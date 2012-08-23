@@ -4,8 +4,8 @@ Created on 14.8.2012
 @author: ttiurani
 '''
 from troikagame import app
-from login import do_the_login, show_the_login_form
-from flask import request
+from security import validate_login
+from flask import request, session, flash, redirect, url_for, render_template
 
 @app.route('/')
 def home():
@@ -20,11 +20,25 @@ def show_user_profile(username):
     # show the user profile for that user
     return 'User %s' % username
 
+def show_troika_list():
+    return render_template('show_troika_list.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    error = None
     if request.method == 'POST':
-        return do_the_login(
-            request.form['email'],
-            request.form['password'])
-    else:
-        return show_the_login_form()
+        if (validate_login(request.form['email'], request.form['password'])):
+            session['logged_in'] = True
+            flash('You were logged in')
+            return redirect(url_for('show_entries'))
+        else:
+            error = 'Invalid email/password'
+  
+    return render_template('login.html', error=error)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect(url_for('home'))

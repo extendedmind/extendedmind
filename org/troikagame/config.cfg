@@ -1,2 +1,0 @@
-DEBUG = True
-DEBUG_WITH_APTANA = False
