@@ -3,18 +3,41 @@ Created on 15.8.2012
 
 @author: ttiurani
 '''
-
 from troikagame import app
 from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/ttiurani/devel/test.db'
+# To Create tables change this:
+DB_DNS = None
+#
+# to something like:
+#
+# DB_DNS = 'sqlite:////home/ttiurani/devel/test.db'
+#
+# and run in the command prompt
+# >> from troikagame.backend import db
+# >> db.create_all()
+if DB_DNS is None:
+    if app.config.get('DB_DNS') is not None:
+        DB_DNS = app.config.get('DB_DNS')
+    else:
+        DB_DNS = None
 
-#str(app.config.get('DB_PREFIX')) + \
-#                                              str(app.config.get('DB_USER')) + \
-#                                        ':' + str(app.config.get('DB_PASSWORD')) + \
-#                                        '@' + str(app.config.get('DB_HOST')) + \
-#                                        '/' + str(app.config.get('DB_NAME'))
+if DB_DNS is not None:
+     app.config['SQLALCHEMY_DATABASE_URI'] = DB_DNS
+elif app.config.get('DB_PREFIX') is not None and \
+     app.config.get('DB_USER') is not None and \
+     app.config.get('DB_PASSWORD') is not None and \
+     app.config.get('DB_HOST') is not None and \
+     app.config.get('DB_NAME') is not None:
+     app.config['SQLALCHEMY_DATABASE_URI'] = app.config.get('DB_PREFIX') + \
+                                             app.config.get('DB_USER') + \
+                                        ':' + app.config.get('DB_PASSWORD') + \
+                                        '@' + app.config.get('DB_HOST') + \
+                                        '/' + app.config.get('DB_NAME')
+else:
+    raise Exception('Either DB_DNS or valid app.config must be set!')
+
 db = SQLAlchemy(app)
 
 class User(db.Model):

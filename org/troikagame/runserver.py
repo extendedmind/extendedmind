@@ -6,14 +6,7 @@ Created on 14.8.2012
 from troikagame import app
 import os
 
-def create_app(config_filename):
-    app.config.from_pyfile(config_filename)    
-    return app
-
 if __name__ == '__main__':
-    # To allow aptana to receive errors, set use_debugger=False
-    app = create_app(config_filename=os.getcwd() + os.sep + "troikagame.cfg")
-
     if app.debug: use_debugger = True
     try:
         # Disable Flask's debugger if external debugger is requested
