@@ -11,10 +11,10 @@ import os
 def validate_login(email, password):
     # First get the user from the database based on email
     user = User.query.filter_by(email=email).first()
-    if (__validate_password(password, user.password)):
-        return True
-    else:
-        return False
+    if user is not None:
+        if (__validate_password(password, user.password)):
+            return True
+    return False
 
 def hash_password(password):
     return sha256_crypt.encrypt

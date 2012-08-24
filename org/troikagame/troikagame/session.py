@@ -34,7 +34,11 @@ class ItsdangerousSessionInterface(SessionInterface):
         val = request.cookies.get(app.session_cookie_name)
         if not val:
             return self.session_class()
-        max_age = app.permanent_session_lifetime.total_seconds()
+        
+        # Needs Python 2.7: https://bitbucket.org/wnielson/django-chronograph/issue/21/timedeltatotal_seconds-requires-python-27
+        #max_age = app.permanent_session_lifetime.total_seconds()
+        max_age = app.permanent_session_lifetime.seconds + (app.permanent_session_lifetime.days * 24 * 3600)
+        
         try:
             data = s.loads(val, max_age=max_age)
             return self.session_class(data)
