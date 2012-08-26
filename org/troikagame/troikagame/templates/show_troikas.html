@@ -1,10 +1,33 @@
 {% extends "layout.html" %}
 {% block body %}
+<div data-role="collapsible" data-collapsed="false" data-theme="a">
+  <h3>Active Troikas</h3>
   <ul class=entries>
-  {% for entry in entries %}
-    <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
+  {% for active_entry in active_entries %}
+    <li><h2>{{ active_entry.title }}</h2>
   {% else %}
-    <li><em>Unbelievable.  No entries here so far</em>
+    <li><em>Unbelievable. No entries here so far</em>
   {% endfor %}
   </ul>
+</div>
+<div data-role="collapsible" data-collapsed="false" data-theme="a">
+  <h3>Pending Troikas</h3>
+  <ul class=entries>
+  {% for pending_entry in pending_entries %}
+    <li><h2>{{ pending_entry.title }}</h2>
+  {% else %}
+    <li><em>Unbelievable. No entries here so far</em>
+  {% endfor %}
+  </ul>
+</div>
+<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="a">
+  <h3>Completed Troikas</h3>
+  <ul class=entries>
+  {% for completed_entry in completed_entries %}
+    <li><h2>{{ completed_entry.title }}</h2>
+  {% else %}
+    <li><em>Unbelievable. No entries here so far</em>
+  {% endfor %}
+  </ul>
+</div>
 {% endblock %}

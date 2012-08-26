@@ -5,14 +5,15 @@ Created on 15.8.2012
 '''
 from troikagame import app
 from flask_sqlalchemy import SQLAlchemy
-import sqlalchemy
+from sqlalchemy import Enum, or_
+import datetime
 
 # To Create tables change this:
 DB_DNS = None
 #
 # to something like:
 #
-# DB_DNS = 'sqlite:////home/ttiurani/devel/test.db'
+#DB_DNS = 'sqlite:////home/ttiurani/devel/test.db'
 #
 # and run in the command prompt
 # >> from troikagame.backend import db
@@ -40,14 +41,31 @@ else:
 
 db = SQLAlchemy(app)
 
+class Area(db.Model):
+    # Identification fields
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(512), unique=True, nullable=False)
+    # TODO: Geolocation info   
+
+class Campus(db.Model):
+    # Identification fields
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(512), unique=True, nullable=False)
+    # Area
+    area_id = db.Column(db.Integer, db.ForeignKey('area.id'), nullable=True)
+    # TODO: Geolocation info
+
+    # Relationships
+    area = db.relationship('Area', backref='campuses')
+
 class User(db.Model):
-    
+
     # Identification fields
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(128), unique=True, nullable=False)
     
     # Security fields
-    role = db.Column(sqlalchemy.Enum('admin', 'user', name='role'), unique=False, nullable=False)
+    role = db.Column(Enum('admin', 'user', name='role'), unique=False, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     password_reset_key = db.Column(db.String(32), unique=False, nullable=True)
     password_reset_expire = db.Column(db.DateTime, unique=False, nullable=True)
@@ -57,8 +75,11 @@ class User(db.Model):
     country = db.Column(db.String(2), unique=False, nullable=True)
     # ISO 3166-2 region code in the country
     region = db.Column(db.String(3), unique=False, nullable=True)
-    # City of residence
-    city = db.Column(db.String(128), unique=False, nullable=True)
+    # Area
+    area_id = db.Column(db.Integer, db.ForeignKey('area.id'), nullable=True)
+    # Campus
+    campus_id = db.Column(db.Integer, db.ForeignKey('campus.id'), nullable=True)
+    
     # ISO-3166-2 two letter language code
     preferred_language = db.Column(db.String(2), unique=False, nullable=False) 
     
@@ -75,87 +96,93 @@ class User(db.Model):
     # Handle to use for public records. User name type field used, if user 
     # does not want to use her real name in public information. 
     handle = db.Column(db.String(512), unique=False, nullable=True)
+
+    # Relationships
+    area = db.relationship('Area', backref='users')
+    campus = db.relationship('Campus', backref='users')
     
-    def __init__(self, email, role, password, password_reset_key, password_reset_expire,
-                country, region, city, preferred_language,
-                full_name, short_name, given_names, family_name,
-                handle):
-        self.email = email
-        self.role = role
-        self.password = password
-        self.password_reset_key = password_reset_key
-        self.password_reset_expire = password_reset_expire
-        self.country = country
-        self.region = region
-        self.city = city 
-        self.preferred_language = preferred_language
-        self.full_name = full_name
-        self.short_name = short_name
-        self.given_names = given_names
-        self.family_name = family_name
-        self.handle = handle
-
-    def __repr__(self):
-        return '<User %r>' % self.email
-
+troikas_users = db.Table('troikas_users',
+    db.Column('troika_id', db.Integer, db.ForeignKey('troika.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+)
 
 class Troika(db.Model):
     
     # Identification fields
     id = db.Column(db.Integer, primary_key=True)
 
-    # Phase of Troika 
-    phase = db.Column(sqlalchemy.Enum('pending', 'pending_huddle', 'active', 'completed', name='phase'), unique=False, nullable=False)
+    # Phase of Troika: NOTE: there is no "completed"
+    # phase in the database because that would
+    # require some sort of polling of end_time. 
+    phase = db.Column(Enum('pending', 'pending_huddle', 'active', name='phase'), unique=False, nullable=False)
     
     # Description
     title = db.Column(db.String(512), unique=False, nullable=False)
     description = db.Column(db.String(10000), unique=False, nullable=True)
 
     # Location and language
+    # Location is either given with country+(region+)address or
+    # with area+address, or with campus+address
     # ISO 3166-1 alpha-2 country code
-    country = db.Column(db.String(2), unique=False, nullable=False)
+    country = db.Column(db.String(2), unique=False, nullable=True)
     # ISO 3166-2 region code in the country
-    region = db.Column(db.String(3), unique=False, nullable=False)
-    # City
-    city = db.Column(db.String(128), unique=False, nullable=True)
+    region = db.Column(db.String(3), unique=False, nullable=True)
+    # Area
+    area_id = db.Column(db.Integer, db.ForeignKey('area.id'), nullable=True)
     # Campus
-    campus = db.Column(db.String(128), unique=False, nullable=True)
-    # Address
+    campus_id = db.Column(db.Integer, db.ForeignKey('campus.id'), nullable=True)
+    # Street address, needs to be possible to find with e.g. Google Maps
     address = db.Column(db.String(512), unique=False, nullable=True)   
+    # Street address addendum, such as "room 123"
+    address_addendum = db.Column(db.String(512), unique=False, nullable=True)   
+
     # ISO-3166-2 two letter language code
-    language = db.Column(db.String(2), unique=False, nullable=False)
+    language = db.Column(db.String(2), unique=False, nullable=True)
     
     # Time
     start_time = db.Column(db.DateTime, unique=False, nullable=True)
     end_time = db.Column(db.DateTime, unique=False, nullable=True)
-       
+
+    # Participation limit, minimum is 5
+    max_participants = db.Column(db.Integer, unique=False, nullable=True)
+
     # Users involved
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     first_learner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     second_learner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    
+    # Relationships
+    area = db.relationship('Area', backref='troikas',
+                                lazy='joined')
+    campus = db.relationship('Campus', backref='troikas',
+                                lazy='joined')    
+    creator = db.relationship('User', backref='created_troikas',
+                              primaryjoin="User.id==Troika.creator_id",
+                              lazy='joined')
+    teacher = db.relationship('User', backref='teacher_troikas',
+                              primaryjoin="User.id==Troika.teacher_id",
+                                lazy='joined')
+    first_learner = db.relationship('User', backref='first_learner_troikas',
+                              primaryjoin="User.id==Troika.first_learner_id",
+                                lazy='joined')
+    second_learner = db.relationship('User', backref='second_learner_troikas',
+                              primaryjoin="User.id==Troika.second_learner_id",
+                                lazy='joined')
+    # The rest of the users involved
+    participants = db.relationship('User', secondary=troikas_users,
+        backref=db.backref('participated_troikas', lazy='dynamic'))
 
-    def __init__(self, phase, title, description,
-                 country, region, city, campus, address, 
-                 language, start_time, end_time,
-                 creator_id, teacher_id, first_learner_id,
-                 second_learner_id):
-        self.phase = phase
-        self.title = title
-        self.description = description
-        self.country = country
-        self.region = region
-        self.city = city
-        self.campus = campus
-        self.address = address
-        self.language = language
-        self.start_time = start_time
-        self.end_time = end_time
-        self.creator_id = creator_id
-        self.teacher_id = teacher_id
-        self.first_learner_id = first_learner_id
-        self.second_learner_id = second_learner_id
-
-    def __repr__(self):
-        return '<Troika %r>' % self.id
-
+# Methods
+def get_active_troikas(index=0, max=10):
+    return Troika.query.filter_by(phase='active') \
+                       .filter(Troika.end_time > datetime.datetime.now()) \
+                       .order_by(Troika.start_time).limit(max).all()
+def get_pending_troikas(index=0, max=10):
+    return Troika.query.filter(or_(Troika.phase == 'pending', Troika.phase =='pending_huddle')) \
+                       .order_by(Troika.start_time).limit(max).all()
+def get_completed_troikas(index=0, max=10):
+    return Troika.query.filter_by(phase='active') \
+                       .filter(Troika.end_time < datetime.datetime.now()) \
+                       .order_by(Troika.start_time).limit(max).all()
+        

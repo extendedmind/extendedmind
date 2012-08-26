@@ -1,8 +1,23 @@
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
 <title>Troika Game</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-<div class=page>
-  <h1>Troika Game</h1>
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css" />
+<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+</head>
+<body>
+<div class=page data-role="page" data-theme="a" data-content-theme="a">
+  <div data-role="header"> 
+	<h1>Troika Game</h1>
+  </div>
+  {% for message in get_flashed_messages() %}
+    <div class="flash ui-bar ui-bar-b">{{ message }}</div>
+  {% endfor %}
   <div class=metanav>
   {% if not session.logged_in %}
     <a href="{{ url_for('login') }}">log in</a>
@@ -10,8 +25,10 @@
     <a href="{{ url_for('logout') }}">log out</a>
   {% endif %}
   </div>
-  {% for message in get_flashed_messages() %}
-    <div class=flash>{{ message }}</div>
-  {% endfor %}
-  {% block body %}{% endblock %}
+  <div data-role="content">
+  {% block body %}
+  {% endblock %}
+  </div>
 </div>
+</body>
+</html>
