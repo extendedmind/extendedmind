@@ -1,4 +1,8 @@
 {% extends "layout.html" %}
+{% block back_button %}
+<a href="/" data-direction="reverse">Troika List</a>
+{% endblock %}
+
 {% block body %}
   <h2>Login</h2>
   {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}

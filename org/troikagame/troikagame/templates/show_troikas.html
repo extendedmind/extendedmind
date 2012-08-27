@@ -1,32 +1,38 @@
 {% extends "layout.html" %}
 {% block body %}
-<div data-role="collapsible" data-collapsed="false" data-theme="a">
+<div data-role="collapsible" data-collapsed="false" data-theme="b">
   <h3>Active Troikas</h3>
-  <ul class=entries>
+  <ul class=entries data-role="listview">
   {% for active_entry in active_entries %}
-    <li><h2>{{ active_entry.title }}</h2>
+    <li><a href="{{ url_for('show_troika_details', troika_id=active_entry.id) }}">
+    {{ active_entry.title }}
+    </a></li>
   {% else %}
-    <li><em>Unbelievable. No entries here so far</em>
+    <li><em>Unbelievable. No entries here so far</em></li>
   {% endfor %}
   </ul>
 </div>
-<div data-role="collapsible" data-collapsed="false" data-theme="a">
+<div data-role="collapsible" data-collapsed="false" data-theme="b">
   <h3>Pending Troikas</h3>
-  <ul class=entries>
+  <ul class=entries data-role="listview">
   {% for pending_entry in pending_entries %}
-    <li><h2>{{ pending_entry.title }}</h2>
+    <li><a href="{{ url_for('show_troika_details', troika_id=pending_entry.id) }}">
+    {{ pending_entry.title }}
+    </a></li>
   {% else %}
-    <li><em>Unbelievable. No entries here so far</em>
+    <li><em>Unbelievable. No entries here so far</em></li>
   {% endfor %}
   </ul>
 </div>
-<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="a">
+<div data-role="collapsible" data-collapsed="true" data-theme="b">
   <h3>Completed Troikas</h3>
-  <ul class=entries>
+  <ul class=entries data-role="listview">
   {% for completed_entry in completed_entries %}
-    <li><h2>{{ completed_entry.title }}</h2>
+    <li><a href="{{ url_for('show_troika_details', troika_id=completed_entry.id) }}">
+    {{ completed_entry.title }}
+    </a></li>
   {% else %}
-    <li><em>Unbelievable. No entries here so far</em>
+    <li><em>Unbelievable. No entries here so far</em></li>
   {% endfor %}
   </ul>
 </div>

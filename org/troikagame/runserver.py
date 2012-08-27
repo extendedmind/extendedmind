@@ -4,7 +4,6 @@ Created on 14.8.2012
 @author: ttiurani
 '''
 from troikagame import app
-import os
 
 if __name__ == '__main__':
     if app.debug: use_debugger = True

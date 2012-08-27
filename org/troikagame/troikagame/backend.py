@@ -13,7 +13,7 @@ DB_DNS = None
 #
 # to something like:
 #
-#DB_DNS = 'sqlite:////home/ttiurani/devel/test.db'
+# DB_DNS = 'mysql://tg:tgpwd@localhost/tgdev'
 #
 # and run in the command prompt
 # >> from troikagame.backend import db
@@ -25,13 +25,13 @@ if DB_DNS is None:
         DB_DNS = None
 
 if DB_DNS is not None:
-     app.config['SQLALCHEMY_DATABASE_URI'] = DB_DNS
+    app.config['SQLALCHEMY_DATABASE_URI'] = DB_DNS
 elif app.config.get('DB_PREFIX') is not None and \
-     app.config.get('DB_USER') is not None and \
-     app.config.get('DB_PASSWORD') is not None and \
-     app.config.get('DB_HOST') is not None and \
-     app.config.get('DB_NAME') is not None:
-     app.config['SQLALCHEMY_DATABASE_URI'] = app.config.get('DB_PREFIX') + \
+    app.config.get('DB_USER') is not None and \
+    app.config.get('DB_PASSWORD') is not None and \
+    app.config.get('DB_HOST') is not None and \
+    app.config.get('DB_NAME') is not None:
+    app.config['SQLALCHEMY_DATABASE_URI'] = app.config.get('DB_PREFIX') + \
                                              app.config.get('DB_USER') + \
                                         ':' + app.config.get('DB_PASSWORD') + \
                                         '@' + app.config.get('DB_HOST') + \
@@ -44,13 +44,13 @@ db = SQLAlchemy(app)
 class Area(db.Model):
     # Identification fields
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(512), unique=True, nullable=False)
+    name = db.Column(db.String(128), unique=True, nullable=False)
     # TODO: Geolocation info   
 
 class Campus(db.Model):
     # Identification fields
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(512), unique=True, nullable=False)
+    name = db.Column(db.String(128), unique=True, nullable=False)
     # Area
     area_id = db.Column(db.Integer, db.ForeignKey('area.id'), nullable=True)
     # TODO: Geolocation info
@@ -174,15 +174,18 @@ class Troika(db.Model):
         backref=db.backref('participated_troikas', lazy='dynamic'))
 
 # Methods
-def get_active_troikas(index=0, max=10):
+def get_troika(troika_id):
+    return Troika.query.filter_by(id=troika_id).first()
+
+def get_active_troikas(index=0, max_entries=10):
     return Troika.query.filter_by(phase='active') \
                        .filter(Troika.end_time > datetime.datetime.now()) \
-                       .order_by(Troika.start_time).limit(max).all()
-def get_pending_troikas(index=0, max=10):
+                       .order_by(Troika.start_time).limit(max_entries).all()
+def get_pending_troikas(index=0, max_entries=10):
     return Troika.query.filter(or_(Troika.phase == 'pending', Troika.phase =='pending_huddle')) \
-                       .order_by(Troika.start_time).limit(max).all()
-def get_completed_troikas(index=0, max=10):
+                       .order_by(Troika.start_time).limit(max_entries).all()
+def get_completed_troikas(index=0, max_entries=10):
     return Troika.query.filter_by(phase='active') \
                        .filter(Troika.end_time < datetime.datetime.now()) \
-                       .order_by(Troika.start_time).limit(max).all()
+                       .order_by(Troika.start_time).limit(max_entries).all()
         

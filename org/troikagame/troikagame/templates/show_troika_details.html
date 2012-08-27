@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block back_button %}
+<a href="/" data-direction="reverse">Troika List</a>
+{% endblock %}
+{% block body %}
+<div data-theme="a">
+  <h2>{{ entry.title }}</h2>
+  <ul class=entries data-role="listview">
+    <li><h3>Description</h3> {{ entry.description }}</span></li>
+    <li><h3>Phase</h3> {{ entry.phase }}</li>
+    <li><h3>Start time</h3> {{ entry.start_time }}</li>
+    <li><h3>End time</h3> {{ entry.end_time }}</li>
+    <li><h3>Address</h3> {{ entry.address }} - {{ entry.address_addendum }}</li>
+    <li><h3>Teacher</h3> {{ entry.teacher }}</li>
+    <li><h3>First Learner</h3> {{ entry.first_learner }}</li>
+    <li><h3>Second Learner</h3> {{ entry.second_learner }}</li>
+    <li><h3>Participants</h3> 
+		    {% for participant in entry.participants %}
+		    {{ participant.full_name }}
+			{% else %} None
+			{% endfor %}</li>
+  </ul>
+</div>
+{% endblock %}

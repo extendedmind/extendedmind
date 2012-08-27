@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <title>Troika Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css" />
 <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script>
@@ -12,11 +13,13 @@
 </head>
 <body>
 <div class=page data-role="page" data-theme="a" data-content-theme="a">
-  <div data-role="header"> 
+  <div data-role="header">
 	<h1>Troika Game</h1>
+	{% block back_button %}
+  	{% endblock %}
   </div>
   {% for message in get_flashed_messages() %}
-    <div class="flash ui-bar ui-bar-b">{{ message }}</div>
+    <div class="flash ui-bar ui-bar-a">{{ message }}</div>
   {% endfor %}
   <div class=metanav>
   {% if not session.logged_in %}
