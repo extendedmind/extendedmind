@@ -14,6 +14,14 @@ setup(
 		"Operating System :: OS Independent",
         "Topic :: Internet :: WWW/HTTP",
         ],
+    requires = [
+        'flask',
+        'mysql-python'
+        'flask-sqlalchemy',
+        'itsdangerous',
+        'flask-bootstrap',
+        'passlib'
+    ], 
     long_description = """\
 Troika Game (www.troikagame.org)
 ********************************
