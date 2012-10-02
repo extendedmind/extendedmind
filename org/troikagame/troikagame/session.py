@@ -7,7 +7,6 @@ from werkzeug.datastructures import CallbackDict
 from flask.sessions import SessionInterface, SessionMixin
 from itsdangerous import URLSafeTimedSerializer, BadSignature
 
-
 class ItsdangerousSession(CallbackDict, SessionMixin):
 
     def __init__(self, initial=None):
