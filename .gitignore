@@ -9,3 +9,4 @@ org/troikagame/.project
 org/troikagame/.pydevproject
 org/troikagame/.settings/*
 org/troikagame/.externalToolBuilders
+org/troikagame/*.egg-info
