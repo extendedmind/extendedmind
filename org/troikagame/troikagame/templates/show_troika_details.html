@@ -3,26 +3,39 @@
 <a href="/">Home</a>
 {% endblock %} 
 {% block body %}
-    <!-- Flashed messages -->
-<header id="tg-heading" class="jumbotron subhead">
-  <div class="container">
+<div class="container tg-heading">
+  <div class="span12">
     <h2>{{ entry.title }}</h2>
-    <p class="lead">{{ entry.description }}</p>
   </div>
-</header>
-
-<ul class=entries data-role="listview">
-  <li><h3>Description</h3> {{ entry.description }}</span></li>
-  <li><h3>Phase</h3> {{ entry.phase }}</li>
-  <li><h3>Start time</h3> {{ entry.start_time }}</li>
-  <li><h3>End time</h3> {{ entry.end_time }}</li>
-  <li><h3>Address</h3> {{ entry.address }} - {{
-    entry.address_addendum }}</li>
-  <li><h3>Teacher</h3> {{ entry.teacher }}</li>
-  <li><h3>First Learner</h3> {{ entry.first_learner }}</li>
-  <li><h3>Second Learner</h3> {{ entry.second_learner }}</li>
-  <li><h3>Participants</h3> {% for participant in
-    entry.participants %} {{ participant.full_name }} {% else %} None {%
-    endfor %}</li>
-</ul>
+</div>
+<div class="container">
+  <div class="row-fluid">
+    <div class="span4 tg-group">
+      <div class="container span12">  
+        <h3>Description</h3> {{ entry.description }}
+      </div>
+    </div>
+    <div class="span4 tg-group">
+      <div class="container span12">
+        <h3>Phase</h3> {{ entry.phase }}
+        <h3>Start time</h3> {{ entry.start_time }}
+        <h3>End time</h3> {{ entry.end_time }}
+        <h3>Address</h3> {{ entry.address }} - {{ entry.address_addendum }}
+      </div>
+    </div>
+    <div class="span4 tg-group">
+      <div class="span12">
+        <h3>Teacher</h3> {{ entry.teacher }}
+        <h3>First Learner</h3> {{ entry.first_learner }}
+        <h3>Second Learner</h3> {{ entry.second_learner }}
+        <h3>Participants</h3>
+          {% for participant in entry.participants %} 
+            {{ participant.full_name }} 
+            {% else %} None 
+          {%endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+       
 {% endblock %}

@@ -1,27 +1,26 @@
-@media (min-width: 980px) {
-  .tg-mobile {
-    display: none !important;
-  }
-}
-@media (min-width: 768px) {
-  .content {
-    padding-left: 20px;
-  }
-}
-@media (min-width: 768px) and (max-width: 979px) {
-  .container-fluid {
-    padding: 0 !important;
-  }
-}
-.brand {
-  margin-left: auto;
-  margin-right: auto;
-}
-.mobile {
-  display: none;
-}
 body {
   padding-top: 60px;
+}
+.tg-heading,
+.tg-message {
+  text-align: center;
+}
+.tg-group {
+  border: 1px solid #E5E5E5;
+  border-radius: 4px 4px 4px 4px;
+  padding: 8px 8px 8px 8px;
+}
+
+.tg-anchor {
+  padding-top: 40px; 
+  margin-top: -40px;
+}
+
+@media (min-width: 980px) {
+  .tg-heading {
+    padding-top: 3em;
+    padding-bottom: 2em;
+  }
 }
 @media (max-width: 979px) {
   body {

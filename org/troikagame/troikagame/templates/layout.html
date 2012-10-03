@@ -2,7 +2,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="{{ url_for('static',filename='bootstrap/css/bootstrap.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static',filename='bootstrap/css/bootstrap-responsive.css') }}">
 <link rel="stylesheet" href="{{ url_for('static',filename='css/tg.css') }}">
@@ -23,7 +23,7 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <ul class="nav tg-mobile">
+          <ul class="nav hidden-desktop">
             <li>
               {% block back_button %} 
               {% endblock %}
@@ -39,9 +39,8 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
               </li>
             </ul>
             <ul class="nav pull-left">
-              <li><a href="{{ url_for('about') }}">About</a></li>
-              <li><a href="blog">Blog</a></li>
-              <li><a href="http://www.facebook.com/troikagame">Facebook</a></li>
+              <li class="hidden-phone"><a href="{{ url_for('about') }}">About</a></li>
+              <li><a href="http://www.facebook.com/troikagame" target="_blank">Facebook</a></li>
             </ul>
           </div>
         </div>
@@ -49,10 +48,19 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </div>
     
     <!-- Flashed messages -->
-    {% for message in get_flashed_messages() %}
-    <div class="flash ui-bar ui-bar-a">{{ message }}</div>
-    {% endfor %}
-    
+    <div class="container">
+      <div class="row">
+        {% for message in get_flashed_messages() %}
+        <div class="span4 offset4">  
+          <div class="alert alert-success tg-message">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            {{ message }}
+          </div>
+        </div>
+        <div class="span4"></div>
+        {% endfor %}
+      </div>
+    </div>
     <!-- Page Content -->
     <div class="content">{% block body %} {% endblock %}</div>
   </div>

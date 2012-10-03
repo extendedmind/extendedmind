@@ -10,7 +10,7 @@ from flask import request, session, flash, redirect, url_for, render_template
 
 @app.route('/about')
 def about():
-    return 'About'
+    return render_template('about.html')
 
 @app.route('/user/<email>')
 def show_user_profile(email):
@@ -78,7 +78,6 @@ def login():
             error = 'Invalid email/password'
   
     return render_template('login.html', error=error)
-
 
 @app.route('/logout')
 def logout():

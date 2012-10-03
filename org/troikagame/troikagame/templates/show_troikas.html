@@ -1,42 +1,92 @@
 {% extends "layout.html" %}
+{% import 'macros.html' as macros %}
 {% block back_button %}
 <a class="navbar-link" href="about">About</a>
 {% endblock %}
 {% block body %}
-<div data-role="collapsible" data-collapsed="false" data-theme="b">
-  <h3>Active Troikas</h3>
-  <ul class=entries data-role="listview">
-  {% for active_entry in active_entries %}
-    <li><a href="{{ url_for('show_troika_details', troika_id=active_entry.id) }}">
-    {{ active_entry.title }}
-    </a></li>
-  {% else %}
-    <li><em>Unbelievable. No entries here so far</em></li>
-  {% endfor %}
-  </ul>
-</div>
-<div data-role="collapsible" data-collapsed="false" data-theme="b">
-  <h3>Pending Troikas</h3>
-  <ul class=entries data-role="listview">
-  {% for pending_entry in pending_entries %}
-    <li><a href="{{ url_for('show_troika_details', troika_id=pending_entry.id) }}">
-    {{ pending_entry.title }}
-    </a></li>
-  {% else %}
-    <li><em>Unbelievable. No entries here so far</em></li>
-  {% endfor %}
-  </ul>
-</div>
-<div data-role="collapsible" data-collapsed="true" data-theme="b">
-  <h3>Completed Troikas</h3>
-  <ul class=entries data-role="listview">
-  {% for completed_entry in completed_entries %}
-    <li><a href="{{ url_for('show_troika_details', troika_id=completed_entry.id) }}">
-    {{ completed_entry.title }}
-    </a></li>
-  {% else %}
-    <li><em>Unbelievable. No entries here so far</em></li>
-  {% endfor %}
-  </ul>
+
+{% call macros.print_heading() %} {% endcall %}
+<div class="container">
+  <div class="row-fluid">
+    <div class="span4">
+      <div class="accordion" id="tg-active-accordion">
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <div class="accordion-toggle">
+              <a href="#tg-active-collapse" data-toggle="collapse" data-parent="#tg-active-accordion">
+              <h3>Active Troikas</h3>
+              </a>
+              <h6>Future Troikas that you can join in on!</h6> 
+            </div>
+          </div>
+          <div id="tg-active-collapse" class="accordion-body collapse in">
+            <div class="accordion-inner">
+              <ul class=entries>
+                {% for active_entry in active_entries %}
+                <li><a
+                  href="{{ url_for('show_troika_details', troika_id=active_entry.id) }}">
+                    {{ active_entry.title }} </a></li> {% else %}
+                <li><em>Unbelievable. No entries.</em></li> {% endfor
+                %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="span4">
+      <div class="accordion" id="tg-pending-accordion">
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <div class="accordion-toggle">
+              <a data-toggle="collapse" data-parent="#tg-pending-accordion" href="#tg-pending-collapse">
+              <h3>Pending Troikas</h3>
+              </a>
+              <h6>Troikas that have not yet been activated either because they don't yet have three participants or
+               they are missing a time and place.</h6> 
+            </div>
+          </div>
+          <div id="tg-pending-collapse" class="accordion-body collapse in">
+            <div class="accordion-inner">
+              <ul class=entries>
+                {% for pending_entry in pending_entries %}
+                <li><a
+                  href="{{ url_for('show_troika_details', troika_id=pending_entry.id) }}">
+                    {{ pending_entry.title }} </a></li> {% else %}
+                <li><em>Unbelievable. No entries here so far</em></li> {% endfor
+                %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="span4">
+      <div class="accordion" id="tg-completed-accordion">
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <div class="accordion-toggle">
+              <a data-toggle="collapse" data-parent="#tg-completed-accordion" href="#tg-completed-collapse">
+                <h3>Completed Troikas</h3>
+              </a>
+              <h6>Troikas that were successfully kept.</h6> 
+            </div>
+          </div>
+          <div id="tg-completed-collapse" class="accordion-body collapse">
+            <div class="accordion-inner">
+              <ul class=entries>
+                {% for completed_entry in completed_entries %}
+                <li><a
+                  href="{{ url_for('show_troika_details', troika_id=completed_entry.id) }}">
+                    {{ completed_entry.title }} </a></li> {% else %}
+                <li><em>Unbelievable. No entries here so far</em></li> {% endfor
+                %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

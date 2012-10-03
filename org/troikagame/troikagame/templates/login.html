@@ -1,18 +1,54 @@
 {% extends "layout.html" %}
 {% block back_button %}
-<a href="/" data-direction="reverse">Troika List</a>
-{% endblock %}
+<a href="/">Home</a>
+{% endblock %} 
 
 {% block body %}
-  <h2>Login</h2>
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
-  <form action="{{ url_for('login') }}" method=post>
-    <dl>
-      <dt>Email Address:
-      <dd><input type=text name=email>
-      <dt>Password:
-      <dd><input type=password name=password>
-      <dd><input type=submit value=Login>
-    </dl>
-  </form>
+<div class="container">
+  <div class="row-fluid"> 
+    <div class="span6">  
+      <h2>Login</h2>
+      {% if error %}
+      <div class="alert alert-error tg-message">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>Error:</strong> {{ error }}
+      </div>
+      {% endif %}
+      <form id="tg-login" action="{{ url_for('login') }}" method=post>
+        <dl>
+          <dt>Email Address:</dt>
+          <dd><input type=text name=email></dd>
+          <dt>Password:</dt>
+          <dd><input type=password name=password></dd>
+          <dd><input type=submit value=Login></dd>
+        </dl>
+      </form>
+    </div>
+    <div class="span6">  
+      <h2>Register</h2>
+      {% if error %}
+      <div class="alert alert-error tg-message">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>Error:</strong> {{ error }}
+      </div>
+      {% endif %}
+      <form id="tg-register" action="{{ url_for('login') }}" method=post>
+        <dl>
+          <dt>First Name:</dt>
+          <dd><input type=text name=register_first_name></dd>
+          <dt>Last Name:</dt>
+          <dd><input type=text name=register_last_name></dd>
+          <dt>Email Address:</dt>
+          <dd><input type=text name=register_email></dd>
+          <dt>Password:</dt>
+          <dd><input type=password name=register_password></dd>
+          <dt>Verify Password:</dt>
+          <dd><input type=password name=verify_password></dd>
+          <dd><input type=submit value=Register></dd>
+        </dl>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
