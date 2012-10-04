@@ -21,13 +21,13 @@ def show_user_profile(email):
 def show_troika_details(troika_id):
     troika = get_troika(troika_id);
     entry = {'id': troika.id,
-             'phase': troika.phase,
+             'phase': troika.get_phase(),
              'title': troika.title, 
              'description': troika.description,
              'address': troika.address,
              'address_addendum': troika.address_addendum,
              'start_time': troika.start_time,
-             'end_time': troika.start_time,
+             'end_time': troika.end_time,
              'max_participants': troika.max_participants,
              'teacher': troika.teacher.full_name if troika.teacher != None else None,
              'first_learner': troika.first_learner.full_name if troika.first_learner != None else None,

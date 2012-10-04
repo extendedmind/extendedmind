@@ -126,7 +126,9 @@ db.session.commit()
 
 # Real Troikas
 
-troika1 = Troika(phase='active', title=u"How to visualize data with network analysis?", 
+troika1 = Troika(created=datetime.datetime(2012, 5, 20, 14, 15, 0), 
+                 activated=datetime.datetime(2012, 5, 20, 14, 15, 0),
+                 title=u"How to visualize data with network analysis?", 
                  description=u"Olli Parviainen talks about data visualization using network analysis.",
                  country='FI', region='18', area_id=None, campus_id=None, 
                  address=u"Unioninkatu 37",
@@ -137,7 +139,9 @@ troika1 = Troika(phase='active', title=u"How to visualize data with network anal
                  max_participants=10, creator=olli, teacher=olli, first_learner=petro,
                  second_learner=salla)
 
-troika2 = Troika(phase='active', title=u"Luokittelutroikka", 
+troika2 = Troika(created=datetime.datetime(2012, 6, 3, 15, 15, 0), 
+                 activated=datetime.datetime(2012, 6, 3, 15, 15, 0),
+                 title=u"Luokittelutroikka", 
                  description=u"Onko intohimosi luokitella asioita? Tutkimusaineiston \
                               analysointi on usein aineiston luokittelua erilaisiin \
                               kategorioihin ja näiden kategorioiden tulkitsemista. \
@@ -154,7 +158,9 @@ troika2 = Troika(phase='active', title=u"Luokittelutroikka",
                  end_time=datetime.datetime(2012, 6, 13, 16, 45, 0),
                  max_participants=8, creator=petro, teacher=petro, first_learner=olli, second_learner=salla)
 
-troika3 = Troika(phase='active', title=u"Semanttinen verkostoanalyysi", 
+troika3 = Troika(created=datetime.datetime(2012, 7, 4, 17, 15, 0), 
+                 activated=datetime.datetime(2012, 7, 4, 17, 15, 0), 
+                 title=u"Semanttinen verkostoanalyysi", 
                  description=u"Troikan kolmas kierros käynnistyy. Aiheenaan jälleen \
                               verkostoanalyysi. Tällä kertaa käsittelemme sanojen \
                               muodostamia verkostoja (http://en.wikipedia.org/wiki/Semantic_network \
@@ -175,12 +181,19 @@ troika3.participants = [arho]
 
 # Test Troikas
 
+two_months_ago = datetime.datetime.now() - datetime.timedelta(days=60)
+two_months_ago.replace(hour=16, minute=0, second=0, microsecond=0)
 one_month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
 one_month_ago.replace(hour=16, minute=0, second=0, microsecond=0)
+twenty_days_ago = datetime.datetime.now() - datetime.timedelta(days=20)
+twenty_days_ago.replace(hour=16, minute=0, second=0, microsecond=0)
+ten_days_ago = datetime.datetime.now() - datetime.timedelta(days=10)
+ten_days_ago.replace(hour=16, minute=0, second=0, microsecond=0)
 one_month_away = datetime.datetime.now() + datetime.timedelta(days=30)
 one_month_away.replace(hour=17, minute=0, second=0, microsecond=0)
 
-troika4 = Troika(phase='pending', title=u"Excel kung fu - heinäsirkasta mestariksi",
+troika4 = Troika(created=ten_days_ago,
+                title=u"Excel kung fu - heinäsirkasta mestariksi",
                 description=u"Suurimmalla osalla istuu työpöydällä käyttämätön tehopakkaus: Office-paketin excel. Excel kung fu:ssa opit yksinkertaisia kikkoja ja menetelmiä tiedon ja numeroiden käsittelyyn. Tarvitset koneen ja Office 2007/2010 Excelin. ",
                 country='FI', region='18', area_id=None, campus_id=None,
                 address=u"Mannerheimintie 22",
@@ -188,7 +201,10 @@ troika4 = Troika(phase='pending', title=u"Excel kung fu - heinäsirkasta mestari
                 language='fi', 
                 max_participants=10, creator=alfonso, teacher=alfonso, first_learner=antti)
 
-troika5 = Troika(phase='active', title=u"Konferenssiposterin tekeminen",
+troika5 = Troika(created=one_month_ago, 
+                 pended=twenty_days_ago,
+                 activated=ten_days_ago, 
+                 title=u"Konferenssiposterin tekeminen",
                 description=u"Työpajassa käydään läpi posterin tekemisen teoria ja käytäntö. Kukin osallistuja rakentaa pajan aikana tieteellisen posterin omasta tutkimusaiheestaan. Tarvitset mukaan kannettavan tietokoneen, jossa mieluiten PowerPoint tai InDesign, tai vaihtoehtoisesti A2-koon paperin ja tusseja.",
                 country='FI', region='18', area_id=None, campus_id=None,
                 address=u"Unioninkatu 37",
@@ -200,7 +216,10 @@ troika5 = Troika(phase='active', title=u"Konferenssiposterin tekeminen",
                 second_learner=esko)
 troika5.participants = [essi,camilla,petro,anita,antti,jukka,laura,jari,arho,petro]
 
-troika6 = Troika(phase='active', title=u"Viitteiden hallinta Mendeleyn avulla",
+troika6 = Troika(created=one_month_ago, 
+                 pended=twenty_days_ago,
+                 activated=ten_days_ago, 
+                 title=u"Viitteiden hallinta Mendeleyn avulla",
                 description=u"Troikassa tutustutaan digitaaliseen viitteiden hallintaan. Tieteellinen kirjoittaminen tehdään tietokoneella, ja usein myös lähdekirjallisuus on digitaalisessa muodossa. Siitä huolimatta lähdeviitteet kirjoitetaan ja arkistoidaan usein käsin. Internetistä on kuitenkin saatavilla pitkälle kehittyneitä viitteiden hallinta järjestelmiä, kuten Mendeley tai Zotero, joiden avulla voi lukea artikkeleita ja kirjallisuutta digitaalisessa muodossa, tehdä merkintöjä ja muistiinpanoja, siteerata, ja mikä tärkeintä, tulostaa lähdeluetteloita. Saavu troikkaan kuulemaan, kuinka päivität artikkelin kirjoituksen ja tieteellisiin teksteihin tutustumisen digitaaliseen aikaan! Opettelemme konkreettiisena esimerkkinä Mendeleyn käyttöä. Muista ladata ohjelma koneellesi osoitteesta http://www.mendeley.com/",
                 country='FI', region='18', area_id=None, campus_id=None,
                 address=u"Snellmaninkatu 14 B",
@@ -212,7 +231,10 @@ troika6 = Troika(phase='active', title=u"Viitteiden hallinta Mendeleyn avulla",
                 second_learner=jukka)
 troika6.participants = [camilla,natasha,bertil,lauri,timo,pertti]
 
-troika7 = Troika(phase='active', title=u"Kuinka ideoin tehokkaasti? Luovan ajattelun työpaja",
+troika7 = Troika(created=one_month_ago, 
+                 pended=twenty_days_ago,
+                 activated=ten_days_ago,
+                 title=u"Kuinka ideoin tehokkaasti? Luovan ajattelun työpaja",
                 description=u"Eikö artikkelin kirjoitus edisty? Onko edessäsi tyhjä sivu, eikä päässä yhtään hyvää ideaa? Akateeminen työnteko edellyttää usein luovuutta: uudet tutkimusideat, artikkelin kirjoitus, hyvän luennon suunnittelu, koeasetelman kekseliäisyys, kyselylomakkeen tekeminen jne. ovat kaikki toimenpiteitä, joissa pohjimmiltaan tarvitsemme luovaa ajattelua. Aina kekseliäät ideat eivät kuitenkaan tule liukuhihnalta. Tässä troikassa harjoittelemme muutamaa yksinkertaista luovan ajattelun menetelmää, joiden avulla ideaputki aukeaa kuin vesihana!",
                 country='FI', region='18', area_id=None, campus_id=None,
                 address=u"Liisankatu 29",
@@ -223,7 +245,10 @@ troika7 = Troika(phase='active', title=u"Kuinka ideoin tehokkaasti? Luovan ajatt
                 max_participants=5, creator=petro, teacher=lauri, first_learner=petro,
                 second_learner=salla)
 
-troika8 = Troika(phase='active', title=u"PowerPoint on kirosana?",
+troika8 = Troika(created=one_month_ago, 
+                 pended=twenty_days_ago,
+                 activated=ten_days_ago,
+                 title=u"PowerPoint on kirosana?",
                 description=u"Kalvosulkeiset on usein käytetty lempinimi PowerPoint-esityksille. Esityksen tekijästä on saattanut tuntua, että kaikki tarpeellinen ei millään mahdu mukaan, ja tuloksena on kuulijan kannalta puuduttava kalvoshow, jossa esiintyjän oma viestintä ja PowerPoint viestintävälineenä eivät tuo aiheeseen sanottava lisäarvoa - oppimisen tulos olisi ollut sama, jos kuulija olisi lukenut sen suoraan paperilta. Tässä troikassa käymme läpi muutamia yksinkertaisia perusperiaatteita mukaansatempaavien PowerPoint-esitysten tekemiseksi. Samalla esitellään 10 helppoa vinkkiä oman viestinnän elävöittämiseksi.",
                 country='FI', region='18', area_id=None, campus_id=None,
                 address=u"Aleksanterinkatu 7",
@@ -231,11 +256,14 @@ troika8 = Troika(phase='active', title=u"PowerPoint on kirosana?",
                 language='fi', 
                 start_time=one_month_away + datetime.timedelta(days=4), 
                 end_time=one_month_away + datetime.timedelta(days=4, hours=1),
-                max_participants=5, creator=petro, teacher=essi, first_learner=alfonso,
+                max_participants=5, creator=petro, teacher=petro, first_learner=alfonso,
                 second_learner=mikaela)
 troika8.participants = [jari,anita]
 
-troika9 = Troika(phase='active', title=u"Jumittaako? Tule taukojumppa-Troikkaan",
+troika9 = Troika(created=one_month_ago, 
+                 pended=twenty_days_ago,
+                 activated=ten_days_ago,
+                 title=u"Jumittaako? Tule taukojumppa-Troikkaan",
                 description=u"Jumittaako niska? Tekeekö mieli jatkuvasti venytellä tuolin selkänojaa vasten? Takkuaako ajatus? Taukojumppa saattaa auttaa. Taukojumppa on helppo tapa pitää pieni tauko päivittäisestä päätteellä istumisesta. Samalla kohtaat työtovereitasi, kohennat terveyttäsi ja lisäät omaa työtehoasi! Taukojumppa-Troikassa käymme läpi tärkeimmät perusliikkeet siten, että kuka tahansa osallistujista voi toimia vetäjänä seuraavalla kerralla!",
                 country='FI', region='18', area_id=None, campus_id=None,
                 address=u"Unioninkatu 37",
@@ -243,11 +271,14 @@ troika9 = Troika(phase='active', title=u"Jumittaako? Tule taukojumppa-Troikkaan"
                 language='fi', 
                 start_time=one_month_away + datetime.timedelta(days=5), 
                 end_time=one_month_away + datetime.timedelta(days=5, hours=1),
-                max_participants=20, creator=petro, teacher=camilla, first_learner=salla,
+                max_participants=20, creator=petro, teacher=camilla, first_learner=petro,
                 second_learner=mirkka)
-troika9.participants = [arho,jari,anita,bertil,antti,minttu,jukka,essi,natasha,esko,lauri,timo,petro]
+troika9.participants = [arho,jari,anita,bertil,antti,minttu,jukka,essi,natasha,esko,lauri,timo,salla]
 
-troika10 = Troika(phase='active', title=u"Ensiapua kertaajille",
+troika10 = Troika(created=one_month_ago, 
+                 pended=twenty_days_ago,
+                 activated=ten_days_ago,
+                  title=u"Ensiapua kertaajille",
                 description=u"Verestä ensiaputaitojasi. Lyhyt päivitys jo ensiapukurssin vuosia sitten käyneille: miten elvytysohjeet ovat muuttuneet jne. Huom.! Ei virallinen SPR:n kurssi, vaikka kouluttajalla onkin pätevyys! Toteutuu, jos saadaan 15 täyteen",
                 country='FI', region='18', area_id=None, campus_id=None,
                 address=u"Ratakatu 6",
@@ -260,17 +291,18 @@ troika10 = Troika(phase='active', title=u"Ensiapua kertaajille",
 troika10.participants = [esko,natasha,essi,jukka,antti,bertil,anita,jari,mikaela,petro]
 
 
-troika11= Troika(phase='pending', title=u"Verkostoanalyysi sosiaalisessa mediassa",
+troika11= Troika(created=one_month_ago, 
+                 pended=ten_days_ago,
+                 title=u"Verkostoanalyysi sosiaalisessa mediassa",
                 description=u"Verkostoanalyysin toteuttaminen sosiaalisessa mediassa. Käymme lävitse ohjeet, mitä tietoa voi Facebookista ja Twitteristä hakea sekä miten tiedosta tehdään verkosto. Verkostoanalyysin alkeet tulee olla hallinnassa. Läppäri mukaan.",
                 country='FI', region='18', area_id=None, campus_id=None,
-                address=u"Liisankatu 29",
-                address_addendum=u"-Espresso Edge",
                 language='fi', 
                 start_time=one_month_away + datetime.timedelta(days=7), 
                 end_time=one_month_away+datetime.timedelta(days=7, hours=1),
-                max_participants=6, creator=petro, first_learner=petro)
+                max_participants=6, creator=petro, teacher=olli, first_learner=petro, second_learner=camilla)
 
-troika12 = Troika(phase='pending', title=u"Leikit 1900-luvulla: opi tekemällä",
+troika12 = Troika(created=ten_days_ago,
+                  title=u"Leikit 1900-luvulla: opi tekemällä",
                 description=u"Mitä isoäitisi leikki pienenä? Käymme lyhyesti läpi leikkien historian eri vuosikymmeninä ja lopuksi käytännön kokeilua! Verkkarit mukaan, sadekelin sattuessa myös kumisaappaat!",
                 country='FI', region='18', area_id=None, campus_id=None,
                 address=u"Helsinginkatu 23",
@@ -278,34 +310,95 @@ troika12 = Troika(phase='pending', title=u"Leikit 1900-luvulla: opi tekemällä"
                 language='fi',
                 max_participants=7, creator=natasha, teacher=natasha, first_learner=bertil)
 
-troika13 = Troika(phase='pending', title=u"Pitching - esitä ideasi nopeasti ja houkuttelevasti",
+troika13 = Troika(created=one_month_ago, 
+                 pended=ten_days_ago,
+                title=u"Pitching - esitä ideasi nopeasti ja houkuttelevasti",
                 description=u"Opi kertomaan ideastasi - oli se sitten tutkimussuunnitelma tai liikeidea - nopeasti ja houkuttelevasti. Tapaamisen aikana kommentteja antaa kokenut pitchaaja ja sijoittajaenkeli Bertil Lax. Tavoitteena oppia vakuuttamaan kuulija luopumaan rahastaan tai ajastaan 30 sekunnin puheen jälkeen. Oma idea mukaan..",
                 country='FI', region='18', area_id=None, campus_id=None,
                 address=u"Betonimiehenkuja 3, Espoo",
                 address_addendum=u"Aalto Venture Garage",
                 language='fi',
-                max_participants=15, creator=pertti, teacher=bertil, first_learner=pertti)
+                max_participants=15, creator=pertti, teacher=bertil, first_learner=pertti, second_learner=antti)
 
-troika14 = Troika(phase='pending', title=u"Opetusportfolion rakentaminen",
+troika14 = Troika(created=ten_days_ago,
+                  title=u"Opetusportfolion rakentaminen",
                 description=u"Tässä troikassa opit rakentamaan yliopistouralla yhä tarpeellisemmaksi käyvän opetusportfolion. Mikä on paras tapa esittää opettamiseen liittyvää osaamistasi? Millä eri tekniikoilla portfolioita voi toteuttaa? Voit tulla paikalle ihan vain kuuntelemaan, tai ottaa oman kannettavan, jolloin voit samalla työstää portfoliotasi.",
                 country='FI', region='18', area_id=None, campus_id=None,
-                address=u"Unioninkatu 37",
-                address_addendum=u"Viestinnän oppiaineen kokoushuone",
                 language='fi',
-                max_participants=5, creator=salla, teacher=minttu, first_learner=essi,
-                second_learner=jukka)
+                max_participants=5, creator=salla, teacher=minttu, first_learner=salla)
 
-troika15 = Troika(phase='active', title=u"Massaluentojen elävöittäminen",
+troika15 = Troika(created=two_months_ago, 
+                 pended=one_month_ago,
+                 activated=twenty_days_ago,
+                  title=u"Massaluentojen elävöittäminen",
                 description=u"Tuntuuko sinusta, että opiskelijasi eivät jaksa kuunnella sinua? Tässä troikassa käymme läpi liudan erilaisia keinoja, joilla massaluentoja voi elävöittää ja helposti muuttaa inteaktiivisemmiksi. Sovellamme menetelmiä eri tyyppisissä harjoituksissa.",
                 country='FI', region='18', area_id=None, campus_id=None,
                 address=u"Uninonkatu 37",
                 address_addendum=u"Seminaarihuone 2",
                 language='fi', 
-                start_time=one_month_ago, 
-                end_time=one_month_ago + datetime.timedelta(hours=1),
+                start_time=ten_days_ago, 
+                end_time=ten_days_ago + datetime.timedelta(hours=1),
                 max_participants=100, creator=salla, teacher=salla, first_learner=lauri,
                 second_learner=bertil)
 troika15.participants = [antti]
+
+troika16 = Troika(created=two_months_ago, 
+                 pended=one_month_ago,
+                 activated=twenty_days_ago,
+                  title=u"Suomen kansan oudot tanssit",
+                description=u"Työpajassa käymme läpi vanhoja suomalaisia kansantansseja ja -leikkejä, jotka virallisista arkistoista on sensuroitu - syystä tai toisesta. Tule siis oppimaan mm. “Tupsunjuureen” -tanssi sekä “Kuollut ryssä” -leikki! Mukaan vaatteet, joissa mukava liikkua ja pehmeät tossut.",
+                country='FI', region='18', area_id=None, campus_id=None,
+                address=u"Fabianinkatu 26",
+                address_addendum=u"Yliopistoliikunta hallintorakennus",
+                language='fi', 
+                start_time=ten_days_ago + datetime.timedelta(days=1), 
+                end_time=ten_days_ago + datetime.timedelta(days=1, hours=1),
+                max_participants=8, creator=salla, teacher=essi, first_learner=salla,
+                second_learner=jukka)
+troika16.participants = [bertil,petro,lauri,timo,arho]
+
+troika17 = Troika(created=two_months_ago, 
+                 pended=one_month_ago,
+                 activated=twenty_days_ago,
+                title=u"Abstraktin kirjoittaminen",
+                description=u"Abstrakti on tieteellisen työn ultimaalisin markkinointikeino, jonka avulla hankit pääsyn konferensseihin ja teemanumeroihin. Tule troikaan oppimaan abstraktin kirjoittamisen salat ja toimiva perusmalli. Käymme läpi teoriaa ja käytäntöä ja harjoittelemme oman työn esittämistä eri mittaisina abstrakteina. Oma tietokone mukaan.",
+                country='FI', region='18', area_id=None, campus_id=None,
+                address=u"Unioninkatu 37",
+                address_addendum=u"Seminaarihuone 3",
+                language='fi', 
+                start_time=ten_days_ago + datetime.timedelta(days=2),
+                end_time=ten_days_ago + datetime.timedelta(days=2, hours=1),
+                max_participants=5, creator=salla, teacher=salla, first_learner=jari,
+                second_learner=jukka)
+
+troika18 = Troika(created=two_months_ago, 
+                 pended=one_month_ago,
+                 activated=twenty_days_ago,
+                  title=u"Työskelentelyn tehostaminen ajanhallintaohjelmien avulla",
+                description=u"Troikassa perehdytään erilaisiin ajanahallintatyökaluihin ja -ohjelmiin, joiden avulla omaa työskentelyä voi tehostaa. Esittelyssä esimerkiksi Pomodoro -tekniikka sekä GTD-menetelmä. Voit myös esitellä tilaisuudessa lyhyesti oman, hyväksi kokemasti menetelmän.",
+                country='FI', region='18', area_id=None, campus_id=None,
+                address=u"Fredrikinkatu 66",
+                address_addendum=u"Mukava toimisto",
+                language='fi', 
+                start_time=ten_days_ago + datetime.timedelta(days=3),
+                end_time=ten_days_ago + datetime.timedelta(days=3, hours=1),
+                max_participants=6, creator=bertil, teacher=bertil, first_learner=jari,
+                second_learner=essi)
+troika18.participants = [arho]
+
+troika19 = Troika(created=one_month_ago, 
+                 pended=twenty_days_ago,
+                 activated=ten_days_ago,
+                  title=u"Päälläseisontatyöpaja",
+                description=u"Päälläseisonta on erinomainen tapa tehostaa ajattelua, sillä se lisää verenkiertoa aivoissa. Jo viiden minuutin sessio työpäivän keskellä parantaa työtehoasi huomattavasti. Tule siis oppimaan perusniksit päälläseisontaa turvallisessa troika-työpajassa, jotta voit aloittaa omatoimisen harjoittelun.",
+                country='FI', region='18', area_id=None, campus_id=None,
+                address=u"Siltavuorenpenger 1D",
+                address_addendum=u"Yliopistoliikunnan tatami",
+                language='fi', 
+                start_time=one_month_away + datetime.timedelta(days=4),
+                end_time=one_month_away + datetime.timedelta(days=4, hours=1),
+                max_participants=5, creator=lauri, teacher=salla, first_learner=jukka,
+                second_learner=antti)
 
 db.session.add(troika1)
 db.session.add(troika2)
@@ -322,4 +415,8 @@ db.session.add(troika12)
 db.session.add(troika13)
 db.session.add(troika14)
 db.session.add(troika15)
+db.session.add(troika16)
+db.session.add(troika17)
+db.session.add(troika18)
+db.session.add(troika19)
 db.session.commit()

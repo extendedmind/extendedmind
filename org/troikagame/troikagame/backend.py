@@ -9,11 +9,11 @@ from sqlalchemy import Enum, or_
 import datetime
 
 # To Create tables change this:
-DB_DNS = None
+# DB_DNS = None
 #
 # to something like:
 #
-# DB_DNS = 'mysql://tg:tgpwd@localhost/tgdev'
+DB_DNS = 'mysql://tg:tgpwd@localhost/tgdev'
 #
 # and run in the command prompt
 # >> from troikagame.backend import db
@@ -99,7 +99,7 @@ class User(db.Model):
 
     # Relationships
     area = db.relationship('Area', backref='users')
-    campus = db.relationship('Campus', backref='users')
+    campus = db.relationship('Campus', backref='users')    
     
 troikas_users = db.Table('troikas_users',
     db.Column('troika_id', db.Integer, db.ForeignKey('troika.id')),
@@ -113,9 +113,11 @@ class Troika(db.Model):
 
     # Phase of Troika: NOTE: there is no "completed"
     # phase in the database because that would
-    # require some sort of polling of end_time. 
-    phase = db.Column(Enum('pending', 'pending_huddle', 'active', name='phase'), unique=False, nullable=False)
-    
+    # require some sort of polling of end_time.
+    created =  db.Column(db.DateTime, unique=False, nullable=True, default=datetime.datetime.now())
+    pended =  db.Column(db.DateTime, unique=False, nullable=True)
+    activated =  db.Column(db.DateTime, unique=False, nullable=True)
+
     # Description
     title = db.Column(db.String(512), unique=False, nullable=False)
     description = db.Column(db.String(10000), unique=False, nullable=True)
@@ -173,19 +175,30 @@ class Troika(db.Model):
     participants = db.relationship('User', secondary=troikas_users,
         backref=db.backref('participated_troikas', lazy='dynamic'))
 
+    def get_phase(self):
+        if self.activated is not None:
+            if datetime.datetime.now() > self.activated:
+                if datetime.datetime.now() < self.end_time:
+                    return 'active'
+                else:
+                    return 'complete'
+        if self.pended is not None:
+            return 'pending_huddle'
+        return 'pending'
+
 # Methods
 def get_troika(troika_id):
     return Troika.query.filter_by(id=troika_id).first()
 
 def get_active_troikas(index=0, max_entries=10):
-    return Troika.query.filter_by(phase='active') \
+    return Troika.query.filter(Troika.activated != None) \
                        .filter(Troika.end_time > datetime.datetime.now()) \
                        .order_by(Troika.start_time).limit(max_entries).all()
 def get_pending_troikas(index=0, max_entries=10):
-    return Troika.query.filter(or_(Troika.phase == 'pending', Troika.phase =='pending_huddle')) \
+    return Troika.query.filter(Troika.activated == None) \
                        .order_by(Troika.start_time).limit(max_entries).all()
 def get_completed_troikas(index=0, max_entries=10):
-    return Troika.query.filter_by(phase='active') \
+    return Troika.query.filter(Troika.activated != None) \
                        .filter(Troika.end_time < datetime.datetime.now()) \
                        .order_by(Troika.start_time).limit(max_entries).all()
         
