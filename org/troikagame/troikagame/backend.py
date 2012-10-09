@@ -9,11 +9,11 @@ from sqlalchemy import Enum, or_
 import datetime
 
 # To Create tables change this:
-# DB_DNS = None
+DB_DNS = None
 #
 # to something like:
 #
-DB_DNS = 'mysql://tg:tgpwd@localhost/tgdev'
+# DB_DNS = 'mysql://tg:tgpwd@localhost/tgdev'
 #
 # and run in the command prompt
 # >> from troikagame.backend import db
