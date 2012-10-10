@@ -187,6 +187,7 @@ class Troika(db.Model):
         return 'pending'
 
 # Methods
+
 def get_troika(troika_id):
     return Troika.query.filter_by(id=troika_id).first()
 
@@ -201,4 +202,9 @@ def get_completed_troikas(index=0, max_entries=10):
     return Troika.query.filter(Troika.activated != None) \
                        .filter(Troika.end_time < datetime.datetime.now()) \
                        .order_by(Troika.start_time).limit(max_entries).all()
-        
+def get_user(email):
+    return User.query.filter_by(email=email).first()
+
+def save_user(user):
+    db.session.add(user)
+    db.session.commit()

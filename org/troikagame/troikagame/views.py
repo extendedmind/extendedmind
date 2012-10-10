@@ -4,8 +4,9 @@ Created on 14.8.2012
 @author: ttiurani
 '''
 from troikagame import app
-from security import validate_login
+from security import validate_login, register
 from backend import *
+from forms import *
 from flask import request, session, flash, redirect, url_for, render_template
 
 @app.route('/about')
@@ -68,16 +69,33 @@ def show_troikas():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
-    if request.method == 'POST':
-        if (validate_login(request.form['email'], request.form['password'])):
+    loginerrors = []
+    regerrors = []
+    regform = RegistrationForm(prefix="register")
+    loginform = LoginForm(prefix="login")
+    if loginform.email.data and loginform.validate_on_submit():
+        if (validate_login(loginform.email.data, loginform.password.data)):
             session['logged_in'] = True
             flash('You were logged in')
             return redirect(url_for('show_troikas'))
         else:
-            error = 'Invalid email/password'
-  
-    return render_template('login.html', error=error)
+            loginerrors.append('Invalid email/password')
+    if loginform.errors:
+        for key, value in loginform.errors.items():
+            loginerrors.append(key + ': ' + value[0])
+    if regform.email.data and regform.validate_on_submit():
+        register(regform.first_name.data, regform.last_name.data,
+                 regform.handle.data, regform.email.data, 
+                 regform.password.data);
+        session['logged_in'] = True
+        flash('Registration successful, you were logged in')
+        return redirect(url_for('show_troikas'))
+    if regform.errors:
+        for key, value in regform.errors.items():
+            regerrors.append(key + ': ' + value[0])
+
+    return render_template('login.html', loginform=loginform, regform=regform, 
+                           loginerrors=loginerrors, regerrors=regerrors)
 
 @app.route('/logout')
 def logout():

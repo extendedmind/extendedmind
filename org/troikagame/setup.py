@@ -19,5 +19,6 @@ setup(
         'mysql-python',
         'flask-sqlalchemy',
         'itsdangerous',
-        'passlib']
+        'passlib',
+        'Flask-WTF']
 )
