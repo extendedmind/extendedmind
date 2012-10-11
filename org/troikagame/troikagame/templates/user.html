@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% import 'macros.html' as macros %}
+{% block back_button %}
+<a href="/">Home</a>
+{% endblock %} 
+
+{% block body %}
+<div class="container">
+  <div class="row-fluid"> 
+    <div class="span8 offset4">  
+      <h2>User information</h2>
+      {% if usererrors %}
+      {% for usererror in usererrors %}
+      <div class="alert alert-error tg-message">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>Error:</strong> {{ usererror }}
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% call macros.user_form(form=userform) %} {% endcall %}
+    </div>
+  </div>
+</div>
+{% endblock %}

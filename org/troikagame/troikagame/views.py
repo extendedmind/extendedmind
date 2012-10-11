@@ -4,7 +4,7 @@ Created on 14.8.2012
 @author: ttiurani
 '''
 from troikagame import app
-from security import validate_login, register
+from security import validate_login, register, hash_password
 from backend import *
 from forms import *
 from flask import request, session, flash, redirect, url_for, render_template
@@ -76,6 +76,7 @@ def login():
     if loginform.email.data and loginform.validate_on_submit():
         if (validate_login(loginform.email.data, loginform.password.data)):
             session['logged_in'] = True
+            session['email'] = loginform.email.data
             flash('You were logged in')
             return redirect(url_for('show_troikas'))
         else:
@@ -88,6 +89,7 @@ def login():
                  regform.handle.data, regform.email.data, 
                  regform.password.data);
         session['logged_in'] = True
+        session['email'] = regform.email.data
         flash('Registration successful, you were logged in')
         return redirect(url_for('show_troikas'))
     if regform.errors:
@@ -96,6 +98,40 @@ def login():
 
     return render_template('login.html', loginform=loginform, regform=regform, 
                            loginerrors=loginerrors, regerrors=regerrors)
+
+@app.route('/user', methods=['GET', 'POST'])
+def user():
+    if not 'logged_in' in session:
+        flash('You need to login first')
+        return redirect(url_for('login'))
+    usererrors = []
+    userform = UserForm(prefix="user")
+    user = get_user(session['email'])
+    if request.method == 'GET':
+        # Add default values
+        userform.email.data = user.email
+        userform.first_name.data = user.short_name
+        userform.last_name.data = user.family_name
+        userform.handle.data = user.handle
+    elif userform.validate_on_submit(): 
+        if (validate_login(session['email'], userform.password.data)):
+            # Update info
+            user.email = userform.email.data
+            user.short_name = userform.first_name.data 
+            user.family_name = userform.last_name.data
+            user.full_name = userform.first_name.data + " " + userform.last_name.data
+            user.handle = userform.handle.data
+            if (userform.new_password.data):
+                user.password = hash_password(userform.new_password.data)
+            save_user(user)
+            flash('Information updated')
+        else:
+            usererrors.append('Invalid password')
+    if userform.errors:
+        for key, value in userform.errors.items():
+            usererrors.append(key + ': ' + value[0])
+
+    return render_template('user.html', userform=userform, usererrors=usererrors)
 
 @app.route('/logout')
 def logout():

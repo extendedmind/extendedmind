@@ -27,3 +27,20 @@ class LoginForm(Form):
         validators.email('Not a valid email address')])
     password = PasswordField('Password *', [
         validators.Required()])
+
+class UserForm(Form):
+    first_name = TextField('First Name *', [
+        validators.Required(),
+        validators.Length(max=128)])
+    last_name = TextField('Last Name *', [
+        validators.Required(),
+        validators.Length(max=128)])
+    handle = TextField('Handle', [validators.Length(max=512)])
+    email = TextField('Email Address *', [
+        validators.Required(),
+        validators.email('Not a valid email address')])
+    new_password = PasswordField('New Password', [
+        validators.EqualTo('new_confirm', message='Passwords must match')])
+    new_confirm = PasswordField('Repeat New Password')
+    password = PasswordField('Password *', [
+        validators.Required()])

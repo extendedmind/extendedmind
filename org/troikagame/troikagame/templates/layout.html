@@ -32,11 +32,13 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
           <a class="brand" href="/">Troika Game</a>
           <div class="nav-collapse collapse">
             <ul class="nav pull-right">
-              <li>
-              {% if not session.logged_in %} <a href="{{ url_for('login') }}">Login / Register</a> 
-              {% else %} <a href="{{ url_for('logout') }}">Logout</a> {%
-              endif %}
-              </li>
+              {% if not session.logged_in %}
+              <li><a href="{{ url_for('login') }}">Login / Register</a></li>
+              {% else %}
+              <li><a href="{{ url_for('user') }}">{{ session.email }}</a></li>
+              <li><a href="{{ url_for('logout') }}">Logout</a></li>
+              {% endif %}
+              
             </ul>
             <ul class="nav pull-left">
               <li class="hidden-phone"><a href="{{ url_for('about') }}">About</a></li>
