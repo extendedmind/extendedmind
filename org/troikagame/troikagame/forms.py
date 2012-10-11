@@ -3,7 +3,7 @@ Created on 10.10.2012
 
 @author: ttiurani
 '''
-from flask_wtf import Form, TextField, PasswordField, validators 
+from flask_wtf import Form, IntegerField, DateTimeField, TextField, PasswordField, validators 
 
 class RegistrationForm(Form):
     first_name = TextField('First Name *', [
@@ -44,3 +44,19 @@ class UserForm(Form):
     new_confirm = PasswordField('Repeat New Password')
     password = PasswordField('Password *', [
         validators.Required()])
+
+class TroikaForm(Form):
+    title = TextField('Title *', [
+        validators.Required(),
+        validators.Length(max=512)])
+    description = TextField('Description *', [
+        validators.Required(),
+        validators.Length(max=10000)])
+    address = TextField('Address', [
+        validators.Length(max=512)])
+    address_addendum = TextField('Address Addendum', [
+        validators.Length(max=512)])
+    start_time = DateTimeField('Start Time')
+    end_time = DateTimeField('End Time')
+    max_participants = IntegerField('Max Participants', [
+        validators.number_range(min=3, message="Minumum of three participants")])

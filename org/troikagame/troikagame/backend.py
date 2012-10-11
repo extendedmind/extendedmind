@@ -208,3 +208,7 @@ def get_user(email):
 def save_user(user):
     db.session.add(user)
     db.session.commit()
+
+def save_troika(troika):
+    db.session.add(troika)
+    db.session.commit()
