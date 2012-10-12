@@ -4,10 +4,11 @@ Created on 14.8.2012
 @author: ttiurani
 '''
 from troikagame import app
-from security import validate_login, register, hash_password
+from security import validate_login, register, hash_password, get_troika_access_right, activatable
 from backend import *
 from forms import *
 from flask import request, session, flash, redirect, url_for, render_template
+import time
 
 @app.route('/about')
 def about():
@@ -20,7 +21,7 @@ def show_user_profile(email):
 
 
 @app.route('/')
-def show_troikas():
+def troikas():
     active_troikas = get_active_troikas()
     active_entries = [dict(id=active_troika.id,
                         start_time=active_troika.start_time, 
@@ -39,7 +40,7 @@ def show_troikas():
                         title=completed_troika.title, 
                         description=completed_troika.description) 
                for completed_troika in completed_troikas]
-    return render_template('show_troikas.html', 
+    return render_template('troikas.html', 
                            active_entries=active_entries,
                            pending_entries=pending_entries,
                            completed_entries=completed_entries)
@@ -55,7 +56,7 @@ def login():
             session['logged_in'] = True
             session['email'] = loginform.email.data
             flash('You were logged in')
-            return redirect(url_for('show_troikas'))
+            return redirect(url_for('troikas'))
         else:
             loginerrors.append('Invalid email/password')
     if loginform.errors:
@@ -68,7 +69,7 @@ def login():
         session['logged_in'] = True
         session['email'] = regform.email.data
         flash('Registration successful, you were logged in')
-        return redirect(url_for('show_troikas'))
+        return redirect(url_for('troikas'))
     if regform.errors:
         for key, value in regform.errors.items():
             regerrors.append(key + ': ' + value[0])
@@ -111,9 +112,17 @@ def user():
     return render_template('user.html', userform=userform, usererrors=usererrors)
 
 @app.route('/troika/<troika_id>')
-def show_troika_details(troika_id):
+def troika(troika_id):
     troika = get_troika(troika_id);
-    entry = {'id': troika.id,
+    access=False
+    activate=False
+    if 'logged_in' in session:
+      user = get_user(session['email'])
+      access = get_troika_access_right(user, troika)
+      activate = activatable(user, troika, app.config.get('ACTIVATABLE_BEFORE_THREE'))
+    entry = {'access': access,
+             'activate': activate,
+             'id': troika.id,
              'phase': troika.get_phase(),
              'title': troika.title, 
              'description': troika.description,
@@ -131,49 +140,138 @@ def show_troika_details(troika_id):
              }
 
     # show the troika with the given id
-    return render_template('show_troika_details.html', 
-                           entry=entry)
+    return render_template('troika.html', 
+                           troika=entry)
+
+def __get_start_datetime(start_date, start_time):
+    if start_date is None or start_time is None:
+        return None
+    start_datetime = datetime.datetime.combine(start_date, datetime.time())
+    aux_time = time.strptime(start_time, "%H:%M")
+    start_datetime = start_datetime.replace(hour=aux_time.tm_hour, minute=aux_time.tm_min, second=0, microsecond=0)
+    return start_datetime
+
+def __get_end_datetime(start_datetime, duration):
+    if start_datetime is None or duration is None:
+        return None
+    return start_datetime + datetime.timedelta(minutes=duration)
+
+def __get_duration(start_datetime, end_datetime):
+    if start_datetime is None or end_datetime is None:
+        return None
+    duration = end_datetime - start_datetime
+    return duration.seconds//60 
+
+def __get_formatted_datetime(dt, dt_format):
+    if dt is None or dt_format is None:
+        return None
+    return dt.strftime(dt_format)
 
 @app.route('/troika/<troika_id>/edit', methods=['GET', 'POST'])
-def troika(troika_id):
+def edit_troika(troika_id):
     if not 'logged_in' in session:
-        flash('You need to login first')
+        flash('You need to login first', 'error')
         return redirect(url_for('login'))
     troikaerrors = []
     troikaform = TroikaForm(prefix="troika")
+    # Find out if the logged in user has rights to edit/delete
     troika = get_troika(troika_id);
+    user = get_user(session['email'])
+    access = get_troika_access_right(user, troika)
+    if not access:
+        flash('Only the creator or the teacher can edit the Troika', 'error')
+        return redirect(url_for('troika', troika_id=troika_id))
+
     if request.method == 'GET':
         # Add default values
         troikaform.title.data = troika.title
         troikaform.description.data = troika.description
         troikaform.address.data = troika.address
-        troikaform.address_addendum.data = troika.address_addendum
-        troikaform.start_time.data = troika.start_time
-        troikaform.end_time.data = troika.end_time
+        troikaform.address_addendum.data = troika.address_addendum        
+        troikaform.start_date.data = troika.start_time
+        troikaform.start_time.data = __get_formatted_datetime(troika.start_time,"%H:%M")
+        troikaform.duration.data = __get_duration(troika.start_time, troika.end_time)
         troikaform.max_participants.data = troika.max_participants
     elif troikaform.validate_on_submit(): 
-        if (validate_login(session['email'], troikaform.password.data)):
+        if request.form["action"] == "Save Troika":
             # Update info
             troika.title = troikaform.title.data
             troika.description = troikaform.description.data 
             troika.address = troikaform.address.data
             troika.address_addendum = troikaform.address_addendum.data
-            troika.start_time = troikaform.start_time.data
-            troika.end_time = troikaform.end_time.data
+            troika.start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time.data) 
+            troika.end_time = __get_end_datetime(troika.start_time, troikaform.duration.data)
             troika.max_participants = troikaform.max_participants.data
             save_troika(troika)
-            flash('Troika saved')
-        else:
-            troikaerrors.append('Invalid password')
+            return redirect(url_for('troika', troika_id=troika_id))
+            flash('Troika saved')         
+        elif request.form["action"] == "Delete Troika":
+            title = troika.title
+            delete_troika(troika)
+            flash('Troika "' + title +  '" deleted')
+            return redirect(url_for('troikas'))
     if troikaform.errors:
         for key, value in troikaform.errors.items():
             troikaerrors.append(key + ': ' + value[0])
 
-    return render_template('troika.html', troikaform=troikaform, troikaerrors=troikaerrors)
+    return render_template('edit_troika.html', 
+                           troikaform=troikaform, troikaerrors=troikaerrors,
+                           access=access)
 
+@app.route('/troika/<troika_id>/activate', methods=['GET'])
+def activate_troika(troika_id):
+    if not 'logged_in' in session:
+        flash('You need to login first', 'error')
+        return redirect(url_for('login'))
+    troika = get_troika(troika_id);
+    user = get_user(session['email'])
+    if activatable(user, troika, app.config.get('ACTIVATABLE_BEFORE_THREE')):
+        troika.activated = datetime.datetime.now()
+        save_troika(troika)
+        flash('Troika "' + troika.title +  '" activated')
+        return redirect(url_for('troika', troika_id=troika_id))
+    else:
+        flash('Troika can only be activated by the teacher after all required information is set', 'error')
+        return redirect(url_for('troika', troika_id=troika_id))        
+
+@app.route('/create', methods=['GET', 'POST'])
+def create_troika():
+    if not 'logged_in' in session:
+        flash('You need to login first', 'error')
+        return redirect(url_for('login'))
+    troikaerrors = []
+    troikaform = TroikaForm(prefix="troika")
+    # Find out if the logged in user has rights to edit/delete
+    user = get_user(session['email'])
+
+    if troikaform.validate_on_submit():
+        troika = Troika(created=datetime.datetime.now(), 
+                title=troikaform.title.data,
+                description=troikaform.description.data,
+                country='FI', region='18', area_id=None, campus_id=None,
+                address=troikaform.address.data,
+                address_addendum=troikaform.address_addendum.data,
+                language='fi', 
+                start_time=__get_start_datetime(troikaform.start_date.data, troikaform.start_time.data),
+                end_time=__get_end_datetime(troika.start_time, troikaform.duration.data),
+                max_participants=troikaform.max_participants.data, 
+                creator=user)
+        if troikaform.creator_is_teacher.data:
+            troika.teacher = user
+        else:
+            troika.first_learner = user
+        save_troika(troika)
+        return redirect(url_for('troika', troika_id=troika.id))
+        flash('Troika Created')
+    if troikaform.errors:
+        for key, value in troikaform.errors.items():
+            troikaerrors.append(key + ': ' + value[0])
+    return render_template('edit_troika.html', 
+                           troikaform=troikaform, troikaerrors=troikaerrors,
+                           access='create')
 
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
-    return redirect(url_for('show_troikas'))
+    return redirect(url_for('troikas'))

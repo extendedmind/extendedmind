@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% import 'macros.html' as macros %}
+{% block back_button %}
+<a href="/">Home</a>
+{% endblock %} 
+{% block body %}
+<div class="container">
+  <div class="row-fluid"> 
+    <div class="span8 offset4">  
+      <h2>Troika</h2>
+      {% if troikaerrors %}
+      {% for troikaerror in troikaerrors %}
+      <div class="alert alert-error tg-message">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>Error:</strong> {{ troikaerror }}
+      </div>
+      {% endfor %}
+      {% endif %}
+      
+      <form id="tg-troika" action="" method="POST">
+        <dl>
+          <dt>{{ troikaform.hidden_tag() }}</dt>
+          <dt>{{ troikaform.title.label }} {{ troikaform.title() }}</dt>
+          <dt>{{ troikaform.description.label }} {{ troikaform.description() }}</dt>
+          <dt>{{ troikaform.address.label }} {{ troikaform.address() }}</dt>
+          <dt>{{ troikaform.address_addendum.label }} {{ troikaform.address_addendum() }}</dt>
+          <dt>{{ troikaform.start_date.label }} {{ troikaform.start_date() }}</dt>
+          <dt>{{ troikaform.start_time.label }} {{ troikaform.start_time() }}</dt>
+          <dt>{{ troikaform.duration.label }} {{ troikaform.duration() }}</dt>
+          <dt>{{ troikaform.max_participants.label }} {{ troikaform.max_participants() }}</dt>
+          {% if access == 'create' %}
+          <dt>{{ troikaform.creator_is_teacher.label }} {{ troikaform.creator_is_teacher() }}</dt>
+          <dt>
+            <input type="submit" name="action" value="Create Troika">
+          </dt>
+          {% else %}  
+          <dt>
+            <input type="submit" name="action" value="Save Troika">
+            {% if access == 'delete' %}
+            <input type="submit" name="action" value="Delete Troika">
+            {% endif %}
+          </dt>
+          {% endif %}  
+        </dl>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,24 +1,50 @@
-{% extends "layout.html" %}
-{% import 'macros.html' as macros %}
+{% extends "layout.html" %} 
 {% block back_button %}
-<a href="/">Home</a>
+<a href="{{ url_for('troikas') }}">Home</a>
 {% endblock %} 
-
 {% block body %}
-<div class="container">
-  <div class="row-fluid"> 
-    <div class="span8 offset4">  
-      <h2>Troika</h2>
-      {% if troikaerrors %}
-      {% for troikaerror in troikaerrors %}
-      <div class="alert alert-error tg-message">
-        <button type="button" class="close" data-dismiss="alert">×</button>
-        <strong>Error:</strong> {{ troikaerror }}
+<div class="tg-heading">
+  <h2>{{ troika.title }}</h2>  
+</div>
+{% if troika.access %}
+<div class="pagination-centered">
+  <a href="{{ url_for('edit_troika', troika_id=troika.id) }}"><h4>Edit Troika</h4></a>
+</div>
+{% endif %}
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span4 tg-group">
+      <div class="container span12">  
+        <h3>Description</h3> {{ troika.description }}
       </div>
-      {% endfor %}
-      {% endif %}
-      {% call macros.troika_form(form=troikaform) %} {% endcall %}
+    </div>
+    <div class="span4 tg-group">
+      <div class="container span12">
+        <h3>Phase</h3> {{ troika.phase }}
+        <h3>Start time</h3> {{ troika.start_time }}
+        <h3>End time</h3> {{ troika.end_time }}
+        <h3>Address</h3> {{ troika.address }} - {{ troika.address_addendum }}
+      </div>
+    </div>
+    <div class="span4 tg-group">
+      <div class="span12">
+        <h3>Teacher</h3> {{ troika.teacher }}
+        <h3>First Learner</h3> {{ troika.first_learner }}
+        <h3>Second Learner</h3> {{ troika.second_learner }}
+        <h3>Max Participants</h3> {{ troika.max_participants }}
+        <h3>Participants</h3>
+          {% for participant in troika.participants %} 
+            {{ participant.full_name }} 
+            {% else %} None 
+          {%endfor %}
+      </div>
     </div>
   </div>
 </div>
+{% if troika.activate %}
+<div class="pagination-centered">
+  <a href="{{ url_for('activate_troika', troika_id=troika.id) }}"><h4>Activate Troika</h4></a>
+</div>
+{% endif %}
+       
 {% endblock %}

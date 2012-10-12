@@ -212,3 +212,7 @@ def save_user(user):
 def save_troika(troika):
     db.session.add(troika)
     db.session.commit()
+
+def delete_troika(troika):
+    db.session.delete(troika)
+    db.session.commit()

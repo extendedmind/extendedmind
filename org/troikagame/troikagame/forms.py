@@ -3,7 +3,9 @@ Created on 10.10.2012
 
 @author: ttiurani
 '''
-from flask_wtf import Form, IntegerField, DateTimeField, TextField, PasswordField, validators 
+from flask_wtf import Form, IntegerField, BooleanField, \
+                      DateField, DateTimeField, TextField, PasswordField,  \
+                      validators 
 
 class RegistrationForm(Form):
     first_name = TextField('First Name *', [
@@ -56,7 +58,12 @@ class TroikaForm(Form):
         validators.Length(max=512)])
     address_addendum = TextField('Address Addendum', [
         validators.Length(max=512)])
-    start_time = DateTimeField('Start Time')
-    end_time = DateTimeField('End Time')
+    start_date = DateField('Start Date', [validators.Optional()])
+    start_time = TextField('Start Time', [validators.Optional()])
+    duration = IntegerField('Duration (min)', [
+        validators.Optional(),
+        validators.number_range(min=1, message="Troika has to last at least one minute")])
     max_participants = IntegerField('Max Participants', [
+        validators.Optional(),
         validators.number_range(min=3, message="Minumum of three participants")])
+    creator_is_teacher = BooleanField('I will teach this')

@@ -1,9 +1,7 @@
 {% macro heading(caller) %}
-<div class="container tg-heading">
-  <div class="span12">
-    <h1>Troika Game</h1>
-    <p>Do you know what the person next to you wants to teach?</p>
-  </div>
+<div class="tg-heading">
+  <h1>Troika Game</h1>
+  <p>Do you know what the person next to you wants to teach?</p>
 </div>
 {% endmacro %}
 
@@ -50,24 +48,6 @@
     <dt>{{ form.password.label }} {{ form.password() }}</dt>
     <dt>
       <input type="submit" value="Update">
-    </dt>
-  </dl>
-</form>
-{% endmacro %}
-
-{% macro troika_form(caller, form) %}
-<form id="tg-troika" action="{{ url_for('troika', troika_id=caller) }}" method="POST">
-  <dl>
-    <dt>{{ form.hidden_tag() }}</dt>
-    <dt>{{ form.title.label }} {{ form.title() }}</dt>
-    <dt>{{ form.description.label }} {{ form.description() }}</dt>
-    <dt>{{ form.address.label }} {{ form.address() }}</dt>
-    <dt>{{ form.address_addendum.label }} {{ form.address_addendum() }}</dt>
-    <dt>{{ form.start_time.label }} {{ form.start_time() }}</dt>
-    <dt>{{ form.end_time.label }} {{ form.end_time() }}</dt>
-    <dt>{{ form.max_participants.label }} {{ form.max_participants() }}</dt>
-    <dt>
-      <input type="submit" value="Save Troika">
     </dt>
   </dl>
 </form>
