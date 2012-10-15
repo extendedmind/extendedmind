@@ -44,7 +44,7 @@ class UserForm(Form):
     new_password = PasswordField('New Password', [
         validators.EqualTo('new_confirm', message='Passwords must match')])
     new_confirm = PasswordField('Repeat New Password')
-    password = PasswordField('Password *', [
+    password = PasswordField('Current Password *', [
         validators.Required()])
 
 class TroikaForm(Form):

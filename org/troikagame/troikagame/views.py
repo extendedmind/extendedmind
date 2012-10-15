@@ -14,12 +14,6 @@ import time
 def about():
     return render_template('about.html')
 
-@app.route('/user/<email>')
-def show_user_profile(email):
-    # show the user profile for that user
-    return 'User %s' % email
-
-
 @app.route('/')
 def troikas():
     active_troikas = get_active_troikas()
@@ -56,7 +50,11 @@ def login():
             session['logged_in'] = True
             session['email'] = loginform.email.data
             flash('You were logged in')
-            return redirect(url_for('troikas'))
+            destination = url_for('troikas')
+            if 'destination' in session:
+                destination = session['destination']
+                session.pop('destination', None)
+            return redirect(destination)
         else:
             loginerrors.append('Invalid email/password')
     if loginform.errors:
@@ -69,7 +67,11 @@ def login():
         session['logged_in'] = True
         session['email'] = regform.email.data
         flash('Registration successful, you were logged in')
-        return redirect(url_for('troikas'))
+        destination = url_for('troikas')
+        if 'destination' in session:
+            destination = session['destination']
+            session.pop('destination', None)
+        return redirect(destination)
     if regform.errors:
         for key, value in regform.errors.items():
             regerrors.append(key + ': ' + value[0])
@@ -77,11 +79,17 @@ def login():
     return render_template('login.html', loginform=loginform, regform=regform, 
                            loginerrors=loginerrors, regerrors=regerrors)
 
+def __check_login(destination = None, url = None):
+    if not 'logged_in' in session:
+        if url is None:
+            url = url_for(destination)
+        flash('You need to login first')
+        session['destination'] = url
+        return redirect(url_for('login'))
+
 @app.route('/user', methods=['GET', 'POST'])
 def user():
-    if not 'logged_in' in session:
-        flash('You need to login first')
-        return redirect(url_for('login'))
+    __check_login('user')
     usererrors = []
     userform = UserForm(prefix="user")
     user = get_user(session['email'])
@@ -111,15 +119,27 @@ def user():
 
     return render_template('user.html', userform=userform, usererrors=usererrors)
 
+def __participating(user, troika):
+    if user == troika.teacher:
+        return 'teacher'
+    if user == troika.first_learner:
+        return 'first_learner'
+    if user == troika.second_learner:
+        return 'second_learner'
+    if troika.get_phase() != 'complete' and user in troika.participants:
+        return 'participant'
+    return False
+
 @app.route('/troika/<troika_id>')
 def troika(troika_id):
     troika = get_troika(troika_id);
     access=False
     activate=False
     if 'logged_in' in session:
-      user = get_user(session['email'])
-      access = get_troika_access_right(user, troika)
-      activate = activatable(user, troika, app.config.get('ACTIVATABLE_BEFORE_THREE'))
+        user = get_user(session['email'])
+        access = get_troika_access_right(user, troika)
+        activate = activatable(user, troika, app.config.get('ACTIVATABLE_BEFORE_THREE'))
+    
     entry = {'access': access,
              'activate': activate,
              'id': troika.id,
@@ -131,6 +151,7 @@ def troika(troika_id):
              'start_time': troika.start_time,
              'end_time': troika.end_time,
              'max_participants': troika.max_participants,
+             'participating': __participating(user, troika),
              'teacher': troika.teacher.full_name if troika.teacher != None else None,
              'first_learner': troika.first_learner.full_name if troika.first_learner != None else None,
              'second_learner': troika.second_learner.full_name if troika.second_learner != None else None,
@@ -169,9 +190,7 @@ def __get_formatted_datetime(dt, dt_format):
 
 @app.route('/troika/<troika_id>/edit', methods=['GET', 'POST'])
 def edit_troika(troika_id):
-    if not 'logged_in' in session:
-        flash('You need to login first', 'error')
-        return redirect(url_for('login'))
+    __check_login(url = url_for('edit_troika', troika_id = troika_id))
     troikaerrors = []
     troikaform = TroikaForm(prefix="troika")
     # Find out if the logged in user has rights to edit/delete
@@ -220,9 +239,7 @@ def edit_troika(troika_id):
 
 @app.route('/troika/<troika_id>/activate', methods=['GET'])
 def activate_troika(troika_id):
-    if not 'logged_in' in session:
-        flash('You need to login first', 'error')
-        return redirect(url_for('login'))
+    __check_login(url = url_for('activate_troika', troika_id = troika_id))
     troika = get_troika(troika_id);
     user = get_user(session['email'])
     if activatable(user, troika, app.config.get('ACTIVATABLE_BEFORE_THREE')):
@@ -232,13 +249,105 @@ def activate_troika(troika_id):
         return redirect(url_for('troika', troika_id=troika_id))
     else:
         flash('Troika can only be activated by the teacher after all required information is set', 'error')
-        return redirect(url_for('troika', troika_id=troika_id))        
+        return redirect(url_for('troika', troika_id=troika_id))
+
+@app.route('/troika/<troika_id>/<troika_role>/join', methods=['GET'])
+def join_troika(troika_id, troika_role):
+    __check_login(url = url_for('join_troika', troika_id = troika_id, troika_role = troika_role))
+    troika = get_troika(troika_id);
+    user = get_user(session['email'])
+    
+    if not __participating(user, troika):
+        if troika_role == '0':
+            if troika.teacher is not None:
+                flash('The Troika already has a teacher', 'error')
+                return redirect(url_for('troika', troika_id=troika_id))
+            troika.teacher = user
+            save_troika(troika)
+            flash('You are now teaching "' + troika.title +  '"!')
+            return redirect(url_for('troika', troika_id=troika_id))
+        elif troika_role == '1':
+            if troika.first_learner is not None:
+                flash('The Troika already has a first learner', 'error')
+                return redirect(url_for('troika', troika_id=troika_id))
+            troika.first_learner = user
+            save_troika(troika)
+            flash('You are now the first learner of "' + troika.title +  '"!')
+            return redirect(url_for('troika', troika_id=troika_id))
+        elif troika_role == '2':
+            if troika.second_learner is not None:
+                flash('The Troika already has a second learner', 'error')
+                return redirect(url_for('troika', troika_id=troika_id))
+            troika.second_learner = user
+            save_troika(troika)
+            flash('You are now the second learner of "' + troika.title +  '"!')
+            return redirect(url_for('troika', troika_id=troika_id))
+        elif troika_role == '3':
+            if user in troika.participants:
+                flash('You are already participating in the Troika', 'error')
+                return redirect(url_for('troika', troika_id=troika_id))
+            troika.participants.append(user)
+            save_troika(troika)
+            flash('You are now participating in "' + troika.title +  '"!')
+            return redirect(url_for('troika', troika_id=troika_id))
+        else:
+            flash('Unknown Troika role: ' + troika_role, 'error')
+            return redirect(url_for('troika', troika_id=troika_id))
+    else:
+        flash('You are already partipating in the Troika.', 'error')
+        return redirect(url_for('troika', troika_id=troika_id))
+        
+    
+@app.route('/troika/<troika_id>/<troika_role>/leave', methods=['GET'])
+def leave_troika(troika_id, troika_role):
+    __check_login(url = url_for('leave_troika', troika_id = troika_id, troika_role = troika_role))
+    troika = get_troika(troika_id);
+    user = get_user(session['email'])
+    if troika.get_phase() != 'complete':
+        if troika_role == '0':
+            if troika.teacher != user:
+                flash('You are not the teacher of this Troika.', 'error')
+                return redirect(url_for('troika', troika_id=troika_id))
+            troika.teacher = None
+            save_troika(troika)
+            flash('You are no longer teaching "' + troika.title +  '".')
+            return redirect(url_for('troika', troika_id=troika_id))
+        elif troika_role == '1':
+            if troika.first_learner != user:
+                flash('You are not the first learner of this Troika.', 'error')
+                return redirect(url_for('troika', troika_id=troika_id))
+            troika.first_learner = None
+            save_troika(troika)
+            flash('You are no longer the first learner of "' + troika.title +  '".')
+            return redirect(url_for('troika', troika_id=troika_id))
+        elif troika_role == '2':
+            if troika.second_learner != user:
+                flash('You are not the second learner of this Troika.', 'error')
+                return redirect(url_for('troika', troika_id=troika_id))
+            troika.second_learner = None
+            save_troika(troika)
+            flash('You are no longer the second learner of "' + troika.title +  '".')
+            return redirect(url_for('troika', troika_id=troika_id))
+        elif troika_role == '3':
+            if user not in troika.participants:
+                flash('You are not participating in the Troika', 'error')
+                return redirect(url_for('troika', troika_id=troika_id))
+            troika.participants.remove(user)
+            save_troika(troika)
+            flash('You are no longer participating in "' + troika.title +  '".')
+            return redirect(url_for('troika', troika_id=troika_id))
+            
+        else:
+            flash('Unknown Troika role: ' + troika_role, 'error')
+            return redirect(url_for('troika', troika_id=troika_id))
+    else:
+        flash('You can not leave a Troika that is complete', 'error')
+        return redirect(url_for('troika', troika_id=troika_id))
+
 
 @app.route('/create', methods=['GET', 'POST'])
 def create_troika():
-    if not 'logged_in' in session:
-        flash('You need to login first', 'error')
-        return redirect(url_for('login'))
+    __check_login('create_troika')
     troikaerrors = []
     troikaform = TroikaForm(prefix="troika")
     # Find out if the logged in user has rights to edit/delete
@@ -253,7 +362,7 @@ def create_troika():
                 address_addendum=troikaform.address_addendum.data,
                 language='fi', 
                 start_time=__get_start_datetime(troikaform.start_date.data, troikaform.start_time.data),
-                end_time=__get_end_datetime(troika.start_time, troikaform.duration.data),
+                end_time=__get_end_datetime(troikaform.start_time.data, troikaform.duration.data),
                 max_participants=troikaform.max_participants.data, 
                 creator=user)
         if troikaform.creator_is_teacher.data:
@@ -273,5 +382,6 @@ def create_troika():
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
+    session.pop('email', None)
     flash('You were logged out')
     return redirect(url_for('troikas'))
