@@ -10,6 +10,10 @@ from forms import *
 from flask import request, session, flash, redirect, url_for, render_template
 import time
 
+@app.route('/front')
+def front():
+    return redirect(url_for('troikas'))
+
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html')
