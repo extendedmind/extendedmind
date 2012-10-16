@@ -353,6 +353,7 @@ def create_troika():
     # Find out if the logged in user has rights to edit/delete
     user = get_user(session['email'])
 
+    start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time.data)
     if troikaform.validate_on_submit():
         troika = Troika(created=datetime.datetime.now(), 
                 title=troikaform.title.data,
@@ -361,10 +362,10 @@ def create_troika():
                 address=troikaform.address.data,
                 address_addendum=troikaform.address_addendum.data,
                 language='fi', 
-                start_time=__get_start_datetime(troikaform.start_date.data, troikaform.start_time.data),
-                end_time=__get_end_datetime(troikaform.start_time.data, troikaform.duration.data),
+                start_time=start_time,
+                end_time=__get_end_datetime(start_time, troikaform.duration.data),
                 max_participants=troikaform.max_participants.data, 
-                creator=user)
+                creator=user)        
         if troikaform.creator_is_teacher.data:
             troika.teacher = user
         else:
