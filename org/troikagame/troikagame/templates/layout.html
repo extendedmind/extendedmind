@@ -67,20 +67,6 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   </div>
   <script src="http://code.jquery.com/jquery-latest.js"></script>
   <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
-  <script src="{{ url_for('static',filename='bootstrap/ext/datepicker/bootstrap-datepicker.js') }}"></script>
-  <script type=text/javascript>
-    $('#troika-start_date').datepicker({
-      format: 'yyyy-mm-dd'
-  });
-  </script>
-  <script src="{{ url_for('static',filename='bootstrap/ext/timepicker/bootstrap-timepicker.js') }}"></script>
-  <script type=text/javascript>
-    $('#troika-start_time').timepicker({
-    		minuteStep: 1,
-    		defaultTime: 'value',
-    		template: 'modal',
-    		showSeconds: false,
-    		showMeridian: false});
-  </script>
+  {% block extra_js %} {% endblock %}
 </body>
 </html>

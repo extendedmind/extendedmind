@@ -8,7 +8,7 @@
 {% call macros.heading() %} {% endcall %}
 {% if session.logged_in %}
 <div class="pagination-centered">
-  <a href="{{ url_for('create_troika') }}"><h4>Create new Troika</h4></a>
+  <a href="{{ url_for('create_troika') }}"><h4>Create a new troika event</h4></a>
 </div>
 {% endif %}
 <div class="container-fluid">
@@ -21,7 +21,7 @@
               <a href="#tg-active-collapse" data-toggle="collapse" data-parent="#tg-active-accordion">
               <h3>Active Troikas</h3>
               </a>
-              <h6>Future Troikas that you can join in on!</h6> 
+              <h6>Upcoming troikas you can join:</h6> 
             </div>
           </div>
           <div id="tg-active-collapse" class="accordion-body collapse in">
@@ -47,8 +47,10 @@
               <a data-toggle="collapse" data-parent="#tg-pending-accordion" href="#tg-pending-collapse">
               <h3>Pending Troikas</h3>
               </a>
-              <h6>Troikas that have not yet been activated either because they don't yet have three participants or
-               they are missing a time and place.</h6> 
+              <h6>Suggested troikas not yet activated. It might be
+                  because they don't yet have the minimum of
+                  three participants or the troika details have not
+                  been agreed on, so check if you can help!</h6> 
             </div>
           </div>
           <div id="tg-pending-collapse" class="accordion-body collapse in">
@@ -74,7 +76,7 @@
               <a data-toggle="collapse" data-parent="#tg-completed-accordion" href="#tg-completed-collapse">
                 <h3>Completed Troikas</h3>
               </a>
-              <h6>Troikas that were successfully kept.</h6> 
+              <h6>Succesfully held troikas.</h6> 
             </div>
           </div>
           <div id="tg-completed-collapse" class="accordion-body collapse">

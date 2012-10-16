@@ -4,7 +4,7 @@ Created on 10.10.2012
 @author: ttiurani
 '''
 from flask_wtf import Form, IntegerField, BooleanField, \
-                      DateField, DateTimeField, TextField, PasswordField,  \
+                      DateField, DateTimeField, TextField, TextAreaField, PasswordField,  \
                       validators 
 
 class RegistrationForm(Form):
@@ -51,7 +51,7 @@ class TroikaForm(Form):
     title = TextField('Title *', [
         validators.Required(),
         validators.Length(max=512)])
-    description = TextField('Description *', [
+    description = TextAreaField('Description *', [
         validators.Required(),
         validators.Length(max=10000)])
     address = TextField('Address', [
@@ -59,7 +59,12 @@ class TroikaForm(Form):
     address_addendum = TextField('Address Addendum', [
         validators.Length(max=512)])
     start_date = DateField('Start Date', [validators.Optional()])
-    start_time = TextField('Start Time', [validators.Optional()])
+    start_time_hours = IntegerField('Start Time (hours, minutes)',[
+        validators.Optional(),
+        validators.number_range(min=0, max=23, message="Hours must be between 0 and 23")])
+    start_time_minutes = IntegerField('Start Time (min)',[
+        validators.Optional(),
+        validators.number_range(min=0, max=59, message="Minutes must be between 0 and 59")])
     duration = IntegerField('Duration (min)', [
         validators.Optional(),
         validators.number_range(min=1, message="Troika has to last at least one minute")])

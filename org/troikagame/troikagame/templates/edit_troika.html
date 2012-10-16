@@ -16,20 +16,29 @@
       </div>
       {% endfor %}
       {% endif %}
-      
       <form id="tg-troika" action="" method="POST">
+        {% if access == 'create' %}
+            When you fill up this form you will become a
+            creator for a new pending troika. The troika will
+            become active once two other participants have
+            confirmed their attendance and you have agreed
+            on time and place of the troika.
+        {% endif %}  
         <dl>
           <dt>{{ troikaform.hidden_tag() }}</dt>
-          <dt>{{ troikaform.title.label }} {{ troikaform.title() }}</dt>
-          <dt>{{ troikaform.description.label }} {{ troikaform.description() }}</dt>
-          <dt>{{ troikaform.address.label }} {{ troikaform.address() }}</dt>
-          <dt>{{ troikaform.address_addendum.label }} {{ troikaform.address_addendum() }}</dt>
-          <dt>{{ troikaform.start_date.label }} {{ troikaform.start_date() }}</dt>
-          <dt>{{ troikaform.start_time.label }} {{ troikaform.start_time() }}</dt>
-          <dt>{{ troikaform.duration.label }} {{ troikaform.duration() }}</dt>
-          <dt>{{ troikaform.max_participants.label }} {{ troikaform.max_participants() }}</dt>
+          <dt>{{ troikaform.title.label }} {{ troikaform.title(class="tg-text-medium") }}</dt>
+          <dt>{{ troikaform.description.label }} {{ troikaform.description(class="tg-text-large") }}</dt>
+          <dt>{{ troikaform.address.label }} {{ troikaform.address(class="tg-text-medium") }}</dt>
+          <dt>{{ troikaform.address_addendum.label }} {{ troikaform.address_addendum(class="tg-text-medium") }}</dt>
+          <dt>{{ troikaform.start_date.label }} {{ troikaform.start_date(class="tg-date") }}</dt>
+          <dt>{{ troikaform.start_time_hours.label }} {{ troikaform.start_time_hours(class="tg-integer") }} {{ troikaform.start_time_minutes(class="tg-integer") }}</dt>
+          <dt>{{ troikaform.duration.label }} {{ troikaform.duration(class="tg-integer") }}</dt>
+          <dt>{{ troikaform.max_participants.label }} {{ troikaform.max_participants(class="tg-integer") }}</dt>
           {% if access == 'create' %}
-          <dt>{{ troikaform.creator_is_teacher.label }} {{ troikaform.creator_is_teacher() }}</dt>
+          <dt>{{ troikaform.creator_is_teacher.label }} {{ troikaform.creator_is_teacher(class="tg-checkbox") }}</dt>
+          <h6>Check this box if you will be
+          the teacher for this troika. If the teacher is
+          someone else, you can appoint them later on.</h6>
           <dt>
             <input type="submit" name="action" value="Create Troika">
           </dt>
@@ -46,4 +55,13 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static',filename='bootstrap/ext/datepicker/bootstrap-datepicker.js') }}"></script>
+<script type=text/javascript>
+  $('#troika-start_date').datepicker({
+    format: 'yyyy-mm-dd'
+});
+</script>
 {% endblock %}

@@ -120,6 +120,8 @@ def user():
     return render_template('user.html', userform=userform, usererrors=usererrors)
 
 def __participating(user, troika):
+    if user == None:
+        return False
     if user == troika.teacher:
         return 'teacher'
     if user == troika.first_learner:
@@ -135,6 +137,7 @@ def troika(troika_id):
     troika = get_troika(troika_id);
     access=False
     activate=False
+    user = None
     if 'logged_in' in session:
         user = get_user(session['email'])
         access = get_troika_access_right(user, troika)
@@ -148,8 +151,8 @@ def troika(troika_id):
              'description': troika.description,
              'address': troika.address,
              'address_addendum': troika.address_addendum,
-             'start_time': troika.start_time,
-             'end_time': troika.end_time,
+             'start_time': __get_formatted_datetime(troika.start_time,"%d.%m.%Y %H:%M"),
+             'end_time': __get_formatted_datetime(troika.end_time,"%d.%m.%Y %H:%M"),
              'max_participants': troika.max_participants,
              'participating': __participating(user, troika),
              'teacher': troika.teacher.full_name if troika.teacher != None else None,
@@ -164,12 +167,11 @@ def troika(troika_id):
     return render_template('troika.html', 
                            troika=entry)
 
-def __get_start_datetime(start_date, start_time):
-    if start_date is None or start_time is None:
+def __get_start_datetime(start_date, start_time_hours, start_time_minutes):
+    if start_date is None or start_time_hours is None:
         return None
     start_datetime = datetime.datetime.combine(start_date, datetime.time())
-    aux_time = time.strptime(start_time, "%H:%M")
-    start_datetime = start_datetime.replace(hour=aux_time.tm_hour, minute=aux_time.tm_min, second=0, microsecond=0)
+    start_datetime = start_datetime.replace(hour=start_time_hours, minute=start_time_minutes, second=0, microsecond=0)
     return start_datetime
 
 def __get_end_datetime(start_datetime, duration):
@@ -208,7 +210,8 @@ def edit_troika(troika_id):
         troikaform.address.data = troika.address
         troikaform.address_addendum.data = troika.address_addendum        
         troikaform.start_date.data = troika.start_time
-        troikaform.start_time.data = __get_formatted_datetime(troika.start_time,"%H:%M")
+        troikaform.start_time_hours.data = __get_formatted_datetime(troika.start_time,"%H")
+        troikaform.start_time_minutes.data = __get_formatted_datetime(troika.start_time,"%M")
         troikaform.duration.data = __get_duration(troika.start_time, troika.end_time)
         troikaform.max_participants.data = troika.max_participants
     elif troikaform.validate_on_submit(): 
@@ -218,7 +221,7 @@ def edit_troika(troika_id):
             troika.description = troikaform.description.data 
             troika.address = troikaform.address.data
             troika.address_addendum = troikaform.address_addendum.data
-            troika.start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time.data) 
+            troika.start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time_hours.data, troikaform.start_time_minutes.data) 
             troika.end_time = __get_end_datetime(troika.start_time, troikaform.duration.data)
             troika.max_participants = troikaform.max_participants.data
             save_troika(troika)
@@ -353,7 +356,7 @@ def create_troika():
     # Find out if the logged in user has rights to edit/delete
     user = get_user(session['email'])
 
-    start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time.data)
+    start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time_hours.data, troikaform.start_time_minutes.data)
     if troikaform.validate_on_submit():
         troika = Troika(created=datetime.datetime.now(), 
                 title=troikaform.title.data,
