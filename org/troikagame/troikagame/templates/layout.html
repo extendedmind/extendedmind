@@ -31,7 +31,7 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
               {% endblock %}
             </li>
           </ul>
-          <a class="brand" href="/">Troika Game</a>
+          <a class="brand" href="{{ url_for('troikas') }}">Troika Game</a>
           <div class="nav-collapse collapse">
             <ul class="nav pull-right">
               {% if not session.logged_in %}
@@ -42,7 +42,9 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
               {% endif %}
             </ul>
             <ul class="nav pull-left">
-              <li class="hidden-phone"><a href="{{ url_for('about') }}">About</a></li>
+              <li class="hidden-phone">
+              <a href="{{ url_for('about') }}">About</a>
+              </li>
               <li><a href="http://www.facebook.com/troikagame" target="_blank">Facebook</a></li>
             </ul>
           </div>

@@ -10,7 +10,7 @@ from forms import *
 from flask import request, session, flash, redirect, url_for, render_template
 import time
 
-@app.route('/about')
+@app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html')
 
