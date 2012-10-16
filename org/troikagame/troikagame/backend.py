@@ -5,7 +5,7 @@ Created on 15.8.2012
 '''
 from troikagame import app
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Enum, or_
+from sqlalchemy import Enum, or_, desc
 import datetime
 
 # To Create tables change this:
@@ -201,7 +201,7 @@ def get_pending_troikas(index=0, max_entries=10):
 def get_completed_troikas(index=0, max_entries=10):
     return Troika.query.filter(Troika.activated != None) \
                        .filter(Troika.end_time < datetime.datetime.now()) \
-                       .order_by(Troika.start_time).limit(max_entries).all()
+                       .order_by(desc(Troika.start_time)).limit(max_entries).all()
 def get_user(email):
     return User.query.filter_by(email=email).first()
 

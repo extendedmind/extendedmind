@@ -24,7 +24,10 @@
     <dt>{{ form.hidden_tag() }}</dt>
     <dt>{{ form.first_name.label }} {{ form.first_name() }}</dt>
     <dt>{{ form.last_name.label }} {{ form.last_name() }}</dt>
-    <dt>{{ form.handle.label }} {{ form.handle() }}</dt>
+    <dt>{{ form.handle.label }} {{ form.handle() }}
+    <h6 class="tg-input-description">Handle to use instead of your real name. Set a handle only 
+        if you do not want your real name to be public on this web site.</h6>
+    </dt>
     <dt>{{ form.email.label }} {{ form.email() }}</dt>
     <dt>{{ form.password.label }} {{ form.password() }}</dt>
     <dt>{{ form.confirm.label }} {{ form.confirm() }}</dt>

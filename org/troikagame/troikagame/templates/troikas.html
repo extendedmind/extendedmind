@@ -26,13 +26,18 @@
           </div>
           <div id="tg-active-collapse" class="accordion-body collapse in">
             <div class="accordion-inner">
-              <ul class=entries>
+              <ul class="tg-troika-headers">
                 {% for active_entry in active_entries %}
-                <li><a
-                  href="{{ url_for('troika', troika_id=active_entry.id) }}">
-                    {{ active_entry.title }} </a></li> {% else %}
-                <li><em>Unbelievable. No entries.</em></li> {% endfor
-                %}
+                  <li class="tg-troika-header">
+                    <a href="{{ url_for('troika', troika_id=active_entry.id) }}">
+                    {{ active_entry.title }}</a>
+                    <br/><span class="tg-start-date">
+                    {{ active_entry.start_time }}
+                    </span>
+                  </li>
+                {% else %}
+                  <li><em>Unbelievable. No entries.</em></li> 
+                {% endfor %}
               </ul>
             </div>
           </div>
@@ -55,13 +60,20 @@
           </div>
           <div id="tg-pending-collapse" class="accordion-body collapse in">
             <div class="accordion-inner">
-              <ul class=entries>
+              <ul class="tg-troika-headers">
                 {% for pending_entry in pending_entries %}
-                <li><a
-                  href="{{ url_for('troika', troika_id=pending_entry.id) }}">
-                    {{ pending_entry.title }} </a></li> {% else %}
-                <li><em>Unbelievable. No entries here so far</em></li> {% endfor
-                %}
+                  <li class="tg-troika-header"><a
+                    href="{{ url_for('troika', troika_id=pending_entry.id) }}">
+                      {{ pending_entry.title }} </a>
+                    {% if pending_entry.start_time != None %}
+                    <br/><span class="tg-start-date">
+                    {{ pending_entry.start_time }}
+                    </span>
+                    {% endif %}
+                  </li> 
+                {% else %}
+                  <li><em>Unbelievable. No entries here so far</em></li>
+                {% endfor %}
               </ul>
             </div>
           </div>
@@ -81,13 +93,17 @@
           </div>
           <div id="tg-completed-collapse" class="accordion-body collapse">
             <div class="accordion-inner">
-              <ul class=entries>
+              <ul class="tg-troika-headers">
                 {% for completed_entry in completed_entries %}
-                <li><a
-                  href="{{ url_for('troika', troika_id=completed_entry.id) }}">
-                    {{ completed_entry.title }} </a></li> {% else %}
-                <li><em>Unbelievable. No entries here so far</em></li> {% endfor
-                %}
+                  <li class="tg-troika-header"><a href="{{ url_for('troika', troika_id=completed_entry.id) }}">
+                    {{ completed_entry.title }} </a>
+                    <br/><span class="tg-start-date">
+                    {{ completed_entry.start_time }}
+                    </span>
+                  </li>
+                {% else %}
+                <li><em>Unbelievable. No entries here so far</em></li>
+                {% endfor %}
               </ul>
             </div>
           </div>

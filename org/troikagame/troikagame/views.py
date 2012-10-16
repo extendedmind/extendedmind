@@ -22,19 +22,19 @@ def troikas():
     
     active_troikas = get_active_troikas()
     active_entries = [dict(id=active_troika.id,
-                        start_time=active_troika.start_time, 
+                        start_time=__get_formatted_datetime(active_troika.start_time,"%d.%m.%Y %H:%M"), 
                         title=active_troika.title, 
                         description=active_troika.description) 
                for active_troika in active_troikas]
     pending_troikas = get_pending_troikas()
     pending_entries = [dict(id=pending_troika.id,
-                        start_time=pending_troika.start_time, 
+                        start_time=__get_formatted_datetime(pending_troika.start_time,"%d.%m.%Y %H:%M"), 
                         title=pending_troika.title, 
                         description=pending_troika.description) 
                for pending_troika in pending_troikas]
     completed_troikas = get_completed_troikas()
     completed_entries = [dict(id=completed_troika.id,
-                        start_time=completed_troika.start_time, 
+                        start_time=__get_formatted_datetime(completed_troika.start_time,"%d.%m.%Y %H:%M"), 
                         title=completed_troika.title, 
                         description=completed_troika.description) 
                for completed_troika in completed_troikas]
@@ -136,6 +136,11 @@ def __participating(user, troika):
         return 'participant'
     return False
 
+def __get_user_name(user):
+    if user.handle is not None:
+        return user.handle
+    return user.full_name
+
 @app.route('/troika/<troika_id>')
 def troika(troika_id):
     troika = get_troika(troika_id);
@@ -159,11 +164,11 @@ def troika(troika_id):
              'end_time': __get_formatted_datetime(troika.end_time,"%d.%m.%Y %H:%M"),
              'max_participants': troika.max_participants,
              'participating': __participating(user, troika),
-             'teacher': troika.teacher.full_name if troika.teacher != None else None,
-             'first_learner': troika.first_learner.full_name if troika.first_learner != None else None,
-             'second_learner': troika.second_learner.full_name if troika.second_learner != None else None,
+             'teacher': __get_user_name(troika.teacher) if troika.teacher != None else None,
+             'first_learner': __get_user_name(troika.first_learner) if troika.first_learner != None else None,
+             'second_learner': __get_user_name(troika.second_learner) if troika.second_learner != None else None,
              'participants': [dict(id=participant.id,
-                                full_name=participant.full_name) 
+                                full_name=__get_user_name(participant)) 
                                 for participant in troika.participants] if troika.participants != None else None
              }
 
