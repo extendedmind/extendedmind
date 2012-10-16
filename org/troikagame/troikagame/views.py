@@ -10,16 +10,16 @@ from forms import *
 from flask import request, session, flash, redirect, url_for, render_template
 import time
 
-@app.route('/front')
-def front():
-    return redirect(url_for('troikas'))
-
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html')
 
 @app.route('/')
 def troikas():
+    if ('REQUEST_URI' in request.environ and
+        not request.environ['REQUEST_URI'].endswith('/')):
+        return redirect(url_for('troikas').rstrip('/') + '/')
+    
     active_troikas = get_active_troikas()
     active_entries = [dict(id=active_troika.id,
                         start_time=active_troika.start_time, 
