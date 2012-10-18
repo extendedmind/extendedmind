@@ -69,6 +69,7 @@ def login():
         if (user_exists(email=regform.email.data, handle=regform.handle.data)):
             regerrors.append('User with given email or handle already exists')
         else:
+            if regform.handle.data == "": regform.handle.data = None    
             register(regform.first_name.data, regform.last_name.data,
                      regform.handle.data, regform.email.data, 
                      regform.password.data);
@@ -116,6 +117,7 @@ def user():
             user.short_name = userform.first_name.data 
             user.family_name = userform.last_name.data
             user.full_name = userform.first_name.data + " " + userform.last_name.data
+            if userform.handle.data == "": userform.handle.data = None    
             user.handle = userform.handle.data
             if (userform.new_password.data):
                 user.password = hash_password(userform.new_password.data)
