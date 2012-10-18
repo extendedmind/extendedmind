@@ -49,7 +49,6 @@ def activatable(user, troika, activatable_before_three):
         troika.address is not None and 
         troika.start_time is not None and 
         troika.end_time is not None and 
-        troika.max_participants is not None and
         troika.activated is None):
         
         if activatable_before_three or user.role == "admin":

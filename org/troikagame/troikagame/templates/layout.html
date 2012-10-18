@@ -45,7 +45,7 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
               <li class="hidden-phone">
               <a href="{{ url_for('about') }}">About</a>
               </li>
-              <li><a href="http://www.facebook.com/troikagame" target="_blank">Facebook</a></li>
+              <li><a href="http://www.facebook.com/troikagame" target="_blank">Facebook&raquo;</a></li>
             </ul>
           </div>
         </div>
@@ -70,5 +70,18 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   <script src="http://code.jquery.com/jquery-latest.js"></script>
   <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
   {% block extra_js %} {% endblock %}
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35664666-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+  </script>
 </body>
 </html>

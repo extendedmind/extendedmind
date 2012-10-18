@@ -20,5 +20,6 @@ setup(
         'flask-sqlalchemy',
         'itsdangerous',
         'passlib',
-        'Flask-WTF']
+        'Flask-WTF',
+        'flask-mail']
 )
