@@ -65,17 +65,20 @@ def login():
         for key, value in loginform.errors.items():
             loginerrors.append(key + ': ' + value[0])
     if regform.email.data and regform.validate_on_submit():
-        register(regform.first_name.data, regform.last_name.data,
-                 regform.handle.data, regform.email.data, 
-                 regform.password.data);
-        session['logged_in'] = True
-        session['email'] = regform.email.data
-        flash('Registration successful, you were logged in')
-        destination = url_for('troikas')
-        if 'destination' in session:
-            destination = session['destination']
-            session.pop('destination', None)
-        return redirect(destination)
+        if (user_exists(email=regform.email.data, handle=regform.handle.data)):
+            regerrors.append('User with given email or handle already exists')
+        else:
+            register(regform.first_name.data, regform.last_name.data,
+                     regform.handle.data, regform.email.data, 
+                     regform.password.data);
+            session['logged_in'] = True
+            session['email'] = regform.email.data
+            flash('Registration successful, you were logged in')
+            destination = url_for('troikas')
+            if 'destination' in session:
+                destination = session['destination']
+                session.pop('destination', None)
+            return redirect(destination)
     if regform.errors:
         for key, value in regform.errors.items():
             regerrors.append(key + ': ' + value[0])
@@ -89,11 +92,13 @@ def __check_login(destination = None, url = None):
             url = url_for(destination)
         flash('You need to login first')
         session['destination'] = url
-        return redirect(url_for('login'))
+        return url_for('login')
+    return False
 
 @app.route('/user', methods=['GET', 'POST'])
 def user():
-    __check_login('user')
+    url = __check_login('user')
+    if url: return redirect(url)
     usererrors = []
     userform = UserForm(prefix="user")
     user = get_user(session['email'])
@@ -136,7 +141,17 @@ def __participating(user, troika):
         return 'participant'
     return False
 
-def __get_user_name(user):
+def __is_full(troika):
+    if troika.max_participants is not None and \
+        troika.teacher is not None and \
+        troika.first_learner is not None and \
+        troika.second_learner is not None and \
+        troika.participants is not None and \
+        len(troika.participants) >= (troika.max_participants - 3):
+        return True
+    return False
+
+def __get_display_name(user):
     if user.handle is not None:
         return user.handle
     return user.full_name
@@ -163,12 +178,13 @@ def troika(troika_id):
              'start_time': __get_formatted_datetime(troika.start_time,"%d.%m.%Y %H:%M"),
              'end_time': __get_formatted_datetime(troika.end_time,"%d.%m.%Y %H:%M"),
              'max_participants': troika.max_participants,
+             'is_full': __is_full(troika),
              'participating': __participating(user, troika),
-             'teacher': __get_user_name(troika.teacher) if troika.teacher != None else None,
-             'first_learner': __get_user_name(troika.first_learner) if troika.first_learner != None else None,
-             'second_learner': __get_user_name(troika.second_learner) if troika.second_learner != None else None,
+             'teacher': __get_display_name(troika.teacher) if troika.teacher != None else None,
+             'first_learner': __get_display_name(troika.first_learner) if troika.first_learner != None else None,
+             'second_learner': __get_display_name(troika.second_learner) if troika.second_learner != None else None,
              'participants': [dict(id=participant.id,
-                                full_name=__get_user_name(participant)) 
+                                full_name=__get_display_name(participant)) 
                                 for participant in troika.participants] if troika.participants != None else None
              }
 
@@ -201,7 +217,9 @@ def __get_formatted_datetime(dt, dt_format):
 
 @app.route('/troika/<troika_id>/edit', methods=['GET', 'POST'])
 def edit_troika(troika_id):
-    __check_login(url = url_for('edit_troika', troika_id = troika_id))
+    url = __check_login(url = url_for('edit_troika', troika_id = troika_id))
+    if url: return redirect(url)
+
     troikaerrors = []
     troikaform = TroikaForm(prefix="troika")
     # Find out if the logged in user has rights to edit/delete
@@ -251,7 +269,9 @@ def edit_troika(troika_id):
 
 @app.route('/troika/<troika_id>/activate', methods=['GET'])
 def activate_troika(troika_id):
-    __check_login(url = url_for('activate_troika', troika_id = troika_id))
+    url = __check_login(url = url_for('activate_troika', troika_id = troika_id))
+    if url: return redirect(url)
+
     troika = get_troika(troika_id);
     user = get_user(session['email'])
     if activatable(user, troika, app.config.get('ACTIVATABLE_BEFORE_THREE')):
@@ -265,7 +285,8 @@ def activate_troika(troika_id):
 
 @app.route('/troika/<troika_id>/<troika_role>/join', methods=['GET'])
 def join_troika(troika_id, troika_role):
-    __check_login(url = url_for('join_troika', troika_id = troika_id, troika_role = troika_role))
+    url = __check_login(url = url_for('join_troika', troika_id = troika_id, troika_role = troika_role))
+    if url: return redirect(url)
     troika = get_troika(troika_id);
     user = get_user(session['email'])
     
@@ -298,6 +319,9 @@ def join_troika(troika_id, troika_role):
             if user in troika.participants:
                 flash('You are already participating in the Troika', 'error')
                 return redirect(url_for('troika', troika_id=troika_id))
+            if __is_full(troika):
+                flash('There is no more room in this Troika', 'error')
+                return redirect(url_for('troika', troika_id=troika_id))
             troika.participants.append(user)
             save_troika(troika)
             flash('You are now participating in "' + troika.title +  '"!')
@@ -312,7 +336,9 @@ def join_troika(troika_id, troika_role):
     
 @app.route('/troika/<troika_id>/<troika_role>/leave', methods=['GET'])
 def leave_troika(troika_id, troika_role):
-    __check_login(url = url_for('leave_troika', troika_id = troika_id, troika_role = troika_role))
+    url = __check_login(url = url_for('leave_troika', troika_id = troika_id, troika_role = troika_role))
+    if url: return redirect(url)
+
     troika = get_troika(troika_id);
     user = get_user(session['email'])
     if troika.get_phase() != 'complete':
@@ -359,7 +385,9 @@ def leave_troika(troika_id, troika_role):
 
 @app.route('/create', methods=['GET', 'POST'])
 def create_troika():
-    __check_login('create_troika')
+    url = __check_login('create_troika')
+    if url: return redirect(url)
+    
     troikaerrors = []
     troikaform = TroikaForm(prefix="troika")
     # Find out if the logged in user has rights to edit/delete
@@ -394,7 +422,10 @@ def create_troika():
 
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None)
-    session.pop('email', None)
-    flash('You were logged out')
+    if 'logged_in' in session:
+        session.pop('logged_in', None)
+        session.pop('email', None)
+        flash('You were logged out')
+    if 'destination' in session:
+        session.pop('destination', None)
     return redirect(url_for('troikas'))

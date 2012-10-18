@@ -203,7 +203,23 @@ def get_completed_troikas(index=0, max_entries=10):
                        .filter(Troika.end_time < datetime.datetime.now()) \
                        .order_by(desc(Troika.start_time)).limit(max_entries).all()
 def get_user(email):
+    if email is None:
+        return None
     return User.query.filter_by(email=email).first()
+
+def user_exists(email = None, handle = None):
+    user = None
+    if email is None:
+        if handle is None:
+            return False
+        user = User.query.filter_by(handle=handle).first()
+    elif handle is not None:
+        user = User.query.filter(or_(User.email == email, User.handle == handle)).first()
+    else:
+        user = User.query.filter_by(email=email).first()
+    if user is not None:
+        return True
+    return False
 
 def save_user(user):
     db.session.add(user)

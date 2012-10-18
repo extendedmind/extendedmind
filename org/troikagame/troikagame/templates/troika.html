@@ -10,6 +10,10 @@
 <div class="pagination-centered">
   <a href="{{ url_for('edit_troika', troika_id=troika.id) }}"><h4>Edit troika</h4></a>
 </div>
+{% elif not session.logged_in and not troika.is_full and not troika.phase == 'complete' %}
+<div class="pagination-centered">
+  <a href="{{ url_for('login', troika_id=troika.id) }}"><h5>Login or register to join troika!</h5></a>
+</div>
 {% endif %}
 <div class="container-fluid">
   <div class="row-fluid">
@@ -77,7 +81,7 @@
             {% endif %}
             {% else %} None 
           {%endfor %}
-          {% if (troika.phase == 'active' and session.logged_in and not troika.participating) %}
+          {% if (troika.phase == 'active' and session.logged_in and not troika.participating and not troika.is_full) %}
             <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=3) }}">
             Participate in this Troika
             </a>
@@ -86,7 +90,6 @@
             Leave this Troika
             </a>
           {% endif %}
-          
       </div>
     </div>
   </div>
