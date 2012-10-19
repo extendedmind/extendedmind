@@ -3,9 +3,9 @@ This package contains software licensed under different
 licenses, please refer to the NOTICE.txt file for further
 information and LICENSES.txt for full license texts.
 
-The software ("Software") developed and owned by Filosofian Akatemia is
-licensed under the GNU AFFERO GENERAL PUBLIC LICENSE Version 3 to all
-third parties and that license is included below.
+The software ("Software") is licensed under the GNU AFFERO GENERAL 
+PUBLIC LICENSE Version 3 to all third parties and that license is 
+included below.
 
 
                     GNU AFFERO GENERAL PUBLIC LICENSE

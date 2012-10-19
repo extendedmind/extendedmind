@@ -1,0 +1,19 @@
+Troika Game
+Copyright © 2012 Olli Parviainen, Petro Poutanen, Salla Laaksonen and 
+Filosofian Akatemia.  
+[http://troikagame.org]
+
+This product includes software ("Software") developed by Filosofian 
+Akatemia and its contributors.
+
+The Software  is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE 
+Version 3  (http://www.fsf.org/licensing/licenses/agpl-3.0.html)
+("AGPL") to all third parties and that license, as required by the AGPL,
+is included in the LICENSE.txt file.
+
+Third party libraries
+---------------------
+
+See the NOTICE.txt and LICENSES.txt files in the subdirectories for
+information on included third party software.
+
