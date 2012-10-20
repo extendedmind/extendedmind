@@ -14,7 +14,7 @@ class RegistrationForm(Form):
     last_name = TextField('Last Name *', [
         validators.Required(),
         validators.Length(max=128)])
-    handle = TextField('Handle', [validators.Length(max=512)])
+    handle = TextField('Alias', [validators.Length(max=512)])
     email = TextField('Email Address *', [
         validators.Required(),
         validators.email('Not a valid email address')])
@@ -37,7 +37,7 @@ class UserForm(Form):
     last_name = TextField('Last Name *', [
         validators.Required(),
         validators.Length(max=128)])
-    handle = TextField('Handle', [validators.Length(max=512)])
+    handle = TextField('Alias', [validators.Length(max=512)])
     email = TextField('Email Address *', [
         validators.Required(),
         validators.email('Not a valid email address')])
@@ -71,4 +71,4 @@ class TroikaForm(Form):
     max_participants = IntegerField('Max Participants', [
         validators.Optional(),
         validators.number_range(min=3, message="Minumum of three participants")])
-    creator_is_teacher = BooleanField('I will teach this')
+    creator_is_teacher = BooleanField('I will lead this')

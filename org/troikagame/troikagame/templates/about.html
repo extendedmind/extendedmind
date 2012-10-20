@@ -13,7 +13,7 @@
         <li class="nav-header">Contents</li>
         <li><a href="#general">What is Troika Game?</a></li>
         <li><a href="#learn">Ready to start learning? Join a Troika!</a></li>
-        <li><a href="#teach">Ready to start teaching? Set up your own Troika!</a></li>
+        <li><a href="#share">Ready to start sharing? Set up your own Troika!</a></li>
         <li><a href="#we">Who are we?</a></li>
         <li><a href="#contact">Contact us</a></li>
       </ul>
@@ -23,14 +23,14 @@
         <div class="page-header">
           <h3>What is Troika Game?</h3>
         </div>
-        <p>Do you know what the person next to you wants to teach? What 
+        <p>Do you know what you could learn from the person next to you? What 
         would be the funniest way to share this knowledge to you and
-        other people ? Troika the Game is a tool developed for you to
+        other people? Troika the Game is a tool developed for you to
         make learning together possible with just the right people
         around you. Troika helps you to easily organize a session for 
         learning and passing the knowledge on.</p>
         <p>Why do we need Troika for learning together? The biggest 
-        obstacle in sharing our knowledge is often to take the first step. 
+        obstacle in sharing our knowledge or skills is often to take the first step. 
         Troubles in taking the first steps prevent us from learning small 
         things from each other: how to mend a bicycle, how to use a 
         spreadsheet program - how to juggle? Small things that could make 
@@ -57,7 +57,7 @@
           </ul>
         </p>
         <p><b>Troika is not limited to any certain subject areas. We all know 
-        something worth teaching - think out of the box!</b></p>
+        something worth sharing - think outside the box!</b></p>
       </section>
       <section id="learn" class="tg-anchor">
         <div class="page-header">
@@ -66,12 +66,12 @@
         <p>
           <ol>
             <li><a href="{{ url_for('login') }}" target="_blank">Register</a> as a user.</li>
-            <li><a href="{{ url_for('troikas') }}" target="_blank">Browse</a> the list of active troika-events 
+            <li><a href="{{ url_for('troikas') }}" target="_blank">Browse</a> the list of active troika events 
                 on the front page and find the ones you’re interested in. If there is no troika 
                 available on the topic you wish to learn, you may want 
                 <a href="{{ url_for('create_troika') }}" target="_blank">
-                set up your own “pending troika”</a> and leave to "I will teach this" unclicked
-                to request for a teacher.</li>
+                set up your own “pending troika”</a> and leave to "I will lead this" unclicked
+                to request for someone else to lead the troika.</li>
             <li>Sign up for an interesting troika by clicking the appropriate join link 
                 on the troika description page.</li>
             <li>Attend the troika and enjoy the experience of learning!</li>
@@ -80,15 +80,15 @@
           </ol>
         </p>
       </section>
-      <section id="learn" class="tg-anchor">
+      <section id="share" class="tg-anchor">
         <div class="page-header">
-          <h3>Ready to start teaching? Set up your own Troika!</h3>
+          <h3>Ready to start sharing? Set up your own Troika!</h3>
         </div>
         <p>
           <ol>
             <li><a href="{{ url_for('login') }}" target="_blank">Register</a> as a user.</li>
-            <li>Find a topic you wish to teach or a topic you want somebody to
-                teach you to.</li>
+            <li>Find a topic you wish to teach, share or present, or a topic you want to learn about 
+		from someone else.</li>
             <li><a href="{{ url_for('create_troika') }}" target="_blank">Create</a> a new 
                 pending troika!</li>
             <li>Wait for the first two to join your troika.</li>

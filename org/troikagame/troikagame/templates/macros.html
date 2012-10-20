@@ -18,6 +18,11 @@
 </form>
 {% endmacro %}
 
+{% macro handle_description(caller) %}
+<h6 class="tg-input-description">Alias to use instead of your real name. Set an alias only 
+        if you do not want your real name to be public on this web site.</h6>
+{% endmacro %}
+
 {% macro register_form(caller, form) %}
 <form id="tg-register" action="{{ url_for('login') }}" method="POST">
   <dl>
@@ -25,8 +30,7 @@
     <dt>{{ form.first_name.label }} {{ form.first_name() }}</dt>
     <dt>{{ form.last_name.label }} {{ form.last_name() }}</dt>
     <dt>{{ form.handle.label }} {{ form.handle() }}
-    <h6 class="tg-input-description">Handle to use instead of your real name. Set a handle only 
-        if you do not want your real name to be public on this web site.</h6>
+        {% call handle_description() %} {% endcall %}
     </dt>
     <dt>{{ form.email.label }} {{ form.email() }}</dt>
     <dt>{{ form.password.label }} {{ form.password() }}</dt>
@@ -45,6 +49,7 @@
     <dt>{{ form.first_name.label }} {{ form.first_name() }}</dt>
     <dt>{{ form.last_name.label }} {{ form.last_name() }}</dt>
     <dt>{{ form.handle.label }} {{ form.handle() }}</dt>
+        {% call handle_description() %} {% endcall %}
     <dt>{{ form.email.label }} {{ form.email() }}</dt>
     <dt>{{ form.new_password.label }} {{ form.new_password() }}</dt>
     <dt>{{ form.new_confirm.label }} {{ form.new_confirm() }}</dt>
