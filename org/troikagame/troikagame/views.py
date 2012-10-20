@@ -323,11 +323,11 @@ def __process_pending(troika):
                 msg.body += \
 """
 
-has now all three participants, you!
+has now all three participants!
 
 Your job now is to:
 1. decide on the remaining open details for the troika, 
-2. add that information to the troika by pressing "Edit troika" (visible for the teacher or creator),
+2. add that information to the troika by pressing "Edit troika" (visible for the lead and creator),
 3. and then press "Activate troika".
 
 Get going!
