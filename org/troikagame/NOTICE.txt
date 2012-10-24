@@ -1,10 +1,9 @@
 Troika Game
-Copyright © 2012 Olli Parviainen, Petro Poutanen, Salla Laaksonen and 
-Filosofian Akatemia.  
-[http://troikagame.org]
 
-This product includes software ("Software") developed by Filosofian 
-Akatemia and its contributors.
+Copyright © 2012 Olli Parviainen, Petro Poutanen, Salla Laaksonen,
+Timo Tiuraniemi and Filosofian Akatemia. [http://troikagame.org]
+
+This product includes software ("Software") developed by Timo Tiuraniemi.
 
 The Software  is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE 
 Version 3  (http://www.fsf.org/licensing/licenses/agpl-3.0.html)
@@ -14,6 +13,5 @@ is included in the LICENSE.txt file.
 Third party libraries
 ---------------------
 
-See the NOTICE.txt and LICENSES.txt files in the subdirectories for
-information on included third party software.
+See the LICENSES.txt file for information on included third party software.
 

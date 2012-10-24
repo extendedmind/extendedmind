@@ -1,5 +1,4 @@
-#  Copyright © 2012 Olli Parviainen, Petro Poutanen, Salla Laaksonen and 
-#  Filosofian Akatemia. [http://troikagame.org]
+#  Copyright © 2012 Timo Tiuraniemi
 #
 #  This file is part of Troika Game.
 #
