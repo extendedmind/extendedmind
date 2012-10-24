@@ -1,6 +1,6 @@
 Extended Mind
-Copyright © 2012 Filosofian Akatemia
-[http://www.filosofianakatemia.fi]
+
+Copyright © 2012 Filosofian Akatemia [http://www.filosofianakatemia.fi]
 
 This product includes software ("Software") developed by Filosofian Akatemia
 and its contributors.
