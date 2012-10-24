@@ -1,4 +1,4 @@
-#  Copyright © 2012 Timo Tiuraniemi
+#  Copyright (c) 2012 Timo Tiuraniemi
 #
 #  This file is part of Troika Game.
 #
@@ -22,7 +22,7 @@ Created on 10.10.2012
 @author: ttiurani
 '''
 from flask_wtf import Form, IntegerField, BooleanField, \
-                      DateField, DateTimeField, TextField, TextAreaField, PasswordField,  \
+                      DateField, TextField, TextAreaField, PasswordField,  \
                       validators 
 
 class RegistrationForm(Form):

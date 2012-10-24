@@ -1,4 +1,4 @@
-#  Copyright © 2012 Timo Tiuraniemi
+#  Copyright (c) 2012 Timo Tiuraniemi
 #
 #  This file is part of Troika Game.
 #
@@ -23,8 +23,8 @@ Created on 15.8.2012
 '''
 from troikagame import app
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Enum, or_, desc, case, text
-import datetime
+from sqlalchemy import Enum, or_, desc, text
+from datetime import datetime
 
 # To Create tables change this:
 DB_DNS = None
@@ -132,7 +132,7 @@ class Troika(db.Model):
     # Phase of Troika: NOTE: there is no "completed"
     # phase in the database because that would
     # require some sort of polling of end_time.
-    created =  db.Column(db.DateTime, unique=False, nullable=True, default=datetime.datetime.now())
+    created =  db.Column(db.DateTime, unique=False, nullable=True, default=datetime.now())
     pended =  db.Column(db.DateTime, unique=False, nullable=True)
     activated =  db.Column(db.DateTime, unique=False, nullable=True)
 
@@ -195,8 +195,8 @@ class Troika(db.Model):
 
     def get_phase(self):
         if self.activated is not None:
-            if datetime.datetime.now() > self.activated:
-                if datetime.datetime.now() < self.end_time:
+            if datetime.now() > self.activated:
+                if datetime.now() < self.end_time:
                     return 'active'
                 else:
                     return 'complete'
@@ -211,7 +211,7 @@ def get_troika(troika_id):
 
 def get_active_troikas(index=0, max_entries=50):
     return Troika.query.filter(Troika.activated != None) \
-                       .filter(Troika.end_time > datetime.datetime.now()) \
+                       .filter(Troika.end_time > datetime.now()) \
                        .order_by(Troika.start_time).limit(max_entries).all()
 def get_pending_troikas(index=0, max_entries=50):
     return Troika.query.filter(Troika.activated == None) \
@@ -219,7 +219,7 @@ def get_pending_troikas(index=0, max_entries=50):
                        .limit(max_entries).all()
 def get_completed_troikas(index=0, max_entries=50):
     return Troika.query.filter(Troika.activated != None) \
-                       .filter(Troika.end_time < datetime.datetime.now()) \
+                       .filter(Troika.end_time < datetime.now()) \
                        .order_by(desc(Troika.start_time)).limit(max_entries).all()
 def get_user(email):
     if email is None:

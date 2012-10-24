@@ -1,4 +1,4 @@
-#  Copyright © 2012 Timo Tiuraniemi
+#  Copyright (c) 2012 Timo Tiuraniemi
 #
 #  This file is part of Troika Game.
 #
@@ -84,6 +84,3 @@ def __validate_password(plain_password, password_hash):
 
 def __generate_reload_token():
     return os.urandom(32);
-
-def __hash_password():
-    return '';

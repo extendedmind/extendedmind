@@ -1,4 +1,4 @@
-#  Copyright © 2012 Timo Tiuraniemi
+#  Copyright (c) 2012 Timo Tiuraniemi
 #
 #  This file is part of Troika Game.
 #
@@ -23,10 +23,11 @@ Created on 14.8.2012
 '''
 from troikagame import app, mail
 from security import validate_login, register, hash_password, get_troika_access_right, activatable
-from backend import *
-from forms import *
+from backend import Troika, get_active_troikas, get_pending_troikas, get_completed_troikas, \
+                    user_exists, get_user, save_user, get_troika, save_troika, delete_troika
+from forms import LoginForm, RegistrationForm, TroikaForm, UserForm
 from flask import request, session, flash, redirect, url_for, render_template
-import time
+from datetime import datetime
 from flask_mail import Message
 
 @app.route('/about', methods=['GET'])
@@ -216,7 +217,7 @@ def troika(troika_id):
 def __get_start_datetime(start_date, start_time_hours, start_time_minutes):
     if start_date is None or start_time_hours is None:
         return None
-    start_datetime = datetime.datetime.combine(start_date, datetime.time())
+    start_datetime = datetime.combine(start_date, datetime.time())
     start_datetime = start_datetime.replace(hour=start_time_hours, minute=start_time_minutes, second=0, microsecond=0)
     return start_datetime
 
@@ -265,7 +266,7 @@ def edit_troika(troika_id):
     elif troikaform.validate_on_submit(): 
         if request.form["action"] == "Save Troika":
             start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time_hours.data, troikaform.start_time_minutes.data)
-            if start_time is not None and start_time < datetime.datetime.now():
+            if start_time is not None and start_time < datetime.now():
                 troikaerrors.append("Start time for the troika must be in the future")
             else:
                 # Update info
@@ -302,7 +303,7 @@ def __get_troika_message(subject, troika):
               recipients=recipients)
 
 def __process_activation(troika):
-    troika.activated = datetime.datetime.now()
+    troika.activated = datetime.now()
     
     if not app.config.get('MAIL_SKIP'):    
         # Send message to all three participants
@@ -327,7 +328,7 @@ def __process_pending(troika):
        troika.teacher is not None and \
        troika.first_learner is not None and \
        troika.second_learner is not None:
-        troika.pended = datetime.datetime.now()
+        troika.pended = datetime.now()
         if troika.start_time is not None and \
            troika.end_time is not None and \
            troika.address is not None:
@@ -488,10 +489,10 @@ def create_troika():
     user = get_user(session['email'])
 
     start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time_hours.data, troikaform.start_time_minutes.data)
-    if start_time is not None and start_time < datetime.datetime.now():
+    if start_time is not None and start_time < datetime.now():
         troikaerrors.append("Start time for the troika must be in the future")
     elif troikaform.validate_on_submit():
-        troika = Troika(created=datetime.datetime.now(), 
+        troika = Troika(created=datetime.now(), 
                 title=troikaform.title.data,
                 description=troikaform.description.data,
                 country='FI', region='18', area_id=None, campus_id=None,
