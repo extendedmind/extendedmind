@@ -33,7 +33,7 @@ DB_DNS = None
 #
 # DB_DNS = 'mysql://tg:tgpwd@localhost/tgdev'
 #
-# and run in the command prompt
+# and run in a Python interpreter:
 # >> from troikagame.backend import db
 # >> db.create_all()
 if DB_DNS is None:
