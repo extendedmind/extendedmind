@@ -35,11 +35,7 @@ def about():
     return render_template('about.html')
 
 @app.route('/')
-def troikas():
-    if ('REQUEST_URI' in request.environ and
-        not request.environ['REQUEST_URI'].endswith('/')):
-        return redirect(url_for('troikas').rstrip('/') + '/')
-    
+def troikas():    
     active_troikas = get_active_troikas()
     active_entries = [dict(id=active_troika.id,
                         start_time=__get_formatted_datetime(active_troika.start_time,"%d.%m.%Y %H:%M"), 
