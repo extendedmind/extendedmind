@@ -2,8 +2,10 @@
 {% block back_button %}
 <a href="{{ url_for('troikas') }}">Home</a>
 {% endblock %} 
+{% block subheading %} | {{ troika.title }}{% endblock %}
+
 {% block body %}
-<div class="tg-heading">
+<div class="tl-heading">
   <h2>{{ troika.title }}</h2>  
 </div>
 {% if troika.access %}
@@ -21,12 +23,12 @@
 {% endif %}
 <div class="container-fluid">
   <div class="row-fluid">
-    <div class="span4 tg-group">
+    <div class="span4 tl-group">
       <div class="container span12">  
         <h3>Description</h3> {{ troika.description }}
       </div>
     </div>
-    <div class="span4 tg-group">
+    <div class="span4 tl-group">
       <div class="container span12">
         <h3>Status</h3> {{ troika.phase }}
         <h3>Start time</h3> {{ troika.start_time }}
@@ -34,7 +36,7 @@
         <h3>Address</h3> {{ troika.address }} - {{ troika.address_addendum }}
       </div>
     </div>
-    <div class="span4 tg-group">
+    <div class="span4 tl-group">
       <div class="span12">
         <h3>Lead</h3> 
         {% if (troika.lead == None and session.logged_in and not troika.participating) %}

@@ -1,12 +1,14 @@
 {% macro heading(caller) %}
-<div class="tg-heading">
-  <img class="tg-logo" src="{{ url_for('static', filename='img/logo.png') }}"></img>
+<div class="tl-heading">
+  <img class="tl-logo" src="{{ url_for('static', filename='img/logo.png') }}"></img>
   <p>Do you know what you could learn from the person next to you?</p>
 </div>
 {% endmacro %}
 
+{% macro slogan(caller) %} Hassle-Free Peer Learning {% endmacro %}
+
 {% macro login_form(caller, form) %}
-<form id="tg-login" action="{{ url_for('login') }}" method="POST">
+<form id="tl-login" action="{{ url_for('login') }}" method="POST">
   <dl>
     <dt>{{ form.hidden_tag() }}</dt>
     <dt>{{ form.email.label }} {{ form.email() }}</dt>
@@ -19,12 +21,12 @@
 {% endmacro %}
 
 {% macro handle_description(caller) %}
-<h6 class="tg-input-description">Alias to use instead of your real name. Set an alias only 
+<h6 class="tl-input-description">Alias to use instead of your real name. Set an alias only 
         if you do not want your real name to be public on this web site.</h6>
 {% endmacro %}
 
 {% macro register_form(caller, form) %}
-<form id="tg-register" action="{{ url_for('login') }}" method="POST">
+<form id="tl-register" action="{{ url_for('login') }}" method="POST">
   <dl>
     <dt>{{ form.hidden_tag() }}</dt>
     <dt>{{ form.first_name.label }} {{ form.first_name() }}</dt>
@@ -43,7 +45,7 @@
 {% endmacro %}
 
 {% macro user_form(caller, form) %}
-<form id="tg-user" action="{{ url_for('user') }}" method="POST">
+<form id="tl-user" action="{{ url_for('user') }}" method="POST">
   <dl>
     <dt>{{ form.hidden_tag() }}</dt>
     <dt>{{ form.first_name.label }} {{ form.first_name() }}</dt>

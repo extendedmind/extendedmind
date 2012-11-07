@@ -3,12 +3,13 @@
 {% block back_button %}
 <a href="{{ url_for('troikas') }}">Home</a>
 {% endblock %} 
+{% block subheading %} | About{% endblock %}
 
 {% block body %}
 {% call macros.heading() %} {% endcall %}
 <div class="container">
   <div class="row-fluid"> 
-    <div class="span4 tg-group">
+    <div class="span4 tl-group">
       <ul class="nav nav-list" data-spy="scroll" data-target=".nav">
         <li class="nav-header">Contents</li>
         <li><a href="#general">What is Troika?</a></li>
@@ -19,7 +20,7 @@
       </ul>
     </div>
     <div class="span8">
-      <section id="general" class="tg-anchor">
+      <section id="general" class="tl-anchor">
         <div class="page-header">
           <h3>What is Troika?</h3>
         </div>
@@ -56,7 +57,7 @@
         <p><b>Troika is not limited to any certain subject areas. We all know 
         something worth sharing - think outside the box!</b></p>
       </section>
-      <section id="learn" class="tg-anchor">
+      <section id="learn" class="tl-anchor">
         <div class="page-header">
           <h3>Ready to start learning? Join a Troika!</h3>
         </div>
@@ -77,7 +78,7 @@
           </ol>
         </p>
       </section>
-      <section id="share" class="tg-anchor">
+      <section id="share" class="tl-anchor">
         <div class="page-header">
           <h3>Ready to start sharing? Set up your own Troika!</h3>
         </div>
@@ -97,7 +98,7 @@
           </ol>
         </p>
       </section>
-      <section id="we" class="tg-anchor">
+      <section id="we" class="tl-anchor">
         <div class="page-header">
           <h3>Who are we?</h3>
         </div>
@@ -115,7 +116,7 @@
            <a href="http://www.filosofianakatemia.fi/" target="_blank">Filosofian Akatemia</a>. 
         </p>
       </section>
-      <section id="contact" class="tg-anchor">
+      <section id="contact" class="tl-anchor">
         <div class="page-header">
           <h3>Contact us</h3>
         </div>

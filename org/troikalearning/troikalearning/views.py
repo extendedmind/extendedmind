@@ -499,7 +499,7 @@ def create_troika():
                 end_time=__get_end_datetime(start_time, troikaform.duration.data),
                 max_participants=troikaform.max_participants.data, 
                 creator=user)        
-        if troikaform.creator_is_lead.data:
+        if troikaform.creator_role.data == 'lead':
             troika.lead = user
         else:
             troika.first_learner = user

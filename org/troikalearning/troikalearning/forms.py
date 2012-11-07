@@ -21,7 +21,7 @@ Created on 10.10.2012
 
 @author: ttiurani
 '''
-from flask_wtf import Form, IntegerField, BooleanField, \
+from flask_wtf import Form, IntegerField, RadioField, \
                       DateField, TextField, TextAreaField, PasswordField,  \
                       validators 
 
@@ -89,4 +89,7 @@ class TroikaForm(Form):
     max_participants = IntegerField('Max Participants', [
         validators.Optional(),
         validators.number_range(min=3, message="Minumum of three participants")])
-    creator_is_lead = BooleanField('I will lead this')
+    creator_role = RadioField(u'Your role in the Troika', choices=[
+        ('lead', u'I will lead this'), 
+        ('learner', u'I want someone else to lead this.')],
+        default='lead')

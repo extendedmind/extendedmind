@@ -3,6 +3,7 @@
 {% block back_button %}
 <a href="/">Home</a>
 {% endblock %} 
+{% block subheading %} | Login / Register{% endblock %}
 
 {% block body %}
 <div class="container">
@@ -11,7 +12,7 @@
       <h2>Login</h2>
       {% if loginerrors %}
       {% for loginerror in loginerrors %}
-      <div class="alert alert-error tg-message">
+      <div class="alert alert-error tl-message">
         <button type="button" class="close" data-dismiss="alert">×</button>
         <strong>Error:</strong> {{ loginerror }}
       </div>
@@ -23,7 +24,7 @@
       <h2>Register</h2>
       {% if regerrors %}
       {% for regerror in regerrors %}
-      <div class="alert alert-error tg-message">
+      <div class="alert alert-error tl-message">
         <button type="button" class="close" data-dismiss="alert">×</button>
         <strong>Error:</strong> {{ regerror }}
       </div>

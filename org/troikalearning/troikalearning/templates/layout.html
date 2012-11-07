@@ -7,14 +7,14 @@
 <link rel="stylesheet" href="{{ url_for('static',filename='bootstrap/css/bootstrap-responsive.css') }}">
 <link rel="stylesheet" href="{{ url_for('static',filename='bootstrap/ext/datepicker/datepicker.css') }}">
 <link rel="stylesheet" href="{{ url_for('static',filename='bootstrap/ext/timepicker/timepicker.css') }}">
-<link rel="stylesheet" href="{{ url_for('static',filename='css/tg.css') }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='css/tl.css') }}">
 <script type=text/javascript>
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
-<title>Troika</title>
+<title>Troika{% block subheading %}{% endblock %}</title>
 </head>
 <body>
-  <div class="tg-page">
+  <div class="tl-page">
     <!-- Navigation Bar -->
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -57,7 +57,7 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
       <div class="span12">
           <!-- Flashed messages -->
           {% for message in get_flashed_messages() %}
-          <div class="alert alert-success tg-message">
+          <div class="alert alert-success tl-message">
             <button type="button" class="close" data-dismiss="alert">×</button>
             {{ message }}
           </div>

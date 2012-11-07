@@ -3,6 +3,7 @@
 {% block back_button %}
 <a href="/">Home</a>
 {% endblock %} 
+{% block subheading %} | User{% endblock %}
 
 {% block body %}
 <div class="container">
@@ -11,7 +12,7 @@
       <h2>User information</h2>
       {% if usererrors %}
       {% for usererror in usererrors %}
-      <div class="alert alert-error tg-message">
+      <div class="alert alert-error tl-message">
         <button type="button" class="close" data-dismiss="alert">×</button>
         <strong>Error:</strong> {{ usererror }}
       </div>

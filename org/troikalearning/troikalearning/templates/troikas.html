@@ -3,6 +3,8 @@
 {% block back_button %}
 <a class="navbar-link" href="about">About</a>
 {% endblock %}
+{% block subheading %} &ndash; {% call macros.slogan() %}{% endcall %} {% endblock %}
+
 {% block body %}
 
 {% call macros.heading() %} {% endcall %}
@@ -14,24 +16,24 @@
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span4">
-      <div class="accordion" id="tg-active-accordion">
+      <div class="accordion" id="tl-active-accordion">
         <div class="accordion-group">
           <div class="accordion-heading">
             <div class="accordion-toggle">
-              <a href="#tg-active-collapse" data-toggle="collapse" data-parent="#tg-active-accordion">
+              <a href="#tl-active-collapse" data-toggle="collapse" data-parent="#tl-active-accordion">
               <h3>Active Troikas</h3>
               </a>
               <h6>Upcoming troikas you can join.</h6> 
             </div>
           </div>
-          <div id="tg-active-collapse" class="accordion-body collapse in">
+          <div id="tl-active-collapse" class="accordion-body collapse in">
             <div class="accordion-inner">
-              <ul class="tg-troika-headers">
+              <ul class="tl-troika-headers">
                 {% for active_entry in active_entries %}
-                  <li class="tg-troika-header">
+                  <li class="tl-troika-header">
                     <a href="{{ url_for('troika', troika_id=active_entry.id) }}">
                     {{ active_entry.title }}</a>
-                    <br/><span class="tg-start-date">
+                    <br/><span class="tl-start-date">
                     {{ active_entry.start_time }}
                     </span>
                   </li>
@@ -45,25 +47,25 @@
       </div>
     </div>
     <div class="span4">
-      <div class="accordion" id="tg-pending-accordion">
+      <div class="accordion" id="tl-pending-accordion">
         <div class="accordion-group">
           <div class="accordion-heading">
             <div class="accordion-toggle">
-              <a data-toggle="collapse" data-parent="#tg-pending-accordion" href="#tg-pending-collapse">
+              <a data-toggle="collapse" data-parent="#tl-pending-accordion" href="#tl-pending-collapse">
               <h3>Pending Troikas</h3>
               </a>
               <h6>Suggested troikas not yet activated. Check if you can help!</h6> 
             </div>
           </div>
-          <div id="tg-pending-collapse" class="accordion-body collapse in">
+          <div id="tl-pending-collapse" class="accordion-body collapse in">
             <div class="accordion-inner">
-              <ul class="tg-troika-headers">
+              <ul class="tl-troika-headers">
                 {% for pending_entry in pending_entries %}
-                  <li class="tg-troika-header"><a
+                  <li class="tl-troika-header"><a
                     href="{{ url_for('troika', troika_id=pending_entry.id) }}">
                       {{ pending_entry.title }} </a>
                     {% if pending_entry.start_time != None %}
-                    <br/><span class="tg-start-date">
+                    <br/><span class="tl-start-date">
                     {{ pending_entry.start_time }}
                     </span>
                     {% endif %}
@@ -78,23 +80,23 @@
       </div>
     </div>
     <div class="span4">
-      <div class="accordion" id="tg-completed-accordion">
+      <div class="accordion" id="tl-completed-accordion">
         <div class="accordion-group">
           <div class="accordion-heading">
             <div class="accordion-toggle">
-              <a data-toggle="collapse" data-parent="#tg-completed-accordion" href="#tg-completed-collapse">
+              <a data-toggle="collapse" data-parent="#tl-completed-accordion" href="#tl-completed-collapse">
                 <h3>Completed Troikas</h3>
               </a>
               <h6>Succesfully held troikas.</h6> 
             </div>
           </div>
-          <div id="tg-completed-collapse" class="accordion-body collapse">
+          <div id="tl-completed-collapse" class="accordion-body collapse">
             <div class="accordion-inner">
-              <ul class="tg-troika-headers">
+              <ul class="tl-troika-headers">
                 {% for completed_entry in completed_entries %}
-                  <li class="tg-troika-header"><a href="{{ url_for('troika', troika_id=completed_entry.id) }}">
+                  <li class="tl-troika-header"><a href="{{ url_for('troika', troika_id=completed_entry.id) }}">
                     {{ completed_entry.title }} </a>
-                    <br/><span class="tg-start-date">
+                    <br/><span class="tl-start-date">
                     {{ completed_entry.start_time }}
                     </span>
                   </li>
