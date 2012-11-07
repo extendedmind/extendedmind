@@ -35,13 +35,13 @@ def validate_login(email, password):
             return True
     return False
 
-def register(first_name, last_name, handle, email, password):
+def register(first_name, last_name, alias, email, password):
     hash = hash_password(password)
     user = User(email=email, role='user', 
              password=hash,
              country='FI', region='18', preferred_language='fi',
              full_name=first_name + " " + last_name, short_name=first_name, 
-             given_names=first_name, family_name=last_name)
+             given_names=first_name, family_name=last_name, alias=alias)
     save_user(user)
     
 def hash_password(password):
@@ -56,14 +56,14 @@ def get_troika_access_right(user, troika):
         if user == troika.creator:
             # Creator can delete non-completed Troikas
             access = 'delete'
-        elif user == troika.teacher:
-            # Teacher can edit Troika contents
+        elif user == troika.lead:
+            # Lead can edit Troika contents
             access = 'edit'
     return access
 
 def activatable(user, troika, activatable_before_three):
 
-    if ((user.role == "admin" or troika.teacher is user) and  
+    if ((user.role == "admin" or troika.lead is user) and  
         troika.address is not None and 
         troika.start_time is not None and 
         troika.end_time is not None and 

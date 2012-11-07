@@ -81,12 +81,12 @@ def login():
         for key, value in loginform.errors.items():
             loginerrors.append(key + ': ' + value[0])
     if regform.email.data and regform.validate_on_submit():
-        if (user_exists(email=regform.email.data, handle=regform.handle.data)):
-            regerrors.append('User with given email or handle already exists')
+        if (user_exists(email=regform.email.data, alias=regform.alias.data)):
+            regerrors.append('User with given email or alias already exists')
         else:
-            if regform.handle.data == "": regform.handle.data = None    
+            if regform.alias.data == "": regform.alias.data = None    
             register(regform.first_name.data, regform.last_name.data,
-                     regform.handle.data, regform.email.data, 
+                     regform.alias.data, regform.email.data, 
                      regform.password.data);
             session['logged_in'] = True
             session['email'] = regform.email.data
@@ -124,7 +124,7 @@ def user():
         userform.email.data = user.email
         userform.first_name.data = user.short_name
         userform.last_name.data = user.family_name
-        userform.handle.data = user.handle
+        userform.alias.data = user.alias
     elif userform.validate_on_submit(): 
         if (validate_login(session['email'], userform.password.data)):
             # Update info
@@ -132,8 +132,8 @@ def user():
             user.short_name = userform.first_name.data 
             user.family_name = userform.last_name.data
             user.full_name = userform.first_name.data + " " + userform.last_name.data
-            if userform.handle.data == "": userform.handle.data = None    
-            user.handle = userform.handle.data
+            if userform.alias.data == "": userform.alias.data = None    
+            user.alias = userform.alias.data
             if (userform.new_password.data):
                 user.password = hash_password(userform.new_password.data)
             save_user(user)
@@ -149,8 +149,8 @@ def user():
 def __participating(user, troika):
     if user == None:
         return False
-    if user == troika.teacher:
-        return 'teacher'
+    if user == troika.lead:
+        return 'lead'
     if user == troika.first_learner:
         return 'first_learner'
     if user == troika.second_learner:
@@ -161,7 +161,7 @@ def __participating(user, troika):
 
 def __is_full(troika):
     if troika.max_participants is not None and \
-        troika.teacher is not None and \
+        troika.lead is not None and \
         troika.first_learner is not None and \
         troika.second_learner is not None and \
         troika.participants is not None and \
@@ -170,8 +170,8 @@ def __is_full(troika):
     return False
 
 def __get_display_name(user):
-    if user.handle is not None:
-        return user.handle
+    if user.alias is not None:
+        return user.alias
     return user.full_name
 
 @app.route('/troika/<troika_id>')
@@ -198,7 +198,7 @@ def troika(troika_id):
              'max_participants': troika.max_participants,
              'is_full': __is_full(troika),
              'participating': __participating(user, troika),
-             'teacher': __get_display_name(troika.teacher) if troika.teacher != None else None,
+             'lead': __get_display_name(troika.lead) if troika.lead != None else None,
              'first_learner': __get_display_name(troika.first_learner) if troika.first_learner != None else None,
              'second_learner': __get_display_name(troika.second_learner) if troika.second_learner != None else None,
              'participants': [dict(id=participant.id,
@@ -245,7 +245,7 @@ def edit_troika(troika_id):
     user = get_user(session['email'])
     access = get_troika_access_right(user, troika)
     if not access:
-        flash('Only the creator or the teacher can edit the Troika', 'error')
+        flash('Only the creator or the lead can edit the Troika', 'error')
         return redirect(url_for('troika', troika_id=troika_id))
 
     if request.method == 'GET':
@@ -291,11 +291,11 @@ def edit_troika(troika_id):
 
 def __get_troika_message(subject, troika):
     recipients = []
-    if troika.teacher is not None: recipients.append(troika.teacher.email)
+    if troika.lead is not None: recipients.append(troika.lead.email)
     if troika.first_learner is not None: recipients.append(troika.first_learner.email)
     if troika.second_learner is not None: recipients.append(troika.second_learner.email)
     return Message(subject,
-              sender = troika.teacher.email,
+              sender = troika.lead.email,
               recipients=recipients)
 
 def __process_activation(troika):
@@ -321,7 +321,7 @@ http://troikagame.org
 
 def __process_pending(troika):
     if troika.get_phase() == 'pending' and \
-       troika.teacher is not None and \
+       troika.lead is not None and \
        troika.first_learner is not None and \
        troika.second_learner is not None:
         troika.pended = datetime.now()
@@ -369,7 +369,7 @@ def activate_troika(troika_id):
         flash('Troika "' + troika.title +  '" activated')
         return redirect(url_for('troika', troika_id=troika_id))
     else:
-        flash('Troika can only be activated by the teacher after all required information is set', 'error')
+        flash('Troika can only be activated by the lead after all required information is set', 'error')
         return redirect(url_for('troika', troika_id=troika_id))
 
 @app.route('/troika/<troika_id>/<troika_role>/join', methods=['GET'])
@@ -381,10 +381,10 @@ def join_troika(troika_id, troika_role):
     
     if not __participating(user, troika):
         if troika_role == '0':
-            if troika.teacher is not None:
-                flash('The Troika already has a teacher', 'error')
+            if troika.lead is not None:
+                flash('The Troika already has a lead', 'error')
                 return redirect(url_for('troika', troika_id=troika_id))
-            troika.teacher = user
+            troika.lead = user
             __process_pending(troika)
             save_troika(troika)
             flash('You are now teaching "' + troika.title +  '"!')
@@ -434,10 +434,10 @@ def leave_troika(troika_id, troika_role):
     user = get_user(session['email'])
     if troika.get_phase() != 'complete':
         if troika_role == '0':
-            if troika.teacher != user:
-                flash('You are not the teacher of this Troika.', 'error')
+            if troika.lead != user:
+                flash('You are not the lead of this Troika.', 'error')
                 return redirect(url_for('troika', troika_id=troika_id))
-            troika.teacher = None
+            troika.lead = None
             save_troika(troika)
             flash('You are no longer teaching "' + troika.title +  '".')
             return redirect(url_for('troika', troika_id=troika_id))
@@ -499,8 +499,8 @@ def create_troika():
                 end_time=__get_end_datetime(start_time, troikaform.duration.data),
                 max_participants=troikaform.max_participants.data, 
                 creator=user)        
-        if troikaform.creator_is_teacher.data:
-            troika.teacher = user
+        if troikaform.creator_is_lead.data:
+            troika.lead = user
         else:
             troika.first_learner = user
         save_troika(troika)

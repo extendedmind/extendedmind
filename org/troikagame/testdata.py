@@ -154,7 +154,7 @@ troika1 = Troika(created=datetime.datetime(2012, 5, 20, 14, 15, 0),
                  language='fi', 
                  start_time=datetime.datetime(2012, 5, 24, 14, 15, 0), 
                  end_time=datetime.datetime(2012, 5, 24, 15, 45, 0),
-                 max_participants=10, creator=olli, teacher=olli, first_learner=petro,
+                 max_participants=10, creator=olli, lead=olli, first_learner=petro,
                  second_learner=salla)
 
 troika2 = Troika(created=datetime.datetime(2012, 6, 3, 15, 15, 0), 
@@ -174,7 +174,7 @@ troika2 = Troika(created=datetime.datetime(2012, 6, 3, 15, 15, 0),
                  language='fi',
                  start_time=datetime.datetime(2012, 6, 13, 15, 15, 0), 
                  end_time=datetime.datetime(2012, 6, 13, 16, 45, 0),
-                 max_participants=8, creator=petro, teacher=petro, first_learner=olli, second_learner=salla)
+                 max_participants=8, creator=petro, lead=petro, first_learner=olli, second_learner=salla)
 
 troika3 = Troika(created=datetime.datetime(2012, 7, 4, 17, 15, 0), 
                  activated=datetime.datetime(2012, 7, 4, 17, 15, 0), 
@@ -192,7 +192,7 @@ troika3 = Troika(created=datetime.datetime(2012, 7, 4, 17, 15, 0),
                  language='fi', 
                  start_time=datetime.datetime(2012, 8, 14, 17, 15, 0), 
                  end_time=datetime.datetime(2012, 8, 14, 18, 45, 0),
-                 max_participants=5, creator=olli, teacher=olli, first_learner=lauri,
+                 max_participants=5, creator=olli, lead=olli, first_learner=lauri,
                  second_learner=timo)
 troika3.participants = [arho]
 
@@ -217,7 +217,7 @@ troika4 = Troika(created=ten_days_ago,
                 address=u"Mannerheimintie 22",
                 address_addendum=u"Cafe Lasipalatsi",
                 language='fi', 
-                max_participants=10, creator=alfonso, teacher=alfonso, first_learner=antti)
+                max_participants=10, creator=alfonso, lead=alfonso, first_learner=antti)
 
 troika5 = Troika(created=one_month_ago, 
                  pended=twenty_days_ago,
@@ -230,7 +230,7 @@ troika5 = Troika(created=one_month_ago,
                 language='fi', 
                 start_time=one_month_away + datetime.timedelta(days=1), 
                 end_time=one_month_away + datetime.timedelta(days=1, hours=1),
-                max_participants=13, creator=salla, teacher=salla, first_learner=minttu,
+                max_participants=13, creator=salla, lead=salla, first_learner=minttu,
                 second_learner=esko)
 troika5.participants = [essi,camilla,petro,anita,antti,jukka,laura,jari,arho,petro]
 
@@ -245,7 +245,7 @@ troika6 = Troika(created=one_month_ago,
                 language='fi', 
                 start_time=one_month_away + datetime.timedelta(days=2), 
                 end_time=one_month_away + datetime.timedelta(days=2, hours=1),
-                max_participants=8, creator=petro, teacher=petro, first_learner=laura,
+                max_participants=8, creator=petro, lead=petro, first_learner=laura,
                 second_learner=jukka)
 troika6.participants = [camilla,natasha,bertil,lauri,timo,pertti]
 
@@ -260,7 +260,7 @@ troika7 = Troika(created=one_month_ago,
                 language='fi',
                 start_time=one_month_away + datetime.timedelta(days=3),
                 end_time=one_month_away+datetime.timedelta(days=3, hours=1),
-                max_participants=5, creator=petro, teacher=lauri, first_learner=petro,
+                max_participants=5, creator=petro, lead=lauri, first_learner=petro,
                 second_learner=salla)
 
 troika8 = Troika(created=one_month_ago, 
@@ -274,7 +274,7 @@ troika8 = Troika(created=one_month_ago,
                 language='fi', 
                 start_time=one_month_away + datetime.timedelta(days=4), 
                 end_time=one_month_away + datetime.timedelta(days=4, hours=1),
-                max_participants=5, creator=petro, teacher=petro, first_learner=alfonso,
+                max_participants=5, creator=petro, lead=petro, first_learner=alfonso,
                 second_learner=mikaela)
 troika8.participants = [jari,anita]
 
@@ -289,7 +289,7 @@ troika9 = Troika(created=one_month_ago,
                 language='fi', 
                 start_time=one_month_away + datetime.timedelta(days=5), 
                 end_time=one_month_away + datetime.timedelta(days=5, hours=1),
-                max_participants=20, creator=petro, teacher=camilla, first_learner=petro,
+                max_participants=20, creator=petro, lead=camilla, first_learner=petro,
                 second_learner=mirkka)
 troika9.participants = [arho,jari,anita,bertil,antti,minttu,jukka,essi,natasha,esko,lauri,timo,salla]
 
@@ -304,7 +304,7 @@ troika10 = Troika(created=one_month_ago,
                 language='fi', 
                 start_time=one_month_away + datetime.timedelta(days=6), 
                 end_time=one_month_away+datetime.timedelta(days=6, hours=1),
-                max_participants=15, creator=mirkka, teacher=mirkka, first_learner=laura,
+                max_participants=15, creator=mirkka, lead=mirkka, first_learner=laura,
                 second_learner=camilla)
 troika10.participants = [esko,natasha,essi,jukka,antti,bertil,anita,jari,mikaela,petro]
 
@@ -317,7 +317,7 @@ troika11= Troika(created=one_month_ago,
                 language='fi', 
                 start_time=one_month_away + datetime.timedelta(days=7), 
                 end_time=one_month_away+datetime.timedelta(days=7, hours=1),
-                max_participants=6, creator=petro, teacher=olli, first_learner=petro, second_learner=camilla)
+                max_participants=6, creator=petro, lead=olli, first_learner=petro, second_learner=camilla)
 
 troika12 = Troika(created=ten_days_ago,
                   title=u"Leikit 1900-luvulla: opi tekemällä",
@@ -326,7 +326,7 @@ troika12 = Troika(created=ten_days_ago,
                 address=u"Helsinginkatu 23",
                 address_addendum=u"Brahen kenttä",
                 language='fi',
-                max_participants=7, creator=natasha, teacher=natasha, first_learner=bertil)
+                max_participants=7, creator=natasha, lead=natasha, first_learner=bertil)
 
 troika13 = Troika(created=one_month_ago, 
                  pended=ten_days_ago,
@@ -336,14 +336,14 @@ troika13 = Troika(created=one_month_ago,
                 address=u"Betonimiehenkuja 3, Espoo",
                 address_addendum=u"Aalto Venture Garage",
                 language='fi',
-                max_participants=15, creator=pertti, teacher=bertil, first_learner=pertti, second_learner=antti)
+                max_participants=15, creator=pertti, lead=bertil, first_learner=pertti, second_learner=antti)
 
 troika14 = Troika(created=ten_days_ago,
                   title=u"Opetusportfolion rakentaminen",
                 description=u"Tässä troikassa opit rakentamaan yliopistouralla yhä tarpeellisemmaksi käyvän opetusportfolion. Mikä on paras tapa esittää opettamiseen liittyvää osaamistasi? Millä eri tekniikoilla portfolioita voi toteuttaa? Voit tulla paikalle ihan vain kuuntelemaan, tai ottaa oman kannettavan, jolloin voit samalla työstää portfoliotasi.",
                 country='FI', region='18', area_id=None, campus_id=None,
                 language='fi',
-                max_participants=5, creator=salla, teacher=minttu, first_learner=salla)
+                max_participants=5, creator=salla, lead=minttu, first_learner=salla)
 
 troika15 = Troika(created=two_months_ago, 
                  pended=one_month_ago,
@@ -356,7 +356,7 @@ troika15 = Troika(created=two_months_ago,
                 language='fi', 
                 start_time=ten_days_ago, 
                 end_time=ten_days_ago + datetime.timedelta(hours=1),
-                max_participants=100, creator=salla, teacher=salla, first_learner=lauri,
+                max_participants=100, creator=salla, lead=salla, first_learner=lauri,
                 second_learner=bertil)
 troika15.participants = [antti]
 
@@ -371,7 +371,7 @@ troika16 = Troika(created=two_months_ago,
                 language='fi', 
                 start_time=ten_days_ago + datetime.timedelta(days=1), 
                 end_time=ten_days_ago + datetime.timedelta(days=1, hours=1),
-                max_participants=8, creator=salla, teacher=essi, first_learner=salla,
+                max_participants=8, creator=salla, lead=essi, first_learner=salla,
                 second_learner=jukka)
 troika16.participants = [bertil,petro,lauri,timo,arho]
 
@@ -386,7 +386,7 @@ troika17 = Troika(created=two_months_ago,
                 language='fi', 
                 start_time=ten_days_ago + datetime.timedelta(days=2),
                 end_time=ten_days_ago + datetime.timedelta(days=2, hours=1),
-                max_participants=5, creator=salla, teacher=salla, first_learner=jari,
+                max_participants=5, creator=salla, lead=salla, first_learner=jari,
                 second_learner=jukka)
 
 troika18 = Troika(created=two_months_ago, 
@@ -400,7 +400,7 @@ troika18 = Troika(created=two_months_ago,
                 language='fi', 
                 start_time=ten_days_ago + datetime.timedelta(days=3),
                 end_time=ten_days_ago + datetime.timedelta(days=3, hours=1),
-                max_participants=6, creator=bertil, teacher=bertil, first_learner=jari,
+                max_participants=6, creator=bertil, lead=bertil, first_learner=jari,
                 second_learner=essi)
 troika18.participants = [arho]
 
@@ -415,7 +415,7 @@ troika19 = Troika(created=one_month_ago,
                 language='fi', 
                 start_time=one_month_away + datetime.timedelta(days=4),
                 end_time=one_month_away + datetime.timedelta(days=4, hours=1),
-                max_participants=5, creator=lauri, teacher=salla, first_learner=jukka,
+                max_participants=5, creator=lauri, lead=salla, first_learner=jukka,
                 second_learner=antti)
 
 db.session.add(troika1)

@@ -37,13 +37,13 @@
     <div class="span4 tg-group">
       <div class="span12">
         <h3>Lead</h3> 
-        {% if (troika.teacher == None and session.logged_in and not troika.participating) %}
+        {% if (troika.lead == None and session.logged_in and not troika.participating) %}
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=0) }}">
           Lead this Troika
           </a>
         {% else %}
-          {{ troika.teacher }}
-          {% if (troika.phase not in ['active', 'complete'] and troika.participating == 'teacher') %}
+          {{ troika.lead }}
+          {% if (troika.phase not in ['active', 'complete'] and troika.participating == 'lead') %}
             <a href="{{ url_for('leave_troika', troika_id=troika.id, troika_role=0) }}">
             Leave this Troika
             </a>

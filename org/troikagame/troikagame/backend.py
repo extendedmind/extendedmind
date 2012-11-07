@@ -111,9 +111,9 @@ class User(db.Model):
     # Family name
     family_name = db.Column(db.String(128), unique=False, nullable=True)
     
-    # Handle to use for public records. User name type field used, if user 
+    # Alias to use for public records. User name type field used, if user 
     # does not want to use her real name in public information. 
-    handle = db.Column(db.String(512), unique=False, nullable=True)
+    alias = db.Column(db.String(512), unique=False, nullable=True)
 
     # Relationships
     area = db.relationship('Area', backref='users')
@@ -163,12 +163,12 @@ class Troika(db.Model):
     start_time = db.Column(db.DateTime, unique=False, nullable=True)
     end_time = db.Column(db.DateTime, unique=False, nullable=True)
 
-    # Participation limit, minimum is 5
+    # Participation limit, minimum is 3
     max_participants = db.Column(db.Integer, unique=False, nullable=True)
 
     # Users involved
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    lead_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     first_learner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     second_learner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     
@@ -180,8 +180,8 @@ class Troika(db.Model):
     creator = db.relationship('User', backref='created_troikas',
                               primaryjoin="User.id==Troika.creator_id",
                               lazy='joined')
-    teacher = db.relationship('User', backref='teacher_troikas',
-                              primaryjoin="User.id==Troika.teacher_id",
+    lead = db.relationship('User', backref='lead_troikas',
+                              primaryjoin="User.id==Troika.lead_id",
                                 lazy='joined')
     first_learner = db.relationship('User', backref='first_learner_troikas',
                               primaryjoin="User.id==Troika.first_learner_id",
@@ -226,14 +226,14 @@ def get_user(email):
         return None
     return User.query.filter_by(email=email).first()
 
-def user_exists(email = None, handle = None):
+def user_exists(email = None, alias = None):
     user = None
     if email is None:
-        if handle is None:
+        if alias is None:
             return False
-        user = User.query.filter_by(handle=handle).first()
-    elif handle is not None:
-        user = User.query.filter(or_(User.email == email, User.handle == handle)).first()
+        user = User.query.filter_by(alias=alias).first()
+    elif alias is not None:
+        user = User.query.filter(or_(User.email == email, User.alias == alias)).first()
     else:
         user = User.query.filter_by(email=email).first()
     if user is not None:
