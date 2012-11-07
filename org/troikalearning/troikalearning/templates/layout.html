@@ -11,7 +11,7 @@
 <script type=text/javascript>
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
-<title>Troika Game</title>
+<title>Troika</title>
 </head>
 <body>
   <div class="tg-page">
@@ -31,7 +31,7 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
               {% endblock %}
             </li>
           </ul>
-          <a class="brand" href="{{ url_for('troikas') }}">Troika Game</a>
+          <a class="brand" href="{{ url_for('troikas') }}">Troika</a>
           <div class="nav-collapse collapse">
             <ul class="nav pull-right">
               {% if not session.logged_in %}

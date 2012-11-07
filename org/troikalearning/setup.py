@@ -19,10 +19,10 @@ __version__ = '0.1'
 
 from distutils.core import setup
 setup(
-    name = 'troikagame',
-    packages = ['troikagame'],
+    name = 'troikalearning',
+    packages = ['troikalearning'],
     version = __version__,
-    description = 'Troika Game',
+    description = 'Troika',
     author=__author__,
     classifiers = [
         "Programming Language :: Python",

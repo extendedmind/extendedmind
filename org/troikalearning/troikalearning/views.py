@@ -1,8 +1,8 @@
 #  Copyright (c) 2012 Timo Tiuraniemi
 #
-#  This file is part of Troika Game.
+#  This file is part of Troika.
 #
-#  Troika Game is free software; you can redistribute it and/or modify
+#  Troika is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License as published
 #  by the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
@@ -21,7 +21,7 @@ Created on 14.8.2012
 
 @author: ttiurani
 '''
-from troikagame import app, mail
+from troikalearning import app, mail
 from security import validate_login, register, hash_password, get_troika_access_right, activatable
 from backend import Troika, get_active_troikas, get_pending_troikas, get_completed_troikas, \
                     user_exists, get_user, save_user, get_troika, save_troika, delete_troika
@@ -313,9 +313,9 @@ has now been activated. You can view the participants on the troika page.
 Happy learnings!
 
 --
-Troika Game Team
+Troika Team
 Salla, Olli, Petro and Timo
-http://troikagame.org
+http://troikalearning.org
 """
         mail.send(msg)
 
@@ -350,9 +350,9 @@ Get going!
 [insert inspirational quote about balalaikas here]
 
 --
-Troika Game Team
+Troika Team
 Salla, Olli, Petro and Timo
-http://troikagame.org
+http://troikalearning.org
 """
                 mail.send(msg)
 

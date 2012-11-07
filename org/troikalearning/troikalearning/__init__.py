@@ -1,8 +1,8 @@
 #  Copyright (c) 2012 Timo Tiuraniemi
 #
-#  This file is part of Troika Game.
+#  This file is part of Troika.
 #
-#  Troika Game is free software; you can redistribute it and/or modify
+#  Troika is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License as published
 #  by the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
@@ -15,20 +15,15 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program; if not, see http://www.gnu.org/licenses
 #
+from flask import Flask
+from troikalearning import session
+import os
+from flask_mail import Mail
 
-'''
-Created on 14.8.2012
+app = Flask(__name__)
+app.config.from_pyfile(os.getcwd() + os.sep + 'troikalearning.cfg')
+app.session_interface = session.ItsdangerousSessionInterface()
 
-@author: ttiurani
-'''
-from troikagame import app
+mail = Mail(app)
 
-if __name__ == '__main__':
-    if app.debug: use_debugger = True
-    try:
-        # Disable Flask's debugger if external debugger is requested
-        use_debugger = not(app.config.get('DEBUG_WITH_APTANA'))
-    except:
-        pass
-    app.run(use_debugger=use_debugger, debug=app.debug,
-            use_reloader=use_debugger)
+import views

@@ -1,7 +1,7 @@
-Troika Game
+Troika
 
 Copyright © 2012 Olli Parviainen, Petro Poutanen, Salla Laaksonen,
-Timo Tiuraniemi and Filosofian Akatemia. [http://troikagame.org]
+Timo Tiuraniemi and Filosofian Akatemia. [http://troikalearning.org]
 
 This product includes software ("Software") developed by Timo Tiuraniemi.
 

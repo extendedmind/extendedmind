@@ -1,8 +1,8 @@
 #  Copyright (c) 2012 Timo Tiuraniemi
 #
-#  This file is part of Troika Game.
+#  This file is part of Troika.
 #
-#  Troika Game is free software; you can redistribute it and/or modify
+#  Troika is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License as published
 #  by the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
@@ -22,7 +22,7 @@ Created on 14.8.2012
 @author: ttiurani
 '''
 
-from troikagame.backend import User, save_user, get_user
+from troikalearning.backend import User, save_user, get_user
 from passlib.hash import sha256_crypt
 from flask import flash
 import os

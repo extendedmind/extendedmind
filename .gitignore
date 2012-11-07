@@ -1,12 +1,12 @@
 # Ignore virtual environments that may contain sensitive information.
-org/troikagame/venv/*
+org/troikalearning/venv/*
 
 # Ignore all .pyc files
 *.pyc
 
 # Ignore Eclipse files
-org/troikagame/.project
-org/troikagame/.pydevproject
-org/troikagame/.settings/*
-org/troikagame/.externalToolBuilders
-org/troikagame/*.egg-info
+org/troikalearning/.project
+org/troikalearning/.pydevproject
+org/troikalearning/.settings/*
+org/troikalearning/.externalToolBuilders
+org/troikalearning/*.egg-info

@@ -2,9 +2,9 @@
 #
 #  Copyright (c) 2012 Timo Tiuraniemi
 #
-#  This file is part of Troika Game.
+#  This file is part of Troika.
 #
-#  Troika Game is free software; you can redistribute it and/or modify
+#  Troika is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License as published
 #  by the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
@@ -17,7 +17,7 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program; if not, see http://www.gnu.org/licenses
 #
-from troikagame.backend import db, User, Troika
+from troikalearning.backend import db, User, Troika
 from passlib.hash import sha256_crypt
 import datetime
 # Creates tables if they are not there yet
@@ -26,9 +26,9 @@ hash = sha256_crypt.encrypt("test");
 
 # Real people
 
-admin = User(email="admin@troikagame.org", role='admin', 
+admin = User(email="admin@troikalearning.org", role='admin', 
              password=hash, preferred_language='en',
-             full_name="Troika Game Administrator", short_name="admin")
+             full_name="Troika Administrator", short_name="admin")
 olli = User(email="verkostoanatomia@gmail.com", role='user', 
              password=hash,
              country='FI', region='18', preferred_language='fi',
