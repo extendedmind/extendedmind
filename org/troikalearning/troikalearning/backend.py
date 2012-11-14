@@ -31,7 +31,7 @@ DB_DNS = None
 #
 # to something like:
 #
-# DB_DNS = 'mysql://tg:tgpwd@localhost/tgdev'
+# DB_DNS = 'mysql://tl:tlpwd@localhost/tldev'
 #
 # and run in a Python interpreter:
 # >> from troikalearning.backend import db
