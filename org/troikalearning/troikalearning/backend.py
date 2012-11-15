@@ -132,7 +132,7 @@ class Troika(db.Model):
     # Phase of Troika: NOTE: there is no "completed"
     # phase in the database because that would
     # require some sort of polling of end_time.
-    created =  db.Column(db.DateTime, unique=False, nullable=True, default=datetime.now())
+    created =  db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now())
     pended =  db.Column(db.DateTime, unique=False, nullable=True)
     activated =  db.Column(db.DateTime, unique=False, nullable=True)
 
@@ -204,6 +204,15 @@ class Troika(db.Model):
             return 'pending_huddle'
         return 'pending'
 
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    created =  db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    description = db.Column(db.String(10000), unique=False, nullable=False)
+
+    user = db.relationship('User', backref='feedbacks',
+                                lazy='joined')
+
 # Methods
 
 def get_troika(troika_id):
@@ -251,3 +260,11 @@ def save_troika(troika):
 def delete_troika(troika):
     db.session.delete(troika)
     db.session.commit()
+
+def save_feedback(feedback):
+    db.session.add(feedback)
+    db.session.commit()
+    
+def get_feedback(index=0, max_entries=500):
+    return Feedback.query.order_by(desc(Feedback.created)).limit(max_entries).all()
+

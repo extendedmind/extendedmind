@@ -7,58 +7,19 @@
 
 {% macro slogan(caller) %} Hassle-Free Peer Learning {% endmacro %}
 
-{% macro login_form(caller, form) %}
-<form id="tl-login" action="{{ url_for('login') }}" method="POST">
-  <dl>
-    <dt>{{ form.hidden_tag() }}</dt>
-    <dt>{{ form.email.label }} {{ form.email() }}</dt>
-    <dt>{{ form.password.label }} {{ form.password() }}</dt>
-    <dt>
-      <input type="submit" value="Login">
-    </dt>
-  </dl>
-</form>
+
+{% macro handle_errors(caller, errors) %}
+{% if errors %}
+{% for error in errors %}
+<div class="alert alert-error tl-message">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>Error:</strong> {{ error }}
+</div>
+{% endfor %}
+{% endif %}
 {% endmacro %}
 
 {% macro handle_description(caller) %}
 <h6 class="tl-input-description">Alias to use instead of your real name. Set an alias only 
         if you do not want your real name to be public on this web site.</h6>
-{% endmacro %}
-
-{% macro register_form(caller, form) %}
-<form id="tl-register" action="{{ url_for('login') }}" method="POST">
-  <dl>
-    <dt>{{ form.hidden_tag() }}</dt>
-    <dt>{{ form.first_name.label }} {{ form.first_name() }}</dt>
-    <dt>{{ form.last_name.label }} {{ form.last_name() }}</dt>
-    <dt>{{ form.alias.label }} {{ form.alias() }}
-        {% call handle_description() %} {% endcall %}
-    </dt>
-    <dt>{{ form.email.label }} {{ form.email() }}</dt>
-    <dt>{{ form.password.label }} {{ form.password() }}</dt>
-    <dt>{{ form.confirm.label }} {{ form.confirm() }}</dt>
-    <dt>
-      <input type="submit" value="Register">
-    </dt>
-  </dl>
-</form>
-{% endmacro %}
-
-{% macro user_form(caller, form) %}
-<form id="tl-user" action="{{ url_for('user') }}" method="POST">
-  <dl>
-    <dt>{{ form.hidden_tag() }}</dt>
-    <dt>{{ form.first_name.label }} {{ form.first_name() }}</dt>
-    <dt>{{ form.last_name.label }} {{ form.last_name() }}</dt>
-    <dt>{{ form.alias.label }} {{ form.alias() }}</dt>
-        {% call handle_description() %} {% endcall %}
-    <dt>{{ form.email.label }} {{ form.email() }}</dt>
-    <dt>{{ form.new_password.label }} {{ form.new_password() }}</dt>
-    <dt>{{ form.new_confirm.label }} {{ form.new_confirm() }}</dt>
-    <dt>{{ form.password.label }} {{ form.password() }}</dt>
-    <dt>
-      <input type="submit" value="Update">
-    </dt>
-  </dl>
-</form>
 {% endmacro %}

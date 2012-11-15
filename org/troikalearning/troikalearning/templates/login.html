@@ -10,27 +10,37 @@
   <div class="row-fluid"> 
     <div class="span6">  
       <h2>Login</h2>
-      {% if loginerrors %}
-      {% for loginerror in loginerrors %}
-      <div class="alert alert-error tl-message">
-        <button type="button" class="close" data-dismiss="alert">×</button>
-        <strong>Error:</strong> {{ loginerror }}
-      </div>
-      {% endfor %}
-      {% endif %}
-      {% call macros.login_form(form=loginform) %} {% endcall %}
+      {% call macros.handle_errors(errors=loginerrors) %} {% endcall %}
+      <form id="tl-login" action="{{ url_for('login') }}" method="POST">
+        <dl>
+          <dt>{{ loginform.hidden_tag() }}</dt>
+          <dt>{{ loginform.email.label }} {{ loginform.email() }}</dt>
+          <dt>{{ loginform.password.label }} {{ loginform.password() }}</dt>
+          <dt>
+            <input type="submit" value="Login">
+          </dt>
+        </dl>
+      </form>
     </div>
     <div class="span6">  
       <h2>Register</h2>
-      {% if regerrors %}
-      {% for regerror in regerrors %}
-      <div class="alert alert-error tl-message">
-        <button type="button" class="close" data-dismiss="alert">×</button>
-        <strong>Error:</strong> {{ regerror }}
-      </div>
-      {% endfor %}
-      {% endif %}
-      {% call macros.register_form(form=regform) %} {% endcall %}
+      {% call macros.handle_errors(errors=regerrors) %} {% endcall %}
+      <form id="tl-register" action="{{ url_for('login') }}"
+        method="POST">
+        <dl>
+          <dt>{{ regform.hidden_tag() }}</dt>
+          <dt>{{ regform.first_name.label }} {{ regform.first_name() }}</dt>
+          <dt>{{ regform.last_name.label }} {{ regform.last_name() }}</dt>
+          <dt>{{ regform.alias.label }} {{ regform.alias() }} {% call
+            macros.handle_description() %} {% endcall %}</dt>
+          <dt>{{ regform.email.label }} {{ regform.email() }}</dt>
+          <dt>{{ regform.password.label }} {{ regform.password() }}</dt>
+          <dt>{{ regform.confirm.label }} {{ regform.confirm() }}</dt>
+          <dt>
+            <input type="submit" value="Register">
+          </dt>
+        </dl>
+      </form>
     </div>
   </div>
 </div>

@@ -24,8 +24,9 @@ Created on 14.8.2012
 from troikalearning import app, mail
 from security import validate_login, register, hash_password, get_troika_access_right, activatable
 from backend import Troika, get_active_troikas, get_pending_troikas, get_completed_troikas, \
-                    user_exists, get_user, save_user, get_troika, save_troika, delete_troika
-from forms import LoginForm, RegistrationForm, TroikaForm, UserForm
+                    user_exists, get_user, save_user, get_troika, save_troika, delete_troika, \
+                    Feedback, save_feedback, get_feedback
+from forms import LoginForm, RegistrationForm, TroikaForm, UserForm, FeedbackForm
 from flask import request, session, flash, redirect, url_for, render_template
 from datetime import datetime
 from flask_mail import Message
@@ -494,7 +495,7 @@ def create_troika():
     if start_time is not None and start_time < datetime.now():
         troikaerrors.append("Start time for the troika must be in the future")
     elif troikaform.validate_on_submit():
-        troika = Troika(created=datetime.now(), 
+        troika = Troika(created = datetime.now(),
                 title=troikaform.title.data,
                 description=troikaform.description.data,
                 country='FI', region='18', area_id=None, campus_id=None,
@@ -504,20 +505,48 @@ def create_troika():
                 start_time=start_time,
                 end_time=__get_end_datetime(start_time, troikaform.duration.data),
                 max_participants=troikaform.max_participants.data, 
-                creator=user)        
+                creator=user)
         if troikaform.creator_role.data == 'lead':
             troika.lead = user
         else:
             troika.first_learner = user
         save_troika(troika)
-        return redirect(url_for('troika', troika_id=troika.id))
         flash('Troika Created')
+        return redirect(url_for('troika', troika_id=troika.id))
     if troikaform.errors:
         for key, value in troikaform.errors.items():
             troikaerrors.append(key + ': ' + value[0])
     return render_template('edit_troika.html', 
                            troikaform=troikaform, troikaerrors=troikaerrors,
                            access='create')
+
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback():
+    feedbackerrors = []
+    feedbackform = FeedbackForm()
+    user = None
+    given_feedback = []
+    if 'logged_in' in session: 
+        user = get_user(session['email'])
+        if user.role == 'admin':
+            # For admins, the feedback is shown
+            given_feedback = get_feedback()
+    
+    if feedbackform.validate_on_submit():
+        feedback = Feedback(created = datetime.now(),
+                            description=feedbackform.description.data,
+                            user=user)
+        save_feedback(feedback)
+        flash('Feedback saved. Thank you!')
+        return redirect(url_for('troikas'))
+        
+    if feedbackform.errors:
+        for key, value in feedbackform.errors.items():
+            feedbackerrors.append(key + ': ' + value[0])
+
+    return render_template('feedback.html', feedbackform=feedbackform, 
+                           feedbackerrors=feedbackerrors,
+                           given_feedback=given_feedback)
 
 @app.route('/logout')
 def logout():

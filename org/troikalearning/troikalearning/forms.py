@@ -93,3 +93,8 @@ class TroikaForm(Form):
         ('lead', u'I will lead this'), 
         ('learner', u'I want someone else to lead this.')],
         default='lead')
+    
+class FeedbackForm(Form):
+    description = TextAreaField("Share us your thoughts on Troika. What do you like? What could be improved?", [
+        validators.Required(),
+        validators.Length(max=10000)])

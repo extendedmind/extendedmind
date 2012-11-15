@@ -34,6 +34,7 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
           <a class="brand" href="{{ url_for('troikas') }}">Troika</a>
           <div class="nav-collapse collapse">
             <ul class="nav pull-right">
+              <li><a href="{{ url_for('feedback') }}">Give Feedback</a></li>
               {% if not session.logged_in %}
               <li><a href="{{ url_for('login') }}">Login / Register</a></li>
               {% else %}
@@ -58,7 +59,7 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
           <!-- Flashed messages -->
           {% for message in get_flashed_messages() %}
           <div class="alert alert-success tl-message">
-            <button type="button" class="close" data-dismiss="alert">×</button>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
             {{ message }}
           </div>
           {% endfor %}
