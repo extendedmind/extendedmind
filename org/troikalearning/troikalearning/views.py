@@ -110,7 +110,7 @@ def __check_login(destination = None, url = None):
     if not 'logged_in' in session:
         if url is None:
             url = url_for(destination)
-        flash('You need to login first')
+        flash('You need to login or register first')
         session['destination'] = url
         return url_for('login')
     return False

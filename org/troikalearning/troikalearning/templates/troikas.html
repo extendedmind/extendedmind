@@ -8,11 +8,9 @@
 {% block body %}
 
 {% call macros.heading() %} {% endcall %}
-{% if session.logged_in %}
 <div class="pagination-centered">
   <a href="{{ url_for('create_troika') }}"><h4>Create a new troika event</h4></a>
 </div>
-{% endif %}
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span4">
