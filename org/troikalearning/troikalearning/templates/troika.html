@@ -14,7 +14,7 @@
 </div>
 {% elif not session.logged_in and not troika.is_full and not troika.phase == 'complete' %}
 <div class="pagination-centered">
-  <a href="{{ url_for('login', troika_id=troika.id) }}"><h5>Login or register to join troika!</h5></a>
+  <a href="{{ url_for('login_troika', troika_id=troika.id) }}"><h5>Login or register to join troika!</h5></a>
 </div>
 {% elif session.logged_in and troika.is_full and not troika.phase == 'complete' %}
 <div class="pagination-centered">

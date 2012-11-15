@@ -112,6 +112,12 @@ def __check_login(destination = None, url = None):
         return url_for('login')
     return False
 
+@app.route('/login/<troika_id>', methods=['GET'])
+def login_troika(troika_id):
+    # Login using
+    session['destination'] = url_for('troika', troika_id = troika_id)
+    return redirect(url_for('login'))
+
 @app.route('/user', methods=['GET', 'POST'])
 def user():
     url = __check_login('user')
