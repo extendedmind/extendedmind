@@ -1,4 +1,5 @@
 {% extends "layout.html" %} 
+{% import 'macros.html' as macros %}
 {% block back_button %}
 <a href="{{ url_for('troikas') }}">Home</a>
 {% endblock %} 
@@ -42,7 +43,11 @@
         {% if (troika.lead == None and session.logged_in and not troika.participating) %}
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=0) }}">
           Lead this Troika
-          </a>
+          </a><br/>          
+          {% call macros.invite_modal(troika_role=0, 
+                                      link_text='Invite lead', 
+                                      heading_text='Give the email address of the person you want to invite to lead.') %}
+          {% endcall %}          
         {% else %}
           {{ troika.lead }}
           {% if (troika.phase not in ['active', 'complete'] and troika.participating == 'lead') %}
@@ -55,7 +60,11 @@
         {% if (troika.first_learner == None and session.logged_in and not troika.participating) %}
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=1) }}">
           Be the first learner in this Troika
-          </a>
+          </a><br/>          
+          {% call macros.invite_modal(troika_role=1, 
+                                      link_text='Invite first learner', 
+                                      heading_text='Give the email address of the person you want to invite to be the first learner.') %}
+          {% endcall %}
         {% else %}
           {{ troika.first_learner }}
           {% if (troika.phase not in ['active', 'complete'] and troika.participating == 'first_learner') %}
@@ -68,7 +77,11 @@
         {% if (troika.second_learner == None and session.logged_in and not troika.participating) %}
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=2) }}">
           Be the second learner in this Troika
-          </a>
+          </a><br/>          
+          {% call macros.invite_modal(troika_role=2, 
+                                      link_text='Invite second learner', 
+                                      heading_text='Give the email address of the person you want to invite to be the second learner.') %}
+          {% endcall %}
         {% else %}
           {{ troika.second_learner }}
           {% if (troika.phase not in ['active', 'complete'] and troika.participating == 'second_learner') %}
@@ -88,13 +101,19 @@
             {% else %} None 
           {%endfor %}
           {% if (troika.phase == 'active' and session.logged_in and not troika.participating and not troika.is_full) %}
-            <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=3) }}">
+            <br/><a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=3) }}">
             Participate in this Troika
             </a>
           {% elif (troika.phase != 'complete' and troika.participating == 'participant') %}
-            <a href="{{ url_for('leave_troika', troika_id=troika.id, troika_role=3) }}">
+            <br/><a href="{{ url_for('leave_troika', troika_id=troika.id, troika_role=3) }}">
             Leave this Troika
             </a>
+          {% endif %}
+          {% if (troika.phase == 'active' and not troika.is_full) %}  
+            <br/>{% call macros.invite_modal(troika_role=3, 
+                                        link_text='Invite participant', 
+                                        heading_text='Give the email address of a person you want to invite to be participate in this Troika.') %}
+            {% endcall %}
           {% endif %}
       </div>
     </div>
@@ -106,4 +125,12 @@
 </div>
 {% endif %}
        
+{% endblock %}
+
+{% block extra_js %}
+<script type=text/javascript>
+  function sendInvite(troika_role) {
+      window.location.replace(document.URL + "/invite/" + troika_role + "/" + document.getElementById("invite-email-" + troika_role).value);
+  };
+</script>
 {% endblock %}

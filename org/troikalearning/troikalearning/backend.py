@@ -267,4 +267,3 @@ def save_feedback(feedback):
     
 def get_feedback(index=0, max_entries=500):
     return Feedback.query.order_by(desc(Feedback.created)).limit(max_entries).all()
-

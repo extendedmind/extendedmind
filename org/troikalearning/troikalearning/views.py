@@ -32,6 +32,7 @@ from datetime import datetime
 from datetime import time as dttime
 from datetime import timedelta as dttimedelta
 from flask_mail import Message
+import re
 
 @app.route('/about', methods=['GET'])
 def about():
@@ -219,6 +220,41 @@ def troika(troika_id):
     return render_template('troika.html', 
                            troika=entry)
 
+@app.route('/troika/<troika_id>/invite/<role>/<email>', methods=['GET'])
+def invite(troika_id, role, email):
+    url = __check_login(url = url_for('troika', troika_id = troika_id))
+    if url: return redirect(url)
+ 
+    if email is not None:
+        # Validate email address
+        if not re.match(r'^.+@[^.].*\.[a-z]{2,10}$', email, re.IGNORECASE):
+            flash(email + " is not a valid email address", 'error')
+        else:
+            user = get_user(session['email'])
+            troika = get_troika(troika_id);
+            msg = Message("Come join the Troika \"" + troika.title + "\"!" ,
+                      sender = (__get_display_name(user),user.email),
+                      recipients=[email])
+        
+            msg.body = "I thought you should join the troika \"" + troika.title + "\":\n\n" + url_for('troika', troika_id=troika.id, _external=True)
+            msg.body += "as "
+            if role == '0':
+                msg.body += "the lead. "
+            elif role == '1':
+                msg.body += "the first learner. "
+            elif role == '2':
+                msg.body += "the second learner. "
+            elif role == '3':
+                msg.body += "a particapant. "
+            msg.body += "What do you say?"
+            msg.body += "--\n" + __get_display_name(user)
+            
+            mail.send(msg)
+            flash('Invite sent to ' + email)
+    else:
+        flash("No email address given", 'error')
+    return redirect(url_for('troika', troika_id=troika_id))
+
 def __get_start_datetime(start_date, start_time_hours, start_time_minutes):
     if start_date is None or start_time_hours is None:
         return None
@@ -304,7 +340,7 @@ def __get_troika_message(subject, troika):
     if troika.first_learner is not None: recipients.append(troika.first_learner.email)
     if troika.second_learner is not None: recipients.append(troika.second_learner.email)
     return Message(subject,
-              sender = troika.lead.email,
+              sender = (__get_display_name(troika.lead),troika.lead.email),
               recipients=recipients)
 
 def __process_activation(troika):

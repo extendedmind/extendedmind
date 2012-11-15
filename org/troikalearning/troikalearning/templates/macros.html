@@ -23,3 +23,26 @@
 <h6 class="tl-input-description">Alias to use instead of your real name. Set an alias only 
         if you do not want your real name to be public on this web site.</h6>
 {% endmacro %}
+
+{% macro invite_modal(caller, troika_role, link_text, heading_text) %}
+<!-- Button to trigger modal -->
+<a href="#inviteDialog-{{ troika_role }}" data-toggle="modal">{{ link_text }}</a>
+<!-- Modal -->
+<div id="inviteDialog-{{ troika_role }}" class="modal hide fade"
+  role="dialog" aria-labelledby="inviteLabel"
+  aria-hidden="true">
+  <div class="modal-header">
+    <a href="#" class="close" data-dismiss="modal">&times;</a>
+    <button type="button" class="close" data-dismiss="modal"
+      aria-hidden="true"></button>
+    <h4 id="inviteLabel">{{ heading_text }}</h4>
+  </div>
+  <div class="modal-body">
+    <input id="invite-email-{{ troika_role }}" type="email"/>
+  </div>
+  <div class="modal-footer">
+    <a class="btn btn-primary" onclick="sendInvite('{{ troika_role }}');" href="#">Send email</a>
+  </div>
+</div>
+{% endmacro %}
+

@@ -23,7 +23,7 @@ Created on 10.10.2012
 '''
 from flask_wtf import Form, IntegerField, RadioField, \
                       DateField, TextField, TextAreaField, PasswordField,  \
-                      validators 
+                      validators, HiddenField 
 
 class RegistrationForm(Form):
     first_name = TextField('First Name *', [
