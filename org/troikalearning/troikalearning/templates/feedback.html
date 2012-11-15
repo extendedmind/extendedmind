@@ -19,7 +19,7 @@
             <li>{{ feedback.description }}</li>
           </ul>
         </li>
-      </ul> 
+      </ul>
       {% else %}
         {% call macros.handle_errors(errors=feedbackerrors) %} {% endcall %}
         <form id="feedback" action="" method="POST">

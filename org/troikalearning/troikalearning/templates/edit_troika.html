@@ -26,9 +26,9 @@
           <dt>{{ troikaform.address.label }} {{ troikaform.address(class="tl-text-medium") }}</dt>
           <dt>{{ troikaform.address_addendum.label }} {{ troikaform.address_addendum(class="tl-text-medium") }}</dt>
           <dt>{{ troikaform.start_date.label }} {{ troikaform.start_date(class="tl-date") }}</dt>
-          <dt>{{ troikaform.start_time_hours.label }} {{ troikaform.start_time_hours(class="tl-integer") }} {{ troikaform.start_time_minutes(class="tl-integer") }}</dt>
-          <dt>{{ troikaform.duration.label }} {{ troikaform.duration(class="tl-integer") }}</dt>
-          <dt>{{ troikaform.max_participants.label }} {{ troikaform.max_participants(class="tl-integer") }}</dt>
+          <dt>{{ troikaform.start_time_hours.label }} {{ troikaform.start_time_hours(class="tl-integer", type="number") }} {{ troikaform.start_time_minutes(class="tl-integer", type="number") }}</dt>
+          <dt>{{ troikaform.duration.label }} {{ troikaform.duration(class="tl-integer", type="number") }}</dt>
+          <dt>{{ troikaform.max_participants.label }} {{ troikaform.max_participants(class="tl-integer", type="number") }}</dt>
           {% if access == 'create' %}
           <dt class="tl-radio">{{ troikaform.creator_role.label }}
 		        {% for subfield in troikaform.creator_role %}

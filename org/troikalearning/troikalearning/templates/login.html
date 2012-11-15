@@ -14,7 +14,7 @@
       <form id="tl-login" action="{{ url_for('login') }}" method="POST">
         <dl>
           <dt>{{ loginform.hidden_tag() }}</dt>
-          <dt>{{ loginform.email.label }} {{ loginform.email() }}</dt>
+          <dt>{{ loginform.email.label }} {{ loginform.email(type="email") }}</dt>
           <dt>{{ loginform.password.label }} {{ loginform.password() }}</dt>
           <dt>
             <input type="submit" value="Login">
@@ -33,7 +33,7 @@
           <dt>{{ regform.last_name.label }} {{ regform.last_name() }}</dt>
           <dt>{{ regform.alias.label }} {{ regform.alias() }} {% call
             macros.handle_description() %} {% endcall %}</dt>
-          <dt>{{ regform.email.label }} {{ regform.email() }}</dt>
+          <dt>{{ regform.email.label }} {{ regform.email(type="email") }}</dt>
           <dt>{{ regform.password.label }} {{ regform.password() }}</dt>
           <dt>{{ regform.confirm.label }} {{ regform.confirm() }}</dt>
           <dt>

@@ -29,6 +29,8 @@ from backend import Troika, get_active_troikas, get_pending_troikas, get_complet
 from forms import LoginForm, RegistrationForm, TroikaForm, UserForm, FeedbackForm
 from flask import request, session, flash, redirect, url_for, render_template
 from datetime import datetime
+from datetime import time as dttime
+from datetime import timedelta as dttimedelta
 from flask_mail import Message
 
 @app.route('/about', methods=['GET'])
@@ -220,14 +222,14 @@ def troika(troika_id):
 def __get_start_datetime(start_date, start_time_hours, start_time_minutes):
     if start_date is None or start_time_hours is None:
         return None
-    start_datetime = datetime.combine(start_date, datetime.time())
+    start_datetime = datetime.combine(start_date, dttime())
     start_datetime = start_datetime.replace(hour=start_time_hours, minute=start_time_minutes, second=0, microsecond=0)
     return start_datetime
 
 def __get_end_datetime(start_datetime, duration):
     if start_datetime is None or duration is None:
         return None
-    return start_datetime + datetime.timedelta(minutes=duration)
+    return start_datetime + dttimedelta(minutes=duration)
 
 def __get_duration(start_datetime, end_datetime):
     if start_datetime is None or end_datetime is None:
@@ -371,6 +373,9 @@ def activate_troika(troika_id):
     troika = get_troika(troika_id);
     user = get_user(session['email'])
     if activatable(user, troika, app.config.get('ACTIVATABLE_BEFORE_THREE')):
+        if troika.start_time < datetime.now() and user.role != 'admin':
+            flash('Start time is in the past, change it before activating Troika', 'error')
+            return redirect(url_for('troika', troika_id=troika_id))            
         __process_activation(troika)
         save_troika(troika)
         flash('Troika "' + troika.title +  '" activated')
