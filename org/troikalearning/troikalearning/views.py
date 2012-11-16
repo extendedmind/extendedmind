@@ -21,18 +21,37 @@ Created on 14.8.2012
 
 @author: ttiurani
 '''
-from troikalearning import app, mail
+from troikalearning import app, mail, babel
 from security import validate_login, register, hash_password, get_troika_access_right, activatable
 from backend import Troika, get_active_troikas, get_pending_troikas, get_completed_troikas, \
                     user_exists, get_user, save_user, get_troika, save_troika, delete_troika, \
                     Feedback, save_feedback, get_feedback
 from forms import LoginForm, RegistrationForm, TroikaForm, UserForm, FeedbackForm
-from flask import request, session, flash, redirect, url_for, render_template
+from flask import request, session, flash, redirect, url_for, render_template, g
 from datetime import datetime
 from datetime import time as dttime
 from datetime import timedelta as dttimedelta
 from flask_mail import Message
+from flaskext.babel import gettext
 import re
+
+
+@babel.localeselector
+def get_locale():
+    # if a user is logged in, use the locale from the user settings
+    user = getattr(g, 'user', None)
+    if user is not None:
+        return user.locale
+    # otherwise try to guess the language from the user accept
+    # header the browser transmits.  We support de/fr/en in this
+    # example.  The best match wins.
+    return request.accept_languages.best_match(['fi', 'en'])
+
+@babel.timezoneselector
+def get_timezone():
+    user = getattr(g, 'user', None)
+    if user is not None:
+        return user.timezone
 
 @app.route('/about', methods=['GET'])
 def about():
@@ -73,20 +92,20 @@ def login():
         if (validate_login(loginform.email.data, loginform.password.data)):
             session['logged_in'] = True
             session['email'] = loginform.email.data
-            flash('You were logged in')
+            flash(gettext(u'You were logged in'))
             destination = url_for('troikas')
             if 'destination' in session:
                 destination = session['destination']
                 session.pop('destination', None)
             return redirect(destination)
         else:
-            loginerrors.append('Invalid email/password')
+            loginerrors.append(gettext(u'Invalid email/password'))
     if loginform.errors:
         for key, value in loginform.errors.items():
             loginerrors.append(key + ': ' + value[0])
     if regform.email.data and regform.validate_on_submit():
         if (user_exists(email=regform.email.data, alias=regform.alias.data)):
-            regerrors.append('User with given email or alias already exists')
+            regerrors.append(gettext(u'User with given email or alias already exists'))
         else:
             if regform.alias.data == "": regform.alias.data = None    
             register(regform.first_name.data, regform.last_name.data,
@@ -94,7 +113,7 @@ def login():
                      regform.password.data);
             session['logged_in'] = True
             session['email'] = regform.email.data
-            flash('Registration successful, you were logged in')
+            flash(gettext(u'Registration successful, you were logged in'))
             destination = url_for('troikas')
             if 'destination' in session:
                 destination = session['destination']
@@ -111,7 +130,7 @@ def __check_login(destination = None, url = None):
     if not 'logged_in' in session:
         if url is None:
             url = url_for(destination)
-        flash('You need to login or register first')
+        flash(gettext(u'You need to login or register first'))
         session['destination'] = url
         return url_for('login')
     return False
@@ -147,9 +166,9 @@ def user():
             if (userform.new_password.data):
                 user.password = hash_password(userform.new_password.data)
             save_user(user)
-            flash('Information updated')
+            flash(gettext(u'Information updated'))
         else:
-            usererrors.append('Invalid password')
+            usererrors.append(gettext(u'Invalid password'))
     if userform.errors:
         for key, value in userform.errors.items():
             usererrors.append(key + ': ' + value[0])
@@ -228,31 +247,33 @@ def invite(troika_id, role, email):
     if email is not None:
         # Validate email address
         if not re.match(r'^.+@[^.].*\.[a-z]{2,10}$', email, re.IGNORECASE):
-            flash(email + " is not a valid email address", 'error')
+            flash(gettext(u"%(email)s is not a valid email address", email=email), 'error')
         else:
             user = get_user(session['email'])
             troika = get_troika(troika_id);
-            msg = Message("Come join the Troika \"" + troika.title + "\"!" ,
-                      sender = (__get_display_name(user),user.email),
+            msg = Message(gettext(u"Come join the Troika \"%(title)s\"!", title=troika.title),
+                      sender = ("Troika Webmaster", "webmaster@troikalearning.org"),
                       recipients=[email])
         
-            msg.body = "I thought you should join the troika \"" + troika.title + "\":\n\n" + url_for('troika', troika_id=troika.id, _external=True)
-            msg.body += "as "
-            if role == '0':
-                msg.body += "the lead. "
-            elif role == '1':
-                msg.body += "the first learner. "
+            msg.body = gettext("$(user)s thought you should join the troika \"%(title)s\":", user = __get_display_name(user), title=troika.title)
+            msg.body += "\n\n" + url_for('troika', troika_id=troika.id, _external=True)
+            msg.body += "\n\n"
+            role_string = gettext("the lead")
+            if role == '1':
+                role_string = gettext("the first learner")
             elif role == '2':
-                msg.body += "the second learner. "
+                role_string = gettext("the second learner")
             elif role == '3':
-                msg.body += "a particapant. "
-            msg.body += "What do you say?"
-            msg.body += "--\n" + __get_display_name(user)
+                role_string = gettext("a particapant")
+            msg.body += gettext("as $(role)s.", role=role_string)
+            msg.body += "\n\n" 
+            msg.body += gettext("What do you say?\n\n")
+            msg.body += __get_troika_message_signature()
             
             mail.send(msg)
-            flash('Invite sent to ' + email)
+            flash(gettext(u'Invite sent to $(email)s.',email = email))
     else:
-        flash("No email address given", 'error')
+        flash(gettext(u"No email address given"), 'error')
     return redirect(url_for('troika', troika_id=troika_id))
 
 def __get_start_datetime(start_date, start_time_hours, start_time_minutes):
@@ -290,7 +311,7 @@ def edit_troika(troika_id):
     user = get_user(session['email'])
     access = get_troika_access_right(user, troika)
     if not access:
-        flash('Only the creator or the lead can edit the Troika', 'error')
+        flash(gettext(u'Only the creator or the lead can edit the Troika'), 'error')
         return redirect(url_for('troika', troika_id=troika_id))
 
     if request.method == 'GET':
@@ -308,7 +329,7 @@ def edit_troika(troika_id):
         if request.form["action"] == "Save Troika":
             start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time_hours.data, troikaform.start_time_minutes.data)
             if start_time is not None and start_time < datetime.now():
-                troikaerrors.append("Start time for the troika must be in the future")
+                troikaerrors.append(gettext(u"Start time for the troika must be in the future"))
             else:
                 # Update info
                 troika.title = troikaform.title.data
@@ -320,8 +341,8 @@ def edit_troika(troika_id):
                 troika.max_participants = troikaform.max_participants.data
                 save_troika(troika)
                 return redirect(url_for('troika', troika_id=troika_id))
-                flash('Troika saved')         
-        elif request.form["action"] == "Delete Troika":
+                flash(gettext(u'Troika saved'))         
+        elif request.form["action"] == gettext(u"Delete Troika"):
             title = troika.title
             delete_troika(troika)
             flash('Troika "' + title +  '" deleted')
@@ -343,25 +364,27 @@ def __get_troika_message(subject, troika):
               sender = (__get_display_name(troika.lead),troika.lead.email),
               recipients=recipients)
 
+def __get_troika_message_signature():
+    signature = "--\n"
+    signature += gettext(u"Troika Team")
+    signature += gettext(u"Salla, Olli, Petro and Timo")
+    signature += "http://troikalearning.org"
+    return signature
+
 def __process_activation(troika):
     troika.activated = datetime.now()
     
     if not app.config.get('MAIL_SKIP'):    
         # Send message to all three participants
-        msg = __get_troika_message("Troika \"" + troika.title + "\" activated!", troika)
-        msg.body = "Congratulations! The troika \"" + troika.title + "\":\n\n" + url_for('troika', troika_id=troika.id, _external=True)
-        msg.body += \
-"""
-
-has now been activated. You can view the participants on the troika page.
-
-Happy learnings!
-
---
-Troika Team
-Salla, Olli, Petro and Timo
-http://troikalearning.org
-"""
+        msg = __get_troika_message(gettext(u"Troika \"%(title)s\" activated!", title=troika.title))
+        msg.body = gettext(u"Congratulations! The troika \"%(title)s\":", title=troika.title)
+        msg.body += "\n\n" + url_for('troika', troika_id=troika.id, _external=True)
+        msg.body += "\n\n"
+        msg.body += gettext(u"has now been activated. You can view the participants on the troika page.")
+        msg.body += "\n\n"
+        msg.body += gettext(u"Happy learnings!")
+        msg.body += "\n\n"
+        msg.body += __get_troika_message_signature()
         mail.send(msg)
 
 def __process_pending(troika):
@@ -378,27 +401,23 @@ def __process_pending(troika):
         else: 
             if not app.config.get('MAIL_SKIP'):    
                 # Send message to all three participants
-                msg = __get_troika_message("Troika \"" + troika.title + "\" is just about to be born!", troika)
-                msg.body = "Congratulations! The troika \"" + troika.title + "\":\n\n" + url_for('troika', troika_id=troika.id, _external=True)
-                msg.body += \
-"""
-
-has now all three participants!
-
-Your job now is to:
-1. decide on the remaining open details for the troika, 
-2. add that information to the troika by pressing "Edit troika" (visible for the lead and creator),
-3. and then press "Activate troika".
-
-Get going!
-
-[insert inspirational quote about balalaikas here]
-
---
-Troika Team
-Salla, Olli, Petro and Timo
-http://troikalearning.org
-"""
+                msg = __get_troika_message(gettext(u"Troika \"%(title)s\" is just about to be born!", title=troika.title), troika)
+                msg.body = gettext(u"Congratulations! The troika \"%(title)s\":", title=troika.title)
+                msg.body += "\n\n" + url_for('troika', troika_id=troika.id, _external=True)
+                msg.body += "\n\n"
+                msg.body += gettext(u"has now all three participants!")
+                msg.body += "\n\n"
+                msg.body += gettext(u"Your job now is to:")
+                msg.body += "\n"
+                msg.body += gettext(u"1. decide on the remaining open details for the troika,")
+                msg.body += gettext(u"2. add that information to the troika by pressing \"Edit troika\" (visible for the lead and creator),")
+                msg.body += gettext(u"3. and then press \"Activate troika\".")
+                msg.body += "\n\n"
+                msg.body += gettext(u"Get going!")
+                msg.body += "\n\n"
+                msg.body += gettext(u"[insert inspirational quote about balalaikas here]")
+                msg.body += "\n\n"
+                msg.body += __get_troika_message_signature()
                 mail.send(msg)
 
 @app.route('/troika/<troika_id>/activate', methods=['GET'])
@@ -410,14 +429,14 @@ def activate_troika(troika_id):
     user = get_user(session['email'])
     if activatable(user, troika, app.config.get('ACTIVATABLE_BEFORE_THREE')):
         if troika.start_time < datetime.now() and user.role != 'admin':
-            flash('Start time is in the past, change it before activating Troika', 'error')
+            flash(gettext(u'Start time is in the past, change it before activating Troika'), 'error')
             return redirect(url_for('troika', troika_id=troika_id))            
         __process_activation(troika)
         save_troika(troika)
-        flash('Troika "' + troika.title +  '" activated')
+        flash(gettext(u"Troika \"$(title)s\" activated", title=troika.title))
         return redirect(url_for('troika', troika_id=troika_id))
     else:
-        flash('Troika can only be activated by the lead after all required information is set', 'error')
+        flash(gettext(u'Troika can only be activated by the lead after all required information is set'), 'error')
         return redirect(url_for('troika', troika_id=troika_id))
 
 @app.route('/troika/<troika_id>/<troika_role>/join', methods=['GET'])
@@ -430,47 +449,47 @@ def join_troika(troika_id, troika_role):
     if not __participating(user, troika):
         if troika_role == '0':
             if troika.lead is not None:
-                flash('The Troika already has a lead', 'error')
+                flash(gettext(u"The Troika already has a lead"), 'error')
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.lead = user
             __process_pending(troika)
             save_troika(troika)
-            flash('You are now teaching "' + troika.title +  '"!')
+            flash(gettext(u"You are now teaching \"$(title)s\"!", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '1':
             if troika.first_learner is not None:
-                flash('The Troika already has a first learner', 'error')
+                flash(gettext(u"The Troika already has a first learner"), 'error')
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.first_learner = user
             __process_pending(troika)
             save_troika(troika)
-            flash('You are now the first learner of "' + troika.title +  '"!')
+            flash(gettext(u"You are now the first learner of \"$(title)s\"!", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '2':
             if troika.second_learner is not None:
-                flash('The Troika already has a second learner', 'error')
+                flash(gettext(u"The Troika already has a second learner"), 'error')
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.second_learner = user
             __process_pending(troika)
             save_troika(troika)
-            flash('You are now the second learner of "' + troika.title +  '"!')
+            flash(gettext(u"You are now the second learner of \"$(title)s\"!", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '3':
             if user in troika.participants:
-                flash('You are already participating in the Troika', 'error')
+                flash(gettext(u"You are already participating in the Troika"), 'error')
                 return redirect(url_for('troika', troika_id=troika_id))
             if __is_full(troika):
-                flash('There is no more room in this Troika', 'error')
+                flash(gettext(u"There is no more room in this Troika"), 'error')
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.participants.append(user)
             save_troika(troika)
-            flash('You are now participating in "' + troika.title +  '"!')
+            flash(gettext(u"You are now participating in \"$(title)s\"!", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         else:
-            flash('Unknown Troika role: ' + troika_role, 'error')
+            flash(gettext(u"Unknown Troika role: $(role)", role=troika_role), 'error')
             return redirect(url_for('troika', troika_id=troika_id))
     else:
-        flash('You are already partipating in the Troika.', 'error')
+        flash(gettext(u"You are already partipating in the Troika."), 'error')
         return redirect(url_for('troika', troika_id=troika_id))
         
 @app.route('/troika/<troika_id>/<troika_role>/leave', methods=['GET'])
@@ -483,42 +502,42 @@ def leave_troika(troika_id, troika_role):
     if troika.get_phase() != 'complete':
         if troika_role == '0':
             if troika.lead != user:
-                flash('You are not the lead of this Troika.', 'error')
+                flash(gettext(u"You are not the lead of this Troika."), 'error')
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.lead = None
             save_troika(troika)
-            flash('You are no longer teaching "' + troika.title +  '".')
+            flash(gettext(u"You are no longer teaching \"$(title)s\.", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '1':
             if troika.first_learner != user:
-                flash('You are not the first learner of this Troika.', 'error')
+                flash(gettext(u"You are not the first learner of this Troika."), 'error')
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.first_learner = None
             save_troika(troika)
-            flash('You are no longer the first learner of "' + troika.title +  '".')
+            flash(gettext(u"You are no longer the first learner of \"$(title)s\".", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '2':
             if troika.second_learner != user:
-                flash('You are not the second learner of this Troika.', 'error')
+                flash(gettext(u"You are not the second learner of this Troika."), 'error')
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.second_learner = None
             save_troika(troika)
-            flash('You are no longer the second learner of "' + troika.title +  '".')
+            flash(gettext(u"You are no longer the second learner of \"$(title)s\".", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '3':
             if user not in troika.participants:
-                flash('You are not participating in the Troika', 'error')
+                flash(gettext(u"You are not participating in the Troika"), 'error')
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.participants.remove(user)
             save_troika(troika)
-            flash('You are no longer participating in "' + troika.title +  '".')
+            flash(gettext(u"You are no longer participating in \"$(title)s\".", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
             
         else:
-            flash('Unknown Troika role: ' + troika_role, 'error')
+            flash(gettext(u"Unknown Troika role: $(role)s", role = troika_role), 'error')
             return redirect(url_for('troika', troika_id=troika_id))
     else:
-        flash('You can not leave a Troika that is complete', 'error')
+        flash(gettext(u"You can not leave a Troika that is complete"), 'error')
         return redirect(url_for('troika', troika_id=troika_id))
 
 
@@ -534,7 +553,7 @@ def create_troika():
 
     start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time_hours.data, troikaform.start_time_minutes.data)
     if start_time is not None and start_time < datetime.now():
-        troikaerrors.append("Start time for the troika must be in the future")
+        troikaerrors.append(gettext(u"Start time for the troika must be in the future"))
     elif troikaform.validate_on_submit():
         troika = Troika(created = datetime.now(),
                 title=troikaform.title.data,
@@ -552,7 +571,7 @@ def create_troika():
         else:
             troika.first_learner = user
         save_troika(troika)
-        flash('Troika Created')
+        flash(gettext(u"Troika Created"))
         return redirect(url_for('troika', troika_id=troika.id))
     if troikaform.errors:
         for key, value in troikaform.errors.items():
@@ -578,7 +597,7 @@ def feedback():
                             description=feedbackform.description.data,
                             user=user)
         save_feedback(feedback)
-        flash('Feedback saved. Thank you!')
+        flash(gettext(u"Feedback saved. Thank you!"))
         return redirect(url_for('troikas'))
         
     if feedbackform.errors:
@@ -594,7 +613,7 @@ def logout():
     if 'logged_in' in session:
         session.pop('logged_in', None)
         session.pop('email', None)
-        flash('You were logged out')
+        flash(gettext(u"You were logged out"))
     if 'destination' in session:
         session.pop('destination', None)
     return redirect(url_for('troikas'))

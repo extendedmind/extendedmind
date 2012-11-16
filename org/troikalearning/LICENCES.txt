@@ -216,6 +216,7 @@ Three clause BSD License
   Flask-Mail: (c) 2010 by Dan Jacob
   Flask-WTF: (c) 2010 by Dan Jacob
   Flask-SQLAlchemy: (c) 2012 by Armin Ronacher
+  Flask-Babel: (c) 2010 by Armin Ronacher.
   Itsdangerous: (c) 2011 by Armin Ronacher and the 
                 Django Software Foundation.
   Passlib: (c) 2008-2012 Assurance Technologies, LLC.
@@ -238,7 +239,7 @@ that the following conditions are met:
     from this software without specific prior written permission.
 
 THIS SOFTWARE AND DOCUMENTATION IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
-CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
 NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
 A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER 
 OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 

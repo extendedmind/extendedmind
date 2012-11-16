@@ -15,7 +15,7 @@ __credits__ = '''
     along with this program; if not, see http://www.gnu.org/licenses
 '''
 __author__  = 'Timo Tiuraniemi'
-__version__ = '0.1'
+__version__ = '0.2'
 
 from distutils.core import setup
 setup(
@@ -26,7 +26,7 @@ setup(
     author=__author__,
     classifiers = [
         "Programming Language :: Python",
-        "Development Status :: 1 - Planning",
+        "Development Status :: 3 - Alpha",
         "Environment :: Other Environment",
         "Intended Audience :: Education",
 		"License :: OSI Approved :: GNU Affero General Public License v3"
@@ -40,5 +40,6 @@ setup(
         'itsdangerous',
         'passlib',
         'Flask-WTF',
-        'flask-mail']
+        'flask-mail',
+        'Flask-Babel']
 )

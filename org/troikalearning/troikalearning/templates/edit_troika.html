@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% import 'macros.html' as macros %}
 {% block back_button %}
-<a href="/">Home</a>
+<a href="/">{{ gettext('Home') }}</a>
 {% endblock %} 
-{% block subheading %} | {% if access == 'create' %}Create{% else %}Edit{% endif %}{% endblock %}
+{% block subheading %} | {% if access == 'create' %}{{ gettext('Create') }}{% else %}{{ gettext('Edit') }}{% endif %}{% endblock %}
 
 {% block body %}
 <div class="container">
@@ -13,11 +13,11 @@
       {% call macros.handle_errors(errors=troikaerrors) %} {% endcall %}
       <form id="tl-troika" action="" method="POST">
         {% if access == 'create' %}
-            When you fill up this form you will become a
+            {{ gettext('When you fill up this form you will become a
             creator for a new pending troika. The troika will
             become active once two other participants have
             confirmed their attendance and you have agreed
-            on time and place of the troika.
+            on time and place of the troika.') }}
         {% endif %}  
         <dl>
           <dt>{{ troikaform.hidden_tag() }}</dt>

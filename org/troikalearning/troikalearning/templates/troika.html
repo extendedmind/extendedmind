@@ -1,7 +1,7 @@
 {% extends "layout.html" %} 
 {% import 'macros.html' as macros %}
 {% block back_button %}
-<a href="{{ url_for('troikas') }}">Home</a>
+<a href="{{ url_for('troikas') }}">{{ gettext('Home') }}</a>
 {% endblock %} 
 {% block subheading %} | {{ troika.title }}{% endblock %}
 
@@ -11,87 +11,87 @@
 </div>
 {% if troika.access %}
 <div class="pagination-centered">
-  <a href="{{ url_for('edit_troika', troika_id=troika.id) }}"><h4>Edit troika</h4></a>
+  <a href="{{ url_for('edit_troika', troika_id=troika.id) }}"><h4>{{ gettext('Edit troika') }}</h4></a>
 </div>
 {% elif not session.logged_in and not troika.is_full and not troika.phase == 'complete' %}
 <div class="pagination-centered">
-  <a href="{{ url_for('login_troika', troika_id=troika.id) }}"><h5>Login or register to join troika!</h5></a>
+  <a href="{{ url_for('login_troika', troika_id=troika.id) }}"><h5>{{ gettext('Login or register to join troika!') }}</h5></a>
 </div>
 {% elif session.logged_in and troika.is_full and not troika.phase == 'complete' %}
 <div class="pagination-centered">
-  <h5>This troika is currently full.</h5></a>
+  <h5>{{ gettext('This troika is currently full.') }}</h5></a>
 </div>
 {% endif %}
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span4 tl-group">
       <div class="container span12">  
-        <h3>Description</h3> {{ troika.description }}
+        <h3>{{ gettext('Description') }}</h3> {{ troika.description }}
       </div>
     </div>
     <div class="span4 tl-group">
       <div class="container span12">
-        <h3>Status</h3> {{ troika.phase }}
-        <h3>Start time</h3> {{ troika.start_time }}
-        <h3>End time</h3> {{ troika.end_time }}
-        <h3>Address</h3> {{ troika.address }} - {{ troika.address_addendum }}
+        <h3>{{ gettext('Status') }}</h3> {{ troika.phase }}
+        <h3>{{ gettext('Start time') }}</h3> {{ troika.start_time }}
+        <h3>{{ gettext('End time') }}</h3> {{ troika.end_time }}
+        <h3>{{ gettext('Address') }}</h3> {{ troika.address }} - {{ troika.address_addendum }}
       </div>
     </div>
     <div class="span4 tl-group">
       <div class="span12">
-        <h3>Lead</h3> 
+        <h3>{{ gettext('Lead') }}</h3> 
         {% if (troika.lead == None and session.logged_in and not troika.participating) %}
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=0) }}">
-          Lead this Troika
+          {{ gettext('Lead this Troika') }}
           </a><br/>          
           {% call macros.invite_modal(troika_role=0, 
-                                      link_text='Invite lead', 
-                                      heading_text='Give the email address of the person you want to invite to lead.') %}
+                                      link_text=gettext('Invite lead'), 
+                                      heading_text=gettext('Give the email address of the person you want to invite to lead.')) %}
           {% endcall %}          
         {% else %}
           {{ troika.lead }}
           {% if (troika.phase not in ['active', 'complete'] and troika.participating == 'lead') %}
             <a href="{{ url_for('leave_troika', troika_id=troika.id, troika_role=0) }}">
-            Leave this Troika
+            {{ gettext('Leave this Troika') }}
             </a>
           {% endif %}
         {% endif %}
-        <h3>First Learner</h3>
+        <h3>{{ gettext('First Learner') }}</h3>
         {% if (troika.first_learner == None and session.logged_in and not troika.participating) %}
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=1) }}">
-          Be the first learner in this Troika
+          {{ gettext('Be the first learner in this Troika') }}
           </a><br/>          
           {% call macros.invite_modal(troika_role=1, 
-                                      link_text='Invite first learner', 
-                                      heading_text='Give the email address of the person you want to invite to be the first learner.') %}
+                                      link_text=gettext('Invite first learner'), 
+                                      heading_text=gettext('Give the email address of the person you want to invite to be the first learner.')) %}
           {% endcall %}
         {% else %}
           {{ troika.first_learner }}
           {% if (troika.phase not in ['active', 'complete'] and troika.participating == 'first_learner') %}
             <a href="{{ url_for('leave_troika', troika_id=troika.id, troika_role=1) }}">
-            Leave this Troika
+            {{ gettext('Leave this Troika') }}
             </a>
           {% endif %}
         {% endif %}
-        <h3>Second Learner</h3> 
+        <h3>{{ gettext('Second Learner') }}</h3> 
         {% if (troika.second_learner == None and session.logged_in and not troika.participating) %}
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=2) }}">
-          Be the second learner in this Troika
+          {{ gettext('Be the second learner in this Troika') }}
           </a><br/>          
           {% call macros.invite_modal(troika_role=2, 
-                                      link_text='Invite second learner', 
-                                      heading_text='Give the email address of the person you want to invite to be the second learner.') %}
+                                      link_text=gettext('Invite second learner'), 
+                                      heading_text=gettext('Give the email address of the person you want to invite to be the second learner.')) %}
           {% endcall %}
         {% else %}
           {{ troika.second_learner }}
           {% if (troika.phase not in ['active', 'complete'] and troika.participating == 'second_learner') %}
             <a href="{{ url_for('leave_troika', troika_id=troika.id, troika_role=2) }}">
-            Leave this Troika
+            {{ gettext('Leave this Troika') }}
             </a>
           {% endif %}
         {% endif %}
-        <h3>Max Participants</h3> {{ troika.max_participants }}
-        <h3>Participants</h3>
+        <h3>{{ gettext('Max Participants') }}</h3> {{ troika.max_participants }}
+        <h3>{{ gettext('Participants') }}</h3>
           {% for participant in troika.participants %}
             {% if (loop.last) %}
               {{ participant.full_name }}
@@ -102,17 +102,17 @@
           {%endfor %}
           {% if (troika.phase == 'active' and session.logged_in and not troika.participating and not troika.is_full) %}
             <br/><a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=3) }}">
-            Participate in this Troika
+            {{ gettext('Participate in this Troika') }}
             </a>
           {% elif (troika.phase != 'complete' and troika.participating == 'participant') %}
             <br/><a href="{{ url_for('leave_troika', troika_id=troika.id, troika_role=3) }}">
-            Leave this Troika
+            {{ gettext('Leave this Troika') }}
             </a>
           {% endif %}
           {% if (troika.phase == 'active' and not troika.is_full) %}  
             <br/>{% call macros.invite_modal(troika_role=3, 
-                                        link_text='Invite participant', 
-                                        heading_text='Give the email address of a person you want to invite to be participate in this Troika.') %}
+                                        link_text=gettext('Invite participant'), 
+                                        heading_text=gettext('Give the email address of a person you want to invite to be participate in this Troika.')) %}
             {% endcall %}
           {% endif %}
       </div>
