@@ -34,7 +34,6 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
           <a class="brand" href="{{ url_for('troikas') }}">Troika</a>
           <div class="nav-collapse collapse">
             <ul class="nav pull-right">
-              <li><a href="{{ url_for('feedback') }}">{{ gettext('Give Feedback') }}</a></li>
               {% if not session.logged_in %}
               <li><a href="{{ url_for('login') }}">{{ gettext('Login / Register') }}</a></li>
               {% else %}
@@ -69,9 +68,15 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
           {% endfor %}
         <!-- Page Content -->
         {% block body %} {% endblock %}
+        {% block feedback %}
+        <div class="tl-feedback">
+        	<a href="{{ url_for('feedback') }}">{{ gettext('Give Feedback') }}</a></li>
+        </div>
+        {% endblock %}
       </div>
     </div>
   </div>
+    
   <script src="http://code.jquery.com/jquery-latest.js"></script>
   <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
   {% block extra_js %} {% endblock %}
