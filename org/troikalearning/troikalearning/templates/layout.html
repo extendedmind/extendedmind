@@ -40,6 +40,20 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
               <li><a href="{{ url_for('user') }}">{{ session.email }}</a></li>
               <li><a href="{{ url_for('logout') }}">{{ gettext('Logout') }}</a></li>
               {% endif %}
+              <li>
+                <form class="navbar-search">
+                  <fieldset>
+                    <div class="control-group">
+                      <div class="controls">
+                        <select>
+                          <option value="en">English</option>
+                          <option value="fi">Suomi</option>
+                        </select>
+                      </div>
+                    </div>
+                  </fieldset>
+                </form>
+              </li>
             </ul>
             <ul class="nav pull-left">
               <li class="hidden-phone">
