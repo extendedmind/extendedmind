@@ -45,7 +45,8 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
               <li class="hidden-phone">
               <a href="{{ url_for('about') }}">{{ gettext('About') }}</a>
               </li>
-              <li><a href="http://www.facebook.com/troikagame" target="_blank">Facebook&raquo;</a></li>
+              <li><a href="http://www.facebook.com/troikagame" target="_blank">
+              <img class="tl-logo" src="{{ url_for('static', filename='img/fb.png') }}"></img></a></li>
             </ul>
           </div>
         </div>
