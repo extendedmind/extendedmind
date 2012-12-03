@@ -34,21 +34,27 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
           <a class="brand" href="{{ url_for('troikas') }}">Troika</a>
           <div class="nav-collapse collapse">
             <ul class="nav pull-right">
-              {% if not session.logged_in %}
-              <li><a href="{{ url_for('login') }}">{{ gettext('Login / Register') }}</a></li>
+              {% if not 'email' in session %}
+              <li><a href="{{ url_for('login') }}">{{ _('Login / Register') }}</a></li>
               {% else %}
               <li><a href="{{ url_for('user') }}">{{ session.email }}</a></li>
-              <li><a href="{{ url_for('logout') }}">{{ gettext('Logout') }}</a></li>
+              <li><a href="{{ url_for('logout') }}">{{ _('Logout') }}</a></li>
               {% endif %}
               <li>
-                <form class="navbar-search">
+                <form class="navbar-search" action="{{ url_for('change_language') }}" method="post">
                   <fieldset>
-                    <div class="control-group">
+                    <div class="control-group tl-language">
                       <div class="controls">
-                        <select>
-                          <option value="en">English</option>
-                          <option value="fi">Suomi</option>
-                        </select>
+                         <dl>
+                          <dt>{{ langform.hidden_tag() }}</dt>
+                          <dt>
+                            <select name="{{ langform.language.name }}" onchange="this.form.submit();">
+                              {% for subfield in langform.language %}
+                                {{ subfield() }}
+                              {% endfor %}
+                            </select>
+                          </dt>
+                        </dl>
                       </div>
                     </div>
                   </fieldset>
@@ -57,7 +63,7 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
             </ul>
             <ul class="nav pull-left">
               <li class="hidden-phone">
-              <a href="{{ url_for('about') }}">{{ gettext('About') }}</a>
+              <a href="{{ url_for('about') }}">{{ _('About') }}</a>
               </li>
               <li><a href="http://www.facebook.com/troikagame" target="_blank">
               <img class="tl-logo" src="{{ url_for('static', filename='img/fb.png') }}"></img></a></li>
@@ -78,14 +84,14 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
             <div class="alert alert-success tl-message">
             {% endif %}
               <button type="button" class="close" data-dismiss="alert">&times;</button>
-              {% if category == "error" %}<strong>{{ gettext('Error') }}:</strong> {% endif %} {{ message }}
+              {% if category == "error" %}<strong>{{ _('Error') }}:</strong> {% endif %} {{ message }}
             </div>
           {% endfor %}
         <!-- Page Content -->
         {% block body %} {% endblock %}
         {% block feedback %}
         <div class="tl-feedback">
-        	<a href="{{ url_for('feedback') }}">{{ gettext('Give Feedback') }}</a></li>
+        	<a href="{{ url_for('feedback') }}">{{ _('Give Feedback') }}</a></li>
         </div>
         {% endblock %}
       </div>

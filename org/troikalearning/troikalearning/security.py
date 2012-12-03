@@ -22,9 +22,12 @@ Created on 14.8.2012
 @author: ttiurani
 '''
 
+from troikalearning import _
 from troikalearning.backend import User, save_user, get_user
 from passlib.hash import sha256_crypt
-from flask import flash
+from flask import request, url_for, flash
+from urlparse import urlparse, urljoin
+
 import os
 
 def validate_login(email, password):
@@ -32,7 +35,7 @@ def validate_login(email, password):
     user = get_user(email)
     if user is not None:
         if (__validate_password(password, user.password)):
-            return True
+            return user
     return False
 
 def register(first_name, last_name, alias, email, password):
@@ -84,3 +87,20 @@ def __validate_password(plain_password, password_hash):
 
 def __generate_reload_token():
     return os.urandom(32);
+
+# From http://flask.pocoo.org/snippets/62/
+
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+           ref_url.netloc == test_url.netloc
+
+def get_redirect_target():
+    for target in request.values.get('next'), request.referrer:
+        if not target:
+            continue
+        if is_safe_url(target):
+            return target
+    flash(_(u'Invalid redirect target'), 'error')
+    return url_for('troikas')

@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% import 'macros.html' as macros %}
 {% block back_button %}
-<a href="/">{{ gettext('Home') }}</a>
+<a href="/">{{ _('Home') }}</a>
 {% endblock %} 
-{% block subheading %} | {{ gettext('Feedback') }}{% endblock %}
+{% block subheading %} | {{ _('Feedback') }}{% endblock %}
 
 {% block body %}
 <div class="container">
@@ -14,7 +14,7 @@
       <ul>
         <li>{{ feedback.created }} -- 
             {% if (feedback.user) %} {{ feedback.user.full_name }}
-            {% else %}{{ gettext('Anonymous') }}{% endif %}
+            {% else %}{{ _('Anonymous') }}{% endif %}
           <ul>
             <li>{{ feedback.description }}</li>
           </ul>

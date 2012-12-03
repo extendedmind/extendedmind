@@ -23,30 +23,30 @@ Created on 10.10.2012
 '''
 from flask_wtf import Form, IntegerField, RadioField, \
                       DateField, TextField, TextAreaField, PasswordField,  \
-                      validators, HiddenField 
-from flaskext.babel import gettext
+                      validators, HiddenField, SelectField
+from troikalearning import _
 
 class RegistrationForm(Form):
-    first_name = TextField(gettext(u"First Name") + ' *', [
+    first_name = TextField(_(u"First Name") + ' *', [
         validators.Required(),
         validators.Length(max=128)])
-    last_name = TextField(gettext(u"Last Name") + ' *', [
+    last_name = TextField(_(u"Last Name") + ' *', [
         validators.Required(),
         validators.Length(max=128)])
-    alias = TextField(gettext(u"Alias"), [validators.Length(max=512)])
-    email = TextField(gettext(u"Email Address") + ' *', [
+    alias = TextField(_(u"Alias"), [validators.Length(max=512)])
+    email = TextField(_(u"Email Address") + ' *', [
         validators.Required(),
-        validators.email(gettext(u"Not a valid email address"))])
-    password = PasswordField(gettext(u"Password") + ' *', [
+        validators.email(_(u"Not a valid email address"))])
+    password = PasswordField(_(u"Password") + ' *', [
         validators.Required(),
-        validators.EqualTo('confirm', message=gettext(u"Passwords must match"))])
-    confirm = PasswordField(gettext(u"Repeat Password") + ' *')
+        validators.EqualTo('confirm', message=_(u"Passwords must match"))])
+    confirm = PasswordField(_(u"Repeat Password") + ' *')
 
 class LoginForm(Form):
-    email = TextField(gettext(u"Email Address") + ' *', [
+    email = TextField(_(u"Email Address") + ' *', [
         validators.Required(),
-        validators.email(gettext(u"Not a valid email address"))])
-    password = PasswordField(gettext(u"Password") + ' *', [
+        validators.email(_(u"Not a valid email address"))])
+    password = PasswordField(_(u"Password") + ' *', [
         validators.Required()])
 
 class UserForm(Form):
@@ -54,42 +54,47 @@ class UserForm(Form):
     last_name = RegistrationForm.last_name
     alias = RegistrationForm.alias
     email = RegistrationForm.email
-    new_password = PasswordField(gettext(u"New Password"), [
-        validators.EqualTo('new_confirm', message=gettext(u"Passwords must match"))])
-    new_confirm = PasswordField(gettext(u"Repeat New Password"))
-    password = PasswordField(gettext(u"Current Password") + ' *', [
+    new_password = PasswordField(_(u"New Password"), [
+        validators.EqualTo('new_confirm', message=_(u"Passwords must match"))])
+    new_confirm = PasswordField(_(u"Repeat New Password"))
+    password = PasswordField(_(u"Current Password") + ' *', [
         validators.Required()])
 
 class TroikaForm(Form):
-    title = TextField(gettext(u"Title") + ' *', [
+    title = TextField(_(u"Title") + ' *', [
         validators.Required(),
         validators.Length(max=512)])
-    description = TextAreaField(gettext(u"Description") + ' *', [
+    description = TextAreaField(_(u"Description") + ' *', [
         validators.Required(),
         validators.Length(max=10000)])
-    address = TextField(gettext(u"Address"), [
+    address = TextField(_(u"Address"), [
         validators.Length(max=512)])
-    address_addendum = TextField(gettext(u"Address Addendum"), [
+    address_addendum = TextField(_(u"Address Addendum"), [
         validators.Length(max=512)])
-    start_date = DateField(gettext(u"Start Date"), [validators.Optional()])
-    start_time_hours = IntegerField(gettext(u"Start Time (hours, minutes)"),[
+    start_date = DateField(_(u"Start Date"), [validators.Optional()])
+    start_time_hours = IntegerField(_(u"Start Time (hours, minutes)"),[
         validators.Optional(),
-        validators.number_range(min=0, max=23, message=gettext(u"Hours must be between 0 and 23"))])
-    start_time_minutes = IntegerField(gettext(u"Start Time (min)"),[
+        validators.number_range(min=0, max=23, message=_(u"Hours must be between 0 and 23"))])
+    start_time_minutes = IntegerField(_(u"Start Time (min)"),[
         validators.Optional(),
-        validators.number_range(min=0, max=59, message=gettext(u"Minutes must be between 0 and 59"))])
-    duration = IntegerField(gettext(u"Duration (min)"), [
+        validators.number_range(min=0, max=59, message=_(u"Minutes must be between 0 and 59"))])
+    duration = IntegerField(_(u"Duration (min)"), [
         validators.Optional(),
-        validators.number_range(min=1, message=gettext(u"Troika has to last at least one minute"))])
-    max_participants = IntegerField(gettext(u"Max Participants"), [
+        validators.number_range(min=1, message=_(u"Troika has to last at least one minute"))])
+    max_participants = IntegerField(_(u"Max Participants"), [
         validators.Optional(),
-        validators.number_range(min=3, message=gettext(u"Minumum of three participants"))])
-    creator_role = RadioField(gettext(u"Your role in the Troika"), choices=[
-        ('lead', gettext(u"I will lead this")), 
-        ('learner', gettext(u"I want someone else to lead this."))],
+        validators.number_range(min=3, message=_(u"Minumum of three participants"))])
+    creator_role = RadioField(_(u"Your role in the Troika"), choices=[
+        ('lead', _(u"I will lead this")), 
+        ('learner', _(u"I want someone else to lead this."))],
         default='lead')
     
 class FeedbackForm(Form):
-    description = TextAreaField(gettext(u"Share us your thoughts on Troika. What do you like? What could be improved?"), [
+    description = TextAreaField(_(u"Share us your thoughts on Troika. What do you like? What could be improved?"), [
         validators.Required(),
         validators.Length(max=10000)])
+    
+class LanguageForm(Form):
+    language = SelectField(choices=[
+        ('en', 'English'), 
+        ('fi', 'Suomi')])

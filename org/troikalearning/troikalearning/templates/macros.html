@@ -5,7 +5,7 @@
 </div>
 {% endmacro %}
 
-{% macro slogan(caller) %} {{ gettext('Hassle-Free Peer Learning') }} {% endmacro %}
+{% macro slogan(caller) %} {{ _('Hassle-Free Peer Learning') }} {% endmacro %}
 
 
 {% macro handle_errors(caller, errors) %}
@@ -13,14 +13,14 @@
 {% for error in errors %}
 <div class="alert alert-error tl-message">
   <button type="button" class="close" data-dismiss="alert">&times;</button>
-  <strong>{{ gettext('Error') }}:</strong> {{ error }}
+  <strong>{{ _('Error') }}:</strong> {{ error }}
 </div>
 {% endfor %}
 {% endif %}
 {% endmacro %}
 
 {% macro handle_description(caller) %}
-<h6 class="tl-input-description">{{ gettext('Alias to use instead of your real name. Set an alias only 
+<h6 class="tl-input-description">{{ _('Alias to use instead of your real name. Set an alias only 
         if you do not want your real name to be public on this web site.') }}</h6>
 {% endmacro %}
 
