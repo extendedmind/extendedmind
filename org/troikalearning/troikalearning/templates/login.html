@@ -9,7 +9,7 @@
 <div class="container">
   <div class="row-fluid"> 
     <div class="span6">  
-      <h2>Login</h2>
+      <h2>{{ _('Login') }}</h2>
       {% call macros.handle_errors(errors=loginerrors) %} {% endcall %}
       <form id="tl-login" action="{{ url_for('login') }}" method="POST">
         <dl>
@@ -23,7 +23,7 @@
       </form>
     </div>
     <div class="span6">  
-      <h2>Register</h2>
+      <h2>{{ _('Register') }}</h2>
       {% call macros.handle_errors(errors=regerrors) %} {% endcall %}
       <form id="tl-register" action="{{ url_for('login') }}"
         method="POST">

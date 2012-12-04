@@ -370,23 +370,27 @@ def edit_troika(troika_id):
         troikaform.start_time_minutes.data = __get_formatted_datetime(troika.start_time,"%M")
         troikaform.duration.data = __get_duration(troika.start_time, troika.end_time)
         troikaform.max_participants.data = troika.max_participants
-    elif troikaform.validate_on_submit(): 
+    elif troikaform.validate_on_submit():
         if request.form["action"] == "Save Troika":
-            start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time_hours.data, troikaform.start_time_minutes.data)
-            if start_time is not None and start_time < datetime.now():
-                troikaerrors.append(_(u"Start time for the troika must be in the future"))
+            # Validate times
+            if troikaform.start_date.data is not None and (troikaform.start_time_hours.data is None or troikaform.start_time_minutes.data is None or troikaform.duration.data is None):
+                troikaerrors.append(_(u"When a date is set, you must also give values for hours, minutes and duration."))
             else:
-                # Update info
-                troika.title = troikaform.title.data
-                troika.description = troikaform.description.data 
-                troika.address = troikaform.address.data
-                troika.address_addendum = troikaform.address_addendum.data
-                troika.start_time = start_time
-                troika.end_time = __get_end_datetime(troika.start_time, troikaform.duration.data)
-                troika.max_participants = troikaform.max_participants.data
-                save_troika(troika)
-                return redirect(url_for('troika', troika_id=troika_id))
-                flash(_(u'Troika saved'))         
+                start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time_hours.data, troikaform.start_time_minutes.data)
+                if user.role != 'admin' and start_time is not None and start_time < datetime.now():
+                    troikaerrors.append(_(u"Start time for the troika must be in the future"))
+                else:
+                    # Update info
+                    troika.title = troikaform.title.data
+                    troika.description = troikaform.description.data 
+                    troika.address = troikaform.address.data
+                    troika.address_addendum = troikaform.address_addendum.data
+                    troika.start_time = start_time
+                    troika.end_time = __get_end_datetime(troika.start_time, troikaform.duration.data)
+                    troika.max_participants = troikaform.max_participants.data
+                    save_troika(troika)
+                    return redirect(url_for('troika', troika_id=troika_id))
+                    flash(_(u'Troika saved'))         
         elif request.form["action"] == _(u"Delete Troika"):
             title = troika.title
             delete_troika(troika)
@@ -593,31 +597,34 @@ def create_troika():
     
     troikaerrors = []
     troikaform = TroikaForm(prefix="troika")
-    # Find out if the logged in user has rights to edit/delete
-    user = get_user(session['email'])
-
-    start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time_hours.data, troikaform.start_time_minutes.data)
-    if start_time is not None and start_time < datetime.now():
-        troikaerrors.append(_(u"Start time for the troika must be in the future"))
-    elif troikaform.validate_on_submit():
-        troika = Troika(created = datetime.now(),
-                title=troikaform.title.data,
-                description=troikaform.description.data,
-                country='FI', region='18', area_id=None, campus_id=None,
-                address=troikaform.address.data,
-                address_addendum=troikaform.address_addendum.data,
-                language='fi', 
-                start_time=start_time,
-                end_time=__get_end_datetime(start_time, troikaform.duration.data),
-                max_participants=troikaform.max_participants.data, 
-                creator=user)
-        if troikaform.creator_role.data == 'lead':
-            troika.lead = user
+    if troikaform.validate_on_submit():
+        user = get_user(session['email'])
+        # Validate times
+        if troikaform.start_date.data is not None and (troikaform.start_time_hours.data is None or troikaform.start_time_minutes.data is None or troikaform.duration.data is None):
+            troikaerrors.append(_(u"When a date is set, you must also give values for hours, minutes and duration.."))
         else:
-            troika.first_learner = user
-        save_troika(troika)
-        flash(_(u"Troika Created"))
-        return redirect(url_for('troika', troika_id=troika.id))
+            start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time_hours.data, troikaform.start_time_minutes.data)
+            if start_time is not None and start_time < datetime.now():
+                troikaerrors.append(_(u"Start time for the troika must be in the future."))
+            else:
+                troika = Troika(created = datetime.now(),
+                        title=troikaform.title.data,
+                        description=troikaform.description.data,
+                        country='FI', region='18', area_id=None, campus_id=None,
+                        address=troikaform.address.data,
+                        address_addendum=troikaform.address_addendum.data,
+                        language='fi', 
+                        start_time=start_time,
+                        end_time=__get_end_datetime(start_time, troikaform.duration.data),
+                        max_participants=troikaform.max_participants.data, 
+                        creator=user)
+                if troikaform.creator_role.data == 'lead':
+                    troika.lead = user
+                else:
+                    troika.first_learner = user
+                save_troika(troika)
+                flash(_(u"Troika Created"))
+                return redirect(url_for('troika', troika_id=troika.id))
     if troikaform.errors:
         for key, value in troikaform.errors.items():
             troikaerrors.append(key + ': ' + value[0])

@@ -19,7 +19,7 @@ from flask import Flask
 from troikalearning import session
 import os
 from flask_mail import Mail
-from flaskext.babel import Babel, gettext
+from flaskext.babel import Babel, gettext, lazy_gettext
 
 app = Flask(__name__)
 app.config.from_pyfile(os.getcwd() + os.sep + 'troikalearning.cfg')
@@ -28,5 +28,6 @@ app.session_interface = session.ItsdangerousSessionInterface()
 mail = Mail(app)
 babel = Babel(app)
 _ = gettext
+__ = lazy_gettext
 
 import views
