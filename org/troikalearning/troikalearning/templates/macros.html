@@ -31,18 +31,20 @@
 <div id="inviteDialog-{{ troika_role }}" class="modal hide fade"
   role="dialog" aria-labelledby="inviteLabel"
   aria-hidden="true">
-  <div class="modal-header">
-    <a href="#" class="close" data-dismiss="modal">&times;</a>
-    <button type="button" class="close" data-dismiss="modal"
-      aria-hidden="true"></button>
-    <h4 id="inviteLabel">{{ heading_text }}</h4>
-  </div>
-  <div class="modal-body">
-    <input id="invite-email-{{ troika_role }}" type="email"/>
-  </div>
-  <div class="modal-footer">
-    <a class="btn btn-primary" onclick="sendInvite('{{ troika_role }}');" href="#">Send email</a>
-  </div>
+  <form id="invite-form" action="/invite" data-remote="true" method="post">
+    <div class="modal-header">
+      <a href="#" class="close" data-dismiss="modal">&times;</a>
+      <button type="button" class="close" data-dismiss="modal"
+        aria-hidden="true"></button>
+      <h4 id="inviteLabel">{{ heading_text }}</h4>
+    </div>
+    <div class="modal-body">
+      <input id="invite-email-{{ troika_role }}" type="email"/>
+    </div>
+    <div class="modal-footer">
+      <input type="submit" class="btn btn-primary" value="{{ _('Send email') }}"/>
+    </div>
+  </form>
 </div>
 {% endmacro %}
 
