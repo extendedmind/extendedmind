@@ -236,6 +236,8 @@ def troika(troika_id):
         access = get_troika_access_right(user, troika)
         activate = activatable(user, troika, app.config.get('ACTIVATABLE_BEFORE_THREE'))
     
+    troikaform = TroikaForm(language=troika.language)
+    language_name = [item for item in troikaform.language.choices if item[0] == troika.language][0][1]
     entry = {'access': access,
              'activate': activate,
              'id': troika.id,
@@ -244,6 +246,7 @@ def troika(troika_id):
              'description': troika.description,
              'address': troika.address,
              'address_addendum': troika.address_addendum,
+             'language': language_name,
              'start_time': __get_formatted_datetime(troika.start_time,"%d.%m.%Y %H:%M"),
              'end_time': __get_formatted_datetime(troika.end_time,"%d.%m.%Y %H:%M"),
              'max_participants': troika.max_participants,
@@ -364,7 +367,8 @@ def edit_troika(troika_id):
         troikaform.title.data = troika.title
         troikaform.description.data = troika.description
         troikaform.address.data = troika.address
-        troikaform.address_addendum.data = troika.address_addendum        
+        troikaform.address_addendum.data = troika.address_addendum
+        troikaform.language.data = troika.language
         troikaform.start_date.data = troika.start_time
         troikaform.start_time_hours.data = __get_formatted_datetime(troika.start_time,"%H")
         troikaform.start_time_minutes.data = __get_formatted_datetime(troika.start_time,"%M")
@@ -385,6 +389,7 @@ def edit_troika(troika_id):
                     troika.description = troikaform.description.data 
                     troika.address = troikaform.address.data
                     troika.address_addendum = troikaform.address_addendum.data
+                    troika.language = troikaform.language.data
                     troika.start_time = start_time
                     troika.end_time = __get_end_datetime(troika.start_time, troikaform.duration.data)
                     troika.max_participants = troikaform.max_participants.data
@@ -610,10 +615,10 @@ def create_troika():
                 troika = Troika(created = datetime.now(),
                         title=troikaform.title.data,
                         description=troikaform.description.data,
-                        country='FI', region='18', area_id=None, campus_id=None,
+                        country='FI', region=None, area_id=None, campus_id=None,
                         address=troikaform.address.data,
                         address_addendum=troikaform.address_addendum.data,
-                        language='fi', 
+                        language=troikaform.language.data, 
                         start_time=start_time,
                         end_time=__get_end_datetime(start_time, troikaform.duration.data),
                         max_participants=troikaform.max_participants.data, 

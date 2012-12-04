@@ -68,6 +68,10 @@ class TroikaForm(Form):
     description = TextAreaField(__(u"Description *"), [
         validators.Required(),
         validators.Length(max=10000)])
+    language = SelectField(__(u"Language"), [
+        validators.Optional(),
+        validators.Length(max=2, min=2)],
+        choices=[('fi', __(u"Finnish")), ('en', __(u"English")), ('se', __(u"Swedish"))])
     address = TextField(__(u"Address"), [
         validators.Length(max=512)])
     address_addendum = TextField(__(u"Address Addendum"), [

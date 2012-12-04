@@ -23,6 +23,12 @@
           <dt>{{ troikaform.hidden_tag() }}</dt>
           <dt>{{ troikaform.title.label }} {{ troikaform.title(class="tl-text-medium") }}</dt>
           <dt>{{ troikaform.description.label }} {{ troikaform.description(class="tl-text-large", rows=10) }}</dt>
+          <dt>{{ troikaform.language.label }}
+              <select name="{{ troikaform.language.name }}">
+              {% for subfield in troikaform.language %}
+                 {{ subfield() }}
+              {% endfor %}
+              </select></dt>
           <dt>{{ troikaform.address.label }} {{ troikaform.address(class="tl-text-medium") }}</dt>
           <dt>{{ troikaform.address_addendum.label }} {{ troikaform.address_addendum(class="tl-text-medium") }}</dt>
           <dt>{{ troikaform.start_date.label }} {{ troikaform.start_date(class="tl-date") }}</dt>
