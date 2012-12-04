@@ -27,7 +27,7 @@ from security import validate_login, register, hash_password, get_troika_access_
 from backend import Troika, get_active_troikas, get_pending_troikas, get_completed_troikas, \
                     user_exists, get_user, save_user, get_troika, save_troika, delete_troika, \
                     Feedback, save_feedback, get_feedback
-from forms import LoginForm, RegistrationForm, TroikaForm, UserForm, FeedbackForm, LanguageForm
+from forms import LoginForm, RegistrationForm, TroikaForm, UserForm, FeedbackForm, LanguageForm, InviteForm
 from flask import request, session, flash, redirect, url_for, render_template
 from datetime import datetime
 from datetime import time as dttime
@@ -62,9 +62,15 @@ def inject_language_form():
 def change_language():
     langform = LanguageForm(prefix="language")
     if langform.validate():
-        session['language'] = langform.language.data
+        if not 'language' in session or session['language'] != langform.language.data:
+            session['language'] = langform.language.data
+            # Also change the user language in the database, to make the change persistent
+            if 'email' in session: 
+                user = get_user(session['email'])
+                user.preferred_language = session['language']
+                save_user(user)
     else:
-        flash(_(u'Invalid language form: ' + ', '.join(langform.language.errors)), 'error')
+        flash(_(u'Invalid language form: ' + ', '.join((key + ': ' + value[0]) for key, value in langform.errors.items())), 'error')
     return redirect(get_redirect_target())
 
 # Main pages
@@ -250,47 +256,70 @@ def troika(troika_id):
                                 full_name=__get_display_name(participant)) 
                                 for participant in troika.participants] if troika.participants != None else None
              }
-
+    inviteform_lead = InviteForm(role='0', troika_id = troika.id)
+    inviteform_first = InviteForm(role='1', troika_id = troika.id)
+    inviteform_second = InviteForm(role='2', troika_id = troika.id)
+    inviteform_participant = InviteForm(role='3', troika_id = troika.id)
     # show the troika with the given id
     return render_template('troika.html', 
-                           troika=entry)
+                           troika=entry,
+                           inviteform_lead=inviteform_lead,
+                           inviteform_first=inviteform_first,
+                           inviteform_second=inviteform_second,
+                           inviteform_participant=inviteform_participant)
 
-@app.route('/troika/<troika_id>/invite/<role>/<email>', methods=['GET'])
-def invite(troika_id, role, email):
-    url = __check_login(url = url_for('troika', troika_id = troika_id))
+@app.route('/invite', methods=['POST'])
+def invite():
+    url = __check_login(url = get_redirect_target())
     if url: return redirect(url)
- 
-    if email is not None:
-        # Validate email address
-        if not re.match(r'^.+@[^.].*\.[a-z]{2,10}$', email, re.IGNORECASE):
-            flash(_(u"%(email)s is not a valid email address", email=email), 'error')
+    inviteform = InviteForm()
+    if inviteform.validate():
+        user = get_user(session['email'])
+        troika = get_troika(inviteform.troika_id.data)
+        if troika is None:
+            flash(_(u'Invalid troika id'), 'error')
+        elif troika.get_phase() == 'complete':
+            flash(_(u'Can not invite to a completed troika'), 'error')
         else:
-            user = get_user(session['email'])
-            troika = get_troika(troika_id);
             msg = Message(_(u"Come join the Troika \"%(title)s\"!", title=troika.title),
                       sender = ("Troika Webmaster", "webmaster@troikalearning.org"),
-                      recipients=[email])
+                      recipients=[inviteform.email.data])
         
-            msg.body = _("$(user)s thought you should join the troika \"%(title)s\":", user = __get_display_name(user), title=troika.title)
+            msg.body = _("%(user)s thought you should join the troika \"%(title)s\":", user = __get_display_name(user), title=troika.title)
             msg.body += "\n\n" + url_for('troika', troika_id=troika.id, _external=True)
             msg.body += "\n\n"
-            role_string = _("the lead")
-            if role == '1':
-                role_string = _("the first learner")
-            elif role == '2':
-                role_string = _("the second learner")
-            elif role == '3':
-                role_string = _("a particapant")
-            msg.body += _("as $(role)s.", role=role_string)
-            msg.body += "\n\n" 
-            msg.body += _("What do you say?\n\n")
-            msg.body += __get_troika_message_signature()
             
-            mail.send(msg)
-            flash(_(u'Invite sent to $(email)s.',email = email))
+            role_string = None
+            if inviteform.role.data == '0':
+                if troika.lead is None:
+                    role_string = _("the lead")
+                else:
+                    flash(_(u'Troika already has a second learner'), 'error')
+            elif inviteform.role.data == '1':
+                if troika.first_learner is None:
+                    role_string = _("the first learner")
+                else:
+                    flash(_(u'Troika already has a second learner'), 'error')
+            elif inviteform.role.data == '2':
+                if troika.second_learner is None:
+                    role_string = _("the second learner")
+                else:
+                    flash(_(u'Troika already has a second learner'), 'error')
+            elif inviteform.role.data == '3':
+                role_string = _("a participant")
+            else:
+                flash(_(u'Invalid role: ') + 'inviteform.role', 'error')
+            if role_string is not None:  
+                msg.body += _("as %(role)s.", role=role_string)
+                msg.body += "\n\n" 
+                msg.body += _("What do you say?\n\n")
+                msg.body += __get_troika_message_signature()
+                
+                mail.send(msg)
+                flash(_(u'Invite sent to %(email)s.', email = inviteform.email.data))
     else:
-        flash(_(u"No email address given"), 'error')
-    return redirect(url_for('troika', troika_id=troika_id))
+        flash(_(u'Invalid invite form: ' + ', '.join((key + ': ' + value[0]) for key, value in inviteform.errors.items())), 'error')
+    return redirect(get_redirect_target())
 
 def __get_start_datetime(start_date, start_time_hours, start_time_minutes):
     if start_date is None or start_time_hours is None:
@@ -449,7 +478,7 @@ def activate_troika(troika_id):
             return redirect(url_for('troika', troika_id=troika_id))            
         __process_activation(troika)
         save_troika(troika)
-        flash(_(u"Troika \"$(title)s\" activated", title=troika.title))
+        flash(_(u"Troika \"%(title)s\" activated", title=troika.title))
         return redirect(url_for('troika', troika_id=troika_id))
     else:
         flash(_(u'Troika can only be activated by the lead after all required information is set'), 'error')
@@ -470,7 +499,7 @@ def join_troika(troika_id, troika_role):
             troika.lead = user
             __process_pending(troika)
             save_troika(troika)
-            flash(_(u"You are now teaching \"$(title)s\"!", title=troika.title))
+            flash(_(u"You are now teaching \"%(title)s\"!", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '1':
             if troika.first_learner is not None:
@@ -479,7 +508,7 @@ def join_troika(troika_id, troika_role):
             troika.first_learner = user
             __process_pending(troika)
             save_troika(troika)
-            flash(_(u"You are now the first learner of $(title)s!", title=troika.title))
+            flash(_(u"You are now the first learner of \"%(title)s\"!", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '2':
             if troika.second_learner is not None:
@@ -488,7 +517,7 @@ def join_troika(troika_id, troika_role):
             troika.second_learner = user
             __process_pending(troika)
             save_troika(troika)
-            flash(_(u"You are now the second learner of \"$(title)s\"!", title=troika.title))
+            flash(_(u"You are now the second learner of \"%(title)s\"!", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '3':
             if user in troika.participants:
@@ -499,10 +528,10 @@ def join_troika(troika_id, troika_role):
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.participants.append(user)
             save_troika(troika)
-            flash(_(u"You are now participating in \"$(title)s\"!", title=troika.title))
+            flash(_(u"You are now participating in \"%(title)s\"!", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         else:
-            flash(_(u"Unknown Troika role: $(role)", role=troika_role), 'error')
+            flash(_(u"Unknown Troika role: %(role)", role=troika_role), 'error')
             return redirect(url_for('troika', troika_id=troika_id))
     else:
         flash(_(u"You are already partipating in the Troika."), 'error')
@@ -522,7 +551,7 @@ def leave_troika(troika_id, troika_role):
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.lead = None
             save_troika(troika)
-            flash(_(u"You are no longer teaching \"$(title)s\.", title=troika.title))
+            flash(_(u"You are no longer teaching \"%(title)s\.", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '1':
             if troika.first_learner != user:
@@ -530,7 +559,7 @@ def leave_troika(troika_id, troika_role):
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.first_learner = None
             save_troika(troika)
-            flash(_(u"You are no longer the first learner of \"$(title)s\".", title=troika.title))
+            flash(_(u"You are no longer the first learner of \"%(title)s\".", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '2':
             if troika.second_learner != user:
@@ -538,7 +567,7 @@ def leave_troika(troika_id, troika_role):
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.second_learner = None
             save_troika(troika)
-            flash(_(u"You are no longer the second learner of \"$(title)s\".", title=troika.title))
+            flash(_(u"You are no longer the second learner of \"%(title)s\".", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '3':
             if user not in troika.participants:
@@ -546,11 +575,11 @@ def leave_troika(troika_id, troika_role):
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.participants.remove(user)
             save_troika(troika)
-            flash(_(u"You are no longer participating in \"$(title)s\".", title=troika.title))
+            flash(_(u"You are no longer participating in \"%(title)s\".", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
             
         else:
-            flash(_(u"Unknown Troika role: $(role)s", role = troika_role), 'error')
+            flash(_(u"Unknown Troika role: %(role)s", role = troika_role), 'error')
             return redirect(url_for('troika', troika_id=troika_id))
     else:
         flash(_(u"You can not leave a Troika that is complete"), 'error')

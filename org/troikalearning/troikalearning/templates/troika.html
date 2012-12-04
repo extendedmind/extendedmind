@@ -43,8 +43,8 @@
         {% if (troika.lead == None and 'email' in session and not troika.participating) %}
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=0) }}">
           {{ _('Lead this Troika') }}
-          </a><br/>          
-          {% call macros.invite_modal(troika_role=0, 
+          </a><br/>
+          {% call macros.invite_modal(inviteform=inviteform_lead, 
                                       link_text=_('Invite lead'), 
                                       heading_text=_('Give the email address of the person you want to invite to lead.')) %}
           {% endcall %}          
@@ -61,7 +61,7 @@
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=1) }}">
           {{ _('Be the first learner in this Troika') }}
           </a><br/>          
-          {% call macros.invite_modal(troika_role=1, 
+          {% call macros.invite_modal(inviteform=inviteform_first, 
                                       link_text=_('Invite first learner'), 
                                       heading_text=_('Give the email address of the person you want to invite to be the first learner.')) %}
           {% endcall %}
@@ -78,7 +78,7 @@
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=2) }}">
           {{ _('Be the second learner in this Troika') }}
           </a><br/>          
-          {% call macros.invite_modal(troika_role=2, 
+          {% call macros.invite_modal(inviteform=inviteform_second, 
                                       link_text=_('Invite second learner'), 
                                       heading_text=_('Give the email address of the person you want to invite to be the second learner.')) %}
           {% endcall %}
@@ -110,7 +110,7 @@
             </a>
           {% endif %}
           {% if (troika.phase == 'active' and not troika.is_full) %}  
-            <br/>{% call macros.invite_modal(troika_role=3, 
+            <br/>{% call macros.invite_modal(inviteform=inviteform_participant, 
                                         link_text=_('Invite participant'), 
                                         heading_text=_('Give the email address of a person you want to invite to be participate in this Troika.')) %}
             {% endcall %}
@@ -125,12 +125,4 @@
 </div>
 {% endif %}
        
-{% endblock %}
-
-{% block extra_js %}
-<script type=text/javascript>
-  function sendInvite(troika_role) {
-      window.location.replace(document.URL + "/invite/" + troika_role + "/" + document.getElementById("invite-email-" + troika_role).value);
-  };
-</script>
 {% endblock %}

@@ -24,14 +24,14 @@
         if you do not want your real name to be public on this web site.') }}</h6>
 {% endmacro %}
 
-{% macro invite_modal(caller, troika_role, link_text, heading_text) %}
+{% macro invite_modal(caller, inviteform, link_text, heading_text) %}
 <!-- Button to trigger modal -->
-<a href="#inviteDialog-{{ troika_role }}" data-toggle="modal">{{ link_text }}</a>
+<a href="#inviteDialog-{{ inviteform.role.data }}" data-toggle="modal">{{ link_text }}</a>
 <!-- Modal -->
-<div id="inviteDialog-{{ troika_role }}" class="modal hide fade"
+<div id="inviteDialog-{{ inviteform.role.data }}" class="modal hide fade"
   role="dialog" aria-labelledby="inviteLabel"
   aria-hidden="true">
-  <form id="invite-form" action="/invite" data-remote="true" method="post">
+  <form id="invite-form" action="/invite" data-remote="true" method="POST">
     <div class="modal-header">
       <a href="#" class="close" data-dismiss="modal">&times;</a>
       <button type="button" class="close" data-dismiss="modal"
@@ -39,7 +39,8 @@
       <h4 id="inviteLabel">{{ heading_text }}</h4>
     </div>
     <div class="modal-body">
-      <input id="invite-email-{{ troika_role }}" type="email"/>
+      {{ inviteform.hidden_tag() }}
+      {{ inviteform.email() }}
     </div>
     <div class="modal-footer">
       <input type="submit" class="btn btn-primary" value="{{ _('Send email') }}"/>

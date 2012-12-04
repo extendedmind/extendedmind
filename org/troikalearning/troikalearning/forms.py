@@ -23,7 +23,8 @@ Created on 10.10.2012
 '''
 from flask_wtf import Form, IntegerField, RadioField, \
                       DateField, TextField, TextAreaField, PasswordField,  \
-                      validators, HiddenField, SelectField
+                      HiddenField, SelectField
+from wtforms import validators
 from troikalearning import _
 
 class RegistrationForm(Form):
@@ -36,7 +37,7 @@ class RegistrationForm(Form):
     alias = TextField(_(u"Alias"), [validators.Length(max=512)])
     email = TextField(_(u"Email Address") + ' *', [
         validators.Required(),
-        validators.email(_(u"Not a valid email address"))])
+        validators.email(message=_(u"Not a valid email address"))])
     password = PasswordField(_(u"Password") + ' *', [
         validators.Required(),
         validators.EqualTo('confirm', message=_(u"Passwords must match"))])
@@ -98,3 +99,10 @@ class LanguageForm(Form):
     language = SelectField(choices=[
         ('en', 'English'), 
         ('fi', 'Suomi')])
+
+class InviteForm(Form):
+    role = HiddenField(_(u"Role"), [validators.Length(min=1, max=1)])
+    troika_id = HiddenField(_(u"Troika Id"), [validators.Required()])
+    email = TextField(_(u"Email Address"), [validators.Required(),
+        validators.email(message=_(u"Not a valid email address"))])
+    
