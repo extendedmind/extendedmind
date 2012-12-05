@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-12-05 12:48+0200\n"
-"PO-Revision-Date: 2012-12-05 20:18+0200\n"
+"POT-Creation-Date: 2012-12-05 20:44+0200\n"
+"PO-Revision-Date: 2012-12-05 20:45+0200\n"
 "Last-Translator: Timo Tiuraniemi <timo.tiuraniemi@iki.fi>\n"
 "Language-Team: fi <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -712,6 +712,7 @@ msgstr ""
 "automaattisesti tai \"Aktivoi Troika\" -linkkiä on klikattu."
 
 #: troikalearning/templates/feedback.html:6
+#: troikalearning/templates/feedback.html:12
 msgid "Feedback"
 msgstr "Palaute"
 
@@ -876,6 +877,10 @@ msgid ""
 msgstr ""
 "Anna sen henkilön sähköpostiosoite, jonka haluat kutsua Troikan "
 "osallistujaksi."
+
+#: troikalearning/templates/troika.html:125
+msgid "Activate Troika"
+msgstr "Aktivoi Troika"
 
 #: troikalearning/templates/troikas.html:12
 msgid "Create a new Troika event"
