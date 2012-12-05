@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2012-12-05 12:48+0200\n"
-"PO-Revision-Date: 2012-12-05 20:09+0200\n"
+"PO-Revision-Date: 2012-12-05 20:18+0200\n"
 "Last-Translator: Timo Tiuraniemi <timo.tiuraniemi@iki.fi>\n"
 "Language-Team: fi <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -144,9 +144,9 @@ msgstr "Haluan, että joku muu on Troikan vetäjä"
 
 #: troikalearning/forms.py:98
 msgid ""
-"Share us your thoughts on Troika. What do you like? What could be "
-"improved?"
-msgstr "Kerro vapaasti mielipiteesi Troikasta. Mistä pidät? Mitä voisi parantaa?"
+"Share us your thoughts on Troika. What do you like? What could be improved?"
+msgstr ""
+"Kerro vapaasti mielipiteesi Troikasta. Mistä pidät? Mitä voisi parantaa?"
 
 #: troikalearning/forms.py:108
 msgid "Role"
@@ -270,8 +270,7 @@ msgstr "Vain Troikan luoja tai vetäjä voi muokata Troikaa"
 
 #: troikalearning/views.py:381 troikalearning/views.py:609
 msgid ""
-"When a date is set, you must also give values for hours, minutes and "
-"duration"
+"When a date is set, you must also give values for hours, minutes and duration"
 msgstr ""
 "Kun päivämäärä on asetettu, sinun pitää myös antaa arvot tunneille, "
 "minuuteille ja kestolle"
@@ -307,7 +306,8 @@ msgid "Congratulations! The Troika \"%(title)s\":"
 msgstr "Onnittelut! Troika \"%(title)s\":"
 
 #: troikalearning/views.py:437
-msgid "has now been activated. You can view the participants on the Troika page."
+msgid ""
+"has now been activated. You can view the participants on the Troika page."
 msgstr "on nyt aktivoitu. Voit katsoa osallistujia Troikan sivulla."
 
 #: troikalearning/views.py:439
@@ -333,11 +333,11 @@ msgstr "1. päättää lopuista avoimista asioista Troikassa."
 
 #: troikalearning/views.py:467
 msgid ""
-"2. add that information to the troika by pressing \"Edit Troika\" "
-"(visible for the lead and creator),"
+"2. add that information to the troika by pressing \"Edit Troika\" (visible "
+"for the lead and creator),"
 msgstr ""
-"2. lisätä tiedot Troikaan painamalla \"Muokkaa Troikaa\" (näkyvillä "
-"Troikan luojalle ja vetäjälle) "
+"2. lisätä tiedot Troikaan painamalla \"Muokkaa Troikaa\" (näkyvillä Troikan "
+"luojalle ja vetäjälle) "
 
 #: troikalearning/views.py:468
 msgid "3. and then press \"Activate Troika\"."
@@ -472,8 +472,8 @@ msgstr "Kirjauduit ulos"
 #: troikalearning/templates/about.html:4
 #: troikalearning/templates/edit_troika.html:4
 #: troikalearning/templates/feedback.html:4
-#: troikalearning/templates/login.html:4 troikalearning/templates/troika.html:4
-#: troikalearning/templates/user.html:4
+#: troikalearning/templates/login.html:4
+#: troikalearning/templates/troika.html:4 troikalearning/templates/user.html:4
 msgid "Home"
 msgstr "Etusivu"
 
@@ -515,12 +515,12 @@ msgstr "Troikan tehtävä on auttaa ihmisiä"
 msgid ""
 "to share and create new knowledge with each other. We want to remove "
 "common \n"
-"        obstacles that usually prohibit this. We want to encourage people"
-" to recognize their own abilities, skills and\n"
+"        obstacles that usually prohibit this. We want to encourage people to "
+"recognize their own abilities, skills and\n"
 "        knowledge."
 msgstr ""
-"jakamaan ja luomaan uutta tietoa. Haluamme innostaa ihimisiä tunnistamaan"
-" heidän omat kykynsä ja tietonsa. Haluamme poistaa ne esteet, jotka "
+"jakamaan ja luomaan uutta tietoa. Haluamme innostaa ihimisiä tunnistamaan "
+"heidän omat kykynsä ja tietonsa. Haluamme poistaa ne esteet, jotka "
 "tyypillisesti estävät tiedon jakamista tapahtumasta."
 
 #: troikalearning/templates/about.html:30
@@ -529,29 +529,30 @@ msgstr "Troika auttaa koordinoimaan ja organisoimaan"
 
 #: troikalearning/templates/about.html:31
 msgid ""
-"for peer learning. Whether you want to share knowledge or receive it, "
-"Troika offers a platform \n"
-"        where people can arrange peer learning events and spread the word"
-" of the event to other people interested in the \n"
+"for peer learning. Whether you want to share knowledge or receive it, Troika "
+"offers a platform \n"
+"        where people can arrange peer learning events and spread the word of "
+"the event to other people interested in the \n"
 "        topic."
 msgstr ""
 "vertaisoppimisen tapahtumia. Jos haluat yhdistää ihmisiä tiedon äärelle, "
-"Troika tarjoaa alustan, jonka avulla voit järjestää tapahtumia ja viestiä"
-" niistä muille kiinnostuneille."
+"Troika tarjoaa alustan, jonka avulla voit järjestää tapahtumia ja viestiä "
+"niistä muille kiinnostuneille."
 
 #: troikalearning/templates/about.html:34
 msgid "Troika's focus is on in-person meetings"
-msgstr "Troikan perusajatuksena on saada helposti aikaan fyysinen oppimistapahtuma"
+msgstr ""
+"Troikan perusajatuksena on saada helposti aikaan fyysinen oppimistapahtuma"
 
 #: troikalearning/templates/about.html:35
 msgid ""
-"of three or more people. A \"troika\" means \"of three\". When three "
-"people get together \n"
+"of three or more people. A \"troika\" means \"of three\". When three people "
+"get together \n"
 "        at a Troika event, the organized Troika is considered a great "
 "success!"
 msgstr ""
-"kolmen tai useamman ihmisen kesken. \"Troikka\" tarkoittaa \"kolmikkoa\"."
-" Kun Troika-tapahtumaan osallistuu vähintään kolme ihmistä, on Troika "
+"kolmen tai useamman ihmisen kesken. \"Troikka\" tarkoittaa \"kolmikkoa\". "
+"Kun Troika-tapahtumaan osallistuu vähintään kolme ihmistä, on Troika "
 "onnistunut!"
 
 #: troikalearning/templates/about.html:42
@@ -570,12 +571,12 @@ msgstr "Selaa aiheita,"
 msgid ""
 "people have suggested as Troika events. Join a Troika that interests you "
 "either as a \n"
-"          learner, participant or even lead. You are of course also "
-"welcome to"
+"          learner, participant or even lead. You are of course also welcome "
+"to"
 msgstr ""
 "joita muut käyttäjät ovat ehdottaneet Troikiksi. Osallistu sinua "
-"kiinnostavaan Troikaan joko oppijana, osallistujana tai jopa vetäjänä. "
-"Voit tietysti myös"
+"kiinnostavaan Troikaan joko oppijana, osallistujana tai jopa vetäjänä. Voit "
+"tietysti myös"
 
 #: troikalearning/templates/about.html:47
 msgid "create your own Troika"
@@ -583,19 +584,19 @@ msgstr "luoda oman Troikan."
 
 #: troikalearning/templates/about.html:48
 msgid ""
-"Give your Troika event a title, a description, language and select your "
-"role in the Troika. If you want, \n"
-"          you can also suggest a time and a place and set the maximum "
-"number of participants in the Troika. After the Troika \n"
+"Give your Troika event a title, a description, language and select your role "
+"in the Troika. If you want, \n"
+"          you can also suggest a time and a place and set the maximum number "
+"of participants in the Troika. After the Troika \n"
 "          is created, you can invite people to join your Troika on the "
 "Troika page, or just \n"
 "          take a rest and wait for people to discover your Troika!"
 msgstr ""
-"Anna Troikallesi otsikko, kuvaus, kieli ja valitse roolisi Troikassa.  "
-"Jos haluat, voit myös ehdottaa aikaa ja paikkaa ja asettaa osallistujien "
-"ylärajan. Kun Troika on luotu, voit Troikan sivulla kutsua mukaan "
-"ihmisiä, joiden haluaisit liittyvän luomaasi Troikaan, tai sitten vain "
-"otat rauhassa ja odotat, että ihmiset innostuvat Troikastasi!"
+"Anna Troikallesi otsikko, kuvaus, kieli ja valitse roolisi Troikassa.  Jos "
+"haluat, voit myös ehdottaa aikaa ja paikkaa ja asettaa osallistujien "
+"ylärajan. Kun Troika on luotu, voit Troikan sivulla kutsua mukaan ihmisiä, "
+"joiden haluaisit liittyvän luomaasi Troikaan, tai sitten vain otat rauhassa "
+"ja odotat, että ihmiset innostuvat Troikastasi!"
 
 #: troikalearning/templates/about.html:52
 msgid "Meet People."
@@ -604,23 +605,23 @@ msgstr "Tapaa ihmisiä."
 #: troikalearning/templates/about.html:52
 msgid ""
 "When you and two other people have found each other in a Troika event, \n"
-"          you will receive email from us containing the email addresses "
-"of the three of you. If all the details were given \n"
-"          by the Troika creator, the Troika is now activated. If not, "
-"this is the time to agree on the remaining details and \n"
-"          then activate the Troika event by pressing \"Activate Troika\" "
-"on the Troika page. After that other people will be \n"
-"          able to join your Troika, limited of course by the maximum "
-"number of participants you have specified."
+"          you will receive email from us containing the email addresses of "
+"the three of you. If all the details were given \n"
+"          by the Troika creator, the Troika is now activated. If not, this "
+"is the time to agree on the remaining details and \n"
+"          then activate the Troika event by pressing \"Activate Troika\" on "
+"the Troika page. After that other people will be \n"
+"          able to join your Troika, limited of course by the maximum number "
+"of participants you have specified."
 msgstr ""
 "Kun sinä ja kaksi muuta ihmisitä olette löytäneet toisenne Troika-"
-"tapahtumassa, saatte meltä sähköpostin, joka sisältää "
-"sähköpostiosoitteenne. Jos Troikan luoja antoi jo kaikki tarvittavat "
-"tiedot Troika-tapahtumasta, Troika on nyt aktiivinen. Jos tiedot olivat "
-"vielä vajaat, tässä vaiheessa teidän tulee päättää puuttuvista tiedoista."
-" Kun nämä tiedot on täytetty palveluun, Troika-tapahtuman voi aktioida "
-"painamalla \"Aktvoi Troika\". Tämän jälkeen myös muut voivat liittyä "
-"mukaan Troikaan asettamanne osallistujamäärän ylärajan mukaisesti."
+"tapahtumassa, saatte meltä sähköpostin, joka sisältää sähköpostiosoitteenne. "
+"Jos Troikan luoja antoi jo kaikki tarvittavat tiedot Troika-tapahtumasta, "
+"Troika on nyt aktiivinen. Jos tiedot olivat vielä vajaat, tässä vaiheessa "
+"teidän tulee päättää puuttuvista tiedoista. Kun nämä tiedot on täytetty "
+"palveluun, Troika-tapahtuman voi aktioida painamalla \"Aktvoi Troika\". "
+"Tämän jälkeen myös muut voivat liittyä mukaan Troikaan asettamanne "
+"osallistujamäärän ylärajan mukaisesti."
 
 #: troikalearning/templates/about.html:57
 msgid "Learn Stuff."
@@ -629,27 +630,26 @@ msgstr "Opi kaikenlaista."
 #: troikalearning/templates/about.html:57
 msgid ""
 "Enjoy your Troika event and learn things from each other! Finally \n"
-"          remember to spread the word about your Troika event for others "
-"to be encouraged and set \n"
+"          remember to spread the word about your Troika event for others to "
+"be encouraged and set \n"
 "          up more Troikas to share their knowledge."
 msgstr ""
 "Nauttikaa Troika-tapahtumasta ja oppikaa kaikenlaista uutta toisiltanne. "
-"Muistakaa kertoa Troikasta eteenpäin ja antaa palautetta tapahtumastanne,"
-" jotta muutkin innostuvat lisäämään omia Troikiaan tiedon jakamiseksi."
+"Muistakaa kertoa Troikasta eteenpäin ja antaa palautetta tapahtumastanne, "
+"jotta muutkin innostuvat lisäämään omia Troikiaan tiedon jakamiseksi."
 
 #: troikalearning/templates/about.html:67
 msgid ""
 "Troika is the brain child of Olli Parviainen, Petro Poutanen, \n"
 "        Salla Laaksonen and Timo Tiuraniemi who also developed this site."
 msgstr ""
-"Troika takana ovat Olli Parviainen, Petro Poutanen, Salla Laaksonen ja "
-"Timo Tiuraniemi, joka myös kehitti tämän sivuston."
+"Troika takana ovat Olli Parviainen, Petro Poutanen, Salla Laaksonen ja Timo "
+"Tiuraniemi, joka myös kehitti tämän sivuston."
 
 #: troikalearning/templates/about.html:69
 msgid ""
 "Troika website is part of the Extended Mind family of software tools. \n"
-"          Troika and Extended Mind are open source software developed "
-"under"
+"          Troika and Extended Mind are open source software developed under"
 msgstr ""
 "Troikan verkkosivut ovat osa Extended Mind -työkaluperhettä. Troika ja "
 "Extended Mind ovat avointa lähdekoodia. Lisenssinä on"
@@ -681,14 +681,12 @@ msgstr "Anna heti palautetta Troikasta"
 #: troikalearning/templates/about.html:87
 msgid "For general questions about Troika, send email to"
 msgstr ""
-"Jos sinulla on yleisiä kysymyksiä Troikasta, lähetä sähköpostia "
-"osoiteeseen "
+"Jos sinulla on yleisiä kysymyksiä Troikasta, lähetä sähköpostia osoiteeseen "
 
 #: troikalearning/templates/about.html:89
 msgid "For questions about this site, send email to"
 msgstr ""
-"Jos sinulla on kysymyksiä tästä sivuostosta, lähetä sähköpostia "
-"osoitteeseen"
+"Jos sinulla on kysymyksiä tästä sivuostosta, lähetä sähköpostia osoitteeseen"
 
 #: troikalearning/templates/edit_troika.html:6
 msgid "Create"
@@ -710,8 +708,8 @@ msgid ""
 msgstr ""
 "Kun täytät tämän lomakkeen, sinusta tulee uuden Troika-aihion luoja. "
 "Troikasta tulee aktiivinen, kun kaksi muuta käyttäjää ovat vahvistaneet "
-"osallistumisensa, ajasta ja paikasta on sovittu, ja joko Troika on "
-"aktivoitu automaattisesti tai \"Aktivoi Troika\" -linkkiä on klikattu."
+"osallistumisensa, ajasta ja paikasta on sovittu, ja joko Troika on aktivoitu "
+"automaattisesti tai \"Aktivoi Troika\" -linkkiä on klikattu."
 
 #: troikalearning/templates/feedback.html:6
 msgid "Feedback"
@@ -809,7 +807,8 @@ msgstr "Kutsu vetäjä"
 
 #: troikalearning/templates/troika.html:50
 msgid "Give the email address of the person you want to invite to lead."
-msgstr "Anna sen henkilön sähköpostiosoite, jonka haluat kutsua Troikan vetäjäksi."
+msgstr ""
+"Anna sen henkilön sähköpostiosoite, jonka haluat kutsua Troikan vetäjäksi."
 
 #: troikalearning/templates/troika.html:56
 #: troikalearning/templates/troika.html:73
@@ -872,8 +871,8 @@ msgstr "Kutsu osallistuja"
 
 #: troikalearning/templates/troika.html:116
 msgid ""
-"Give the email address of a person you want to invite to be participate "
-"in this Troika."
+"Give the email address of a person you want to invite to be participate in "
+"this Troika."
 msgstr ""
 "Anna sen henkilön sähköpostiosoite, jonka haluat kutsua Troikan "
 "osallistujaksi."
@@ -888,7 +887,7 @@ msgstr "Aktiviiset Troikat"
 
 #: troikalearning/templates/troikas.html:24
 msgid "Upcoming Troikas you can join."
-msgstr "Tulevat Troikat, joihin voit osallistua"
+msgstr "Tulevat Troikat, joihin voit osallistua."
 
 #: troikalearning/templates/troikas.html:39
 #: troikalearning/templates/troikas.html:72
@@ -902,9 +901,7 @@ msgstr "Troika-aihiot"
 
 #: troikalearning/templates/troikas.html:55
 msgid "Suggested Troikas not yet activated. Check if you can help!"
-msgstr ""
-"Ehdotetut Troikat, joita ei ole vielä aktivoitu. Tarkista, jos voit "
-"auttaa!"
+msgstr "Ehdotetut Troikat, joita ei ole vielä aktivoitu. Katso voitko auttaa!"
 
 #: troikalearning/templates/troikas.html:86
 msgid "Completed Troikas"
@@ -912,9 +909,8 @@ msgstr "Valmistuneet Troikat"
 
 #: troikalearning/templates/troikas.html:88
 msgid "Succesfully held Troikas."
-msgstr "Onnistuneesti pidetyt Troikat"
+msgstr "Onnistuneesti pidetyt Troikat."
 
 #: troikalearning/templates/user.html:6
 msgid "User"
 msgstr "Käyttäjä"
-
