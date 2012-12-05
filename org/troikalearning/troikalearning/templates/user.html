@@ -9,7 +9,7 @@
 <div class="container">
   <div class="row-fluid"> 
     <div class="span8 offset4">  
-      <h2>User information</h2>
+      <h2>{{ _('User information') }}</h2>
       {% call macros.handle_errors(errors=usererrors) %} {% endcall %}
       <form id="tl-user" action="{{ url_for('user') }}" method="POST">
         <dl>
@@ -24,7 +24,7 @@
           <dt>{{ userform.new_confirm.label }} {{ userform.new_confirm() }}</dt>
           <dt>{{ userform.password.label }} {{ userform.password() }}</dt>
           <dt>
-            <input type="submit" value="Update">
+            <input type="submit" value="{{ _('Update') }}">
           </dt>
         </dl>
       </form>
