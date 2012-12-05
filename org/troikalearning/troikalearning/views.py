@@ -420,8 +420,8 @@ def __get_troika_message(subject, troika):
 
 def __get_troika_message_signature():
     signature = "--\n"
-    signature += _(u"Troika Team")
-    signature += _(u"Salla, Olli, Petro and Timo")
+    signature += _(u"Troika Team") + "\n"
+    signature += _(u"Salla, Olli, Petro and Timo") + "\n"
     signature += "http://troikalearning.org"
     return signature
 
