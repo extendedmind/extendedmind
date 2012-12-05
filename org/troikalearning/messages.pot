@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-12-05 11:32+0200\n"
+"POT-Creation-Date: 2012-12-05 12:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -63,7 +63,7 @@ msgid "Current Password *"
 msgstr ""
 
 #: troikalearning/forms.py:65
-msgid "Title"
+msgid "Title *"
 msgstr ""
 
 #: troikalearning/forms.py:68
@@ -197,11 +197,11 @@ msgid "Invalid password"
 msgstr ""
 
 #: troikalearning/views.py:283
-msgid "Invalid troika id"
+msgid "Invalid Troika Id"
 msgstr ""
 
 #: troikalearning/views.py:285
-msgid "Can not invite to a completed troika"
+msgid "Can not invite to a completed Troika"
 msgstr ""
 
 #: troikalearning/views.py:287
@@ -252,9 +252,7 @@ msgid "as %(role)s."
 msgstr ""
 
 #: troikalearning/views.py:318
-msgid ""
-"What do you say?\n"
-"\n"
+msgid "What do you say?"
 msgstr ""
 
 #: troikalearning/views.py:322
@@ -355,13 +353,13 @@ msgstr ""
 
 #: troikalearning/views.py:490
 #, python-format
-msgid "Troika \"%(title)s\" activated"
+msgid "Troika %(title)s activated"
 msgstr ""
 
 #: troikalearning/views.py:493
 msgid ""
-"Troika can only be activated by the lead after all required information "
-"is set"
+"Troika can only be activated by the creator or lead after all required "
+"information is set"
 msgstr ""
 
 #: troikalearning/views.py:506
@@ -370,7 +368,7 @@ msgstr ""
 
 #: troikalearning/views.py:511
 #, python-format
-msgid "You are now teaching %(title)s"
+msgid "You are now the lead of %(title)s"
 msgstr ""
 
 #: troikalearning/views.py:515
@@ -391,7 +389,7 @@ msgstr ""
 msgid "You are now the second learner of %(title)s"
 msgstr ""
 
-#: troikalearning/views.py:533
+#: troikalearning/views.py:533 troikalearning/views.py:546
 msgid "You are already participating in the Troika"
 msgstr ""
 
@@ -408,17 +406,13 @@ msgstr ""
 msgid "Unknown Troika role: %(role)"
 msgstr ""
 
-#: troikalearning/views.py:546
-msgid "You are already partipating in the Troika"
-msgstr ""
-
 #: troikalearning/views.py:559
 msgid "You are not the lead of this Troika"
 msgstr ""
 
 #: troikalearning/views.py:563
 #, python-format
-msgid "You are no longer teaching %(title)s"
+msgid "You are no longer the lead of %(title)s"
 msgstr ""
 
 #: troikalearning/views.py:567
@@ -488,7 +482,8 @@ msgid "Contents"
 msgstr ""
 
 #: troikalearning/templates/about.html:15
-msgid "What is Troika?"
+#: troikalearning/templates/about.html:24
+msgid "What Is Troika?"
 msgstr ""
 
 #: troikalearning/templates/about.html:16
@@ -504,10 +499,6 @@ msgstr ""
 #: troikalearning/templates/about.html:18
 #: troikalearning/templates/about.html:83
 msgid "Contact us"
-msgstr ""
-
-#: troikalearning/templates/about.html:24
-msgid "What Is Troika?"
 msgstr ""
 
 #: troikalearning/templates/about.html:26
@@ -642,7 +633,7 @@ msgid "Development of Troika is supported by"
 msgstr ""
 
 #: troikalearning/templates/about.html:77
-msgid "ja"
+msgid "and"
 msgstr ""
 
 #: troikalearning/templates/about.html:85
@@ -670,8 +661,10 @@ msgid ""
 "When you fill up this form you will become a\n"
 "            creator for a new pending Troika. The Troika will\n"
 "            become active once two other participants have\n"
-"            confirmed their attendance and you have agreed\n"
-"            on time and place of the Troika."
+"            confirmed their attendance, you have agreed\n"
+"            on time and place of the Troika, and either Troika\n"
+"            is activated automatically or \"Activate Troika\" \n"
+"            has been clicked."
 msgstr ""
 
 #: troikalearning/templates/feedback.html:6
@@ -735,7 +728,7 @@ msgid "Login or register to join Troika!"
 msgstr ""
 
 #: troikalearning/templates/troika.html:22
-msgid "This Troika is currently full."
+msgid "This Troika is currently full"
 msgstr ""
 
 #: troikalearning/templates/troika.html:29

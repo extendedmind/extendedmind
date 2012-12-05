@@ -280,9 +280,9 @@ def invite():
         user = get_user(session['email'])
         troika = get_troika(inviteform.troika_id.data)
         if troika is None:
-            flash(_(u'Invalid troika id'), 'error')
+            flash(_(u'Invalid Troika Id'), 'error')
         elif troika.get_phase() == 'complete':
-            flash(_(u'Can not invite to a completed troika'), 'error')
+            flash(_(u'Can not invite to a completed Troika'), 'error')
         else:
             msg = Message(_(u"Come join the Troika \"%(title)s\"!", title=troika.title),
                       sender = ("Troika Webmaster", "webmaster@troikalearning.org"),
@@ -315,7 +315,7 @@ def invite():
             if role_string is not None:  
                 msg.body += _("as %(role)s.", role=role_string)
                 msg.body += "\n\n" 
-                msg.body += _("What do you say?\n\n")
+                msg.body += _("What do you say?") + "\n\n"
                 msg.body += __get_troika_message_signature()
                 
                 mail.send(msg)
@@ -487,10 +487,10 @@ def activate_troika(troika_id):
             return redirect(url_for('troika', troika_id=troika_id))            
         __process_activation(troika)
         save_troika(troika)
-        flash(_(u"Troika \"%(title)s\" activated", title=troika.title))
+        flash(_(u"Troika %(title)s activated", title=troika.title))
         return redirect(url_for('troika', troika_id=troika_id))
     else:
-        flash(_(u'Troika can only be activated by the lead after all required information is set'), 'error')
+        flash(_(u'Troika can only be activated by the creator or lead after all required information is set'), 'error')
         return redirect(url_for('troika', troika_id=troika_id))
 
 @app.route('/troika/<troika_id>/<troika_role>/join', methods=['GET'])
@@ -508,7 +508,7 @@ def join_troika(troika_id, troika_role):
             troika.lead = user
             __process_pending(troika)
             save_troika(troika)
-            flash(_(u"You are now teaching %(title)s", title=troika.title))
+            flash(_(u"You are now the lead of %(title)s", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '1':
             if troika.first_learner is not None:
@@ -543,7 +543,7 @@ def join_troika(troika_id, troika_role):
             flash(_(u"Unknown Troika role: %(role)", role=troika_role), 'error')
             return redirect(url_for('troika', troika_id=troika_id))
     else:
-        flash(_(u"You are already partipating in the Troika"), 'error')
+        flash(_(u"You are already participating in the Troika"), 'error')
         return redirect(url_for('troika', troika_id=troika_id))
         
 @app.route('/troika/<troika_id>/<troika_role>/leave', methods=['GET'])
@@ -560,7 +560,7 @@ def leave_troika(troika_id, troika_role):
                 return redirect(url_for('troika', troika_id=troika_id))
             troika.lead = None
             save_troika(troika)
-            flash(_(u"You are no longer teaching %(title)s", title=troika.title))
+            flash(_(u"You are no longer the lead of %(title)s", title=troika.title))
             return redirect(url_for('troika', troika_id=troika_id))
         elif troika_role == '1':
             if troika.first_learner != user:

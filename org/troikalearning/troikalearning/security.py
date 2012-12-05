@@ -66,7 +66,7 @@ def get_troika_access_right(user, troika):
 
 def activatable(user, troika, activatable_before_three):
 
-    if ((user.role == "admin" or troika.lead is user) and  
+    if ((user.role == "admin" or troika.creator is user or troika.lead is user) and  
         troika.address is not None and 
         troika.start_time is not None and 
         troika.end_time is not None and 

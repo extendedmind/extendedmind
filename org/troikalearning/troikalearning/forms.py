@@ -62,7 +62,7 @@ class UserForm(Form):
         validators.Required()])
 
 class TroikaForm(Form):
-    title = TextField(__(u"Title") + ' *', [
+    title = TextField(__(u"Title *"), [
         validators.Required(),
         validators.Length(max=512)])
     description = TextAreaField(__(u"Description *"), [
