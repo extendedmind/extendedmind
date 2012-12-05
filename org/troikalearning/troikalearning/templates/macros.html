@@ -1,7 +1,11 @@
+{% macro steps(caller) %}
+{{ _('Discover a Topic. Meet People. Learn Stuff.') }}
+{% endmacro %}
+
 {% macro heading(caller) %}
 <div class="tl-heading">
   <img class="tl-logo" src="{{ url_for('static', filename='img/logo.png') }}"></img>
-  <p>Discover a Topic. Meet People. Learn Stuff.</p>
+  <p>{% call steps() %}{% endcall %}</p>
 </div>
 {% endmacro %}
 

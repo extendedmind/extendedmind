@@ -24,6 +24,15 @@ body {
 .tl-language select {
   width: 100px;
 }
+.tl-list {
+  font-weight: bold;
+}
+.tl-list li {
+  margin-bottom: 1em;
+}
+.tl-list span {
+  font-weight: normal;
+}
 .tl-group {
   border: 1px solid #E5E5E5;
   border-radius: 4px 4px 4px 4px;

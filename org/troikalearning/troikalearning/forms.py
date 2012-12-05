@@ -91,7 +91,7 @@ class TroikaForm(Form):
         validators.number_range(min=3, message=__(u"Minumum of three participants"))])
     creator_role = RadioField(__(u"Your role in the Troika"), choices=[
         ('lead', __(u"I will lead this")), 
-        ('learner', __(u"I want someone else to lead this."))],
+        ('learner', __(u"I want someone else to lead this"))],
         default='lead')
     
 class FeedbackForm(Form):

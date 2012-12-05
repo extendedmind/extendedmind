@@ -13,8 +13,7 @@
       <ul class="nav nav-list" data-spy="scroll" data-target=".nav">
         <li class="nav-header">{{ _('Contents') }}</li>
         <li><a href="#general">{{ _('What is Troika?') }}</a></li>
-        <li><a href="#learn">{{ _('Ready to start learning? Join a Troika!') }}</a></li>
-        <li><a href="#share">{{ _('Ready to start sharing? Set up your own Troika!') }}</a></li>
+        <li><a href="#how">{{ _('How Does It Work?') }}</a></li>
         <li><a href="#we">{{ _('Who are we?') }}</a></li>
         <li><a href="#contact">{{ _('Contact us') }}</a></li>
       </ul>
@@ -22,82 +21,43 @@
     <div class="span8">
       <section id="general" class="tl-anchor">
         <div class="page-header">
-          <h3>{{ _('What is Troika?') }}</h3>
+          <h3>{{ _('What Is Troika?') }}</h3>
         </div>
-        <p>{{ _('Do you know what you could learn from the person next to you? What 
-        would be the funniest way to share this knowledge to you and
-        other people? Troika is a tool developed for you to
-        make learning together possible with just the right people
-        around you. Troika helps you to easily organize a session for 
-        learning and passing the knowledge on.') }}</p>
-        <p>{{ _('Why do we need Troika for learning together? The biggest 
-        obstacle in sharing our knowledge or skills is often to take the first step. 
-        Troubles in taking the first steps prevent us from learning small 
-        things from each other: how to mend a bicycle, how to use a 
-        spreadsheet program - how to juggle? Small things that could make 
-        life easier and take very little time.') }}</p>
-        <p>{{ _('Troika is a method and a tool to answer these questions and 
-        overcome the simple - but demanding - obstacles in peer-to-peer 
-        learning and knowledge creation. Troika offers') }}
-        <ol><li>{{ _('a platform where people can arrange a learning session and') }}</li>
-        <li>{{ _('a way to communicate this session forward to other people interested in 
-        the topic.') }}</li></ol>{{ _('The purpose of Troika is to make these things possible 
-        with the minimum level of organization. A \'troika\' means a clique 
-        of three. When three people gather together at Troika event, 
-        the organized Troika will be considered as a great success!') }}</p>
-        <p>{{ _('Troika builds on three simple premises:') }}
-          <ul>
-              <li>{{ _('You will fill a gap between people who know something and 
-                  people who want to learn something.')}}</li>
-              <li>{{ _('You will engage a minimum of two (2) people.')}}</li>
-              <li>{{ _('You will talk about troika (Spread the word, advertise the
-              Troika event and share the spirit).')}}</li>
-          </ul>
-        </p>
-        <p><b>{{ _('Troika is not limited to any certain subject areas. We all know 
-        something worth sharing - think outside the box!')}}</b></p>
+        <p><b>{{ _('Troika\'s mission is to empower people') }}</b><br/>
+        <blockquote>{{ _('to share and create new knowledge with each other. We want to remove common 
+        obstacles that usually prohibit this. We want to encourage people to recognize their own abilities, skills and
+        knowledge.') }}</blockquote></p>
+        <p><b>{{ _('Troika is a hassle-free coordinator and organizer') }}</b><br/>
+        <blockquote>{{ _('for peer learning. Whether you want to share knowledge or receive it, Troika offers a platform 
+        where people can arrange peer learning events and spread the word of the event to other people interested in the 
+        topic.') }}</blockquote></p>
+        <p><b>{{ _('Troika\'s focus is on in-person meetings') }}</b><br/>
+        <blockquote>{{ _('of three or more people. A "troika" means "of three". When three people get together 
+        at a Troika event, the organized Troika is considered a great success!') }}</blockquote></p>
       </section>
-      <section id="learn" class="tl-anchor">
+      <section id="how" class="tl-anchor">
         <div class="page-header">
-          <h3>{{ _('Ready to start learning? Join a Troika!')}}</h3>
+          <h3>{{ _('How Does It Work?')}}</h3>
         </div>
-        <p>
-          <ol>
-            <li><a href="{{ url_for('login') }}" target="_blank">{{ _('Register') }}</a> {{ _('as a user.') }}</li>
-            <li><a href="{{ url_for('troikas') }}" target="_blank">{{ _('Browse') }}</a> 
-                {{ _('the list of active troika events
-                on the front page and find the ones you\'re interested in. If there is no troika 
-                available on the topic you wish to learn, you may want to') }} 
-                <a href="{{ url_for('create_troika') }}" target="_blank">
-                {{ _('set up your own \'pending troika\'') }}</a> 
-                {{ _('and choose "I want someone else to lead this"
-                to request for someone else to lead the troika.') }}</li>
-            <li>{{ _('Sign up for an interesting troika by clicking the appropriate join link 
-                on the troika description page.') }}</li>
-            <li>{{ _('Attend the troika and enjoy the experience of learning!') }}</li>
-            <li>{{ _('Gain your badges and review.')}}</li>
-            <li>{{ _('Recommend Troika to your friends and acquaintances.') }}</li>
-          </ol>
-        </p>
-      </section>
-      <section id="share" class="tl-anchor">
-        <div class="page-header">
-          <h3>{{ _('Ready to start sharing? Set up your own Troika!') }}</h3>
-        </div>
-        <p>
-          <ol>
-            <li><a href="{{ url_for('login') }}" target="_blank">{{ _('Register') }}</a> {{ _('as a user.') }}</li>
-            <li>{{ _('Find a topic you wish to teach, share or present, or a topic you want to learn about 
-		from someone else.') }}</li>
-            <li><a href="{{ url_for('create_troika') }}" target="_blank">{{ _('Create') }}</a> 
-                {{ _('a new pending troika!') }}</li>
-            <li>{{ _('Wait for the first two to join your troika.') }}</li>
-            <li>{{ _('Agree on the time and place and click "Activate troika" to make the troika
-                active and publicly available.') }}</li>
-            <li>{{ _('Attend the troika and enjoy the experience of learning!') }}</li>
-            <li>{{ _('Gain your badges and reviews.') }}</li>
-            <li>{{ _('Recommend Troika to your friends and acquaintances.') }}</li>
-          </ol>
+        <p>{{ _('Three easy steps:') }} {% call macros.steps() %}{% endcall %}</p>
+        <p><ol class="tl-list">
+          <li>{{ _('Discover a Topic.') }} <span><a href="{{ url_for('troikas') }}">{{ _('Browse topics') }}</a> 
+          {{ _('people have suggested as Troika events. Join a Troika that interests you either as a 
+          learner, participant or even lead. You are of course also welcome to') }} 
+          <a href="{{ url_for('create_troika') }}">{{_('create your own Troika') }}</a>. 
+          {{_('Give your Troika event a title, a description, language and select your role in the Troika. If you want, 
+          you can also suggest a time and a place and set the maximum number of participants in the Troika. After the Troika 
+          is created, you can invite people to join your Troika on the Troika page, or just 
+          take a rest and wait for people to discover your Troika!') }}</span></li>
+          <li>{{ _('Meet People.') }} <span>{{ _('When you and two other people have found each other in a Troika event, 
+          you will receive email from us containing the email addresses of the three of you. If all the details were given 
+          by the Troika creator, the Troika is now activated. If not, this is the time to agree on the remaining details and 
+          then activate the Troika event by pressing "Activate Troika" on the Troika page. After that other people will be 
+          able to join your Troika, limited of course by the maximum number of participants you have specified.') }}</span></li>
+          <li>{{ _('Learn Stuff.') }} <span>{{ _('Enjoy your Troika event and learn things from each other! Finally 
+          remember to spread the word about your Troika event for others to be encouraged and set 
+          up more Troikas to share their knowledge.') }}</span></li>
+        </ol>
         </p>
       </section>
       <section id="we" class="tl-anchor">
@@ -124,12 +84,11 @@
         </div>
         <p><a href="mailto:info@troikalearning.org">{{ _('Give instant feedback about Troika') }}</a>.
         </p>
-        <p>{{ _('For general questions about Troika, send an email to') }}
-          <a href="mailto:info@troikalearning.org">info@troikalearning.org</a>.
-        </p>
-        <p>{{ _('For questions about this site, send an email to') }} 
-          <a href="mailto:webmaster@troikalearning.org">webmaster@troikalearning.org</a>.
-        </p>
+        <p>{{ _('For general questions about Troika, send email to') }}
+          <a href="mailto:info@troikalearning.org">info@troikalearning.org</a>.</p>
+        <p>{{ _('For questions about this site, send email to') }} 
+          <a href="mailto:webmaster@troikalearning.org">webmaster@troikalearning.org</a>.</p>
+        <p>&nbsp;</p>
       </section>
     </div>
   </div>

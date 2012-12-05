@@ -11,15 +11,15 @@
 </div>
 {% if troika.access %}
 <div class="pagination-centered">
-  <a href="{{ url_for('edit_troika', troika_id=troika.id) }}"><h4>{{ _('Edit troika') }}</h4></a>
+  <a href="{{ url_for('edit_troika', troika_id=troika.id) }}"><h4>{{ _('Edit Troika') }}</h4></a>
 </div>
 {% elif not 'email' in session and not troika.is_full and not troika.phase == 'complete' %}
 <div class="pagination-centered">
-  <a href="{{ url_for('login_troika', troika_id=troika.id) }}"><h5>{{ _('Login or register to join troika!') }}</h5></a>
+  <a href="{{ url_for('login_troika', troika_id=troika.id) }}"><h5>{{ _('Login or register to join Troika!') }}</h5></a>
 </div>
 {% elif 'email' in session and troika.is_full and not troika.phase == 'complete' %}
 <div class="pagination-centered">
-  <h5>{{ _('This troika is currently full.') }}</h5></a>
+  <h5>{{ _('This Troika is currently full.') }}</h5></a>
 </div>
 {% endif %}
 <div class="container-fluid">
@@ -122,7 +122,7 @@
 </div>
 {% if troika.activate %}
 <div class="pagination-centered">
-  <a href="{{ url_for('activate_troika', troika_id=troika.id) }}"><h4>Activate troika</h4></a>
+  <a href="{{ url_for('activate_troika', troika_id=troika.id) }}"><h4>Activate Troika</h4></a>
 </div>
 {% endif %}
        
