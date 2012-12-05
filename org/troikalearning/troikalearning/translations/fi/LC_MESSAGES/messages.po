@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-12-05 20:44+0200\n"
-"PO-Revision-Date: 2012-12-05 20:45+0200\n"
+"POT-Creation-Date: 2012-12-05 22:02+0200\n"
+"PO-Revision-Date: 2012-12-05 22:03+0200\n"
 "Last-Translator: Timo Tiuraniemi <timo.tiuraniemi@iki.fi>\n"
 "Language-Team: fi <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -283,7 +283,7 @@ msgstr "Troikan alkuajankohta pitää olla tulevaisuudessa"
 msgid "Troika saved"
 msgstr "Troika tallennettu"
 
-#: troikalearning/views.py:399
+#: troikalearning/views.py:399 troikalearning/templates/edit_troika.html:56
 msgid "Delete Troika"
 msgstr "Poista Troika"
 
@@ -710,6 +710,14 @@ msgstr ""
 "Troikasta tulee aktiivinen, kun kaksi muuta käyttäjää ovat vahvistaneet "
 "osallistumisensa, ajasta ja paikasta on sovittu, ja joko Troika on aktivoitu "
 "automaattisesti tai \"Aktivoi Troika\" -linkkiä on klikattu."
+
+#: troikalearning/templates/edit_troika.html:50
+msgid "Create Troika"
+msgstr "Luo Troika"
+
+#: troikalearning/templates/edit_troika.html:54
+msgid "Save Troika"
+msgstr "Tallenna Troika"
 
 #: troikalearning/templates/feedback.html:6
 #: troikalearning/templates/feedback.html:12

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-12-05 20:44+0200\n"
+"POT-Creation-Date: 2012-12-05 22:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -282,7 +282,7 @@ msgstr ""
 msgid "Troika saved"
 msgstr ""
 
-#: troikalearning/views.py:399
+#: troikalearning/views.py:399 troikalearning/templates/edit_troika.html:56
 msgid "Delete Troika"
 msgstr ""
 
@@ -665,6 +665,14 @@ msgid ""
 "            on time and place of the Troika, and either Troika\n"
 "            is activated automatically or \"Activate Troika\" \n"
 "            has been clicked."
+msgstr ""
+
+#: troikalearning/templates/edit_troika.html:50
+msgid "Create Troika"
+msgstr ""
+
+#: troikalearning/templates/edit_troika.html:54
+msgid "Save Troika"
 msgstr ""
 
 #: troikalearning/templates/feedback.html:6
