@@ -57,6 +57,10 @@ body {
   .nav-collapse ul li a {
     color: #EEEEEE !important;
   }
+  .tl-heading {
+    font-size: 12px;
+    padding-bottom: 1em;
+  }
 }
 .tl-integer {
   width: 2em;
