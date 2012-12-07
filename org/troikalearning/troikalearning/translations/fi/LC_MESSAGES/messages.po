@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2012-12-07 22:00+0200\n"
-"PO-Revision-Date: 2012-12-07 22:03+0200\n"
+"PO-Revision-Date: 2012-12-07 22:20+0200\n"
 "Last-Translator: Timo Tiuraniemi <timo.tiuraniemi@iki.fi>\n"
 "Language-Team: fi <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -839,7 +839,7 @@ msgstr "Vetäjä"
 
 #: troikalearning/templates/troika.html:46
 msgid "Lead this Troika"
-msgstr "Johda tätä Troikaa"
+msgstr "Ryhdy Troikan vetäjäksi"
 
 #: troikalearning/templates/troika.html:49
 msgid "Invite lead"
