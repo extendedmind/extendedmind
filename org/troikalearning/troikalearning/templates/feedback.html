@@ -13,7 +13,7 @@
       {% for feedback in given_feedback %}
       <ul>
         <li>{{ feedback.created }} -- 
-            {% if (feedback.user) %} {{ feedback.user.full_name }}
+            {% if (feedback.user) %} {{ feedback.user.full_name }} - {{ feedback.user.email }}
             {% else %}{{ _('Anonymous') }}{% endif %}
           <ul>
             <li>{{ feedback.description }}</li>
