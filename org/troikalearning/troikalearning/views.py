@@ -182,7 +182,7 @@ def user():
             user.short_name = userform.first_name.data 
             user.family_name = userform.last_name.data
             user.full_name = userform.first_name.data + " " + userform.last_name.data
-            user.alias = userform.alias.data if userform.alias.data == "" else None
+            user.alias = userform.alias.data if userform.alias.data != "" else None
             if (userform.new_password.data):
                 user.password = hash_password(userform.new_password.data)
             save_user(user)
