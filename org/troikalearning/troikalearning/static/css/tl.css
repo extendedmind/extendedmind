@@ -14,8 +14,9 @@ body {
   margin-top: 1em;
   margin-bottom: 1em;
 }
-.tl-language {
-  margin-left: 1em;
+#tl-login,
+#tl-logout {
+  margin-right: 1em;
 }
 .tl-language,
 .tl-language dl {
@@ -52,6 +53,9 @@ body {
 @media (max-width: 979px) {
   body {
     padding-top: 0px;
+  }
+  .nav-collapse ul li a {
+    color: #EEEEEE !important;
   }
 }
 .tl-integer {

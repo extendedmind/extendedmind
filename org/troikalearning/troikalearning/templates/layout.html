@@ -1,3 +1,11 @@
+{% macro fb(caller) %}
+<li>
+    <a href="http://www.facebook.com/troikagame" target="_blank">
+    <img class="tl-logo" src="{{ url_for('static', filename='img/fb.png') }}">
+    </img></a>
+</li>
+{% endmacro %}
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -30,15 +38,16 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
               {% block back_button %} 
               {% endblock %}
             </li>
+            {% call fb() %}{% endcall %}
           </ul>
-          <a class="brand" href="{{ url_for('troikas') }}">Troika</a>
+          <a class="brand hidden-phone" href="{{ url_for('troikas') }}">Troika</a>
           <div class="nav-collapse collapse">
             <ul class="nav pull-right">
               {% if not 'email' in session %}
-              <li><a href="{{ url_for('login') }}">{{ _('Login / Register') }}</a></li>
+              <li id="tl-login"><a href="{{ url_for('login') }}">{{ _('Login / Register') }}</a></li>
               {% else %}
               <li><a href="{{ url_for('user') }}">{{ session.email }}</a></li>
-              <li><a href="{{ url_for('logout') }}">{{ _('Logout') }}</a></li>
+              <li id="tl-logout"><a href="{{ url_for('logout') }}">{{ _('Logout') }}</a></li>
               {% endif %}
               <li>
                 <form class="navbar-search" action="{{ url_for('change_language') }}" method="post">
@@ -63,10 +72,11 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
             </ul>
             <ul class="nav pull-left">
               <li class="hidden-phone">
-              <a href="{{ url_for('about') }}">{{ _('About') }}</a>
+                <a href="{{ url_for('about') }}">{{ _('About') }}</a>
               </li>
-              <li><a href="http://www.facebook.com/troikagame" target="_blank">
-              <img class="tl-logo" src="{{ url_for('static', filename='img/fb.png') }}"></img></a></li>
+            </ul>
+            <ul class="nav pull-left hidden-phone">
+              {% call fb() %}{% endcall %}
             </ul>
           </div>
         </div>
