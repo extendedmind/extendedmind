@@ -25,15 +25,16 @@
           <dt>{{ troikaform.hidden_tag() }}</dt>
           <dt>{{ troikaform.title.label }} {{ troikaform.title(class="tl-text-medium") }}</dt>
           <dt>{{ troikaform.description.label }} {{ troikaform.description(class="tl-text-large", rows=10) }}</dt>
+          <dt>{{ troikaform.address.label }} {{ troikaform.address(class="tl-text-medium") }}</dt>
+          <dt>{{ troikaform.address_addendum.label }} {{ troikaform.address_addendum(class="tl-text-medium") }}</dt>
           <dt>{{ troikaform.language.label }}
               <select name="{{ troikaform.language.name }}">
               {% for subfield in troikaform.language %}
                  {{ subfield() }}
               {% endfor %}
-              </select></dt>
-          <dt>{{ troikaform.address.label }} {{ troikaform.address(class="tl-text-medium") }}</dt>
-          <dt>{{ troikaform.address_addendum.label }} {{ troikaform.address_addendum(class="tl-text-medium") }}</dt>
-          <dt>{{ troikaform.start_date.label }} {{ troikaform.start_date(class="tl-date") }}</dt>
+              </select>
+          </dt>
+          <dt>{{ troikaform.start_date.label }} {{ troikaform.start_date(class="tl-date clearable") }}</dt>
           <dt>{{ troikaform.start_time_hours.label }} {{ troikaform.start_time_hours(class="tl-integer", type="number") }} {{ troikaform.start_time_minutes(class="tl-integer", type="number") }}</dt>
           <dt>{{ troikaform.duration.label }} {{ troikaform.duration(class="tl-integer", type="number") }}</dt>
           <dt>{{ troikaform.max_participants.label }} {{ troikaform.max_participants(class="tl-integer", type="number") }}</dt>
@@ -72,4 +73,12 @@
     weekStart: 1
 });
 </script>
+<script>
+    $(document).ready(function() {
+        $('input.clearable').wrap('<span class="deleteicon" />').after($('<button type="button" class="close tl-clear">&times;</button>').click(function() {
+            $(this).prev('input').val('');
+        }));
+    });
+</script>
+
 {% endblock %}

@@ -49,6 +49,17 @@ body {
     padding-top: 3em;
     padding-bottom: 2em;
   }
+  #tl-troika input,
+  #tl-troika textarea {
+    width: 30em;
+  }
+  #tl-troika .tl-integer {
+    width: 2em;
+  }
+  #tl-troika input[type=submit],
+  #tl-troika select {
+    width: auto;
+  }
 }
 @media (max-width: 979px) {
   body {
@@ -61,6 +72,15 @@ body {
     font-size: 12px;
     padding-bottom: 1em;
   }
+}
+.tl-date {
+  width: 7em !important;
+}
+.tl-clear {
+  float: inherit;
+  position: absolute;
+  margin-top: 4px;
+  margin-left: -20px;
 }
 .tl-integer {
   width: 2em;
