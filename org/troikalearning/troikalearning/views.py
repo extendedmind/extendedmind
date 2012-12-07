@@ -33,7 +33,6 @@ from datetime import datetime
 from datetime import time as dttime
 from datetime import timedelta as dttimedelta
 from flask_mail import Message
-import re
 
 # Language Selection
 
@@ -375,7 +374,7 @@ def edit_troika(troika_id):
         troikaform.duration.data = __get_duration(troika.start_time, troika.end_time)
         troikaform.max_participants.data = troika.max_participants
     elif troikaform.validate_on_submit():
-        if request.form["action"] == "Save Troika":
+        if request.form["action"] == _(u"Save Troika"):
             # Validate times
             if troikaform.start_date.data is not None and (troikaform.start_time_hours.data is None or troikaform.start_time_minutes.data is None or troikaform.duration.data is None):
                 troikaerrors.append(_(u"When a date is set, you must also give values for hours, minutes and duration"))
@@ -384,6 +383,7 @@ def edit_troika(troika_id):
                 if user.role != 'admin' and start_time is not None and start_time < datetime.now():
                     troikaerrors.append(_(u"Start time for the Troika must be in the future"))
                 else:
+                    
                     # Update info
                     troika.title = troikaform.title.data
                     troika.description = troikaform.description.data 
