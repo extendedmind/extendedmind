@@ -17,7 +17,7 @@
           <dt>{{ loginform.email.label }} {{ loginform.email(type="email") }}</dt>
           <dt>{{ loginform.password.label }} {{ loginform.password() }}</dt>
           <dt>
-            <input type="submit" value="Login">
+            <input type="submit" value="{{ _('Login') }}">
           </dt>
         </dl>
       </form>
@@ -37,7 +37,7 @@
           <dt>{{ regform.password.label }} {{ regform.password() }}</dt>
           <dt>{{ regform.confirm.label }} {{ regform.confirm() }}</dt>
           <dt>
-            <input type="submit" value="Register">
+            <input type="submit" value="{{ _('Register') }}">
           </dt>
         </dl>
       </form>

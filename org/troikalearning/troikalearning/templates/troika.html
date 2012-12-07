@@ -34,14 +34,14 @@
         <h3>{{ _('Status') }}</h3> {{ troika.phase }}
         <h3>{{ _('Start time') }}</h3> {{ troika.start_time }}
         <h3>{{ _('End time') }}</h3> {{ troika.end_time }}
-        <h3>{{ _('Address') }}</h3> {{ troika.address }} - {{ troika.address_addendum }}
+        <h3>{{ _('Address') }}</h3> {{ troika.address }}
         <h3>{{ _('Language') }}</h3> {{ troika.language }}
       </div>
     </div>
     <div class="span4 tl-group">
       <div class="span12">
         <h3>{{ _('Lead') }}</h3> 
-        {% if (troika.lead == None and 'email' in session and not troika.participating) %}
+        {% if (troika.lead == _('No one yet') and 'email' in session and not troika.participating) %}
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=0) }}">
           {{ _('Lead this Troika') }}
           </a><br/>
@@ -58,7 +58,7 @@
           {% endif %}
         {% endif %}
         <h3>{{ _('First Learner') }}</h3>
-        {% if (troika.first_learner == None and 'email' in session and not troika.participating) %}
+        {% if (troika.first_learner == _('No one yet') and 'email' in session and not troika.participating) %}
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=1) }}">
           {{ _('Be the first learner in this Troika') }}
           </a><br/>          
@@ -75,7 +75,7 @@
           {% endif %}
         {% endif %}
         <h3>{{ _('Second Learner') }}</h3> 
-        {% if (troika.second_learner == None and 'email' in session and not troika.participating) %}
+        {% if (troika.second_learner == _('No one yet') and 'email' in session and not troika.participating) %}
           <a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=2) }}">
           {{ _('Be the second learner in this Troika') }}
           </a><br/>          
@@ -99,7 +99,7 @@
             {% else %}
               {{ participant.full_name + ', ' }}
             {% endif %}
-            {% else %} None 
+            {% else %} {{ _('No one yet') }}
           {%endfor %}
           {% if (troika.phase == 'active' and 'email' in session and not troika.participating and not troika.is_full) %}
             <br/><a href="{{ url_for('join_troika', troika_id=troika.id, troika_role=3) }}">
