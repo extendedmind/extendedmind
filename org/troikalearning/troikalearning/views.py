@@ -226,8 +226,8 @@ def __get_display_name(user):
 @app.route('/troika/<troika_id>')
 def troika(troika_id):
     troika = get_troika(troika_id);
-    access=False
-    activate=False
+    access = False
+    activate = False
     user = None
     if 'email' in session:
         user = get_user(session['email'])
@@ -236,6 +236,7 @@ def troika(troika_id):
     
     troikaform = TroikaForm(language=troika.language)
     language_name = [item for item in troikaform.language.choices if item[0] == troika.language][0][1]
+
     address_text = troika.address
     if address_text is not None:
         address_text += " - "
@@ -244,25 +245,10 @@ def troika(troika_id):
     if address_text is None:
         address_text = _(u'Not set')
 
-    phase_text = troika.get_phase()
-    if phase_text == 'active':
-        phase_text = _(u"Active")
-    elif phase_text == 'pending':
-        phase_text = _(u"Pending")
-    elif phase_text == 'pending_huddle':
-        phase_text = _(u"Pending, huddle in progress")
-    elif phase_text == 'complete':
-        phase_text = _(u"Complete")
-
-    if troika.address_addendum is not None:
-        address_text += troika.address_addendum
-    if address_text is None:
-        address_text = _(u'Not set')
-
     entry = {'access': access,
              'activate': activate,
              'id': troika.id,
-             'phase': phase_text,
+             'phase': troika.get_phase(),
              'title': troika.title,
              'description': troika.description,
              'address': address_text,
@@ -272,9 +258,9 @@ def troika(troika_id):
              'max_participants': troika.max_participants if troika.max_participants is not None else _(u"Not set"),
              'is_full': __is_full(troika),
              'participating': __participating(user, troika),
-             'lead': __get_display_name(troika.lead) if troika.lead != None else _(u"No one yet"),
-             'first_learner': __get_display_name(troika.first_learner) if troika.first_learner != None else _(u"No one yet"),
-             'second_learner': __get_display_name(troika.second_learner) if troika.second_learner != None else _(u"No one yet"),
+             'lead': __get_display_name(troika.lead) if troika.lead != None else None,
+             'first_learner': __get_display_name(troika.first_learner) if troika.first_learner != None else None,
+             'second_learner': __get_display_name(troika.second_learner) if troika.second_learner != None else None,
              'participants': [dict(id=participant.id, \
                                 full_name=__get_display_name(participant)) \
                                 for participant in troika.participants] if troika.participants is not None else None
