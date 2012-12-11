@@ -437,7 +437,7 @@ def __process_activation(troika):
     
     if not app.config.get('MAIL_SKIP'):    
         # Send message to all three participants
-        msg = __get_troika_message(_(u"Troika \"%(title)s\" activated!", title=troika.title))
+        msg = __get_troika_message(_(u"Troika \"%(title)s\" activated!", title=troika.title), troika)
         msg.body = _(u"Congratulations! The Troika \"%(title)s\":", title=troika.title)
         msg.body += "\n\n" + url_for('troika', troika_id=troika.id, _external=True)
         msg.body += "\n\n"
