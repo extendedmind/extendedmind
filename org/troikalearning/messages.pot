@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-12-07 22:00+0200\n"
+"POT-Creation-Date: 2012-12-12 10:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,7 +70,7 @@ msgstr ""
 msgid "Description *"
 msgstr ""
 
-#: troikalearning/forms.py:71 troikalearning/templates/troika.html:38
+#: troikalearning/forms.py:71 troikalearning/templates/troika.html:48
 msgid "Language"
 msgstr ""
 
@@ -86,7 +86,7 @@ msgstr ""
 msgid "Swedish"
 msgstr ""
 
-#: troikalearning/forms.py:75 troikalearning/templates/troika.html:37
+#: troikalearning/forms.py:75 troikalearning/templates/troika.html:47
 msgid "Address"
 msgstr ""
 
@@ -122,7 +122,7 @@ msgstr ""
 msgid "Troika has to last at least one minute"
 msgstr ""
 
-#: troikalearning/forms.py:89 troikalearning/templates/troika.html:94
+#: troikalearning/forms.py:89 troikalearning/templates/troika.html:116
 msgid "Max Participants"
 msgstr ""
 
@@ -160,7 +160,7 @@ msgstr ""
 msgid "Email Address"
 msgstr ""
 
-#: troikalearning/security.py:105
+#: troikalearning/security.py:115
 msgid "Invalid redirect target"
 msgstr ""
 
@@ -196,303 +196,288 @@ msgstr ""
 msgid "Invalid password"
 msgstr ""
 
-#: troikalearning/views.py:245 troikalearning/views.py:260
-#: troikalearning/views.py:272
+#: troikalearning/views.py:246 troikalearning/views.py:256
+#: troikalearning/views.py:257 troikalearning/views.py:258
 msgid "Not set"
 msgstr ""
 
-#: troikalearning/views.py:249
-msgid "Active"
-msgstr ""
-
-#: troikalearning/views.py:251
-msgid "Pending"
-msgstr ""
-
-#: troikalearning/views.py:253
-msgid "Pending, huddle in progress"
-msgstr ""
-
-#: troikalearning/views.py:255
-msgid "Complete"
-msgstr ""
-
-#: troikalearning/views.py:275 troikalearning/views.py:276
-#: troikalearning/views.py:277 troikalearning/templates/troika.html:44
-#: troikalearning/templates/troika.html:61
-#: troikalearning/templates/troika.html:78
-#: troikalearning/templates/troika.html:102
-msgid "No one yet"
-msgstr ""
-
-#: troikalearning/views.py:303
+#: troikalearning/views.py:289
 msgid "Invalid Troika Id"
 msgstr ""
 
-#: troikalearning/views.py:305
+#: troikalearning/views.py:291
 msgid "Can not invite to a completed Troika"
 msgstr ""
 
-#: troikalearning/views.py:307
+#: troikalearning/views.py:293
 #, python-format
 msgid "Come join the Troika \"%(title)s\"!"
 msgstr ""
 
-#: troikalearning/views.py:311
+#: troikalearning/views.py:297
 #, python-format
 msgid "%(user)s thought you should join the Troika \"%(title)s\":"
 msgstr ""
 
-#: troikalearning/views.py:318
+#: troikalearning/views.py:304
 msgid "the lead"
 msgstr ""
 
-#: troikalearning/views.py:320
+#: troikalearning/views.py:306
 msgid "Troika already has a lead"
 msgstr ""
 
-#: troikalearning/views.py:323
+#: troikalearning/views.py:309
 msgid "the first learner"
 msgstr ""
 
-#: troikalearning/views.py:325
+#: troikalearning/views.py:311
 msgid "Troika already has a first learner"
 msgstr ""
 
-#: troikalearning/views.py:328
+#: troikalearning/views.py:314
 msgid "the second learner"
 msgstr ""
 
-#: troikalearning/views.py:330
+#: troikalearning/views.py:316
 msgid "Troika already has a second learner"
 msgstr ""
 
-#: troikalearning/views.py:332
+#: troikalearning/views.py:318
 msgid "a participant"
 msgstr ""
 
-#: troikalearning/views.py:334
+#: troikalearning/views.py:320
 msgid "Invalid role: "
 msgstr ""
 
-#: troikalearning/views.py:336
+#: troikalearning/views.py:322
 #, python-format
 msgid "as %(role)s."
 msgstr ""
 
-#: troikalearning/views.py:338
+#: troikalearning/views.py:324
 msgid "What do you say?"
 msgstr ""
 
-#: troikalearning/views.py:342
+#: troikalearning/views.py:328
 #, python-format
 msgid "Invite sent to %(email)s"
 msgstr ""
 
-#: troikalearning/views.py:344
+#: troikalearning/views.py:330
 msgid "Invalid invite form"
 msgstr ""
 
-#: troikalearning/views.py:382
+#: troikalearning/views.py:368
 msgid "Only the creator or the lead can edit the Troika"
 msgstr ""
 
-#: troikalearning/views.py:398 troikalearning/templates/edit_troika.html:55
+#: troikalearning/views.py:384 troikalearning/templates/edit_troika.html:55
 msgid "Save Troika"
 msgstr ""
 
-#: troikalearning/views.py:401 troikalearning/views.py:630
+#: troikalearning/views.py:387 troikalearning/views.py:622
 msgid ""
 "When a date is set, you must also give values for hours, minutes and "
 "duration"
 msgstr ""
 
-#: troikalearning/views.py:405 troikalearning/views.py:634
+#: troikalearning/views.py:391 troikalearning/views.py:626
 msgid "Start time for the Troika must be in the future"
 msgstr ""
 
-#: troikalearning/views.py:419
+#: troikalearning/views.py:407 troikalearning/views.py:467
+msgid "Troika activated!"
+msgstr ""
+
+#: troikalearning/views.py:410
 msgid "Troika saved"
 msgstr ""
 
-#: troikalearning/views.py:420 troikalearning/templates/edit_troika.html:57
+#: troikalearning/views.py:414 troikalearning/templates/edit_troika.html:57
 msgid "Delete Troika"
 msgstr ""
 
-#: troikalearning/views.py:444
+#: troikalearning/views.py:417
+#, python-format
+msgid "Troika \"%(title)s\" deleted"
+msgstr ""
+
+#: troikalearning/views.py:438
 msgid "Troika Team"
 msgstr ""
 
-#: troikalearning/views.py:445
+#: troikalearning/views.py:439
 msgid "Salla, Olli, Petro and Timo"
 msgstr ""
 
-#: troikalearning/views.py:454
+#: troikalearning/views.py:448
 #, python-format
 msgid "Troika \"%(title)s\" activated!"
 msgstr ""
 
-#: troikalearning/views.py:455 troikalearning/views.py:480
+#: troikalearning/views.py:449 troikalearning/views.py:472
 #, python-format
 msgid "Congratulations! The Troika \"%(title)s\":"
 msgstr ""
 
-#: troikalearning/views.py:458
+#: troikalearning/views.py:452
 msgid "has now been activated. You can view the participants on the Troika page."
 msgstr ""
 
-#: troikalearning/views.py:460
+#: troikalearning/views.py:454
 msgid "Happy learnings!"
 msgstr ""
 
-#: troikalearning/views.py:479
+#: troikalearning/views.py:471
 #, python-format
 msgid "Troika \"%(title)s\" is just about to be born!"
 msgstr ""
 
-#: troikalearning/views.py:483
+#: troikalearning/views.py:475
 msgid "has now all three participants!"
 msgstr ""
 
-#: troikalearning/views.py:485
+#: troikalearning/views.py:477
 msgid "Your job now is to:"
 msgstr ""
 
-#: troikalearning/views.py:487
+#: troikalearning/views.py:479
 msgid "1. decide on the remaining open details for the Troika,"
 msgstr ""
 
-#: troikalearning/views.py:488
+#: troikalearning/views.py:480
 msgid ""
-"2. add that information to the troika by pressing \"Edit Troika\" "
-"(visible for the lead and creator),"
+"2. go to the Troika page and press \"Edit Troika\" (visible for the lead "
+"and creator),"
 msgstr ""
 
-#: troikalearning/views.py:489
-msgid "3. and then press \"Activate Troika\"."
+#: troikalearning/views.py:481
+msgid "3. add the missing information and press \"Save Troika\"."
 msgstr ""
 
-#: troikalearning/views.py:491
+#: troikalearning/views.py:483
 msgid "Get going!"
 msgstr ""
 
-#: troikalearning/views.py:493
+#: troikalearning/views.py:485
 msgid "[insert inspirational quote about balalaikas here]"
 msgstr ""
 
-#: troikalearning/views.py:507
+#: troikalearning/views.py:499
 msgid "Start time is in the past, change it before activating Troika"
 msgstr ""
 
-#: troikalearning/views.py:511
+#: troikalearning/views.py:503
 #, python-format
 msgid "Troika %(title)s activated"
 msgstr ""
 
-#: troikalearning/views.py:514
+#: troikalearning/views.py:506
 msgid ""
 "Troika can only be activated by the creator or lead after all required "
 "information is set"
 msgstr ""
 
-#: troikalearning/views.py:527
+#: troikalearning/views.py:519
 msgid "The Troika already has a lead"
 msgstr ""
 
-#: troikalearning/views.py:532
+#: troikalearning/views.py:524
 #, python-format
 msgid "You are now the lead of %(title)s"
 msgstr ""
 
-#: troikalearning/views.py:536
+#: troikalearning/views.py:528
 msgid "The Troika already has a first learner"
 msgstr ""
 
-#: troikalearning/views.py:541
+#: troikalearning/views.py:533
 #, python-format
 msgid "You are now the first learner of %(title)s"
 msgstr ""
 
-#: troikalearning/views.py:545
+#: troikalearning/views.py:537
 msgid "The Troika already has a second learner"
 msgstr ""
 
-#: troikalearning/views.py:550
+#: troikalearning/views.py:542
 #, python-format
 msgid "You are now the second learner of %(title)s"
 msgstr ""
 
-#: troikalearning/views.py:554 troikalearning/views.py:567
+#: troikalearning/views.py:546 troikalearning/views.py:559
 msgid "You are already participating in the Troika"
 msgstr ""
 
-#: troikalearning/views.py:557
+#: troikalearning/views.py:549
 msgid "There is no more room in this Troika"
 msgstr ""
 
-#: troikalearning/views.py:561
+#: troikalearning/views.py:553
 #, python-format
 msgid "You are now participating in %(title)s"
 msgstr ""
 
-#: troikalearning/views.py:564
+#: troikalearning/views.py:556
 msgid "Unknown Troika role: %(role)"
 msgstr ""
 
-#: troikalearning/views.py:580
+#: troikalearning/views.py:572
 msgid "You are not the lead of this Troika"
 msgstr ""
 
-#: troikalearning/views.py:584
+#: troikalearning/views.py:576
 #, python-format
 msgid "You are no longer the lead of %(title)s"
 msgstr ""
 
-#: troikalearning/views.py:588
+#: troikalearning/views.py:580
 msgid "You are not the first learner of this Troika"
 msgstr ""
 
-#: troikalearning/views.py:592
+#: troikalearning/views.py:584
 #, python-format
 msgid "You are no longer the first learner of %(title)s"
 msgstr ""
 
-#: troikalearning/views.py:596
+#: troikalearning/views.py:588
 msgid "You are not the second learner of this Troika"
 msgstr ""
 
-#: troikalearning/views.py:600
+#: troikalearning/views.py:592
 #, python-format
 msgid "You are no longer the second learner of %(title)s"
 msgstr ""
 
-#: troikalearning/views.py:604
+#: troikalearning/views.py:596
 msgid "You are not participating in the Troika"
 msgstr ""
 
-#: troikalearning/views.py:608
+#: troikalearning/views.py:600
 #, python-format
 msgid "You are no longer participating in %(title)s"
 msgstr ""
 
-#: troikalearning/views.py:612
+#: troikalearning/views.py:604
 #, python-format
 msgid "Unknown Troika role: %(role)s"
 msgstr ""
 
-#: troikalearning/views.py:615
+#: troikalearning/views.py:607
 msgid "You can not leave a Troika that is complete"
 msgstr ""
 
-#: troikalearning/views.py:652
+#: troikalearning/views.py:644
 msgid "Troika Created"
 msgstr ""
 
-#: troikalearning/views.py:678
+#: troikalearning/views.py:670
 msgid "Feedback saved. Thank you!"
 msgstr ""
 
-#: troikalearning/views.py:693
+#: troikalearning/views.py:685
 msgid "You were logged out"
 msgstr ""
 
@@ -618,8 +603,8 @@ msgid ""
 "of the three of you. If all the details were given \n"
 "          by the Troika creator, the Troika is now activated. If not, "
 "this is the time to agree on the remaining details and \n"
-"          then activate the Troika event by pressing \"Activate Troika\" "
-"on the Troika page. After that other people will be \n"
+"          then add that information to the Troika event by pressing "
+"\"Edit Troika\" on the Troika page. After that other people will be \n"
 "          able to join your Troika, limited of course by the maximum "
 "number of participants you have specified."
 msgstr ""
@@ -771,100 +756,123 @@ msgstr ""
 msgid "This Troika is currently full"
 msgstr ""
 
-#: troikalearning/templates/troika.html:29
+#: troikalearning/templates/troika.html:30
 msgid "Description"
 msgstr ""
 
-#: troikalearning/templates/troika.html:34
+#: troikalearning/templates/troika.html:35
 msgid "Status"
 msgstr ""
 
-#: troikalearning/templates/troika.html:35
-msgid "Start time"
+#: troikalearning/templates/troika.html:37
+msgid "Active"
 msgstr ""
 
-#: troikalearning/templates/troika.html:36
-msgid "End time"
+#: troikalearning/templates/troika.html:39
+msgid "Pending"
+msgstr ""
+
+#: troikalearning/templates/troika.html:41
+msgid "Pending, huddle in progress"
 msgstr ""
 
 #: troikalearning/templates/troika.html:43
-msgid "Lead"
+msgid "Complete"
+msgstr ""
+
+#: troikalearning/templates/troika.html:45
+msgid "Start time"
 msgstr ""
 
 #: troikalearning/templates/troika.html:46
-msgid "Lead this Troika"
+msgid "End time"
 msgstr ""
 
-#: troikalearning/templates/troika.html:49
-msgid "Invite lead"
-msgstr ""
-
-#: troikalearning/templates/troika.html:50
-msgid "Give the email address of the person you want to invite to lead."
+#: troikalearning/templates/troika.html:53
+msgid "Lead"
 msgstr ""
 
 #: troikalearning/templates/troika.html:56
-#: troikalearning/templates/troika.html:73
-#: troikalearning/templates/troika.html:90
-#: troikalearning/templates/troika.html:110
-msgid "Leave this Troika"
+msgid "Lead this Troika"
+msgstr ""
+
+#: troikalearning/templates/troika.html:59
+msgid "Invite lead"
 msgstr ""
 
 #: troikalearning/templates/troika.html:60
+msgid "Give the email address of the person you want to invite to lead."
+msgstr ""
+
+#: troikalearning/templates/troika.html:64
+#: troikalearning/templates/troika.html:85
+#: troikalearning/templates/troika.html:106
+#: troikalearning/templates/troika.html:124
+msgid "No one yet"
+msgstr ""
+
+#: troikalearning/templates/troika.html:70
+#: troikalearning/templates/troika.html:91
+#: troikalearning/templates/troika.html:112
+#: troikalearning/templates/troika.html:132
+msgid "Leave this Troika"
+msgstr ""
+
+#: troikalearning/templates/troika.html:74
 msgid "First Learner"
 msgstr ""
 
-#: troikalearning/templates/troika.html:63
+#: troikalearning/templates/troika.html:77
 msgid "Be the first learner in this Troika"
 msgstr ""
 
-#: troikalearning/templates/troika.html:66
+#: troikalearning/templates/troika.html:80
 msgid "Invite first learner"
 msgstr ""
 
-#: troikalearning/templates/troika.html:67
+#: troikalearning/templates/troika.html:81
 msgid ""
 "Give the email address of the person you want to invite to be the first "
 "learner."
 msgstr ""
 
-#: troikalearning/templates/troika.html:77
+#: troikalearning/templates/troika.html:95
 msgid "Second Learner"
 msgstr ""
 
-#: troikalearning/templates/troika.html:80
+#: troikalearning/templates/troika.html:98
 msgid "Be the second learner in this Troika"
 msgstr ""
 
-#: troikalearning/templates/troika.html:83
+#: troikalearning/templates/troika.html:101
 msgid "Invite second learner"
 msgstr ""
 
-#: troikalearning/templates/troika.html:84
+#: troikalearning/templates/troika.html:102
 msgid ""
 "Give the email address of the person you want to invite to be the second "
 "learner."
 msgstr ""
 
-#: troikalearning/templates/troika.html:95
+#: troikalearning/templates/troika.html:117
 msgid "Participants"
 msgstr ""
 
-#: troikalearning/templates/troika.html:106
+#: troikalearning/templates/troika.html:128
 msgid "Participate in this Troika"
 msgstr ""
 
-#: troikalearning/templates/troika.html:115
+#: troikalearning/templates/troika.html:137
 msgid "Invite participant"
 msgstr ""
 
-#: troikalearning/templates/troika.html:116
+#: troikalearning/templates/troika.html:138
 msgid ""
 "Give the email address of a person you want to invite to be participate "
 "in this Troika."
 msgstr ""
 
-#: troikalearning/templates/troika.html:125
+#: troikalearning/templates/troika.html:147
 msgid "Activate Troika"
 msgstr ""
 

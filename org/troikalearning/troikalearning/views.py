@@ -23,7 +23,7 @@ Created on 14.8.2012
 '''
 from troikalearning import app, mail, babel, _
 from security import validate_login, register, hash_password, get_troika_access_right, activatable, \
-                     get_redirect_target
+                     get_redirect_target, activation_ready
 from backend import Troika, get_active_troikas, get_pending_troikas, get_completed_troikas, \
                     user_exists, get_user, save_user, get_troika, save_troika, delete_troika, \
                     Feedback, save_feedback, get_feedback
@@ -238,10 +238,10 @@ def troika(troika_id):
     language_name = [item for item in troikaform.language.choices if item[0] == troika.language][0][1]
 
     address_text = troika.address
-    if address_text is not None:
-        address_text += " - "
-    if troika.address_addendum is not None:
-        address_text += troika.address_addendum
+    if address_text is None:
+        address_text = troika.address_addendum
+    elif troika.address_addendum is not None:
+        address_text += " - " + troika.address_addendum
     if address_text is None:
         address_text = _(u'Not set')
 
@@ -400,13 +400,21 @@ def edit_troika(troika_id):
                     troika.start_time = start_time
                     troika.end_time = __get_end_datetime(troika.start_time, troikaform.duration.data)
                     troika.max_participants = troikaform.max_participants.data
+
+                    # Activate automatically when all information is given                                        
+                    if activation_ready(troika):
+                        __process_activation(troika)
+                        flash (_(u"Troika activated!"))
+
                     save_troika(troika)
+                    flash(_(u'Troika saved'))
+                    
                     return redirect(url_for('troika', troika_id=troika_id))
-                    flash(_(u'Troika saved'))         
+                       
         elif request.form["action"] == _(u"Delete Troika"):
             title = troika.title
             delete_troika(troika)
-            flash('Troika "' + title +  '" deleted')
+            flash(_(u"Troika \"%(title)s\" deleted", title=title))
             return redirect(url_for('troikas'))
     if troikaform.errors:
         for key, value in troikaform.errors.items():
@@ -454,11 +462,9 @@ def __process_pending(troika):
        troika.first_learner is not None and \
        troika.second_learner is not None:
         troika.pended = datetime.now()
-        if troika.start_time is not None and \
-           troika.end_time is not None and \
-           troika.address is not None:
+        if activation_ready(troika):
             __process_activation(troika)
-            flash ("Troika activated!")
+            flash (_(u"Troika activated!"))
         else: 
             if not app.config.get('MAIL_SKIP'):    
                 # Send message to all three participants
@@ -471,8 +477,8 @@ def __process_pending(troika):
                 msg.body += _(u"Your job now is to:")
                 msg.body += "\n"
                 msg.body += _(u"1. decide on the remaining open details for the Troika,")
-                msg.body += _(u"2. add that information to the troika by pressing \"Edit Troika\" (visible for the lead and creator),")
-                msg.body += _(u"3. and then press \"Activate Troika\".")
+                msg.body += _(u"2. go to the Troika page and press \"Edit Troika\" (visible for the lead and creator),")
+                msg.body += _(u"3. add the missing information and press \"Save Troika\".")
                 msg.body += "\n\n"
                 msg.body += _(u"Get going!")
                 msg.body += "\n\n"
@@ -618,13 +624,13 @@ def create_troika():
             start_time = __get_start_datetime(troikaform.start_date.data, troikaform.start_time_hours.data, troikaform.start_time_minutes.data)
             if start_time is not None and start_time < datetime.now():
                 troikaerrors.append(_(u"Start time for the Troika must be in the future"))
-            else:
+            else:                
                 troika = Troika(created = datetime.now(),
                         title=troikaform.title.data,
                         description=troikaform.description.data,
                         country='FI', region=None, area_id=None, campus_id=None,
-                        address=troikaform.address.data,
-                        address_addendum=troikaform.address_addendum.data,
+                        address=troikaform.address.data if troikaform.address.data != "" else None,
+                        address_addendum=troikaform.address_addendum.data if troikaform.address_addendum.data != "" else None,
                         language=troikaform.language.data, 
                         start_time=start_time,
                         end_time=__get_end_datetime(start_time, troikaform.duration.data),

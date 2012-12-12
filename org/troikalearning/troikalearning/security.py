@@ -64,6 +64,17 @@ def get_troika_access_right(user, troika):
             access = 'edit'
     return access
 
+def activation_ready(troika):
+    if (troika.address is not None and 
+        troika.start_time is not None and 
+        troika.end_time is not None and 
+        troika.activated is None and
+        troika.lead is not None and
+        troika.first_learner is not None and
+        troika.second_learner is not None):
+        return True
+    return False
+
 def activatable(user, troika, activatable_before_three):
 
     if ((user.role == "admin" or troika.creator is user or troika.lead is user) and  
@@ -71,15 +82,14 @@ def activatable(user, troika, activatable_before_three):
         troika.start_time is not None and 
         troika.end_time is not None and 
         troika.activated is None):
-        
         if activatable_before_three or user.role == "admin":
             return True
         else:
             # Also make sure there are three participants
-            if (troika.first_learner is not None and
+            if (troika.lead is not None and
+                troika.first_learner is not None and
                 troika.second_learner is not None):
                 return True
-
     return False
 
 def __validate_password(plain_password, password_hash):
