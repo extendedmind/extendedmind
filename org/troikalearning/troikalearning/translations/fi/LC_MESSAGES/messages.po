@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2012-12-12 10:45+0200\n"
-"PO-Revision-Date: 2012-12-12 11:06+0200\n"
+"PO-Revision-Date: 2013-01-04 11:26+0200\n"
 "Last-Translator: Timo Tiuraniemi <timo.tiuraniemi@iki.fi>\n"
 "Language-Team: fi <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -704,7 +704,7 @@ msgstr ""
 #: troikalearning/templates/about.html:89
 msgid "For questions about this site, send email to"
 msgstr ""
-"Jos sinulla on kysymyksiä tästä sivuostosta, lähetä sähköpostia osoitteeseen"
+"Jos sinulla on kysymyksiä tästä sivustosta, lähetä sähköpostia osoitteeseen"
 
 #: troikalearning/templates/edit_troika.html:6
 msgid "Create"
@@ -935,7 +935,7 @@ msgstr "Luo uusi Troika-tapahtuma"
 
 #: troikalearning/templates/troikas.html:22
 msgid "Active Troikas"
-msgstr "Aktiviiset Troikat"
+msgstr "Aktiiviset Troikat"
 
 #: troikalearning/templates/troikas.html:24
 msgid "Upcoming Troikas you can join."
