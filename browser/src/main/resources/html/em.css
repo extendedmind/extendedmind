@@ -1,0 +1,22 @@
+a {
+  color: gray;
+}
+
+.accordion-group {
+  border: 0;
+}
+
+.masthead {
+  text-align: center;
+  padding-top: 140px;
+  padding-bottom: 50px;
+}
+
+ul.em-headers {
+  list-style-image: none;
+  list-style-type: none;
+  margin-left: 0;
+}
+li.em-header {
+  padding-bottom: 20px;
+}
