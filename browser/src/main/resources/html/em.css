@@ -12,6 +12,10 @@ a {
   padding-bottom: 50px;
 }
 
+.em-note {
+  padding-top: 80px;
+}
+
 ul.em-headers {
   list-style-image: none;
   list-style-type: none;
