@@ -9,9 +9,9 @@
     <version>0.1-SNAPSHOT</version>
   </parent>
   <groupId>org.extendedmind</groupId>
-  <artifactId>server</artifactId>
-  <name>Extended Mind :: Server</name>
-  <description>Extended Mind Server</description>
+  <artifactId>backend</artifactId>
+  <name>Extended Mind :: Backend</name>
+  <description>Extended Mind Backend</description>
   <inceptionYear>2013</inceptionYear>
   <licenses>
     <license>
