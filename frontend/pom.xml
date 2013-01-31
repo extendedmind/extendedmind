@@ -1,0 +1,29 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org</groupId>
+    <artifactId>extendedmind</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+  <groupId>org.extendedmind</groupId>
+  <artifactId>frontend</artifactId>
+  <name>Extended Mind :: Frontend</name>
+  <description>Extended Mind Frontend</description>
+  <packaging>pom</packaging>
+  <inceptionYear>2013</inceptionYear>
+  <licenses>
+    <license>
+       <name>GNU Affero General Public License, Version 3</name>
+      <url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+      <distribution>repo</distribution>
+    </license>  
+  </licenses>
+
+  <modules>
+    <module>core</module>
+  </modules>
+  
+</project>
