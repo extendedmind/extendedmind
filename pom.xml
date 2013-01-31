@@ -42,7 +42,7 @@
   </dependencyManagement>
 
   <modules>
-    <module>server</module>
+    <module>backend</module>
   </modules>
 
   <build>
