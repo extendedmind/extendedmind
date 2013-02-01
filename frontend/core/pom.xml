@@ -21,28 +21,44 @@
     </license>  
   </licenses>
 
-<build>
-  <plugins>
-    <plugin>
-      <groupId>ro.isdc.wro4j</groupId>
-      <artifactId>wro4j-maven-plugin</artifactId>
-      <executions>
-        <execution>
-          <phase>compile</phase>
-          <goals>
-            <goal>run</goal>
-          </goals>
-        </execution>
-      </executions>
-      <configuration>
-        <targetGroups>scripts</targetGroups>
-        <destinationFolder>${project.build.directory}/generated-sources/</destinationFolder>
-        <contextFolder>${basedir}/src/main/</contextFolder>
-        <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
-      </configuration>
-    </plugin>
-  </plugins>
-</build>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>ro.isdc.wro4j</groupId>
+        <artifactId>wro4j-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>wro4j-devel</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <minimize>false</minimize>
+              <targetGroups>em-devel</targetGroups>
+              <extraConfigFile>${basedir}/config/wro-devel.properties</extraConfigFile>
+            </configuration>
+          </execution>
+          <execution>
+            <id>wro4j-production</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <targetGroups>em-min</targetGroups>
+              <extraConfigFile>${basedir}/config/wro-min.properties</extraConfigFile>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <destinationFolder>${project.build.directory}/generated-sources/</destinationFolder>
+          <contextFolder>${basedir}/src/main/</contextFolder>
+          <wroFile>${basedir}/config/wro.xml</wroFile>
+          <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
