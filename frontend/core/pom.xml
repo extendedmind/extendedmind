@@ -10,6 +10,7 @@
   </parent>
   <groupId>org.extendedmind.frontend</groupId>
   <artifactId>core</artifactId>
+  <packaging>war</packaging>
   <name>Extended Mind :: Frontend :: Core</name>
   <description>Extended Mind Frontend Core</description>
   <inceptionYear>2013</inceptionYear>
@@ -24,38 +25,40 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${basedir}/src/main/webapp/css</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/main/webapp/js</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>ro.isdc.wro4j</groupId>
         <artifactId>wro4j-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>wro4j-devel</id>
-            <phase>process-sources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <minimize>false</minimize>
-              <targetGroups>em-devel</targetGroups>
-              <extraConfigFile>${basedir}/config/wro-devel.properties</extraConfigFile>
-            </configuration>
-          </execution>
-          <execution>
             <id>wro4j-production</id>
-            <phase>compile</phase>
+            <phase>prepare-package</phase>
             <goals>
               <goal>run</goal>
             </goals>
             <configuration>
               <targetGroups>em-min</targetGroups>
-              <extraConfigFile>${basedir}/config/wro-min.properties</extraConfigFile>
             </configuration>
           </execution>
         </executions>
         <configuration>
-          <destinationFolder>${project.build.directory}/generated-sources/</destinationFolder>
-          <contextFolder>${basedir}/src/main/</contextFolder>
-          <wroFile>${basedir}/config/wro.xml</wroFile>
+          <contextFolder>${basedir}/src/main/webapp/</contextFolder>
           <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+          <destinationFolder>${basedir}/src/main/webapp/</destinationFolder>
+          <cssDestinationFolder>${basedir}/src/main/webapp/css/</cssDestinationFolder>
+          <jsDestinationFolder>${basedir}/src/main/webapp/js/</jsDestinationFolder>
         </configuration>
       </plugin>
     </plugins>

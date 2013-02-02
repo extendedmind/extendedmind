@@ -3,11 +3,7 @@
   xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
   <group name="em-min">
     <js>/coffeescript/**.coffee</js>
-    <css>/resources/less/**.less</css>
-  </group>
-  <group name="em-devel">
-    <js>/coffeescript/**.coffee</js>
-    <css>/resources/less/**.less</css>
+    <css>/less/**.less</css>
   </group>
 
 </groups>
