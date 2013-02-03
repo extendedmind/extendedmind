@@ -3,7 +3,7 @@
 # Directives
 
 angular
-  .module('myApp.directives', [])
+  .module('em.directives', [])
   .directive('appVersion', ['version', (version)->
     (scope, elm, attrs)->
       elm.text(version)

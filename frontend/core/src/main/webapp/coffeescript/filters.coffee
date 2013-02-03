@@ -3,7 +3,7 @@
 # Filters
 
 angular
-  .module('myApp.filters', [])
+  .module('em.filters', [])
   .filter('interpolate',
     ['version', (version)->
       (text)->

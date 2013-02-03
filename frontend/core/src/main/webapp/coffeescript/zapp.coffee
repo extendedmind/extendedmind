@@ -1,7 +1,10 @@
 "use strict"
 
+# Kludge: "z" in the file name is because Wro4j compiles coffeescript
+# files in alphabetical order and this needs to be the last file.
+
 angular
-  .module( 'myApp', ['myApp.filters', 'myApp.services', 'myApp.directives'])
+  .module( 'em', ['em.filters', 'em.services', 'em.directives'])
   .config( ['$routeProvider', ($routeProvider)->
 
       $routeProvider.when('/view1', {templateUrl: 'partials/partial1.html', controller: MyCtrl1})
@@ -9,4 +12,4 @@ angular
       $routeProvider.otherwise({redirectTo: '/view1'})
     ])
 
-angular.bootstrap(document,['myApp'])
+angular.bootstrap(document,['em'])
