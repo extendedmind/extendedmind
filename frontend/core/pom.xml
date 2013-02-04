@@ -54,6 +54,7 @@
           <jsSrcDir>${project.basedir}/src/main/webapp</jsSrcDir>
           <jsTestSrcDir>${project.basedir}/src/test/webapp</jsTestSrcDir>
           <sourceIncludes>
+            <include>lib/jquery/jquery.js</include>
             <include>lib/angularjs/angular.js</include>
             <include>lib/angularjs/angular-mocks.js</include>
             <include>**/*.coffee</include>
