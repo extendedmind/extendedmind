@@ -20,14 +20,19 @@
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/version/angular.min.js"></script>
   -->
+  <script src="lib/jquery/jquery.js"></script>
   <script src="lib/angularjs/angular.js"></script>
   <script src="lib/angularjs/angular-mocks.js"></script>
+
+  <!-- Allows for coffeescript compiling on the fly. -->
+  <!-- Not recommended for production use. See http://coffeescript.org/#scripts. -->
+  <script src="lib/coffeescript/coffee-script.js"></script>
   
-  <script src="coffeescript/services.coffee" type="text/javascript"></script>
-  <script src="coffeescript/controllers.coffee" type="text/javascript"></script>
-  <script src="coffeescript/filters.coffee" type="text/javascript"></script>
-  <script src="coffeescript/directives.coffee" type="text/javascript"></script>
-  <script src="coffeescript/zapp.coffee" type="text/javascript"></script>
+  <script src="coffeescript/services.coffee" type="text/coffeescript"></script>
+  <script src="coffeescript/controllers.coffee" type="text/coffeescript"></script>
+  <script src="coffeescript/filters.coffee" type="text/coffeescript"></script>
+  <script src="coffeescript/directives.coffee" type="text/coffeescript"></script>
+  <script src="coffeescript/zapp.coffee" type="text/coffeescript"></script>
 
 </body>
 </html>
