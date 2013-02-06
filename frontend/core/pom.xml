@@ -58,7 +58,6 @@
             <include>lib/angularjs/angular.js</include>
             <include>lib/angularjs/angular-mocks.js</include>
             <include>**/*.coffee</include>
-            <include>*Spec.js</include>
           </sourceIncludes>
         </configuration>
       </plugin>
@@ -73,7 +72,7 @@
               <goal>run</goal>
             </goals>
             <configuration>
-              <targetGroups>em-min</targetGroups>
+              <targetGroups>em.min</targetGroups>
             </configuration>
           </execution>
         </executions>
