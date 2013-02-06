@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% import 'macros.html' as macros %}
+{% block back_button %}
+<a href="/">{{ _('Home') }}</a>
+{% endblock %} 
+{% block subheading %} | {{ _('User Information') }}{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div class="row-fluid"> 
+    <div class="span8 offset4">  
+      <h2>{{ _('User Information') }}</h2>
+      {% call macros.handle_errors(errors=usererrors) %} {% endcall %}
+      <form id="tl-user" action="{{ url_for('user') }}" method="POST">
+        <dl>
+          <dt>{{ userform.hidden_tag() }}</dt>
+          <dt>{{ userform.first_name.label }} {{ userform.first_name() }}</dt>
+          <dt>{{ userform.last_name.label }} {{ userform.last_name() }}</dt>
+          <dt>{{ userform.alias.label }} {{ userform.alias() }}</dt>
+          {% call macros.handle_description() %} {% endcall %}
+          <dt>{{ userform.email.label }} {{ userform.email() }}</dt>
+          <dt>{{ userform.new_password.label }} {{ userform.new_password()
+            }}</dt>
+          <dt>{{ userform.new_confirm.label }} {{ userform.new_confirm() }}</dt>
+          <dt>{{ userform.password.label }} {{ userform.password() }}</dt>
+          <dt>
+            <input type="submit" value="{{ _('Update') }}">
+          </dt>
+        </dl>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

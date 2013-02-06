@@ -1,0 +1,55 @@
+{% macro steps(caller) %}
+{{ _('Discover a Topic. Meet People. Learn Stuff.') }}
+{% endmacro %}
+
+{% macro heading(caller) %}
+<div class="tl-heading">
+  <img class="tl-logo" src="{{ url_for('static', filename='img/logo.png') }}"></img>
+  <p>{% call steps() %}{% endcall %}</p>
+</div>
+{% endmacro %}
+
+{% macro slogan(caller) %} {{ _('Hassle-Free Peer Learning') }} {% endmacro %}
+
+
+{% macro handle_errors(caller, errors) %}
+{% if errors %}
+{% for error in errors %}
+<div class="alert alert-error tl-message">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>{{ _('Error') }}:</strong> {{ error }}
+</div>
+{% endfor %}
+{% endif %}
+{% endmacro %}
+
+{% macro handle_description(caller) %}
+<h6 class="tl-input-description">{{ _('Alias to use instead of your real name. Set an alias only 
+        if you do not want your real name to be public on this web site.') }}</h6>
+{% endmacro %}
+
+{% macro invite_modal(caller, inviteform, link_text, heading_text) %}
+<!-- Button to trigger modal -->
+<a href="#inviteDialog-{{ inviteform.role.data }}" data-toggle="modal">{{ link_text }}</a>
+<!-- Modal -->
+<div id="inviteDialog-{{ inviteform.role.data }}" class="modal hide fade"
+  role="dialog" aria-labelledby="inviteLabel"
+  aria-hidden="true">
+  <form id="invite-form" action="/invite" data-remote="true" method="POST">
+    <div class="modal-header">
+      <a href="#" class="close" data-dismiss="modal">&times;</a>
+      <button type="button" class="close" data-dismiss="modal"
+        aria-hidden="true"></button>
+      <h4 id="inviteLabel">{{ heading_text }}</h4>
+    </div>
+    <div class="modal-body">
+      {{ inviteform.hidden_tag() }}
+      {{ inviteform.email() }}
+    </div>
+    <div class="modal-footer">
+      <input type="submit" class="btn btn-primary" value="{{ _('Send email') }}"/>
+    </div>
+  </form>
+</div>
+{% endmacro %}
+
