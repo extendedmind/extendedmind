@@ -2,10 +2,12 @@
 <html lang="en" ng-controller="MainCtrl">
 <head>
   <meta charset="utf-8">
-  <title>{{ page.getTitle() }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title ng-bind="page.getTitle()"></title>
   <link rel="stylesheet" href="lib/bootstrap/bootstrap.min.css"/>
   <link rel="stylesheet" href="lib/bootstrap/bootstrap-responsive.min.css"/>
   <link rel="stylesheet" href="css/em.min.css"/>
+  
 </head>
 <body>
 

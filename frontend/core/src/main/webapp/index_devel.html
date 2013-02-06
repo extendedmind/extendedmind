@@ -2,7 +2,7 @@
 <html lang="en" ng-controller="MainCtrl">
 <head>
   <meta charset="utf-8">
-  <title>{{ page.getTitle() }}</title>
+  <title ng-bind="page.getTitle()"></title>
   <link rel="stylesheet" href="lib/bootstrap/bootstrap.css"/>
   <link rel="stylesheet" href="lib/bootstrap/bootstrap-responsive.css"/>
   <link rel="stylesheet/less" href="less/em.less"/>
