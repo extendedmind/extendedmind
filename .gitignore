@@ -1,9 +1,3 @@
-# Ignore Python virtual environments that may contain sensitive information.
-venv/
-
-# Ignore all .pyc files
-*.pyc
-
 # Ignore Eclipse files
 .project
 .pydevproject
