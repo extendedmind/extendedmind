@@ -2,7 +2,13 @@
 
 # Services
 
-# Demonstrate how to register services
-#In this case it is a simple value service.
 angular.module('em.services', [])
-  .value('version', '0.1');
+  .value('version', '0.1')
+  .value('title', '0.1')
+  .factory('page', () -> 
+    PAGE_TITLE = 'extended mind'
+    subTitle = null
+    return { getTitle: () -> 
+               return if subTitle? then (PAGE_TITLE + ' | ' + subTitle) else PAGE_TITLE
+             setSubTitle: (newsubTitle) -> 
+               subTitle = newsubTitle })
