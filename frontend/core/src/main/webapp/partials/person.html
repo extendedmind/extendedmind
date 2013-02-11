@@ -5,7 +5,7 @@
   </div>
   <div class="row-fluid">
     <div class="span8">
-      <section id="contributors" class="em-anchor">
+      <section id="notes" class="em-anchor">
         <div class="page-header">
           <h5>Public notes</h5>
         </div>
@@ -14,13 +14,15 @@
             <li ng-repeat="note in notes">
               <a href="#{{ note.url }}">{{ note.title }}</a>
               <br/>&nbsp;&nbsp;&nbsp;
-              <span ng-switch on="note.verified != undefined">
-                <a ng-switch-when="true" href="#/about#verification" 
-                   title="verified on {{ note.verified.date }} by {{ note.verified.supervisor }}">verified</a> 
-                <span ng-switch-when="false">public</span>
-              </span>
-              <span ng-switch on="note.category == undefined">
-                <a ng-switch-when="false" href="#{{ note.category.url }}">{{ note.category.title }}</a>
+              <span ng-switch on="note.category != undefined">
+                <span ng-switch-when="true" >
+                  <span ng-switch on="note.verified != undefined">
+                    <a ng-switch-when="true" href="#/about#verification" 
+                       title="verified on {{ note.verified.date }} by {{ note.verified.supervisor }}">verified</a> 
+                    <span ng-switch-when="false">public</span>
+                  </span>
+                  <a href="#{{ note.category.url }}">{{ note.category.title }}</a>
+                </span>
               </span>
               <span ng-switch on="note.cags != undefined">
                 <span ng-switch-when="true">under
@@ -33,18 +35,20 @@
           </ul>
         </p>
       </section>
-      <section id="supervisors" class="em-anchor">
-        <div class="page-header">
-          <h5>supervised cags</h5>
-        </div>
-        <p>
-          <ul>
-            <li ng-repeat="supervisedCag in supervisedCags">
-              <a href="#{{ supervisedCag.url }}">{{ supervisedCag.title }}</a>
-            </li>
-          </ul>
-        </p>
-      </section>
+      <span ng-switch on="supervisedCags != undefined">
+        <section ng-switch-when="true" id="supervisors" class="em-anchor">
+          <div class="page-header">
+            <h5>supervised cags</h5>
+          </div>
+          <p>
+            <ul>
+              <li ng-repeat="supervisedCag in supervisedCags">
+                <a href="#{{ supervisedCag.url }}">{{ supervisedCag.title }}</a>
+              </li>
+            </ul>
+          </p>
+        </section>
+      </span>
     </div>
   </div>
 </div>
