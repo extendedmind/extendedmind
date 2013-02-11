@@ -21,6 +21,9 @@ angular
       $routeProvider.when('/search/:searchString', {templateUrl: 'partials/search.html', controller: SearchCtrl})
       $routeProvider.when('/login', {templateUrl: 'partials/login.html', controller: LoginCtrl})
       $routeProvider.when('/my', {templateUrl: 'partials/my.html', controller: MyCtrl})
+      $routeProvider.when('/my/notes', {templateUrl: 'partials/notes.html', controller: NotesCtrl})
+      $routeProvider.when('/my/tasks', {templateUrl: 'partials/tasks.html', controller: TasksCtrl})
+      $routeProvider.when('/my/email', {templateUrl: 'partials/email.html', controller: EmailCtrl})
 
       # TEST VALUES FOR MOCKUP
       $routeProvider.when('/people/timo-tiuraniemi/on-philosophy-of-technology', {templateUrl: 'partials/test/tech.html', controller: NoteCtrl})

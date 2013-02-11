@@ -28,6 +28,15 @@ window.LoginCtrl = ($scope, page) ->
 window.MyCtrl = ($scope, page) ->
   page.setSubTitle 'my'
 
+window.NotesCtrl = ($scope, page) ->
+  page.setSubTitle 'my notes'
+
+window.TasksCtrl = ($scope, page) ->
+  page.setSubTitle 'my tasks'
+
+window.EmailCtrl = ($scope, page) ->
+  page.setSubTitle 'my email'
+
 window.NoteCtrl = ($scope, page) ->
   page.setSubTitle 'note'
 
