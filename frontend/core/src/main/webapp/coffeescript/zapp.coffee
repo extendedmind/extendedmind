@@ -15,6 +15,7 @@ angular
       $routeProvider.when('/', {templateUrl: 'partials/home.html', controller: ContentCtrl})
       $routeProvider.when('/about', {templateUrl: 'partials/about.html', controller: AboutCtrl})
       $routeProvider.when('/people', {templateUrl: 'partials/people.html', controller: PeopleCtrl})
+      $routeProvider.when('/people/:personId', {templateUrl: 'partials/person.html', controller: PersonCtrl})
       $routeProvider.when('/categories', {templateUrl: 'partials/categories.html', controller: CategoriesCtrl})
       $routeProvider.when('/login', {templateUrl: 'partials/login.html', controller: LoginCtrl})
       $routeProvider.when('/my', {templateUrl: 'partials/my.html', controller: MyCtrl})

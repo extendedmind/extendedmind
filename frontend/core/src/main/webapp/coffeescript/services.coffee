@@ -8,7 +8,9 @@ angular.module('em.services', [])
   .factory('page', () -> 
     PAGE_TITLE = 'extended mind'
     subTitle = null
-    return { getTitle: () -> 
+    return { getSubTitle: () ->
+               return subTitle
+             getTitle: () -> 
                return if subTitle? then (PAGE_TITLE + ' | ' + subTitle) else PAGE_TITLE
              setSubTitle: (newsubTitle) -> 
                subTitle = newsubTitle })
