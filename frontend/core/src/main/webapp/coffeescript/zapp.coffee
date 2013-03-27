@@ -12,7 +12,7 @@ angular
     #['$locationProvider', ($locationProvider) ->
     #  $locationProvider.html5Mode(true)],
     ['$routeProvider', ($routeProvider)->
-      $routeProvider.when('/', {templateUrl: 'partials/home.html', controller: ContentCtrl})
+      $routeProvider.when('/', {templateUrl: 'partials/login.html', controller: ContentCtrl})
       $routeProvider.when('/about', {templateUrl: 'partials/about.html', controller: AboutCtrl})
       $routeProvider.when('/people', {templateUrl: 'partials/people.html', controller: PeopleCtrl})
       $routeProvider.when('/people/:personId', {templateUrl: 'partials/person.html', controller: PersonCtrl})
