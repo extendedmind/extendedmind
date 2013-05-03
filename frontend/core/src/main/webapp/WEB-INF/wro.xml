@@ -2,7 +2,7 @@
 <groups xmlns="http://www.isdc.ro/wro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
   <group name="em.min">
-    <js>/coffeescript/**.coffee</js>
+    <js>/js/**.js</js>
     <css>/less/**.less</css>
   </group>
 

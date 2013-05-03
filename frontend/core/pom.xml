@@ -1,6 +1,6 @@
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -19,7 +19,7 @@
        <name>GNU Affero General Public License, Version 3</name>
       <url>http://www.gnu.org/licenses/agpl-3.0.html</url>
       <distribution>repo</distribution>
-    </license>  
+    </license>
   </licenses>
 
   <build>
@@ -30,10 +30,11 @@
         <configuration>
           <filesets>
             <fileset>
-              <directory>${basedir}/src/main/webapp/css</directory>
-            </fileset>
-            <fileset>
-              <directory>${basedir}/src/main/webapp/js</directory>
+              <directory>${basedir}/src/main/webapp/static/</directory>
+              <includes>
+	            <include>em.min.js</include>
+	            <include>em.min.css</include>
+	          </includes>
             </fileset>
           </filesets>
         </configuration>
@@ -51,13 +52,13 @@
           </execution>
         </executions>
         <configuration>
-          <jsSrcDir>${project.basedir}/src/main/webapp</jsSrcDir>
-          <jsTestSrcDir>${project.basedir}/src/test/webapp</jsTestSrcDir>
+          <jsSrcDir>${project.basedir}/src/main/webapp/static</jsSrcDir>
+          <jsTestSrcDir>${project.basedir}/src/test/webapp/static</jsTestSrcDir>
           <sourceIncludes>
             <include>lib/jquery/jquery.js</include>
             <include>lib/angularjs/angular.js</include>
             <include>lib/angularjs/angular-mocks.js</include>
-            <include>**/*.coffee</include>
+            <include>js/*.js</include>
           </sourceIncludes>
         </configuration>
       </plugin>
@@ -77,11 +78,11 @@
           </execution>
         </executions>
         <configuration>
-          <contextFolder>${basedir}/src/main/webapp/</contextFolder>
+          <contextFolder>${basedir}/src/main/webapp/static</contextFolder>
           <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
-          <destinationFolder>${basedir}/src/main/webapp/</destinationFolder>
-          <cssDestinationFolder>${basedir}/src/main/webapp/css/</cssDestinationFolder>
-          <jsDestinationFolder>${basedir}/src/main/webapp/js/</jsDestinationFolder>
+          <destinationFolder>${basedir}/src/main/webapp/static</destinationFolder>
+          <cssDestinationFolder>${basedir}/src/main/webapp/static/</cssDestinationFolder>
+          <jsDestinationFolder>${basedir}/src/main/webapp/static/</jsDestinationFolder>
         </configuration>
       </plugin>
     </plugins>
