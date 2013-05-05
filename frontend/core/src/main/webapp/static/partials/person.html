@@ -1,7 +1,7 @@
 <div class="span12">
   <!-- Page Content -->
   <div class="em-core">
-    <h3>extended mind <a href="#/" class="em-subtitle" ng-bind="page.getSubTitle()"></a></h3>
+    <h3>extended mind <a href="/" class="em-subtitle" ng-bind="page.getSubTitle()"></a></h3>
   </div>
   <div class="row-fluid">
     <div class="span8">
@@ -12,22 +12,22 @@
         <p>
           <ul>
             <li ng-repeat="note in notes">
-              <a href="#{{ note.url }}">{{ note.title }}</a>
+              <a href="{{ note.url }}">{{ note.title }}</a>
               <br/>&nbsp;&nbsp;&nbsp;
               <span ng-switch on="note.category != undefined">
                 <span ng-switch-when="true" >
                   <span ng-switch on="note.verified != undefined">
-                    <a ng-switch-when="true" href="#/about#verification" 
-                       title="verified on {{ note.verified.date }} by {{ note.verified.supervisor }}">verified</a> 
+                    <a ng-switch-when="true" href="/about#verification"
+                       title="verified on {{ note.verified.date }} by {{ note.verified.supervisor }}">verified</a>
                     <span ng-switch-when="false">public</span>
                   </span>
-                  <a href="#{{ note.category.url }}">{{ note.category.title }}</a>
+                  <a href="{{ note.category.url }}">{{ note.category.title }}</a>
                 </span>
               </span>
               <span ng-switch on="note.cags != undefined">
                 <span ng-switch-when="true">under
                   <span ng-repeat="cag in note.cags">
-                    <a href="#{{ cag.url }}">{{ cag.title }}</a><span ng-hide="$last">,</span>
+                    <a href="{{ cag.url }}">{{ cag.title }}</a><span ng-hide="$last">,</span>
                   </span>
                 </span>
               </span>
@@ -43,7 +43,7 @@
           <p>
             <ul>
               <li ng-repeat="supervisedCag in supervisedCags">
-                <a href="#{{ supervisedCag.url }}">{{ supervisedCag.title }}</a>
+                <a href="{{ supervisedCag.url }}">{{ supervisedCag.title }}</a>
               </li>
             </ul>
           </p>
