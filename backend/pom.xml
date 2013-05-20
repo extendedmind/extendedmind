@@ -27,6 +27,22 @@
       <artifactId>scala-library</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.reportgrid</groupId>
+      <artifactId>blueeyes-core_2.9.2</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.reportgrid</groupId>
+      <artifactId>blueeyes-json_2.9.2</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- Test -->
     <dependency>
       <groupId>org.scalatest</groupId>

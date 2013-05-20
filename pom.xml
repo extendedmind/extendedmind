@@ -24,6 +24,24 @@
     <scala.version>2.10.0</scala.version>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>reportgrid</id>
+      <name>ReportGrid repo (public)</name>
+      <url>http://nexus.reportgrid.com/content/repositories/public-releases</url>
+    </repository>
+    <repository>
+      <id>reportgrid-snapshot</id>
+      <name>ReportGrid snapshot repo (public)</name>
+      <url>http://nexus.reportgrid.com/content/repositories/public-snapshots</url>
+    </repository>
+    <repository>
+      <id>typesafe</id>
+      <name>Typesafe repository</name>
+      <url>http://repo.typesafe.com/typesafe/releases</url>
+    </repository>
+  </repositories>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
