@@ -5,8 +5,8 @@ This package contains software licensed under different
 licenses, please refer to the NOTICE.txt file for further
 information and LICENSES.txt for full license texts.
 
-The software ("Software") is licensed under the GNU AFFERO GENERAL
-PUBLIC LICENSE Version 3 to all third parties and that license is
+Parts of the software ("Software") is licensed under the GNU AFFERO
+GENERAL PUBLIC LICENSE Version 3 to all third parties and that license is
 included below.
 
 Other parts of the software ("Software") is licensed under the Apache
