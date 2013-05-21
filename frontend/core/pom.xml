@@ -26,9 +26,9 @@
 
   <scm>
     <connection>scm:git:git@github.com:extendedmind/extendedmind.git</connection>
-    <url>scm:git:git@github.com:extendedmind/extendedmind.git</url>
     <developerConnection>scm:git:git@github.com:extendedmind/extendedmind.git</developerConnection>
-  </scm>
+    <url>git@github.com:extendedmind/extendedmind.git</url>
+  </scm>  
 
   <developers>
     <developer>
