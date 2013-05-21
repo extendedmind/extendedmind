@@ -1,6 +1,6 @@
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -15,20 +15,20 @@
   <description>Extended Mind Backend</description>
   <url>https://github.com/extendedmind/extendedmind</url>
   <inceptionYear>2013</inceptionYear>
-  
+
   <licenses>
     <license>
        <name>GNU Affero General Public License, Version 3</name>
       <url>http://www.gnu.org/licenses/agpl-3.0.html</url>
       <distribution>repo</distribution>
-    </license>  
+    </license>
   </licenses>
 
   <scm>
     <connection>scm:git:git@github.com:extendedmind/extendedmind.git</connection>
     <developerConnection>scm:git:git@github.com:extendedmind/extendedmind.git</developerConnection>
     <url>git@github.com:extendedmind/extendedmind.git</url>
-  </scm>  
+  </scm>
 
   <developers>
     <developer>
@@ -45,17 +45,17 @@
     </dependency>
 
     <dependency>
-      <groupId>com.reportgrid</groupId>
+      <groupId>com.github.jdegoes</groupId>
       <artifactId>blueeyes-core_${scala.version}</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>0.6.1-SNAPSHOT</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
-      <groupId>com.reportgrid</groupId>
+      <groupId>com.github.jdegoes</groupId>
       <artifactId>blueeyes-json_${scala.version}</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>0.6.1-SNAPSHOT</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>

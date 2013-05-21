@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -33,7 +33,7 @@
     <connection>scm:git:git@github.com:extendedmind/extendedmind.git</connection>
     <developerConnection>scm:git:git@github.com:extendedmind/extendedmind.git</developerConnection>
     <url>git@github.com:extendedmind/extendedmind.git</url>
-  </scm>  
+  </scm>
 
   <developers>
     <developer>
@@ -42,24 +42,19 @@
       <email>timo.tiuraniemi@iki.fi</email>
     </developer>
   </developers>
-  
+
   <properties>
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
     <encoding>UTF-8</encoding>
-    <scala.version>2.9.2</scala.version>
+    <scala.version>2.9.3</scala.version>
   </properties>
 
   <repositories>
     <repository>
-      <id>reportgrid</id>
-      <name>ReportGrid repo (public)</name>
-      <url>http://nexus.reportgrid.com/content/repositories/public-releases</url>
-    </repository>
-    <repository>
-      <id>reportgrid-snapshot</id>
-      <name>ReportGrid snapshot repo (public)</name>
-      <url>http://nexus.reportgrid.com/content/repositories/public-snapshots</url>
+      <id>oss-sonatype-public</id>
+      <name>OSS Sonatype public</name>
+      <url>https://oss.sonatype.org/content/repositories/public</url>
     </repository>
     <repository>
       <id>typesafe</id>
@@ -75,7 +70,7 @@
         <artifactId>scala-library</artifactId>
         <version>${scala.version}</version>
       </dependency>
-      
+
       <!-- Test -->
       <dependency>
         <groupId>org.scalatest</groupId>
