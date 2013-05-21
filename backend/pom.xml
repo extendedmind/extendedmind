@@ -10,9 +10,12 @@
   </parent>
   <groupId>org.extendedmind</groupId>
   <artifactId>backend</artifactId>
+  <packaging>jar</packaging>
   <name>Extended Mind :: Backend</name>
   <description>Extended Mind Backend</description>
+  <url>https://github.com/extendedmind/extendedmind</url>
   <inceptionYear>2013</inceptionYear>
+  
   <licenses>
     <license>
        <name>GNU Affero General Public License, Version 3</name>
@@ -20,6 +23,20 @@
       <distribution>repo</distribution>
     </license>  
   </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:extendedmind/extendedmind.git</connection>
+    <url>scm:git:git@github.com:extendedmind/extendedmind.git</url>
+    <developerConnection>scm:git:git@github.com:extendedmind/extendedmind.git</developerConnection>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>ttiurani</id>
+      <name>Timo Tiuraniemi</name>
+      <email>timo.tiuraniemi@iki.fi</email>
+    </developer>
+  </developers>
 
   <dependencies>
     <dependency>

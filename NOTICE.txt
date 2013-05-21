@@ -1,18 +1,26 @@
 Extended Mind
+-------------
 
-Copyright © 2012 Filosofian Akatemia [http://www.filosofianakatemia.fi]
+Copyright (c) 2013 Extended Mind Technologies Oy.
 
-This product includes software ("Software") developed by Filosofian Akatemia
-and its contributors.
+This product includes software ("Software") developed by Extended Mind
+Technologies Oy and its contributors.
 
-The Software is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE Version 3 
-(http://www.fsf.org/licensing/licenses/agpl-3.0.html)
-("AGPL") to all third parties and that license, as required by the AGPL,
-is included in the LICENSE.txt file.
+Parts of the software ("Software") is licensed under the GNU AFFERO GENERAL
+PUBLIC LICENSE Version 3 to all third parties and that license is
+included below.
+
+Other parts of the software ("Software") is licensed under the Apache
+License Version 2.0, January 2004 to all third parties and that
+license is included below.
+
+See the corresponding pom.xml to verify which licence applies to
+which parts.
+
+The licenses, as required by the AGPL are included in the LICENSE.txt file.
 
 Third party libraries
 ---------------------
 
 See the NOTICE.txt and LICENSES.txt files in the subdirectories for
 information on included third party software.
-
