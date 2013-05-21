@@ -29,7 +29,7 @@
 
     <dependency>
       <groupId>com.reportgrid</groupId>
-      <artifactId>blueeyes-core_2.9.2</artifactId>
+      <artifactId>blueeyes-core_${scala.version}</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <type>jar</type>
       <scope>compile</scope>
@@ -37,7 +37,7 @@
 
     <dependency>
       <groupId>com.reportgrid</groupId>
-      <artifactId>blueeyes-json_2.9.2</artifactId>
+      <artifactId>blueeyes-json_${scala.version}</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <type>jar</type>
       <scope>compile</scope>
@@ -46,7 +46,8 @@
     <!-- Test -->
     <dependency>
       <groupId>org.scalatest</groupId>
-      <artifactId>scalatest_2.10</artifactId>
+      <artifactId>scalatest_${scala.version}</artifactId>
+      <version>1.9.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
