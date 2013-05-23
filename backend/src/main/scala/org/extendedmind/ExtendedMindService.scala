@@ -1,5 +1,7 @@
+package org.extendedmind
+
 import akka.dispatch.Future
-import blueeyes.{BlueEyesServiceBuilder, BlueEyesServer}
+import blueeyes.BlueEyesServiceBuilder
 import blueeyes.core.http.{HttpRequest, HttpResponse, HttpStatus}
 import blueeyes.core.http.HttpStatusCodes._
 import blueeyes.core.data.{ByteChunk, BijectionsChunkString}
@@ -52,5 +54,3 @@ trait ExtendedMindService extends BlueEyesServiceBuilder with BijectionsChunkStr
       }
   }
 }
-
-object ExtendedMindServer extends BlueEyesServer with ExtendedMindService

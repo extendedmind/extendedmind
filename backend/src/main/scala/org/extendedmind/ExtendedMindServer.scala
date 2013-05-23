@@ -1,0 +1,5 @@
+package org.extendedmind
+
+import blueeyes.BlueEyesServer
+
+object ExtendedMindServer extends BlueEyesServer with ExtendedMindService
