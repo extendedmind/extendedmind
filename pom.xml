@@ -47,7 +47,8 @@
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
     <encoding>UTF-8</encoding>
-    <scala.version>2.9.3</scala.version>
+    <scala.version.short>2.10</scala.version.short>
+    <scala.version>${scala.version.short}.1</scala.version>
   </properties>
 
   <repositories>
@@ -60,6 +61,16 @@
       <id>typesafe</id>
       <name>Typesafe repository</name>
       <url>http://repo.typesafe.com/typesafe/releases</url>
+    </repository>
+    <repository>
+      <id>spray.io</id>
+      <name>Spray.io repository</name>
+      <url>http://repo.spray.io</url>
+    </repository>
+    <repository>
+      <id>spray.io.nightlies</id>
+      <name>Spray.io Nightly Repository</name>
+      <url>http://nightlies.spray.io/</url>
     </repository>
   </repositories>
 
@@ -74,7 +85,7 @@
       <!-- Test -->
       <dependency>
         <groupId>org.scalatest</groupId>
-        <artifactId>scalatest_2.10</artifactId>
+        <artifactId>scalatest_${scala.version.short}</artifactId>
         <version>2.0.M5b</version>
       </dependency>
     </dependencies>

@@ -45,21 +45,43 @@
     </dependency>
 
     <dependency>
-      <groupId>com.github.jdegoes</groupId>
-      <artifactId>blueeyes-core_${scala.version}</artifactId>
-      <version>0.6.1-SNAPSHOT</version>
+      <groupId>io.spray</groupId>
+      <artifactId>spray-io</artifactId>
+      <version>1.2-20130516</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
-      <groupId>com.github.jdegoes</groupId>
-      <artifactId>blueeyes-json_${scala.version}</artifactId>
-      <version>0.6.1-SNAPSHOT</version>
+      <groupId>io.spray</groupId>
+      <artifactId>spray-can</artifactId>
+      <version>1.2-20130516</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-    
+
+	<dependency>
+      <groupId>io.spray</groupId>
+      <artifactId>spray-json_${scala.version.short}</artifactId>
+      <version>1.2.4</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+
+	<dependency>
+		<groupId>com.typesafe.akka</groupId>
+		<artifactId>akka-actor_${scala.version.short}</artifactId>
+		<version>2.2-M3</version>
+		<scope>compile</scope>
+	</dependency>
+
+	<dependency>
+		<groupId>com.typesafe.akka</groupId>
+		<artifactId>akka-slf4j_${scala.version.short}</artifactId>
+		<version>2.2-M3</version>
+		<scope>compile</scope>
+	</dependency>
+
 	<dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
@@ -74,8 +96,7 @@
     <!-- Test -->
     <dependency>
       <groupId>org.scalatest</groupId>
-      <artifactId>scalatest_${scala.version}</artifactId>
-      <version>1.9.1</version>
+      <artifactId>scalatest_${scala.version.short}</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
