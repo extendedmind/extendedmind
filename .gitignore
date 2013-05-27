@@ -1,6 +1,7 @@
 # Ignore Eclipse files
 .project
-.pydevproject
+.classpath
+.cache
 .settings/
 .externalToolBuilders
 
