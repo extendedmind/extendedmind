@@ -59,8 +59,16 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>io.spray</groupId>
+      <artifactId>spray-routing</artifactId>
+      <version>1.2-20130516</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
 
-	<dependency>
+	  <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-json_${scala.version.short}</artifactId>
       <version>1.2.4</version>
@@ -68,21 +76,21 @@
       <scope>compile</scope>
     </dependency>
 
-	<dependency>
-		<groupId>com.typesafe.akka</groupId>
-		<artifactId>akka-actor_${scala.version.short}</artifactId>
-		<version>2.2-M3</version>
-		<scope>compile</scope>
-	</dependency>
-
-	<dependency>
-		<groupId>com.typesafe.akka</groupId>
-		<artifactId>akka-slf4j_${scala.version.short}</artifactId>
-		<version>2.2-M3</version>
-		<scope>compile</scope>
-	</dependency>
-
-	<dependency>
+  	<dependency>
+  		<groupId>com.typesafe.akka</groupId>
+  		<artifactId>akka-actor_${scala.version.short}</artifactId>
+  		<version>2.2-M3</version>
+  		<scope>compile</scope>
+  	</dependency>
+  
+  	<dependency>
+  		<groupId>com.typesafe.akka</groupId>
+  		<artifactId>akka-slf4j_${scala.version.short}</artifactId>
+  		<version>2.2-M3</version>
+  		<scope>compile</scope>
+  	</dependency>
+  
+  	<dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
         <version>1.0.13</version>
@@ -94,6 +102,14 @@
     </dependency>
 
     <!-- Test -->
+    <dependency>
+      <groupId>io.spray</groupId>
+      <artifactId>spray-testkit</artifactId>
+      <version>1.2-20130516</version>
+      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+    
     <dependency>
       <groupId>org.scalatest</groupId>
       <artifactId>scalatest_${scala.version.short}</artifactId>
