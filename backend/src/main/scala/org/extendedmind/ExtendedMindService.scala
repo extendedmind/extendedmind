@@ -1,3 +1,5 @@
+package org.extendedmind
+
 import scala.concurrent.duration._
 import akka.pattern.ask
 import akka.util.Timeout
