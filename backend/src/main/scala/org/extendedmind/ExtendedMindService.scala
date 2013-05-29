@@ -1,131 +1,76 @@
 package org.extendedmind
 
-import scala.concurrent.duration._
-import akka.pattern.ask
-import akka.util.Timeout
-import akka.actor._
-import spray.can.Http
-import spray.can.server.Stats
-import spray.util._
+import org.extendedmind.domain._
+
+import akka.actor.Actor
+import spray.routing._
 import spray.http._
-import HttpMethods._
-import MediaTypes._
+import spray.http.MediaTypes._
+import spray.routing.Directive.pimpApply
+import spray.routing.directives.CompletionMagnet.fromObject
+import spray.httpx.SprayJsonSupport.sprayJsonMarshaller
+import spray.httpx.SprayJsonSupport.sprayJsonUnmarshaller
+import spray.json.DefaultJsonProtocol
 
-class ExtendedMindService extends Actor with SprayActorLogging {
-  implicit val timeout: Timeout = 1.second // for the actor 'asks'
-  import context.dispatcher // ExecutionContext for the futures and scheduler
+// we don't implement our route structure directly in the service actor because
+// we want to be able to test it independently, without having to spin up an actor
+class ExtendedMindServiceActor extends Actor with ExtendedMindService with ProductionDB {
 
-  def receive = {
-    // when a new connection comes in we register ourselves as the connection handler
-    case _: Http.Connected => sender ! Http.Register(self)
+  // the HttpService trait defines only one abstract member, which
+  // connects the services environment to the enclosing actor or test
+  def actorRefFactory = context
 
-    case HttpRequest(GET, Uri.Path("/"), _, _, _) =>
-      sender ! index
+  // this actor only runs our route, but you could add
+  // other things here, like request stream processing
+  // or timeout handling
+  def receive = runRoute(s4Route)
+}
 
-    case HttpRequest(GET, Uri.Path("/ping"), _, _, _) =>
-      sender ! HttpResponse(entity = "PONG!")
 
-    case HttpRequest(GET, Uri.Path("/stream"), _, _, _) =>
-      val peer = sender // since the Props creator is executed asyncly we need to save the sender ref
-      context actorOf Props(new Streamer(peer, 25))
+object JsonImplicits extends DefaultJsonProtocol {
+  implicit val impPerson = jsonFormat3(Person)
+}
 
-    case HttpRequest(GET, Uri.Path("/server-stats"), _, _, _) =>
-      val client = sender
-      context.actorFor("/user/IO-HTTP/listener-0") ? Http.GetStats onSuccess {
-        case x: Stats => client ! statsPresentation(x)
-      }
 
-    case HttpRequest(GET, Uri.Path("/crash"), _, _, _) =>
-      sender ! HttpResponse(entity = "About to throw an exception in the request handling actor, " +
-        "which triggers an actor restart")
-      sys.error("BOOM!")
-
-    case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/timeout" =>
-      log.info("Dropping request, triggering a timeout")
-
-    case HttpRequest(GET, Uri.Path("/stop"), _, _, _) =>
-      sender ! HttpResponse(entity = "Shutting down in 1 second ...")
-      context.system.scheduler.scheduleOnce(1.second) { context.system.shutdown() }
-
-    case _: HttpRequest => sender ! HttpResponse(status = 404, entity = "Unknown resource!")
-
-    case Timedout(HttpRequest(_, Uri.Path("/timeout/timeout"), _, _, _)) =>
-      log.info("Dropping Timeout message")
-
-    case Timedout(HttpRequest(method, uri, _, _, _)) =>
-      sender ! HttpResponse(
-        status = 500,
-        entity = "The " + method + " request to '" + uri + "' has timed out..."
-      )
-  }
-
-  ////////////// helpers //////////////
-
-  lazy val index = HttpResponse(
-    entity = HttpEntity(`text/html`,
-      <html>s
-        <body>
-          <h1>Say hello to <i>spray-can</i>!</h1>
-          <p>Defined resources:</p>
-          <ul>
-            <li><a href="/ping">/ping</a></li>
-            <li><a href="/stream">/stream</a></li>
-            <li><a href="/server-stats">/server-stats</a></li>
-            <li><a href="/crash">/crash</a></li>
-            <li><a href="/timeout">/timeout</a></li>
-            <li><a href="/timeout/timeout">/timeout/timeout</a></li>
-            <li><a href="/stop">/stop</a></li>
-          </ul>
-        </body>
-      </html>.toString()
-    )
-  )
-
-  def statsPresentation(s: Stats) = HttpResponse(
-    entity = HttpEntity(`text/html`,
-      <html>
-        <body>
-          <h1>HttpServer Stats</h1>
-          <table>
-            <tr><td>uptime:</td><td>{s.uptime.formatHMS}</td></tr>
-            <tr><td>totalRequests:</td><td>{s.totalRequests}</td></tr>
-            <tr><td>openRequests:</td><td>{s.openRequests}</td></tr>
-            <tr><td>maxOpenRequests:</td><td>{s.maxOpenRequests}</td></tr>
-            <tr><td>totalConnections:</td><td>{s.totalConnections}</td></tr>
-            <tr><td>openConnections:</td><td>{s.openConnections}</td></tr>
-            <tr><td>maxOpenConnections:</td><td>{s.maxOpenConnections}</td></tr>
-            <tr><td>requestTimeouts:</td><td>{s.requestTimeouts}</td></tr>
-          </table>
-        </body>
-      </html>.toString()
-    )
-  )
-
-  class Streamer(client: ActorRef, count: Int) extends Actor with SprayActorLogging {
-    log.debug("Starting streaming response ...")
-
-    // we use the successful sending of a chunk as trigger for scheduling the next chunk
-    client ! ChunkedResponseStart(HttpResponse(entity = " " * 2048)).withAck(Ok(count))
-
-    def receive = {
-      case Ok(0) =>
-        log.info("Finalizing response stream ...")
-        client ! MessageChunk("\nStopped...")
-        client ! ChunkedMessageEnd()
-        context.stop(self)
-
-      case Ok(remaining) =>
-        log.info("Sending response chunk ...")
-        context.system.scheduler.scheduleOnce(100 millis span) {
-          client ! MessageChunk(DateTime.now.toIsoDateTimeString + ", ").withAck(Ok(remaining - 1))
+// this trait defines our service behavior independently from the service actor
+trait ExtendedMindService extends HttpService { this: DBConfig =>
+  import JsonImplicits._
+  
+  val s4Route =
+    path("") {
+      get {
+        respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
+          complete {
+            <html>
+              <body>
+                <h1>The <b>S4</b> - <i>Slick Spray Scala Stack</i> is running :-)</h1>
+              </body>
+            </html>
+          }
         }
+      }
+    } ~
+      path("persons") {
+        get { ctx =>
+          ctx.complete{
+            val result: List[Person] = m.getPersons()
+            result
+          }
+        }
+      }~
+      path("person") {
+        post {
+          entity(as[Person]) { person =>
+            val result: Person = m.addPerson(person)
+            complete(result)
+          }
+        }
+      }
+}
 
-      case x: Http.ConnectionClosed =>
-        log.info("Canceling response stream due to {} ...", x)
-        context.stop(self)
-    }
-
-    // simple case class whose instances we use as send confirmation message for streaming chunks
-    case class Ok(remaining: Int)
+class B{
+    def persons: List[Person] = {
+    List()
   }
 }
+
