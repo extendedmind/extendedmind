@@ -39,11 +39,14 @@
   </developers>
 
   <dependencies>
+    
+    <!-- Scala -->
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
     </dependency>
 
+    <!-- Spray.io -->
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-io</artifactId>
@@ -51,7 +54,6 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-can</artifactId>
@@ -59,7 +61,6 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-    
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-routing</artifactId>
@@ -67,7 +68,6 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-
 	  <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-json_${scala.version.short}</artifactId>
@@ -75,29 +75,48 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
- 
-    <dependency>
-      <groupId>org.json4s</groupId>
-      <artifactId>json4s-jackson_${scala.version.short}</artifactId>
-      <version>3.2.4</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
 
+    <!-- Akka -->
   	<dependency>
   		<groupId>com.typesafe.akka</groupId>
   		<artifactId>akka-actor_${scala.version.short}</artifactId>
   		<version>2.2-M3</version>
-  		<scope>compile</scope>
+      <type>jar</type>
+      <scope>compile</scope>
   	</dependency>
 
-  	<dependency>
-  		<groupId>com.typesafe.akka</groupId>
-  		<artifactId>akka-slf4j_${scala.version.short}</artifactId>
-  		<version>2.2-M3</version>
-  		<scope>compile</scope>
-  	</dependency>
+    <!-- Neo4j -->
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-kernel</artifactId>
+      <version>1.9</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.extendedmind</groupId>
+      <artifactId>neo4j-scala</artifactId>
+      <version>0.2.0-M2_${scala.version}-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+    
+    <!-- Subcut -->
+    <dependency>
+      <groupId>com.escalatesoft.subcut</groupId>
+      <artifactId>subcut_${scala.version.short}</artifactId>
+      <version>2.0</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
 
+    <!-- Logging -->
+    <dependency>
+      <groupId>com.typesafe.akka</groupId>
+      <artifactId>akka-slf4j_${scala.version.short}</artifactId>
+      <version>2.2-M3</version>
+      <scope>compile</scope>
+    </dependency>
   	<dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
@@ -115,6 +134,13 @@
       <artifactId>spray-testkit</artifactId>
       <version>1.2-20130516</version>
       <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-kernel</artifactId>
+      <version>1.9</version>
+      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
