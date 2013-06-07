@@ -2,8 +2,8 @@ package org.extendedmind.test
 
 import org.neo4j.scala.DatabaseService
 import org.neo4j.scala.DatabaseServiceImpl
-import org.neo4j.test.ImpermanentGraphDatabase
 import java.util.{HashMap => jMap}
+import org.neo4j.test.ImpermanentGraphDatabase
 
 /**
  * provides a specific Database Service

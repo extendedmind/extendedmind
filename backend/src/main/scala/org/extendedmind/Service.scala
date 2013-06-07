@@ -13,6 +13,7 @@ import spray.json.DefaultJsonProtocol
 import com.escalatesoft.subcut.inject.BindingModule
 import com.escalatesoft.subcut.inject.Injectable
 import akka.actor.ActorContext
+import com.escalatesoft.subcut.inject.NewBindingModule
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -22,9 +23,9 @@ class ServiceActor extends Actor with Service{
   // connects the services environment to the enclosing actor or test
   def actorRefFactory = context
   
-  // Initialize settings correctly here
+  // Implement abstract field from Service
   def settings = SettingsExtension(context.system)
-
+  
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling
@@ -40,19 +41,17 @@ trait Service extends HttpService with Injectable{
 
   // Settings need to be initialized in the child class
   def settings: Settings
+
+  // Setup Subcut bindings
+  implicit val bindingModule = settings.configuration  
   
-  // Setup Subcut bindings here
-  implicit val bindingModule = settings.configuration
-
-  // Inject database
-  val db = injectOptional[GraphDatabase] getOrElse(new EmbeddedGraphDatabase(settings))
-
   import JsonImplicits._
-  val emRoute =
+  val emRoute = {
     path("") {
       get {
         respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
+        	val db = injectOptional[GraphDatabase]
             <html>
               <body>
                 <h1>Extended Mind Scala Stack is running</h1>
@@ -65,7 +64,7 @@ trait Service extends HttpService with Injectable{
     path("users") {
       get { ctx =>
         ctx.complete{
-          val result: List[User] = db.getUsers()
+          val result: List[User] = getDatabase(settings).getUsers()
           result
         }
       }
@@ -73,9 +72,15 @@ trait Service extends HttpService with Injectable{
     path("user") {
       post {
         entity(as[User]) { user =>
-          val result: User = db.addUser(user)
+          val result: User = getDatabase(settings).addUser(user)
           complete(result)
         }
       }
     }
+  }
+  
+  def getDatabase(settings: Settings)(implicit bindingModule: BindingModule): GraphDatabase = {
+    // Inject database
+    injectOptional[GraphDatabase] getOrElse(new EmbeddedGraphDatabase(settings))                
+  }
 }
