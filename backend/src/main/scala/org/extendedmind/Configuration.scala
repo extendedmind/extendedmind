@@ -13,7 +13,8 @@ import org.extendedmind.domain._
 // Custom settings from application.conf or overridden file
 
 class Settings(config: Config) extends Extension {
-  val neo4jStoreDir: String = config.getString("extendedmind.neo4j.storeDir")
+  val neo4jStoreDir = config.getString("extendedmind.neo4j.storeDir")
+  val configuration = new Configuration(this)
 }
 
 object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{
@@ -23,9 +24,9 @@ object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{
 
 // Subcut defaults
 
-class Configuration(implicit val settings: Settings) extends NewBindingModule(module => {
+class Configuration(settings: Settings) extends NewBindingModule(module => {
   import module._
-  bind [GraphDatabase] toSingle new EmbeddedGraphDatabase
+  bind [GraphDatabase] toSingle new EmbeddedGraphDatabase(settings)
 }) 
 
 
