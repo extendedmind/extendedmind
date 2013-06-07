@@ -16,17 +16,19 @@ import akka.actor.ActorContext
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
-class ServiceActor extends Actor{
+class ServiceActor extends Actor with Service{
 
-  // Setup Subcut bindings here
-  val settings = SettingsExtension(context.system)
-  implicit val bindingModule = settings.configuration
-  val service = new Service(context, settings)
+  // the HttpService trait defines only one abstract member, which
+  // connects the services environment to the enclosing actor or test
+  def actorRefFactory = context
   
+  // Initialize settings correctly here
+  def settings = SettingsExtension(context.system)
+
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling
-  def receive = service.runRoute(service.emRoute)
+  def receive = runRoute(emRoute)
 }
 
 object JsonImplicits extends DefaultJsonProtocol {
@@ -34,14 +36,14 @@ object JsonImplicits extends DefaultJsonProtocol {
 }
 
 // this class defines our service behavior independently from the service actor
-class Service(context: ActorContext,
-              settings: Settings)
-              (implicit val bindingModule: BindingModule) extends HttpService with Injectable{
+trait Service extends HttpService with Injectable{
 
-  // the HttpService trait defines only one abstract member, which
-  // connects the services environment to the enclosing actor or test
-  def actorRefFactory = context
+  // Settings need to be initialized in the child class
+  def settings: Settings
   
+  // Setup Subcut bindings here
+  implicit val bindingModule = settings.configuration
+
   // Inject database
   val db = injectOptional[GraphDatabase] getOrElse(new EmbeddedGraphDatabase(settings))
 
