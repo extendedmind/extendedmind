@@ -1,9 +1,9 @@
 package org.extendedmind.test
 
-import org.neo4j.scala.EmbeddedGraphDatabaseServiceProvider
 import org.extendedmind.Settings
 import org.extendedmind.domain.GraphDatabase
+import org.extendedmind.bl.SearchIndex
 
-class TestGraphDatabase(settings: Settings) extends GraphDatabase 
-			with ImpermanentGraphDatabaseServiceProvider {
+class TestGraphDatabase(settings: Settings) 
+				extends GraphDatabase with ImpermanentGraphDatabaseServiceProvider {
 }

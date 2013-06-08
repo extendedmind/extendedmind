@@ -10,10 +10,10 @@ import spray.routing.directives.CompletionMagnet.fromObject
 import spray.httpx.SprayJsonSupport.sprayJsonMarshaller
 import spray.httpx.SprayJsonSupport.sprayJsonUnmarshaller
 import spray.json.DefaultJsonProtocol
-import com.escalatesoft.subcut.inject.BindingModule
-import com.escalatesoft.subcut.inject.Injectable
 import akka.actor.ActorContext
-import com.escalatesoft.subcut.inject.NewBindingModule
+import scaldi.Injectable
+import scaldi.Injector
+import org.extendedmind.bl.UserActions
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -25,6 +25,7 @@ class ServiceActor extends Actor with Service{
   
   // Implement abstract field from Service
   def settings = SettingsExtension(context.system)
+  def configurations = new Configuration(settings)
   
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
@@ -41,9 +42,10 @@ trait Service extends HttpService with Injectable{
 
   // Settings need to be initialized in the child class
   def settings: Settings
-
-  // Setup Subcut bindings
-  implicit val bindingModule = settings.configuration  
+  def configurations: Injector
+  
+  // Implicit values for Scaldi modules
+  implicit val implModules = configurations  
   
   import JsonImplicits._
   val emRoute = {
@@ -51,7 +53,7 @@ trait Service extends HttpService with Injectable{
       get {
         respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-        	val db = injectOptional[GraphDatabase]
+        	val users = getUserActions(settings).getUsers()
             <html>
               <body>
                 <h1>Extended Mind Scala Stack is running</h1>
@@ -64,7 +66,7 @@ trait Service extends HttpService with Injectable{
     path("users") {
       get { ctx =>
         ctx.complete{
-          val result: List[User] = getDatabase(settings).getUsers()
+          val result: List[User] = getUserActions(settings).getUsers()
           result
         }
       }
@@ -72,15 +74,14 @@ trait Service extends HttpService with Injectable{
     path("user") {
       post {
         entity(as[User]) { user =>
-          val result: User = getDatabase(settings).addUser(user)
+          val result: User = getUserActions(settings).addUser(user)
           complete(result)
         }
       }
     }
   }
   
-  def getDatabase(settings: Settings)(implicit bindingModule: BindingModule): GraphDatabase = {
-    // Inject database
-    injectOptional[GraphDatabase] getOrElse(new EmbeddedGraphDatabase(settings))                
+  def getUserActions(settings: Settings): UserActions = {
+    inject[UserActions]
   }
 }

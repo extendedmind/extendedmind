@@ -7,14 +7,17 @@ import akka.actor.ExtendedActorSystem
 import scala.concurrent.duration.Duration
 import com.typesafe.config.Config
 import java.util.concurrent.TimeUnit
-import com.escalatesoft.subcut.inject.NewBindingModule
 import org.extendedmind.domain._
+import scaldi.Module
+import org.extendedmind.bl.ElasticSearchIndex
+import org.extendedmind.bl.SearchIndex
+import org.extendedmind.bl.UserActions
+import org.extendedmind.bl.UserActionsImpl
 
 // Custom settings from application.conf or overridden file
 
 class Settings(config: Config) extends Extension {
   val neo4jStoreDir = config.getString("extendedmind.neo4j.storeDir")
-  val configuration = new Configuration(this)
 }
 
 object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{
@@ -22,12 +25,10 @@ object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{
   override def createExtension(system: ExtendedActorSystem) = new Settings(system.settings.config)
 }
 
-// Subcut defaults
+// Scaldi default configuration
 
-class Configuration(settings: Settings) extends NewBindingModule(module => {
-  import module._
-  bind [GraphDatabase] toSingle new EmbeddedGraphDatabase(settings)
-}) 
-
-
-
+class Configuration(settings: Settings) extends Module{
+  bind [GraphDatabase] to new EmbeddedGraphDatabase(settings)
+  bind [SearchIndex] to new ElasticSearchIndex(settings)
+  bind [UserActions] to new UserActionsImpl(settings)
+}

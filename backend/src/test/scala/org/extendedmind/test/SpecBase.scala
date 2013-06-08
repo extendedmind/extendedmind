@@ -9,10 +9,14 @@ import org.extendedmind.SettingsExtension
 import org.extendedmind.domain.GraphDatabase
 import org.extendedmind.Settings
 import org.extendedmind.Configuration
+import scaldi.Module
+import org.extendedmind.Configuration
+import org.scalamock.scalatest.MockFactory
 
 abstract class SpecBase extends FunSpec 
     with ScalatestRouteTest with Service
-    with BeforeAndAfter with ShouldMatchers{
+    with BeforeAndAfter with ShouldMatchers
+    with MockFactory{
   
   // spray-testkit
   def actorRefFactory = system
@@ -20,4 +24,8 @@ abstract class SpecBase extends FunSpec
   // Initialize settings correctly here
   def settings = SettingsExtension(system)
 
+  // Standard test mocks
+  class TestConfiguration(settings: Settings) extends Module {
+    bind [GraphDatabase] to new TestGraphDatabase(settings)
+  }  
 }

@@ -102,11 +102,11 @@
       <scope>compile</scope>
     </dependency>
     
-    <!-- Subcut -->
+    <!-- Scaldi -->
     <dependency>
-      <groupId>com.escalatesoft.subcut</groupId>
-      <artifactId>subcut_${scala.version.short}</artifactId>
-      <version>2.0</version>
+      <groupId>com.github.scaldi</groupId>
+      <artifactId>scaldi_${scala.version.short}</artifactId>
+      <version>0.2</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
