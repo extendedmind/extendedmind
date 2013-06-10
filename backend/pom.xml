@@ -88,13 +88,6 @@
 
     <!-- Neo4j -->
     <dependency>
-      <groupId>org.neo4j</groupId>
-      <artifactId>neo4j-kernel</artifactId>
-      <version>1.9</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>neo4j-scala</artifactId>
       <version>0.2.0-M2_${scala.version}-SNAPSHOT</version>
@@ -152,14 +145,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.scalamock</groupId>
-      <artifactId>scalamock-scalatest-support_${scala.version.short}</artifactId>
-      <version>3.0.1</version>
-      <type>jar</type>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.9.5</version>
       <scope>test</scope>
     </dependency>
-
-    
   </dependencies>
 
   <build>
