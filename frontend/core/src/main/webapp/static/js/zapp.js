@@ -7,7 +7,7 @@
       $locationProvider.html5Mode(true);
       $routeProvider.when('/', {
         templateUrl: '/static/partials/home.html',
-        controller: ContentCtrl
+        controller: HomeCtrl
       });
       $routeProvider.when('/about', {
         templateUrl: '/static/partials/about.html',
@@ -15,7 +15,7 @@
       });
       $routeProvider.when('/people', {
         templateUrl: '/static/partials/people.html',
-        controller: PeopleCtrl
+        controller: PersonListCtrl
       });
       $routeProvider.when('/people/:personId', {
         templateUrl: '/static/partials/person.html',

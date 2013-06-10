@@ -36,6 +36,11 @@
       <name>Timo Tiuraniemi</name>
       <email>timo.tiuraniemi@iki.fi</email>
     </developer>
+    <developer>
+      <id>jpsalo</id>
+      <name>JP Salo</name>
+      <email>jukapeka@gmail.com</email>
+    </developer>
   </developers>
   
   <build>

@@ -17,6 +17,9 @@
           return PAGE_TITLE;
         }
       },
+      getPageTitle: function() {
+      	return PAGE_TITLE;
+      },
       setSubTitle: function(newsubTitle) {
         return subTitle = newsubTitle;
       }
