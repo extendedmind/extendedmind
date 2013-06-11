@@ -2,17 +2,19 @@ package org.extendedmind.test
 
 import spray.testkit.ScalatestRouteTest
 import org.extendedmind.bl.UserActions
-import scaldi.DynamicModule
+import scaldi.Module
 import org.mockito.Mockito._
 
 class ServiceSpec extends SpecBase{
-  // Mock out all peripherals
-  object ServiceTestConfiguration extends DynamicModule
-  def configurations = ServiceTestConfiguration 
+
+  // Mock out all action classes to test only the Service class
   val mockUserActions = mock[UserActions]
-  ServiceTestConfiguration.bind [UserActions] to mockUserActions
+  object ServiceTestConfiguration extends Module{
+    bind [UserActions] to mockUserActions
+  }
+  def configurations = ServiceTestConfiguration 
   
-  // Reset mocks after each test
+  // Reset mocks after each test to be able to use verify after each test
   after{
     reset(mockUserActions)
   }

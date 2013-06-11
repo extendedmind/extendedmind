@@ -40,12 +40,12 @@ object JsonImplicits extends DefaultJsonProtocol {
 // this class defines our service behavior independently from the service actor
 trait Service extends HttpService with Injectable{
 
-  // Settings need to be initialized in the child class
+  // Settings and configuration need to be initialized in the child class
   def settings: Settings
   def configurations: Injector
   
-  // Implicit values for Scaldi modules
   implicit val implModules = configurations  
+  implicit val implSettings = settings
   
   import JsonImplicits._
   val emRoute = {
@@ -53,7 +53,7 @@ trait Service extends HttpService with Injectable{
       get {
         respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-        	val users = getUserActions(settings).getUsers()
+        	val users = userActions.getUsers()
             <html>
               <body>
                 <h1>Extended Mind Scala Stack is running</h1>
@@ -64,9 +64,9 @@ trait Service extends HttpService with Injectable{
       }
     }~
     path("users") {
-      get { ctx =>
-        ctx.complete{
-          val result: List[User] = getUserActions(settings).getUsers()
+      get {
+        complete{
+          val result: List[User] = userActions.getUsers()
           result
         }
       }
@@ -74,14 +74,14 @@ trait Service extends HttpService with Injectable{
     path("user") {
       post {
         entity(as[User]) { user =>
-          val result: User = getUserActions(settings).addUser(user)
+          val result: User = userActions.addUser(user)
           complete(result)
         }
       }
     }
   }
   
-  def getUserActions(settings: Settings): UserActions = {
+  def userActions(implicit settings: Settings): UserActions = {
     inject[UserActions]
   }
 }
