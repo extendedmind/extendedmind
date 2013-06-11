@@ -51,21 +51,21 @@
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-io</artifactId>
-      <version>1.2-20130516</version>
+      <version>1.2-M8</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-can</artifactId>
-      <version>1.2-20130516</version>
+      <version>1.2-M8</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-routing</artifactId>
-      <version>1.2-20130516</version>
+      <version>1.2-M8</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -76,15 +76,6 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-
-    <!-- Akka -->
-  	<dependency>
-  		<groupId>com.typesafe.akka</groupId>
-  		<artifactId>akka-actor_${scala.version.short}</artifactId>
-  		<version>2.2-M3</version>
-      <type>jar</type>
-      <scope>compile</scope>
-  	</dependency>
 
     <!-- Neo4j -->
     <dependency>

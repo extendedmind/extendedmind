@@ -17,18 +17,12 @@ import org.extendedmind.bl.UserActions
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
-class ServiceActor extends Actor with Service{
-
-  // the HttpService trait defines only one abstract member, which
-  // connects the services environment to the enclosing actor or test
-  def actorRefFactory = context
+class ServiceActor extends HttpServiceActor with Service{
   
   // Implement abstract field from Service
   def settings = SettingsExtension(context.system)
   def configurations = new Configuration(settings)
-  
-  context.dispatcher
-  
+    
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling
@@ -51,9 +45,9 @@ trait Service extends API with Injectable{
   
   import JsonImplicits._
   val emRoute = {
-    rootPath{
+    rootPath{ 
       respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
-        complete {            
+        complete {
           val users = userActions.getUsers()
           <html>
             <body>
@@ -66,7 +60,8 @@ trait Service extends API with Injectable{
     path("users") {
       get {
         complete{
-          val result: List[User] = userActions.getUsers()
+          
+          val result: List[User] = userActions.getUsers
           result
         }
       }
