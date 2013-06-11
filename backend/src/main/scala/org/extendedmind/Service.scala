@@ -27,6 +27,8 @@ class ServiceActor extends Actor with Service{
   def settings = SettingsExtension(context.system)
   def configurations = new Configuration(settings)
   
+  context.dispatcher
+  
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling
@@ -38,7 +40,7 @@ object JsonImplicits extends DefaultJsonProtocol {
 }
 
 // this class defines our service behavior independently from the service actor
-trait Service extends HttpService with Injectable{
+trait Service extends API with Injectable{
 
   // Settings and configuration need to be initialized in the child class
   def settings: Settings
@@ -49,17 +51,15 @@ trait Service extends HttpService with Injectable{
   
   import JsonImplicits._
   val emRoute = {
-    path("") {
-      get {
-        respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
-          complete {
-        	val users = userActions.getUsers()
-            <html>
-              <body>
-                <h1>Extended Mind Scala Stack is running</h1>
-              </body>
-            </html>
-          }
+    rootPath{
+      respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
+        complete {            
+          val users = userActions.getUsers()
+          <html>
+            <body>
+              <h1>Extended Mind Scala Stack is running</h1>
+            </body>
+          </html>
         }
       }
     }~
