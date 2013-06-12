@@ -4,6 +4,7 @@ import org.extendedmind.domain._
 import akka.actor.Actor
 import scala.concurrent.Future
 import spray.routing._
+import spray.routing.authentication.BasicAuth
 import spray.http._
 import spray.http.MediaTypes._
 import spray.routing.Directive.pimpApply
@@ -15,6 +16,7 @@ import akka.actor.ActorContext
 import scaldi.Injectable
 import scaldi.Injector
 import org.extendedmind.bl.UserActions
+import org.extendedmind.bl.SecurityActions
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -47,14 +49,18 @@ trait Service extends API with Injectable{
   
   import JsonImplicits._
   val emRoute = {
-    rootPath{ 
-      respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
+    rootGet{
+      complete {          
+        "Extended Mind Scala Stack is running"
+      }
+    }~
+    authenticatePost{
+      // TODO: Add custom authenticator
+      authenticate(BasicAuth(realm = "user")){ user =>
         complete {
-          <html>
-            <body>
-              <h1>Extended Mind Scala Stack is running</h1>
-            </body>
-          </html>
+          Future[String]{
+            securityActions.generateToken(user.username)
+          }
         }
       }
     }~
@@ -79,5 +85,9 @@ trait Service extends API with Injectable{
   
   def userActions(implicit settings: Settings): UserActions = {
     inject[UserActions]
+  }
+  
+  def securityActions(implicit settings: Settings): SecurityActions = {
+    inject[SecurityActions]
   }
 }

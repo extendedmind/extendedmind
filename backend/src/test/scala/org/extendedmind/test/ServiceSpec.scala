@@ -28,9 +28,7 @@ class ServiceSpec extends SpecBase{
       val users = List(User("timo@ext.md"), User("jp@ext.md"))
       stub(mockUserActions.getUsers()).toReturn(users);
       Get("/users") ~> emRoute ~> check { 
-        val response = entityAs[String]
-        println(response)
-        response should include("timo@ext.md") 
+        entityAs[String] should include("timo@ext.md") 
       }
       verify(mockUserActions).getUsers()
     }
