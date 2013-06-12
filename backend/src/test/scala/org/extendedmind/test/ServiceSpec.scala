@@ -4,6 +4,7 @@ import spray.testkit.ScalatestRouteTest
 import org.extendedmind.bl.UserActions
 import scaldi.Module
 import org.mockito.Mockito._
+import org.extendedmind.domain.User
 
 class ServiceSpec extends SpecBase{
 
@@ -20,12 +21,17 @@ class ServiceSpec extends SpecBase{
   }
 
   describe("Extended Mind Service"){
-    it("TESTING"){
+    it("should return a list of available commands at root"){
       Get() ~> emRoute ~> check { entityAs[String] should include("is running") }
-      verify(mockUserActions).getUsers()
     }
-    it("TESTING2"){
-      Get() ~> emRoute ~> check { entityAs[String] should include("is running") }
+    it("should return a list of users at /users"){
+      val users = List(User("timo@ext.md"), User("jp@ext.md"))
+      stub(mockUserActions.getUsers()).toReturn(users);
+      Get("/users") ~> emRoute ~> check { 
+        val response = entityAs[String]
+        println(response)
+        response should include("timo@ext.md") 
+      }
       verify(mockUserActions).getUsers()
     }
   }

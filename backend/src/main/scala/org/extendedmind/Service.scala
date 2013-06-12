@@ -2,6 +2,7 @@ package org.extendedmind
 
 import org.extendedmind.domain._
 import akka.actor.Actor
+import scala.concurrent.Future
 import spray.routing._
 import spray.http._
 import spray.http.MediaTypes._
@@ -42,13 +43,13 @@ trait Service extends API with Injectable{
   
   implicit val implModules = configurations  
   implicit val implSettings = settings
+  implicit val implExecutionContext = actorRefFactory.dispatcher
   
   import JsonImplicits._
   val emRoute = {
     rootPath{ 
       respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
         complete {
-          val users = userActions.getUsers()
           <html>
             <body>
               <h1>Extended Mind Scala Stack is running</h1>
@@ -60,9 +61,9 @@ trait Service extends API with Injectable{
     path("users") {
       get {
         complete{
-          
-          val result: List[User] = userActions.getUsers
-          result
+          Future[List[User]]{  
+            userActions.getUsers
+          }
         }
       }
     }~
