@@ -5,18 +5,35 @@
 		return $scope.page = page;
 	};
 
-	window.HomeCtrl = function($scope, $http) {
-		$http.get('static/test/json/latest.json').success(function(data) {
+	window.HomeCtrl = function($scope, page, $http) {
+		$http.get('/api/latest').success(function(data) {
 			$scope.latest = data;
+			console.log($scope.latest);
 		});
+		$scope.page = page;
 	};
 
 	window.AboutCtrl = function($scope, page) {
 		return page.setSubTitle('about');
 	};
 
-	window.LoginCtrl = function($scope, page) {
-		return page.setSubTitle('login');
+	window.LoginCtrl = function($scope, page, $http) {
+		$http.get('static/test/json/authenticate.json').success(function(data) {
+			$scope.auth = data;
+		});
+
+		this.login = function(name) {
+			$scope.status = 'Authenticating';
+			$http.post('/api/authenticate', name).success(function(response) {
+				$scope.status = '';
+			}).error(function() {
+				$scope.status = 'ERROR';
+			});
+		};
+
+		$scope.page = page;
+
+		page.setSubTitle('login');
 	};
 
 	window.MyCtrl = function($scope, page) {
