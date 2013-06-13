@@ -10,7 +10,7 @@
 
 			beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
 				$httpBackend = _$httpBackend_;
-				$httpBackend.expectGET('static/test/json/latest.json').respond([{
+				$httpBackend.expectGET('/api/latest').respond([{
 					"title" : "Why it's great to be a nerd"
 				}, {
 					"title" : "Avocado pasta"
@@ -68,14 +68,12 @@
 				expect(scope.auth).toEqual(undefined);
 				$httpBackend.flush();
 
-				console.log(scope.auth);
-
 				expect(scope.auth[1].token).toEqual("timo-tiuraniemi");
 			});
 			
-			it('should authenticate user', function() {
-				$httpBackend.expectPOST('/api/authenticate', 'test, test').respond(201, '');
-			});
+//			it('should authenticate user', function() {
+//				$httpBackend.expectPOST('/api/authenticate', 'test, test').respond(201, '');
+//			});
 		});
 	});
 }).call(this);
