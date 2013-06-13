@@ -51,21 +51,21 @@
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-io</artifactId>
-      <version>1.2-20130516</version>
+      <version>1.2-M8</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-can</artifactId>
-      <version>1.2-20130516</version>
+      <version>1.2-M8</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-routing</artifactId>
-      <version>1.2-20130516</version>
+      <version>1.2-M8</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -77,23 +77,7 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- Akka -->
-  	<dependency>
-  		<groupId>com.typesafe.akka</groupId>
-  		<artifactId>akka-actor_${scala.version.short}</artifactId>
-  		<version>2.2-M3</version>
-      <type>jar</type>
-      <scope>compile</scope>
-  	</dependency>
-
     <!-- Neo4j -->
-    <dependency>
-      <groupId>org.neo4j</groupId>
-      <artifactId>neo4j-kernel</artifactId>
-      <version>1.9</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>neo4j-scala</artifactId>
@@ -152,14 +136,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.scalamock</groupId>
-      <artifactId>scalamock-scalatest-support_${scala.version.short}</artifactId>
-      <version>3.0.1</version>
-      <type>jar</type>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.9.5</version>
       <scope>test</scope>
     </dependency>
-
-    
   </dependencies>
 
   <build>

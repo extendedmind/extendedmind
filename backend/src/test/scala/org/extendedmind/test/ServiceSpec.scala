@@ -1,28 +1,36 @@
 package org.extendedmind.test
 
 import spray.testkit.ScalatestRouteTest
-import org.extendedmind.Service
-import org.extendedmind.domain.GraphDatabase
-import org.extendedmind.Settings
-import scaldi.Module
 import org.extendedmind.bl.UserActions
-import org.extendedmind.Configuration
-import scaldi.Injector
-import scaldi.Injectable
-import org.extendedmind.bl.SearchIndex
-import org.extendedmind.bl.UserActionsImpl
+import scaldi.Module
+import org.mockito.Mockito._
+import org.extendedmind.domain.User
 
 class ServiceSpec extends SpecBase{
-  
-  // Mock out all peripherals
-  class ServiceTestConfiguration(settings: Settings) extends Module {
-    bind [UserActions] to MockUserActions
+
+  // Mock out all action classes to test only the Service class
+  val mockUserActions = mock[UserActions]
+  object ServiceTestConfiguration extends Module{
+    bind [UserActions] to mockUserActions
   }
-  def configurations = new ServiceTestConfiguration(this.settings) :: new TestConfiguration(this.settings) :: new Configuration(this.settings)
+  def configurations = ServiceTestConfiguration 
   
+  // Reset mocks after each test to be able to use verify after each test
+  after{
+    reset(mockUserActions)
+  }
+
   describe("Extended Mind Service"){
-    it("should return a list of available paths at root"){
+    it("should return a list of available commands at root"){
       Get() ~> emRoute ~> check { entityAs[String] should include("is running") }
-    }  
+    }
+    it("should return a list of users at /users"){
+      val users = List(User("timo@ext.md"), User("jp@ext.md"))
+      stub(mockUserActions.getUsers()).toReturn(users);
+      Get("/users") ~> emRoute ~> check { 
+        entityAs[String] should include("timo@ext.md") 
+      }
+      verify(mockUserActions).getUsers()
+    }
   }
 }
