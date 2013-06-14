@@ -1,29 +1,21 @@
-(function() {
-	"use strict";
+"use strict";
 
-	angular.module('em', [ 'em.filters', 'em.services', 'em.directives' ])
-
-	.config(function($routeProvider, $locationProvider) {
-		$locationProvider.html5Mode(true);
-		$routeProvider.when('/', {
-			templateUrl : '/static/partials/home.html',
-			controller : HomeCtrl
+angular.module('em', [ 'em.filters', 'em.services', 'em.directives' ],
+		function($routeProvider, $locationProvider) {
+			$routeProvider.when('/', {
+				templateUrl : '/static/partials/home.html',
+				controller : HomeCtrl
+			});
+			$routeProvider.when('/about', {
+				templateUrl : '/static/partials/about.html',
+				controller : AboutCtrl
+			});
+			$routeProvider.when('/login', {
+				templateUrl : '/static/partials/login.html',
+				controller : LoginCtrl
+			});
+			$routeProvider.otherwise({
+				redirectTo : '/'
+			});
+			$locationProvider.html5Mode(true);
 		});
-		$routeProvider.when('/about', {
-			templateUrl : '/static/partials/about.html',
-			controller : AboutCtrl
-		});
-		$routeProvider.when('/login', {
-			templateUrl : '/static/partials/login.html',
-			controller : LoginCtrl
-		});
-		$routeProvider.when('/my', {
-			templateUrl : '/static/partials/my.html',
-			controller : MyCtrl
-		});
-		return $routeProvider.otherwise({
-			redirectTo : '/'
-		});
-	});
-
-}).call(this);

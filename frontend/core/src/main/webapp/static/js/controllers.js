@@ -1,41 +1,26 @@
-(function() {
-	"use strict";
+"use strict";
 
-	window.MainCtrl = function($scope, page) {
-		return $scope.page = page;
-	};
+function MainCtrl($scope, page) {
+	return $scope.page = page;
+};
 
-	window.HomeCtrl = function($scope, page, $http) {
-		$http.get('/api/latest').success(function(data) {
-			$scope.latest = data;
-		});
-		$scope.page = page;
-	};
+function HomeCtrl($scope, page, Latest) {
+	// $http.get('/api/latest').success(function(data) {
+	// $scope.latest = data;
+	// });
+	$scope.latest = Latest.query();
+	$scope.page = page;
+};
 
-	window.AboutCtrl = function($scope, page) {
-		return page.setSubTitle('about');
-	};
+function AboutCtrl($scope, page) {
+	return page.setSubTitle('about');
+};
 
-	window.LoginCtrl = function($scope, page, $http) {
-		$http.get('/api/login').success(function(data) {
-			$scope.user = data;
-		});
+function LoginCtrl($scope, page, $http) {
+	$http.get('/api/login').success(function(data) {
+		$scope.user = data;
+	});
 
-//		this.login = function(name) {
-//			$scope.status = 'Authenticating';
-//			$http.post('/api/authenticate', name).success(function(response) {
-//				$scope.status = '';
-//			}).error(function() {
-//				$scope.status = 'ERROR';
-//			});
-//		};
-
-		$scope.page = page;
-		page.setSubTitle('login');
-	};
-
-	window.MyCtrl = function($scope, page) {
-		return page.setSubTitle('my');
-	};
-
-}).call(this);
+	$scope.page = page;
+	page.setSubTitle('login');
+};
