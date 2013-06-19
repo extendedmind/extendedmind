@@ -2,7 +2,7 @@
 
 angular.module('emDev', ['em', 'ngMockE2E']).run(function($httpBackend) {
 
-    var latest = $.getJSON('static/test/json/latest.json', function(data) {
+    var latest = $.getJSON('test/static/json/latest.json', function(data) {
     });
 
     $httpBackend.whenGET('/api/latest').respond(latest);

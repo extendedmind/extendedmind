@@ -8,7 +8,6 @@ function HomeCtrl($scope, page, $http) {
     $http.get('/api/latest').success(function(data) {
         $scope.latest = data;
     });
-
     $scope.page = page;
 };
 
