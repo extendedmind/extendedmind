@@ -1,10 +1,10 @@
-package org.extendedmind.test
-
-import spray.testkit.ScalatestRouteTest
+package org.extendedmind.api.test
 import org.extendedmind.bl.UserActions
 import scaldi.Module
 import org.mockito.Mockito._
 import org.extendedmind.domain.User
+import org.extendedmind.test.SpecBase
+import java.io.PrintWriter
 
 class ServiceSpec extends SpecBase{
 
@@ -28,9 +28,17 @@ class ServiceSpec extends SpecBase{
       val users = List(User("timo@ext.md"), User("jp@ext.md"))
       stub(mockUserActions.getUsers()).toReturn(users);
       Get("/users") ~> emRoute ~> check { 
-        entityAs[String] should include("timo@ext.md") 
+        val getUsersResponse = entityAs[String]
+        writeJsonOutput("getUsersResponse", getUsersResponse)
+        getUsersResponse should include("timo@ext.md")
       }
       verify(mockUserActions).getUsers()
     }
+  }
+  
+  
+  // Helper file writer
+  def writeJsonOutput(filename: String, contents: String): Unit = {
+    Some(new PrintWriter("target/test-classes/" + filename + ".json")).foreach{p => p.write(contents); p.close}
   }
 }

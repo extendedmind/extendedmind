@@ -1,4 +1,4 @@
-package org.extendedmind.bl
+package org.extendedmind.search
 
 import org.extendedmind.Settings
 

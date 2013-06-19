@@ -3,6 +3,7 @@ package org.extendedmind
 import akka.actor.{ActorSystem, Props}
 import akka.io.IO
 import spray.can.Http
+import org.extendedmind.api.ServiceActor
 
 object Server extends App {
 

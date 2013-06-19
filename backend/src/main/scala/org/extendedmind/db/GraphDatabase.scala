@@ -1,6 +1,7 @@
-package org.extendedmind.domain
+package org.extendedmind.db
 
 import org.neo4j.scala.Neo4jWrapper
+import org.extendedmind.domain.User
 
 trait GraphDatabase extends Neo4jWrapper{
   

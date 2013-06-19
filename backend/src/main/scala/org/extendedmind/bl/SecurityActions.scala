@@ -1,11 +1,11 @@
 package org.extendedmind.bl
 
 import org.extendedmind.domain.User
-import org.extendedmind.domain.GraphDatabase
+import org.extendedmind.db.GraphDatabase
 import org.extendedmind.Settings
 import scaldi.Injector
 import scaldi.Injectable
-import org.extendedmind.domain.EmbeddedGraphDatabase
+import org.extendedmind.db.EmbeddedGraphDatabase
 
 trait SecurityActions{
 

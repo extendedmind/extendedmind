@@ -30,6 +30,15 @@
     <url>git@github.com:extendedmind/extendedmind.git</url>
   </scm>  
 
+  <dependencies>
+    <dependency> 
+      <groupId>org.extendedmind</groupId>
+      <artifactId>backend</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <developers>
     <developer>
       <id>ttiurani</id>
@@ -45,7 +54,32 @@
   
   <build>
     <testSourceDirectory>${project.basedir}/src/main/webapp/test/static</testSourceDirectory>
-    <plugins>
+    <plugins> 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.extendedmind</groupId>
+                  <artifactId>backend</artifactId>
+                  <type>test-jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.basedir}/src/main/webapp/test/static/json</outputDirectory>
+                  <includes>*.json</includes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
@@ -54,10 +88,15 @@
             <fileset>
               <directory>${basedir}/src/main/webapp/static/</directory>
               <includes>
-	            <include>em.min.js</include>
-	            <include>em.min.css</include>
-	          </includes>
+	              <include>em.min.js</include>
+	              <include>em.min.css</include>
+	            </includes>
             </fileset>
+            <!--TODO: Removes entire test json directory 
+            <fileset>
+              <directory>${basedir}/src/main/webapp/test/static/json</directory>
+            </fileset>
+             -->
           </filesets>
         </configuration>
       </plugin>
@@ -109,6 +148,36 @@
         </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. 
+            It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <versionRange>[2.8,)</versionRange>
+                    <goals>
+                      <goal>unpack</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
 </project>

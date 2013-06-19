@@ -1,12 +1,12 @@
-package org.extendedmind.domain
+package org.extendedmind.db
 
 import org.neo4j.scala.EmbeddedGraphDatabaseServiceProvider
 import com.typesafe.config.Config
 import org.extendedmind.Settings
 import scaldi.Injector
 import scaldi.Injectable
-import org.extendedmind.bl.ElasticSearchIndex
-import org.extendedmind.bl.SearchIndex
+import org.extendedmind.search.ElasticSearchIndex
+import org.extendedmind.search.SearchIndex
 
 class EmbeddedGraphDatabase(settings: Settings) 
 	extends GraphDatabase with EmbeddedGraphDatabaseServiceProvider{

@@ -7,12 +7,13 @@ import akka.actor.ExtendedActorSystem
 import scala.concurrent.duration.Duration
 import com.typesafe.config.Config
 import java.util.concurrent.TimeUnit
-import org.extendedmind.domain._
+import org.extendedmind.db.GraphDatabase
 import scaldi.Module
-import org.extendedmind.bl.ElasticSearchIndex
-import org.extendedmind.bl.SearchIndex
+import org.extendedmind.search.ElasticSearchIndex
+import org.extendedmind.search.SearchIndex
 import org.extendedmind.bl.UserActions
 import org.extendedmind.bl.UserActionsImpl
+import org.extendedmind.db.EmbeddedGraphDatabase
 
 // Custom settings from application.conf or overridden file
 

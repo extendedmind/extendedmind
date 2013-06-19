@@ -1,8 +1,7 @@
-package org.extendedmind
+package org.extendedmind.api
 
 import spray.routing.HttpService
-import spray.routing.PathMatcher
-import spray.routing.Directive
+import spray.routing.ConjunctionMagnet.fromDirective
 
 /**
  * Specifies the Extended Mind API
