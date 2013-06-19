@@ -5,13 +5,17 @@ angular.module('em', ['em.filters', 'em.services', 'em.directives'], function($r
         templateUrl : '/static/partials/home.html',
         controller : HomeCtrl
     });
-    $routeProvider.when('/about', {
-        templateUrl : '/static/partials/about.html',
-        controller : AboutCtrl
-    });
     $routeProvider.when('/login', {
         templateUrl : '/static/partials/login.html',
         controller : LoginCtrl
+    });
+    $routeProvider.when('/notes', {
+        templateUrl : '/static/partials/notes.html',
+        controller : NotesCtrl
+    });
+    $routeProvider.when('/tasks', {
+        templateUrl : '/static/partials/tasks.html',
+        controller : TasksCtrl
     });
     $routeProvider.otherwise({
         redirectTo : '/'
