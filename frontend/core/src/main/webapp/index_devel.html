@@ -1,28 +1,28 @@
 <!doctype html>
-<html lang="en" ng-controller="MainCtrl">
-<head>
-  <meta charset="utf-8">
-  <title ng-bind="page.getTitle()"></title>
-  <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.css"/>
-  <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap-responsive.css"/>
-  <link rel="stylesheet/less" href="/static/less/em.less"/>
-  <script src="/static/lib/less/less-min.js"></script>
-</head>
-<body>
+<html ng-app="emDev">
+	<head>
+		<meta charset="utf-8">
+		<title ng-bind="page.getTitle()"></title>
+		<link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.css"/>
+		<link rel="stylesheet" href="/static/lib/bootstrap/bootstrap-responsive.css"/>
+		<link rel="stylesheet/less" href="/static/less/em.less"/>
+		<script src="/static/lib/less/less-min.js"></script>
+	</head>
+	<body>
+		<div class="em-page">
+			<div class="container" ng-view></div>
+		</div>
 
-  <div class="em-page">
-    <div class="container" ng-view></div>
-  </div>
+		<script src="/static/lib/jquery/jquery.js"></script>
+		<script src="/static/lib/angularjs/angular.js"></script>
+		<script src="/static/lib/angularjs/angular-mocks.js"></script>
+		<script src="/static/lib/angularjs/angular-resource.js"></script>
 
-  <script src="/static/lib/jquery/jquery.js"></script>
-  <script src="/static/lib/angularjs/angular.js"></script>
-  <script src="/static/lib/angularjs/angular-mocks.js"></script>
-
-  <script src="/static/js/services.js"></script>
-  <script src="/static/js/controllers.js"></script>
-  <script src="/static/js/filters.js"></script>
-  <script src="/static/js/directives.js"></script>
-  <script src="/static/js/zapp.js"></script>
-
-</body>
+		<script src="/static/js/app.js"></script>
+		<script src="/static/js/services.js"></script>
+		<script src="/static/js/controllers.js"></script>
+		<script src="/static/js/filters.js"></script>
+		<script src="/static/js/directives.js"></script>
+		<script src="/test/static/e2e/backendMock.js"></script>
+	</body>
 </html>

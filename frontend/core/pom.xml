@@ -36,9 +36,15 @@
       <name>Timo Tiuraniemi</name>
       <email>timo.tiuraniemi@iki.fi</email>
     </developer>
+    <developer>
+      <id>jpsalo</id>
+      <name>JP Salo</name>
+      <email>jukapeka@gmail.com</email>
+    </developer>
   </developers>
   
   <build>
+    <testSourceDirectory>${project.basedir}/src/main/webapp/test/static</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -69,11 +75,12 @@
         </executions>
         <configuration>
           <jsSrcDir>${project.basedir}/src/main/webapp/static</jsSrcDir>
-          <jsTestSrcDir>${project.basedir}/src/test/webapp/static</jsTestSrcDir>
+          <jsTestSrcDir>${project.basedir}/src/main/webapp/test/static</jsTestSrcDir>
           <sourceIncludes>
             <include>lib/jquery/jquery.js</include>
             <include>lib/angularjs/angular.js</include>
             <include>lib/angularjs/angular-mocks.js</include>
+            <include>lib/angularjs/angular-resource.js</include>
             <include>js/*.js</include>
           </sourceIncludes>
         </configuration>
