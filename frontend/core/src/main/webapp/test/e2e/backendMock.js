@@ -2,7 +2,7 @@
 
 angular.module('emDev', ['em', 'ngMockE2E']).run(function($httpBackend) {
 
-    var user = $.getJSON('test/static/json/user.json', function(user) {
+    var user = $.getJSON('test/json/user.json', function(user) {
     });
 
     $httpBackend.whenGET('/api/user').respond(user);
