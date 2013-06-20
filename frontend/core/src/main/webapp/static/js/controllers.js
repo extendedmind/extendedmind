@@ -7,8 +7,8 @@ function HomeCtrl($scope) {
 };
 
 function LoginCtrl($scope, $http) {
-    $http.get('/api/user').success(function(user) {
-        $scope.user = user;
+    $http.get('/api/users').success(function(users) {
+        $scope.users = users;
     });
 
     this.login = function(user) {

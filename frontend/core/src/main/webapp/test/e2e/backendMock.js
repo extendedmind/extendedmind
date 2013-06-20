@@ -2,12 +2,15 @@
 
 angular.module('emDev', ['em', 'ngMockE2E']).run(function($httpBackend) {
 
-    var user = $.getJSON('test/json/user.json', function(user) {
+    var users = $.getJSON('test/json/getUsersResponse.json', function(users) {
     });
 
-    $httpBackend.whenGET('/api/user').respond(user);
+    var authenticate = $.getJSON('test/json/getAuthenticateResponse.json', function(authenticate) {
+    });
 
-    $httpBackend.whenPOST('/api/login').respond();
+    $httpBackend.whenGET('/api/users').respond(users);
+
+    $httpBackend.whenPOST('/api/login').respond(authenticate);
 
     $httpBackend.whenGET(/^\/static\//).passThrough();
 });
