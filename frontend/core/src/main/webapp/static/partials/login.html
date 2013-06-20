@@ -21,7 +21,10 @@
 						<!-- <input id="login-password" type="password" value="test" name="login-password"/> -->
 					</dt>
 					<dt>
-						<a href="/my" class="btn">login</a>
+						<!-- <a href="/my" class="btn" ng-click="login()">login</a> -->
+						<button ng-click="userAuthenticate(users[0].email)">
+							login
+						</button>
 					</dt>
 				</dl>
 			</form>

@@ -11,9 +11,8 @@ function LoginCtrl($scope, $http) {
         $scope.users = users;
     });
 
-    this.login = function(user) {
-        $http.post('/api/login', user).success(function(user) {
-
+    $scope.userAuthenticate = function(user) {
+        $http.post('/api/authenticate', user).success(function(authenticate) {
         }).error(function() {
         });
     };

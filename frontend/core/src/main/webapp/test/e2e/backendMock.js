@@ -10,7 +10,7 @@ angular.module('emDev', ['em', 'ngMockE2E']).run(function($httpBackend) {
 
     $httpBackend.whenGET('/api/users').respond(users);
 
-    $httpBackend.whenPOST('/api/login').respond(authenticate);
+    $httpBackend.whenPOST('/api/authenticate').respond(authenticate);
 
     $httpBackend.whenGET(/^\/static\//).passThrough();
 });
