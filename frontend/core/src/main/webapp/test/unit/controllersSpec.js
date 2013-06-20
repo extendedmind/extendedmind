@@ -2,19 +2,13 @@
 
 describe("controllers", function() {
 
-    describe("TasksCtrl", function() {
-
-    });
-
-    describe("NotessCtrl", function() {
-
-    });
-
     describe("LoginCtrl", function() {
         var scope, ctrl, $httpBackend;
 
         beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
             $httpBackend = _$httpBackend_;
+
+            $httpBackend.expextGET('/api/authenticate').respond();
 
             scope = $rootScope.$new();
             ctrl = $controller(LoginCtrl, {
