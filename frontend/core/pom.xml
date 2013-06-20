@@ -53,7 +53,7 @@
   </developers>
   
   <build>
-    <testSourceDirectory>${project.basedir}/src/main/webapp/test/static</testSourceDirectory>
+    <testSourceDirectory>${project.basedir}/src/main/webapp/test</testSourceDirectory>
     <plugins> 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -72,7 +72,7 @@
                   <artifactId>backend</artifactId>
                   <type>test-jar</type>
                   <overWrite>true</overWrite>
-                  <outputDirectory>${project.basedir}/src/main/webapp/test/static/json</outputDirectory>
+                  <outputDirectory>${project.basedir}/src/main/webapp/test/json</outputDirectory>
                   <includes>*.json</includes>
                 </artifactItem>
               </artifactItems>
@@ -94,7 +94,7 @@
             </fileset>
             <!--TODO: Removes entire test json directory 
             <fileset>
-              <directory>${basedir}/src/main/webapp/test/static/json</directory>
+              <directory>${basedir}/src/main/webapp/test/json</directory>
             </fileset>
              -->
           </filesets>
@@ -114,7 +114,7 @@
         </executions>
         <configuration>
           <jsSrcDir>${project.basedir}/src/main/webapp/static</jsSrcDir>
-          <jsTestSrcDir>${project.basedir}/src/main/webapp/test/static</jsTestSrcDir>
+          <jsTestSrcDir>${project.basedir}/src/main/webapp/test</jsTestSrcDir>
           <sourceIncludes>
             <include>lib/jquery/jquery.js</include>
             <include>lib/angularjs/angular.js</include>
