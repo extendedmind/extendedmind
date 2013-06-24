@@ -4,11 +4,9 @@ describe("controllers", function() {
 
     describe("LoginCtrl", function() {
 
-        beforeEach(module('mockedLogin'));
-
         var scope, ctrl, $httpBackend;
 
-        beforeEach(inject(function(_$httpBackend_, $rootScope, $controller, authenticateJSON) {
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
             $httpBackend = _$httpBackend_;
 
             var authenticate = getJSONFixture('getAuthenticateResponse.json');
