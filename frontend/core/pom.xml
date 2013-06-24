@@ -92,11 +92,9 @@
 	              <include>em.min.css</include>
 	            </includes>
             </fileset>
-            <!--TODO: Removes entire test json directory 
             <fileset>
               <directory>${basedir}/src/main/webapp/test/json</directory>
             </fileset>
-             -->
           </filesets>
         </configuration>
       </plugin>
