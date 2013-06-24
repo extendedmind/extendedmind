@@ -10,7 +10,12 @@ angular.module('emDev', ['em', 'ngMockE2E']).run(function($httpBackend) {
 
     $httpBackend.whenGET('/api/users').respond(users);
 
-    $httpBackend.whenPOST('/api/authenticate').respond(authenticate);
-
+    $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data) {
+        if (data == 'timo') {
+            return [200, authenticate];
+        } else {
+            return [503, 'Invalid username/password'];
+        }
+    });
     $httpBackend.whenGET(/^\/static\//).passThrough();
 });
