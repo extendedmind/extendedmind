@@ -8,10 +8,12 @@ describe("controllers", function() {
 
         var scope, ctrl, $httpBackend;
 
-        beforeEach(inject(function(_$httpBackend_, $rootScope, $controller, usersJSON, authenticateJSON) {
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $controller, authenticateJSON) {
             $httpBackend = _$httpBackend_;
 
-            $httpBackend.whenGET('/api/users').respond(usersJSON);
+            var authenticate = getJSONFixture('getAuthenticateResponse.json');
+
+            $httpBackend.expectPOST('/api/authenticate').respond(authenticate);
 
             scope = $rootScope.$new();
             ctrl = $controller(LoginCtrl, {
@@ -24,10 +26,10 @@ describe("controllers", function() {
             $httpBackend.verifyNoOutstandingRequest();
         });
 
-        it('should fetch user list', function() {
-            $httpBackend.expectGET('/api/users');
+        it('should return login response', function() {
+            scope.userAuthenticate();
             $httpBackend.flush();
-            expect(scope.users.entry[0].email).toBe('timo@ext.md');
+            expect(scope.authenticate[0].token).toBe('timo-tiuraniemi');
         });
     });
 });
