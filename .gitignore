@@ -7,4 +7,4 @@
 
 # Ignore Maven builds
 target/
-
+frontend/core/src/main/webapp/test/json/
