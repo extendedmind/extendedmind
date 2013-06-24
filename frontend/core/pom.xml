@@ -101,7 +101,7 @@
       <plugin>
         <groupId>com.github.searls</groupId>
         <artifactId>jasmine-maven-plugin</artifactId>
-        <version>1.2.0.0</version>
+        <version>1.3.1.2</version>
         <extensions>true</extensions>
         <executions>
           <execution>
@@ -113,6 +113,9 @@
         <configuration>
           <jsSrcDir>${project.basedir}/src/main/webapp/static</jsSrcDir>
           <jsTestSrcDir>${project.basedir}/src/main/webapp/test</jsTestSrcDir>
+          <preloadSources>
+            <include>${project.basedir}/src/main/webapp/test/lib/jasmine-jquery.js</include>
+          </preloadSources>
           <sourceIncludes>
             <include>lib/jquery/jquery.js</include>
             <include>lib/angularjs/angular.js</include>
