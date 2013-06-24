@@ -11,7 +11,7 @@ angular.module('emDev', ['em', 'ngMockE2E']).run(function($httpBackend) {
     $httpBackend.whenGET('/api/users').respond(users);
 
     $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data) {
-        if (data == 'timo') {
+        if (data == "timo@ext.md") {
             return [200, authenticate];
         } else {
             return [503, 'Invalid username/password'];

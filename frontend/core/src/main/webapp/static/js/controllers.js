@@ -7,8 +7,8 @@ function HomeCtrl($scope) {
 };
 
 function LoginCtrl($scope, $http) {
-    $scope.userAuthenticate = function(user) {
-        $http.post('/api/authenticate', user).success(function(authenticate) {
+    $scope.userAuthenticate = function(userName) {
+        $http.post('/api/authenticate', userName).success(function(authenticate) {
             $scope.authenticate = authenticate;
         }).error(function() {
             $scope.authenticate = 'ERROR';
