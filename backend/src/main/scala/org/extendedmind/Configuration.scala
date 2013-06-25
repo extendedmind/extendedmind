@@ -19,6 +19,7 @@ import org.extendedmind.db.EmbeddedGraphDatabase
 
 class Settings(config: Config) extends Extension {
   val neo4jStoreDir = config.getString("extendedmind.neo4j.storeDir")
+  val tokenSecret = config.getString("extendedmind.security.tokenSecret")
 }
 
 object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{

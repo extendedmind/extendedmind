@@ -1,13 +1,13 @@
 package org.extendedmind.api
 
-import spray.routing.HttpService
 import spray.routing.ConjunctionMagnet.fromDirective
+import spray.routing.HttpService
 
 /**
  * Specifies the Extended Mind API
  */
-trait API extends HttpService{
-  
+trait API extends HttpService {
+
   // All valid paths
   val rootGet = path("") & get
   val authenticatePost = path("authenticate") & post
@@ -18,5 +18,5 @@ trait API extends HttpService{
   val tasksGet = path("tasks") & get
   val taskGet = path("task" / IntNumber) & get
   val taskPut = path("task" / IntNumber) & put
-  
+
 }

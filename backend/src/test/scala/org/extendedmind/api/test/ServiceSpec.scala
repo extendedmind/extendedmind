@@ -5,13 +5,22 @@ import org.mockito.Mockito._
 import org.extendedmind.domain.User
 import org.extendedmind.test.SpecBase
 import java.io.PrintWriter
+import spray.testkit.ScalatestRouteTest
+import org.extendedmind.api.Service
+import org.extendedmind.SettingsExtension
+import org.extendedmind.test.SpraySpecBase
+import org.extendedmind.bl.SecurityActions
+import spray.http.HttpHeaders.Authorization
+import spray.http.BasicHttpCredentials
 
-class ServiceSpec extends SpecBase{
+class ServiceSpec extends SpraySpecBase{
 
   // Mock out all action classes to test only the Service class
   val mockUserActions = mock[UserActions]
+  val mockSecurityActions = mock[SecurityActions]
   object ServiceTestConfiguration extends Module{
     bind [UserActions] to mockUserActions
+    bind [SecurityActions] to mockSecurityActions
   }
   def configurations = ServiceTestConfiguration 
   
@@ -33,6 +42,17 @@ class ServiceSpec extends SpecBase{
         getUsersResponse should include("timo@ext.md")
       }
       verify(mockUserActions).getUsers()
+    }
+    
+    it("should return token on authenticate"){
+      val users = List(User("timo@ext.md"), User("jp@ext.md"))
+      stub(mockSecurityActions.generateToken("timo@ext.md")).toReturn("12345");
+      Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials("timo@ext.md", "test"))) ~> emRoute ~> check { 
+        val authenticateResponse = entityAs[String]
+        writeJsonOutput("authenticateResponse", authenticateResponse)
+        authenticateResponse should include("12345")
+      }
+      verify(mockSecurityActions).generateToken("timo@ext.md")
     }
   }
   
