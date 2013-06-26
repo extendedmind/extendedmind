@@ -12,6 +12,7 @@ import org.extendedmind.security.Token
 import java.util.UUID
 import org.extendedmind.security.PasswordService
 import org.extendedmind.domain.User
+import org.extendedmind.security.UUIDUtils
 
 /**
  * Basic test data for Extended Mind
@@ -20,8 +21,7 @@ trait TestGraphDatabase extends GraphDatabase {
   def insertTestUsers() {
     withTx {
       implicit neo =>
-        putUser(User("timo@ext.md"))
-        val timo = createNode
+        val timo = createNodeWithUUID
         timo.addLabel(MainLabel.USER)
         val salt = PasswordService.generateSalt
         val password = "timopwd"
@@ -30,10 +30,12 @@ trait TestGraphDatabase extends GraphDatabase {
         timo.setProperty("passwordHash", encryptedPassword.passwordHash)
         timo.setProperty("passwordIterations", encryptedPassword.iterations)
         timo.setProperty("passwordAlgorithm", encryptedPassword.algorithm)
+        timo.setProperty("email", "timo@ext.md")
+
         
-        val timoTokenNode = createNode
+        val timoTokenNode = createNodeWithUUID
         timoTokenNode.addLabel(MainLabel.TOKEN)
-        val timoToken = Token(UUID.fromString(timoTokenNode.getProperty("uuid").asInstanceOf[String]))
+        val timoToken = Token(UUIDUtils.getUUID(timoTokenNode.getProperty("uuid").asInstanceOf[String]))
         timoTokenNode.setProperty("accessKey", timoToken.accessKey)
         timo --> UserRelationship.HAS_TOKEN --> timoTokenNode
     }

@@ -52,9 +52,7 @@ object Token{
       }
       
       // Create Token
-      val mostSignificantBits = ByteBuffer.wrap(decryptedToken.slice(0, 8)).getLong()
-      val leastSignificantBits = ByteBuffer.wrap(decryptedToken.slice(8, 16)).getLong()
-      val userUUID = new UUID(mostSignificantBits, leastSignificantBits)
+      val userUUID = UUIDUtils.getUUID(decryptedToken.slice(0, 16))
       Right(Token(userUUID, ByteBuffer.wrap(decryptedToken.slice(16, 24)).getLong()))
     } catch {
       case e: Throwable => Left(List(e.toString))

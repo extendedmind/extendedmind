@@ -12,6 +12,8 @@ import org.extendedmind.test.SpraySpecBase
 import org.extendedmind.bl.SecurityActions
 import spray.http.HttpHeaders.Authorization
 import spray.http.BasicHttpCredentials
+import java.util.UUID
+import org.extendedmind.domain.UserWrapper
 
 class ServiceSpec extends SpraySpecBase{
 
@@ -34,7 +36,7 @@ class ServiceSpec extends SpraySpecBase{
       Get() ~> emRoute ~> check { entityAs[String] should include("is running") }
     }
     it("should return a list of users at /users"){
-      val users = List(User("timo@ext.md"), User("jp@ext.md"))
+      val users = List(UserWrapper(UUID.randomUUID(), "timo@ext.md"), UserWrapper(UUID.randomUUID(), "jp@ext.md"))
       stub(mockUserActions.getUsers()).toReturn(users);
       Get("/users") ~> emRoute ~> check { 
         val getUsersResponse = entityAs[String]
@@ -45,7 +47,6 @@ class ServiceSpec extends SpraySpecBase{
     }
     
     it("should return token on authenticate"){
-      val users = List(User("timo@ext.md"), User("jp@ext.md"))
       stub(mockSecurityActions.generateToken("timo@ext.md")).toReturn("12345");
       Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials("timo@ext.md", "test"))) ~> emRoute ~> check { 
         val authenticateResponse = entityAs[String]

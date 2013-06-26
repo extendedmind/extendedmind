@@ -12,7 +12,7 @@ import annotation.implicitNotFound
 import java.io.{ DataOutputStream, ByteArrayOutputStream }
 import javax.crypto.spec.SecretKeySpec
 import javax.crypto.Cipher
-import org.bouncycastle.util.encoders.Base64
+import org.apache.commons.codec.binary.Base64
 
 @implicitNotFound(msg = "Could not find a Writes for ${T}")
 trait Writes[T] {
@@ -62,8 +62,8 @@ object defaults {
   implicit object WritesInt extends DataOutputStreamWrites[Int](_.writeInt(_))
   implicit object WritesShort extends DataOutputStreamWrites[Short](_.writeShort(_))
   
-  def encodeBase64(bytes: Array[Byte]) = Base64.encode(bytes)
-  def decodeBase64(base64String: String) = Base64.decode(base64String)
+  def encodeBase64(bytes: Array[Byte]) = Base64.encodeBase64String(bytes)
+  def decodeBase64(base64String: String) = Base64.decodeBase64(base64String)
 }
 
 object DES extends JavaCryptoEncryption("DES")

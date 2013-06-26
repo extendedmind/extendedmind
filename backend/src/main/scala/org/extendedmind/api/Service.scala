@@ -17,6 +17,7 @@ import spray.routing.HttpServiceActor
 import spray.routing.directives.CompletionMagnet.fromObject
 import spray.routing.authentication.BasicAuth
 import org.extendedmind.security.ExtendedMindUserPassAuthenticator
+import org.extendedmind.domain.Item
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -33,7 +34,8 @@ class ServiceActor extends HttpServiceActor with Service {
 }
 
 object JsonImplicits extends DefaultJsonProtocol {
-  implicit val impPerson = jsonFormat1(User)
+  implicit val implItem = jsonFormat2(Item)
+  implicit val implUser = jsonFormat2(User)
 }
 
 // this class defines our service behavior independently from the service actor

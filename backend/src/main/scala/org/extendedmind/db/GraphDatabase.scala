@@ -6,37 +6,30 @@ import scala.collection.immutable.BitSet
 import java.util.UUID
 import org.neo4j.graphdb.Node
 import scala.collection.JavaConverters._
+import org.extendedmind.domain.UserWrapper
 
 trait GraphDatabase extends Neo4jWrapper{
+
+  def putUser(user: User): User = {
+    user
+  }
   
   def getUsers(): List[User] = {
     List()
   }
 
-  def setUUID(node: Node) = {
-    if (node.getPropertyKeys().asScala.find(p => p != "uuid")){
-      
-    }
-    
-    val uuidString = node.getProperty("uuid").asInstanceOf[String]
-	  
-	  val uuid = UUID.randomUUID()
-	  timo.addLabel(MainLabel.USER)
-	  timo.setProperty("uuid", uuid.toString().replace("-", ""))
-	  uuid
-  }
-  
   def getUser(email: String): Either[List[String], User] = {
     withTx{
       implicit neo =>
     		val nodeIter = findNodesByLabelAndProperty(MainLabel.USER, "email", email)
-    		if (nodeIter.isEmpty){
+    		if (nodeIter.toList.isEmpty){
     		  Left("No users found with given email " + email)
     		}else if (nodeIter.toList.size > 1){
     		  Left("Ḿore than one user found with given email " + email)    		  
     		}
-    		val userNode = nodeIter.head
-    		Right(User(Some(UUID.fromString(userNode.getProperty("uuid").asInstanceOf[String])), 
+    		println(nodeIter.toList.size)
+    		val userNode = nodeIter.toList(0)
+    		Right(UserWrapper(userNode.getProperty("uuid").asInstanceOf[String], 
     		    			 userNode.getProperty("email").asInstanceOf[String]))
     }
   }
@@ -51,7 +44,7 @@ trait GraphDatabase extends Neo4jWrapper{
     		  Left("Ḿore than one user found with given UUID " + uuid.toString)    		  
     		}
     		val userNode = nodeIter.head
-    		Right(User(Some(UUID.fromString(userNode.getProperty("uuid").asInstanceOf[String])), 
+    		Right(UserWrapper(userNode.getProperty("uuid").asInstanceOf[String], 
     		    			 userNode.getProperty("email").asInstanceOf[String]))
     }
   }
@@ -63,6 +56,6 @@ trait GraphDatabase extends Neo4jWrapper{
   }
   
   def authenticate(username: String, password: String): Token = {
-    return BitSet(1,2,3)
+    return BitSet(1,2,3)2
   }*/
 }

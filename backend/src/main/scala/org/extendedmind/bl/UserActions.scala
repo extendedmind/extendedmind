@@ -15,7 +15,7 @@ trait UserActions{
   def si: SearchIndex;
   
   def addUser(user: User): User = {
-    val persisted = db.addUser(user)
+    val persisted = db.putUser(user)
     si.addUser(user)
     persisted
   }
