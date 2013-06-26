@@ -15,6 +15,6 @@ abstract class SpecBase extends FunSpec
   
   // Standard test mocks
   class TestConfiguration(settings: Settings) extends Module {
-    bind [GraphDatabase] to new TestGraphDatabase(settings)
+    bind [GraphDatabase] to new TestImpermanentGraphDatabase(settings)
   }
 }
