@@ -9,19 +9,19 @@
 			<form name="login">
 				<dl>
 					<dt>
-						<label for="login-email">email address</label>
-						<input type="email" ng-model="login.userName" required>
+						<input type="email" ng-model="user.email" placeholder="Email" required>
 					</dt>
 					<dt>
-						<label for="login-password">password</label>
-						<input type="text" ng-model="login.pass" required>
+						<input type="password" ng-model="user.password" placeholder="Password" required>
 					</dt>
 					<dt>
-						<button ng-disabled="!login.$valid" ng-click="userAuthenticate(login.userName)">
+						<button ng-disabled="!login.$valid" ng-click="userLogin(user)">
 							login
 						</button>
+					</dt>
+					<dt>
 						remember
-						<input type="checkbox">
+						<input type="checkbox" ng-model="user.remember">
 					</dt>
 				</dl>
 			</form>

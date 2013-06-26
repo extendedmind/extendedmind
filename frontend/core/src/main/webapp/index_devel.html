@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="emDev">
+<html ng-app="emDevApp">
 	<head>
 		<meta charset="utf-8">
 		<title ng-bind="page.getTitle()"></title>
@@ -17,12 +17,14 @@
 		<script src="/static/lib/angularjs/angular.js"></script>
 		<script src="/static/lib/angularjs/angular-mocks.js"></script>
 		<script src="/static/lib/angularjs/angular-resource.js"></script>
+		<script src="/static/lib/angularjs/angular-cookies.js"></script>
 
 		<script src="/static/js/app.js"></script>
 		<script src="/static/js/services.js"></script>
 		<script src="/static/js/controllers.js"></script>
 		<script src="/static/js/filters.js"></script>
 		<script src="/static/js/directives.js"></script>
-		<script src="/test/e2e/backendMock.js"></script>
+		<script src="/static/js/auth.js"></script>
+		<script src="/test/e2e/devApp.js"></script>
 	</body>
 </html>

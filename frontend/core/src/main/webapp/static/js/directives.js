@@ -1,8 +1,10 @@
 "use strict";
 
-angular.module('em.directives', []).directive('appVersion', ['version',
+var emDirectives = angular.module('directives', []);
+
+emDirectives.directive('appVersion', ['version',
 function(version) {
-    return function(scope, elm, attrs) {
-        return elm.text(version);
-    };
+  return function(scope, elm, attrs) {
+    return elm.text(version);
+  };
 }]);

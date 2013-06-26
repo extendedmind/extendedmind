@@ -1,3 +1,5 @@
 "use strict";
 
-angular.module('em.services', []).value('version', '0.1');
+var emServices = angular.module('services', []);
+
+emServices.value('version', '0.1');

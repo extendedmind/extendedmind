@@ -1,23 +1,24 @@
 "use strict";
 
-function MainCtrl($scope) {
-};
+var emControllers = angular.module('controllers', ['auth']);
 
-function HomeCtrl($scope) {
-};
+emControllers.controller('LoginCtrl', ['$scope', 'Auth',
+function($scope, Auth) {
+  $scope.userLogin = function() {
+    Auth.userLogin($scope.user, function(res) {
+      $scope.authResponse = res;
+    }, function(err) {
+      $scope.authResponse = err;
+    });
+  };
+}]);
 
-function LoginCtrl($scope, $http) {
-    $scope.userAuthenticate = function(userName) {
-        $http.post('/api/authenticate', userName).success(function(authenticate) {
-            $scope.authenticate = authenticate;
-        }).error(function() {
-            $scope.authenticate = 'ERROR';
-        });
-    };
-};
+emControllers.controller('MainCtrl', ['$scope',
+function($scope) {
 
-function NotesCtrl($scope) {
-};
+}]);
 
-function TasksCtrl($scope) {
-};
+emControllers.controller('HomeCtrl', ['$scope',
+function($scope) {
+
+}]);
