@@ -4,6 +4,7 @@ import org.neo4j.scala.DatabaseService
 import org.neo4j.scala.DatabaseServiceImpl
 import java.util.{HashMap => jMap}
 import org.neo4j.test.ImpermanentGraphDatabase
+import org.neo4j.test.TestGraphDatabaseFactory
 
 /**
  * provides a specific Database Service
@@ -22,7 +23,10 @@ trait ImpermanentGraphDatabaseServiceProvider {
   val ds: DatabaseService = {
     import collection.JavaConversions.mapAsJavaMap
     DatabaseServiceImpl(
-      new ImpermanentGraphDatabase(new jMap[String, String](configParams))
+        new ImpermanentGraphDatabase(new jMap[String, String](configParams))
+        
+        //new TestGraphDatabaseFactory().newImpermanentDatabase()  
+        //new ImpermanentGraphDatabase(new jMap[String, String](configParams))
     )
   }
 }

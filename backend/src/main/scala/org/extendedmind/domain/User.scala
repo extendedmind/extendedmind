@@ -1,3 +1,5 @@
 package org.extendedmind.domain
 
-case class User(email: String)
+import java.util.UUID
+
+case class User(uuid: Option[UUID], email: String)

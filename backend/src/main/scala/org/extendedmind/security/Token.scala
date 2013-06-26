@@ -10,6 +10,13 @@ import org.extendedmind.security.defaults._
 case class Token(userUUID: UUID, accessKey: Long)
 
 object Token{
+  def apply(userUUID: UUID) = new Token(userUUID, generateAccessKey)
+  
+  def generateAccessKey(): Long = {
+    val random = new scala.util.Random(new java.security.SecureRandom())
+    random.nextLong
+  }
+  
   def encryptToken(token: Token)(implicit settings: Settings): String = {
     val bb = ByteBuffer.allocate(26)
     bb.putLong(token.userUUID.getMostSignificantBits())

@@ -15,6 +15,13 @@ abstract class SpecBase extends FunSpec
   
   // Standard test mocks
   class TestConfiguration(settings: Settings) extends Module {
-    bind [GraphDatabase] to new TestImpermanentGraphDatabase(settings)
+    bind [GraphDatabase] to new TestImpermanentGraphDatabase
+  }
+  
+  def bytes2hex(bytes: Array[Byte], sep: Option[String] = None): String = {
+    sep match {
+      case None => bytes.map("%02x".format(_)).mkString
+      case _ => bytes.map("%02x".format(_)).mkString(sep.get)
+    }
   }
 }
