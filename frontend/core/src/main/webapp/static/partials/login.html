@@ -10,21 +10,18 @@
 				<dl>
 					<dt>
 						<label for="login-email">email address</label>
-						<!-- TODO: add attribute ng-model="email" -->
-						<input type="text" name="userName" ng-model="users[0].email" required>
-						<!-- <input id="login-email" type="email" value="login.title" name="login-email"/> -->
+						<input type="email" ng-model="login.userName" required>
 					</dt>
 					<dt>
 						<label for="login-password">password</label>
-						<!-- TODO: add attribute ng-model="password" -->
-						<input type="text" name="password" required>
-						<!-- <input id="login-password" type="password" value="test" name="login-password"/> -->
+						<input type="text" ng-model="login.pass" required>
 					</dt>
 					<dt>
-						<!-- <a href="/my" class="btn" ng-click="login()">login</a> -->
-						<button ng-click="userAuthenticate(users[0].email)">
+						<button ng-disabled="!login.$valid" ng-click="userAuthenticate(login.userName)">
 							login
 						</button>
+						remember
+						<input type="checkbox">
 					</dt>
 				</dl>
 			</form>

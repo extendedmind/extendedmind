@@ -1,6 +1,7 @@
 "use strict";
 
 angular.module('em', ['em.filters', 'em.services', 'em.directives'], function($routeProvider, $locationProvider) {
+    
     $routeProvider.when('/', {
         templateUrl : '/static/partials/home.html',
         controller : HomeCtrl

@@ -4,14 +4,20 @@ describe("controllers", function() {
 
     describe("LoginCtrl", function() {
 
-        beforeEach(module('mockedLogin'));
-
         var scope, ctrl, $httpBackend;
 
-        beforeEach(inject(function(_$httpBackend_, $rootScope, $controller, usersJSON, authenticateJSON) {
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
             $httpBackend = _$httpBackend_;
 
-            $httpBackend.whenGET('/api/users').respond(usersJSON);
+            var authenticate = getJSONFixture('getAuthenticateResponse.json');
+
+            $httpBackend.expectPOST('/api/authenticate').respond(function(method, url, data) {
+                if (data == 'timo@ext.md') {
+                    return [200, authenticate];
+                } else {
+                    return [503, 'Invalid username/password'];
+                }
+            });
 
             scope = $rootScope.$new();
             ctrl = $controller(LoginCtrl, {
@@ -24,10 +30,19 @@ describe("controllers", function() {
             $httpBackend.verifyNoOutstandingRequest();
         });
 
-        it('should fetch user list', function() {
-            $httpBackend.expectGET('/api/users');
+        it('should return login response for user "timo@ext.md"', function() {
+            scope.userAuthenticate('timo@ext.md');
             $httpBackend.flush();
-            expect(scope.users.entry[0].email).toBe('timo@ext.md');
+
+            expect(scope.authenticate[0].token).toBe('timo-tiuraniemi');
         });
+
+        it('should not return login response for user "jp@ext.md"', function() {
+            scope.userAuthenticate('jp');
+            $httpBackend.flush();
+
+            expect(scope.authenticate).toBe('ERROR');
+        });
+
     });
 });

@@ -92,11 +92,9 @@
 	              <include>em.min.css</include>
 	            </includes>
             </fileset>
-            <!--TODO: Removes entire test json directory 
             <fileset>
               <directory>${basedir}/src/main/webapp/test/json</directory>
             </fileset>
-             -->
           </filesets>
         </configuration>
       </plugin>
@@ -116,7 +114,8 @@
           <jsSrcDir>${project.basedir}/src/main/webapp/static</jsSrcDir>
           <jsTestSrcDir>${project.basedir}/src/main/webapp/test</jsTestSrcDir>
           <preloadSources>
-            <include>${project.basedir}/src/main/webapp/test/lib/jasmine-jquery.js</include>
+            <source>lib/jasmine-jquery.js</source>
+            <source>lib/jsonFixtures.js</source>
           </preloadSources>
           <sourceIncludes>
             <include>lib/jquery/jquery.js</include>
