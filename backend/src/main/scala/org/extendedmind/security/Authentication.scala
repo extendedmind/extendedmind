@@ -1,23 +1,23 @@
 package org.extendedmind.security
-import spray.routing.authentication._
+
 import scala.concurrent.Promise
-import java.util.UUID
 
-object ExtendedMindUserPassAuthenticator extends UserPassAuthenticator[SecurityContext]{
+import org.extendedmind.db.GraphDatabase
 
-  // TODO: Get from database
-  val testUsers = List(SecurityContext(UUID.fromString("759cfbcd-a05d-49e4-8362-6f114182eb64"), 
-      								 "timo@ext.md",
-      								 0,
-      								 Map()))
+import spray.routing.authentication.UserPass
+import spray.routing.authentication.UserPassAuthenticator
+import spray.routing.authentication.UserPassAuthenticator
 
-  def apply(userPass: Option[UserPass]) = Promise.successful(
+class ExtendedMindUserPassAuthenticator(db: GraphDatabase)
+			extends UserPassAuthenticator[SecurityContext]{
+	 
+  def apply(userPass: Option[UserPass])= Promise.successful(
     userPass match {
       case Some(UserPass(user, pass)) => {
-        testUsers.find(c => c.email == user).flatMap {
-          case x => {
-            Some(x)
-          }
+        if (user == "token"){
+          db.authenticate(pass)
+        }else{
+          db.authenticate(user, pass)
         }
       }
       case None => None

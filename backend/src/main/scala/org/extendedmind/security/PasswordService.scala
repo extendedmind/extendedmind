@@ -27,10 +27,11 @@ object PasswordService {
   def authenticate(attemptedPassword: String, password: Password): Boolean = {
 	  // Encrypt the clear-text password using the same salt that was used to
 	  // encrypt the original password
-	  val encryptedAttemptedPassword = getEncryptedPassword(attemptedPassword, 
-	      																									password.salt, 
-	      																									password.algorithm, 
-	      																									password.iterations);
+	  val encryptedAttemptedPassword = 
+	    getEncryptedPassword(attemptedPassword,
+                             password.salt,
+                             password.algorithm,
+                             password.iterations);
 	  // Authentication succeeds if encrypted password that the user entered
 	  // is equal to the stored hash
 	  return Arrays.equals(password.passwordHash, encryptedAttemptedPassword.passwordHash);

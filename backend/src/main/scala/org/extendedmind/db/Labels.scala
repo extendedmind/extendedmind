@@ -15,9 +15,8 @@ object MainLabel {
 
 }
 
-object UserLabels {
+object UserLabel {
   val ADMIN = Label("ADMIN")
-  val NORMAL = Label("NORMAL")
 }
 
 object ItemLabel {

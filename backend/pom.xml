@@ -116,14 +116,14 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>1.0.13</version>
-      <scope>runtime</scope>
+      <version>0.9.30</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.0.13</version>
-      <scope>runtime</scope>
+      <version>0.9.30</version>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Security -->
@@ -169,6 +169,14 @@
       <type>jar</type>
       <scope>test</scope>
     </dependency>
+    <dependency>
+	  <groupId>commons-io</groupId>
+	  <artifactId>commons-io</artifactId>
+	  <version>2.4</version>
+      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+            
   </dependencies>
 
   <build>

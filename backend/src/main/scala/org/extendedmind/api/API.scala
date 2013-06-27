@@ -10,7 +10,7 @@ trait API extends HttpService {
 
   // All valid paths
   val rootGet = path("") & get
-  val authenticatePost = path("authenticate") & post
+  val postAuthenticate = post & path("authenticate".r) 
   val searchPost = path("search") & post
   val notesGet = path("notes") & get
   val noteGet = path("note" / IntNumber) & get

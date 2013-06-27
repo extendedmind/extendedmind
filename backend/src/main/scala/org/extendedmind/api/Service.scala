@@ -18,6 +18,7 @@ import spray.routing.directives.CompletionMagnet.fromObject
 import spray.routing.authentication.BasicAuth
 import org.extendedmind.security.ExtendedMindUserPassAuthenticator
 import org.extendedmind.domain.Item
+import org.extendedmind.db.GraphDatabase
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -48,7 +49,7 @@ trait Service extends API with Injectable {
   implicit val implModules = configurations
   implicit val implSettings = settings
   implicit val implExecutionContext = actorRefFactory.dispatcher
-
+  
   import JsonImplicits._
   val emRoute = {
     rootGet {
@@ -56,8 +57,8 @@ trait Service extends API with Injectable {
         "Extended Mind Scala Stack is running"
       }
     } ~
-    authenticatePost {
-      authenticate(BasicAuth(ExtendedMindUserPassAuthenticator, "user")) { securityContext =>
+    postAuthenticate { url =>
+      authenticate(BasicAuth(new ExtendedMindUserPassAuthenticator(graphDatabase), "user")) { securityContext =>
         complete {
           Future[String] {
             securityActions.generateToken(securityContext.email)
@@ -65,8 +66,8 @@ trait Service extends API with Injectable {
         }
       }
     } ~
-    path("users") {
-      get {
+    get{
+      path("users") {
         complete {
           Future[List[User]] {
             userActions.getUsers
@@ -90,5 +91,9 @@ trait Service extends API with Injectable {
 
   def securityActions(implicit settings: Settings): SecurityActions = {
     inject[SecurityActions]
+  }
+  
+  def graphDatabase(implicit settings: Settings): GraphDatabase = {
+    inject[GraphDatabase]
   }
 }
