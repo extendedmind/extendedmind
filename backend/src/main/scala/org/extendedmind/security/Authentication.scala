@@ -1,16 +1,18 @@
 package org.extendedmind.security
 
 import scala.concurrent.Promise
-
 import org.extendedmind.db.GraphDatabase
-
 import spray.routing.authentication.UserPass
 import spray.routing.authentication.UserPassAuthenticator
 import spray.routing.authentication.UserPassAuthenticator
+import org.extendedmind.Settings
+import scaldi.Injector
+import scaldi.Injectable
 
-class ExtendedMindUserPassAuthenticator(db: GraphDatabase)
-			extends UserPassAuthenticator[SecurityContext]{
-	 
+trait ExtendedMindUserPassAuthenticator extends UserPassAuthenticator[SecurityContext]{
+  
+  def db: GraphDatabase
+  
   def apply(userPass: Option[UserPass])= Promise.successful(
     userPass match {
       case Some(UserPass(user, pass)) => {
@@ -22,4 +24,9 @@ class ExtendedMindUserPassAuthenticator(db: GraphDatabase)
       }
       case None => None
     }).future
+}
+
+class ExtendedMindUserPassAuthenticatorImpl (implicit val settings: Settings, implicit val inj: Injector)
+		extends ExtendedMindUserPassAuthenticator with Injectable{
+  override def db = inject[GraphDatabase]
 }

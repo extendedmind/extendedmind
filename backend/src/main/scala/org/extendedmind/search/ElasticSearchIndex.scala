@@ -2,6 +2,6 @@ package org.extendedmind.search
 
 import org.extendedmind.Settings
 
-class ElasticSearchIndex(settings: Settings) extends SearchIndex{
+class ElasticSearchIndex(implicit val settings: Settings) extends SearchIndex{
   println("ElasticSearchIndex")
 }

@@ -2,6 +2,7 @@ package org.extendedmind.api
 
 import spray.routing.ConjunctionMagnet.fromDirective
 import spray.routing.HttpService
+import spray.routing.PathMatchers._
 
 /**
  * Specifies the Extended Mind API
@@ -9,8 +10,11 @@ import spray.routing.HttpService
 trait API extends HttpService {
 
   // All valid paths
-  val rootGet = path("") & get
+  val getRoot = get & path("")
   val postAuthenticate = post & path("authenticate".r) 
+  val getItems = get & path(JavaUUID / "items")
+  val putNewItem = put & path(JavaUUID / "item")
+  val putExistingItem = put & path(JavaUUID / "item" / JavaUUID)
   val searchPost = path("search") & post
   val notesGet = path("notes") & get
   val noteGet = path("note" / IntNumber) & get

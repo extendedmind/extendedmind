@@ -1,5 +1,5 @@
 package org.extendedmind.api.test
-import org.extendedmind.bl.UserActions
+import org.extendedmind.bl.ItemActions
 import scaldi.Module
 import org.mockito.Mockito._
 import org.extendedmind.domain.User
@@ -21,14 +21,14 @@ import org.extendedmind.test.TestGraphDatabase._
 class ServiceSpec extends SpraySpecBase{
 
   // Mock out all action classes to test only the Service class
-  val mockUserActions = mock[UserActions]
+  val mockItemActions = mock[ItemActions]
   val mockSecurityActions = mock[SecurityActions]
 
   // Create test database  
   val db = new TestImpermanentGraphDatabase
 
   object ServiceTestConfiguration extends Module{
-    bind [UserActions] to mockUserActions
+    bind [ItemActions] to mockItemActions
     bind [SecurityActions] to mockSecurityActions
     bind [GraphDatabase] to db
   }
@@ -40,7 +40,7 @@ class ServiceSpec extends SpraySpecBase{
 
   // Reset mocks after each test to be able to use verify after each test
   after{
-    reset(mockUserActions)
+    reset(mockItemActions)
     reset(mockSecurityActions)
     db.shutdown(db.ds)
   }
@@ -48,13 +48,11 @@ class ServiceSpec extends SpraySpecBase{
   
   describe("Extended Mind Service"){
     it("should return token on authenticate"){
-      stub(mockSecurityActions.generateToken(TIMO_EMAIL)).toReturn("12345");
       Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> emRoute ~> check { 
         val authenticateResponse = entityAs[String]
         writeJsonOutput("authenticateResponse", authenticateResponse)
-        authenticateResponse should include("12345")
+        authenticateResponse should include("token")
       }
-      verify(mockSecurityActions).generateToken(TIMO_EMAIL)
     }
   }
   

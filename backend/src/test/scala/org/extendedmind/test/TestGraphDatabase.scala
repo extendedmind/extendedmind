@@ -52,11 +52,11 @@ trait TestGraphDatabase extends GraphDatabase {
   }
 }
 
-class TestImpermanentGraphDatabase
+class TestImpermanentGraphDatabase(implicit val settings: Settings)
   extends TestGraphDatabase with ImpermanentGraphDatabaseServiceProvider {
 }
 
-class TestEmbeddedGraphDatabase(store: String)
+class TestEmbeddedGraphDatabase(store: String)(implicit val settings: Settings)
   extends TestGraphDatabase with EmbeddedGraphDatabaseServiceProvider {
   def neo4jStoreDir = store
 }

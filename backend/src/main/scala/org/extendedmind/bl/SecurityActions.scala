@@ -11,12 +11,10 @@ trait SecurityActions{
 
   def db: GraphDatabase;
   
-  def generateToken(username: String): String = {
-    "EXAMPLE_TOKEN_for_" + username
-  }
+  // TODO: Security actions here such as registration, forgot password etc.
 }
 
-class SecurityActionsImpl(settings: Settings)(implicit val inj: Injector) 
+class SecurityActionsImpl(implicit val settings: Settings, implicit val inj: Injector) 
 		extends SecurityActions with Injectable{
-  def db = inject[GraphDatabase] (by default new EmbeddedGraphDatabase(settings))
+  def db = inject[GraphDatabase]
 }

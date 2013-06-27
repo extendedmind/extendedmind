@@ -3,7 +3,7 @@ package org.extendedmind.test
 import java.io.PrintWriter
 import java.util.UUID
 import org.extendedmind.bl.SecurityActions
-import org.extendedmind.bl.UserActions
+import org.extendedmind.bl.ItemActions
 import org.extendedmind.db.GraphDatabase
 import org.extendedmind.domain.UserWrapper
 import org.extendedmind.security.SecurityContext
@@ -19,6 +19,16 @@ import org.zeroturnaround.zip.ZipUtil
 import java.io.File
 import org.zeroturnaround.zip.FileUtil
 import org.apache.commons.io.FileUtils
+import org.extendedmind.security.SecurityContextWrapper
+import org.extendedmind.security.ExtendedMindUserPassAuthenticator
+import org.extendedmind.security.ExtendedMindUserPassAuthenticatorImpl
+import org.extendedmind.security.Token
+import org.extendedmind.domain.Item
+import org.extendedmind.domain.ItemWrapper
+
+import org.extendedmind.api.JsonImplicits._
+import spray.httpx.SprayJsonSupport._
+import spray.httpx.marshalling._
 
 /**
  * Class that is used to generate .json filesDuration from the
@@ -30,52 +40,64 @@ class TestDataGeneratorSpec extends SpraySpecBase{
   val TEST_DATA_DESTINATION = "target/test-classes"
   
   // Mock out all action classes to use only the Service class for output
-  val mockUserActions = mock[UserActions]
-  val mockSecurityActions = mock[SecurityActions]
+  val mockItemActions = mock[ItemActions]
   val mockGraphDatabase = mock[GraphDatabase]
 
   object TestDataGeneratorConfiguration extends Module{
     bind [GraphDatabase] to mockGraphDatabase
-    bind [UserActions] to mockUserActions
-    bind [SecurityActions] to mockSecurityActions
+    bind [ItemActions] to mockItemActions
   }
   
   def configurations = TestDataGeneratorConfiguration 
   
   // Create test database  
   val db = new TestEmbeddedGraphDatabase(TEST_DATA_STORE)
-  
+    
   // Reset mocks after each test to be able to use verify after each test
   after{
-    reset(mockUserActions)
-    reset(mockSecurityActions)
+    reset(mockItemActions)
     reset(mockGraphDatabase)
   }
-
-  describe("Extended Mind Service"){
+  
+  describe("Test data generator"){
     it("should return a list of available commands at root"){
       Get() ~> emRoute ~> check { entityAs[String] should include("is running") }
     }
-    it("should return a list of users at /users"){
-      val users = List(UserWrapper(UUID.randomUUID(), TIMO_EMAIL), UserWrapper(UUID.randomUUID(), "jp@ext.md"))
-      stub(mockUserActions.getUsers()).toReturn(users);
-      Get("/users") ~> emRoute ~> check { 
-        val getUsersResponse = entityAs[String]
-        writeJsonOutput("getUsersResponse", getUsersResponse)
-        getUsersResponse should include("timo@ext.md")
-      }
-      verify(mockUserActions).getUsers()
-    }
     
-    it("should return token on /authenticate"){
+    it("should generate token response on /authenticate"){
       stubTimoAuthenticate()
-      stub(mockSecurityActions.generateToken(TIMO_EMAIL)).toReturn("12345");
       Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> emRoute ~> check { 
         val authenticateResponse = entityAs[String]
         writeJsonOutput("authenticateResponse", authenticateResponse)
-        authenticateResponse should include("12345")
+        authenticateResponse should include("token")
       }
-      verify(mockSecurityActions).generateToken(TIMO_EMAIL)
+      verify(mockGraphDatabase).authenticate(TIMO_EMAIL, TIMO_PASSWORD)
+    }
+    
+    it ("should generate item list response on /[userUUID]/items"){
+      val securityContext = stubTimoAuthenticate()
+      stub(itemActions.getItems(UUID.fromString(securityContext.userUUID))).toReturn(
+        List(ItemWrapper(UUID.randomUUID(), "book flight", None, None, None),
+             ItemWrapper(UUID.randomUUID(), "buy tickets", Some("TASK"), Some("2013-09-01"), None),
+             ItemWrapper(UUID.randomUUID(), "notes on productivity", Some("NOTE"), None, None)))
+      Get("/" + securityContext.userUUID + "/items") ~> addHeader(Authorization(BasicHttpCredentials("token", securityContext.token.get))) ~> emRoute ~> check { 
+        val itemsResponse = entityAs[String]
+        writeJsonOutput("itemsResponse", itemsResponse)
+        itemsResponse should include("book flight")
+      }
+    }
+    
+    it ("should generate uuid response on put to /[userUUID]/item"){
+      val securityContext = stubTimoAuthenticate()
+      val newItem = Item(None, "remember the milk", None, None, None)
+      stub(itemActions.putItem(UUID.fromString(securityContext.userUUID), newItem, None)).toReturn(UUID.randomUUID().toString())
+      Put("/" + securityContext.userUUID + "/item",
+          marshal(newItem).right.get
+          ) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials("token", securityContext.token.get))) ~> emRoute ~> check { 
+        val putItemResponse = entityAs[String]
+        writeJsonOutput("putItemResponse", putItemResponse)
+        putItemResponse should include("-")
+      }
     }
   }
 
@@ -83,15 +105,19 @@ class TestDataGeneratorSpec extends SpraySpecBase{
     it("should initialize with test data"){
       db.insertTestUsers
       db.shutdown(db.ds)
-      packNeo4jStore
-      
+      packNeo4jStore  
     }
   }
   
-  def stubTimoAuthenticate(){
-      stub(mockGraphDatabase.authenticate(TIMO_EMAIL, TIMO_PASSWORD)).toReturn(
-          Some(
-            SecurityContext(UUID.randomUUID(), TIMO_EMAIL, UserWrapper.ADMIN, None)))
+  def stubTimoAuthenticate(): SecurityContext = {
+    val uuid = UUID.randomUUID()
+    val token = Token.encryptToken(Token(uuid))
+    val securityContext = SecurityContextWrapper(uuid, TIMO_EMAIL, UserWrapper.ADMIN, Some(token), None)
+    stub(mockGraphDatabase.authenticate(TIMO_EMAIL, TIMO_PASSWORD)).toReturn(
+          Some(securityContext))
+    stub(mockGraphDatabase.authenticate(token)).toReturn(
+          Some(securityContext))
+    securityContext
   }
   
   // Helper file writer

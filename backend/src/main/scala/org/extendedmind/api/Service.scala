@@ -5,10 +5,11 @@ import org.extendedmind.Configuration
 import org.extendedmind.Settings
 import org.extendedmind.SettingsExtension
 import org.extendedmind.bl.SecurityActions
-import org.extendedmind.bl.UserActions
+import org.extendedmind.bl.ItemActions
 import org.extendedmind.domain.User
 import scaldi.Injectable
 import scaldi.Injector
+import spray.http._
 import spray.httpx.SprayJsonSupport.sprayJsonMarshaller
 import spray.httpx.SprayJsonSupport.sprayJsonUnmarshaller
 import spray.json.DefaultJsonProtocol
@@ -19,6 +20,8 @@ import spray.routing.authentication.BasicAuth
 import org.extendedmind.security.ExtendedMindUserPassAuthenticator
 import org.extendedmind.domain.Item
 import org.extendedmind.db.GraphDatabase
+import org.extendedmind.security.SecurityContext
+import org.extendedmind.security.ExtendedMindUserPassAuthenticatorImpl
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -35,8 +38,9 @@ class ServiceActor extends HttpServiceActor with Service {
 }
 
 object JsonImplicits extends DefaultJsonProtocol {
-  implicit val implItem = jsonFormat2(Item)
+  implicit val implItem = jsonFormat5(Item)
   implicit val implUser = jsonFormat2(User)
+  implicit val implSecurityContext = jsonFormat5(SecurityContext)
 }
 
 // this class defines our service behavior independently from the service actor
@@ -52,48 +56,56 @@ trait Service extends API with Injectable {
   
   import JsonImplicits._
   val emRoute = {
-    rootGet {
+    getRoot {
       complete {
         "Extended Mind Scala Stack is running"
       }
     } ~
     postAuthenticate { url =>
-      authenticate(BasicAuth(new ExtendedMindUserPassAuthenticator(graphDatabase), "user")) { securityContext =>
+      authenticate(BasicAuth(authenticator, "user")) { securityContext =>
         complete {
-          Future[String] {
-            securityActions.generateToken(securityContext.email)
-          }
+          securityContext
         }
       }
     } ~
-    get{
-      path("users") {
-        complete {
-          Future[List[User]] {
-            userActions.getUsers
-          }
+    getItems{ userUUID =>
+      authenticate(BasicAuth(authenticator, "user")) { securityContext =>
+        authorize(true){
+	      complete {
+	        Future[List[Item]] {
+	          itemActions.getItems(userUUID)
+	        }
+	      }
         }
       }
+    } ~ 
+    putNewItem { userUUID =>
+      entity(as[Item]) { item =>
+        val uuid: String = itemActions.putItem(userUUID, item, None)
+        complete(uuid)
+      }   
     } ~
-    path("user") {
-      post {
-        entity(as[User]) { user =>
-          val result: User = userActions.addUser(user)
-          complete(result)
-        }
+    putExistingItem { (userUUID, itemUUID) =>
+      entity(as[Item]) { item =>
+        val uuid: String = itemActions.putItem(userUUID, item, Some(itemUUID))
+        complete(uuid)
       }
     }
   }
 
-  def userActions(implicit settings: Settings): UserActions = {
-    inject[UserActions]
+  def itemActions: ItemActions = {
+    inject[ItemActions]
   }
 
-  def securityActions(implicit settings: Settings): SecurityActions = {
+  def securityActions: SecurityActions = {
     inject[SecurityActions]
   }
   
-  def graphDatabase(implicit settings: Settings): GraphDatabase = {
+  def authenticator: ExtendedMindUserPassAuthenticator = {
+    inject[ExtendedMindUserPassAuthenticator] (by default new ExtendedMindUserPassAuthenticatorImpl)
+  }
+  
+  def graphDatabase: GraphDatabase = {
     inject[GraphDatabase]
   }
 }
