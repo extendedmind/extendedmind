@@ -8,7 +8,7 @@ import scaldi.Injectable
 import org.extendedmind.search.ElasticSearchIndex
 import org.extendedmind.search.SearchIndex
 
-class EmbeddedGraphDatabase(settings: Settings) 
+class EmbeddedGraphDatabase(implicit val settings: Settings) 
 	extends GraphDatabase with EmbeddedGraphDatabaseServiceProvider{
-  def neo4jStoreDir = settings.neo4jStoreDir  
+  def neo4jStoreDir = settings.neo4jStoreDir
 }

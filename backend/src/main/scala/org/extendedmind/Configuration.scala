@@ -11,14 +11,17 @@ import org.extendedmind.db.GraphDatabase
 import scaldi.Module
 import org.extendedmind.search.ElasticSearchIndex
 import org.extendedmind.search.SearchIndex
-import org.extendedmind.bl.UserActions
-import org.extendedmind.bl.UserActionsImpl
+import org.extendedmind.bl.ItemActions
+import org.extendedmind.bl.ItemActionsImpl
 import org.extendedmind.db.EmbeddedGraphDatabase
+import org.extendedmind.security.ExtendedMindUserPassAuthenticator
+import org.extendedmind.security.ExtendedMindUserPassAuthenticatorImpl
 
 // Custom settings from application.conf or overridden file
 
 class Settings(config: Config) extends Extension {
   val neo4jStoreDir = config.getString("extendedmind.neo4j.storeDir")
+  val tokenSecret = config.getString("extendedmind.security.tokenSecret")
 }
 
 object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{
@@ -29,7 +32,8 @@ object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{
 // Scaldi default configuration
 
 class Configuration(settings: Settings) extends Module{
-  bind [GraphDatabase] to new EmbeddedGraphDatabase(settings)
-  bind [SearchIndex] to new ElasticSearchIndex(settings)
-  bind [UserActions] to new UserActionsImpl(settings)
+  implicit val implSettings = settings
+  bind [GraphDatabase] to new EmbeddedGraphDatabase
+  bind [SearchIndex] to new ElasticSearchIndex
+  bind [ItemActions] to new ItemActionsImpl
 }

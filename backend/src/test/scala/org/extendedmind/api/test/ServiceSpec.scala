@@ -1,38 +1,58 @@
 package org.extendedmind.api.test
-import org.extendedmind.bl.UserActions
+import org.extendedmind.bl.ItemActions
 import scaldi.Module
 import org.mockito.Mockito._
 import org.extendedmind.domain.User
 import org.extendedmind.test.SpecBase
 import java.io.PrintWriter
+import spray.testkit.ScalatestRouteTest
+import org.extendedmind.api.Service
+import org.extendedmind.SettingsExtension
+import org.extendedmind.test.SpraySpecBase
+import org.extendedmind.bl.SecurityActions
+import spray.http.HttpHeaders.Authorization
+import spray.http.BasicHttpCredentials
+import java.util.UUID
+import org.extendedmind.domain.UserWrapper
+import org.extendedmind.test.TestImpermanentGraphDatabase
+import org.extendedmind.db.GraphDatabase
+import org.extendedmind.test.TestGraphDatabase._
 
-class ServiceSpec extends SpecBase{
+class ServiceSpec extends SpraySpecBase{
 
   // Mock out all action classes to test only the Service class
-  val mockUserActions = mock[UserActions]
+  val mockItemActions = mock[ItemActions]
+  val mockSecurityActions = mock[SecurityActions]
+
+  // Create test database  
+  val db = new TestImpermanentGraphDatabase
+
   object ServiceTestConfiguration extends Module{
-    bind [UserActions] to mockUserActions
+    bind [ItemActions] to mockItemActions
+    bind [SecurityActions] to mockSecurityActions
+    bind [GraphDatabase] to db
   }
   def configurations = ServiceTestConfiguration 
-  
-  // Reset mocks after each test to be able to use verify after each test
-  after{
-    reset(mockUserActions)
+
+  before{
+    db.insertTestUsers
   }
 
+  // Reset mocks after each test to be able to use verify after each test
+  after{
+    reset(mockItemActions)
+    reset(mockSecurityActions)
+    db.shutdown(db.ds)
+  }
+
+  
   describe("Extended Mind Service"){
-    it("should return a list of available commands at root"){
-      Get() ~> emRoute ~> check { entityAs[String] should include("is running") }
-    }
-    it("should return a list of users at /users"){
-      val users = List(User("timo@ext.md"), User("jp@ext.md"))
-      stub(mockUserActions.getUsers()).toReturn(users);
-      Get("/users") ~> emRoute ~> check { 
-        val getUsersResponse = entityAs[String]
-        writeJsonOutput("getUsersResponse", getUsersResponse)
-        getUsersResponse should include("timo@ext.md")
+    it("should return token on authenticate"){
+      Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> emRoute ~> check { 
+        val authenticateResponse = entityAs[String]
+        writeJsonOutput("authenticateResponse", authenticateResponse)
+        authenticateResponse should include("token")
       }
-      verify(mockUserActions).getUsers()
     }
   }
   

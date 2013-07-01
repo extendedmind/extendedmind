@@ -1,6 +1,5 @@
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -18,7 +17,7 @@
 
   <licenses>
     <license>
-       <name>GNU Affero General Public License, Version 3</name>
+      <name>GNU Affero General Public License, Version 3</name>
       <url>http://www.gnu.org/licenses/agpl-3.0.html</url>
       <distribution>repo</distribution>
     </license>
@@ -38,8 +37,13 @@
     </developer>
   </developers>
 
+  <properties>
+      <neo4j.version>2.0.0-M03</neo4j.version>
+      <spray.version>1.2-M8</spray.version>
+  </properties>
+
   <dependencies>
-    
+
     <!-- Scala -->
     <dependency>
       <groupId>org.scala-lang</groupId>
@@ -51,25 +55,25 @@
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-io</artifactId>
-      <version>1.2-M8</version>
+      <version>${spray.version}</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-can</artifactId>
-      <version>1.2-M8</version>
+      <version>${spray.version}</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-routing</artifactId>
-      <version>1.2-M8</version>
+      <version>${spray.version}</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-	  <dependency>
+    <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-json_${scala.version.short}</artifactId>
       <version>1.2.4</version>
@@ -85,7 +89,14 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-    
+    <dependency>
+      <groupId>org.neo4j.app</groupId>
+      <artifactId>neo4j-server</artifactId>
+      <version>${neo4j.version}</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+ 
     <!-- Scaldi -->
     <dependency>
       <groupId>com.github.scaldi</groupId>
@@ -102,29 +113,39 @@
       <version>2.2-M3</version>
       <scope>compile</scope>
     </dependency>
-  	<dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>1.0.13</version>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>0.9.30</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.0.13</version>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>0.9.30</version>
+      <scope>compile</scope>
     </dependency>
+
+    <!-- Security -->
+	<dependency>
+		<groupId>commons-codec</groupId>
+		<artifactId>commons-codec</artifactId>
+		<version>1.8</version>
+		<scope>compile</scope>
+	</dependency>
 
     <!-- Test -->
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-testkit</artifactId>
-      <version>1.2-20130516</version>
+      <version>${spray.version}</version>
       <type>jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.neo4j</groupId>
       <artifactId>neo4j-kernel</artifactId>
-      <version>1.9</version>
+      <version>${neo4j.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -141,13 +162,28 @@
       <version>1.9.5</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.zeroturnaround</groupId>
+      <artifactId>zt-zip</artifactId>
+      <version>1.6</version>
+      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+	  <groupId>commons-io</groupId>
+	  <artifactId>commons-io</artifactId>
+	  <version>2.4</version>
+      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+            
   </dependencies>
 
   <build>
     <sourceDirectory>src/main/scala</sourceDirectory>
     <testSourceDirectory>src/test/scala</testSourceDirectory>
     <plugins>
-	  <plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.14</version>
@@ -174,9 +210,9 @@
         <executions>
           <execution>
             <id>test</id>
-              <goals>
-                <goal>test</goal>
-              </goals>
+            <goals>
+              <goal>test</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
