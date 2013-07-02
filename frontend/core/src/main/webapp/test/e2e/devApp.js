@@ -1,6 +1,6 @@
 "use strict";
 
-var emDevApp = angular.module('emDevApp', ['emApp', 'ngMockE2E']);
+var emDevApp = angular.module('em.devApp', ['em.app', 'ngMockE2E']);
 
 emDevApp.run(function($httpBackend) {
 

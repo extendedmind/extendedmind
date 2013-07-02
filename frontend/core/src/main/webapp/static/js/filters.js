@@ -1,6 +1,6 @@
 "use strict";
 
-var emFilters = angular.module('filters', []);
+var emFilters = angular.module('em.filters', []);
 
 emFilters.filter('interpolate', ['version',
 function(version) {

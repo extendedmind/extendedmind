@@ -1,6 +1,6 @@
 "use strict";
 
-var emDirectives = angular.module('directives', []);
+var emDirectives = angular.module('em.directives', []);
 
 emDirectives.directive('appVersion', ['version',
 function(version) {

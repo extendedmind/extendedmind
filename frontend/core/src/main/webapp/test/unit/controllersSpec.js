@@ -3,7 +3,7 @@
 describe('controllers', function() {
   beforeEach(module('controllers'));
 
-  describe('LoginCtrl', function() {
+  describe('LoginController', function() {
 
     var scope, ctrl, $httpBackend;
 
@@ -22,7 +22,7 @@ describe('controllers', function() {
       });
 
       scope = $rootScope.$new();
-      ctrl = $controller('LoginCtrl', {
+      ctrl = $controller('LoginController', {
         $scope : scope
       });
     }));

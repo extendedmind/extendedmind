@@ -1,10 +1,10 @@
 "use strict";
 
-var emAuth = angular.module('auth', []);
+var emAuth = angular.module('em.userAuthenticate', []);
 
-emAuth.factory('Auth', function($http) {
+emAuth.factory('UserAuthenticate', function($http) {
   return {
-    isLoggedIn : function(user) {
+    isUserLoggedIn : function(user) {
     },
     userLogin : function(user, success, error) {
       $http.post('/api/authenticate', user).success(function(user) {
