@@ -6,12 +6,11 @@ describe('controllers', function() {
   describe('LoginCtrl', function() {
 
     var scope, ctrl, $httpBackend;
-    var users = getJSONFixture('getUsersResponse.json');
 
     beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
       $httpBackend = _$httpBackend_;
 
-      var authenticate = getJSONFixture('getAuthenticateResponse.json');
+      var authenticate = getJSONFixture('authenticateResponse.json');
 
       $httpBackend.expectPOST('/api/authenticate').respond(function(method, url, data) {
         var userEmail = angular.fromJson(data).email;
@@ -34,18 +33,21 @@ describe('controllers', function() {
     });
 
     it('should return login response for user "timo@ext.md"', function() {
-      scope.user = users[0];
+      scope.user = {
+        "email" : 'timo@ext.md'
+      };
       scope.userLogin();
+      expect(scope.authResponse).toBe(undefined);
       $httpBackend.flush();
-
-      expect(scope.authResponse[0].token).toBe('timo-tiuraniemi');
+      expect(scope.authResponse.token).toBe('XYlpFWpwzqHwgUD6+lovjrg7ZJGhrozCxsAVRIOmyh4=');
     });
 
     it('should return error response for user "na@na.com"', function() {
       scope.user = {
-        "email" : 'na@na.com'
+        "email" : 'na@ext.md'
       };
       scope.userLogin();
+      expect(scope.authResponse).toBe(undefined);
       $httpBackend.flush();
 
       expect(scope.authResponse).toBe('Invalid username/password');

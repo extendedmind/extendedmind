@@ -4,7 +4,7 @@ var emDevApp = angular.module('emDevApp', ['emApp', 'ngMockE2E']);
 
 emDevApp.run(function($httpBackend) {
 
-  var authenticate = $.getJSON('test/json/getAuthenticateResponse.json', function(data) {
+  var authenticate = $.getJSON('test/json/authenticateResponse.json', function(data) {
   });
 
   $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data) {

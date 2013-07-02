@@ -4,6 +4,9 @@ var emControllers = angular.module('controllers', ['auth']);
 
 emControllers.controller('LoginCtrl', ['$scope', 'Auth',
 function($scope, Auth) {
+  $scope.user = {
+    "email" : 'timo@ext.md'
+  };
   $scope.userLogin = function() {
     Auth.userLogin($scope.user, function(res) {
       $scope.authResponse = res;
