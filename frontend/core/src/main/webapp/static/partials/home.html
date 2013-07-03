@@ -6,10 +6,11 @@
 			<a href="/tasks">tasks</a> | <a href="/notes">notes</a> | <a href="/login">login</a>
 		</p>
 		<form name="searchAndAddOmniForm">
-			<input type="search" ng-model="item.text">
+			<input type="search" ng-model="item" autofocus="autofocus">
 			<button ng-click="addNewItem()">
 				+
 			</button>
 		</form>
+		<div new-item></div>
 	</div>
 </div>

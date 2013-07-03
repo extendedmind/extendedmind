@@ -1,7 +1,7 @@
 "use strict";
 
-describe("directives", function() {
-  beforeEach(module("directives"));
+describe("em.directives", function() {
+  beforeEach(module("em.directives"));
 
   return describe("app-version", function() {
     return it("should print current version", function() {

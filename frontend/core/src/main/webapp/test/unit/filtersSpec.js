@@ -1,7 +1,7 @@
 "use strict";
 
-describe("filter", function() {
-  beforeEach(module("filters"));
+describe("em.filter", function() {
+  beforeEach(module("em.filters"));
 
   return describe("interpolate", function() {
     beforeEach(module(function($provide) {

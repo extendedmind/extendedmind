@@ -1,7 +1,7 @@
 "use strict";
 
-describe('controllers', function() {
-  beforeEach(module('controllers'));
+describe('em.controllers', function() {
+  beforeEach(module('em.controllers'));
 
   describe('LoginController', function() {
 

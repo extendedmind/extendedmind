@@ -1,8 +1,8 @@
 "use strict";
 
-describe("service", function() {
+describe("em.service", function() {
 
-  beforeEach(module("services"));
+  beforeEach(module("em.services"));
 
   return describe("version", function() {
     return it("should return current version", inject(function(version) {
