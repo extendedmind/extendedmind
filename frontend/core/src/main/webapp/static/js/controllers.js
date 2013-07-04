@@ -1,6 +1,6 @@
 "use strict";
 
-var emControllers = angular.module('em.controllers', ['em.item', 'em.userAuthenticate']);
+var emControllers = angular.module('em.controllers', ['em.item', 'em.tasks', 'em.userAuthenticate']);
 
 emControllers.controller('HomeController', ['$scope', 'Item',
 function($scope, Item) {
@@ -30,4 +30,9 @@ function($scope, UserAuthenticate) {
 emControllers.controller('MainController', ['$scope',
 function($scope) {
 
+}]);
+
+emControllers.controller('TasksController', ['$scope', 'Tasks',
+function($scope, Tasks) {
+  $scope.tasks = Tasks.query();
 }]);

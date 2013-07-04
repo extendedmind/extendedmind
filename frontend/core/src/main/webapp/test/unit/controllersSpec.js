@@ -49,7 +49,6 @@ describe('em.controllers', function() {
       scope.userLogin();
       expect(scope.authResponse).toBe(undefined);
       $httpBackend.flush();
-
       expect(scope.authResponse).toBe('Invalid username/password');
     });
   });

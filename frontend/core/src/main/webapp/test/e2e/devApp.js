@@ -1,14 +1,12 @@
 "use strict";
 
-var emDevApp = angular.module('em.devApp', ['em.app', 'ngMockE2E']);
+var emDevApp = angular.module('em.devApp', ['em.app', 'ngMockE2E', 'ngResource']);
 
-emDevApp.run(function($httpBackend) {
+emDevApp.run(function($httpBackend, $resource) {
 
-  var authenticateResponse = $.getJSON('test/json/authenticateResponse.json', function(data) {
-  });
-
-  var putItemResponse = $.getJSON('test/json/putItemResponse.json', function(data) {
-  });
+  var authenticateResponse = $resource('test/json/authenticateResponse.json').query();
+  var putItemResponse = $resource('test/json/putItemResponse.json').query();
+  var itemsResponse = $resource('test/json/itemsResponse.json').query();
 
   $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data) {
     var userEmail = angular.fromJson(data).email;
@@ -23,5 +21,8 @@ emDevApp.run(function($httpBackend) {
     return [200, putItemResponse];
   });
 
+  $httpBackend.whenGET('/api/items').respond(itemsResponse);
+
   $httpBackend.whenGET(/^\/static\//).passThrough();
+  $httpBackend.whenGET(/^test\//).passThrough();
 });
