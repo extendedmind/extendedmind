@@ -2,12 +2,24 @@
 
 var emItem = angular.module('em.item', []);
 
-emItem.factory('Item', function($http) {
+emItem.factory('Item', ['$http',
+function($http) {
+  var items;
   return {
-    AddNewItem : function(item, success, error) {
-      $http.post('/api/item', item).success(function(item) {
-        success(item);
+    getUserItems : function(user, success, error) {
+      $http.get('/api/' + user + '/items').success(function(itemsResponse) {
+        items = itemsResponse;
+        success(items);
+      }).error(error);
+    },
+    putItem : function(newItemTitle, success, error) {
+      $http.post('/api/item', newItemTitle).success(function(putItemResponse) {
+        var newItem = {};
+        newItem.title = newItemTitle;
+        newItem.uuid = putItemResponse;
+        items.push(newItem);
+        success();
       }).error(error);
     }
   };
-});
+}]);

@@ -1,6 +1,6 @@
 "use strict";
 
-var emApp = angular.module('em.app', ['em.controllers', 'em.filters', 'em.services', 'em.directives']);
+var emApp = angular.module('em.app', ['em.controllers', 'em.filters', 'em.services', 'em.directives', 'em.userAuthenticate']);
 
 emApp.config(function($routeProvider, $locationProvider) {
 
@@ -26,3 +26,11 @@ emApp.config(function($routeProvider, $locationProvider) {
 
   $locationProvider.html5Mode(true);
 });
+
+emApp.run(['$rootScope', '$location', 'UserAuthenticate',
+function($rootScope, $location, UserAuthenticate) {
+  if (UserAuthenticate.isUserLoggedIn())
+    $location.path('/');
+  else
+    $location.path('/login');
+}]);

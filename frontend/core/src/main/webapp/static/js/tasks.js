@@ -1,8 +1,12 @@
 "use strict";
 
-var emTasks = angular.module('em.tasks', ['ngResource']);
+var emTasks = angular.module('em.tasks', []);
 
-emTasks.factory('Tasks', ['$resource',
-function($resource) {
-  return $resource('/api/items');
+emTasks.factory('Tasks', [
+function() {
+  return {
+    getUserTasks : function() {
+      return 'true';
+    }
+  };
 }]);

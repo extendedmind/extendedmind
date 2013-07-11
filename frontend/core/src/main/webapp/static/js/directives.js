@@ -9,18 +9,9 @@ function(version) {
   };
 }]);
 
-emDirectives.directive('newItem', function() {
+emDirectives.directive('itemList', function() {
   return {
-    restrict : 'EA',
-    replace : true,
-    transclude : true,
-    templateUrl : '/static/partials/newItemTemplate.html',
-    link : function(scope, element, attrs) {
-      scope.showMe = false;
-
-      scope.toggle = function toggle() {
-        scope.showMe = !scope.showMe;
-      }
-    }
+    restrict : 'E',
+    templateUrl : '/static/partials/newItemTemplate.html'
   }
 });

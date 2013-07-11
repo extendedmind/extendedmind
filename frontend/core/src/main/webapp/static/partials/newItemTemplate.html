@@ -1,11 +1,13 @@
-<form ng-show="showMe">
-	<p>
-		{{newItem}}
-	</p>
-	<button>
-		task
-	</button>
-	<button>
-		note
-	</button>
-</form>
+<div>
+	<ul>
+		<li ng-repeat="item in items">
+			{{item.title}}
+			<button>
+				task
+			</button>
+			<button>
+				note
+			</button>
+		</li>
+	</ul>
+</div>
