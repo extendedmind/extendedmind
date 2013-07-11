@@ -2,9 +2,12 @@
 
 var emDevApp = angular.module('em.devApp', ['em.app', 'ngMockE2E', 'ngResource']);
 
-emDevApp.run(function($httpBackend, $resource) {
+emDevApp.run(function($httpBackend, $resource, $http) {
+  var authenticateResponse;
+  $http.get('test/json/authenticateResponse.json').success(function(data) {
+    authenticateResponse = data;
+  });
 
-  var authenticateResponse = $resource('test/json/authenticateResponse.json').get();
   var putItemResponse = $resource('test/json/putItemResponse.json').query();
   var itemsResponse = $resource('test/json/itemsResponse.json').query();
 
