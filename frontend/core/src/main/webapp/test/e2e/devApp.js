@@ -2,12 +2,9 @@
 
 var emDevApp = angular.module('em.devApp', ['em.app', 'ngMockE2E', 'ngResource']);
 
-emDevApp.run(function($httpBackend, $resource, $http) {
-  var authenticateResponse;
-  $http.get('test/json/authenticateResponse.json').success(function(data) {
-    authenticateResponse = data;
-  });
+emDevApp.run(function($httpBackend, $resource) {
 
+  var authenticateResponse = $resource('test/json/authenticateResponse.json').get();
   var putItemResponse = $resource('test/json/putItemResponse.json').query();
   var itemsResponse = $resource('test/json/itemsResponse.json').query();
 
@@ -20,7 +17,7 @@ emDevApp.run(function($httpBackend, $resource, $http) {
     }
   });
 
-  $httpBackend.whenPOST('/api/item').respond(function(method, url, data) {
+  $httpBackend.whenPUT('/api/bba6363c-59ce-46b9-9709-acfd7b4be3f1/item').respond(function(method, url, data) {
     return [200, putItemResponse];
   });
 

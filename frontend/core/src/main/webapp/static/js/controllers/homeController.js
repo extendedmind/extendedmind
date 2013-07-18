@@ -1,14 +1,15 @@
 "use strict";
 
-emControllers.controller('HomeController', ['$scope', 'Item', 'UserAuthenticate',
-function($scope, Item, UserAuthenticate) {
-  var loggedUser = UserAuthenticate.getUser();
-  Item.getUserItems(loggedUser.userUUID, function(itemsResponse) {
-    $scope.items = itemsResponse;
+emControllers.controller('HomeController', ['$scope', 'Item', 'Items', 'User',
+function($scope, Item, Items, User) {
+
+  Item.getItems(User.getUserUUID(), function() {
+    $scope.items = Items.getUserItems();
+  }, function(error) {
   });
 
   $scope.putItem = function() {
-    Item.putItem($scope.itemTitle, function(result) {
+    Item.putItem(User.getUserUUID(), $scope.item, function() {
     }, function(error) {
     });
   };

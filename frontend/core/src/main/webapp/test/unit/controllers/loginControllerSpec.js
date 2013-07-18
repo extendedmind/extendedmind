@@ -4,7 +4,6 @@ describe('em.controllers', function() {
   beforeEach(module('em.controllers'));
 
   describe('LoginController', function() {
-
     var scope, ctrl, $httpBackend;
 
     beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {

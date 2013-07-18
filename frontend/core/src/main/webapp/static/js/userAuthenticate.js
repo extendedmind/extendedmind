@@ -1,23 +1,38 @@
 "use strict";
 
-var emAuthenticate = angular.module('em.userAuthenticate', []);
+var emAuthenticate = angular.module('em.userAuthenticate', ['ngCookies']);
 
-emAuthenticate.factory('UserAuthenticate', function($http) {
-  var userLoggedIn = false;
-  var loggedUser = {};
+emAuthenticate.factory('UserAuthenticate', ['$http', 'User',function($http, User) {
   return {
-    isUserLoggedIn : function(user) {
-      return userLoggedIn;
-    },
     userLogin : function(user, success, error) {
       $http.post('/api/authenticate', user).success(function(authenticateResponse) {
-        userLoggedIn = true;
-        loggedUser = authenticateResponse;
-        success(authenticateResponse);
+        User.setUser(authenticateResponse);
+        success();
       }).error(error);
     },
-    getUser : function() {
-      return loggedUser;
+    userLogout : function() {
+      User.setUser();
     }
   };
-});
+}]);
+
+emAuthenticate.factory('User', ['$cookieStore',
+function($cookieStore) {
+  return {
+    setUser : function(user) {
+      if (user == undefined) {
+        $cookieStore.remove('user');
+      } else
+        $cookieStore.put('user', user);
+    },
+    getUser : function() {
+      return $cookieStore.get('user');
+    },
+    getUserUUID : function() {
+      return $cookieStore.get('user').userUUID;
+    },
+    isUserAuthenticated : function() {
+      return $cookieStore.get('user') != undefined;
+    }
+  };
+}]);

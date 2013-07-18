@@ -2,24 +2,63 @@
 
 var emItem = angular.module('em.item', []);
 
-emItem.factory('Item', ['$http',
-function($http) {
-  var items;
+emItem.factory('Item', ['$http', 'Items',
+function($http, Items) {
   return {
-    getUserItems : function(user, success, error) {
-      $http.get('/api/' + user + '/items').success(function(itemsResponse) {
-        items = itemsResponse;
-        success(items);
-      }).error(error);
+    getItems : function(userUUID, success, error) {
+      $http({
+        method : 'GET',
+        url : '/api/' + userUUID + '/items'
+      }).success(function(userItems) {
+        Items.setUserItems(userItems);
+        success();
+      }).error(function(error) {
+        error(error);
+      });
     },
-    putItem : function(newItemTitle, success, error) {
-      $http.post('/api/item', newItemTitle).success(function(putItemResponse) {
-        var newItem = {};
-        newItem.title = newItemTitle;
-        newItem.uuid = putItemResponse;
-        items.push(newItem);
+    putItem : function(userUUID, item, success, error) {
+      $http({
+        method : 'PUT',
+        url : '/api/' + userUUID + '/item',
+        data : item
+      }).success(function(putItemResponse) {
+        Items.putUserItem(item, putItemResponse);
         success();
       }).error(error);
+    },
+    editItem : function(userUUID, item, success, error) {
+      $http({
+        method : 'PUT',
+        url : '/api/' + userUUID + '/item/' + item.uuid,
+        data : item
+      }).success(function(putItemResponse) {
+      }).error(error);
+    },
+    deleteItem : function(userUUID, itemUUID, success, error) {
+      $http({
+        method : 'DELETE',
+        url : '/api/' + userUUID + '/item/' + itemUUID
+      }).success(function() {
+      }).error();
+    }
+  };
+}]);
+
+emItem.factory('Items', [
+function() {
+  var userItems;
+  return {
+    setUserItems : function(items) {
+      userItems = items;
+    },
+    getUserItems : function() {
+      return userItems;
+    },
+    putUserItem : function(item, itemUUID) {
+      var newItem = {};
+      newItem.title = item.title;
+      newItem.uuid = itemUUID;
+      userItems.push(newItem);
     }
   };
 }]);
