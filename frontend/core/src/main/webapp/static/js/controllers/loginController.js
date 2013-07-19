@@ -1,7 +1,7 @@
 "use strict";
 
-emControllers.controller('LoginController', ['$location', '$rootScope', '$scope', 'UserAuthenticate',
-function($location, $rootScope, $scope, UserAuthenticate) {
+emControllers.controller('LoginController', ['$rootScope', '$scope', 'UserAuthenticate',
+function($rootScope, $scope, UserAuthenticate) {
 
   $scope.user = {
     "email" : 'timo@ext.md',

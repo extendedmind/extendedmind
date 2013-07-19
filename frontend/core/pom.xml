@@ -116,6 +116,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 						<include>lib/angularjs/angular.js</include>
 						<include>lib/angularjs/angular-mocks.js</include>
 						<include>lib/angularjs/angular-resource.js</include>
+						<include>lib/angularjs/angular-cookies.js</include>
 						<include>js/*.js</include>
 						<include>js/controllers/*.js</include>
 					</sourceIncludes>

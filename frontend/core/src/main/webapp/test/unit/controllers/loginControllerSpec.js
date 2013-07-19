@@ -4,9 +4,9 @@ describe('em.controllers', function() {
   beforeEach(module('em.controllers'));
 
   describe('LoginController', function() {
-    var scope, ctrl, $httpBackend;
+    var $controller, $httpBackend, $scope;
 
-    beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
+    beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_) {
       $httpBackend = _$httpBackend_;
 
       var authenticate = getJSONFixture('authenticateResponse.json');
@@ -20,9 +20,9 @@ describe('em.controllers', function() {
         }
       });
 
-      scope = $rootScope.$new();
-      ctrl = $controller('LoginController', {
-        $scope : scope
+      $scope = _$rootScope_.$new();
+      $controller = _$controller_('LoginController', {
+        $scope : $scope
       });
     }));
 
@@ -32,23 +32,21 @@ describe('em.controllers', function() {
     });
 
     it('should return login response for user "timo@ext.md"', function() {
-      scope.user = {
-        "email" : 'timo@ext.md'
+      $scope.user = {
+        "email" : 'timo@ext.md',
+        "password" : 'timo'
       };
-      scope.userLogin();
-      expect(scope.authResponse).toBe(undefined);
+      $scope.userLogin();
       $httpBackend.flush();
-      expect(scope.authResponse.token).toBe('XYlpFWpwzqHwgUD6+lovjrg7ZJGhrozCxsAVRIOmyh4=');
     });
-
+    //
     it('should return error response for user "na@na.com"', function() {
-      scope.user = {
-        "email" : 'na@ext.md'
+      $scope.user = {
+        "email" : 'na@ext.md',
+        "password" : 'timo'
       };
-      scope.userLogin();
-      expect(scope.authResponse).toBe(undefined);
+      $scope.userLogin();
       $httpBackend.flush();
-      expect(scope.authResponse).toBe('Invalid username/password');
     });
   });
 });

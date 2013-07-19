@@ -17,7 +17,7 @@ emDevApp.run(function($httpBackend, $resource) {
     }
   });
 
-  $httpBackend.whenPUT('/api/bba6363c-59ce-46b9-9709-acfd7b4be3f1/item').respond(function(method, url, data) {
+  $httpBackend.whenPUT('/api/bba6363c-59ce-46b9-9709-acfd7b4be3f1/item').respond(function() {
     return [200, putItemResponse];
   });
 

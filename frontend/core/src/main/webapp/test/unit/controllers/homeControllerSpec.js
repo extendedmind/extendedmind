@@ -1,27 +1,27 @@
 "use strict";
 
 describe('em.controllers', function() {
-  beforeEach(module('em.controllers'));
+  beforeEach(module('em.controllers', 'em.userAuthenticate'));
 
   describe('HomeController', function() {
-    var scope, ctrl, $httpBackend;
+    var $controller, $httpBackend, $scope, items, putItemResponse, user;
 
-    beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
+    beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_, User) {
       $httpBackend = _$httpBackend_;
 
-      scope = $rootScope.$new();
-      ctrl = $controller('HomeController', {
-        $scope : scope
+      user = {
+        "userUUID" : 'bba6363c-59ce-46b9-9709-acfd7b4be3f1'
+      };
+      User.setUser(user);
+
+      items = getJSONFixture('itemsResponse.json');
+      $httpBackend.expectGET('/api/' + user.userUUID + '/items').respond(items);
+      putItemResponse = getJSONFixture('putItemResponse.json');
+
+      $scope = _$rootScope_.$new();
+      $controller = _$controller_('HomeController', {
+        $scope : $scope
       });
-
-      var loggedUser = {};
-      var items = getJSONFixture('itemsResponse.json');
-      $httpBackend.expectGET('/api/' + loggedUser.token + '/items').respond(items);
-
-      loggedUser.token = 'bba6363c-59ce-46b9-9709-acfd7b4be3f1';
-      ctrl.setLoggedUser(loggedUser);
-
-      var putItemResponse = getJSONFixture('putItemResponse.json');
     }));
 
     afterEach(function() {
@@ -30,23 +30,23 @@ describe('em.controllers', function() {
     });
 
     it('should return logged user\'s items', function() {
-      expect(scope.items).toBe(undefined);
+      expect($scope.items).toBe(undefined);
       $httpBackend.flush();
-      expect(scope.items.length).toBe(3);
+      expect($scope.items.length).toBe(3);
     });
 
     it('should add new item into user\'s item list', function() {
-      var putItemResponse = getJSONFixture('putItemResponse.json');
-      $httpBackend.expectPUT('/api/' + ctrl.getLoggedUser().UUID + '/item').respond(function(method, url, data) {
+      $scope.item = {
+        "title" : 'Buy more milk'
+      };
+      $httpBackend.expectPUT('/api/' + user.userUUID + '/item').respond(function() {
         return [200, putItemResponse];
       });
-      scope.item = {
-        title : 'Buy more milk'
-      };
-      scope.putItem();
-      expect(scope.items).toBe(undefined);
+      $scope.putItem();
+      expect($scope.items).toBe(undefined);
       $httpBackend.flush();
-      expect(scope.items[3].title).toBe('Buy more milk');
+      expect($scope.items[3].title).toBe('Buy more milk');
+      expect($scope.items.length).toBe(4);
     });
   });
 });
