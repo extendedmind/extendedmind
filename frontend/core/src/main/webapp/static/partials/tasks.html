@@ -5,8 +5,10 @@
 		<p>
 			&nbsp;
 		</p>
-		<div ng-repeat="item in tasks">
-			{{item.title}}
-		</div>
+		<ul>
+			<li ng-repeat="item in items | userItems:filterArgument">
+				{{item.title}}
+			</li>
+		</ul>
 	</div>
 </div>

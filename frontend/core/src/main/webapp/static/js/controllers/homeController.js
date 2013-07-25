@@ -5,6 +5,7 @@ function($scope, Item, Items, User) {
 
   Item.getItems(User.getUserUUID(), function() {
     $scope.items = Items.getUserItems();
+    $scope.newItems = Items.getUserNewItems();
   }, function(error) {
   });
 

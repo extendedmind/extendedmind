@@ -8,7 +8,8 @@ function($http, Items) {
     getItems : function(userUUID, success, error) {
       $http({
         method : 'GET',
-        url : '/api/' + userUUID + '/items'
+        url : '/api/' + userUUID + '/items',
+        cache : true
       }).success(function(userItems) {
         Items.setUserItems(userItems);
         success();
@@ -47,6 +48,14 @@ function($http, Items) {
 emItem.factory('Items', [
 function() {
   var userItems;
+  var userNewItems = [];
+  var itemInArray = function(title) {
+    for (var i = 0; i < userNewItems.length; i++) {
+      if (userNewItems[i].title === title) {
+        return true;
+      }
+    }
+  };
   return {
     setUserItems : function(items) {
       userItems = items;
@@ -54,11 +63,19 @@ function() {
     getUserItems : function() {
       return userItems;
     },
+    getUserNewItems : function() {
+      return userNewItems;
+    },
     putUserItem : function(item, itemUUID) {
-      var newItem = {};
-      newItem.title = item.title;
-      newItem.uuid = itemUUID;
-      userItems.push(newItem);
+      if (item === undefined || item.title === '') {
+        return;
+      }
+      if (!itemInArray(item.title)) {
+        var newItem = [];
+        newItem.title = item.title;
+        newItem.uuid = itemUUID;
+        userNewItems.push(newItem);
+      }
     }
   };
 }]);

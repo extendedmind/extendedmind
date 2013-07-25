@@ -43,10 +43,9 @@ describe('em.controllers', function() {
         return [200, putItemResponse];
       });
       $scope.putItem();
-      expect($scope.items).toBe(undefined);
+      expect($scope.newItems).toBe(undefined);
       $httpBackend.flush();
-      expect($scope.items[3].title).toBe('Buy more milk');
-      expect($scope.items.length).toBe(4);
+      expect($scope.newItems[0].title).toBe('Buy more milk');
     });
   });
 });
