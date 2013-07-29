@@ -82,8 +82,8 @@ trait Service extends API with Injectable {
     putNewItem { userUUID =>
       entity(as[Item]) { item =>
         val uuid: String = itemActions.putItem(userUUID, item, None)
-        complete(uuid)
-      }   
+        complete("{\"uuid\":\"" + uuid + "\"}")
+      }
     } ~
     putExistingItem { (userUUID, itemUUID) =>
       entity(as[Item]) { item =>
