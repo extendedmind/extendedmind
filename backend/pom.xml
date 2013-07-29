@@ -38,8 +38,8 @@
   </developers>
 
   <properties>
-      <neo4j.version>2.0.0-M03</neo4j.version>
-      <spray.version>1.2-M8</spray.version>
+    <neo4j.version>2.0.0-M03</neo4j.version>
+    <spray.version>1.2-M8</spray.version>
   </properties>
 
   <dependencies>
@@ -48,7 +48,6 @@
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
-      <version>${scala.version}</version>
     </dependency>
 
     <!-- Spray.io -->
@@ -96,7 +95,7 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
- 
+
     <!-- Scaldi -->
     <dependency>
       <groupId>com.github.scaldi</groupId>
@@ -127,12 +126,12 @@
     </dependency>
 
     <!-- Security -->
-	<dependency>
-		<groupId>commons-codec</groupId>
-		<artifactId>commons-codec</artifactId>
-		<version>1.8</version>
-		<scope>compile</scope>
-	</dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.8</version>
+      <scope>compile</scope>
+    </dependency>
 
     <!-- Test -->
     <dependency>
@@ -152,7 +151,6 @@
     <dependency>
       <groupId>org.scalatest</groupId>
       <artifactId>scalatest_${scala.version.short}</artifactId>
-      <version>2.0.M5b</version>
       <type>jar</type>
       <scope>test</scope>
     </dependency>
@@ -170,13 +168,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-	  <groupId>commons-io</groupId>
-	  <artifactId>commons-io</artifactId>
-	  <version>2.4</version>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
       <type>jar</type>
       <scope>test</scope>
     </dependency>
-            
+
   </dependencies>
 
   <build>
@@ -186,7 +184,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.14</version>
         <configuration>
           <skipTests>true</skipTests>
         </configuration>
@@ -206,7 +203,6 @@
       <plugin>
         <groupId>org.scalatest</groupId>
         <artifactId>scalatest-maven-plugin</artifactId>
-        <version>1.0-M2</version>
         <executions>
           <execution>
             <id>test</id>
