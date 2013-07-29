@@ -2,5 +2,13 @@
 	<!-- Page Content -->
 	<div class="em-core">
 		<h3>extended mind <a href="/" class="em-subtitle">notes</a></h3>
+		<p>
+			&nbsp;
+		</p>
+		<ul>
+			<li ng-repeat="item in items | userItems:filterArgument">
+				{{item.title}}
+			</li>
+		</ul>
 	</div>
 </div>
