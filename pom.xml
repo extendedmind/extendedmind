@@ -49,6 +49,7 @@
     <scala.version.short>2.10</scala.version.short>
     <scala.version>${scala.version.short}.1</scala.version>
     <phantomjs.version>1.9.1</phantomjs.version>
+    <jetty.version>9.0.4.v20130625</jetty.version>
   </properties>
 
   <repositories>
@@ -82,7 +83,7 @@
 
   <dependencyManagement>
     <dependencies>
-    
+
       <!-- Internal dependencies -->
       <dependency>
         <groupId>org.extendedmind</groupId>
@@ -90,35 +91,35 @@
         <version>${project.version}</version>
         <type>jar</type>
       </dependency>
-      
+
       <dependency>
         <groupId>org.extendedmind</groupId>
         <artifactId>backend</artifactId>
         <version>${project.version}</version>
         <type>test-jar</type>
       </dependency>
-      
+
       <dependency>
         <groupId>org.extendedmind.frontend</groupId>
         <artifactId>core</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
-      
+
       <!-- Scala -->
       <dependency>
         <groupId>org.scala-lang</groupId>
         <artifactId>scala-library</artifactId>
         <version>${scala.version}</version>
       </dependency>
-      
+
       <!-- Test dependencies -->
       <dependency>
         <groupId>org.scalatest</groupId>
         <artifactId>scalatest_${scala.version.short}</artifactId>
         <version>2.0.M5b</version>
       </dependency>
-      
+
     </dependencies>
   </dependencyManagement>
 

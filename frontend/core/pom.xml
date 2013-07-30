@@ -40,6 +40,16 @@
     </developer>
   </developers>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-proxy</artifactId>
+      <version>${jetty.version}</version>
+      <type>jar</type>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
   <profiles>
 
     <!-- PhantomJS profiles, copied from here: https://github.com/qa/arquillian-phantom-binary -->
@@ -135,6 +145,17 @@
               <directory>${basedir}/src/main/webapp/test/json</directory>
             </fileset>
           </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+            </manifest>
+          </archive>
         </configuration>
       </plugin>
       <plugin>

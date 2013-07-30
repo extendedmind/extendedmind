@@ -1,19 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org</groupId>
-		<artifactId>extendedmind</artifactId>
-		<version>0.1-SNAPSHOT</version>
-	</parent>
-	<groupId>org.extendedmind</groupId>
-	<artifactId>e2e</artifactId>
-	<packaging>jar</packaging>
-	<name>Extended Mind :: End-to-end Tests </name>
-	<description>Extended Mind End-to-end Tests</description>
-	<url>https://github.com/extendedmind/extendedmind</url>
-	<inceptionYear>2013</inceptionYear>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org</groupId>
+    <artifactId>extendedmind</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+  <groupId>org.extendedmind</groupId>
+  <artifactId>e2e</artifactId>
+  <packaging>jar</packaging>
+  <name>Extended Mind :: End-to-end Tests </name>
+  <description>Extended Mind End-to-end Tests</description>
+  <url>https://github.com/extendedmind/extendedmind</url>
+  <inceptionYear>2013</inceptionYear>
 
   <licenses>
     <license>
@@ -22,26 +21,26 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <distribution>repo</distribution>
     </license>
   </licenses>
-	
+
   <scm>
-		<connection>scm:git:git@github.com:extendedmind/extendedmind.git</connection>
-		<developerConnection>scm:git:git@github.com:extendedmind/extendedmind.git</developerConnection>
-		<url>git@github.com:extendedmind/extendedmind.git</url>
-	</scm>
-	
+    <connection>scm:git:git@github.com:extendedmind/extendedmind.git</connection>
+    <developerConnection>scm:git:git@github.com:extendedmind/extendedmind.git</developerConnection>
+    <url>git@github.com:extendedmind/extendedmind.git</url>
+  </scm>
+
   <developers>
-		<developer>
-			<id>ttiurani</id>
-			<name>Timo Tiuraniemi</name>
-			<email>timo.tiuraniemi@iki.fi</email>
-		</developer>
-		<developer>
-			<id>jpsalo</id>
-			<name>JP Salo</name>
-			<email>jukapeka@gmail.com</email>
-		</developer>
-	</developers>
-  
+    <developer>
+      <id>ttiurani</id>
+      <name>Timo Tiuraniemi</name>
+      <email>timo.tiuraniemi@iki.fi</email>
+    </developer>
+    <developer>
+      <id>jpsalo</id>
+      <name>JP Salo</name>
+      <email>jukapeka@gmail.com</email>
+    </developer>
+  </developers>
+
   <dependencies>
 
     <!-- Scala -->
@@ -50,45 +49,45 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <artifactId>scala-library</artifactId>
       <scope>test</scope>
     </dependency>
-  
+
     <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>backend</artifactId>
       <type>jar</type>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>backend</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.extendedmind.frontend</groupId>
       <artifactId>core</artifactId>
       <type>war</type>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.scalatest</groupId>
       <artifactId>scalatest_${scala.version.short}</artifactId>
       <type>jar</type>
       <scope>test</scope>
     </dependency>
-  
+
     <!-- Selenium dependency, use PhantomJS -->
     <dependency>
       <groupId>com.github.detro.ghostdriver</groupId>
       <artifactId>phantomjsdriver</artifactId>
       <version>1.0.4</version>
     </dependency>
-    
+
   </dependencies>
-  
-    <profiles>
+
+  <profiles>
 
     <!-- PhantomJS profiles, copied from here: https://github.com/qa/arquillian-phantom-binary -->
     <!-- NOTE: http://stackoverflow.com/a/12181394 this needs to be in all 
@@ -138,8 +137,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       </build>
     </profile>
   </profiles>
-    
-	<build>
+
+  <build>
     <sourceDirectory>src/main/scala</sourceDirectory>
     <testSourceDirectory>src/test/scala</testSourceDirectory>
     <plugins>
@@ -162,6 +161,24 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}</outputDirectory>
                   <includes>*.zip</includes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.extendedmind.frontend</groupId>
+                  <artifactId>core</artifactId>
+                  <type>war</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -212,8 +229,38 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
           </execution>
         </executions>
       </plugin>
-		</plugins>
-        <pluginManagement>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>${jetty.version}</version>
+        <executions>
+          <execution>
+            <id>deploy-war</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>deploy-war</goal>
+            </goals>
+            <configuration>
+              <daemon>true</daemon>
+              <reload>manual</reload>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-jetty</id>
+            <phase>test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <stopKey>testKey</stopKey>
+          <stopPort>9999</stopPort>
+          <war>${project.build.directory}/core-${project.version}.war</war>
+        </configuration>
+      </plugin>
+    </plugins>
+    <pluginManagement>
       <plugins>
         <!--This plugin's configuration is used to store Eclipse m2e settings 
           only. It has no influence on the Maven build itself. -->
@@ -231,6 +278,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                     <versionRange>[2.8,)</versionRange>
                     <goals>
                       <goal>unpack</goal>
+                      <goal>copy</goal>
                     </goals>
                   </pluginExecutionFilter>
                   <action>
@@ -254,12 +302,27 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                     <ignore></ignore>
                   </action>
                 </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <versionRange>[9,)</versionRange>
+                    <goals>
+                      <goal>start</goal>
+                      <goal>deploy-war</goal>
+                      <goal>stop</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
-	</build>
+  </build>
 
 </project>
