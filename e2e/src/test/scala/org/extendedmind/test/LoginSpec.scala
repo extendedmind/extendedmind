@@ -1,5 +1,7 @@
 package org.extendedmind.test
 
+import org.scalatest.concurrent.Eventually._
+
 class LoginSpec extends E2ESpecBase{
 
   describe("Extended Mind Website"){
@@ -9,7 +11,7 @@ class LoginSpec extends E2ESpecBase{
 			textField("q").value = "Cheese!"
 			submit()
 			// Google's search is rendered dynamically with JavaScript.
-			eventually { title should be ("Cheese! - Google Search") }
+			eventually { title should include("Cheese!") }
     }
   }  
 }
