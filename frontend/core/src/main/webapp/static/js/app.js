@@ -55,12 +55,13 @@ function($location, $scope) {
     $location.path('/login');
   });
   $scope.$on('event:loginSuccess', function() {
-    $location.path('/');
+    if ($location.path() === '/login')
+      $location.path('/');
   });
 }]);
 
-emApp.run(['$location', '$rootScope', 'Auth', 'Resu', 'User', 'UserAuthenticate',
-function($location, $rootScope, Auth, Resu, User, UserAuthenticate) {
+emApp.run(['$location', '$rootScope', 'User', 'UserAuthenticate',
+function($location, $rootScope, User, UserAuthenticate) {
   $rootScope.$on('$locationChangeStart', function() {
     if (!User.isUserAuthenticated()) {
       if (!User.isUserRemembered()) {
@@ -68,7 +69,7 @@ function($location, $rootScope, Auth, Resu, User, UserAuthenticate) {
           $location.path('/login');
         }
       } else {
-        Resu.loglog();
+        UserAuthenticate.userAuthenticate('token', User.getUserToken(), true);
       }
     }
   });
