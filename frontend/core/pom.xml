@@ -174,8 +174,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 					<jsSrcDir>${project.basedir}/src/main/webapp/static</jsSrcDir>
 					<jsTestSrcDir>${project.basedir}/src/main/webapp/test</jsTestSrcDir>
 					<preloadSources>
-						<source>lib/jasmine-jquery.js</source>
-						<source>lib/jsonFixtures.js</source>
+						<source>lib/jasmine/jasmine-jquery.js</source>
+						<source>jsonFixtures.js</source>
 					</preloadSources>
 					<sourceIncludes>
 						<include>lib/jquery/jquery.js</include>
@@ -260,5 +260,4 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 			</plugins>
 		</pluginManagement>
 	</build>
-
 </project>
