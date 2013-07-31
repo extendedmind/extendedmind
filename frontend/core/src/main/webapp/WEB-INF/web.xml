@@ -7,6 +7,7 @@ metadata-complete="false"
 version="3.0">
 
   <display-name>Extended Mind</display-name>
+  
   <filter>
     <filter-name>UrlRewriteFilter</filter-name>
     <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
@@ -16,15 +17,8 @@ version="3.0">
     <url-pattern>/*</url-pattern>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
-    <init-param>
-      <param-name>modRewriteConfText</param-name>
-      <param-value>
-        RewriteCond %{REQUEST_URI}  !^/index.html
-        RewriteRule ^/(?!(static|api)) /index.html [L]
-      </param-value>
-    </init-param>
-
   </filter-mapping>
+  
   <servlet>
     <servlet-name>BackendProxy</servlet-name>
     <servlet-class>org.eclipse.jetty.proxy.ProxyServlet$Transparent</servlet-class>

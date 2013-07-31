@@ -13,7 +13,7 @@
         <note>
             Write all except /static and /api to index.html
         </note>
-        <from>^/(?!(static|api))</from>
-        <to type="redirect">/index.html</to>
+        <from>^/?!(static|api)$</from>
+        <to>/index.html</to>
     </rule>
 </urlrewrite>
