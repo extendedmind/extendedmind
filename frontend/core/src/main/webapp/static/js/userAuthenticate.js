@@ -10,63 +10,19 @@
 
 var emAuthenticate = angular.module('em.userAuthenticate', ['em.base64']);
 
-emAuthenticate.factory('UserAuthenticate', ['$http', 'Auth', 'User',function($http, Auth, User) {
-
+emAuthenticate.factory('UserAuthenticate', ['Auth', 'User', 'UserLogin',
+function(Auth, User, UserLogin) {
   return {
-    userLogin : function(success, error) {
-      $http({
-        method : 'POST',
-        url : '/api/authenticate'
-      }).success(success).error(error);
-    },
-    userLogout : function() {
-      // Auth.clearCredentials();
-      // User.clearUser();
-    }
-  };
-}]);
-
-emAuthenticate.factory('Resu', ['Auth', 'User', 'UserAuthenticate',
-function(Auth, User, UserAuthenticate) {
-  return {
-    loglog : function() {
-      Auth.setCredentials('token', User.getUserToken());
-      UserAuthenticate.userLogin(function(authenticateResponse) {
-        User.setUser(authenticateResponse.token.toString(), true);
+    userAuthenticate : function(username, password, remember) {
+      Auth.setCredentials(username, password);
+      UserLogin.userLogin(function(authenticateResponse) {
+        User.setUserToken(authenticateResponse.token.toString(), remember);
+        User.setUserUUID(authenticateResponse.userUUID);
         Auth.setCredentials('token', authenticateResponse.token);
       }, function(error) {
+        return false;
       });
-    }
-  };
-}]);
-
-emAuthenticate.factory('User', [
-function() {
-  return {
-    setUser : function(token, remember) {
-      if (remember) {
-        console.log('remember: ' + remember + ', token: ' + token);
-        $.cookie('token', token, {
-          expires : 7
-        });
-      }
-      sessionStorage.setItem('token', token);
-    },
-    clearUser : function() {
-      $.removeCookie('token');
-      sessionStorage.removeItem('token');
-    },
-    getUserToken : function() {
-      return $.cookie('token');
-    },
-    getUserUUID : function() {
-      return sessionStorage.getItem('userUUID');
-    },
-    isUserRemembered : function() {
-      return $.cookie('token') != null;
-    },
-    isUserAuthenticated : function() {
-      return sessionStorage.getItem('token') != null;
+      return true;
     }
   };
 }]);
@@ -87,6 +43,55 @@ function($http, Base64) {
       document.execCommand("ClearAuthenticationCache");
       sessionStorage.removeItem('token');
       $http.defaults.headers.common.Authorization = 'Basic ';
+    }
+  };
+}]);
+
+emAuthenticate.factory('UserLogin', ['$http', 'User',function($http, User) {
+
+  return {
+    userLogin : function(success, error) {
+      $http({
+        method : 'POST',
+        url : '/api/authenticate'
+      }).success(success).error(error);
+    },
+    userLogout : function() {
+      Auth.clearCredentials();
+      User.clearUserToken();
+    }
+  };
+}]);
+
+emAuthenticate.factory('User', [
+function() {
+  return {
+    setUserToken : function(token, remember) {
+      if (remember) {
+        $.cookie('token', token, {
+          expires : 7
+        });
+      }
+      sessionStorage.setItem('token', token);
+    },
+    getUserToken : function() {
+      return $.cookie('token');
+    },
+    clearUserToken : function() {
+      $.removeCookie('token');
+      sessionStorage.removeItem('token');
+    },
+    setUserUUID : function(userUUID) {
+      sessionStorage.setItem('userUUID', userUUID);
+    },
+    getUserUUID : function() {
+      return sessionStorage.getItem('userUUID');
+    },
+    isUserAuthenticated : function() {
+      return sessionStorage.getItem('token') != null;
+    },
+    isUserRemembered : function() {
+      return $.cookie('token') != null;
     }
   };
 }]);

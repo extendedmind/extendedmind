@@ -5,9 +5,9 @@ var emApp = angular.module('em.app', ['em.controllers', 'em.directives', 'em.fil
 emApp.config(['$locationProvider', '$routeProvider',
 function($locationProvider, $routeProvider) {
 
-  $routeProvider.when('/', {
-    templateUrl : '/static/partials/home.html',
-    controller : 'HomeController'
+  $routeProvider.when('/my', {
+    templateUrl : '/static/partials/my.html',
+    controller : 'MyHomeController'
   });
   $routeProvider.when('/login', {
     templateUrl : '/static/partials/login.html',
@@ -20,6 +20,10 @@ function($locationProvider, $routeProvider) {
   $routeProvider.when('/tasks', {
     templateUrl : '/static/partials/tasks.html',
     controller : 'TasksController'
+  });
+  $routeProvider.when('/', {
+    templateUrl : '/static/partials/home.html',
+    controller : 'HomeController'
   });
   $routeProvider.otherwise({
     redirectTo : '/'
@@ -55,12 +59,13 @@ function($location, $scope) {
     $location.path('/login');
   });
   $scope.$on('event:loginSuccess', function() {
-    $location.path('/');
+    if ($location.path() === '/login')
+      $location.path('/my');
   });
 }]);
 
-emApp.run(['$location', '$rootScope', 'Auth', 'Resu', 'User', 'UserAuthenticate',
-function($location, $rootScope, Auth, Resu, User, UserAuthenticate) {
+emApp.run(['$location', '$rootScope', 'User', 'UserAuthenticate',
+function($location, $rootScope, User, UserAuthenticate) {
   $rootScope.$on('$locationChangeStart', function() {
     if (!User.isUserAuthenticated()) {
       if (!User.isUserRemembered()) {
@@ -68,7 +73,7 @@ function($location, $rootScope, Auth, Resu, User, UserAuthenticate) {
           $location.path('/login');
         }
       } else {
-        Resu.loglog();
+        UserAuthenticate.userAuthenticate('token', User.getUserToken(), true);
       }
     }
   });

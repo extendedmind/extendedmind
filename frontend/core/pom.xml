@@ -173,41 +173,40 @@
           </packagingExcludes>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>com.github.searls</groupId>
-        <artifactId>jasmine-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <jsSrcDir>${project.basedir}/src/main/webapp/static</jsSrcDir>
-          <jsTestSrcDir>${project.basedir}/src/main/webapp/test</jsTestSrcDir>
-          <preloadSources>
-            <source>lib/jasmine-jquery.js</source>
-            <source>lib/jsonFixtures.js</source>
-          </preloadSources>
-          <sourceIncludes>
-            <include>lib/jquery/jquery.js</include>
-            <include>lib/jquery/jquery.cookie.js</include>
-            <include>lib/angularjs/angular.js</include>
-            <include>lib/angularjs/angular-mocks.js</include>
-            <include>lib/angularjs/angular-resource.js</include>
-            <include>lib/base64.js</include>
-            <include>js/*.js</include>
-            <include>js/controllers/*.js</include>
-          </sourceIncludes>
-          <webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
-          <webDriverCapabilities>
-            <phantomjs.binary.path>${phantomjs.binary.directory}/bin/phantomjs</phantomjs.binary.path>
-          </webDriverCapabilities>
-        </configuration>
-      </plugin>
-      <plugin>
+			<plugin>
+				<groupId>com.github.searls</groupId>
+				<artifactId>jasmine-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<jsSrcDir>${project.basedir}/src/main/webapp/static</jsSrcDir>
+					<jsTestSrcDir>${project.basedir}/src/main/webapp/test</jsTestSrcDir>
+					<preloadSources>
+						<source>lib/jasmine/jasmine-jquery.js</source>
+						<source>jsonFixtures.js</source>
+					</preloadSources>
+					<sourceIncludes>
+						<include>lib/jquery/jquery.js</include>
+						<include>lib/jquery/jquery.cookie.js</include>
+						<include>lib/angularjs/angular.js</include>
+						<include>lib/angularjs/angular-mocks.js</include>
+						<include>lib/base64.js</include>
+						<include>js/*.js</include>
+						<include>js/controllers/*.js</include>
+					</sourceIncludes>
+					<webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
+					<webDriverCapabilities>
+						<phantomjs.binary.path>${phantomjs.binary.directory}/bin/phantomjs</phantomjs.binary.path>
+					</webDriverCapabilities>
+				</configuration>
+			</plugin>
+     <plugin>
         <groupId>ro.isdc.wro4j</groupId>
         <artifactId>wro4j-maven-plugin</artifactId>
         <executions>

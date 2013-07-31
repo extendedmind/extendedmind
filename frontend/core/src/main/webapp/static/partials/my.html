@@ -1,0 +1,16 @@
+<div class="span12">
+	<!-- Page Content -->
+	<div class="masthead">
+		<h3>extended mind</h3>
+		<p>
+			<a href="/tasks">tasks</a> | <a href="/notes">notes</a> | <a href="/login">login</a>
+		</p>
+		<form name="searchAndAddOmniForm">
+			<input type="search" ng-model="item.title" autofocus="autofocus">
+			<button ng-click="putItem()">
+				+
+			</button>
+		</form>
+		<div item-list></div>
+	</div>
+</div>
