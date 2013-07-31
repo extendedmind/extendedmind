@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app
-   xmlns="http://java.sun.com/xml/ns/javaee"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-   metadata-complete="false"
-   version="3.0">
+xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+metadata-complete="false"
+version="3.0">
 
   <display-name>Extended Mind</display-name>
+  <filter>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <init-param>
+      <param-name>modRewriteConfText</param-name>
+      <param-value>
+        RewriteCond %{REQUEST_URI}  !^/index.html
+        RewriteRule ^/(?!(static|api)) /index.html [L]
+      </param-value>
+    </init-param>
 
+  </filter-mapping>
   <servlet>
     <servlet-name>BackendProxy</servlet-name>
     <servlet-class>org.eclipse.jetty.proxy.ProxyServlet$Transparent</servlet-class>

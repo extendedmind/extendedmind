@@ -48,6 +48,13 @@
       <type>jar</type>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.tuckey</groupId>
+      <artifactId>urlrewritefilter</artifactId>
+      <version>4.0.3</version>
+      <type>jar</type>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 
   <profiles>

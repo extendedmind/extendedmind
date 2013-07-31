@@ -276,7 +276,7 @@
           </execution>
         </executions>
         <configuration>
-          <jettyConfig>${project.basedir}/src/test/resources/jetty.xml</jettyConfig>
+          <!-- <jettyConfig>${project.basedir}/src/test/resources/jetty.xml</jettyConfig> -->
           <stopKey>testKey</stopKey>
           <stopPort>9999</stopPort>
           <war>${project.build.directory}/core-${project.version}.war</war>
