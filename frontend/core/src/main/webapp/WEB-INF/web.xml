@@ -13,7 +13,7 @@
     <servlet-class>org.eclipse.jetty.proxy.ProxyServlet$Transparent</servlet-class>
     <init-param>
       <param-name>proxyTo</param-name>
-      <param-value>http://localhost/</param-value>
+      <param-value>http://localhost:8081/</param-value>
     </init-param>
     <init-param>
       <param-name>prefix</param-name>

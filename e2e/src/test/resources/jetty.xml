@@ -18,17 +18,18 @@
       <Set name="rewriteRequestURI"><Property name="rewrite.rewriteRequestURI" default="true"/></Set>
       <Set name="rewritePathInfo"><Property name="rewrite.rewritePathInfo" default="false"/></Set>
       <Set name="originalPathAttribute"><Property name="rewrite.originalPathAttribute" default="requestedPath"/></Set>
+
+      <!-- Rewrite all except /static and /api to index.html -->
+      <Call name="addRule">
+        <Arg>
+          <New class="org.eclipse.jetty.rewrite.handler.RewriteRegexRule">
+            <Set name="regex">^/(?!(static|api))</Set>
+            <Set name="replacement">/index.html</Set>
+          </New>
+        </Arg>
+      </Call>
      </New>
     </Set>
 
-    <!-- Rewrite all except /static and /api to index.html -->
-    <Call name="addRule">
-      <Arg>
-        <New class="org.eclipse.jetty.rewrite.handler.RewriteRegexRule">
-          <Set name="regex">^/(?!(static|api))</Set>
-          <Set name="replacement">/index.html</Set>
-        </New>
-      </Arg>
-    </Call>
 
 </Configure>
