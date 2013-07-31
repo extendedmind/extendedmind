@@ -5,9 +5,9 @@ var emApp = angular.module('em.app', ['em.controllers', 'em.directives', 'em.fil
 emApp.config(['$locationProvider', '$routeProvider',
 function($locationProvider, $routeProvider) {
 
-  $routeProvider.when('/', {
-    templateUrl : '/static/partials/home.html',
-    controller : 'HomeController'
+  $routeProvider.when('/my', {
+    templateUrl : '/static/partials/my.html',
+    controller : 'MyHomeController'
   });
   $routeProvider.when('/login', {
     templateUrl : '/static/partials/login.html',
@@ -20,6 +20,10 @@ function($locationProvider, $routeProvider) {
   $routeProvider.when('/tasks', {
     templateUrl : '/static/partials/tasks.html',
     controller : 'TasksController'
+  });
+  $routeProvider.when('/', {
+    templateUrl : '/static/partials/home.html',
+    controller : 'HomeController'
   });
   $routeProvider.otherwise({
     redirectTo : '/'
@@ -56,7 +60,7 @@ function($location, $scope) {
   });
   $scope.$on('event:loginSuccess', function() {
     if ($location.path() === '/login')
-      $location.path('/');
+      $location.path('/my');
   });
 }]);
 

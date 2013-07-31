@@ -57,8 +57,8 @@ emAuthenticate.factory('UserLogin', ['$http', 'User',function($http, User) {
       }).success(success).error(error);
     },
     userLogout : function() {
-      // Auth.clearCredentials();
-      // User.clearUser();
+      Auth.clearCredentials();
+      User.clearUserToken();
     }
   };
 }]);
