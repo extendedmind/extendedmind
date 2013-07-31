@@ -78,8 +78,17 @@
       <name>Spray.io Nightly Repository</name>
       <url>http://nightlies.spray.io/</url>
     </repository>
+
   </repositories>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>thirdparty.jboss.org</id>
+      <name>JBoss - Third Party Repository</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
+      <layout>default</layout>
+    </pluginRepository>
+  </pluginRepositories>
 
   <dependencyManagement>
     <dependencies>
@@ -90,6 +99,7 @@
         <artifactId>backend</artifactId>
         <version>${project.version}</version>
         <type>jar</type>
+        <classifier>jar-with-dependencies</classifier>
       </dependency>
 
       <dependency>

@@ -8,3 +8,6 @@
 # Ignore Maven builds
 target/
 frontend/core/src/main/webapp/test/json/
+
+# Ignore PhantomJS logs
+phantomjsdriver.log

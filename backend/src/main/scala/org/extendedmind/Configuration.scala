@@ -20,6 +20,7 @@ import org.extendedmind.security.ExtendedMindUserPassAuthenticatorImpl
 // Custom settings from application.conf or overridden file
 
 class Settings(config: Config) extends Extension {
+  val serverPort = config.getString("extendedmind.server.port")
   val neo4jStoreDir = config.getString("extendedmind.neo4j.storeDir")
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
 }

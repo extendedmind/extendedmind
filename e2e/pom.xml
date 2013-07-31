@@ -53,15 +53,15 @@
     <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>backend</artifactId>
-      <type>jar</type>
-      <scope>test</scope>
+      <classifier>jar-with-dependencies</classifier>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>backend</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
@@ -180,6 +180,14 @@
                   <overWrite>false</overWrite>
                   <outputDirectory>${project.build.directory}</outputDirectory>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.extendedmind</groupId>
+                  <artifactId>backend</artifactId>
+                  <type>jar</type>
+                  <classifier>jar-with-dependencies</classifier>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
+                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
@@ -223,6 +231,7 @@
         <executions>
           <execution>
             <id>test</id>
+            <phase>integration-test</phase>
             <goals>
               <goal>test</goal>
             </goals>
@@ -236,7 +245,7 @@
         <executions>
           <execution>
             <id>deploy-war</id>
-            <phase>test-compile</phase>
+            <phase>pre-integration-test</phase>
             <goals>
               <goal>deploy-war</goal>
             </goals>
@@ -247,7 +256,7 @@
           </execution>
           <execution>
             <id>stop-jetty</id>
-            <phase>test</phase>
+            <phase>post-integration-test</phase>
             <goals>
               <goal>stop</goal>
             </goals>
@@ -257,6 +266,30 @@
           <stopKey>testKey</stopKey>
           <stopPort>9999</stopPort>
           <war>${project.build.directory}/core-${project.version}.war</war>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1.jbossorg-3</version>
+        <executions>
+          <execution>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <workingDirectory>${project.build.directory}</workingDirectory>
+          <executable>java</executable>
+          <arguments>
+            <argument>-jar</argument>
+            <argument>backend-${project.version}-jar-with-dependencies.jar</argument>
+          </arguments>
+          <background>true</background>
+          <!-- Poll for backend server to be up and running -->
+          <backgroundPollingAddress>127.0.0.1:8081</backgroundPollingAddress>
         </configuration>
       </plugin>
     </plugins>

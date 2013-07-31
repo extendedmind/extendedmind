@@ -12,5 +12,5 @@ object Server extends App {
   // the handler actor replies to incoming HttpRequests
   val handler = system.actorOf(Props[ServiceActor], name = "handler")
 
-  IO(Http) ! Http.Bind(handler, interface = "localhost", port = 8080)
+  IO(Http) ! Http.Bind(handler, interface = "localhost", port = Integer.valueOf(SettingsExtension(system).serverPort))
 }
