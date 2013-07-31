@@ -1,7 +1,7 @@
 <div>
 	<ul>
 		<li ng-repeat="item in newItems">
-			<span class="done-true">{{item.title}}</span>
+			<span class="done-{{todo.done}}">{{item.title}}</span>
 			<div note-edit></div>
 			<div task-edit></div>
 		</li>

@@ -59,12 +59,17 @@ function($location, $scope) {
   });
 }]);
 
-emApp.run(['$location', '$rootScope', 'User',
-function($location, $rootScope, User) {
+emApp.run(['$location', '$rootScope', 'Auth', 'Resu', 'User', 'UserAuthenticate',
+function($location, $rootScope, Auth, Resu, User, UserAuthenticate) {
   $rootScope.$on('$locationChangeStart', function() {
-    if (!User.isUserAuthenticated())
-      if ($location.path() != '/login') {
-        $location.path('/login');
+    if (!User.isUserAuthenticated()) {
+      if (!User.isUserRemembered()) {
+        if ($location.path() != '/login') {
+          $location.path('/login');
+        }
+      } else {
+        Resu.loglog();
       }
+    }
   });
 }]);
