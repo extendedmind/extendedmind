@@ -5,7 +5,7 @@ function($rootScope, $scope, User, UserAuthenticate) {
 
   $scope.user = {
     "email" : 'timo@ext.md',
-    "password" : 'timo',
+    "password" : 'timopwd',
     "remember" : User.isUserRemembered()
   };
 
