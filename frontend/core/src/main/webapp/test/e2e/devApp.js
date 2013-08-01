@@ -9,10 +9,16 @@ emDevApp.run(function($httpBackend, Base64) {
   var itemsResponse = getJSONFixture('itemsResponse.json');
 
   $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data, headers) {
+    // var userNamePass = sessionStorage.getItem('token');
     var parsedAuthorizationHeader = headers.Authorization.split(' ');
     var userNamePass = Base64.decode(parsedAuthorizationHeader[1]);
+    var parsedUserNamePass = userNamePass.split(':');
+    var userName = parsedUserNamePass[0];
 
     if (userNamePass === 'timo@ext.md:timopwd') {
+      return [200, authenticateResponse];
+    } else if (userName === 'token') {
+      console.log(userName);
       return [200, authenticateResponse];
     } else {
       return [401, 'Invalid username/password'];
