@@ -48,7 +48,6 @@ function($http, Base64) {
 }]);
 
 emAuthenticate.factory('UserLogin', ['$http', 'User',function($http, User) {
-
   return {
     userLogin : function(success, error) {
       $http({

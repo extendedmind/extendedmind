@@ -3,23 +3,25 @@
 describe('em.controllers', function() {
   beforeEach(module('em.controllers', 'em.userAuthenticate'));
 
-  describe('HomeController', function() {
+  describe('MyController', function() {
     var $controller, $httpBackend, $scope, items, putItemResponse, user;
 
     beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_, User) {
       $httpBackend = _$httpBackend_;
 
-      user = {
-        "userUUID" : 'bba6363c-59ce-46b9-9709-acfd7b4be3f1'
-      };
-      User.setUser(user);
+      // user = {
+      // "userUUID" : 'bba6363c-59ce-46b9-9709-acfd7b4be3f1'
+      // };
+      user = getJSONFixture('authenticateResponse.json');
+      User.setUserToken(user.token);
+      User.setUserUUID(user.userUUID);
 
       items = getJSONFixture('itemsResponse.json');
       $httpBackend.expectGET('/api/' + user.userUUID + '/items').respond(items);
       putItemResponse = getJSONFixture('putItemResponse.json');
 
       $scope = _$rootScope_.$new();
-      $controller = _$controller_('HomeController', {
+      $controller = _$controller_('MyController', {
         $scope : $scope
       });
     }));
