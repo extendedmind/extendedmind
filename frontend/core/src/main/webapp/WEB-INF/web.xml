@@ -11,6 +11,7 @@ version="3.0">
   <filter>
     <filter-name>UrlRewriteFilter</filter-name>
     <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter-mapping>
     <filter-name>UrlRewriteFilter</filter-name>
