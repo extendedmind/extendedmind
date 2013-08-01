@@ -7,7 +7,7 @@ function($locationProvider, $routeProvider) {
 
   $routeProvider.when('/my', {
     templateUrl : '/static/partials/my.html',
-    controller : 'MyHomeController'
+    controller : 'MyController'
   });
   $routeProvider.when('/login', {
     templateUrl : '/static/partials/login.html',
