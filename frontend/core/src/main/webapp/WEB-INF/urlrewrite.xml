@@ -11,9 +11,9 @@
 <urlrewrite>
     <rule>
         <note>
-            Write all except /static and /api to index.html
+            Write all except those beginning with /static/ and /api/ to index.html
         </note>
-        <from>^/?!(static|api)$</from>
+        <from>^(?!(/api/|/static/)).+$</from>
         <to>/index.html</to>
     </rule>
 </urlrewrite>

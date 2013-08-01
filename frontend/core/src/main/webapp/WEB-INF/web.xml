@@ -7,7 +7,7 @@ metadata-complete="false"
 version="3.0">
 
   <display-name>Extended Mind</display-name>
-  
+
   <filter>
     <filter-name>UrlRewriteFilter</filter-name>
     <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
@@ -16,9 +16,8 @@ version="3.0">
     <filter-name>UrlRewriteFilter</filter-name>
     <url-pattern>/*</url-pattern>
     <dispatcher>REQUEST</dispatcher>
-    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
-  
+
   <servlet>
     <servlet-name>BackendProxy</servlet-name>
     <servlet-class>org.eclipse.jetty.proxy.ProxyServlet$Transparent</servlet-class>
