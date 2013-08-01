@@ -21,10 +21,6 @@ function($locationProvider, $routeProvider) {
     templateUrl : '/static/partials/tasks.html',
     controller : 'TasksController'
   });
-  // $routeProvider.when('/', {
-  // templateUrl : '/static/partials/home.html',
-  // controller : 'HomeController'
-  // });
   $routeProvider.otherwise({
     redirectTo : '/',
     templateUrl : '/static/partials/home.html',
@@ -66,16 +62,21 @@ function($location, $scope) {
   });
 }]);
 
-emApp.run(['$location', '$rootScope', 'User', 'UserAuthenticate',
-function($location, $rootScope, User, UserAuthenticate) {
+emApp.run(['$location', '$rootScope', 'UserCookie', 'UserSessionStorage', 'UserAuthenticate',
+function($location, $rootScope, UserCookie, UserSessionStorage, UserAuthenticate) {
   $rootScope.$on('$locationChangeStart', function() {
-    if (!User.isUserAuthenticated()) {
-      if (!User.isUserRemembered()) {
+    if (!UserSessionStorage.isUserAuthenticated()) {
+      if (!UserCookie.isUserRemembered()) {
         if ($location.path() != '/login') {
           $location.path('/login');
         }
       } else {
-        UserAuthenticate.userAuthenticate('token', User.getUserToken(), true);
+        UserAuthenticate.userAuthenticate(undefined);
+        UserAuthenticate.userLogin(function(success) {
+          // $rootScope.$broadcast('event:loginSuccess');
+        }, function(error) {
+          // $rootScope.$broadcast('event:loginRequired');
+        });
       }
     }
   });
