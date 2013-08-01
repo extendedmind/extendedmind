@@ -7,7 +7,7 @@ function($locationProvider, $routeProvider) {
 
   $routeProvider.when('/my', {
     templateUrl : '/static/partials/my.html',
-    controller : 'MyHomeController'
+    controller : 'MyController'
   });
   $routeProvider.when('/login', {
     templateUrl : '/static/partials/login.html',
@@ -21,12 +21,14 @@ function($locationProvider, $routeProvider) {
     templateUrl : '/static/partials/tasks.html',
     controller : 'TasksController'
   });
-  $routeProvider.when('/', {
+  // $routeProvider.when('/', {
+  // templateUrl : '/static/partials/home.html',
+  // controller : 'HomeController'
+  // });
+  $routeProvider.otherwise({
+    redirectTo : '/',
     templateUrl : '/static/partials/home.html',
     controller : 'HomeController'
-  });
-  $routeProvider.otherwise({
-    redirectTo : '/'
   });
 
   $locationProvider.html5Mode(true);
