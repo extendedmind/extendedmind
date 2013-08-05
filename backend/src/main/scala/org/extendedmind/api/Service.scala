@@ -22,6 +22,11 @@ import org.extendedmind.domain.Item
 import org.extendedmind.db.GraphDatabase
 import org.extendedmind.security.SecurityContext
 import org.extendedmind.security.ExtendedMindUserPassAuthenticatorImpl
+import spray.routing.RejectionHandler
+import spray.routing.AuthenticationFailedRejection
+import spray.routing.AuthenticationFailedRejection._
+import spray.routing.MissingHeaderRejection
+import spray.http.StatusCodes._
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -30,6 +35,16 @@ class ServiceActor extends HttpServiceActor with Service {
   // Implement abstract field from Service
   def settings = SettingsExtension(context.system)
   def configurations = new Configuration(settings)
+
+  // Rejection handler
+  implicit val myRejectionHandler = RejectionHandler.apply {
+	  case AuthenticationFailedRejection(cause, authenticator) :: _ => 
+	    val rejectionMessage = cause match {
+        case CredentialsMissing  ⇒ "The resource requires authentication, which was not supplied with the request"
+        case CredentialsRejected ⇒ "The supplied authentication is invalid"
+      }
+      ctx ⇒ ctx.complete(Forbidden, rejectionMessage)
+	}
 
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
@@ -70,12 +85,12 @@ trait Service extends API with Injectable {
     } ~
     getItems{ userUUID =>
       authenticate(BasicAuth(authenticator, "user")) { securityContext =>
-        authorize(true){
-	      complete {
-	        Future[List[Item]] {
-	          itemActions.getItems(userUUID)
-	        }
-	      }
+        authorize(securityContext.userUUID == userUUID.toString()){
+		      complete {
+		        Future[List[Item]] {
+		          itemActions.getItems(userUUID)
+		        }
+		      }
         }
       }
     } ~ 

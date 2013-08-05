@@ -39,7 +39,7 @@
 
   <properties>
     <neo4j.version>2.0.0-M03</neo4j.version>
-    <spray.version>1.2-20130727</spray.version>
+    <spray.version>1.2-20130801</spray.version>
     <akka.version>2.2.0</akka.version>
   </properties>
 
@@ -85,7 +85,7 @@
     <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>neo4j-scala</artifactId>
-      <version>0.2.0-M2_${scala.version}-SNAPSHOT</version>
+      <version>0.1-SNAPSHOT</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -147,6 +147,13 @@
       <artifactId>akka-testkit_${scala.version.short}</artifactId>
       <version>${akka.version}</version>
       <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.extendedmind</groupId>
+      <artifactId>neo4j-scala</artifactId>
+      <version>0.1-SNAPSHOT</version>
+      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>

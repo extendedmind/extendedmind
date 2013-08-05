@@ -3,7 +3,6 @@ package org.extendedmind.test
 import org.scalatest.concurrent.Eventually._
 
 class LoginSpec extends E2ESpecBase {
-
   describe("Extended Mind Website") {
     it("should return error on invalid password") {
       go to "http://localhost:8080/login"
