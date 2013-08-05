@@ -13,6 +13,7 @@ import org.extendedmind.domain.User
 import org.extendedmind.security.UUIDUtils
 import org.neo4j.scala.Neo4jWrapper
 import org.apache.commons.codec.binary.Base64
+import org.neo4j.scala.ImpermanentGraphDatabaseServiceProvider
 
 object TestGraphDatabase {
   val TIMO_EMAIL: String = "timo@ext.md"

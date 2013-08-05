@@ -70,12 +70,12 @@ trait Service extends API with Injectable {
     } ~
     getItems{ userUUID =>
       authenticate(BasicAuth(authenticator, "user")) { securityContext =>
-        authorize(true){
-	      complete {
-	        Future[List[Item]] {
-	          itemActions.getItems(userUUID)
-	        }
-	      }
+        authorize(securityContext.userUUID == userUUID.toString()){
+		      complete {
+		        Future[List[Item]] {
+		          itemActions.getItems(userUUID)
+		        }
+		      }
         }
       }
     } ~ 
