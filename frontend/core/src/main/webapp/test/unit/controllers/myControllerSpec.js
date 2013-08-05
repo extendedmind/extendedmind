@@ -6,15 +6,15 @@ describe('em.controllers', function() {
   describe('MyController', function() {
     var $controller, $httpBackend, $scope, items, putItemResponse, user;
 
-    beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_, User) {
+    beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_, UserSessionStorage) {
       $httpBackend = _$httpBackend_;
 
       // user = {
       // "userUUID" : 'bba6363c-59ce-46b9-9709-acfd7b4be3f1'
       // };
       user = getJSONFixture('authenticateResponse.json');
-      User.setUserToken(user.token);
-      User.setUserUUID(user.userUUID);
+      UserSessionStorage.setUserToken(user.token);
+      UserSessionStorage.setUserUUID(user.userUUID);
 
       items = getJSONFixture('itemsResponse.json');
       $httpBackend.expectGET('/api/' + user.userUUID + '/items').respond(items);

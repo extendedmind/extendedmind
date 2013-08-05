@@ -1,30 +1,31 @@
 <div class="span12">
-	<!-- Page Content -->
-	<div class="em-core">
-		<h3>extended mind <a href="/" class="em-subtitle">login</a></h3>
-		<p>
-			&nbsp;
-		</p>
-		<p>
-			<form name="login">
-				<dl>
-					<dt>
-						<input type="email" ng-model="user.username" placeholder="Email" required>
-					</dt>
-					<dt>
-						<input type="password" ng-model="user.password" placeholder="Password" required>
-					</dt>
-					<dt>
-						<button ng-disabled="!login.$valid" ng-click="userLogin()">
-							login
-						</button>
-					</dt>
-					<dt>
-						remember
-						<input type="checkbox" ng-model="user.remember">
-					</dt>
-				</dl>
-			</form>
-		</p>
-	</div>
+  <!-- Page Content -->
+  <div class="em-core">
+    <h3>extended mind <a href="/" class="em-subtitle">login</a></h3>
+    <p>
+      &nbsp;
+    </p>
+    <p>
+      <form name="login">
+        <dl>
+          <dt>
+            <input id="username" name="username" type="email" ng-model="user.username" placeholder="Email" required>
+          </dt>
+          <dt>
+            <input id="password" name="password" type="password" ng-model="user.password" placeholder="Password" required>
+          </dt>
+          <dt>
+            <button ng-disabled="!login.$valid" ng-click="userLogin()">
+              login
+            </button>
+          </dt>
+          <dt>
+            remember
+            <input type="checkbox" ng-model="user.remember">
+          </dt>
+        </dl>
+      </form>
+      <span id="error">{{error}}</span>
+    </p>
+  </div>
 </div>

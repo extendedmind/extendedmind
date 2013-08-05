@@ -3,6 +3,8 @@ package org.extendedmind.test
 import org.scalatest.concurrent.Eventually._
 
 class LoginSpec extends E2ESpecBase {
+
+<<<<<<< HEAD
   describe("Extended Mind Website") {
     it("should return error on invalid password") {
       go to "http://localhost:8080/login"
@@ -12,6 +14,21 @@ class LoginSpec extends E2ESpecBase {
       pressKeys("wrong")
       submit()
       eventually { currentUrl should include("/login") }
+=======
+  describe("Extended Mind Website"){
+    it("should return error on invalid password"){
+    	go to "http://localhost:8080/login"
+    	
+    	click on "email"
+			enter("timo@ext.md")
+
+    	click on "password"
+			enter("timopwd")
+			submit()
+
+			// Google's search is rendered dynamically with JavaScript.
+			eventually { currentUrl should include("/login") }
+>>>>>>> extendedmind/master
     }
     it("should return front page on successful login") {
       go to "http://localhost:8080/login"
@@ -20,7 +37,7 @@ class LoginSpec extends E2ESpecBase {
       click on("password")
       pressKeys("timopwd")
       submit()
-      eventually { currentUrl should include("/my") }
+      eventually { currentUrl should endWith("/my") }
     }
   }
 }

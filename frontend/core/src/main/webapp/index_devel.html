@@ -1,46 +1,47 @@
 <!doctype html>
 <html ng-app="em.devApp">
-	<head>
-		<meta charset="utf-8">
-		<title ng-bind="page.getTitle()"></title>
-		<link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.css"/>
-		<link rel="stylesheet" href="/static/lib/bootstrap/bootstrap-responsive.css"/>
-		<link rel="stylesheet/less" href="/static/less/em.less"/>
-		<script src="/static/lib/less/less-min.js"></script>
-	</head>
-	<body>
-		<div class="em-page">
-			<div class="container" ng-view></div>
-		</div>
+  <head>
+    <meta charset="utf-8">
+    <title ng-bind="page.getTitle()"></title>
+    <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap-responsive.css"/>
+    <link rel="stylesheet/less" href="/static/less/em.less"/>
+    <script src="/static/lib/less/less-min.js"></script>
+  </head>
+  <body>
+    <div class="em-page">
+      <div class="container" ng-view></div>
+    </div>
 
-		<script src="/static/lib/jquery/jquery.js"></script>
-		<script src="/static/lib/jquery/jquery.cookie.js"></script>
-		<script src="/static/lib/jasmine/jasmine.js"></script>
-		<script src="/static/lib/jasmine/jasmine-jquery.js"></script>
-		<script>
+    <script src="/static/lib/jquery/jquery.js"></script>
+    <script src="/static/lib/jquery/jquery.cookie.js"></script>
+    <script src="/static/lib/jasmine/jasmine.js"></script>
+    <script src="/static/lib/jasmine/jasmine-jquery.js"></script>
+    <script>
       jasmine.getJSONFixtures().fixturesPath = 'test/json'
-		</script>
+    </script>
 
-		<script src="/static/lib/angularjs/angular.js"></script>
-		<script src="/static/lib/angularjs/angular-mocks.js"></script>
-		<script src="/static/lib/base64.js"></script>
+    <script src="/static/lib/angularjs/angular.js"></script>
+    <script src="/static/lib/angularjs/angular-mocks.js"></script>
+    <script src="/static/lib/base64.js"></script>
 
-		<script src="/static/js/app.js"></script>
-		<script src="/test/e2e/devApp.js"></script>
+    <script src="/static/js/app.js"></script>
+    <script src="/test/e2e/devApp.js"></script>
 
-		<script src="/static/js/controllers/controllers.js"></script>
-		<script src="/static/js/controllers/homeController.js"></script>
-		<script src="/static/js/controllers/loginController.js"></script>
-		<script src="/static/js/controllers/myController.js"></script>
-		<script src="/static/js/controllers/notesController.js"></script>
-		<script src="/static/js/controllers/tasksController.js"></script>
+    <script src="/static/js/controllers/controllers.js"></script>
+    <script src="/static/js/controllers/homeController.js"></script>
+    <script src="/static/js/controllers/loginController.js"></script>
+    <script src="/static/js/controllers/myController.js"></script>
+    <script src="/static/js/controllers/notesController.js"></script>
+    <script src="/static/js/controllers/pageNotFoundController.js"></script>
+    <script src="/static/js/controllers/tasksController.js"></script>
 
-		<script src="/static/js/directives.js"></script>
-		<script src="/static/js/filters.js"></script>
-		<script src="/static/js/services.js"></script>
+    <script src="/static/js/directives.js"></script>
+    <script src="/static/js/filters.js"></script>
+    <script src="/static/js/services.js"></script>
 
-		<script src="/static/js/item.js"></script>
-		<script src="/static/js/tasks.js"></script>
-		<script src="/static/js/userAuthenticate.js"></script>
-	</body>
+    <script src="/static/js/item.js"></script>
+    <script src="/static/js/tasks.js"></script>
+    <script src="/static/js/userAuthenticate.js"></script>
+  </body>
 </html>

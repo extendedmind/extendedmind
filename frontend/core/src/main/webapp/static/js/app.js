@@ -21,10 +21,16 @@ function($locationProvider, $routeProvider) {
     templateUrl : '/static/partials/tasks.html',
     controller : 'TasksController'
   });
-  $routeProvider.otherwise({
-    redirectTo : '/',
+  $routeProvider.when('/', {
     templateUrl : '/static/partials/home.html',
     controller : 'HomeController'
+  });
+  $routeProvider.when('/404', {
+    templateUrl : '/static/partials/pageNotFound.html',
+    controller : 'PageNotFoundController'
+  });
+  $routeProvider.otherwise({
+    redirectTo : '/404'
   });
 
   $locationProvider.html5Mode(true);
@@ -41,7 +47,8 @@ function($q, $rootScope) {
     return response;
   };
   function error(response) {
-    if (response.status === 401) {// HTTP Error 401 Unauthorized
+    if (response.status === 403) {// HTTP Error 401 Unauthorized
+      console.log('asd');
       $rootScope.$broadcast('event:loginRequired');
     }
     return $q.reject(response);
@@ -51,32 +58,49 @@ function($q, $rootScope) {
   };
 }]);
 
-emApp.run(['$location', '$rootScope',
-function($location, $scope) {
+emApp.factory('LocationHandler', [
+function() {
+  var nextLocation;
+  return {
+    setNextLocation : function(next) {
+      nextLocation = next;
+    },
+    getNextLocation : function() {
+      return nextLocation;
+    }
+  };
+}]);
+
+emApp.run(['$location', '$rootScope', 'LocationHandler',
+function($location, $scope, LocationHandler) {
   $scope.$on('event:loginRequired', function() {
     $location.path('/login');
   });
   $scope.$on('event:loginSuccess', function() {
+    console.log(LocationHandler.getNextLocation());
     if ($location.path() === '/login')
       $location.path('/my');
   });
 }]);
 
-emApp.run(['$location', '$rootScope', 'UserCookie', 'UserSessionStorage', 'UserAuthenticate',
-function($location, $rootScope, UserCookie, UserSessionStorage, UserAuthenticate) {
-  $rootScope.$on('$locationChangeStart', function() {
-    if (!UserSessionStorage.isUserAuthenticated()) {
-      if (!UserCookie.isUserRemembered()) {
-        if ($location.path() != '/login') {
-          $location.path('/login');
+emApp.run(['$location', '$rootScope', 'LocationHandler', 'UserCookie', 'UserSessionStorage', 'UserAuthenticate',
+function($location, $rootScope, LocationHandler, UserCookie, UserSessionStorage, UserAuthenticate) {
+  $rootScope.$on('$locationChangeStart', function(event, next, current) {
+    LocationHandler.setNextLocation(next);
+    if ($location.path() != '/') {
+      if (!UserSessionStorage.isUserAuthenticated()) {
+        if (!UserCookie.isUserRemembered()) {
+          if ($location.path() != '/login') {
+            $rootScope.$broadcast('event:loginRequired');
+          }
+        } else {
+          UserAuthenticate.userAuthenticate(undefined);
+          UserAuthenticate.userLogin(function(success) {
+            $rootScope.$broadcast('event:loginSuccess');
+          }, function(error) {
+            $rootScope.$broadcast('event:loginRequired');
+          });
         }
-      } else {
-        UserAuthenticate.userAuthenticate(undefined);
-        UserAuthenticate.userLogin(function(success) {
-          // $rootScope.$broadcast('event:loginSuccess');
-        }, function(error) {
-          // $rootScope.$broadcast('event:loginRequired');
-        });
       }
     }
   });

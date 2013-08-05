@@ -19,7 +19,7 @@ emDevApp.run(function($httpBackend, Base64) {
     } else if (userName === 'token') {
       return [200, authenticateResponse];
     } else {
-      return [401, 'Invalid username/password'];
+      return [403, 'Forbidden'];
     }
   });
 

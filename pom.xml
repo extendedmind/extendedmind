@@ -146,7 +146,6 @@
     <module>backend</module>
     <module>frontend</module>
     <module>e2e</module>
-    <module>?</module>
   </modules>
 
   <build>
