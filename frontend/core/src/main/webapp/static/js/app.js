@@ -48,7 +48,6 @@ function($q, $rootScope) {
   };
   function error(response) {
     if (response.status === 403) {// HTTP Error 401 Unauthorized
-      console.log('asd');
       $rootScope.$broadcast('event:loginRequired');
     }
     return $q.reject(response);
@@ -60,13 +59,13 @@ function($q, $rootScope) {
 
 emApp.factory('LocationHandler', [
 function() {
-  var nextLocation;
+  var nextLocationPath;
   return {
-    setNextLocation : function(next) {
-      nextLocation = next;
+    setNextLocationPath : function(nextPath) {
+      nextLocationPath = nextPath;
     },
-    getNextLocation : function() {
-      return nextLocation;
+    getNextLocationPath : function() {
+      return nextLocationPath;
     }
   };
 }]);
@@ -74,19 +73,22 @@ function() {
 emApp.run(['$location', '$rootScope', 'LocationHandler',
 function($location, $scope, LocationHandler) {
   $scope.$on('event:loginRequired', function() {
+    LocationHandler.setNextLocationPath($location.path());
     $location.path('/login');
   });
   $scope.$on('event:loginSuccess', function() {
-    console.log(LocationHandler.getNextLocation());
-    if ($location.path() === '/login')
-      $location.path('/my');
+    if ($location.path() === '/login') {
+      if (LocationHandler.getNextLocationPath())
+        $location.path(LocationHandler.getNextLocationPath());
+      else
+        $location.path('/my');
+    }
   });
 }]);
 
 emApp.run(['$location', '$rootScope', 'LocationHandler', 'UserCookie', 'UserSessionStorage', 'UserAuthenticate',
 function($location, $rootScope, LocationHandler, UserCookie, UserSessionStorage, UserAuthenticate) {
-  $rootScope.$on('$locationChangeStart', function(event, next, current) {
-    LocationHandler.setNextLocation(next);
+  $rootScope.$on('$routeChangeStart', function(event, next, current) {
     if ($location.path() != '/') {
       if (!UserSessionStorage.isUserAuthenticated()) {
         if (!UserCookie.isUserRemembered()) {
