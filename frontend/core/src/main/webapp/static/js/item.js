@@ -8,13 +8,12 @@ function($http, Items) {
     getItems : function(userUUID, success, error) {
       $http({
         method : 'GET',
-        url : '/api/' + userUUID + '/items',
-        cache : true
+        url : '/api/' + userUUID + '/items'
       }).success(function(userItems) {
         Items.setUserItems(userItems);
         success();
-      }).error(function(error) {
-        error(error);
+      }).error(function(userItems) {
+        error(userItems);
       });
     },
     putItem : function(userUUID, item, success, error) {

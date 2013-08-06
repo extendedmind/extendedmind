@@ -39,7 +39,7 @@ function($http, Auth, UserCookie, UserSessionStorage) {
 
         UserSessionStorage.setUserToken(token);
         UserSessionStorage.setUserUUID(authenticateResponse.userUUID);
-        success();
+        success(authenticateResponse.email);
       }).error(function(authenticateResponse) {
         error(authenticateResponse);
       });

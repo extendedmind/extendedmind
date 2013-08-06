@@ -24,7 +24,16 @@ emDevApp.run(function($httpBackend, Base64) {
   });
 
   $httpBackend.whenPUT('/api/' + authenticateResponse.userUUID + '/item').respond(putItemResponse);
-  $httpBackend.whenGET('/api/' + authenticateResponse.userUUID + '/items').respond(itemsResponse);
+
+  $httpBackend.whenGET('/api/' + authenticateResponse.userUUID + '/items').respond(function(method, url, data, headers) {
+    var parsedAuthorizationHeader = headers.Authorization.split(' ');
+    var userNamePass = Base64.decode(parsedAuthorizationHeader[1]);
+    var parsedUserNamePass = userNamePass.split(':');
+    var userName = parsedUserNamePass[0];
+    console.log(headers.Authorization);
+
+    return itemsResponse;
+  });
 
   $httpBackend.whenGET(/^\/static\//).passThrough();
   $httpBackend.whenGET(/^test\//).passThrough();
