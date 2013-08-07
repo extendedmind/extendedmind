@@ -14,19 +14,20 @@ import org.extendedmind.security.UUIDUtils
 import org.neo4j.scala.Neo4jWrapper
 import org.apache.commons.codec.binary.Base64
 import org.neo4j.scala.ImpermanentGraphDatabaseServiceProvider
+import org.neo4j.graphdb.factory.GraphDatabaseFactory
 
 object TestGraphDatabase {
   val TIMO_EMAIL: String = "timo@ext.md"
-  val TIMO_PASSWORD: String = "timopwd"  
+  val TIMO_PASSWORD: String = "timopwd"
 }
 
 /**
  * Basic test data for Extended Mind
  */
 trait TestGraphDatabase extends GraphDatabase {
-  
+
   import TestGraphDatabase._
-  
+
   def insertTestUsers() {
     withTx {
       implicit neo =>
@@ -57,7 +58,9 @@ class TestImpermanentGraphDatabase(implicit val settings: Settings)
   extends TestGraphDatabase with ImpermanentGraphDatabaseServiceProvider {
 }
 
-class TestEmbeddedGraphDatabase(store: String)(implicit val settings: Settings)
+class TestEmbeddedGraphDatabase(implicit val settings: Settings)
   extends TestGraphDatabase with EmbeddedGraphDatabaseServiceProvider {
-  def neo4jStoreDir = store
+  def neo4jStoreDir = settings.neo4jStoreDir
+  override def configFileLocation = settings.neo4jPropertiesFile
+  def graphDatabaseFactory = settings.neo4jGraphDatabaseFactory
 }

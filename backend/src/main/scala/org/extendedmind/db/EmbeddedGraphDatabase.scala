@@ -11,4 +11,6 @@ import org.extendedmind.search.SearchIndex
 class EmbeddedGraphDatabase(implicit val settings: Settings) 
 	extends GraphDatabase with EmbeddedGraphDatabaseServiceProvider{
   def neo4jStoreDir = settings.neo4jStoreDir
+  override def configFileLocation = settings.neo4jPropertiesFile
+  def graphDatabaseFactory = settings.neo4jGraphDatabaseFactory
 }

@@ -25,7 +25,6 @@ import org.extendedmind.security.ExtendedMindUserPassAuthenticatorImpl
 import org.extendedmind.security.Token
 import org.extendedmind.domain.Item
 import org.extendedmind.domain.ItemWrapper
-
 import org.extendedmind.api.JsonImplicits._
 import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
@@ -36,7 +35,6 @@ import spray.httpx.marshalling._
  */
 class TestDataGeneratorSpec extends SpraySpecBase{
   
-  val TEST_DATA_STORE = "/tmp/neo4j-test"
   val TEST_DATA_DESTINATION = "target/test-classes"
   
   // Mock out all action classes to use only the Service class for output
@@ -51,7 +49,7 @@ class TestDataGeneratorSpec extends SpraySpecBase{
   def configurations = TestDataGeneratorConfiguration 
   
   // Create test database  
-  val db = new TestEmbeddedGraphDatabase(TEST_DATA_STORE)
+  val db = new TestEmbeddedGraphDatabase
     
   // Reset mocks after each test to be able to use verify after each test
   after{
@@ -126,7 +124,7 @@ class TestDataGeneratorSpec extends SpraySpecBase{
   }
   
   def packNeo4jStore(){
-    val storeDir = new File(TEST_DATA_STORE)
+    val storeDir = new File(settings.neo4jStoreDir)
     ZipUtil.pack(storeDir, new File(TEST_DATA_DESTINATION + "/neo4j-test.zip"))
     FileUtils.deleteDirectory(storeDir)
   }
