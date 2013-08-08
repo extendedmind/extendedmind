@@ -14,12 +14,29 @@ import org.neo4j.scala.Neo4jWrapper
 import org.extendedmind.security.SecurityContextWrapper
 import org.extendedmind.security.Token
 import org.extendedmind.Settings
+import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.kernel.extension.KernelExtensionFactory
+import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
 
 trait GraphDatabase extends Neo4jWrapper {
 
   def settings: Settings
   implicit val implSettings = settings
 
+  // INITIALIZATION
+  
+  def kernelExtensions(): java.util.ArrayList[KernelExtensionFactory[_]] = {
+    val extensions = new java.util.ArrayList[KernelExtensionFactory[_]](1); 
+    extensions.add(new UUIDKernelExtensionFactory());
+    extensions
+  }
+  
+  def startServer(graphdb: GraphDatabaseService){
+    
+  }
+  
+  // USER METHODS
+  
   def getUser(email: String): Either[List[String], User] = {
   	val userNode = getUserNode(email)
   	getUser(userNode)
@@ -95,6 +112,7 @@ trait GraphDatabase extends Neo4jWrapper {
   }
   
   private def validatePassword(user: Node, attemptedPassword: String): Option[SecurityContext] = {
+    println("validatePassword called")
     // Check password
     if (PasswordService.authenticate(attemptedPassword, getStoredPassword(user))){
       // Generate Token
@@ -102,6 +120,7 @@ trait GraphDatabase extends Neo4jWrapper {
       println("validatePassword returning token")
       Some(getSecurityContext(user, token))
     }else{
+      println("validatePassword returning None")
       None
     }
   }

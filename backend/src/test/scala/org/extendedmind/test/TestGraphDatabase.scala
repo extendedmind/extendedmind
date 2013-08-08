@@ -15,6 +15,9 @@ import org.neo4j.scala.Neo4jWrapper
 import org.apache.commons.codec.binary.Base64
 import org.neo4j.scala.ImpermanentGraphDatabaseServiceProvider
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
+import org.neo4j.kernel.extension.KernelExtensionFactory
+import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
+import org.neo4j.test.TestGraphDatabaseFactory
 
 object TestGraphDatabase {
   val TIMO_EMAIL: String = "timo@ext.md"
@@ -29,9 +32,11 @@ trait TestGraphDatabase extends GraphDatabase {
   import TestGraphDatabase._
 
   def insertTestUsers() {
+    var userId: Long = 0
+    var tokenId: Long = 0
     withTx {
       implicit neo =>
-        val timo = createNodeWithUUID
+        val timo = createNode
         timo.addLabel(MainLabel.USER)
         timo.addLabel(UserLabel.ADMIN)
 
@@ -44,11 +49,17 @@ trait TestGraphDatabase extends GraphDatabase {
         timo.setProperty("passwordHash", Base64.encodeBase64String(encryptedPassword.passwordHash))
         timo.setProperty("passwordSalt", encryptedPassword.salt)
         timo.setProperty("email", TIMO_EMAIL)
-
-        val timoTokenNode = createNodeWithUUID
+        userId = timo.getId()
+        val timoTokenNode = createNode
         timoTokenNode.addLabel(MainLabel.TOKEN)
+        tokenId = timoTokenNode.getId()
+    }
+    withTx {
+      implicit neo =>
+        val timoTokenNode = getNodeById(tokenId)
         val timoToken = Token(UUIDUtils.getUUID(timoTokenNode.getProperty("uuid").asInstanceOf[String]))
         timoTokenNode.setProperty("accessKey", timoToken.accessKey)
+        val timo = getNodeById(userId)
         timo --> UserRelationship.HAS_TOKEN --> timoTokenNode
     }
   }
@@ -56,11 +67,17 @@ trait TestGraphDatabase extends GraphDatabase {
 
 class TestImpermanentGraphDatabase(implicit val settings: Settings)
   extends TestGraphDatabase with ImpermanentGraphDatabaseServiceProvider {
+  def testGraphDatabaseFactory = {
+    val factory = new TestGraphDatabaseFactory()
+    factory.addKernelExtensions(kernelExtensions)
+    factory
+  }
 }
 
-class TestEmbeddedGraphDatabase(implicit val settings: Settings)
+class TestEmbeddedGraphDatabase(dataStore: String)(implicit val settings: Settings)
   extends TestGraphDatabase with EmbeddedGraphDatabaseServiceProvider {
-  def neo4jStoreDir = settings.neo4jStoreDir
-  override def configFileLocation = settings.neo4jPropertiesFile
-  def graphDatabaseFactory = settings.neo4jGraphDatabaseFactory
+  def neo4jStoreDir = dataStore
+  def graphDatabaseFactory = {
+    new GraphDatabaseFactory().addKernelExtensions(kernelExtensions)
+  }
 }

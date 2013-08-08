@@ -35,6 +35,7 @@ import spray.httpx.marshalling._
  */
 class TestDataGeneratorSpec extends SpraySpecBase{
   
+  val TEST_DATA_STORE = "target/neo4j-test-database"
   val TEST_DATA_DESTINATION = "target/test-classes"
   
   // Mock out all action classes to use only the Service class for output
@@ -49,7 +50,7 @@ class TestDataGeneratorSpec extends SpraySpecBase{
   def configurations = TestDataGeneratorConfiguration 
   
   // Create test database  
-  val db = new TestEmbeddedGraphDatabase
+  val db = new TestEmbeddedGraphDatabase(TEST_DATA_STORE)
     
   // Reset mocks after each test to be able to use verify after each test
   after{
@@ -122,9 +123,9 @@ class TestDataGeneratorSpec extends SpraySpecBase{
   def writeJsonOutput(filename: String, contents: String): Unit = {
     Some(new PrintWriter(TEST_DATA_DESTINATION + "/" + filename + ".json")).foreach{p => p.write(contents); p.close}
   }
-  
+
   def packNeo4jStore(){
-    val storeDir = new File(settings.neo4jStoreDir)
+    val storeDir = new File(TEST_DATA_STORE)
     ZipUtil.pack(storeDir, new File(TEST_DATA_DESTINATION + "/neo4j-test.zip"))
     FileUtils.deleteDirectory(storeDir)
   }

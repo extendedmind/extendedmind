@@ -25,6 +25,7 @@ object PasswordService {
   val ITERATIONS = 20000
   
   def authenticate(attemptedPassword: String, password: Password): Boolean = {
+    println("attempted password: " + attemptedPassword)
 	  // Encrypt the clear-text password using the same salt that was used to
 	  // encrypt the original password
 	  val encryptedAttemptedPassword = 
@@ -32,8 +33,11 @@ object PasswordService {
                              password.salt,
                              password.algorithm,
                              password.iterations);
+    
+    println("passwordinfo: " + password.salt + " " + password.algorithm + " " + password.iterations)
 	  // Authentication succeeds if encrypted password that the user entered
 	  // is equal to the stored hash
+    println("password compare: " + password.passwordHash.map("%02X" format _).mkString + " " + encryptedAttemptedPassword.passwordHash.map("%02X" format _).mkString)
 	  return Arrays.equals(password.passwordHash, encryptedAttemptedPassword.passwordHash);
   }
   
