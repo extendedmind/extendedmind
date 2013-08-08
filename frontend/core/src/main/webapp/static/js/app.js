@@ -7,7 +7,12 @@ function($locationProvider, $routeProvider) {
 
   $routeProvider.when('/my', {
     templateUrl : '/static/partials/my.html',
-    controller : 'MyController'
+    controller : 'MyController',
+    resolve : {
+      authenticated : function(UserAuthenticate) {
+        // return UserAuthenticate.userAuthenticate();
+      }
+    }
   });
   $routeProvider.when('/login', {
     templateUrl : '/static/partials/login.html',
@@ -38,72 +43,39 @@ function($locationProvider, $routeProvider) {
 
 emApp.config(['$httpProvider',
 function($httpProvider) {
-  $httpProvider.responseInterceptors.push('httpInterceptor');
+  $httpProvider.interceptors.push('httpInterceptor');
 }]);
 
 emApp.factory('httpInterceptor', ['$q', '$rootScope',
 function($q, $rootScope) {
-  function success(response) {
-    return response;
-  };
-  function error(response) {
-    if (response.status === 403) {// HTTP Error 401 Unauthorized
-      $rootScope.$broadcast('event:loginRequired');
-    }
-    return $q.reject(response);
-  };
-  return function(promise) {
-    return promise.then(success, error);
-  };
-}]);
-
-emApp.factory('LocationHandler', [
-function() {
-  var nextLocationPath;
   return {
-    setNextLocationPath : function(nextPath) {
-      nextLocationPath = nextPath;
+    request : function(config) {
+      return config || $q.when(config);
     },
-    getNextLocationPath : function() {
-      return nextLocationPath;
+    requestError : function(rejection) {
+      return $q.reject(rejection);
+    },
+    response : function(response) {
+      return response || $q.when(response);
+    },
+    responseError : function(rejection) {
+      if (rejection.status === 403) {
+        $rootScope.$broadcast('event:authenticationRequired');
+      }
+      return $q.reject(rejection);
     }
   };
 }]);
 
-emApp.run(['$location', '$rootScope', 'LocationHandler',
-function($location, $scope, LocationHandler) {
-  $scope.$on('event:loginRequired', function() {
-    LocationHandler.setNextLocationPath($location.path());
+emApp.run(['$location', '$rootScope', 'UserAuthenticate',
+function($location, $rootScope, UserAuthenticate) {
+  $rootScope.$on('event:authenticationRequired', function() {
+    UserAuthenticate.userAuthenticate();
+  });
+  $rootScope.$on('event:loginRequired', function() {
     $location.path('/login');
   });
-  $scope.$on('event:loginSuccess', function() {
-    if ($location.path() === '/login') {
-      if (LocationHandler.getNextLocationPath())
-        $location.path(LocationHandler.getNextLocationPath());
-      else
-        $location.path('/my');
-    }
-  });
-}]);
-
-emApp.run(['$location', '$rootScope', 'LocationHandler', 'UserCookie', 'UserSessionStorage', 'UserAuthenticate',
-function($location, $rootScope, LocationHandler, UserCookie, UserSessionStorage, UserAuthenticate) {
-  $rootScope.$on('$routeChangeStart', function(event, next, current) {
-    if ($location.path() != '/') {
-      if (!UserSessionStorage.isUserAuthenticated()) {
-        if (!UserCookie.isUserRemembered()) {
-          if ($location.path() != '/login') {
-            $rootScope.$broadcast('event:loginRequired');
-          }
-        } else {
-          UserAuthenticate.userAuthenticate(undefined);
-          UserAuthenticate.userLogin(function(success) {
-            $rootScope.$broadcast('event:loginSuccess');
-          }, function(error) {
-            $rootScope.$broadcast('event:loginRequired');
-          });
-        }
-      }
-    }
+  $rootScope.$on('event:loginSuccess', function() {
+    $location.path('/my');
   });
 }]);
