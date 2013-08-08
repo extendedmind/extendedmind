@@ -1,10 +1,17 @@
 "use strict";
 
-emControllers.controller('LoginController', ['$scope', 'UserAuthenticate',
+emControllers.controller('LoginController', ['$rootScope', '$scope', 'User', 'UserAuthenticate',
 
-function($scope, UserAuthenticate) {
+function($rootScope, $scope, User, UserAuthenticate) {
   $scope.userLogin = function() {
-    UserAuthenticate.setCredentials($scope.user.username, $scope.user.password);
-    UserAuthenticate.userLogin($scope.user.remember);
+    User.setCredentials($scope.user.username, $scope.user.password);
+
+    UserAuthenticate.userLogin(function() {
+      if ($scope.user.remember) {
+        User.setUserTokenCookie();
+      }
+      $rootScope.$broadcast('event:loginSuccess');
+    }, function(error) {
+    });
   };
 }]);

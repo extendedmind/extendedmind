@@ -10,35 +10,45 @@
 
 var emAuthenticate = angular.module('em.userAuthenticate', ['em.base64']);
 
-emAuthenticate.factory('UserAuthenticate', ['$http', '$location', '$rootScope', 'HttpBasicAuth', 'UserCookie', 'UserLogin', 'UserSessionStorage',
-function($http, $location, $rootScope, HttpBasicAuth, UserCookie, UserLogin, UserSessionStorage) {
+emAuthenticate.factory('User', ['HttpBasicAuth', 'UserCookie', 'UserSessionStorage',
+function(HttpBasicAuth, UserCookie, UserSessionStorage) {
+  return {
+    setUserSessionData : function(authenticateResponse) {
+      this.setCredentials('token', authenticateResponse.token);
+      var token = HttpBasicAuth.getCredentials();
+      UserSessionStorage.setUserToken(token);
+      UserSessionStorage.setUserUUID(authenticateResponse.userUUID);
+    },
+    setUserTokenCookie : function() {
+      UserCookie.setUserToken(UserSessionStorage.getUserToken());
+    },
+    setCredentials : function(username, password) {
+      HttpBasicAuth.setCredentials(username, password);
+    }
+  };
+}]);
 
+emAuthenticate.factory('UserAuthenticate', ['$rootScope', 'User', 'UserCookie', 'UserLogin',
+function($rootScope, User, UserCookie, UserLogin) {
   return {
     userAuthenticate : function() {
       if (UserCookie.isUserRemembered()) {
-        this.setCredentials('token', UserCookie.getUserToken());
-        this.userLogin(true);
+        User.setCredentials('token', UserCookie.getUserToken());
+        this.userLogin(function() {
+          User.setUserTokenCookie();
+          $rootScope.$broadcast('event:loginSuccess');
+        }, function(error) {
+        });
       } else {
         $rootScope.$broadcast('event:loginRequired');
       }
     },
-    setCredentials : function(username, password) {
-      HttpBasicAuth.setCredentials(username, password);
-    },
-    userLogin : function(remember) {
+    userLogin : function(success, error) {
       UserLogin.userLogin(function(authenticateResponse) {
-        HttpBasicAuth.setCredentials('token', authenticateResponse.token);
-        var token = HttpBasicAuth.getCredentials();
-
-        if (remember) {
-          UserCookie.setUserToken(token);
-        }
-
-        UserSessionStorage.setUserToken(token);
-        UserSessionStorage.setUserUUID(authenticateResponse.userUUID)
-        $rootScope.$broadcast('event:loginSuccess');
-      }, function(error) {
-        $rootScope.$broadcast('event:loginRequired');
+        User.setUserSessionData(authenticateResponse);
+        success();
+      }, function(authenticateResponse) {
+        error(authenticateResponse);
       });
     }
   };
