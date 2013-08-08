@@ -30,7 +30,6 @@ emDevApp.run(function($httpBackend, Base64) {
     var userNamePass = Base64.decode(parsedAuthorizationHeader[1]);
     var parsedUserNamePass = userNamePass.split(':');
     var userName = parsedUserNamePass[0];
-    console.log(headers.Authorization);
 
     return itemsResponse;
   });

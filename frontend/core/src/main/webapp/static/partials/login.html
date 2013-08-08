@@ -6,16 +6,16 @@
       &nbsp;
     </p>
     <p>
-      <form name="login" ng-submit="userLogin()">
+      <form name="login">
         <dl>
           <dt>
-            <input id="username" name="username" type="text" ng-model="user.username" placeholder="Email" required>
+            <input id="username" name="username" type="email" ng-model="user.username" placeholder="Email" required>
           </dt>
           <dt>
             <input id="password" name="password" type="password" ng-model="user.password" placeholder="Password" required>
           </dt>
           <dt>
-            <button id="loginn" name="loginn" ng-disabled="!login.$valid" ng-click="userLogin()">
+            <button id="loginbutton" name="loginbutton" type="submit" ng-disabled="!login.$valid" ng-click="userLogin()">
               login
             </button>
           </dt>
@@ -25,8 +25,6 @@
           </dt>
         </dl>
       </form>
-      <input type="text" id="error" name="error" ng-model="error">
-      <input type="success" id="success" name="success" ng-model="success">
     </p>
   </div>
 </div>

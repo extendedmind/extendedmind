@@ -10,50 +10,58 @@
 
 var emAuthenticate = angular.module('em.userAuthenticate', ['em.base64']);
 
-emAuthenticate.factory('UserAuthenticate', ['$http', 'Auth', 'UserCookie', 'UserSessionStorage',
-function($http, Auth, UserCookie, UserSessionStorage) {
-  var isUserRemembered = false;
+emAuthenticate.factory('UserAuthenticate', ['$http', '$location', '$rootScope', 'HttpBasicAuth', 'UserCookie', 'UserLogin', 'UserSessionStorage',
+function($http, $location, $rootScope, HttpBasicAuth, UserCookie, UserLogin, UserSessionStorage) {
+
   return {
-    userAuthenticate : function(user) {
-      if (user === undefined) {
-        var user = {
-          username : 'token',
-          password : UserCookie.getUserToken(),
-          remember : UserCookie.isUserRemembered()
-        };
+    userAuthenticate : function() {
+      if (UserCookie.isUserRemembered()) {
+        this.setCredentials('token', UserCookie.getUserToken());
+        this.userLogin(true);
+      } else {
+        $rootScope.$broadcast('event:loginRequired');
       }
-      Auth.setCredentials(user.username, user.password);
-      isUserRemembered = user.remember;
     },
+    setCredentials : function(username, password) {
+      HttpBasicAuth.setCredentials(username, password);
+    },
+    userLogin : function(remember) {
+      UserLogin.userLogin(function(authenticateResponse) {
+        HttpBasicAuth.setCredentials('token', authenticateResponse.token);
+        var token = HttpBasicAuth.getCredentials();
+
+        if (remember) {
+          UserCookie.setUserToken(token);
+        }
+
+        UserSessionStorage.setUserToken(token);
+        UserSessionStorage.setUserUUID(authenticateResponse.userUUID)
+        $rootScope.$broadcast('event:loginSuccess');
+      }, function(error) {
+        $rootScope.$broadcast('event:loginRequired');
+      });
+    }
+  };
+}]);
+
+emAuthenticate.factory('UserLogin', ['$http',
+function($http) {
+  return {
     userLogin : function(success, error) {
       $http({
         method : 'POST',
         url : '/api/authenticate'
       }).success(function(authenticateResponse) {
-        Auth.setCredentials('token', authenticateResponse.token);
-        var token = Auth.getCredentials();
-
-        if (isUserRemembered) {
-          UserCookie.setUserToken(token);
-        }
-
-        UserSessionStorage.setUserToken(token);
-        UserSessionStorage.setUserUUID(authenticateResponse.userUUID);
-        success(authenticateResponse.email);
+        success(authenticateResponse);
       }).error(function(authenticateResponse) {
         error(authenticateResponse);
       });
-    },
-    userLogout : function() {
-      Auth.clearCredentials();
-      UserCookie.clearUserToken();
-      UserSessionStorage.clearUserToken();
     }
   };
 }]);
 
-emAuthenticate.factory('Auth', ['$http', 'Base64', 'UserCookie', 'UserSessionStorage',
-function($http, Base64, UserCookie, UserSessionStorage) {
+emAuthenticate.factory('HttpBasicAuth', ['$http', 'Base64',
+function($http, Base64) {
   $http.defaults.headers.common['Authorization'] = 'Basic ';
   var encoded;
 
