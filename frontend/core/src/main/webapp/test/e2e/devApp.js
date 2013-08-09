@@ -22,7 +22,6 @@ emDevApp.run(function($httpBackend, Base64) {
       return [403, 'Forbidden'];
     }
   });
-
   $httpBackend.whenPUT('/api/' + authenticateResponse.userUUID + '/item').respond(putItemResponse);
 
   $httpBackend.whenGET('/api/' + authenticateResponse.userUUID + '/items').respond(function(method, url, data, headers) {
@@ -42,4 +41,8 @@ emDevApp.run(function($httpBackend, Base64) {
 
   $httpBackend.whenGET(/^\/static\//).passThrough();
   $httpBackend.whenGET(/^test\//).passThrough();
+
+  $httpBackend.whenGET(/null/).respond(function(method, url, data, headers) {
+    return [403];
+  });
 });

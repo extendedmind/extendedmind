@@ -39,7 +39,7 @@ function($rootScope, User, UserCookie, UserLogin, UserSessionStorage) {
           $rootScope.$broadcast('event:loginSuccess');
         }, function(error) {
         });
-      } else if (UserSessionStorage.isUserAuthenticated) {
+      } else if (UserSessionStorage.isUserAuthenticated()) {
         User.setCredentials('token', UserSessionStorage.getUserToken());
       } else {
         $rootScope.$broadcast('event:loginRequired');

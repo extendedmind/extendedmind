@@ -22,8 +22,8 @@ class LoginSpec extends E2ESpecBase {
       pressKeys("timo@ext.md")
       click on ("password")
       pressKeys("timopwd")
-      submit()
-      eventually(timeout(Span(60, Seconds))) { currentUrl should include("/my") }
+      click on id("loginbutton")
+      eventually(timeout(Span(5, Seconds))) { currentUrl should include("/my") }
     }
   }
 }
