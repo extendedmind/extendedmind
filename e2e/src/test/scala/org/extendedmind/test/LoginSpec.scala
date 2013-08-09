@@ -18,12 +18,12 @@ class LoginSpec extends E2ESpecBase {
     }
     it("should return front page on successful login") {
       go to "http://localhost:8080/login"
-      click on id("username")
+      click on ("username")
       pressKeys("timo@ext.md")
-      click on id("password")
+      click on ("password")
       pressKeys("timopwd")
       submit()
-      eventually(timeout(Span(5, Seconds))) { currentUrl should include("/my") }
+      eventually(timeout(Span(60, Seconds))) { currentUrl should include("/my") }
     }
   }
 }

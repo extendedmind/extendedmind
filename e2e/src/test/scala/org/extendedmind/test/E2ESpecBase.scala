@@ -25,6 +25,8 @@ abstract class E2ESpecBase extends FunSpec
   implicit val webDriver: WebDriver = new PhantomJSDriver
  
   // Initialize Neo4j every time
+  // NOTE: unpacking database after each test proved very unreliable!
+  /* Unpacking the database is now done before backend is started in the pom.xml with antrun plugin
   before{
     // First delete old if it exists
     val store = new File(TEST_DATA_STORE_DESTINATION)
@@ -33,7 +35,7 @@ abstract class E2ESpecBase extends FunSpec
     }
     // Unpack test data
     ZipUtil.unpack(new File(TEST_DATA_STORE), store)
-  }
+  }*/
   
   override def afterAll(configMap: Map[String, Any]) {
     webDriver.quit()
