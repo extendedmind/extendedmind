@@ -31,7 +31,13 @@ emDevApp.run(function($httpBackend, Base64) {
     var parsedUserNamePass = userNamePass.split(':');
     var userName = parsedUserNamePass[0];
 
-    return itemsResponse;
+    if (userNamePass === 'timo@ext.md:timopwd') {
+      return [200, itemsResponse];
+    } else if (userName === 'token') {
+      return [200, itemsResponse];
+    } else {
+      return [403, 'Forbidden'];
+    }
   });
 
   $httpBackend.whenGET(/^\/static\//).passThrough();

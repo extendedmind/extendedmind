@@ -28,8 +28,8 @@ function(HttpBasicAuth, UserCookie, UserSessionStorage) {
   };
 }]);
 
-emAuthenticate.factory('UserAuthenticate', ['$rootScope', 'User', 'UserCookie', 'UserLogin',
-function($rootScope, User, UserCookie, UserLogin) {
+emAuthenticate.factory('UserAuthenticate', ['$rootScope', 'User', 'UserCookie', 'UserLogin', 'UserSessionStorage',
+function($rootScope, User, UserCookie, UserLogin, UserSessionStorage) {
   return {
     userAuthenticate : function() {
       if (UserCookie.isUserRemembered()) {
@@ -39,6 +39,8 @@ function($rootScope, User, UserCookie, UserLogin) {
           $rootScope.$broadcast('event:loginSuccess');
         }, function(error) {
         });
+      } else if (UserSessionStorage.isUserAuthenticated) {
+        User.setCredentials('token', UserSessionStorage.getUserToken());
       } else {
         $rootScope.$broadcast('event:loginRequired');
       }

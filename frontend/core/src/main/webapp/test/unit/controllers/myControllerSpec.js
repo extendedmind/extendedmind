@@ -4,7 +4,7 @@ describe('em.controllers', function() {
   beforeEach(module('em.controllers', 'em.userAuthenticate'));
 
   describe('MyController', function() {
-    var $controller, $httpBackend, $scope, items, putItemResponse, user;
+    var $controller, $httpBackend, $scope, items, putItemResponse, user,authenticated;
 
     beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_, UserSessionStorage) {
       $httpBackend = _$httpBackend_;
@@ -22,7 +22,8 @@ describe('em.controllers', function() {
 
       $scope = _$rootScope_.$new();
       $controller = _$controller_('MyController', {
-        $scope : $scope
+        $scope : $scope,
+        authenticated:authenticated
       });
     }));
 
