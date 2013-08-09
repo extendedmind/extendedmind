@@ -16,6 +16,7 @@ trait ExtendedMindUserPassAuthenticator extends UserPassAuthenticator[SecurityCo
   def apply(userPass: Option[UserPass])= Promise.successful(
     userPass match {
       case Some(UserPass(user, pass)) => {
+        println(user + pass)
         if (user == "token"){
           db.authenticate(pass)
         }else{

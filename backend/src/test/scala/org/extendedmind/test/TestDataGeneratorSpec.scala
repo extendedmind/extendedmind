@@ -25,7 +25,6 @@ import org.extendedmind.security.ExtendedMindUserPassAuthenticatorImpl
 import org.extendedmind.security.Token
 import org.extendedmind.domain.Item
 import org.extendedmind.domain.ItemWrapper
-
 import org.extendedmind.api.JsonImplicits._
 import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
@@ -36,7 +35,7 @@ import spray.httpx.marshalling._
  */
 class TestDataGeneratorSpec extends SpraySpecBase{
   
-  val TEST_DATA_STORE = "/tmp/neo4j-test"
+  val TEST_DATA_STORE = "target/neo4j-test-database"
   val TEST_DATA_DESTINATION = "target/test-classes"
   
   // Mock out all action classes to use only the Service class for output
@@ -124,7 +123,7 @@ class TestDataGeneratorSpec extends SpraySpecBase{
   def writeJsonOutput(filename: String, contents: String): Unit = {
     Some(new PrintWriter(TEST_DATA_DESTINATION + "/" + filename + ".json")).foreach{p => p.write(contents); p.close}
   }
-  
+
   def packNeo4jStore(){
     val storeDir = new File(TEST_DATA_STORE)
     ZipUtil.pack(storeDir, new File(TEST_DATA_DESTINATION + "/neo4j-test.zip"))

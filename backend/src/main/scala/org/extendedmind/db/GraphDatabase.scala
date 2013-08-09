@@ -14,20 +14,37 @@ import org.neo4j.scala.Neo4jWrapper
 import org.extendedmind.security.SecurityContextWrapper
 import org.extendedmind.security.Token
 import org.extendedmind.Settings
+import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.kernel.extension.KernelExtensionFactory
+import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
 
 trait GraphDatabase extends Neo4jWrapper {
 
   def settings: Settings
   implicit val implSettings = settings
 
+  // INITIALIZATION
+  
+  def kernelExtensions(): java.util.ArrayList[KernelExtensionFactory[_]] = {
+    val extensions = new java.util.ArrayList[KernelExtensionFactory[_]](1); 
+    extensions.add(new UUIDKernelExtensionFactory());
+    extensions
+  }
+  
+  def startServer(graphdb: GraphDatabaseService){
+    
+  }
+  
+  // USER METHODS
+  
   def getUser(email: String): Either[List[String], User] = {
-	val userNode = getUserNode(email)
-	getUser(userNode)
+  	val userNode = getUserNode(email)
+  	getUser(userNode)
   }
   
   def getUser(uuid: UUID): Either[List[String], User] = {
-	val userNode = getUserNode(uuid)
-	getUser(userNode)
+  	val userNode = getUserNode(uuid)
+  	getUser(userNode)
   }
   
   private def getUser(userNode: Either[List[String], Node]): Either[List[String], User] = {
@@ -45,27 +62,27 @@ trait GraphDatabase extends Neo4jWrapper {
   private def getUserNode(email: String): Either[List[String], Node] = {
     withTx{
       implicit neo =>
-		val nodeIter = findNodesByLabelAndProperty(MainLabel.USER, "email", email)
-		if (nodeIter.toList.isEmpty){
-		  Left(List("No users found with given email " + email))
-		}else if (nodeIter.toList.size > 1){
-		  Left(List("Ḿore than one user found with given email " + email))    		  
-		}else
-		  Right(nodeIter.toList(0))
+    		val nodeIter = findNodesByLabelAndProperty(MainLabel.USER, "email", email)
+    		if (nodeIter.toList.isEmpty){
+    		  Left(List("No users found with given email " + email))
+    		}else if (nodeIter.toList.size > 1){
+    		  Left(List("Ḿore than one user found with given email " + email))    		  
+    		}else
+    		  Right(nodeIter.toList(0))
     }
   }
   
   private def getUserNode(uuid: UUID): Either[List[String], Node] = {
     withTx{
       implicit neo =>
-		val nodeIter = findNodesByLabelAndProperty(MainLabel.USER, "uuid", uuid.toString())
-		if (nodeIter.toList.isEmpty)
-		  Left(List("No users found with given UUID " + uuid.toString))
-		else if (nodeIter.toList.size > 1)
-		  Left(List("Ḿore than one user found with given UUID " + uuid.toString)) 		  
-		else
-		  Right(nodeIter.toList(0))
-    }
+    		val nodeIter = findNodesByLabelAndProperty(MainLabel.USER, "uuid", uuid.toString())
+    		if (nodeIter.toList.isEmpty)
+    		  Left(List("No users found with given UUID " + uuid.toString))
+    		else if (nodeIter.toList.size > 1)
+    		  Left(List("Ḿore than one user found with given UUID " + uuid.toString)) 		  
+    		else
+    		  Right(nodeIter.toList(0))
+        }
   }
   
   // SECURITY
@@ -75,11 +92,15 @@ trait GraphDatabase extends Neo4jWrapper {
   }
   
   def authenticate(email: String, attemptedPassword: String): Option[SecurityContext] = {
+    println("authenticate called")
     val user = getUserNode(email)
-    if (user.isRight)
+    if (user.isRight){
+      println("Found user")
       validatePassword(user.right.get, attemptedPassword)
-    else
+    }else{
+      println(user.left.get)
       None
+    }
   }
   
   private def getStoredPassword(user: Node): Password = {
@@ -91,12 +112,15 @@ trait GraphDatabase extends Neo4jWrapper {
   }
   
   private def validatePassword(user: Node, attemptedPassword: String): Option[SecurityContext] = {
+    println("validatePassword called")
     // Check password
     if (PasswordService.authenticate(attemptedPassword, getStoredPassword(user))){
       // Generate Token
       val token = Token(UUIDUtils.getUUID(user.getProperty("uuid").asInstanceOf[String]))
+      println("validatePassword returning token")
       Some(getSecurityContext(user, token))
     }else{
+      println("validatePassword returning None")
       None
     }
   }

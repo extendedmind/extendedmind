@@ -44,7 +44,6 @@ class ServiceSpec extends SpraySpecBase{
     reset(mockSecurityActions)
     db.shutdown(db.ds)
   }
-
   
   describe("Extended Mind Service"){
     it("should return token on authenticate"){

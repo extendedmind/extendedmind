@@ -18,8 +18,8 @@ abstract class E2ESpecBase extends FunSpec
     with BeforeAndAfter with BeforeAndAfterAll with ShouldMatchers
     with WebBrowser{
   
-  val TEST_DATA_STORE_DESTINATION = new File("/tmp/temp-neo-test")
-  val TEST_DATA_STORE = new File("target/neo4j-test.zip")
+  val TEST_DATA_STORE_DESTINATION = "target/neo-test"
+  val TEST_DATA_STORE = "target/neo4j-test.zip"
   
   System.setProperty(PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"target/phantomjs-1.9.1-linux-x86_64/bin/phantomjs")  
   implicit val webDriver: WebDriver = new PhantomJSDriver
@@ -27,11 +27,12 @@ abstract class E2ESpecBase extends FunSpec
   // Initialize Neo4j every time
   before{
     // First delete old if it exists
-    if (TEST_DATA_STORE_DESTINATION.exists() == true){
-    	FileUtils.deleteDirectory(TEST_DATA_STORE_DESTINATION);
+    val store = new File(TEST_DATA_STORE_DESTINATION)
+    if (store.exists() == true){
+    	FileUtils.deleteDirectory(store);
     }
     // Unpack test data
-    ZipUtil.unpack(TEST_DATA_STORE, TEST_DATA_STORE_DESTINATION)
+    ZipUtil.unpack(new File(TEST_DATA_STORE), store)
   }
   
   override def afterAll(configMap: Map[String, Any]) {

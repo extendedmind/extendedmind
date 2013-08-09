@@ -16,12 +16,25 @@ import org.extendedmind.bl.ItemActionsImpl
 import org.extendedmind.db.EmbeddedGraphDatabase
 import org.extendedmind.security.ExtendedMindUserPassAuthenticator
 import org.extendedmind.security.ExtendedMindUserPassAuthenticatorImpl
+import org.neo4j.graphdb.factory.GraphDatabaseFactory
+import org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory
+import org.neo4j.kernel.extension.KernelExtensionFactory
+import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
+import scala.collection.JavaConverters._
 
 // Custom settings from application.conf or overridden file
 
 class Settings(config: Config) extends Extension {
   val serverPort = config.getString("extendedmind.server.port")
   val neo4jStoreDir = config.getString("extendedmind.neo4j.storeDir")
+  val neo4jPropertiesFile: Option[String] = {
+    if (config.hasPath("extendedmind.neo4j.propertiesFile"))
+      Some(config.getString("extendedmind.neo4j.propertiesFile"))
+    else
+      None
+  }
+  val isHighAvailability = config.getBoolean("extendedmind.neo4j.isHighAvailability")
+  val startNeo4jServer = config.getBoolean("extendedmind.neo4j.startServer")
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
 }
 
