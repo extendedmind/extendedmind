@@ -13,7 +13,7 @@ class LoginSpec extends E2ESpecBase {
       pressKeys("timo@ext.md")
       click on ("password")
       pressKeys("wrong")
-      submit()
+      click on id("loginbutton")
       eventually { currentUrl should include("/login") }
     }
     it("should return front page on successful login") {

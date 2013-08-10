@@ -98,6 +98,7 @@
         <groupId>org.extendedmind</groupId>
         <artifactId>backend</artifactId>
         <version>${project.version}</version>
+        <classifier>jar-with-dependencies</classifier>
         <type>jar</type>
       </dependency>
 

@@ -53,12 +53,6 @@
     <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>backend</artifactId>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.extendedmind</groupId>
-      <artifactId>backend</artifactId>
       <type>test-jar</type>
       <scope>compile</scope>
     </dependency>
