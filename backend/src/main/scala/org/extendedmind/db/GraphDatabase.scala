@@ -92,13 +92,10 @@ trait GraphDatabase extends Neo4jWrapper {
   }
   
   def authenticate(email: String, attemptedPassword: String): Option[SecurityContext] = {
-    println("authenticate called")
     val user = getUserNode(email)
     if (user.isRight){
-      println("Found user")
       validatePassword(user.right.get, attemptedPassword)
     }else{
-      println(user.left.get)
       None
     }
   }
@@ -112,15 +109,12 @@ trait GraphDatabase extends Neo4jWrapper {
   }
   
   private def validatePassword(user: Node, attemptedPassword: String): Option[SecurityContext] = {
-    println("validatePassword called")
     // Check password
     if (PasswordService.authenticate(attemptedPassword, getStoredPassword(user))){
       // Generate Token
       val token = Token(UUIDUtils.getUUID(user.getProperty("uuid").asInstanceOf[String]))
-      println("validatePassword returning token")
       Some(getSecurityContext(user, token))
     }else{
-      println("validatePassword returning None")
       None
     }
   }
