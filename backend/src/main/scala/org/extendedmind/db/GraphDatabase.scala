@@ -17,6 +17,7 @@ import org.extendedmind.Settings
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.kernel.extension.KernelExtensionFactory
 import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
+import org.neo4j.extension.timestamp.TimestampKernelExtensionFactory
 
 trait GraphDatabase extends Neo4jWrapper {
 
@@ -26,8 +27,9 @@ trait GraphDatabase extends Neo4jWrapper {
   // INITIALIZATION
   
   def kernelExtensions(): java.util.ArrayList[KernelExtensionFactory[_]] = {
-    val extensions = new java.util.ArrayList[KernelExtensionFactory[_]](1); 
+    val extensions = new java.util.ArrayList[KernelExtensionFactory[_]](2); 
     extensions.add(new UUIDKernelExtensionFactory());
+    extensions.add(new TimestampKernelExtensionFactory());
     extensions
   }
   
