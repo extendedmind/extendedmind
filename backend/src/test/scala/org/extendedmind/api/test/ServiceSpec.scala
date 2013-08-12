@@ -17,6 +17,11 @@ import org.extendedmind.domain.UserWrapper
 import org.extendedmind.test.TestImpermanentGraphDatabase
 import org.extendedmind.db.GraphDatabase
 import org.extendedmind.test.TestGraphDatabase._
+import org.extendedmind.security.SecurityContext
+import org.extendedmind.api.JsonImplicits._
+import spray.httpx.SprayJsonSupport._
+import spray.httpx.marshalling._
+
 
 class ServiceSpec extends SpraySpecBase{
 
@@ -24,8 +29,8 @@ class ServiceSpec extends SpraySpecBase{
   val mockItemActions = mock[ItemActions]
   val mockSecurityActions = mock[SecurityActions]
 
-  // Create test database  
-  val db = new TestImpermanentGraphDatabase
+  // Create test database
+  var db: TestImpermanentGraphDatabase = null
 
   object ServiceTestConfiguration extends Module{
     bind [ItemActions] to mockItemActions
@@ -35,6 +40,7 @@ class ServiceSpec extends SpraySpecBase{
   def configurations = ServiceTestConfiguration 
 
   before{
+    db = new TestImpermanentGraphDatabase
     db.insertTestUsers
   }
 
@@ -42,22 +48,25 @@ class ServiceSpec extends SpraySpecBase{
   after{
     reset(mockItemActions)
     reset(mockSecurityActions)
-    db.shutdown(db.ds)
   }
   
   describe("Extended Mind Service"){
     it("should return token on authenticate"){
-      Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> emRoute ~> check { 
-        val authenticateResponse = entityAs[String]
-        writeJsonOutput("authenticateResponse", authenticateResponse)
-        authenticateResponse should include("token")
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      authenticateResponse.token should not be (None)
+    }
+    it("should swap token on token authentication"){
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))) ~> emRoute ~> check { 
+        val tokenAuthenticateResponse = entityAs[SecurityContext]
+        tokenAuthenticateResponse.token.get should not be (authenticateResponse.token.get)
       }
     }
   }
   
-  
-  // Helper file writer
-  def writeJsonOutput(filename: String, contents: String): Unit = {
-    Some(new PrintWriter("target/test-classes/" + filename + ".json")).foreach{p => p.write(contents); p.close}
+  def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {
+    Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> emRoute ~> check { 
+      return entityAs[SecurityContext]
+    }
   }
 }

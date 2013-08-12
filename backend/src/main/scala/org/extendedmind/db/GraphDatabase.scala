@@ -18,6 +18,10 @@ import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.kernel.extension.KernelExtensionFactory
 import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
 import org.neo4j.extension.timestamp.TimestampKernelExtensionFactory
+import org.neo4j.server.configuration.ServerConfigurator
+import org.neo4j.server.configuration.Configurator
+import org.neo4j.server.WrappingNeoServerBootstrapper
+import org.neo4j.kernel.GraphDatabaseAPI
 
 trait GraphDatabase extends Neo4jWrapper {
 
@@ -33,8 +37,15 @@ trait GraphDatabase extends Neo4jWrapper {
     extensions
   }
   
-  def startServer(graphdb: GraphDatabaseService){
-    
+  def startServer(){
+    if (settings.startNeo4jServer){
+      val config: ServerConfigurator = new ServerConfigurator(ds.gds.asInstanceOf[GraphDatabaseAPI]);
+      config.configuration().setProperty(
+        Configurator.WEBSERVER_PORT_PROPERTY_KEY, settings.neo4jServerPort);
+      val srv: WrappingNeoServerBootstrapper = 
+        new WrappingNeoServerBootstrapper(ds.gds.asInstanceOf[GraphDatabaseAPI], config);
+      srv.start();
+    }
   }
   
   // USER METHODS
@@ -129,11 +140,18 @@ trait GraphDatabase extends Neo4jWrapper {
   }
   
   private def getSecurityContext(user: Node, token: Token, userType: Byte): SecurityContext = {
-    SecurityContextWrapper(
-        UUIDUtils.getUUID(user.getProperty("uuid").asInstanceOf[String]), 
-        user.getProperty("email").asInstanceOf[String], 
-        userType, 
-        Some(Token.encryptToken(token)),
-        None) // TODO: Owning entities, aggregates with True value = rw, False = r
+    withTx{
+      implicit neo =>
+        // Save token
+        /*val tokenNode = createNode(MainLabel.TOKEN)
+        tokenNode.
+        */
+        SecurityContextWrapper(
+            UUIDUtils.getUUID(user.getProperty("uuid").asInstanceOf[String]), 
+            user.getProperty("email").asInstanceOf[String], 
+            userType, 
+            Some(Token.encryptToken(token)),
+            None) // TODO: Owning entities, aggregates with True value = rw, False = r
+    }
   }
 }

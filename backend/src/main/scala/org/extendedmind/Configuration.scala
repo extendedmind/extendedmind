@@ -25,7 +25,7 @@ import scala.collection.JavaConverters._
 // Custom settings from application.conf or overridden file
 
 class Settings(config: Config) extends Extension {
-  val serverPort = config.getString("extendedmind.server.port")
+  val serverPort = config.getInt("extendedmind.server.port")
   val neo4jStoreDir = config.getString("extendedmind.neo4j.storeDir")
   val neo4jPropertiesFile: Option[String] = {
     if (config.hasPath("extendedmind.neo4j.propertiesFile"))
@@ -35,6 +35,7 @@ class Settings(config: Config) extends Extension {
   }
   val isHighAvailability = config.getBoolean("extendedmind.neo4j.isHighAvailability")
   val startNeo4jServer = config.getBoolean("extendedmind.neo4j.startServer")
+  val neo4jServerPort = config.getInt("extendedmind.neo4j.serverPort")
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
 }
 

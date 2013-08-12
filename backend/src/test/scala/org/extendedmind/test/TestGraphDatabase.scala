@@ -36,10 +36,7 @@ trait TestGraphDatabase extends GraphDatabase {
     var tokenId: Long = 0
     withTx {
       implicit neo =>
-        val timo = createNode
-        timo.addLabel(MainLabel.USER)
-        timo.addLabel(UserLabel.ADMIN)
-
+        val timo = createNode(MainLabel.USER, UserLabel.ADMIN)
         val salt = PasswordService.generateSalt
         val password = TIMO_PASSWORD
         val encryptedPassword = PasswordService.getEncryptedPassword(
@@ -50,8 +47,7 @@ trait TestGraphDatabase extends GraphDatabase {
         timo.setProperty("passwordSalt", encryptedPassword.salt)
         timo.setProperty("email", TIMO_EMAIL)
         userId = timo.getId()
-        val timoTokenNode = createNode
-        timoTokenNode.addLabel(MainLabel.TOKEN)
+        val timoTokenNode = createNode(MainLabel.TOKEN)
         tokenId = timoTokenNode.getId()
     }
     withTx {

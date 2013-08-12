@@ -27,6 +27,7 @@ import spray.routing.AuthenticationFailedRejection
 import spray.routing.AuthenticationFailedRejection._
 import spray.routing.MissingHeaderRejection
 import spray.http.StatusCodes._
+import org.extendedmind.security.TokenExpiredRejection
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -44,7 +45,10 @@ class ServiceActor extends HttpServiceActor with Service {
         case CredentialsRejected ⇒ "The supplied authentication is invalid"
       }
       ctx ⇒ ctx.complete(Forbidden, rejectionMessage)
-	}
+
+    case TokenExpiredRejection() :: _ => 
+      ctx ⇒ ctx.complete(419, "The supllied token has expired.")  
+  }
 
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
