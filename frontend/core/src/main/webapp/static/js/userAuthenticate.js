@@ -12,18 +12,25 @@ var emAuthenticate = angular.module('em.userAuthenticate', ['em.base64']);
 
 emAuthenticate.factory('User', ['HttpBasicAuth', 'UserCookie', 'UserSessionStorage',
 function(HttpBasicAuth, UserCookie, UserSessionStorage) {
+  var rememberMe;
   return {
     setUserSessionData : function(authenticateResponse) {
       this.setCredentials('token', authenticateResponse.token);
       var token = HttpBasicAuth.getCredentials();
       UserSessionStorage.setUserToken(token);
       UserSessionStorage.setUserUUID(authenticateResponse.userUUID);
-    },
-    setUserTokenCookie : function() {
-      UserCookie.setUserToken(UserSessionStorage.getUserToken());
+      if (this.getUserRemembered()) {
+        UserCookie.setUserToken(token);
+      }
     },
     setCredentials : function(username, password) {
       HttpBasicAuth.setCredentials(username, password);
+    },
+    setUserRemembered : function(remember) {
+      rememberMe = remember;
+    },
+    getUserRemembered : function() {
+      return rememberMe === true;
     }
   };
 }]);
@@ -34,11 +41,13 @@ function($rootScope, User, UserCookie, UserLogin, UserSessionStorage) {
     userAuthenticate : function() {
       if (UserCookie.isUserRemembered()) {
         User.setCredentials('token', UserCookie.getUserToken());
+        User.setUserRemembered(true);
+
         this.userLogin(function() {
-          User.setUserTokenCookie();
           $rootScope.$broadcast('event:loginSuccess');
         }, function(error) {
         });
+
       } else if (UserSessionStorage.isUserAuthenticated()) {
         User.setCredentials('token', UserSessionStorage.getUserToken());
       } else {
@@ -56,13 +65,16 @@ function($rootScope, User, UserCookie, UserLogin, UserSessionStorage) {
   };
 }]);
 
-emAuthenticate.factory('UserLogin', ['$http',
-function($http) {
+emAuthenticate.factory('UserLogin', ['$http', 'User',
+function($http, User) {
   return {
     userLogin : function(success, error) {
       $http({
         method : 'POST',
-        url : '/api/authenticate'
+        url : '/api/authenticate',
+        data : {
+          rememberMe : User.getUserRemembered()
+        }
       }).success(function(authenticateResponse) {
         success(authenticateResponse);
       }).error(function(authenticateResponse) {

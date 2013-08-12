@@ -1,12 +1,9 @@
 "use strict";
 
-emControllers.controller('NotesController', ['$scope', 'Item', 'Items', 'UserSessionStorage',
-function($scope, Item, Items, UserSessionStorage) {
+emControllers.controller('NotesController', ['$scope', 'Items',
+function($scope, Items) {
   $scope.filterArgument = 'NOTE';
 
-  Item.getItems(UserSessionStorage.getUserUUID(), function() {
-    $scope.items = Items.getUserItems();
-    $scope.newItems = Items.getUserNewItems();
-  }, function(error) {
-  });
+  $scope.items = Items.getUserItems();
+  $scope.newItems = Items.getUserNewItems();
 }]);

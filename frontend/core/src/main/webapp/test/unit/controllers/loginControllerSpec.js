@@ -1,17 +1,19 @@
 "use strict";
 
 describe('em.controllers', function() {
-  beforeEach(module('em.controllers'));
+  beforeEach(module('em.controllers', 'em.helpers'));
 
   describe('LoginController', function() {
     var $controller, $httpBackend, $scope;
 
-    beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_) {
+    beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_, helperFactory) {
       $httpBackend = _$httpBackend_;
 
-      var authenticate = getJSONFixture('authenticateResponse.json');
+      var authenticateResponse = getJSONFixture('authenticateResponse.json');
 
-      $httpBackend.expectPOST('/api/authenticate').respond(authenticate);
+      $httpBackend.expectPOST('/api/authenticate').respond(function(method, url, data, headers) {
+        return helperFactory.expectResponse(method, url, data, headers, authenticateResponse);
+      });
 
       $scope = _$rootScope_.$new();
       $controller = _$controller_('LoginController', {
@@ -26,21 +28,24 @@ describe('em.controllers', function() {
 
     it('should return login response for user "timo@ext.md"', function() {
       $scope.user = {
-        "email" : 'timo@ext.md',
-        "password" : 'timo',
-        'remember' : false
+        "username" : 'timo@ext.md',
+        "password" : 'timopwd',
+        remember : true
       };
       $scope.userLogin();
       $httpBackend.flush();
+      expect($scope.error).toBe(undefined);
     });
-    //
+
     it('should return error response for user "na@na.com"', function() {
       $scope.user = {
-        "email" : 'na@ext.md',
-        "password" : 'timo'
+        "username" : 'na@ext.md',
+        "password" : 'timo',
       };
       $scope.userLogin();
+      expect($scope.error).toBe(undefined);
       $httpBackend.flush();
+      expect($scope.error).toBe('Forbidden');
     });
   });
 });
