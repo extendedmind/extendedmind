@@ -7,7 +7,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <version>0.1-SNAPSHOT</version>
   </parent>
   <groupId>org.extendedmind.frontend</groupId>
-  <artifactId>core</artifactId>
+  <artifactId>frontend-core</artifactId>
   <packaging>war</packaging>
   <name>Extended Mind :: Frontend :: Core</name>
   <description>Extended Mind Frontend Core</description>
@@ -37,6 +37,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <email>jukapeka@gmail.com</email>
     </developer>
   </developers>
+  
   <dependencies>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>

@@ -3,11 +3,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org</groupId>
-    <artifactId>extendedmind</artifactId>
+    <groupId>org.extendedmind</groupId>
+    <artifactId>root</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.extendedmind</groupId>
   <artifactId>backend</artifactId>
   <packaging>jar</packaging>
   <name>Extended Mind :: Backend</name>

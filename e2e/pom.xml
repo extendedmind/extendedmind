@@ -2,11 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org</groupId>
-    <artifactId>extendedmind</artifactId>
+    <groupId>org.extendedmind</groupId>
+    <artifactId>root</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.extendedmind</groupId>
   <artifactId>e2e</artifactId>
   <packaging>jar</packaging>
   <name>Extended Mind :: End-to-end Tests </name>
@@ -59,7 +58,7 @@
 
     <dependency>
       <groupId>org.extendedmind.frontend</groupId>
-      <artifactId>core</artifactId>
+      <artifactId>frontend-core</artifactId>
       <type>war</type>
       <scope>test</scope>
     </dependency>
@@ -181,7 +180,7 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.extendedmind.frontend</groupId>
-                  <artifactId>core</artifactId>
+                  <artifactId>frontend-core</artifactId>
                   <type>war</type>
                   <overWrite>false</overWrite>
                   <outputDirectory>${project.build.directory}</outputDirectory>
@@ -269,10 +268,9 @@
           </execution>
         </executions>
         <configuration>
-          <!-- <jettyConfig>${project.basedir}/src/test/resources/jetty.xml</jettyConfig> -->
           <stopKey>testKey</stopKey>
           <stopPort>9999</stopPort>
-          <war>${project.build.directory}/core-${project.version}.war</war>
+          <war>${project.build.directory}/frontend-core-${project.version}.war</war>
         </configuration>
         <dependencies>
           <dependency>

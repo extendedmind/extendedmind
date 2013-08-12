@@ -6,8 +6,8 @@
     <artifactId>oss-parent</artifactId>
     <version>7</version>
   </parent>
-  <groupId>org</groupId>
-  <artifactId>extendedmind</artifactId>
+  <groupId>org.extendedmind</groupId>
+  <artifactId>root</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Extended Mind</name>
@@ -111,7 +111,7 @@
 
       <dependency>
         <groupId>org.extendedmind.frontend</groupId>
-        <artifactId>core</artifactId>
+        <artifactId>frontend-core</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
