@@ -16,8 +16,8 @@ import spray.json.DefaultJsonProtocol
 import spray.routing.Directive.pimpApply
 import spray.routing.HttpServiceActor
 import spray.routing.directives.CompletionMagnet.fromObject
-import spray.routing.authentication.BasicAuth
 import org.extendedmind.security.ExtendedMindUserPassAuthenticator
+import org.extendedmind.security.ExtendedAuth
 import org.extendedmind.domain.Item
 import org.extendedmind.db.GraphDatabase
 import org.extendedmind.security.SecurityContext
@@ -27,7 +27,11 @@ import spray.routing.AuthenticationFailedRejection
 import spray.routing.AuthenticationFailedRejection._
 import spray.routing.MissingHeaderRejection
 import spray.http.StatusCodes._
-import org.extendedmind.security.TokenExpiredRejection
+import spray.routing.ExceptionHandler
+import org.extendedmind.security.TokenExpiredException
+import spray.routing.authentication.BasicAuth
+import org.extendedmind.security.ExtendedMindAuthenticateUserPassAuthenticator
+import org.extendedmind.security.ExtendedMindAuthenticateUserPassAuthenticatorImpl
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -45,11 +49,12 @@ class ServiceActor extends HttpServiceActor with Service {
         case CredentialsRejected ⇒ "The supplied authentication is invalid"
       }
       ctx ⇒ ctx.complete(Forbidden, rejectionMessage)
-
-    case TokenExpiredRejection() :: _ => 
-      ctx ⇒ ctx.complete(419, "The supllied token has expired.")  
   }
-
+  
+  implicit val myExceptionHandler = ExceptionHandler.apply {
+    case e: TokenExpiredException => ctx =>
+      ctx.complete(419, "The supllied token has expired.") 
+  }
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling
@@ -81,7 +86,7 @@ trait Service extends API with Injectable {
       }
     } ~
     postAuthenticate { url =>
-      authenticate(BasicAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticateAuthenticator, "user")) { securityContext =>
         complete {
           securityContext
         }
@@ -118,6 +123,10 @@ trait Service extends API with Injectable {
 
   def securityActions: SecurityActions = {
     inject[SecurityActions]
+  }
+  
+  def authenticateAuthenticator: ExtendedMindAuthenticateUserPassAuthenticator = {
+    inject[ExtendedMindAuthenticateUserPassAuthenticator] (by default new ExtendedMindAuthenticateUserPassAuthenticatorImpl)
   }
   
   def authenticator: ExtendedMindUserPassAuthenticator = {

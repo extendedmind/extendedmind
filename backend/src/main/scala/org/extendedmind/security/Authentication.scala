@@ -4,7 +4,6 @@ import scala.concurrent.Promise
 import org.extendedmind.db.GraphDatabase
 import spray.routing.authentication.UserPass
 import spray.routing.authentication.UserPassAuthenticator
-import spray.routing.authentication.Authentication
 import org.extendedmind.Settings
 import scaldi.Injector
 import scaldi.Injectable
@@ -18,34 +17,13 @@ import spray.http.BasicHttpCredentials
 import spray.http.HttpRequest
 import spray.http.HttpHeaders._
 import spray.http.HttpChallenge
+import spray.json._
+import DefaultJsonProtocol._
+import java.lang.RuntimeException
 
+// Normal authentication
 
-case class TokenExpiredRejection extends Rejection
-case class UserPassRemember(user: String, pass: String, remember: Boolean)
-
-
-object Authentication{
-  type UserPassRememberAuthenticator[T] = Option[UserPassRemember] => Future[Either[Rejection, T]]
-}
-
-/**
- * The ExtendedHttpAuthenticator implements HTTP Basic Auth with rememberMe value from POST data
- */
-class ExtendedHttpAuthenticator[U](val realm: String, val userPassAuthenticator: Authentication.UserPassRememberAuthenticator[U])(implicit val executionContext: ExecutionContext)
-    extends HttpAuthenticator[U] {
-
-  def authenticate(credentials: Option[HttpCredentials], ctx: RequestContext) = {
-    userPassAuthenticator {
-      credentials.flatMap {
-        case BasicHttpCredentials(user, pass) => Some(UserPassRemember(user, pass, ctx.request.entity.asString == "{\"remember\"}"))
-        case _                                => None
-      }
-    }
-  }
-
-  def getChallengeHeaders(httpRequest: HttpRequest) =
-    `WWW-Authenticate`(HttpChallenge(scheme = "Basic", realm = realm, params = Map.empty)) :: Nil
-}
+class TokenExpiredException extends RuntimeException
 
 trait ExtendedMindUserPassAuthenticator extends UserPassAuthenticator[SecurityContext] {
 
@@ -55,9 +33,10 @@ trait ExtendedMindUserPassAuthenticator extends UserPassAuthenticator[SecurityCo
     userPass match {
       case Some(UserPass(user, pass)) => {
         if (user == "token") {
+          throw new TokenExpiredException
           //new TokenExpiredRejection
           // TODO: Reject with 419 if token has expired
-          db.authenticate(pass)
+          //db.authenticate(pass)
         } else {
           db.authenticate(user, pass)
         }
@@ -69,4 +48,69 @@ trait ExtendedMindUserPassAuthenticator extends UserPassAuthenticator[SecurityCo
 class ExtendedMindUserPassAuthenticatorImpl(implicit val settings: Settings, implicit val inj: Injector)
   extends ExtendedMindUserPassAuthenticator with Injectable {
   override def db = inject[GraphDatabase]
+}
+
+// Authentication for POST /authenticate
+
+case class UserPassRemember(user: String, pass: String, payload: AuthenticatePayload)
+case class AuthenticatePayload(rememberMe: Boolean)
+
+object Authentication{
+  type UserPassRememberAuthenticator[T] = Option[UserPassRemember] => Future[Option[T]]
+}
+
+import Authentication._
+
+/**
+ * The ExtendedHttpAuthenticator implements HTTP Basic Auth with rememberMe value from POST data
+ */
+class ExtendedHttpAuthenticator[U](val realm: String, val userPassAuthenticator: UserPassRememberAuthenticator[U])(implicit val executionContext: ExecutionContext)
+    extends HttpAuthenticator[U] {
+
+  implicit val implAuthenticatePayload = jsonFormat1(AuthenticatePayload)
+  
+  def authenticate(credentials: Option[HttpCredentials], ctx: RequestContext) = {
+    userPassAuthenticator {
+      credentials.flatMap {
+        case BasicHttpCredentials(user, pass) => 
+                Some(UserPassRemember(user, pass, 
+                  ctx.request.entity.asString.asJson.convertTo[AuthenticatePayload]))
+        case _                                => None
+      }
+    }
+  }
+
+  def getChallengeHeaders(httpRequest: HttpRequest) =
+    `WWW-Authenticate`(HttpChallenge(scheme = "Basic", realm = realm, params = Map.empty)) :: Nil
+}
+
+trait ExtendedMindAuthenticateUserPassAuthenticator extends UserPassRememberAuthenticator[SecurityContext] {
+
+  def db: GraphDatabase
+
+  def apply(userPassRemember: Option[UserPassRemember]) = Promise.successful(
+    userPassRemember match {
+      case Some(UserPassRemember(user, pass, payload)) => {
+        if (user == "token") {
+          throw new TokenExpiredException
+          //new TokenExpiredRejection
+          // TODO: Reject with 419 if token has expired
+          //db.authenticate(pass)
+        } else {
+          db.authenticate(user, pass)
+        }
+      }
+      case None => None
+    }).future
+}
+
+class ExtendedMindAuthenticateUserPassAuthenticatorImpl(implicit val settings: Settings, implicit val inj: Injector)
+  extends ExtendedMindAuthenticateUserPassAuthenticator with Injectable {
+  override def db = inject[GraphDatabase]
+}
+
+object ExtendedAuth {
+  def apply[T](authenticator: UserPassRememberAuthenticator[T], realm: String)
+              (implicit ec: ExecutionContext): ExtendedHttpAuthenticator[T] =
+    new ExtendedHttpAuthenticator[T](realm, authenticator)
 }
