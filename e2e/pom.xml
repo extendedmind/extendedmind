@@ -165,7 +165,7 @@
                   <type>test-jar</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}</outputDirectory>
-                  <includes>*.zip</includes>
+                  <includes>*.zip, testData.properties</includes>
                 </artifactItem>
               </artifactItems>
             </configuration>

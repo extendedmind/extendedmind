@@ -95,12 +95,17 @@ trait TestGraphDatabase extends GraphDatabase {
         tokenNode --> UserRelationship.FOR_USER --> userNode
     }
     if (testDataLocation.isDefined){      
-      val testData = "12h valid token for timo@ext.md: " + Token.encryptToken(token) + "\n" +
-                     "12h valid, 7 days replaceable token for timo@ext.md: " + Token.encryptToken(replaceableToken) + "\n" +               
-                     "Expired token for timo@ext.md: " + Token.encryptToken(expiredToken) + "\n" + 
-                     "Expired but replaceable token for timo@ext.md: " + Token.encryptToken(expiredReplaceableToken) + "\n" +
-                     "Expired unreplaceable token for timo@ext.md: " + Token.encryptToken(expiredUnreplaceableToken) + "\n"
-      Some(new PrintWriter(testDataLocation.get + "/" + "testData.txt")).foreach{p => p.write(testData); p.close}
+      val testData = "# 12h valid token for timo@ext.md: " + "\n" + 
+                     "token=" + Token.encryptToken(token) + "\n\n" +
+                     "# 12h valid, 7 days replaceable token for timo@ext.md: " + "\n" + 
+                     "replaceableToken=" + Token.encryptToken(replaceableToken) + "\n\n" +                
+                     "# Expired token for timo@ext.md: " + "\n" +
+                     "expiredToken=" + Token.encryptToken(expiredToken) + "\n\n" + 
+                     "# Expired but replaceable token for timo@ext.md: " + "\n" + 
+                     "expiredReplaceableToken=" + Token.encryptToken(expiredReplaceableToken) + "\n\n" +
+                     "# Expired unreplaceable token for timo@ext.md: " + "\n" +
+                     "expiredUnreplaceableToken=" + Token.encryptToken(expiredUnreplaceableToken) + "\n\n"
+      Some(new PrintWriter(testDataLocation.get + "/" + "testData.properties")).foreach{p => p.write(testData); p.close}
     }
   }
 }
