@@ -5,9 +5,9 @@ var emMockHelpers = angular.module('em.mockHelpers', []);
 emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
 function($httpBackend, mockHttpBackendResponse) {
 
-  var authenticateResponse = getJSONFixture('putItemResponse.json');
-  var putItemResponse = getJSONFixture('putItemResponse.json');
-  var itemsResponse = getJSONFixture('itemsResponse.json');
+  var authenticateResponse = mockHttpBackendResponse.getAuthenticateResponse();
+  var itemsResponse = mockHttpBackendResponse.getItemsResponse();
+  var putItemResponse = mockHttpBackendResponse.getPutItemResponse();
 
   $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data, headers) {
     return mockHttpBackendResponse.expectResponse(method, url, data, headers, authenticateResponse);
@@ -42,6 +42,15 @@ function(Base64) {
       } else {
         return [403, 'Forbidden'];
       }
+    },
+    getAuthenticateResponse : function() {
+      return getJSONFixture('putItemResponse.json');
+    },
+    getItemsResponse : function() {
+      return getJSONFixture('itemsResponse.json');
+    },
+    getPutItemResponse : function() {
+      return getJSONFixture('putItemResponse.json');
     }
   }
 }]);

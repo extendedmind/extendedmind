@@ -40,7 +40,6 @@ describe('em.controllers', function() {
         password : 'timopwd',
       };
       $scope.userLogin();
-      expect($scope.error).toBe(undefined);
       $httpBackend.flush();
       expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
     });
@@ -51,7 +50,6 @@ describe('em.controllers', function() {
         password : 'wrong',
       };
       $scope.userLogin();
-      expect($scope.error).toBe(undefined);
       $httpBackend.flush();
       expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
     });

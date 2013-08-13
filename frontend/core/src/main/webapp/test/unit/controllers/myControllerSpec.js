@@ -4,16 +4,11 @@ describe('em.controllers', function() {
   beforeEach(module('em.controllers', 'em.mockHelpers'));
 
   describe('MyController', function() {
-    var $controller, $httpBackend, $scope;
-    var items;
-    var putItemResponse, user;
+    var $controller, $scope;
+    var mockHttpBackendResponse;
 
-    beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_) {
-      $httpBackend = _$httpBackend_;
-
-      items = getJSONFixture('itemsResponse.json');
-      putItemResponse = getJSONFixture('putItemResponse.json');
-      user = getJSONFixture('authenticateResponse.json');
+    beforeEach(inject(function(_$controller_, _$rootScope_, _mockHttpBackendResponse_) {
+      mockHttpBackendResponse = _mockHttpBackendResponse_;
 
       $scope = _$rootScope_.$new();
       $controller = _$controller_('MyController', {
@@ -21,14 +16,9 @@ describe('em.controllers', function() {
       });
     }));
 
-    afterEach(function() {
-      $httpBackend.verifyNoOutstandingExpectation();
-      $httpBackend.verifyNoOutstandingRequest();
-    });
-
     it('should return logged user\'s items', function() {
       expect($scope.items).toBe(undefined);
-      $scope.items = items;
+      $scope.items = mockHttpBackendResponse.getItemsResponse();
       expect($scope.items.length).toBe(3);
     });
   });

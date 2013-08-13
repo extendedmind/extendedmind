@@ -1,14 +1,14 @@
 "use strict";
 
 describe('em.controllers', function() {
-  beforeEach(module('em.controllers'));
+  beforeEach(module('em.controllers', 'em.mockHelpers'));
 
   describe('TasksController', function() {
     var $controller, $scope;
-    var items;
+    var mockHttpBackendResponse;
 
-    beforeEach(inject(function(_$controller_, _$rootScope_) {
-      items = getJSONFixture('itemsResponse.json');
+    beforeEach(inject(function(_$controller_, _$rootScope_, _mockHttpBackendResponse_) {
+      mockHttpBackendResponse = _mockHttpBackendResponse_;
 
       $scope = _$rootScope_.$new();
       $controller = _$controller_('TasksController', {
@@ -16,9 +16,9 @@ describe('em.controllers', function() {
       });
     }));
 
-    it('should return logged user\'s tasks', function() {
+    it('should return logged user\'s notes', function() {
       expect($scope.items).toBe(undefined);
-      $scope.items = items;
+      $scope.items = mockHttpBackendResponse.getItemsResponse();
       expect($scope.items.length).toBe(3);
     });
   });
