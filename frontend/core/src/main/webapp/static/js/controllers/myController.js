@@ -1,16 +1,13 @@
 "use strict";
 
-emControllers.controller('MyController', ['$scope', 'authenticated', 'Item', 'Items', 'UserSessionStorage',
-function($scope, authenticated, Item, Items, UserSessionStorage) {
+emControllers.controller('MyController', ['$scope', 'Item', 'Items',
+function($scope, Item, Items) {
 
-  Item.getItems(UserSessionStorage.getUserUUID(), function() {
-    $scope.items = Items.getUserItems();
-    $scope.newItems = Items.getUserNewItems();
-  }, function(error) {
-  });
+  $scope.items = Items.getUserItems();
+  $scope.newItems = Items.getUserNewItems();
 
   $scope.putItem = function() {
-    Item.putItem(UserSessionStorage.getUserUUID(), $scope.item, function() {
+    Item.putItem($scope.item, function() {
     }, function(error) {
     });
   };

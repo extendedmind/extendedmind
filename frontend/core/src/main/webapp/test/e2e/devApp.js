@@ -1,48 +1,30 @@
 "use strict";
 
-var emDevApp = angular.module('em.devApp', ['em.app', 'em.base64', 'ngMockE2E']);
+var emDevApp = angular.module('em.devApp', ['em.app', 'em.helpers', 'ngMockE2E']);
 
-emDevApp.run(function($httpBackend, Base64) {
+emDevApp.run(['$httpBackend', 'helperFactory',
+function($httpBackend, helperFactory) {
 
   var authenticateResponse = getJSONFixture('authenticateResponse.json');
   var putItemResponse = getJSONFixture('putItemResponse.json');
   var itemsResponse = getJSONFixture('itemsResponse.json');
 
   $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data, headers) {
-    var parsedAuthorizationHeader = headers.Authorization.split(' ');
-    var userNamePass = Base64.decode(parsedAuthorizationHeader[1]);
-    var parsedUserNamePass = userNamePass.split(':');
-    var userName = parsedUserNamePass[0];
-
-    if (userNamePass === 'timo@ext.md:timopwd') {
-      return [200, authenticateResponse];
-    } else if (userName === 'token') {
-      return [200, authenticateResponse];
-    } else {
-      return [403, 'Forbidden'];
-    }
+    return helperFactory.expectResponse(method, url, data, headers, authenticateResponse);
   });
-  $httpBackend.whenPUT('/api/' + authenticateResponse.userUUID + '/item').respond(putItemResponse);
+
+  $httpBackend.whenPUT('/api/' + authenticateResponse.userUUID + '/item').respond(function(method, url, data, headers) {
+    return helperFactory.expectResponse(method, url, data, headers, putItemResponse);
+  });
 
   $httpBackend.whenGET('/api/' + authenticateResponse.userUUID + '/items').respond(function(method, url, data, headers) {
-    var parsedAuthorizationHeader = headers.Authorization.split(' ');
-    var userNamePass = Base64.decode(parsedAuthorizationHeader[1]);
-    var parsedUserNamePass = userNamePass.split(':');
-    var userName = parsedUserNamePass[0];
-
-    if (userNamePass === 'timo@ext.md:timopwd') {
-      return [200, itemsResponse];
-    } else if (userName === 'token') {
-      return [200, itemsResponse];
-    } else {
-      return [403, 'Forbidden'];
-    }
+    return helperFactory.expectResponse(method, url, data, headers, itemsResponse);
   });
 
   $httpBackend.whenGET(/^\/static\//).passThrough();
   $httpBackend.whenGET(/^test\//).passThrough();
 
   $httpBackend.whenGET(/null/).respond(function(method, url, data, headers) {
-    return [403];
+    return [403, 'Forbidden'];
   });
-});
+}]);

@@ -2,24 +2,36 @@
 
 var emItem = angular.module('em.item', []);
 
-emItem.factory('Item', ['$http', 'Items',
-function($http, Items) {
+emItem.factory('userItems', ['Item', 'Items',
+function(Item, Items) {
   return {
-    getItems : function(userUUID, success, error) {
+    getItems : function() {
+      Item.getItems(function(items) {
+        Items.setUserItems(items);
+      }, function(error) {
+      });
+    }
+  };
+}]);
+
+emItem.factory('Item', ['$http', 'Items', 'UserSessionStorage',
+function($http, Items, UserSessionStorage) {
+  return {
+    getItems : function(success, error) {
       $http({
         method : 'GET',
-        url : '/api/' + userUUID + '/items'
+        url : '/api/' + UserSessionStorage.getUserUUID() + '/items',
+        cache : true
       }).success(function(userItems) {
-        Items.setUserItems(userItems);
-        success();
+        success(userItems);
       }).error(function(userItems) {
         error(userItems);
       });
     },
-    putItem : function(userUUID, item, success, error) {
+    putItem : function(item, success, error) {
       $http({
         method : 'PUT',
-        url : '/api/' + userUUID + '/item',
+        url : '/api/' + UserSessionStorage.getUserUUID() + '/item',
         data : item
       }).success(function(putItemResponse) {
         Items.putUserItem(item, putItemResponse);

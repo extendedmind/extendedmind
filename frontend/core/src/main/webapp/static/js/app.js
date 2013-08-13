@@ -9,9 +9,11 @@ function($locationProvider, $routeProvider) {
     templateUrl : '/static/partials/my.html',
     controller : 'MyController',
     resolve : {
-      authenticated : function(UserAuthenticate) {
-        // return UserAuthenticate.userAuthenticate();
-      }
+      userItems : ['userItems',
+      function(userItems) {
+        userItems.getItems();
+      }]
+
     }
   });
   $routeProvider.when('/login', {
@@ -20,11 +22,25 @@ function($locationProvider, $routeProvider) {
   });
   $routeProvider.when('/notes', {
     templateUrl : '/static/partials/notes.html',
-    controller : 'NotesController'
+    controller : 'NotesController',
+    resolve : {
+      userItems : ['userItems',
+      function(userItems) {
+        userItems.getItems();
+      }]
+
+    }
   });
   $routeProvider.when('/tasks', {
     templateUrl : '/static/partials/tasks.html',
-    controller : 'TasksController'
+    controller : 'TasksController',
+    resolve : {
+      userItems : ['userItems',
+      function(userItems) {
+        userItems.getItems();
+      }]
+
+    }
   });
   $routeProvider.when('/', {
     templateUrl : '/static/partials/home.html',
@@ -59,7 +75,11 @@ function($q, $rootScope) {
       return response || $q.when(response);
     },
     responseError : function(rejection) {
+      // Http 401 will cause a browser to display a login dialog
+      // http://stackoverflow.com/questions/86105/how-can-i-supress-the-browsers-authentication-dialog
       if (rejection.status === 403) {
+        $rootScope.$broadcast('event:authenticationRequired');
+      } else if (rejection.status === 419) {
         $rootScope.$broadcast('event:authenticationRequired');
       }
       return $q.reject(rejection);

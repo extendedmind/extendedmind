@@ -5,13 +5,12 @@ emControllers.controller('LoginController', ['$rootScope', '$scope', 'User', 'Us
 function($rootScope, $scope, User, UserAuthenticate) {
   $scope.userLogin = function() {
     User.setCredentials($scope.user.username, $scope.user.password);
+    User.setUserRemembered($scope.user.remember);
 
     UserAuthenticate.userLogin(function() {
-      if ($scope.user.remember) {
-        User.setUserTokenCookie();
-      }
       $rootScope.$broadcast('event:loginSuccess');
     }, function(error) {
+      $scope.error = error;
     });
   };
 }]);
