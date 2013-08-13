@@ -5,22 +5,12 @@ import org.extendedmind.test.SpecBase
 import org.extendedmind.test.TestImpermanentGraphDatabase
 import org.extendedmind.test.SpraySpecBase
 import org.extendedmind.test.TestGraphDatabase._
+import org.extendedmind.api.test.ImpermanentGraphDatabaseSpecBase
 
-class GraphDatabaseSpec extends SpraySpecBase{
+class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
 	
-  val db = new TestImpermanentGraphDatabase
-  
   def configurations = EmptyTestConfiguration 
   
-  // Insert to
-  before{
-    db.insertTestUsers
-  }
-
-  after{
-    db.shutdown(db.ds)
-  }
-
   describe("Graph Database Class"){
     it("should contain test users"){
       val testEmail = TIMO_EMAIL

@@ -23,7 +23,7 @@ import java.lang.RuntimeException
 
 // Normal authentication
 
-class TokenExpiredException extends RuntimeException
+class TokenExpiredException(msg: String) extends Exception(msg)
 
 trait ExtendedMindUserPassAuthenticator extends UserPassAuthenticator[SecurityContext] {
 
@@ -33,10 +33,7 @@ trait ExtendedMindUserPassAuthenticator extends UserPassAuthenticator[SecurityCo
     userPass match {
       case Some(UserPass(user, pass)) => {
         if (user == "token") {
-          throw new TokenExpiredException
-          //new TokenExpiredRejection
-          // TODO: Reject with 419 if token has expired
-          //db.authenticate(pass)
+          db.authenticate(pass)
         } else {
           db.authenticate(user, pass)
         }
@@ -52,7 +49,7 @@ class ExtendedMindUserPassAuthenticatorImpl(implicit val settings: Settings, imp
 
 // Authentication for POST /authenticate
 
-case class UserPassRemember(user: String, pass: String, payload: AuthenticatePayload)
+case class UserPassRemember(user: String, pass: String, payload: Option[AuthenticatePayload])
 case class AuthenticatePayload(rememberMe: Boolean)
 
 object Authentication{
@@ -67,16 +64,23 @@ import Authentication._
 class ExtendedHttpAuthenticator[U](val realm: String, val userPassAuthenticator: UserPassRememberAuthenticator[U])(implicit val executionContext: ExecutionContext)
     extends HttpAuthenticator[U] {
 
-  implicit val implAuthenticatePayload = jsonFormat1(AuthenticatePayload)
   
   def authenticate(credentials: Option[HttpCredentials], ctx: RequestContext) = {
     userPassAuthenticator {
       credentials.flatMap {
         case BasicHttpCredentials(user, pass) => 
-                Some(UserPassRemember(user, pass, 
-                  ctx.request.entity.asString.asJson.convertTo[AuthenticatePayload]))
+                Some(UserPassRemember(user, pass, payload(ctx.request.entity)))
         case _                                => None
       }
+    }
+  }
+
+  def payload(entity: spray.http.HttpEntity): Option[AuthenticatePayload] = {
+    import org.extendedmind.api.JsonImplicits._
+    if (entity.isEmpty){
+      None
+    }else{
+      Some(entity.asString.asJson.convertTo[AuthenticatePayload])
     }
   }
 
@@ -92,12 +96,9 @@ trait ExtendedMindAuthenticateUserPassAuthenticator extends UserPassRememberAuth
     userPassRemember match {
       case Some(UserPassRemember(user, pass, payload)) => {
         if (user == "token") {
-          throw new TokenExpiredException
-          //new TokenExpiredRejection
-          // TODO: Reject with 419 if token has expired
-          //db.authenticate(pass)
+          db.swapToken(pass, payload)
         } else {
-          db.authenticate(user, pass)
+          db.generateToken(user, pass, payload)
         }
       }
       case None => None

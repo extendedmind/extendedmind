@@ -1,10 +1,9 @@
 package org.extendedmind.security
 
 import java.util.UUID
+import org.neo4j.graphdb.Node
 
-case class SecurityContext(userUUID: String, email: String, userType: Byte, token: Option[String], owns: Option[Map[String,Boolean]])
-
-object SecurityContextWrapper{
-  def apply(userUUID: UUID, email: String, userType: Byte, token: Option[String], owns: Option[Map[String,Boolean]]) = 
-    new SecurityContext(userUUID.toString(), email, userType, token, owns)
+case class SecurityContext(userUUID: UUID, email: String, userType: Byte, token: Option[String], 
+                           owns: Option[Map[String,Boolean]]){
+  @transient var user: Node = null
 }

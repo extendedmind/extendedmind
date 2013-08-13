@@ -18,6 +18,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory
 import org.neo4j.kernel.extension.KernelExtensionFactory
 import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
 import org.neo4j.test.TestGraphDatabaseFactory
+import org.neo4j.graphdb.Node
 
 object TestGraphDatabase {
   val TIMO_EMAIL: String = "timo@ext.md"
@@ -32,8 +33,7 @@ trait TestGraphDatabase extends GraphDatabase {
   import TestGraphDatabase._
 
   def insertTestUsers() {
-    var userId: Long = 0
-    var tokenId: Long = 0
+    var user: Node = null
     withTx {
       implicit neo =>
         val timo = createNode(MainLabel.USER, UserLabel.ADMIN)
@@ -46,18 +46,10 @@ trait TestGraphDatabase extends GraphDatabase {
         timo.setProperty("passwordHash", Base64.encodeBase64String(encryptedPassword.passwordHash))
         timo.setProperty("passwordSalt", encryptedPassword.salt)
         timo.setProperty("email", TIMO_EMAIL)
-        userId = timo.getId()
-        val timoTokenNode = createNode(MainLabel.TOKEN)
-        tokenId = timoTokenNode.getId()
+        user = timo
     }
-    withTx {
-      implicit neo =>
-        val timoTokenNode = getNodeById(tokenId)
-        val timoToken = Token(UUIDUtils.getUUID(timoTokenNode.getProperty("uuid").asInstanceOf[String]))
-        timoTokenNode.setProperty("accessKey", timoToken.accessKey)
-        val timo = getNodeById(userId)
-        timo --> UserRelationship.HAS_TOKEN --> timoTokenNode
-    }
+    val token = Token(UUIDUtils.getUUID(user.getProperty("uuid").asInstanceOf[String]))
+    saveToken(user, token, None)
   }
 }
 
