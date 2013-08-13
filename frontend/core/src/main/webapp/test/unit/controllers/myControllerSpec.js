@@ -1,7 +1,7 @@
 "use strict";
 
 describe('em.controllers', function() {
-  beforeEach(module('em.controllers'));
+  beforeEach(module('em.controllers', 'em.mockHelpers'));
 
   describe('MyController', function() {
     var $controller, $httpBackend, $scope;
@@ -30,20 +30,6 @@ describe('em.controllers', function() {
       expect($scope.items).toBe(undefined);
       $scope.items = items;
       expect($scope.items.length).toBe(3);
-    });
-
-    it('should add new item into user\'s item list', function() {
-      $httpBackend.expectPUT('/api/' + user.userUUID + '/item').respond(function() {
-        return [200, putItemResponse];
-      });
-
-      $scope.item = {
-        title : 'Buy more milk'
-      };
-
-      $scope.putItem();
-      $httpBackend.flush();
-      expect($scope.newItems[0].title).toBe('Buy more milk');
     });
   });
 });

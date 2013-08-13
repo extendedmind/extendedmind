@@ -190,7 +190,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <include>lib/jquery/jquery.cookie.js</include>
             <include>lib/angularjs/angular.js</include>
             <include>lib/angularjs/angular-mocks.js</include>
-            <include>helpers.js</include>
+            <include>mockHelpers.js</include>
             <include>lib/base64.js</include>
             <include>js/*.js</include>
             <include>js/controllers/*.js</include>

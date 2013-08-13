@@ -1,19 +1,14 @@
 "use strict";
 
 describe('em.controllers', function() {
-  beforeEach(module('em.controllers', 'em.helpers'));
+  beforeEach(module('em.controllers', 'em.mockHelpers'));
 
   describe('LoginController', function() {
     var $controller, $httpBackend, $rootScope, $scope;
 
-    beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_, helperFactory) {
+    beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_) {
       $httpBackend = _$httpBackend_;
-
-      var authenticateResponse = getJSONFixture('authenticateResponse.json');
-
-      $httpBackend.expectPOST('/api/authenticate').respond(function(method, url, data, headers) {
-        return helperFactory.expectResponse(method, url, data, headers, authenticateResponse);
-      });
+      $httpBackend.expectPOST('/api/authenticate');
 
       $rootScope = _$rootScope_;
       spyOn($rootScope, "$broadcast");
