@@ -113,15 +113,15 @@ trait Service extends API with Injectable {
       }
     } ~
     postAuthenticate { url =>
-      authenticate(ExtendedAuth(authenticateAuthenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticateAuthenticator)) { securityContext =>
         complete {
           securityContext
         }
       }
     } ~
     getItems{ userUUID =>
-      authenticate(BasicAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID.equals(userUUID)){
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == userUUID){
 		      complete {
 		        Future[List[Item]] {
 		          itemActions.getItems(userUUID)

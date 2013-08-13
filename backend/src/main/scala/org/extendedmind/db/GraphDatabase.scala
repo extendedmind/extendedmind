@@ -38,8 +38,6 @@ trait GraphDatabase extends Neo4jWrapper {
   // If rememberMe is set, the token can be replaced for 7 days
   val TOKEN_REPLACEABLE: Long = 7 * 24 * 60 * 60 * 1000
 
-  val TIMO_PASSWORD: String = "timopwd"
-
   def settings: Settings
   implicit val implSettings = settings
 
@@ -288,4 +286,8 @@ trait GraphDatabase extends Neo4jWrapper {
     sc.user = user
     sc
   }
+  
+  // ITEM METHODS
+  // TODO
+  
 }
