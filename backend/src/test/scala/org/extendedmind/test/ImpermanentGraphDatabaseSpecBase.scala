@@ -31,6 +31,6 @@ trait ImpermanentGraphDatabaseSpecBase extends SpraySpecBase{
 
   before{
     db = new TestImpermanentGraphDatabase
-    db.insertTestUsers
+    db.insertTestUsers()
   }
 }

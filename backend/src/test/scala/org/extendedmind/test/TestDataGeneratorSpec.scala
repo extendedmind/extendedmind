@@ -101,9 +101,9 @@ class TestDataGeneratorSpec extends SpraySpecBase{
 
   describe("Embedded Graph Database"){
     it("should initialize with test data"){
-      db.insertTestUsers
+      db.insertTestUsers(Some(TEST_DATA_DESTINATION))
       db.shutdown(db.ds)
-      packNeo4jStore  
+      packNeo4jStore
     }
   }
   
