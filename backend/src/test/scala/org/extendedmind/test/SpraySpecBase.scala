@@ -8,7 +8,11 @@ import scaldi.Module
 
 abstract class SpraySpecBase extends SpecBase 
     with ScalatestRouteTest with Service{
-  
+
+  // Setup implicits to scope
+  implicit val rejectionHandler = Service.rejectionHandler
+  implicit val exceptionHandler = Service.exceptionHandler
+
   // spray-testkit
   def actorRefFactory = system
 
@@ -17,5 +21,7 @@ abstract class SpraySpecBase extends SpecBase
   
   // Empty Scaldi bindings
   object EmptyTestConfiguration extends Module
+
+  
   
 }

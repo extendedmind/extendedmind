@@ -17,15 +17,18 @@ import org.extendedmind.domain.UserWrapper
 import org.extendedmind.test.TestImpermanentGraphDatabase
 import org.extendedmind.db.GraphDatabase
 import org.extendedmind.test.TestGraphDatabase._
+import org.extendedmind.security.SecurityContext
+import org.extendedmind.api.JsonImplicits._
+import spray.httpx.SprayJsonSupport._
+import spray.httpx.marshalling._
+import org.extendedmind.security.AuthenticatePayload
 
-class ServiceSpec extends SpraySpecBase{
+
+class ServiceSpec extends ImpermanentGraphDatabaseSpecBase{
 
   // Mock out all action classes to test only the Service class
   val mockItemActions = mock[ItemActions]
   val mockSecurityActions = mock[SecurityActions]
-
-  // Create test database  
-  val db = new TestImpermanentGraphDatabase
 
   object ServiceTestConfiguration extends Module{
     bind [ItemActions] to mockItemActions
@@ -34,30 +37,35 @@ class ServiceSpec extends SpraySpecBase{
   }
   def configurations = ServiceTestConfiguration 
 
-  before{
-    db.insertTestUsers
-  }
-
   // Reset mocks after each test to be able to use verify after each test
   after{
     reset(mockItemActions)
     reset(mockSecurityActions)
-    db.shutdown(db.ds)
   }
   
   describe("Extended Mind Service"){
     it("should return token on authenticate"){
-      Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> emRoute ~> check { 
-        val authenticateResponse = entityAs[String]
-        writeJsonOutput("authenticateResponse", authenticateResponse)
-        authenticateResponse should include("token")
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD, false)
+      authenticateResponse.token should not be (None)
+    }
+    it("should swap token on token authentication"){
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD, true)
+      val payload = AuthenticatePayload(true)
+      Post("/authenticate", marshal(payload).right.get
+          ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+          ) ~> emRoute ~> check { 
+        val tokenAuthenticateResponse = entityAs[SecurityContext]
+        tokenAuthenticateResponse.token.get should not be (authenticateResponse.token.get)
       }
     }
   }
   
-  
-  // Helper file writer
-  def writeJsonOutput(filename: String, contents: String): Unit = {
-    Some(new PrintWriter("target/test-classes/" + filename + ".json")).foreach{p => p.write(contents); p.close}
+  def emailPasswordAuthenticate(email: String, password: String, rememberMe: Boolean): SecurityContext = {
+    
+    Post("/authenticate", marshal(AuthenticatePayload(rememberMe)).right.get
+        ) ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))
+        ) ~> emRoute ~> check { 
+      return entityAs[SecurityContext]
+    }
   }
 }

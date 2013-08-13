@@ -12,7 +12,6 @@ object MainLabel {
   val TAG = Label("TAG")
   val AGGREGATE = Label("AGGREGATE")
   val TOKEN = Label("TOKEN")
-
 }
 
 object UserLabel {

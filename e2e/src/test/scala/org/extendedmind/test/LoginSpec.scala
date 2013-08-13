@@ -34,5 +34,10 @@ class LoginSpec extends E2ESpecBase {
       click on id("loginbutton")
       eventually(timeout(Span(5, Seconds))) { currentUrl should include("/my") }
     }
+    it("should return error on expired token") {
+      val expiredToken = testData.getProperty("expiredToken");
+      // TODO: The stored tokens are in e2e/target/testData.properties
+      // Use them to check that authentication works as planned!
+    }
   }
 }

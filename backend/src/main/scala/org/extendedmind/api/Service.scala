@@ -16,8 +16,8 @@ import spray.json.DefaultJsonProtocol
 import spray.routing.Directive.pimpApply
 import spray.routing.HttpServiceActor
 import spray.routing.directives.CompletionMagnet.fromObject
-import spray.routing.authentication.BasicAuth
 import org.extendedmind.security.ExtendedMindUserPassAuthenticator
+import org.extendedmind.security.ExtendedAuth
 import org.extendedmind.domain.Item
 import org.extendedmind.db.GraphDatabase
 import org.extendedmind.security.SecurityContext
@@ -27,6 +27,35 @@ import spray.routing.AuthenticationFailedRejection
 import spray.routing.AuthenticationFailedRejection._
 import spray.routing.MissingHeaderRejection
 import spray.http.StatusCodes._
+import spray.routing.ExceptionHandler
+import org.extendedmind.security.TokenExpiredException
+import spray.routing.authentication.BasicAuth
+import org.extendedmind.security.ExtendedMindAuthenticateUserPassAuthenticator
+import org.extendedmind.security.ExtendedMindAuthenticateUserPassAuthenticatorImpl
+import java.util.UUID
+import spray.json.JsonFormat
+import spray.json.JsString
+import spray.json.JsValue
+import org.extendedmind.security.AuthenticatePayload
+
+object Service {
+  def rejectionHandler: RejectionHandler = {
+    RejectionHandler.apply {
+      case AuthenticationFailedRejection(cause, authenticator) :: _ => 
+        val rejectionMessage = cause match {
+          case CredentialsMissing  ⇒ "The resource requires authentication, which was not supplied with the request"
+          case CredentialsRejected ⇒ "The supplied authentication is invalid"
+        }
+        ctx ⇒ ctx.complete(Forbidden, rejectionMessage)
+    }
+  }
+  def exceptionHandler: ExceptionHandler = { 
+      ExceptionHandler.apply {
+      case e: TokenExpiredException => ctx =>
+        ctx.complete(419, "The supplied token has expired.")
+    }
+  }
+}
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -36,16 +65,10 @@ class ServiceActor extends HttpServiceActor with Service {
   def settings = SettingsExtension(context.system)
   def configurations = new Configuration(settings)
 
-  // Rejection handler
-  implicit val myRejectionHandler = RejectionHandler.apply {
-	  case AuthenticationFailedRejection(cause, authenticator) :: _ => 
-	    val rejectionMessage = cause match {
-        case CredentialsMissing  ⇒ "The resource requires authentication, which was not supplied with the request"
-        case CredentialsRejected ⇒ "The supplied authentication is invalid"
-      }
-      ctx ⇒ ctx.complete(Forbidden, rejectionMessage)
-	}
-
+  // Setup implicits
+  implicit val myRejectionHandler = Service.rejectionHandler
+  implicit val myExceptionHandler = Service.exceptionHandler
+  
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling
@@ -53,9 +76,22 @@ class ServiceActor extends HttpServiceActor with Service {
 }
 
 object JsonImplicits extends DefaultJsonProtocol {
+
+  // Create a UUID formatter
+  import spray.json._
+  implicit object UUIDJsonFormat extends JsonFormat[UUID] {
+    def write(x: UUID) = JsString(x.toString())
+    def read(value: JsValue) = value match {
+      case JsString(x) => java.util.UUID.fromString(x)
+      case x => deserializationError("Expected UUID as JsString, but got " + x)
+    }
+  }
+
   implicit val implItem = jsonFormat5(Item)
   implicit val implUser = jsonFormat2(User)
   implicit val implSecurityContext = jsonFormat5(SecurityContext)
+  implicit val implAuthenticatePayload = jsonFormat1(AuthenticatePayload)
+
 }
 
 // this class defines our service behavior independently from the service actor
@@ -77,7 +113,7 @@ trait Service extends API with Injectable {
       }
     } ~
     postAuthenticate { url =>
-      authenticate(BasicAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticateAuthenticator, "user")) { securityContext =>
         complete {
           securityContext
         }
@@ -85,7 +121,7 @@ trait Service extends API with Injectable {
     } ~
     getItems{ userUUID =>
       authenticate(BasicAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID == userUUID.toString()){
+        authorize(securityContext.userUUID.equals(userUUID)){
 		      complete {
 		        Future[List[Item]] {
 		          itemActions.getItems(userUUID)
@@ -114,6 +150,10 @@ trait Service extends API with Injectable {
 
   def securityActions: SecurityActions = {
     inject[SecurityActions]
+  }
+  
+  def authenticateAuthenticator: ExtendedMindAuthenticateUserPassAuthenticator = {
+    inject[ExtendedMindAuthenticateUserPassAuthenticator] (by default new ExtendedMindAuthenticateUserPassAuthenticatorImpl)
   }
   
   def authenticator: ExtendedMindUserPassAuthenticator = {
