@@ -37,6 +37,7 @@ import spray.json.JsonFormat
 import spray.json.JsString
 import spray.json.JsValue
 import org.extendedmind.security.AuthenticatePayload
+import org.extendedmind.bl.SetResponse
 
 object Service {
   def rejectionHandler: RejectionHandler = {
@@ -87,6 +88,7 @@ object JsonImplicits extends DefaultJsonProtocol {
     }
   }
 
+  implicit val implSetResponse = jsonFormat2(SetResponse)
   implicit val implItem = jsonFormat5(Item)
   implicit val implUser = jsonFormat2(User)
   implicit val implSecurityContext = jsonFormat5(SecurityContext)
@@ -132,8 +134,13 @@ trait Service extends API with Injectable {
     } ~ 
     putNewItem { userUUID =>
       entity(as[Item]) { item =>
-        val uuid: String = itemActions.putItem(userUUID, item, None)
-        complete("{\"uuid\":\"" + uuid + "\"}")
+        itemActions.putItem(userUUID, item, None) match {
+          case Right(sr) => complete(sr)
+          case Left(e) => reject(Rejection("asdasd")
+        }/*reject{
+          
+        }
+        complete("{\"uuid\":\"" + uuid + "\"}")*/
       }
     } ~
     putExistingItem { (userUUID, itemUUID) =>
