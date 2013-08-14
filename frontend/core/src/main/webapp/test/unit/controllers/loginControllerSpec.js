@@ -1,19 +1,17 @@
 "use strict";
 
 describe('em.controllers', function() {
-  beforeEach(module('em.controllers', 'em.helpers'));
+  beforeEach(module('em.controllers', 'em.mockHelpers'));
 
   describe('LoginController', function() {
-    var $controller, $httpBackend, $scope;
+    var $controller, $httpBackend, $rootScope, $scope;
 
-    beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_, helperFactory) {
+    beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_) {
       $httpBackend = _$httpBackend_;
+      $httpBackend.expectPOST('/api/authenticate');
 
-      var authenticateResponse = getJSONFixture('authenticateResponse.json');
-
-      $httpBackend.expectPOST('/api/authenticate').respond(function(method, url, data, headers) {
-        return helperFactory.expectResponse(method, url, data, headers, authenticateResponse);
-      });
+      $rootScope = _$rootScope_;
+      spyOn($rootScope, "$broadcast");
 
       $scope = _$rootScope_.$new();
       $controller = _$controller_('LoginController', {
@@ -26,26 +24,34 @@ describe('em.controllers', function() {
       $httpBackend.verifyNoOutstandingRequest();
     });
 
-    it('should return login response for user "timo@ext.md"', function() {
+    it('should broadcast \'event:loginSuccess\' on successful login', function() {
       $scope.user = {
-        "username" : 'timo@ext.md',
-        "password" : 'timopwd',
-        remember : true
+        username : 'timo@ext.md',
+        password : 'timopwd'
       };
       $scope.userLogin();
       $httpBackend.flush();
-      expect($scope.error).toBe(undefined);
+      expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginSuccess');
     });
 
-    it('should return error response for user "na@na.com"', function() {
+    it('should broadcast \'event:loginRequired\' on invalid email', function() {
       $scope.user = {
-        "username" : 'na@ext.md',
-        "password" : 'timo',
+        username : 'timo@extendedmind.org',
+        password : 'timopwd',
       };
       $scope.userLogin();
-      expect($scope.error).toBe(undefined);
       $httpBackend.flush();
-      expect($scope.error).toBe('Forbidden');
+      expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
+    });
+
+    it('should broadcast \'event:loginRequired\' on invalid password', function() {
+      $scope.user = {
+        username : 'timo@ext.md',
+        password : 'wrong',
+      };
+      $scope.userLogin();
+      $httpBackend.flush();
+      expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
     });
   });
 });

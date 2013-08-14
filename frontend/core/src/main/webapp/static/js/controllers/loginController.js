@@ -10,7 +10,7 @@ function($rootScope, $scope, User, UserAuthenticate) {
     UserAuthenticate.userLogin(function() {
       $rootScope.$broadcast('event:loginSuccess');
     }, function(error) {
-      $scope.error = error;
+      $rootScope.$broadcast('event:loginRequired');
     });
   };
 }]);

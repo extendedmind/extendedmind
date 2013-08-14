@@ -3,7 +3,7 @@
 describe('em.controllers', function() {
   beforeEach(module('em.controllers', 'em.mockHelpers'));
 
-  describe('MyController', function() {
+  describe('NotesController', function() {
     var $controller, $scope;
     var mockHttpBackendResponse;
 
@@ -11,12 +11,12 @@ describe('em.controllers', function() {
       mockHttpBackendResponse = _mockHttpBackendResponse_;
 
       $scope = _$rootScope_.$new();
-      $controller = _$controller_('MyController', {
+      $controller = _$controller_('NotesController', {
         $scope : $scope
       });
     }));
 
-    it('should return logged user\'s items', function() {
+    it('should return logged user\'s notes', function() {
       expect($scope.items).toBe(undefined);
       $scope.items = mockHttpBackendResponse.getItemsResponse();
       expect($scope.items.length).toBe(3);
