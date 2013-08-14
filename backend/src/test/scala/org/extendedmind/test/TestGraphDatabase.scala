@@ -94,6 +94,9 @@ trait TestGraphDatabase extends GraphDatabase {
         tokenNode.setProperty("replaceable", currentTime - 100)
         tokenNode --> UserRelationship.FOR_USER --> userNode
     }
+    
+    // Save items for user
+    
     if (testDataLocation.isDefined){      
       val testData = "# 12h valid token for timo@ext.md: " + "\n" + 
                      "token=" + Token.encryptToken(token) + "\n\n" +

@@ -38,8 +38,6 @@ trait GraphDatabase extends Neo4jWrapper {
   // If rememberMe is set, the token can be replaced for 7 days
   val TOKEN_REPLACEABLE: Long = 7 * 24 * 60 * 60 * 1000
 
-  val TIMO_PASSWORD: String = "timopwd"
-
   def settings: Settings
   implicit val implSettings = settings
 
@@ -153,7 +151,7 @@ trait GraphDatabase extends Neo4jWrapper {
         }
     }
   }
-  
+
   private def getUserNode(token: Token): Either[List[String], Node] = {
     withTx {
       implicit neo =>
@@ -168,90 +166,89 @@ trait GraphDatabase extends Neo4jWrapper {
 
   // SECURITY
 
-  def generateToken(email: String, attemptedPassword: String, payload: Option[AuthenticatePayload]): Option[SecurityContext] = {
-    val sc = authenticate(email: String, attemptedPassword: String)
-    if (sc.isDefined) {
-      // Store token
-      val token = Token(sc.get.userUUID)
-      saveToken(sc.get.user, token, payload)
-
-      Some(SecurityContext(
-        sc.get.userUUID,
-        sc.get.email,
-        sc.get.userType,
+  def generateToken(email: String, attemptedPassword: String, payload: Option[AuthenticatePayload]): Either[List[String], SecurityContext] = {
+    for {
+      sc <- authenticate(email: String, attemptedPassword: String).right
+      token <- Right(Token(sc.userUUID)).right
+      saved <- Right(saveToken(sc.user, token, payload)).right
+      sc <- Right(SecurityContext(
+        sc.userUUID,
+        sc.email,
+        sc.userType,
         Some(Token.encryptToken(token)),
-        None))
-    } else None
+        None)).right
+    } yield sc
   }
 
-  def swapToken(oldToken: String, payload: Option[AuthenticatePayload]): Option[SecurityContext] = {
-    val tokenEither = Token.decryptToken(oldToken)
-    if (tokenEither.isRight) {
-      val tokenNode = getTokenNode(tokenEither.right.get)
-      if (tokenNode.isRight) {
-        // Validate expiration
-        val currentTime = System.currentTimeMillis()
-        if (tokenNode.right.get.hasProperty("replaceable")){
-          val replaceable = tokenNode.right.get.getProperty("replaceable").asInstanceOf[Long];
-          if (currentTime < replaceable){
-            val userNode = getUserNode(tokenNode.right.get)
-            if (userNode.isRight){
-              val sc = getSecurityContext(userNode.right.get)
-              // Make new token and set properties to the token node
-              val token = Token(sc.userUUID)
-              withTx {
-                implicit neo =>
-                  setTokenProperties(tokenNode.right.get, token, payload)
-              }
-              Some(SecurityContext(
-                sc.userUUID,
-                sc.email,
-                sc.userType,
-                Some(Token.encryptToken(token)),
-                None))
-            }else None
-          }else throw new TokenExpiredException("Token no longer replaceable")
-        } else None
-      } else None
-    } else None
+  private def validateTokenReplacable(tokenNode: Node, currentTime: Long): Either[List[String], Node] = {
+    if (tokenNode.hasProperty("replaceable")) {
+      val replaceable = tokenNode.getProperty("replaceable").asInstanceOf[Long];
+      if (currentTime < replaceable) {
+        Right(tokenNode)
+      } else Left(List("Token no longer replaceable"))
+    } else Left(List("Token not replaceable"))
   }
 
-  def authenticate(email: String, attemptedPassword: String): Option[SecurityContext] = {
-    val user = getUserNode(email)
-    if (user.isRight) {
-      validatePassword(user.right.get, attemptedPassword)
-    } else {
-      None
+  private def createNewAccessKey(tokenNode: Node, sc: SecurityContext, payload: Option[AuthenticatePayload]): SecurityContext = {
+    // Make new token and set properties to the token node
+    val token = Token(sc.userUUID)
+    withTx {
+      implicit neo =>
+        setTokenProperties(tokenNode, token, payload)
     }
+    SecurityContext(
+      sc.userUUID,
+      sc.email,
+      sc.userType,
+      Some(Token.encryptToken(token)),
+      None)
   }
 
-  def authenticate(token: String): Option[SecurityContext] = {
-    val tokenEither = Token.decryptToken(token)
-    if (tokenEither.isRight) {
-      val user = getUserNode(tokenEither.right.get)
-      if (user.isRight) {
-        Some(getSecurityContext(user.right.get))
-      } else None
-    } else None
+  def swapToken(oldToken: String, payload: Option[AuthenticatePayload]): Either[List[String], SecurityContext] = {
+    val currentTime = System.currentTimeMillis()
+    for {
+      token <- Token.decryptToken(oldToken).right
+      tokenNode <- getTokenNode(token).right
+      tokenNode <- validateTokenReplacable(tokenNode, currentTime).right
+      userNode <- getUserNode(tokenNode).right
+      sc <- getSecurityContext(userNode).right
+      sc <- Right(createNewAccessKey(tokenNode, sc, payload)).right
+    } yield sc
   }
-  
+
+  def authenticate(email: String, attemptedPassword: String): Either[List[String], SecurityContext] = {
+    for {
+      user <- getUserNode(email).right
+      sc <- validatePassword(user, attemptedPassword).right
+    } yield sc
+  }
+
+  def authenticate(token: String): Either[List[String], SecurityContext] = {
+    for {
+      token <- Token.decryptToken(token).right
+      user <- getUserNode(token).right
+      sc <- getSecurityContext(user).right
+    } yield sc
+  }
+
   protected def saveToken(userNode: Node, token: Token, payload: Option[AuthenticatePayload]) {
     withTx {
       implicit neo =>
         val tokenNode = createNode(MainLabel.TOKEN)
         setTokenProperties(tokenNode, token, payload);
         tokenNode --> UserRelationship.FOR_USER --> userNode
+        Some(true)
     }
   }
-  
-  private def setTokenProperties(tokenNode: Node, token: Token, payload: Option[AuthenticatePayload]){
+
+  private def setTokenProperties(tokenNode: Node, token: Token, payload: Option[AuthenticatePayload]) {
     val currentTime = System.currentTimeMillis()
     tokenNode.setProperty("accessKey", token.accessKey)
     tokenNode.setProperty("expires", currentTime + TOKEN_DURATION)
     if (payload.isDefined && payload.get.rememberMe) {
       // Remember me has been clicked
       tokenNode.setProperty("replaceable", currentTime + TOKEN_REPLACEABLE)
-    }    
+    }
   }
 
   private def getStoredPassword(user: Node): Password = {
@@ -262,20 +259,22 @@ trait GraphDatabase extends Neo4jWrapper {
       user.getProperty("passwordSalt").asInstanceOf[Array[Byte]])
   }
 
-  private def validatePassword(user: Node, attemptedPassword: String): Option[SecurityContext] = {
+  private def validatePassword(user: Node, attemptedPassword: String): Either[List[String], SecurityContext] = {
     // Check password
     if (PasswordService.authenticate(attemptedPassword, getStoredPassword(user))) {
-      Some(getSecurityContext(user))
+      for {
+        sc <- getSecurityContext(user).right
+      } yield sc
     } else {
-      None
+      Left(List("Invalid password"))
     }
   }
 
-  private def getSecurityContext(user: Node): SecurityContext = {
+  private def getSecurityContext(user: Node): Either[List[String], SecurityContext] = {
     if (user.getLabels().asScala.find(p => p.name() == "ADMIN").isDefined)
-      getSecurityContext(user, UserWrapper.ADMIN)
+      Right(getSecurityContext(user, UserWrapper.ADMIN))
     else
-      getSecurityContext(user, UserWrapper.NORMAL)
+      Right(getSecurityContext(user, UserWrapper.NORMAL))
   }
 
   private def getSecurityContext(user: Node, userType: Byte): SecurityContext = {

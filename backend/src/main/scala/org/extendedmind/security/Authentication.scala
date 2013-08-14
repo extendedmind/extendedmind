@@ -21,21 +21,66 @@ import spray.json._
 import DefaultJsonProtocol._
 import java.lang.RuntimeException
 
+class TokenExpiredException(msg: String) extends Exception(msg)
+case class UserPassRealm(user: String, pass: String, realm: String)
+case class UserPassRemember(user: String, pass: String, payload: Option[AuthenticatePayload])
+case class AuthenticatePayload(rememberMe: Boolean)
+
+object Authentication{
+  type UserPassRealmAuthenticator[T] = Option[UserPassRealm] => Future[Option[T]]
+  type UserPassRememberAuthenticator[T] = Option[UserPassRemember] => Future[Option[T]]
+  
+  type EitherResult[T] = Either[List[String], T]
+  type OptionResult[T] = Option[T]
+  def securityContextEitherToOption(result: Either[List[String], SecurityContext]): OptionResult[SecurityContext] = {
+    result match {
+      case Right(sc) => Some(sc)
+      // TODO: Better logging
+      case Left(e) => {
+        e foreach println 
+        None
+      }
+    }
+  }
+}
+
+import Authentication._
+
 // Normal authentication
 
-class TokenExpiredException(msg: String) extends Exception(msg)
+/**
+ * The RealmHttpAuthenticator implements HTTP Basic Auth with realm included
+ */
+class RealmHttpAuthenticator[U](val realm: String, val userPassAuthenticator: UserPassRealmAuthenticator[U])(implicit val executionContext: ExecutionContext)
+    extends HttpAuthenticator[U] {
+  
+  def authenticate(credentials: Option[HttpCredentials], ctx: RequestContext) = {
+    userPassAuthenticator {
+      credentials.flatMap {
+        case BasicHttpCredentials(user, pass) => Some(UserPassRealm(user, pass, realm))
+        case _                                => None
+      }
+    }
+  }
+  
+  def getChallengeHeaders(httpRequest: HttpRequest) =
+    `WWW-Authenticate`(HttpChallenge(scheme = "Basic", realm = realm, params = Map.empty)) :: Nil
+}
 
-trait ExtendedMindUserPassAuthenticator extends UserPassAuthenticator[SecurityContext] {
+trait ExtendedMindUserPassAuthenticator extends UserPassRealmAuthenticator[SecurityContext] {
 
   def db: GraphDatabase
 
-  def apply(userPass: Option[UserPass]) = Promise.successful(
-    userPass match {
-      case Some(UserPass(user, pass)) => {
+  def apply(userPassRealm: Option[UserPassRealm]) = Promise.successful(
+    userPassRealm match {
+      case Some(UserPassRealm(user, pass, realm)) => {
         if (user == "token") {
-          db.authenticate(pass)
+          securityContextEitherToOption(db.authenticate(pass))
+        } else if (realm == "secure") {
+          securityContextEitherToOption(db.authenticate(user, pass))
         } else {
-          db.authenticate(user, pass)
+          // It is not possible to use username/password for other than "secure" realm methods
+          None
         }
       }
       case None => None
@@ -49,21 +94,11 @@ class ExtendedMindUserPassAuthenticatorImpl(implicit val settings: Settings, imp
 
 // Authentication for POST /authenticate
 
-case class UserPassRemember(user: String, pass: String, payload: Option[AuthenticatePayload])
-case class AuthenticatePayload(rememberMe: Boolean)
-
-object Authentication{
-  type UserPassRememberAuthenticator[T] = Option[UserPassRemember] => Future[Option[T]]
-}
-
-import Authentication._
-
 /**
- * The ExtendedHttpAuthenticator implements HTTP Basic Auth with rememberMe value from POST data
+ * The AuthenticateHttpAuthenticator implements HTTP Basic Auth with rememberMe value from POST data
  */
-class ExtendedHttpAuthenticator[U](val realm: String, val userPassAuthenticator: UserPassRememberAuthenticator[U])(implicit val executionContext: ExecutionContext)
+class AuthenticateHttpAuthenticator[U](val realm: String, val userPassAuthenticator: UserPassRememberAuthenticator[U])(implicit val executionContext: ExecutionContext)
     extends HttpAuthenticator[U] {
-
   
   def authenticate(credentials: Option[HttpCredentials], ctx: RequestContext) = {
     userPassAuthenticator {
@@ -96,9 +131,9 @@ trait ExtendedMindAuthenticateUserPassAuthenticator extends UserPassRememberAuth
     userPassRemember match {
       case Some(UserPassRemember(user, pass, payload)) => {
         if (user == "token") {
-          db.swapToken(pass, payload)
+          securityContextEitherToOption(db.swapToken(pass, payload))
         } else {
-          db.generateToken(user, pass, payload)
+          securityContextEitherToOption(db.generateToken(user, pass, payload))
         }
       }
       case None => None
@@ -111,7 +146,11 @@ class ExtendedMindAuthenticateUserPassAuthenticatorImpl(implicit val settings: S
 }
 
 object ExtendedAuth {
-  def apply[T](authenticator: UserPassRememberAuthenticator[T], realm: String)
-              (implicit ec: ExecutionContext): ExtendedHttpAuthenticator[T] =
-    new ExtendedHttpAuthenticator[T](realm, authenticator)
+  def apply[T](authenticator: UserPassRememberAuthenticator[T])
+              (implicit ec: ExecutionContext): AuthenticateHttpAuthenticator[T] =
+    new AuthenticateHttpAuthenticator[T]("authenticate", authenticator)
+
+ def apply[T](authenticator: UserPassRealmAuthenticator[T], realm: String)
+              (implicit ec: ExecutionContext): RealmHttpAuthenticator[T] =
+    new RealmHttpAuthenticator[T](realm, authenticator)
 }
