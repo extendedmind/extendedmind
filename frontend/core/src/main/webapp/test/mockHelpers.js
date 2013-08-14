@@ -44,13 +44,16 @@ function(Base64) {
       }
     },
     getAuthenticateResponse : function() {
-      return getJSONFixture('putItemResponse.json');
+      return getJSONFixture('authenticateResponse.json');
     },
     getItemsResponse : function() {
       return getJSONFixture('itemsResponse.json');
     },
     getPutItemResponse : function() {
       return getJSONFixture('putItemResponse.json');
+    },
+    clearSessionStorage : function() {
+      sessionStorage.clear();
     }
   }
 }]);
