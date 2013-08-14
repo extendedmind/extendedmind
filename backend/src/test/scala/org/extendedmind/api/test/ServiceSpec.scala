@@ -45,11 +45,11 @@ class ServiceSpec extends ImpermanentGraphDatabaseSpecBase{
   
   describe("Extended Mind Service"){
     it("should return token on authenticate"){
-      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD, false)
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       authenticateResponse.token should not be (None)
     }
     it("should swap token on token authentication"){
-      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD, true)
+      val authenticateResponse = emailPasswordAuthenticateRememberMe(TIMO_EMAIL, TIMO_PASSWORD)
       val payload = AuthenticatePayload(true)
       Post("/authenticate", marshal(payload).right.get
           ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
@@ -60,12 +60,20 @@ class ServiceSpec extends ImpermanentGraphDatabaseSpecBase{
     }
   }
   
-  def emailPasswordAuthenticate(email: String, password: String, rememberMe: Boolean): SecurityContext = {
-    
-    Post("/authenticate", marshal(AuthenticatePayload(rememberMe)).right.get
-        ) ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))
+  def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {
+    Post("/authenticate"
+        ) ~> addHeader(Authorization(BasicHttpCredentials(email, password))
         ) ~> emRoute ~> check { 
-      return entityAs[SecurityContext]
+      entityAs[SecurityContext]
     }
+  }
+  
+  def emailPasswordAuthenticateRememberMe(email: String, password: String): SecurityContext = {
+    Post("/authenticate", marshal(AuthenticatePayload(true)).right.get
+        ) ~> addHeader(Authorization(BasicHttpCredentials(email, password))
+        ) ~> emRoute ~> check { 
+      entityAs[SecurityContext]
+    }
+    
   }
 }

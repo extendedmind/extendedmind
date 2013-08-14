@@ -29,6 +29,19 @@ case class AuthenticatePayload(rememberMe: Boolean)
 object Authentication{
   type UserPassRealmAuthenticator[T] = Option[UserPassRealm] => Future[Option[T]]
   type UserPassRememberAuthenticator[T] = Option[UserPassRemember] => Future[Option[T]]
+  
+  type EitherResult[T] = Either[List[String], T]
+  type OptionResult[T] = Option[T]
+  def securityContextEitherToOption(result: Either[List[String], SecurityContext]): OptionResult[SecurityContext] = {
+    result match {
+      case Right(sc) => Some(sc)
+      // TODO: Better logging
+      case Left(e) => {
+        e foreach println 
+        None
+      }
+    }
+  }
 }
 
 import Authentication._
@@ -62,9 +75,9 @@ trait ExtendedMindUserPassAuthenticator extends UserPassRealmAuthenticator[Secur
     userPassRealm match {
       case Some(UserPassRealm(user, pass, realm)) => {
         if (user == "token") {
-          db.authenticate(pass)
+          securityContextEitherToOption(db.authenticate(pass))
         } else if (realm == "secure") {
-          db.authenticate(user, pass)
+          securityContextEitherToOption(db.authenticate(user, pass))
         } else {
           // It is not possible to use username/password for other than "secure" realm methods
           None
@@ -118,9 +131,9 @@ trait ExtendedMindAuthenticateUserPassAuthenticator extends UserPassRememberAuth
     userPassRemember match {
       case Some(UserPassRemember(user, pass, payload)) => {
         if (user == "token") {
-          db.swapToken(pass, payload)
+          securityContextEitherToOption(db.swapToken(pass, payload))
         } else {
-          db.generateToken(user, pass, payload)
+          securityContextEitherToOption(db.generateToken(user, pass, payload))
         }
       }
       case None => None

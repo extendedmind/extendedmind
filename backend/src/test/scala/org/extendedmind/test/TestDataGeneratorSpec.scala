@@ -111,9 +111,9 @@ class TestDataGeneratorSpec extends SpraySpecBase {
     val token = Token.encryptToken(Token(uuid))
     val securityContext = SecurityContext(uuid, TIMO_EMAIL, UserWrapper.ADMIN, Some(token), None)
     stub(mockGraphDatabase.generateToken(TIMO_EMAIL, TIMO_PASSWORD, None)).toReturn(
-      Some(securityContext))
+      Right(securityContext))
     stub(mockGraphDatabase.authenticate(token)).toReturn(
-      Some(securityContext))
+      Right(securityContext))
     securityContext
   }
 
