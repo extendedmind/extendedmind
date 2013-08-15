@@ -51,6 +51,9 @@ function(Base64) {
     },
     getPutNewItemResponse : function() {
       return getJSONFixture('putNewItemResponse.json');
+    },
+    clearSessionStorage : function() {
+      sessionStorage.clear();
     }
   }
 }]);
