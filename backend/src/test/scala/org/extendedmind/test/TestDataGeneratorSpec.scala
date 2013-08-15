@@ -2,11 +2,10 @@ package org.extendedmind.test
 
 import java.io.PrintWriter
 import java.util.UUID
-import org.extendedmind.bl.SecurityActions
-import org.extendedmind.bl.ItemActions
-import org.extendedmind.db.GraphDatabase
-import org.extendedmind.domain.UserWrapper
-import org.extendedmind.security.SecurityContext
+import org.extendedmind.bl._
+import org.extendedmind.db._
+import org.extendedmind.domain._
+import org.extendedmind.security._
 import org.extendedmind.test.TestGraphDatabase.TIMO_EMAIL
 import org.extendedmind.test.TestGraphDatabase.TIMO_PASSWORD
 import org.mockito.Mockito.reset
@@ -19,11 +18,6 @@ import org.zeroturnaround.zip.ZipUtil
 import java.io.File
 import org.zeroturnaround.zip.FileUtil
 import org.apache.commons.io.FileUtils
-import org.extendedmind.security.ExtendedMindUserPassAuthenticator
-import org.extendedmind.security.ExtendedMindUserPassAuthenticatorImpl
-import org.extendedmind.security.Token
-import org.extendedmind.domain.Item
-import org.extendedmind.domain.ItemWrapper
 import org.extendedmind.api.JsonImplicits._
 import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
@@ -64,7 +58,9 @@ class TestDataGeneratorSpec extends SpraySpecBase {
 
     it("should generate token response on /authenticate") {
       stubTimoAuthenticate()
-      Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> emRoute ~> check {
+      Post("/authenticate"
+          ) ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))
+          ) ~> emRoute ~> check {
         val authenticateResponse = entityAs[String]
         writeJsonOutput("authenticateResponse", authenticateResponse)
         authenticateResponse should include("token")
@@ -75,9 +71,9 @@ class TestDataGeneratorSpec extends SpraySpecBase {
     it("should generate item list response on /[userUUID]/items") {
       val securityContext = stubTimoAuthenticate()
       stub(itemActions.getItems(securityContext.userUUID)).toReturn(
-        List(ItemWrapper(UUID.randomUUID(), "book flight", None, None, None),
-          ItemWrapper(UUID.randomUUID(), "buy tickets", Some("TASK"), Some("2013-09-01"), None),
-          ItemWrapper(UUID.randomUUID(), "notes on productivity", Some("NOTE"), None, None)))
+        List(Item(Some(UUID.randomUUID()), "book flight", None, None, None),
+          Item(Some(UUID.randomUUID()), "buy tickets", Some("TASK"), Some("2013-09-01"), None),
+          Item(Some(UUID.randomUUID()), "notes on productivity", Some("NOTE"), None, None)))
       Get("/" + securityContext.userUUID + "/items") ~> addHeader(Authorization(BasicHttpCredentials("token", securityContext.token.get))) ~> emRoute ~> check {
         val itemsResponse = entityAs[String]
         writeJsonOutput("itemsResponse", itemsResponse)
@@ -85,15 +81,36 @@ class TestDataGeneratorSpec extends SpraySpecBase {
       }
     }
 
-    it("should generate uuid response on put to /[userUUID]/item") {
+    it("should generate uuid response on existing item put to /[userUUID]/item/[itemUUID]") {
+      val securityContext = stubTimoAuthenticate()
+      val existingItemUUID = UUID.randomUUID()
+      val existingItem = Item(None, "remember the milk", None, None, None)
+      stub(itemActions.putExistingItem(securityContext.userUUID, existingItem, existingItemUUID))
+            .toReturn(Right(new SetResponse(None, System.currentTimeMillis())))
+      Put("/" + securityContext.userUUID + "/item/" + existingItemUUID,
+        marshal(existingItem).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addHeader(Authorization(BasicHttpCredentials("token", securityContext.token.get))
+            ) ~> emRoute ~> check {
+          val putExistingItemResponse = entityAs[String]
+          writeJsonOutput("putExistingItemResponse", putExistingItemResponse)
+          putExistingItemResponse should include("modified")
+        }
+    }
+    
+    it("should generate uuid response on new item put to /[userUUID]/item") {
       val securityContext = stubTimoAuthenticate()
       val newItem = Item(None, "remember the milk", None, None, None)
-      stub(itemActions.putItem(securityContext.userUUID, newItem, None)).toReturn(UUID.randomUUID().toString())
+      stub(itemActions.putNewItem(securityContext.userUUID, newItem))
+            .toReturn(Right(new SetResponse(Some(UUID.randomUUID()), System.currentTimeMillis())))
       Put("/" + securityContext.userUUID + "/item",
-        marshal(newItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials("token", securityContext.token.get))) ~> emRoute ~> check {
+        marshal(newItem).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addHeader(Authorization(BasicHttpCredentials("token", securityContext.token.get))
+            ) ~> emRoute ~> check {
           val putItemResponse = entityAs[String]
-          writeJsonOutput("putItemResponse", putItemResponse)
-          putItemResponse should include("-")
+          writeJsonOutput("putNewItemResponse", putItemResponse)
+          putItemResponse should include("uuid")
         }
     }
   }

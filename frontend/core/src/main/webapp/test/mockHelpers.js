@@ -7,14 +7,14 @@ function($httpBackend, mockHttpBackendResponse) {
 
   var authenticateResponse = mockHttpBackendResponse.getAuthenticateResponse();
   var itemsResponse = mockHttpBackendResponse.getItemsResponse();
-  var putItemResponse = mockHttpBackendResponse.getPutItemResponse();
+  var putNewItemResponse = mockHttpBackendResponse.getPutNewItemResponse();
 
   $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data, headers) {
     return mockHttpBackendResponse.expectResponse(method, url, data, headers, authenticateResponse);
   });
 
   $httpBackend.whenPUT('/api/' + authenticateResponse.userUUID + '/item').respond(function(method, url, data, headers) {
-    return mockHttpBackendResponse.expectResponse(method, url, data, headers, putItemResponse);
+    return mockHttpBackendResponse.expectResponse(method, url, data, headers, putNewItemResponse);
   });
 
   $httpBackend.whenGET('/api/' + authenticateResponse.userUUID + '/items').respond(function(method, url, data, headers) {
@@ -44,13 +44,13 @@ function(Base64) {
       }
     },
     getAuthenticateResponse : function() {
-      return getJSONFixture('putItemResponse.json');
+      return getJSONFixture('authenticateResponse.json');
     },
     getItemsResponse : function() {
       return getJSONFixture('itemsResponse.json');
     },
-    getPutItemResponse : function() {
-      return getJSONFixture('putItemResponse.json');
+    getPutNewItemResponse : function() {
+      return getJSONFixture('putNewItemResponse.json');
     }
   }
 }]);

@@ -16,7 +16,11 @@ trait ItemActions{
   def db: GraphDatabase;
   def si: SearchIndex;
   
-  def putItem(userUUID: UUID, item: Item, itemUUID: Option[UUID]): Either[List[String], SetResponse] = {
+  def putNewItem(userUUID: UUID, item: Item): Either[List[String], SetResponse] = {
+    Right(SetResponse(Some(UUID.randomUUID()), 1))
+  }
+  
+  def putExistingItem(userUUID: UUID, item: Item, itemUUID: UUID): Either[List[String], SetResponse] = {
     Right(SetResponse(Some(UUID.randomUUID()), 1))
   }
   

@@ -1,43 +1,19 @@
 package org.extendedmind.api
 
 import scala.concurrent.Future
-import org.extendedmind.Configuration
-import org.extendedmind.Settings
-import org.extendedmind.SettingsExtension
-import org.extendedmind.bl.SecurityActions
-import org.extendedmind.bl.ItemActions
-import org.extendedmind.domain.User
-import scaldi.Injectable
-import scaldi.Injector
+import org.extendedmind._
+import org.extendedmind.bl._
+import org.extendedmind.security._
+import org.extendedmind.domain._
+import org.extendedmind.db._
+import scaldi._
 import spray.http._
-import spray.httpx.SprayJsonSupport.sprayJsonMarshaller
-import spray.httpx.SprayJsonSupport.sprayJsonUnmarshaller
-import spray.json.DefaultJsonProtocol
-import spray.routing.Directive.pimpApply
-import spray.routing.HttpServiceActor
-import spray.routing.directives.CompletionMagnet.fromObject
-import org.extendedmind.security.ExtendedMindUserPassAuthenticator
-import org.extendedmind.security.ExtendedAuth
-import org.extendedmind.domain.Item
-import org.extendedmind.db.GraphDatabase
-import org.extendedmind.security.SecurityContext
-import org.extendedmind.security.ExtendedMindUserPassAuthenticatorImpl
-import spray.routing.RejectionHandler
-import spray.routing.AuthenticationFailedRejection
-import spray.routing.AuthenticationFailedRejection._
-import spray.routing.MissingHeaderRejection
-import spray.http.StatusCodes._
-import spray.routing.ExceptionHandler
-import org.extendedmind.security.TokenExpiredException
-import spray.routing.authentication.BasicAuth
-import org.extendedmind.security.ExtendedMindAuthenticateUserPassAuthenticator
-import org.extendedmind.security.ExtendedMindAuthenticateUserPassAuthenticatorImpl
+import StatusCodes._
+import spray.httpx.SprayJsonSupport._
+import spray.json._
+import spray.routing._
+import AuthenticationFailedRejection._
 import java.util.UUID
-import spray.json.JsonFormat
-import spray.json.JsString
-import spray.json.JsValue
-import org.extendedmind.security.AuthenticatePayload
-import org.extendedmind.bl.SetResponse
 
 object Service {
   def rejectionHandler: RejectionHandler = {
@@ -134,19 +110,18 @@ trait Service extends API with Injectable {
     } ~ 
     putNewItem { userUUID =>
       entity(as[Item]) { item =>
-        itemActions.putItem(userUUID, item, None) match {
+        itemActions.putNewItem(userUUID, item) match {
           case Right(sr) => complete(sr)
-          case Left(e) => reject(Rejection("asdasd")
-        }/*reject{
-          
+          case Left(e) => reject(MalformedQueryParamRejection("item", e mkString(",")))
         }
-        complete("{\"uuid\":\"" + uuid + "\"}")*/
       }
     } ~
     putExistingItem { (userUUID, itemUUID) =>
       entity(as[Item]) { item =>
-        val uuid: String = itemActions.putItem(userUUID, item, Some(itemUUID))
-        complete(uuid)
+        itemActions.putExistingItem(userUUID, item, itemUUID) match {
+          case Right(sr) => complete(sr)
+          case Left(e) => reject(MalformedQueryParamRejection("item", e mkString(",")))
+        }
       }
     }
   }
