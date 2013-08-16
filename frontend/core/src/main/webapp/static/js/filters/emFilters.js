@@ -1,6 +1,4 @@
-"use strict";
-
-var emFilters = angular.module('em.filters', []);
+'use strict';
 
 emFilters.filter('interpolate', ['version',
 function(version) {
@@ -9,7 +7,8 @@ function(version) {
   };
 }]);
 
-emFilters.filter('userItems', function() {
+emFilters.filter('userItems', [
+function() {
   var userItemsFilter = function(items, itemsFilterArgument) {
     var filteredItems = [];
     angular.forEach(items, function(item) {
@@ -19,4 +18,4 @@ emFilters.filter('userItems', function() {
     return filteredItems;
   };
   return userItemsFilter;
-});
+}]);

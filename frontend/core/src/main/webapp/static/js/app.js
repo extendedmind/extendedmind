@@ -1,6 +1,11 @@
-"use strict";
+'use strict';
 
-var emApp = angular.module('em.app', ['em.controllers', 'em.directives', 'em.filters', 'em.services', 'em.userAuthenticate']);
+var emApp = angular.module('em.app', ['em.controllers', 'em.directives', 'em.filters', 'em.services']);
+
+var emControllers = angular.module('em.controllers', []);
+var emDirectives = angular.module('em.directives', []);
+var emFilters = angular.module('em.filters', []);
+var emServices = angular.module('em.services', ['em.base64']);
 
 emApp.config(['$locationProvider', '$routeProvider',
 function($locationProvider, $routeProvider) {

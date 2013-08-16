@@ -1,6 +1,4 @@
-"use strict";
-
-var emDirectives = angular.module('em.directives', []);
+'use strict';
 
 emDirectives.directive('appVersion', ['version',
 function(version) {
@@ -9,7 +7,8 @@ function(version) {
   };
 }]);
 
-emDirectives.directive('itemList', function() {
+emDirectives.directive('itemList', [
+function() {
   return {
     restrict : 'A',
     templateUrl : '/static/partials/templates/newItemTemplate.html',
@@ -22,9 +21,10 @@ emDirectives.directive('itemList', function() {
       }
     }
   }
-});
+}]);
 
-emDirectives.directive('taskEdit', function() {
+emDirectives.directive('taskEdit', [
+function() {
   return {
     restrict : 'A',
     templateUrl : '/static/partials/templates/newTaskTemplate.html',
@@ -36,9 +36,10 @@ emDirectives.directive('taskEdit', function() {
       }
     }
   }
-});
+}]);
 
-emDirectives.directive('noteEdit', function() {
+emDirectives.directive('noteEdit', [
+function() {
   return {
     restrict : 'A',
     templateUrl : '/static/partials/templates/newNoteTemplate.html',
@@ -50,4 +51,4 @@ emDirectives.directive('noteEdit', function() {
       }
     }
   }
-});
+}]);

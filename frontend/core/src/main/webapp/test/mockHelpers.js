@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-var emMockHelpers = angular.module('em.mockHelpers', []);
+var emMockHelpers = angular.module('em.mockHelpers', ['em.base64']);
 
 emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
 function($httpBackend, mockHttpBackendResponse) {

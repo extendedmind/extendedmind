@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 emControllers.controller('NotesController', ['$scope', 'Items',
 function($scope, Items) {

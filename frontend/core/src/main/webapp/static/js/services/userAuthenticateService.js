@@ -1,16 +1,6 @@
-// AngularJS does not support cookie expiration:
-// https://github.com/angular/angular.js/pull/2459.
-//
-// Using JQUery cookie instead
-// http://stackoverflow.com/questions/1458724/how-to-set-unset-cookie-with-jquery
-// http://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.3.1/jquery.cookie.min.js
-// }
+'use strict';
 
-"use strict";
-
-var emAuthenticate = angular.module('em.userAuthenticate', ['em.base64']);
-
-emAuthenticate.factory('User', ['HttpBasicAuth', 'UserCookie', 'UserSessionStorage',
+emServices.factory('User', ['HttpBasicAuth', 'UserCookie', 'UserSessionStorage',
 function(HttpBasicAuth, UserCookie, UserSessionStorage) {
   var rememberMe;
   return {
@@ -35,7 +25,7 @@ function(HttpBasicAuth, UserCookie, UserSessionStorage) {
   };
 }]);
 
-emAuthenticate.factory('UserAuthenticate', ['$rootScope', 'User', 'UserCookie', 'UserLogin', 'UserSessionStorage',
+emServices.factory('UserAuthenticate', ['$rootScope', 'User', 'UserCookie', 'UserLogin', 'UserSessionStorage',
 function($rootScope, User, UserCookie, UserLogin, UserSessionStorage) {
   return {
     userAuthenticate : function() {
@@ -65,7 +55,7 @@ function($rootScope, User, UserCookie, UserLogin, UserSessionStorage) {
   };
 }]);
 
-emAuthenticate.factory('UserLogin', ['$http', 'User',
+emServices.factory('UserLogin', ['$http', 'User',
 function($http, User) {
   return {
     userLogin : function(success, error) {
@@ -84,7 +74,7 @@ function($http, User) {
   };
 }]);
 
-emAuthenticate.factory('HttpBasicAuth', ['$http', 'Base64',
+emServices.factory('HttpBasicAuth', ['$http', 'Base64',
 function($http, Base64) {
   $http.defaults.headers.common['Authorization'] = 'Basic ';
   var encoded;
@@ -103,7 +93,14 @@ function($http, Base64) {
   };
 }]);
 
-emAuthenticate.factory('UserCookie', [
+// AngularJS does not support cookie expiration:
+// https://github.com/angular/angular.js/pull/2459.
+//
+// Using JQUery cookie instead
+// http://stackoverflow.com/questions/1458724/how-to-set-unset-cookie-with-jquery
+// http://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.3.1/jquery.cookie.min.js
+// }
+emServices.factory('UserCookie', [
 function() {
   return {
     setUserToken : function(token) {
@@ -123,7 +120,7 @@ function() {
   };
 }]);
 
-emAuthenticate.factory('UserSessionStorage', [
+emServices.factory('UserSessionStorage', [
 function() {
   return {
     setUserToken : function(token) {

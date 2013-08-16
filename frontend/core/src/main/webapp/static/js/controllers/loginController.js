@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 emControllers.controller('LoginController', ['$rootScope', '$scope', 'User', 'UserAuthenticate',
 

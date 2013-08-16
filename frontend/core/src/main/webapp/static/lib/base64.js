@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var emBase64 = angular.module('em.base64', []);
 

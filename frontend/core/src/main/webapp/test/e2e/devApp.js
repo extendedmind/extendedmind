@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var emDevApp = angular.module('em.devApp', ['em.app', 'em.mockHelpers', 'ngMockE2E']);
 

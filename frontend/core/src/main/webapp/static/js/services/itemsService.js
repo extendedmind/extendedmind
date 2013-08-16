@@ -1,8 +1,6 @@
-"use strict";
+'use strict';
 
-var emItem = angular.module('em.item', []);
-
-emItem.factory('userItems', ['Item', 'Items',
+emServices.factory('userItems', ['Item', 'Items',
 function(Item, Items) {
   return {
     getItems : function() {
@@ -14,7 +12,7 @@ function(Item, Items) {
   };
 }]);
 
-emItem.factory('Item', ['$http', 'Items', 'UserSessionStorage',
+emServices.factory('Item', ['$http', 'Items', 'UserSessionStorage',
 function($http, Items, UserSessionStorage) {
   return {
     getItems : function(success, error) {
@@ -56,7 +54,7 @@ function($http, Items, UserSessionStorage) {
   };
 }]);
 
-emItem.factory('Items', [
+emServices.factory('Items', [
 function() {
   var userItems;
   var userNewItems = [];

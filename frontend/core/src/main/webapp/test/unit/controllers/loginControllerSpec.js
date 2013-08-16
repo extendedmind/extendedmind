@@ -1,9 +1,11 @@
-"use strict";
+'use strict';
 
 describe('em.controllers', function() {
-  beforeEach(module('em.controllers', 'em.mockHelpers'));
+  beforeEach(module('em.controllers'));
 
   describe('LoginController', function() {
+    beforeEach(module('em.services', 'em.mockHelpers'));
+
     var $controller, $httpBackend, $rootScope, $scope;
     var mockHttpBackendResponse;
 
@@ -28,7 +30,7 @@ describe('em.controllers', function() {
       mockHttpBackendResponse.clearSessionStorage();
     });
 
-    it('should broadcast \'event:loginRequired\' on invalid email', function() {
+    it('should broadcast \'event:loginRequired\' on invalid email', inject(function() {
       $scope.user = {
         username : 'timo@extendedmind.org',
         password : 'timopwd',
@@ -36,9 +38,9 @@ describe('em.controllers', function() {
       $scope.userLogin();
       $httpBackend.flush();
       expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
-    });
+    }));
 
-    it('should broadcast \'event:loginRequired\' on invalid password', function() {
+    it('should broadcast \'event:loginRequired\' on invalid password', inject(function() {
       $scope.user = {
         username : 'timo@ext.md',
         password : 'wrong',
@@ -46,9 +48,9 @@ describe('em.controllers', function() {
       $scope.userLogin();
       $httpBackend.flush();
       expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
-    });
+    }));
 
-    it('should broadcast \'event:loginSuccess\' on successful login', function() {
+    it('should broadcast \'event:loginSuccess\' on successful login', inject(function() {
       $scope.user = {
         username : 'timo@ext.md',
         password : 'timopwd'
@@ -56,6 +58,6 @@ describe('em.controllers', function() {
       $scope.userLogin();
       $httpBackend.flush();
       expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginSuccess');
-    });
+    }));
   });
 });
