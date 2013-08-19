@@ -74,32 +74,6 @@ function($http, User) {
   };
 }]);
 
-emServices.factory('HttpBasicAuth', ['$http', 'Base64',
-function($http, Base64) {
-  $http.defaults.headers.common['Authorization'] = 'Basic ';
-  var encoded;
-
-  return {
-    setCredentials : function(username, password) {
-      encoded = Base64.encode(username + ':' + password);
-      $http.defaults.headers.common.Authorization = 'Basic ' + encoded;
-    },
-    getCredentials : function() {
-      return encoded;
-    },
-    clearCredentials : function() {
-      $http.defaults.headers.common.Authorization = 'Basic ';
-    }
-  };
-}]);
-
-// AngularJS does not support cookie expiration:
-// https://github.com/angular/angular.js/pull/2459.
-//
-// Using JQUery cookie instead
-// http://stackoverflow.com/questions/1458724/how-to-set-unset-cookie-with-jquery
-// http://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.3.1/jquery.cookie.min.js
-// }
 emServices.factory('UserCookie', [
 function() {
   return {
