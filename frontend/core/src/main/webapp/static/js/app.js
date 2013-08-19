@@ -14,9 +14,9 @@ function($locationProvider, $routeProvider) {
     templateUrl : '/static/partials/my.html',
     controller : 'MyController',
     resolve : {
-      userItems : ['userItems',
-      function(userItems) {
-        userItems.getItems();
+      userItemsFactory : ['userItemsFactory',
+      function(userItemsFactory) {
+        userItemsFactory.getItems();
       }]
 
     }
@@ -29,9 +29,9 @@ function($locationProvider, $routeProvider) {
     templateUrl : '/static/partials/notes.html',
     controller : 'NotesController',
     resolve : {
-      userItems : ['userItems',
-      function(userItems) {
-        userItems.getItems();
+      userItemsFactory : ['userItemsFactory',
+      function(userItemsFactory) {
+        userItemsFactory.getItems();
       }]
 
     }
@@ -40,9 +40,9 @@ function($locationProvider, $routeProvider) {
     templateUrl : '/static/partials/tasks.html',
     controller : 'TasksController',
     resolve : {
-      userItems : ['userItems',
-      function(userItems) {
-        userItems.getItems();
+      userItemsFactory : ['userItemsFactory',
+      function(userItemsFactory) {
+        userItemsFactory.getItems();
       }]
 
     }
@@ -62,10 +62,10 @@ function($locationProvider, $routeProvider) {
   $locationProvider.html5Mode(true);
 }]);
 
-emApp.run(['$location', '$rootScope', 'UserAuthenticate',
-function($location, $rootScope, UserAuthenticate) {
+emApp.run(['$location', '$rootScope', 'userAuthenticate',
+function($location, $rootScope, userAuthenticate) {
   $rootScope.$on('event:authenticationRequired', function() {
-    UserAuthenticate.userAuthenticate();
+    userAuthenticate.authenticate();
   });
   $rootScope.$on('event:loginRequired', function() {
     $location.path('/login');

@@ -1,5 +1,5 @@
 'use strict';
 
-emServices.factory('Tasks', [
+emServices.factory('tasksFactory', [
 function() {
 }]);

@@ -30,14 +30,14 @@ function($q, $rootScope) {
   };
 }]);
 
-emServices.factory('HttpBasicAuth', ['$http', 'Base64',
-function($http, Base64) {
+emServices.factory('httpBasicAuth', ['$http', 'base64',
+function($http, base64) {
   $http.defaults.headers.common['Authorization'] = 'Basic ';
   var encoded;
 
   return {
     setCredentials : function(username, password) {
-      encoded = Base64.encode(username + ':' + password);
+      encoded = base64.encode(username + ':' + password);
       $http.defaults.headers.common.Authorization = 'Basic ' + encoded;
     },
     getCredentials : function() {
@@ -47,4 +47,24 @@ function($http, Base64) {
       $http.defaults.headers.common.Authorization = 'Basic ';
     }
   };
+}]);
+
+emServices.factory('httpHandler', ['$http',
+function($http) {
+  var httpHandler = {};
+
+  angular.forEach(['get', 'delete', 'head', 'jsonp'], function(name) {
+    httpHandler[name] = function(url, config) {
+      config = config || {};
+      return $http[name](url, config);
+    };
+  });
+
+  angular.forEach(['post', 'put'], function(name) {
+    httpHandler[name] = function(url, data, config) {
+      config = config || {};
+      return $http[name](url, data, config);
+    };
+  });
+  return httpHandler;
 }]);

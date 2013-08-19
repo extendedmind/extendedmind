@@ -1,9 +1,9 @@
 'use strict';
 
-emControllers.controller('TasksController', ['$scope', 'Items',
-function($scope, Items) {
+emControllers.controller('TasksController', ['$scope', 'itemsFactory',
+function($scope, itemsFactory) {
   $scope.filterArgument = 'TASK';
 
-  $scope.items = Items.getUserItems();
-  $scope.newItems = Items.getUserNewItems();
+  $scope.items = itemsFactory.getUserItems();
+  $scope.newItems = itemsFactory.getUserNewItems();
 }]);

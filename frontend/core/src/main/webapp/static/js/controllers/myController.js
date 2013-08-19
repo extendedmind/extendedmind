@@ -1,13 +1,13 @@
 'use strict';
 
-emControllers.controller('MyController', ['$scope', 'Item', 'Items',
-function($scope, Item, Items) {
+emControllers.controller('MyController', ['$scope', 'itemFactory', 'itemsFactory',
+function($scope, itemFactory, itemsFactory) {
 
-  $scope.items = Items.getUserItems();
-  $scope.newItems = Items.getUserNewItems();
+  $scope.items = itemsFactory.getUserItems();
+  $scope.newItems = itemsFactory.getUserNewItems();
 
   $scope.putItem = function() {
-    Item.putItem($scope.item, function() {
+    itemFactory.putItem($scope.item, function() {
     }, function(error) {
     });
   };

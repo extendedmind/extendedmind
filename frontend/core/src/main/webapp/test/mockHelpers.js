@@ -26,12 +26,12 @@ function($httpBackend, mockHttpBackendResponse) {
   });
 }]);
 
-emMockHelpers.factory('mockHttpBackendResponse', ['Base64',
-function(Base64) {
+emMockHelpers.factory('mockHttpBackendResponse', ['base64',
+function(base64) {
   return {
     expectResponse : function(method, url, data, headers, responseData) {
       var parsedAuthorizationHeader = headers.Authorization.split(' ');
-      var userNamePass = Base64.decode(parsedAuthorizationHeader[1]);
+      var userNamePass = base64.decode(parsedAuthorizationHeader[1]);
       var parsedUserNamePass = userNamePass.split(':');
       var userName = parsedUserNamePass[0];
 

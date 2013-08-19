@@ -1,20 +1,20 @@
 'use strict';
 
-emServices.factory('User', ['HttpBasicAuth', 'UserCookie', 'UserSessionStorage',
-function(HttpBasicAuth, UserCookie, UserSessionStorage) {
+emServices.factory('user', ['httpBasicAuth', 'userCookie', 'userSessionStorage',
+function(httpBasicAuth, userCookie, userSessionStorage) {
   var rememberMe;
   return {
     setUserSessionData : function(authenticateResponse) {
       this.setCredentials('token', authenticateResponse.token);
-      var token = HttpBasicAuth.getCredentials();
-      UserSessionStorage.setUserToken(token);
-      UserSessionStorage.setUserUUID(authenticateResponse.userUUID);
+      var token = httpBasicAuth.getCredentials();
+      userSessionStorage.setUserToken(token);
+      userSessionStorage.setUserUUID(authenticateResponse.userUUID);
       if (this.getUserRemembered()) {
-        UserCookie.setUserToken(token);
+        userCookie.setUserToken(token);
       }
     },
     setCredentials : function(username, password) {
-      HttpBasicAuth.setCredentials(username, password);
+      httpBasicAuth.setCredentials(username, password);
     },
     setUserRemembered : function(remember) {
       rememberMe = remember;
@@ -25,28 +25,28 @@ function(HttpBasicAuth, UserCookie, UserSessionStorage) {
   };
 }]);
 
-emServices.factory('UserAuthenticate', ['$rootScope', 'User', 'UserCookie', 'UserLogin', 'UserSessionStorage',
-function($rootScope, User, UserCookie, UserLogin, UserSessionStorage) {
+emServices.factory('userAuthenticate', ['$rootScope', 'user', 'userCookie', 'userLogin', 'userSessionStorage',
+function($rootScope, user, userCookie, userLogin, userSessionStorage) {
   return {
-    userAuthenticate : function() {
-      if (UserCookie.isUserRemembered()) {
-        User.setCredentials('token', UserCookie.getUserToken());
-        User.setUserRemembered(true);
+    authenticate : function() {
+      if (userCookie.isUserRemembered()) {
+        user.setCredentials('token', userCookie.getUserToken());
+        user.setUserRemembered(true);
 
-        this.userLogin(function() {
+        this.login(function() {
           $rootScope.$broadcast('event:loginSuccess');
         }, function(error) {
         });
 
-      } else if (UserSessionStorage.isUserAuthenticated()) {
-        User.setCredentials('token', UserSessionStorage.getUserToken());
+      } else if (userSessionStorage.isUserAuthenticated()) {
+        user.setCredentials('token', userSessionStorage.getUserToken());
       } else {
         $rootScope.$broadcast('event:loginRequired');
       }
     },
-    userLogin : function(success, error) {
-      UserLogin.userLogin(function(authenticateResponse) {
-        User.setUserSessionData(authenticateResponse);
+    login : function(success, error) {
+      userLogin.login(function(authenticateResponse) {
+        user.setUserSessionData(authenticateResponse);
         success();
       }, function(authenticateResponse) {
         error(authenticateResponse);
@@ -55,15 +55,15 @@ function($rootScope, User, UserCookie, UserLogin, UserSessionStorage) {
   };
 }]);
 
-emServices.factory('UserLogin', ['$http', 'User',
-function($http, User) {
+emServices.factory('userLogin', ['$http', 'user',
+function($http, user) {
   return {
-    userLogin : function(success, error) {
+    login : function(success, error) {
       $http({
         method : 'POST',
         url : '/api/authenticate',
         data : {
-          rememberMe : User.getUserRemembered()
+          rememberMe : user.getUserRemembered()
         }
       }).success(function(authenticateResponse) {
         success(authenticateResponse);
@@ -74,7 +74,7 @@ function($http, User) {
   };
 }]);
 
-emServices.factory('UserCookie', [
+emServices.factory('userCookie', [
 function() {
   return {
     setUserToken : function(token) {
@@ -94,7 +94,7 @@ function() {
   };
 }]);
 
-emServices.factory('UserSessionStorage', [
+emServices.factory('userSessionStorage', [
 function() {
   return {
     setUserToken : function(token) {

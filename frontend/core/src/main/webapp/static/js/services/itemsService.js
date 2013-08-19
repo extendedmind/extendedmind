@@ -1,38 +1,38 @@
 'use strict';
 
-emServices.factory('userItems', ['Item', 'Items',
-function(Item, Items) {
+emServices.factory('userItemsFactory', ['itemFactory', 'itemsFactory',
+function(itemFactory, itemsFactory) {
   return {
     getItems : function() {
-      Item.getItems(function(items) {
-        Items.setUserItems(items);
+      itemFactory.getItems(function(items) {
+        itemsFactory.setUserItems(items);
       }, function(error) {
       });
     }
   };
 }]);
 
-emServices.factory('Item', ['$http', 'Items', 'UserSessionStorage',
-function($http, Items, UserSessionStorage) {
+emServices.factory('itemFactory', ['$http', 'itemsFactory', 'userSessionStorage',
+function($http, itemsFactory, userSessionStorage) {
   return {
     getItems : function(success, error) {
       $http({
         method : 'GET',
-        url : '/api/' + UserSessionStorage.getUserUUID() + '/items',
+        url : '/api/' + userSessionStorage.getUserUUID() + '/items',
         cache : true
-      }).success(function(userItems) {
-        success(userItems);
-      }).error(function(userItems) {
-        error(userItems);
+      }).success(function(userItemsFactory) {
+        success(userItemsFactory);
+      }).error(function(userItemsFactory) {
+        error(userItemsFactory);
       });
     },
     putItem : function(item, success, error) {
       $http({
         method : 'PUT',
-        url : '/api/' + UserSessionStorage.getUserUUID() + '/item',
+        url : '/api/' + userSessionStorage.getUserUUID() + '/item',
         data : item
       }).success(function(putItemResponse) {
-        Items.putUserItem(item, putItemResponse);
+        itemsFactory.putUserItem(item, putItemResponse);
         success();
       }).error(error);
     },
@@ -54,9 +54,9 @@ function($http, Items, UserSessionStorage) {
   };
 }]);
 
-emServices.factory('Items', [
+emServices.factory('itemsFactory', [
 function() {
-  var userItems;
+  var userItemsFactory;
   var userNewItems = [];
   var itemInArray = function(title) {
     for (var i = 0; i < userNewItems.length; i++) {
@@ -67,10 +67,10 @@ function() {
   };
   return {
     setUserItems : function(items) {
-      userItems = items;
+      userItemsFactory = items;
     },
     getUserItems : function() {
-      return userItems;
+      return userItemsFactory;
     },
     getUserNewItems : function() {
       return userNewItems;
