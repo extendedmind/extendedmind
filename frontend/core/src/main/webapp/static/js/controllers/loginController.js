@@ -1,11 +1,11 @@
 'use strict';
 
-emControllers.controller('LoginController', ['$rootScope', '$scope', 'user', 'userAuthenticate',
+emControllers.controller('LoginController', ['$rootScope', '$scope', 'userFactory', 'userAuthenticate',
 
-function($rootScope, $scope, user, userAuthenticate) {
+function($rootScope, $scope, userFactory, userAuthenticate) {
   $scope.userLogin = function() {
-    user.setCredentials($scope.user.username, $scope.user.password);
-    user.setUserRemembered($scope.user.remember);
+    userFactory.setCredentials($scope.user.username, $scope.user.password);
+    userFactory.setUserRemembered($scope.user.remember);
 
     userAuthenticate.login(function() {
       $rootScope.$broadcast('event:loginSuccess');

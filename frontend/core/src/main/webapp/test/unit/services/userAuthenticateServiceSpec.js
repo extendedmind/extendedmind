@@ -23,44 +23,6 @@ describe('em.service', function() {
       }));
     });
 
-    describe('userLogin', function() {
-      var $httpBackend;
-      var userLogin, httpBasicAuth, mockHttpBackendResponse;
-
-      beforeEach(inject(function(_$httpBackend_, _httpBasicAuth_, _mockHttpBackendResponse_, _userLogin_) {
-        $httpBackend = _$httpBackend_;
-        $httpBackend.expectPOST('/api/authenticate');
-
-        httpBasicAuth = _httpBasicAuth_;
-        mockHttpBackendResponse = _mockHttpBackendResponse_;
-        userLogin = _userLogin_;
-      }));
-
-      it('should return error on invalid email', inject(function() {
-        httpBasicAuth.setCredentials('timo@extended.mind', 'timopwd');
-        userLogin.login(function(authenticateResponse) {
-        }, function(authenticateResponse) {
-          expect(authenticateResponse).toEqual('Forbidden');
-        });
-      }));
-
-      it('should return error on invalid password', inject(function() {
-        httpBasicAuth.setCredentials('timo@ext.md', 'wrong');
-        userLogin.login(function(authenticateResponse) {
-        }, function(authenticateResponse) {
-          expect(authenticateResponse).toEqual('Forbidden');
-        });
-      }));
-
-      it('should return authenticate response on successful login', inject(function() {
-        httpBasicAuth.setCredentials('timo@ext.md', 'timopwd');
-        userLogin.login(function(authenticateResponse) {;
-          expect(authenticateResponse).toEqual(mockHttpBackendResponse.getAuthenticateResponse());
-        }, function(authenticateResponse) {
-        });
-      }));
-    });
-
     describe('httpBasicAuth', function() {
       var httpBasicAuth;
 

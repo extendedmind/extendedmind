@@ -1,6 +1,6 @@
 'use strict';
 
-emServices.factory('user', ['httpBasicAuth', 'userCookie', 'userSessionStorage',
+emServices.factory('userFactory', ['httpBasicAuth', 'userCookie', 'userSessionStorage',
 function(httpBasicAuth, userCookie, userSessionStorage) {
   var rememberMe;
   return {
@@ -25,13 +25,13 @@ function(httpBasicAuth, userCookie, userSessionStorage) {
   };
 }]);
 
-emServices.factory('userAuthenticate', ['$rootScope', 'user', 'userCookie', 'userLogin', 'userSessionStorage',
-function($rootScope, user, userCookie, userLogin, userSessionStorage) {
+emServices.factory('userAuthenticate', ['$rootScope', 'httpHandler', 'userFactory', 'userCookie', 'userSessionStorage',
+function($rootScope, httpHandler, userFactory, userCookie, userSessionStorage) {
   return {
     authenticate : function() {
       if (userCookie.isUserRemembered()) {
-        user.setCredentials('token', userCookie.getUserToken());
-        user.setUserRemembered(true);
+        userFactory.setCredentials('token', userCookie.getUserToken());
+        userFactory.setUserRemembered(true);
 
         this.login(function() {
           $rootScope.$broadcast('event:loginSuccess');
@@ -39,35 +39,16 @@ function($rootScope, user, userCookie, userLogin, userSessionStorage) {
         });
 
       } else if (userSessionStorage.isUserAuthenticated()) {
-        user.setCredentials('token', userSessionStorage.getUserToken());
+        userFactory.setCredentials('token', userSessionStorage.getUserToken());
       } else {
         $rootScope.$broadcast('event:loginRequired');
       }
     },
     login : function(success, error) {
-      userLogin.login(function(authenticateResponse) {
-        user.setUserSessionData(authenticateResponse);
+      httpHandler.POST('/api/authenticate', userFactory.getUserRemembered(), function(authenticateResponse) {
+        userFactory.setUserSessionData(authenticateResponse);
         success();
       }, function(authenticateResponse) {
-        error(authenticateResponse);
-      });
-    }
-  };
-}]);
-
-emServices.factory('userLogin', ['$http', 'user',
-function($http, user) {
-  return {
-    login : function(success, error) {
-      $http({
-        method : 'POST',
-        url : '/api/authenticate',
-        data : {
-          rememberMe : user.getUserRemembered()
-        }
-      }).success(function(authenticateResponse) {
-        success(authenticateResponse);
-      }).error(function(authenticateResponse) {
         error(authenticateResponse);
       });
     }
