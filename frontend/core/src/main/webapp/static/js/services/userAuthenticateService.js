@@ -25,8 +25,8 @@ function(httpBasicAuth, userCookie, userSessionStorage) {
   };
 }]);
 
-emServices.factory('userAuthenticate', ['$rootScope', 'httpHandler', 'userFactory', 'userCookie', 'userSessionStorage',
-function($rootScope, httpHandler, userFactory, userCookie, userSessionStorage) {
+emServices.factory('userAuthenticate', ['$rootScope', 'httpRequestHandler', 'userFactory', 'userCookie', 'userSessionStorage',
+function($rootScope, httpRequestHandler, userFactory, userCookie, userSessionStorage) {
   return {
     authenticate : function() {
       if (userCookie.isUserRemembered()) {
@@ -45,7 +45,7 @@ function($rootScope, httpHandler, userFactory, userCookie, userSessionStorage) {
       }
     },
     login : function(success, error) {
-      httpHandler.POST('/api/authenticate', userFactory.getUserRemembered(), function(authenticateResponse) {
+      httpRequestHandler.post('/api/authenticate', userFactory.getUserRemembered(), function(authenticateResponse) {
         userFactory.setUserSessionData(authenticateResponse);
         success();
       }, function(authenticateResponse) {

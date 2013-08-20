@@ -49,19 +49,32 @@ function($http, base64) {
   };
 }]);
 
-emServices.factory('httpHandler', ['$http',
+emServices.factory('httpRequestHandler', ['$http',
 function($http) {
-  return {
-    POST : function(url, data, success, error) {
-      $http({
-        method : 'POST',
-        url : url,
-        data : data
+  var httpRequestHandler = {};
+
+  angular.forEach(['get', 'delete', 'head', 'jsonp'], function(name) {
+    httpRequestHandler[name] = function(url, success, error) {
+      return $http({
+        method : name,
+        url : url
       }).success(function(response) {
         success(response);
       }).error(function(response) {
         error(response);
       });
-    }
-  }
+    };
+  });
+
+  angular.forEach(['post', 'put'], function(name) {
+    httpRequestHandler[name] = function(url, data, success, error) {
+      return $http[name](url, data).success(function(response) {
+        success(response);
+      }).error(function(response) {
+        error(response);
+      });
+    };
+  });
+
+  return httpRequestHandler;
 }]);

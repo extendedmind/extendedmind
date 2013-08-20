@@ -12,44 +12,37 @@ function(itemFactory, itemsFactory) {
   };
 }]);
 
-emServices.factory('itemFactory', ['$http', 'itemsFactory', 'userSessionStorage',
-function($http, itemsFactory, userSessionStorage) {
+emServices.factory('itemFactory', ['httpRequestHandler', 'itemsFactory', 'userSessionStorage',
+function(httpRequestHandler, itemsFactory, userSessionStorage) {
   return {
     getItems : function(success, error) {
-      $http({
-        method : 'GET',
-        url : '/api/' + userSessionStorage.getUserUUID() + '/items',
-        cache : true
-      }).success(function(userItemsFactory) {
-        success(userItemsFactory);
-      }).error(function(userItemsFactory) {
-        error(userItemsFactory);
+      httpRequestHandler.get('/api/' + userSessionStorage.getUserUUID() + '/items', function(userItems) {
+        success(userItems);
+      }, function(userItems) {
+        error(userItems);
       });
     },
     putItem : function(item, success, error) {
-      $http({
-        method : 'PUT',
-        url : '/api/' + userSessionStorage.getUserUUID() + '/item',
-        data : item
-      }).success(function(putItemResponse) {
+      httpRequestHandler.put('/api/' + userSessionStorage.getUserUUID() + '/item', item, function(putItemResponse) {
         itemsFactory.putUserItem(item, putItemResponse);
-        success();
-      }).error(error);
+        success(putItemResponse);
+      }, function(putItemResponse) {
+        error(putItemResponse);
+      });
     },
-    editItem : function(userUUID, item, success, error) {
-      $http({
-        method : 'PUT',
-        url : '/api/' + userUUID + '/item/' + item.uuid,
-        data : item
-      }).success(function(putItemResponse) {
-      }).error(error);
+    editItem : function(item, success, error) {
+      httpRequestHandler.put('/api/' + userSessionStorage.getUserUUID() + '/item' + item.uuid, item, function(editItemResponse) {
+        success(editItemResponse);
+      }, function(editItemResponse) {
+        error(editItemResponse);
+      });
     },
-    deleteItem : function(userUUID, itemUUID, success, error) {
-      $http({
-        method : 'DELETE',
-        url : '/api/' + userUUID + '/item/' + itemUUID
-      }).success(function() {
-      }).error();
+    deleteItem : function(itemUUID, success, error) {
+      httpRequestHandler.put('/api/' + userSessionStorage.getUserUUID() + '/item' + item.uuid, function(deleteItemResponse) {
+        success(deleteItemResponse);
+      }, function(deleteItemResponse) {
+        error(deleteItemResponse);
+      });
     }
   };
 }]);

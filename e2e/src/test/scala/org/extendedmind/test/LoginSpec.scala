@@ -9,7 +9,7 @@ class LoginSpec extends E2ESpecBase {
   describe("Extended Mind Website") {
     it("should return error on invalid email") {
       go to "http://localhost:8080/login"
-      click on ("username")
+      click on id("username")
       pressKeys("timo@extendedmind.org")
       click on ("password")
       pressKeys("timopwd")
@@ -18,7 +18,7 @@ class LoginSpec extends E2ESpecBase {
     }
     it("should return error on invalid password") {
       go to "http://localhost:8080/login"
-      click on ("username")
+      click on id("username")
       pressKeys("timo@ext.md")
       click on ("password")
       pressKeys("wrong")
@@ -27,7 +27,7 @@ class LoginSpec extends E2ESpecBase {
     }
     it("should return front page on successful login") {
       go to "http://localhost:8080/login"
-      click on ("username")
+      click on id("username")
       pressKeys("timo@ext.md")
       click on ("password")
       pressKeys("timopwd")
