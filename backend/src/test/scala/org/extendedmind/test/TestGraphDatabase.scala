@@ -21,6 +21,7 @@ import org.neo4j.test.TestGraphDatabaseFactory
 import org.neo4j.graphdb.Node
 import org.extendedmind.security.AuthenticatePayload
 import java.io.PrintWriter
+import org.neo4j.scala.DatabaseService
 
 object TestGraphDatabase {
   val TIMO_EMAIL: String = "timo@ext.md"
@@ -35,82 +36,75 @@ trait TestGraphDatabase extends GraphDatabase {
   import TestGraphDatabase._
 
   def insertTestUsers(testDataLocation: Option[String] = None) {
-    var userNode: Node = null
+    val timoId = insertTestUser(TIMO_EMAIL, TIMO_PASSWORD)
+    
+    withTx{
+      implicit neo =>
+        // Valid, unreplaceable
+        val userNode = getNodeById(timoId)
+        val token = Token(UUIDUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
+        saveToken(userNode, token, None)
+        
+        // Valid, replaceable
+        val replaceableToken = Token(UUIDUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
+        saveToken(userNode, replaceableToken, Some(AuthenticatePayload(true)))
+
+        val currentTime = System.currentTimeMillis()
+        // Save another expired token
+        val expiredToken = saveCustomToken(currentTime - 1000, None, userNode)
+        // Save another replaceable but expired token
+        val expiredReplaceableToken = saveCustomToken(currentTime - 1000, Some(currentTime + 1000*60*60*24*10000), userNode)
+        // Save another not replaceable anymore, expired token
+        val expiredUnreplaceableToken = saveCustomToken(currentTime - 1000, Some(currentTime - 100), userNode)
+
+
+        // Save items for user
+        if (testDataLocation.isDefined){      
+          val testData = "# 12h valid token for timo@ext.md: " + "\n" + 
+                         "token=" + Token.encryptToken(token) + "\n\n" +
+                         "# 12h valid, 7 days replaceable token for timo@ext.md: " + "\n" + 
+                         "replaceableToken=" + Token.encryptToken(replaceableToken) + "\n\n" +                
+                         "# Expired token for timo@ext.md: " + "\n" +
+                         "expiredToken=" + Token.encryptToken(expiredToken) + "\n\n" + 
+                         "# Expired but replaceable token for timo@ext.md: " + "\n" + 
+                         "expiredReplaceableToken=" + Token.encryptToken(expiredReplaceableToken) + "\n\n" +
+                         "# Expired unreplaceable token for timo@ext.md: " + "\n" +
+                         "expiredUnreplaceableToken=" + Token.encryptToken(expiredUnreplaceableToken) + "\n\n"
+          Some(new PrintWriter(testDataLocation.get + "/" + "testData.properties")).foreach{p => p.write(testData); p.close}
+        }
+    }
+  }
+  
+  def insertTestUser(email:String, plainPassword:String): Long = {
     withTx {
       implicit neo =>
         val timo = createNode(MainLabel.USER, UserLabel.ADMIN)
         val salt = PasswordService.generateSalt
-        val password = TIMO_PASSWORD
+        val password = plainPassword
         val encryptedPassword = PasswordService.getEncryptedPassword(
           password, salt, PasswordService.ALGORITHM, PasswordService.ITERATIONS)
         timo.setProperty("passwordAlgorithm", encryptedPassword.algorithm)
         timo.setProperty("passwordIterations", encryptedPassword.iterations)
         timo.setProperty("passwordHash", Base64.encodeBase64String(encryptedPassword.passwordHash))
         timo.setProperty("passwordSalt", encryptedPassword.salt)
-        timo.setProperty("email", TIMO_EMAIL)
-        userNode = timo
-    }
-
-    // Valid, unreplaceable
-    val token = Token(UUIDUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
-    saveToken(userNode, token, None)
-    
-    // Valid, replaceable
-    val replaceableToken = Token(UUIDUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
-    saveToken(userNode, replaceableToken, Some(AuthenticatePayload(true)))
-
-    // Save another expired token
-    val expiredToken = Token(UUIDUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
-    withTx {
-      implicit neo =>
-        val tokenNode = createNode(MainLabel.TOKEN)
-        val currentTime = System.currentTimeMillis()
-        tokenNode.setProperty("accessKey", expiredToken.accessKey)
-        tokenNode.setProperty("expires", currentTime - 1000)
-        tokenNode --> UserRelationship.FOR_USER --> userNode
-    }    
-    
-    // Save another replaceable but expired token
-    val expiredReplaceableToken = Token(UUIDUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
-    withTx {
-      implicit neo =>
-        val tokenNode = createNode(MainLabel.TOKEN)
-        val currentTime = System.currentTimeMillis()
-        tokenNode.setProperty("accessKey", expiredReplaceableToken.accessKey)
-        tokenNode.setProperty("expires", currentTime - 1000)
-        // Ten thousand days replaceable
-        tokenNode.setProperty("replaceable", currentTime + 1000*60*60*24*10000)
-        tokenNode --> UserRelationship.FOR_USER --> userNode
-    }
-    
-    // Save another not replaceable anymore, expired token
-    val expiredUnreplaceableToken = Token(UUIDUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
-    withTx {
-      implicit neo =>
-        val tokenNode = createNode(MainLabel.TOKEN)
-        val currentTime = System.currentTimeMillis()
-        tokenNode.setProperty("accessKey", expiredUnreplaceableToken.accessKey)
-        tokenNode.setProperty("expires", currentTime - 1000)
-        tokenNode.setProperty("replaceable", currentTime - 100)
-        tokenNode --> UserRelationship.FOR_USER --> userNode
-    }
-    
-    // Save items for user
-    
-    if (testDataLocation.isDefined){      
-      val testData = "# 12h valid token for timo@ext.md: " + "\n" + 
-                     "token=" + Token.encryptToken(token) + "\n\n" +
-                     "# 12h valid, 7 days replaceable token for timo@ext.md: " + "\n" + 
-                     "replaceableToken=" + Token.encryptToken(replaceableToken) + "\n\n" +                
-                     "# Expired token for timo@ext.md: " + "\n" +
-                     "expiredToken=" + Token.encryptToken(expiredToken) + "\n\n" + 
-                     "# Expired but replaceable token for timo@ext.md: " + "\n" + 
-                     "expiredReplaceableToken=" + Token.encryptToken(expiredReplaceableToken) + "\n\n" +
-                     "# Expired unreplaceable token for timo@ext.md: " + "\n" +
-                     "expiredUnreplaceableToken=" + Token.encryptToken(expiredUnreplaceableToken) + "\n\n"
-      Some(new PrintWriter(testDataLocation.get + "/" + "testData.properties")).foreach{p => p.write(testData); p.close}
+        timo.setProperty("email", email)
+        timo.getId()
     }
   }
+  
+  def saveCustomToken(expires: Long, replaceable: Option[Long], userNode: Node)
+               (implicit neo: DatabaseService): Token = {
+    val newToken = Token(UUIDUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
+    val tokenNode = createNode(MainLabel.TOKEN)
+    val currentTime = System.currentTimeMillis()
+    tokenNode.setProperty("accessKey", newToken.accessKey)
+    tokenNode.setProperty("expires", expires)
+    if (replaceable.isDefined)
+      tokenNode.setProperty("replaceable", replaceable.get)
+    tokenNode --> UserRelationship.FOR_USER --> userNode
+    newToken
+  }
+  
 }
 
 class TestImpermanentGraphDatabase(implicit val settings: Settings)
