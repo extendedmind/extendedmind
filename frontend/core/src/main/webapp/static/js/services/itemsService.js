@@ -1,62 +1,55 @@
 'use strict';
 
-emServices.factory('userItems', ['Item', 'Items',
-function(Item, Items) {
+emServices.factory('userItemsFactory', ['itemFactory', 'itemsFactory',
+function(itemFactory, itemsFactory) {
   return {
     getItems : function() {
-      Item.getItems(function(items) {
-        Items.setUserItems(items);
+      itemFactory.getItems(function(items) {
+        itemsFactory.setUserItems(items);
       }, function(error) {
       });
     }
   };
 }]);
 
-emServices.factory('Item', ['$http', 'Items', 'UserSessionStorage',
-function($http, Items, UserSessionStorage) {
+emServices.factory('itemFactory', ['httpRequestHandler', 'itemsFactory', 'userSessionStorage',
+function(httpRequestHandler, itemsFactory, userSessionStorage) {
   return {
     getItems : function(success, error) {
-      $http({
-        method : 'GET',
-        url : '/api/' + UserSessionStorage.getUserUUID() + '/items',
-        cache : true
-      }).success(function(userItems) {
+      httpRequestHandler.get('/api/' + userSessionStorage.getUserUUID() + '/items', function(userItems) {
         success(userItems);
-      }).error(function(userItems) {
+      }, function(userItems) {
         error(userItems);
       });
     },
     putItem : function(item, success, error) {
-      $http({
-        method : 'PUT',
-        url : '/api/' + UserSessionStorage.getUserUUID() + '/item',
-        data : item
-      }).success(function(putItemResponse) {
-        Items.putUserItem(item, putItemResponse);
-        success();
-      }).error(error);
+      httpRequestHandler.put('/api/' + userSessionStorage.getUserUUID() + '/item', item, function(putItemResponse) {
+        itemsFactory.putUserItem(item, putItemResponse);
+        success(putItemResponse);
+      }, function(putItemResponse) {
+        error(putItemResponse);
+      });
     },
-    editItem : function(userUUID, item, success, error) {
-      $http({
-        method : 'PUT',
-        url : '/api/' + userUUID + '/item/' + item.uuid,
-        data : item
-      }).success(function(putItemResponse) {
-      }).error(error);
+    editItem : function(item, success, error) {
+      httpRequestHandler.put('/api/' + userSessionStorage.getUserUUID() + '/item' + item.uuid, item, function(editItemResponse) {
+        success(editItemResponse);
+      }, function(editItemResponse) {
+        error(editItemResponse);
+      });
     },
-    deleteItem : function(userUUID, itemUUID, success, error) {
-      $http({
-        method : 'DELETE',
-        url : '/api/' + userUUID + '/item/' + itemUUID
-      }).success(function() {
-      }).error();
+    deleteItem : function(itemUUID, success, error) {
+      httpRequestHandler.put('/api/' + userSessionStorage.getUserUUID() + '/item' + item.uuid, function(deleteItemResponse) {
+        success(deleteItemResponse);
+      }, function(deleteItemResponse) {
+        error(deleteItemResponse);
+      });
     }
   };
 }]);
 
-emServices.factory('Items', [
+emServices.factory('itemsFactory', [
 function() {
-  var userItems;
+  var userItemsFactory;
   var userNewItems = [];
   var itemInArray = function(title) {
     for (var i = 0; i < userNewItems.length; i++) {
@@ -67,10 +60,10 @@ function() {
   };
   return {
     setUserItems : function(items) {
-      userItems = items;
+      userItemsFactory = items;
     },
     getUserItems : function() {
-      return userItems;
+      return userItemsFactory;
     },
     getUserNewItems : function() {
       return userNewItems;

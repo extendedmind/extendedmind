@@ -2,7 +2,7 @@
 
 var emBase64 = angular.module('em.base64', []);
 
-emBase64.factory('Base64', function() {
+emBase64.factory('base64', function() {
   var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
   return {
     encode : function(input) {

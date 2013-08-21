@@ -1,9 +1,9 @@
 'use strict';
 
-emControllers.controller('NotesController', ['$scope', 'Items',
-function($scope, Items) {
+emControllers.controller('NotesController', ['$scope', 'itemsFactory',
+function($scope, itemsFactory) {
   $scope.filterArgument = 'NOTE';
 
-  $scope.items = Items.getUserItems();
-  $scope.newItems = Items.getUserNewItems();
+  $scope.items = itemsFactory.getUserItems();
+  $scope.newItems = itemsFactory.getUserNewItems();
 }]);

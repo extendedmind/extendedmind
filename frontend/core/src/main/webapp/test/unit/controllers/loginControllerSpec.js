@@ -33,7 +33,7 @@ describe('em.controllers', function() {
     it('should broadcast \'event:loginRequired\' on invalid email', inject(function() {
       $scope.user = {
         username : 'timo@extendedmind.org',
-        password : 'timopwd',
+        password : 'timopwd'
       };
       $scope.userLogin();
       $httpBackend.flush();
@@ -43,7 +43,7 @@ describe('em.controllers', function() {
     it('should broadcast \'event:loginRequired\' on invalid password', inject(function() {
       $scope.user = {
         username : 'timo@ext.md',
-        password : 'wrong',
+        password : 'wrong'
       };
       $scope.userLogin();
       $httpBackend.flush();
