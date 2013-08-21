@@ -64,13 +64,20 @@ trait GraphDatabase extends Neo4jWrapper {
   // USER METHODS
 
   def getUser(email: String): Either[List[String], User] = {
-    val userNode = getUserNode(email)
-    getUser(userNode)
+    withTx{
+      implicit neo =>
+        val userNode = getUserNode(email)
+        getUser(userNode)
+    }
   }
 
   def getUser(uuid: UUID): Either[List[String], User] = {
-    val userNode = getUserNode(uuid)
-    getUser(userNode)
+    withTx{
+      implicit neo =>
+
+        val userNode = getUserNode(uuid)
+        getUser(userNode)
+    }
   }
 
   private def getUser(userNode: Either[List[String], Node]): Either[List[String], User] = {
@@ -167,17 +174,20 @@ trait GraphDatabase extends Neo4jWrapper {
   // SECURITY
 
   def generateToken(email: String, attemptedPassword: String, payload: Option[AuthenticatePayload]): Either[List[String], SecurityContext] = {
-    for {
-      sc <- authenticate(email: String, attemptedPassword: String).right
-      token <- Right(Token(sc.userUUID)).right
-      saved <- Right(saveToken(sc.user, token, payload)).right
-      sc <- Right(SecurityContext(
-        sc.userUUID,
-        sc.email,
-        sc.userType,
-        Some(Token.encryptToken(token)),
-        None)).right
-    } yield sc
+    withTx {
+      implicit neo =>
+        for {
+          sc <- authenticate(email: String, attemptedPassword: String).right
+          token <- Right(Token(sc.userUUID)).right
+          saved <- Right(saveToken(sc.user, token, payload)).right
+          sc <- Right(SecurityContext(
+                      sc.userUUID,
+                      sc.email,
+                      sc.userType,
+                      Some(Token.encryptToken(token)),
+                      None)).right
+          } yield sc
+    }
   }
 
   private def validateTokenReplacable(tokenNode: Node, currentTime: Long): Either[List[String], Node] = {
@@ -206,29 +216,39 @@ trait GraphDatabase extends Neo4jWrapper {
 
   def swapToken(oldToken: String, payload: Option[AuthenticatePayload]): Either[List[String], SecurityContext] = {
     val currentTime = System.currentTimeMillis()
-    for {
-      token <- Token.decryptToken(oldToken).right
-      tokenNode <- getTokenNode(token).right
-      tokenNode <- validateTokenReplacable(tokenNode, currentTime).right
-      userNode <- getUserNode(tokenNode).right
-      sc <- getSecurityContext(userNode).right
-      sc <- Right(createNewAccessKey(tokenNode, sc, payload)).right
-    } yield sc
+    withTx {
+      implicit neo =>
+        for {
+          token <- Token.decryptToken(oldToken).right
+          tokenNode <- getTokenNode(token).right
+          tokenNode <- validateTokenReplacable(tokenNode, currentTime).right
+          userNode <- getUserNode(tokenNode).right
+          sc <- getSecurityContext(userNode).right
+          sc <- Right(createNewAccessKey(tokenNode, sc, payload)).right
+        } yield sc
+    }
   }
 
   def authenticate(email: String, attemptedPassword: String): Either[List[String], SecurityContext] = {
-    for {
-      user <- getUserNode(email).right
-      sc <- validatePassword(user, attemptedPassword).right
-    } yield sc
+    withTx{
+      implicit neo4j => 
+        for {
+          user <- getUserNode(email).right
+          sc <- validatePassword(user, attemptedPassword).right
+        } yield sc
+    }
   }
 
   def authenticate(token: String): Either[List[String], SecurityContext] = {
-    for {
-      token <- Token.decryptToken(token).right
-      user <- getUserNode(token).right
-      sc <- getSecurityContext(user).right
-    } yield sc
+    withTx{
+      implicit neo4j => 
+
+        for {
+          token <- Token.decryptToken(token).right
+          user <- getUserNode(token).right
+          sc <- getSecurityContext(user).right
+        } yield sc
+    }
   }
 
   protected def saveToken(userNode: Node, token: Token, payload: Option[AuthenticatePayload]) {
