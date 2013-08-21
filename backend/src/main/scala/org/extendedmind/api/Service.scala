@@ -59,9 +59,9 @@ object JsonImplicits extends DefaultJsonProtocol {
     }
   }
 
-  implicit val implSetResponse = jsonFormat2(SetResponse)
-  implicit val implItem = jsonFormat5(Item)
-  implicit val implUser = jsonFormat2(User)
+  implicit val implSetResult = jsonFormat2(SetResult)
+  implicit val implItem = jsonFormat6(Item)
+  implicit val implUser = jsonFormat3(User)
   implicit val implSecurityContext = jsonFormat5(SecurityContext)
   implicit val implAuthenticatePayload = jsonFormat1(AuthenticatePayload)
 

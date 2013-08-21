@@ -2,6 +2,7 @@ package org.extendedmind.test
 
 import java.io.PrintWriter
 import java.util.UUID
+import org.extendedmind._
 import org.extendedmind.bl._
 import org.extendedmind.db._
 import org.extendedmind.domain._
@@ -52,6 +53,8 @@ class TestDataGeneratorSpec extends SpraySpecBase {
   }
 
   describe("Test data generator") {
+    val currentTime = System.currentTimeMillis()
+
     it("should return a list of available commands at root") {
       Get() ~> emRoute ~> check { entityAs[String] should include("is running") }
     }
@@ -71,9 +74,9 @@ class TestDataGeneratorSpec extends SpraySpecBase {
     it("should generate item list response on /[userUUID]/items") {
       val securityContext = stubTimoAuthenticate()
       stub(itemActions.getItems(securityContext.userUUID)).toReturn(
-        List(Item(Some(UUID.randomUUID()), "book flight", None, None, None),
-          Item(Some(UUID.randomUUID()), "buy tickets", Some("TASK"), Some("2013-09-01"), None),
-          Item(Some(UUID.randomUUID()), "notes on productivity", Some("NOTE"), None, None)))
+        List(Item(Some(UUID.randomUUID()), Some(currentTime), "book flight", None, None, None),
+          Item(Some(UUID.randomUUID()), Some(currentTime), "buy tickets", Some("TASK"), Some("2013-09-01"), None),
+          Item(Some(UUID.randomUUID()), Some(currentTime), "notes on productivity", Some("NOTE"), None, None)))
       Get("/" + securityContext.userUUID + "/items") ~> addHeader(Authorization(BasicHttpCredentials("token", securityContext.token.get))) ~> emRoute ~> check {
         val itemsResponse = entityAs[String]
         writeJsonOutput("itemsResponse", itemsResponse)
@@ -84,9 +87,9 @@ class TestDataGeneratorSpec extends SpraySpecBase {
     it("should generate uuid response on existing item put to /[userUUID]/item/[itemUUID]") {
       val securityContext = stubTimoAuthenticate()
       val existingItemUUID = UUID.randomUUID()
-      val existingItem = Item(None, "remember the milk", None, None, None)
+      val existingItem = Item(None, Some(currentTime), "remember the milk", None, None, None)
       stub(itemActions.putExistingItem(securityContext.userUUID, existingItem, existingItemUUID))
-            .toReturn(Right(new SetResponse(None, System.currentTimeMillis())))
+            .toReturn(Right(new SetResult(None, System.currentTimeMillis())))
       Put("/" + securityContext.userUUID + "/item/" + existingItemUUID,
         marshal(existingItem).right.get
             ) ~> addHeader("Content-Type", "application/json"
@@ -100,9 +103,9 @@ class TestDataGeneratorSpec extends SpraySpecBase {
     
     it("should generate uuid response on new item put to /[userUUID]/item") {
       val securityContext = stubTimoAuthenticate()
-      val newItem = Item(None, "remember the milk", None, None, None)
+      val newItem = Item(None, Some(currentTime), "remember the milk", None, None, None)
       stub(itemActions.putNewItem(securityContext.userUUID, newItem))
-            .toReturn(Right(new SetResponse(Some(UUID.randomUUID()), System.currentTimeMillis())))
+            .toReturn(Right(new SetResult(Some(UUID.randomUUID()), System.currentTimeMillis())))
       Put("/" + securityContext.userUUID + "/item",
         marshal(newItem).right.get
             ) ~> addHeader("Content-Type", "application/json"
@@ -126,7 +129,7 @@ class TestDataGeneratorSpec extends SpraySpecBase {
   def stubTimoAuthenticate(): SecurityContext = {
     val uuid = UUID.randomUUID()
     val token = Token.encryptToken(Token(uuid))
-    val securityContext = SecurityContext(uuid, TIMO_EMAIL, UserWrapper.ADMIN, Some(token), None)
+    val securityContext = SecurityContext(uuid, TIMO_EMAIL, Token.ADMIN, Some(token), None)
     stub(mockGraphDatabase.generateToken(TIMO_EMAIL, TIMO_PASSWORD, None)).toReturn(
       Right(securityContext))
     stub(mockGraphDatabase.authenticate(token)).toReturn(

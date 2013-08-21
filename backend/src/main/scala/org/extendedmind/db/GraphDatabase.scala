@@ -11,14 +11,18 @@ import org.extendedmind.security._
 import org.neo4j.graphdb.Node
 import org.neo4j.scala.Neo4jWrapper
 import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.graphdb.DynamicRelationshipType
+import org.neo4j.graphdb.Direction
 import org.neo4j.kernel.extension.KernelExtensionFactory
 import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
 import org.neo4j.extension.timestamp.TimestampKernelExtensionFactory
 import org.neo4j.server.configuration.ServerConfigurator
 import org.neo4j.server.configuration.Configurator
 import org.neo4j.server.WrappingNeoServerBootstrapper
-import org.neo4j.kernel.GraphDatabaseAPI
-import org.neo4j.graphdb._
+import org.neo4j.kernel._
+import org.neo4j.scala._
+import org.neo4j.graphdb.traversal._
+import org.neo4j.graphdb.traversal.Evaluators
 
 trait GraphDatabase extends Neo4jWrapper {
 
@@ -28,8 +32,23 @@ trait GraphDatabase extends Neo4jWrapper {
   val TOKEN_REPLACEABLE: Long = 7 * 24 * 60 * 60 * 1000
 
   def settings: Settings
+  
+  // IMPLICITS
+  
+  // Settins
   implicit val implSettings = settings
 
+  // Implicit Neo4j Scala wrapper serialization exclusions
+  implicit val serializeExclusions: Option[List[String]] = Some(
+    // Always exclude the setting of uuid and modified
+    List("uuid", "modified")
+  )
+  // Implicit Neo4j Scala wrapper converters
+  implicit val customConverters: Option[Map[String, AnyRef => AnyRef]] = 
+    // Convert trimmed Base64 UUID to 
+    Some(Map("uuid" -> (uuid => Some(UUIDUtils.getUUID(uuid.asInstanceOf[String]))))
+  )
+  
   // INITIALIZATION
 
   def kernelExtensions(): java.util.ArrayList[KernelExtensionFactory[_]] = {
@@ -49,6 +68,24 @@ trait GraphDatabase extends Neo4jWrapper {
       srv.start();
     }
   }
+  
+  // CONVERSION
+
+  private def updateNode(node: Node, caseClass: AnyRef): Response[Long] = {
+    try{
+      Right(Neo4jWrapper.serialize[Node](caseClass, node).getId())
+    } catch {
+      case e: Exception => fail(INTERNAL_SERVER_ERROR, "Exception while updating node", e)
+   }
+  }
+  
+  private def toCaseClass[T: Manifest](node: Node): Response[T] = {
+    try{
+      Right(Neo4jWrapper.deSerialize[T](node))
+    } catch {
+      case e: Exception => fail(INTERNAL_SERVER_ERROR, "Exception while converting node " + node.getId(), e)
+    }
+  }
 
   // USER METHODS
 
@@ -57,7 +94,7 @@ trait GraphDatabase extends Neo4jWrapper {
       implicit neo =>
         for{
           userNode <- getUserNode(email).right
-          user <- Right(getUser(userNode)).right
+          user <- toCaseClass[User](userNode).right
         }yield user
     }
   }
@@ -67,14 +104,9 @@ trait GraphDatabase extends Neo4jWrapper {
       implicit neo =>
         for{
           userNode <- getUserNode(uuid).right
-          user <- Right(getUser(userNode)).right
+          user <- toCaseClass[User](userNode).right
         }yield user
     }
-  }
-
-  private def getUser(userNode: Node): User = {
-    UserWrapper(userNode.getProperty("uuid").asInstanceOf[String],
-      userNode.getProperty("email").asInstanceOf[String])
   }
 
   private def getUserNode(email: String): Response[Node] = {
@@ -117,30 +149,29 @@ trait GraphDatabase extends Neo4jWrapper {
     }
   }
 
-  private def getUserNode(tokenNode: Node): Response[Node] = {
-    withTx {
-      implicit neo =>
-        // Check that token is still valid
-        val expires = tokenNode.getProperty("expires").asInstanceOf[Long]
-        if (System.currentTimeMillis() > expires) {
-          fail(TOKEN_EXPIRED, "Token has expired")
-        }else{
-          val traverser =
-            tokenNode.traverse(
-              Traverser.Order.BREADTH_FIRST,
-              (tp: TraversalPosition) => false,
-              ReturnableEvaluator.ALL_BUT_START_NODE,
-              DynamicRelationshipType.withName(UserRelationship.FOR_USER.name),
-              Direction.OUTGOING)
-          val userNodeList = traverser.getAllNodes()
-          if (userNodeList.size() == 0) {
-            fail(INTERNAL_SERVER_ERROR, "Token attached to no users")
-          } else if (userNodeList.size() > 1) {
-            fail(INTERNAL_SERVER_ERROR, "Token attached more than one user")
-          } else {
-            Right(userNodeList.head)
-          }
-        }
+  private def getUserNode(tokenNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
+    // Check that token is still valid
+    val expires = tokenNode.getProperty("expires").asInstanceOf[Long]
+    if (System.currentTimeMillis() > expires) {
+      fail(TOKEN_EXPIRED, "Token has expired")
+    }else{
+      val userFromToken: TraversalDescription = 
+        Traversal.description()
+          .relationships(DynamicRelationshipType.withName(UserRelationship.FOR_USER.name), 
+                         Direction.OUTGOING)
+          .breadthFirst()
+          .evaluator(Evaluators.excludeStartPosition())
+          .evaluator(LabelEvaluator(MainLabel.USER))
+          
+      val traverser = userFromToken.traverse(tokenNode)
+      val userNodeList = traverser.nodes().toArray
+      if (userNodeList.length == 0) {
+        fail(INTERNAL_SERVER_ERROR, "Token attached to no users")
+      } else if (userNodeList.length > 1) {
+        fail(INTERNAL_SERVER_ERROR, "Token attached to more than one user")
+      } else {
+        Right(userNodeList.head)
+      }
     }
   }
 
@@ -182,13 +213,10 @@ trait GraphDatabase extends Neo4jWrapper {
     } else fail(INVALID_PARAMETER, "Token not replaceable")
   }
 
-  private def createNewAccessKey(tokenNode: Node, sc: SecurityContext, payload: Option[AuthenticatePayload]): SecurityContext = {
+  private def createNewAccessKey(tokenNode: Node, sc: SecurityContext, payload: Option[AuthenticatePayload])(implicit neo4j: DatabaseService): SecurityContext = {
     // Make new token and set properties to the token node
     val token = Token(sc.userUUID)
-    withTx {
-      implicit neo =>
-        setTokenProperties(tokenNode, token, payload)
-    }
+    setTokenProperties(tokenNode, token, payload)
     SecurityContext(
       sc.userUUID,
       sc.email,
@@ -273,9 +301,9 @@ trait GraphDatabase extends Neo4jWrapper {
 
   private def getSecurityContext(user: Node): SecurityContext = {
     if (user.getLabels().asScala.find(p => p.name() == "ADMIN").isDefined)
-      getSecurityContext(user, UserWrapper.ADMIN)
+      getSecurityContext(user, Token.ADMIN)
     else
-      getSecurityContext(user, UserWrapper.NORMAL)
+      getSecurityContext(user, Token.NORMAL)
   }
 
   private def getSecurityContext(user: Node, userType: Byte): SecurityContext = {
@@ -288,4 +316,80 @@ trait GraphDatabase extends Neo4jWrapper {
     sc.user = user
     sc
   }
+  
+  // ITEM
+
+  def putNewItem(userUUID: UUID, item: Item): Response[SetResult] = {
+    for{
+      itemId <- createItem(userUUID, item).right
+      result <- getSetResult(itemId, true).right
+    }yield result
+  }
+
+  def putExistingItem(userUUID: UUID, itemUUID: UUID, item: Item): Response[SetResult] = {
+    for{
+      itemId <- updateItem(userUUID, itemUUID, item).right
+      result <- getSetResult(itemId, true).right
+    }yield result
+  }
+
+  private def createItem(userUUID: UUID, item: Item): Response[Long] = {
+    withTx{
+      implicit neo4j =>
+        for{
+          userNode <- getUserNode(userUUID).right
+          result <- createItem(userNode, item).right
+        }yield result
+    }
+  }
+ 
+  private def createItem(userNode: Node, item: Item)(implicit neo4j: DatabaseService): Response[Long] = {
+    val node = createNode(item, MainLabel.ITEM)
+    Right(node.getId())
+  }
+  
+  private def updateItem(userUUID: UUID, itemUUID: UUID, item: Item): Response[Long] = {
+    withTx{
+      implicit neo4j =>
+        for{
+          userNode <- getUserNode(userUUID).right
+          itemNode <- getItemNode(userNode, itemUUID).right
+          itemId <- updateNode(itemNode, item).right
+        }yield itemId
+    }    
+  }
+    
+  private def getItemNode(userNode: Node, itemUUID: UUID)(implicit neo4j: DatabaseService): Response[Node] = {
+    val itemFromUser: TraversalDescription = 
+        Traversal.description()
+          .relationships(DynamicRelationshipType.withName(UserRelationship.OWNS.name), 
+                         Direction.OUTGOING)
+          .breadthFirst()
+          .evaluator(Evaluators.excludeStartPosition())
+          .evaluator(UUIDEvaluator(itemUUID))
+          .evaluator(LabelEvaluator(MainLabel.ITEM))
+
+    val traverser = itemFromUser.traverse(userNode)
+    val itemNodeList = traverser.nodes().toArray
+    if (itemNodeList.length == 0) {
+      fail(INVALID_PARAMETER, "Item " + itemUUID + " not found")
+    } else if (itemNodeList.length > 1) {
+      fail(INTERNAL_SERVER_ERROR, "More than one item found with UUID " + itemUUID)
+    } else {
+      Right(itemNodeList.head)
+    }
+  }
+  private def getSetResult(nodeId: Long, includeUUID: Boolean): Response[SetResult] ={
+    withTx{
+      implicit neo4j =>
+        val node = getNodeById(nodeId)
+        val uuid = if(includeUUID) 
+                      Some(UUID.fromString(node.getProperty("uuid").asInstanceOf[String])) 
+                   else None
+        Right(SetResult(uuid,
+                        node.getProperty("modified").asInstanceOf[Long]))
+    }
+  }
+ 
+  
 }

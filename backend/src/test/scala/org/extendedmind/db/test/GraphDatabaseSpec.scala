@@ -17,9 +17,13 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
     	db.getUser(testEmail) match {
 				case Right(user) => assert(user.email === testEmail)
 				case Left(e) => {
-				  e foreach println
+				  e foreach (resp => {
+				      println(resp)
+				      if (resp.throwable.isDefined) resp.throwable.get.printStackTrace()
+				    }
+				  )
 				  fail("Got errors")
-				} 
+				}
     	}
     }
   }

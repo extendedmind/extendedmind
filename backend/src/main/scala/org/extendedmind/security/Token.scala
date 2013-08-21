@@ -12,6 +12,10 @@ import org.extendedmind.security.defaults._
 case class Token(userUUID: UUID, accessKey: Long)
 
 object Token{
+  
+  val ADMIN: Byte = 0
+  val NORMAL: Byte = 1
+  
   def apply(userUUID: UUID) = new Token(userUUID, generateAccessKey)
   
   def generateAccessKey(): Long = {

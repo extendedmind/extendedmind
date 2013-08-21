@@ -13,7 +13,6 @@ import org.extendedmind.bl.SecurityActions
 import spray.http.HttpHeaders.Authorization
 import spray.http.BasicHttpCredentials
 import java.util.UUID
-import org.extendedmind.domain.UserWrapper
 import org.extendedmind.test.TestImpermanentGraphDatabase
 import org.extendedmind.db.GraphDatabase
 import org.extendedmind.test.TestGraphDatabase._
@@ -22,7 +21,6 @@ import org.extendedmind.api.JsonImplicits._
 import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
 import org.extendedmind.security.AuthenticatePayload
-
 
 class ServiceSpec extends ImpermanentGraphDatabaseSpecBase{
 
