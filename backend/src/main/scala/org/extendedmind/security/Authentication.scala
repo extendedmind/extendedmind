@@ -4,7 +4,8 @@ import scala.concurrent.Promise
 import org.extendedmind.db.GraphDatabase
 import spray.routing.authentication.UserPass
 import spray.routing.authentication.UserPassAuthenticator
-import org.extendedmind.Settings
+import org.extendedmind._
+import org.extendedmind.Response._
 import scaldi.Injector
 import scaldi.Injectable
 import spray.routing.RequestContext
@@ -18,26 +19,33 @@ import spray.http.HttpRequest
 import spray.http.HttpHeaders._
 import spray.http.HttpChallenge
 import spray.json._
+import spray.routing._
 import DefaultJsonProtocol._
 import java.lang.RuntimeException
 
-class TokenExpiredException(msg: String) extends Exception(msg)
 case class UserPassRealm(user: String, pass: String, realm: String)
 case class UserPassRemember(user: String, pass: String, payload: Option[AuthenticatePayload])
 case class AuthenticatePayload(rememberMe: Boolean)
+case class TokenExpiredRejection(description: String) extends Rejection
 
 object Authentication{
   type UserPassRealmAuthenticator[T] = Option[UserPassRealm] => Future[Option[T]]
   type UserPassRememberAuthenticator[T] = Option[UserPassRemember] => Future[Option[T]]
   
-  type EitherResult[T] = Either[List[String], T]
-  type OptionResult[T] = Option[T]
-  def securityContextEitherToOption(result: Either[List[String], SecurityContext]): OptionResult[SecurityContext] = {
-    result match {
+  
+  def securityContextResponseToOption(response: Response[SecurityContext]): Option[SecurityContext] = {
+    response match {
       case Right(sc) => Some(sc)
       // TODO: Better logging
       case Left(e) => {
-        e foreach println 
+        // TODO: Log whole stack instead of printing to system out
+        e foreach println
+        e foreach(
+            responseContent => 
+              if (responseContent.responseType == TOKEN_EXPIRED){
+                throw new RejectionError(TokenExpiredRejection(responseContent.description))
+              }
+        )
         None
       }
     }
@@ -75,9 +83,9 @@ trait ExtendedMindUserPassAuthenticator extends UserPassRealmAuthenticator[Secur
     userPassRealm match {
       case Some(UserPassRealm(user, pass, realm)) => {
         if (user == "token") {
-          securityContextEitherToOption(db.authenticate(pass))
+          securityContextResponseToOption(db.authenticate(pass))
         } else if (realm == "secure") {
-          securityContextEitherToOption(db.authenticate(user, pass))
+          securityContextResponseToOption(db.authenticate(user, pass))
         } else {
           // It is not possible to use username/password for other than "secure" realm methods
           None
@@ -131,9 +139,9 @@ trait ExtendedMindAuthenticateUserPassAuthenticator extends UserPassRememberAuth
     userPassRemember match {
       case Some(UserPassRemember(user, pass, payload)) => {
         if (user == "token") {
-          securityContextEitherToOption(db.swapToken(pass, payload))
+          securityContextResponseToOption(db.swapToken(pass, payload))
         } else {
-          securityContextEitherToOption(db.generateToken(user, pass, payload))
+          securityContextResponseToOption(db.generateToken(user, pass, payload))
         }
       }
       case None => None

@@ -24,12 +24,8 @@ object Service {
           case CredentialsRejected ⇒ "The supplied authentication is invalid"
         }
         ctx ⇒ ctx.complete(Forbidden, rejectionMessage)
-    }
-  }
-  def exceptionHandler: ExceptionHandler = { 
-      ExceptionHandler.apply {
-      case e: TokenExpiredException => ctx =>
-        ctx.complete(419, "The supplied token has expired.")
+      case TokenExpiredRejection(description) :: _ => 
+        ctx => ctx.complete(419, description)
     }
   }
 }
@@ -44,7 +40,6 @@ class ServiceActor extends HttpServiceActor with Service {
 
   // Setup implicits
   implicit val myRejectionHandler = Service.rejectionHandler
-  implicit val myExceptionHandler = Service.exceptionHandler
   
   // this actor only runs our route, but you could add
   // other things here, like request stream processing

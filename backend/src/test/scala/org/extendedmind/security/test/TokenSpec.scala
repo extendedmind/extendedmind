@@ -5,6 +5,8 @@ import org.extendedmind.security.defaults._
 import org.extendedmind.security.AES
 import java.util.UUID
 import org.extendedmind.security.Token
+import org.extendedmind._
+import org.extendedmind.Response._
 
 class TokenSpec extends SpraySpecBase{
   
@@ -32,14 +34,14 @@ class TokenSpec extends SpraySpecBase{
       val decryptedToken = Token.decryptToken("s61FqPljIOpZ0PHVoC1nSG4te8uK6Z1bN3Xilk+pObM=")
       decryptedToken match{
         case Right(token) => fail("Should have failed with CRC check")
-        case Left(e) => assert(e(0) === "Token CRC Check failed")
+        case Left(e) => assert(e(0) === ResponseContent(INVALID_PARAMETER, "Token CRC Check failed"))
       }
     }
     it("should fail to decode too short token"){
       val decryptedToken = Token.decryptToken("r61FqPljIOpZ0PHVoC1nSG4te8uK6Z1bN3Xilk+pObM")
       decryptedToken match{
         case Right(token) => fail("Should have failed with invalid lenght token")
-        case Left(e) => assert(e(0) === "Invalid string token length, should be 44")
+        case Left(e) => assert(e(0) === ResponseContent(INVALID_PARAMETER, "Invalid string token length, should be 44"))
       }
     }
   }

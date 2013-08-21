@@ -4,6 +4,8 @@ import scala.collection.immutable.BitSet
 import scala.util.Either
 import java.util.UUID
 import java.nio.ByteBuffer
+import org.extendedmind._
+import org.extendedmind.Response._
 import org.extendedmind.Settings
 import org.extendedmind.security.defaults._
 
@@ -33,10 +35,10 @@ object Token{
     new String(encodeBase64(AES.encrypt(bb.array(), settings.tokenSecret)))
   }
   
-  def decryptToken(stringToken: String)(implicit settings: Settings): Either[List[String], Token] =
+  def decryptToken(stringToken: String)(implicit settings: Settings): Response[Token] =
     try {
       if (stringToken.length() != 44){
-      	return Left(List("Invalid string token length, should be 44"))
+      	return fail(INVALID_PARAMETER, "Invalid string token length, should be 44")
       }
       
       // Decrypt Token
@@ -48,14 +50,14 @@ object Token{
       crc.end
       
       if (crc.getBytes.deep != decryptedToken.slice(24, 26).deep){
-        return Left(List("Token CRC Check failed"))
+        return fail(INVALID_PARAMETER, "Token CRC Check failed")
       }
       
       // Create Token
       val userUUID = UUIDUtils.getUUID(decryptedToken.slice(0, 16))
       Right(Token(userUUID, ByteBuffer.wrap(decryptedToken.slice(16, 24)).getLong()))
     } catch {
-      case e: Throwable => Left(List(e.toString))
+      case e: Throwable => fail(INTERNAL_SERVER_ERROR, e.toString)
     }
 }
 
