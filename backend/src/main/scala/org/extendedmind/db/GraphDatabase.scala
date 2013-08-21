@@ -4,16 +4,12 @@ import java.util.UUID
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
 import org.apache.commons.codec.binary.Base64
-import org.extendedmind.domain.User
-import org.extendedmind.domain.UserWrapper
-import org.extendedmind.security.Password
-import org.extendedmind.security.PasswordService
-import org.extendedmind.security.SecurityContext
-import org.extendedmind.security.UUIDUtils
+import org.extendedmind._
+import org.extendedmind.Response._
+import org.extendedmind.domain._
+import org.extendedmind.security._
 import org.neo4j.graphdb.Node
 import org.neo4j.scala.Neo4jWrapper
-import org.extendedmind.security.Token
-import org.extendedmind.Settings
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.kernel.extension.KernelExtensionFactory
 import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
@@ -22,14 +18,7 @@ import org.neo4j.server.configuration.ServerConfigurator
 import org.neo4j.server.configuration.Configurator
 import org.neo4j.server.WrappingNeoServerBootstrapper
 import org.neo4j.kernel.GraphDatabaseAPI
-import org.extendedmind.security.AuthenticatePayload
-import org.extendedmind.security.Token
-import org.neo4j.graphdb.Traverser
-import org.neo4j.graphdb.TraversalPosition
-import org.neo4j.graphdb.ReturnableEvaluator
-import org.neo4j.graphdb.DynamicRelationshipType
-import org.neo4j.graphdb.Direction
-import org.extendedmind.security.TokenExpiredException
+import org.neo4j.graphdb._
 
 trait GraphDatabase extends Neo4jWrapper {
 
@@ -63,28 +52,24 @@ trait GraphDatabase extends Neo4jWrapper {
 
   // USER METHODS
 
-  def getUser(email: String): Either[List[String], User] = {
+  def getUser(email: String): Response[User] = {
     withTx{
       implicit neo =>
-        val userNode = getUserNode(email)
-        getUser(userNode)
+        for{
+          userNode <- getUserNode(email).right
+          user <- Right(getUser(userNode)).right
+        }yield user
     }
   }
 
-  def getUser(uuid: UUID): Either[List[String], User] = {
+  def getUser(uuid: UUID): Response[User] = {
     withTx{
       implicit neo =>
-
-        val userNode = getUserNode(uuid)
-        getUser(userNode)
+        for{
+          userNode <- getUserNode(uuid).right
+          user <- Right(getUser(userNode)).right
+        }yield user
     }
-  }
-
-  private def getUser(userNode: Either[List[String], Node]): Either[List[String], User] = {
-    if (userNode.isLeft)
-      Left(userNode.left.get)
-    else
-      Right(getUser(userNode.right.get))
   }
 
   private def getUser(userNode: Node): User = {
@@ -92,88 +77,86 @@ trait GraphDatabase extends Neo4jWrapper {
       userNode.getProperty("email").asInstanceOf[String])
   }
 
-  private def getUserNode(email: String): Either[List[String], Node] = {
+  private def getUserNode(email: String): Response[Node] = {
     withTx {
       implicit neo =>
         val nodeIter = findNodesByLabelAndProperty(MainLabel.USER, "email", email)
         if (nodeIter.toList.isEmpty) {
-          Left(List("No users found with given email " + email))
+          fail(INVALID_PARAMETER, "No users found with given email " + email)
         } else if (nodeIter.toList.size > 1) {
-          Left(List("Ḿore than one user found with given email " + email))
+          fail(INTERNAL_SERVER_ERROR, "Ḿore than one user found with given email " + email)
         } else
           Right(nodeIter.toList(0))
     }
   }
 
-  private def getUserNode(uuid: UUID): Either[List[String], Node] = {
+  private def getUserNode(uuid: UUID): Response[Node] = {
     withTx {
       implicit neo =>
         val nodeIter = findNodesByLabelAndProperty(MainLabel.USER, "uuid", uuid.toString())
         if (nodeIter.toList.isEmpty)
-          Left(List("No users found with given UUID " + uuid.toString))
+          fail(INVALID_PARAMETER, "No users found with given UUID " + uuid.toString)
         else if (nodeIter.toList.size > 1)
-          Left(List("Ḿore than one user found with given UUID " + uuid.toString))
+          fail(INTERNAL_SERVER_ERROR, "Ḿore than one user found with given UUID " + uuid.toString)
         else
           Right(nodeIter.toList(0))
     }
   }
 
-  private def getTokenNode(token: Token): Either[List[String], Node] = {
+  private def getTokenNode(token: Token): Response[Node] = {
     withTx {
       implicit neo =>
         val nodeIter = findNodesByLabelAndProperty(MainLabel.TOKEN, "accessKey", token.accessKey: java.lang.Long)
         if (nodeIter.toList.isEmpty)
-          Left(List("No tokens found with given token"))
+          fail(INVALID_PARAMETER, "No tokens found with given token")
         else if (nodeIter.toList.size > 1)
-          Left(List("Ḿore than one token found with given token"))
+          fail(INTERNAL_SERVER_ERROR, "Ḿore than one token found with given token")
         else {
           Right(nodeIter.toList(0))
         }
     }
   }
 
-  private def getUserNode(tokenNode: Node): Either[List[String], Node] = {
+  private def getUserNode(tokenNode: Node): Response[Node] = {
     withTx {
       implicit neo =>
         // Check that token is still valid
         val expires = tokenNode.getProperty("expires").asInstanceOf[Long]
         if (System.currentTimeMillis() > expires) {
-          throw new TokenExpiredException("Token has expired")
-        }
-
-        val traverser =
-          tokenNode.traverse(
-            Traverser.Order.BREADTH_FIRST,
-            (tp: TraversalPosition) => false,
-            ReturnableEvaluator.ALL_BUT_START_NODE,
-            DynamicRelationshipType.withName(UserRelationship.FOR_USER.name),
-            Direction.OUTGOING)
-        val userNodeList = traverser.getAllNodes()
-        if (userNodeList.size() == 0) {
-          Left(List("Token attached to no users"))
-        } else if (userNodeList.size() > 1) {
-          Left(List("Token attached more than one user"))
-        } else {
-          Right(userNodeList.head)
+          fail(TOKEN_EXPIRED, "Token has expired")
+        }else{
+          val traverser =
+            tokenNode.traverse(
+              Traverser.Order.BREADTH_FIRST,
+              (tp: TraversalPosition) => false,
+              ReturnableEvaluator.ALL_BUT_START_NODE,
+              DynamicRelationshipType.withName(UserRelationship.FOR_USER.name),
+              Direction.OUTGOING)
+          val userNodeList = traverser.getAllNodes()
+          if (userNodeList.size() == 0) {
+            fail(INTERNAL_SERVER_ERROR, "Token attached to no users")
+          } else if (userNodeList.size() > 1) {
+            fail(INTERNAL_SERVER_ERROR, "Token attached more than one user")
+          } else {
+            Right(userNodeList.head)
+          }
         }
     }
   }
 
-  private def getUserNode(token: Token): Either[List[String], Node] = {
+  private def getUserNode(token: Token): Response[Node] = {
     withTx {
       implicit neo =>
-        val tokenNode = getTokenNode(token)
-        if (tokenNode.isRight) {
-          return getUserNode(tokenNode.right.get)
-        } else {
-          Left(List("Error getting token node"))
-        }
+        for {
+          tokenNode <- getTokenNode(token).right
+          userNode <- getUserNode(tokenNode).right
+        }yield userNode
     }
   }
 
   // SECURITY
 
-  def generateToken(email: String, attemptedPassword: String, payload: Option[AuthenticatePayload]): Either[List[String], SecurityContext] = {
+  def generateToken(email: String, attemptedPassword: String, payload: Option[AuthenticatePayload]): Response[SecurityContext] = {
     withTx {
       implicit neo =>
         for {
@@ -190,13 +173,13 @@ trait GraphDatabase extends Neo4jWrapper {
     }
   }
 
-  private def validateTokenReplacable(tokenNode: Node, currentTime: Long): Either[List[String], Node] = {
+  private def validateTokenReplacable(tokenNode: Node, currentTime: Long): Response[Node] = {
     if (tokenNode.hasProperty("replaceable")) {
       val replaceable = tokenNode.getProperty("replaceable").asInstanceOf[Long];
       if (currentTime < replaceable) {
         Right(tokenNode)
-      } else Left(List("Token no longer replaceable"))
-    } else Left(List("Token not replaceable"))
+      } else fail(TOKEN_EXPIRED, "Token no longer replaceable")
+    } else fail(INVALID_PARAMETER, "Token not replaceable")
   }
 
   private def createNewAccessKey(tokenNode: Node, sc: SecurityContext, payload: Option[AuthenticatePayload]): SecurityContext = {
@@ -214,7 +197,7 @@ trait GraphDatabase extends Neo4jWrapper {
       None)
   }
 
-  def swapToken(oldToken: String, payload: Option[AuthenticatePayload]): Either[List[String], SecurityContext] = {
+  def swapToken(oldToken: String, payload: Option[AuthenticatePayload]): Response[SecurityContext] = {
     val currentTime = System.currentTimeMillis()
     withTx {
       implicit neo =>
@@ -223,13 +206,13 @@ trait GraphDatabase extends Neo4jWrapper {
           tokenNode <- getTokenNode(token).right
           tokenNode <- validateTokenReplacable(tokenNode, currentTime).right
           userNode <- getUserNode(tokenNode).right
-          sc <- getSecurityContext(userNode).right
+          sc <- Right(getSecurityContext(userNode)).right
           sc <- Right(createNewAccessKey(tokenNode, sc, payload)).right
         } yield sc
     }
   }
 
-  def authenticate(email: String, attemptedPassword: String): Either[List[String], SecurityContext] = {
+  def authenticate(email: String, attemptedPassword: String): Response[SecurityContext] = {
     withTx{
       implicit neo4j => 
         for {
@@ -239,14 +222,14 @@ trait GraphDatabase extends Neo4jWrapper {
     }
   }
 
-  def authenticate(token: String): Either[List[String], SecurityContext] = {
+  def authenticate(token: String): Response[SecurityContext] = {
     withTx{
       implicit neo4j => 
 
         for {
           token <- Token.decryptToken(token).right
           user <- getUserNode(token).right
-          sc <- getSecurityContext(user).right
+          sc <- Right(getSecurityContext(user)).right
         } yield sc
     }
   }
@@ -279,22 +262,20 @@ trait GraphDatabase extends Neo4jWrapper {
       user.getProperty("passwordSalt").asInstanceOf[Array[Byte]])
   }
 
-  private def validatePassword(user: Node, attemptedPassword: String): Either[List[String], SecurityContext] = {
+  private def validatePassword(user: Node, attemptedPassword: String): Response[SecurityContext] = {
     // Check password
     if (PasswordService.authenticate(attemptedPassword, getStoredPassword(user))) {
-      for {
-        sc <- getSecurityContext(user).right
-      } yield sc
+      Right(getSecurityContext(user))
     } else {
-      Left(List("Invalid password"))
+      fail(INVALID_PARAMETER, "Invalid password")
     }
   }
 
-  private def getSecurityContext(user: Node): Either[List[String], SecurityContext] = {
+  private def getSecurityContext(user: Node): SecurityContext = {
     if (user.getLabels().asScala.find(p => p.name() == "ADMIN").isDefined)
-      Right(getSecurityContext(user, UserWrapper.ADMIN))
+      getSecurityContext(user, UserWrapper.ADMIN)
     else
-      Right(getSecurityContext(user, UserWrapper.NORMAL))
+      getSecurityContext(user, UserWrapper.NORMAL)
   }
 
   private def getSecurityContext(user: Node, userType: Byte): SecurityContext = {

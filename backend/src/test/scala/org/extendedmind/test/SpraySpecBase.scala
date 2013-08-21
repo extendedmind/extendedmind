@@ -11,7 +11,6 @@ abstract class SpraySpecBase extends SpecBase
 
   // Setup implicits to scope
   implicit val rejectionHandler = Service.rejectionHandler
-  implicit val exceptionHandler = Service.exceptionHandler
 
   // spray-testkit
   def actorRefFactory = system
@@ -21,7 +20,4 @@ abstract class SpraySpecBase extends SpecBase
   
   // Empty Scaldi bindings
   object EmptyTestConfiguration extends Module
-
-  
-  
 }
