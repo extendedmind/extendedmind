@@ -36,12 +36,10 @@ trait TestGraphDatabase extends GraphDatabase {
   import TestGraphDatabase._
 
   def insertTestUsers(testDataLocation: Option[String] = None) {
-    val timoId = insertTestUser(TIMO_EMAIL, TIMO_PASSWORD)
-    
+    val userNode = createUser(User(None, None, TIMO_EMAIL), TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
     withTx{
       implicit neo =>
         // Valid, unreplaceable
-        val userNode = getNodeById(timoId)
         val token = Token(UUIDUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
         saveToken(userNode, token, None)
         
@@ -57,7 +55,6 @@ trait TestGraphDatabase extends GraphDatabase {
         // Save another not replaceable anymore, expired token
         val expiredUnreplaceableToken = saveCustomToken(currentTime - 1000, Some(currentTime - 100), userNode)
 
-
         // Save items for user
         if (testDataLocation.isDefined){      
           val testData = "# 12h valid token for timo@ext.md: " + "\n" + 
@@ -72,23 +69,6 @@ trait TestGraphDatabase extends GraphDatabase {
                          "expiredUnreplaceableToken=" + Token.encryptToken(expiredUnreplaceableToken) + "\n\n"
           Some(new PrintWriter(testDataLocation.get + "/" + "testData.properties")).foreach{p => p.write(testData); p.close}
         }
-    }
-  }
-  
-  def insertTestUser(email:String, plainPassword:String): Long = {
-    withTx {
-      implicit neo =>
-        val timo = createNode(MainLabel.USER, UserLabel.ADMIN)
-        val salt = PasswordService.generateSalt
-        val password = plainPassword
-        val encryptedPassword = PasswordService.getEncryptedPassword(
-          password, salt, PasswordService.ALGORITHM, PasswordService.ITERATIONS)
-        timo.setProperty("passwordAlgorithm", encryptedPassword.algorithm)
-        timo.setProperty("passwordIterations", encryptedPassword.iterations)
-        timo.setProperty("passwordHash", Base64.encodeBase64String(encryptedPassword.passwordHash))
-        timo.setProperty("passwordSalt", encryptedPassword.salt)
-        timo.setProperty("email", email)
-        timo.getId()
     }
   }
   
