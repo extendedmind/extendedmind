@@ -36,19 +36,5 @@ class LoginSpec extends E2ESpecBase {
       click on id("loginbutton")
       eventually(timeout(Span(5, Seconds))) { currentUrl should include("/my") }
     }
-
-    //    it("should return error on expired token") {
-    //      go to "http://localhost:8080/"
-    //
-    //      val expiredUnreplaceableToken = testData.getProperty("expiredUnreplaceableToken");
-    //      add cookie ("token", expiredUnreplaceableToken)
-    //
-    //      go to "http://localhost:8080/my"
-    //
-    //      eventually(timeout(Span(5, Seconds))) {
-    //        currentUrl should include("/login")
-    //        delete all cookies
-    //      }
-    //    }
   }
 }
