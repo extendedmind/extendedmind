@@ -1,14 +1,17 @@
-'use strict';
+/*global angular*/
 
-emControllers.controller('MyController', ['$scope', 'itemFactory', 'itemsFactory',
-function($scope, itemFactory, itemsFactory) {
+( function() {'use strict';
 
-  $scope.items = itemsFactory.getUserItems();
-  $scope.newItems = itemsFactory.getUserNewItems();
+    angular.module('em.app').controller('MyController', ['$scope', 'itemFactory', 'itemsFactory',
+    function($scope, itemFactory, itemsFactory) {
 
-  $scope.putItem = function() {
-    itemFactory.putItem($scope.item, function() {
-    }, function(error) {
-    });
-  };
-}]);
+      $scope.items = itemsFactory.getUserItems();
+      $scope.newItems = itemsFactory.getUserNewItems();
+
+      $scope.putItem = function() {
+        itemFactory.putItem($scope.item, function() {
+        }, function(error) {
+        });
+      };
+    }]);
+  }());

@@ -1,16 +1,19 @@
-'use strict';
+/*global module, beforeEach, inject, describe, afterEach, it, expect*/
+/*jslint nomen: true */
 
-describe('em.filters', function() {
-  beforeEach(module('em.filters'));
+( function() {'use strict';
+    describe('em.filters', function() {
+      beforeEach(module('em.filters'));
 
-  describe('interpolate', function() {
-    beforeEach(module(function($provide) {
-      $provide.value('version', 'TEST_VER');
-      return null;
-    }));
+      describe('interpolate', function() {
+        beforeEach(module(function($provide) {
+          $provide.value('version', 'TEST_VER');
+          return null;
+        }));
 
-    it('should replace VERSION', inject(function(interpolateFilter) {
-      expect(interpolateFilter('before %VERSION% after')).toEqual('before TEST_VER after');
-    }));
-  });
-});
+        it('should replace VERSION', inject(function(interpolateFilter) {
+          expect(interpolateFilter('before %VERSION% after')).toEqual('before TEST_VER after');
+        }));
+      });
+    });
+  }());

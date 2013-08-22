@@ -1,3 +1,7 @@
-'use strict';
+/*global angular*/
 
-emServices.value('version', 0.1);
+( function() {'use strict';
+
+    angular.module('em.services').value('version', 0.1);
+
+  }());

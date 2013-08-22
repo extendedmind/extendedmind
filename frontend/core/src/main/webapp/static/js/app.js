@@ -1,76 +1,83 @@
-'use strict';
+/*global angular*/
 
-var emApp = angular.module('em.app', ['em.controllers', 'em.directives', 'em.filters', 'em.services']);
+( function() {'use strict';
 
-var emControllers = angular.module('em.controllers', []);
-var emDirectives = angular.module('em.directives', []);
-var emFilters = angular.module('em.filters', []);
-var emServices = angular.module('em.services', ['em.base64']);
+    angular.module('em.app', ['em.directives', 'em.filters', 'em.services']);
+    angular.module('em.directives', []);
+    angular.module('em.filters', []);
+    angular.module('em.services', ['em.base64']);
 
-emApp.config(['$locationProvider', '$routeProvider',
-function($locationProvider, $routeProvider) {
+    angular.module('em.app').config(['$locationProvider', '$routeProvider',
+    function($locationProvider, $routeProvider) {
 
-  $routeProvider.when('/my', {
-    templateUrl : '/static/partials/my.html',
-    controller : 'MyController',
-    resolve : {
-      userItemsFactory : ['userItemsFactory',
-      function(userItemsFactory) {
-        userItemsFactory.getItems();
-      }]
+      $routeProvider.when('/', {
+        templateUrl : '/static/partials/home.html',
+        controller : 'HomeController'
+      });
 
-    }
-  });
-  $routeProvider.when('/login', {
-    templateUrl : '/static/partials/login.html',
-    controller : 'LoginController'
-  });
-  $routeProvider.when('/notes', {
-    templateUrl : '/static/partials/notes.html',
-    controller : 'NotesController',
-    resolve : {
-      userItemsFactory : ['userItemsFactory',
-      function(userItemsFactory) {
-        userItemsFactory.getItems();
-      }]
+      $routeProvider.when('/404', {
+        templateUrl : '/static/partials/pageNotFound.html',
+        controller : 'PageNotFoundController'
+      });
 
-    }
-  });
-  $routeProvider.when('/tasks', {
-    templateUrl : '/static/partials/tasks.html',
-    controller : 'TasksController',
-    resolve : {
-      userItemsFactory : ['userItemsFactory',
-      function(userItemsFactory) {
-        userItemsFactory.getItems();
-      }]
+      $routeProvider.when('/login', {
+        templateUrl : '/static/partials/login.html',
+        controller : 'LoginController'
+      });
 
-    }
-  });
-  $routeProvider.when('/', {
-    templateUrl : '/static/partials/home.html',
-    controller : 'HomeController'
-  });
-  $routeProvider.when('/404', {
-    templateUrl : '/static/partials/pageNotFound.html',
-    controller : 'PageNotFoundController'
-  });
-  $routeProvider.otherwise({
-    redirectTo : '/404'
-  });
+      $routeProvider.when('/my', {
+        controller : 'MyController',
+        templateUrl : '/static/partials/my.html',
+        resolve : {
+          authenticationRequired : ['$rootScope',
+          function($rootScope) {
+            $rootScope.$broadcast('event:authenticationRequired');
+          }]
 
-  $locationProvider.html5Mode(true);
-}]);
+        }
+      });
 
-emApp.run(['$location', '$rootScope', 'userAuthenticate',
-function($location, $rootScope, userAuthenticate) {
-  $rootScope.$on('event:authenticationRequired', function() {
-    userAuthenticate.authenticate();
-  });
-  $rootScope.$on('event:loginRequired', function() {
-    $location.path('/login');
-  });
-  $rootScope.$on('event:loginSuccess', function() {
-    $location.path('/my');
-  });
-}]);
+      $routeProvider.when('/mynotes', {
+        controller : 'NotesController',
+        templateUrl : '/static/partials/mynotes.html',
+        resolve : {
+          authenticationRequired : ['$rootScope',
+          function($rootScope) {
+            $rootScope.$broadcast('event:authenticationRequired');
+          }]
+
+        }
+      });
+
+      $routeProvider.when('/mytasks', {
+        controller : 'TasksController',
+        templateUrl : '/static/partials/mytasks.html',
+        resolve : {
+          authenticationRequired : ['$rootScope',
+          function($rootScope) {
+            $rootScope.$broadcast('event:authenticationRequired');
+          }]
+
+        }
+      });
+
+      $routeProvider.otherwise({
+        redirectTo : '/404'
+      });
+
+      $locationProvider.html5Mode(true);
+    }]);
+
+    angular.module('em.app').run(['$location', '$rootScope', 'userAuthenticate',
+    function($location, $rootScope, userAuthenticate) {
+      $rootScope.$on('event:authenticationRequired', function() {
+        userAuthenticate.authenticate();
+      });
+      $rootScope.$on('event:loginRequired', function() {
+        $location.path('/login');
+      });
+      $rootScope.$on('event:loginSuccess', function() {
+        $location.path('/my');
+      });
+    }]);
+  }());

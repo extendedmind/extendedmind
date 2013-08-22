@@ -1,9 +1,12 @@
-'use strict';
+/*global angular*/
 
-emControllers.controller('TasksController', ['$scope', 'itemsFactory',
-function($scope, itemsFactory) {
-  $scope.filterArgument = 'TASK';
+( function() {'use strict';
 
-  $scope.items = itemsFactory.getUserItems();
-  $scope.newItems = itemsFactory.getUserNewItems();
-}]);
+    angular.module('em.app').controller('TasksController', ['$scope', 'itemsFactory',
+    function($scope, itemsFactory) {
+      $scope.filterArgument = 'TASK';
+
+      $scope.items = itemsFactory.getUserItems();
+      $scope.newItems = itemsFactory.getUserNewItems();
+    }]);
+  }());

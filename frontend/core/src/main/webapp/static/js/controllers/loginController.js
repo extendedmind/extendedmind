@@ -1,16 +1,21 @@
-'use strict';
+/*global angular*/
 
-emControllers.controller('LoginController', ['$rootScope', '$scope', 'userFactory', 'userAuthenticate',
+( function() {'use strict';
+    angular.module('em.app').controller('LoginController', ['$rootScope', '$scope', 'errorService', 'userFactory', 'userAuthenticate',
 
-function($rootScope, $scope, userFactory, userAuthenticate) {
-  $scope.userLogin = function() {
-    userFactory.setCredentials($scope.user.username, $scope.user.password);
-    userFactory.setUserRemembered($scope.user.remember);
+    function($rootScope, $scope, errorService, userFactory, userAuthenticate) {
 
-    userAuthenticate.login(function() {
-      $rootScope.$broadcast('event:loginSuccess');
-    }, function(error) {
-      $rootScope.$broadcast('event:loginRequired');
-    });
-  };
-}]);
+      $scope.errorService = errorService;
+
+      $scope.userLogin = function() {
+        userFactory.setCredentials($scope.user.username, $scope.user.password);
+        userFactory.setUserRemembered($scope.user.remember);
+
+        userAuthenticate.login(function() {
+          $rootScope.$broadcast('event:loginSuccess');
+        }, function(error) {
+          $rootScope.$broadcast('event:loginRequired');
+        });
+      };
+    }]);
+  }());

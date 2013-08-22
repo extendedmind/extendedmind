@@ -16,6 +16,7 @@ class LoginSpec extends E2ESpecBase {
       click on id("loginbutton")
       eventually { currentUrl should include("/login") }
     }
+
     it("should return error on invalid password") {
       go to "http://localhost:8080/login"
       click on id("username")
@@ -25,6 +26,7 @@ class LoginSpec extends E2ESpecBase {
       click on id("loginbutton")
       eventually { currentUrl should include("/login") }
     }
+
     it("should return front page on successful login") {
       go to "http://localhost:8080/login"
       click on id("username")
@@ -34,10 +36,19 @@ class LoginSpec extends E2ESpecBase {
       click on id("loginbutton")
       eventually(timeout(Span(5, Seconds))) { currentUrl should include("/my") }
     }
-    it("should return error on expired token") {
-      val expiredToken = testData.getProperty("expiredToken");
-      // TODO: The stored tokens are in e2e/target/testData.properties
-      // Use them to check that authentication works as planned!
-    }
+
+    //    it("should return error on expired token") {
+    //      go to "http://localhost:8080/"
+    //
+    //      val expiredUnreplaceableToken = testData.getProperty("expiredUnreplaceableToken");
+    //      add cookie ("token", expiredUnreplaceableToken)
+    //
+    //      go to "http://localhost:8080/my"
+    //
+    //      eventually(timeout(Span(5, Seconds))) {
+    //        currentUrl should include("/login")
+    //        delete all cookies
+    //      }
+    //    }
   }
 }

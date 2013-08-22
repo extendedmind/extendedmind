@@ -1,9 +1,12 @@
-'use strict';
+/*global angular*/
 
-emControllers.controller('NotesController', ['$scope', 'itemsFactory',
-function($scope, itemsFactory) {
-  $scope.filterArgument = 'NOTE';
+( function() {'use strict';
 
-  $scope.items = itemsFactory.getUserItems();
-  $scope.newItems = itemsFactory.getUserNewItems();
-}]);
+    angular.module('em.app').controller('NotesController', ['$scope', 'itemsFactory',
+    function($scope, itemsFactory) {
+      $scope.filterArgument = 'NOTE';
+
+      $scope.items = itemsFactory.getUserItems();
+      $scope.newItems = itemsFactory.getUserNewItems();
+    }]);
+  }());

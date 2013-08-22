@@ -1,25 +1,37 @@
-'use strict';
+/*global module, beforeEach, inject, describe, afterEach, it, expect, spyOn*/
+/*jslint nomen: true */
 
-describe('em.service', function() {
-  beforeEach(module('em.services'));
+( function() {'use strict';
+    describe('em.service', function() {
+      beforeEach(module('em.services'));
 
-  describe('userAuthenticateService', function() {
-    beforeEach(module('em.mockHelpers'));
+      describe('userAuthenticateService', function() {
+        beforeEach(module('em.mockHelpers'));
 
-    describe('userAuthenticate', function() {
-      var $rootScope, userAuthenticate;
+        describe('userAuthenticate', function() {
+          var $rootScope, httpBasicAuth, userAuthenticate;
 
-      beforeEach(inject(function(_$rootScope_, _userAuthenticate_) {
-        $rootScope = _$rootScope_;
-        userAuthenticate = _userAuthenticate_;
-      }));
+          beforeEach(inject(function(_$rootScope_, _httpBasicAuth_, _userAuthenticate_) {
+            $rootScope = _$rootScope_;
+            spyOn($rootScope, "$broadcast");
 
-      it('should broadcast \'event:loginRequired\' on invalid user', inject(function() {
-        spyOn($rootScope, "$broadcast");
+            httpBasicAuth = _httpBasicAuth_;
+            userAuthenticate = _userAuthenticate_;
+          }));
 
-        userAuthenticate.authenticate();
-        expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
-      }));
+          it('should broadcast \'event:loginRequired\' on invalid user', inject(function() {
+            userAuthenticate.authenticate();
+            expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
+          }));
+
+          it('should broadcast \'event:loginSuccess\' on successful authentication', inject(function() {
+            // httpBasicAuth.setCredentials('timo@ext.md', 'timopwd');
+            //
+            // userAuthenticate.authenticate();
+            //
+            // expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
+          }));
+        });
+      });
     });
-  });
-});
+  }());
