@@ -1,5 +1,8 @@
-'use strict';
+/*global angular*/
 
-emServices.factory('tasksFactory', [
-function() {
-}]);
+( function() {'use strict';
+
+    angular.module('em.services').factory('tasksFactory', [
+    function() {
+    }]);
+  }());

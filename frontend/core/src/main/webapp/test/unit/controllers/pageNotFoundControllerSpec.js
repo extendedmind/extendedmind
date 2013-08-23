@@ -1,17 +1,20 @@
-'use strict';
+/*global module, beforeEach, inject, describe, afterEach, it, expect*/
+/*jslint nomen: true */
 
-describe('em.controllers', function() {
-  beforeEach(module('em.controllers'));
+( function() {'use strict';
+    // describe('em.controllers', function() {
+    beforeEach(module('em.app'));
 
-  describe('PageNotFoundController', function() {
-    var $controller, $scope;
+    describe('PageNotFoundController', function() {
+      var $controller, $scope;
 
-    beforeEach(inject(function(_$controller_, _$rootScope_) {
+      beforeEach(inject(function(_$controller_, _$rootScope_) {
 
-      $scope = _$rootScope_.$new();
-      $controller = _$controller_('PageNotFoundController', {
-        $scope : $scope
-      });
-    }));
-  });
-});
+        $scope = _$rootScope_.$new();
+        $controller = _$controller_('PageNotFoundController', {
+          $scope : $scope
+        });
+      }));
+    });
+    // });
+  }());

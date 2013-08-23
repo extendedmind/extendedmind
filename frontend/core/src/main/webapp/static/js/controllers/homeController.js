@@ -1,5 +1,8 @@
-'use strict';
+/*global angular*/
 
-emControllers.controller('HomeController', ['$scope',
-function() {
-}]);
+( function() {'use strict';
+
+    angular.module('em.app').controller('HomeController', ['$scope',
+    function($scope) {
+    }]);
+  }());

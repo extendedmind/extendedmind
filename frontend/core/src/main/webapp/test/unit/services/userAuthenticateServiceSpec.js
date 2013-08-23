@@ -1,50 +1,37 @@
-'use strict';
+/*global module, beforeEach, inject, describe, afterEach, it, expect, spyOn*/
+/*jslint nomen: true */
 
-describe('em.service', function() {
-  beforeEach(module('em.services'));
+( function() {'use strict';
+    describe('em.service', function() {
+      beforeEach(module('em.services'));
 
-  describe('userAuthenticateService', function() {
-    beforeEach(module('em.mockHelpers'));
+      describe('userAuthenticateService', function() {
+        beforeEach(module('em.mockHelpers'));
 
-    describe('userAuthenticate', function() {
-      var $rootScope, userAuthenticate;
+        describe('userAuthenticate', function() {
+          var $rootScope, httpBasicAuth, userAuthenticate;
 
-      beforeEach(inject(function(_$rootScope_, _userAuthenticate_) {
+          beforeEach(inject(function(_$rootScope_, _httpBasicAuth_, _userAuthenticate_) {
+            $rootScope = _$rootScope_;
+            spyOn($rootScope, "$broadcast");
 
-        $rootScope = _$rootScope_;
-        spyOn($rootScope, "$broadcast");
+            httpBasicAuth = _httpBasicAuth_;
+            userAuthenticate = _userAuthenticate_;
+          }));
 
-        userAuthenticate = _userAuthenticate_;
-      }));
+          it('should broadcast \'event:loginRequired\' on invalid user', inject(function() {
+            userAuthenticate.authenticate();
+            expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
+          }));
 
-      it('should broadcast \'event:loginRequired\' on invalid user', inject(function() {
-        userAuthenticate.authenticate();
-        expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
-      }));
+          it('should broadcast \'event:loginSuccess\' on successful authentication', inject(function() {
+            // httpBasicAuth.setCredentials('timo@ext.md', 'timopwd');
+            //
+            // userAuthenticate.authenticate();
+            //
+            // expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
+          }));
+        });
+      });
     });
-
-    describe('httpBasicAuth', function() {
-      var httpBasicAuth;
-
-      beforeEach(inject(function(_httpBasicAuth_) {
-        httpBasicAuth = _httpBasicAuth_;
-      }));
-
-      it('should set credentials', inject(function() {
-        httpBasicAuth.setCredentials('timo@ext.md', 'timopwd');
-        expect(httpBasicAuth.getCredentials()).toBeDefined();
-      }));
-
-      it('should call setter for credentials', inject(function() {
-        spyOn(httpBasicAuth, 'setCredentials');
-        httpBasicAuth.setCredentials('timo@ext.md', 'timopwd');
-        expect(httpBasicAuth.setCredentials).toHaveBeenCalledWith('timo@ext.md', 'timopwd');
-      }));
-
-      it('should get new credentials', inject(function() {
-        httpBasicAuth.setCredentials(['timo@ext.md', 'timopwd']);
-        expect(httpBasicAuth.getCredentials()).toEqual('dGltb0BleHQubWQsdGltb3B3ZDp1bmRlZmluZWQ=');
-      }));
-    });
-  });
-});
+  }());

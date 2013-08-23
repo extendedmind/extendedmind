@@ -1,5 +1,8 @@
-'use strict';
+/*global angular*/
 
-emControllers.controller('PageNotFoundController', ['$scope',
-function() {
-}]);
+( function() {'use strict';
+
+    angular.module('em.app').controller('PageNotFoundController', ['$scope',
+    function() {
+    }]);
+  }());
