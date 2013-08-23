@@ -1,16 +1,11 @@
 package org.extendedmind.test
 
-import org.extendedmind.Settings
-import org.extendedmind.db.GraphDatabase
-import org.extendedmind.search.SearchIndex
+import org.extendedmind._
+import org.extendedmind.db._
+import org.extendedmind.security._
+import org.extendedmind.domain._
 import org.neo4j.scala.EmbeddedGraphDatabaseServiceProvider
-import org.extendedmind.db.{ MainLabel, UserLabel }
-import org.extendedmind.db.UserRelationship
-import org.extendedmind.security.Token
 import java.util.UUID
-import org.extendedmind.security.PasswordService
-import org.extendedmind.domain.User
-import org.extendedmind.security.UUIDUtils
 import org.neo4j.scala.Neo4jWrapper
 import org.apache.commons.codec.binary.Base64
 import org.neo4j.scala.ImpermanentGraphDatabaseServiceProvider
@@ -19,7 +14,6 @@ import org.neo4j.kernel.extension.KernelExtensionFactory
 import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
 import org.neo4j.test.TestGraphDatabaseFactory
 import org.neo4j.graphdb.Node
-import org.extendedmind.security.AuthenticatePayload
 import java.io.PrintWriter
 import org.neo4j.scala.DatabaseService
 
@@ -32,30 +26,36 @@ object TestGraphDatabase {
  * Basic test data for Extended Mind
  */
 trait TestGraphDatabase extends GraphDatabase {
-
+  
   import TestGraphDatabase._
 
-  def insertTestUsers(testDataLocation: Option[String] = None) {
-    val userNode = createUser(User(None, None, TIMO_EMAIL), TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
+  val TEST_DATA_DESTINATION = "target/test-classes"
+
+  var timoUUID: UUID = null
+  
+  def insertTestData(testDataLocation: Option[String] = None) {
+    val timoNode = createUser(User(None, None, TIMO_EMAIL), TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
+    
     withTx{
       implicit neo =>
         // Valid, unreplaceable
-        val token = Token(UUIDUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
-        saveToken(userNode, token, None)
+        timoUUID = UUIDUtils.getUUID(timoNode.getProperty("uuid").asInstanceOf[String])
+        val token = Token(timoUUID)
+        saveToken(timoNode, token, None)
         
         // Valid, replaceable
-        val replaceableToken = Token(UUIDUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
-        saveToken(userNode, replaceableToken, Some(AuthenticatePayload(true)))
+        val replaceableToken = Token(UUIDUtils.getUUID(timoNode.getProperty("uuid").asInstanceOf[String]))
+        saveToken(timoNode, replaceableToken, Some(AuthenticatePayload(true)))
 
         val currentTime = System.currentTimeMillis()
         // Save another expired token
-        val expiredToken = saveCustomToken(currentTime - 1000, None, userNode)
+        val expiredToken = saveCustomToken(currentTime - 1000, None, timoNode)
         // Save another replaceable but expired token
-        val expiredReplaceableToken = saveCustomToken(currentTime - 1000, Some(currentTime + 1000*60*60*24*10000), userNode)
+        val expiredReplaceableToken = saveCustomToken(currentTime - 1000, Some(currentTime + 1000*60*60*24*10000), timoNode)
         // Save another not replaceable anymore, expired token
-        val expiredUnreplaceableToken = saveCustomToken(currentTime - 1000, Some(currentTime - 100), userNode)
+        val expiredUnreplaceableToken = saveCustomToken(currentTime - 1000, Some(currentTime - 100), timoNode)
 
-        // Save items for user
+        // Save test data
         if (testDataLocation.isDefined){      
           val testData = "# 12h valid token for timo@ext.md: " + "\n" + 
                          "token=" + Token.encryptToken(token) + "\n\n" +
@@ -70,6 +70,14 @@ trait TestGraphDatabase extends GraphDatabase {
           Some(new PrintWriter(testDataLocation.get + "/" + "testData.properties")).foreach{p => p.write(testData); p.close}
         }
     }
+    
+    // Store items for user
+    putNewItem(timoUUID, 
+        Item(None, None, "book flight", None)).right.get
+    putNewItem(timoUUID, 
+        Item(None, None, "remember the milk", None)).right.get
+    putNewItem(timoUUID, 
+        Item(None, None, "door code: 1234", Some("sometimes the key 2 does not work"))).right.get
   }
   
   def saveCustomToken(expires: Long, replaceable: Option[Long], userNode: Node)
@@ -91,7 +99,7 @@ class TestImpermanentGraphDatabase(implicit val settings: Settings)
   extends TestGraphDatabase with ImpermanentGraphDatabaseServiceProvider {
   def testGraphDatabaseFactory = {
     val factory = new TestGraphDatabaseFactory()
-    factory.addKernelExtensions(kernelExtensions)
+    factory.addKernelExtensions(kernelExtensions(false))
     factory
   }
 }
@@ -100,6 +108,6 @@ class TestEmbeddedGraphDatabase(dataStore: String)(implicit val settings: Settin
   extends TestGraphDatabase with EmbeddedGraphDatabaseServiceProvider {
   def neo4jStoreDir = dataStore
   def graphDatabaseFactory = {
-    new GraphDatabaseFactory().addKernelExtensions(kernelExtensions)
+    new GraphDatabaseFactory().addKernelExtensions(kernelExtensions(true))
   }
 }

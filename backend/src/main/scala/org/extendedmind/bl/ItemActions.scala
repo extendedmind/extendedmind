@@ -20,12 +20,12 @@ trait ItemActions{
     db.putNewItem(userUUID, item)
   }
   
-  def putExistingItem(userUUID: UUID, item: Item, itemUUID: UUID): Response[SetResult] = {
-    Right(SetResult(Some(UUID.randomUUID()), 1))
+  def putExistingItem(userUUID: UUID, itemUUID: UUID, item: Item): Response[SetResult] = {
+    db.putExistingItem(userUUID, itemUUID, item)
   }
   
-  def getItems(userUUID: UUID): List[Item] = {
-    List()
+  def getItems(userUUID: UUID): Response[Items] = {
+    db.getItems(userUUID)
   }
 }
 

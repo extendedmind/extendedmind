@@ -26,35 +26,29 @@ import org.neo4j.graphdb.traversal.Evaluators
 
 abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
-  // Token is valid for twelve hours
-  val TOKEN_DURATION: Long = 12 * 60 * 60 * 1000
-  // If rememberMe is set, the token can be replaced for 7 days
-  val TOKEN_REPLACEABLE: Long = 7 * 24 * 60 * 60 * 1000
-
-  def settings: Settings
-  
   // IMPLICITS
   
-  // Settins
+  // Settings
+  def settings: Settings
   implicit val implSettings = settings
 
   // Implicit Neo4j Scala wrapper serialization exclusions
   implicit val serializeExclusions: Option[List[String]] = Some(
-    // Always exclude the setting of uuid and modified
-    List("uuid", "modified")
+    // Always exclude the direct setting of uuid, modified, public and exclusive
+    List("uuid", "modified", "public", "exclusive")
   )
   // Implicit Neo4j Scala wrapper converters
   implicit val customConverters: Option[Map[String, AnyRef => AnyRef]] = 
-    // Convert trimmed Base64 UUID to 
+    // Convert trimmed Base64 UUID to java.util.UUID
     Some(Map("uuid" -> (uuid => Some(UUIDUtils.getUUID(uuid.asInstanceOf[String]))))
   )
   
   // INITIALIZATION
 
-  protected def kernelExtensions(): java.util.ArrayList[KernelExtensionFactory[_]] = {
+  protected def kernelExtensions(setupAutoindexing: Boolean = true): java.util.ArrayList[KernelExtensionFactory[_]] = {
     val extensions = new java.util.ArrayList[KernelExtensionFactory[_]](2);
-    extensions.add(new UUIDKernelExtensionFactory());
-    extensions.add(new TimestampKernelExtensionFactory());
+    extensions.add(new UUIDKernelExtensionFactory(false, false, setupAutoindexing));
+    extensions.add(new TimestampKernelExtensionFactory(setupAutoindexing));
     extensions
   }
 
@@ -91,7 +85,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     withTx{
       implicit neo4j =>
         val uuid = if(includeUUID) 
-                      Some(UUID.fromString(node.getProperty("uuid").asInstanceOf[String])) 
+                      Some(UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])) 
                    else None
         Right(SetResult(uuid,
                         node.getProperty("modified").asInstanceOf[Long]))

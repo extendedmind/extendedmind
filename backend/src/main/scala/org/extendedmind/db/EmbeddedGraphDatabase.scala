@@ -16,9 +16,9 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
   }
   def graphDatabaseFactory = {
     if (settings.isHighAvailability){
-      new HighlyAvailableGraphDatabaseFactory().addKernelExtensions(kernelExtensions)
+      new HighlyAvailableGraphDatabaseFactory().addKernelExtensions(kernelExtensions())
     }else{
-      new GraphDatabaseFactory().addKernelExtensions(kernelExtensions)
+      new GraphDatabaseFactory().addKernelExtensions(kernelExtensions())
     }
   }
   startServer()

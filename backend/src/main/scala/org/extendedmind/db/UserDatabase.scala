@@ -1,19 +1,12 @@
 package org.extendedmind.db
 
 import java.util.UUID
-
 import scala.collection.JavaConversions.iterableAsScalaIterable
-
 import org.apache.commons.codec.binary.Base64
-import org.extendedmind.INTERNAL_SERVER_ERROR
-import org.extendedmind.INVALID_PARAMETER
-import org.extendedmind.Response.Response
-import org.extendedmind.Response.fail
-import org.extendedmind.SetResult
-import org.extendedmind.TOKEN_EXPIRED
-import org.extendedmind.domain.User
-import org.extendedmind.security.PasswordService
-import org.extendedmind.security.Token
+import org.extendedmind._
+import org.extendedmind.Response._
+import org.extendedmind.domain._
+import org.extendedmind.security._
 import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.Node
@@ -24,13 +17,27 @@ import org.neo4j.scala.DatabaseService
 
 trait UserDatabase extends AbstractGraphDatabase {
 
+  // PUBLIC
+
   def putNewUser(user: User, password: String): Response[SetResult] = {
     for{
       user <- createUser(user, password).right
       result <- getSetResult(user, true).right
     }yield result
   }
-  
+
+  def getUser(email: String): Response[User] = {
+    withTx{
+      implicit neo =>
+        for{
+          userNode <- getUserNode(email).right
+          user <- toCaseClass[User](userNode).right
+        }yield user
+    }
+  }
+
+  // PRIVATE
+
   protected def createUser(user: User, plainPassword: String, userLabel: Option[Label] = None): Response[Node] = {
     withTx{
       implicit neo4j =>
@@ -48,17 +55,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  def getUser(email: String): Response[User] = {
-    withTx{
-      implicit neo =>
-        for{
-          userNode <- getUserNode(email).right
-          user <- toCaseClass[User](userNode).right
-        }yield user
-    }
-  }
-
-  def getUser(uuid: UUID): Response[User] = {
+  protected def getUser(uuid: UUID): Response[User] = {
     withTx{
       implicit neo =>
         for{
@@ -84,7 +81,7 @@ trait UserDatabase extends AbstractGraphDatabase {
   protected def getUserNode(uuid: UUID): Response[Node] = {
     withTx {
       implicit neo =>
-        val nodeIter = findNodesByLabelAndProperty(MainLabel.USER, "uuid", uuid.toString())
+        val nodeIter = findNodesByLabelAndProperty(MainLabel.USER, "uuid", UUIDUtils.getTrimmedBase64UUID(uuid))
         if (nodeIter.toList.isEmpty)
           fail(INVALID_PARAMETER, "No users found with given UUID " + uuid.toString)
         else if (nodeIter.toList.size > 1)

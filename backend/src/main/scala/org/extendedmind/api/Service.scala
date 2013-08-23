@@ -60,11 +60,13 @@ object JsonImplicits extends DefaultJsonProtocol {
   }
 
   implicit val implSetResult = jsonFormat2(SetResult)
-  implicit val implItem = jsonFormat6(Item)
+  implicit val implItem = jsonFormat4(Item)
+  implicit val implNote = jsonFormat10(Note)
+  implicit val implTask = jsonFormat11(Task)
+  implicit val implItems = jsonFormat3(Items)
   implicit val implUser = jsonFormat3(User)
   implicit val implSecurityContext = jsonFormat5(SecurityContext)
   implicit val implAuthenticatePayload = jsonFormat1(AuthenticatePayload)
-
 }
 
 // this class defines our service behavior independently from the service actor
@@ -96,8 +98,12 @@ trait Service extends API with Injectable {
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
         authorize(securityContext.userUUID == userUUID){
 		      complete {
-		        Future[List[Item]] {
-		          itemActions.getItems(userUUID)
+		        Future[Items] {
+		          itemActions.getItems(userUUID) match {
+                case Right(items) => items
+                case Left(e) => throw new RejectionError(
+                    MalformedQueryParamRejection("items", e mkString(",")))
+		          }
 		        }
 		      }
         }
@@ -113,7 +119,7 @@ trait Service extends API with Injectable {
     } ~
     putExistingItem { (userUUID, itemUUID) =>
       entity(as[Item]) { item =>
-        itemActions.putExistingItem(userUUID, item, itemUUID) match {
+        itemActions.putExistingItem(userUUID, itemUUID, item) match {
           case Right(sr) => complete(sr)
           case Left(e) => reject(MalformedQueryParamRejection("item", e mkString(",")))
         }

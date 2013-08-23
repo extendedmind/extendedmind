@@ -18,8 +18,13 @@ import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 
 trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
+  
+  // Token is valid for twelve hours
+  val TOKEN_DURATION: Long = 12 * 60 * 60 * 1000
+  // If rememberMe is set, the token can be replaced for 7 days
+  val TOKEN_REPLACEABLE: Long = 7 * 24 * 60 * 60 * 1000
 
-  // SECURITY
+  // PUBLIC
 
   def generateToken(email: String, attemptedPassword: String, payload: Option[AuthenticatePayload]): Response[SecurityContext] = {
     withTx {
@@ -36,27 +41,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
                       None)).right
           } yield sc
     }
-  }
-  
-  protected def validateTokenReplacable(tokenNode: Node, currentTime: Long): Response[Node] = {
-    if (tokenNode.hasProperty("replaceable")) {
-      val replaceable = tokenNode.getProperty("replaceable").asInstanceOf[Long];
-      if (currentTime < replaceable) {
-        Right(tokenNode)
-      } else fail(TOKEN_EXPIRED, "Token no longer replaceable")
-    } else fail(INVALID_PARAMETER, "Token not replaceable")
-  }
-
-  protected def createNewAccessKey(tokenNode: Node, sc: SecurityContext, payload: Option[AuthenticatePayload])(implicit neo4j: DatabaseService): SecurityContext = {
-    // Make new token and set properties to the token node
-    val token = Token(sc.userUUID)
-    setTokenProperties(tokenNode, token, payload)
-    SecurityContext(
-      sc.userUUID,
-      sc.email,
-      sc.userType,
-      Some(Token.encryptToken(token)),
-      None)
   }
 
   def swapToken(oldToken: String, payload: Option[AuthenticatePayload]): Response[SecurityContext] = {
@@ -94,6 +78,29 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           sc <- Right(getSecurityContext(user)).right
         } yield sc
     }
+  }
+  
+  // PRIVATE
+  
+  protected def validateTokenReplacable(tokenNode: Node, currentTime: Long): Response[Node] = {
+    if (tokenNode.hasProperty("replaceable")) {
+      val replaceable = tokenNode.getProperty("replaceable").asInstanceOf[Long];
+      if (currentTime < replaceable) {
+        Right(tokenNode)
+      } else fail(TOKEN_EXPIRED, "Token no longer replaceable")
+    } else fail(INVALID_PARAMETER, "Token not replaceable")
+  }
+
+  protected def createNewAccessKey(tokenNode: Node, sc: SecurityContext, payload: Option[AuthenticatePayload])(implicit neo4j: DatabaseService): SecurityContext = {
+    // Make new token and set properties to the token node
+    val token = Token(sc.userUUID)
+    setTokenProperties(tokenNode, token, payload)
+    SecurityContext(
+      sc.userUUID,
+      sc.email,
+      sc.userType,
+      Some(Token.encryptToken(token)),
+      None)
   }
 
   protected def saveToken(userNode: Node, token: Token, payload: Option[AuthenticatePayload]) {

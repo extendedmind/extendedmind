@@ -1,16 +1,12 @@
 package org.extendedmind.api.test
 
-import org.extendedmind.test.SpraySpecBase
-import org.extendedmind.test.TestImpermanentGraphDatabase
+import org.extendedmind.test._
 
+import org.neo4j.test.TestGraphDatabaseFactory
 
-trait ImpermanentGraphDatabaseSpecBase extends SpraySpecBase{
+trait ImpermanentGraphDatabaseSpecBase extends SpraySpecBase with Neo4jHelper{
 
   // Create test database
-  var db: TestImpermanentGraphDatabase = null
+  val db: TestImpermanentGraphDatabase = new TestImpermanentGraphDatabase
 
-  before{
-    db = new TestImpermanentGraphDatabase
-    db.insertTestUsers()
-  }
 }
