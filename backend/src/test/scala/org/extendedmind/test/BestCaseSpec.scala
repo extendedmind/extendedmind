@@ -100,6 +100,13 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
               writeJsonOutput("putExistingItemResponse", putExistingItemResponse)
               putExistingItemResponse should include("modified")
               putExistingItemResponse should not include("uuid")
+            Get("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get
+                  ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                  ) ~> emRoute ~> check {
+                val itemResponse = entityAs[Item]
+                writeJsonOutput("itemResponse", entityAs[String])
+                itemResponse.description.get should be("not kidding")
+              }
             }
         }
     }

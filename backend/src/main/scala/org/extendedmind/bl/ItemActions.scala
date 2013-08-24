@@ -27,6 +27,10 @@ trait ItemActions{
   def getItems(userUUID: UUID): Response[Items] = {
     db.getItems(userUUID)
   }
+  
+  def getItem(userUUID: UUID, itemUUID: UUID): Response[Item] = {
+    db.getItem(userUUID, itemUUID)
+  }
 }
 
 class ItemActionsImpl(implicit val settings: Settings, implicit val inj: Injector) 

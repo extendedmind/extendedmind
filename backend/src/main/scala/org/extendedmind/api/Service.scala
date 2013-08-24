@@ -110,6 +110,17 @@ trait Service extends API with Injectable {
         }
       }
     } ~ 
+    getItem { (userUUID, itemUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == userUUID){
+          itemActions.getItem(userUUID, itemUUID) match {
+            case Right(sr) => complete(sr)
+            // TODO: Proper error handling
+            case Left(e) => reject(MalformedQueryParamRejection("item", e mkString(",")))
+          }
+        }
+      }      
+    } ~
     putNewItem { userUUID =>
       entity(as[Item]) { item =>
         itemActions.putNewItem(userUUID, item) match {

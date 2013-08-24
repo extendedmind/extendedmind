@@ -32,6 +32,17 @@ trait ItemDatabase extends AbstractGraphDatabase with UserDatabase{
     }yield result
   }
 
+  def getItem(userUUID: UUID, itemUUID: UUID): Response[Item] = {
+    withTx{
+      implicit neo =>
+        for{
+          userNode <- getUserNode(userUUID).right
+          itemNode <- getItemNode(userNode, itemUUID).right
+          item <- toCaseClass[Item](itemNode).right
+        }yield item
+    }
+  }
+
   def getItems(userUUID: UUID): Response[Items] = {
     withTx{
       implicit neo =>
@@ -42,6 +53,7 @@ trait ItemDatabase extends AbstractGraphDatabase with UserDatabase{
         }yield items
     }
   }
+  
   
   // PRIVATE
   
