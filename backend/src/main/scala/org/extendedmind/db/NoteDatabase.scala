@@ -20,45 +20,16 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase{
   
   def putNewNote(userUUID: UUID, note: Note): Response[SetResult] = {
     for{
-      noteNode <- createNote(userUUID, note).right
+      noteNode <- createItem(userUUID, note, Some(ItemLabel.NOTE)).right
       result <- getSetResult(noteNode, true).right
     }yield result
   }
 
   def putExistingNote(userUUID: UUID, noteUUID: UUID, note: Note): Response[SetResult] = {
     for{
-      note <- updateNote(userUUID, noteUUID, note).right
+      note <- updateItem(userUUID, noteUUID, note).right
       result <- getSetResult(note, false).right
     }yield result
   }
-  
-  // PRIVATE
-  
-  protected def createNote(userUUID: UUID, note: Note): Response[Node] = {
-    withTx{
-      implicit neo4j =>
-        for{
-          userNode <- getUserNode(userUUID).right
-          noteNode <- createNote(userNode, note).right
-        }yield noteNode
-    }
-  }
- 
-  protected def createNote(userNode: Node, note: Note)(implicit neo4j: DatabaseService): Response[Node] = {
-    val noteNode = createNode(note, MainLabel.ITEM, ItemLabel.NOTE)
-    // Attach task to the user
-    userNode --> UserRelationship.OWNS --> noteNode
-    Right(noteNode)
-  }
-  
-  protected def updateNote(userUUID: UUID, noteUUID: UUID, note: Note): Response[Node] = {
-    withTx{
-      implicit neo4j =>
-        for{
-          userNode <- getUserNode(userUUID).right
-          itemNode <- getItemNode(userNode, noteUUID).right
-          itemNode <- updateNode(itemNode, note).right
-        }yield itemNode
-    }    
-  }
+
 }

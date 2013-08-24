@@ -20,45 +20,15 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase{
   
   def putNewTask(userUUID: UUID, task: Task): Response[SetResult] = {
     for{
-      taskNode <- createTask(userUUID, task).right
+      taskNode <- createItem(userUUID, task, Some(ItemLabel.TASK)).right
       result <- getSetResult(taskNode, true).right
     }yield result
   }
 
   def putExistingTask(userUUID: UUID, taskUUID: UUID, task: Task): Response[SetResult] = {
     for{
-      item <- updateTask(userUUID, taskUUID, task).right
+      item <- updateItem(userUUID, taskUUID, task).right
       result <- getSetResult(item, false).right
     }yield result
-  }
-  
-  // PRIVATE
-  
-  protected def createTask(userUUID: UUID, task: Task): Response[Node] = {
-    withTx{
-      implicit neo4j =>
-        for{
-          userNode <- getUserNode(userUUID).right
-          taskNode <- createTask(userNode, task).right
-        }yield taskNode
-    }
-  }
- 
-  protected def createTask(userNode: Node, task: Task)(implicit neo4j: DatabaseService): Response[Node] = {
-    val taskNode = createNode(task, MainLabel.ITEM, ItemLabel.TASK)
-    // Attach task to the user
-    userNode --> UserRelationship.OWNS --> taskNode
-    Right(taskNode)
-  }
-  
-  protected def updateTask(userUUID: UUID, taskUUID: UUID, task: Task): Response[Node] = {
-    withTx{
-      implicit neo4j =>
-        for{
-          userNode <- getUserNode(userUUID).right
-          itemNode <- getItemNode(userNode, taskUUID).right
-          itemNode <- updateNode(itemNode, task).right
-        }yield itemNode
-    }    
   }
 }

@@ -91,24 +91,25 @@ trait ItemDatabase extends AbstractGraphDatabase with UserDatabase{
     Right(traverser.nodes())
   }
   
-  protected def createItem(userUUID: UUID, item: Item): Response[Node] = {
+  protected def createItem(userUUID: UUID, item: AnyRef, extraLabel: Option[Label] = None): Response[Node] = {
     withTx{
       implicit neo4j =>
         for{
           userNode <- getUserNode(userUUID).right
-          itemNode <- createItem(userNode, item).right
+          itemNode <- createItem(userNode, item, extraLabel).right
         }yield itemNode
     }
   }
  
-  protected def createItem(userNode: Node, item: Item)(implicit neo4j: DatabaseService): Response[Node] = {
+  protected def createItem(userNode: Node, item: AnyRef, extraLabel: Option[Label])(implicit neo4j: DatabaseService): Response[Node] = {
     val itemNode = createNode(item, MainLabel.ITEM)
+    if (extraLabel.isDefined) itemNode.addLabel(extraLabel.get)
     // Attach it to the user
     userNode --> UserRelationship.OWNS --> itemNode
     Right(itemNode)
   }
   
-  protected def updateItem(userUUID: UUID, itemUUID: UUID, item: Item): Response[Node] = {
+  protected def updateItem(userUUID: UUID, itemUUID: UUID, item: AnyRef): Response[Node] = {
     withTx{
       implicit neo4j =>
         for{
