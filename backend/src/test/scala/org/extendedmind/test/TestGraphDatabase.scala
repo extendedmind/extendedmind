@@ -73,11 +73,25 @@ trait TestGraphDatabase extends GraphDatabase {
     
     // Store items for user
     putNewItem(timoUUID, 
-        Item(None, None, "book flight", None)).right.get
+        Item(None, None, "should I start yoga?", None)).right.get
     putNewItem(timoUUID, 
         Item(None, None, "remember the milk", None)).right.get
-    putNewItem(timoUUID, 
-        Item(None, None, "door code: 1234", Some("sometimes the key 2 does not work"))).right.get
+        
+    // Store tasks for user
+    putNewTask(timoUUID, 
+        TaskWrapper("clean closet", None, None, None, None, None, None)).right.get
+    putNewTask(timoUUID, 
+        TaskWrapper("book flight", None, Some("2014-01-01"), None, None, None, None)).right.get
+    putNewTask(timoUUID, 
+        TaskWrapper("print tickets", None, Some("2014-01-02"), Some("10:00"), Some("http://www.finnair.fi"), None, None )).right.get
+
+    // Store notes for user
+    putNewNote(timoUUID, 
+        NoteWrapper("door codes", None, Some("home: 1234\noffice:4321"), None, None, None)).right.get
+    putNewNote(timoUUID, 
+        NoteWrapper("notes on productivity", None, Some("##what I've learned about productivity"), None, None, None)).right.get
+    putNewNote(timoUUID, 
+        NoteWrapper("extended mind", None, None, Some("http://ext.md"), None, None)).right.get
   }
   
   def saveCustomToken(expires: Long, replaceable: Option[Long], userNode: Node)

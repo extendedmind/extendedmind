@@ -39,7 +39,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
       db.getItems(db.timoUUID) match {
         case Right(items) => {
           assert(items.items.isDefined)
-          assert(items.items.get.size === 3)
+          assert(items.items.get.size === 2)
         }
         case Left(e) => {
           e foreach (resp => {

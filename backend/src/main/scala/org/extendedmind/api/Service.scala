@@ -61,8 +61,8 @@ object JsonImplicits extends DefaultJsonProtocol {
 
   implicit val implSetResult = jsonFormat2(SetResult)
   implicit val implItem = jsonFormat4(Item)
-  implicit val implNote = jsonFormat10(Note)
   implicit val implTask = jsonFormat11(Task)
+  implicit val implNote = jsonFormat10(Note)
   implicit val implItems = jsonFormat3(Items)
   implicit val implUser = jsonFormat3(User)
   implicit val implSecurityContext = jsonFormat5(SecurityContext)
@@ -101,6 +101,7 @@ trait Service extends API with Injectable {
 		        Future[Items] {
 		          itemActions.getItems(userUUID) match {
                 case Right(items) => items
+                // TODO: Proper error handling
                 case Left(e) => throw new RejectionError(
                     MalformedQueryParamRejection("items", e mkString(",")))
 		          }
@@ -113,6 +114,7 @@ trait Service extends API with Injectable {
       entity(as[Item]) { item =>
         itemActions.putNewItem(userUUID, item) match {
           case Right(sr) => complete(sr)
+          // TODO: Proper error handling
           case Left(e) => reject(MalformedQueryParamRejection("item", e mkString(",")))
         }
       }
