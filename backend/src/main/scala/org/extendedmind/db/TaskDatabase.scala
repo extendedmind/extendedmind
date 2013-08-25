@@ -32,5 +32,16 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase{
     }yield result
   }
   
+  def getTask(userUUID: UUID, taskUUID: UUID): Response[Task] = {
+    withTx{
+      implicit neo =>
+        for{
+          userNode <- getUserNode(userUUID).right
+          taskNode <- getItemNode(userNode, taskUUID).right
+          item <- toCaseClass[Task](taskNode).right
+        }yield item
+    }
+  }
+  
   
 }

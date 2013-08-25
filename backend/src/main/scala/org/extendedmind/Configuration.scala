@@ -9,13 +9,10 @@ import com.typesafe.config.Config
 import java.util.concurrent.TimeUnit
 import org.extendedmind.db.GraphDatabase
 import scaldi.Module
-import org.extendedmind.search.ElasticSearchIndex
-import org.extendedmind.search.SearchIndex
-import org.extendedmind.bl.ItemActions
-import org.extendedmind.bl.ItemActionsImpl
+import org.extendedmind.search._
+import org.extendedmind.bl._
 import org.extendedmind.db.EmbeddedGraphDatabase
-import org.extendedmind.security.ExtendedMindUserPassAuthenticator
-import org.extendedmind.security.ExtendedMindUserPassAuthenticatorImpl
+import org.extendedmind.security._
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
 import org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory
 import org.neo4j.kernel.extension.KernelExtensionFactory
@@ -51,4 +48,6 @@ class Configuration(settings: Settings) extends Module{
   bind [GraphDatabase] to new EmbeddedGraphDatabase
   bind [SearchIndex] to new ElasticSearchIndex
   bind [ItemActions] to new ItemActionsImpl
+  bind [TaskActions] to new TaskActionsImpl
+  bind [NoteActions] to new NoteActionsImpl
 }

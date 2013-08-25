@@ -137,12 +137,67 @@ trait Service extends API with Injectable {
           case Left(e) => reject(MalformedQueryParamRejection("item", e mkString(",")))
         }
       }
+    } ~
+    getTask { (userUUID, taskUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == userUUID){
+          taskActions.getTask(userUUID, taskUUID) match {
+            case Right(sr) => complete(sr)
+            // TODO: Proper error handling
+            case Left(e) => reject(MalformedQueryParamRejection("task", e mkString(",")))
+          }
+        }
+      }
+    } ~
+    putNewTask { userUUID =>
+      entity(as[Task]) { task =>
+        taskActions.putNewTask(userUUID, task) match {
+          case Right(sr) => complete(sr)
+          // TODO: Proper error handling
+          case Left(e) => reject(MalformedQueryParamRejection("task", e mkString(",")))
+        }
+      }
+    } ~
+    putExistingTask { (userUUID, taskUUID) =>
+      entity(as[Task]) { task =>
+        taskActions.putExistingTask(userUUID, taskUUID, task) match {
+          case Right(sr) => complete(sr)
+          // TODO: Proper error handling
+          case Left(e) => reject(MalformedQueryParamRejection("task", e mkString(",")))
+        }
+      }
+    } ~
+    getNote { (userUUID, noteUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == userUUID){
+          noteActions.getNote(userUUID, noteUUID) match {
+            case Right(sr) => complete(sr)
+            // TODO: Proper error handling
+            case Left(e) => reject(MalformedQueryParamRejection("note", e mkString(",")))
+          }
+        }
+      }
+    } ~
+    putNewNote { userUUID =>
+      entity(as[Note]) { note =>
+        noteActions.putNewNote(userUUID, note) match {
+          case Right(sr) => complete(sr)
+          // TODO: Proper error handling
+          case Left(e) => reject(MalformedQueryParamRejection("note", e mkString(",")))
+        }
+      }
+    } ~
+    putExistingNote { (userUUID, noteUUID) =>
+      entity(as[Note]) { note =>
+        noteActions.putExistingNote(userUUID, noteUUID, note) match {
+          case Right(sr) => complete(sr)
+          // TODO: Proper error handling
+          case Left(e) => reject(MalformedQueryParamRejection("task", e mkString(",")))
+        }
+      }
     }
   }
 
-  def itemActions: ItemActions = {
-    inject[ItemActions]
-  }
 
   def securityActions: SecurityActions = {
     inject[SecurityActions]
@@ -159,4 +214,17 @@ trait Service extends API with Injectable {
   def graphDatabase: GraphDatabase = {
     inject[GraphDatabase]
   }
+  
+  def itemActions: ItemActions = {
+    inject[ItemActions]
+  }
+  
+  def taskActions: TaskActions = {
+    inject[TaskActions]
+  }
+  
+  def noteActions: NoteActions = {
+    inject[NoteActions]
+  }
+
 }

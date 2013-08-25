@@ -31,5 +31,16 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase{
       result <- getSetResult(note, false).right
     }yield result
   }
+  
+  def getNote(userUUID: UUID, noteUUID: UUID): Response[Note] = {
+    withTx{
+      implicit neo =>
+        for{
+          userNode <- getUserNode(userUUID).right
+          noteNode <- getItemNode(userNode, noteUUID).right
+          note <- toCaseClass[Note](noteNode).right
+        }yield note
+    }
+  }
 
 }
