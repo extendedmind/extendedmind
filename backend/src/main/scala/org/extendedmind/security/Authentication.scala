@@ -26,7 +26,6 @@ import java.lang.RuntimeException
 case class UserPassRealm(user: String, pass: String, realm: String)
 case class UserPassRemember(user: String, pass: String, payload: Option[AuthenticatePayload])
 case class AuthenticatePayload(rememberMe: Boolean)
-case class TokenExpiredRejection(description: String) extends Rejection
 
 object Authentication{
   type UserPassRealmAuthenticator[T] = Option[UserPassRealm] => Future[Option[T]]
@@ -36,18 +35,7 @@ object Authentication{
   def securityContextResponseToOption(response: Response[SecurityContext]): Option[SecurityContext] = {
     response match {
       case Right(sc) => Some(sc)
-      // TODO: Better logging
-      case Left(e) => {
-        // TODO: Log whole stack instead of printing to system out
-        e foreach println
-        e foreach(
-            responseContent => 
-              if (responseContent.responseType == TOKEN_EXPIRED){
-                throw new RejectionError(TokenExpiredRejection(responseContent.description))
-              }
-        )
-        None
-      }
+      case Left(e) => processErrors(e)
     }
   }
 }

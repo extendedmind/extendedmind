@@ -2,6 +2,7 @@ package org.extendedmind.api
 
 import scala.concurrent.Future
 import org.extendedmind._
+import org.extendedmind.Response._
 import org.extendedmind.bl._
 import org.extendedmind.security._
 import org.extendedmind.domain._
@@ -26,6 +27,10 @@ object Service {
         ctx ⇒ ctx.complete(Forbidden, rejectionMessage)
       case TokenExpiredRejection(description) :: _ => 
         ctx => ctx.complete(419, description)
+      case InvalidParameterRejection(description: String, throwable: Option[Throwable]) :: _ => 
+        ctx => ctx.complete(BadRequest, description)
+      case InternalServerErrorRejection(description: String, throwable: Option[Throwable]) :: _ => 
+        ctx => ctx.complete(InternalServerError, description)
     }
   }
 }
@@ -84,7 +89,7 @@ trait Service extends API with Injectable {
   val emRoute = {
     getRoot {
       complete {
-        "Extended Mind Scala Stack is running"
+        "Extended Mind backend is running"
       }
     } ~
     postAuthenticate { url =>
@@ -101,9 +106,7 @@ trait Service extends API with Injectable {
 		        Future[Items] {
 		          itemActions.getItems(userUUID) match {
                 case Right(items) => items
-                // TODO: Proper error handling
-                case Left(e) => throw new RejectionError(
-                    MalformedQueryParamRejection("items", e mkString(",")))
+                case Left(e) => processErrors(e)
 		          }
 		        }
 		      }
@@ -113,91 +116,142 @@ trait Service extends API with Injectable {
     getItem { (userUUID, itemUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
         authorize(securityContext.userUUID == userUUID){
-          itemActions.getItem(userUUID, itemUUID) match {
-            case Right(sr) => complete(sr)
-            // TODO: Proper error handling
-            case Left(e) => reject(MalformedQueryParamRejection("item", e mkString(",")))
+          complete{
+            Future[Item] {
+              itemActions.getItem(userUUID, itemUUID) match {
+                case Right(item) => item
+                case Left(e) => processErrors(e)
+              }
+            }
           }
         }
       }      
     } ~
     putNewItem { userUUID =>
-      entity(as[Item]) { item =>
-        itemActions.putNewItem(userUUID, item) match {
-          case Right(sr) => complete(sr)
-          // TODO: Proper error handling
-          case Left(e) => reject(MalformedQueryParamRejection("item", e mkString(",")))
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == userUUID){
+          entity(as[Item]) { item =>
+            complete{
+              Future[SetResult]{
+                itemActions.putNewItem(userUUID, item) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
         }
       }
     } ~
     putExistingItem { (userUUID, itemUUID) =>
-      entity(as[Item]) { item =>
-        itemActions.putExistingItem(userUUID, itemUUID, item) match {
-          case Right(sr) => complete(sr)
-          case Left(e) => reject(MalformedQueryParamRejection("item", e mkString(",")))
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == userUUID){
+          entity(as[Item]) { item =>
+            complete{
+              Future[SetResult]{
+                itemActions.putExistingItem(userUUID, itemUUID, item) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
         }
       }
     } ~
     getTask { (userUUID, taskUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
         authorize(securityContext.userUUID == userUUID){
-          taskActions.getTask(userUUID, taskUUID) match {
-            case Right(sr) => complete(sr)
-            // TODO: Proper error handling
-            case Left(e) => reject(MalformedQueryParamRejection("task", e mkString(",")))
+          complete{
+            Future[Task] {
+              taskActions.getTask(userUUID, taskUUID) match {
+                case Right(task) => task
+                case Left(e) => processErrors(e)
+              }
+            }
           }
         }
       }
     } ~
     putNewTask { userUUID =>
-      entity(as[Task]) { task =>
-        taskActions.putNewTask(userUUID, task) match {
-          case Right(sr) => complete(sr)
-          // TODO: Proper error handling
-          case Left(e) => reject(MalformedQueryParamRejection("task", e mkString(",")))
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == userUUID){
+          entity(as[Task]) { task =>
+            complete {
+              Future[SetResult] {
+                taskActions.putNewTask(userUUID, task) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
         }
       }
     } ~
     putExistingTask { (userUUID, taskUUID) =>
-      entity(as[Task]) { task =>
-        taskActions.putExistingTask(userUUID, taskUUID, task) match {
-          case Right(sr) => complete(sr)
-          // TODO: Proper error handling
-          case Left(e) => reject(MalformedQueryParamRejection("task", e mkString(",")))
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == userUUID){
+          entity(as[Task]) { task =>
+            complete {
+              Future[SetResult] {
+                taskActions.putExistingTask(userUUID, taskUUID, task) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
         }
       }
     } ~
     getNote { (userUUID, noteUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
         authorize(securityContext.userUUID == userUUID){
-          noteActions.getNote(userUUID, noteUUID) match {
-            case Right(sr) => complete(sr)
-            // TODO: Proper error handling
-            case Left(e) => reject(MalformedQueryParamRejection("note", e mkString(",")))
+          complete{
+            Future[Note] {
+              noteActions.getNote(userUUID, noteUUID) match {
+                case Right(note) => note
+                case Left(e) => processErrors(e)
+              }
+            }
           }
         }
       }
     } ~
     putNewNote { userUUID =>
-      entity(as[Note]) { note =>
-        noteActions.putNewNote(userUUID, note) match {
-          case Right(sr) => complete(sr)
-          // TODO: Proper error handling
-          case Left(e) => reject(MalformedQueryParamRejection("note", e mkString(",")))
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == userUUID){
+          entity(as[Note]) { note =>
+            complete {
+              Future[SetResult] {
+                noteActions.putNewNote(userUUID, note) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
         }
       }
     } ~
     putExistingNote { (userUUID, noteUUID) =>
-      entity(as[Note]) { note =>
-        noteActions.putExistingNote(userUUID, noteUUID, note) match {
-          case Right(sr) => complete(sr)
-          // TODO: Proper error handling
-          case Left(e) => reject(MalformedQueryParamRejection("task", e mkString(",")))
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == userUUID){
+          entity(as[Note]) { note =>
+            complete {
+              Future[SetResult] {
+                noteActions.putExistingNote(userUUID, noteUUID, note) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }       
         }
       }
     }
   }
-
 
   def securityActions: SecurityActions = {
     inject[SecurityActions]
