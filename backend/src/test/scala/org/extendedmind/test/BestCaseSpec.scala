@@ -72,9 +72,12 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       Get("/" + authenticateResponse.userUUID + "/items"
           ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
           ) ~> emRoute ~> check {
-        val itemsResponse = entityAs[String]
-        writeJsonOutput("itemsResponse", itemsResponse)
-        itemsResponse should include("book flight")
+        val itemsResponse = entityAs[Items]
+        writeJsonOutput("itemsResponse", entityAs[String])
+        itemsResponse.items should not be None
+        itemsResponse.tasks should not be None
+        itemsResponse.tasks.get.length should equal(3)
+        itemsResponse.notes should not be None
       }
     }
     it("should successfully put new item on PUT to /[userUUID]/item "

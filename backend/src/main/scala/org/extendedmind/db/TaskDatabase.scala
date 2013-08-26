@@ -31,7 +31,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase{
       result <- getSetResult(item, false).right
     }yield result
   }
-  
+
   def getTask(userUUID: UUID, taskUUID: UUID): Response[Task] = {
     withTx{
       implicit neo =>
@@ -42,7 +42,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase{
         }yield item
     }
   }
-  
+
   def completeTask(userUUID: UUID, taskUUID: UUID): Response[CompleteTaskResult] = {
     withTx{
       implicit neo =>
@@ -53,9 +53,9 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase{
         }yield result
     }
   }
-  
+
   // PRIVATE
-  
+
   def completeTask(taskNode: Node)(implicit neo4j: DatabaseService): CompleteTaskResult = {
     val currentTime = System.currentTimeMillis()
     taskNode.setProperty("completed", currentTime)

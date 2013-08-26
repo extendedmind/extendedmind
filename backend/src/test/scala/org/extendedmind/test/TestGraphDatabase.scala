@@ -72,19 +72,22 @@ trait TestGraphDatabase extends GraphDatabase {
     }
     
     // Store items for user
-    putNewItem(timoUUID, 
+    putNewItem(timoUUID,
         Item(None, None, "should I start yoga?", None)).right.get
-    putNewItem(timoUUID, 
+    putNewItem(timoUUID,
         Item(None, None, "remember the milk", None)).right.get
-        
+    
     // Store tasks for user
-    putNewTask(timoUUID, 
+    putNewTask(timoUUID,
         TaskWrapper("clean closet", None, None, None, None, None, None)).right.get
-    putNewTask(timoUUID, 
+    putNewTask(timoUUID,
         TaskWrapper("book flight", None, Some("2014-01-01"), None, None, None, None)).right.get
-    putNewTask(timoUUID, 
+    putNewTask(timoUUID,
         TaskWrapper("print tickets", None, Some("2014-01-02"), Some("10:00"), Some("http://www.finnair.fi"), None, None )).right.get
-
+    val completedTask = putNewTask(timoUUID,
+        TaskWrapper("get ext.md domain", None, Some("2013-05-01"), None, None, None, None )).right.get
+    completeTask(timoUUID, completedTask.uuid.get)
+    
     // Store notes for user
     putNewNote(timoUUID, 
         NoteWrapper("door codes", None, Some("home: 1234\noffice:4321"), None, None, None)).right.get

@@ -98,6 +98,7 @@ trait ItemDatabase extends AbstractGraphDatabase with UserDatabase{
           .breadthFirst()
           .evaluator(Evaluators.excludeStartPosition())
           .evaluator(LabelEvaluator(MainLabel.ITEM))
+          .evaluator(ExcludeHasPropertyEvaluator(ItemLabel.TASK, "completed"))
 
     val traverser = itemsFromUser.traverse(userNode)
     Right(traverser.nodes())
