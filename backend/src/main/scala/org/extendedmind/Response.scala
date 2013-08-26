@@ -2,6 +2,7 @@ package org.extendedmind
 
 import java.util.UUID
 import spray.routing._
+import spray.util._
 
 // List of custom rejections
 case class InvalidParameterRejection(description: String, throwable: Option[Throwable] = None) extends Rejection
@@ -41,9 +42,9 @@ object Response{
     Left(List(ResponseContent(responseType, description, Some(throwable))))
   }
   
-  def processErrors(errors: List[ResponseContent]) = {
-    // First log errors
-    // TODO: Logging with slf4j
+  def processErrors(errors: List[ResponseContent])(implicit log: LoggingContext) = {
+    // First log all errors
+    errors foreach (e => log.error(e.responseType + ": " + e.description, e.throwable))
     
     if (!errors.isEmpty){
       // Reject based on the first exception
