@@ -27,7 +27,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase{
 
   def putExistingNote(userUUID: UUID, noteUUID: UUID, note: Note): Response[SetResult] = {
     for{
-      note <- updateItem(userUUID, noteUUID, note).right
+      note <- updateItem(userUUID, noteUUID, note, Some(ItemLabel.NOTE)).right
       result <- getSetResult(note, false).right
     }yield result
   }
@@ -37,7 +37,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase{
       implicit neo =>
         for{
           userNode <- getUserNode(userUUID).right
-          noteNode <- getItemNode(userNode, noteUUID).right
+          noteNode <- getItemNode(userNode, noteUUID, Some(ItemLabel.NOTE)).right
           note <- toCaseClass[Note](noteNode).right
         }yield note
     }

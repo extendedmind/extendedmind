@@ -27,7 +27,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase{
 
   def putExistingTask(userUUID: UUID, taskUUID: UUID, task: Task): Response[SetResult] = {
     for{
-      item <- updateItem(userUUID, taskUUID, task).right
+      item <- updateItem(userUUID, taskUUID, task, Some(ItemLabel.TASK)).right
       result <- getSetResult(item, false).right
     }yield result
   }
@@ -37,7 +37,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase{
       implicit neo =>
         for{
           userNode <- getUserNode(userUUID).right
-          taskNode <- getItemNode(userNode, taskUUID).right
+          taskNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
           item <- toCaseClass[Task](taskNode).right
         }yield item
     }

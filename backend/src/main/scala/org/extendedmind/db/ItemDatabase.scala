@@ -121,27 +121,36 @@ trait ItemDatabase extends AbstractGraphDatabase with UserDatabase{
     Right(itemNode)
   }
   
-  protected def updateItem(userUUID: UUID, itemUUID: UUID, item: AnyRef): Response[Node] = {
+  protected def updateItem(userUUID: UUID, itemUUID: UUID, item: AnyRef, additionalLabel: Option[Label] = None): Response[Node] = {
     withTx{
       implicit neo4j =>
         for{
           userNode <- getUserNode(userUUID).right
           itemNode <- getItemNode(userNode, itemUUID).right
+          itemNode <- Right(setLabel(itemNode, additionalLabel)).right
           itemNode <- updateNode(itemNode, item).right
         }yield itemNode
-    }    
+    }
+  }
+  
+  protected def setLabel(node: Node, additionalLabel: Option[Label])(implicit neo4j: DatabaseService): Node = {
+    if (additionalLabel.isDefined && !node.hasLabel(additionalLabel.get))
+      node.addLabel(additionalLabel.get)
+    node
   }
     
-  protected def getItemNode(userNode: Node, itemUUID: UUID)(implicit neo4j: DatabaseService): Response[Node] = {
-    val itemFromUser: TraversalDescription = 
+  protected def getItemNode(userNode: Node, itemUUID: UUID, mandatoryLabel: Option[Label] = None)(implicit neo4j: DatabaseService): Response[Node] = {
+    val nodeFromUser: TraversalDescription = 
         Traversal.description()
           .relationships(DynamicRelationshipType.withName(UserRelationship.OWNS.name), 
                          Direction.OUTGOING)
           .breadthFirst()
           .evaluator(Evaluators.excludeStartPosition())
           .evaluator(UUIDEvaluator(itemUUID))
-          .evaluator(LabelEvaluator(MainLabel.ITEM))
-
+   val itemFromUser = if (mandatoryLabel.isEmpty)
+                        nodeFromUser.evaluator(LabelEvaluator(MainLabel.ITEM))
+                      else
+                        nodeFromUser.evaluator(LabelEvaluator(MainLabel.ITEM, mandatoryLabel.get))          
     val traverser = itemFromUser.traverse(userNode)
     val itemNodeList = traverser.nodes().toArray
     if (itemNodeList.length == 0) {
