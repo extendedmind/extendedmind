@@ -43,5 +43,22 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase{
     }
   }
   
+  def completeTask(userUUID: UUID, taskUUID: UUID): Response[CompleteTaskResult] = {
+    withTx{
+      implicit neo =>
+        for{
+          userNode <- getUserNode(userUUID).right
+          taskNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
+          result <- Right(completeTask(taskNode)).right
+        }yield result
+    }
+  }
   
+  // PRIVATE
+  
+  def completeTask(taskNode: Node)(implicit neo4j: DatabaseService): CompleteTaskResult = {
+    val currentTime = System.currentTimeMillis()
+    taskNode.setProperty("completed", currentTime)
+    CompleteTaskResult(currentTime)
+  }
 }

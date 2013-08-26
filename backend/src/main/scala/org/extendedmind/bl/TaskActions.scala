@@ -27,6 +27,11 @@ trait TaskActions{
   def getTask(userUUID: UUID, taskUUID: UUID): Response[Task] = {
     db.getTask(userUUID, taskUUID)
   }
+  
+  def completeTask(userUUID: UUID, taskUUID: UUID): Response[CompleteTaskResult] = {
+    db.completeTask(userUUID, taskUUID)
+  }
+  
 }
 
 class TaskActionsImpl(implicit val settings: Settings, implicit val inj: Injector) 

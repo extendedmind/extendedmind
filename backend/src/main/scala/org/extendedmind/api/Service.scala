@@ -66,12 +66,13 @@ object JsonImplicits extends DefaultJsonProtocol {
 
   implicit val implSetResult = jsonFormat2(SetResult)
   implicit val implItem = jsonFormat4(Item)
-  implicit val implTask = jsonFormat11(Task)
+  implicit val implTask = jsonFormat12(Task)
   implicit val implNote = jsonFormat10(Note)
   implicit val implItems = jsonFormat3(Items)
   implicit val implUser = jsonFormat3(User)
   implicit val implSecurityContext = jsonFormat5(SecurityContext)
   implicit val implAuthenticatePayload = jsonFormat1(AuthenticatePayload)
+  implicit val implCompleteTaskResult = jsonFormat1(CompleteTaskResult)
 }
 
 // this class defines our service behavior independently from the service actor
@@ -199,6 +200,20 @@ trait Service extends API with Injectable {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
+              }
+            }
+          }
+        }
+      }
+    } ~
+    completeTask { (userUUID, taskUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == userUUID){
+          complete{
+            Future[CompleteTaskResult] {
+              taskActions.completeTask(userUUID, taskUUID) match {
+                case Right(task) => task
+                case Left(e) => processErrors(e)
               }
             }
           }

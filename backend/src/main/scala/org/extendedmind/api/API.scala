@@ -16,9 +16,12 @@ trait API extends HttpService {
   val getItem = get & path(JavaUUID / "item" / JavaUUID)
   val putNewItem = put & path(JavaUUID / "item")
   val putExistingItem = put & path(JavaUUID / "item" / JavaUUID)
+  
   val getTask = get & path(JavaUUID / "task" / JavaUUID)
   val putNewTask = put & path(JavaUUID / "task")
   val putExistingTask = put & path(JavaUUID / "task" / JavaUUID)
+  val completeTask = post & path(JavaUUID / "task" / JavaUUID / "complete")
+  
   val getNote = get & path(JavaUUID / "note" / JavaUUID)
   val putNewNote = put & path(JavaUUID / "note")
   val putExistingNote = put & path(JavaUUID / "note" / JavaUUID)

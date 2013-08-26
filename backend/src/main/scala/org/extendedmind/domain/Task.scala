@@ -7,6 +7,7 @@ case class Task(uuid: Option[UUID], modified: Option[Long],
                 due: Option[String],
                 reminder: Option[String],
                 link: Option[String],
+                completed: Option[Long],
                 public: Option[Long],
                 exclusive: Option[Long],
                 parentTask: Option[UUID],
@@ -21,6 +22,8 @@ object TaskWrapper{
             parentTask: Option[UUID],
             parentNote: Option[UUID]) 
         = new Task(None, None, title, description, 
-                   date, reminder, link, 
+                   date, reminder, link, None, 
                    None, None, parentTask, parentNote)
 }
+
+case class CompleteTaskResult(completed: Long)
