@@ -21,14 +21,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase{
   def putNewNote(userUUID: UUID, note: Note): Response[SetResult] = {
     for{
       noteNode <- createItem(userUUID, note, Some(ItemLabel.NOTE)).right
-      result <- getSetResult(noteNode, true).right
+      result <- Right(getSetResult(noteNode, true)).right
     }yield result
   }
 
   def putExistingNote(userUUID: UUID, noteUUID: UUID, note: Note): Response[SetResult] = {
     for{
       note <- updateItem(userUUID, noteUUID, note, Some(ItemLabel.NOTE)).right
-      result <- getSetResult(note, false).right
+      result <- Right(getSetResult(note, false)).right
     }yield result
   }
   

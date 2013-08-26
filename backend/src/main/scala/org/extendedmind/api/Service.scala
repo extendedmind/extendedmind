@@ -72,7 +72,7 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implUser = jsonFormat3(User)
   implicit val implSecurityContext = jsonFormat5(SecurityContext)
   implicit val implAuthenticatePayload = jsonFormat1(AuthenticatePayload)
-  implicit val implCompleteTaskResult = jsonFormat1(CompleteTaskResult)
+  implicit val implCompleteTaskResult = jsonFormat2(CompleteTaskResult)
 }
 
 // this class defines our service behavior independently from the service actor

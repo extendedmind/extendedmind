@@ -1,6 +1,7 @@
 package org.extendedmind.domain
 
 import java.util.UUID
+import org.extendedmind.SetResult
 
 case class Task(uuid: Option[UUID], modified: Option[Long], 
                 title: String, description: Option[String], 
@@ -26,4 +27,4 @@ object TaskWrapper{
                    None, None, parentTask, parentNote)
 }
 
-case class CompleteTaskResult(completed: Long)
+case class CompleteTaskResult(completed: Long, result: SetResult)

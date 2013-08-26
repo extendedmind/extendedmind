@@ -22,7 +22,7 @@ trait UserDatabase extends AbstractGraphDatabase {
   def putNewUser(user: User, password: String): Response[SetResult] = {
     for{
       user <- createUser(user, password).right
-      result <- getSetResult(user, true).right
+      result <- Right(getSetResult(user, true)).right
     }yield result
   }
 

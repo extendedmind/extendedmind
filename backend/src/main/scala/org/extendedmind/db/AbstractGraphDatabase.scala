@@ -81,14 +81,13 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
   
-  protected def getSetResult(node: Node, includeUUID: Boolean): Response[SetResult] ={
+  protected def getSetResult(node: Node, includeUUID: Boolean): SetResult ={
     withTx{
       implicit neo4j =>
         val uuid = if(includeUUID) 
                       Some(UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])) 
                    else None
-        Right(SetResult(uuid,
-                        node.getProperty("modified").asInstanceOf[Long]))
+        SetResult(uuid, node.getProperty("modified").asInstanceOf[Long])
     }
   }
   

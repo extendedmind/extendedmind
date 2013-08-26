@@ -21,14 +21,14 @@ trait ItemDatabase extends AbstractGraphDatabase with UserDatabase{
   def putNewItem(userUUID: UUID, item: Item): Response[SetResult] = {
     for{
       itemNode <- createItem(userUUID, item).right
-      result <- getSetResult(itemNode, true).right
+      result <- Right(getSetResult(itemNode, true)).right
     }yield result
   }
 
   def putExistingItem(userUUID: UUID, itemUUID: UUID, item: Item): Response[SetResult] = {
     for{
       item <- updateItem(userUUID, itemUUID, item).right
-      result <- getSetResult(item, false).right
+      result <- Right(getSetResult(item, false)).right
     }yield result
   }
 

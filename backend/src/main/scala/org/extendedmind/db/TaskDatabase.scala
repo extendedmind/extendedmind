@@ -21,14 +21,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase{
   def putNewTask(userUUID: UUID, task: Task): Response[SetResult] = {
     for{
       taskNode <- createItem(userUUID, task, Some(ItemLabel.TASK)).right
-      result <- getSetResult(taskNode, true).right
+      result <- Right(getSetResult(taskNode, true)).right
     }yield result
   }
 
   def putExistingTask(userUUID: UUID, taskUUID: UUID, task: Task): Response[SetResult] = {
     for{
       item <- updateItem(userUUID, taskUUID, task, Some(ItemLabel.TASK)).right
-      result <- getSetResult(item, false).right
+      result <- Right(getSetResult(item, false)).right
     }yield result
   }
 
@@ -44,21 +44,36 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase{
   }
 
   def completeTask(userUUID: UUID, taskUUID: UUID): Response[CompleteTaskResult] = {
+    for{
+      task <- completeTaskNode(userUUID, taskUUID).right
+      result <- Right(getCompleteTaskResult(task)).right
+    }yield result
+    
+  }
+
+  // PRIVATE
+
+  protected def completeTaskNode(userUUID: UUID, taskUUID: UUID): Response[Node] = {
     withTx{
       implicit neo =>
         for{
           userNode <- getUserNode(userUUID).right
           taskNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
-          result <- Right(completeTask(taskNode)).right
-        }yield result
+          result <- Right(completeTaskNode(taskNode)).right
+        }yield taskNode
     }
   }
-
-  // PRIVATE
-
-  def completeTask(taskNode: Node)(implicit neo4j: DatabaseService): CompleteTaskResult = {
+  
+  protected def completeTaskNode(taskNode: Node)(implicit neo4j: DatabaseService): Unit = {
     val currentTime = System.currentTimeMillis()
     taskNode.setProperty("completed", currentTime)
-    CompleteTaskResult(currentTime)
+  }
+  
+  protected def getCompleteTaskResult(task: Node): CompleteTaskResult = {
+    withTx{
+      implicit neo =>
+        CompleteTaskResult(task.getProperty("completed").asInstanceOf[Long],
+                           getSetResult(task, false))       
+    }
   }
 }

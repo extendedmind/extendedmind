@@ -53,7 +53,6 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         writeJsonOutput("authenticateResponse", authenticateResponse)
         authenticateResponse should include("token")
       }
-
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       authenticateResponse.token should not be (None)
     }
@@ -209,7 +208,6 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         }
       }
     }
-
     it("should successfully complete task with POST to /[userUUID]/task/[itemUUID]/complete") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newTask = TaskWrapper("learn Spanish", None, None, None, None, None, None)
@@ -223,6 +221,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
               ) ~> addHeader("Content-Type", "application/json"
               ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
               ) ~> emRoute ~> check {
+          writeJsonOutput("completeTaskResponse", entityAs[String])
           Get("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get
                 ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
                 ) ~> emRoute ~> check {
