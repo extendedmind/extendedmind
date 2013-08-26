@@ -148,6 +148,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             }
         }
     }
+    
     it("should successfully put new note on PUT to /[userUUID]/note, " 
          + "update it with PUT to /[userUUID]/note/[noteUUID] " 
          + "and get it back with GET to /[userUUID]/note/[noteUUID]") {
@@ -183,7 +184,34 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
               }
             }
         }
+    }      
+    it("should successfully put new item on PUT to /[userUUID]/item, " 
+         + "update it to task with PUT to /[userUUID]/task/[itemUUID] " 
+         + "and get it back with GET to /[userUUID]/task/[taskUUID]") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val newItem = Item(None, None, "learn how to fly", None)
+      Put("/" + authenticateResponse.userUUID + "/item",
+        marshal(newItem).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+            ) ~> emRoute ~> check {
+          val putItemResponse = entityAs[SetResult]          
+          val updatedToTask = TaskWrapper("learn how to fly", None, Some("2014-03-01"), None, None, None, None)
+          Put("/" + authenticateResponse.userUUID + "/task/" + putItemResponse.uuid.get,
+            marshal(updatedToTask).right.get
+                ) ~> addHeader("Content-Type", "application/json"
+                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> emRoute ~> check {
+            Get("/" + authenticateResponse.userUUID + "/task/" + putItemResponse.uuid.get
+                  ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                  ) ~> emRoute ~> check {
+                val taskResponse = entityAs[Task]
+                taskResponse.due.get should be("2014-03-01")
+              }
+            }
+        }
     }
+    
   }
   
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {
