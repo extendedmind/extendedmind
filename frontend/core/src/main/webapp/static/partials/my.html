@@ -9,13 +9,23 @@
       </button>
     </form>
 
-    <div tasks-list tasksfilter="item.title">
+    <div>
       <h4><a href="/mytasks">Tasks</a></h4>
+      <div tasks-list tasksfilter="item.title"></div>
     </div>
 
-    <div notes-list notesfilter="item.title">
+    <div>
       <h4><a href="/mynotes">Notes</a></h4>
+      <div notes-list notesfilter="item.title"></div>
     </div>
+
+    <div>
+      <button ng-click="toggleItemsList()">
+        Inbox
+      </button>
+      <div ng-show="showMe" items-list itemsfilter="item.title"></div>
+    </div>
+
   </div>
   <div error-alert-bar alertmessage="errorService.errorMessage"></div>
 </div>

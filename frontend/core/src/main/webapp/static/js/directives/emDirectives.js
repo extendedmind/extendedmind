@@ -43,7 +43,14 @@
       return {
         restrict : 'A',
         templateUrl : '/static/partials/templates/itemsList.html',
+        transclude : true,
         link : function(scope, element, attrs) {
+          scope.showMe = false;
+
+          scope.toggleItemsList = function toggleItemsList() {
+            scope.showMe = !scope.showMe;
+          };
+
           var itemsFilterAttr = attrs.itemsfilter;
           scope.$watch(itemsFilterAttr, function(newValue) {
             scope.itemsListFilter = newValue;
@@ -90,7 +97,7 @@
         link : function(scope, element, attrs) {
           scope.showNewTask = false;
 
-          scope.toggleNewTask = function() {
+          scope.toggleNewTask = function toggleNewTask() {
             scope.showNewTask = !scope.showNewTask;
           };
         }
@@ -105,7 +112,7 @@
         link : function(scope, element, attrs) {
           scope.showNewNote = false;
 
-          scope.toggleNewNote = function() {
+          scope.toggleNewNote = function toggleNewNote() {
             scope.showNewNote = !scope.showNewNote;
           };
         }
