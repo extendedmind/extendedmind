@@ -68,13 +68,9 @@
         link : function(scope, element, attrs) {
           var tasksFilterAttr = attrs.tasksfilter;
 
-          if (tasksFilterAttr) {
-            scope.$watch(tasksFilterAttr, function(newValue) {
-              scope.tasksListFilter = newValue;
-            });
-          } else {
-            scope.tasksListFilter = true;
-          }
+          scope.$watch(tasksFilterAttr, function(newValue) {
+            scope.tasksListFilter = newValue;
+          });
         }
       };
     }]);
@@ -87,6 +83,7 @@
         transclude : true,
         link : function(scope, element, attrs) {
           var notesFilterAttr = attrs.notesfilter;
+
           scope.$watch(notesFilterAttr, function(newValue) {
             scope.notesListFilter = newValue;
           });
