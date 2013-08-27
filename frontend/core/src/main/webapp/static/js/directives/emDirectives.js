@@ -67,9 +67,14 @@
         transclude : true,
         link : function(scope, element, attrs) {
           var tasksFilterAttr = attrs.tasksfilter;
-          scope.$watch(tasksFilterAttr, function(newValue) {
-            scope.tasksListFilter = newValue;
-          });
+
+          if (tasksFilterAttr) {
+            scope.$watch(tasksFilterAttr, function(newValue) {
+              scope.tasksListFilter = newValue;
+            });
+          } else {
+            scope.tasksListFilter = true;
+          }
         }
       };
     }]);
