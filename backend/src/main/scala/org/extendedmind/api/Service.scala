@@ -15,6 +15,7 @@ import spray.json._
 import spray.routing._
 import AuthenticationFailedRejection._
 import java.util.UUID
+import spray.util.LoggingContext
 
 object Service {
   def rejectionHandler: RejectionHandler = {
@@ -25,14 +26,31 @@ object Service {
           case CredentialsRejected ⇒ "The supplied authentication is invalid"
         }
         ctx ⇒ ctx.complete(Forbidden, rejectionMessage)
-      case TokenExpiredRejection(description) :: _ => 
-        ctx => ctx.complete(419, description)
-      case InvalidParameterRejection(description: String, throwable: Option[Throwable]) :: _ => 
-        ctx => ctx.complete(BadRequest, description)
-      case InternalServerErrorRejection(description: String, throwable: Option[Throwable]) :: _ => 
-        ctx => ctx.complete(InternalServerError, description)
     }
   }
+  
+  def exceptionHandler(implicit log: LoggingContext): ExceptionHandler = {
+    val currentTime = System.currentTimeMillis()
+
+    ExceptionHandler.apply {
+      case e: TokenExpiredException => ctx => {
+        log.error(e, "Status code: " + 419 + " @ " + currentTime)
+        ctx.complete(419, e.description)
+      } 
+      case e: InvalidParameterException => ctx => {
+        log.error(e, "Status code: " + BadRequest + " @ " + currentTime)
+        ctx.complete(BadRequest, e.description + " @ " + currentTime)
+      }
+      case e: InternalServerErrorException => ctx => {
+        log.error(e, "Status code: " + InternalServerError + " @ " + currentTime)        
+        ctx.complete(InternalServerError, e.description + " @ " + currentTime)
+      }
+      case t: Throwable => ctx => {
+        log.error(t, "Status code: " + InternalServerError + " @ " + currentTime)        
+        ctx.complete(InternalServerError, "Unknown error occured  @ " + currentTime)        
+      }
+    }
+  }  
 }
 
 // we don't implement our route structure directly in the service actor because
@@ -44,8 +62,9 @@ class ServiceActor extends HttpServiceActor with Service {
   def configurations = new Configuration(settings)
 
   // Setup implicits
-  implicit val myRejectionHandler = Service.rejectionHandler
-  
+  implicit val implRejectionHandler = Service.rejectionHandler 
+  implicit val implExceptionHandler = Service.exceptionHandler
+
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling

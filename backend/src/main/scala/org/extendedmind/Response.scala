@@ -5,9 +5,14 @@ import spray.routing._
 import spray.util._
 
 // List of custom rejections
-case class InvalidParameterRejection(description: String, throwable: Option[Throwable] = None) extends Rejection
-case class TokenExpiredRejection(description: String) extends Rejection
-case class InternalServerErrorRejection(description: String, throwable: Option[Throwable] = None) extends Rejection
+abstract class ExtendedMindException(description: String, throwable: Option[Throwable] = None) extends Exception(description) {
+  if (throwable.isDefined){
+    super.setStackTrace(throwable.get.getStackTrace())
+  }
+}
+case class InvalidParameterException(description: String, throwable: Option[Throwable] = None) extends ExtendedMindException(description, throwable)
+case class TokenExpiredException(description: String) extends ExtendedMindException(description)
+case class InternalServerErrorException(description: String, throwable: Option[Throwable] = None) extends ExtendedMindException(description, throwable)
 
 // List of ResponseTypes
 sealed abstract class ResponseType
@@ -21,14 +26,11 @@ object Response{
     def throwRejectionError() = {
       responseType match {
         case INVALID_PARAMETER => 
-          throw new RejectionError(
-              InvalidParameterRejection(description, throwable))
+          throw new InvalidParameterException(description, throwable)
         case INTERNAL_SERVER_ERROR => 
-          throw new RejectionError(
-              InternalServerErrorRejection(description, throwable))
+          throw new InternalServerErrorException(description, throwable)
         case TOKEN_EXPIRED => 
-          throw new RejectionError(
-              InternalServerErrorRejection(description, throwable))
+          throw new TokenExpiredException(description)
       }
     }
   }
@@ -50,8 +52,7 @@ object Response{
       // Reject based on the first exception
       errors(0).throwRejectionError
     }
-    throw new RejectionError(
-            InternalServerErrorRejection("Unknown error"))
+    throw new InternalServerErrorException("Unknown error")
   }
 }
 

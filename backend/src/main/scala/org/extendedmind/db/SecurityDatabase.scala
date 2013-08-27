@@ -71,7 +71,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   def authenticate(token: String): Response[SecurityContext] = {
     withTx{
       implicit neo4j => 
-
         for {
           token <- Token.decryptToken(token).right
           user <- getUserNode(token).right
