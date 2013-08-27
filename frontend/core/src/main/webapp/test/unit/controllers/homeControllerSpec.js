@@ -2,7 +2,6 @@
 /*jslint nomen: true */
 
 ( function() {'use strict';
-    // describe('em.controllers', function() {
     beforeEach(module('em.app'));
 
     describe('HomeController', function() {
@@ -16,5 +15,4 @@
         });
       }));
     });
-    // });
   }());

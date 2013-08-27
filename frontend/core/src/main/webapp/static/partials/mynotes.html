@@ -1,14 +1,18 @@
 <div class="span12">
-	<!-- Page Content -->
-	<div class="em-core">
-		<h3>extended mind <a href="/" class="em-subtitle">notes</a></h3>
-		<p>
-			&nbsp;
-		</p>
-		<ul>
-			<li ng-repeat="item in items | userItems:filterArgument">
-				{{item.title}}
-			</li>
-		</ul>
-	</div>
+  <!-- Page Content -->
+  <div class="em-core">
+    <h3>extended mind <a href="/my" class="em-subtitle">notes</a></h3>
+    <p>
+      &nbsp;
+    </p>
+
+    <div>
+      <h4> inbox </h4>
+      <div notesfilter="{{notesListFilter}}" notes-list></div>
+    </div>
+
+    <h4> projects </h4>
+
+    <h4> areas </h4>
+  </div>
 </div>

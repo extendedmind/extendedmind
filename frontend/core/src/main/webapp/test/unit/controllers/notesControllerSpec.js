@@ -2,7 +2,6 @@
 /*jslint nomen: true */
 
 ( function() {'use strict';
-    // describe('em.controllers', function() {
     beforeEach(module('em.app'));
 
     describe('NotesController', function() {
@@ -22,8 +21,7 @@
       it('should return logged user\'s notes', inject(function() {
         expect($scope.items).toBe(undefined);
         $scope.items = mockHttpBackendResponse.getItemsResponse();
-        expect($scope.items.length).toBe(3);
+        expect($scope.items.notes.length).toBe(3);
       }));
     });
-    // });
   }());

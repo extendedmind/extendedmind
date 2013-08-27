@@ -47,7 +47,9 @@
           }
         },
         login : function(success, error) {
-          httpRequestHandler.post('/api/authenticate', userFactory.getUserRemembered(), function(authenticateResponse) {
+          httpRequestHandler.post('/api/authenticate', {
+            rememberMe : userFactory.getUserRemembered()
+          }, function(authenticateResponse) {
             userFactory.setUserSessionData(authenticateResponse);
             success();
           }, function(authenticateResponse) {

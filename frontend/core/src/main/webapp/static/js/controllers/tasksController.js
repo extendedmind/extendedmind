@@ -4,9 +4,11 @@
 
     angular.module('em.app').controller('TasksController', ['$scope', 'itemsFactory',
     function($scope, itemsFactory) {
-      $scope.filterArgument = 'TASK';
+      $scope.tasksListFilter = true;
+      $scope.tasks = itemsFactory.getUserTasks();
 
-      $scope.items = itemsFactory.getUserItems();
-      $scope.newItems = itemsFactory.getUserNewItems();
+      $scope.addNewTask = function() {
+      };
+
     }]);
   }());

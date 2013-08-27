@@ -1,4 +1,4 @@
-/*global angular, getJSONFixture*/
+/*global $, angular, getJSONFixture*/
 
 ( function() {'use strict';
 
@@ -11,7 +11,7 @@
 
       authenticateResponse = mockHttpBackendResponse.getAuthenticateResponse();
       itemsResponse = mockHttpBackendResponse.getItemsResponse();
-      putNewItemResponse = mockHttpBackendResponse.getPutNewItemResponse();
+      putNewItemResponse = mockHttpBackendResponse.getPutItemResponse();
 
       $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, authenticateResponse);
@@ -56,11 +56,21 @@
         getItemsResponse : function() {
           return getJSONFixture('itemsResponse.json');
         },
-        getPutNewItemResponse : function() {
-          return getJSONFixture('putNewItemResponse.json');
+        getPutItemResponse : function() {
+          return getJSONFixture('putItemResponse.json');
         },
         clearSessionStorage : function() {
           sessionStorage.clear();
+        },
+        clearCookies : function() {
+          var cookies = document.cookie.split(';');
+
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i];
+            var eqPos = cookie.indexOf("=");
+            var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+          }
         }
       };
     }]);

@@ -1,14 +1,32 @@
 <div class="span12">
-	<!-- Page Content -->
-	<div class="masthead">
-		<h3>extended mind</h3>
-		<p url-list></p>
-		<form name="searchAndAddOmniForm">
-			<input type="search" ng-model="item.title" autofocus="autofocus">
-			<button ng-click="putItem()">
-				+
-			</button>
-		</form>
-		<div item-list></div>
-	</div>
+  <!-- Page Content -->
+  <div class="masthead">
+    <h3>extended mind</h3>
+    <form name="searchAndAddOmniForm">
+      <input type="search" ng-model="item.title" autofocus="autofocus" placeholder="Search / Add">
+      <button ng-click="putItem()">
+        +
+      </button>
+    </form>
+
+    <div>
+      <h4><a href="/mytasks" class="em-subtitle">tasks</a></h4>
+      <div tasks-list tasksfilter="item.title"></div>
+    </div>
+
+    <div>
+      <h4><a href="/mynotes" class="em-subtitle">notes</a></h4>
+      <div notes-list notesfilter="item.title"></div>
+    </div>
+
+    <div>
+      <button ng-click="toggleItemsList()">
+        Inbox
+      </button>
+      <div new-items></div>
+      <div ng-show="showMe" items-list itemsfilter="item.title"></div>
+    </div>
+
+  </div>
+  <div error-alert-bar alertmessage="errorService.errorMessage"></div>
 </div>
