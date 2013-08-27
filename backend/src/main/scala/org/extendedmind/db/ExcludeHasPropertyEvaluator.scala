@@ -12,7 +12,7 @@ case class ExcludeHasPropertyEvaluator(label: Label, property: String) extends E
   override def evaluate(path: Path): Evaluation = {
     val currentNode: Node = path.endNode();
     if (currentNode.hasLabel(label) && currentNode.hasProperty(property)){
-      return Evaluation.EXCLUDE_AND_CONTINUE
+      return Evaluation.EXCLUDE_AND_PRUNE
     }
     return Evaluation.INCLUDE_AND_CONTINUE
   }
