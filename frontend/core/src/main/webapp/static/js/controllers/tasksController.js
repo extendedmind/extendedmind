@@ -6,5 +6,9 @@
     function($scope, itemsFactory) {
       $scope.tasksListFilter = true;
       $scope.tasks = itemsFactory.getUserTasks();
+
+      $scope.addNewTask = function() {
+      };
+
     }]);
   }());

@@ -46,6 +46,16 @@
       };
     }]);
 
+    angular.module('em.directives').directive('newTask', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : '/static/partials/templates/newTask.html',
+        link : function(scope, element, attrs) {
+        }
+      };
+    }]);
+
     angular.module('em.directives').directive('itemsList', [
     function() {
       return {
