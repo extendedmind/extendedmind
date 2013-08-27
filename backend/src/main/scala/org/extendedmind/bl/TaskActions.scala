@@ -10,25 +10,30 @@ import org.extendedmind.domain.Item
 import java.util.UUID
 import org.extendedmind._
 import org.extendedmind.Response._
+import spray.util.LoggingContext
 
 trait TaskActions{
 
   def db: GraphDatabase;
   def si: SearchIndex;
   
-  def putNewTask(userUUID: UUID, task: Task): Response[SetResult] = {
+  def putNewTask(userUUID: UUID, task: Task)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putNewTask: user " + userUUID)
     db.putNewTask(userUUID, task)
   }
   
-  def putExistingTask(userUUID: UUID, taskUUID: UUID, task: Task): Response[SetResult] = {
+  def putExistingTask(userUUID: UUID, taskUUID: UUID, task: Task)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putExistingTask: user " + userUUID + ", task " + taskUUID)
     db.putExistingTask(userUUID, taskUUID, task)
   }
     
-  def getTask(userUUID: UUID, taskUUID: UUID): Response[Task] = {
+  def getTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[Task] = {
+    log.info("getTask: user " + userUUID + ", task " + taskUUID)
     db.getTask(userUUID, taskUUID)
   }
   
-  def completeTask(userUUID: UUID, taskUUID: UUID): Response[CompleteTaskResult] = {
+  def completeTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[CompleteTaskResult] = {
+    log.info("completeTask: user " + userUUID + ", task " + taskUUID)
     db.completeTask(userUUID, taskUUID)
   }
   

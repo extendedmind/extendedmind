@@ -34,20 +34,20 @@ object Service {
 
     ExceptionHandler.apply {
       case e: TokenExpiredException => ctx => {
-        log.error(e, "Status code: " + 419 + " @ " + currentTime)
+        log.error(e, "Status code: " + 419 + " @" + currentTime)
         ctx.complete(419, e.description)
       } 
       case e: InvalidParameterException => ctx => {
-        log.error(e, "Status code: " + BadRequest + " @ " + currentTime)
-        ctx.complete(BadRequest, e.description + " @ " + currentTime)
+        log.error(e, "Status code: " + BadRequest + " @" + currentTime)
+        ctx.complete(BadRequest, e.description + " @" + currentTime)
       }
       case e: InternalServerErrorException => ctx => {
-        log.error(e, "Status code: " + InternalServerError + " @ " + currentTime)        
-        ctx.complete(InternalServerError, e.description + " @ " + currentTime)
+        log.error(e, "Status code: " + InternalServerError + " @" + currentTime)        
+        ctx.complete(InternalServerError, e.description + " @" + currentTime)
       }
       case t: Throwable => ctx => {
-        log.error(t, "Status code: " + InternalServerError + " @ " + currentTime)        
-        ctx.complete(InternalServerError, "Unknown error occured  @ " + currentTime)        
+        log.error(t, "Status code: " + InternalServerError + " @" + currentTime)        
+        ctx.complete(InternalServerError, "Unknown error occured  @" + currentTime)        
       }
     }
   }  
