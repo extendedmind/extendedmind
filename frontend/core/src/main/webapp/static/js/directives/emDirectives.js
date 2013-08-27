@@ -38,6 +38,14 @@
       };
     }]);
 
+    angular.module('em.directives').directive('newItems', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : '/static/partials/templates/newItems.html'
+      };
+    }]);
+
     angular.module('em.directives').directive('itemsList', [
     function() {
       return {
