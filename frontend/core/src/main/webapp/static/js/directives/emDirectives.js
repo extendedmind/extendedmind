@@ -13,7 +13,7 @@
     function($parse) {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/errorMessageTemplate.html',
+        templateUrl : '/static/partials/templates/errorMessage.html',
         link : function(scope, elem, attrs) {
           var alertMessageAttr = attrs.alertmessage;
           scope.errorMessage = null;
@@ -38,18 +38,46 @@
       };
     }]);
 
-    angular.module('em.directives').directive('itemList', [
+    angular.module('em.directives').directive('itemsList', [
     function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/newItemTemplate.html',
+        templateUrl : '/static/partials/templates/itemsList.html',
         link : function(scope, element, attrs) {
-          scope.show = function() {
-            if (scope.item === undefined) {
-              return false;
-            }
-            return scope.item.title.length !== 0;
-          };
+          var itemsFilterAttr = attrs.itemsfilter;
+          scope.$watch(itemsFilterAttr, function(newValue) {
+            scope.itemsListFilter = newValue;
+          });
+        }
+      };
+    }]);
+
+    angular.module('em.directives').directive('tasksList', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : '/static/partials/templates/tasksList.html',
+        transclude : true,
+        link : function(scope, element, attrs) {
+          var tasksFilterAttr = attrs.tasksfilter;
+          scope.$watch(tasksFilterAttr, function(newValue) {
+            scope.tasksListFilter = newValue;
+          });
+        }
+      };
+    }]);
+
+    angular.module('em.directives').directive('notesList', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : '/static/partials/templates/notesList.html',
+        transclude : true,
+        link : function(scope, element, attrs) {
+          var notesFilterAttr = attrs.notesfilter;
+          scope.$watch(notesFilterAttr, function(newValue) {
+            scope.notesListFilter = newValue;
+          });
         }
       };
     }]);

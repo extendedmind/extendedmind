@@ -2,17 +2,17 @@
 /*jslint nomen: true */
 
 ( function() {'use strict';
-    // describe('em.controllers', function() {
     beforeEach(module('em.app'));
 
     describe('MyController', function() {
       beforeEach(module('em.services', 'em.mockHelpers'));
 
-      var $controller, $httpBackend, $scope, mockHttpBackendResponse;
+      var $controller, $httpBackend, $scope, mockHttpBackendResponse, userItems;
 
       beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_, _mockHttpBackendResponse_) {
         $httpBackend = _$httpBackend_;
         mockHttpBackendResponse = _mockHttpBackendResponse_;
+        userItems = mockHttpBackendResponse.getItemsResponse();
 
         $scope = _$rootScope_.$new();
         $controller = _$controller_('MyController', {
@@ -28,8 +28,23 @@
 
       it('should return logged user\'s items', inject(function() {
         expect($scope.items).toBe(undefined);
-        $scope.items = mockHttpBackendResponse.getItemsResponse();
-        expect($scope.items.length).toBe(3);
+        $scope.items = userItems.items;
+        $httpBackend.flush();
+        expect($scope.items.length).toBe(2);
+      }));
+
+      it('should return logged user\'s notes', inject(function() {
+        expect($scope.notes).toBe(undefined);
+        $scope.notes = userItems.notes;
+        $httpBackend.flush();
+        expect($scope.notes.length).toBe(3);
+      }));
+
+      it('should return logged user\'s tasks', inject(function() {
+        expect($scope.tasks).toBe(undefined);
+        $scope.tasks = userItems.tasks;
+        $httpBackend.flush();
+        expect($scope.tasks.length).toBe(3);
       }));
 
       it('should add new item', inject(function(_httpBasicAuth_, _itemsFactory_, _userSessionStorage_) {
@@ -56,5 +71,4 @@
         expect($scope.newItems[0].title).toBe('Buy more milk');
       }));
     });
-    // });
   }());

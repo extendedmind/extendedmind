@@ -1,0 +1,8 @@
+<div>
+  <div ng-transclude></div>
+  <ul>
+    <li ng-show="notesListFilter" ng-repeat="note in notes | filter:item">
+      {{note.title}}
+    </li>
+  </ul>
+</div>

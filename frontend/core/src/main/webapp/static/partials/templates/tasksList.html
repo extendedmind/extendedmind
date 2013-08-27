@@ -1,0 +1,9 @@
+<div>
+  <div ng-transclude></div>
+  <ul>
+    <li ng-show="tasksListFilter" ng-repeat="task in tasks | filter:item">
+      <input type="checkbox" ng-model="todo.done">
+      <span class="done-{{todo.done}}">{{task.title}}</span>
+    </li>
+  </ul>
+</div>

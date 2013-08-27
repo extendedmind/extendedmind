@@ -9,27 +9,24 @@
         beforeEach(module('em.mockHelpers'));
 
         describe('userAuthenticate', function() {
-          var $rootScope, httpBasicAuth, userAuthenticate;
+          var $rootScope, httpBasicAuth, mockHttpBackendResponse, userAuthenticate;
 
-          beforeEach(inject(function(_$rootScope_, _httpBasicAuth_, _userAuthenticate_) {
+          beforeEach(inject(function(_$rootScope_, _httpBasicAuth_, _mockHttpBackendResponse_, _userAuthenticate_) {
             $rootScope = _$rootScope_;
             spyOn($rootScope, "$broadcast");
 
             httpBasicAuth = _httpBasicAuth_;
+            mockHttpBackendResponse = _mockHttpBackendResponse_;
             userAuthenticate = _userAuthenticate_;
           }));
+
+          afterEach(function() {
+            mockHttpBackendResponse.clearCookies();
+          });
 
           it('should broadcast \'event:loginRequired\' on invalid user', inject(function() {
             userAuthenticate.authenticate();
             expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
-          }));
-
-          it('should broadcast \'event:loginSuccess\' on successful authentication', inject(function() {
-            // httpBasicAuth.setCredentials('timo@ext.md', 'timopwd');
-            //
-            // userAuthenticate.authenticate();
-            //
-            // expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
           }));
         });
       });

@@ -5,10 +5,14 @@
     angular.module('em.services').factory('userItemsFactory', ['itemFactory', 'itemsFactory',
     function(itemFactory, itemsFactory) {
       return {
-        getItems : function() {
+        getItems : function(success, error) {
           itemFactory.getItems(function(items) {
-            itemsFactory.setUserItems(items);
-          }, function(error) {
+            itemsFactory.setUserItems(items.items);
+            itemsFactory.setUserNotes(items.notes);
+            itemsFactory.setUserTasks(items.tasks);
+            success();
+          }, function(items) {
+            error(items);
           });
         }
       };
@@ -51,7 +55,8 @@
 
     angular.module('em.services').factory('itemsFactory', [
     function() {
-      var itemInArray, userItemsFactory, userNewItems = [];
+      var itemInArray, userItems, userNewItems, userNotes, userTasks;
+      userNewItems = [];
 
       itemInArray = function(title) {
         angular.forEach(userNewItems, function(userNewItem) {
@@ -62,10 +67,22 @@
       };
       return {
         setUserItems : function(items) {
-          userItemsFactory = items;
+          userItems = items;
+        },
+        setUserNotes : function(notes) {
+          userNotes = notes;
+        },
+        setUserTasks : function(tasks) {
+          userTasks = tasks;
         },
         getUserItems : function() {
-          return userItemsFactory;
+          return userItems;
+        },
+        getUserNotes : function() {
+          return userNotes;
+        },
+        getUserTasks : function() {
+          return userTasks;
         },
         getUserNewItems : function() {
           return userNewItems;

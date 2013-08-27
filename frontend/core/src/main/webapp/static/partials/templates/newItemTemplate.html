@@ -1,15 +1,9 @@
 <div>
-	<ul>
-		<li ng-repeat="item in newItems">
-			<span class="done-{{todo.done}}">{{item.title}}</span>
-			<div note-edit></div>
-			<div task-edit></div>
-		</li>
-		<li ng-show="show()" ng-repeat="item in items | filter:item">
-			{{item.title}}
-			<button>
-				edit
-			</button>
-		</li>
-	</ul>
+  <ul>
+    <li ng-repeat="item in newItems">
+      <span class="done-{{todo.done}}">{{item.title}}</span>
+      <div note-edit></div>
+      <div task-edit></div>
+    </li>
+  </ul>
 </div>
