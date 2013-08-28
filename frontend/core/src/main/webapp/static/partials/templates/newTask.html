@@ -1,3 +1,18 @@
-<form name="newTask">
-  <input type="text" ng-model="task.title" autofocus="autofocus" placeholder="name">
+<form name="addTask">
+  <dl>
+    <dt>
+      <input type="text" ng-model="newTask.title" autofocus="autofocus" placeholder="name">
+    </dt>
+    <dt>
+      <input type="date" ng-model="newTask.due">
+    </dt>
+    <dt>
+      <textarea ng-model="newTask.description" placeholder="description"></textarea>
+    </dt>
+    <dt>
+      <button id="newTaskSubmit" type="submit" ng-click="addNewTask()">
+        Add
+      </button>
+    </dt>
+  </dl>
 </form>

@@ -7,18 +7,23 @@
     emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
     function($httpBackend, mockHttpBackendResponse) {
 
-      var authenticateResponse, itemsResponse, putNewItemResponse;
+      var authenticateResponse, itemsResponse, putItemResponse, putTaskResponse;
 
       authenticateResponse = mockHttpBackendResponse.getAuthenticateResponse();
       itemsResponse = mockHttpBackendResponse.getItemsResponse();
-      putNewItemResponse = mockHttpBackendResponse.getPutItemResponse();
+      putItemResponse = mockHttpBackendResponse.getPutItemResponse();
+      putTaskResponse = mockHttpBackendResponse.getPutTaskResponse();
 
       $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, authenticateResponse);
       });
 
       $httpBackend.whenPUT('/api/' + authenticateResponse.userUUID + '/item').respond(function(method, url, data, headers) {
-        return mockHttpBackendResponse.expectResponse(method, url, data, headers, putNewItemResponse);
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, putItemResponse);
+      });
+
+      $httpBackend.whenPUT('/api/' + authenticateResponse.userUUID + '/task').respond(function(method, url, data, headers) {
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, putTaskResponse);
       });
 
       $httpBackend.whenGET('/api/' + authenticateResponse.userUUID + '/items').respond(function(method, url, data, headers) {
@@ -58,6 +63,9 @@
         },
         getPutItemResponse : function() {
           return getJSONFixture('putItemResponse.json');
+        },
+        getPutTaskResponse : function() {
+          return getJSONFixture('putTaskResponse.json');
         },
         clearSessionStorage : function() {
           sessionStorage.clear();
