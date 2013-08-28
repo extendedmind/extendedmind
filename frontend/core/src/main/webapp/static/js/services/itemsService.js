@@ -2,14 +2,15 @@
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('userItemsFactory', ['itemFactory', 'itemsFactory',
-    function(itemFactory, itemsFactory) {
+    angular.module('em.services').factory('userItemsFactory', ['itemFactory', 'itemsFactory','tasksArray',
+    function(itemFactory, itemsFactory,tasksArray) {
       return {
         getItems : function(success, error) {
           itemFactory.getItems(function(items) {
             itemsFactory.setUserItems(items.items);
             itemsFactory.setUserNotes(items.notes);
             itemsFactory.setUserTasks(items.tasks);
+            tasksArray.setTasks(items.tasks);
             success();
           }, function(items) {
             error(items);
