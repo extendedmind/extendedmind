@@ -1,8 +1,9 @@
 <!doctype html>
 <html ng-app="em.devApp">
   <head>
+    <base href="/">
     <meta charset="utf-8">
-    <title ng-bind="page.getTitle()"></title>
+    <title ng-bind="pageTitle.getTitle()"></title>
     <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.css"/>
     <link rel="stylesheet/less" href="/static/less/em.less"/>
     <script src="/static/lib/less/less-min.js"></script>
@@ -43,6 +44,7 @@
     <script src="/static/js/services/errorService.js"></script>
     <script src="/static/js/services/httpService.js"></script>
     <script src="/static/js/services/itemsService.js"></script>
+    <script src="/static/js/services/pageTitle.js"></script>
     <script src="/static/js/services/tasksService.js"></script>
     <script src="/static/js/services/userAuthenticateService.js"></script>
   </body>

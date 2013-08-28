@@ -37,9 +37,9 @@
         }
       });
 
-      $routeProvider.when('/mynotes', {
+      $routeProvider.when('/my/notes', {
         controller : 'NotesController',
-        templateUrl : '/static/partials/mynotes.html',
+        templateUrl : '/static/partials/my/notes.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -49,9 +49,9 @@
         }
       });
 
-      $routeProvider.when('/mytasks', {
+      $routeProvider.when('/my/tasks', {
         controller : 'TasksController',
-        templateUrl : '/static/partials/mytasks.html',
+        templateUrl : '/static/partials/my/tasks.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -62,6 +62,7 @@
       });
 
       $routeProvider.otherwise({
+        controller : 'PageNotFoundController',
         redirectTo : '/404'
       });
 

@@ -34,7 +34,7 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/urlListTemplate.html'
+        templateUrl : '/static/partials/templates/urlList.html'
       };
     }]);
 

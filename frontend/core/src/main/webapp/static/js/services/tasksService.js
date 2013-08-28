@@ -28,7 +28,6 @@
 
     angular.module('em.services').factory('tasksArray', [
     function() {
-
       var tasks = [];
 
       return {
