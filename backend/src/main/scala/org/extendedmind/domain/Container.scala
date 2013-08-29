@@ -2,4 +2,7 @@ package org.extendedmind.domain
 
 import java.util.UUID
 
-abstract class Container (uuid: Option[UUID], modified: Option[Long])
+trait Container {
+  val uuid: Option[UUID]
+  val modified: Option[Long]
+}

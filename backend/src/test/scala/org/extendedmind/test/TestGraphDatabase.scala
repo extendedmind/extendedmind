@@ -106,7 +106,7 @@ trait TestGraphDatabase extends GraphDatabase {
     tokenNode.setProperty("expires", expires)
     if (replaceable.isDefined)
       tokenNode.setProperty("replaceable", replaceable.get)
-    tokenNode --> UserRelationship.FOR_USER --> userNode
+    tokenNode --> SecurityRelationship.IDS --> userNode
     newToken
   }
   

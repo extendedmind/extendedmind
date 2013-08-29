@@ -41,7 +41,7 @@ trait UserDatabase extends AbstractGraphDatabase {
   protected def createUser(user: User, plainPassword: String, userLabel: Option[Label] = None): Response[Node] = {
     withTx{
       implicit neo4j =>
-        val userNode = createNode(user, MainLabel.USER)
+        val userNode = createNode(user, MainLabel.OWNER, OwnerLabel.USER)
         if (userLabel.isDefined) userNode.addLabel(userLabel.get)
         val salt = PasswordService.generateSalt
         val encryptedPassword = PasswordService.getEncryptedPassword(
@@ -68,7 +68,7 @@ trait UserDatabase extends AbstractGraphDatabase {
   protected def getUserNode(email: String): Response[Node] = {
     withTx {
       implicit neo =>
-        val nodeIter = findNodesByLabelAndProperty(MainLabel.USER, "email", email)
+        val nodeIter = findNodesByLabelAndProperty(OwnerLabel.USER, "email", email)
         if (nodeIter.toList.isEmpty) {
           fail(INVALID_PARAMETER, "No users found with given email " + email)
         } else if (nodeIter.toList.size > 1) {
@@ -81,7 +81,7 @@ trait UserDatabase extends AbstractGraphDatabase {
   protected def getUserNode(uuid: UUID): Response[Node] = {
     withTx {
       implicit neo =>
-        val nodeIter = findNodesByLabelAndProperty(MainLabel.USER, "uuid", UUIDUtils.getTrimmedBase64UUID(uuid))
+        val nodeIter = findNodesByLabelAndProperty(OwnerLabel.USER, "uuid", UUIDUtils.getTrimmedBase64UUID(uuid))
         if (nodeIter.toList.isEmpty)
           fail(INVALID_PARAMETER, "No users found with given UUID " + uuid.toString)
         else if (nodeIter.toList.size > 1)
@@ -99,14 +99,15 @@ trait UserDatabase extends AbstractGraphDatabase {
     }else{
       val userFromToken: TraversalDescription = 
         Traversal.description()
-          .relationships(DynamicRelationshipType.withName(UserRelationship.FOR_USER.name), 
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IDS.name), 
                          Direction.OUTGOING)
-          .breadthFirst()
+          .depthFirst()
           .evaluator(Evaluators.excludeStartPosition())
-          .evaluator(LabelEvaluator(MainLabel.USER))
+          .evaluator(LabelEvaluator(List(OwnerLabel.USER)))
           
       val traverser = userFromToken.traverse(tokenNode)
       val userNodeList = traverser.nodes().toArray
+
       if (userNodeList.length == 0) {
         fail(INTERNAL_SERVER_ERROR, "Token attached to no users")
       } else if (userNodeList.length > 1) {

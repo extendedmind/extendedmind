@@ -107,8 +107,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       implicit neo =>
         val tokenNode = createNode(MainLabel.TOKEN)
         setTokenProperties(tokenNode, token, payload);
-        tokenNode --> UserRelationship.FOR_USER --> userNode
-        Some(true)
+        tokenNode --> SecurityRelationship.IDS --> userNode
     }
   }
 

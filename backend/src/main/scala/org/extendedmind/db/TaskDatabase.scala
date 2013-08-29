@@ -14,53 +14,52 @@ import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 
-trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase{
+trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PUBLIC
-  
-  def putNewTask(userUUID: UUID, task: Task): Response[SetResult] = {
-    for{
-      taskNode <- createItem(userUUID, task, Some(ItemLabel.TASK)).right
-      result <- Right(getSetResult(taskNode, true)).right
-    }yield result
-  }
 
+  def putNewTask(userUUID: UUID, task: Task): Response[SetResult] = {
+    for {
+      taskNode <- putNewExtendedItem(userUUID, task, ItemLabel.TASK).right
+      result <- Right(getSetResult(taskNode, true)).right
+    } yield result
+  }
+ 
   def putExistingTask(userUUID: UUID, taskUUID: UUID, task: Task): Response[SetResult] = {
-    for{
-      item <- updateItem(userUUID, taskUUID, task, Some(ItemLabel.TASK)).right
-      result <- Right(getSetResult(item, false)).right
-    }yield result
+    for {
+      taskNode <- putExistingExtendedItem(userUUID, taskUUID, task, ItemLabel.TASK).right
+      result <- Right(getSetResult(taskNode, false)).right
+    } yield result
   }
 
   def getTask(userUUID: UUID, taskUUID: UUID): Response[Task] = {
-    withTx{
+    withTx {
       implicit neo =>
-        for{
+        for {
           userNode <- getUserNode(userUUID).right
           taskNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
           item <- toCaseClass[Task](taskNode).right
-        }yield item
+        } yield item
     }
   }
 
   def completeTask(userUUID: UUID, taskUUID: UUID): Response[CompleteTaskResult] = {
-    for{
+    for {
       task <- completeTaskNode(userUUID, taskUUID).right
       result <- Right(getCompleteTaskResult(task)).right
-    }yield result
-    
+    } yield result
   }
 
   // PRIVATE
 
   protected def completeTaskNode(userUUID: UUID, taskUUID: UUID): Response[Node] = {
-    withTx{
+    withTx {
       implicit neo =>
-        for{
+        for {
           userNode <- getUserNode(userUUID).right
           taskNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
           result <- Right(completeTaskNode(taskNode)).right
-        }yield taskNode
+        } yield taskNode
     }
   }
   
@@ -68,12 +67,12 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase{
     val currentTime = System.currentTimeMillis()
     taskNode.setProperty("completed", currentTime)
   }
-  
+
   protected def getCompleteTaskResult(task: Node): CompleteTaskResult = {
-    withTx{
+    withTx {
       implicit neo =>
         CompleteTaskResult(task.getProperty("completed").asInstanceOf[Long],
-                           getSetResult(task, false))       
+          getSetResult(task, false))
     }
   }
 }

@@ -10,7 +10,7 @@ case class Note(uuid: Option[UUID], modified: Option[Long],
                 exclusive: Option[Long],
                 parentTask: Option[UUID],
                 parentNote: Option[UUID])
-           extends Container(uuid, modified)
+           extends ExtendedItem
 
 object NoteWrapper{
   def apply(title: String, description: Option[String], 

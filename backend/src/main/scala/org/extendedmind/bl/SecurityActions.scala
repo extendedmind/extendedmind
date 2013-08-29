@@ -7,14 +7,14 @@ import scaldi.Injector
 import scaldi.Injectable
 import org.extendedmind.db.EmbeddedGraphDatabase
 
-trait SecurityActions{
+trait SecurityActions {
 
   def db: GraphDatabase;
-  
+
   // TODO: Security actions here such as registration, forgot password etc.
 }
 
-class SecurityActionsImpl(implicit val settings: Settings, implicit val inj: Injector) 
-		extends SecurityActions with Injectable{
+class SecurityActionsImpl(implicit val settings: Settings, implicit val inj: Injector)
+  extends SecurityActions with Injectable {
   def db = inject[GraphDatabase]
 }
