@@ -35,7 +35,8 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   // Implicit Neo4j Scala wrapper serialization exclusions
   implicit val serializeExclusions: Option[List[String]] = Some(
     // Always exclude the direct setting of uuid, modified, completed, public and exclusive
-    List("uuid", "modified", "completed", "public", "exclusive"))
+    // Also block parents for ExtendedItems
+    List("uuid", "modified", "completed", "public", "exclusive", "parentTask", "parentNote"))
   // Implicit Neo4j Scala wrapper converters
   implicit val customConverters: Option[Map[String, AnyRef => AnyRef]] =
     // Convert trimmed Base64 UUID to java.util.UUID
