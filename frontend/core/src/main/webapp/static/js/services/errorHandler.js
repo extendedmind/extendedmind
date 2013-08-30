@@ -2,7 +2,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('errorService', [
+    angular.module('em.services').factory('errorHandler', [
     function() {
       return {
         errorMessage : null,

@@ -7,8 +7,8 @@
       $httpProvider.interceptors.push('httpInterceptor');
     }]);
 
-    angular.module('em.services').factory('httpInterceptor', ['$q', '$rootScope', 'errorService',
-    function($q, $rootScope, errorService) {
+    angular.module('em.services').factory('httpInterceptor', ['$q', '$rootScope', 'errorHandler',
+    function($q, $rootScope, errorHandler) {
       return {
         request : function(config) {
           return config || $q.when(config);
@@ -20,7 +20,7 @@
           return response || $q.when(response);
         },
         responseError : function(rejection) {
-          errorService.setError(rejection.data);
+          errorHandler.setError(rejection.data);
           // Http 401 will cause a browser to display a login dialog
           // http://stackoverflow.com/questions/86105/how-can-i-supress-the-browsers-authentication-dialog
           if (rejection.status === 403) {
@@ -52,12 +52,12 @@
       };
     }]);
 
-    angular.module('em.services').factory('httpRequestHandler', ['$http',
+    angular.module('em.services').factory('httpRequest', ['$http',
     function($http) {
-      var httpRequestHandler = {};
+      var httpRequest = {};
 
       angular.forEach(['get', 'delete', 'head', 'jsonp'], function(name) {
-        httpRequestHandler[name] = function(url, success, error) {
+        httpRequest[name] = function(url, success, error) {
           return $http({
             method : name,
             url : url
@@ -70,7 +70,7 @@
       });
 
       angular.forEach(['post', 'put'], function(name) {
-        httpRequestHandler[name] = function(url, data, success, error) {
+        httpRequest[name] = function(url, data, success, error) {
           return $http[name](url, data).success(function(response) {
             success(response);
           }).error(function(response) {
@@ -79,6 +79,6 @@
         };
       });
 
-      return httpRequestHandler;
+      return httpRequest;
     }]);
   }());

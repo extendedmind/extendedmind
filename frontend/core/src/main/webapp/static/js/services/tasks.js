@@ -2,18 +2,18 @@
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('tasksRequest', ['httpRequestHandler', 'userSessionStorage',
-    function(httpRequestHandler, userSessionStorage) {
+    angular.module('em.services').factory('tasksRequest', ['httpRequest', 'userSessionStorage',
+    function(httpRequest, userSessionStorage) {
       return {
         putTask : function(task, success, error) {
-          httpRequestHandler.put('/api/' + userSessionStorage.getUserUUID() + '/task', task, function(putTaskResponse) {
+          httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/task', task, function(putTaskResponse) {
             success(putTaskResponse);
           }, function(putTaskResponse) {
             error(putTaskResponse);
           });
         },
         completeTask : function(task, success, error) {
-          httpRequestHandler.get('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid, function(completeTaskResponse) {
+          httpRequest.get('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid, function(completeTaskResponse) {
             success(completeTaskResponse);
           }, function(completeTaskResponse) {
             error(completeTaskResponse);

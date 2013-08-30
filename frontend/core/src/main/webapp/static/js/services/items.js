@@ -2,32 +2,32 @@
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('itemsRequest', ['httpRequestHandler', 'itemsArray', 'userSessionStorage',
-    function(httpRequestHandler, itemsArray, userSessionStorage) {
+    angular.module('em.services').factory('itemsRequest', ['httpRequest', 'itemsArray', 'userSessionStorage',
+    function(httpRequest, itemsArray, userSessionStorage) {
       return {
         getItems : function(success, error) {
-          httpRequestHandler.get('/api/' + userSessionStorage.getUserUUID() + '/items', function(itemsResponse) {
+          httpRequest.get('/api/' + userSessionStorage.getUserUUID() + '/items', function(itemsResponse) {
             success(itemsResponse);
           }, function(itemsResponse) {
             error(itemsResponse);
           });
         },
         putItem : function(item, success, error) {
-          httpRequestHandler.put('/api/' + userSessionStorage.getUserUUID() + '/item', item, function(putItemResponse) {
+          httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/item', item, function(putItemResponse) {
             success(putItemResponse);
           }, function(putItemResponse) {
             error(putItemResponse);
           });
         },
         editItem : function(item, success, error) {
-          httpRequestHandler.put('/api/' + userSessionStorage.getUserUUID() + '/item' + item.uuid, item, function(editItemResponse) {
+          httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/item' + item.uuid, item, function(editItemResponse) {
             success(editItemResponse);
           }, function(editItemResponse) {
             error(editItemResponse);
           });
         },
         deleteItem : function(itemUUID, success, error) {
-          httpRequestHandler.put('/api/' + userSessionStorage.getUserUUID() + '/item' + itemUUID, function(deleteItemResponse) {
+          httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/item' + itemUUID, function(deleteItemResponse) {
             success(deleteItemResponse);
           }, function(deleteItemResponse) {
             error(deleteItemResponse);
