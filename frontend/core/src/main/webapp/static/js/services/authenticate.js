@@ -4,7 +4,7 @@
 
     angular.module('em.services').factory('userFactory', ['httpBasicAuth', 'userCookie', 'userSessionStorage',
     function(httpBasicAuth, userCookie, userSessionStorage) {
-      var rememberMe;
+      var rememberMe = false;
       return {
         setUserSessionData : function(authenticateResponse) {
           this.setCredentials('token', authenticateResponse.token);
