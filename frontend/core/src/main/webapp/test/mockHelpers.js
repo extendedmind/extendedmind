@@ -83,12 +83,13 @@
           sessionStorage.clear();
         },
         clearCookies : function() {
-          var cookies = document.cookie.split(';');
+          var cookie, cookies, eqPos, i, name;
+          cookies = document.cookie.split(';');
 
-          for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i];
-            var eqPos = cookie.indexOf("=");
-            var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+          for ( i = 0; i < cookies.length; i += 1) {
+            cookie = cookies[i];
+            eqPos = cookie.indexOf("=");
+            name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
             document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
           }
         }
