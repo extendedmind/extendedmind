@@ -1,4 +1,5 @@
 /*global angular*/
+/*jslint bitwise: true, plusplus: true, regexp: true*/
 
 ( function() {'use strict';
 
@@ -8,10 +9,10 @@
       var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
       return {
         encode : function(input) {
-          var output = "";
-          var chr1, chr2, chr3 = "";
-          var enc1, enc2, enc3, enc4 = "";
-          var i = 0;
+          var output, chr1, chr2, chr3, enc1, enc2, enc3, enc4, i;
+          output = '';
+          enc4 = '';
+          i = 0;
 
           while (i < input.length) {
             chr1 = input.charCodeAt(i++);
@@ -30,24 +31,24 @@
             }
 
             output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2) + keyStr.charAt(enc3) + keyStr.charAt(enc4);
-            chr1 = chr2 = chr3 = "";
-            enc1 = enc2 = enc3 = enc4 = "";
+            chr1 = chr2 = chr3 = '';
+            enc1 = enc2 = enc3 = enc4 = '';
           }
           return output;
         },
 
         decode : function(input) {
-          var output = "";
-          var chr1, chr2, chr3 = "";
-          var enc1, enc2, enc3, enc4 = "";
-          var i = 0;
+          var output, chr1, chr2, chr3, enc1, enc2, enc3, enc4, base64test, i;
+          output = '';
+          enc4 = '';
+          i = 0;
 
           // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
-          var base64test = /[^A-Za-z0-9\+\/\=]/g;
+          base64test = /[^A-Za-z0-9\+\/\=]/g;
           if (base64test.exec(input)) {
             alert("There were invalid base64 characters in the input text.\n" + "Valid base64 characters are A-Z, a-z, 0-9, '+', '/',and '='\n" + "Expect errors in decoding.");
           }
-          input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+          input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
 
           while (i < input.length) {
             enc1 = keyStr.indexOf(input.charAt(i++));
@@ -61,15 +62,15 @@
 
             output = output + String.fromCharCode(chr1);
 
-            if (enc3 != 64) {
+            if (enc3 !== 64) {
               output = output + String.fromCharCode(chr2);
             }
-            if (enc4 != 64) {
+            if (enc4 !== 64) {
               output = output + String.fromCharCode(chr3);
             }
 
-            chr1 = chr2 = chr3 = "";
-            enc1 = enc2 = enc3 = enc4 = "";
+            chr1 = chr2 = chr3 = '';
+            enc1 = enc2 = enc3 = enc4 = '';
           }
           return output;
         }
