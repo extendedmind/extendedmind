@@ -2,7 +2,32 @@
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('userFactory', ['httpBasicAuth', 'userCookie', 'userSessionStorage',
+    angular.module('em.services').factory('userAuthenticate', ['$rootScope', 'authenticateRequest', 'userSession', 'userCookie', 'userSessionStorage',
+    function($rootScope, authenticateRequest, userSession, userCookie, userSessionStorage) {
+      return {
+        authenticate : function() {
+
+          if (userCookie.isUserRemembered()) {
+            userSession.setCredentials('token', userCookie.getUserToken());
+            userSession.setUserRemembered(true);
+
+            authenticateRequest.login(function(authenticateResponse) {
+              userSession.setUserSessionData(authenticateResponse);
+              $rootScope.$broadcast('event:loginSuccess');
+            }, function(error) {
+              $rootScope.$broadcast('event:loginRequired');
+            });
+
+          } else if (userSessionStorage.isUserAuthenticated()) {
+            userSession.setCredentials('token', userSessionStorage.getUserToken());
+          } else {
+            $rootScope.$broadcast('event:loginRequired');
+          }
+        }
+      };
+    }]);
+
+    angular.module('em.services').factory('userSession', ['httpBasicAuth', 'userCookie', 'userSessionStorage',
     function(httpBasicAuth, userCookie, userSessionStorage) {
 
       var rememberMe = false;
@@ -32,43 +57,18 @@
       };
     }]);
 
-    angular.module('em.services').factory('authenticateRequest', ['httpRequest', 'userFactory',
-    function(httpRequest, userFactory) {
+    angular.module('em.services').factory('authenticateRequest', ['httpRequest', 'userSession',
+    function(httpRequest, userSession) {
       return {
         login : function(success, error) {
 
           httpRequest.post('/api/authenticate', {
-            rememberMe : userFactory.getUserRemembered()
+            rememberMe : userSession.getUserRemembered()
           }, function(authenticateResponse) {
             success(authenticateResponse);
           }, function(authenticateResponse) {
             error(authenticateResponse);
           });
-        }
-      };
-    }]);
-
-    angular.module('em.services').factory('userAuthenticate', ['$rootScope', 'authenticateRequest', 'httpRequest', 'userFactory', 'userCookie', 'userSessionStorage',
-    function($rootScope, authenticateRequest, httpRequest, userFactory, userCookie, userSessionStorage) {
-      return {
-        authenticate : function() {
-
-          if (userCookie.isUserRemembered()) {
-            userFactory.setCredentials('token', userCookie.getUserToken());
-            userFactory.setUserRemembered(true);
-
-            authenticateRequest.login(function(authenticateResponse) {
-              userFactory.setUserSessionData(authenticateResponse);
-              $rootScope.$broadcast('event:loginSuccess');
-            }, function(error) {
-              $rootScope.$broadcast('event:loginRequired');
-            });
-
-          } else if (userSessionStorage.isUserAuthenticated()) {
-            userFactory.setCredentials('token', userSessionStorage.getUserToken());
-          } else {
-            $rootScope.$broadcast('event:loginRequired');
-          }
         }
       };
     }]);
