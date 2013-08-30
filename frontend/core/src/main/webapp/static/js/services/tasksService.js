@@ -11,6 +11,13 @@
           }, function(putTaskResponse) {
             error(putTaskResponse);
           });
+        },
+        completeTask : function(task, success, error) {
+          httpRequestHandler.get('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid, function(completeTaskResponse) {
+            success(completeTaskResponse);
+          }, function(completeTaskResponse) {
+            error(completeTaskResponse);
+          });
         }
       };
     }]);
