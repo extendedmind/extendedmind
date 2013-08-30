@@ -2,9 +2,9 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NotesController', ['$scope', 'itemsFactory',
-    function($scope, itemsFactory) {
+    angular.module('em.app').controller('NotesController', ['$scope', 'notesArray',
+    function($scope, notesArray) {
       $scope.notesListFilter = true;
-      $scope.notes = itemsFactory.getUserNotes();
+      $scope.notes = notesArray.getNotes();
     }]);
   }());

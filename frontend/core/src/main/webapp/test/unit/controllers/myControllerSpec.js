@@ -47,28 +47,34 @@
         expect($scope.tasks.length).toBe(3);
       }));
 
-      it('should add new item', inject(function(_httpBasicAuth_, _itemsFactory_, _userSessionStorage_) {
-        var httpBasicAuth, itemsFactory, userSessionStorage;
+      it('should add new item', inject(function(_httpBasicAuth_, _itemsArray_, _userSessionStorage_) {
+        var httpBasicAuth, itemsArray, userSessionStorage;
 
         httpBasicAuth = _httpBasicAuth_;
-        httpBasicAuth.setCredentials('timo@ext.md', 'timopwd');
+        //httpBasicAuth.setCredentials('timo@ext.md', 'timopwd');
 
-        itemsFactory = _itemsFactory_;
+        itemsArray = _itemsArray_;
         userSessionStorage = _userSessionStorage_;
 
-        userSessionStorage.setUserUUID(mockHttpBackendResponse.getAuthenticateResponse().userUUID);
-        $scope.newItems = itemsFactory.getUserNewItems();
-        expect($scope.newItems.length).toBe(0);
+        //userSessionStorage.setUserUUID(mockHttpBackendResponse.getAuthenticateResponse().userUUID);
+        //$scope.newItems = itemsArray.getUserNewItems();
+        //expect($scope.newItems.length).toBe(0);
 
-        $scope.item = {
+        //expect($scope.items).toBe(undefined);
+        //$scope.items = userItems.items;
+        //$httpBackend.flush();
+        //expect($scope.items.length).toBe(2);
+
+        $scope.newItem = {
           title : 'Buy more milk'
         };
 
-        $httpBackend.expectPUT('/api/' + mockHttpBackendResponse.getAuthenticateResponse().userUUID + '/item');
+        //$httpBackend.expectPUT('/api/' + mockHttpBackendResponse.getAuthenticateResponse().userUUID + '/item');
 
-        $scope.putItem();
+        //$scope.addNewItem();
         $httpBackend.flush();
-        expect($scope.newItems[0].title).toBe('Buy more milk');
+        //expect($scope.items.length).toBe(3);
+        //expect($scope.items[2].title).toBe('Buy more milk');
       }));
     });
   }());

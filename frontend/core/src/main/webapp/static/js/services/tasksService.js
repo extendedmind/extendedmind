@@ -22,30 +22,30 @@
       };
     }]);
 
-    angular.module('em.services').factory('tasksResponse', [
-    function() {
+    angular.module('em.services').factory('tasksResponse', ['itemsResponse',
+    function(itemsResponse) {
       return {
         putTaskContent : function(task, putTaskResponse) {
-          angular.forEach(putTaskResponse, function(value, key) {
-            task[key] = value;
-          });
+          itemsResponse.putItemContent(task, putTaskResponse);
         }
       };
     }]);
 
-    angular.module('em.services').factory('tasksArray', [
-    function() {
-      var tasks = [];
+    angular.module('em.services').factory('tasksArray', ['itemsArray',
+    function(itemsArray) {
+      var tasks;
 
       return {
         setTasks : function(tasks) {
           this.tasks = tasks;
         },
+        getTasks : function() {
+          return this.tasks;
+        },
         putNewTask : function(task) {
-          if (this.tasks.indexOf(task) > -1) {
-            return;
+          if (!itemsArray.itemInArray(this.tasks, task.title)) {
+            this.tasks.push(task);
           }
-          this.tasks.push(task);
         }
       };
     }]);

@@ -2,36 +2,18 @@
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('userItemsFactory', ['itemFactory', 'itemsFactory','tasksArray',
-    function(itemFactory, itemsFactory,tasksArray) {
+    angular.module('em.services').factory('itemsRequest', ['httpRequestHandler', 'itemsArray', 'userSessionStorage',
+    function(httpRequestHandler, itemsArray, userSessionStorage) {
       return {
         getItems : function(success, error) {
-          itemFactory.getItems(function(items) {
-            itemsFactory.setUserItems(items.items);
-            itemsFactory.setUserNotes(items.notes);
-            itemsFactory.setUserTasks(items.tasks);
-            tasksArray.setTasks(items.tasks);
-            success();
-          }, function(items) {
-            error(items);
-          });
-        }
-      };
-    }]);
-
-    angular.module('em.services').factory('itemFactory', ['httpRequestHandler', 'itemsFactory', 'userSessionStorage',
-    function(httpRequestHandler, itemsFactory, userSessionStorage) {
-      return {
-        getItems : function(success, error) {
-          httpRequestHandler.get('/api/' + userSessionStorage.getUserUUID() + '/items', function(userItems) {
-            success(userItems);
-          }, function(userItems) {
-            error(userItems);
+          httpRequestHandler.get('/api/' + userSessionStorage.getUserUUID() + '/items', function(itemsResponse) {
+            success(itemsResponse);
+          }, function(itemsResponse) {
+            error(itemsResponse);
           });
         },
         putItem : function(item, success, error) {
           httpRequestHandler.put('/api/' + userSessionStorage.getUserUUID() + '/item', item, function(putItemResponse) {
-            itemsFactory.putUserItem(item, putItemResponse);
             success(putItemResponse);
           }, function(putItemResponse) {
             error(putItemResponse);
@@ -54,50 +36,44 @@
       };
     }]);
 
-    angular.module('em.services').factory('itemsFactory', [
+    angular.module('em.services').factory('itemsResponse', [
     function() {
-      var itemInArray, userItems, userNewItems, userNotes, userTasks;
-      userNewItems = [];
-
-      itemInArray = function(title) {
-        angular.forEach(userNewItems, function(userNewItem) {
-          if (userNewItem.title === title) {
-            return true;
-          }
-        });
-      };
       return {
-        setUserItems : function(items) {
-          userItems = items;
+        putItemContent : function(item, putItemResponse) {
+          angular.forEach(putItemResponse, function(value, key) {
+            item[key] = value;
+          });
+        }
+      };
+    }]);
+
+    angular.module('em.services').factory('itemsArray', [
+    function() {
+      var items, notes;
+
+      return {
+        setItems : function(items) {
+          this.items = items;
         },
-        setUserNotes : function(notes) {
-          userNotes = notes;
+        getItems : function() {
+          return this.items;
         },
-        setUserTasks : function(tasks) {
-          userTasks = tasks;
-        },
-        getUserItems : function() {
-          return userItems;
-        },
-        getUserNotes : function() {
-          return userNotes;
-        },
-        getUserTasks : function() {
-          return userTasks;
-        },
-        getUserNewItems : function() {
-          return userNewItems;
-        },
-        putUserItem : function(item, itemUUID) {
-          if (item === undefined || item.title === '') {
-            return;
+        putNewItem : function(item) {
+          if (!this.itemInArray(this.items, item.title)) {
+            this.items.push(item);
           }
-          if (!itemInArray(item.title)) {
-            var newItem = [];
-            newItem.title = item.title;
-            newItem.uuid = itemUUID;
-            userNewItems.push(newItem);
-          }
+        },
+        itemInArray : function(items, title) {
+          var found = false;
+
+          angular.forEach(items, function(item) {
+            if (item.title === title) {
+              found = true;
+              return;
+            }
+          });
+
+          return found;
         }
       };
     }]);

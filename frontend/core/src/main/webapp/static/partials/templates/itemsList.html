@@ -1,7 +1,7 @@
 <div>
   <div ng-transclude></div>
   <ul>
-    <li ng-show="itemsListFilter" ng-repeat="item in items | filter:item">
+    <li ng-show="itemsListFilter" ng-repeat="item in items | filter:newItem">
       {{item.title}}
     </li>
   </ul>
