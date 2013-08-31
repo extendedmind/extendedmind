@@ -15,7 +15,7 @@ case class UUIDEvaluator(uuid: UUID, foundEvaluation: Evaluation = Evaluation.IN
   override def evaluate(path: Path): Evaluation = {
     if (length.isEmpty || path.length() == length.get){
       val currentNode: Node = path.endNode();
-      if (UUIDUtils.getTrimmedBase64UUID(uuid) == currentNode.getProperty("uuid")){
+      if (currentNode.hasProperty("uuid") && UUIDUtils.getTrimmedBase64UUID(uuid) == currentNode.getProperty("uuid")){
         return foundEvaluation
       }else{
         return notFoundEvaluation

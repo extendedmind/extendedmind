@@ -14,33 +14,51 @@ import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 
-trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase{
+trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PUBLIC
-  
+
   def putNewNote(userUUID: UUID, note: Note): Response[SetResult] = {
-    for{
+    for {
       noteNode <- putNewExtendedItem(userUUID, note, ItemLabel.NOTE).right
       result <- Right(getSetResult(noteNode, true)).right
-    }yield result
+    } yield result
   }
 
   def putExistingNote(userUUID: UUID, noteUUID: UUID, note: Note): Response[SetResult] = {
-    for{
+    for {
       noteNode <- putExistingExtendedItem(userUUID, noteUUID, note, ItemLabel.NOTE).right
       result <- Right(getSetResult(noteNode, false)).right
-    }yield result
+    } yield result
   }
-  
+
   def getNote(userUUID: UUID, noteUUID: UUID): Response[Note] = {
-    withTx{
+    withTx {
       implicit neo =>
-        for{
-          userNode <- getUserNode(userUUID).right
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
           noteNode <- getItemNode(userNode, noteUUID, Some(ItemLabel.NOTE)).right
-          note <- toCaseClass[Note](noteNode).right
-        }yield note
+          note <- toNote(noteNode, userUUID).right
+        } yield note
     }
+  }
+
+  // PRIVATE
+  override def toNote(noteNode: Node, userUUID: UUID)(implicit neo4j: DatabaseService): Response[Note] = {
+    for {
+      note <- toCaseClass[Note](noteNode).right
+      completeNote <- addTransientNoteProperties(noteNode, userUUID, note).right
+    } yield completeNote
+  }
+
+  protected def addTransientNoteProperties(noteNode: Node, userUUID: UUID, note: Note)(implicit neo4j: DatabaseService): Response[Note] = {
+    for {
+      parents <- getParentRelationships(noteNode, userUUID).right
+      note <- Right(note.copy(
+        parentTask = (if (parents._1.isEmpty) None else (Some(getUUID(parents._1.get.getEndNode())))),
+        parentNote = (if (parents._2.isEmpty) None else (Some(getUUID(parents._2.get.getEndNode())))),
+        area = (if (noteNode.hasLabel(ItemParentLabel.AREA)) Some(true) else None))).right
+    } yield note
   }
 
 }

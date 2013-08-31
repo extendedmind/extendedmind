@@ -19,7 +19,7 @@ trait ExtendedItem extends ItemLike{
   val title: String
   val description: Option[String]
   val public: Option[Long]
-  val exclusive: Option[Long]
+  val collective: Option[UUID]
   val parentTask: Option[UUID]
   val parentNote: Option[UUID]
 }
