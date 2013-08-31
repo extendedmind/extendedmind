@@ -39,6 +39,7 @@
           var token = authenticateResponse.token;
           this.setCredentials('token', token);
           userSessionStorage.setUserToken(token);
+          userSessionStorage.setHttpAuthorizationHeader(this.getCredentials());
 
           if (this.getUserRemembered()) {
             userCookie.setUserToken(token);
@@ -103,11 +104,11 @@
     function() {
 
       return {
-        setHttpAuthenticateHeader : function(authenticateHeader) {
-          sessionStorage.setItem('authenticateHeader', authenticateHeader);
+        setHttpAuthorizationHeader : function(authorizationHeader) {
+          sessionStorage.setItem('authorizationHeader', authorizationHeader);
         },
-        getHttpAuthenticateHeader : function() {
-          return sessionStorage.getItem('authenticateHeader');
+        getHttpAuthorizationHeader : function() {
+          return sessionStorage.getItem('authorizationHeader');
         },
         setUserToken : function(token) {
           sessionStorage.setItem('token', token);
