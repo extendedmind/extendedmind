@@ -4,7 +4,7 @@
 
     angular.module('em.services').factory('userFactory', ['httpBasicAuth', 'userCookie', 'userSessionStorage',
     function(httpBasicAuth, userCookie, userSessionStorage) {
-      var rememberMe;
+      var rememberMe = false;
       return {
         setUserSessionData : function(authenticateResponse) {
           this.setCredentials('token', authenticateResponse.token);
@@ -27,8 +27,8 @@
       };
     }]);
 
-    angular.module('em.services').factory('userAuthenticate', ['$rootScope', 'httpRequestHandler', 'userFactory', 'userCookie', 'userSessionStorage',
-    function($rootScope, httpRequestHandler, userFactory, userCookie, userSessionStorage) {
+    angular.module('em.services').factory('userAuthenticate', ['$rootScope', 'httpRequest', 'userFactory', 'userCookie', 'userSessionStorage',
+    function($rootScope, httpRequest, userFactory, userCookie, userSessionStorage) {
       return {
         authenticate : function() {
           if (userCookie.isUserRemembered()) {
@@ -47,7 +47,7 @@
           }
         },
         login : function(success, error) {
-          httpRequestHandler.post('/api/authenticate', {
+          httpRequest.post('/api/authenticate', {
             rememberMe : userFactory.getUserRemembered()
           }, function(authenticateResponse) {
             userFactory.setUserSessionData(authenticateResponse);

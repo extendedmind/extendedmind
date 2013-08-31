@@ -5,7 +5,7 @@
     describe('em.service', function() {
       beforeEach(module('em.services'));
 
-      describe('userAuthenticateService', function() {
+      describe('userAuthenticate', function() {
         beforeEach(module('em.mockHelpers'));
 
         describe('userAuthenticate', function() {

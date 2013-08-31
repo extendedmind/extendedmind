@@ -5,7 +5,7 @@
     describe('em.service', function() {
       beforeEach(module('em.services'));
 
-      describe('itemsService', function() {
+      describe('items', function() {
         beforeEach(module('em.mockHelpers'));
 
         describe('userItemsFactory', function() {

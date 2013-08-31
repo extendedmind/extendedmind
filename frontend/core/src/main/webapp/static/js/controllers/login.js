@@ -1,11 +1,11 @@
 /*global angular*/
 
 ( function() {'use strict';
-    angular.module('em.app').controller('LoginController', ['$rootScope', '$scope', 'errorService', 'userFactory', 'userAuthenticate',
+    angular.module('em.app').controller('LoginController', ['$rootScope', '$scope', 'errorHandler', 'userFactory', 'userAuthenticate',
 
-    function($rootScope, $scope, errorService, userFactory, userAuthenticate) {
+    function($rootScope, $scope, errorHandler, userFactory, userAuthenticate) {
 
-      $scope.errorService = errorService;
+      $scope.errorHandler = errorHandler;
 
       $scope.userLogin = function() {
         userFactory.setCredentials($scope.user.username, $scope.user.password);

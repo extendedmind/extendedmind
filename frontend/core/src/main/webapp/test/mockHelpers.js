@@ -7,9 +7,14 @@
     emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
     function($httpBackend, mockHttpBackendResponse) {
 
-      var authenticateResponse, itemsResponse, putItemResponse, putTaskResponse;
+      var api_useruuid_items, api_useruuid_task_taskuuid, authenticateResponse, completeTaskResponse, itemsResponse, putItemResponse, putTaskResponse, uuid;
+
+      uuid = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+      api_useruuid_task_taskuuid = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+      api_useruuid_items = new RegExp('api' + uuid + 'items');
 
       authenticateResponse = mockHttpBackendResponse.getAuthenticateResponse();
+      completeTaskResponse = mockHttpBackendResponse.getCompleteTaskResponse();
       itemsResponse = mockHttpBackendResponse.getItemsResponse();
       putItemResponse = mockHttpBackendResponse.getPutItemResponse();
       putTaskResponse = mockHttpBackendResponse.getPutTaskResponse();
@@ -26,7 +31,11 @@
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, putTaskResponse);
       });
 
-      $httpBackend.whenGET('/api/' + authenticateResponse.userUUID + '/items').respond(function(method, url, data, headers) {
+      $httpBackend.whenGET(api_useruuid_task_taskuuid).respond(function(method, url, data, headers) {
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, completeTaskResponse);
+      });
+
+      $httpBackend.whenGET(api_useruuid_items).respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, itemsResponse);
       });
 
@@ -58,6 +67,9 @@
         getAuthenticateResponse : function() {
           return getJSONFixture('authenticateResponse.json');
         },
+        getCompleteTaskResponse : function() {
+          return getJSONFixture('completeTaskResponse.json');
+        },
         getItemsResponse : function() {
           return getJSONFixture('itemsResponse.json');
         },
@@ -71,12 +83,13 @@
           sessionStorage.clear();
         },
         clearCookies : function() {
-          var cookies = document.cookie.split(';');
+          var cookie, cookies, eqPos, i, name;
+          cookies = document.cookie.split(';');
 
-          for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i];
-            var eqPos = cookie.indexOf("=");
-            var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+          for ( i = 0; i < cookies.length; i += 1) {
+            cookie = cookies[i];
+            eqPos = cookie.indexOf("=");
+            name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
             document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
           }
         }

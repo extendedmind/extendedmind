@@ -9,7 +9,7 @@
       <form name="login">
         <dl>
           <dt>
-            <input id="username" name="username" type="email" ng-model="user.username" placeholder="Email" required>
+            <input id="username" name="username" type="email" ng-model="user.username" placeholder="Email" autofocus="autofocus" required>
           </dt>
           <dt>
             <input id="password" name="password" type="password" ng-model="user.password" placeholder="Password" required>
@@ -27,5 +27,5 @@
       </form>
     </p>
   </div>
-  <div error-alert-bar alertmessage="errorService.errorMessage"></div>
+  <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
 </div>

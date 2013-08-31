@@ -5,7 +5,7 @@
     describe('em.service', function() {
       beforeEach(module('em.services'));
 
-      describe('httpService', function() {
+      describe('http', function() {
 
         describe('httpBasicAuth', function() {
           var httpBasicAuth;
@@ -31,33 +31,33 @@
           }));
         });
 
-        describe('httpRequestHandler', function() {
-          var $httpBackend, httpRequestHandler;
+        describe('httpRequest', function() {
+          var $httpBackend, httpRequest;
 
-          beforeEach(inject(function(_httpRequestHandler_) {
-            httpRequestHandler = _httpRequestHandler_;
+          beforeEach(inject(function(_httpRequest_) {
+            httpRequest = _httpRequest_;
           }));
 
           it('should call http get', inject(function() {
-            httpRequestHandler.get('url');
-            expect(httpRequestHandler.get()).toBeDefined();
+            httpRequest.get('url');
+            expect(httpRequest.get()).toBeDefined();
           }));
 
           it('should call http get with url parameter', inject(function() {
-            spyOn(httpRequestHandler, 'get');
-            httpRequestHandler.get('url');
-            expect(httpRequestHandler.get).toHaveBeenCalledWith('url');
+            spyOn(httpRequest, 'get');
+            httpRequest.get('url');
+            expect(httpRequest.get).toHaveBeenCalledWith('url');
           }));
 
           it('should call http post', inject(function() {
-            httpRequestHandler.post('url', undefined);
-            expect(httpRequestHandler.post()).toBeDefined();
+            httpRequest.post('url', undefined);
+            expect(httpRequest.post()).toBeDefined();
           }));
 
           it('should call http post with url parameter', inject(function() {
-            spyOn(httpRequestHandler, 'post');
-            httpRequestHandler.post('url', undefined);
-            expect(httpRequestHandler.post).toHaveBeenCalledWith('url', undefined);
+            spyOn(httpRequest, 'post');
+            httpRequest.post('url', undefined);
+            expect(httpRequest.post).toHaveBeenCalledWith('url', undefined);
           }));
         });
       });
