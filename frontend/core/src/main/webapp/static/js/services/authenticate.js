@@ -9,7 +9,7 @@
 
           if (userSessionStorage.isUserAuthenticated()) {
             if (!userSession.getCredentials()) {
-              userSession.setCredentials('token', userSessionStorage.getUserToken());
+              userSession.setEncodedCredentials(userSessionStorage.getHttpAuthorizationHeader());
             }
           } else if (userCookie.isUserRemembered()) {
             userSession.setCredentials('token', userCookie.getUserToken());
@@ -28,27 +28,30 @@
       };
     }]);
 
-    angular.module('em.services').factory('userSession', ['httpBasicAuth', 'userCookie', 'userSessionStorage',
-    function(httpBasicAuth, userCookie, userSessionStorage) {
+    angular.module('em.services').factory('userSession', ['base64', 'httpBasicAuth', 'userCookie', 'userSessionStorage',
+    function(base64, httpBasicAuth, userCookie, userSessionStorage) {
 
       var rememberMe = false;
 
       return {
         setUserSessionData : function(authenticateResponse) {
 
-          var token = authenticateResponse.token;
-          this.setCredentials('token', token);
-          userSessionStorage.setUserToken(token);
+          if (!this.getCredentials()) {
+            this.setCredentials('token', authenticateResponse.token);
+          }
           userSessionStorage.setHttpAuthorizationHeader(this.getCredentials());
 
           if (this.getUserRemembered()) {
-            userCookie.setUserToken(token);
+            userCookie.setUserToken(authenticateResponse.token);
           }
 
           userSessionStorage.setUserUUID(authenticateResponse.userUUID);
         },
         setCredentials : function(username, password) {
-          httpBasicAuth.setCredentials(username, password);
+          this.setEncodedCredentials(base64.encode(username + ':' + password));
+        },
+        setEncodedCredentials : function(userpass) {
+          httpBasicAuth.setEncodedCredentials(userpass);
         },
         getCredentials : function() {
           return httpBasicAuth.getCredentials();
@@ -110,14 +113,8 @@
         getHttpAuthorizationHeader : function() {
           return sessionStorage.getItem('authorizationHeader');
         },
-        setUserToken : function(token) {
-          sessionStorage.setItem('token', token);
-        },
-        getUserToken : function() {
-          return sessionStorage.getItem('token');
-        },
-        clearUserToken : function() {
-          sessionStorage.removeItem('token');
+        clearHttpAuthorizationHeader : function() {
+          sessionStorage.removeItem('authorizationHeader');
         },
         setUserUUID : function(userUUID) {
           sessionStorage.setItem('userUUID', userUUID);
@@ -129,7 +126,7 @@
           sessionStorage.removeItem('userUUID');
         },
         isUserAuthenticated : function() {
-          return sessionStorage.getItem('token') !== null;
+          return sessionStorage.getItem('authorizationHeader') !== null;
         }
       };
     }]);
