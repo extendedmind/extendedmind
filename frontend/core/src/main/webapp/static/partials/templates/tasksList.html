@@ -1,6 +1,6 @@
 <div>
   <ul>
-    <li ng-show="tasksListFilter" ng-repeat="task in tasks | filter:item">
+    <li ng-show="tasksListFilter" ng-repeat="task in tasks | filter:newItem">
       <input type="checkbox" ng-model="task.done" ng-change="taskChecked(task)">
       <span class="done-{{task.done}}">{{task.title}}</span>
     </li>
