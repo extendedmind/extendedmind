@@ -7,7 +7,11 @@
       return {
         authenticate : function() {
 
-          if (userCookie.isUserRemembered()) {
+          if (userSessionStorage.isUserAuthenticated()) {
+            if (!userSession.getCredentials()) {
+              userSession.setCredentials('token', userSessionStorage.getUserToken());
+            }
+          } else if (userCookie.isUserRemembered()) {
             userSession.setCredentials('token', userCookie.getUserToken());
             userSession.setUserRemembered(true);
 
@@ -17,9 +21,6 @@
             }, function(error) {
               $rootScope.$broadcast('event:loginRequired');
             });
-
-          } else if (userSessionStorage.isUserAuthenticated()) {
-            userSession.setCredentials('token', userSessionStorage.getUserToken());
           } else {
             $rootScope.$broadcast('event:loginRequired');
           }
@@ -47,6 +48,9 @@
         },
         setCredentials : function(username, password) {
           httpBasicAuth.setCredentials(username, password);
+        },
+        getCredentials : function() {
+          return httpBasicAuth.getCredentials();
         },
         setUserRemembered : function(remember) {
           rememberMe = remember;
@@ -79,7 +83,8 @@
       return {
         setUserToken : function(token) {
           $.cookie('token', token, {
-            expires : 7
+            expires : 7,
+            path : '/'
           });
         },
         getUserToken : function() {
@@ -98,6 +103,12 @@
     function() {
 
       return {
+        setHttpAuthenticateHeader : function(authenticateHeader) {
+          sessionStorage.setItem('authenticateHeader', authenticateHeader);
+        },
+        getHttpAuthenticateHeader : function() {
+          return sessionStorage.getItem('authenticateHeader');
+        },
         setUserToken : function(token) {
           sessionStorage.setItem('token', token);
         },

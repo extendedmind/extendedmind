@@ -43,6 +43,10 @@
           encoded = base64.encode(username + ':' + password);
           $http.defaults.headers.common.Authorization = 'Basic ' + encoded;
         },
+        setEncodedCredentials : function(userpass) {
+          encoded = userpass;
+          $http.defaults.headers.common.Authorization = 'Basic ' + encoded;
+        },
         getCredentials : function() {
           return encoded;
         },

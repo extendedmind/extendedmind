@@ -1,9 +1,9 @@
 /*global angular*/
 
 ( function() {'use strict';
-    angular.module('em.app').controller('LoginController', ['$rootScope', '$scope', 'authenticateRequest', 'errorHandler', 'userSession', 'userAuthenticate',
+    angular.module('em.app').controller('LoginController', ['$rootScope', '$scope', 'authenticateRequest', 'errorHandler', 'userSession',
 
-    function($rootScope, $scope, authenticateRequest, errorHandler, userSession, userAuthenticate) {
+    function($rootScope, $scope, authenticateRequest, errorHandler, userSession) {
 
       $scope.errorHandler = errorHandler;
 
