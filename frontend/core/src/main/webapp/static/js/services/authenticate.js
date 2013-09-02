@@ -36,9 +36,7 @@
       return {
         setUserSessionData : function(authenticateResponse) {
 
-          if (!this.getCredentials()) {
-            this.setCredentials('token', authenticateResponse.token);
-          }
+          this.setCredentials('token', authenticateResponse.token);
           userSessionStorage.setHttpAuthorizationHeader(this.getCredentials());
 
           if (this.getUserRemembered()) {
