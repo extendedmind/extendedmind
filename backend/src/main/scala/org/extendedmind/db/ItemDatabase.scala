@@ -218,7 +218,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
               == parentUUID.get){
           return Right(oldParentRelationship)
         }else{
-          oldParentRelationship.get.delete()
+          deleteParentRelationship(oldParentRelationship.get)
         }
       }
       val newParentLabel = if (parentLabel == ItemLabel.NOTE) ItemParentLabel.AREA else ItemParentLabel.PROJECT
@@ -228,21 +228,25 @@ trait ItemDatabase extends AbstractGraphDatabase {
       }yield Some(parentRelationship)
     }else{
       if (oldParentRelationship.isDefined){
-        val parentNode = oldParentRelationship.get.getEndNode()
-        oldParentRelationship.get.delete()
-        // If there are no more children, remove the parent label as well
-        if (!hasChildren(parentNode)){
-          if (parentNode.hasLabel(ItemParentLabel.PROJECT))
-            parentNode.removeLabel(ItemParentLabel.PROJECT)
-          else if (parentNode.hasLabel(ItemParentLabel.AREA))
-            parentNode.removeLabel(ItemParentLabel.AREA)
-        }
+        deleteParentRelationship(oldParentRelationship.get)
       }
       Right(None)
     } 
   }
   
-  protected def hasChildren(itemNode: Node): Boolean = {
+  protected def deleteParentRelationship(parentRelationship: Relationship)(implicit neo4j: DatabaseService) : Unit = {
+    val parentNode = parentRelationship.getEndNode()
+    parentRelationship.delete()
+    // If there are no more children, remove the parent label as well
+    if (!hasChildren(parentNode)){
+      if (parentNode.hasLabel(ItemParentLabel.PROJECT))
+        parentNode.removeLabel(ItemParentLabel.PROJECT)
+      else if (parentNode.hasLabel(ItemParentLabel.AREA))
+        parentNode.removeLabel(ItemParentLabel.AREA)
+    }
+  }
+  
+  protected def hasChildren(itemNode: Node)(implicit neo4j: DatabaseService): Boolean = {
     val itemsFromParent: TraversalDescription =
       Traversal.description()
         .depthFirst()
