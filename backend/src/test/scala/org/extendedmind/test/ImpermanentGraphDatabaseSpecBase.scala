@@ -1,6 +1,4 @@
-package org.extendedmind.api.test
-
-import org.extendedmind.test._
+package org.extendedmind.test
 
 import org.neo4j.test.TestGraphDatabaseFactory
 

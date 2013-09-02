@@ -34,9 +34,9 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   // Implicit Neo4j Scala wrapper serialization exclusions
   implicit val serializeExclusions: Option[List[String]] = Some(
-    // Always exclude the direct setting of uuid, modified, completed, public and exclusive
-    // Also block parents for ExtendedItems
-    List("uuid", "modified", "completed", "public", "exclusive", "parentTask", "parentNote"))
+    // Always exclude the direct setting of uuid, modified, completed, public and collective
+    // Also block parents and project/area boolean for ExtendedItems
+    List("uuid", "modified", "completed", "public", "collective", "project", "area", "parentTask", "parentNote"))
   // Implicit Neo4j Scala wrapper converters
   implicit val customConverters: Option[Map[String, AnyRef => AnyRef]] =
     // Convert trimmed Base64 UUID to java.util.UUID
@@ -89,33 +89,34 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
         SetResult(uuid, node.getProperty("modified").asInstanceOf[Long])
     }
   }
+  
+  protected def getUUID(node: Node): UUID = {
+    UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
+  }
 
   // GENERAL
 
   protected def getTokenNode(token: Token): Response[Node] = {
-    withTx {
-      implicit neo =>
-        val nodeList = findNodesByLabelAndProperty(MainLabel.TOKEN, "accessKey", token.accessKey: java.lang.Long).toList
-        if (nodeList.isEmpty)
-          fail(INVALID_PARAMETER, "No tokens found with given token")
-        else if (nodeList.size > 1)
-          fail(INTERNAL_SERVER_ERROR, "Ḿore than one token found with given token")
-        else {
-          Right(nodeList(0))
-        }
-    }
+    getNode("accessKey", token.accessKey: java.lang.Long, MainLabel.TOKEN)
   }
 
-  protected def getOwnerNode(ownerUUID: UUID): Response[Node] = {
+  protected def getNode(nodeUUID: UUID, label: Label): Response[Node] = {
+    val uuidString = UUIDUtils.getTrimmedBase64UUID(nodeUUID)
+    getNode("uuid", uuidString, label, Some(uuidString))
+  }
+  
+  protected def getNode(nodeProperty: String, nodeValue: AnyRef, label: Label, nodeStringValue: Option[String] = None): Response[Node] = {
     withTx {
       implicit neo =>
-        val ownerList = findNodesByLabelAndProperty(MainLabel.OWNER, "uuid", UUIDUtils.getTrimmedBase64UUID(ownerUUID)).toList
-        if (ownerList.isEmpty)
-          fail(INVALID_PARAMETER, "Owner not found with given uuid " + ownerUUID.toString())
-        else if (ownerList.size > 1)
-          fail(INTERNAL_SERVER_ERROR, "Ḿore than one owner found with given uuid " + ownerUUID.toString())
+        val nodeList = findNodesByLabelAndProperty(label, nodeProperty, nodeValue).toList
+        if (nodeList.isEmpty)
+          fail(INVALID_PARAMETER, label.labelName.toLowerCase() + " not found with given " + nodeProperty + 
+              (if (nodeStringValue.isDefined) ": " + nodeStringValue else ""))
+        else if (nodeList.size > 1)
+          fail(INTERNAL_SERVER_ERROR, "Ḿore than one " + label.labelName.toLowerCase() + " found with given  " + nodeProperty + 
+              (if (nodeStringValue.isDefined) ": " + nodeStringValue else ""))
         else {
-          Right(ownerList(0))
+          Right(nodeList(0))
         }
     }
   }

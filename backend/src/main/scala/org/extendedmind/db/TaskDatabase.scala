@@ -24,7 +24,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       result <- Right(getSetResult(taskNode, true)).right
     } yield result
   }
- 
+
   def putExistingTask(userUUID: UUID, taskUUID: UUID, task: Task): Response[SetResult] = {
     for {
       taskNode <- putExistingExtendedItem(userUUID, taskUUID, task, ItemLabel.TASK).right
@@ -36,10 +36,11 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          userNode <- getUserNode(userUUID).right
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
           taskNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
-          item <- toCaseClass[Task](taskNode).right
-        } yield item
+          task <- toCaseClass[Task](taskNode).right
+          completeTask <- addTransientTaskProperties(taskNode, userUUID, task).right
+        } yield completeTask
     }
   }
 
@@ -52,17 +53,34 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PRIVATE
 
+  override def toTask(taskNode: Node, userUUID: UUID)(implicit neo4j: DatabaseService): Response[Task] = {
+    for {
+      task <- toCaseClass[Task](taskNode).right
+      completeTask <- addTransientTaskProperties(taskNode, userUUID, task).right
+    } yield completeTask
+  }
+
+  protected def addTransientTaskProperties(taskNode: Node, userUUID: UUID, task: Task)(implicit neo4j: DatabaseService): Response[Task] = {
+    for {
+      parents <- getParentRelationships(taskNode, userUUID).right
+      task <- Right(task.copy(
+        parentTask = (if (parents._1.isEmpty) None else (Some(getUUID(parents._1.get.getEndNode())))),
+        parentNote = (if (parents._2.isEmpty) None else (Some(getUUID(parents._2.get.getEndNode())))),
+        project = (if (taskNode.hasLabel(ItemParentLabel.PROJECT)) Some(true) else None))).right
+    } yield task
+  }
+
   protected def completeTaskNode(userUUID: UUID, taskUUID: UUID): Response[Node] = {
     withTx {
       implicit neo =>
         for {
-          userNode <- getUserNode(userUUID).right
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
           taskNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
           result <- Right(completeTaskNode(taskNode)).right
         } yield taskNode
     }
   }
-  
+
   protected def completeTaskNode(taskNode: Node)(implicit neo4j: DatabaseService): Unit = {
     val currentTime = System.currentTimeMillis()
     taskNode.setProperty("completed", currentTime)

@@ -9,22 +9,25 @@ case class Task(uuid: Option[UUID], modified: Option[Long],
                 reminder: Option[String],
                 link: Option[String],
                 completed: Option[Long],
+                assignee: Option[UUID],
+                assigner: Option[UUID],
+                project: Option[Boolean],
                 public: Option[Long],
-                exclusive: Option[Long],
+                collective: Option[UUID],
                 parentTask: Option[UUID],
                 parentNote: Option[UUID])
             extends ExtendedItem
 
 object TaskWrapper{
   def apply(title: String, description: Option[String], 
-            date: Option[String],
+            due: Option[String],
             reminder: Option[String],
             link: Option[String],
             parentTask: Option[UUID],
             parentNote: Option[UUID]) 
         = new Task(None, None, title, description, 
-                   date, reminder, link, None, 
-                   None, None, parentTask, parentNote)
+                   due, reminder, link, None, None, None, 
+                   None, None, None, parentTask, parentNote)
 }
 
 case class CompleteTaskResult(completed: Long, result: SetResult)

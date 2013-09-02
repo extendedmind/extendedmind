@@ -7,8 +7,8 @@ import org.extendedmind.bl._
 import org.extendedmind.db._
 import org.extendedmind.domain._
 import org.extendedmind.security._
-import org.extendedmind.test.TestGraphDatabase.TIMO_EMAIL
-import org.extendedmind.test.TestGraphDatabase.TIMO_PASSWORD
+import org.extendedmind.test._
+import org.extendedmind.test.TestGraphDatabase._
 import org.mockito.Mockito.reset
 import org.mockito.Mockito.stub
 import org.mockito.Mockito.verify
@@ -23,7 +23,6 @@ import org.extendedmind.api.JsonImplicits._
 import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
-import org.extendedmind.api.test.ImpermanentGraphDatabaseSpecBase
 
 /**
  * Best case test. Also generates .json files.
@@ -128,7 +127,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         writeJsonOutput("putTaskResponse", entityAs[String])
         putTaskResponse.modified should not be None
         putTaskResponse.uuid should not be None  
-        val updatedTask = TaskWrapper("learn Spanish", None, Some("2014-03-01"), None, None, None, None)
+        val updatedTask = newTask.copy(due = Some("2014-03-01"))
         Put("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get,
             marshal(updatedTask).right.get
                 ) ~> addHeader("Content-Type", "application/json"
@@ -163,7 +162,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         putNoteResponse.modified should not be None
         putNoteResponse.uuid should not be None
 
-        val updatedNote = NoteWrapper("home measurements", Some("Helsinki home dimensions"), Some("bedroom wall: 420cm*250cm"), None, None, None)
+        val updatedNote = newNote.copy(description = Some("Helsinki home dimensions"))
         Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
             marshal(updatedNote).right.get
                 ) ~> addHeader("Content-Type", "application/json"
@@ -211,25 +210,54 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
     it("should successfully complete task with POST to /[userUUID]/task/[itemUUID]/complete") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newTask = TaskWrapper("learn Spanish", None, None, None, None, None, None)
-      Put("/" + authenticateResponse.userUUID + "/task",
-            marshal(newTask).right.get
-                ) ~> addHeader("Content-Type", "application/json"
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
-                ) ~> emRoute ~> check {
-        val putTaskResponse = entityAs[SetResult]
-        Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete"
-              ) ~> addHeader("Content-Type", "application/json"
-              ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
-              ) ~> emRoute ~> check {
-          writeJsonOutput("completeTaskResponse", entityAs[String])
-          Get("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
-                ) ~> emRoute ~> check {
-            val taskResponse = entityAs[Task]
-            taskResponse.completed.get should not be None
-          }
-        }
+      val putTaskResponse = putNewTask(newTask, authenticateResponse)
+      
+      Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete"
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+            ) ~> emRoute ~> check {
+        writeJsonOutput("completeTaskResponse", entityAs[String])
+        val taskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
+        taskResponse.completed.get should not be None
       }
+    }
+    it("should successfully update task parent task and note with PUT to /[userUUID]/task/[itemUUID]") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      
+      // Create task and note
+      val newTask = TaskWrapper("learn Spanish", None, None, None, None, None, None)
+      val putTaskResponse = putNewTask(newTask, authenticateResponse)
+      val newNote = NoteWrapper("studies", None, Some("area for studies"), None, None, None)
+      val putNoteResponse = putNewNote(newNote, authenticateResponse)  
+      
+      // Create subtask for both new task and for new note and one for task
+      val newSubTask = TaskWrapper("google for a good Spanish textbook", None, Some("2014-03-01"), None, None, 
+                                       Some(putTaskResponse.uuid.get), Some(putNoteResponse.uuid.get))
+      val putSubTaskResponse = putNewTask(newSubTask, authenticateResponse)
+      val newSecondSubTask = TaskWrapper("loan textbook from library", None, Some("2014-03-02"), None, None, 
+                                       Some(putTaskResponse.uuid.get), None)
+      val putSecondSubTaskResponse = putNewTask(newSecondSubTask, authenticateResponse)
+                                       
+      // Get subtask, task and note and verify right values
+      val taskResponse = getTask(putSubTaskResponse.uuid.get, authenticateResponse)
+      taskResponse.parentNote.get should equal(putNoteResponse.uuid.get)
+      taskResponse.parentTask.get should equal(putTaskResponse.uuid.get)
+      val parentTaskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
+      parentTaskResponse.project.get should equal(true)
+      val parentNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
+      parentNoteResponse.area.get should equal(true)
+      
+      // Remove parents, verify that they are removed from subtask, and that project is still a project
+      // but note is no longer an area
+      putExistingTask(taskResponse.copy(parentNote = None, parentTask = None), putSubTaskResponse.uuid.get, 
+                      authenticateResponse)
+      val taskResponse2 = getTask(putSubTaskResponse.uuid.get, authenticateResponse)
+      taskResponse2.parentNote should be (None)
+      taskResponse2.parentTask should be (None)
+      val parentTaskResponse2 = getTask(putTaskResponse.uuid.get, authenticateResponse)
+      parentTaskResponse2.project.get should equal(true)
+      val parentNoteResponse2 = getNote(putNoteResponse.uuid.get, authenticateResponse)
+      parentNoteResponse2.area should be (None)
     }
   }
   
@@ -246,6 +274,62 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         ) ~> addHeader(Authorization(BasicHttpCredentials(email, password))
         ) ~> emRoute ~> check { 
       entityAs[SecurityContext]
+    }
+  }
+  
+  def putNewNote(newNote: Note, authenticateResponse: SecurityContext): SetResult = {
+     Put("/" + authenticateResponse.userUUID + "/note",
+        marshal(newNote).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+            ) ~> emRoute ~> check {
+       entityAs[SetResult]
+     }
+  }
+  
+  def putExistingNote(existingNote: Note, noteUUID: UUID, authenticateResponse: SecurityContext): SetResult = {
+     Put("/" + authenticateResponse.userUUID + "/note/" + noteUUID.toString(),
+        marshal(existingNote).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+            ) ~> emRoute ~> check {
+       entityAs[SetResult]
+     }
+  }
+  
+  def putNewTask(newTask: Task, authenticateResponse: SecurityContext): SetResult = {
+     Put("/" + authenticateResponse.userUUID + "/task",
+        marshal(newTask).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+            ) ~> emRoute ~> check {
+       entityAs[SetResult]
+     }
+  }
+  
+  def putExistingTask(existingTask: Task, taskUUID: UUID, authenticateResponse: SecurityContext): SetResult = {
+     Put("/" + authenticateResponse.userUUID + "/task/" + taskUUID.toString(),
+        marshal(existingTask).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+            ) ~> emRoute ~> check {
+       entityAs[SetResult]
+     }
+  }
+  
+  def getTask(taskUUID: UUID, authenticateResponse: SecurityContext): Task = {
+    Get("/" + authenticateResponse.userUUID + "/task/" + taskUUID
+        ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+        ) ~> emRoute ~> check {
+      entityAs[Task]
+    }
+  }
+  
+  def getNote(noteUUID: UUID, authenticateResponse: SecurityContext): Note = {
+    Get("/" + authenticateResponse.userUUID + "/note/" + noteUUID
+        ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+        ) ~> emRoute ~> check {
+      entityAs[Note]
     }
   }
   

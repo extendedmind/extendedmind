@@ -59,7 +59,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     withTx{
       implicit neo =>
         for{
-          userNode <- getUserNode(uuid).right
+          userNode <- getNode(uuid, OwnerLabel.USER).right
           user <- toCaseClass[User](userNode).right
         }yield user
     }
@@ -74,19 +74,6 @@ trait UserDatabase extends AbstractGraphDatabase {
         } else if (nodeIter.toList.size > 1) {
           fail(INTERNAL_SERVER_ERROR, "Ḿore than one user found with given email " + email)
         } else
-          Right(nodeIter.toList(0))
-    }
-  }
-
-  protected def getUserNode(uuid: UUID): Response[Node] = {
-    withTx {
-      implicit neo =>
-        val nodeIter = findNodesByLabelAndProperty(OwnerLabel.USER, "uuid", UUIDUtils.getTrimmedBase64UUID(uuid))
-        if (nodeIter.toList.isEmpty)
-          fail(INVALID_PARAMETER, "No users found with given UUID " + uuid.toString)
-        else if (nodeIter.toList.size > 1)
-          fail(INTERNAL_SERVER_ERROR, "Ḿore than one user found with given UUID " + uuid.toString)
-        else
           Right(nodeIter.toList(0))
     }
   }

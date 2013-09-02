@@ -1,11 +1,8 @@
 package org.extendedmind.db.test
 
-import org.extendedmind.test.TestGraphDatabase
-import org.extendedmind.test.SpecBase
-import org.extendedmind.test.TestImpermanentGraphDatabase
-import org.extendedmind.test.SpraySpecBase
+import org.extendedmind.test._
 import org.extendedmind.test.TestGraphDatabase._
-import org.extendedmind.api.test.ImpermanentGraphDatabaseSpecBase
+
 import org.extendedmind.domain.Items
 import org.extendedmind.domain.TaskWrapper
 
