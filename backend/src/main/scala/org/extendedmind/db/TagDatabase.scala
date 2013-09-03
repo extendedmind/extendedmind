@@ -71,7 +71,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo4j =>
         for {
           tagNode <- createItem(userUUID, tag, Some(ItemLabel.TAG),
-                         (if (tag.tagType == CONTEXT) Some(TagLabel.CONTEXT) else Some(TagLabel.KEYWORD))              
+                         (if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT) else Some(TagLabel.KEYWORD))              
                          ).right
           parentNodes <- setTagParentNodes(tagNode, userUUID, tag).right
         } yield tagNode

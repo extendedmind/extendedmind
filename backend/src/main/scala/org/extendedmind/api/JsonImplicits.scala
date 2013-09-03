@@ -20,7 +20,11 @@ object JsonImplicits extends DefaultJsonProtocol {
   }
   // Create a TagType formatter
   implicit object TagTypeJsonFormat extends JsonFormat[TagType] {
-    def write(x: TagType) = JsString((if (x == CONTEXT) "context" else "keyword"))
+    def write(x: TagType) = JsString(
+        x match {
+          case CONTEXT => "context"
+          case KEYWORD => "keyword"
+        })
     def read(value: JsValue) = value match {
       case JsString(x) => {
         if (x == "keyword") KEYWORD
