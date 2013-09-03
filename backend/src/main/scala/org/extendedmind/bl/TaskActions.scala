@@ -15,7 +15,6 @@ import spray.util.LoggingContext
 trait TaskActions {
 
   def db: GraphDatabase;
-  def si: SearchIndex;
 
   def putNewTask(userUUID: UUID, task: Task)(implicit log: LoggingContext): Response[SetResult] = {
     log.info("putNewTask: user " + userUUID)
@@ -42,5 +41,4 @@ trait TaskActions {
 class TaskActionsImpl(implicit val settings: Settings, implicit val inj: Injector)
   extends TaskActions with Injectable {
   def db = inject[GraphDatabase]
-  def si = inject[SearchIndex]
 }

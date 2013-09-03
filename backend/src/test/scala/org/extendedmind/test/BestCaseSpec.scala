@@ -82,7 +82,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
          + "update it with PUT to /[userUUID]/item/[itemUUID] "
          + "and get it back with GET to /[userUUID]/item/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newItem = Item(None, None, "learn how to fly", None)
+      val newItem = Item(None, None, None, "learn how to fly", None)
       Put("/" + authenticateResponse.userUUID + "/item",
             marshal(newItem).right.get
                 ) ~> addHeader("Content-Type", "application/json"
@@ -93,7 +93,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         putItemResponse.modified should not be None
         putItemResponse.uuid should not be None
 
-        val updatedItem = Item(None, None, "learn how to fly", Some("not kidding"))
+        val updatedItem = Item(None, None, None, "learn how to fly", Some("not kidding"))
         Put("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get,
             marshal(updatedItem).right.get
                 ) ~> addHeader("Content-Type", "application/json"
@@ -117,7 +117,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
          + "update it with PUT to /[userUUID]/task/[taskUUID] " 
          + "and get it back with GET to /[userUUID]/task/[taskUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newTask = TaskWrapper("learn Spanish", None, None, None, None, None, None)
+      val newTask = Task("learn Spanish", None, None, None, None, None)
       Put("/" + authenticateResponse.userUUID + "/task",
             marshal(newTask).right.get
                 ) ~> addHeader("Content-Type", "application/json"
@@ -151,7 +151,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
          + "update it with PUT to /[userUUID]/note/[noteUUID] " 
          + "and get it back with GET to /[userUUID]/note/[noteUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newNote = NoteWrapper("home measurements", None, Some("bedroom wall: 420cm*250cm"), None, None, None)
+      val newNote = Note("home measurements", None, Some("bedroom wall: 420cm*250cm"), None, None)
       Put("/" + authenticateResponse.userUUID + "/note",
             marshal(newNote).right.get
                 ) ~> addHeader("Content-Type", "application/json"
@@ -183,16 +183,50 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         }
       }
     }
+    it("should successfully put new tag on PUT to /[userUUID]/tag, " 
+         + "update it with PUT to /[userUUID]/tag/[tagUUID] " 
+         + "and get it back with GET to /[userUUID]/tag/[tagUUID]") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val newTag = Tag("home", None, CONTEXT, None, None)
+      Put("/" + authenticateResponse.userUUID + "/tag",
+            marshal(newTag).right.get
+                ) ~> addHeader("Content-Type", "application/json"
+                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> emRoute ~> check {
+        val putTagResponse = entityAs[SetResult]
+        writeJsonOutput("putTagResponse", entityAs[String])
+        putTagResponse.modified should not be None
+        putTagResponse.uuid should not be None  
+        val updatedTag = newTag.copy(description = Some("my home"))
+        Put("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get,
+            marshal(updatedTag).right.get
+                ) ~> addHeader("Content-Type", "application/json"
+                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> emRoute ~> check {
+          val putExistingTagResponse = entityAs[String]
+          writeJsonOutput("putExistingTagResponse", putExistingTagResponse)
+          putExistingTagResponse should include("modified")
+          putExistingTagResponse should not include("uuid")
+          Get("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get
+              ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+              ) ~> emRoute ~> check {
+            val tagResponse = entityAs[Tag]
+            writeJsonOutput("tagResponse", entityAs[String])
+            tagResponse.description.get should be("my home")
+          }
+        }
+      }
+    }
     it("should successfully update item to task with PUT to /[userUUID]/task/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newItem = Item(None, None, "learn how to fly", None)
+      val newItem = Item(None, None, None, "learn how to fly", None)
       Put("/" + authenticateResponse.userUUID + "/item",
           marshal(newItem).right.get
               ) ~> addHeader("Content-Type", "application/json"
               ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
               ) ~> emRoute ~> check {
         val putItemResponse = entityAs[SetResult]          
-        val updatedToTask = TaskWrapper("learn how to fly", None, Some("2014-03-01"), None, None, None, None)
+        val updatedToTask = Task("learn how to fly", None, Some("2014-03-01"), None, None, None)
         Put("/" + authenticateResponse.userUUID + "/task/" + putItemResponse.uuid.get,
           marshal(updatedToTask).right.get
               ) ~> addHeader("Content-Type", "application/json"
@@ -209,7 +243,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
     }
     it("should successfully complete task with POST to /[userUUID]/task/[itemUUID]/complete") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newTask = TaskWrapper("learn Spanish", None, None, None, None, None, None)
+      val newTask = Task("learn Spanish", None, None, None, None, None)
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
       
       Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete"
@@ -225,17 +259,18 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       
       // Create task and note
-      val newTask = TaskWrapper("learn Spanish", None, None, None, None, None, None)
+      val newTask = Task("learn Spanish", None, None, None, None, None)
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
-      val newNote = NoteWrapper("studies", None, Some("area for studies"), None, None, None)
+      val newNote = Note("studies", None, Some("area for studies"), None, None)
       val putNoteResponse = putNewNote(newNote, authenticateResponse)  
       
       // Create subtask for both new task and for new note and one for task
-      val newSubTask = TaskWrapper("google for a good Spanish textbook", None, Some("2014-03-01"), None, None, 
-                                       Some(putTaskResponse.uuid.get), Some(putNoteResponse.uuid.get))
+      val newSubTask = Task("google for a good Spanish textbook", None, Some("2014-03-01"), None, None,
+                          Some(ExtendedItemRelationships(Some(putTaskResponse.uuid.get), 
+                                                         Some(putNoteResponse.uuid.get), None)))
       val putSubTaskResponse = putNewTask(newSubTask, authenticateResponse)
-      val newSecondSubTask = TaskWrapper("loan textbook from library", None, Some("2014-03-02"), None, None, 
-                                       Some(putTaskResponse.uuid.get), None)
+      val newSecondSubTask = Task("loan textbook from library", None, Some("2014-03-02"), None, None, 
+                                       Some(ExtendedItemRelationships(Some(putTaskResponse.uuid.get), None, None)))
       val putSecondSubTaskResponse = putNewTask(newSecondSubTask, authenticateResponse)
                                        
       // Get subtask, task and note and verify right values
@@ -249,7 +284,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       
       // Remove parents, verify that they are removed from subtask, and that project is still a project
       // but note is no longer an area
-      putExistingTask(taskResponse.copy(parentNote = None, parentTask = None), putSubTaskResponse.uuid.get, 
+      putExistingTask(taskResponse.copy(relationships = None), putSubTaskResponse.uuid.get, 
                       authenticateResponse)
       val taskResponse2 = getTask(putSubTaskResponse.uuid.get, authenticateResponse)
       taskResponse2.parentNote should be (None)

@@ -42,8 +42,8 @@ trait ItemDatabase extends AbstractGraphDatabase {
     withTx {
       implicit neo =>
         for {
-          ownerNode <- getNode(userUUID, MainLabel.OWNER).right
-          itemNode <- getItemNode(ownerNode, itemUUID).right
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          itemNode <- getItemNode(userNode, itemUUID).right
           item <- toCaseClass[Item](itemNode).right
         } yield item
     }
@@ -66,11 +66,13 @@ trait ItemDatabase extends AbstractGraphDatabase {
     val itemBuffer = new ListBuffer[Item]
     val taskBuffer = new ListBuffer[Task]
     val noteBuffer = new ListBuffer[Note]
+    val tagBuffer = new ListBuffer[Tag]
+
     itemNodes foreach (itemNode =>
       if (itemNode.hasLabel(ItemLabel.NOTE)) {
         val note = toNote(itemNode, userUUID)
         if (note.isLeft) {
-          return fail(INTERNAL_SERVER_ERROR, "Could not convert note: " + note.left.get)
+          return fail(INTERNAL_SERVER_ERROR, note.left.get.toString)
         }
         noteBuffer.append(note.right.get)
       } else if (itemNode.hasLabel(ItemLabel.TASK)) {
@@ -79,7 +81,15 @@ trait ItemDatabase extends AbstractGraphDatabase {
           return fail(INTERNAL_SERVER_ERROR, task.left.get.toString)
         }
         taskBuffer.append(task.right.get)
-      } else {
+      } else if (itemNode.hasLabel(ItemLabel.TAG)) {
+        val tag = toTag(itemNode, userUUID)
+        if (tag.isLeft) {
+          return fail(INTERNAL_SERVER_ERROR, tag.left.get.toString)
+        }
+        tagBuffer.append(tag.right.get)
+        
+      }
+      else {
         val item = toCaseClass[Item](itemNode)
         if (item.isLeft) {
           return fail(INTERNAL_SERVER_ERROR, "Could not convert item: " + item.left.get)
@@ -89,13 +99,15 @@ trait ItemDatabase extends AbstractGraphDatabase {
     Right(Items(
       if (itemBuffer.isEmpty) None else Some(itemBuffer.toList),
       if (taskBuffer.isEmpty) None else Some(taskBuffer.toList),
-      if (noteBuffer.isEmpty) None else Some(noteBuffer.toList)))
+      if (noteBuffer.isEmpty) None else Some(noteBuffer.toList),
+      if (tagBuffer.isEmpty) None else Some(tagBuffer.toList)))
   }
   
   // Methods for converting tasks and nodes
   def toTask(taskNode: Node, userUUID: UUID)(implicit neo4j: DatabaseService): Response[Task];
   def toNote(noteNode: Node, userUUID: UUID)(implicit neo4j: DatabaseService): Response[Note];
-  
+  def toTag(tagNode: Node, userUUID: UUID)(implicit neo4j: DatabaseService): Response[Tag];
+
   protected def getItemNodes(userNode: Node)(implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
     val itemsFromOwner: TraversalDescription =
       Traversal.description()
@@ -113,39 +125,56 @@ trait ItemDatabase extends AbstractGraphDatabase {
     Right(traverser.nodes())
   }
 
-  protected def createItem(userUUID: UUID, item: AnyRef, extraLabel: Option[Label] = None): Response[Node] = {
+  protected def createItem(userUUID: UUID, item: AnyRef, 
+                           extraLabel: Option[Label] = None, extraSubLabel: Option[Label] = None): 
+                           Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          itemNode <- createItem(userNode, item, extraLabel).right
+          itemNode <- createItem(userNode, item, extraLabel, extraSubLabel).right
         } yield itemNode
     }
   }
 
-  protected def createItem(userNode: Node, item: AnyRef, extraLabel: Option[Label])(implicit neo4j: DatabaseService): Response[Node] = {
+  protected def createItem(userNode: Node, item: AnyRef, extraLabel: Option[Label], extraSubLabel: Option[Label])
+            (implicit neo4j: DatabaseService): Response[Node] = {
     val itemNode = createNode(item, MainLabel.ITEM)
-    if (extraLabel.isDefined)itemNode.addLabel(extraLabel.get)
+    if (extraLabel.isDefined){
+      itemNode.addLabel(extraLabel.get)
+      if (extraSubLabel.isDefined){
+        itemNode.addLabel(extraSubLabel.get)
+      }
+    }
     // Attach it to the user
     userNode --> SecurityRelationship.OWNS --> itemNode
     Right(itemNode)
   }
 
-  protected def updateItem(userUUID: UUID, itemUUID: UUID, item: AnyRef, additionalLabel: Option[Label] = None): Response[Node] = {
+  protected def updateItem(userUUID: UUID, itemUUID: UUID, item: AnyRef, 
+                          additionalLabel: Option[Label] = None, 
+                          additionalSubLabel: Option[Tuple2[Label, Label]] = None): Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
           userNode <- getNode(userUUID, OwnerLabel.USER).right
           itemNode <- getItemNode(userNode, itemUUID).right
-          itemNode <- Right(setLabel(itemNode, additionalLabel)).right
+          itemNode <- Right(setLabel(itemNode, additionalLabel, additionalSubLabel)).right
           itemNode <- updateNode(itemNode, item).right
         } yield itemNode
     }
   }
 
-  protected def setLabel(node: Node, additionalLabel: Option[Label])(implicit neo4j: DatabaseService): Node = {
-    if (additionalLabel.isDefined && !node.hasLabel(additionalLabel.get))
+  protected def setLabel(node: Node, additionalLabel: Option[Label], additionalSubLabel: Option[Tuple2[Label, Label]])(implicit neo4j: DatabaseService): Node = {
+    if (additionalLabel.isDefined && !node.hasLabel(additionalLabel.get)){
       node.addLabel(additionalLabel.get)
+      if (additionalSubLabel.isDefined && !node.hasLabel(additionalSubLabel.get._1)){
+        node.addLabel(additionalSubLabel.get._1)
+        // Need to remove the other as the sublabel is either or
+        if (node.hasLabel(additionalSubLabel.get._2))
+          node.removeLabel(additionalSubLabel.get._2)
+      }
+    }
     node
   }
 
@@ -177,27 +206,29 @@ trait ItemDatabase extends AbstractGraphDatabase {
     }
   }
 
-  def putExistingExtendedItem(userUUID: UUID, taskUUID: UUID, extItem: ExtendedItem, label: Label): Response[Node] = {
+  def putExistingExtendedItem(userUUID: UUID, itemUUID: UUID, extItem: ExtendedItem, 
+                              label: Label, subLabel: Option[Tuple2[Label, Label]] = None): 
+        Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- updateItem(userUUID, taskUUID, extItem, Some(label)).right
+          itemNode <- updateItem(userUUID, itemUUID, extItem, Some(label), subLabel).right
           parentNodes <- setParentNodes(itemNode, userUUID, extItem).right
         } yield itemNode
     }
   }
-  
-  def putNewExtendedItem(userUUID: UUID, extItem: ExtendedItem, label: Label): Response[Node] = {
+
+  def putNewExtendedItem(userUUID: UUID, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None): 
+          Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- createItem(userUUID, extItem, Some(label)).right
+          itemNode <- createItem(userUUID, extItem, Some(label), subLabel).right
           parentNodes <- setParentNodes(itemNode, userUUID, extItem).right
         } yield itemNode
     }
   }
-  
-    
+
   protected def setParentNodes(itemNode: Node,  userUUID: UUID, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Tuple2[Option[Relationship], Option[Relationship]]] = {
     for {
       userNode <- getNode(userUUID, OwnerLabel.USER).right
@@ -221,10 +252,12 @@ trait ItemDatabase extends AbstractGraphDatabase {
           deleteParentRelationship(oldParentRelationship.get)
         }
       }
-      val newParentLabel = if (parentLabel == ItemLabel.NOTE) ItemParentLabel.AREA else ItemParentLabel.PROJECT
+      val newParentLabel = if (parentLabel == ItemLabel.NOTE) Some(ItemParentLabel.AREA) 
+                           else if (parentLabel == ItemLabel.TASK) Some(ItemParentLabel.PROJECT)
+                           else None
       for{
         parentNode <- getItemNode(userNode, parentUUID.get, Some(parentLabel)).right
-        parentRelationship <- Right(createParentRelationship(itemNode, parentNode, newParentLabel)).right
+        parentRelationship <- createParentRelationship(itemNode, parentNode, newParentLabel).right
       }yield Some(parentRelationship)
     }else{
       if (oldParentRelationship.isDefined){
@@ -261,14 +294,23 @@ trait ItemDatabase extends AbstractGraphDatabase {
       false
   }
 
-  protected def createParentRelationship(itemNode: Node, parentNode: Node, newParentLabel: Label)(implicit neo4j: DatabaseService): Relationship = {
+  protected def createParentRelationship(itemNode: Node, parentNode: Node, newParentLabel: Option[Label])
+              (implicit neo4j: DatabaseService): Response[Relationship] = {
+    if (newParentLabel.isDefined){
+      if(!parentNode.hasLabel(newParentLabel.get))
+        parentNode.addLabel(newParentLabel.get)
+    }else{
+      // Both parent and child need to have the same labels
+      itemNode.getLabels() foreach (label => {
+        if (!parentNode.hasLabel(label)) fail(INVALID_PARAMETER, "Parent needs to be the same type as the child")
+      })
+    }
     val relationship = itemNode --> ItemRelationship.PARENT --> parentNode <;
-    if (!parentNode.hasLabel(newParentLabel))
-      parentNode.addLabel(newParentLabel)
-    relationship
+    Right(relationship)
   }
   
-  protected def getParentRelationships(itemNode: Node, userUUID: UUID)(implicit neo4j: DatabaseService): Response[Tuple2[Option[Relationship], Option[Relationship]]] = {
+  protected def getParentRelationships(itemNode: Node, userUUID: UUID)(implicit neo4j: DatabaseService): 
+            Response[Tuple3[Option[Relationship], Option[Relationship], Option[Relationship]]] = {
     val parentNodesFromItem: TraversalDescription =
       Traversal.description()
         .depthFirst()
@@ -288,10 +330,11 @@ trait ItemDatabase extends AbstractGraphDatabase {
 
     val traverser = parentNodesFromItem.traverse(itemNode)
     val relationshipList = traverser.relationships().toArray
-    
+
     // Correct relationships are in order ITEM->ITEM then OWNER->ITEM
     var parentProject: Option[Relationship] = None
     var parentArea: Option[Relationship] = None
+    var parentTag: Option[Relationship] = None
     var previousRelationship: Relationship = null
     relationshipList foreach (relationship => {
       if (relationship.getStartNode().hasLabel(MainLabel.OWNER) 
@@ -300,11 +343,13 @@ trait ItemDatabase extends AbstractGraphDatabase {
           parentProject = Some(previousRelationship)
         else if (relationship.getEndNode().hasLabel(ItemParentLabel.AREA))
           parentArea = Some(previousRelationship)
+        else if (relationship.getEndNode().hasLabel(ItemLabel.TAG))
+          parentTag = Some(previousRelationship)
       }
       previousRelationship = relationship
     })
 
-    Right((parentProject, parentArea))
+    Right((parentProject, parentArea, parentTag))
   }
   
 }

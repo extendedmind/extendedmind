@@ -71,29 +71,6 @@ class ServiceActor extends HttpServiceActor with Service {
   def receive = runRoute(emRoute)
 }
 
-object JsonImplicits extends DefaultJsonProtocol {
-
-  // Create a UUID formatter
-  import spray.json._
-  implicit object UUIDJsonFormat extends JsonFormat[UUID] {
-    def write(x: UUID) = JsString(x.toString())
-    def read(value: JsValue) = value match {
-      case JsString(x) => java.util.UUID.fromString(x)
-      case x => deserializationError("Expected UUID as JsString, but got " + x)
-    }
-  }
-
-  implicit val implSetResult = jsonFormat2(SetResult)
-  implicit val implItem = jsonFormat4(Item)
-  implicit val implTask = jsonFormat15(Task)
-  implicit val implNote = jsonFormat11(Note)
-  implicit val implItems = jsonFormat3(Items)
-  implicit val implUser = jsonFormat3(User)
-  implicit val implSecurityContext = jsonFormat5(SecurityContext)
-  implicit val implAuthenticatePayload = jsonFormat1(AuthenticatePayload)
-  implicit val implCompleteTaskResult = jsonFormat2(CompleteTaskResult)
-}
-
 // this class defines our service behavior independently from the service actor
 trait Service extends API with Injectable {
 
@@ -119,12 +96,12 @@ trait Service extends API with Injectable {
         }
       }
     } ~
-    getItems{ userUUID =>
+    getItems{ ownerUUID =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID == userUUID){
+        authorize(securityContext.userUUID == ownerUUID){
 		      complete {
 		        Future[Items] {
-		          itemActions.getItems(userUUID) match {
+		          itemActions.getItems(ownerUUID) match {
                 case Right(items) => items
                 case Left(e) => processErrors(e)
 		          }
@@ -133,12 +110,12 @@ trait Service extends API with Injectable {
         }
       }
     } ~ 
-    getItem { (userUUID, itemUUID) =>
+    getItem { (ownerUUID, itemUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID == userUUID){
+        authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[Item] {
-              itemActions.getItem(userUUID, itemUUID) match {
+              itemActions.getItem(ownerUUID, itemUUID) match {
                 case Right(item) => item
                 case Left(e) => processErrors(e)
               }
@@ -147,13 +124,13 @@ trait Service extends API with Injectable {
         }
       }      
     } ~
-    putNewItem { userUUID =>
+    putNewItem { ownerUUID =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID == userUUID){
+        authorize(securityContext.userUUID == ownerUUID){
           entity(as[Item]) { item =>
             complete{
               Future[SetResult]{
-                itemActions.putNewItem(userUUID, item) match {
+                itemActions.putNewItem(ownerUUID, item) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -163,13 +140,13 @@ trait Service extends API with Injectable {
         }
       }
     } ~
-    putExistingItem { (userUUID, itemUUID) =>
+    putExistingItem { (ownerUUID, itemUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID == userUUID){
+        authorize(securityContext.userUUID == ownerUUID){
           entity(as[Item]) { item =>
             complete{
               Future[SetResult]{
-                itemActions.putExistingItem(userUUID, itemUUID, item) match {
+                itemActions.putExistingItem(ownerUUID, itemUUID, item) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -179,12 +156,12 @@ trait Service extends API with Injectable {
         }
       }
     } ~
-    getTask { (userUUID, taskUUID) =>
+    getTask { (ownerUUID, taskUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID == userUUID){
+        authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[Task] {
-              taskActions.getTask(userUUID, taskUUID) match {
+              taskActions.getTask(ownerUUID, taskUUID) match {
                 case Right(task) => task
                 case Left(e) => processErrors(e)
               }
@@ -193,13 +170,13 @@ trait Service extends API with Injectable {
         }
       }
     } ~
-    putNewTask { userUUID =>
+    putNewTask { ownerUUID =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID == userUUID){
+        authorize(securityContext.userUUID == ownerUUID){
           entity(as[Task]) { task =>
             complete {
               Future[SetResult] {
-                taskActions.putNewTask(userUUID, task) match {
+                taskActions.putNewTask(ownerUUID, task) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -209,13 +186,13 @@ trait Service extends API with Injectable {
         }
       }
     } ~
-    putExistingTask { (userUUID, taskUUID) =>
+    putExistingTask { (ownerUUID, taskUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID == userUUID){
+        authorize(securityContext.userUUID == ownerUUID){
           entity(as[Task]) { task =>
             complete {
               Future[SetResult] {
-                taskActions.putExistingTask(userUUID, taskUUID, task) match {
+                taskActions.putExistingTask(ownerUUID, taskUUID, task) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -225,12 +202,12 @@ trait Service extends API with Injectable {
         }
       }
     } ~
-    completeTask { (userUUID, taskUUID) =>
+    completeTask { (ownerUUID, taskUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID == userUUID){
+        authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[CompleteTaskResult] {
-              taskActions.completeTask(userUUID, taskUUID) match {
+              taskActions.completeTask(ownerUUID, taskUUID) match {
                 case Right(task) => task
                 case Left(e) => processErrors(e)
               }
@@ -239,12 +216,12 @@ trait Service extends API with Injectable {
         }
       }
     } ~
-    getNote { (userUUID, noteUUID) =>
+    getNote { (ownerUUID, noteUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID == userUUID){
+        authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[Note] {
-              noteActions.getNote(userUUID, noteUUID) match {
+              noteActions.getNote(ownerUUID, noteUUID) match {
                 case Right(note) => note
                 case Left(e) => processErrors(e)
               }
@@ -253,13 +230,13 @@ trait Service extends API with Injectable {
         }
       }
     } ~
-    putNewNote { userUUID =>
+    putNewNote { ownerUUID =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID == userUUID){
+        authorize(securityContext.userUUID == ownerUUID){
           entity(as[Note]) { note =>
             complete {
               Future[SetResult] {
-                noteActions.putNewNote(userUUID, note) match {
+                noteActions.putNewNote(ownerUUID, note) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -269,13 +246,59 @@ trait Service extends API with Injectable {
         }
       }
     } ~
-    putExistingNote { (userUUID, noteUUID) =>
+    putExistingNote { (ownerUUID, noteUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
-        authorize(securityContext.userUUID == userUUID){
+        authorize(securityContext.userUUID == ownerUUID){
           entity(as[Note]) { note =>
             complete {
               Future[SetResult] {
-                noteActions.putExistingNote(userUUID, noteUUID, note) match {
+                noteActions.putExistingNote(ownerUUID, noteUUID, note) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }       
+        }
+      }
+    } ~
+    getTag{ (ownerUUID, tagUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == ownerUUID){
+          complete {
+            Future[Tag] {
+              tagActions.getTag(ownerUUID, tagUUID) match {
+                case Right(tag) => tag
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      }
+    } ~
+    putNewTag { ownerUUID =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == ownerUUID){
+          entity(as[Tag]) { tag =>
+            complete {
+              Future[SetResult] {
+                tagActions.putNewTag(ownerUUID, tag) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      }
+    } ~
+    putExistingTag { (ownerUUID, tagUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == ownerUUID){
+          entity(as[Tag]) { tag =>
+            complete {
+              Future[SetResult] {
+                tagActions.putExistingTag(ownerUUID, tagUUID, tag) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -285,6 +308,7 @@ trait Service extends API with Injectable {
         }
       }
     }
+    
   }
 
   def securityActions: SecurityActions = {
@@ -313,6 +337,10 @@ trait Service extends API with Injectable {
   
   def noteActions: NoteActions = {
     inject[NoteActions]
+  }
+  
+  def tagActions: TagActions = {
+    inject[TagActions]
   }
 
 }

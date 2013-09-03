@@ -3,8 +3,7 @@ package org.extendedmind.db.test
 import org.extendedmind.test._
 import org.extendedmind.test.TestGraphDatabase._
 
-import org.extendedmind.domain.Items
-import org.extendedmind.domain.TaskWrapper
+import org.extendedmind.domain._
 
 class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
 	
@@ -54,11 +53,12 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
   }
   describe("TaskDatabase"){
      it("should remove properties of a task from the database"){
+      val testTask = Task("testTitle", Some("testDescription"), None, None, None, None)
       val result = db.putNewTask(db.timoUUID, 
-          TaskWrapper("testTitle", Some("testDescription"), None, None, None, None, None))
+          testTask)
       // Put it back without the description
       val updateResult = db.putExistingTask(db.timoUUID, result.right.get.uuid.get, 
-          TaskWrapper("testTitle", None, None, None, None, None, None))
+          testTask.copy(description = None))
       
       db.getTask(db.timoUUID, result.right.get.uuid.get) match {
         case Right(task) => {

@@ -6,3 +6,4 @@ with UserDatabase
 with ItemDatabase
 with TaskDatabase
 with NoteDatabase
+with TagDatabase

@@ -44,19 +44,27 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   // PRIVATE
-  override def toNote(noteNode: Node, userUUID: UUID)(implicit neo4j: DatabaseService): Response[Note] = {
+  override def toNote(noteNode: Node, userUUID: UUID)
+               (implicit neo4j: DatabaseService): Response[Note] = {
     for {
       note <- toCaseClass[Note](noteNode).right
       completeNote <- addTransientNoteProperties(noteNode, userUUID, note).right
     } yield completeNote
   }
 
-  protected def addTransientNoteProperties(noteNode: Node, userUUID: UUID, note: Note)(implicit neo4j: DatabaseService): Response[Note] = {
+  protected def addTransientNoteProperties(noteNode: Node, userUUID: UUID, note: Note)
+                (implicit neo4j: DatabaseService): Response[Note] = {
     for {
       parents <- getParentRelationships(noteNode, userUUID).right
       note <- Right(note.copy(
-        parentTask = (if (parents._1.isEmpty) None else (Some(getUUID(parents._1.get.getEndNode())))),
-        parentNote = (if (parents._2.isEmpty) None else (Some(getUUID(parents._2.get.getEndNode())))),
+        relationships = 
+          (if (parents._1.isDefined || parents._2.isDefined)            
+            Some(ExtendedItemRelationships(  
+              parentTask = (if (parents._1.isEmpty) None else (Some(getUUID(parents._1.get.getEndNode())))),
+              parentNote = (if (parents._2.isEmpty) None else (Some(getUUID(parents._2.get.getEndNode())))),
+              None))
+           else None
+          ),
         area = (if (noteNode.hasLabel(ItemParentLabel.AREA)) Some(true) else None))).right
     } yield note
   }

@@ -6,7 +6,6 @@ import org.extendedmind.security._
 import org.extendedmind.domain._
 import org.neo4j.scala.EmbeddedGraphDatabaseServiceProvider
 import java.util.UUID
-import org.neo4j.scala.Neo4jWrapper
 import org.apache.commons.codec.binary.Base64
 import org.neo4j.scala.ImpermanentGraphDatabaseServiceProvider
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
@@ -34,7 +33,7 @@ trait TestGraphDatabase extends GraphDatabase {
   var timoUUID: UUID = null
   
   def insertTestData(testDataLocation: Option[String] = None) {
-    val timoNode = createUser(User(None, None, TIMO_EMAIL), TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
+    val timoNode = createUser(User(None, None, None, TIMO_EMAIL), TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
     
     withTx{
       implicit neo =>
@@ -73,28 +72,44 @@ trait TestGraphDatabase extends GraphDatabase {
     
     // Store items for user
     putNewItem(timoUUID,
-        Item(None, None, "should I start yoga?", None)).right.get
+        Item(None, None, None, "should I start yoga?", None)).right.get
     putNewItem(timoUUID,
-        Item(None, None, "remember the milk", None)).right.get
+        Item(None, None, None, "remember the milk", None)).right.get
     
+    // Store tags for user
+    putNewTag(timoUUID,
+        Tag("home", None, CONTEXT, None, None))
+    putNewTag(timoUUID,
+        Tag("office", None, CONTEXT, None, None))
+    val computerTag = putNewTag(timoUUID,
+        Tag("computer", None, CONTEXT, None, None))
+    putNewTag(timoUUID,
+        Tag("browser", None, CONTEXT, None, computerTag.right.get.uuid))
+    putNewTag(timoUUID,
+        Tag("email", None, CONTEXT, None, computerTag.right.get.uuid))
+    putNewTag(timoUUID,
+        Tag("secret", None, KEYWORD, None, None))        
+    putNewTag(timoUUID,
+        Tag("productivity", None, KEYWORD, None, None))        
+
     // Store tasks for user
     putNewTask(timoUUID,
-        TaskWrapper("clean closet", None, None, None, None, None, None)).right.get
+        Task("clean closet", None, None, None, None, None)).right.get
     putNewTask(timoUUID,
-        TaskWrapper("book flight", None, Some("2014-01-01"), None, None, None, None)).right.get
+        Task("book flight", None, Some("2014-01-01"), None, None, None)).right.get
     putNewTask(timoUUID,
-        TaskWrapper("print tickets", None, Some("2014-01-02"), Some("10:00"), Some("http://www.finnair.fi"), None, None )).right.get
+        Task("print tickets", None, Some("2014-01-02"), Some("10:00"), Some("http://www.finnair.fi"), None)).right.get
     val completedTask = putNewTask(timoUUID,
-        TaskWrapper("get ext.md domain", None, Some("2013-05-01"), None, None, None, None )).right.get
+        Task("get ext.md domain", None, Some("2013-05-01"), None, None, None)).right.get
     completeTask(timoUUID, completedTask.uuid.get)
     
     // Store notes for user
     putNewNote(timoUUID, 
-        NoteWrapper("door codes", None, Some("home: 1234\noffice:4321"), None, None, None)).right.get
+        Note("office door code", None, Some("4321"), None, None)).right.get
     putNewNote(timoUUID, 
-        NoteWrapper("notes on productivity", None, Some("##what I've learned about productivity"), None, None, None)).right.get
+        Note("notes on productivity", None, Some("##what I've learned about productivity"), None, None)).right.get
     putNewNote(timoUUID, 
-        NoteWrapper("extended mind", None, None, Some("http://ext.md"), None, None)).right.get
+        Note("extended mind", None, None, Some("http://ext.md"), None)).right.get
   }
   
   def saveCustomToken(expires: Long, replaceable: Option[Long], userNode: Node)
