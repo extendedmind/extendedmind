@@ -1,31 +1,35 @@
 <div class="span12">
   <!-- Page Content -->
   <div class="em-core">
+
     <h3>extended mind <a href="/" class="em-subtitle">login</a></h3>
-    <p>
-      &nbsp;
-    </p>
-    <p>
-      <form name="login">
-        <dl>
-          <dt>
-            <input id="username" name="username" type="email" ng-model="user.username" placeholder="Email" autofocus="autofocus" required>
-          </dt>
-          <dt>
-            <input id="password" name="password" type="password" ng-model="user.password" placeholder="Password" required>
-          </dt>
-          <dt>
-            <button id="loginbutton" name="loginbutton" type="submit" ng-disabled="!login.$valid" ng-click="userLogin()">
-              login
-            </button>
-          </dt>
-          <dt>
-            remember
-            <input type="checkbox" ng-model="user.remember">
-          </dt>
-        </dl>
-      </form>
-    </p>
+
+    <form name="login">
+      <dl>
+
+        <dt>
+          <input class="formContent" id="username" name="username" type="email" ng-model="user.username" placeholder="Email" autofocus="autofocus" required>
+        </dt>
+
+        <dt>
+          <input class="formContent" id="password" name="password" type="password" ng-model="user.password" placeholder="Password" required>
+        </dt>
+
+        <dt>
+          <button class="formAction" id="loginbutton" name="loginbutton" type="submit" ng-disabled="!login.$valid" ng-click="userLogin()">
+            login
+          </button>
+        </dt>
+
+        <dt>
+          <span> remember </span>
+          <input type="checkbox" ng-model="user.remember">
+        </dt>
+
+      </dl>
+    </form>
+
+    <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
+
   </div>
-  <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
 </div>

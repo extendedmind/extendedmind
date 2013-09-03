@@ -2,30 +2,37 @@
   <!-- Page Content -->
   <div class="masthead">
     <h3>extended mind</h3>
+
     <form name="searchAndAddOmniForm">
       <input type="search" ng-model="newItem.title" autofocus="autofocus" placeholder="Search / Add">
-      <button ng-click="addNewItem()">
+      <button type="button" class="addNew" ng-click="addNewItem()">
         +
       </button>
     </form>
 
+    <p>
+      &nbsp;
+    </p>
+
     <div>
-      <h4><a href="/my/tasks" class="em-subtitle">tasks</a></h4>
+      <a href="/my/tasks" class="em-subtitle">tasks</a>
       <div tasks-list tasksfilter="newItem.title"></div>
     </div>
 
     <div>
-      <h4><a href="/my/notes" class="em-subtitle">notes</a></h4>
+      <a href="/my/notes" class="em-subtitle">notes</a>
       <div notes-list notesfilter="newItem.title"></div>
     </div>
 
     <div>
-      <button ng-click="toggleItemsList()">
-        Inbox
+      <button type="button" class="toggle" ng-click="toggleItemsList()">
+        <p>
+          inbox
+        </p>
       </button>
       <div ng-show="showMe" items-list itemsfilter="newItem.title"></div>
     </div>
 
+    <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
   </div>
-  <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
 </div>

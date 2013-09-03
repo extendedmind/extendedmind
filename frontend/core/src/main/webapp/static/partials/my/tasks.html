@@ -2,18 +2,14 @@
   <!-- Page Content -->
   <div class="em-core">
 
-    <div>
-      <h3><a href="/my" class="em-subtitle">tasks</a></h3>
-      <button ng-click="addNewTask()">
+    <div id="header">
+      <a href="/my" class="em-subtitle">tasks</a>
+      <button type="button" class="addNew" ng-click="editNewTask()">
         +
       </button>
     </div>
 
-    <p>
-      &nbsp;
-    </p>
-
-    <div new-task></div>
+    <div ng-show="showEditNewTask" new-task></div>
 
     <div>
       <h4>inbox</h4>

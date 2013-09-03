@@ -80,5 +80,7 @@
       $rootScope.$on('event:loginSuccess', function() {
         $location.path('/my');
       });
+      $rootScope.$on('$routeChangeStart', function(event, next, current) {
+      });
     }]);
   }());
