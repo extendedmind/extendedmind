@@ -5,15 +5,20 @@
       <div>
         <span>{{item.title}}</span>
 
-        <button type="button" class="editItem" ng-click="editNewTask()">
-          task
+        <button type="button" class="editItem" ng-click="editNewTag()">
+          tag
         </button>
 
         <button type="button"class="editItem">
           note
         </button>
 
+        <button type="button" class="editItem" ng-click="editNewTask()">
+          task
+        </button>
+
       </div>
+      <div ng-show="showEditNewTag" new-tag></div>
       <div ng-show="showEditNewTask" new-task></div>
     </li>
   </ul>
