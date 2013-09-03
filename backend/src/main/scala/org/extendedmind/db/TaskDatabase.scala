@@ -64,8 +64,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       parents <- getParentRelationships(taskNode, userUUID).right
       task <- Right(task.copy(
-        parentTask = (if (parents._1.isEmpty) None else (Some(getUUID(parents._1.get.getEndNode())))),
-        parentNote = (if (parents._2.isEmpty) None else (Some(getUUID(parents._2.get.getEndNode())))),
+        relationships = 
+          (if (parents._1.isDefined || parents._2.isDefined)            
+            Some(ExtendedItemRelationships(  
+              parentTask = (if (parents._1.isEmpty) None else (Some(getUUID(parents._1.get.getEndNode())))),
+              parentNote = (if (parents._2.isEmpty) None else (Some(getUUID(parents._2.get.getEndNode())))),
+              None))
+           else None
+          ),
         project = (if (taskNode.hasLabel(ItemParentLabel.PROJECT)) Some(true) else None))).right
     } yield task
   }

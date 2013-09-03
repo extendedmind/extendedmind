@@ -2,23 +2,20 @@ package org.extendedmind.domain
 
 import java.util.UUID
 
-case class Note(uuid: Option[UUID], modified: Option[Long], 
+case class Note(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long], 
                 title: String, description: Option[String], 
                 content: Option[String],
                 link: Option[String],
                 area: Option[Boolean],
-                public: Option[Long],
-                collective: Option[UUID],
-                parentTask: Option[UUID],
-                parentNote: Option[UUID])
+                visibility: Option[SharedItemVisibility],
+                relationships: Option[ExtendedItemRelationships])
            extends ExtendedItem
 
-object NoteWrapper{
+object Note{
   def apply(title: String, description: Option[String], 
             content: Option[String],
             link: Option[String],
-            parentTask: Option[UUID],
-            parentNote: Option[UUID]) 
-        = new Note(None, None, title, description, content, 
-                   link, None, None, None, parentTask, parentNote)
+            relationships: Option[ExtendedItemRelationships]) 
+        = new Note(None, None, None, title, description, content, 
+                   link, None, None, relationships)
 }

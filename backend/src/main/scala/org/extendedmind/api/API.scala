@@ -12,20 +12,27 @@ trait API extends HttpService {
   // All valid paths
   val getRoot = get & path("")
   val postAuthenticate = post & path("authenticate".r) 
+  
+  // Items
   val getItems = get & path(JavaUUID / "items")
   val getItem = get & path(JavaUUID / "item" / JavaUUID)
   val putNewItem = put & path(JavaUUID / "item")
   val putExistingItem = put & path(JavaUUID / "item" / JavaUUID)
   
+  // Tasks
   val getTask = get & path(JavaUUID / "task" / JavaUUID)
   val putNewTask = put & path(JavaUUID / "task")
   val putExistingTask = put & path(JavaUUID / "task" / JavaUUID)
   val completeTask = post & path(JavaUUID / "task" / JavaUUID / "complete")
-  
+
+  // Notes
   val getNote = get & path(JavaUUID / "note" / JavaUUID)
   val putNewNote = put & path(JavaUUID / "note")
   val putExistingNote = put & path(JavaUUID / "note" / JavaUUID)
   
-  val searchPost = path("search") & post
+  // Tags
+  val getTag = get & path(JavaUUID / "tag" / JavaUUID)
+  val putNewTag = put & path(JavaUUID / "tag")
+  val putExistingTag = put & path(JavaUUID / "tag" / JavaUUID)
 
 }

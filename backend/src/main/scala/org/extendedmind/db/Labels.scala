@@ -9,7 +9,6 @@ case class Label(labelName: String) extends Neo4jLabel{
 object MainLabel {
   val OWNER = Label("OWNER")
   val ITEM = Label("ITEM")
-  val TAG = Label("TAG")
   val TOKEN = Label("TOKEN")
 }
 
@@ -25,6 +24,12 @@ object UserLabel {
 object ItemLabel {
   val NOTE = Label("NOTE")
   val TASK = Label("TASK")
+  val TAG = Label("TAG")
+}
+
+object TagLabel {
+  val KEYWORD = Label("KEYWORD")
+  val CONTEXT = Label("CONTEXT")
 }
 
 object ItemParentLabel {

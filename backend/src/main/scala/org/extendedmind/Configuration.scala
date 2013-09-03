@@ -50,4 +50,5 @@ class Configuration(settings: Settings) extends Module{
   bind [ItemActions] to new ItemActionsImpl
   bind [TaskActions] to new TaskActionsImpl
   bind [NoteActions] to new NoteActionsImpl
+  bind [TagActions] to new TagActionsImpl
 }
