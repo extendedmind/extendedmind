@@ -30,7 +30,7 @@
           };
 
           scope.editNewTask = function addNewTask() {
-            scope.showEditNewTask = true;
+            scope.showEditNewTask = !scope.showEditNewTask;
           };
         }
       };

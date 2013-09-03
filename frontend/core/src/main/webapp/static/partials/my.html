@@ -10,25 +10,21 @@
       </button>
     </form>
 
-    <p>
-      &nbsp;
-    </p>
-
     <div>
-      <a href="/my/tasks" class="em-subtitle">tasks</a>
-      <div tasks-list tasksfilter="newItem.title"></div>
+      <div notes-list notesfilter="newItem.title">
+        <h4><a href="/my/notes" class="em-subtitle">notes</a></h4>
+      </div>
     </div>
 
     <div>
-      <a href="/my/notes" class="em-subtitle">notes</a>
-      <div notes-list notesfilter="newItem.title"></div>
+      <div tasks-list tasksfilter="newItem.title">
+        <h4><a href="/my/tasks" class="em-subtitle">tasks</a></h4>
+      </div>
     </div>
 
     <div>
       <button type="button" class="toggle" ng-click="toggleItemsList()">
-        <p>
-          inbox
-        </p>
+        <h4>inbox</h4>
       </button>
       <div ng-show="showMe" items-list itemsfilter="newItem.title"></div>
     </div>
