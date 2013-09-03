@@ -2,7 +2,19 @@
   <div ng-transclude></div>
   <ul>
     <li ng-show="itemsListFilter" ng-repeat="item in items | filter:newItem">
-      {{item.title}}
+      <div>
+        <span>{{item.title}}</span>
+
+        <button type="button" class="editItem" ng-click="editNewTask()">
+          task
+        </button>
+
+        <button type="button"class="editItem">
+          note
+        </button>
+
+      </div>
+      <div ng-show="showEditNewTask" new-task></div>
     </li>
   </ul>
 </div>

@@ -15,19 +15,19 @@
           }));
 
           it('should set credentials', inject(function() {
-            httpBasicAuth.setCredentials('timo@ext.md', 'timopwd');
+            httpBasicAuth.setEncodedCredentials('timo@ext.md', 'timopwd');
             expect(httpBasicAuth.getCredentials()).toBeDefined();
           }));
 
           it('should call setter for credentials', inject(function() {
-            spyOn(httpBasicAuth, 'setCredentials');
-            httpBasicAuth.setCredentials('timo@ext.md', 'timopwd');
-            expect(httpBasicAuth.setCredentials).toHaveBeenCalledWith('timo@ext.md', 'timopwd');
+            spyOn(httpBasicAuth, 'setEncodedCredentials');
+            httpBasicAuth.setEncodedCredentials('timo@ext.md', 'timopwd');
+            expect(httpBasicAuth.setEncodedCredentials).toHaveBeenCalledWith('timo@ext.md', 'timopwd');
           }));
 
           it('should get new credentials', inject(function() {
-            httpBasicAuth.setCredentials('timo@ext.md', 'timopwd');
-            expect(httpBasicAuth.getCredentials()).toEqual('dGltb0BleHQubWQ6dGltb3B3ZA==');
+            httpBasicAuth.setEncodedCredentials('timo@ext.md' + ':' + 'timopwd');
+            expect(httpBasicAuth.getCredentials()).toEqual('timo@ext.md:timopwd');
           }));
         });
 

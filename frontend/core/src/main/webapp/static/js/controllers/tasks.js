@@ -2,8 +2,10 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('TasksController', ['$scope', 'itemsRequest', 'tasksArray', 'tasksRequest', 'tasksResponse',
-    function($scope, itemsRequest, tasksArray, tasksRequest, tasksResponse) {
+    angular.module('em.app').controller('TasksController', ['$scope', 'errorHandler', 'itemsRequest', 'tasksArray', 'tasksRequest', 'tasksResponse',
+    function($scope, errorHandler, itemsRequest, tasksArray, tasksRequest, tasksResponse) {
+
+      $scope.errorHandler = errorHandler;
 
       itemsRequest.getItems(function(itemsResponse) {
         tasksArray.setTasks(itemsResponse.tasks);

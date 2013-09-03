@@ -8,6 +8,15 @@
         restrict : 'A',
         templateUrl : '/static/partials/templates/newTask.html',
         link : function(scope, element, attrs) {
+          scope.showEditNewTask = false;
+
+          scope.cancelNewTask = function cancelNewTask() {
+            scope.showEditNewTask = false;
+          };
+
+          scope.editNewTask = function addNewTask() {
+            scope.showEditNewTask = true;
+          };
         }
       };
     }]);

@@ -33,14 +33,14 @@
       };
     }]);
 
-    angular.module('em.services').factory('httpBasicAuth', ['$http', 'base64',
-    function($http, base64) {
+    angular.module('em.services').factory('httpBasicAuth', ['$http',
+    function($http) {
       $http.defaults.headers.common.Authorization = 'Basic ';
       var encoded;
 
       return {
-        setCredentials : function(username, password) {
-          encoded = base64.encode(username + ':' + password);
+        setEncodedCredentials : function(userpass) {
+          encoded = userpass;
           $http.defaults.headers.common.Authorization = 'Basic ' + encoded;
         },
         getCredentials : function() {
