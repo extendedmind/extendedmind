@@ -241,7 +241,8 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         }
       }
     }
-    it("should successfully complete task with POST to /[userUUID]/task/[itemUUID]/complete") {
+    it("should successfully complete task with POST to /[userUUID]/task/[itemUUID]/complete "
+          + "and uncomplete it with POST to /[userUUID]/task/[itemUUID]/uncomplete") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newTask = Task("learn Spanish", None, None, None, None, None)
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
@@ -252,7 +253,15 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             ) ~> emRoute ~> check {
         writeJsonOutput("completeTaskResponse", entityAs[String])
         val taskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
-        taskResponse.completed.get should not be None
+        taskResponse.completed should not be None
+        Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/uncomplete"
+              ) ~> addHeader("Content-Type", "application/json"
+              ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+              ) ~> emRoute ~> check {
+          writeJsonOutput("uncompleteTaskResponse", entityAs[String])
+          val untaskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
+          untaskResponse.completed should be (None)
+        }
       }
     }
     it("should successfully update task parent task and note with PUT to /[userUUID]/task/[itemUUID]") {

@@ -50,6 +50,13 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       result <- Right(getCompleteTaskResult(task)).right
     } yield result
   }
+  
+  def uncompleteTask(userUUID: UUID, taskUUID: UUID): Response[SetResult] = {
+    for {
+      taskNode <- uncompleteTaskNode(userUUID, taskUUID).right
+      result <- Right(getSetResult(taskNode, false)).right
+    } yield result
+  }
 
   // PRIVATE
 
@@ -98,5 +105,20 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
         CompleteTaskResult(task.getProperty("completed").asInstanceOf[Long],
           getSetResult(task, false))
     }
+  }
+  
+  protected def uncompleteTaskNode(userUUID: UUID, taskUUID: UUID): Response[Node] = {
+    withTx {
+      implicit neo =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          taskNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
+          result <- Right(uncompleteTaskNode(taskNode)).right
+        } yield taskNode
+    }
+  }
+
+  protected def uncompleteTaskNode(taskNode: Node)(implicit neo4j: DatabaseService): Unit = {
+    if (taskNode.hasProperty("completed")) taskNode.removeProperty("completed")
   }
 }
