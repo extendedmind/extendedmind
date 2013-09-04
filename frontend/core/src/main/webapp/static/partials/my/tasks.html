@@ -3,10 +3,17 @@
   <div class="em-core">
 
     <div id="header">
-      <a href="/my" class="em-subtitle">tasks</a>
-      <button type="button" class="addNew" ng-click="editNewTask()">
-        +
-      </button>
+
+      <div class="inlineblock">
+        <h4><a href="/my" class="em-subtitle">tasks</a></h4>
+      </div>
+
+      <div class="inlineblock">
+        <button type="button" class="addNew" ng-click="editNewTask()">
+          +
+        </button>
+      </div>
+
     </div>
 
     <div ng-show="showEditNewTask" new-task></div>
@@ -19,5 +26,6 @@
     <h4>projects</h4>
     <h4>areas</h4>
     <h4>tags</h4>
+
   </div>
 </div>

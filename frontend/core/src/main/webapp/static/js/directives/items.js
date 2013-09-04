@@ -2,6 +2,21 @@
 
 ( function() {'use strict';
 
+    angular.module('em.directives').directive('newTag', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : '/static/partials/templates/newTag.html',
+        link : function(scope, element, attrs) {
+          scope.showEditNewTag = false;
+
+          scope.editNewTag = function addNewTask() {
+            scope.showEditNewTag = true;
+          };
+        }
+      };
+    }]);
+
     angular.module('em.directives').directive('newTask', [
     function() {
       return {
@@ -15,7 +30,7 @@
           };
 
           scope.editNewTask = function addNewTask() {
-            scope.showEditNewTask = true;
+            scope.showEditNewTask = !scope.showEditNewTask;
           };
         }
       };
