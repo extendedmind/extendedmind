@@ -26,12 +26,12 @@ import java.lang.RuntimeException
 case class UserPassRealm(user: String, pass: String, realm: String)
 case class UserPassRemember(user: String, pass: String, payload: Option[AuthenticatePayload])
 case class AuthenticatePayload(rememberMe: Boolean)
+case class SignUp(email: String, password: String)
 
 object Authentication{
   type UserPassRealmAuthenticator[T] = Option[UserPassRealm] => Future[Option[T]]
   type UserPassRememberAuthenticator[T] = Option[UserPassRemember] => Future[Option[T]]
-  
-  
+    
   def securityContextResponseToOption(response: Response[SecurityContext]): Option[SecurityContext] = {
     response match {
       case Right(sc) => Some(sc)

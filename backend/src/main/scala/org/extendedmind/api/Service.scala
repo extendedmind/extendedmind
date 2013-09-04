@@ -89,6 +89,13 @@ trait Service extends API with Injectable {
         "Extended Mind backend is running"
       }
     } ~
+    postSignUp { url =>
+      entity(as[SignUp]) { signUp =>
+        complete{
+          signUp
+        }
+      }
+    } ~
     postAuthenticate { url =>
       authenticate(ExtendedAuth(authenticateAuthenticator)) { securityContext =>
         complete {
