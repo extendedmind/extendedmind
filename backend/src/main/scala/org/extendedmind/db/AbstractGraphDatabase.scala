@@ -23,6 +23,7 @@ import org.neo4j.kernel._
 import org.neo4j.scala._
 import org.neo4j.graphdb.traversal._
 import scala.collection.mutable.ListBuffer
+import org.neo4j.graphdb.Relationship
 
 abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
@@ -98,9 +99,21 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   protected def getUUID(node: Node): UUID = {
     UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
   }
+  
+  protected def getEndNodeUUIDList(relationships: List[Relationship]): List[UUID] = {
+    relationships map (relationship => getUUID(relationship.getEndNode()))
+  }
 
   // GENERAL
 
+  protected def getNodes(nodeUUIDList: List[UUID], label: Label): Response[List[Node]] = {
+    Right(nodeUUIDList map (uuid => {
+      val nodeResponse = getNode(uuid, label)
+      if (nodeResponse.isLeft) return Left(nodeResponse.left.get)
+      else nodeResponse.right.get
+    }))
+  }
+  
   protected def getTokenNode(token: Token): Response[Node] = {
     getNode("accessKey", token.accessKey: java.lang.Long, MainLabel.TOKEN)
   }

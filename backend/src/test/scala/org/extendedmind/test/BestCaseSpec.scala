@@ -74,7 +74,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         writeJsonOutput("itemsResponse", entityAs[String])
         itemsResponse.items should not be None
         itemsResponse.tasks should not be None
-        itemsResponse.tasks.get.length should equal(3)
+        itemsResponse.tasks.get.length should equal(4)
         itemsResponse.notes should not be None
       }
     }
@@ -213,6 +213,12 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             val tagResponse = entityAs[Tag]
             writeJsonOutput("tagResponse", entityAs[String])
             tagResponse.description.get should be("my home")
+            // Add the tag to a Note
+            val newNote = Note("bike details", None, Some("model: 12345"), None, 
+                Some(ExtendedItemRelationships(None, None, Some(List(putTagResponse.uuid.get)))))    
+            val putNoteResponse = putNewNote(newNote, authenticateResponse)  
+            val noteWithTag = getNote(putNoteResponse.uuid.get, authenticateResponse)
+            noteWithTag.relationships.get.tags.get should be (List(putTagResponse.uuid.get))
           }
         }
       }
@@ -272,7 +278,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
       val newNote = Note("studies", None, Some("area for studies"), None, None)
       val putNoteResponse = putNewNote(newNote, authenticateResponse)  
-      
+
       // Create subtask for both new task and for new note and one for task
       val newSubTask = Task("google for a good Spanish textbook", None, Some("2014-03-01"), None, None,
                           Some(ExtendedItemRelationships(Some(putTaskResponse.uuid.get), 
@@ -281,7 +287,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val newSecondSubTask = Task("loan textbook from library", None, Some("2014-03-02"), None, None, 
                                        Some(ExtendedItemRelationships(Some(putTaskResponse.uuid.get), None, None)))
       val putSecondSubTaskResponse = putNewTask(newSecondSubTask, authenticateResponse)
-                                       
+ 
       // Get subtask, task and note and verify right values
       val taskResponse = getTask(putSubTaskResponse.uuid.get, authenticateResponse)
       taskResponse.parentNote.get should equal(putNoteResponse.uuid.get)
@@ -290,7 +296,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       parentTaskResponse.project.get should equal(true)
       val parentNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
       parentNoteResponse.area.get should equal(true)
-      
+
       // Remove parents, verify that they are removed from subtask, and that project is still a project
       // but note is no longer an area
       putExistingTask(taskResponse.copy(relationships = None), putSubTaskResponse.uuid.get, 

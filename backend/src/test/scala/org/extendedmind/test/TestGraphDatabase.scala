@@ -77,39 +77,55 @@ trait TestGraphDatabase extends GraphDatabase {
         Item(None, None, None, "remember the milk", None)).right.get
     
     // Store tags for user
-    putNewTag(timoUUID,
+    val homeTag = putNewTag(timoUUID,
         Tag("home", None, CONTEXT, None, None))
-    putNewTag(timoUUID,
+    val officeTag = putNewTag(timoUUID,
         Tag("office", None, CONTEXT, None, None))
     val computerTag = putNewTag(timoUUID,
         Tag("computer", None, CONTEXT, None, None))
-    putNewTag(timoUUID,
+    val browserTag = putNewTag(timoUUID,
         Tag("browser", None, CONTEXT, None, computerTag.right.get.uuid))
-    putNewTag(timoUUID,
+    val emailTag = putNewTag(timoUUID,
         Tag("email", None, CONTEXT, None, computerTag.right.get.uuid))
-    putNewTag(timoUUID,
+    val secretTag = putNewTag(timoUUID,
         Tag("secret", None, KEYWORD, None, None))        
-    putNewTag(timoUUID,
-        Tag("productivity", None, KEYWORD, None, None))        
+    val productivityTag = putNewTag(timoUUID,
+        Tag("productivity", None, KEYWORD, None, None))
 
+    // Store areas for user
+    val extendedMindNote = putNewNote(timoUUID, 
+        Note("extended mind", None, None, Some("http://ext.md"), None)).right.get
+        
     // Store tasks for user
     putNewTask(timoUUID,
-        Task("clean closet", None, None, None, None, None)).right.get
+        Task("clean closet", None, None, None, None, 
+            Some(ExtendedItemRelationships(None, None, Some(List(homeTag.right.get.uuid.get)))
+    ))).right.get
+    val tripTask = putNewTask(timoUUID,
+        Task("trip to Dublin", None, Some("2013-10-01"), None, None, None)).right.get
     putNewTask(timoUUID,
-        Task("book flight", None, Some("2014-01-01"), None, None, None)).right.get
+        Task("book flight", None, Some("2014-01-01"), None, None, 
+            Some(ExtendedItemRelationships(Some(tripTask.uuid.get), None, Some(List(browserTag.right.get.uuid.get)))
+    ))).right.get
     putNewTask(timoUUID,
-        Task("print tickets", None, Some("2014-01-02"), Some("10:00"), Some("http://www.finnair.fi"), None)).right.get
+        Task("print tickets", None, Some("2014-01-02"), Some("10:00"), Some("http://www.finnair.fi"), 
+            Some(ExtendedItemRelationships(Some(tripTask.uuid.get), None, Some(List(officeTag.right.get.uuid.get)))
+    ))).right.get
     val completedTask = putNewTask(timoUUID,
-        Task("get ext.md domain", None, Some("2013-05-01"), None, None, None)).right.get
+        Task("get ext.md domain", None, Some("2013-05-01"), None, None, 
+            Some(ExtendedItemRelationships(None, Some(extendedMindNote.uuid.get), Some(List(browserTag.right.get.uuid.get)))
+    ))).right.get
     completeTask(timoUUID, completedTask.uuid.get)
     
     // Store notes for user
     putNewNote(timoUUID, 
-        Note("office door code", None, Some("4321"), None, None)).right.get
+        Note("office door code", None, Some("4321"), None, 
+            Some(ExtendedItemRelationships(None, None, Some(List(secretTag.right.get.uuid.get)))
+    ))).right.get
     putNewNote(timoUUID, 
-        Note("notes on productivity", None, Some("##what I've learned about productivity"), None, None)).right.get
-    putNewNote(timoUUID, 
-        Note("extended mind", None, None, Some("http://ext.md"), None)).right.get
+        Note("notes on productivity", None, Some("##what I've learned about productivity"), None, 
+            Some(ExtendedItemRelationships(None, None, Some(List(productivityTag.right.get.uuid.get)))
+    ))).right.get
   }
   
   def saveCustomToken(expires: Long, replaceable: Option[Long], userNode: Node)

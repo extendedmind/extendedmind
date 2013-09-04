@@ -70,13 +70,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def addTransientTaskProperties(taskNode: Node, userUUID: UUID, task: Task)(implicit neo4j: DatabaseService): Response[Task] = {
     for {
       parents <- getParentRelationships(taskNode, userUUID).right
+      tags <- getTagRelationships(taskNode, userUUID).right
       task <- Right(task.copy(
         relationships = 
-          (if (parents._1.isDefined || parents._2.isDefined)            
+          (if (parents._1.isDefined || parents._2.isDefined || tags.isDefined)            
             Some(ExtendedItemRelationships(  
               parentTask = (if (parents._1.isEmpty) None else (Some(getUUID(parents._1.get.getEndNode())))),
               parentNote = (if (parents._2.isEmpty) None else (Some(getUUID(parents._2.get.getEndNode())))),
-              None))
+              tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
            else None
           ),
         project = (if (taskNode.hasLabel(ItemParentLabel.PROJECT)) Some(true) else None))).right

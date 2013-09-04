@@ -55,7 +55,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
      it("should remove properties of a task from the database"){
       val testTask = Task("testTitle", Some("testDescription"), None, None, None, None)
       val result = db.putNewTask(db.timoUUID, 
-          testTask)
+           testTask)
       // Put it back without the description
       val updateResult = db.putExistingTask(db.timoUUID, result.right.get.uuid.get, 
           testTask.copy(description = None))
@@ -65,7 +65,8 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
           // Assert that the modified timestamp has changed from the previous round
           assert(task.modified.get > result.right.get.modified)
           // Assert that the description has indeed been removed
-          assert(task.description === None)
+          // NOTE: For some odd reason this fails when called from Eclipse
+          task.description should be (None)
         }
         case Left(e) => {
           e foreach (resp => {

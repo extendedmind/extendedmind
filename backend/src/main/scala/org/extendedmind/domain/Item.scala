@@ -45,4 +45,8 @@ trait ExtendedItem extends ShareableItem{
     if (relationships.isDefined) relationships.get.parentNote
     else None
   }
+  def tags: Option[List[UUID]] = {
+    if (relationships.isDefined) relationships.get.tags
+    else None
+  }
 }

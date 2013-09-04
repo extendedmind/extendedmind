@@ -44,6 +44,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   // PRIVATE
+
   override def toNote(noteNode: Node, userUUID: UUID)
                (implicit neo4j: DatabaseService): Response[Note] = {
     for {
@@ -56,13 +57,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
                 (implicit neo4j: DatabaseService): Response[Note] = {
     for {
       parents <- getParentRelationships(noteNode, userUUID).right
+      tags <- getTagRelationships(noteNode, userUUID).right
       note <- Right(note.copy(
         relationships = 
-          (if (parents._1.isDefined || parents._2.isDefined)            
+          (if (parents._1.isDefined || parents._2.isDefined || tags.isDefined)            
             Some(ExtendedItemRelationships(  
               parentTask = (if (parents._1.isEmpty) None else (Some(getUUID(parents._1.get.getEndNode())))),
               parentNote = (if (parents._2.isEmpty) None else (Some(getUUID(parents._2.get.getEndNode())))),
-              None))
+              tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
            else None
           ),
         area = (if (noteNode.hasLabel(ItemParentLabel.AREA)) Some(true) else None))).right
