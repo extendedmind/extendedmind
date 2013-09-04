@@ -35,6 +35,11 @@ trait TaskActions {
     log.info("completeTask: user " + userUUID + ", task " + taskUUID)
     db.completeTask(userUUID, taskUUID)
   }
+  
+  def uncompleteTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("uncompleteTask: user " + userUUID + ", task " + taskUUID)
+    db.uncompleteTask(userUUID, taskUUID)
+  }
 
 }
 

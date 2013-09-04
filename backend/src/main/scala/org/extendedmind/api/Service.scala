@@ -216,6 +216,20 @@ trait Service extends API with Injectable {
         }
       }
     } ~
+    uncompleteTask { (ownerUUID, taskUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == ownerUUID){
+          complete{
+            Future[SetResult] {
+              taskActions.uncompleteTask(ownerUUID, taskUUID) match {
+                case Right(sr) => sr
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      }
+    } ~
     getNote { (ownerUUID, noteUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
