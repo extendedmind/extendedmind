@@ -4,8 +4,10 @@
   <ul>
     <li ng-show="tasksListFilter" ng-repeat="task in tasks | filter:newItem">
 
-      <input type="checkbox" id="checkbox" name="checkbox" ng-model="task.done" ng-change="taskChecked(task)">
-      <label class="done-{{task.done}}" for="checkbox">{{task.title}}</label>
+      <input type="checkbox" id="checkbox{{$index}}" name="checkbox" ng-model="task.done" ng-change="taskChecked(task)">
+      <span class="done-{{task.done}}" ng-click="expandTask()">{{task.title}}</span>
+
+      <div task-content ng-show="showMe"></div>
 
     </li>
   </ul>

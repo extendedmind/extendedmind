@@ -1,4 +1,5 @@
 /*global angular*/
+/*jslint plusplus: true*/
 
 ( function() {'use strict';
 
@@ -49,7 +50,7 @@
 
     angular.module('em.services').factory('itemsArray', [
     function() {
-      var items, notes;
+      var items;
 
       return {
         setItems : function(items) {
@@ -61,6 +62,15 @@
         putNewItem : function(item) {
           if (!this.itemInArray(this.items, item.title)) {
             this.items.push(item);
+          }
+        },
+        getItemByUuid : function(items, uuid) {
+          var i = 0;
+          while (items[i]) {
+            if (items[i].uuid === uuid) {
+              return items[i];
+            }
+            i++;
           }
         },
         itemInArray : function(items, title) {

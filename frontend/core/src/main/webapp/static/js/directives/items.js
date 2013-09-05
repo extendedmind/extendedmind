@@ -2,6 +2,24 @@
 
 ( function() {'use strict';
 
+    angular.module('em.directives').directive('expander', function() {
+      return {
+        restrict : 'EA',
+        replace : true,
+        transclude : true,
+        scope : {
+          title : '=expanderTitle'
+        },
+        templateUrl : '/static/partials/templates/expandedContent.html',
+        link : function(scope, element, attrs) {
+          scope.showMe = false;
+          scope.toggle = function toggle() {
+            scope.showMe = !scope.showMe;
+          };
+        }
+      };
+    });
+
     angular.module('em.directives').directive('newTag', [
     function() {
       return {
@@ -10,7 +28,7 @@
         link : function(scope, element, attrs) {
           scope.showEditNewTag = false;
 
-          scope.editNewTag = function addNewTask() {
+          scope.editNewTag = function editNewTag() {
             scope.showEditNewTag = true;
           };
         }
@@ -21,18 +39,7 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/newTask.html',
-        link : function(scope, element, attrs) {
-          scope.showEditNewTask = false;
-
-          scope.cancelNewTask = function cancelNewTask() {
-            scope.showEditNewTask = false;
-          };
-
-          scope.editNewTask = function addNewTask() {
-            scope.showEditNewTask = !scope.showEditNewTask;
-          };
-        }
+        templateUrl : '/static/partials/templates/newTask.html'
       };
     }]);
 
@@ -57,6 +64,14 @@
       };
     }]);
 
+    angular.module('em.directives').directive('contextsList', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : '/static/partials/templates/contextsList.html'
+      };
+    }]);
+
     angular.module('em.directives').directive('tasksList', [
     function() {
       return {
@@ -69,6 +84,21 @@
           scope.$watch(tasksFilterAttr, function(newValue) {
             scope.tasksListFilter = newValue;
           });
+        }
+      };
+    }]);
+
+    angular.module('em.directives').directive('taskContent', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : '/static/partials/templates/taskContent.html',
+        link : function(scope, element, attrs) {
+          scope.showMe = false;
+
+          scope.expandTask = function expandTask() {
+            scope.showMe = !scope.showMe;
+          };
         }
       };
     }]);

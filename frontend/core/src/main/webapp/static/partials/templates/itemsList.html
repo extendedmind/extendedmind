@@ -14,15 +14,12 @@
           note
         </button>
 
-        <button type="button" class="editItem" ng-click="editNewTask()">
-          task
+        <button type="button" class="editItem">
+          <a href="/my/tasks/new/{{item.uuid}}">task</a>
         </button>
 
       </div>
-
       <div ng-show="showEditNewTag" new-tag></div>
-      <div ng-show="showEditNewNote" new-task></div>
-      <div ng-show="showEditNewTask" new-task></div>
 
     </li>
   </ul>

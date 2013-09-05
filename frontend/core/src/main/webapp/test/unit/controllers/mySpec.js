@@ -44,7 +44,7 @@
         expect($scope.tasks).toBe(undefined);
         $scope.tasks = userItems.tasks;
         $httpBackend.flush();
-        expect($scope.tasks.length).toBe(3);
+        expect($scope.tasks.length).toBe(4);
       }));
 
       it('should add new item', inject(function(_httpBasicAuth_, _itemsArray_, _userSessionStorage_) {

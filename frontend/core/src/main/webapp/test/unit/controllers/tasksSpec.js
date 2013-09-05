@@ -21,7 +21,7 @@
       it('should return logged user\'s tasks', inject(function() {
         expect($scope.items).toBe(undefined);
         $scope.items = mockHttpBackendResponse.getItemsResponse();
-        expect($scope.items.tasks.length).toBe(3);
+        expect($scope.items.tasks.length).toBe(4);
       }));
     });
   }());

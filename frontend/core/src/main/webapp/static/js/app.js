@@ -61,6 +61,30 @@
         }
       });
 
+      $routeProvider.when('/my/tasks/context/:contextUuid', {
+        controller : 'ContextController',
+        templateUrl : '/static/partials/my/tasks/context.html',
+        resolve : {
+          authenticationRequired : ['$rootScope',
+          function($rootScope) {
+            $rootScope.$broadcast('event:authenticationRequired');
+          }]
+
+        }
+      });
+
+      $routeProvider.when('/my/tasks/new/:itemUuid', {
+        controller : 'NewTaskController',
+        templateUrl : '/static/partials/my/tasks/new.html',
+        resolve : {
+          authenticationRequired : ['$rootScope',
+          function($rootScope) {
+            $rootScope.$broadcast('event:authenticationRequired');
+          }]
+
+        }
+      });
+
       $routeProvider.otherwise({
         controller : 'PageNotFoundController',
         redirectTo : '/404'

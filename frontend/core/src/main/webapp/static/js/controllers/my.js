@@ -2,18 +2,20 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('MyController', ['$scope', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tasksArray',
-    function($scope, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tasksArray) {
+    angular.module('em.app').controller('MyController', ['$scope', '$location', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray',
+    function($scope, $location, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
 
       itemsRequest.getItems(function(itemsResponse) {
         itemsArray.setItems(itemsResponse.items);
-        tasksArray.setTasks(itemsResponse.tasks);
         notesArray.setNotes(itemsResponse.notes);
+        tagsArray.setTags(itemsResponse.tags);
+        tasksArray.setTasks(itemsResponse.tasks);
 
         $scope.items = itemsArray.getItems();
         $scope.notes = notesArray.getNotes();
+        $scope.tags = tagsArray.getTags();
         $scope.tasks = tasksArray.getTasks();
       }, function(error) {
       });
@@ -25,6 +27,10 @@
           $scope.newItem = {};
         }, function(error) {
         });
+      };
+
+      $scope.itemToTask = function(item) {
+        $location.path('/my/tasks/new');
       };
     }]);
   }());

@@ -1,0 +1,9 @@
+<ul>
+  <li ng-repeat="value in task | visibleTaskContent">
+    <span>{{value}}</span>
+
+  </li>
+  <li ng-repeat="tag in task.relationships.tags | tagTitle">
+    <span><a href="/my/tasks/context/{{tag.uuid}}">@{{tag.title}}</a></span>
+  </li>
+</ul>

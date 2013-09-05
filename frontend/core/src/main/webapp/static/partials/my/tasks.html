@@ -9,23 +9,25 @@
       </div>
 
       <div class="inlineblock">
-        <button type="button" class="addNew" ng-click="editNewTask()">
-          +
+        <button type="button" class="addNew">
+          <a href="/my/tasks/new/">+</a>
         </button>
       </div>
 
     </div>
 
-    <div ng-show="showEditNewTask" new-task></div>
-
     <div>
       <h4>inbox</h4>
-      <div tasksfilter="{{tasksListFilter}}" tasks-list></div>
+      <div tasks-list tasksfilter="{{tasksListFilter}}"></div>
     </div>
 
     <h4>projects</h4>
     <h4>areas</h4>
-    <h4>tags</h4>
+
+    <div>
+      <h4>contexts</h4>
+      <div contexts-list></div>
+    </div>
 
   </div>
 </div>
