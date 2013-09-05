@@ -48,8 +48,8 @@
       };
     }]);
 
-    angular.module('em.services').factory('activeItem', [
-    function() {
+    angular.module('em.services').factory('activeItem', ['$rootScope',
+    function($rootScope) {
       var item;
 
       return {

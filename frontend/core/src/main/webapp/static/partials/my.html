@@ -4,10 +4,12 @@
     <h3>extended mind</h3>
 
     <form name="searchAndAddOmniForm">
+
       <input type="search" class="formContent"  ng-model="newItem.title" autofocus="autofocus" placeholder="Search / Add">
       <button type="button" class="addNew" ng-click="addNewItem()">
         +
       </button>
+
     </form>
 
     <div>
@@ -30,5 +32,6 @@
     </div>
 
     <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
+
   </div>
 </div>

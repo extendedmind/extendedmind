@@ -61,7 +61,7 @@
         }
       });
 
-      $routeProvider.when('/my/tasks/context/:contextUuid', {
+      $routeProvider.when('/my/tasks/context/:uuid', {
         controller : 'ContextController',
         templateUrl : '/static/partials/my/tasks/context.html',
         resolve : {
@@ -73,7 +73,7 @@
         }
       });
 
-      $routeProvider.when('/my/tasks/new/:itemUuid', {
+      $routeProvider.when('/my/tasks/new/:uuid', {
         controller : 'NewTaskController',
         templateUrl : '/static/partials/my/tasks/new.html',
         resolve : {

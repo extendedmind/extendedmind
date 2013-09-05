@@ -29,12 +29,9 @@
         });
       };
 
-      $scope.itemToTask = function(item) {
-        $location.path('/my/tasks/new');
-      };
-
       $scope.setActiveItem = function(item) {
         activeItem.setItem(item);
+        $location.path('/my/tasks/new/' + item.uuid);
       };
     }]);
   }());
