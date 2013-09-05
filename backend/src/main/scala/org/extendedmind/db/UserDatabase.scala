@@ -35,9 +35,16 @@ trait UserDatabase extends AbstractGraphDatabase {
         }yield user
     }
   }
+  
+  def saveInviteRequest(inviteRequest: InviteRequest): Response[SetResult] = {
+    for{
+      ir <- createInviteRequest(inviteRequest).right
+      result <- Right(getSetResult(ir, true)).right
+    }yield result
+  }
 
   // PRIVATE
-
+  
   protected def createUser(user: User, plainPassword: String, userLabel: Option[Label] = None): Response[Node] = {
     withTx{
       implicit neo4j =>
@@ -114,4 +121,12 @@ trait UserDatabase extends AbstractGraphDatabase {
         }yield userNode
     }
   }
+  
+  protected def createInviteRequest(inviteRequest: InviteRequest): Response[Node] = {
+    withTx {
+      implicit neo =>
+        Right(createNode(inviteRequest, MainLabel.REQUEST))
+    }
+  }
+  
 }

@@ -79,6 +79,14 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>io.spray</groupId>
+      <artifactId>spray-client</artifactId>
+      <version>${spray.version}</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+
 
     <!-- Neo4j -->
     <dependency>

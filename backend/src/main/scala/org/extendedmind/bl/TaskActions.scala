@@ -4,8 +4,6 @@ import org.extendedmind.domain._
 import org.extendedmind.db._
 import scaldi.Injector
 import scaldi.Injectable
-import org.extendedmind.search.ElasticSearchIndex
-import org.extendedmind.search.SearchIndex
 import org.extendedmind.domain.Item
 import java.util.UUID
 import org.extendedmind._
@@ -17,27 +15,27 @@ trait TaskActions {
   def db: GraphDatabase;
 
   def putNewTask(userUUID: UUID, task: Task)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putNewTask: user " + userUUID)
+    log.info("putNewTask: user {}", userUUID)
     db.putNewTask(userUUID, task)
   }
 
   def putExistingTask(userUUID: UUID, taskUUID: UUID, task: Task)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putExistingTask: user " + userUUID + ", task " + taskUUID)
+    log.info("putExistingTask: user {}, task {}", userUUID, taskUUID)
     db.putExistingTask(userUUID, taskUUID, task)
   }
 
   def getTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[Task] = {
-    log.info("getTask: user " + userUUID + ", task " + taskUUID)
+    log.info("getTask: user {}, task {}", userUUID, taskUUID)
     db.getTask(userUUID, taskUUID)
   }
 
   def completeTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[CompleteTaskResult] = {
-    log.info("completeTask: user " + userUUID + ", task " + taskUUID)
+    log.info("completeTask: user {}, task {}", userUUID, taskUUID)
     db.completeTask(userUUID, taskUUID)
   }
   
   def uncompleteTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("uncompleteTask: user " + userUUID + ", task " + taskUUID)
+    log.info("uncompleteTask: user {}, task {}", userUUID, taskUUID)
     db.uncompleteTask(userUUID, taskUUID)
   }
 

@@ -10,6 +10,7 @@ object MainLabel {
   val OWNER = Label("OWNER")
   val ITEM = Label("ITEM")
   val TOKEN = Label("TOKEN")
+  val REQUEST = Label("REQUEST")
 }
 
 object OwnerLabel {

@@ -7,6 +7,7 @@ import org.extendedmind.bl._
 import org.extendedmind.db._
 import org.extendedmind.domain._
 import org.extendedmind.security._
+import org.extendedmind.email._
 import org.extendedmind.test._
 import org.extendedmind.test.TestGraphDatabase._
 import org.mockito.Mockito.reset
@@ -28,9 +29,12 @@ import spray.json.DefaultJsonProtocol._
  * Best case test. Also generates .json files.
  */
 class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
-    
+   
+  val mockMailgunClient = mock[MailgunClient]
+
   object TestDataGeneratorConfiguration extends Module{
     bind [GraphDatabase] to db
+    bind [MailgunClient] to mockMailgunClient
   }
   
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings)
@@ -41,6 +45,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
   
   after {
     cleanDb(db.ds.gds)
+    reset(mockMailgunClient)
   }
   
   describe("Extended Mind Backend"){
@@ -59,7 +64,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val authenticateResponse = emailPasswordAuthenticateRememberMe(TIMO_EMAIL, TIMO_PASSWORD)
       val payload = AuthenticatePayload(true)
       Post("/authenticate", marshal(payload).right.get
-          ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+          ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
           ) ~> emRoute ~> check { 
         val tokenAuthenticateResponse = entityAs[SecurityContext]
         tokenAuthenticateResponse.token.get should not be (authenticateResponse.token.get)
@@ -68,7 +73,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
     it("should generate item list response on /[userUUID]/items") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/" + authenticateResponse.userUUID + "/items"
-          ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+          ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
           ) ~> emRoute ~> check {
         val itemsResponse = entityAs[Items]
         writeJsonOutput("itemsResponse", entityAs[String])
@@ -86,7 +91,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       Put("/" + authenticateResponse.userUUID + "/item",
             marshal(newItem).right.get
                 ) ~> addHeader("Content-Type", "application/json"
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                 ) ~> emRoute ~> check {
         val putItemResponse = entityAs[SetResult]
         writeJsonOutput("putItemResponse", entityAs[String])
@@ -97,14 +102,14 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         Put("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get,
             marshal(updatedItem).right.get
                 ) ~> addHeader("Content-Type", "application/json"
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                 ) ~> emRoute ~> check {
           val putExistingItemResponse = entityAs[String]
           writeJsonOutput("putExistingItemResponse", putExistingItemResponse)
           putExistingItemResponse should include("modified")
           putExistingItemResponse should not include("uuid")
           Get("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                 ) ~> emRoute ~> check {
             val itemResponse = entityAs[Item]
             writeJsonOutput("itemResponse", entityAs[String])
@@ -121,7 +126,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       Put("/" + authenticateResponse.userUUID + "/task",
             marshal(newTask).right.get
                 ) ~> addHeader("Content-Type", "application/json"
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                 ) ~> emRoute ~> check {
         val putTaskResponse = entityAs[SetResult]
         writeJsonOutput("putTaskResponse", entityAs[String])
@@ -131,14 +136,14 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         Put("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get,
             marshal(updatedTask).right.get
                 ) ~> addHeader("Content-Type", "application/json"
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                 ) ~> emRoute ~> check {
           val putExistingTaskResponse = entityAs[String]
           writeJsonOutput("putExistingItemResponse", putExistingTaskResponse)
           putExistingTaskResponse should include("modified")
           putExistingTaskResponse should not include("uuid")
           Get("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get
-              ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+              ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
               ) ~> emRoute ~> check {
             val taskResponse = entityAs[Task]
             writeJsonOutput("taskResponse", entityAs[String])
@@ -155,7 +160,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       Put("/" + authenticateResponse.userUUID + "/note",
             marshal(newNote).right.get
                 ) ~> addHeader("Content-Type", "application/json"
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                 ) ~> emRoute ~> check {
         val putNoteResponse = entityAs[SetResult]
         writeJsonOutput("putNoteResponse", entityAs[String])
@@ -166,14 +171,14 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
             marshal(updatedNote).right.get
                 ) ~> addHeader("Content-Type", "application/json"
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                 ) ~> emRoute ~> check {
           val putExistingNoteResponse = entityAs[String]
           writeJsonOutput("putExistingNoteResponse", putExistingNoteResponse)
           putExistingNoteResponse should include("modified")
           putExistingNoteResponse should not include("uuid")
           Get("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                 ) ~> emRoute ~> check {
             val noteResponse = entityAs[Note]
             writeJsonOutput("noteResponse", entityAs[String])
@@ -191,7 +196,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       Put("/" + authenticateResponse.userUUID + "/tag",
             marshal(newTag).right.get
                 ) ~> addHeader("Content-Type", "application/json"
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                 ) ~> emRoute ~> check {
         val putTagResponse = entityAs[SetResult]
         writeJsonOutput("putTagResponse", entityAs[String])
@@ -201,14 +206,14 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         Put("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get,
             marshal(updatedTag).right.get
                 ) ~> addHeader("Content-Type", "application/json"
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                 ) ~> emRoute ~> check {
           val putExistingTagResponse = entityAs[String]
           writeJsonOutput("putExistingTagResponse", putExistingTagResponse)
           putExistingTagResponse should include("modified")
           putExistingTagResponse should not include("uuid")
           Get("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get
-              ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+              ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
               ) ~> emRoute ~> check {
             val tagResponse = entityAs[Tag]
             writeJsonOutput("tagResponse", entityAs[String])
@@ -229,17 +234,17 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       Put("/" + authenticateResponse.userUUID + "/item",
           marshal(newItem).right.get
               ) ~> addHeader("Content-Type", "application/json"
-              ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+              ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
               ) ~> emRoute ~> check {
         val putItemResponse = entityAs[SetResult]          
         val updatedToTask = Task("learn how to fly", None, Some("2014-03-01"), None, None, None)
         Put("/" + authenticateResponse.userUUID + "/task/" + putItemResponse.uuid.get,
           marshal(updatedToTask).right.get
               ) ~> addHeader("Content-Type", "application/json"
-              ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+              ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
               ) ~> emRoute ~> check {
           Get("/" + authenticateResponse.userUUID + "/task/" + putItemResponse.uuid.get
-                ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                 ) ~> emRoute ~> check {
             val taskResponse = entityAs[Task]
             taskResponse.due.get should be("2014-03-01")
@@ -255,14 +260,14 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       
       Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete"
             ) ~> addHeader("Content-Type", "application/json"
-            ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+            ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
             ) ~> emRoute ~> check {
         writeJsonOutput("completeTaskResponse", entityAs[String])
         val taskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
         taskResponse.completed should not be None
         Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/uncomplete"
               ) ~> addHeader("Content-Type", "application/json"
-              ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+              ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
               ) ~> emRoute ~> check {
           writeJsonOutput("uncompleteTaskResponse", entityAs[String])
           val untaskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
@@ -309,6 +314,24 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val parentNoteResponse2 = getNote(putNoteResponse.uuid.get, authenticateResponse)
       parentNoteResponse2.area should be (None)
     }
+    
+    it("should successfully create invite request with POST to /invite/request") {
+      val testEmail = "example@example.com"
+      val testInviteRequest = InviteRequest(testEmail, None)
+      stub(mockMailgunClient.sendRequestInviteConfirmation(testEmail)).toReturn(
+          Right("1234"))
+      Post("/invite/request",
+         marshal(testInviteRequest).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> emRoute ~> check {
+        writeJsonOutput("inviteRequestResponse", entityAs[String])
+        val inviteRequestResponse = entityAs[SetResult]
+        inviteRequestResponse.uuid should not be None
+        inviteRequestResponse.modified should not be None
+        verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail)
+      }    
+    }
+
   }
   
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {
@@ -331,7 +354,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
      Put("/" + authenticateResponse.userUUID + "/note",
         marshal(newNote).right.get
             ) ~> addHeader("Content-Type", "application/json"
-            ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+            ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
             ) ~> emRoute ~> check {
        entityAs[SetResult]
      }
@@ -341,7 +364,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
      Put("/" + authenticateResponse.userUUID + "/note/" + noteUUID.toString(),
         marshal(existingNote).right.get
             ) ~> addHeader("Content-Type", "application/json"
-            ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+            ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
             ) ~> emRoute ~> check {
        entityAs[SetResult]
      }
@@ -351,7 +374,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
      Put("/" + authenticateResponse.userUUID + "/task",
         marshal(newTask).right.get
             ) ~> addHeader("Content-Type", "application/json"
-            ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+            ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
             ) ~> emRoute ~> check {
        entityAs[SetResult]
      }
@@ -361,7 +384,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
      Put("/" + authenticateResponse.userUUID + "/task/" + taskUUID.toString(),
         marshal(existingTask).right.get
             ) ~> addHeader("Content-Type", "application/json"
-            ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+            ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
             ) ~> emRoute ~> check {
        entityAs[SetResult]
      }
@@ -369,7 +392,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
   
   def getTask(taskUUID: UUID, authenticateResponse: SecurityContext): Task = {
     Get("/" + authenticateResponse.userUUID + "/task/" + taskUUID
-        ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+        ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
         ) ~> emRoute ~> check {
       entityAs[Task]
     }
@@ -377,7 +400,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
   
   def getNote(noteUUID: UUID, authenticateResponse: SecurityContext): Note = {
     Get("/" + authenticateResponse.userUUID + "/note/" + noteUUID
-        ) ~> addHeader(Authorization(BasicHttpCredentials("token", authenticateResponse.token.get))
+        ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
         ) ~> emRoute ~> check {
       entityAs[Note]
     }

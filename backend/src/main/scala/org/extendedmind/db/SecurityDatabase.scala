@@ -79,6 +79,22 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
   
+  def validateEmailUniqueness(email: String): Response[Boolean] = {
+    withTx{
+      implicit neo4j => 
+ 
+        val userNodeList = findNodesByLabelAndProperty(OwnerLabel.USER, "email", email).toList
+        if (!userNodeList.isEmpty){
+          fail(INVALID_PARAMETER, "User already exists with given email: " + email)
+        }
+        val requestNodeList = findNodesByLabelAndProperty(MainLabel.REQUEST, "email", email).toList
+        if (!requestNodeList.isEmpty){
+          fail(INVALID_PARAMETER, "Request already exists with given email: " + email)      
+        }
+        Right(true)
+    }
+  }
+  
   // PRIVATE
   
   protected def validateTokenReplacable(tokenNode: Node, currentTime: Long): Response[Node] = {

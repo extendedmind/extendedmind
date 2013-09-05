@@ -4,8 +4,6 @@ import org.extendedmind.domain._
 import org.extendedmind.db._
 import scaldi.Injector
 import scaldi.Injectable
-import org.extendedmind.search.ElasticSearchIndex
-import org.extendedmind.search.SearchIndex
 import org.extendedmind.domain.Item
 import java.util.UUID
 import org.extendedmind._
@@ -17,17 +15,17 @@ trait TagActions {
   def db: GraphDatabase;
 
   def putNewTag(userUUID: UUID, tag: Tag)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putNewTag: user " + userUUID)
+    log.info("putNewTag: user {}", userUUID)
     db.putNewTag(userUUID, tag)
   }
   
   def putExistingTag(userUUID: UUID, tagUUID: UUID, tag: Tag)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putExistingTag: user " + userUUID + ", tag " + tagUUID)
+    log.info("putExistingTag: user {}, tag {}", userUUID, tagUUID)
     db.putExistingTag(userUUID, tagUUID, tag)
   }
   
   def getTag(userUUID: UUID, tagUUID: UUID)(implicit log: LoggingContext): Response[Tag] = {
-    log.info("getTag: user " + userUUID + ", tag " + tagUUID)
+    log.info("getTag: user {}, tag {}", userUUID, tagUUID)
     db.getTag(userUUID, tagUUID)
   }
 }

@@ -92,7 +92,19 @@ trait Service extends API with Injectable {
     postSignUp { url =>
       entity(as[SignUp]) { signUp =>
         complete{
-          signUp
+          "Not implemented"
+        }
+      }
+    } ~
+    postInviteRequest { url =>
+      entity(as[InviteRequest]) { inviteRequest =>
+        complete{
+          Future[SetResult] {
+            userActions.requestInvite(inviteRequest) match {
+              case Right(sr) => sr
+              case Left(e) => processErrors(e)
+            }
+          }
         }
       }
     } ~
@@ -328,12 +340,7 @@ trait Service extends API with Injectable {
           }       
         }
       }
-    }
-    
-  }
-
-  def securityActions: SecurityActions = {
-    inject[SecurityActions]
+    }    
   }
   
   def authenticateAuthenticator: ExtendedMindAuthenticateUserPassAuthenticator = {
@@ -344,8 +351,12 @@ trait Service extends API with Injectable {
     inject[ExtendedMindUserPassAuthenticator] (by default new ExtendedMindUserPassAuthenticatorImpl)
   }
   
-  def graphDatabase: GraphDatabase = {
-    inject[GraphDatabase]
+  def securityActions: SecurityActions = {
+    inject[SecurityActions]
+  }
+  
+  def userActions: UserActions = {
+    inject[UserActions]
   }
   
   def itemActions: ItemActions = {

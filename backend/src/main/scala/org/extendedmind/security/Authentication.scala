@@ -5,6 +5,7 @@ import org.extendedmind.db.GraphDatabase
 import spray.routing.authentication.UserPass
 import spray.routing.authentication.UserPassAuthenticator
 import org.extendedmind._
+import org.extendedmind.domain._
 import org.extendedmind.Response._
 import scaldi.Injector
 import scaldi.Injectable
@@ -26,7 +27,6 @@ import java.lang.RuntimeException
 case class UserPassRealm(user: String, pass: String, realm: String)
 case class UserPassRemember(user: String, pass: String, payload: Option[AuthenticatePayload])
 case class AuthenticatePayload(rememberMe: Boolean)
-case class SignUp(email: String, password: String)
 
 object Authentication{
   type UserPassRealmAuthenticator[T] = Option[UserPassRealm] => Future[Option[T]]
