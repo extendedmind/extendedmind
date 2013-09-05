@@ -48,6 +48,20 @@
       };
     }]);
 
+    angular.module('em.services').factory('activeItem', [
+    function() {
+      var item;
+
+      return {
+        setItem : function(item) {
+          this.item = item;
+        },
+        getItem : function() {
+          return this.item;
+        }
+      };
+    }]);
+
     angular.module('em.services').factory('itemsArray', [
     function() {
       var items;

@@ -2,8 +2,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('MyController', ['$scope', '$location', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray',
-    function($scope, $location, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
+    angular.module('em.app').controller('MyController', ['$scope', '$location', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray',
+    function($scope, $location, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
 
@@ -31,6 +31,10 @@
 
       $scope.itemToTask = function(item) {
         $location.path('/my/tasks/new');
+      };
+
+      $scope.setActiveItem = function(item) {
+        activeItem.setItem(item);
       };
     }]);
   }());

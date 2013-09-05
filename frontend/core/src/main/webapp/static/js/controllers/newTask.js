@@ -2,17 +2,17 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NewTaskController', ['$scope', '$routeParams', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
-    function($scope, $routeParams, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    angular.module('em.app').controller('NewTaskController', ['$scope', '$routeParams', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
+    function($scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.errorHandler = errorHandler;
 
+      if ($routeParams.itemUuid) {
+        $scope.newTask = activeItem.getItem();
+      }
+
       itemsRequest.getItems(function(itemsResponse) {
         itemsArray.setItems(itemsResponse.items);
-
-        if ($routeParams.itemUuid) {
-          $scope.newTask = itemsArray.getItemByUuid(itemsArray.getItems(), $routeParams.itemUuid);
-        }
       }, function(error) {
       });
 
