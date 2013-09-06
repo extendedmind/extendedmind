@@ -13,10 +13,17 @@
           });
         },
         completeTask : function(task, success, error) {
-          httpRequest.get('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid, function(completeTaskResponse) {
+          httpRequest.get('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/complete', function(completeTaskResponse) {
             success(completeTaskResponse);
           }, function(completeTaskResponse) {
             error(completeTaskResponse);
+          });
+        },
+        uncompleteTask : function(task, success, error) {
+          httpRequest.get('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/uncomplete', function(uncompleteTaskResponse) {
+            success(uncompleteTaskResponse);
+          }, function(uncompleteTaskResponse) {
+            error(uncompleteTaskResponse);
           });
         }
       };
@@ -27,6 +34,9 @@
       return {
         putTaskContent : function(task, putTaskResponse) {
           itemsResponse.putItemContent(task, putTaskResponse);
+        },
+        deleteTaskProperty : function(task, property) {
+          itemsResponse.deleteItemProperty(task, property);
         }
       };
     }]);

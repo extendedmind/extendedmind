@@ -44,6 +44,11 @@
           angular.forEach(putItemResponse, function(value, key) {
             item[key] = value;
           });
+        },
+        deleteItemProperty : function(item, property) {
+          // console.log(item);
+          delete item[property];
+          // console.log(item);
         }
       };
     }]);

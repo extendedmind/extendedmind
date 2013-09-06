@@ -21,16 +21,24 @@
 
       $scope.tasksListFilter = true;
 
-      $scope.taskChecked = function(task) {
+      $scope.taskChecked = function(index) {
+        $scope.task = $scope.tasks[index];
 
-        if (task.done) {
+        if ($scope.task.done) {
 
-          tasksRequest.completeTask(task, function(completeTaskResponse) {
-            tasksResponse.putTaskContent(task, completeTaskResponse);
+          tasksRequest.completeTask($scope.task, function(completeTaskResponse) {
+            tasksResponse.putTaskContent($scope.task, completeTaskResponse);
           }, function(completeTaskResponse) {
           });
+
+        } else {
+
+          tasksRequest.uncompleteTask($scope.task, function(uncompleteTaskResponse) {
+            tasksResponse.deleteTaskProperty($scope.task, 'completed');
+          }, function(uncompleteTaskResponse) {
+
+          });
         }
-        // TODO: Uncomplete done task
       };
 
       $scope.setActiveTag = function(tag) {
