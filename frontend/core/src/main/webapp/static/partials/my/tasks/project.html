@@ -1,10 +1,30 @@
 <div class="span12">
-  <p>
-    {{project.title}}
-  </p>
-  <ul>
-    <li ng-repeat="subtask in subtasks">
-      <span>{{subtask.title}}</span>
-    </li>
-  </ul>
+  <div class="em-core">
+    <div id="header">
+
+      <div class="inlineblock">
+        <h4><a href="/my/tasks" class="em-subtitle">tasks</a></h4>
+      </div>
+
+      <div class="inlineblock">
+        <button type="button" class="addNew">
+          <a href="/my/tasks/new/">+</a>
+        </button>
+      </div>
+
+    </div>
+
+    <h4>{{project.title}}</h4>
+
+    <ul>
+      <li ng-repeat="task in subtasks">
+
+        <input type="checkbox" name="checkbox" id="checkbox{{$index}}" ng-model="task.done" ng-change="taskChecked($index)">
+        <label for="checkbox{{$index}}" class="done-{{task.done}}" eat-click ng-click="expandTask()">{{task.title}}</label>
+
+        <div task-content ng-show="showMe"></div>
+      </li>
+    </ul>
+
+  </div>
 </div>

@@ -48,8 +48,8 @@
         }
       };
 
-      $scope.setActiveItem = function(tag) {
-        activeItem.setItem(tag);
+      $scope.setActiveItem = function(item) {
+        activeItem.setItem(item);
       };
     }]);
   }());

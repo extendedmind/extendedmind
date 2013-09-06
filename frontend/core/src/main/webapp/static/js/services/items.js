@@ -104,6 +104,27 @@
           }
           return this.subtasks;
         },
+        getTagItems : function(items, uuid) {
+          var i, j, subtasks;
+          i = 0;
+          this.subtasks = [];
+
+          while (items[i]) {
+            if (items[i].relationships) {
+              if (items[i].relationships.tags) {
+                j = 0;
+                while (items[i].relationships.tags[j]) {
+                  if (items[i].relationships.tags[j] === uuid) {
+                    this.subtasks.push(items[i]);
+                  }
+                  j++;
+                }
+              }
+            }
+            i++;
+          }
+          return this.subtasks;
+        },
         itemInArray : function(items, uuid) {
           var i = 0;
 

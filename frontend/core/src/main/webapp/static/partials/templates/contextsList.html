@@ -1,13 +1,7 @@
-<div>
+<ul>
+  <li ng-repeat="context in tags">
 
-  <ul>
-    <li ng-repeat="context in tags">
+    <span ng-click="setActiveItem(context)"><a href="/my/tasks/context/{{context.uuid}}">@{{context.title}}</a></span>
 
-      <p ng-click="setActiveItem(context)">
-        <a href="/my/tasks/context/{{context.uuid}}">@{{context.title}}</a>
-      </p>
-
-    </li>
-  </ul>
-
-</div>
+  </li>
+</ul>
