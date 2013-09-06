@@ -56,10 +56,10 @@ object Service {
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
 class ServiceActor extends HttpServiceActor with Service {
-
+  
   // Implement abstract field from Service
   def settings = SettingsExtension(context.system)
-  def configurations = new Configuration(settings)
+  def configurations = new Configuration(settings, actorRefFactory)
 
   // Setup implicits
   implicit val implRejectionHandler = Service.rejectionHandler 
@@ -80,9 +80,10 @@ trait Service extends API with Injectable {
 
   implicit val implModules = configurations
   implicit val implSettings = settings
-  implicit val implExecutionContext = actorRefFactory.dispatcher
-  
+  implicit val executor = actorRefFactory.dispatcher
+
   import JsonImplicits._
+  
   val emRoute = {
     getRoot {
       complete {

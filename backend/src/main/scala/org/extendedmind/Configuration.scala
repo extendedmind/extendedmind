@@ -18,6 +18,7 @@ import org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory
 import org.neo4j.kernel.extension.KernelExtensionFactory
 import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
 import scala.collection.JavaConverters._
+import akka.actor.ActorRefFactory
 
 // Custom settings from application.conf or overridden file
 
@@ -49,8 +50,9 @@ object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{
 
 // Scaldi default configuration
 
-class Configuration(settings: Settings) extends Module{
+class Configuration(settings: Settings, actorRefFactory: ActorRefFactory) extends Module{
   implicit val implSettings = settings
+  implicit val implActorRefFactory = actorRefFactory
   bind [GraphDatabase] to new EmbeddedGraphDatabase
   bind [MailgunClient] to new MailgunClientImpl
   bind [SecurityActions] to new SecurityActionsImpl

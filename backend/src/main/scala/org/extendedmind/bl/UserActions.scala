@@ -10,19 +10,37 @@ import scaldi.Injector
 import scaldi.Injectable
 import org.extendedmind.db.EmbeddedGraphDatabase
 import spray.util.LoggingContext
+import scala.util.{Success, Failure}
+import scala.concurrent.ExecutionContext
+import akka.actor.ActorRefFactory
+import akka.actor.ActorSystem
 
 trait UserActions {
 
   def db: GraphDatabase
   def mailgun: MailgunClient
   
+  def actorRefFactory: ActorRefFactory
+  implicit val implicitActorRefFactory = actorRefFactory
+  implicit val implicitExecutionContext = actorRefFactory.dispatcher 
+  
   def requestInvite(inviteRequest: InviteRequest)(implicit log: LoggingContext): Response[SetResult] = {
     log.info("requestInvite: email {}", inviteRequest.email)
-    for {
+    val setResult = for {
       isUnique <- db.validateEmailUniqueness(inviteRequest.email).right
-      emailId <- mailgun.sendRequestInviteConfirmation(inviteRequest.email).right
-      result <- db.saveInviteRequest(inviteRequest.copy(emailId = Some(emailId))).right
-    } yield result
+      setResult <- db.saveInviteRequest(inviteRequest).right
+    } yield setResult
+    
+    val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email)
+    futureMailResponse onSuccess {
+      case SendEmailResponse(message, id) => {
+        val saveResponse = db.saveInviteRequest(inviteRequest.copy(emailId = Some(id)))
+        if (saveResponse.isLeft) log.error("Error saving email id " + saveResponse.left.get)
+        else log.info("Saved email: {} with id: {}", inviteRequest.email, id)
+      }case _ =>
+        log.error("Could not send email to {}", inviteRequest.email)
+    }
+    return setResult
   }
   
   def getInviteRequests() (implicit log: LoggingContext): Response[List[InviteRequest]] = {
@@ -33,8 +51,9 @@ trait UserActions {
   }
 }
 
-class UserActionsImpl(implicit val settings: Settings, implicit val inj: Injector)
+class UserActionsImpl(implicit val settings: Settings, implicit val inj: Injector, implicit val implActorRefFactory: ActorRefFactory)
   extends UserActions with Injectable {
   override def db = inject[GraphDatabase]
   override def mailgun = inject[MailgunClient]
+  override def actorRefFactory = implActorRefFactory
 }

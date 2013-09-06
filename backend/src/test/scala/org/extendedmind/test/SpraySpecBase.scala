@@ -15,6 +15,8 @@ abstract class SpraySpecBase extends SpecBase
   // spray-testkit
   def actorRefFactory = system
 
+  override implicit val executor = super[ScalatestRouteTest].executor
+  
   // Initialize settings correctly here
   def settings = SettingsExtension(system)
   

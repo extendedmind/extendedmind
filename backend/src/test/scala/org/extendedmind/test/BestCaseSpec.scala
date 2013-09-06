@@ -24,6 +24,7 @@ import org.extendedmind.api.JsonImplicits._
 import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
+import scala.concurrent.Future
 
 /**
  * Best case test. Also generates .json files.
@@ -37,7 +38,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
     bind [MailgunClient] to mockMailgunClient
   }
   
-  override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings)
+  override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
 
   before{
     db.insertTestData()
@@ -319,7 +320,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val testEmail = "example@example.com"
       val testInviteRequest = InviteRequest(testEmail, None)
       stub(mockMailgunClient.sendRequestInviteConfirmation(testEmail)).toReturn(
-          Right("1234"))
+          Future{SendEmailResponse("OK", "1234")})
       Post("/invite/request",
          marshal(testInviteRequest).right.get
             ) ~> addHeader("Content-Type", "application/json"

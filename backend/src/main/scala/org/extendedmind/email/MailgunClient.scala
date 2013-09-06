@@ -17,14 +17,20 @@ import spray.httpx.marshalling._
 import spray.httpx.marshalling.Marshaller._
 import spray.json.DefaultJsonProtocol._
 import spray.util.LoggingContext
+import scala.concurrent.Future
+import akka.util.Timeout
+import scala.concurrent.duration._
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext
+import akka.actor.ActorRefFactory
 
 case class SendEmailRequest(from: String, to: String, subject: String, html: String)
 case class SendEmailResponse(message: String, id: String)
 
 object MailgunProtocol  extends DefaultJsonProtocol{
   implicit val sendEmailRequestMarshaller = 
-      Marshaller.delegate[SendEmailRequest, FormData](`application/x-www-form-urlencoded`) { (sendMailRequest, contentType) =>
-        new FormData(getCCParams(SendEmailRequest))
+      Marshaller.delegate[SendEmailRequest, FormData](`application/x-www-form-urlencoded`) { (sendEmailRequest, contentType) =>
+        new FormData(getCCParams(sendEmailRequest))
       }
   implicit val sendEmailResponseFormat = jsonFormat2(SendEmailResponse)
    
@@ -40,35 +46,29 @@ trait MailgunClient{
   import MailgunProtocol._
 
   def settings: Settings
+  def actorRefFactory: ActorRefFactory
+
   val requestInviteConfirmationHtml = getFileContent(settings.emailTemplateDir + "/requestInviteConfirmation.html")
 
   // Prepare pipeline
-  implicit val system = ActorSystem("MailgunClient")
-  import system.dispatcher // execution context for futures below
+  implicit val implicitActorRefFactory = actorRefFactory
+  implicit val implicitContext =  actorRefFactory.dispatcher 
   val sendEmailPipeline = sendReceive ~> unmarshal[SendEmailResponse]
   
-  def sendRequestInviteConfirmation(email: String): Response[String] = {
+  def sendRequestInviteConfirmation(email: String): Future[SendEmailResponse] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, email, 
                            settings.requestInviteConfirmationTitle, requestInviteConfirmationHtml)
-    val responseFuture = sendEmailPipeline {
+    implicit val timeout = Timeout(5 seconds)
+    sendEmailPipeline {
       Post("https://api.mailgun.net/v2/" + settings.mailgunDomain + "/messages",
           marshal(sendEmailRequest).right.get
               ) ~> addHeader("Content-Type", `application/x-www-form-urlencoded`.toString
               ) ~> addCredentials(BasicHttpCredentials("api", settings.mailgunApiKey))  
     }
-    responseFuture onComplete {
-      case Success(SendEmailResponse(message, id)) =>
-        return Right(id)
-      case Failure(error) =>
-        return fail(INTERNAL_SERVER_ERROR, "Sending email to " + email + " failed", error)
-      case _ =>
-        return fail(INTERNAL_SERVER_ERROR, "Unknown response for sending email to " + email)
-    }
-    fail(INTERNAL_SERVER_ERROR, "Unknown error while sending email to " + email)
   }
   
   private def getFileContent(fileLocation: String): String = {
-    val source = scala.io.Source.fromFile("file.txt")
+    val source = scala.io.Source.fromFile(fileLocation)
     val lines = source.mkString
     source.close()
     lines
@@ -76,7 +76,9 @@ trait MailgunClient{
 
 }
 
-class MailgunClientImpl(implicit val implSettings: Settings, implicit val inj: Injector)
-  extends MailgunClient with Injectable {
+class MailgunClientImpl(implicit val implSettings: Settings, implicit val implActorRefFactory: ActorRefFactory, 
+                        implicit val inj: Injector)
+  extends MailgunClient with Injectable {  
+  override def actorRefFactory = implActorRefFactory
   override def settings = implSettings
 }
