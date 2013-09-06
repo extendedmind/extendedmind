@@ -56,7 +56,21 @@
     function($http) {
       var httpRequest = {};
 
-      angular.forEach(['get', 'delete', 'head', 'jsonp'], function(name) {
+      angular.forEach(['get'], function(name) {
+        httpRequest[name] = function(url, success, error) {
+          return $http({
+            method : name,
+            url : url,
+            cache : true
+          }).success(function(response) {
+            success(response);
+          }).error(function(response) {
+            error(response);
+          });
+        };
+      });
+
+      angular.forEach(['delete', 'head', 'jsonp'], function(name) {
         httpRequest[name] = function(url, success, error) {
           return $http({
             method : name,
