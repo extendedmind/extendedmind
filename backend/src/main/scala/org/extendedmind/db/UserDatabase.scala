@@ -37,10 +37,17 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  def saveInviteRequest(inviteRequest: InviteRequest): Response[SetResult] = {
+  def putNewInviteRequest(inviteRequest: InviteRequest): Response[SetResult] = {
     for{
       ir <- createInviteRequest(inviteRequest).right
       result <- Right(getSetResult(ir, true)).right
+    }yield result
+  }
+  
+  def putExistingInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest): Response[SetResult] = {
+    for{
+      updatedInviteRequest <- updateInviteRequest(inviteRequestUUID, inviteRequest).right
+      result <- Right(getSetResult(updatedInviteRequest, false)).right
     }yield result
   }
   
@@ -143,6 +150,16 @@ trait UserDatabase extends AbstractGraphDatabase {
     withTx {
       implicit neo =>
         Right(createNode(inviteRequest, MainLabel.REQUEST))
+    }
+  }
+  
+  protected def updateInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          inviteRequestNode <- getNode(inviteRequestUUID, MainLabel.REQUEST).right
+          updatedNode <- updateNode(inviteRequestNode, inviteRequest).right
+        } yield updatedNode
     }
   }
   

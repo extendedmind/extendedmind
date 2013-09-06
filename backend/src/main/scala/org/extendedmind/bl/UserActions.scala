@@ -28,14 +28,16 @@ trait UserActions {
     log.info("requestInvite: email {}", inviteRequest.email)
     val setResult = for {
       isUnique <- db.validateEmailUniqueness(inviteRequest.email).right
-      setResult <- db.saveInviteRequest(inviteRequest).right
+      setResult <- db.putNewInviteRequest(inviteRequest).right
     } yield setResult
     
     val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email)
     futureMailResponse onSuccess {
       case SendEmailResponse(message, id) => {
-        val saveResponse = db.saveInviteRequest(inviteRequest.copy(emailId = Some(id)))
-        if (saveResponse.isLeft) log.error("Error saving email id " + saveResponse.left.get)
+        val saveResponse = db.putExistingInviteRequest(setResult.right.get.uuid.get, inviteRequest.copy(emailId = Some(id)))
+        if (saveResponse.isLeft) 
+          log.error("Error updating invite request for email {} with id {}, error: {}", 
+              inviteRequest.email, id, saveResponse.left.get.head)
         else log.info("Saved email: {} with id: {}", inviteRequest.email, id)
       }case _ =>
         log.error("Could not send email to {}", inviteRequest.email)
