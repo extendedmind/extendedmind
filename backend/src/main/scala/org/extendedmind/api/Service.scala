@@ -108,6 +108,20 @@ trait Service extends API with Injectable {
         }
       }
     } ~
+    getInviteRequests { path =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userType == 0){
+          complete {
+            Future[List[InviteRequest]] {
+              userActions.getInviteRequests match {
+                case Right(inviteRequests) => inviteRequests
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      }
+    } ~ 
     postAuthenticate { url =>
       authenticate(ExtendedAuth(authenticateAuthenticator)) { securityContext =>
         complete {

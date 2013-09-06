@@ -329,9 +329,18 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         inviteRequestResponse.uuid should not be None
         inviteRequestResponse.modified should not be None
         verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail)
-      }    
+        
+        // Get the request back
+        val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+        Get("/invite/requests"
+              ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+              ) ~> emRoute ~> check {
+            val inviteRequests = entityAs[String]
+            writeJsonOutput("inviteRequests", inviteRequests)
+            inviteRequests should include(testEmail)
+          }
+      }
     }
-
   }
   
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {

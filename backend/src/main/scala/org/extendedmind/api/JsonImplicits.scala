@@ -8,7 +8,7 @@ import org.extendedmind.security._
 
 object JsonImplicits extends DefaultJsonProtocol {
 
-  // Create a UUID formatter
+  // Create custom formatters
   import spray.json._
 
   implicit object UUIDJsonFormat extends JsonFormat[UUID] {
@@ -18,7 +18,6 @@ object JsonImplicits extends DefaultJsonProtocol {
       case x => deserializationError("Expected UUID as JsString, but got " + x)
     }
   }
-  // Create a TagType formatter
   implicit object TagTypeJsonFormat extends JsonFormat[TagType] {
     def write(x: TagType) = JsString(
         x match {

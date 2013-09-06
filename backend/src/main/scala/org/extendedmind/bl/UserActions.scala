@@ -24,6 +24,13 @@ trait UserActions {
       result <- db.saveInviteRequest(inviteRequest.copy(emailId = Some(emailId))).right
     } yield result
   }
+  
+  def getInviteRequests() (implicit log: LoggingContext): Response[List[InviteRequest]] = {
+    log.info("getInviteRequests")
+    for {
+      inviteRequests <- db.getInviteRequests().right
+    } yield inviteRequests
+  }
 }
 
 class UserActionsImpl(implicit val settings: Settings, implicit val inj: Injector)

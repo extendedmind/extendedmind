@@ -14,6 +14,7 @@ import org.neo4j.graphdb.traversal.Evaluators
 import org.neo4j.graphdb.traversal.TraversalDescription
 import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
+import scala.collection.mutable.ListBuffer
 
 trait UserDatabase extends AbstractGraphDatabase {
 
@@ -41,6 +42,22 @@ trait UserDatabase extends AbstractGraphDatabase {
       ir <- createInviteRequest(inviteRequest).right
       result <- Right(getSetResult(ir, true)).right
     }yield result
+  }
+  
+  def getInviteRequests(): Response[List[InviteRequest]] = {
+    withTx{
+      implicit neo =>
+        val inviteRequestNodeList = findNodesByLabel(MainLabel.REQUEST).toList
+        if (inviteRequestNodeList.isEmpty){
+          Right(List())}
+        else {
+          Right(inviteRequestNodeList map (inviteRequestNode => {
+            val response = toCaseClass[InviteRequest](inviteRequestNode)
+            if (response.isLeft) return Left(response.left.get)
+            else response.right.get
+          }))
+        }
+    }
   }
 
   // PRIVATE
