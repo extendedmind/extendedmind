@@ -4,6 +4,8 @@
 
   </li>
   <li ng-repeat="tag in task.relationships.tags | tagTitle">
-    <span><a href="/my/tasks/context/{{tag.uuid}}">@{{tag.title}}</a></span>
+
+    <span ng-click="setActiveTag(tag)"><a href="/my/tasks/context/{{tag.uuid}}">@{{tag.title}}</a></span>
+
   </li>
 </ul>

@@ -2,9 +2,11 @@
 
   <ul>
     <li ng-repeat="context in tags">
-      <p>
+
+      <p ng-click="setActiveTag(context)">
         <a href="/my/tasks/context/{{context.uuid}}">@{{context.title}}</a>
       </p>
+
     </li>
   </ul>
 

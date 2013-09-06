@@ -2,25 +2,35 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NewTaskController', ['$scope', '$routeParams', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
-    function($scope, $routeParams, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    angular.module('em.app').controller('NewTaskController', ['$scope', '$routeParams', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
+    function($scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tasArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.errorHandler = errorHandler;
 
-      itemsRequest.getItems(function(itemsResponse) {
-        itemsArray.setItems(itemsResponse.items);
+      if ($routeParams.uuid) {
 
-        if ($routeParams.itemUuid) {
-          $scope.newTask = itemsArray.getItemByUuid(itemsArray.getItems(), $routeParams.itemUuid);
+        if (activeItem.getItem()) {
+          $scope.newTask = activeItem.getItem();
+        } else {
+
+          itemsRequest.getItems(function(itemsResponse) {
+
+            itemsArray.setItems(itemsResponse.items);
+            $scope.newTask = itemsArray.getItemByUuid(itemsArray.getItems(), $routeParams.uuid);
+
+          }, function(error) {
+          });
         }
-      }, function(error) {
-      });
+      }
 
       $scope.addNewTask = function(task) {
+
         tasksRequest.putTask($scope.newTask, function(putTaskResponse) {
+
           tasksResponse.putTaskContent($scope.newTask, putTaskResponse);
           tasksArray.putNewTask($scope.newTask);
           $scope.newTask = {};
+
         }, function(putTaskResponse) {
         });
       };
