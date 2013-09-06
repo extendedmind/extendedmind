@@ -3,14 +3,17 @@
   <head>
     <base href="/">
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title ng-bind="pageTitle.getTitle()"></title>
     <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.css"/>
     <link rel="stylesheet/less" href="/static/less/em.less"/>
     <script src="/static/lib/less/less-min.js"></script>
   </head>
   <body>
-    <div class="em-page">
-      <div class="container" ng-view></div>
+    <div class="container">
+      <div class="row-fluid">
+        <div class="col-lg-6 col-lg-offset-3 em-page" ng-view></div>
+      </div>
     </div>
 
     <script src="/static/lib/jquery/jquery.js"></script>
