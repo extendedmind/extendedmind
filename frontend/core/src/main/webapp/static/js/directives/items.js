@@ -72,6 +72,14 @@
       };
     }]);
 
+    angular.module('em.directives').directive('projectsList', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : '/static/partials/templates/projectsList.html'
+      };
+    }]);
+
     angular.module('em.directives').directive('tasksList', [
     function() {
       return {

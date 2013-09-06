@@ -1,4 +1,4 @@
-/*global angular*/
+/*global $, angular*/
 
 ( function() {'use strict';
 
@@ -6,6 +6,15 @@
     function(version) {
       return function(scope, element, attrs) {
         return element.text(version);
+      };
+    }]);
+
+    angular.module('em.directives').directive('eatClick', [
+    function() {
+      return function(scope, element, attrs) {
+        $(element).click(function(event) {
+          event.preventDefault();
+        });
       };
     }]);
 

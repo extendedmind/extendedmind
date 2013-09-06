@@ -13,6 +13,13 @@
     </form>
 
     <div>
+      <button type="button" class="toggle" ng-click="toggleItemsList()">
+        <h4>inbox ({{items.length}})</h4>
+      </button>
+      <div ng-show="showMe" items-list itemsfilter="newItem.title"></div>
+    </div>
+
+    <div>
       <div notes-list notesfilter="newItem.title">
         <h4><a href="/my/notes" class="em-subtitle">notes</a></h4>
       </div>
@@ -22,13 +29,6 @@
       <div tasks-list tasksfilter="newItem.title">
         <h4><a href="/my/tasks" class="em-subtitle">tasks</a></h4>
       </div>
-    </div>
-
-    <div>
-      <button type="button" class="toggle" ng-click="toggleItemsList()">
-        <h4>inbox</h4>
-      </button>
-      <div ng-show="showMe" items-list itemsfilter="newItem.title"></div>
     </div>
 
     <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>

@@ -10,31 +10,46 @@
       itemsRequest.getItems(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);
-        tagsArray.setTags(itemsResponse.tags);
-        tasksArray.setTasks(itemsResponse.tasks);
 
+        tagsArray.setTags(itemsResponse.tags);
         $scope.tags = tagsArray.getTags();
+
+        tasksArray.setTasks(itemsResponse.tasks);
         $scope.tasks = tasksArray.getTasks();
+
+        tasksArray.setSubtasks($scope.tasks);
+        $scope.subtasks = tasksArray.getSubtasks();
+
+        tasksArray.setProjects($scope.tasks);
+        $scope.projects = tasksArray.getProjects();
 
       }, function(error) {
       });
 
       $scope.tasksListFilter = true;
 
-      $scope.taskChecked = function(task) {
+      $scope.taskChecked = function(index) {
+        $scope.task = $scope.tasks[index];
 
-        if (task.done) {
+        if ($scope.task.done) {
 
-          tasksRequest.completeTask(task, function(completeTaskResponse) {
-            tasksResponse.putTaskContent(task, completeTaskResponse);
+          tasksRequest.completeTask($scope.task, function(completeTaskResponse) {
+            tasksResponse.putTaskContent($scope.task, completeTaskResponse);
           }, function(completeTaskResponse) {
           });
+
+        } else {
+
+          tasksRequest.uncompleteTask($scope.task, function(uncompleteTaskResponse) {
+            tasksResponse.deleteTaskProperty($scope.task, 'completed');
+          }, function(uncompleteTaskResponse) {
+
+          });
         }
-        // TODO: Uncomplete done task
       };
 
-      $scope.setActiveTag = function(tag) {
-        activeItem.setItem(tag);
+      $scope.setActiveItem = function(item) {
+        activeItem.setItem(item);
       };
     }]);
   }());
