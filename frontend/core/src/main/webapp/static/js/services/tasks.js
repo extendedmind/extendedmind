@@ -1,4 +1,5 @@
 /*global angular*/
+/*jslint plusplus: true*/
 
 ( function() {'use strict';
 
@@ -43,7 +44,9 @@
 
     angular.module('em.services').factory('tasksArray', ['itemsArray',
     function(itemsArray) {
-      var tasks;
+      var projects, subtasks, tasks;
+      projects = [];
+      subtasks = [];
 
       return {
         setTasks : function(tasks) {
@@ -52,8 +55,40 @@
         getTasks : function() {
           return this.tasks;
         },
+        setProjects : function(tasks) {
+          var i = 0;
+
+          while (tasks[i]) {
+            if (tasks[i].project) {
+              if (!itemsArray.itemInArray(projects, tasks[i].uuid)) {
+                projects.push(tasks[i]);
+              }
+            }
+            i++;
+          }
+        },
+        getProjects : function() {
+          return projects;
+        },
+        setSubtasks : function(tasks) {
+          var i = 0;
+
+          while (tasks[i]) {
+            if (tasks[i].relationships) {
+              if (tasks[i].relationships.parentTask) {
+                if (!itemsArray.itemInArray(subtasks, tasks[i].uuid)) {
+                  subtasks.push(tasks[i]);
+                }
+              }
+            }
+            i++;
+          }
+        },
+        getSubtasks : function() {
+          return subtasks;
+        },
         putNewTask : function(task) {
-          if (!itemsArray.itemInArray(this.tasks, task.title)) {
+          if (!itemsArray.itemInArray(this.tasks, task.uuid)) {
             this.tasks.push(task);
           }
         }

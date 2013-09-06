@@ -10,11 +10,18 @@
       itemsRequest.getItems(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);
-        tagsArray.setTags(itemsResponse.tags);
-        tasksArray.setTasks(itemsResponse.tasks);
 
+        tagsArray.setTags(itemsResponse.tags);
         $scope.tags = tagsArray.getTags();
+
+        tasksArray.setTasks(itemsResponse.tasks);
         $scope.tasks = tasksArray.getTasks();
+
+        tasksArray.setSubtasks($scope.tasks);
+        $scope.subtasks = tasksArray.getSubtasks();
+
+        tasksArray.setProjects($scope.tasks);
+        $scope.projects = tasksArray.getProjects();
 
       }, function(error) {
       });
@@ -41,7 +48,7 @@
         }
       };
 
-      $scope.setActiveTag = function(tag) {
+      $scope.setActiveItem = function(tag) {
         activeItem.setItem(tag);
       };
     }]);

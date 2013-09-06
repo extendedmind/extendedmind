@@ -46,9 +46,7 @@
           });
         },
         deleteItemProperty : function(item, property) {
-          // console.log(item);
           delete item[property];
-          // console.log(item);
         }
       };
     }]);
@@ -85,6 +83,7 @@
         },
         getItemByUuid : function(items, uuid) {
           var i = 0;
+
           while (items[i]) {
             if (items[i].uuid === uuid) {
               return items[i];
@@ -92,17 +91,29 @@
             i++;
           }
         },
-        itemInArray : function(items, title) {
-          var found = false;
+        getItemsByUuid : function(items, uuid) {
+          var i, subtasks;
+          i = 0;
+          this.subtasks = [];
 
-          angular.forEach(items, function(item) {
-            if (item.title === title) {
-              found = true;
-              return;
+          while (items[i]) {
+            if (items[i].relationships.parentTask === uuid) {
+              this.subtasks.push(items[i]);
             }
-          });
+            i++;
+          }
+          return this.subtasks;
+        },
+        itemInArray : function(items, uuid) {
+          var i = 0;
 
-          return found;
+          while (items[i]) {
+            if (items[i].uuid === uuid) {
+              return true;
+            }
+            i++;
+          }
+          return false;
         }
       };
     }]);

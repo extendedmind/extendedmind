@@ -1,1 +1,10 @@
-<!-- /tasks/project/uuid -->
+<div class="span12">
+  <p>
+    {{project.title}}
+  </p>
+  <ul>
+    <li ng-repeat="subtask in subtasks">
+      <span>{{subtask.title}}</span>
+    </li>
+  </ul>
+</div>

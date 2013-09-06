@@ -85,6 +85,18 @@
         }
       });
 
+      $routeProvider.when('/my/tasks/project/:uuid', {
+        controller : 'ProjectController',
+        templateUrl : '/static/partials/my/tasks/project.html',
+        resolve : {
+          authenticationRequired : ['$rootScope',
+          function($rootScope) {
+            $rootScope.$broadcast('event:authenticationRequired');
+          }]
+
+        }
+      });
+
       $routeProvider.otherwise({
         controller : 'PageNotFoundController',
         redirectTo : '/404'
