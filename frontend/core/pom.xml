@@ -164,7 +164,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             WEB-INF/wro.*,
             static/less*/**,
             static/js*/**,
-            static/lib/less*/**</packagingExcludes>
+            static/lib/less*/**,
+            static/lib/jasmine*/**</packagingExcludes>
         </configuration>
       </plugin>
       <plugin>
