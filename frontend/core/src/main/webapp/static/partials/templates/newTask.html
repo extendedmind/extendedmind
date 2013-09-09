@@ -10,6 +10,12 @@
     </fieldset>
 
     <fieldset>
+      <select ng-model="parentTask" ng-options="project.title for project in projects">
+        <option value="">select list</option>
+      </select>
+    </fieldset>
+
+    <fieldset>
       <textarea class="formContent" ng-model="newTask.description" placeholder="description..."></textarea>
     </fieldset>
 
@@ -18,7 +24,7 @@
         Add
       </button>
       <button class="formAction" type="submit" ng-click="cancelNewTask()">
-        Cancel
+        <a href="/my/tasks">Cancel</a>
       </button>
     </fieldset>
 

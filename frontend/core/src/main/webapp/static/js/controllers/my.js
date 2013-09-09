@@ -4,7 +4,6 @@
 
     angular.module('em.app').controller('MyController', ['$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray',
     function($scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
-
       $scope.errorHandler = errorHandler;
 
       itemsRequest.getItems(function(itemsResponse) {

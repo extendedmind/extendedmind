@@ -2,9 +2,10 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NotesController', ['$scope', 'activeItem', 'errorHandler', 'itemsRequest', 'notesArray',
-    function($scope, activeItem, errorHandler, itemsRequest, notesArray) {
+    angular.module('em.app').controller('NotesController', ['swiper','$scope', 'activeItem', 'errorHandler', 'itemsRequest', 'notesArray',
+    function(swiper,$scope, activeItem, errorHandler, itemsRequest, notesArray) {
 
+      // swiper.reinitSwiper();
       $scope.errorHandler = errorHandler;
 
       itemsRequest.getItems(function(itemsResponse) {

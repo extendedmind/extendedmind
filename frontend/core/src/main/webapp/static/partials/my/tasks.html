@@ -1,32 +1,33 @@
+<div>
+  <div id="header">
 
-<div id="header">
+    <div class="inlineblock">
+      <h4>previous <a href="/my/tasks" class="em-subtitle">tasks</a> next</h4>
+    </div>
 
-  <div class="inlineblock">
-    <h4><a href="/my/tasks" class="em-subtitle">tasks</a></h4>
+    <div class="inlineblock">
+      <button type="button" class="addNew">
+        <a href="/my/tasks/new/">+</a>
+      </button>
+    </div>
+
   </div>
 
-  <div class="inlineblock">
-    <button type="button" class="addNew">
-      <a href="/my/tasks/new/">+</a>
-    </button>
+  <div>
+    <h4>inbox</h4>
+    <div tasks-list tasksfilter="{{tasksListFilter}}"></div>
+  </div>
+
+  <div>
+    <h4>projects</h4>
+    <div projects-list></div>
+  </div>
+
+  <h4>areas</h4>
+
+  <div>
+    <h4>contexts</h4>
+    <div contexts-list></div>
   </div>
 
 </div>
-
-<div>
-  <h4>inbox</h4>
-  <div tasks-list tasksfilter="{{tasksListFilter}}"></div>
-</div>
-
-<div>
-  <h4>projects</h4>
-  <div projects-list></div>
-</div>
-
-<h4>areas</h4>
-
-<div>
-  <h4>contexts</h4>
-  <div contexts-list></div>
-</div>
-

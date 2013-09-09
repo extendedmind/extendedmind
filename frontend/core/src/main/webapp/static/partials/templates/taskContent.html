@@ -8,4 +8,11 @@
     <span ng-click="setActiveItem(tag)"><a href="/my/tasks/context/{{tag.uuid}}">@{{tag.title}}</a></span>
 
   </li>
+
+  <li>
+    <button type="button" class="editItem" ng-click="setActiveItem(task)">
+      <a href="/my/tasks/project/{{task.uuid}}">add subtask</a>
+    </button>
+  </li>
+
 </ul>

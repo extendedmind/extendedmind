@@ -10,19 +10,13 @@
       itemsRequest.getItems(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);
-
-        tagsArray.setTags(itemsResponse.tags);
-        $scope.tags = tagsArray.getTags();
-
         tasksArray.setTasks(itemsResponse.tasks);
+        tagsArray.setTags(itemsResponse.tags);
+
         $scope.tasks = tasksArray.getTasks();
-
-        tasksArray.setSubtasks($scope.tasks);
-        $scope.subtasks = tasksArray.getSubtasks();
-
-        tasksArray.setProjects($scope.tasks);
+        $scope.tags = tagsArray.getTags();
         $scope.projects = tasksArray.getProjects();
-
+        $scope.subtasks = tasksArray.getSubtasks();
       }, function(error) {
       });
 

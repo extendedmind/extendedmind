@@ -15,14 +15,11 @@
         itemsRequest.getItems(function(itemsResponse) {
 
           itemsArray.setItems(itemsResponse.items);
+          tasksArray.setTasks(itemsResponse.tasks);
           tagsArray.setTags(itemsResponse.tags);
 
-          tasksArray.setTasks(itemsResponse.tasks);
           $scope.tasks = tasksArray.getTasks();
-
-          tasksArray.setProjects($scope.tasks);
           $scope.projects = tasksArray.getProjects();
-          tasksArray.setSubtasks($scope.tasks);
 
           $scope.project = itemsArray.getItemByUuid(tasksArray.getProjects(), $routeParams.uuid);
           $scope.subtasks = itemsArray.getItemsByUuid(tasksArray.getSubtasks(), $scope.project.uuid);

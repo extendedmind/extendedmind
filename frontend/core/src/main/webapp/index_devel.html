@@ -5,9 +5,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title ng-bind="pageTitle.getTitle()"></title>
+
     <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.css"/>
+
     <link rel="stylesheet/less" href="/static/less/em.less"/>
     <script src="/static/lib/less/less-min.js"></script>
+
+    <link rel="stylesheet" href="/static/lib/Swiper/dist/idangerous.swiper.css">
+    <script defer src="/static/lib/Swiper/dist/idangerous.swiper-2.1.js"></script>
   </head>
   <body>
     <div class="container">
@@ -20,6 +25,7 @@
     <script src="/static/lib/jquery/jquery.cookie.js"></script>
     <script src="/static/lib/jasmine/jasmine.js"></script>
     <script src="/static/lib/jasmine/jasmine-jquery.js"></script>
+
     <script>
       jasmine.getJSONFixtures().fixturesPath = 'test/json'
     </script>
@@ -27,6 +33,7 @@
     <script src="/static/lib/angularjs/angular.js"></script>
     <script src="/static/lib/angularjs/angular-mocks.js"></script>
     <script src="/static/lib/base64.js"></script>
+    <script src="/static/lib/swiper.js"></script>
 
     <script src="/static/js/app.js"></script>
 
@@ -57,5 +64,6 @@
     <script src="/static/js/services/tags.js"></script>
     <script src="/static/js/services/tasks.js"></script>
     <script src="/static/js/services/authenticate.js"></script>
+
   </body>
 </html>

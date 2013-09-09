@@ -2,7 +2,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app', ['em.directives', 'em.filters', 'em.services']);
+    angular.module('em.app', ['em.directives', 'em.filters', 'em.services', 'em.swiper']);
     angular.module('em.directives', []);
     angular.module('em.filters', []);
     angular.module('em.services', ['em.base64']);
@@ -23,6 +23,10 @@
       $routeProvider.when('/login', {
         templateUrl : '/static/partials/login.html',
         controller : 'LoginController'
+      });
+
+      $routeProvider.when('/mySwipe', {
+        templateUrl : '/static/partials/mySwipe.html'
       });
 
       $routeProvider.when('/my', {
@@ -105,8 +109,8 @@
       $locationProvider.html5Mode(true);
     }]);
 
-    angular.module('em.app').run(['$location', '$rootScope', 'userAuthenticate',
-    function($location, $rootScope, userAuthenticate) {
+    angular.module('em.app').run(['$document', '$location', '$rootScope', 'userAuthenticate', 'swiper',
+    function($document, $location, $rootScope, userAuthenticate, swiper) {
       $rootScope.$on('event:authenticationRequired', function() {
         userAuthenticate.authenticate();
       });
@@ -116,7 +120,7 @@
       $rootScope.$on('event:loginSuccess', function() {
         $location.path('/my');
       });
-      $rootScope.$on('$routeChangeStart', function(event, next, current) {
-      });
+      $rootScope.$on('$viewContentLoaded', function() {
+        swiper.reinitSwiper();      });
     }]);
   }());

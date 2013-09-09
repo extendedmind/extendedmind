@@ -72,6 +72,33 @@
       };
     }]);
 
+    angular.module('em.directives').directive('mySwipe', ['swiper',
+    function(swiper) {
+      return {
+        restrict : 'A',
+        templateUrl : '/static/partials/mySwipe.html',
+        controller : 'MyController'
+      };
+    }]);
+
+    angular.module('em.directives').directive('tasks', ['swiper',
+    function(swiper) {
+      return {
+        restrict : 'A',
+        templateUrl : '/static/partials/my/tasks.html',
+        controller : 'TasksController'
+      };
+    }]);
+
+    angular.module('em.directives').directive('notes', ['swiper',
+    function(swiper) {
+      return {
+        restrict : 'A',
+        templateUrl : '/static/partials/my/notes.html',
+        controller : 'NotesController'
+      };
+    }]);
+
     angular.module('em.directives').directive('projectsList', [
     function() {
       return {
