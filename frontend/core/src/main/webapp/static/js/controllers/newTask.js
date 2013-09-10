@@ -2,8 +2,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NewTaskController', ['$scope', '$routeParams', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
-    function($scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    angular.module('em.app').controller('NewTaskController', ['$routeParams', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
+    function($routeParams, $scope, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.errorHandler = errorHandler;
 
@@ -35,7 +35,6 @@
         tasksRequest.putTask($scope.newTask, function(putTaskResponse) {
 
           tasksResponse.putTaskContent($scope.newTask, putTaskResponse);
-          console.log($scope.newTask);
           tasksArray.putNewTask($scope.newTask);
           $scope.newTask = {};
 

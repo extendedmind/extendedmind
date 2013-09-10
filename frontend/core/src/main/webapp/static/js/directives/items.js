@@ -10,7 +10,7 @@
         scope : {
           title : '=expanderTitle'
         },
-        templateUrl : '/static/partials/templates/expandedContent.html',
+        templateUrl : 'static/partials/templates/expandedContent.html',
         link : function(scope, element, attrs) {
           scope.showMe = false;
           scope.toggle = function toggle() {
@@ -24,7 +24,7 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/newTag.html',
+        templateUrl : 'static/partials/templates/newTag.html',
         link : function(scope, element, attrs) {
           scope.showEditNewTag = false;
 
@@ -39,7 +39,7 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/newTask.html'
+        templateUrl : 'static/partials/templates/newTask.html'
       };
     }]);
 
@@ -47,7 +47,7 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/itemsList.html',
+        templateUrl : 'static/partials/templates/itemsList.html',
         transclude : true,
         link : function(scope, element, attrs) {
           scope.showMe = false;
@@ -68,33 +68,24 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/contextsList.html'
+        templateUrl : 'static/partials/templates/contextsList.html'
       };
     }]);
 
-    angular.module('em.directives').directive('mySwipe', ['swiper',
-    function(swiper) {
+    angular.module('em.directives').directive('tasks', [
+    function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/mySwipe.html',
-        controller : 'MyController'
-      };
-    }]);
-
-    angular.module('em.directives').directive('tasks', ['swiper',
-    function(swiper) {
-      return {
-        restrict : 'A',
-        templateUrl : '/static/partials/my/tasks.html',
+        templateUrl : 'static/partials/my/tasks.html',
         controller : 'TasksController'
       };
     }]);
 
-    angular.module('em.directives').directive('notes', ['swiper',
-    function(swiper) {
+    angular.module('em.directives').directive('notes', [
+    function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/my/notes.html',
+        templateUrl : 'static/partials/my/notes.html',
         controller : 'NotesController'
       };
     }]);
@@ -103,7 +94,7 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/projectsList.html'
+        templateUrl : 'static/partials/templates/projectsList.html'
       };
     }]);
 
@@ -111,7 +102,7 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/tasksList.html',
+        templateUrl : 'static/partials/templates/tasksList.html',
         transclude : true,
         link : function(scope, element, attrs) {
           var tasksFilterAttr = attrs.tasksfilter;
@@ -127,7 +118,7 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/taskContent.html',
+        templateUrl : 'static/partials/templates/taskContent.html',
         link : function(scope, element, attrs) {
           scope.showMe = false;
 
@@ -142,7 +133,7 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/notesList.html',
+        templateUrl : 'static/partials/templates/notesList.html',
         transclude : true,
         link : function(scope, element, attrs) {
           var notesFilterAttr = attrs.notesfilter;

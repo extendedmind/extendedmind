@@ -1,23 +1,25 @@
-<div>
-  <div id="header">
+<div class="{{pageAnimation}}">
+  <div ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
+    <div id="header">
 
-    <div class="inlineblock">
-      <h4><a href="/my" class="em-subtitle">notes</a></h4>
+      <div class="inlineblock">
+        <h4><a href="my" class="em-subtitle">notes</a></h4>
+      </div>
+
+      <div class="inlineblock">
+        <button type="button" class="addNew" ng-click="editNewNote()">
+          +
+        </button>
+      </div>
     </div>
 
-    <div class="inlineblock">
-      <button type="button" class="addNew" ng-click="editNewNote()">
-        +
-      </button>
+    <div>
+      <h4>inbox</h4>
+      <div notesfilter="{{notesListFilter}}" notes-list></div>
+
+      <h4>projects</h4>
+
+      <h4>areas</h4>
     </div>
-  </div>
-
-  <div>
-    <h4>inbox</h4>
-    <div notesfilter="{{notesListFilter}}" notes-list></div>
-
-    <h4>projects</h4>
-
-    <h4>areas</h4>
   </div>
 </div>

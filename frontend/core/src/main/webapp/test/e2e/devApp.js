@@ -6,7 +6,7 @@
 
     angular.module('em.devApp').run(['$httpBackend', 'mockHttpBackendResponse',
     function($httpBackend, mockHttpBackendResponse) {
-      $httpBackend.whenGET(/^\/static\//).passThrough();
+      $httpBackend.whenGET(/^static\//).passThrough();
       $httpBackend.whenGET(/^test\//).passThrough();
     }]);
   }());

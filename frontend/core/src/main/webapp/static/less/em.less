@@ -1,6 +1,5 @@
-
-.container {
-  // box-sizing: border-box;
+.container {//
+  box-sizing: border-box;
   padding: 50px;
 }
 
@@ -113,4 +112,110 @@ ul {
 .done-true {
   text-decoration: line-through;
   color: gray;
+}
+
+.em-page-enter-left, .em-page-enter-right, .em-page-leave-left, .em-page-leave-right {
+  -webkit-transition:all linear 0.3s;
+  position: absolute;
+}
+
+.em-page-enter-left {
+  left: -100% !important;
+  right: auto !important;
+
+  &.em-page-enter-left-active {
+    left: 0 !important;
+    right: auto !important;
+  }
+}
+.em-page-leave-right, .em-page-leave-left {
+  left: 0 !important;
+  right: auto !important;
+
+  &.em-page-leave-right-active {
+    left: 100% !important;
+    right: auto !important;
+  }
+
+  &.em-page-leave-left-active {
+    left: -100% !important;
+    right: auto !important;
+  }
+}
+
+.em-page-enter-right {
+  left: 100% !important;
+  right: auto !important;
+
+  &.em-page-enter-right-active {
+    left: 0 !important;
+    right: auto !important;
+  }
+}
+
+// .em-page-leave, .em-page-enter {
+  // -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) .7s;
+  // -moz-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) .7s;
+  // -ms-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) .7s;
+  // -o-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) .7s;
+  // transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) .7s;
+// }
+// 
+// .em-page-animate-container {
+  // position: relative;
+// }
+// 
+// .em-page-animate-container > * {
+  // display: block;
+  // width: 100%;
+  // position: absolute;
+  // top: 0;
+  // left: 0;
+  // right: 0;
+  // bottom: 0;
+  // padding: 10px;
+// }
+// 
+// .em-page-enter {
+  // left: 100%;
+// }
+// .em-page-enter.em-page-enter-active {
+  // left: 0;
+// }
+// 
+// .em-page-leave {
+// }
+// .em-page-leave.em-page-leave-active {
+  // left: -100%;
+// }
+
+.example-repeat-enter, .example-repeat-leave, .example-repeat-move {
+  -webkit-transition: all linear 0.5s;
+  -moz-transition: all linear 0.5s;
+  -ms-transition: all linear 0.5s;
+  -o-transition: all linear 0.5s;
+  transition: all linear 0.5s;
+}
+
+.example-repeat-enter {
+  line-height: 0;
+  opacity: 0;
+}
+.example-repeat-enter.example-repeat-enter-active {
+  line-height: 20px;
+  opacity: 1;
+}
+
+.example-repeat-leave {
+  opacity: 1;
+  line-height: 20px;
+}
+.example-repeat-leave.example-repeat-leave-active {
+  opacity: 0;
+  line-height: 0;
+}
+
+.example-repeat-move {
+}
+.example-repeat-move.example-repeat-move-active {
 }
