@@ -50,6 +50,19 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
   }
   
   describe("Extended Mind Backend"){
+    it("should create an administrator with POST to /signup because adminSignUp is set to true"){
+      val signUp = SignUp("info@ext.md", "infopwd")
+      Post("/signup",
+          marshal(signUp).right.get
+          ) ~> emRoute ~> check {
+        val signUpResponse = entityAs[String]
+        writeJsonOutput("signUpResponse", signUpResponse)
+        signUpResponse should include("uuid")
+        signUpResponse should include("modified")
+        val authenticationResponse = emailPasswordAuthenticate(signUp.email, signUp.password)
+        authenticationResponse.userType should be(0)
+      }
+    }
     it("should return token on authenticate"){
       Post("/authenticate"
           ) ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))

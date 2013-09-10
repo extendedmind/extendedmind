@@ -1,10 +1,13 @@
 package org.extendedmind.domain
 
 import java.util.UUID
+import Validators._
 
 case class Item(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long], 
-                title: String, description: Option[String])
-  extends ItemLike
+                title: String, description: Option[String]) extends ItemLike{
+  require(validateLength(title, 64), "Title can not be more than 64 characters")
+  if (description.isDefined) require(validateLength(description.get, 256), "Description can not be more than 256 characters")
+}
 
 case class Items(items: Option[List[Item]], tasks: Option[List[Task]], notes: Option[List[Note]], tags: Option[List[Tag]])
 

@@ -20,9 +20,9 @@ trait UserDatabase extends AbstractGraphDatabase {
 
   // PUBLIC
 
-  def putNewUser(user: User, password: String): Response[SetResult] = {
+  def putNewUser(user: User, password: String, adminSignUp: Boolean): Response[SetResult] = {
     for{
-      user <- createUser(user, password).right
+      user <- createUser(user, password, (if (adminSignUp) Some(UserLabel.ADMIN) else None)).right
       result <- Right(getSetResult(user, true)).right
     }yield result
   }

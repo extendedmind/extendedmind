@@ -93,7 +93,12 @@ trait Service extends API with Injectable {
     postSignUp { url =>
       entity(as[SignUp]) { signUp =>
         complete{
-          "Not implemented"
+          Future[SetResult] {
+            userActions.signUp(signUp) match {
+              case Right(sr) => sr
+              case Left(e) => processErrors(e)
+            }
+          }
         }
       }
     } ~

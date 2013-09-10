@@ -35,6 +35,8 @@ class Settings(config: Config) extends Extension {
   val startNeo4jServer = config.getBoolean("extendedmind.neo4j.startServer")
   val neo4jServerPort = config.getInt("extendedmind.neo4j.serverPort")
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
+  val signUp = config.getBoolean("extendedmind.security.signUp")
+  val adminSignUp = config.getBoolean("extendedmind.security.adminSignUp")
   val emailFrom = config.getString("extendedmind.email.from")
   val mailgunDomain = config.getString("extendedmind.email.mailgun.domain")
   val mailgunApiKey = config.getString("extendedmind.email.mailgun.apiKey")
