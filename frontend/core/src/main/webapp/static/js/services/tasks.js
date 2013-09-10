@@ -95,8 +95,10 @@
         putNewTask : function(task) {
           if (!itemsArray.itemInArray(tasks, task.uuid)) {
             tasks.push(task);
-            if (task.relationships.parentTask) {
-              this.setSubtask(task);
+            if (task.relationships) {
+              if (task.relationships.parentTask) {
+                this.setSubtask(task);
+              }
             }
           }
         }
