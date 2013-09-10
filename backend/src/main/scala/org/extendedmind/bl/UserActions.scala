@@ -34,7 +34,7 @@ trait UserActions {
     } yield setResult
     
     if (setResult.isRight){
-      val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email)
+      val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email, setResult.right.get.uuid.get)
       futureMailResponse onSuccess {
         case SendEmailResponse(message, id) => {
           val saveResponse = for{

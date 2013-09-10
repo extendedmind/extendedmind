@@ -10,9 +10,9 @@ import org.extendedmind.security._
 import org.extendedmind.email._
 import org.extendedmind.test._
 import org.extendedmind.test.TestGraphDatabase._
-import org.mockito.Mockito.reset
-import org.mockito.Mockito.stub
-import org.mockito.Mockito.verify
+import org.mockito.Mockito._
+import org.mockito.Matchers._
+import org.mockito.Matchers.{eq => mockEq}
 import scaldi.Module
 import spray.http.BasicHttpCredentials
 import spray.http.HttpHeaders.Authorization
@@ -338,11 +338,11 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val testEmail3 = "example3@example.com"
       val testInviteRequest3 = InviteRequest(testEmail3, None)
 
-      stub(mockMailgunClient.sendRequestInviteConfirmation(testEmail)).toReturn(
+      stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail), anyObject())).toReturn(
           Future{SendEmailResponse("OK", "1234")})
-      stub(mockMailgunClient.sendRequestInviteConfirmation(testEmail2)).toReturn(
+      stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail2), anyObject())).toReturn(
           Future{SendEmailResponse("OK", "12345")})
-      stub(mockMailgunClient.sendRequestInviteConfirmation(testEmail3)).toReturn(
+      stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail3), anyObject())).toReturn(
           Future{SendEmailResponse("OK", "123456")})
       Post("/invite/request",
          marshal(testInviteRequest).right.get
@@ -365,9 +365,9 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
               ) ~> emRoute ~> check {
               val inviteRequestResponse3 = entityAs[SetResult]
 
-              verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail)
-              verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail2)
-              verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail3)
+              verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail, inviteRequestResponse.uuid.get)
+              verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail2, inviteRequestResponse2.uuid.get)
+              verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail3, inviteRequestResponse3.uuid.get)
               // Get the request back
               val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
               Get("/invite/requests"

@@ -23,6 +23,7 @@ import scala.concurrent.duration._
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext
 import akka.actor.ActorRefFactory
+import java.util.UUID
 
 case class SendEmailRequest(from: String, to: String, subject: String, html: String)
 case class SendEmailResponse(message: String, id: String)
@@ -48,16 +49,19 @@ trait MailgunClient{
   def settings: Settings
   def actorRefFactory: ActorRefFactory
 
-  val requestInviteConfirmationHtml = getTemplate("requestInviteConfirmation.html", settings.emailTemplateDir)
+  val requestInviteConfirmationHtmlTemplate = getTemplate("requestInviteConfirmation.html", settings.emailTemplateDir)
 
   // Prepare pipeline
   implicit val implicitActorRefFactory = actorRefFactory
   implicit val implicitContext =  actorRefFactory.dispatcher 
   val sendEmailPipeline = sendReceive ~> unmarshal[SendEmailResponse]
   
-  def sendRequestInviteConfirmation(email: String): Future[SendEmailResponse] = {
+  def sendRequestInviteConfirmation(email: String, inviteRequestUUID: UUID): Future[SendEmailResponse] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, email, 
-                           settings.requestInviteConfirmationTitle, requestInviteConfirmationHtml)
+                           settings.requestInviteConfirmationTitle, 
+                           requestInviteConfirmationHtmlTemplate.replaceAll(
+                               "queueNumberLink", 
+                               settings.emailUrlPrefix + settings.requestInviteOrderNumberURI + "/" + inviteRequestUUID))
     implicit val timeout = Timeout(5 seconds)
     sendEmailPipeline {
       Post("https://api.mailgun.net/v2/" + settings.mailgunDomain + "/messages",

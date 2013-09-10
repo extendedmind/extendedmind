@@ -37,10 +37,11 @@ class Settings(config: Config) extends Extension {
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
   val signUp = config.getBoolean("extendedmind.security.signUp")
   val adminSignUp = config.getBoolean("extendedmind.security.adminSignUp")
-  val emailFrom = config.getString("extendedmind.email.from")
   val mailgunDomain = config.getString("extendedmind.email.mailgun.domain")
   val mailgunApiKey = config.getString("extendedmind.email.mailgun.apiKey")
   // Email templates
+  val emailFrom = config.getString("extendedmind.email.from")
+  val emailUrlPrefix = config.getString("extendedmind.email.urlPrefix")
   val emailTemplateDir: Option[String] = {
     if (config.hasPath("extendedmind.email.templates.directory"))
       Some(config.getString("extendedmind.email.templates.directory"))
@@ -48,6 +49,7 @@ class Settings(config: Config) extends Extension {
       None
   }
   val requestInviteConfirmationTitle = config.getString("extendedmind.email.templates.requestInviteConfirmationTitle")
+  val requestInviteOrderNumberURI = config.getString("extendedmind.email.templates.requestInviteOrderNumberURI")
 }
 
 object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{
