@@ -13,6 +13,7 @@ import java.io.{ DataOutputStream, ByteArrayOutputStream }
 import javax.crypto.spec.SecretKeySpec
 import javax.crypto.Cipher
 import org.apache.commons.codec.binary.Base64
+import org.apache.commons.codec.binary.Hex
 
 @implicitNotFound(msg = "Could not find a Writes for ${T}")
 trait Writes[T] {
@@ -40,14 +41,14 @@ trait Encryption {
 class JavaCryptoEncryption(algorithmName: String) extends Encryption {
 
   def encrypt(bytes: Array[Byte], secret: String): Array[Byte] = {
-    val secretKey = new SecretKeySpec(secret.getBytes("UTF-8"), algorithmName)
+    val secretKey = new SecretKeySpec(Hex.decodeHex(secret.toCharArray()), algorithmName)
     val encipher = Cipher.getInstance(algorithmName + "/ECB/PKCS5Padding")
     encipher.init(Cipher.ENCRYPT_MODE, secretKey)
     encipher.doFinal(bytes)
   }
 
   def decrypt(bytes: Array[Byte], secret: String): Array[Byte] = {
-    val secretKey = new SecretKeySpec(secret.getBytes("UTF-8"), algorithmName)
+    val secretKey = new SecretKeySpec(Hex.decodeHex(secret.toCharArray()), algorithmName)
     val encipher = Cipher.getInstance(algorithmName + "/ECB/PKCS5Padding")
     encipher.init(Cipher.DECRYPT_MODE, secretKey)
     encipher.doFinal(bytes)
