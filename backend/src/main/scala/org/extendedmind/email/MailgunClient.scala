@@ -48,7 +48,7 @@ trait MailgunClient{
   def settings: Settings
   def actorRefFactory: ActorRefFactory
 
-  val requestInviteConfirmationHtml = getFileContent(settings.emailTemplateDir + "/requestInviteConfirmation.html")
+  val requestInviteConfirmationHtml = getTemplate("requestInviteConfirmation.html", settings.emailTemplateDir)
 
   // Prepare pipeline
   implicit val implicitActorRefFactory = actorRefFactory
@@ -67,8 +67,15 @@ trait MailgunClient{
     }
   }
   
-  private def getFileContent(fileLocation: String): String = {
-    val source = scala.io.Source.fromFile(fileLocation)
+  private def getTemplate(templateFileName: String, templateDirectory: Option[String]): String = {
+    val source = {
+      if (templateDirectory.isDefined)
+        scala.io.Source.fromFile(templateDirectory.get + "/" + templateFileName)
+      else{
+        // Read file from templates directory
+        scala.io.Source.fromInputStream(getClass.getResourceAsStream("/templates/" + templateFileName))
+      }
+    }
     val lines = source.mkString
     source.close()
     lines

@@ -41,7 +41,12 @@ class Settings(config: Config) extends Extension {
   val mailgunDomain = config.getString("extendedmind.email.mailgun.domain")
   val mailgunApiKey = config.getString("extendedmind.email.mailgun.apiKey")
   // Email templates
-  val emailTemplateDir = config.getString("extendedmind.email.templates.directory")
+  val emailTemplateDir: Option[String] = {
+    if (config.hasPath("extendedmind.email.templates.directory"))
+      Some(config.getString("extendedmind.email.templates.directory"))
+    else
+      None
+  }
   val requestInviteConfirmationTitle = config.getString("extendedmind.email.templates.requestInviteConfirmationTitle")
 }
 

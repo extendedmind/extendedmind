@@ -24,9 +24,7 @@ trait UserActions {
   def actorRefFactory: ActorRefFactory
   implicit val implicitActorRefFactory = actorRefFactory
   implicit val implicitExecutionContext = actorRefFactory.dispatcher 
-  
-  // PUBLIC
-  
+    
   def requestInvite(inviteRequest: InviteRequest)(implicit log: LoggingContext): Response[SetResult] = {
     log.info("requestInvite: email {}", inviteRequest.email)
     val setResult = for {
@@ -34,27 +32,29 @@ trait UserActions {
       setResult <- db.putNewInviteRequest(inviteRequest).right
     } yield setResult
     
-    val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email)
-    futureMailResponse onSuccess {
-      case SendEmailResponse(message, id) => {
-        val saveResponse = db.putExistingInviteRequest(setResult.right.get.uuid.get, inviteRequest.copy(emailId = Some(id)))
-        if (saveResponse.isLeft) 
-          log.error("Error updating invite request for email {} with id {}, error: {}", 
-              inviteRequest.email, id, saveResponse.left.get.head)
-        else log.info("Saved email: {} with id: {}", inviteRequest.email, id)
-      }case _ =>
-        log.error("Could not send email to {}", inviteRequest.email)
+    if (setResult.isRight){
+      val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email)
+      futureMailResponse onSuccess {
+        case SendEmailResponse(message, id) => {
+          val saveResponse = db.putExistingInviteRequest(setResult.right.get.uuid.get, inviteRequest.copy(emailId = Some(id)))
+          if (saveResponse.isLeft) 
+            log.error("Error updating invite request for email {} with id {}, error: {}", 
+                inviteRequest.email, id, saveResponse.left.get.head)
+          else log.info("Saved email: {} with id: {}", inviteRequest.email, id)
+        }case _ =>
+          log.error("Could not send email to {}", inviteRequest.email)
+      }
     }
     return setResult
   }
-  
+
   def getInviteRequests() (implicit log: LoggingContext): Response[List[InviteRequest]] = {
     log.info("getInviteRequests")
     for {
       inviteRequests <- db.getInviteRequests().right
     } yield inviteRequests
   }
-  
+
   def signUp(signUp: SignUp)(implicit log: LoggingContext): Response[SetResult] = {
     log.info("signUp: email {}", signUp.email)
     if (settings.adminSignUp) 
@@ -64,6 +64,8 @@ trait UserActions {
       isUnique <- db.validateEmailUniqueness(signUp.email).right
       result <- db.putNewUser(User(None, None, None, signUp.email), signUp.password, settings.adminSignUp).right
     } yield result
+    
+    // TODO: Send verification email as Future
   }
 }
 
