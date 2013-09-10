@@ -18,7 +18,8 @@ trait API extends HttpService {
   val postInviteRequest = post & path("invite" / "request".r)
   val postAcceptInvite = post & path("invite" / "accept" / HexLongNumber)
   val getInviteRequests = get & path("invite" / "requests".r)
-  
+  val getInviteRequestQueueNumber = get & path("invite" / "request" / JavaUUID)
+
   // Security
   val postAuthenticate = post & path("authenticate".r) 
   

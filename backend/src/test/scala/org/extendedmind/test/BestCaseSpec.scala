@@ -330,10 +330,20 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
     }
     
     it("should successfully create invite request with POST to /invite/request") {
+
       val testEmail = "example@example.com"
       val testInviteRequest = InviteRequest(testEmail, None)
+      val testEmail2 = "example2@example.com"
+      val testInviteRequest2 = InviteRequest(testEmail2, None)
+      val testEmail3 = "example3@example.com"
+      val testInviteRequest3 = InviteRequest(testEmail3, None)
+
       stub(mockMailgunClient.sendRequestInviteConfirmation(testEmail)).toReturn(
           Future{SendEmailResponse("OK", "1234")})
+      stub(mockMailgunClient.sendRequestInviteConfirmation(testEmail2)).toReturn(
+          Future{SendEmailResponse("OK", "12345")})
+      stub(mockMailgunClient.sendRequestInviteConfirmation(testEmail3)).toReturn(
+          Future{SendEmailResponse("OK", "123456")})
       Post("/invite/request",
          marshal(testInviteRequest).right.get
             ) ~> addHeader("Content-Type", "application/json"
@@ -342,17 +352,53 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         val inviteRequestResponse = entityAs[SetResult]
         inviteRequestResponse.uuid should not be None
         inviteRequestResponse.modified should not be None
-        verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail)
         
-        // Get the request back
-        val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-        Get("/invite/requests"
-              ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+        Post("/invite/request",
+         marshal(testInviteRequest2).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> emRoute ~> check {
+          val inviteRequestResponse2 = entityAs[SetResult]
+
+          Post("/invite/request",
+           marshal(testInviteRequest3).right.get
+              ) ~> addHeader("Content-Type", "application/json"
               ) ~> emRoute ~> check {
-            val inviteRequests = entityAs[String]
-            writeJsonOutput("inviteRequests", inviteRequests)
-            inviteRequests should include(testEmail)
-          }
+              val inviteRequestResponse3 = entityAs[SetResult]
+
+              verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail)
+              verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail2)
+              verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail3)
+              // Get the request back
+              val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+              Get("/invite/requests"
+                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                    ) ~> emRoute ~> check {
+                  val inviteRequests = entityAs[String]
+                  writeJsonOutput("inviteRequests", entityAs[String])
+                  inviteRequests should include(testEmail)
+                  inviteRequests should include(testEmail2)
+                  inviteRequests should include(testEmail3)
+                  // Get order number for invites
+                  Get("/invite/request/" + inviteRequestResponse.uuid.get
+                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                    ) ~> emRoute ~> check {
+                    entityAs[InviteRequestQueueNumber].queueNumber should be(1)
+                  }
+                  Get("/invite/request/" + inviteRequestResponse2.uuid.get
+                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                    ) ~> emRoute ~> check {
+                    entityAs[InviteRequestQueueNumber].queueNumber should be(2)
+                      
+                  }
+                  Get("/invite/request/" + inviteRequestResponse3.uuid.get
+                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                    ) ~> emRoute ~> check {
+                    entityAs[InviteRequestQueueNumber].queueNumber should be(3)
+
+                  }
+              }
+            }
+        }
       }
     }
   }

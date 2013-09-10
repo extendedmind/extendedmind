@@ -15,6 +15,8 @@ import org.neo4j.graphdb.traversal.TraversalDescription
 import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
+import org.neo4j.index.lucene.ValueContext
+import org.neo4j.index.lucene.QueryContext
 
 trait UserDatabase extends AbstractGraphDatabase {
 
@@ -40,21 +42,43 @@ trait UserDatabase extends AbstractGraphDatabase {
   def putNewInviteRequest(inviteRequest: InviteRequest): Response[SetResult] = {
     for{
       ir <- createInviteRequest(inviteRequest).right
+      createResponse <- Right(createInviteRequestModifiedIndex(ir)).right
       result <- Right(getSetResult(ir, true)).right
     }yield result
   }
   
-  def putExistingInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest): Response[SetResult] = {
+  def putExistingInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest): Response[Tuple3[SetResult, Node, Long]] = {
     for{
       updatedInviteRequest <- updateInviteRequest(inviteRequestUUID, inviteRequest).right
-      result <- Right(getSetResult(updatedInviteRequest, false)).right
-    }yield result
+      result <- Right(getSetResult(updatedInviteRequest._1, false)).right
+    }yield (result, updatedInviteRequest._1, updatedInviteRequest._2)
+  }
+  
+  def createInviteRequestModifiedIndex(inviteRequestNode: Node): Unit = {
+    withTx {
+      implicit neo =>
+        val inviteRequests = neo.gds.index().forNodes("inviteRequests")
+        inviteRequests.add(inviteRequestNode, "modified", 
+            new ValueContext(inviteRequestNode.getProperty("modified").asInstanceOf[Long] ).indexNumeric())
+    }
+  }
+
+  def updateInviteRequestModifiedIndex(inviteRequestNode: Node, oldModified: Long): Unit = {
+    withTx {
+      implicit neo =>
+        val inviteRequests = neo.gds.index().forNodes("inviteRequests")
+        inviteRequests.remove(inviteRequestNode, "modified", oldModified)
+        inviteRequests.add(inviteRequestNode, "modified", 
+            new ValueContext(inviteRequestNode.getProperty("modified").asInstanceOf[Long] ).indexNumeric())
+    }
   }
   
   def getInviteRequests(): Response[List[InviteRequest]] = {
     withTx{
       implicit neo =>
-        val inviteRequestNodeList = findNodesByLabel(MainLabel.REQUEST).toList
+        val inviteRequests = neo.gds.index().forNodes("inviteRequests")
+        val inviteRequestNodeList = inviteRequests.query( "modified", 
+            QueryContext.numericRange("modified", 0, Long.MaxValue).sort("modified")).toList        
         if (inviteRequestNodeList.isEmpty){
           Right(List())}
         else {
@@ -66,7 +90,23 @@ trait UserDatabase extends AbstractGraphDatabase {
         }
     }
   }
-
+  
+  def getInviteRequestQueueNumber(inviteRequestUUID: UUID): Response[InviteRequestQueueNumber] = {
+    withTx{
+      implicit neo =>
+        val inviteRequests = neo.gds.index().forNodes("inviteRequests")
+        val inviteRequestNodeList = inviteRequests.query( "modified", 
+            QueryContext.numericRange("modified", 0, Long.MaxValue).sort("modified"))
+        var count = 1
+        // for loop execution with a range
+        for( inviteRequestNode <- inviteRequestNodeList){
+          if (getUUID(inviteRequestNode) == inviteRequestUUID) 
+            return Right(InviteRequestQueueNumber(count))
+          count += 1
+        }
+        fail(INVALID_PARAMETER, "Invite request not found with given UUID: " + inviteRequestUUID)
+    }
+  }
   // PRIVATE
   
   protected def createUser(user: User, plainPassword: String, userLabel: Option[Label] = None): Response[Node] = {
@@ -153,13 +193,13 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def updateInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest): Response[Node] = {
+  protected def updateInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest): Response[Tuple2[Node, Long]] = {
     withTx {
       implicit neo4j =>
         for {
           inviteRequestNode <- getNode(inviteRequestUUID, MainLabel.REQUEST).right
           updatedNode <- updateNode(inviteRequestNode, inviteRequest).right
-        } yield updatedNode
+        } yield (updatedNode, updatedNode.getProperty("modified").asInstanceOf[Long])
     }
   }
   

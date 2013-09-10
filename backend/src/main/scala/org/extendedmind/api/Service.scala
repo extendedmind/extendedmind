@@ -128,6 +128,16 @@ trait Service extends API with Injectable {
         }
       }
     } ~ 
+    getInviteRequestQueueNumber { inviteRequestUUID =>
+      complete{
+        Future[InviteRequestQueueNumber] {
+          userActions.getInviteRequestQueueNumber(inviteRequestUUID) match {
+            case Right(queueNumber) => queueNumber
+            case Left(e) => processErrors(e)
+          }
+        }
+      }
+    } ~ 
     postAuthenticate { url =>
       authenticate(ExtendedAuth(authenticateAuthenticator)) { securityContext =>
         complete {

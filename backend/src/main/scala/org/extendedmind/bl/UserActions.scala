@@ -14,6 +14,7 @@ import scala.util.{Success, Failure}
 import scala.concurrent.ExecutionContext
 import akka.actor.ActorRefFactory
 import akka.actor.ActorSystem
+import java.util.UUID
 
 trait UserActions {
 
@@ -36,7 +37,10 @@ trait UserActions {
       val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email)
       futureMailResponse onSuccess {
         case SendEmailResponse(message, id) => {
-          val saveResponse = db.putExistingInviteRequest(setResult.right.get.uuid.get, inviteRequest.copy(emailId = Some(id)))
+          val saveResponse = for{
+            putExistingResponse <- db.putExistingInviteRequest(setResult.right.get.uuid.get, inviteRequest.copy(emailId = Some(id))).right
+            updateResponse <- Right(db.updateInviteRequestModifiedIndex(putExistingResponse._2, putExistingResponse._3)).right
+          } yield putExistingResponse._1
           if (saveResponse.isLeft) 
             log.error("Error updating invite request for email {} with id {}, error: {}", 
                 inviteRequest.email, id, saveResponse.left.get.head)
@@ -54,7 +58,14 @@ trait UserActions {
       inviteRequests <- db.getInviteRequests().right
     } yield inviteRequests
   }
-
+  
+  def getInviteRequestQueueNumber(inviteRequestUUID: UUID) (implicit log: LoggingContext): Response[InviteRequestQueueNumber] = {
+    log.info("getInviteRequestQueueNumber for UUID {}", inviteRequestUUID)
+    for {
+      inviteRequestQueueNumber <- db.getInviteRequestQueueNumber(inviteRequestUUID).right
+    } yield inviteRequestQueueNumber
+  }
+  
   def signUp(signUp: SignUp)(implicit log: LoggingContext): Response[SetResult] = {
     log.info("signUp: email {}", signUp.email)
     if (settings.adminSignUp) 
