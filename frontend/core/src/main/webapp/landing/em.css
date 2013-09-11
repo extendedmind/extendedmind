@@ -1,0 +1,85 @@
+.embed-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16/9 ratio */
+    padding-top: 30px; /* IE6 workaround*/
+    height: 0;
+    overflow: hidden;
+}
+
+.embed-container iframe,
+.embed-container object,
+.embed-container embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.stich-top {
+  background-image: -webkit-linear-gradient(0deg, #5c5c5c 60%, transparent 60%, transparent 100%), -webkit-linear-gradient(0deg, #5c5c5c 60%, transparent 60%, transparent 100%);
+  left: 0px;
+  right: 0px;
+  height: 2px;
+  background-repeat: repeat-x;
+  background-size: 40px 1px;
+  background-position: 0px 0px, 0px 1px;
+  -webkit-box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 30px;
+  top: 10px;
+}
+
+a:link {
+  text-decoration:none;
+}
+a:hover {
+  text-decoration:underline;
+}
+
+.em-page {
+  background-color: #333333;	
+  text-align: center;
+  color: white;
+}
+
+.em-app {
+  border:solid;
+  border-color: #4c4c4c;
+  border-width: 2px;
+  color: #d6d6d6;
+}
+
+.em-heading {
+  margin-top: 100px;
+  margin-bottom: 50px;
+}
+
+.em-ingress {
+  color: #d6d6d6;
+  margin-bottom: 40px;
+}
+
+.em-please {
+  color: #c9c9c9;
+  margin-bottom: 70px;
+}
+
+.em-sign{
+  color: #676767;
+}
+
+input, button {
+  background-color: #d6d6d6 !important;
+}
+
+.em-logo {
+  margin-top: 100px;
+  margin-bottom: 50px;
+}
+
+.footer a{
+  color: #d6d6d6 !important;
+}
+
