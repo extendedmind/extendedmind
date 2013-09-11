@@ -20,7 +20,7 @@
   background-image: -webkit-linear-gradient(0deg, #5c5c5c 60%, transparent 60%, transparent 100%), -webkit-linear-gradient(0deg, #5c5c5c 60%, transparent 60%, transparent 100%);
   left: 0px;
   right: 0px;
-  height: 2px;
+  height: 1px;
   background-repeat: repeat-x;
   background-size: 40px 1px;
   background-position: 0px 0px, 0px 1px;
@@ -39,12 +39,19 @@ a:hover {
 }
 
 .em-page {
-  background-color: #333333;	
+  background-color: #333333;
   text-align: center;
   color: white;
 }
 
+.em-topmargin{
+  height: 5px;
+}
+
 .em-app {
+  max-width: 300px;
+  margin-left: auto ;
+  margin-right: auto ;
   border:solid;
   border-color: #4c4c4c;
   border-width: 2px;
@@ -52,18 +59,18 @@ a:hover {
 }
 
 .em-heading {
-  margin-top: 100px;
-  margin-bottom: 50px;
+  margin-top: 10%;
+  margin-bottom: 5%;
 }
 
 .em-ingress {
   color: #d6d6d6;
-  margin-bottom: 40px;
+  margin-bottom: 4%;
 }
 
 .em-please {
   color: #c9c9c9;
-  margin-bottom: 70px;
+  margin-bottom: 8%;
 }
 
 .em-sign{
@@ -74,9 +81,15 @@ input, button {
   background-color: #d6d6d6 !important;
 }
 
+@media (min-width: 767px) {
+  .form-group {
+    width: 350px;
+  }
+}
+
 .em-logo {
-  margin-top: 100px;
-  margin-bottom: 50px;
+  margin-top: 7%;
+  margin-bottom: 5%;
 }
 
 .footer a{
