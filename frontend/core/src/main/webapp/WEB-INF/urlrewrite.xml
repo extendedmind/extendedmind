@@ -10,8 +10,8 @@ http://www.tuckey.org/urlrewrite/
 -->
 <urlrewrite>
   <rule>
-    <note>Write all except those beginning with /static/ and /api/ to index.html</note>
-    <from>^(?!(/api/|/static/)).+$</from>
+    <note>Write all except those beginning with /static/, /api/ or /landing/ to index.html</note>
+    <from>^(?!(/api/|/static/|/landing/)).+$</from>
     <to>/index.html</to>
   </rule>
 </urlrewrite>

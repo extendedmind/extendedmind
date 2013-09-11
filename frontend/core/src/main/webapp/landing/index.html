@@ -35,15 +35,16 @@
           </div>
           <div class="row">
             <div class="col-lg-10 col-lg-offset-1 em-email">
-            	<form class="form-inline" role="form">
+            	<form class="form-inline" role="form" id="emailForm">
             	  <div class="form-group">
             	    <label class="sr-only" for="email">Email address</label>
-            	    <input type="email" class="form-control" id="email" placeholder="Enter email"/>
+            	    <input type="email" class="form-control" id="email" name="email" placeholder="Enter email"/>
             	  </div>
-            	  <button type="submit" class="btn btn-default">OK</button>
+            	  <input id="input" type="submit" name="submit" value="OK" class="btn btn-default"/>
             	</form>
-            </div><br/>
+            </div>
           </div>
+          <div class="row" id="result"><div class="alert">&nbsp;</div></div>
           <div class="row">
             <div class="em-logo col-lg-4 col-lg-offset-4"><img src="logo.png" height="40"/></div>
           </div>
@@ -52,6 +53,8 @@
                           <a href="mailto:info@ext.md">contact</a> |
                           <a href="http://ext.md/press">press</a><br/><br/>
         </div>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+        <script src="em.js"></script>
       </div>
     </div>
   </body>
