@@ -1,7 +1,9 @@
 <ul>
-  <li ng-repeat="context in tags">
+  <li ng-repeat="context in tags" ng-animate="{enter: 'example-repeat-enter',
+  leave: 'example-repeat-leave',
+  move: 'example-repeat-move'}">
 
-    <span ng-click="setActiveItem(context)"><a href="/my/tasks/context/{{context.uuid}}">@{{context.title}}</a></span>
+    <span ng-click="setActiveItem(context)"><a href="my/tasks/context/{{context.uuid}}">@{{context.title}}</a></span>
 
   </li>
 </ul>

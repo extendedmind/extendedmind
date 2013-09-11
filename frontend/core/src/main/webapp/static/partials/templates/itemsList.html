@@ -1,7 +1,9 @@
 <div>
   <div ng-transclude></div>
   <ul>
-    <li ng-repeat="item in items | filter:newItem" ng-model="activeItem">
+    <li ng-repeat="item in items | filter:newItem" ng-model="activeItem" ng-animate="{enter: 'example-repeat-enter',
+    leave: 'example-repeat-leave',
+    move: 'example-repeat-move'}">
       <div>
 
         <span>{{item.title}}</span>
@@ -15,7 +17,7 @@
         </button>
 
         <button type="button" class="editItem" ng-click="setActiveItem(item)">
-          <a href="/my/tasks/new/{{item.uuid}}">task</a>
+          <a href="my/tasks/new/{{item.uuid}}">task</a>
         </button>
 
       </div>

@@ -4,8 +4,5 @@
 
     angular.module('em.app').controller('HomeController', ['$scope', 'errorHandler',
     function($scope, errorHandler) {
-
-      $scope.errorHandler = errorHandler;
-
     }]);
   }());

@@ -2,27 +2,22 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('TasksController', ['$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
-    function($scope, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    angular.module('em.app').controller('TasksController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
+    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.errorHandler = errorHandler;
+      $rootScope.pageAnimation = null;
 
       itemsRequest.getItems(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);
-
-        tagsArray.setTags(itemsResponse.tags);
-        $scope.tags = tagsArray.getTags();
-
         tasksArray.setTasks(itemsResponse.tasks);
+        tagsArray.setTags(itemsResponse.tags);
+
         $scope.tasks = tasksArray.getTasks();
-
-        tasksArray.setSubtasks($scope.tasks);
-        $scope.subtasks = tasksArray.getSubtasks();
-
-        tasksArray.setProjects($scope.tasks);
+        $scope.tags = tagsArray.getTags();
         $scope.projects = tasksArray.getProjects();
-
+        $scope.subtasks = tasksArray.getSubtasks();
       }, function(error) {
       });
 
@@ -50,6 +45,22 @@
 
       $scope.setActiveItem = function(item) {
         activeItem.setItem(item);
+      };
+
+      $scope.swipeLeft = function(asd) {
+        $rootScope.pageAnimation = {
+          enter : 'em-page-enter-right',
+          leave : 'em-page-leave-left'
+        };
+        $location.path('/my/notes');
+      };
+
+      $scope.swipeRight = function() {
+        $rootScope.pageAnimation = {
+          enter : 'em-page-enter-left',
+          leave : 'em-page-leave-right'
+        };
+        $location.path('/my');
       };
     }]);
   }());

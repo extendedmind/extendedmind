@@ -22,7 +22,7 @@
     function($parse) {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/errorMessage.html',
+        templateUrl : 'static/partials/templates/errorMessage.html',
         link : function(scope, elem, attrs) {
           var alertMessageAttr = attrs.alertmessage;
           scope.errorMessage = null;
@@ -43,7 +43,7 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : '/static/partials/templates/urlList.html'
+        templateUrl : 'static/partials/templates/urlList.html'
       };
     }]);
   }());

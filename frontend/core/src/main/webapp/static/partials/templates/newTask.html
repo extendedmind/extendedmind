@@ -2,7 +2,7 @@
   <fieldset>
 
     <fieldset>
-      <input id="input-id" class="formContent" type="text" ng-model="newTask.title" autofocus="autofocus" placeholder="title...">
+      <input id="input-id" class="formContent" type="text" ng-model="newTask.title" autofocus="autofocus" placeholder="title..." required>
     </fieldset>
 
     <fieldset>
@@ -10,15 +10,18 @@
     </fieldset>
 
     <fieldset>
+      <select ng-model="parentTask" ng-options="project.title for project in projects">
+        <option value="">select list</option>
+      </select>
+    </fieldset>
+
+    <fieldset>
       <textarea class="formContent" ng-model="newTask.description" placeholder="description..."></textarea>
     </fieldset>
 
     <fieldset>
-      <button class="formAction" type="submit" ng-click="addNewTask()">
+      <button class="formAction" type="submit" ng-disabled="!addTask.$valid" ng-click="addNewTask()">
         Add
-      </button>
-      <button class="formAction" type="submit" ng-click="cancelNewTask()">
-        Cancel
       </button>
     </fieldset>
 

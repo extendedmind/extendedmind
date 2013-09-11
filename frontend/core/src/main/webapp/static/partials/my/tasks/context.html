@@ -1,28 +1,28 @@
-  <div class="em-core">
-    <div id="header">
+<div>
+  <div id="header">
 
-      <div class="inlineblock">
-        <h4><a href="/my/tasks" class="em-subtitle">tasks</a></h4>
-      </div>
-
-      <div class="inlineblock">
-        <button type="button" class="addNew">
-          <a href="/my/tasks/new/">+</a>
-        </button>
-      </div>
-
+    <div class="inlineblock">
+      <h4><a href="my/tasks" class="em-subtitle">tasks</a></h4>
     </div>
 
-    <h4>@{{context.title}}</h4>
-
-    <ul>
-      <li ng-repeat="task in subtasks">
-
-        <input type="checkbox" name="checkbox" id="checkbox{{$index}}" ng-model="task.done" ng-change="taskChecked($index)">
-        <label for="checkbox{{$index}}" class="done-{{task.done}}" eat-click ng-click="expandTask()">{{task.title}}</label>
-
-        <div task-content ng-show="showMe"></div>
-      </li>
-    </ul>
+    <div class="inlineblock">
+      <button type="button" class="addNew">
+        <a href="my/tasks/new/">+</a>
+      </button>
+    </div>
 
   </div>
+
+  <h4>@{{context.title}}</h4>
+
+  <ul>
+    <li ng-repeat="task in subtasks">
+
+      <input type="checkbox" name="checkbox" id="checkbox{{$index}}" ng-model="task.done" ng-change="taskChecked($index)">
+      <label for="checkbox{{$index}}" class="done-{{task.done}}" eat-click ng-click="expandTask()">{{task.title}}</label>
+
+      <div task-content ng-show="showMe" ></div>
+    </li>
+  </ul>
+
+</div>

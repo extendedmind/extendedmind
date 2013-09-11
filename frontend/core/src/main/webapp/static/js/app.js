@@ -1,8 +1,8 @@
-/*global angular*/
+/*global angular, templateUrlPrefix*/
 
 ( function() {'use strict';
 
-    angular.module('em.app', ['em.directives', 'em.filters', 'em.services']);
+    angular.module('em.app', ['ngMobile', 'em.directives', 'em.filters', 'em.services']);
     angular.module('em.directives', []);
     angular.module('em.filters', []);
     angular.module('em.services', ['em.base64']);
@@ -11,23 +11,23 @@
     function($locationProvider, $routeProvider) {
 
       $routeProvider.when('/', {
-        templateUrl : '/static/partials/home.html',
+        templateUrl : 'static/partials/home.html',
         controller : 'HomeController'
       });
 
       $routeProvider.when('/404', {
-        templateUrl : '/static/partials/pageNotFound.html',
+        templateUrl : 'static/partials/pageNotFound.html',
         controller : 'PageNotFoundController'
       });
 
       $routeProvider.when('/login', {
-        templateUrl : '/static/partials/login.html',
+        templateUrl : 'static/partials/login.html',
         controller : 'LoginController'
       });
 
       $routeProvider.when('/my', {
         controller : 'MyController',
-        templateUrl : '/static/partials/my.html',
+        templateUrl : 'static/partials/my.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -39,7 +39,7 @@
 
       $routeProvider.when('/my/notes', {
         controller : 'NotesController',
-        templateUrl : '/static/partials/my/notes.html',
+        templateUrl : 'static/partials/my/notes.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -51,7 +51,7 @@
 
       $routeProvider.when('/my/tasks', {
         controller : 'TasksController',
-        templateUrl : '/static/partials/my/tasks.html',
+        templateUrl : 'static/partials/my/tasks.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -63,7 +63,7 @@
 
       $routeProvider.when('/my/tasks/context/:uuid', {
         controller : 'ContextController',
-        templateUrl : '/static/partials/my/tasks/context.html',
+        templateUrl : 'static/partials/my/tasks/context.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -75,7 +75,7 @@
 
       $routeProvider.when('/my/tasks/new/:uuid', {
         controller : 'NewTaskController',
-        templateUrl : '/static/partials/my/tasks/new.html',
+        templateUrl : 'static/partials/my/tasks/new.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -87,7 +87,7 @@
 
       $routeProvider.when('/my/tasks/project/:uuid', {
         controller : 'ProjectController',
-        templateUrl : '/static/partials/my/tasks/project.html',
+        templateUrl : 'static/partials/my/tasks/project.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -99,14 +99,14 @@
 
       $routeProvider.otherwise({
         controller : 'PageNotFoundController',
-        redirectTo : '/404'
+        redirectTo : '404'
       });
 
       $locationProvider.html5Mode(true);
     }]);
 
-    angular.module('em.app').run(['$location', '$rootScope', 'userAuthenticate',
-    function($location, $rootScope, userAuthenticate) {
+    angular.module('em.app').run(['$document', '$location', '$rootScope', 'userAuthenticate',
+    function($document, $location, $rootScope, userAuthenticate) {
       $rootScope.$on('event:authenticationRequired', function() {
         userAuthenticate.authenticate();
       });
@@ -115,8 +115,6 @@
       });
       $rootScope.$on('event:loginSuccess', function() {
         $location.path('/my');
-      });
-      $rootScope.$on('$routeChangeStart', function(event, next, current) {
       });
     }]);
   }());

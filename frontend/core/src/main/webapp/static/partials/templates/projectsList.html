@@ -1,7 +1,9 @@
 <ul>
-  <li ng-repeat="project in projects">
+  <li ng-repeat="project in projects" ng-animate="{enter: 'example-repeat-enter',
+  leave: 'example-repeat-leave',
+  move: 'example-repeat-move'}">
 
-    <span ng-click="setActiveItem(project)"><a href="/my/tasks/project/{{project.uuid}}">{{project.title}}</a></span>
+    <span ng-click="setActiveItem(project)"><a href="my/tasks/project/{{project.uuid}}">{{project.title}}</a></span>
 
   </li>
 </ul>

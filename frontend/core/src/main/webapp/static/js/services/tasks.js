@@ -45,51 +45,61 @@
     angular.module('em.services').factory('tasksArray', ['itemsArray',
     function(itemsArray) {
       var projects, subtasks, tasks;
+      tasks = [];
       projects = [];
       subtasks = [];
 
       return {
         setTasks : function(tasks) {
-          this.tasks = tasks;
-        },
-        getTasks : function() {
-          return this.tasks;
-        },
-        setProjects : function(tasks) {
-          var i = 0;
-
-          while (tasks[i]) {
-            if (tasks[i].project) {
-              if (!itemsArray.itemInArray(projects, tasks[i].uuid)) {
-                projects.push(tasks[i]);
-              }
-            }
-            i++;
-          }
-        },
-        getProjects : function() {
-          return projects;
-        },
-        setSubtasks : function(tasks) {
           var i = 0;
 
           while (tasks[i]) {
             if (tasks[i].relationships) {
               if (tasks[i].relationships.parentTask) {
-                if (!itemsArray.itemInArray(subtasks, tasks[i].uuid)) {
-                  subtasks.push(tasks[i]);
-                }
+                this.setSubtask(tasks[i]);
               }
             }
+
+            if (tasks[i].project) {
+              this.setProject(tasks[i]);
+            } else {
+              this.setTask(tasks[i]);
+            }
             i++;
+          }
+        },
+        getTasks : function() {
+          return tasks;
+        },
+        setTask : function(task) {
+          if (!itemsArray.itemInArray(tasks, task.uuid)) {
+            tasks.push(task);
+          }
+        },
+        setProject : function(task) {
+          if (!itemsArray.itemInArray(projects, task.uuid)) {
+            projects.push(task);
+          }
+        },
+        getProjects : function() {
+          return projects;
+        },
+        setSubtask : function(task) {
+          if (!itemsArray.itemInArray(subtasks, task.uuid)) {
+            subtasks.push(task);
           }
         },
         getSubtasks : function() {
           return subtasks;
         },
         putNewTask : function(task) {
-          if (!itemsArray.itemInArray(this.tasks, task.uuid)) {
-            this.tasks.push(task);
+          if (!itemsArray.itemInArray(tasks, task.uuid)) {
+            tasks.push(task);
+            if (task.relationships) {
+              if (task.relationships.parentTask) {
+                this.setSubtask(task);
+              }
+            }
           }
         }
       };

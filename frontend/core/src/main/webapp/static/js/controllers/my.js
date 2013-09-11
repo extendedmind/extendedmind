@@ -2,10 +2,11 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('MyController', ['$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray',
-    function($scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
+    angular.module('em.app').controller('MyController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray',
+    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
+      $rootScope.pageAnimation = null;
 
       itemsRequest.getItems(function(itemsResponse) {
 
@@ -35,6 +36,22 @@
 
       $scope.setActiveItem = function(item) {
         activeItem.setItem(item);
+      };
+
+      $scope.swipeLeft = function(asd) {
+        $rootScope.pageAnimation = {
+          enter : 'em-page-enter-right',
+          leave : 'em-page-leave-left'
+        };
+        $location.path('/my/tasks');
+      };
+
+      $scope.swipeRight = function() {
+        $rootScope.pageAnimation = {
+          enter : 'em-page-enter-left',
+          leave : 'em-page-leave-right'
+        };
+        $location.path('/my/notes');
       };
     }]);
   }());
