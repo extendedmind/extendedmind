@@ -2,11 +2,10 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NavigationController', ['$location', '$rootScope', '$scope', 'locationHandler','pageTitle',
-    function($location, $rootScope, $scope, locationHandler,pageTitle) {
-      
-      $scope.pageTitle=pageTitle.getTitle();
-      // $scope.subtitle=pageTitle.getSubTitle();
+    angular.module('em.app').controller('NavigationController', ['$location', '$rootScope', '$scope', 'locationHandler', 'pageTitle',
+    function($location, $rootScope, $scope, locationHandler, pageTitle) {
+
+      $scope.pageTitle = pageTitle.getTitle();
 
       $scope.swipeLeft = function(url) {
         $rootScope.pageAnimation = {

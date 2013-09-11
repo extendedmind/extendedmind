@@ -1,17 +1,19 @@
-<div class="collapse navbar-collapse" ng-controller="NavigationController">
-  <ul class="pager">
+<div ng-controller="NavigationController">
 
-    <li class="previous">
-      <a href="" ng-click="swipeRight()">&larr;</a>
-    </li>
-
-    <li class="next">
-      <a href="" ng-click="swipeLeft()">&rarr;</a>
-    </li>
-
-    <div class="page-header">
-      <h1>{{pageTitle}} <small>{{subtitle}}</small></h1>
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="navbar-left">
+      <button type="button" class="btn btn-default navbar-btn" ng-click="swipeRight()">
+        &larr;
+      </button>
     </div>
 
-  </ul>
+    <div class="navbar-header">
+      <h1>{{pageTitle}} <small>{{subtitle}}</small></h1>
+    </div>
+    <div class="navbar-right">
+      <button type="button" class="btn btn-default navbar-btn" ng-click="swipeLeft()">
+        &rarr;
+      </button>
+    </div>
+  </nav>
 </div>
