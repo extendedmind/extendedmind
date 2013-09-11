@@ -44,7 +44,7 @@ trait UserActions {
           if (saveResponse.isLeft) 
             log.error("Error updating invite request for email {} with id {}, error: {}", 
                 inviteRequest.email, id, saveResponse.left.get.head)
-          else log.info("Saved email: {} with id: {}", inviteRequest.email, id)
+          else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", inviteRequest.email, setResult.right.get.uuid.get, id)
         }case _ =>
           log.error("Could not send email to {}", inviteRequest.email)
       }

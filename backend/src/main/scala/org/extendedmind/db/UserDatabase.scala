@@ -94,17 +94,19 @@ trait UserDatabase extends AbstractGraphDatabase {
   def getInviteRequestQueueNumber(inviteRequestUUID: UUID): Response[InviteRequestQueueNumber] = {
     withTx{
       implicit neo =>
-        val inviteRequests = neo.gds.index().forNodes("inviteRequests")
-        val inviteRequestNodeList = inviteRequests.query( "modified", 
-            QueryContext.numericRange("modified", 0, Long.MaxValue).sort("modified"))
-        var count = 1
-        // for loop execution with a range
-        for( inviteRequestNode <- inviteRequestNodeList){
-          if (getUUID(inviteRequestNode) == inviteRequestUUID) 
-            return Right(InviteRequestQueueNumber(count))
-          count += 1
+        val inviteRequest = getNode(inviteRequestUUID, MainLabel.REQUEST)
+        if (inviteRequest.isLeft) Left(inviteRequest.left.get)
+        else{
+          val inviteRequests = neo.gds.index().forNodes("inviteRequests")
+          val inviteRequestNodeList = inviteRequests.query( "modified", 
+              QueryContext.numericRange("modified", 0, Long.MaxValue).sort("modified")).toList
+          val queueNumber = inviteRequestNodeList.indexOf(inviteRequest.right.get)
+          if (queueNumber < -1){
+            fail(INTERNAL_SERVER_ERROR, "Invite request could not be found from invite request index with UUID: " + inviteRequestUUID)
+          }else{
+            return Right(InviteRequestQueueNumber(queueNumber+1))
+          }
         }
-        fail(INVALID_PARAMETER, "Invite request not found with given UUID: " + inviteRequestUUID)
     }
   }
   // PRIVATE

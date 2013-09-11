@@ -388,13 +388,11 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                     ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                     ) ~> emRoute ~> check {
                     entityAs[InviteRequestQueueNumber].queueNumber should be(2)
-                      
                   }
                   Get("/invite/request/" + inviteRequestResponse3.uuid.get
                     ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                     ) ~> emRoute ~> check {
                     entityAs[InviteRequestQueueNumber].queueNumber should be(3)
-
                   }
               }
             }
