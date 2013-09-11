@@ -13,9 +13,6 @@
           return subTitle;
         },
         getTitle : function() {
-          if (subTitle !== null) {
-            return pageTitle + ' | ' + subTitle;
-          }
           return pageTitle;
         },
         setSubTitle : function(newsubTitle) {
