@@ -1,17 +1,22 @@
 <div class="{{pageAnimation}}">
+
+  <ul class="pager">
+
+    <li class="previous">
+      <a href="" ng-click="swipeRight()">&larr;</a>
+    </li>
+
+    <li class="next">
+      <a href="" ng-click="swipeLeft()">&rarr;</a>
+    </li>
+
+  </ul>
+
+  <div class="page-header">
+    <h1>Extended Mind <small>Notes</small></h1>
+  </div>
+
   <div ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
-    <div id="header">
-
-      <div class="inlineblock">
-        <h4><a href="my" class="em-subtitle">notes</a></h4>
-      </div>
-
-      <div class="inlineblock">
-        <button type="button" class="addNew" ng-click="editNewNote()">
-          +
-        </button>
-      </div>
-    </div>
 
     <div>
       <h4>inbox</h4>

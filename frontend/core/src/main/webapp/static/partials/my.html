@@ -1,7 +1,22 @@
 <div class="{{pageAnimation}}">
-  <div ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
 
-    <h3>extended mind</h3>
+  <ul class="pager">
+
+    <li class="previous">
+      <a href="" ng-click="swipeRight()">&larr;</a>
+    </li>
+
+    <li class="next">
+      <a href="" ng-click="swipeLeft()">&rarr;</a>
+    </li>
+
+  </ul>
+
+  <div class="page-header">
+    <h1>Extended Mind <small>My</small></h1>
+  </div>
+
+  <div ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
 
     <form name="searchAndAddOmniForm">
 
