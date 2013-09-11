@@ -31,6 +31,33 @@
   top: 10px;
 }
 
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: #333333;
+  text-align: center;
+  color: white;
+}
+
+#wrap {
+  min-height: 100%;
+}
+
+#waiting {
+  overflow:auto;
+  padding-bottom:150px; /* this needs to be bigger than footer height*/
+}
+
+.footer {
+  position: relative;
+  margin-top: -50px; /* negative value of footer height */
+  height: 50px;
+  clear:both;
+  padding-top:20px;
+}
+
 a:link {
   text-decoration:none;
 }
@@ -38,18 +65,12 @@ a:hover {
   text-decoration:underline;
 }
 
-.em-page {
-  background-color: #333333;
-  text-align: center;
-  color: white;
-}
-
 .em-topmargin{
   height: 5px;
 }
 
 .em-app {
-  max-width: 300px;
+  max-width: 340px;
   margin-left: auto ;
   margin-right: auto ;
   border:solid;
@@ -61,6 +82,11 @@ a:hover {
 .em-heading {
   margin-top: 10%;
   margin-bottom: 5%;
+}
+
+.em-logoheading {
+  margin-top: 10%;
+  margin-bottom: 10%;
 }
 
 .em-ingress {
