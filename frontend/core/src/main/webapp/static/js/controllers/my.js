@@ -2,11 +2,14 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('MyController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray',
-    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
+    angular.module('em.app').controller('MyController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse','locationHandler', 'notesArray', 'tagsArray', 'tasksArray',
+    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, locationHandler,notesArray, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
       $rootScope.pageAnimation = null;
+      
+      locationHandler.setPreviousLocation('/my/tasks');
+      locationHandler.setNextLocation('/my/notes');
 
       itemsRequest.getItems(function(itemsResponse) {
 
