@@ -9,6 +9,7 @@
       $scope.errorHandler = errorHandler;
       $rootScope.pageAnimation = null;
       $scope.pageIndex = 0;
+      $rootScope.pageAnimation = null;
 
       locationHandler.setPreviousLocation('/my/tasks');
       locationHandler.setNextLocation('/my/notes');
