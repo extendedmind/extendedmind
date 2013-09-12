@@ -1,4 +1,5 @@
 /*global angular*/
+/*jslint plusplus: true*/
 
 ( function() {'use strict';
 
@@ -7,7 +8,7 @@
 
       $scope.errorHandler = errorHandler;
       $rootScope.pageAnimation = null;
-      $rootScope.subtitle = 'my';
+      $scope.pageIndex = 0;
 
       locationHandler.setPreviousLocation('/my/tasks');
       locationHandler.setNextLocation('/my/notes');
@@ -47,7 +48,13 @@
           enter : 'em-page-enter-right',
           leave : 'em-page-leave-left'
         };
-        $location.path('/my/tasks');
+        if ($scope.pageIndex < 2) {
+          $scope.pageIndex++;
+        } else {
+          $scope.pageIndex = 0;
+        }
+        $scope.template = $scope.templates[$scope.pageIndex];
+        $rootScope.subtitle = $scope.template.name;
       };
 
       $scope.swipeRight = function() {
@@ -55,7 +62,26 @@
           enter : 'em-page-enter-left',
           leave : 'em-page-leave-right'
         };
-        $location.path('/my/notes');
+        if ($scope.pageIndex > 0) {
+          $scope.pageIndex--;
+        } else {
+          $scope.pageIndex = 2;
+        }
+        $scope.template = $scope.templates[$scope.pageIndex];
+        $rootScope.subtitle = $scope.template.name;
       };
+
+      $scope.templates = [{
+        name : 'my',
+        url : 'static/partials/myMy.html'
+      }, {
+        name : 'tasks',
+        url : 'static/partials/my/tasks.html'
+      }, {
+        name : 'notes',
+        url : 'static/partials/my/notes.html'
+      }];
+      $scope.template = $scope.templates[$scope.pageIndex];
+      $rootScope.subtitle = $scope.template.name;
     }]);
   }());
