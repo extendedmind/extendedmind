@@ -35,22 +35,6 @@
       };
     }]);
 
-    angular.module('em.directives').directive('notes', [
-    function() {
-      return {
-        restrict : 'EACM',
-        templateUrl : 'static/partials/my/notes.html'
-      };
-    }]);
-
-    angular.module('em.directives').directive('tasks', [
-    function() {
-      return {
-        restrict : 'EACM',
-        templateUrl : 'static/partials/my/tasks.html'
-      };
-    }]);
-
     angular.module('em.directives').directive('newTask', [
     function() {
       return {
@@ -85,32 +69,6 @@
       return {
         restrict : 'A',
         templateUrl : 'static/partials/templates/contextsList.html'
-      };
-    }]);
-
-    angular.module('em.directives').directive('my', [
-    function() {
-      return {
-        restrict : 'C',
-        templateUrl : 'static/partials/myMy.html'
-      };
-    }]);
-
-    angular.module('em.directives').directive('tasks', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/my/tasks.html',
-        controller : 'TasksController'
-      };
-    }]);
-
-    angular.module('em.directives').directive('notes', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/my/notes.html',
-        controller : 'NotesController'
       };
     }]);
 

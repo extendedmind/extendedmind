@@ -5,20 +5,18 @@
     angular.module('em.app').controller('NavigationController', ['$location', '$rootScope', '$scope', 'locationHandler', 'pageTitle',
     function($location, $rootScope, $scope, locationHandler, pageTitle) {
 
-      $scope.pageTitle = pageTitle.getTitle();
-
-      $scope.swipeLeft = function(url) {
+      $scope.swipeLeft = function() {
         $rootScope.pageAnimation = {
-          enter : 'em-page-enter-right',
-          leave : 'em-page-leave-left'
+          enter : 'em-animate-enter-left',
+          leave : 'em-animate-leave-right'
         };
         $location.path(locationHandler.getPreviousLocation());
       };
 
-      $scope.swipeRight = function(url) {
+      $scope.swipeRight = function() {
         $rootScope.pageAnimation = {
-          enter : 'em-page-enter-left',
-          leave : 'em-page-leave-right'
+          enter : 'em-animate-enter-right',
+          leave : 'em-animate-leave-left'
         };
         $location.path(locationHandler.getNextLocation());
       };

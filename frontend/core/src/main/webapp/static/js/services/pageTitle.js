@@ -5,7 +5,7 @@
     angular.module('em.services').factory('pageTitle', function() {
       var pageTitle, subTitle;
 
-      pageTitle = 'extended mind';
+      pageTitle = null;
       subTitle = null;
 
       return {
