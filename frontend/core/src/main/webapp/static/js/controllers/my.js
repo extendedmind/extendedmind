@@ -43,10 +43,10 @@
         activeItem.setItem(item);
       };
 
-      $scope.swipeLeft = function(asd) {
+      $scope.swipeLeft = function() {
         $rootScope.pageAnimation = {
-          enter : 'em-page-enter-right',
-          leave : 'em-page-leave-left'
+          enter : 'em-animate-enter-right',
+          leave : 'em-animate-leave-left'
         };
         if ($scope.pageIndex < 2) {
           $scope.pageIndex++;
@@ -59,8 +59,8 @@
 
       $scope.swipeRight = function() {
         $rootScope.pageAnimation = {
-          enter : 'em-page-enter-left',
-          leave : 'em-page-leave-right'
+          enter : 'em-animate-enter-left',
+          leave : 'em-animate-leave-right'
         };
         if ($scope.pageIndex > 0) {
           $scope.pageIndex--;
@@ -81,6 +81,7 @@
         name : 'notes',
         url : 'static/partials/my/notes.html'
       }];
+
       $scope.template = $scope.templates[$scope.pageIndex];
       $rootScope.subtitle = $scope.template.name;
     }]);
