@@ -53,16 +53,16 @@
 
       $scope.swipeLeft = function(asd) {
         $rootScope.pageAnimation = {
-          enter : 'em-page-enter-right',
-          leave : 'em-page-leave-left'
+          enter : 'em-animate-enter-right',
+          leave : 'em-animate-leave-left'
         };
         $location.path('/my/notes');
       };
 
       $scope.swipeRight = function() {
         $rootScope.pageAnimation = {
-          enter : 'em-page-enter-left',
-          leave : 'em-page-leave-right'
+          enter : 'em-animate-enter-left',
+          leave : 'em-animate-leave-right'
         };
         $location.path('/my');
       };

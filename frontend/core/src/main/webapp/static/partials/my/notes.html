@@ -1,8 +1,12 @@
-<div>
-  <h4>inbox</h4>
-  <div notesfilter="{{notesListFilter}}" notes-list></div>
+<div class="em-animate" ng-animate="{{pageAnimation}}">
 
-  <h4>projects</h4>
+  <div ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
 
-  <h4>areas</h4>
+    <h4>inbox</h4>
+    <div notesfilter="{{notesListFilter}}" notes-list></div>
+
+    <h4>projects</h4>
+
+    <h4>areas</h4>
+  </div>
 </div>

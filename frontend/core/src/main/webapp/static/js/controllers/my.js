@@ -8,8 +8,7 @@
 
       $scope.errorHandler = errorHandler;
       $rootScope.pageAnimation = null;
-      $scope.pageIndex = 0;
-      $rootScope.pageAnimation = null;
+      $rootScope.subtitle = 'my';
 
       locationHandler.setPreviousLocation('/my/tasks');
       locationHandler.setNextLocation('/my/notes');
@@ -49,13 +48,7 @@
           enter : 'em-animate-enter-right',
           leave : 'em-animate-leave-left'
         };
-        if ($scope.pageIndex < 2) {
-          $scope.pageIndex++;
-        } else {
-          $scope.pageIndex = 0;
-        }
-        $scope.template = $scope.templates[$scope.pageIndex];
-        $rootScope.subtitle = $scope.template.name;
+        $location.path('/my/tasks');
       };
 
       $scope.swipeRight = function() {
@@ -63,27 +56,7 @@
           enter : 'em-animate-enter-left',
           leave : 'em-animate-leave-right'
         };
-        if ($scope.pageIndex > 0) {
-          $scope.pageIndex--;
-        } else {
-          $scope.pageIndex = 2;
-        }
-        $scope.template = $scope.templates[$scope.pageIndex];
-        $rootScope.subtitle = $scope.template.name;
+        $location.path('/my/notes');
       };
-
-      $scope.templates = [{
-        name : 'my',
-        url : 'static/partials/myMy.html'
-      }, {
-        name : 'tasks',
-        url : 'static/partials/my/tasks.html'
-      }, {
-        name : 'notes',
-        url : 'static/partials/my/notes.html'
-      }];
-
-      $scope.template = $scope.templates[$scope.pageIndex];
-      $rootScope.subtitle = $scope.template.name;
     }]);
   }());
