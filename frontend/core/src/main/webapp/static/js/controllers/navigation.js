@@ -4,12 +4,12 @@
 
     angular.module('em.app').controller('NavigationController', ['$location', '$rootScope', '$scope', 'locationHandler', 'pageTitle',
     function($location, $rootScope, $scope, locationHandler, pageTitle) {
-      
-      $scope.previous=function(){
+
+      $scope.previous = function() {
         $location.path(locationHandler.getPreviousLocation());
       };
-      
-      $scope.next=function(){
+
+      $scope.next = function() {
         $location.path(locationHandler.getNextLocation());
       };
 

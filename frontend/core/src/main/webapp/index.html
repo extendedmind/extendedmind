@@ -11,8 +11,9 @@
   </head>
   <body>
     <div class="container">
+      <div ng-include src="'static/partials/templates/navigation.html'"></div>
       <div class="row-fluid">
-        <div class="col-lg-6 col-lg-offset-3 em-page" ng-view ng-animate="{{pageAnimation}}"></div>
+        <div class="col-lg-6 col-lg-offset-3 em-page em-animate" ng-view ng-animate="{{pageAnimation}}"></div>
       </div>
     </div>
 
