@@ -8,7 +8,6 @@
       $scope.pageTitle = pageTitle.getTitle();
 
       $scope.swipeLeft = function(url) {
-console.log('asd');
         $rootScope.pageAnimation = {
           enter : 'em-page-enter-right',
           leave : 'em-page-leave-left'
