@@ -1,10 +1,14 @@
 <div ng-controller="NavigationController">
+  <div class="em-animate" ng-animate="{{pageAnimation}}">
 
-  <nav class="navbar" role="navigation">
+    <div ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
+      <nav class="navbar" role="navigation">
 
-    <div class="navbar-header">
-      <h1><a href="" class="navbar-link" ng-click="swipeRight()">&laquo; </a>{{pageTitle}} <small>{{subtitle}}</small> <a href="" class="navbar-link" ng-click="swipeLeft()">&raquo;</a></h1>
+        <div class="navbar-header">
+          <h1><a href="" class="navbar-link" ng-click="next()">&laquo; </a>{{pageTitle}}<small> {{subtitle}} </small><a href="" class="navbar-link" ng-click="previous()">&raquo;</a></h1>
+        </div>
+
+      </nav>
     </div>
-
-  </nav>
+  </div>
 </div>
