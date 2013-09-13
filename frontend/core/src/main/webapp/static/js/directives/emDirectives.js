@@ -39,6 +39,14 @@
       };
     }]);
 
+    angular.module('em.directives').directive('navigationBar', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/navigation.html'
+      };
+    }]);
+
     angular.module('em.directives').directive('urlList', [
     function() {
       return {

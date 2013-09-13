@@ -1,36 +1,32 @@
-<div class="{{pageAnimation}}">
-  <div ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
+<div class="em-animate" ng-animate="{{pageAnimation}}" ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
 
-    <h3>extended mind</h3>
+  <form name="searchAndAddOmniForm">
 
-    <form name="searchAndAddOmniForm">
+    <input type="search" class="formContent"  ng-model="newItem.title" placeholder="Search / Add">
+    <button type="button" class="addNew" ng-click="addNewItem()">
+      +
+    </button>
 
-      <input type="search" class="formContent"  ng-model="newItem.title" autofocus="autofocus" placeholder="Search / Add">
-      <button type="button" class="addNew" ng-click="addNewItem()">
-        +
-      </button>
+  </form>
 
-    </form>
-
-    <div>
-      <button type="button" class="toggle" ng-click="toggleItemsList()">
-        <h4>inbox ({{items.length}})</h4>
-      </button>
-      <div ng-show="showMe" items-list itemsfilter="newItem.title"></div>
-    </div>
-
-    <div>
-      <div notes-list notesfilter="newItem.title">
-        <h4><a href="my/notes" class="em-subtitle">notes</a></h4>
-      </div>
-    </div>
-
-    <div>
-      <div tasks-list tasksfilter="newItem.title">
-        <h4><a href="my/tasks" class="em-subtitle">tasks</a></h4>
-      </div>
-    </div>
-
-    <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
+  <div>
+    <button type="button" class="toggle" ng-click="toggleItemsList()">
+      <h4>inbox ({{items.length}})</h4>
+    </button>
+    <div ng-show="showMe" items-list itemsfilter="newItem.title"></div>
   </div>
+
+  <div>
+    <div notes-list notesfilter="newItem.title">
+      <h4><a href="my/notes" class="em-subtitle">notes</a></h4>
+    </div>
+  </div>
+
+  <div>
+    <div tasks-list tasksfilter="newItem.title">
+      <h4><a href="my/tasks" class="em-subtitle">tasks</a></h4>
+    </div>
+  </div>
+
+  <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
 </div>

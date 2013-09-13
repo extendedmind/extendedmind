@@ -2,11 +2,15 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NotesController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsRequest', 'notesArray',
-    function($location, $rootScope, $scope, activeItem, errorHandler, itemsRequest, notesArray) {
+    angular.module('em.app').controller('NotesController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsRequest', 'locationHandler', 'notesArray',
+    function($location, $rootScope, $scope, activeItem, errorHandler, itemsRequest, locationHandler, notesArray) {
 
       $scope.errorHandler = errorHandler;
       $rootScope.pageAnimation = null;
+      $rootScope.subtitle = 'notes';
+
+      locationHandler.setPreviousLocation('/my');
+      locationHandler.setNextLocation('/my/tasks');
 
       itemsRequest.getItems(function(itemsResponse) {
         notesArray.setNotes(itemsResponse.notes);
@@ -23,16 +27,16 @@
 
       $scope.swipeLeft = function(asd) {
         $rootScope.pageAnimation = {
-          enter : 'em-page-enter-right',
-          leave : 'em-page-leave-left'
+          enter : 'em-animate-enter-right',
+          leave : 'em-animate-leave-left'
         };
         $location.path('/my');
       };
 
       $scope.swipeRight = function() {
         $rootScope.pageAnimation = {
-          enter : 'em-page-enter-left',
-          leave : 'em-page-leave-right'
+          enter : 'em-animate-enter-left',
+          leave : 'em-animate-leave-right'
         };
         $location.path('/my/tasks');
       };
