@@ -72,24 +72,6 @@
       };
     }]);
 
-    angular.module('em.directives').directive('tasks', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/my/tasks.html',
-        controller : 'TasksController'
-      };
-    }]);
-
-    angular.module('em.directives').directive('notes', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/my/notes.html',
-        controller : 'NotesController'
-      };
-    }]);
-
     angular.module('em.directives').directive('projectsList', [
     function() {
       return {

@@ -1,12 +1,18 @@
 /*global angular*/
+/*jslint plusplus: true*/
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('MyController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray',
-    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
+    angular.module('em.app').controller('MyController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'locationHandler', 'notesArray', 'pageTitle', 'tagsArray', 'tasksArray',
+    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, locationHandler, notesArray, pageTitle, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
       $rootScope.pageAnimation = null;
+      $rootScope.pageTitle = 'my';
+      $rootScope.subtitle = null;
+
+      locationHandler.setPreviousLocation('/my/tasks');
+      locationHandler.setNextLocation('/my/notes');
 
       itemsRequest.getItems(function(itemsResponse) {
 
@@ -38,18 +44,18 @@
         activeItem.setItem(item);
       };
 
-      $scope.swipeLeft = function(asd) {
+      $scope.swipeLeft = function() {
         $rootScope.pageAnimation = {
-          enter : 'em-page-enter-right',
-          leave : 'em-page-leave-left'
+          enter : 'em-animate-enter-right',
+          leave : 'em-animate-leave-left'
         };
         $location.path('/my/tasks');
       };
 
       $scope.swipeRight = function() {
         $rootScope.pageAnimation = {
-          enter : 'em-page-enter-left',
-          leave : 'em-page-leave-right'
+          enter : 'em-animate-enter-left',
+          leave : 'em-animate-leave-right'
         };
         $location.path('/my/notes');
       };

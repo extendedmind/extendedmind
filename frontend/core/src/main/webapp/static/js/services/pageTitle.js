@@ -5,7 +5,7 @@
     angular.module('em.services').factory('pageTitle', function() {
       var pageTitle, subTitle;
 
-      pageTitle = 'extended mind';
+      pageTitle = null;
       subTitle = null;
 
       return {
@@ -13,9 +13,6 @@
           return subTitle;
         },
         getTitle : function() {
-          if (subTitle !== null) {
-            return pageTitle + ' | ' + subTitle;
-          }
           return pageTitle;
         },
         setSubTitle : function(newsubTitle) {
