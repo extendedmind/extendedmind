@@ -5,7 +5,7 @@
   </li>
   <li ng-repeat="tag in task.relationships.tags | tagTitle">
 
-    <span ng-click="setActiveItem(tag)"><a href="my/tasks/context/{{tag.uuid}}">@{{tag.title}}</a></span>
+    <span ng-click="setActiveItem(tag)"><a class="text-muted" href="my/tasks/context/{{tag.uuid}}">@{{tag.title}}</a></span>
 
   </li>
 
