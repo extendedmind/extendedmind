@@ -2,15 +2,17 @@
 
   <h3 class="text-primary">login</h3>
 
-  <form class="form-horizontal" role="form" name="loginform">
+  <form class="form-horizontal" role="form" name="loginForm">
     <div class="form-group">
+    <label class="sr-only" for="input-email" class="col-lg-2 control-label">email</label>
       <div class="col-lg-10">
-        <input type="email" class="form-control" id="inputEmail" ng-model="user.username" placeholder="email" autofocus="autofocus" required>
+        <input type="email" class="form-control" id="input-email" ng-model="user.username" placeholder="email" autofocus="autofocus" required>
       </div>
     </div>
     <div class="form-group">
+    <label class="sr-only" for="input-password" class="col-lg-2 control-label">password</label>
       <div class="col-lg-10">
-        <input type="password" class="form-control" id="inputPassword1" ng-model="user.password" placeholder="password" required>
+        <input type="password" class="form-control" id="input-password" ng-model="user.password" placeholder="password" required>
       </div>
     </div>
     <div class="form-group">
@@ -24,7 +26,7 @@
     </div>
     <div class="form-group">
       <div class="col-lg-offset-2 col-lg-10">
-        <button type="submit" class="btn btn-default" ng-disabled="!loginform.$valid" ng-click="userLogin()">
+        <button type="submit" class="btn btn-default" ng-disabled="!loginForm.$valid" ng-click="userLogin()">
           log in
         </button>
       </div>
