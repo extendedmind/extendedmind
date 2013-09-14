@@ -20,7 +20,7 @@
         notesArray.setNotes(itemsResponse.notes);
         tagsArray.setTags(itemsResponse.tags);
         tasksArray.setTasks(itemsResponse.tasks);
-
+        
         $scope.items = itemsArray.getItems();
         $scope.notes = notesArray.getNotes();
         $scope.tags = tagsArray.getTags();

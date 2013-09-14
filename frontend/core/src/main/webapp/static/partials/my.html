@@ -1,15 +1,15 @@
 <div class="em-animate" ng-animate="{{pageAnimation}}" ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
   <h3 class="text-primary">extended mind</h3>
   
-  <div ng-show="!newItem.title" url-list></div>
+  <div ng-hide="newItem.title" url-list></div>
 
   <div class="row">
     <div class="col-lg-6">
       <div class="input-group">
-        <input type="search" class="form-control" ng-model="newItem.title" placeholder="search / add" required>
+        <input type="TEXT" class="form-control" ng-model="newItem.title" placeholder="search / add" ng-click="toggleUrlList()" required>
         <span class="input-group-btn">
           <button class="btn btn-default" type="button" ng-disabled="!newItem.title" ng-click="addNewItem()">
-            <span class="glyphicon glyphicon-plus"></span>
+            +
           </button> </span>
       </div>
     </div>
@@ -22,13 +22,13 @@
 
   <div>
     <div notes-list notesfilter="newItem.title">
-      <h4><a class="text-muted" href="my/notes">notes</a></h4>
+      <h4><a class="text-muted" href="" ng-click="swipeRight()">notes</a></h4>
     </div>
   </div>
 
   <div>
     <div tasks-list tasksfilter="newItem.title">
-      <h4><a class="text-muted" href="my/tasks">tasks</a></h4>
+      <h4><a class="text-muted" href="" ng-click="swipeLeft()">tasks</a></h4>
     </div>
   </div>
 
