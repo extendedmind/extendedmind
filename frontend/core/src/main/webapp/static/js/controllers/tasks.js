@@ -67,5 +67,9 @@
         };
         $location.path('/my');
       };
+
+      $scope.addNew = function() {
+        $location.path('/my/tasks/new/');
+      };
     }]);
   }());
