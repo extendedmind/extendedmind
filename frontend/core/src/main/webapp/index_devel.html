@@ -4,7 +4,7 @@
 
     <base href="/" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
     <title ng-bind="pageTitle.getTitle()"></title>
 
     <link rel="stylesheet" href="static/lib/bootstrap/bootstrap.css"/>
@@ -15,7 +15,7 @@
   </head>
   <body>
     <div class="container">
-      <div ng-include src="'static/partials/templates/navigation.html'"></div>
+      <!-- <div ng-include src="'static/partials/templates/navigation.html'"></div> -->
       <div class="row-fluid">
 
         <div class="col-lg-6 col-lg-offset-3 em-page em-animate" ng-view ng-animate="{{pageAnimation}}"></div>
