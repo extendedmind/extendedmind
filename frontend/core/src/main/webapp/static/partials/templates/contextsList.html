@@ -1,5 +1,5 @@
 <ul>
-  <li ng-repeat="context in tags" ng-animate="{enter: 'fade-enter', leave: 'fade-leave'}">
+  <li ng-repeat="context in tags" ng-animate="'fade'">
 
     <span ng-click="setActiveItem(context)"><a class="text-muted" href="my/tasks/context/{{context.uuid}}">@{{context.title}}</a></span>
 

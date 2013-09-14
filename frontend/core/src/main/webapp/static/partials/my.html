@@ -1,7 +1,7 @@
 <div class="em-animate" ng-animate="{{pageAnimation}}" ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
   <h3 class="text-primary">extended mind</h3>
   
-  <div ng-hide="newItem.title" url-list></div>
+  <div ng-hide="newItem.title" url-list ng-animate="'fade'"></div>
 
   <div class="row">
     <div class="col-lg-6">
@@ -17,7 +17,7 @@
 
   <div>
     <h4><a class="text-muted" href="" ng-click="toggleItemsList()">inbox ({{items.length}})</a></h4>
-    <div ng-show="showMe" items-list itemsfilter="newItem.title"></div>
+    <div ng-show="showMe" items-list itemsfilter="newItem.title" ng-animate="'fade'"></div>
   </div>
 
   <div>

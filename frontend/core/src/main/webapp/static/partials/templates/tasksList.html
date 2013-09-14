@@ -1,8 +1,8 @@
 <div>
-  <div ng-transclude ng-show="tasksListFilter"></div>
+  <div ng-transclude ng-show="tasksListFilter" ng-animate="'fade'"></div>
 
   <ul>
-    <li ng-show="tasksListFilter" ng-repeat="task in tasks | filter:newItem" ng-animate="{enter: 'fade-enter', leave: 'fade-leave'}">
+    <li ng-show="tasksListFilter" ng-repeat="task in tasks | filter:newItem" ng-animate="'fade'">
 
       <input type="checkbox" name="checkbox" id="checkbox{{$index}}" ng-model="task.done" ng-change="taskChecked($index)">
       <label for="checkbox{{$index}}" class="done-{{task.done}}" eat-click ng-click="expandTask()">{{task.title}}</label>
