@@ -7,7 +7,6 @@
     function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, locationHandler, notesArray, pageTitle, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
-      $rootScope.pageAnimation = null;
       $rootScope.pageTitle = 'my';
       $rootScope.subtitle = null;
 
@@ -20,7 +19,7 @@
         notesArray.setNotes(itemsResponse.notes);
         tagsArray.setTags(itemsResponse.tags);
         tasksArray.setTasks(itemsResponse.tasks);
-        
+
         $scope.items = itemsArray.getItems();
         $scope.notes = notesArray.getNotes();
         $scope.tags = tagsArray.getTags();

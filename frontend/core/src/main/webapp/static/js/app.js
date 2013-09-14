@@ -116,5 +116,11 @@
       $rootScope.$on('event:loginSuccess', function() {
         $location.path('/my');
       });
+      $rootScope.$on('$viewContentLoaded', function() {
+        $rootScope.pageAnimation = {
+          enter : 'fade-show',
+          hide : 'fade-hide'
+        };
+      });
     }]);
   }());

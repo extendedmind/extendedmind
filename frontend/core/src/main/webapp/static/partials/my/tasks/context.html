@@ -4,12 +4,12 @@
     +
   </button>
 
-  <h3 class="text-primary"><a href="/my/tasks">tasks</a></h3>
+  <h3 class="text-primary"><a href="my/tasks">tasks</a></h3>
 
   <h4>@{{context.title}}</h4>
 
   <ul>
-    <li ng-repeat="task in subtasks">
+    <li ng-repeat="task in subtasks" ng-animate="'fade'">
 
       <input type="checkbox" name="checkbox" id="checkbox{{$index}}" ng-model="task.done" ng-change="taskChecked($index)">
       <label for="checkbox{{$index}}" class="done-{{task.done}}" eat-click ng-click="expandTask()">{{task.title}}</label>

@@ -6,7 +6,6 @@
     function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, locationHandler, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.errorHandler = errorHandler;
-      $rootScope.pageAnimation = null;
       $rootScope.pageTitle = 'my';
       $rootScope.subtitle = 'tasks';
 
@@ -52,7 +51,7 @@
         activeItem.setItem(item);
       };
 
-      $scope.swipeLeft = function(asd) {
+      $scope.swipeLeft = function() {
         $rootScope.pageAnimation = {
           enter : 'em-animate-enter-right',
           leave : 'em-animate-leave-left'
