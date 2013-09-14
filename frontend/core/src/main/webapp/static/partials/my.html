@@ -7,28 +7,26 @@
         <input type="text" class="form-control" ng-model="newItem.title" placeholder="search / add" required>
         <span class="input-group-btn">
           <button class="btn btn-default" type="button" ng-disabled="!newItem.title" ng-click="addNewItem()">
-            +
+            <span class="glyphicon glyphicon-plus"></span>
           </button> </span>
       </div>
     </div>
   </div>
+
   <div>
-    
-    <button type="button" class="toggle" ng-click="toggleItemsList()">
-      <h4>inbox ({{items.length}})</h4>
-    </button>
+    <h4><a class="text-muted" href="" ng-click="toggleItemsList()">inbox ({{items.length}})</a></h4>
     <div ng-show="showMe" items-list itemsfilter="newItem.title"></div>
   </div>
 
   <div>
     <div notes-list notesfilter="newItem.title">
-      <h4><a href="my/notes" class="em-subtitle">notes</a></h4>
+      <h4><a class="text-muted" href="my/notes">notes</a></h4>
     </div>
   </div>
 
   <div>
     <div tasks-list tasksfilter="newItem.title">
-      <h4><a href="my/tasks" class="em-subtitle">tasks</a></h4>
+      <h4><a class="text-muted" href="my/tasks">tasks</a></h4>
     </div>
   </div>
 

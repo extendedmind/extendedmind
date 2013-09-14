@@ -1,26 +1,19 @@
 <div>
   <div ng-transclude></div>
   <ul>
-    <li ng-repeat="item in items | filter:newItem" ng-model="activeItem" ng-animate="{enter: 'example-repeat-enter',
-    leave: 'example-repeat-leave',
-    move: 'example-repeat-move'}">
-      <div>
+    <li ng-repeat="item in items | filter:newItem" ng-model="activeItem">
+      <ul class="list-inline">
+        <li>
+          <span>{{item.title}}</span>
+        </li>
+        <li>
+          <a class="btn btn-default" href="" ng-click="editNewTag()">tag</a>
+        </li>
+        <li>
+          <a class="btn btn-default" href="my/tasks/new/{{item.uuid}}" ng-click="setActiveItem(item)">task</a>
+        </li>
+      </ul>
 
-        <span>{{item.title}}</span>
-
-        <button type="button" class="editItem" ng-click="editNewTag()">
-          tag
-        </button>
-
-        <button type="button"class="editItem">
-          note
-        </button>
-
-        <button type="button" class="editItem" ng-click="setActiveItem(item)">
-          <a href="my/tasks/new/{{item.uuid}}">task</a>
-        </button>
-
-      </div>
       <div ng-show="showEditNewTag" new-tag></div>
 
     </li>
