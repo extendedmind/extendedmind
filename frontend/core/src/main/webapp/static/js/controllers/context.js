@@ -2,8 +2,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('ContextController', ['$scope', '$routeParams', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray',
-    function($scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray) {
+    angular.module('em.app').controller('ContextController', ['$location', '$scope', '$routeParams', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray',
+    function($location, $scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
 
@@ -30,6 +30,10 @@
 
       $scope.setActiveItem = function(item) {
         activeItem.setItem(item);
+      };
+
+      $scope.addNew = function() {
+        $location.path('/my/tasks/new/');
       };
 
     }]);

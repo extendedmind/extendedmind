@@ -43,7 +43,7 @@
       };
 
       $scope.cancelNew = function() {
-        $location.path('/my/tasks');
+        window.history.back();
       };
     }]);
   }());
