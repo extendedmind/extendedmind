@@ -2,15 +2,19 @@
   <div ng-transclude></div>
   <ul>
     <li ng-repeat="item in items | filter:newItem" ng-model="activeItem">
+      
       <ul class="list-inline">
         <li>
           <span>{{item.title}}</span>
         </li>
         <li>
-          <a class="btn btn-default" href="" ng-click="editNewTag()">tag</a>
+          <a class="text-muted" href="" ng-click="editNewTag()">tag</a>
         </li>
         <li>
-          <a class="btn btn-default" href="my/tasks/new/{{item.uuid}}" ng-click="setActiveItem(item)">task</a>
+          <a class="text-muted" href="my/notes/new/{{item.uuid}}" ng-click="setActiveItem(item)">note</a>
+        </li>
+        <li>
+          <a class="text-muted" href="my/tasks/new/{{item.uuid}}" ng-click="setActiveItem(item)">task</a>
         </li>
       </ul>
 
