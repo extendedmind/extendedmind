@@ -2,7 +2,7 @@
   <div ng-transclude ng-show="notesListFilter"></div>
 
   <ul>
-    <li ng-show="notesListFilter" ng-repeat="note in notes | filter:newItem">
+    <li ng-show="notesListFilter" ng-repeat="note in notes | filter:newItem" ng-animate="{enter: 'fade-enter', leave: 'fade-leave'}">
       <span>{{note.title}}</span>
     </li>
   </ul>

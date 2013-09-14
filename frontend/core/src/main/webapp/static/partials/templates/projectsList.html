@@ -1,5 +1,5 @@
 <ul>
-  <li ng-repeat="project in projects">
+  <li ng-repeat="project in projects" ng-animate="{enter: 'fade-enter', leave: 'fade-leave'}">
 
     <span ng-click="setActiveItem(project)"><a class="text-muted" href="my/tasks/project/{{project.uuid}}">{{project.title}}</a></span>
 

@@ -1,8 +1,8 @@
 <div>
   <div ng-transclude></div>
   <ul>
-    <li ng-repeat="item in items | filter:newItem" ng-model="activeItem">
-      
+    <li ng-repeat="item in items | filter:newItem" ng-model="activeItem" ng-animate="{enter: 'fade-enter', leave: 'fade-leave'}">
+
       <ul class="list-inline">
         <li>
           <span>{{item.title}}</span>

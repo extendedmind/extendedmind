@@ -177,3 +177,16 @@ position:absolute;
   -webkit-transform: translate(0,0) !important;
   }
 }
+
+.fade-enter,.fade-leave {
+  -webkit-transition: 0.3s linear all; /* Chrome */
+  transition: 0.3s linear all;
+  opacity: 0;
+}
+ 
+.fade-enter.fade-enter-active {
+  opacity: 1;
+}
+.fade-leave.fade-leave-active{
+  opacity:0;
+}
