@@ -2,9 +2,7 @@
   <div ng-transclude ng-show="tasksListFilter"></div>
 
   <ul>
-    <li ng-show="tasksListFilter" ng-repeat="task in tasks | filter:newItem" ng-animate="{enter: 'example-repeat-enter',
-    leave: 'example-repeat-leave',
-    move: 'example-repeat-move'}">
+    <li ng-show="tasksListFilter" ng-repeat="task in tasks | filter:newItem">
 
       <input type="checkbox" name="checkbox" id="checkbox{{$index}}" ng-model="task.done" ng-change="taskChecked($index)">
       <label for="checkbox{{$index}}" class="done-{{task.done}}" eat-click ng-click="expandTask()">{{task.title}}</label>
