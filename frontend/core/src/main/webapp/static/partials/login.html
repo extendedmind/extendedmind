@@ -1,27 +1,34 @@
 <div class="em-core">
 
-  <h3>extended mind <a href="/" class="em-subtitle">login</a></h3>
+  <h3 class="text-primary">login</h3>
 
-  <form name="login">
-    <fieldset>
-
-      <fieldset>
-        <input class="formContent" id="username" name="username" type="email" ng-model="user.username" placeholder="Email" autofocus="autofocus" required>
-      </fieldset>
-
-      <fieldset>
-        <input class="formContent" id="password" name="password" type="password" ng-model="user.password" placeholder="Password" required>
-      </fieldset>
-
-      <fieldset>
-        <button class="formAction" id="loginbutton" name="loginbutton" type="submit" ng-disabled="!login.$valid" ng-click="userLogin()">
-          login
+  <form class="form-horizontal" role="form" name="loginform">
+    <div class="form-group">
+      <div class="col-lg-10">
+        <input type="email" class="form-control" id="inputEmail" ng-model="user.username" placeholder="email" autofocus="autofocus" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-10">
+        <input type="password" class="form-control" id="inputPassword1" ng-model="user.password" placeholder="password" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-offset-2 col-lg-10">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" ng-model="user.remember">
+            remember </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-offset-2 col-lg-10">
+        <button type="submit" class="btn btn-default" ng-disabled="!loginform.$valid" ng-click="userLogin()">
+          log in
         </button>
-        <input type="checkbox" id="remember" name="checkbox" ng-model="user.remember">
-        <label for="checkbox" class="checkboxLabel">remember</label>
-      </fieldset>
-
-    </fieldset>
+      </div>
+    </div>
   </form>
 
   <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
