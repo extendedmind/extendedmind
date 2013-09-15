@@ -1,27 +1,24 @@
 <div>
   <div ng-transclude></div>
   <ul>
-    <li ng-repeat="item in items | filter:newItem" ng-model="activeItem" ng-animate="{enter: 'example-repeat-enter',
-    leave: 'example-repeat-leave',
-    move: 'example-repeat-move'}">
-      <div>
+    <li ng-repeat="item in items | filter:newItem" ng-model="activeItem" ng-animate="'fade'">
 
-        <span>{{item.title}}</span>
+      <ul class="list-inline">
+        <li>
+          <span>{{item.title}}</span>
+        </li>
+        <li>
+          <a class="text-muted" href="" ng-click="editNewTag()">tag</a>
+        </li>
+        <li>
+          <a class="text-muted" href="my/notes/new/{{item.uuid}}" ng-click="setActiveItem(item)">note</a>
+        </li>
+        <li>
+          <a class="text-muted" href="my/tasks/new/{{item.uuid}}" ng-click="setActiveItem(item)">task</a>
+        </li>
+      </ul>
 
-        <button type="button" class="editItem" ng-click="editNewTag()">
-          tag
-        </button>
-
-        <button type="button"class="editItem">
-          note
-        </button>
-
-        <button type="button" class="editItem" ng-click="setActiveItem(item)">
-          <a href="my/tasks/new/{{item.uuid}}">task</a>
-        </button>
-
-      </div>
-      <div ng-show="showEditNewTag" new-tag></div>
+      <div ng-show="showEditNewTag" new-tag ng-animate="'fade'"></div>
 
     </li>
   </ul>

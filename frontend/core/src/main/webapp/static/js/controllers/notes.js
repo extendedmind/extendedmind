@@ -6,7 +6,6 @@
     function($location, $rootScope, $scope, activeItem, errorHandler, itemsRequest, locationHandler, notesArray) {
 
       $scope.errorHandler = errorHandler;
-      $rootScope.pageAnimation = null;
       $rootScope.subtitle = 'notes';
 
       locationHandler.setPreviousLocation('/my');
@@ -25,7 +24,7 @@
         activeItem.setItem(item);
       };
 
-      $scope.swipeLeft = function(asd) {
+      $scope.swipeLeft = function() {
         $rootScope.pageAnimation = {
           enter : 'em-animate-enter-right',
           leave : 'em-animate-leave-left'
