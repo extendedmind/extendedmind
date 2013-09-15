@@ -44,7 +44,7 @@ $(document).ready(function() {
         $('#result').html('<div class="alert">' + getErrorMessage(xhr.responseText, xhr.status) + '</div>');
       },
       success : function(data) {
-        $('#result').html('<div class="alert">Thank you. You are now on the beta waiting list.</div>');
+        $('#result').html('<div class="alert">thank you, you are now on the beta waiting list</div>');
       }
     });
     return false;
@@ -54,7 +54,7 @@ $(document).ready(function() {
 
 var getErrorMessage = function(responseText, status) {
   return ((responseText.length > 17) && (responseText.length < 100) ?
-             responseText.slice(0,-15) : 'An unrecognized error occured: ' + status)
+             responseText.slice(0,-15) : 'an unrecognized error occured: ' + status)
 }
 
 var setQueueNumber = function(uuid) {
