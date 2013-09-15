@@ -1,9 +1,10 @@
 <div class="alert alert-error error-alert-bar" ng-show="errorMessage">
 
-  <button type="button" class="close" ng-click="hideAlert()">
-    x
+  <button type="button" class="close" aria-hidden="true" ng-click="hideAlert()">
+    &times;
   </button>
-
-  {{errorMessage}}
+  <p class="text-danger">
+    {{errorMessage}}
+  </p>
 
 </div>

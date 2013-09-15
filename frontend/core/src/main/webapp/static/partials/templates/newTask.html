@@ -1,29 +1,41 @@
-<form name="addTask" class="newItem">
-  <fieldset>
+<form class="form-horizontal" role="form" name="addTask">
 
-    <fieldset>
-      <input id="input-id" class="formContent" type="text" ng-model="newTask.title" autofocus="autofocus" placeholder="title..." required>
-    </fieldset>
+  <div class="form-group">
+    <label class="sr-only" for="newTaskTitle" class="col-lg-2 control-label">title</label>
+    <div class="col-lg-10">
+      <input type="text" class="form-control" id="newTaskTitle" ng-model="newTask.title" autofocus="autofocus" placeholder="title..." required>
+    </div>
+  </div>
 
-    <fieldset>
-      <input type="date" class="formContent" ng-model="newTask.due">
-    </fieldset>
+  <div class="form-group">
+    <label class="sr-only" for="newTaskDue" class="col-lg-2 control-label">date</label>
+    <div class="col-lg-10">
+      <input type="date" class="form-control" id="newTaskDue" ng-model="newTask.due">
+    </div>
+  </div>
 
-    <fieldset>
-      <select ng-model="parentTask" ng-options="project.title for project in projects">
+  <div class="form-group">
+    <label class="sr-only" for="newTaskParent" class="col-lg-2 control-label">parent</label>
+    <div class="col-lg-10">
+      <select class="form-control" id="newTaskParent" ng-model="parentTask" ng-options="project.title for project in projects">
         <option value="">select list</option>
       </select>
-    </fieldset>
+    </div>
+  </div>
 
-    <fieldset>
-      <textarea class="formContent" ng-model="newTask.description" placeholder="description..."></textarea>
-    </fieldset>
+  <div class="form-group">
+    <label class="sr-only" for="newTaskDescription" class="col-lg-2 control-label">description</label>
+    <div class="col-lg-10">
+      <textarea class="form-control" id="newTaskDescription" ng-model="newTask.description" placeholder="description..."></textarea>
+    </div>
+  </div>
 
-    <fieldset>
-      <button class="formAction" type="submit" ng-disabled="!addTask.$valid" ng-click="addNewTask()">
-        Add
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+      <button type="submit" class="btn btn-default" ng-disabled="!addTask.$valid" ng-click="addNewTask()">
+        add
       </button>
-    </fieldset>
+    </div>
+  </div>
 
-  </fieldset>
 </form>

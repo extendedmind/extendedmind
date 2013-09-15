@@ -2,8 +2,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('ProjectController', ['$scope', '$routeParams', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray',
-    function($scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray) {
+    angular.module('em.app').controller('ProjectController', ['$location', '$scope', '$routeParams', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray',
+    function($location, $scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
 
@@ -27,6 +27,10 @@
         }, function(error) {
         });
       }
+
+      $scope.addNew = function() {
+        $location.path('/my/tasks/new/');
+      };
 
       $scope.setActiveItem = function(tag) {
         activeItem.setItem(tag);

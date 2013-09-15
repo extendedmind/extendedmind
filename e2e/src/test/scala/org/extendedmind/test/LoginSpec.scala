@@ -9,9 +9,9 @@ class LoginSpec extends E2ESpecBase {
   describe("Extended Mind Website") {
     it("should return error on invalid email") {
       go to "http://localhost:8080/login"
-      click on id("username")
+      click on id("input-email")
       pressKeys("timo@extendedmind.org")
-      click on ("password")
+      click on ("input-password")
       pressKeys("timopwd")
       click on id("loginbutton")
       eventually { currentUrl should include("/login") }
@@ -19,9 +19,9 @@ class LoginSpec extends E2ESpecBase {
 
     it("should return error on invalid password") {
       go to "http://localhost:8080/login"
-      click on id("username")
+      click on id("input-email")
       pressKeys("timo@ext.md")
-      click on ("password")
+      click on ("input-password")
       pressKeys("wrong")
       click on id("loginbutton")
       eventually { currentUrl should include("/login") }
@@ -29,9 +29,9 @@ class LoginSpec extends E2ESpecBase {
 
     it("should return front page on successful login") {
       go to "http://localhost:8080/login"
-      click on id("username")
+      click on id("input-email")
       pressKeys("timo@ext.md")
-      click on ("password")
+      click on ("input-password")
       pressKeys("timopwd")
       click on id("loginbutton")
       eventually(timeout(Span(5, Seconds))) { currentUrl should include("/my") }

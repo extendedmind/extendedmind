@@ -2,8 +2,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NewTaskController', ['$routeParams', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
-    function($routeParams, $scope, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    angular.module('em.app').controller('NewTaskController', ['$location', '$routeParams', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
+    function($location, $routeParams, $scope, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.errorHandler = errorHandler;
 
@@ -40,6 +40,10 @@
 
         }, function(putTaskResponse) {
         });
+      };
+
+      $scope.cancelNew = function() {
+        window.history.back();
       };
     }]);
   }());

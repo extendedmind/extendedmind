@@ -7,7 +7,6 @@
     function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, locationHandler, notesArray, pageTitle, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
-      $rootScope.pageAnimation = null;
       $rootScope.pageTitle = 'my';
       $rootScope.subtitle = null;
 
