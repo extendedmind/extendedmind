@@ -17,7 +17,7 @@
 }
 
 .embed-margin {
-	max-width: 80%;
+	max-width: 90%;
 	margin-top: 2%;
 	margin-left: auto;
     margin-right: auto;
@@ -78,6 +78,11 @@ a:hover {
   text-decoration:underline;
 }
 
+.em-page{
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .em-topmargin{
   height: 20px;
 }
@@ -87,22 +92,40 @@ a:hover {
   margin-bottom: 5%;
 }
 
-.em-logoheading {
-  margin-top: 10%;
-  margin-bottom: 10%;
+h3 {
+  /*color: #d6d6d6;*/
+  color: #c9c9c9;
+  font-size: 32px;
 }
 
 .em-ingress {
-  color: #d6d6d6;
   margin-bottom: 4%;
 }
 
+.em-ingress ul {
+  text-align: left;
+}
+
+.em-ingress p {
+  padding-bottom: 10%;
+}
+
 .em-please {
-  color: #c9c9c9;
+  text-align:justify;
   margin-bottom: 8%;
 }
 
-.em-sign{
+.em-ingress, .em-please {
+  padding-left:8%;
+  padding-right:8%;
+  text-align:justify;
+}
+
+h4 {
+  color: #c9c9c9;
+}
+
+h5{
   color: #676767;
 }
 
