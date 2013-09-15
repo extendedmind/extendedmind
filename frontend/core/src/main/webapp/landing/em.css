@@ -52,6 +52,8 @@ body {
   background-color: #333333;
   text-align: center;
   color: white;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
+  font-weight: 300 !important;
 }
 
 #wrap {
