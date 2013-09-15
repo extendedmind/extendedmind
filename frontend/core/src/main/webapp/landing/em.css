@@ -113,6 +113,7 @@ h3 {
 
 .em-ingress ul {
   text-align: left;
+  list-style: square;
 }
 
 .em-ingress p {
