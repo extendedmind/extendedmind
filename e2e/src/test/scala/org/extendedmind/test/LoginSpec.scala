@@ -13,7 +13,7 @@ class LoginSpec extends E2ESpecBase {
       pressKeys("timo@extendedmind.org")
       click on ("input-password")
       pressKeys("timopwd")
-      click on id("loginbutton")
+      click on id("login-button")
       eventually { currentUrl should include("/login") }
     }
 
@@ -23,7 +23,7 @@ class LoginSpec extends E2ESpecBase {
       pressKeys("timo@ext.md")
       click on ("input-password")
       pressKeys("wrong")
-      click on id("loginbutton")
+      click on id("login-button")
       eventually { currentUrl should include("/login") }
     }
 
@@ -33,7 +33,7 @@ class LoginSpec extends E2ESpecBase {
       pressKeys("timo@ext.md")
       click on ("input-password")
       pressKeys("timopwd")
-      click on id("loginbutton")
+      click on id("login-button")
       eventually(timeout(Span(5, Seconds))) { currentUrl should include("/my") }
     }
   }
