@@ -63,6 +63,10 @@ body {
   padding-bottom:150px; /* this needs to be bigger than footer height*/
 }
 
+#resultUpper {
+  height: 10em;
+}
+
 .footer {
   position: relative;
   margin-top: -50px; /* negative value of footer height */
@@ -92,10 +96,15 @@ a:hover {
   margin-bottom: 5%;
 }
 
+h1 {
+  color: #d6d6d6;
+  font-size: 70px;
+  font-weight: bold;
+}
+
 h3 {
-  /*color: #d6d6d6;*/
   color: #c9c9c9;
-  font-size: 30px;
+  font-size: 40px;
 }
 
 .em-ingress {
@@ -116,17 +125,19 @@ h3 {
 }
 
 .em-ingress, .em-please {
-  padding-left:10%;
-  padding-right:10%;
+  padding-left:2%;
+  padding-right:2%;
   text-align:justify;
 }
 
 h4 {
   color: #c9c9c9;
+  font-size: 30px;
 }
 
 h5{
   color: #676767;
+  font-size: 25px;
 }
 
 input, button {
@@ -135,13 +146,13 @@ input, button {
 
 @media (min-width: 767px) {
   .form-group {
-    width: 300px;
+    width: 490px;
   }
 }
 
 .em-logo {
   margin-top: 7%;
-  margin-bottom: 70px;
+  margin-bottom: 170px;
 }
 
 .footer a{
