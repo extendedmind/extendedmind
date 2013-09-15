@@ -49,6 +49,18 @@
         }
       });
 
+      $routeProvider.when('/my/notes/edit/:uuid', {
+        controller : 'NoteEditController',
+        templateUrl : 'static/partials/my/notes/edit.html',
+        resolve : {
+          authenticationRequired : ['$rootScope',
+          function($rootScope) {
+            $rootScope.$broadcast('event:authenticationRequired');
+          }]
+
+        }
+      });
+
       $routeProvider.when('/my/tasks', {
         controller : 'TasksController',
         templateUrl : 'static/partials/my/tasks.html',
@@ -107,11 +119,10 @@
 
     angular.module('em.app').run(['$document', '$location', '$rootScope', 'userAuthenticate',
     function($document, $location, $rootScope, userAuthenticate) {
-      // $rootScope.pageAnimation = {
-        // enter : 'fade-show',
-        // hide : 'fade-hide'
-      // };
-
+      $rootScope.pageAnimation = {
+        enter : 'fade-show',
+        hide : 'fade-hide'
+      };
       $rootScope.$on('event:authenticationRequired', function() {
         userAuthenticate.authenticate();
       });
