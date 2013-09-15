@@ -95,7 +95,7 @@ a:hover {
 h3 {
   /*color: #d6d6d6;*/
   color: #c9c9c9;
-  font-size: 32px;
+  font-size: 30px;
 }
 
 .em-ingress {
@@ -116,8 +116,8 @@ h3 {
 }
 
 .em-ingress, .em-please {
-  padding-left:8%;
-  padding-right:8%;
+  padding-left:10%;
+  padding-right:10%;
   text-align:justify;
 }
 
@@ -135,7 +135,7 @@ input, button {
 
 @media (min-width: 767px) {
   .form-group {
-    width: 350px;
+    width: 300px;
   }
 }
 
