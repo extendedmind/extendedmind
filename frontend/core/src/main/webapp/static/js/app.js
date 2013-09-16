@@ -49,6 +49,18 @@
         }
       });
 
+      $routeProvider.when('/my/notes/context/:uuid', {
+        controller : 'ContextController',
+        templateUrl : 'static/partials/my/notes/context.html',
+        resolve : {
+          authenticationRequired : ['$rootScope',
+          function($rootScope) {
+            $rootScope.$broadcast('event:authenticationRequired');
+          }]
+
+        }
+      });
+
       $routeProvider.when('/my/notes/edit/:uuid', {
         controller : 'NoteEditController',
         templateUrl : 'static/partials/my/notes/edit.html',

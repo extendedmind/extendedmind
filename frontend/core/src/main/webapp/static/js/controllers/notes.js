@@ -2,8 +2,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NotesController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsRequest', 'locationHandler', 'notesArray',
-    function($location, $rootScope, $scope, activeItem, errorHandler, itemsRequest, locationHandler, notesArray) {
+    angular.module('em.app').controller('NotesController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsRequest', 'locationHandler', 'notesArray', 'tagsArray',
+    function($location, $rootScope, $scope, activeItem, errorHandler, itemsRequest, locationHandler, notesArray, tagsArray) {
 
       $scope.errorHandler = errorHandler;
       $rootScope.subtitle = 'notes';
@@ -13,6 +13,7 @@
 
       itemsRequest.getItems(function(itemsResponse) {
         notesArray.setNotes(itemsResponse.notes);
+        tagsArray.setTags(itemsResponse.tags);
 
         $scope.notes = notesArray.getNotes();
       }, function(error) {

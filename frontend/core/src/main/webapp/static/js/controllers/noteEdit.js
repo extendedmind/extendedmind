@@ -18,6 +18,10 @@
         });
       }
 
+      $scope.undoNoteEdit = function() {
+        window.history.back();
+      };
+
       $scope.swipeRight = function() {
         $rootScope.pageAnimation = {
           enter : 'em-animate-enter-left',
