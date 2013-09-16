@@ -72,6 +72,28 @@
       };
     }]);
 
+    angular.module('em.directives').directive('myPage', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/myPage.html'
+      };
+    }]);
+    angular.module('em.directives').directive('tasks', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/my/tasks.html'
+      };
+    }]);
+    angular.module('em.directives').directive('notes', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/my/notes.html'
+      };
+    }]);
+
     angular.module('em.directives').directive('projectsList', [
     function() {
       return {

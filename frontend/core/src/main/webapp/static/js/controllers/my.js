@@ -9,6 +9,7 @@
       $scope.errorHandler = errorHandler;
       $rootScope.pageTitle = 'my';
       $rootScope.subtitle = null;
+      activeItem.setItem(null);
 
       locationHandler.setPreviousLocation('/my/tasks');
       locationHandler.setNextLocation('/my/notes');

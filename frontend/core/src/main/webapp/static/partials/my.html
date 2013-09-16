@@ -1,36 +1,13 @@
-<div class="em-animate" ng-animate="{{slideAnimation}}" ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
-  <h2 class="text-primary">extended mind</h2>
-
-  <div ng-hide="newItem.title" url-list ng-animate="'fade'"></div>
-
-  <div class="row">
-    <div class="col-lg-6">
-      <div class="input-group">
-        <input type="text" class="form-control" ng-model="newItem.title" placeholder="search / add" ng-click="toggleUrlList()" required>
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="button" ng-disabled="!newItem.title" ng-click="addNewItem()">
-            +
-          </button> </span>
-      </div>
-    </div>
-  </div>
-
-  <div>
-    <h4><a class="text-muted" href="" ng-click="toggleItemsList()">inbox ({{items.length}})</a></h4>
-    <div ng-show="showMe" items-list itemsfilter="newItem.title" ng-animate="'fade'"></div>
-  </div>
-
-  <div>
-    <div notes-list notesfilter="newItem.title">
-      <h4><a class="text-muted" href="my/notes">notes</a></h4>
-    </div>
-  </div>
-
-  <div>
-    <div tasks-list tasksfilter="newItem.title">
-      <h4><a class="text-muted" href="my/tasks">tasks</a></h4>
-    </div>
-  </div>
-
-  <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
+<div class="em-animate" ng-animate="{{pageAnimation}}">
+  <ul rn-carousel class="image">
+    <li>
+      <div my-page>
+    </li>
+    <li>
+      <div tasks>
+    </li>
+    <li>
+      <div notes>
+    </li>
+  </ul>
 </div>

@@ -7,6 +7,7 @@
 
       $scope.errorHandler = errorHandler;
       $rootScope.subtitle = 'notes';
+      activeItem.setItem(null);
 
       locationHandler.setPreviousLocation('/my');
       locationHandler.setNextLocation('/my/tasks');
