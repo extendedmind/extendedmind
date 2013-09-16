@@ -1,3 +1,6 @@
+
+/* FULL WIDTH EMBEDDED VIDEO */
+
 .embed-container {
   position: relative;
   padding-bottom: 56.25%; /* 16/9 ratio */
@@ -21,6 +24,8 @@
   margin-right: auto;
 }
 
+/* STITCHING */
+
 .stich-top {
   background-image: -webkit-linear-gradient(0deg, #5c5c5c 60%, transparent 60%, transparent 100%), -webkit-linear-gradient(0deg, #5c5c5c 60%, transparent 60%, transparent 100%);
   background-image: -moz-linear-gradient(0deg, #5c5c5c 60%, transparent 60%, transparent 100%), -moz-linear-gradient(0deg, #5c5c5c 60%, transparent 60%, transparent 100%);
@@ -38,13 +43,10 @@
   top: 10px;
 }
 
+/* STICKY FOOTER */
+
 html, body {
   height: 100%;
-}
-
-body {
-  background-color: #333333;
-  color: white;
 }
 
 #wrap {
@@ -68,13 +70,16 @@ body {
   padding-top: 20px;
 }
 
-/* Always center heading, inputs and footer */
-.em-input, .em-heading, .em-logo, .footer {
-  text-align: center;
+/* GENERAL SETTINGS */
+
+body {
+  background-color: #333333;
+  color: white;
 }
 
-.em-ingress, .em-please {
-  text-align: justify;
+.em-page {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 a:link {
@@ -88,19 +93,9 @@ a:hover {
   color: #d6d6d6 !important;
 }
 
-.em-page {
-  margin-left: auto;
-  margin-right: auto;
-}
 
-.em-topmargin {
-  height: 20px;
-}
 
-.em-heading {
-  margin-top: 5%;
-  margin-bottom: 5%;
-}
+/* FONTS */
 
 h1, h2, h3, h4, h5 {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
@@ -116,6 +111,35 @@ h1 {
 h3 {
   color: #c9c9c9;
   font-size: 40px;
+}
+
+h4 {
+  color: #c9c9c9;
+  font-size: 30px;
+}
+
+h5 {
+  color: #676767;
+  font-size: 25px;
+}
+
+/* PAGE CONTENT */
+
+.em-input, .em-heading, .em-logo, .footer {
+  text-align: center;
+}
+
+.em-ingress, .em-please {
+  text-align: justify;
+}
+
+.em-topmargin {
+  height: 20px;
+}
+
+.em-heading {
+  margin-top: 5%;
+  margin-bottom: 5%;
 }
 
 .em-ingress {
@@ -135,16 +159,6 @@ h3 {
   margin-bottom: 8%;
 }
 
-h4 {
-  color: #c9c9c9;
-  font-size: 30px;
-}
-
-h5 {
-  color: #676767;
-  font-size: 25px;
-}
-
 .form-group {
   margin-left: auto;
   margin-right: auto;
@@ -159,8 +173,7 @@ input, button {
   margin-bottom: 170px;
 }
 
-
-/* Resolution specific definitions */
+/* RESPONSIVE TWEAKS */
 
 @media (max-width: 1016px) {
   .em-ingress, .em-please {
