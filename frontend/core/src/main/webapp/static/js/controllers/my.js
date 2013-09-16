@@ -6,6 +6,24 @@
     angular.module('em.app').controller('MyController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'locationHandler', 'notesArray', 'pageTitle', 'tagsArray', 'tasksArray',
     function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, locationHandler, notesArray, pageTitle, tagsArray, tasksArray) {
 
+      $scope.products = [{
+        url : 'static/partials/my/notes.html'
+      }, {
+        url : 'static/partials/my/tasks.html'
+      }];
+
+      $scope.product = $scope.products[0];
+      
+      $scope.prev = function(item) {
+      };
+
+      $scope.next = function(item) {
+        
+        // $scope.product=$scope.products[1];
+
+        // return $scope.product;
+      };
+
       $scope.errorHandler = errorHandler;
       $rootScope.pageTitle = 'my';
       $rootScope.subtitle = null;
