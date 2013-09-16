@@ -1,7 +1,15 @@
 <div class="em-animate" ng-animate="{{pageAnimation}}" ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
 
   <h3 class="text-primary">{{note.title}}</h3>
-  <textarea class="boxsizingBorder" placeholder="description..." autofocus ng-model="note.content"></textarea>    
 
+  <form class="boxsizingBorder" role="form">
+
+    <div class="boxsizingBorder form-group">
+      <label class="boxsizingBorder sr-only" for="noteDescription" class="col-lg-2 control-label">description</label>
+      <div class="boxsizingBorder col-lg-10">
+        <textarea class="form-control boxsizingBorder" id="noteDescription"  placeholder="description..." autofocus ng-model="note.content"></textarea>
+      </div>
+    </div>
+  </form>
 
 </div>
