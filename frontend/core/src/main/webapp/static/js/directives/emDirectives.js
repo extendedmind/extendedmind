@@ -54,33 +54,4 @@
         templateUrl : 'static/partials/templates/urlList.html'
       };
     }]);
-
-    angular.module('em.directives').directive('draggable', function($document) {
-      return function(scope, element, attr) {
-        var startX = 0, startY = 0, x = 0, y = 0;
-        element.css({
-          position : 'relative'
-        });
-        element.on('mousedown', function(event) {
-          // Prevent default dragging of selected content
-          event.preventDefault();
-          startX = event.screenX - x;
-          $document.on('mousemove', mousemove);
-          $document.on('mouseup', mouseup);
-        });
-
-        function mousemove(event) {
-          x = event.screenX - startX;
-          element.css({
-            '-webkit-transform' : 'translate3d(' + x + 'px,0,0)'
-          });
-        }
-
-        function mouseup() {
-          $document.unbind('mousemove', mousemove);
-          $document.unbind('mouseup', mouseup);
-        }
-
-      }
-    });
   }());
