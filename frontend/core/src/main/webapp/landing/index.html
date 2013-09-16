@@ -28,7 +28,7 @@
               <h5>sign up for beta:</h5>
             </div>
             <div class="col-sm-12 em-email">
-              <form class="form-inline" role="form" id="emailFormUpper">
+              <form class="form-inline" role="form" id="emailForm">
                 <div class="form-group">
                   <label class="sr-only" for="email">email address</label>
                   <input type="email" class="form-control" id="email" name="email" placeholder="enter email"/>
@@ -36,7 +36,7 @@
                 <input id="input" type="submit" name="submit" value="OK" class="btn btn-default"/>
               </form>
             </div>
-            <div class="row" id="resultUpper">
+            <div id="result">
               <div class="alert">
                 &nbsp;
               </div>
@@ -66,22 +66,22 @@
               <div class="em-sign col-sm-12">
                 <h5>sign up for beta now:</h5>
               </div>
-              <form class="form-inline" role="form" id="emailForm">
+              <form class="form-inline" role="form" id="emailFormLower">
                 <div class="form-group">
                   <label class="sr-only" for="email">email address</label>
-                  <input type="email" class="form-control" id="email" name="email" placeholder="enter email"/>
+                  <input type="email" class="form-control" id="emailLower" name="email" placeholder="enter email"/>
                 </div>
-                <input id="input" type="submit" name="submit" value="OK" class="btn btn-default"/>
+                <input id="inputLower" type="submit" name="submit" value="OK" class="btn btn-default"/>
               </form>
             </div>
-          </div>
-          <div class="row" id="result">
-            <div class="alert">
-              &nbsp;
+            <div id="resultLower">
+              <div class="alert">
+                &nbsp;
+              </div>
             </div>
           </div>
           <div class="row">
-            <div class="em-logo col-sm-4 col-sm-offset-4">
+            <div class="em-logo col-sm-12">
               <img src="logoname.png"/>
             </div>
           </div>
@@ -95,5 +95,11 @@
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script src="em.js"></script>
+    <script>
+    $(document).ready(function() {
+      $('#input').click(function(){ return postRequest('emailForm', 'result') });
+      $('#inputLower').click(function(){ return postRequest('emailFormLower', 'resultLower')});
+    });
+    </script>
   </body>
 </html>

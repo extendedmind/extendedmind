@@ -8,21 +8,21 @@
     <link rel="stylesheet" href="em.css"/>
   </head>
   <body>
-    <div id="wrap" class="em-page">
-      <div id="waiting" class=" container clear-top">
+    <div id="wrap" class="em-waiting">
+      <div id="waiting" class="container clear-top">
         <div class="row">
-          <div class="col-lg-6 col-lg-offset-3 em-logoheading">
+          <div class="col-sm-12 em-waiting-heading">
             <img src="logoname.png"/>
           </div>
         </div>
         <div class="row">
-          <div class="col-lg-6 col-lg-offset-3 em-ingress">
+          <div class="col-sm-6 col-sm-offset-3">
             <br/>
-            <h3>There are currently</h3>
+            <h4>there are currently</h4>
             <br/>
             <div id="number"></div>
             <br/>
-            <h3>people before you on the Extended Mind Beta waiting list.</h3>
+            <h4>people before you on the extended mind beta waiting list</h4>
           </div>
         </div>
       </div>
@@ -32,5 +32,10 @@
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script src="em.js"></script>
+    <script>
+    $(document).ready(function() {
+      setQueueNumber(QueryString.uuid);
+    });
+    </script>
   </body>
 </html>

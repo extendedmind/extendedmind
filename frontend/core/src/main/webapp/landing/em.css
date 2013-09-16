@@ -93,8 +93,6 @@ a:hover {
   color: #d6d6d6 !important;
 }
 
-
-
 /* FONTS */
 
 h1, h2, h3, h4, h5 {
@@ -120,6 +118,10 @@ h4 {
 
 h5 {
   color: #676767;
+  font-size: 25px;
+}
+
+.alert {
   font-size: 25px;
 }
 
@@ -171,6 +173,17 @@ input, button {
 .em-logo {
   margin-top: 7%;
   margin-bottom: 170px;
+}
+
+/* Waiting page */
+
+.em-waiting{
+  text-align: center;
+}
+
+.em-waiting-heading{
+  margin-top: 5%;
+  margin-bottom: 5%;
 }
 
 /* RESPONSIVE TWEAKS */
@@ -227,6 +240,10 @@ input, button {
   }
 
   h5 {
+    font-size: 20px;
+  }
+
+  .alert {
     font-size: 20px;
   }
 }

@@ -120,7 +120,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   protected def getNode(nodeUUID: UUID, label: Label): Response[Node] = {
     val uuidString = UUIDUtils.getTrimmedBase64UUID(nodeUUID)
-    getNode("uuid", uuidString, label, Some(uuidString))
+    getNode("uuid", uuidString, label, Some(nodeUUID.toString()))
   }
   
   protected def getNode(nodeProperty: String, nodeValue: AnyRef, label: Label, nodeStringValue: Option[String] = None): Response[Node] = {
@@ -129,10 +129,10 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
         val nodeList = findNodesByLabelAndProperty(label, nodeProperty, nodeValue).toList
         if (nodeList.isEmpty)
           fail(INVALID_PARAMETER, label.labelName.toLowerCase() + " not found with given " + nodeProperty + 
-              (if (nodeStringValue.isDefined) ": " + nodeStringValue else ""))
+              (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
         else if (nodeList.size > 1)
           fail(INTERNAL_SERVER_ERROR, "Ḿore than one " + label.labelName.toLowerCase() + " found with given  " + nodeProperty + 
-              (if (nodeStringValue.isDefined) ": " + nodeStringValue else ""))
+              (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
         else {
           Right(nodeList(0))
         }
