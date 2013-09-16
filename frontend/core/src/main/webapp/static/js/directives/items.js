@@ -96,6 +96,14 @@
       };
     }]);
 
+    angular.module('em.directives').directive('noteContent', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/noteContent.html'
+      };
+    }]);
+
     angular.module('em.directives').directive('taskContent', [
     function() {
       return {
