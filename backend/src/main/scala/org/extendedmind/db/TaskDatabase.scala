@@ -43,7 +43,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield completeTask
     }
   }
-
+  
+  def deleteTask(userUUID: UUID, taskUUID: UUID): Response[DeleteItemResult] = {
+    for {
+      deletedTask <- deleteTaskNode(userUUID, taskUUID).right
+      result <- Right(getDeleteItemResult(deletedTask._1, deletedTask._2)).right
+    } yield result
+  }
+  
   def completeTask(userUUID: UUID, taskUUID: UUID): Response[CompleteTaskResult] = {
     for {
       task <- completeTaskNode(userUUID, taskUUID).right
@@ -122,4 +129,23 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def uncompleteTaskNode(taskNode: Node)(implicit neo4j: DatabaseService): Unit = {
     if (taskNode.hasProperty("completed")) taskNode.removeProperty("completed")
   }
+
+  protected def deleteTaskNode(userUUID: UUID, taskUUID: UUID): Response[Tuple2[Node, Long]] = {
+    withTx {
+      implicit neo =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          itemNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
+          deletable <- validateTaskDeletable(itemNode).right
+          deleted <- Right(deleteItem(itemNode)).right
+        } yield (itemNode, deleted)
+    }
+  }
+
+  protected def validateTaskDeletable(taskNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
+    if (taskNode.hasLabel(ItemParentLabel.PROJECT))
+      fail(INVALID_PARAMETER, "can not delete project, only tasks")
+    else
+      Right(true)
+  }  
 }

@@ -279,6 +279,34 @@ trait Service extends API with Injectable {
         }
       }
     } ~
+    deleteTask { (ownerUUID, taskUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == ownerUUID){
+          complete{
+            Future[DeleteItemResult]{
+              taskActions.deleteTask(ownerUUID, taskUUID) match {
+                case Right(dir) => dir
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      }
+    } ~
+    undeleteTask { (ownerUUID, taskUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == ownerUUID){
+          complete{
+            Future[SetResult]{
+              taskActions.undeleteTask(ownerUUID, taskUUID) match {
+                case Right(sr) => sr
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      }
+    } ~
     completeTask { (ownerUUID, taskUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
