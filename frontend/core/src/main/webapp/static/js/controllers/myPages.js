@@ -3,10 +3,23 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('MyPagesController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'location', 'locationHandler', 'notesArray', 'pageTitle', 'slideIndex', 'tagsArray', 'tasksArray',
-    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, location, locationHandler, notesArray, pageTitle, slideIndex, tagsArray, tasksArray) {
+    angular.module('em.app').controller('MyPagesController', ['$location', '$scope', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray', 'tasksArray',
+    function($location, $scope, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray) {
 
+      $scope.errorHandler = errorHandler;
+
+      itemsRequest.getItems(function(itemsResponse) {
+
+        itemsArray.setItems(itemsResponse.items);
+        notesArray.setNotes(itemsResponse.notes);
+        tagsArray.setTags(itemsResponse.tags);
+        tasksArray.setTasks(itemsResponse.tasks);
+
+      }, function(error) {
+      });
+      
       $scope.slide = slideIndex;
+      
       $scope.$watch('slide', function(newValue) {
         switch(newValue) {
           case 0:
@@ -27,23 +40,6 @@
           default:
             break;
         }
-      });
-
-      $scope.errorHandler = errorHandler;
-
-      itemsRequest.getItems(function(itemsResponse) {
-
-        itemsArray.setItems(itemsResponse.items);
-        notesArray.setNotes(itemsResponse.notes);
-        tagsArray.setTags(itemsResponse.tags);
-        tasksArray.setTasks(itemsResponse.tasks);
-
-        $scope.items = itemsArray.getItems();
-        $scope.notes = notesArray.getNotes();
-        $scope.tags = tagsArray.getTags();
-        $scope.tasks = tasksArray.getTasks();
-
-      }, function(error) {
       });
 
     }]);

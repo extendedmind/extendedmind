@@ -143,10 +143,12 @@
 
     angular.module('em.app').run(['$document', '$location', '$rootScope', 'userAuthenticate',
     function($document, $location, $rootScope, userAuthenticate) {
+      
       $rootScope.pageAnimation = {
         enter : 'fade-show',
         hide : 'fade-hide'
       };
+      
       $rootScope.$on('event:authenticationRequired', function() {
         userAuthenticate.authenticate();
       });

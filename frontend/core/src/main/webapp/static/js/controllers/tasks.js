@@ -2,8 +2,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('TasksController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
-    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    angular.module('em.app').controller('TasksController', ['$location', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
+    function($location, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.tasks = tasksArray.getTasks();
       $scope.tags = tagsArray.getTags();
@@ -32,12 +32,12 @@
         }
       };
 
-      $scope.setActiveItem = function(item) {
-        activeItem.setItem(item);
-      };
-
       $scope.addNew = function() {
         $location.path('/my/tasks/new/');
+      };
+
+      $scope.setActiveItem = function(item) {
+        activeItem.setItem(item);
       };
     }]);
   }());

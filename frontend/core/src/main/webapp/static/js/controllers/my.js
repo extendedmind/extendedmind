@@ -3,8 +3,13 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('MyController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'location', 'locationHandler', 'notesArray', 'pageTitle', 'tagsArray', 'tasksArray',
-    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, location, locationHandler, notesArray, pageTitle, tagsArray, tasksArray) {
+    angular.module('em.app').controller('MyController', ['$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray',
+    function($scope, activeItem, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
+
+      $scope.items = itemsArray.getItems();
+      $scope.notes = notesArray.getNotes();
+      $scope.tags = tagsArray.getTags();
+      $scope.tasks = tasksArray.getTasks();
 
       $scope.addNewItem = function() {
 
