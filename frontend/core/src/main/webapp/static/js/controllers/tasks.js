@@ -5,23 +5,10 @@
     angular.module('em.app').controller('TasksController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
     function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
-      $scope.errorHandler = errorHandler;
-      $rootScope.pageTitle = 'my';
-      $rootScope.subtitle = 'tasks';
-      activeItem.setItem(null);
-
-      itemsRequest.getItems(function(itemsResponse) {
-
-        itemsArray.setItems(itemsResponse.items);
-        tasksArray.setTasks(itemsResponse.tasks);
-        tagsArray.setTags(itemsResponse.tags);
-
-        $scope.tasks = tasksArray.getTasks();
-        $scope.tags = tagsArray.getTags();
-        $scope.projects = tasksArray.getProjects();
-        $scope.subtasks = tasksArray.getSubtasks();
-      }, function(error) {
-      });
+      $scope.tasks = tasksArray.getTasks();
+      $scope.tags = tagsArray.getTags();
+      $scope.projects = tasksArray.getProjects();
+      $scope.subtasks = tasksArray.getSubtasks();
 
       $scope.tasksListFilter = true;
 
