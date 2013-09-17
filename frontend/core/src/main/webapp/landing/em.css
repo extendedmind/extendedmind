@@ -3,7 +3,8 @@
 
 .embed-container {
   position: relative;
-  padding-bottom: 56.25%; /* 16/9 ratio */
+  /*padding-bottom: 56.25%;  16/9 ratio */
+  padding-bottom: 54%;
   padding-top: 30px; /* IE6 workaround*/
   height: 0;
   overflow: hidden;
@@ -17,9 +18,14 @@
   height: 100%;
 }
 
+.em-top{
+  width:100%;
+  background-color: #eff0eb;
+}
+
 .embed-margin {
-  max-width: 90%;
-  margin-top: 2%;
+  max-width: 80%;
+  padding-top: 2%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -72,12 +78,9 @@ html, body {
 
 /* GENERAL SETTINGS */
 
-body {
-  background-color: #333333;
-  color: white;
-}
-
 .em-page {
+  background-color: white;
+  color: white;
   margin-left: auto;
   margin-right: auto;
 }
@@ -90,7 +93,7 @@ a:hover {
 }
 
 .footer a {
-  color: #d6d6d6 !important;
+  color: #636363;
 }
 
 /* FONTS */
@@ -101,28 +104,28 @@ h1, h2, h3, h4, h5 {
 }
 
 h1 {
-  color: #d6d6d6;
-  font-size: 70px;
+  color: #228fd7;
+  font-size: 60px;
   font-weight: bold;
 }
 
 h3 {
-  color: #c9c9c9;
-  font-size: 40px;
-}
-
-h4 {
-  color: #c9c9c9;
+  color: #636363;
   font-size: 30px;
 }
 
+h4 {
+  color: #6eb6e5;
+  font-size: 20px;
+}
+
 h5 {
-  color: #676767;
-  font-size: 25px;
+  color: #636363;
+  font-size: 20px;
 }
 
 .alert {
-  font-size: 25px;
+  font-size: 15px;
 }
 
 /* PAGE CONTENT */
@@ -132,7 +135,7 @@ h5 {
 }
 
 .em-ingress, .em-please {
-  text-align: justify;
+  text-align: left;
 }
 
 .em-topmargin {
@@ -167,7 +170,6 @@ h5 {
 }
 
 input, button {
-  background-color: #d6d6d6 !important;
 }
 
 .em-logo {
@@ -228,23 +230,23 @@ input, button {
   }
 
   h1 {
-    font-size: 45px;
+    font-size: 40px;
   }
 
   h3 {
-    font-size: 30px;
-  }
-
-  h4 {
     font-size: 25px;
   }
 
-  h5 {
+  h4 {
     font-size: 20px;
   }
 
+  h5 {
+    font-size: 15px;
+  }
+
   .alert {
-    font-size: 20px;
+    font-size: 15px;
   }
 }
 
