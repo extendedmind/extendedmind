@@ -25,7 +25,6 @@
 
 .embed-margin {
   max-width: 80%;
-  padding-top: 2%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -161,7 +160,7 @@ h5 {
 }
 
 .em-please {
-  margin-bottom: 8%;
+  margin-bottom: 4%;
 }
 
 .form-group {
