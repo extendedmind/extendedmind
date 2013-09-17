@@ -130,22 +130,41 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             val itemResponse = entityAs[Item]
             writeJsonOutput("itemResponse", entityAs[String])
             itemResponse.description.get should be("not kidding")
-	        Delete("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get
-	                ) ~> addHeader("Content-Type", "application/json"
-	                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
-	                ) ~> emRoute ~> check {
-	          val deleteItemResponse = entityAs[String]
-	          writeJsonOutput("deleteItemResponse", deleteItemResponse)
-	          deleteItemResponse should include("deleted")
-	          
-	        }
+  	        Delete("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get
+  	                ) ~> addHeader("Content-Type", "application/json"
+  	                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+  	                ) ~> emRoute ~> check {
+  	          val deleteItemResponse = entityAs[String]
+  	          writeJsonOutput("deleteItemResponse", deleteItemResponse)
+  	          deleteItemResponse should include("deleted")
+  	          Get("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                ) ~> emRoute ~> check {
+                val failure = entityAs[String]
+                // TODO: Fix bug with Internal Server Error!
+                failure should include("error")
+              }
+              Post("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get + "/undelete"
+                      ) ~> addHeader("Content-Type", "application/json"
+                      ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                      ) ~> emRoute ~> check {
+                val undeleteItemResponse = entityAs[String]
+                writeJsonOutput("undeleteItemResponse", undeleteItemResponse)
+                undeleteItemResponse should include("modified")
+                val undeletedItem = getItem(putItemResponse.uuid.get, authenticateResponse)
+                undeletedItem.deleted should be (None)
+                undeletedItem.modified should not be(None)
+              }            
+  	        }
           }
         }
       }
     }
     it("should successfully put new task on PUT to /[userUUID]/task, " 
          + "update it with PUT to /[userUUID]/task/[taskUUID] " 
-         + "and get it back with GET to /[userUUID]/task/[taskUUID]") {
+         + "and get it back with GET to /[userUUID]/task/[taskUUID]"
+         + "and delete it with DELETE to /[userUUID]/task/[itemUUID] "
+         + "and undelete it with POST to /[userUUID]/task/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newTask = Task("learn Spanish", None, None, None, None, None)
       Put("/" + authenticateResponse.userUUID + "/task",
@@ -173,6 +192,32 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             val taskResponse = entityAs[Task]
             writeJsonOutput("taskResponse", entityAs[String])
             taskResponse.due.get should be("2014-03-01")
+            Delete("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get
+                    ) ~> addHeader("Content-Type", "application/json"
+                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                    ) ~> emRoute ~> check {
+              val deleteTaskResponse = entityAs[String]
+              writeJsonOutput("deleteTaskResponse", deleteTaskResponse)
+              deleteTaskResponse should include("deleted")
+              Get("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                ) ~> emRoute ~> check {
+                val failure = entityAs[String]
+                // TODO: Fix bug with Internal Server Error!
+                failure should include("error")
+              }
+              Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/undelete"
+                      ) ~> addHeader("Content-Type", "application/json"
+                      ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                      ) ~> emRoute ~> check {
+                val undeleteTaskResponse = entityAs[String]
+                writeJsonOutput("undeleteTaskResponse", undeleteTaskResponse)
+                undeleteTaskResponse should include("modified")
+                val undeletedTask = getTask(putTaskResponse.uuid.get, authenticateResponse)
+                undeletedTask.deleted should be (None)
+                undeletedTask.modified should not be(None)
+              }            
+            }
           }
         }
       }
@@ -209,6 +254,32 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             writeJsonOutput("noteResponse", entityAs[String])
             noteResponse.content should not be None
             noteResponse.description.get should be("Helsinki home dimensions")
+            Delete("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get
+                    ) ~> addHeader("Content-Type", "application/json"
+                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                    ) ~> emRoute ~> check {
+              val deleteNoteResponse = entityAs[String]
+              writeJsonOutput("deleteNoteResponse", deleteNoteResponse)
+              deleteNoteResponse should include("deleted")
+              Get("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                ) ~> emRoute ~> check {
+                val failure = entityAs[String]
+                // TODO: Fix bug with Internal Server Error!
+                failure should include("error")
+              }
+              Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/undelete"
+                      ) ~> addHeader("Content-Type", "application/json"
+                      ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                      ) ~> emRoute ~> check {
+                val undeleteNoteResponse = entityAs[String]
+                writeJsonOutput("undeleteNoteResponse", undeleteNoteResponse)
+                undeleteNoteResponse should include("modified")
+                val undeletedTask = getNote(putNoteResponse.uuid.get, authenticateResponse)
+                undeletedTask.deleted should be (None)
+                undeletedTask.modified should not be(None)
+              }
+            }            
           }
         }
       }

@@ -42,6 +42,13 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield note
     }
   }
+  
+  def deleteNote(userUUID: UUID, noteUUID: UUID): Response[DeleteItemResult] = {
+    for {
+      deletedNote <- deleteNoteNode(userUUID, noteUUID).right
+      result <- Right(getDeleteItemResult(deletedNote._1, deletedNote._2)).right
+    } yield result
+  }
 
   // PRIVATE
 
@@ -71,4 +78,23 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield note
   }
 
+  
+  protected def deleteNoteNode(userUUID: UUID, noteUUID: UUID): Response[Tuple2[Node, Long]] = {
+    withTx {
+      implicit neo =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          itemNode <- getItemNode(userNode, noteUUID, Some(ItemLabel.NOTE)).right
+          deletable <- validateNoteDeletable(itemNode).right
+          deleted <- Right(deleteItem(itemNode)).right
+        } yield (itemNode, deleted)
+    }
+  }
+
+  protected def validateNoteDeletable(noteNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
+    if (noteNode.hasLabel(ItemParentLabel.AREA))
+      fail(INVALID_PARAMETER, "can not delete area, only note")
+    else
+      Right(true)
+  }  
 }

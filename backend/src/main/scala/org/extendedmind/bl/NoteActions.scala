@@ -28,6 +28,16 @@ trait NoteActions {
     log.info("getNote: user {}, note {}", userUUID, noteUUID)
     db.getNote(userUUID, noteUUID)
   }
+  
+  def deleteNote(userUUID: UUID, noteUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
+    log.info("deleteNote: user {}, note {}", userUUID, noteUUID)
+    db.deleteNote(userUUID, noteUUID)
+  }
+  
+  def undeleteNote(userUUID: UUID, noteUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("undeleteNote: user {}, note {}", userUUID, noteUUID)
+    db.undeleteItem(userUUID, noteUUID, Some(ItemLabel.NOTE))
+  }
 }
 
 class NoteActionsImpl(implicit val settings: Settings, implicit val inj: Injector)

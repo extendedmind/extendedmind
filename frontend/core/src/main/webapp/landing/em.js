@@ -4,7 +4,8 @@ $.fn.formToJSON = function() {
   function add(objectGraph, name, value) {
     if (name.length == 1) {
       //if the array is now one element long, we're done
-      objectGraph[name[0]] = value;
+      //added strtolower to force email always to lowercase
+      objectGraph[name[0]] = value.toLowerCase();
     } else {
       //else we've still got more than a single element of depth
       if (objectGraph[name[0]] == null) {

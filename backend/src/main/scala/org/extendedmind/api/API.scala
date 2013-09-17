@@ -21,7 +21,7 @@ trait API extends HttpService {
   val getInviteRequestQueueNumber = get & path("invite" / "request" / JavaUUID)
 
   // Security
-  val postAuthenticate = post & path("authenticate".r) 
+  val postAuthenticate = post & path("authenticate".r)
   
   // Items
   val getItems = get & path(JavaUUID / "items")
@@ -29,14 +29,14 @@ trait API extends HttpService {
   val putNewItem = put & path(JavaUUID / "item")
   val putExistingItem = put & path(JavaUUID / "item" / JavaUUID)
   val deleteItem = delete & path(JavaUUID / "item" / JavaUUID)
-  val undeleteItem = post & path(JavaUUID / "item" / JavaUUID)
+  val undeleteItem = post & path(JavaUUID / "item" / JavaUUID / "undelete")
   
   // Tasks
   val getTask = get & path(JavaUUID / "task" / JavaUUID)
   val putNewTask = put & path(JavaUUID / "task")
   val putExistingTask = put & path(JavaUUID / "task" / JavaUUID)
   val deleteTask = delete & path(JavaUUID / "task" / JavaUUID)
-  val undeleteTask = post & path(JavaUUID / "task" / JavaUUID)
+  val undeleteTask = post & path(JavaUUID / "task" / JavaUUID / "undelete")
   val completeTask = post & path(JavaUUID / "task" / JavaUUID / "complete")
   val uncompleteTask = post & path(JavaUUID / "task" / JavaUUID / "uncomplete")
 
@@ -45,7 +45,7 @@ trait API extends HttpService {
   val putNewNote = put & path(JavaUUID / "note")
   val putExistingNote = put & path(JavaUUID / "note" / JavaUUID)
   val deleteNote = delete & path(JavaUUID / "note" / JavaUUID)
-  val undeleteNote = post & path(JavaUUID / "note" / JavaUUID)
+  val undeleteNote = post & path(JavaUUID / "note" / JavaUUID / "undelete")
   
   // Tags
   val getTag = get & path(JavaUUID / "tag" / JavaUUID)

@@ -67,9 +67,9 @@ trait ItemDatabase extends AbstractGraphDatabase {
     } yield result
   }
   
-  def undeleteItem(userUUID: UUID, itemUUID: UUID): Response[SetResult] = {
+  def undeleteItem(userUUID: UUID, itemUUID: UUID, mandatoryLabel: Option[Label] = None): Response[SetResult] = {
     for {
-      item <- undeleteItemNode(userUUID, itemUUID).right
+      item <- undeleteItemNode(userUUID, itemUUID, mandatoryLabel).right
       result <- Right(getSetResult(item, false)).right
     } yield result
   }
@@ -172,7 +172,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
       implicit neo4j =>
         for {
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          itemNode <- getItemNode(userNode, itemUUID).right
+          itemNode <- getItemNode(userNode, itemUUID, exactLabelMatch = false).right
           itemNode <- Right(setLabel(itemNode, additionalLabel, additionalSubLabel)).right
           itemNode <- updateNode(itemNode, item).right
         } yield itemNode
@@ -192,13 +192,15 @@ trait ItemDatabase extends AbstractGraphDatabase {
     node
   }
 
-  protected def getItemNode(userNode: Node, itemUUID: UUID, mandatoryLabel: Option[Label] = None, acceptDeleted: Boolean = false)(implicit neo4j: DatabaseService): Response[Node] = {
-    val itemNode = if (mandatoryLabel.isDefined) getNode(itemUUID, mandatoryLabel.get)
-                   else getNode(itemUUID, MainLabel.ITEM)
+  protected def getItemNode(userNode: Node, itemUUID: UUID, mandatoryLabel: Option[Label] = None, 
+                            acceptDeleted: Boolean = false, exactLabelMatch: Boolean = true)
+                           (implicit neo4j: DatabaseService): Response[Node] = {
+    val itemNode = if (mandatoryLabel.isDefined) getNode(itemUUID, mandatoryLabel.get, acceptDeleted)
+                   else getNode(itemUUID, MainLabel.ITEM, acceptDeleted)
     if (itemNode.isLeft) return itemNode              
-
+    
     // If searching for just ITEM, needs to fail for tasks and notes
-    if (mandatoryLabel.isEmpty && 
+    if (exactLabelMatch && mandatoryLabel.isEmpty && 
         (itemNode.right.get.hasLabel(ItemLabel.NOTE) 
          || itemNode.right.get.hasLabel(ItemLabel.TASK)
          || itemNode.right.get.hasLabel(ItemLabel.TAG))){
@@ -498,7 +500,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     }
   }
   
-  def deleteItemNode(userUUID: UUID, itemUUID: UUID): Response[Tuple2[Node, Long]] = {
+  protected def deleteItemNode(userUUID: UUID, itemUUID: UUID): Response[Tuple2[Node, Long]] = {
     withTx {
       implicit neo =>
         for {
@@ -509,12 +511,12 @@ trait ItemDatabase extends AbstractGraphDatabase {
     }
   }
   
-  def undeleteItemNode(userUUID: UUID, itemUUID: UUID): Response[Node] = {
+  protected def undeleteItemNode(userUUID: UUID, itemUUID: UUID, mandatoryLabel: Option[Label] = None): Response[Node] = {
     withTx {
       implicit neo =>
         for {
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          itemNode <- getItemNode(userNode, itemUUID, acceptDeleted = true).right
+          itemNode <- getItemNode(userNode, itemUUID, mandatoryLabel, acceptDeleted = true).right
           success <- Right(undeleteItem(itemNode)).right
         } yield itemNode
     }

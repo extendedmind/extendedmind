@@ -28,6 +28,16 @@ trait TaskActions {
     log.info("getTask: user {}, task {}", userUUID, taskUUID)
     db.getTask(userUUID, taskUUID)
   }
+  
+  def deleteTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
+    log.info("deleteTask: user {}, task {}", userUUID, taskUUID)
+    db.deleteTask(userUUID, taskUUID)
+  }
+  
+  def undeleteTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("undeleteTask: user {}, task {}", userUUID, taskUUID)
+    db.undeleteItem(userUUID, taskUUID, Some(ItemLabel.TASK))
+  }
 
   def completeTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[CompleteTaskResult] = {
     log.info("completeTask: user {}, task {}", userUUID, taskUUID)
