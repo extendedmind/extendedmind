@@ -4,8 +4,9 @@ import java.text.ParseException
 
 object Validators {
   // Pattern from: http://www.mkyong.com/regular-expressions/how-to-validate-email-address-with-regular-expression/
-  val emailPattern = ("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$").r
+  // removed uppercase to make sure no duplicates exist
+  val emailPattern = ("^[_a-z0-9-\\+]+(\\.[_a-z0-9-]+)*@"
+                    + "[a-z0-9-]+(\\.[a-z0-9]+)*(\\.[a-z]{2,})$").r
 
   val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
   dateFormat.setLenient(false)
