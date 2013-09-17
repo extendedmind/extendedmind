@@ -130,15 +130,31 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             val itemResponse = entityAs[Item]
             writeJsonOutput("itemResponse", entityAs[String])
             itemResponse.description.get should be("not kidding")
-	        Delete("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get
-	                ) ~> addHeader("Content-Type", "application/json"
-	                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
-	                ) ~> emRoute ~> check {
-	          val deleteItemResponse = entityAs[String]
-	          writeJsonOutput("deleteItemResponse", deleteItemResponse)
-	          deleteItemResponse should include("deleted")
-	          
-	        }
+  	        Delete("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get
+  	                ) ~> addHeader("Content-Type", "application/json"
+  	                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+  	                ) ~> emRoute ~> check {
+  	          val deleteItemResponse = entityAs[String]
+  	          writeJsonOutput("deleteItemResponse", deleteItemResponse)
+  	          deleteItemResponse should include("deleted")
+  	          Get("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get
+                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                ) ~> emRoute ~> check {
+                val failure = entityAs[String]
+                println(failure)
+              }
+              Post("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get + "/undelete"
+                      ) ~> addHeader("Content-Type", "application/json"
+                      ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                      ) ~> emRoute ~> check {
+                val undeleteItemResponse = entityAs[String]
+                writeJsonOutput("undeleteItemResponse", undeleteItemResponse)
+                deleteItemResponse should include("modified")
+                val undeletedItem = getItem(putItemResponse.uuid.get, authenticateResponse)
+                undeletedItem.deleted should be (None)
+                undeletedItem.modified should not be(None)
+              }              
+  	        }
           }
         }
       }

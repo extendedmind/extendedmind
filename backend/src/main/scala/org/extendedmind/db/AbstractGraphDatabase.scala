@@ -106,7 +106,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   // GENERAL
 
-  protected def getNodes(nodeUUIDList: List[UUID], label: Label): Response[List[Node]] = {
+  protected def getNodes(nodeUUIDList: List[UUID], label: Label, acceptDeleted: Boolean = false): Response[List[Node]] = {
     Right(nodeUUIDList map (uuid => {
       val nodeResponse = getNode(uuid, label)
       if (nodeResponse.isLeft) return Left(nodeResponse.left.get)
@@ -114,16 +114,17 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }))
   }
   
-  protected def getTokenNode(token: Token): Response[Node] = {
-    getNode("accessKey", token.accessKey: java.lang.Long, MainLabel.TOKEN)
+  protected def getTokenNode(token: Token, acceptDeleted: Boolean = false): Response[Node] = {
+    getNode("accessKey", token.accessKey: java.lang.Long, MainLabel.TOKEN, None, acceptDeleted)
   }
 
-  protected def getNode(nodeUUID: UUID, label: Label): Response[Node] = {
+  protected def getNode(nodeUUID: UUID, label: Label, acceptDeleted: Boolean = false): Response[Node] = {
     val uuidString = UUIDUtils.getTrimmedBase64UUID(nodeUUID)
-    getNode("uuid", uuidString, label, Some(nodeUUID.toString()))
+    getNode("uuid", uuidString, label, Some(nodeUUID.toString()), acceptDeleted)
   }
   
-  protected def getNode(nodeProperty: String, nodeValue: AnyRef, label: Label, nodeStringValue: Option[String] = None): Response[Node] = {
+  protected def getNode(nodeProperty: String, nodeValue: AnyRef, label: Label, nodeStringValue: Option[String], 
+                        acceptDeleted: Boolean): Response[Node] = {
     withTx {
       implicit neo =>
         val nodeList = findNodesByLabelAndProperty(label, nodeProperty, nodeValue).toList
@@ -134,7 +135,12 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
           fail(INTERNAL_SERVER_ERROR, "Ḿore than one " + label.labelName.toLowerCase() + " found with given  " + nodeProperty + 
               (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
         else {
-          Right(nodeList(0))
+          if (!acceptDeleted && nodeList(0).hasProperty("deleted")){
+            fail(INVALID_PARAMETER, label.labelName.toLowerCase() + " deleted with given " + nodeProperty + 
+                (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
+          }else{
+            Right(nodeList(0))
+          }
         }
     }
   }

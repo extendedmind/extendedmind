@@ -172,7 +172,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
       implicit neo4j =>
         for {
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          itemNode <- getItemNode(userNode, itemUUID).right
+          itemNode <- getItemNode(userNode, itemUUID, exactLabelMatch = false).right
           itemNode <- Right(setLabel(itemNode, additionalLabel, additionalSubLabel)).right
           itemNode <- updateNode(itemNode, item).right
         } yield itemNode
@@ -192,13 +192,15 @@ trait ItemDatabase extends AbstractGraphDatabase {
     node
   }
 
-  protected def getItemNode(userNode: Node, itemUUID: UUID, mandatoryLabel: Option[Label] = None, acceptDeleted: Boolean = false)(implicit neo4j: DatabaseService): Response[Node] = {
+  protected def getItemNode(userNode: Node, itemUUID: UUID, mandatoryLabel: Option[Label] = None, 
+                            acceptDeleted: Boolean = false, exactLabelMatch: Boolean = true)
+                           (implicit neo4j: DatabaseService): Response[Node] = {
     val itemNode = if (mandatoryLabel.isDefined) getNode(itemUUID, mandatoryLabel.get)
-                   else getNode(itemUUID, MainLabel.ITEM)
+                   else getNode(itemUUID, MainLabel.ITEM, acceptDeleted)
     if (itemNode.isLeft) return itemNode              
 
     // If searching for just ITEM, needs to fail for tasks and notes
-    if (mandatoryLabel.isEmpty && 
+    if (exactLabelMatch && mandatoryLabel.isEmpty && 
         (itemNode.right.get.hasLabel(ItemLabel.NOTE) 
          || itemNode.right.get.hasLabel(ItemLabel.TASK)
          || itemNode.right.get.hasLabel(ItemLabel.TAG))){
