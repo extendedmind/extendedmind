@@ -2,6 +2,7 @@ package org.extendedmind.domain
 
 import java.util.UUID
 import Validators._
+import org.extendedmind.SetResult
 
 case class Item(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long], 
                 title: String, description: Option[String]) extends ItemLike{
@@ -13,6 +14,7 @@ case class Items(items: Option[List[Item]], tasks: Option[List[Task]], notes: Op
 
 case class SharedItemVisibility(public: Option[Long], collective: Option[UUID])
 case class ExtendedItemRelationships(parentTask: Option[UUID], parentNote: Option[UUID], tags: Option[List[UUID]])
+case class DeleteItemResult(deleted: Long, result: SetResult)
 
 trait ItemLike extends Container {
   val uuid: Option[UUID]

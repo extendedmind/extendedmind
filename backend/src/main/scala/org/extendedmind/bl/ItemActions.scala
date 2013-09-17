@@ -33,6 +33,16 @@ trait ItemActions {
     log.info("getItems: user {}, item {}", userUUID, itemUUID)
     db.getItem(userUUID, itemUUID)
   }
+  
+  def deleteItem(userUUID: UUID, itemUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
+    log.info("deleteItem: user {}, item {}", userUUID, itemUUID)
+    db.deleteItem(userUUID, itemUUID)
+  }
+  
+  def undeleteItem(userUUID: UUID, itemUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("undeleteItem: user {}, item {}", userUUID, itemUUID)
+    db.undeleteItem(userUUID, itemUUID)
+  }
 }
 
 class ItemActionsImpl(implicit val settings: Settings, implicit val inj: Injector)
