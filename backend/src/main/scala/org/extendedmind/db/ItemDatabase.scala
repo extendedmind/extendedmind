@@ -59,7 +59,21 @@ trait ItemDatabase extends AbstractGraphDatabase {
         } yield items
     }
   }
-
+  
+  def deleteItem(userUUID: UUID, itemUUID: UUID): Response[DeleteItemResult] = {
+    for {
+      deletedItem <- deleteItemNode(userUUID, itemUUID).right
+      result <- Right(getDeleteItemResult(deletedItem._1, deletedItem._2)).right
+    } yield result
+  }
+  
+  def undeleteItem(userUUID: UUID, itemUUID: UUID): Response[SetResult] = {
+    for {
+      item <- undeleteItemNode(userUUID, itemUUID).right
+      result <- Right(getSetResult(item, false)).right
+    } yield result
+  }
+  
   // PRIVATE
 
   protected def getItems(itemNodes: Iterable[Node], userUUID: UUID)(implicit neo4j: DatabaseService): Response[Items] = {
@@ -178,17 +192,38 @@ trait ItemDatabase extends AbstractGraphDatabase {
     node
   }
 
-  protected def getItemNode(userNode: Node, itemUUID: UUID, mandatoryLabel: Option[Label] = None)(implicit neo4j: DatabaseService): Response[Node] = {
+  protected def getItemNode(userNode: Node, itemUUID: UUID, mandatoryLabel: Option[Label] = None, acceptDeleted: Boolean = false)(implicit neo4j: DatabaseService): Response[Node] = {
     val itemNode = if (mandatoryLabel.isDefined) getNode(itemUUID, mandatoryLabel.get)
                    else getNode(itemUUID, MainLabel.ITEM)
     if (itemNode.isLeft) return itemNode              
 
-    val userFromItem: TraversalDescription =
-      Traversal.description()
-        .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
-          Direction.INCOMING)
-        .depthFirst()
-        .evaluator(Evaluators.excludeStartPosition())
+    // If searching for just ITEM, needs to fail for tasks and notes
+    if (mandatoryLabel.isEmpty && 
+        (itemNode.right.get.hasLabel(ItemLabel.NOTE) 
+         || itemNode.right.get.hasLabel(ItemLabel.TASK)
+         || itemNode.right.get.hasLabel(ItemLabel.TAG))){
+      return fail(INVALID_PARAMETER, "item already either note, task or tag with UUID " + itemUUID)
+    }
+    
+    val userFromItem: TraversalDescription = {
+      if (acceptDeleted){
+        Traversal.description()
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
+            Direction.INCOMING)
+          .depthFirst()
+          .evaluator(Evaluators.excludeStartPosition())
+      }else{
+        Traversal.description()
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
+            Direction.INCOMING)
+          .depthFirst()
+          .evaluator(Evaluators.excludeStartPosition())
+          .evaluator(PropertyEvaluator(
+            MainLabel.ITEM, "deleted",
+            Evaluation.EXCLUDE_AND_PRUNE,
+            Evaluation.INCLUDE_AND_CONTINUE))
+      }
+    }
     val traverser = userFromItem.traverse(itemNode.right.get)
     val itemNodeList = traverser.nodes().toArray
     if (itemNodeList.length == 0) {
@@ -460,6 +495,47 @@ trait ItemDatabase extends AbstractGraphDatabase {
       fail(INVALID_PARAMETER, "Every given tag UUID is not attached to the item " + getUUID(itemNode))
     }else{
       Right(Some(relationshipList))
+    }
+  }
+  
+  def deleteItemNode(userUUID: UUID, itemUUID: UUID): Response[Tuple2[Node, Long]] = {
+    withTx {
+      implicit neo =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          itemNode <- getItemNode(userNode, itemUUID).right
+          deleted <- Right(deleteItem(itemNode)).right
+        } yield (itemNode, deleted)
+    }
+  }
+  
+  def undeleteItemNode(userUUID: UUID, itemUUID: UUID): Response[Node] = {
+    withTx {
+      implicit neo =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          itemNode <- getItemNode(userNode, itemUUID, acceptDeleted = true).right
+          success <- Right(undeleteItem(itemNode)).right
+        } yield itemNode
+    }
+  }
+
+  protected def deleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Long = {
+    val deleted = System.currentTimeMillis()
+    itemNode.setProperty("deleted", deleted)
+    deleted
+  }
+
+  protected def undeleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Unit = {
+    if(itemNode.hasProperty("deleted")){
+      itemNode.removeProperty("deleted")
+    }
+  }
+
+  protected def getDeleteItemResult(item: Node, deleted: Long): DeleteItemResult = {
+    withTx {
+      implicit neo4j =>
+        DeleteItemResult(deleted, getSetResult(item, false))
     }
   }
 }

@@ -37,7 +37,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
     bind [GraphDatabase] to db
     bind [MailgunClient] to mockMailgunClient
   }
-  
+
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
 
   before{
@@ -99,7 +99,9 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
     }
     it("should successfully put new item on PUT to /[userUUID]/item "
          + "update it with PUT to /[userUUID]/item/[itemUUID] "
-         + "and get it back with GET to /[userUUID]/item/[itemUUID]") {
+         + "and get it back with GET to /[userUUID]/item/[itemUUID] "
+         + "and delete it with DELETE to /[userUUID]/item/[itemUUID] "
+         + "and undelete it with POST to /[userUUID]/item/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newItem = Item(None, None, None, "learn how to fly", None)
       Put("/" + authenticateResponse.userUUID + "/item",
@@ -128,6 +130,15 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             val itemResponse = entityAs[Item]
             writeJsonOutput("itemResponse", entityAs[String])
             itemResponse.description.get should be("not kidding")
+	        Delete("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get
+	                ) ~> addHeader("Content-Type", "application/json"
+	                ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+	                ) ~> emRoute ~> check {
+	          val deleteItemResponse = entityAs[String]
+	          writeJsonOutput("deleteItemResponse", deleteItemResponse)
+	          deleteItemResponse should include("deleted")
+	          
+	        }
           }
         }
       }
@@ -455,6 +466,15 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             ) ~> emRoute ~> check {
        entityAs[SetResult]
      }
+  }
+
+    
+  def getItem(itemUUID: UUID, authenticateResponse: SecurityContext): Item = {
+    Get("/" + authenticateResponse.userUUID + "/item/" + itemUUID
+        ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+        ) ~> emRoute ~> check {
+      entityAs[Item]
+    }
   }
   
   def getTask(taskUUID: UUID, authenticateResponse: SecurityContext): Task = {
