@@ -72,21 +72,21 @@
       };
     }]);
 
-    angular.module('em.directives').directive('myPage', [
+    angular.module('em.directives').directive('my', [
     function() {
       return {
         restrict : 'A',
-        templateUrl : 'static/partials/myPage.html'
+        templateUrl : 'static/partials/my.html'
       };
     }]);
-    angular.module('em.directives').directive('tasks', [
+    angular.module('em.directives').directive('myTasks', [
     function() {
       return {
         restrict : 'A',
         templateUrl : 'static/partials/my/tasks.html'
       };
     }]);
-    angular.module('em.directives').directive('notes', [
+    angular.module('em.directives').directive('myNotes', [
     function() {
       return {
         restrict : 'A',

@@ -27,7 +27,7 @@
 
       $routeProvider.when('/my', {
         controller : 'MyController',
-        templateUrl : 'static/partials/my.html',
+        templateUrl : 'static/partials/myPages.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -43,7 +43,7 @@
 
       $routeProvider.when('/my/notes', {
         controller : 'MyController',
-        templateUrl : 'static/partials/my.html',
+        templateUrl : 'static/partials/myPages.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -83,7 +83,7 @@
 
       $routeProvider.when('/my/tasks', {
         controller : 'MyController',
-        templateUrl : 'static/partials/my.html',
+        templateUrl : 'static/partials/myPages.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
