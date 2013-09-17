@@ -68,10 +68,9 @@ html, body {
 
 .footer {
   position: relative;
-  margin-top: -50px; /* negative value of footer height */
+  margin-top: -90px; /* negative value of footer height */
   height: 50px;
   clear: both;
-  padding-top: 20px;
 }
 
 /* GENERAL SETTINGS */
