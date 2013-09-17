@@ -4,7 +4,6 @@
 .embed-container {
   position: relative;
   /*padding-bottom: 56.25%;  16/9 ratio */
-  padding-bottom: 54%;
   padding-top: 30px; /* IE6 workaround*/
   height: 0;
   overflow: hidden;
@@ -97,15 +96,23 @@ a:hover {
 
 /* FONTS */
 
-h1, h2, h3, h4, h5 {
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+h1 {
+  font-family: "HelveticaNeue-UltraLight", "Helvetica Neue UltraLight", 
+               "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+               Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 100;
+  letter-spacing: 9px;
+}
+
+h2, h3, h4, h5 {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+                Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
 }
 
 h1 {
   color: #228fd7;
   font-size: 55px;
-  font-weight: bold;
 }
 
 h3 {
@@ -172,6 +179,10 @@ h5 {
   margin-bottom: 4%;
 }
 
+.em-sign h5 {
+  font-weight: bold;
+}
+
 .form-group {
   margin-left: auto;
   margin-right: auto;
@@ -206,6 +217,15 @@ input, button {
   .em-sff {
     padding-left: 40%;
   }
+  .embed-container {
+    padding-bottom: 52%;
+  }
+}
+
+@media (min-width: 1290px) {
+  .embed-container {
+    padding-bottom: 54%;
+  }
 
 }
 
@@ -213,6 +233,9 @@ input, button {
   .em-ingress, .em-please {
     padding-left: 27%;
     padding-right: 27%;
+  }
+  .embed-container {
+    padding-bottom: 53%;
   }
 }
 
@@ -231,6 +254,15 @@ input, button {
   .em-sff {
     padding-left: 35%;
   }
+  .embed-container {
+    padding-bottom: 52%;
+  }
+}
+
+@media (max-width: 700px) {
+  .embed-container {
+    padding-bottom: 51%;
+  }
 }
 
 @media (min-width: 520px) {
@@ -248,9 +280,12 @@ input, button {
     padding-left: 25%;
   }
 
+  .embed-container {
+    padding-bottom: 49%;
+  }
 
   h1 {
-    font-size: 40px;
+    font-size: 37px;
   }
 
   h3 {
@@ -267,6 +302,12 @@ input, button {
 
   .alert {
     font-size: 15px;
+  }
+}
+
+@media (max-width: 490px) {
+  .embed-container {
+    padding-bottom: 48%;
   }
 }
 
