@@ -104,13 +104,13 @@ h1, h2, h3, h4, h5 {
 
 h1 {
   color: #228fd7;
-  font-size: 60px;
+  font-size: 55px;
   font-weight: bold;
 }
 
 h3 {
   color: #636363;
-  font-size: 30px;
+  font-size: 26px;
 }
 
 h4 {
@@ -254,7 +254,7 @@ input, button {
   }
 
   h3 {
-    font-size: 25px;
+    font-size: 22px;
   }
 
   h4 {
