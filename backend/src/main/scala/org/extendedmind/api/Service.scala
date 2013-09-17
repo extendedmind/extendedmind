@@ -381,6 +381,34 @@ trait Service extends API with Injectable {
         }
       }
     } ~
+    deleteNote { (ownerUUID, noteUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == ownerUUID){
+          complete{
+            Future[DeleteItemResult]{
+              noteActions.deleteNote(ownerUUID, noteUUID) match {
+                case Right(dir) => dir
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      }
+    } ~
+    undeleteNote { (ownerUUID, noteUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+        authorize(securityContext.userUUID == ownerUUID){
+          complete{
+            Future[SetResult]{
+              noteActions.undeleteNote(ownerUUID, noteUUID) match {
+                case Right(sr) => sr
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      }
+    } ~
     getTag{ (ownerUUID, tagUUID) =>
       authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
