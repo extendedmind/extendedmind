@@ -134,6 +134,10 @@ trait ItemDatabase extends AbstractGraphDatabase {
             ItemLabel.TASK, "completed",
             Evaluation.EXCLUDE_AND_PRUNE,
             Evaluation.INCLUDE_AND_CONTINUE))
+        .evaluator(PropertyEvaluator(
+            MainLabel.ITEM, "deleted",
+            Evaluation.EXCLUDE_AND_PRUNE,
+            Evaluation.INCLUDE_AND_CONTINUE))
 
     val traverser = itemsFromOwner.traverse(userNode)
     Right(traverser.nodes())
