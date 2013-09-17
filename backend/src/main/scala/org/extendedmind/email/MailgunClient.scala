@@ -61,7 +61,9 @@ trait MailgunClient{
                            settings.requestInviteConfirmationTitle, 
                            requestInviteConfirmationHtmlTemplate.replaceAll(
                                "queueNumberLink", 
-                               settings.emailUrlPrefix + settings.requestInviteOrderNumberURI + inviteRequestUUID))
+                               settings.emailUrlPrefix + settings.requestInviteOrderNumberURI + inviteRequestUUID)
+                           .replaceAll("logoLink", 
+                               settings.emailUrlPrefix + "logo.png"))
     implicit val timeout = Timeout(5 seconds)
     sendEmailPipeline {
       Post("https://api.mailgun.net/v2/" + settings.mailgunDomain + "/messages",
