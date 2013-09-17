@@ -3,34 +3,36 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('MyController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'locationHandler', 'notesArray', 'pageTitle', 'tagsArray', 'tasksArray',
-    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, locationHandler, notesArray, pageTitle, tagsArray, tasksArray) {
+    angular.module('em.app').controller('MyController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'location', 'locationHandler', 'notesArray', 'pageTitle', 'slideIndex', 'tagsArray', 'tasksArray',
+    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, location, locationHandler, notesArray, pageTitle, slideIndex, tagsArray, tasksArray) {
 
-      $scope.products = [{
-        url : 'static/partials/my/notes.html'
-      }, {
-        url : 'static/partials/my/tasks.html'
-      }];
-
-      $scope.product = $scope.products[0];
-      
-      $scope.prev = function(item) {
-      };
-
-      $scope.next = function(item) {
-        
-        // $scope.product=$scope.products[1];
-
-        // return $scope.product;
-      };
+      $scope.slide = slideIndex;
+      $scope.$watch('slide', function(newValue) {
+        switch(newValue) {
+          case 0:
+            if ($location.path() !== '/my/notes') {
+              location.skipReload().path('/my/notes');
+            }
+            break;
+          case 1:
+            if ($location.path() !== '/my') {
+              location.skipReload().path('/my');
+            }
+            break;
+          case 2:
+            if ($location.path() !== '/my/tasks') {
+              location.skipReload().path('/my/tasks');
+            }
+            break;
+          default:
+            break;
+        }
+      });
 
       $scope.errorHandler = errorHandler;
       $rootScope.pageTitle = 'my';
       $rootScope.subtitle = null;
       activeItem.setItem(null);
-
-      locationHandler.setPreviousLocation('/my/tasks');
-      locationHandler.setNextLocation('/my/notes');
 
       itemsRequest.getItems(function(itemsResponse) {
 
@@ -60,22 +62,6 @@
 
       $scope.setActiveItem = function(item) {
         activeItem.setItem(item);
-      };
-
-      $scope.swipeLeft = function() {
-        $rootScope.pageAnimation = {
-          enter : 'em-animate-enter-right',
-          leave : 'em-animate-leave-left'
-        };
-        $location.path('/my/tasks');
-      };
-
-      $scope.swipeRight = function() {
-        $rootScope.pageAnimation = {
-          enter : 'em-animate-enter-left',
-          leave : 'em-animate-leave-right'
-        };
-        $location.path('/my/notes');
       };
     }]);
   }());

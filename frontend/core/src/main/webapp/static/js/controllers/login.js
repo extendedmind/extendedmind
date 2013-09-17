@@ -4,7 +4,6 @@
     angular.module('em.app').controller('LoginController', ['$rootScope', '$scope', 'authenticateRequest', 'errorHandler', 'userSession',
 
     function($rootScope, $scope, authenticateRequest, errorHandler, userSession) {
-
       $scope.errorHandler = errorHandler;
 
       $scope.userLogin = function() {

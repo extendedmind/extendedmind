@@ -2,16 +2,13 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('TasksController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'locationHandler', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
-    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, locationHandler, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    angular.module('em.app').controller('TasksController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
+    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.errorHandler = errorHandler;
       $rootScope.pageTitle = 'my';
       $rootScope.subtitle = 'tasks';
       activeItem.setItem(null);
-
-      locationHandler.setPreviousLocation('/my/notes');
-      locationHandler.setNextLocation('/my');
 
       itemsRequest.getItems(function(itemsResponse) {
 
@@ -50,22 +47,6 @@
 
       $scope.setActiveItem = function(item) {
         activeItem.setItem(item);
-      };
-
-      $scope.swipeLeft = function() {
-        $rootScope.pageAnimation = {
-          enter : 'em-animate-enter-right',
-          leave : 'em-animate-leave-left'
-        };
-        $location.path('/my/notes');
-      };
-
-      $scope.swipeRight = function() {
-        $rootScope.pageAnimation = {
-          enter : 'em-animate-enter-left',
-          leave : 'em-animate-leave-right'
-        };
-        $location.path('/my');
       };
 
       $scope.addNew = function() {

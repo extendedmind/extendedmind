@@ -2,6 +2,25 @@
 
 ( function() {'use strict';
 
+    angular.module('em.services').factory('location', ['$location', '$route', '$rootScope',
+    function($location, $route, $rootScope) {
+
+      $location.skipReload = function() {
+        var lastRoute, un;
+
+        lastRoute = $route.current;
+
+        un = $rootScope.$on('$locationChangeSuccess', function() {
+          $route.current = lastRoute;
+          un();
+        });
+
+        return $location;
+      };
+
+      return $location;
+    }]);
+
     angular.module('em.services').factory('locationHandler', function() {
       var nextLocation, previousLocation;
 

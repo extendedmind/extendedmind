@@ -32,18 +32,26 @@
           authenticationRequired : ['$rootScope',
           function($rootScope) {
             $rootScope.$broadcast('event:authenticationRequired');
+          }],
+          slideIndex : [
+          function() {
+            return 1;
           }]
 
         }
       });
 
       $routeProvider.when('/my/notes', {
-        controller : 'NotesController',
-        templateUrl : 'static/partials/my/notes.html',
+        controller : 'MyController',
+        templateUrl : 'static/partials/my.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
             $rootScope.$broadcast('event:authenticationRequired');
+          }],
+          slideIndex : [
+          function() {
+            return 0;
           }]
 
         }
@@ -74,12 +82,16 @@
       });
 
       $routeProvider.when('/my/tasks', {
-        controller : 'TasksController',
-        templateUrl : 'static/partials/my/tasks.html',
+        controller : 'MyController',
+        templateUrl : 'static/partials/my.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
             $rootScope.$broadcast('event:authenticationRequired');
+          }],
+          slideIndex : [
+          function() {
+            return 2;
           }]
 
         }
