@@ -31,8 +31,8 @@
 /* STITCHING */
 
 .stich-top {
-  background-image: -webkit-linear-gradient(0deg, #636363 60%, transparent 60%, transparent 100%), -webkit-linear-gradient(0deg, #5c5c5c 60%, transparent 60%, transparent 100%);
-  background-image: -moz-linear-gradient(0deg, #636363 60%, transparent 60%, transparent 100%), -moz-linear-gradient(0deg, #5c5c5c 60%, transparent 60%, transparent 100%);
+  background-image: -webkit-linear-gradient(0deg, #6eb6e5 60%, transparent 60%, transparent 100%), -webkit-linear-gradient(0deg, #5c5c5c 60%, transparent 60%, transparent 100%);
+  background-image: -moz-linear-gradient(0deg, #6eb6e5 60%, transparent 60%, transparent 100%), -moz-linear-gradient(0deg, #5c5c5c 60%, transparent 60%, transparent 100%);
   left: 0px;
   right: 0px;
   height: 1px;
@@ -120,7 +120,7 @@ h3 {
 }
 
 h4 {
-  color: #636363;
+  color: #6eb6e5;
   font-size: 20px;
 }
 
@@ -192,7 +192,7 @@ input, button {
 
 .em-logo {
   margin-top: 4%;
-  margin-bottom: 170px;
+  margin-bottom: 150px;
 }
 
 /* Waiting page */
