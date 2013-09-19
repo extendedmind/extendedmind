@@ -33,9 +33,9 @@
           function($rootScope) {
             $rootScope.$broadcast('event:authenticationRequired');
           }],
-          slideIndex : ['Enum', 'slideUrl',
-          function(Enum, slideUrl) {
-            return slideUrl.setSlideUrl(Enum.my.my);
+          slideIndex : ['Enum',
+          function(Enum) {
+            return Enum.my.my;
           }]
 
         }
@@ -49,9 +49,9 @@
           function($rootScope) {
             $rootScope.$broadcast('event:authenticationRequired');
           }],
-          slideIndex : ['Enum', 'slideUrl',
-          function(Enum, slideUrl) {
-            return slideUrl.setSlideUrl(Enum.my.notes);
+          slideIndex : ['Enum',
+          function(Enum) {
+            return Enum.my.notes;
           }]
 
         }
@@ -89,9 +89,9 @@
           function($rootScope) {
             $rootScope.$broadcast('event:authenticationRequired');
           }],
-          slideIndex : ['Enum', 'slideUrl',
-          function(Enum, slideUrl) {
-            return slideUrl.setSlideUrl(Enum.my.tasks);
+          slideIndex : ['Enum',
+          function(Enum) {
+            return Enum.my.tasks;
           }]
 
         }
@@ -141,8 +141,8 @@
       $locationProvider.html5Mode(true);
     }]);
 
-    angular.module('em.app').run(['$document', '$location', '$rootScope', 'location', 'slideUrl', 'userAuthenticate',
-    function($document, $location, $rootScope, location, slideUrl, userAuthenticate) {
+    angular.module('em.app').run(['$document', '$location', '$rootScope', 'userAuthenticate',
+    function($document, $location, $rootScope, userAuthenticate) {
 
       $rootScope.pageAnimation = {
         enter : 'fade-show',
@@ -164,6 +164,6 @@
           hide : 'fade-hide'
         };
       });
-      
+
     }]);
   }());
