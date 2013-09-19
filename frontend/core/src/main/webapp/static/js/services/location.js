@@ -21,7 +21,8 @@
       return $location;
     }]);
 
-    angular.module('em.services').factory('locationHandler', function() {
+    angular.module('em.services').factory('locationHandler', [
+    function() {
       var nextLocation, previousLocation;
 
       return {
@@ -38,5 +39,19 @@
           return previousLocation;
         }
       };
-    });
+    }]);
+
+    angular.module('em.services').factory('slideUrl', [
+    function() {
+      var slideUrl;
+
+      return {
+        setSlideUrl : function(slideUrl) {
+          this.slideUrl = slideUrl;
+        },
+        getSlideUrl : function() {
+          return this.slideUrl;
+        }
+      };
+    }]);
   }());

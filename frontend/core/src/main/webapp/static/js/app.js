@@ -33,9 +33,9 @@
           function($rootScope) {
             $rootScope.$broadcast('event:authenticationRequired');
           }],
-          slideIndex : [
-          function() {
-            return 1;
+          slideIndex : ['Enum', 'slideUrl',
+          function(Enum, slideUrl) {
+            return slideUrl.setSlideUrl(Enum.my.my);
           }]
 
         }
@@ -49,9 +49,9 @@
           function($rootScope) {
             $rootScope.$broadcast('event:authenticationRequired');
           }],
-          slideIndex : [
-          function() {
-            return 0;
+          slideIndex : ['Enum', 'slideUrl',
+          function(Enum, slideUrl) {
+            return slideUrl.setSlideUrl(Enum.my.notes);
           }]
 
         }
@@ -89,9 +89,9 @@
           function($rootScope) {
             $rootScope.$broadcast('event:authenticationRequired');
           }],
-          slideIndex : [
-          function() {
-            return 2;
+          slideIndex : ['Enum', 'slideUrl',
+          function(Enum, slideUrl) {
+            return slideUrl.setSlideUrl(Enum.my.tasks);
           }]
 
         }
@@ -141,14 +141,14 @@
       $locationProvider.html5Mode(true);
     }]);
 
-    angular.module('em.app').run(['$document', '$location', '$rootScope', 'userAuthenticate',
-    function($document, $location, $rootScope, userAuthenticate) {
-      
+    angular.module('em.app').run(['$document', '$location', '$rootScope', 'location', 'slideUrl', 'userAuthenticate',
+    function($document, $location, $rootScope, location, slideUrl, userAuthenticate) {
+
       $rootScope.pageAnimation = {
         enter : 'fade-show',
         hide : 'fade-hide'
       };
-      
+
       $rootScope.$on('event:authenticationRequired', function() {
         userAuthenticate.authenticate();
       });
@@ -164,5 +164,31 @@
           hide : 'fade-hide'
         };
       });
+
+      // $rootScope.$on('event:slideIndexChanged', function() {
+      //
+      // var asd = slideUrl.getSlideUrl();
+      //
+      // switch(asd) {
+      // case 0:
+      // if ($location.path() !== '/my/notes') {
+      // location.skipReload().path('/my/notes');
+      // }
+      // break;
+      // case 1:
+      // if ($location.path() !== '/my') {
+      // location.skipReload().path('/my');
+      // }
+      // break;
+      // case 2:
+      // if ($location.path() !== '/my/tasks') {
+      // console.log('ads');
+      // // location.skipReload().path('/my/tasks');
+      // }
+      // break;
+      // default:
+      // break;
+      // }
+      // });
     }]);
   }());
