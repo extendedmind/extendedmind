@@ -164,31 +164,6 @@
           hide : 'fade-hide'
         };
       });
-
-      // $rootScope.$on('event:slideIndexChanged', function() {
-      //
-      // var asd = slideUrl.getSlideUrl();
-      //
-      // switch(asd) {
-      // case 0:
-      // if ($location.path() !== '/my/notes') {
-      // location.skipReload().path('/my/notes');
-      // }
-      // break;
-      // case 1:
-      // if ($location.path() !== '/my') {
-      // location.skipReload().path('/my');
-      // }
-      // break;
-      // case 2:
-      // if ($location.path() !== '/my/tasks') {
-      // console.log('ads');
-      // // location.skipReload().path('/my/tasks');
-      // }
-      // break;
-      // default:
-      // break;
-      // }
-      // });
+      
     }]);
   }());
