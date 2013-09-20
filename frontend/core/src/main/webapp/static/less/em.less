@@ -1,22 +1,33 @@
 body {
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue UltraLight', "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
   width: 100%;
   height: 100%;
-  font-size:25px;
+  font-size: 25px;
 }
 
-h1,h2,h3,h4{
+h1 {
+  font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue UltraLight', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-weight: 100;
+  font-size: 35px;
+}
+
+h2, h3, h4 {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-weight: 300;}
+  font-weight: 300;
+}
 
-h1{font-size:45px;}
-h2{font-size:30px;}
-h3{font-size:35px;}
-h4{font-size:25px;}
+h2 {
+  font-size: 30px;
+}
 
-// a{
-  // font-size:30px;}
+h3 {
+  font-size: 25px;
+}
+
+h4 {
+  font-size: 20px;
+}
 
 html {
   width: 100%;
@@ -33,10 +44,12 @@ html {
   width: 100%;
   height: 100%;
 }
+
 .em-page {
   width: 100%;
   height: 100%;
 }
+
 .em-animate {
   width: 100%;
   height: 100%;
@@ -47,72 +60,16 @@ html {
   height: 100% !important;
 }
 
-.inlineblock {
-  display: inline-block;
-}
-
 label {
   font-weight: normal;
 }
 
-.accordion-group {
-  border: 0 none;
-}
-
-button.addNew {
-  border: none;
-  background-color: white;
-}
-
-button.addNew:hover {
-  background-color: #D3D3D3;
-}
-
-.formContent {
-  border-color: gray;
-  border-style: solid;
-  border-width: 1px;
-  padding: 3px;
-}
-
-.formContent:hover {
-  border-color: black;
-}
-
-button.editItem {
-  border-color: #D3D3D3;
-  border-style: solid;
-  border-width: 1px;
-}
-
-button.editItem:hover {
-  border-color: gray;
-}
-
-button.formAction {
-  border-color: #D3D3D3;
-  border-style: solid;
-  border-width: 1px;
-}
-
-button.formAction:enabled:hover {
-  border-color: gray;
-}
-
-button.toggle {
-  border: none;
-  background: none;
-  color: gray;
-}
-
-button.toggle:hover {
-  border: none;
-  background: none;
-  text-decoration: underline;
-}
-
 .em-front {
   text-align: center;
+}
+
+.em-anchor {
+  padding-top: 30px;
 }
 
 .em-note, .em-core {
@@ -129,11 +86,7 @@ ul {
   list-style-type: none;
 }
 
-.em-anchor {
-  padding-top: 30px;
-}
-
-.done-true {
+input[type="checkbox"]:checked + label {
   text-decoration: line-through;
   color: gray;
 }
@@ -159,17 +112,4 @@ ul {
 
 .fade-show.fade-show-active {
   opacity: 1;
-}
-
-.parent{
-z-index:0;
-}
-.child{
-z-index:+1;
-}
-
-.rn-carousel-container {
-}
-
-ul.rn-carousel-slides {
 }

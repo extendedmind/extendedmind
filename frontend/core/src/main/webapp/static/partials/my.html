@@ -1,7 +1,10 @@
 <div ng-controller="MyController">
-  <h2 class="text-primary">extended mind</h2>
 
-  <div ng-hide="newItem.title" url-list ng-animate="'fade'"></div>
+  <div ng-hide="newItem.title">
+    <h1 class="text-primary">extended mind</h1>
+
+    <div url-list></div>
+  </div>
 
   <div class="row">
     <div class="col-lg-6">
@@ -16,19 +19,19 @@
   </div>
 
   <div>
-    <h4><a class="text-muted" href="" ng-click="toggleItemsList()">inbox ({{items.length}})</a></h4>
+    <h2><a class="text-muted" href="" ng-click="toggleItemsList()">inbox ({{items.length}})</a></h2>
     <div ng-show="showMe" items-list itemsfilter="newItem.title" ng-animate="'fade'"></div>
   </div>
 
   <div>
     <div notes-list notesfilter="newItem.title">
-      <h4><a class="text-muted" href="my/notes">notes</a></h4>
+      <h2><a class="text-muted" href="my/notes">notes</a></h2>
     </div>
   </div>
 
   <div>
     <div tasks-list tasksfilter="newItem.title">
-      <h4><a class="text-muted" href="my/tasks">tasks</a></h4>
+      <h2><a class="text-muted" href="my/tasks">tasks</a></h2>
     </div>
   </div>
 

@@ -3,8 +3,10 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('MyPagesController', ['$location', '$scope', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray', 'tasksArray',
-    function($location, $scope, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray) {
+    angular.module('em.app').controller('MyPagesController', ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray', 'tasksArray',
+    function($location, $rootScope, $scope, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray) {
+
+      $scope.slide = slideIndex;
 
       $scope.errorHandler = errorHandler;
 
@@ -17,22 +19,20 @@
 
       }, function(error) {
       });
-      
-      $scope.slide = slideIndex;
-      
-      $scope.$watch('slide', function(newValue) {
-        switch(newValue) {
-          case 0:
+
+      $rootScope.$on('event:slideIndexChanged', function() {
+        switch($scope.slide) {
+          case Enum.my.notes:
             if ($location.path() !== '/my/notes') {
               location.skipReload().path('/my/notes');
             }
             break;
-          case 1:
+          case Enum.my.my:
             if ($location.path() !== '/my') {
               location.skipReload().path('/my');
             }
             break;
-          case 2:
+          case Enum.my.tasks:
             if ($location.path() !== '/my/tasks') {
               location.skipReload().path('/my/tasks');
             }
