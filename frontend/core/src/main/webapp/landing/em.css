@@ -62,14 +62,10 @@ html, body {
   padding-bottom: 150px; /* this needs to be bigger than footer height*/
 }
 
-#resultUpper {
-  height: 10em;
-}
-
 .footer {
   position: relative;
-  margin-top: -90px; /* negative value of footer height */
-  height: 50px;
+  margin-top: -100px; /* negative value of footer height */
+  height: 90px;
   clear: both;
 }
 
@@ -196,11 +192,11 @@ input, button {
 
 .em-waiting{
   text-align: center;
+  padding-top: 5%;
 }
 
-.em-waiting-heading{
-  margin-top: 5%;
-  margin-bottom: 5%;
+.em-logo-waiting {
+  padding-top: 4%;
 }
 
 /* RESPONSIVE TWEAKS */
