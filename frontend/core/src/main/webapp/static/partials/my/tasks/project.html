@@ -9,6 +9,7 @@
   <h2>{{project.title}}</h2>
 
   <ul class="entry-list">
+
     <li ng-repeat="task in subtasks" ng-animate="'fade'">
 
       <input type="checkbox" name="checkbox" id="checkbox{{$index}}" ng-model="task.done" ng-change="taskChecked($index)">
@@ -16,6 +17,7 @@
 
       <div task-content ng-show="showMe" ng-animate="'fade'"></div>
     </li>
+
   </ul>
 
 </div>
