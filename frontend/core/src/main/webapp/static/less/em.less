@@ -1,19 +1,22 @@
 body {
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue UltraLight', "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
   width: 100%;
   height: 100%;
   font-size: 25px;
 }
 
-h1, h2, h3, h4 {
+h1 {
+  font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue UltraLight', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-weight: 100;
+  font-size: 35px;
+}
+
+h2, h3, h4 {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
 }
 
-h1 {
-  font-size: 45px;
-}
 h2 {
   font-size: 30px;
 }
@@ -48,7 +51,9 @@ html {
   height: 100%;
 }
 
-.nav, .pagination, .carousel a { cursor: pointer; }
+.nav, .pagination, .carousel a {
+  cursor: pointer;
+}
 
 .boxsizingBorder {
   width: 100%;
@@ -141,7 +146,7 @@ ul {
   padding-top: 30px;
 }
 
-.done-true {
+input[type=checkbox]:checked + label {
   text-decoration: line-through;
   color: gray;
 }
