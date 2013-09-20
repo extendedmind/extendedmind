@@ -21,13 +21,5 @@
       $scope.undoNoteEdit = function() {
         window.history.back();
       };
-
-      $scope.swipeRight = function() {
-        $rootScope.pageAnimation = {
-          enter : 'em-animate-enter-left',
-          leave : 'em-animate-leave-right'
-        };
-        window.history.back();
-      };
     }]);
   }());

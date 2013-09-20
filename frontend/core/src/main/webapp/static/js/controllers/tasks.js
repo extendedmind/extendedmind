@@ -2,28 +2,13 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('TasksController', ['$location', '$rootScope', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'locationHandler', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
-    function($location, $rootScope, $scope, activeItem, errorHandler, itemsArray, itemsRequest, locationHandler, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    angular.module('em.app').controller('TasksController', ['$location', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
+    function($location, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
-      $scope.errorHandler = errorHandler;
-      $rootScope.pageTitle = 'my';
-      $rootScope.subtitle = 'tasks';
-
-      locationHandler.setPreviousLocation('/my/notes');
-      locationHandler.setNextLocation('/my');
-
-      itemsRequest.getItems(function(itemsResponse) {
-
-        itemsArray.setItems(itemsResponse.items);
-        tasksArray.setTasks(itemsResponse.tasks);
-        tagsArray.setTags(itemsResponse.tags);
-
-        $scope.tasks = tasksArray.getTasks();
-        $scope.tags = tagsArray.getTags();
-        $scope.projects = tasksArray.getProjects();
-        $scope.subtasks = tasksArray.getSubtasks();
-      }, function(error) {
-      });
+      $scope.tasks = tasksArray.getTasks();
+      $scope.tags = tagsArray.getTags();
+      $scope.projects = tasksArray.getProjects();
+      $scope.subtasks = tasksArray.getSubtasks();
 
       $scope.tasksListFilter = true;
 
@@ -47,28 +32,12 @@
         }
       };
 
-      $scope.setActiveItem = function(item) {
-        activeItem.setItem(item);
-      };
-
-      $scope.swipeLeft = function() {
-        $rootScope.pageAnimation = {
-          enter : 'em-animate-enter-right',
-          leave : 'em-animate-leave-left'
-        };
-        $location.path('/my/notes');
-      };
-
-      $scope.swipeRight = function() {
-        $rootScope.pageAnimation = {
-          enter : 'em-animate-enter-left',
-          leave : 'em-animate-leave-right'
-        };
-        $location.path('/my');
-      };
-
       $scope.addNew = function() {
         $location.path('/my/tasks/new/');
+      };
+
+      $scope.setActiveItem = function(item) {
+        activeItem.setItem(item);
       };
     }]);
   }());

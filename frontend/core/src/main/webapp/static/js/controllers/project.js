@@ -6,6 +6,7 @@
     function($location, $scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
+      activeItem.setItem(null);
 
       if (activeItem.getItem()) {
         $scope.project = activeItem.getItem();

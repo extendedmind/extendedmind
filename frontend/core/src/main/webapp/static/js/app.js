@@ -2,7 +2,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app', ['ngMobile', 'em.directives', 'em.filters', 'em.services']);
+    angular.module('em.app', ['ngMobile', 'angular-carousel', 'em.directives', 'em.filters', 'em.services']);
     angular.module('em.directives', []);
     angular.module('em.filters', []);
     angular.module('em.services', ['em.base64']);
@@ -26,24 +26,32 @@
       });
 
       $routeProvider.when('/my', {
-        controller : 'MyController',
-        templateUrl : 'static/partials/my.html',
+        controller : 'MyPagesController',
+        templateUrl : 'static/partials/myPages.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
             $rootScope.$broadcast('event:authenticationRequired');
+          }],
+          slideIndex : [
+          function() {
+            return 1;
           }]
 
         }
       });
 
       $routeProvider.when('/my/notes', {
-        controller : 'NotesController',
-        templateUrl : 'static/partials/my/notes.html',
+        controller : 'MyPagesController',
+        templateUrl : 'static/partials/myPages.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
             $rootScope.$broadcast('event:authenticationRequired');
+          }],
+          slideIndex : [
+          function() {
+            return 0;
           }]
 
         }
@@ -74,12 +82,16 @@
       });
 
       $routeProvider.when('/my/tasks', {
-        controller : 'TasksController',
-        templateUrl : 'static/partials/my/tasks.html',
+        controller : 'MyPagesController',
+        templateUrl : 'static/partials/myPages.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
             $rootScope.$broadcast('event:authenticationRequired');
+          }],
+          slideIndex : [
+          function() {
+            return 2;
           }]
 
         }
@@ -131,10 +143,12 @@
 
     angular.module('em.app').run(['$document', '$location', '$rootScope', 'userAuthenticate',
     function($document, $location, $rootScope, userAuthenticate) {
+      
       $rootScope.pageAnimation = {
         enter : 'fade-show',
         hide : 'fade-hide'
       };
+      
       $rootScope.$on('event:authenticationRequired', function() {
         userAuthenticate.authenticate();
       });

@@ -1,4 +1,4 @@
-<div class="em-animate" ng-animate="{{slideAnimation}}" ng-swipe-left="swipeLeft()" ng-swipe-right="swipeRight()">
+<div ng-controller="MyController">
   <h2 class="text-primary">extended mind</h2>
 
   <div ng-hide="newItem.title" url-list ng-animate="'fade'"></div>
@@ -33,4 +33,5 @@
   </div>
 
   <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
+
 </div>
