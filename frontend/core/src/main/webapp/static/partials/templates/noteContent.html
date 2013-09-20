@@ -1,11 +1,11 @@
 <ul>
   <li ng-repeat="value in note | visibleNoteContent">
-    <span>{{value}}</span>
+    <span><small>{{value}}</small></span>
 
   </li>
   <li ng-repeat="tag in note.relationships.tags | tagTitle">
 
-    <span ng-click="setActiveItem(tag)"><a class="text-muted" href="my/notes/context/{{tag.uuid}}">@{{tag.title}}</a></span>
+    <span ng-click="setActiveItem(tag)"><small><a class="text-muted" href="my/notes/context/{{tag.uuid}}">@{{tag.title}}</a></small></span>
 
   </li>
 

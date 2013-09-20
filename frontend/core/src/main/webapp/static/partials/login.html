@@ -1,6 +1,6 @@
 <div class="em-core">
 
-  <h3 class="text-primary">login</h3>
+  <h1 class="text-primary">login</h1>
 
   <form class="form-horizontal" role="form" name="loginForm">
     <div class="form-group">
@@ -17,11 +17,8 @@
     </div>
     <div class="form-group">
       <div class="col-lg-offset-2 col-lg-10">
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" ng-model="user.remember">
-            remember </label>
-        </div>
+        <input type="checkbox" name="checkbox" id="remember" ng-model="user.remember">
+        <label for="remember">remember</label>
       </div>
     </div>
     <div class="form-group">
