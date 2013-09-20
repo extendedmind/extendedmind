@@ -214,7 +214,7 @@ input, button {
   }
 }
 
-@media (min-width: 1290px) {
+@media (min-width: 1200px) {
   .embed-container {
     padding-bottom: 54%;
   }
