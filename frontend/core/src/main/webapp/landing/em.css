@@ -4,6 +4,7 @@
 .embed-container {
   position: relative;
   /*padding-bottom: 56.25%;  16/9 ratio */
+  padding-bottom: 52.25%;
   padding-top: 30px; /* IE6 workaround*/
   height: 0;
   overflow: hidden;
@@ -180,9 +181,6 @@ h5 {
   margin-right: auto;
 }
 
-input, button {
-}
-
 .em-logo {
   margin-top: 4%;
   margin-bottom: 150px;
@@ -201,40 +199,26 @@ input, button {
 
 /* RESPONSIVE TWEAKS */
 
-@media (max-width: 1016px) {
-  .em-ingress, .em-please {
-    padding-left: 5%;
-    padding-right: 5%;
-  }
-  .em-sff {
-    padding-left: 38%;
-  }
-  .embed-container {
-    padding-bottom: 52%;
-  }
-}
-
-@media (min-width: 1200px) {
+@media (min-width: 1118px) {
   .embed-container {
     padding-bottom: 54%;
   }
-
+  .em-ingress, .em-please {
+    padding-left: 22%;
+    padding-right: 22%;
+  }
 }
 
-@media (min-width: 1017px) {
+@media (max-width: 1017px) {
+  .em-sff {
+    padding-left: 38%;
+  }
   .em-ingress, .em-please {
     padding-left: 27%;
     padding-right: 27%;
   }
   .embed-container {
     padding-bottom: 53%;
-  }
-}
-
-@media (max-width: 1199px) {
-  .em-ingress, .em-please {
-    padding-left: 22%;
-    padding-right: 22%;
   }
 }
 
