@@ -43,7 +43,7 @@ var postRequest = function(formId, resultId) {
       $('div#' + resultId).html('<div class="alert">' + getErrorMessage(xhr.responseText, xhr.status) + '</div>');
     },
     success : function(data) {
-      $('div#' + resultId).html('<div class="alert">thank you, you are now on the beta waiting list<br/>we have sent you a confirmation email. if you have not receives the email in 5 minutes, check your spam filter.</div>');
+      $('div#' + resultId).html('<div class="alert">thank you, you are now on the beta waiting list. we have sent you a confirmation email. if you have not received the email in 5 minutes, check your spam filter.</div>');
     }
   });
   return false;

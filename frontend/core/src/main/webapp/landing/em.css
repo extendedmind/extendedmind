@@ -137,7 +137,7 @@ h5 {
   text-align: center;
 }
 
-.em-ingress, .em-please {
+.em-ingress, .em-please{
   text-align: left;
 }
 
@@ -203,7 +203,7 @@ h5 {
   .embed-container {
     padding-bottom: 54%;
   }
-  .em-ingress, .em-please {
+  .em-ingress, .em-please, .alert, .alert {
     padding-left: 22%;
     padding-right: 22%;
   }
@@ -213,7 +213,7 @@ h5 {
   .em-sff {
     padding-left: 38%;
   }
-  .em-ingress, .em-please {
+  .em-ingress, .em-please, .alert {
     padding-left: 27%;
     padding-right: 27%;
   }
@@ -223,7 +223,7 @@ h5 {
 }
 
 @media (max-width: 991px) {
-  .em-ingress, .em-please {
+  .em-ingress, .em-please, .alert {
     padding-left: 14%;
     padding-right: 14%;
   }
@@ -248,7 +248,7 @@ h5 {
 }
 
 @media (max-width: 600px) {
-  .em-ingress, .em-please {
+  .em-ingress, .em-please, .alert {
     padding-left: 10%;
   }
   
