@@ -26,7 +26,7 @@
           });
 
         } else {
-          
+
           $scope.task.done = true;
 
           tasksRequest.completeTask($scope.task, function(completeTaskResponse) {
