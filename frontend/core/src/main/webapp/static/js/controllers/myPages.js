@@ -6,10 +6,6 @@
     angular.module('em.app').controller('MyPagesController', ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray', 'tasksArray',
     function($location, $rootScope, $scope, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray) {
 
-      $rootScope.pageAnimation = {
-        enter : 'fade-show',
-        hide : 'fade-hide'
-      };
       $scope.slide = slideIndex;
 
       $scope.errorHandler = errorHandler;
