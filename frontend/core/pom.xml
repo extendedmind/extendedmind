@@ -190,6 +190,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <include>lib/jquery/jquery.js</include>
             <include>lib/jquery/jquery.cookie.js</include>
             <include>lib/angularjs/angular.js</include>
+            <include>lib/angularjs/angular-mobile.js</include>
             <include>lib/angularjs/angular-mocks.js</include>
             <include>lib/angular-carousel/dist/angular-carousel.js</include>
             <include>lib/angular-carousel/dist/angular-mobile.js</include>
