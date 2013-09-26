@@ -1,21 +1,22 @@
 <div ng-controller="MyController">
 
-  <div ng-hide="newItem.title">
-    <h1 class="text-primary">extended mind</h1>
+  <div class="em-front">
+    <div ng-hide="newItem.title">
+      <h1 class="text-primary">extended mind</h1>
 
-    <div url-list></div>
-  </div>
-
-  <div class="row">
-    <div class="col-lg-6">
-      <div class="input-group">
-        <input type="text" class="form-control" ng-model="newItem.title" placeholder="search / add" ng-click="toggleUrlList()" required>
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="button" ng-disabled="!newItem.title" ng-click="addNewItem()">
-            +
-          </button> </span>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="input-group">
+          <input type="text" class="form-control" ng-model="newItem.title" placeholder="search / add" ng-click="toggleUrlList()" required>
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button" ng-disabled="!newItem.title" ng-click="addNewItem()">
+              +
+            </button> </span>
+        </div>
       </div>
     </div>
+
   </div>
 
   <div>
@@ -35,6 +36,6 @@
     </div>
   </div>
 
-  <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
+  <div error-alert-bar alertmessage="errorHandler.errorMessage"></div><div url-list></div>
 
 </div>
