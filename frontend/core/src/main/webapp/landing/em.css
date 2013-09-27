@@ -204,9 +204,22 @@ h5 {
   }
 }
 
-@media (min-width: 1118px) {
+@media (min-width: 1285px) {
   .embed-container {
     padding-bottom: 54%;
+  }
+  .em-ingress, .em-please, .alert {
+    padding-left: 22%;
+    padding-right: 22%;
+  }
+  .em-sff{
+    padding-left: 40%;
+  }
+}
+
+@media (max-width: 1284px) {
+  .embed-container {
+    padding-bottom: 53.5%;
   }
   .em-ingress, .em-please, .alert {
     padding-left: 22%;
