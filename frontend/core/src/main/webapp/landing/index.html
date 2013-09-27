@@ -50,8 +50,7 @@
                   <label class="sr-only" for="email">email address</label>
                   <input type="email" class="form-control" id="email" name="email" placeholder="enter email"/>
                 </div>
-                <input id="input" type="submit" name="submit" value="OK" class="btn btn-default"
-                       onclick="_gaq.push(['_trackEvent', 'signup', 'beta', 'upper',, false]);"/>
+                <input id="input" type="submit" name="submit" value="OK" class="btn btn-default" />
               </form>
             </div>
             <div id="result">
@@ -102,8 +101,7 @@
                   <label class="sr-only" for="email">email address</label>
                   <input type="email" class="form-control" id="emailLower" name="email" placeholder="enter email"/>
                 </div>
-                <input id="inputLower" type="submit" name="submit" value="OK" class="btn btn-default"
-                       onclick="_gaq.push(['_trackEvent', 'signup', 'beta', 'lower',, false]);"/>
+                <input id="inputLower" type="submit" name="submit" value="OK" class="btn btn-default" />
               </form>
             </div>
             <div id="resultLower">
@@ -130,9 +128,11 @@
     <script>
 		$(document).ready(function() {
 			$('#input').click(function() {
+			  _gaq.push(['_trackEvent', 'signup', 'beta', 'upper',, false]);
 				return postRequest('emailForm', 'result')
 			});
 			$('#inputLower').click(function() {
+				_gaq.push(['_trackEvent', 'signup', 'beta', 'lower',, false]);
 				return postRequest('emailFormLower', 'resultLower')
 			});
 		});
