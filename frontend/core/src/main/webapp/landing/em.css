@@ -4,7 +4,7 @@
 .embed-container {
   position: relative;
   /*padding-bottom: 56.25%;  16/9 ratio */
-  padding-bottom: 52.25%;
+  /*padding-bottom: 52.25%;*/
   padding-top: 30px; /* IE6 workaround*/
   height: 0;
   overflow: hidden;
@@ -93,15 +93,15 @@ a:hover {
 /* FONTS */
 
 h1 {
-  font-family: "HelveticaNeue-UltraLight", "Helvetica Neue UltraLight", 
-               "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  font-family: "HelveticaNeue-UltraLight", "Helvetica Neue UltraLight",
+               "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
                Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 100;
   letter-spacing: 9px;
 }
 
 h2, h3, h4, h5 {
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
                 Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
 }
@@ -128,7 +128,7 @@ h5 {
 
 .alert {
   font-size: 15px;
-  color: black;  
+  color: black;
 }
 
 /* PAGE CONTENT */
@@ -160,7 +160,6 @@ h5 {
 
 .em-sff {
   text-align: left;
-  padding-left: 40%;
 }
 
 .em-sff ul {
@@ -199,30 +198,42 @@ h5 {
 
 /* RESPONSIVE TWEAKS */
 
+@media (min-width: 520px) {
+  .form-group {
+    width: 490px;
+  }
+}
+
 @media (min-width: 1118px) {
   .embed-container {
     padding-bottom: 54%;
   }
-  .em-ingress, .em-please, .alert, .alert {
+  .em-ingress, .em-please, .alert {
     padding-left: 22%;
     padding-right: 22%;
   }
+  .em-sff{
+    padding-left: 40%;
+  }
 }
 
-@media (max-width: 1017px) {
-  .em-sff {
-    padding-left: 38%;
-  }
-  .em-ingress, .em-please, .alert {
-    padding-left: 27%;
-    padding-right: 27%;
-  }
+@media (max-width: 1117px) {
   .embed-container {
     padding-bottom: 53%;
+  }
+  .em-ingress, .em-please, .alert {
+    padding-left: 16%;
+    padding-right: 16%;
+  }
+  .em-sff {
+    padding-left: 38%;
   }
 }
 
 @media (max-width: 991px) {
+  .embed-container {
+    padding-bottom: 52%;
+  }
   .em-ingress, .em-please, .alert {
     padding-left: 14%;
     padding-right: 14%;
@@ -230,34 +241,33 @@ h5 {
   .em-sff {
     padding-left: 33%;
   }
-  .embed-container {
-    padding-bottom: 52%;
-  }
 }
 
 @media (max-width: 700px) {
   .embed-container {
     padding-bottom: 51%;
   }
-}
-
-@media (min-width: 520px) {
-  .form-group {
-    width: 490px;
+  .em-ingress, .em-please, .alert {
+    padding-left: 13%;
+    padding-right: 13%;
+  }
+  .em-sff {
+    padding-left: 32%;
   }
 }
 
 @media (max-width: 600px) {
-  .em-ingress, .em-please, .alert {
-    padding-left: 10%;
-  }
-  
-  .em-sff {
-    padding-left: 23%;
-  }
-
   .embed-container {
     padding-bottom: 49%;
+  }
+
+  .em-ingress, .em-please, .alert {
+    padding-left: 10%;
+    padding-right: 10%;
+  }
+
+  .em-sff {
+    padding-left: 23%;
   }
 
   h1 {
@@ -285,5 +295,12 @@ h5 {
   .embed-container {
     padding-bottom: 48%;
   }
-}
+  .em-ingress, .em-please, .alert {
+    padding-left: 9%;
+    padding-right: 9%;
+  }
+  .em-sff {
+    padding-left: 22%;
+  }
 
+}
