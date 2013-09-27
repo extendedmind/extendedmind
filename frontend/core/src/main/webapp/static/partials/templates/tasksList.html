@@ -1,5 +1,4 @@
 <div>
-  <div ng-transclude ng-show="tasksListFilter" ng-animate="{{fadeAnimation}}"></div>
 
   <ul>
     <li ng-show="tasksListFilter" ng-repeat="task in tasks | filter:newItem" ng-animate="'fade'">

@@ -20,22 +20,16 @@
   </div>
 
   <div>
-    <h2><a class="text-muted" href="" ng-click="toggleItemsList()">inbox ({{items.length}})</a></h2>
+    <h2><a class="text-muted" href="" ng-click="toggleItemsList()">inbox</a></h2>
     <div ng-show="showMe" items-list itemsfilter="newItem.title" ng-animate="'fade'"></div>
   </div>
 
-  <div>
-    <div notes-list notesfilter="newItem.title">
-      <h2><a class="text-muted" href="my/notes">notes</a></h2>
-    </div>
-  </div>
+  <h2><a class="text-muted" href="my/notes">notes</a></h2>
+  <div notes-list notesfilter="newItem.title"></div>
 
-  <div>
-    <div tasks-list tasksfilter="newItem.title">
-      <h2><a class="text-muted" href="my/tasks">tasks</a></h2>
-    </div>
-  </div>
+  <h2><a class="text-muted" href="my/tasks">tasks</a></h2>
+  <div tasks-list tasksfilter="newItem.title"></div>
 
-  <div error-alert-bar alertmessage="errorHandler.errorMessage"></div><div url-list></div>
+  <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
 
 </div>
