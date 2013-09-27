@@ -11,8 +11,7 @@
     function($locationProvider, $routeProvider) {
 
       $routeProvider.when('/', {
-        templateUrl : 'static/partials/home.html',
-        controller : 'HomeController'
+        redirectTo:'/login'
       });
 
       $routeProvider.when('/404', {

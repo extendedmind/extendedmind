@@ -2,24 +2,6 @@
 
 ( function() {'use strict';
 
-    angular.module('em.directives').directive('expander', function() {
-      return {
-        restrict : 'EA',
-        replace : true,
-        transclude : true,
-        scope : {
-          title : '=expanderTitle'
-        },
-        templateUrl : 'static/partials/templates/expandedContent.html',
-        link : function(scope, element, attrs) {
-          scope.showMe = false;
-          scope.toggle = function toggle() {
-            scope.showMe = !scope.showMe;
-          };
-        }
-      };
-    });
-
     angular.module('em.directives').directive('newTag', [
     function() {
       return {

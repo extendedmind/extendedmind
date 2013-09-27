@@ -5,6 +5,8 @@
     <base href="/" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title ng-bind="pageTitle.getTitle()"></title>
 
     <link rel="stylesheet" href="static/lib/bootstrap/bootstrap.css"/>
@@ -16,9 +18,9 @@
   </head>
   <body>
     <div class="container">
-      <div class="row-fluid">
+      <div class="row">
 
-        <div class="col-lg-6 col-lg-offset-3 em-page em-animate" ng-view ng-animate="{{pageAnimation}}"></div>
+        <div class="col-xs-12 col-sm-6 col-md-8 em-page em-animate" ng-view ng-animate="{{pageAnimation}}"></div>
 
       </div>
     </div>
@@ -33,6 +35,7 @@
     </script>
 
     <script src="static/lib/angularjs/angular.js"></script>
+    <script src="static/lib/angularjs/angular-mobile.js"></script>
     <script src="static/lib/angularjs/angular-mocks.js"></script>
     <script src="static/lib/angular-carousel/dist/angular-mobile.js"></script>
     <script src="static/lib/angular-carousel/dist/angular-carousel.js"></script>

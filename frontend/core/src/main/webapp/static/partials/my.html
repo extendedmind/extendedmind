@@ -1,39 +1,34 @@
 <div ng-controller="MyController">
 
-  <div ng-hide="newItem.title">
-    <h1 class="text-primary">extended mind</h1>
+  <div class="em-front">
+    <div ng-hide="newItem.title">
+      <h1 class="text-primary">extended mind</h1>
 
-    <div url-list></div>
-  </div>
-
-  <div class="row">
-    <div class="col-lg-6">
-      <div class="input-group">
-        <input type="text" class="form-control" ng-model="newItem.title" placeholder="search / add" ng-click="toggleUrlList()" required>
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="button" ng-disabled="!newItem.title" ng-click="addNewItem()">
-            +
-          </button> </span>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="input-group">
+          <input type="text" class="form-control" ng-model="newItem.title" placeholder="search / add" ng-click="toggleUrlList()" required>
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button" ng-disabled="!newItem.title" ng-click="addNewItem()">
+              +
+            </button> </span>
+        </div>
       </div>
     </div>
+
   </div>
 
   <div>
-    <h2><a class="text-muted" href="" ng-click="toggleItemsList()">inbox ({{items.length}})</a></h2>
+    <h2><a class="text-muted" href="" ng-click="toggleItemsList()">inbox</a></h2>
     <div ng-show="showMe" items-list itemsfilter="newItem.title" ng-animate="'fade'"></div>
   </div>
 
-  <div>
-    <div notes-list notesfilter="newItem.title">
-      <h2><a class="text-muted" href="my/notes">notes</a></h2>
-    </div>
-  </div>
+  <h2><a class="text-muted" href="my/notes">notes</a></h2>
+  <div notes-list notesfilter="newItem.title"></div>
 
-  <div>
-    <div tasks-list tasksfilter="newItem.title">
-      <h2><a class="text-muted" href="my/tasks">tasks</a></h2>
-    </div>
-  </div>
+  <h2><a class="text-muted" href="my/tasks">tasks</a></h2>
+  <div tasks-list tasksfilter="newItem.title"></div>
 
   <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
 

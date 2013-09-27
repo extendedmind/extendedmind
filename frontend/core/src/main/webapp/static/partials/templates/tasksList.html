@@ -1,11 +1,10 @@
 <div>
-  <div ng-transclude ng-show="tasksListFilter" ng-animate="{{fadeAnimation}}"></div>
 
   <ul>
     <li ng-show="tasksListFilter" ng-repeat="task in tasks | filter:newItem" ng-animate="'fade'">
 
       <input type="checkbox" name="checkbox" id="checkbox{{$index}}" ng-checked="task.completed" ng-click="taskChecked($index)">
-      <label for="checkbox{{$index}}"  eat-click ng-click="expandTask()">{{task.title}}</label>
+      <label for="checkbox{{$index}}" ng-click="expandTask()">{{task.title}}</label>
       <div task-content ng-show="showMe" ng-animate="'fade'"></div>
 
     </li>

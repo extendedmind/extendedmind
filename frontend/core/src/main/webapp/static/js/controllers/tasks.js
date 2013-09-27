@@ -13,26 +13,20 @@
       $scope.tasksListFilter = true;
 
       $scope.taskChecked = function(index) {
+
         $scope.task = $scope.tasks[index];
-
         if ($scope.task.completed) {
-
-          $scope.task.done = false;
 
           tasksRequest.uncompleteTask($scope.task, function(uncompleteTaskResponse) {
             tasksResponse.deleteTaskProperty($scope.task, 'completed');
           }, function(uncompleteTaskResponse) {
-            $scope.task.done = true;
           });
 
         } else {
-          
-          $scope.task.done = true;
 
           tasksRequest.completeTask($scope.task, function(completeTaskResponse) {
             tasksResponse.putTaskContent($scope.task, completeTaskResponse);
           }, function(completeTaskResponse) {
-            $scope.task.done = false;
           });
 
         }

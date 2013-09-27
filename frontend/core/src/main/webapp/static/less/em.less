@@ -1,32 +1,27 @@
 body {
-  font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue UltraLight', "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-family: 'Helvetica Neue UltraLight', "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
   width: 100%;
   height: 100%;
-  font-size: 25px;
+  font-size: 24px;
+}
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
 
 h1 {
   font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue UltraLight', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-weight: 100;
-  font-size: 35px;
 }
 
-h2, h3, h4 {
+h2, h3, h4, h5, h6 {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
-}
-
-h2 {
-  font-size: 30px;
-}
-
-h3 {
-  font-size: 25px;
-}
-
-h4 {
-  font-size: 20px;
 }
 
 html {
@@ -35,19 +30,32 @@ html {
 }
 
 .container {
-  position: relative;
   width: 100%;
   height: 100%;
+  padding: 0;
 }
 
-.row-fluid {
+.row {
   width: 100%;
   height: 100%;
+  margin: 0;
 }
 
 .em-page {
   width: 100%;
   height: 100%;
+}
+
+.carousel-slides {
+  min-height: 100%;
+}
+
+.rn-carousel-container {
+  min-height: 568px;
+}
+
+.rn-carousel-slides {
+  min-height: 568px;
 }
 
 .em-animate {
@@ -86,16 +94,26 @@ ul {
   list-style-type: none;
 }
 
+ul.entry-list {
+  padding-left: 0;
+}
+
 input[type="checkbox"]:checked + label {
   text-decoration: line-through;
   color: gray;
 }
 
+.rn-carousel-animate {
+  -webkit-transition: -webkit-transform cubic-bezier(0.250, 0.460, 0.450, 0.940) .2s;
+  -moz-transition: -moz-transform cubic-bezier(0.250, 0.460, 0.450, 0.940) .2s;
+  transition: transform cubic-bezier(0.250, 0.460, 0.450, 0.940) .2s;
+}
+
 .fade-hide, .fade-show {
-  -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
-  -moz-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
-  -o-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
-  transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
+  -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) .3s;
+  -moz-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) .3s;
+  -o-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) .3s;
+  transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) .3s;
 }
 
 .fade-hide {

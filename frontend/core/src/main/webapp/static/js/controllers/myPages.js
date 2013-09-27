@@ -6,10 +6,6 @@
     angular.module('em.app').controller('MyPagesController', ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray', 'tasksArray',
     function($location, $rootScope, $scope, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray) {
 
-      $scope.slide = slideIndex;
-
-      $scope.errorHandler = errorHandler;
-
       itemsRequest.getItems(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);
@@ -19,6 +15,10 @@
 
       }, function(error) {
       });
+
+      $scope.errorHandler = errorHandler;
+      
+      $scope.slide = slideIndex;
 
       $rootScope.$on('event:slideIndexChanged', function() {
         switch($scope.slide) {

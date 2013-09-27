@@ -4,6 +4,7 @@
     <base href="/"/>
     <meta name="fragment" content="!" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta charset="utf-8" />
     <title ng-bind="page.getTitle()"></title>
     <link rel="stylesheet" href="static/lib/bootstrap/bootstrap.min.css"/>
@@ -12,14 +13,15 @@
   </head>
   <body>
     <div class="container">
-      <div class="row-fluid">
-        <div class="col-lg-6 col-lg-offset-3 em-page em-animate" ng-view ng-animate="{{pageAnimation}}"></div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-8 em-page em-animate" ng-view ng-animate="{{pageAnimation}}"></div>
       </div>
     </div>
 
     <script src="static/lib/jquery/jquery.js"></script>
     <script src="static/lib/jquery/jquery.cookie.min.js"></script>
     <script src="static/lib/angularjs/angular.min.js"></script>
+    <script src="static/lib/angularjs/angular-mobile.min.js"></script>
     <script src="static/lib/angular-carousel/dist/angular-mobile.js"></script>
     <script src="static/lib/angular-carousel/dist/angular-carousel.min.js"></script>
     <script src="static/lib/base64.js"></script>

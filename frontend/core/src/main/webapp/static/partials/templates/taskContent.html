@@ -1,16 +1,16 @@
 <ul>
   <li ng-repeat="value in task | visibleTaskContent">
-    <span>{{value}}</span>
+    <span><small>{{value}}</small></span>
 
   </li>
   <li ng-repeat="tag in task.relationships.tags | tagTitle">
 
-    <span ng-click="setActiveItem(tag)"><a class="text-muted" href="my/tasks/context/{{tag.uuid}}">@{{tag.title}}</a></span>
+    <span ng-click="setActiveItem(tag)"><small><a class="text-muted" href="my/tasks/context/{{tag.uuid}}">@{{tag.title}}</a></small></span>
 
   </li>
 
   <li>
-    <a class="text-muted" href="my/tasks/project/{{task.uuid}}" ng-click="setActiveItem(task)">add subtask</a>
+    <small><a class="text-muted" href="my/tasks/project/{{task.uuid}}" ng-click="setActiveItem(task)">add subtask</a></small>
   </li>
 
 </ul>
