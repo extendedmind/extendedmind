@@ -209,6 +209,9 @@
                 <include>phantomjsdriver.log</include>
               </includes>
             </fileset>
+            <fileset>
+              <directory>${basedir}/logs</directory>
+            </fileset>
           </filesets>
         </configuration>
       </plugin>

@@ -11,3 +11,6 @@ frontend/core/src/main/webapp/test/json/
 
 # Ignore PhantomJS logs
 phantomjsdriver.log
+
+# Ignore Logback logs
+logs/
