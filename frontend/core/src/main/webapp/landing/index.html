@@ -7,6 +7,19 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="em.css"/>
     <link rel="shortcut icon" href="favicon.ico"/>
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-44203690-1', 'ext.md');
+    ga('send', 'pageview');
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-44203690-1']);
+    _gaq.push(['_trackPageview']);
+    </script>
   </head>
   <body>
     <div class="wrap">
@@ -37,7 +50,8 @@
                   <label class="sr-only" for="email">email address</label>
                   <input type="email" class="form-control" id="email" name="email" placeholder="enter email"/>
                 </div>
-                <input id="input" type="submit" name="submit" value="OK" class="btn btn-default"/>
+                <input id="input" type="submit" name="submit" value="OK" class="btn btn-default"
+                       onclick="_gaq.push(['_trackEvent', 'signup', 'beta', 'upper',, false]);"/>
               </form>
             </div>
             <div id="result">
@@ -88,7 +102,8 @@
                   <label class="sr-only" for="email">email address</label>
                   <input type="email" class="form-control" id="emailLower" name="email" placeholder="enter email"/>
                 </div>
-                <input id="inputLower" type="submit" name="submit" value="OK" class="btn btn-default"/>
+                <input id="inputLower" type="submit" name="submit" value="OK" class="btn btn-default"
+                       onclick="_gaq.push(['_trackEvent', 'signup', 'beta', 'lower',, false]);"/>
               </form>
             </div>
             <div id="resultLower">
@@ -121,22 +136,6 @@
 				return postRequest('emailFormLower', 'resultLower')
 			});
 		});
-    </script>
-    <script>
-		(function(i, s, o, g, r, a, m) {
-			i['GoogleAnalyticsObject'] = r;
-			i[r] = i[r] ||
-			function() {
-				(i[r].q = i[r].q || []).push(arguments)
-			}, i[r].l = 1 * new Date();
-			a = s.createElement(o), m = s.getElementsByTagName(o)[0];
-			a.async = 1;
-			a.src = g;
-			m.parentNode.insertBefore(a, m)
-		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-		ga('create', 'UA-44203690-1', 'ext.md');
-		ga('send', 'pageview');
     </script>
     <script type="text/javascript">
 		setTimeout(function() {
