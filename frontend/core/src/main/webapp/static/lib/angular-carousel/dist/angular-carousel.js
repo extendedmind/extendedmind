@@ -380,7 +380,7 @@ angular.module('angular-carousel')
             // todo: requestAnimationFrame instead
             moveDelay = ($window.jasmine || $window.navigator.platform=='iPad')?0:50;
             
-        $swipe.bind($(".carousel-slides"), {
+        $swipe.bind($(".em-slides"), {
           /* use angular $swipe service */
           start: function(coords) {
             /* capture initial event position */
