@@ -1,12 +1,23 @@
 <div>
-  <a class="text-muted" href="" ng-click="editNewTag()"> tag</a><a class="text-muted" href="my/notes/new/{{item.uuid}}" ng-click="setActiveItem(item)"> note</a><a class="text-muted" href="my/tasks/new/{{item.uuid}}" ng-click="setActiveItem(item)"> task</a><div ng-show="showEditNewTag" new-tag ng-animate="'fade'"></div>
 
-  <button type="button" class="btn btn-default" ng-click="itemToTask()" ng-hide="itemToTaskSuccess">
-    task
+  <button type="button" class="btn btn-default" ng-click="editNewTag()">
+    tag
   </button>
 
-  <button type="button" class="btn btn-success" ng-show="itemToTaskSuccess">
+  <button type="button" class="btn btn-default" ng-hide="itemToNoteSuccess" ng-click="itemToNote()">
+    note
+  </button>
+  <button type="button" class="btn btn-success" ng-show="itemToNoteSuccess" ng-click="itemToNote()">
     added
   </button>
+
+  <button type="button" class="btn btn-default" ng-hide="itemToTaskSuccess" ng-click="itemToTask()">
+    task
+  </button>
+  <button type="button" class="btn btn-success" ng-show="itemToTaskSuccess" ng-click="itemToTask()">
+    added
+  </button>
+
+  <div ng-show="showEditNewTag" new-tag ng-animate="'fade'"></div>
 
 </div>

@@ -11,7 +11,7 @@
           scope.showEditNewTag = false;
 
           scope.editNewTag = function editNewTag() {
-            scope.showEditNewTag = true;
+            scope.showEditNewTag = !scope.showEditNewTag;
           };
         }
       };
