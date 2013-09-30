@@ -29,16 +29,19 @@
       it('should return logged user\'s items', inject(function() {
         expect($scope.items).toBe(undefined);
         $scope.items = userItems.items;
+        $httpBackend.flush();
         expect($scope.items.length).toBe(2);
       }));
 
       it('should return logged user\'s notes', inject(function() {
         $scope.notes = userItems.notes;
+        $httpBackend.flush();
         expect($scope.notes.length).toBe(3);
       }));
 
       it('should return logged user\'s tasks', inject(function() {
         $scope.tasks = userItems.tasks;
+        $httpBackend.flush();
         expect($scope.tasks.length).toBe(4);
       }));
 
@@ -48,6 +51,7 @@
         httpBasicAuth = _httpBasicAuth_;
 
         itemsArray = _itemsArray_;
+        $httpBackend.flush();
         userSessionStorage = _userSessionStorage_;
 
         $scope.newItem = {
