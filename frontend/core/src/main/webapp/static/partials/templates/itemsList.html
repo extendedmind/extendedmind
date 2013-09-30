@@ -1,11 +1,12 @@
 <div>
   <ul>
 
-    <li ng-repeat="item in items | filter:newItem" ng-model="activeItem" ng-animate="'fade'">
-
-      <span ng-click="toggleItemActions()">{{item.title}}</span>
+    <li class="em-li" ng-repeat="item in items | filter:newItem" ng-model="activeItem" ng-animate="'fade'">
       
-      <div item-actions ng-show="showItemActions"></div>
+        <div ng-class="selected" ng-click="toggleItemActions()">
+          <span>{{item.title}}</span>
+        </div>
+        <div item-actions ng-show="showItemActions"></div>
 
     </li>
   </ul>

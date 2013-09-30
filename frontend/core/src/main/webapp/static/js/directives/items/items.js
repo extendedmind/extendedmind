@@ -6,7 +6,27 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : 'static/partials/templates/items/itemActions.html'
+        templateUrl : 'static/partials/templates/items/itemActions.html',
+        link : function(scope, element, attrs) {
+          scope.showItemActions = false;
+          scope.itemToTaskSuccess = false;
+
+          scope.toggleItemActions = function toggleItemActions() {
+
+            scope.showItemActions = !scope.showItemActions;
+
+            if (scope.showItemActions) {
+              scope.selected = 'active';
+            } else {
+              scope.selected = '';
+            }
+
+          };
+
+          scope.itemToTask = function itemToTask() {
+            scope.itemToTaskSuccess = !scope.itemToTaskSuccess;
+          };
+        }
       };
     }]);
   }());
