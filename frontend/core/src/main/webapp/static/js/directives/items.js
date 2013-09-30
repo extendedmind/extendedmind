@@ -33,9 +33,14 @@
         transclude : true,
         link : function(scope, element, attrs) {
           scope.showMe = false;
+          scope.showItemActions = false;
 
           scope.toggleItemsList = function toggleItemsList() {
             scope.showMe = !scope.showMe;
+          };
+          
+          scope.toggleItemActions = function toggleItemActions() {
+            scope.showItemActions = !scope.showItemActions;
           };
 
           var itemsFilterAttr = attrs.itemsfilter;
