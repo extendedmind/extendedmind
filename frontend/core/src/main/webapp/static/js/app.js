@@ -25,8 +25,8 @@
       });
 
       $routeProvider.when('/my', {
-        controller : 'MyPagesController',
-        templateUrl : 'static/partials/myPages.html',
+        controller : 'MyController',
+        templateUrl : 'static/partials/my.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -41,8 +41,8 @@
       });
 
       $routeProvider.when('/my/notes', {
-        controller : 'MyPagesController',
-        templateUrl : 'static/partials/myPages.html',
+        controller : 'MyNotesController',
+        templateUrl : 'static/partials/myNotes.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -81,8 +81,8 @@
       });
 
       $routeProvider.when('/my/tasks', {
-        controller : 'MyPagesController',
-        templateUrl : 'static/partials/myPages.html',
+        controller : 'MyTasksController',
+        templateUrl : 'static/partials/myTasks.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {

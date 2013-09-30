@@ -8,9 +8,9 @@
     function() {
       var pageIndex = {
         my : {
-          notes : 0,
-          my : 1,
-          tasks : 2
+          notes : 1,
+          my : 0,
+          tasks : 1
         }
       };
       return pageIndex;
