@@ -32,11 +32,11 @@
         templateUrl : 'static/partials/templates/itemsList.html',
         transclude : true,
         link : function(scope, element, attrs) {
-          scope.showMe = false;
+          scope.showItemsList = false;
           scope.showItemActions = false;
 
           scope.toggleItemsList = function toggleItemsList() {
-            scope.showMe = !scope.showMe;
+            scope.showItemsList = !scope.showItemsList;
           };
           
           scope.toggleItemActions = function toggleItemActions() {
