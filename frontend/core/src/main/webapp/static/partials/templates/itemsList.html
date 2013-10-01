@@ -3,7 +3,7 @@
 
     <li class="em-li" ng-repeat="item in items | filter:newItem" ng-model="activeItem">
 
-      <div ng-class="selected" ng-click="toggleItemActions()">
+      <div ng-class="selected" class="swipe-element" ng-click="toggleItemActions()">
         <span>{{item.title}}</span>
       </div>
 

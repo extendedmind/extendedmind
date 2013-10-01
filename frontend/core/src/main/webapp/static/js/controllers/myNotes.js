@@ -17,7 +17,7 @@
       });
 
       $scope.errorHandler = errorHandler;
-      
+
       $scope.slide = slideIndex;
 
       $rootScope.$on('event:slideIndexChanged', function() {
