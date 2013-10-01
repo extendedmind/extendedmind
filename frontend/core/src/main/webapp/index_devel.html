@@ -15,12 +15,19 @@
     <link rel="stylesheet/less" href="static/less/em.less"/>
     <script src="static/lib/less/less-min.js"></script>
 
+    <script type='application/javascript' src="static/lib/fastclick/fastclick.js"></script>
+    <script type="application/javascript">
+      window.addEventListener('load', function() {
+        FastClick.attach(document.body);
+      }, false);
+    </script>
+
   </head>
   <body>
     <div class="container">
       <div class="row">
 
-        <div class="col-xs-12 col-sm-6 col-md-8 em-page em-animate" ng-view ng-animate="{{pageAnimation}}"></div>
+        <div class="col-xs-12 col-sm-6 col-md-8 em-page" ng-view></div>
 
       </div>
     </div>
@@ -35,10 +42,14 @@
     </script>
 
     <script src="static/lib/angularjs/angular.js"></script>
-    <script src="static/lib/angularjs/angular-mobile.js"></script>
+    <script src="static/lib/angularjs/angular-route.js"></script>
+    <script src="static/lib/angularjs/angular-animate.js"></script>
+    <script src="static/lib/angularjs/angular-touch.js"></script>
     <script src="static/lib/angularjs/angular-mocks.js"></script>
     <script src="static/lib/angular-carousel/dist/angular-mobile.js"></script>
     <script src="static/lib/angular-carousel/dist/angular-carousel.js"></script>
+
+    <script src="static/lib/angular-ui/ui-bootstrap-tpls-0.6.0.js"></script>
 
     <script src="static/lib/base64.js"></script>
 
@@ -51,7 +62,9 @@
     <script src="static/js/controllers/home.js"></script>
     <script src="static/js/controllers/login.js"></script>
     <script src="static/js/controllers/my.js"></script>
+    <script src="static/js/controllers/myNotes.js"></script>
     <script src="static/js/controllers/myPages.js"></script>
+    <script src="static/js/controllers/myTasks.js"></script>
     <script src="static/js/controllers/navigation.js"></script>
     <script src="static/js/controllers/newTask.js"></script>
     <script src="static/js/controllers/notes.js"></script>
@@ -62,6 +75,7 @@
 
     <script src="static/js/directives/emDirectives.js"></script>
     <script src="static/js/directives/items.js"></script>
+    <script src="static/js/directives/items/items.js"></script>
 
     <script src="static/js/filters/emFilters.js"></script>
 

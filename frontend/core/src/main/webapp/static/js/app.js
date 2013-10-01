@@ -2,7 +2,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app', ['angular-carousel', 'em.directives', 'em.filters', 'em.services']);
+    angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'ui.bootstrap', 'angular-carousel', 'em.directives', 'em.filters', 'em.services']);
     angular.module('em.directives', []);
     angular.module('em.filters', []);
     angular.module('em.services', ['em.base64']);
@@ -11,7 +11,7 @@
     function($locationProvider, $routeProvider) {
 
       $routeProvider.when('/', {
-        redirectTo:'/login'
+        redirectTo : '/login'
       });
 
       $routeProvider.when('/404', {
@@ -25,8 +25,8 @@
       });
 
       $routeProvider.when('/my', {
-        controller : 'MyPagesController',
-        templateUrl : 'static/partials/myPages.html',
+        controller : 'MyController',
+        templateUrl : 'static/partials/my.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -41,8 +41,8 @@
       });
 
       $routeProvider.when('/my/notes', {
-        controller : 'MyPagesController',
-        templateUrl : 'static/partials/myPages.html',
+        controller : 'MyNotesController',
+        templateUrl : 'static/partials/myNotes.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -81,8 +81,8 @@
       });
 
       $routeProvider.when('/my/tasks', {
-        controller : 'MyPagesController',
-        templateUrl : 'static/partials/myPages.html',
+        controller : 'MyTasksController',
+        templateUrl : 'static/partials/myTasks.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -143,11 +143,6 @@
     angular.module('em.app').run(['$document', '$location', '$rootScope', 'userAuthenticate',
     function($document, $location, $rootScope, userAuthenticate) {
 
-      $rootScope.pageAnimation = {
-        enter : 'fade-show',
-        hide : 'fade-hide'
-      };
-
       $rootScope.$on('event:authenticationRequired', function() {
         userAuthenticate.authenticate();
       });
@@ -156,12 +151,6 @@
       });
       $rootScope.$on('event:loginSuccess', function() {
         $location.path('/my');
-      });
-      $rootScope.$on('$viewContentLoaded', function() {
-        $rootScope.pageAnimation = {
-          enter : 'fade-show',
-          hide : 'fade-hide'
-        };
       });
 
     }]);

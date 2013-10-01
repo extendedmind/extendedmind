@@ -1,0 +1,23 @@
+<div>
+
+  <button type="button" class="btn btn-default" ng-click="editNewTag()">
+    tag
+  </button>
+
+  <button type="button" class="btn btn-default" ng-hide="itemToNoteSuccess" ng-click="itemToNote()">
+    note
+  </button>
+  <button type="button" class="btn btn-success" ng-show="itemToNoteSuccess" ng-click="itemToNote()">
+    added
+  </button>
+
+  <button type="button" class="btn btn-default" ng-hide="itemToTaskSuccess" ng-click="itemToTask()">
+    task
+  </button>
+  <button type="button" class="btn btn-success" ng-show="itemToTaskSuccess" ng-click="itemToTask()">
+    added
+  </button>
+
+  <div ng-show="showEditNewTag" new-tag></div>
+
+</div>

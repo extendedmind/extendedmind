@@ -11,7 +11,7 @@
           scope.showEditNewTag = false;
 
           scope.editNewTag = function editNewTag() {
-            scope.showEditNewTag = true;
+            scope.showEditNewTag = !scope.showEditNewTag;
           };
         }
       };
@@ -32,10 +32,10 @@
         templateUrl : 'static/partials/templates/itemsList.html',
         transclude : true,
         link : function(scope, element, attrs) {
-          scope.showMe = false;
+          scope.showItemsList = false;
 
           scope.toggleItemsList = function toggleItemsList() {
-            scope.showMe = !scope.showMe;
+            scope.showItemsList = !scope.showItemsList;
           };
 
           var itemsFilterAttr = attrs.itemsfilter;

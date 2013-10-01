@@ -1,4 +1,4 @@
-<div>
+<div class="em-slide">
 
   <button type="button" class="btn btn-default pull-right" ng-click="addNew()">
     +
@@ -10,12 +10,12 @@
 
   <ul class="entry-list">
 
-    <li ng-repeat="task in subtasks" ng-animate="'fade'">
+    <li ng-repeat="task in subtasks">
 
       <input type="checkbox" name="checkbox" id="checkbox{{$index}}" ng-model="task.done" ng-change="taskChecked($index)">
       <label for="checkbox{{$index}}" class="done-{{task.done}}" eat-click ng-click="expandTask()">{{task.title}}</label>
 
-      <div task-content ng-show="showMe" ng-animate="'fade'"></div>
+      <div task-content ng-show="showMe"></div>
     </li>
 
   </ul>
