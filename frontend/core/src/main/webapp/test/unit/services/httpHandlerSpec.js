@@ -40,7 +40,7 @@
 
           it('should call http get', inject(function() {
             httpRequest.get('url');
-            expect(httpRequest.get()).toBeDefined();
+            expect(httpRequest.get('')).toBeDefined();
           }));
 
           it('should call http get with url parameter', inject(function() {
@@ -51,7 +51,7 @@
 
           it('should call http post', inject(function() {
             httpRequest.post('url', undefined);
-            expect(httpRequest.post()).toBeDefined();
+            expect(httpRequest.post('')).toBeDefined();
           }));
 
           it('should call http post with url parameter', inject(function() {

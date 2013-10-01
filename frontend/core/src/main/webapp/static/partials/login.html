@@ -4,25 +4,25 @@
 
   <form class="form-horizontal" role="form" name="loginForm">
     <div class="form-group">
-      <label class="sr-only" for="input-email" class="col-lg-2 control-label">email</label>
+      <label for="input-email" class="sr-only">email</label>
       <div class="col-lg-10">
         <input type="email" class="form-control" id="input-email" ng-model="user.username" placeholder="email" autofocus="autofocus" required>
       </div>
     </div>
     <div class="form-group">
-      <label class="sr-only" for="input-password" class="col-lg-2 control-label">password</label>
+      <label for="input-password" class="sr-only">password</label>
       <div class="col-lg-10">
         <input type="password" class="form-control" id="input-password" ng-model="user.password" placeholder="password" required>
       </div>
     </div>
     <div class="form-group">
-      <div class="col-lg-offset-2 col-lg-10">
+      <div class="col-lg-10">
         <input type="checkbox" name="checkbox" id="remember" ng-model="user.remember">
         <label for="remember">remember</label>
       </div>
     </div>
     <div class="form-group">
-      <div class="col-lg-offset-2 col-lg-10">
+      <div class="col-lg-10">
         <button type="submit" class="btn btn-primary" id="login-button" ng-disabled="!loginForm.$valid" ng-click="userLogin()">
           log in
         </button>

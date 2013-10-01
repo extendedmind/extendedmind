@@ -1,9 +1,11 @@
 <div>
 
   <ul>
-    <li ng-show="notesListFilter" ng-repeat="note in notes | filter:newItem" ng-animate="'fade'">
+    <li ng-show="notesListFilter" ng-repeat="note in notes | filter:newItem">
       <span ng-click="setActiveItem(note)"><a class="text-muted" href="my/notes/edit/{{note.uuid}}">{{note.title}}</a></span>
+
       <div note-content></div>
+
     </li>
   </ul>
 
