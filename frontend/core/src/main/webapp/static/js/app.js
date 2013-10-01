@@ -2,7 +2,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'angular-carousel', 'em.directives', 'em.filters', 'em.services']);
+    angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'ui.bootstrap', 'angular-carousel', 'em.directives', 'em.filters', 'em.services']);
     angular.module('em.directives', []);
     angular.module('em.filters', []);
     angular.module('em.services', ['em.base64']);
