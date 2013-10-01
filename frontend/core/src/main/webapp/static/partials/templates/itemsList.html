@@ -1,10 +1,12 @@
 <div>
-  <div ng-transclude></div>
   <ul>
 
-    <li ng-repeat="item in items | filter:newItem" ng-model="activeItem" ng-animate="'fade'">
+    <li class="em-li" ng-repeat="item in items | filter:newItem" ng-model="activeItem" ng-animate="'fade'">
 
-      <span>{{item.title}}</span><a class="text-muted" href="" ng-click="editNewTag()"> tag</a><a class="text-muted" href="my/notes/new/{{item.uuid}}" ng-click="setActiveItem(item)"> note</a><a class="text-muted" href="my/tasks/new/{{item.uuid}}" ng-click="setActiveItem(item)"> task</a><div ng-show="showEditNewTag" new-tag ng-animate="'fade'"></div>
+      <div ng-class="selected" ng-click="toggleItemActions()">
+        <span>{{item.title}}</span>
+      </div>
+      <div item-actions ng-show="showItemActions" ng-animate="'fade'"></div>
 
     </li>
   </ul>
