@@ -2,7 +2,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app', ['angular-carousel', 'em.directives', 'em.filters', 'em.services']);
+    angular.module('em.app', ['ngRoute','ngAnimate','ngTouch', 'angular-carousel', 'em.directives', 'em.filters', 'em.services']);
     angular.module('em.directives', []);
     angular.module('em.filters', []);
     angular.module('em.services', ['em.base64']);
@@ -11,7 +11,7 @@
     function($locationProvider, $routeProvider) {
 
       $routeProvider.when('/', {
-        redirectTo:'/login'
+        redirectTo : '/login'
       });
 
       $routeProvider.when('/404', {
