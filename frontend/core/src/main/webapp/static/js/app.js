@@ -2,7 +2,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app', ['ngRoute','ngAnimate','ngTouch', 'angular-carousel', 'em.directives', 'em.filters', 'em.services']);
+    angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'angular-carousel', 'em.directives', 'em.filters', 'em.services']);
     angular.module('em.directives', []);
     angular.module('em.filters', []);
     angular.module('em.services', ['em.base64']);
@@ -143,10 +143,7 @@
     angular.module('em.app').run(['$document', '$location', '$rootScope', 'userAuthenticate',
     function($document, $location, $rootScope, userAuthenticate) {
 
-      $rootScope.pageAnimation = {
-        enter : 'fade-show',
-        hide : 'fade-hide'
-      };
+      // $rootScope.pageAnimation = 'fade';
 
       $rootScope.$on('event:authenticationRequired', function() {
         userAuthenticate.authenticate();
@@ -158,10 +155,7 @@
         $location.path('/my');
       });
       $rootScope.$on('$viewContentLoaded', function() {
-        $rootScope.pageAnimation = {
-          enter : 'fade-show',
-          hide : 'fade-hide'
-        };
+      // $rootScope.pageAnimation = 'fade';
       });
 
     }]);
