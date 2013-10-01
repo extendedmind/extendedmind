@@ -40,9 +40,12 @@ var postRequest = function(formId, resultId) {
     type : "POST",
     data : send,
     error : function(xhr, errors) {
-      $('div#' + resultId).html('<div class="alert">' + getErrorMessage(xhr.responseText, xhr.status) + '</div>');
+      var errorMessage = getErrorMessage(xhr.responseText, xhr.status);
+      _gaq.push(['_trackEvent', 'error', errorMessage, formId,, false]);
+      $('div#' + resultId).html('<div class="alert">' + errorMessage + '</div>');
     },
     success : function(data) {
+      _gaq.push(['_trackEvent', 'signup', 'beta', formId,, false]);
       $('div#' + resultId).html('<div class="alert">thank you, you are now on the beta waiting list. we have sent you a confirmation email. if you have not received the email in 5 minutes, check your spam filter.</div>');
     }
   });
@@ -50,7 +53,11 @@ var postRequest = function(formId, resultId) {
 };
 
 var getErrorMessage = function(responseText, status) {
-  return ((responseText.length > 17) && (responseText.length < 100) ? responseText.slice(0, -15) : 'an unrecognized error occured: ' + status)
+  if (responseText.indexOf("Not a valid email address") != -1){
+  	return 'not a valid email address';
+  }else{
+    return ((responseText.length > 17) && (responseText.length < 100) ? responseText.slice(0, -15) : 'an unrecognized error occured: ' + status);
+  }
 };
 
 var setQueueNumber = function(uuid) {

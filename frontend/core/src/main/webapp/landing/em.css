@@ -209,8 +209,8 @@ h5 {
     padding-bottom: 54%;
   }
   .em-ingress, .em-please, .alert {
-    padding-left: 22%;
-    padding-right: 22%;
+    padding-left: 27%;
+    padding-right: 27%;
   }
   .em-sff{
     padding-left: 40%;
@@ -222,11 +222,18 @@ h5 {
     padding-bottom: 53.5%;
   }
   .em-ingress, .em-please, .alert {
-    padding-left: 22%;
-    padding-right: 22%;
+    padding-left: 27%;
+    padding-right: 27%;
   }
   .em-sff{
     padding-left: 40%;
+  }
+}
+
+@media (max-width: 1199px) {
+  .em-ingress, .em-please, .alert {
+    padding-left: 22%;
+    padding-right: 22%;
   }
 }
 
@@ -235,8 +242,8 @@ h5 {
     padding-bottom: 53%;
   }
   .em-ingress, .em-please, .alert {
-    padding-left: 16%;
-    padding-right: 16%;
+    padding-left: 22%;
+    padding-right: 22%;
   }
   .em-sff {
     padding-left: 38%;
@@ -261,8 +268,8 @@ h5 {
     padding-bottom: 51%;
   }
   .em-ingress, .em-please, .alert {
-    padding-left: 13%;
-    padding-right: 13%;
+    padding-left: 15%;
+    padding-right: 15%;
   }
   .em-sff {
     padding-left: 32%;
