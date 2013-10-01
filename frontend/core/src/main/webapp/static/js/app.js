@@ -143,8 +143,6 @@
     angular.module('em.app').run(['$document', '$location', '$rootScope', 'userAuthenticate',
     function($document, $location, $rootScope, userAuthenticate) {
 
-      // $rootScope.pageAnimation = 'fade';
-
       $rootScope.$on('event:authenticationRequired', function() {
         userAuthenticate.authenticate();
       });
@@ -153,9 +151,6 @@
       });
       $rootScope.$on('event:loginSuccess', function() {
         $location.path('/my');
-      });
-      $rootScope.$on('$viewContentLoaded', function() {
-      // $rootScope.pageAnimation = 'fade';
       });
 
     }]);

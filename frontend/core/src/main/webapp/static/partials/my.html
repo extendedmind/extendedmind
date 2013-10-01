@@ -1,14 +1,15 @@
 <div class="em-slide" ng-controller="MyController">
 
   <div class="em-front">
-    <div ng-hide="newItem.title">
-      <h1 class="text-primary">extended mind</h1>
 
+    <div ng-hide="omniFocus">
+      <h1 class="text-primary">extended mind</h1>
     </div>
+
     <div class="row">
       <div class="col-lg-6">
         <div class="input-group">
-          <input type="text" class="form-control" ng-model="newItem.title" placeholder="search / add" ng-click="toggleUrlList()" required>
+          <input type="text" class="form-control" ng-model="newItem.title" placeholder="search / add" ng-blur="omniFocus = false" ng-focus="omniFocus = true" required>
           <span class="input-group-btn">
             <button class="btn btn-default" type="button" ng-disabled="!newItem.title" ng-click="addNewItem()">
               +
