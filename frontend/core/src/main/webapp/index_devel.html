@@ -15,6 +15,13 @@
     <link rel="stylesheet/less" href="static/less/em.less"/>
     <script src="static/lib/less/less-min.js"></script>
 
+    <script type='application/javascript' src="static/lib/fastclick/fastclick.js"></script>
+    <script type="application/javascript">
+      window.addEventListener('load', function() {
+        FastClick.attach(document.body);
+      }, false);
+    </script>
+
   </head>
   <body>
     <div class="container">
@@ -41,7 +48,7 @@
     <script src="static/lib/angularjs/angular-mocks.js"></script>
     <script src="static/lib/angular-carousel/dist/angular-mobile.js"></script>
     <script src="static/lib/angular-carousel/dist/angular-carousel.js"></script>
-    
+
     <script src="static/lib/angular-ui/ui-bootstrap-tpls-0.6.0.js"></script>
 
     <script src="static/lib/base64.js"></script>
