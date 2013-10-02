@@ -17,4 +17,19 @@
         }
       };
     }]);
+
+    angular.module('em.directives').directive('taskContent', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/tasks/taskContent.html',
+        link : function(scope, element, attrs) {
+          scope.showTaskContent = false;
+
+          scope.expandTask = function expandTask() {
+            scope.showTaskContent = !scope.showTaskContent;
+          };
+        }
+      };
+    }]);
   }());

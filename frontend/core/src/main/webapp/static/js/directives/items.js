@@ -106,21 +106,6 @@
       };
     }]);
 
-    angular.module('em.directives').directive('taskContent', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/templates/taskContent.html',
-        link : function(scope, element, attrs) {
-          scope.showMe = false;
-
-          scope.expandTask = function expandTask() {
-            scope.showMe = !scope.showMe;
-          };
-        }
-      };
-    }]);
-
     angular.module('em.directives').directive('notesList', [
     function() {
       return {
