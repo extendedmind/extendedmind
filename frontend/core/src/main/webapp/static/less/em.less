@@ -47,6 +47,7 @@ html {
 }
 
 .em-slide {
+  z-index: 0;
   padding-left: 15px;
   padding-right: 15px;
 }
@@ -90,6 +91,9 @@ ul.em-headers {
 ul {
   list-style-type: none;
 }
+.item-actions {
+  padding-bottom: 10px;
+}
 
 ul.entry-list {
   padding-left: 0;
@@ -100,15 +104,13 @@ input[type="checkbox"].task-checkbox:checked + label {
   color: gray;
 }
 
-.active {
-  background: #EBEBEB;
-}
-
 .active-list-item {
+  border-style: solid none;
+  border-width: 1px;
+  border-color: #8E8E93;
   margin-left: -55px;
   padding-left: 55px;
   margin-right: -15px;
-  background: #EBEBEB;
 }
 
 .rn-carousel-animate {

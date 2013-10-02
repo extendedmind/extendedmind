@@ -1,0 +1,19 @@
+<div>
+
+  <div>
+    <h2><a ng-show="items!=0" class="text-muted" href="" ng-click="toggleItemsList()">unsorted</a><span class="pull-right"><small>{{completed}}</small></span></h2>
+  </div>
+
+  <ul ng-show="showItemsList">
+
+    <li class="em-li" ng-class="selected" ng-repeat="item in items | filter:newItem" ng-model="activeItem">
+
+      <div class="swipe-element" ng-click="toggleItemActions()">
+        <span>{{item.title}}</span>
+      </div>
+
+      <div item-actions ng-show="showItemActions"></div>
+
+    </li>
+  </ul>
+</div>

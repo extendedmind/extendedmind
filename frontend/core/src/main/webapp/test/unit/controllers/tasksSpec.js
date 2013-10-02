@@ -7,14 +7,15 @@
     describe('TasksController', function() {
       beforeEach(module('em.services', 'em.mockHelpers'));
 
-      var $controller, $scope, mockHttpBackendResponse;
+      var $controller, $scope, mockHttpBackendResponse, slideIndex;
 
       beforeEach(inject(function(_$controller_, _$rootScope_, _mockHttpBackendResponse_) {
         mockHttpBackendResponse = _mockHttpBackendResponse_;
 
         $scope = _$rootScope_.$new();
         $controller = _$controller_('TasksController', {
-          $scope : $scope
+          $scope : $scope,
+          slideIndex : slideIndex
         });
       }));
 

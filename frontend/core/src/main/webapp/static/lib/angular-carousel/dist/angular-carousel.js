@@ -63,7 +63,7 @@ angular.module('angular-carousel')
 
 angular.module('angular-carousel')
 
-.directive('rnCarousel', ['$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager', function($rootScope, $compile, $parse, $swipe, $document, $window, CollectionManager) {
+.directive('rnCarousel', ['disableCarousel','$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager', function(disableCarousel,$rootScope, $compile, $parse, $swipe, $document, $window, CollectionManager) {
   /* track number of carousel instances */
   var carousels = 0;
 
@@ -383,6 +383,9 @@ angular.module('angular-carousel')
         $swipe.bind($(".em-slides"), {
           /* use angular $swipe service */
           start: function(coords) {
+        	  if(disableCarousel.getSwiping()){
+        	  return;
+        	  }
             /* capture initial event position */
             if (swiping === 0) {
               swiping = 1;
