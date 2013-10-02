@@ -2,15 +2,14 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NotesController', ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray', 'tasksArray',
-    function($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray) {
+    angular.module('em.app').controller('NotesController', ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray',
+    function($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray) {
 
       itemsRequest.getItems(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);
         notesArray.setNotes(itemsResponse.notes);
         tagsArray.setTags(itemsResponse.tags);
-        tasksArray.setTasks(itemsResponse.tasks);
 
         $scope.notes = notesArray.getNotes();
         $scope.contexts = tagsArray.getTags();

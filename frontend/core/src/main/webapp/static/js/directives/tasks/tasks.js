@@ -2,6 +2,14 @@
 
 ( function() {'use strict';
 
+    angular.module('em.directives').directive('tasks', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/my/tasks.html'
+      };
+    }]);
+
     angular.module('em.directives').directive('tasksList', [
     function() {
       return {

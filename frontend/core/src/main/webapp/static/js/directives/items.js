@@ -75,13 +75,6 @@
         templateUrl : 'static/partials/my.html'
       };
     }]);
-    angular.module('em.directives').directive('myTasks', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/my/tasks.html'
-      };
-    }]);
 
     angular.module('em.directives').directive('projectsList', [
     function() {
