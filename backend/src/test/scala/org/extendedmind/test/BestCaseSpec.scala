@@ -183,7 +183,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                 ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                 ) ~> emRoute ~> check {
           val putExistingTaskResponse = entityAs[String]
-          writeJsonOutput("putExistingItemResponse", putExistingTaskResponse)
+          writeJsonOutput("putExistingTaskResponse", putExistingTaskResponse)
           putExistingTaskResponse should include("modified")
           putExistingTaskResponse should not include("uuid")
           Get("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get

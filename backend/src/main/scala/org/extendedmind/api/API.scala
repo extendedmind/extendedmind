@@ -23,6 +23,10 @@ trait API extends HttpService {
   // Security
   val postAuthenticate = post & path("authenticate".r)
   
+  // Collectives
+  val putNewCollective = put & path("collective".r)
+  val putExistingCollective = put & path("collective" / JavaUUID)
+
   // Items
   val getItems = get & path(JavaUUID / "items")
   val getItem = get & path(JavaUUID / "item" / JavaUUID)
@@ -39,7 +43,8 @@ trait API extends HttpService {
   val undeleteTask = post & path(JavaUUID / "task" / JavaUUID / "undelete")
   val completeTask = post & path(JavaUUID / "task" / JavaUUID / "complete")
   val uncompleteTask = post & path(JavaUUID / "task" / JavaUUID / "uncomplete")
-
+  val assignTask = post & path(JavaUUID / "task" / JavaUUID / "assign")
+  
   // Notes
   val getNote = get & path(JavaUUID / "note" / JavaUUID)
   val putNewNote = put & path(JavaUUID / "note")
@@ -51,5 +56,6 @@ trait API extends HttpService {
   val getTag = get & path(JavaUUID / "tag" / JavaUUID)
   val putNewTag = put & path(JavaUUID / "tag")
   val putExistingTag = put & path(JavaUUID / "tag" / JavaUUID)
+
 
 }

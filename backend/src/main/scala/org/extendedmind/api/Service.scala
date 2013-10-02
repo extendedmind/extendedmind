@@ -5,6 +5,7 @@ import org.extendedmind._
 import org.extendedmind.Response._
 import org.extendedmind.bl._
 import org.extendedmind.security._
+import org.extendedmind.security.Authentication._
 import org.extendedmind.domain._
 import org.extendedmind.db._
 import scaldi._
@@ -115,7 +116,7 @@ trait Service extends API with Injectable {
       }
     } ~
     getInviteRequests { path =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
         authorize(securityContext.userType == 0){
           complete {
             Future[List[InviteRequest]] {
@@ -145,8 +146,25 @@ trait Service extends API with Injectable {
         }
       }
     } ~
+    putNewCollective { url =>
+      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        // Only admins can create new collectives for now
+        authorize(securityContext.userType == 0){
+          entity(as[Collective]) { collective =>
+            complete {
+              Future[SetResult] {
+                collectiveActions.putNewCollective(collective, securityContext.userUUID) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      }
+    }~
     getItems{ ownerUUID =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", READ_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
 		      complete {
 		        Future[Items] {
@@ -160,7 +178,7 @@ trait Service extends API with Injectable {
       }
     } ~ 
     getItem { (ownerUUID, itemUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", READ_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[Item] {
@@ -174,7 +192,7 @@ trait Service extends API with Injectable {
       }      
     } ~
     putNewItem { ownerUUID =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           entity(as[Item]) { item =>
             complete{
@@ -190,7 +208,7 @@ trait Service extends API with Injectable {
       }
     } ~
     putExistingItem { (ownerUUID, itemUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           entity(as[Item]) { item =>
             complete{
@@ -206,7 +224,7 @@ trait Service extends API with Injectable {
       }
     } ~
     deleteItem { (ownerUUID, itemUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[DeleteItemResult]{
@@ -220,7 +238,7 @@ trait Service extends API with Injectable {
       }
     } ~
     undeleteItem { (ownerUUID, itemUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[SetResult]{
@@ -234,7 +252,7 @@ trait Service extends API with Injectable {
       }
     } ~
     getTask { (ownerUUID, taskUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", READ_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[Task] {
@@ -248,7 +266,7 @@ trait Service extends API with Injectable {
       }
     } ~
     putNewTask { ownerUUID =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           entity(as[Task]) { task =>
             complete {
@@ -264,7 +282,7 @@ trait Service extends API with Injectable {
       }
     } ~
     putExistingTask { (ownerUUID, taskUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           entity(as[Task]) { task =>
             complete {
@@ -280,7 +298,7 @@ trait Service extends API with Injectable {
       }
     } ~
     deleteTask { (ownerUUID, taskUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[DeleteItemResult]{
@@ -294,7 +312,7 @@ trait Service extends API with Injectable {
       }
     } ~
     undeleteTask { (ownerUUID, taskUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[SetResult]{
@@ -308,7 +326,7 @@ trait Service extends API with Injectable {
       }
     } ~
     completeTask { (ownerUUID, taskUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[CompleteTaskResult] {
@@ -322,7 +340,7 @@ trait Service extends API with Injectable {
       }
     } ~
     uncompleteTask { (ownerUUID, taskUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[SetResult] {
@@ -336,7 +354,7 @@ trait Service extends API with Injectable {
       }
     } ~
     getNote { (ownerUUID, noteUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", READ_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[Note] {
@@ -350,7 +368,7 @@ trait Service extends API with Injectable {
       }
     } ~
     putNewNote { ownerUUID =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           entity(as[Note]) { note =>
             complete {
@@ -366,7 +384,7 @@ trait Service extends API with Injectable {
       }
     } ~
     putExistingNote { (ownerUUID, noteUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           entity(as[Note]) { note =>
             complete {
@@ -382,7 +400,7 @@ trait Service extends API with Injectable {
       }
     } ~
     deleteNote { (ownerUUID, noteUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[DeleteItemResult]{
@@ -396,7 +414,7 @@ trait Service extends API with Injectable {
       }
     } ~
     undeleteNote { (ownerUUID, noteUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           complete{
             Future[SetResult]{
@@ -410,7 +428,7 @@ trait Service extends API with Injectable {
       }
     } ~
     getTag{ (ownerUUID, tagUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", READ_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           complete {
             Future[Tag] {
@@ -424,7 +442,7 @@ trait Service extends API with Injectable {
       }
     } ~
     putNewTag { ownerUUID =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           entity(as[Tag]) { tag =>
             complete {
@@ -440,7 +458,7 @@ trait Service extends API with Injectable {
       }
     } ~
     putExistingTag { (ownerUUID, tagUUID) =>
-      authenticate(ExtendedAuth(authenticator, "user")) { securityContext =>
+      authenticate(ExtendedAuth(authenticator, "user", WRITE_ACCESS(ownerUUID))) { securityContext =>
         authorize(securityContext.userUUID == ownerUUID){
           entity(as[Tag]) { tag =>
             complete {
@@ -454,7 +472,7 @@ trait Service extends API with Injectable {
           }       
         }
       }
-    }    
+    }
   }
   
   def authenticateAuthenticator: ExtendedMindAuthenticateUserPassAuthenticator = {
@@ -471,6 +489,10 @@ trait Service extends API with Injectable {
   
   def userActions: UserActions = {
     inject[UserActions]
+  }
+  
+  def collectiveActions: CollectiveActions = {
+    inject[CollectiveActions]
   }
   
   def itemActions: ItemActions = {

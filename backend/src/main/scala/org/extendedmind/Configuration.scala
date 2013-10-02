@@ -37,6 +37,7 @@ class Settings(config: Config) extends Extension {
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
   val signUp = config.getBoolean("extendedmind.security.signUp")
   val adminSignUp = config.getBoolean("extendedmind.security.adminSignUp")
+  val commonCollectives = config.getBoolean("extendedmind.security.commonCollectives")
   val mailgunDomain = config.getString("extendedmind.email.mailgun.domain")
   val mailgunApiKey = config.getString("extendedmind.email.mailgun.apiKey")
   // Email templates

@@ -9,6 +9,9 @@ case class ExtendedMindRelationship(relationshipName: String) extends Relationsh
 object SecurityRelationship {
   val OWNS = ExtendedMindRelationship("OWNS")
   val IDS = ExtendedMindRelationship("IDS")
+  val IS_CREATOR = ExtendedMindRelationship("IS_CREATOR")
+  val CAN_READ = ExtendedMindRelationship("CAN_READ")
+  val CAN_WRITE = ExtendedMindRelationship("CAN_WRITE")
 }
 
 object ItemRelationship {
