@@ -41,7 +41,7 @@
       });
 
       $routeProvider.when('/my/notes', {
-        controller : 'MyNotesController',
+        controller : 'NotesController',
         templateUrl : 'static/partials/my/notesSlides.html',
         resolve : {
           authenticationRequired : ['$rootScope',
