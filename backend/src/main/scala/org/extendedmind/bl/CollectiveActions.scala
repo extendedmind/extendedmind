@@ -25,8 +25,8 @@ trait CollectiveActions {
     log.info("putNewCollective")
    
     if (settings.commonCollectives) 
-      log.warning("CRITICAL: Making collective {} an common collective to all "
-                 +"users because extendedmind.security.commonCollective is set to true")
+      log.warning("CRITICAL: Making collective {} a common collective to all "
+                 +"users because extendedmind.security.commonCollectives is set to true", collective.title)
     db.putNewCollective(collective, userUUID, settings.commonCollectives)
   }
 }

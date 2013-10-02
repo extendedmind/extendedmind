@@ -530,6 +530,20 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         }
       }
     }
+    it("should successfully create new collective with PUT to /collective") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val testCollective = Collective("Test", None)
+      Put("/collective",
+         marshal(testCollective).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+            ) ~> emRoute ~> check {
+        writeJsonOutput("putCollectiveResponse", entityAs[String])
+        val putCollectiveResponse = entityAs[SetResult]
+        putCollectiveResponse.uuid should not be None
+        putCollectiveResponse.modified should not be None
+      }
+    } 
   }
   
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {

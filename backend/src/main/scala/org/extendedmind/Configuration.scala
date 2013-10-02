@@ -67,6 +67,7 @@ class Configuration(settings: Settings, actorRefFactory: ActorRefFactory) extend
   bind [MailgunClient] to new MailgunClientImpl
   bind [SecurityActions] to new SecurityActionsImpl
   bind [UserActions] to new UserActionsImpl
+  bind [CollectiveActions] to new CollectiveActionsImpl
   bind [ItemActions] to new ItemActionsImpl
   bind [TaskActions] to new TaskActionsImpl
   bind [NoteActions] to new NoteActionsImpl
