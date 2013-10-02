@@ -21,14 +21,14 @@
           });
         },
         editItem : function(item, success, error) {
-          httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/item' + item.uuid, item, function(editItemResponse) {
+          httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/item/' + item.uuid, item, function(editItemResponse) {
             success(editItemResponse);
           }, function(editItemResponse) {
             error(editItemResponse);
           });
         },
-        deleteItem : function(itemUUID, success, error) {
-          httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/item' + itemUUID, function(deleteItemResponse) {
+        deleteItem : function(item, success, error) {
+          httpRequest['delete']('/api/' + userSessionStorage.getUserUUID() + '/item/' + item.uuid, function(deleteItemResponse) {
             success(deleteItemResponse);
           }, function(deleteItemResponse) {
             error(deleteItemResponse);
