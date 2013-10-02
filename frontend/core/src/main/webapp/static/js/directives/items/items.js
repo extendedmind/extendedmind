@@ -9,8 +9,7 @@
         templateUrl : 'static/partials/templates/items/itemActions.html',
         link : function(scope, element, attrs) {
           scope.showItemActions = false;
-          scope.itemToTaskSuccess = false;
-          scope.itemToNoteSuccess = false;
+          scope.showItemActionSuccess = false;
 
           scope.toggleItemActions = function toggleItemActions() {
 
@@ -22,14 +21,6 @@
               scope.selected = '';
             }
 
-          };
-
-          scope.itemToTask = function itemToTask() {
-            scope.itemToTaskSuccess = !scope.itemToTaskSuccess;
-          };
-
-          scope.itemToNote = function itemToNote() {
-            scope.itemToNoteSuccess = !scope.itemToNoteSuccess;
           };
         }
       };

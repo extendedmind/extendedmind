@@ -35,5 +35,13 @@
       $scope.setActiveItem = function(item) {
         activeItem.setItem(item);
       };
+
+      $scope.itemToTask = function itemToTask() {
+        $scope.completed = 'task added';
+      };
+
+      $scope.itemToNote = function itemToNote() {
+        $scope.completed = 'note added';
+      };
     }]);
   }());
