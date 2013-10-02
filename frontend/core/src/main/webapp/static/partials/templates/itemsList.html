@@ -1,9 +1,9 @@
 <div>
   <ul>
 
-    <li class="em-li" ng-repeat="item in items | filter:newItem" ng-model="activeItem">
+    <li class="em-li" ng-class="selected" ng-repeat="item in items | filter:newItem" ng-model="activeItem">
 
-      <div ng-class="selected" class="swipe-element" ng-click="toggleItemActions()">
+      <div class="swipe-element" ng-click="toggleItemActions()">
         <span>{{item.title}}</span>
       </div>
 
