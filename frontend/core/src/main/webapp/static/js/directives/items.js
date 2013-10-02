@@ -2,34 +2,11 @@
 
 ( function() {'use strict';
 
-    angular.module('em.directives').directive('newTag', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/templates/newTag.html',
-        link : function(scope, element, attrs) {
-          scope.showEditNewTag = false;
-
-          scope.editNewTag = function editNewTag() {
-            scope.showEditNewTag = !scope.showEditNewTag;
-          };
-        }
-      };
-    }]);
-
-    angular.module('em.directives').directive('newTask', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/templates/newTask.html'
-      };
-    }]);
-
     angular.module('em.directives').directive('itemsList', ['$swipe', 'disableCarousel',
     function($swipe, disableCarousel) {
       return {
         restrict : 'A',
-        templateUrl : 'static/partials/templates/itemsList.html',
+        templateUrl : 'static/partials/templates/items/itemsList.html',
         transclude : true,
         link : function(scope, element, attrs) {
           scope.showItemsList = false;
@@ -60,50 +37,26 @@
       };
     }]);
 
-    angular.module('em.directives').directive('contextsList', [
+    angular.module('em.directives').directive('itemActions', [
     function() {
       return {
         restrict : 'A',
-        templateUrl : 'static/partials/templates/contextsList.html'
-      };
-    }]);
-
-    angular.module('em.directives').directive('my', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/my.html'
-      };
-    }]);
-
-    angular.module('em.directives').directive('projectsList', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/templates/projectsList.html'
-      };
-    }]);
-
-    angular.module('em.directives').directive('noteContent', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/templates/noteContent.html'
-      };
-    }]);
-
-    angular.module('em.directives').directive('notesList', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/templates/notesList.html',
-        transclude : true,
+        templateUrl : 'static/partials/templates/items/itemActions.html',
         link : function(scope, element, attrs) {
-          var notesFilterAttr = attrs.notesfilter;
+          scope.showItemActions = false;
+          scope.showItemActionSuccess = false;
 
-          scope.$watch(notesFilterAttr, function(newValue) {
-            scope.notesListFilter = newValue;
-          });
+          scope.toggleItemActions = function toggleItemActions() {
+
+            scope.showItemActions = !scope.showItemActions;
+
+            if (scope.showItemActions) {
+              scope.selected = 'active-list-item';
+            } else {
+              scope.selected = '';
+            }
+
+          };
         }
       };
     }]);

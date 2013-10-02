@@ -40,4 +40,12 @@
         }
       };
     }]);
+
+    angular.module('em.directives').directive('newTask', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/tasks/newTask.html'
+      };
+    }]);
   }());
