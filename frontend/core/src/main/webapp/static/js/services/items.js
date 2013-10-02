@@ -81,6 +81,9 @@
             this.items.push(item);
           }
         },
+        removeItem : function(item) {
+          this.items.splice(this.items.indexOf(item), 1);
+        },
         getItemByUuid : function(items, uuid) {
           var i = 0;
 

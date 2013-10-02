@@ -3,8 +3,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('MyController', ['$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray',
-    function($scope, activeItem, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
+    angular.module('em.app').controller('MyController', ['$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
+    function($scope, activeItem, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       itemsRequest.getItems(function(itemsResponse) {
 
@@ -36,8 +36,18 @@
         activeItem.setItem(item);
       };
 
-      $scope.itemToTask = function itemToTask() {
-        $scope.completed = 'task added';
+      $scope.itemToTask = function itemToTask(item) {
+
+        tasksRequest.putExistingTask(item, function(putExistingTaskResponse) {
+
+          $scope.completed = 'task added';
+          itemsArray.removeItem(item);
+
+          tasksResponse.putTaskContent(item, putExistingTaskResponse);
+          tasksArray.putNewTask(item);
+
+        }, function(putTaskResponse) {
+        });
       };
 
       $scope.itemToNote = function itemToNote() {

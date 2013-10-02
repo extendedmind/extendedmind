@@ -7,9 +7,11 @@
     emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
     function($httpBackend, mockHttpBackendResponse) {
 
-      var api_useruuid_items, authenticateResponse, completeTask, completeTaskResponse, itemsResponse, putItemResponse, putTaskResponse, uncompleteTask, uncompleteTaskResponse, uuid;
+      var api_useruuid_items, authenticateResponse, completeTask, completeTaskResponse, itemsResponse, putItemResponse, putTaskResponse, putExistingTask, putExistingTaskResponse, uncompleteTask, uncompleteTaskResponse, uuid;
 
       uuid = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+
+      putExistingTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
       completeTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/complete/;
       uncompleteTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/uncomplete/;
@@ -20,7 +22,10 @@
       completeTaskResponse = mockHttpBackendResponse.getCompleteTaskResponse();
       itemsResponse = mockHttpBackendResponse.getItemsResponse();
       putItemResponse = mockHttpBackendResponse.getPutItemResponse();
+
       putTaskResponse = mockHttpBackendResponse.getPutTaskResponse();
+      putExistingTaskResponse = mockHttpBackendResponse.getputExistingTaskResponse();
+
       uncompleteTaskResponse = mockHttpBackendResponse.getUncompleteTaskResponse();
 
       $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data, headers) {
@@ -33,6 +38,10 @@
 
       $httpBackend.whenPUT('/api/' + authenticateResponse.userUUID + '/task').respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, putTaskResponse);
+      });
+
+      $httpBackend.whenPUT(putExistingTask).respond(function(method, url, data, headers) {
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, putExistingTaskResponse);
       });
 
       $httpBackend.whenGET(completeTask).respond(function(method, url, data, headers) {
@@ -85,6 +94,9 @@
           return getJSONFixture('putItemResponse.json');
         },
         getPutTaskResponse : function() {
+          return getJSONFixture('putTaskResponse.json');
+        },
+        getputExistingTaskResponse : function() {
           return getJSONFixture('putTaskResponse.json');
         },
         getUncompleteTaskResponse : function() {
