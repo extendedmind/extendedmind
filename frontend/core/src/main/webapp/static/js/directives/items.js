@@ -98,22 +98,6 @@
       };
     }]);
 
-    angular.module('em.directives').directive('tasksList', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/templates/tasksList.html',
-        transclude : true,
-        link : function(scope, element, attrs) {
-          var tasksFilterAttr = attrs.tasksfilter;
-
-          scope.$watch(tasksFilterAttr, function(newValue) {
-            scope.tasksListFilter = newValue;
-          });
-        }
-      };
-    }]);
-
     angular.module('em.directives').directive('noteContent', [
     function() {
       return {
