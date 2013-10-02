@@ -207,12 +207,12 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           val collective = relationship.getEndNode()
           val title = collective.getProperty("title").asInstanceOf[String]
           val uuid = getUUID(collective)
-          relationship.getType() match {
-            case SecurityRelationship.IS_CREATOR => 
+          relationship.getType().name() match {
+            case SecurityRelationship.IS_CREATOR.relationshipName => 
               collectiveAccessMap.put(uuid, (title, SecurityContext.CREATOR))
-            case SecurityRelationship.CAN_READ =>
+            case SecurityRelationship.CAN_READ.relationshipName =>
               collectiveAccessMap.put(uuid, (title, SecurityContext.READ))
-            case SecurityRelationship.CAN_WRITE =>
+            case SecurityRelationship.CAN_WRITE.relationshipName =>
               collectiveAccessMap.put(uuid, (title, SecurityContext.WRITE))
           }
         })
@@ -242,10 +242,10 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           // Write access required
           var foundWriteAccess: Boolean = false
           relationshipList foreach (relationship => {
-            relationship.getType() match {
-              case SecurityRelationship.IS_CREATOR => 
+            relationship.getType().name() match {
+              case SecurityRelationship.IS_CREATOR.relationshipName => 
                 foundWriteAccess = true
-              case SecurityRelationship.CAN_WRITE =>
+              case SecurityRelationship.CAN_WRITE.relationshipName =>
                 foundWriteAccess = true
             }
           })

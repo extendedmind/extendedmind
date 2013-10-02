@@ -542,6 +542,12 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         val putCollectiveResponse = entityAs[SetResult]
         putCollectiveResponse.uuid should not be None
         putCollectiveResponse.modified should not be None
+        
+        // Authenticating again should have the new collective
+        val reauthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+        reauthenticateResponse.collectives should not be None
+        reauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._1 should equal(testCollective.title)
+        reauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._2 should equal(0)
       }
     } 
   }

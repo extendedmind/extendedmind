@@ -48,11 +48,11 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
 
     if (commonCollective){
       collectiveNode.setProperty("common", true)
-      
       // Give all existing users read access to to common collective
       val userIterator = findNodesByLabel(OwnerLabel.USER);
       userIterator.foreach(user => {
-        user --> SecurityRelationship.CAN_READ --> collectiveNode;
+        if (user != userNode)
+          user --> SecurityRelationship.CAN_READ --> collectiveNode;
       })
     } 
     Right(collectiveNode)
