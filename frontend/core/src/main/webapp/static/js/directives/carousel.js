@@ -1,4 +1,5 @@
-/*global angular*/
+/*global angular, checkEdges, updateSlidePosition, translateSlideProperty */
+/*jslint plusplus: true, regexp: true */
 
 ( function() {'use strict';
 
@@ -20,13 +21,13 @@
 
            if no ng-repeat found, try to use existing <li> DOM nodes
            */
-          var liAttributes = tElement.find('li')[0].attributes, repeatAttribute = liAttributes['ng-repeat'], isBuffered = false, originalCollection, fakeArray;
-          if (!repeatAttribute)
+          var liAttributes = tElement.find('li')[0].attributes, repeatAttribute = liAttributes['ng-repeat'], isBuffered = false,liChilds, originalCollection, fakeArray,originalItem,exprMatch,trackProperty;
+          if (!repeatAttribute){
             repeatAttribute = liAttributes['data-ng-repeat'];
-          if (!repeatAttribute)
-            repeatAttribute = liAttributes['x-ng-repeat'];
+}          if (!repeatAttribute){
+            repeatAttribute = liAttributes['x-ng-repeat'];}
           if (!repeatAttribute) {
-            var liChilds = tElement.find('li');
+            liChilds = tElement.find('li');
             if (liChilds.length < 2) {
               throw new Error("carousel: cannot find the ngRepeat attribute OR no childNodes detected");
             }
@@ -34,9 +35,9 @@
             originalCollection = 'fakeArray';
             fakeArray = Array.prototype.slice.apply(liChilds);
           } else {
-            var exprMatch = repeatAttribute.value.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/), originalItem = exprMatch[1], trackProperty = exprMatch[3] || '';
+            exprMatch = repeatAttribute.value.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/); originalItem = exprMatch[1]; trackProperty = exprMatch[3] || '';
             originalCollection = exprMatch[2];
-            isBuffered = angular.isDefined(tAttrs['rnCarouselBuffered']);
+            isBuffered = angular.isDefined(tAttrs.rnCarouselBuffered);
 
             /* update the current ngRepeat expression and add a slice operator */
             repeatAttribute.value = originalItem + ' in carouselCollection.cards ' + trackProperty;
@@ -49,10 +50,10 @@
             offset = 0, // move offset
             minSwipePercentage = 0.1, // minimum swipe required to trigger slide change
             containerWidth = 0, // store width of the first slide
-            skipAnimation = true;
+            skipAnimation = true,carousel,container;
 
             /* add a wrapper div that will hide the overflow */
-            var carousel = iElement.wrap("<div id='" + carouselId + "' class='rn-carousel-container'></div>"), container = carousel.parent();
+            carousel = iElement.wrap("<div id='" + carouselId + "' class='rn-carousel-container'></div>"); container = carousel.parent();
 
             if (fakeArray) {
               // publish the fakeArray on the scope to be able to add indicators
@@ -61,8 +62,8 @@
 
             function getTransformCoordinates(el) {
               var results = angular.element(el).css('transform').match(/translate3d\((-?\d+(?:px)?),\s*(-?\d+(?:px)?),\s*(-?\d+(?:px)?)\)/);
-              if (!results)
-                return [0, 0, 0];
+              if (!results){
+                return [0, 0, 0];}
               return results.slice(1, 3);
             }
 
