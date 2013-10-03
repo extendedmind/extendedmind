@@ -19,6 +19,12 @@ import org.neo4j.scala.DatabaseService
 object TestGraphDatabase {
   val TIMO_EMAIL: String = "timo@ext.md"
   val TIMO_PASSWORD: String = "timopwd"
+  val LAURI_EMAIL: String = "lauri@ext.md"
+  val LAURI_PASSWORD: String = "lauripwd"
+  val JP_EMAIL: String = "jp@ext.md"
+  val JP_PASSWORD: String = "jppwd"
+  val INFO_EMAIL: String = "info@ext.md"
+  val INFO_PASSWORD: String = "infopwd"
 }
 
 /**
@@ -34,7 +40,22 @@ trait TestGraphDatabase extends GraphDatabase {
   
   def insertTestData(testDataLocation: Option[String] = None) {
     val timoNode = createUser(User(None, None, None, TIMO_EMAIL), TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
-    
+    val lauriNode = createUser(User(None, None, None, LAURI_EMAIL), LAURI_PASSWORD, Some(UserLabel.ADMIN)).right.get
+    val jpNode = createUser(User(None, None, None, JP_EMAIL), JP_PASSWORD, Some(UserLabel.ADMIN)).right.get
+    val infoNode = createUser(User(None, None, None, INFO_EMAIL), INFO_PASSWORD).right.get
+
+    // Collectives
+    val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true)
+    val extendedMindTechnologies = createCollective(
+                                            timoNode, "extended mind technologies", 
+                                            Some("private collective for extended mind technologies"), false)
+                                            
+    // Add to collectives
+    withTx{
+      implicit neo =>
+        addUserToCollective(getUUID(extendedMindTechnologies), getUUID(timoNode), getUUID(lauriNode), SecurityContext.READ_WRITE)                                            
+        addUserToCollective(getUUID(extendedMindTechnologies), getUUID(jpNode), getUUID(jpNode), SecurityContext.READ_WRITE)
+    }
     withTx{
       implicit neo =>
         // Valid, unreplaceable
@@ -69,6 +90,8 @@ trait TestGraphDatabase extends GraphDatabase {
           Some(new PrintWriter(testDataLocation.get + "/" + "testData.properties")).foreach{p => p.write(testData); p.close}
         }
     }
+
+    // Timo's personal notes
     
     // Store items for user
     putNewItem(timoUUID,
@@ -126,6 +149,7 @@ trait TestGraphDatabase extends GraphDatabase {
         Note("notes on productivity", None, Some("##what I've learned about productivity"), None, 
             Some(ExtendedItemRelationships(None, None, Some(List(productivityTag.right.get.uuid.get)))
     ))).right.get
+
   }
   
   def saveCustomToken(expires: Long, replaceable: Option[Long], userNode: Node)
@@ -139,6 +163,14 @@ trait TestGraphDatabase extends GraphDatabase {
       tokenNode.setProperty("replaceable", replaceable.get)
     tokenNode --> SecurityRelationship.IDS --> userNode
     newToken
+  }
+  
+  def createCollective(creator: Node, title: String, description: Option[String], common: Boolean): Node = {
+    withTx{
+      implicit neo =>
+        val collective = createCollective(getUUID(creator), Collective(title, description), common)
+        collective.right.get
+    }
   }
   
 }

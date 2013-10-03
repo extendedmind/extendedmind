@@ -17,6 +17,8 @@ import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.index.lucene.ValueContext
 import org.neo4j.index.lucene.QueryContext
+import org.neo4j.graphdb.traversal.Evaluation
+import org.neo4j.graphdb.Relationship
 
 trait CollectiveDatabase extends AbstractGraphDatabase {
 
@@ -44,6 +46,13 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
           collective <- toCaseClass[Collective](collectiveNode).right
         } yield collective
     }
+  }
+  
+  def addUserToCollective(collectiveUUID: UUID, creatorUUID: UUID, userUUID: UUID, access: Byte): Response[SetResult] = {
+    for {
+      collectiveNode <- addUserToCollectiveNode(collectiveUUID, creatorUUID, userUUID, access).right
+      result <- Right(getSetResult(collectiveNode, false)).right
+    } yield result
   }
 
   // PRIVATE
@@ -85,5 +94,61 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
         } yield collectiveNode
     }
   }
-    
+  
+  protected def addUserToCollectiveNode(collectiveUUID: UUID, creatorUUID: UUID, userUUID: UUID, access: Byte): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          collectiveNode <- getCreatedCollective(collectiveUUID, creatorUUID).right
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          relationship <- addUserToCollective(collectiveNode, userNode, access).right
+        } yield collectiveNode
+    }
+  }
+  
+  protected def getCreatedCollective(collectiveUUID: UUID, creatorUUID: UUID)
+        (implicit neo4j: DatabaseService): Response[Node] = {
+    val collectiveNode = getNode(collectiveUUID, OwnerLabel.COLLECTIVE)
+    if (collectiveNode.isLeft) return collectiveNode
+        
+    val creatorFromCollective: TraversalDescription = {
+        Traversal.description()
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_CREATOR.name),
+            Direction.INCOMING)
+          .depthFirst()
+          .evaluator(Evaluators.excludeStartPosition())
+          .evaluator(PropertyEvaluator(
+            OwnerLabel.COLLECTIVE, "deleted",
+            Evaluation.EXCLUDE_AND_PRUNE,
+            Evaluation.INCLUDE_AND_CONTINUE))
+    }
+    val traverser = creatorFromCollective.traverse(collectiveNode.right.get)
+    val collectiveNodeList = traverser.nodes().toList
+    if (collectiveNodeList.length == 0) {
+      fail(INTERNAL_SERVER_ERROR, "Collective " + collectiveUUID + " has no creator")
+    } else if (collectiveNodeList.length > 1) {
+      fail(INTERNAL_SERVER_ERROR, "More than one creator found for collective with UUID " + collectiveUUID)
+    } else {
+      val creator = collectiveNodeList.head
+      if (getUUID(creator) != creatorUUID){
+        fail(INVALID_PARAMETER, "Collective " + collectiveUUID + " is not created by user " 
+            + creatorUUID)
+      }else{
+        Right(collectiveNode.right.get)
+      }
+    }
+  }
+  
+  protected def addUserToCollective(collectiveNode: Node, userNode: Node, access: Byte) 
+       (implicit neo4j: DatabaseService): Response[Relationship] = {
+    access match {
+      case SecurityContext.READ => 
+        Right(userNode --> SecurityRelationship.CAN_READ --> collectiveNode <)
+      case SecurityContext.READ_WRITE => 
+        Right(userNode --> SecurityRelationship.CAN_READ_WRITE --> collectiveNode <)
+      case _ => 
+        fail(INVALID_PARAMETER, "Invalid access value: " + access)
+    }
+  }
+
 }

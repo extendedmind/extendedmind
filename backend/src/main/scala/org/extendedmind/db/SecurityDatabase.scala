@@ -245,11 +245,11 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
             if (!collectiveAccessMap.contains(uuid))
               collectiveAccessMap.put(uuid, (title, SecurityContext.READ))
           }
-          case SecurityRelationship.CAN_WRITE.relationshipName => {
+          case SecurityRelationship.CAN_READ_WRITE.relationshipName => {
             if (collectiveAccessMap.contains(uuid))
-              collectiveAccessMap.update(uuid, (title, SecurityContext.WRITE))
+              collectiveAccessMap.update(uuid, (title, SecurityContext.READ_WRITE))
             else
-              collectiveAccessMap.put(uuid, (title, SecurityContext.WRITE))
+              collectiveAccessMap.put(uuid, (title, SecurityContext.READ_WRITE))
           }
         }
       })
@@ -271,7 +271,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           .depthFirst()
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_CREATOR.name), Direction.OUTGOING)
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ.name), Direction.OUTGOING)
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_WRITE.name), Direction.OUTGOING)
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ_WRITE.name), Direction.OUTGOING)
           .evaluator(Evaluators.excludeStartPosition())
           .evaluator(LabelEvaluator(List(OwnerLabel.COLLECTIVE)))
           .evaluator(Evaluators.toDepth(1)) 

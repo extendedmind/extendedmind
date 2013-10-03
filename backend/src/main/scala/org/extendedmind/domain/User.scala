@@ -18,3 +18,6 @@ case class InviteRequest(email: String, emailId: Option[String]){
 
 case class InviteRequestQueueNumber(queueNumber: Int)
 
+case class UserAccessRight(userUUID: UUID, access: Byte){
+  require(access == 1 || access == 2, "Not a valid access right, permitted values: 1 = read, 2 = read/write")
+}
