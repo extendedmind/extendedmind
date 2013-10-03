@@ -1,65 +1,8 @@
-/**
- * Angular Carousel - Mobile friendly touch carousel for AngularJS
- * @version v0.0.8 - 2013-08-22
- * @link http://revolunet.github.com/angular-carousel
- * @author Julien Bouquillon <julien@revolunet.com>
- * @license MIT License, http://www.opensource.org/licenses/MIT
- */
-/*global angular */
+/*global angular*/
 
-/*
-Angular touch carousel with CSS GPU accel and slide buffering/cycling
-http://github.com/revolunet/angular-carousel
-
-TODO : 
- - skip initial animation
- - add/remove ngRepeat collection
- - prev/next cbs
- - cycle + no initial index ? (is -1 and has bug)
- - cycle + indicator
-*/
+( function() {'use strict';
 
 angular.module('angular-carousel', ['ngMobile']);
-
-angular.module('angular-carousel')
-
-.directive('rnCarouselIndicators', [function() {
-  return {
-    restrict: 'A',
-    replace: true,
-    scope: {
-      items: '=',
-      index: '='
-    },
-    template: '<div class="rn-carousel-indicator">' +
-                '<span ng-repeat="item in items" ng-class="{active: $index==$parent.index}">●</span>' +
-              '</div>'
-  };
-}]);
-
-angular.module('angular-carousel')
-
-.directive('rnCarouselInfinite', ['$parse', '$compile', function($parse, $compile) {
-  return {
-    restrict: 'EA',
-    transclude:  true,
-    replace: true,
-    scope: true,
-    template: '<ul rn-carousel rn-carousel-buffered><li ng-transclude></li></ul>',
-    compile: function(tElement, tAttrs, linker) {
-      var repeatExpr = tAttrs.rnCarouselCurrent + ' in items';
-      tElement.find('li').attr('ng-repeat', repeatExpr);
-      return function(scope, iElement, iAttrs) {
-        // wrap the original content in a real rn-carousel
-        scope.items = [$parse(iAttrs.rnCarouselCurrent)(scope)];
-        scope.$watchCollection('carouselCollection.position', function(newValue) {
-          // assign the new item to the parent scope
-          $parse(iAttrs.rnCarouselCurrent).assign(scope.$parent, scope.items[newValue]);
-        });
-      };
-    }
-  };
-}]);
 
 angular.module('angular-carousel')
 
@@ -630,3 +573,4 @@ angular.module('angular-carousel')
         }
     };
 }]);
+}());
