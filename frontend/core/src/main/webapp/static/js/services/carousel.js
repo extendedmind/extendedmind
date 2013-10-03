@@ -1,12 +1,12 @@
-/*global angular*/
+/*global $, angular, checkEdges, updateSlidePosition, translateSlideProperty, updateSlidePosition, updateContainerWidth, resize, documentMouseUpEvent, console: true */
+/*jslint plusplus: true, regexp: true */
 
 ( function() {'use strict';
 
 angular.module('angular-carousel', ['ngMobile']);
 
-angular.module('angular-carousel')
-
-.directive('rnCarousel', ['disableCarousel','$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager', function(disableCarousel,$rootScope, $compile, $parse, $swipe, $document, $window, CollectionManager) {
+angular.module('angular-carousel').directive('rnCarousel', ['disableCarousel','$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager', 
+function(disableCarousel,$rootScope, $compile, $parse, $swipe, $document, $window, CollectionManager) {
   /* track number of carousel instances */
   var carousels = 0;
 
@@ -27,11 +27,12 @@ angular.module('angular-carousel')
           repeatAttribute = liAttributes['ng-repeat'],
           isBuffered = false,
           originalCollection,
-          fakeArray;
-      if (!repeatAttribute) repeatAttribute = liAttributes['data-ng-repeat'];
-      if (!repeatAttribute) repeatAttribute = liAttributes['x-ng-repeat'];
+          fakeArray,liChilds,exprMatch,originalItem,trackProperty;
+          
+      if (!repeatAttribute){ repeatAttribute = liAttributes['data-ng-repeat'];}
+      if (!repeatAttribute) {repeatAttribute = liAttributes['x-ng-repeat'];}
       if (!repeatAttribute) {
-        var liChilds = tElement.find('li');
+        liChilds = tElement.find('li');
         if (liChilds.length < 2) {
           throw new Error("carousel: cannot find the ngRepeat attribute OR no childNodes detected");
         }
@@ -39,11 +40,11 @@ angular.module('angular-carousel')
         originalCollection = 'fakeArray';
         fakeArray = Array.prototype.slice.apply(liChilds);
       } else {
-        var exprMatch = repeatAttribute.value.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
-            originalItem = exprMatch[1],
+        exprMatch = repeatAttribute.value.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/);
+            originalItem = exprMatch[1];
             trackProperty = exprMatch[3] || '';
         originalCollection = exprMatch[2];
-        isBuffered = angular.isDefined(tAttrs['rnCarouselBuffered']);
+        isBuffered = angular.isDefined(tAttrs.rnCarouselBuffered);
 
           /* update the current ngRepeat expression and add a slice operator */
           repeatAttribute.value = originalItem + ' in carouselCollection.cards ' + trackProperty;
@@ -57,10 +58,10 @@ angular.module('angular-carousel')
             offset  = 0,                    // move offset
             minSwipePercentage = 0.2,       // minimum swipe required to trigger slide change
             containerWidth = 0,          // store width of the first slide
-            skipAnimation = true;
+            skipAnimation = true,carousel,container,collectionModel,collectionParams,initialIndex,indexModel,collectionReady,vendorPrefixes,indicator,lastMove,moveDelay;
 
         /* add a wrapper div that will hide the overflow */
-        var carousel = iElement.wrap("<div id='" + carouselId +"' class='rn-carousel-container'></div>"),
+        carousel = iElement.wrap("<div id='" + carouselId +"' class='rn-carousel-container'></div>");
             container = carousel.parent();
 
         if (fakeArray) {
@@ -70,7 +71,7 @@ angular.module('angular-carousel')
 
         function getTransformCoordinates(el) {
           var results = angular.element(el).css('transform').match(/translate3d\((-?\d+(?:px)?),\s*(-?\d+(?:px)?),\s*(-?\d+(?:px)?)\)/);
-          if(!results) return [0, 0, 0];
+          if(!results) {return [0, 0, 0];}
           return results.slice(1, 3);
         }
 
@@ -147,13 +148,13 @@ angular.module('angular-carousel')
           }
         }
 
-        var collectionModel = $parse(originalCollection);
-        var collectionParams = {};
+        collectionModel = $parse(originalCollection);
+        collectionParams = {};
 
         /* rn-carousel-index attribute data binding */
-        var initialIndex = 0;
+        initialIndex = 0;
         if (iAttrs.rnCarouselIndex) {
-            var indexModel = $parse(iAttrs.rnCarouselIndex);
+            indexModel = $parse(iAttrs.rnCarouselIndex);
             if (angular.isFunction(indexModel.assign)) {
               /* check if this property is assignable then watch it */
               scope.$watch('carouselCollection.index', function(newValue) {
@@ -185,16 +186,16 @@ angular.module('angular-carousel')
         scope.carouselCollection = CollectionManager.create(collectionParams);
 
         scope.$watch('carouselCollection.updated', function(newValue, oldValue) {
-          if (newValue) updateSlidePosition();
+          if (newValue) {updateSlidePosition();}
         });
 
-        var collectionReady = false;
+        collectionReady = false;
         scope.$watch(collectionModel, function(newValue, oldValue) {
           // update whole collection contents
           // reinitialise index
           scope.carouselCollection.setItems(newValue, collectionReady);
           collectionReady = true;
-          if (containerWidth===0) updateContainerWidth();
+          if (containerWidth===0)  {updateContainerWidth();}
           updateSlidePosition();
         });
 
@@ -203,12 +204,12 @@ angular.module('angular-carousel')
             // partial collection update, watch deeply so use carefully
             scope.carouselCollection.setItems(newValue, false);
             collectionReady = true;
-            if (containerWidth===0) updateContainerWidth();
+            if (containerWidth===0) {updateContainerWidth();}
             updateSlidePosition();
           }, true);
         }
 
-        var vendorPrefixes = ["webkit", "moz"];
+        vendorPrefixes = ["webkit", "moz"];
         function genCSSProperties(property, value) {
           /* cross browser CSS properties generator */
           var css = {};
@@ -221,9 +222,8 @@ angular.module('angular-carousel')
         function translateSlideProperty(offset, is3d) {
           if (is3d) {
             return genCSSProperties('transform', 'translate3d(' + offset + 'px,0,0)');
-          } else {
+          } 
             return genCSSProperties('transform', 'translate(' + offset + 'px,0)');
-          }
         }
 
         carousel[0].addEventListener('webkitTransitionEnd', transitionEndCallback, false);  // webkit
@@ -254,14 +254,14 @@ angular.module('angular-carousel')
 
         /* enable carousel indicator */
         if (angular.isDefined(iAttrs.rnCarouselIndicator)) {
-          var indicator = $compile("<div id='" + carouselId +"-indicator' index='carouselCollection.index' items='carouselCollection.items' data-rn-carousel-indicators class='rn-carousel-indicator'></div>")(scope);
+          indicator = $compile("<div id='" + carouselId +"-indicator' index='carouselCollection.index' items='carouselCollection.items' data-rn-carousel-indicators class='rn-carousel-indicator'></div>")(scope);
           container.append(indicator);
         }
 
         function updateSlidePosition(forceSkipAnimation) {
           /* trigger carousel position update */
           skipAnimation = !!forceSkipAnimation || skipAnimation;
-          if (containerWidth===0) updateContainerWidth();
+          if (containerWidth===0) {updateContainerWidth();}
           offset = scope.carouselCollection.getRelativeIndex() * -containerWidth;
           if (skipAnimation===true) {
               carousel.removeClass('rn-carousel-animate')
@@ -280,18 +280,18 @@ angular.module('angular-carousel')
         function swipeEnd(coords) {
             /* when movement ends, go to next slide or stay on the same */
             $document.unbind('mouseup', documentMouseUpEvent);
-            if (containerWidth===0) updateContainerWidth();
+            if (containerWidth===0) {updateContainerWidth();}
             if (swiping > 1) {
               var lastIndex = scope.carouselCollection.getLastIndex(),
                   position = scope.carouselCollection.position,
                   slideOffset = (offset < startOffset)?1:-1,
-                  tmpSlideIndex = Math.min(Math.max(0, position + slideOffset), lastIndex);
-              var delta = coords.x - startX;
+                  tmpSlideIndex = Math.min(Math.max(0, position + slideOffset), lastIndex),delta,changed;
+              delta = coords.x - startX;
               if (Math.abs(delta) <= containerWidth * minSwipePercentage) {
                 /* prevent swipe if not swipped enough */
                 tmpSlideIndex = position;
               }
-              var changed = (position !== tmpSlideIndex);
+              changed = (position !== tmpSlideIndex);
               /* reset slide position if same slide (watch not triggered) */
               if (!changed) {
                 scope.$apply(function() {
@@ -319,16 +319,16 @@ angular.module('angular-carousel')
           });
         }
         // move throttling
-        var lastMove = null,
+        lastMove = null;
             // todo: requestAnimationFrame instead
-            moveDelay = ($window.jasmine || $window.navigator.platform=='iPad')?0:50;
+            moveDelay = ($window.jasmine || $window.navigator.platform==='iPad')?0:50;
             
         $swipe.bind($(".em-slides"), {
           /* use angular $swipe service */
           start: function(coords) {
-        	  if(disableCarousel.getSwiping()){
-        	  return;
-        	  }
+  if(disableCarousel.getSwiping()){
+  return;
+  }
             /* capture initial event position */
             if (swiping === 0) {
               swiping = 1;
@@ -337,22 +337,22 @@ angular.module('angular-carousel')
             $document.bind('mouseup', documentMouseUpEvent);
           },
           move: function (coords) {
-            if (swiping===0) return;
-            var deltaX = coords.x - startX;
+            if (swiping===0) {return;}
+            var deltaX = coords.x - startX,now,lastIndex,position,ratio;
             if (swiping === 1 && deltaX !== 0) {
               swiping = 2;
               startOffset = offset;
             }
             else if (swiping === 2) {
-              var now = (new Date()).getTime();
-              if (lastMove && (now-lastMove) < moveDelay) return;
+              now = (new Date()).getTime();
+              if (lastMove && (now-lastMove) < moveDelay) {return;}
               lastMove = now;
-              var lastIndex = scope.carouselCollection.getLastIndex(),
+              lastIndex = scope.carouselCollection.getLastIndex();
                   position = scope.carouselCollection.position;
               /* ratio is used for the 'rubber band' effect */
-              var ratio = 1;
-              if ((position === 0 && coords.x > startX) || (position === lastIndex && coords.x < startX))
-                ratio = 3;
+              ratio = 1;
+              if ((position === 0 && coords.x > startX) || (position === lastIndex && coords.x < startX)){
+                ratio = 3;}
               /* follow cursor movement */
               offset = startOffset + deltaX / ratio;
               carousel.css(translateSlideProperty(offset, true))
@@ -393,11 +393,12 @@ angular.module('angular-carousel')
             cards: [],                 // bufered DOM collection
             updated: null,             // triggers DOM change
             debug: false
-        };
+        },i;
 
-        var i;
-        if(options) for(i in options) initial[i] = options[i];
-        for(i in initial) this[i] = initial[i];
+        
+        if(options)    {
+          for(i = 0; i<options.length; i++){ initial[i] = options[i];}}
+        for(i = 0; i<initial.length; i++) {this[i] = initial[i];}
 
         angular.extend(this, initial, options);
 
@@ -435,7 +436,7 @@ angular.module('angular-carousel')
         }
         // cap position
         position = Math.max(0, Math.min(position, this.getLastIndex()));
-        var cycled = false;
+        var cycled = false,realIndex;
         if (this.cycle) {
             if (position===0) {
                 // unshift
@@ -457,13 +458,13 @@ angular.module('angular-carousel')
 
         this.position = Math.max(0, Math.min(position, this.getLastIndex()));
 
-        var realIndex = (this.position - this.cycleOffset + this.length()) % this.length();
+        realIndex = (this.position - this.cycleOffset + this.length()) % this.length();
         this.index = Math.max(0, Math.min(realIndex, this.getLastIndex()));
 
         if (!delayedUpdate) {
             this.adjustBuffer();
         }
-        if (!cycled) this.updated = new Date();
+        if (!cycled) {this.updated = new Date();}
 
     };
 
@@ -514,7 +515,7 @@ angular.module('angular-carousel')
     CollectionManager.prototype.init = function() {
         //this.log('init', this);
         this.setBufferSize(this.isBuffered()?this.bufferSize:this.length());
-        if (this.length() > 0) this.goToIndex(this.index);
+        if (this.length() > 0) {this.goToIndex(this.index);}
     };
     CollectionManager.prototype.setItems = function(items, reset) {
         this.log('setItems', items, reset);
