@@ -16,6 +16,7 @@ import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import org.neo4j.graphdb.traversal.Evaluation
 import scala.collection.mutable.HashMap
+import org.neo4j.graphdb.Relationship
 
 trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   
@@ -63,25 +64,25 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
   
-  def authenticate(email: String, attemptedPassword: String, ownerAccess: Option[(UUID, Boolean)]): Response[SecurityContext] = {
+  def authenticate(email: String, attemptedPassword: String, ownerUUID: Option[UUID]): Response[SecurityContext] = {
     withTx{
       implicit neo4j => 
         for {
           user <- getUserNode(email).right
-          collectiveAccess <- Right(getCollectiveAccess(user, ownerAccess)).right
-          sc <- validatePassword(user, attemptedPassword, collectiveAccess).right
+          collectiveUUID <- Right(getCollectiveUUID(user, ownerUUID)).right
+          sc <- validatePassword(user, attemptedPassword, collectiveUUID).right
         } yield sc
     }
   }
 
-  def authenticate(token: String, ownerAccess: Option[(UUID, Boolean)]): Response[SecurityContext] = {
+  def authenticate(token: String, ownerUUID: Option[UUID]): Response[SecurityContext] = {
     withTx{
       implicit neo4j => 
         for {
           token <- Token.decryptToken(token).right
           user <- getUserNode(token).right
-          collectiveAccess <- Right(getCollectiveAccess(user, ownerAccess)).right
-          sc <- getSecurityContext(user, collectiveAccess).right
+          collectiveUUID <- Right(getCollectiveUUID(user, ownerUUID)).right
+          sc <- getSecurityContext(user, collectiveUUID).right
         } yield sc
     }
   }
@@ -159,10 +160,10 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     } yield sc
   }
   
-  private def validatePassword(user: Node, attemptedPassword: String, collectiveAccess: Option[(UUID, Boolean)]): Response[SecurityContext] = {
+  private def validatePassword(user: Node, attemptedPassword: String, collectiveUUID: Option[UUID]): Response[SecurityContext] = {
     for{
       validPassword <- validatePassword(attemptedPassword, getStoredPassword(user)).right
-      sc <- getSecurityContext(user, collectiveAccess).right
+      sc <- getSecurityContext(user, collectiveUUID).right
     } yield sc
   }
   
@@ -175,17 +176,17 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
     
-  private def getCollectiveAccess(user: Node, ownerAccess: Option[(UUID, Boolean)]): Option[(UUID, Boolean)] = {
-    if (ownerAccess.isDefined && (getUUID(user) == ownerAccess.get._1)) None
-    else ownerAccess
+  private def getCollectiveUUID(user: Node, ownerUUID: Option[UUID]): Option[UUID] = {
+    if (ownerUUID.isDefined && (getUUID(user) == ownerUUID.get)) None
+    else ownerUUID
   }
 
   private def getSecurityContext(user: Node): SecurityContext = {
     getCompleteSecurityContext(user, getUserType(user))
   }
   
-  private def getSecurityContext(user: Node, collectiveAccess: Option[(UUID, Boolean)]): Response[SecurityContext] = {
-    getLimitedSecurityContext(user, getUserType(user), collectiveAccess)
+  private def getSecurityContext(user: Node, collectiveUUID: Option[UUID]): Response[SecurityContext] = {
+    getLimitedSecurityContext(user, getUserType(user), collectiveUUID)
   }
   
   private def getUserType(user: Node): Byte = {
@@ -197,67 +198,63 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
 
   private def getCompleteSecurityContext(user: Node, userType: Byte): SecurityContext = {
     val traverser = collectivesTraversalDescription.traverse(user)
-    val relationshipList = traverser.relationships().toArray
-    
-    val collectives: Option[Map[UUID,(String, Byte)]] = {
-      if (relationshipList.isEmpty) None
-      else{
-        val collectiveAccessMap = new HashMap[UUID,(String, Byte)]
-        relationshipList foreach (relationship => {
-          val collective = relationship.getEndNode()
-          val title = collective.getProperty("title").asInstanceOf[String]
-          val uuid = getUUID(collective)
-          relationship.getType().name() match {
-            case SecurityRelationship.IS_CREATOR.relationshipName => 
-              collectiveAccessMap.put(uuid, (title, SecurityContext.CREATOR))
-            case SecurityRelationship.CAN_READ.relationshipName =>
-              collectiveAccessMap.put(uuid, (title, SecurityContext.READ))
-            case SecurityRelationship.CAN_WRITE.relationshipName =>
-              collectiveAccessMap.put(uuid, (title, SecurityContext.WRITE))
-          }
-        })
-        Some(collectiveAccessMap.toMap)
-      }
-    }
-    
+    val relationshipList = traverser.relationships().toList
     val sc = getSecurityContextSkeleton(user, userType).copy(
-             collectives = collectives)
+               collectives = getCollectiveAccess(relationshipList))
     sc.user = user
     sc
   }
   
-  private def getLimitedSecurityContext(user: Node, userType: Byte, collectiveAccess: Option[(UUID, Boolean)]):
+  private def getLimitedSecurityContext(user: Node, userType: Byte, collectiveUUID: Option[UUID]):
                   Response[SecurityContext] = {
-    if (collectiveAccess.isDefined){
-      // Check that the user has the needed right to the collective
-      val traverser = collectivesTraversalDescription
-                      .evaluator(UUIDEvaluator(collectiveAccess.get._1))
-                      .traverse(user)
-      val relationshipList = traverser.relationships().toArray
-      if (relationshipList.isEmpty){ 
-        return fail(INVALID_PARAMETER, "No access right to collective " + collectiveAccess.get._1 + 
-                                       " or collective does not exist")
+    val collectives: Option[Map[UUID,(String, Byte)]] = {
+      if (collectiveUUID.isEmpty){
+        None
       }else{
-        if (collectiveAccess.get._2){
-          // Write access required
-          var foundWriteAccess: Boolean = false
-          relationshipList foreach (relationship => {
-            relationship.getType().name() match {
-              case SecurityRelationship.IS_CREATOR.relationshipName => 
-                foundWriteAccess = true
-              case SecurityRelationship.CAN_WRITE.relationshipName =>
-                foundWriteAccess = true
-            }
-          })
-          if (!foundWriteAccess){
-            return fail(INVALID_PARAMETER, "No write access collective " + collectiveAccess.get._1)
-          }
+        // Get access right for the collective
+        val traverser = collectivesTraversalDescription
+                        .evaluator(UUIDEvaluator(collectiveUUID.get))
+                        .traverse(user)
+        val relationshipList = traverser.relationships().toList
+        if (relationshipList.isEmpty){ 
+          return fail(INVALID_PARAMETER, "No access right to collective " + collectiveUUID.get + 
+                                         " or collective does not exist")
+        }else{
+          getCollectiveAccess(relationshipList)
         }
       }
     }
-    val sc = getSecurityContextSkeleton(user, userType)
+    val sc = getSecurityContextSkeleton(user, userType).copy(
+      collectives = collectives)
     sc.user = user
     Right(sc)
+  }
+  
+  private def getCollectiveAccess(relationshipList: List[Relationship]): Option[Map[UUID,(String, Byte)]] = {
+    if (relationshipList.isEmpty) None
+    else{
+      val collectiveAccessMap = new HashMap[UUID,(String, Byte)]
+      relationshipList foreach (relationship => {
+        val collective = relationship.getEndNode()
+        val title = collective.getProperty("title").asInstanceOf[String]
+        val uuid = getUUID(collective)
+        relationship.getType().name() match {
+          case SecurityRelationship.IS_CREATOR.relationshipName => 
+            collectiveAccessMap.put(uuid, (title, SecurityContext.CREATOR))
+          case SecurityRelationship.CAN_READ.relationshipName => {
+            if (!collectiveAccessMap.contains(uuid))
+              collectiveAccessMap.put(uuid, (title, SecurityContext.READ))
+          }
+          case SecurityRelationship.CAN_WRITE.relationshipName => {
+            if (collectiveAccessMap.contains(uuid))
+              collectiveAccessMap.update(uuid, (title, SecurityContext.WRITE))
+            else
+              collectiveAccessMap.put(uuid, (title, SecurityContext.WRITE))
+          }
+        }
+      })
+      Some(collectiveAccessMap.toMap)
+    }
   }
 
   private def getSecurityContextSkeleton(user: Node, userType: Byte): SecurityContext = {
