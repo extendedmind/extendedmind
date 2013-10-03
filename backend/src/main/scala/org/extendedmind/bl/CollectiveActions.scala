@@ -21,13 +21,23 @@ trait CollectiveActions {
   def db: GraphDatabase
   def settings: Settings
     
-  def putNewCollective(collective: Collective, userUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putNewCollective")
+  def putNewCollective(creatorUUID: UUID, collective: Collective)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putNewCollective: creator {}", creatorUUID)
    
     if (settings.commonCollectives) 
       log.warning("CRITICAL: Making collective {} a common collective to all "
                  +"users because extendedmind.security.commonCollectives is set to true", collective.title)
-    db.putNewCollective(collective, userUUID, settings.commonCollectives)
+    db.putNewCollective(creatorUUID, collective, settings.commonCollectives)
+  }
+  
+  def putExistingCollective(collectiveUUID: UUID, collective: Collective)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putExistingCollective: collective {}", collectiveUUID)
+    db.putExistingCollective(collectiveUUID, collective)
+  }
+  
+  def getCollective(collectiveUUID: UUID)(implicit log: LoggingContext): Response[Collective] = {
+    log.info("getCollective: collective {}", collectiveUUID)
+    db.getCollective(collectiveUUID)
   }
 }
 

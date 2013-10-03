@@ -26,6 +26,7 @@ trait API extends HttpService {
   // Collectives
   val putNewCollective = put & path("collective".r)
   val putExistingCollective = put & path("collective" / JavaUUID)
+  val getCollective = get & path("collective" / JavaUUID)
 
   // Items
   val getItems = get & path(JavaUUID / "items")

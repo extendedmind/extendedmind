@@ -530,7 +530,9 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         }
       }
     }
-    it("should successfully create new collective with PUT to /collective") {
+    it("should successfully create new collective with PUT to /collective"
+         + "update it with PUT to /collective/[collectiveUUID] " 
+         + "and get it back with GET to /collective/[collectiveUUID]") {    
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val testCollective = Collective("Test", None)
       Put("/collective",
@@ -548,6 +550,26 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         reauthenticateResponse.collectives should not be None
         reauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._1 should equal(testCollective.title)
         reauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._2 should equal(0)
+        
+        // Update collective
+        Put("/collective/" + putCollectiveResponse.uuid.get,
+           marshal(testCollective.copy(description = Some("test description"))).right.get
+              ) ~> addHeader("Content-Type", "application/json"
+              ) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)
+              ) ~> emRoute ~> check {
+          writeJsonOutput("putExistingCollectiveResponse", entityAs[String])
+          val putExistingCollectiveResponse = entityAs[SetResult]
+          putExistingCollectiveResponse.uuid should be (None)
+          assert(putExistingCollectiveResponse.modified > putCollectiveResponse.modified)
+          // Get it back
+          Get("/collective/" + putCollectiveResponse.uuid.get
+              ) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)
+              ) ~> emRoute ~> check {
+            val collectiveResponse = entityAs[Collective]
+            writeJsonOutput("collectiveResponse", entityAs[String])
+            collectiveResponse.description.get should be("test description")
+          }
+        }
       }
     } 
   }

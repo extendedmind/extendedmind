@@ -154,7 +154,7 @@ trait Service extends API with Injectable {
           entity(as[Collective]) { collective =>
             complete {
               Future[SetResult] {
-                collectiveActions.putNewCollective(collective, securityContext.userUUID) match {
+                collectiveActions.putNewCollective(securityContext.userUUID, collective) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -164,7 +164,39 @@ trait Service extends API with Injectable {
         }
       }
     }~
-    getItems{ ownerUUID =>
+    putExistingCollective { collectiveUUID =>
+      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        // Only admins can update collectives for now
+        authorize(adminAccess(securityContext)){
+          entity(as[Collective]) { collective =>
+            complete {
+              Future[SetResult] {
+                collectiveActions.putExistingCollective(collectiveUUID, collective) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      }
+    }~
+    getCollective { collectiveUUID =>
+      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        // Only admins can get collectives for now
+        authorize(adminAccess(securityContext)){
+          complete{
+            Future[Collective] {
+              collectiveActions.getCollective(collectiveUUID) match {
+                case Right(collective) => collective
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      }      
+    } ~
+    getItems { ownerUUID =>
       authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
         authorize(readAccess(ownerUUID, securityContext)){
 		      complete {

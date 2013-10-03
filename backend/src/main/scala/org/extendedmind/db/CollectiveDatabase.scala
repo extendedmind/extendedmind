@@ -22,39 +22,68 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
 
   // PUBLIC
 
-  def putNewCollective(collective: Collective, userUUID: UUID, commonCollective: Boolean): Response[SetResult] = {
+  def putNewCollective(creatorUUID: UUID, collective: Collective, commonCollective: Boolean): Response[SetResult] = {
     for{
-      collectiveNode <- createCollective(collective, userUUID, commonCollective).right
+      collectiveNode <- createCollective(creatorUUID, collective, commonCollective).right
       result <- Right(getSetResult(collectiveNode, true)).right
     }yield result
   }
- 
+  
+  def putExistingCollective(collectiveUUID: UUID, collective: Collective): Response[SetResult] = {
+    for {
+      collectiveNode <- putExistingCollectiveNode(collectiveUUID, collective).right
+      result <- Right(getSetResult(collectiveNode, false)).right
+    } yield result
+  }
+  
+  def getCollective(collectiveUUID: UUID): Response[Collective] = {
+    withTx {
+      implicit neo =>
+        for {
+          collectiveNode <- getNode(collectiveUUID, OwnerLabel.COLLECTIVE).right
+          collective <- toCaseClass[Collective](collectiveNode).right
+        } yield collective
+    }
+  }
+
   // PRIVATE
   
-  protected def createCollective(collective: Collective, userUUID: UUID, commonCollective: Boolean): Response[Node] = {
+  protected def createCollective(creatorUUID: UUID, collective: Collective, commonCollective: Boolean): Response[Node] = {
     withTx{
       implicit neo4j =>
         for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
-          collectiveNode <- createCollectiveNode(collective, userNode, commonCollective).right
+          creatorNode <- getNode(creatorUUID, OwnerLabel.USER).right
+          collectiveNode <- createCollectiveNode(creatorNode, collective, commonCollective).right
         } yield collectiveNode
     }
   }
   
-  protected def createCollectiveNode(collective: Collective, userNode: Node, commonCollective: Boolean)
+  protected def createCollectiveNode(creatorNode: Node, collective: Collective, commonCollective: Boolean)
                (implicit neo4j: DatabaseService): Response[Node] = {
     val collectiveNode = createNode(collective, MainLabel.OWNER, OwnerLabel.COLLECTIVE)
-    userNode --> SecurityRelationship.IS_CREATOR --> collectiveNode;
+    creatorNode --> SecurityRelationship.IS_CREATOR --> collectiveNode;
 
     if (commonCollective){
       collectiveNode.setProperty("common", true)
       // Give all existing users read access to to common collective
       val userIterator = findNodesByLabel(OwnerLabel.USER);
       userIterator.foreach(user => {
-        if (user != userNode)
+        if (user != creatorNode)
           user --> SecurityRelationship.CAN_READ --> collectiveNode;
       })
     } 
     Right(collectiveNode)
-  } 
+  }
+  
+  protected def putExistingCollectiveNode(collectiveUUID: UUID, collective: Collective): 
+        Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          collectiveNode <- getNode(collectiveUUID, OwnerLabel.COLLECTIVE).right
+          collectiveNode <- updateNode(collectiveNode, collective).right
+        } yield collectiveNode
+    }
+  }
+    
 }
