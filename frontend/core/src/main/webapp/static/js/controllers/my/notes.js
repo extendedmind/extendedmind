@@ -38,6 +38,7 @@
         }
       });
 
+      $scope.showNoteContent = true;
       $scope.notesListFilter = true;
 
       $scope.setActiveItem = function(item) {

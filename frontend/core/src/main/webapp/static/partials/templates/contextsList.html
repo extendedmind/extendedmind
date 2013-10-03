@@ -1,7 +1,13 @@
-<ul>
-  <li ng-repeat="context in tags">
+<div>
 
-    <span ng-click="setActiveItem(context)"><a class="text-muted" href="my/tasks/context/{{context.uuid}}">@{{context.title}}</a></span>
+  <div ng-transclude></div>
 
-  </li>
-</ul>
+  <ul>
+    <li ng-repeat="context in tags">
+
+      <span ng-click="setActiveItem(context)"><a class="text-muted" href="my/tasks/context/{{context.uuid}}">@{{context.title}}</a></span>
+
+    </li>
+  </ul>
+
+</div>
