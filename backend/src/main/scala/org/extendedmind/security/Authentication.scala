@@ -24,14 +24,17 @@ import spray.routing._
 import DefaultJsonProtocol._
 import java.lang.RuntimeException
 
-case class UserPassRealm(user: String, pass: String, realm: String)
+import Authentication._
+import java.util.UUID
+
+case class UserPassRealm(user: String, pass: String, realm: String, ownerUUID: Option[UUID])
 case class UserPassRemember(user: String, pass: String, payload: Option[AuthenticatePayload])
 case class AuthenticatePayload(rememberMe: Boolean)
 
 object Authentication{
   type UserPassRealmAuthenticator[T] = Option[UserPassRealm] => Future[Option[T]]
   type UserPassRememberAuthenticator[T] = Option[UserPassRemember] => Future[Option[T]]
-    
+
   def securityContextResponseToOption(response: Response[SecurityContext]): Option[SecurityContext] = {
     response match {
       case Right(sc) => Some(sc)
@@ -40,20 +43,21 @@ object Authentication{
   }
 }
 
-import Authentication._
-
 // Normal authentication
 
 /**
  * The RealmHttpAuthenticator implements HTTP Basic Auth with realm included
  */
-class RealmHttpAuthenticator[U](val realm: String, val userPassAuthenticator: UserPassRealmAuthenticator[U])(implicit val executionContext: ExecutionContext)
+class RealmHttpAuthenticator[U](val realm: String, 
+                                val userPassAuthenticator: UserPassRealmAuthenticator[U], 
+                                val ownerUUID: Option[UUID])
+    (implicit val executionContext: ExecutionContext)
     extends HttpAuthenticator[U] {
   
   def authenticate(credentials: Option[HttpCredentials], ctx: RequestContext) = {
     userPassAuthenticator {
       credentials.flatMap {
-        case BasicHttpCredentials(user, pass) => Some(UserPassRealm(user, pass, realm))
+        case BasicHttpCredentials(user, pass) => Some(UserPassRealm(user, pass, realm, ownerUUID))
         case _                                => None
       }
     }
@@ -69,11 +73,11 @@ trait ExtendedMindUserPassAuthenticator extends UserPassRealmAuthenticator[Secur
 
   def apply(userPassRealm: Option[UserPassRealm]) = Promise.successful(
     userPassRealm match {
-      case Some(UserPassRealm(user, pass, realm)) => {
+      case Some(UserPassRealm(user, pass, realm, ownerUUID)) => {
         if (user == "token") {
-          securityContextResponseToOption(db.authenticate(pass))
+          securityContextResponseToOption(db.authenticate(pass, ownerUUID))
         } else if (realm == "secure") {
-          securityContextResponseToOption(db.authenticate(user, pass))
+          securityContextResponseToOption(db.authenticate(user, pass, ownerUUID))
         } else {
           // It is not possible to use username/password for other than "secure" realm methods
           None
@@ -146,7 +150,7 @@ object ExtendedAuth {
               (implicit ec: ExecutionContext): AuthenticateHttpAuthenticator[T] =
     new AuthenticateHttpAuthenticator[T]("authenticate", authenticator)
 
- def apply[T](authenticator: UserPassRealmAuthenticator[T], realm: String)
+ def apply[T](authenticator: UserPassRealmAuthenticator[T], realm: String, ownerUUID: Option[UUID])
               (implicit ec: ExecutionContext): RealmHttpAuthenticator[T] =
-    new RealmHttpAuthenticator[T](realm, authenticator)
+    new RealmHttpAuthenticator[T](realm, authenticator, ownerUUID)
 }

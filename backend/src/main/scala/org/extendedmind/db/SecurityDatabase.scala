@@ -1,10 +1,8 @@
 package org.extendedmind.db
 
 import java.util.UUID
-
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
-
 import org.apache.commons.codec.binary.Base64
 import org.extendedmind.security._
 import org.extendedmind._
@@ -16,6 +14,9 @@ import org.neo4j.graphdb.traversal.Evaluators
 import org.neo4j.graphdb.traversal.TraversalDescription
 import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
+import org.neo4j.graphdb.traversal.Evaluation
+import scala.collection.mutable.HashMap
+import org.neo4j.graphdb.Relationship
 
 trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   
@@ -30,15 +31,10 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     withTx {
       implicit neo =>
         for {
-          sc <- authenticate(email: String, attemptedPassword: String).right
-          token <- Right(Token(sc.userUUID)).right
-          saved <- Right(saveToken(sc.user, token, payload)).right
-          sc <- Right(SecurityContext(
-                      sc.userUUID,
-                      sc.email,
-                      sc.userType,
-                      Some(Token.encryptToken(token)),
-                      None)).right
+          scWithoutToken <- authenticate(email, attemptedPassword).right
+          token <- Right(Token(scWithoutToken.userUUID)).right
+          saved <- Right(saveToken(scWithoutToken.user, token, payload)).right
+          sc <- Right(scWithoutToken.copy(token = Some(Token.encryptToken(token)))).right
           } yield sc
     }
   }
@@ -67,14 +63,26 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         } yield sc
     }
   }
+  
+  def authenticate(email: String, attemptedPassword: String, ownerUUID: Option[UUID]): Response[SecurityContext] = {
+    withTx{
+      implicit neo4j => 
+        for {
+          user <- getUserNode(email).right
+          collectiveUUID <- Right(getCollectiveUUID(user, ownerUUID)).right
+          sc <- validatePassword(user, attemptedPassword, collectiveUUID).right
+        } yield sc
+    }
+  }
 
-  def authenticate(token: String): Response[SecurityContext] = {
+  def authenticate(token: String, ownerUUID: Option[UUID]): Response[SecurityContext] = {
     withTx{
       implicit neo4j => 
         for {
           token <- Token.decryptToken(token).right
           user <- getUserNode(token).right
-          sc <- Right(getSecurityContext(user)).right
+          collectiveUUID <- Right(getCollectiveUUID(user, ownerUUID)).right
+          sc <- getSecurityContext(user, collectiveUUID).right
         } yield sc
     }
   }
@@ -146,29 +154,126 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   }
 
   private def validatePassword(user: Node, attemptedPassword: String): Response[SecurityContext] = {
+    for{
+      validPassword <- validatePassword(attemptedPassword, getStoredPassword(user)).right
+      sc <- Right(getSecurityContext(user)).right
+    } yield sc
+  }
+  
+  private def validatePassword(user: Node, attemptedPassword: String, collectiveUUID: Option[UUID]): Response[SecurityContext] = {
+    for{
+      validPassword <- validatePassword(attemptedPassword, getStoredPassword(user)).right
+      sc <- getSecurityContext(user, collectiveUUID).right
+    } yield sc
+  }
+  
+  private def validatePassword(attemptedPassword: String, storedPassword: Password): Response[Boolean] = {
     // Check password
-    if (PasswordService.authenticate(attemptedPassword, getStoredPassword(user))) {
-      Right(getSecurityContext(user))
+    if (PasswordService.authenticate(attemptedPassword, storedPassword)) {
+      Right(true)
     } else {
       fail(INVALID_PARAMETER, "Invalid password")
     }
   }
-
-  private def getSecurityContext(user: Node): SecurityContext = {
-    if (user.getLabels().asScala.find(p => p.name() == "ADMIN").isDefined)
-      getSecurityContext(user, Token.ADMIN)
-    else
-      getSecurityContext(user, Token.NORMAL)
+    
+  private def getCollectiveUUID(user: Node, ownerUUID: Option[UUID]): Option[UUID] = {
+    if (ownerUUID.isDefined && (getUUID(user) == ownerUUID.get)) None
+    else ownerUUID
   }
 
-  private def getSecurityContext(user: Node, userType: Byte): SecurityContext = {
-    val sc: SecurityContext = SecurityContext(
-      UUIDUtils.getUUID(user.getProperty("uuid").asInstanceOf[String]),
+  private def getSecurityContext(user: Node): SecurityContext = {
+    getCompleteSecurityContext(user, getUserType(user))
+  }
+  
+  private def getSecurityContext(user: Node, collectiveUUID: Option[UUID]): Response[SecurityContext] = {
+    getLimitedSecurityContext(user, getUserType(user), collectiveUUID)
+  }
+  
+  private def getUserType(user: Node): Byte = {
+    if (user.getLabels().asScala.find(p => p.name() == "ADMIN").isDefined)
+      Token.ADMIN
+    else
+      Token.NORMAL
+  }
+
+  private def getCompleteSecurityContext(user: Node, userType: Byte): SecurityContext = {
+    val traverser = collectivesTraversalDescription.traverse(user)
+    val relationshipList = traverser.relationships().toList
+    val sc = getSecurityContextSkeleton(user, userType).copy(
+               collectives = getCollectiveAccess(relationshipList))
+    sc.user = user
+    sc
+  }
+  
+  private def getLimitedSecurityContext(user: Node, userType: Byte, collectiveUUID: Option[UUID]):
+                  Response[SecurityContext] = {
+    val collectives: Option[Map[UUID,(String, Byte)]] = {
+      if (collectiveUUID.isEmpty){
+        None
+      }else{
+        // Get access right for the collective
+        val traverser = collectivesTraversalDescription
+                        .evaluator(UUIDEvaluator(collectiveUUID.get))
+                        .traverse(user)
+        val relationshipList = traverser.relationships().toList
+        if (relationshipList.isEmpty){ 
+          return fail(INVALID_PARAMETER, "No access right to collective " + collectiveUUID.get + 
+                                         " or collective does not exist")
+        }else{
+          getCollectiveAccess(relationshipList)
+        }
+      }
+    }
+    val sc = getSecurityContextSkeleton(user, userType).copy(
+      collectives = collectives)
+    sc.user = user
+    Right(sc)
+  }
+  
+  private def getCollectiveAccess(relationshipList: List[Relationship]): Option[Map[UUID,(String, Byte)]] = {
+    if (relationshipList.isEmpty) None
+    else{
+      val collectiveAccessMap = new HashMap[UUID,(String, Byte)]
+      relationshipList foreach (relationship => {
+        val collective = relationship.getEndNode()
+        val title = collective.getProperty("title").asInstanceOf[String]
+        val uuid = getUUID(collective)
+        relationship.getType().name() match {
+          case SecurityRelationship.IS_CREATOR.relationshipName => 
+            collectiveAccessMap.put(uuid, (title, SecurityContext.CREATOR))
+          case SecurityRelationship.CAN_READ.relationshipName => {
+            if (!collectiveAccessMap.contains(uuid))
+              collectiveAccessMap.put(uuid, (title, SecurityContext.READ))
+          }
+          case SecurityRelationship.CAN_READ_WRITE.relationshipName => {
+            if (collectiveAccessMap.contains(uuid))
+              collectiveAccessMap.update(uuid, (title, SecurityContext.READ_WRITE))
+            else
+              collectiveAccessMap.put(uuid, (title, SecurityContext.READ_WRITE))
+          }
+        }
+      })
+      Some(collectiveAccessMap.toMap)
+    }
+  }
+
+  private def getSecurityContextSkeleton(user: Node, userType: Byte): SecurityContext = {
+    SecurityContext(
+      getUUID(user),
       user.getProperty("email").asInstanceOf[String],
       userType,
       None,
-      None) // TODO: Owning entities, aggregates with True value = rw, False = r
-    sc.user = user
-    sc
+      None)
+  }
+  
+  private def collectivesTraversalDescription: TraversalDescription = {
+    Traversal.description()
+          .depthFirst()
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_CREATOR.name), Direction.OUTGOING)
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ.name), Direction.OUTGOING)
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ_WRITE.name), Direction.OUTGOING)
+          .evaluator(Evaluators.excludeStartPosition())
+          .evaluator(LabelEvaluator(List(OwnerLabel.COLLECTIVE)))
+          .evaluator(Evaluators.toDepth(1)) 
   }
 }

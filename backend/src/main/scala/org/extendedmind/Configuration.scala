@@ -37,6 +37,7 @@ class Settings(config: Config) extends Extension {
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
   val signUp = config.getBoolean("extendedmind.security.signUp")
   val adminSignUp = config.getBoolean("extendedmind.security.adminSignUp")
+  val commonCollectives = config.getBoolean("extendedmind.security.commonCollectives")
   val mailgunDomain = config.getString("extendedmind.email.mailgun.domain")
   val mailgunApiKey = config.getString("extendedmind.email.mailgun.apiKey")
   // Email templates
@@ -66,6 +67,7 @@ class Configuration(settings: Settings, actorRefFactory: ActorRefFactory) extend
   bind [MailgunClient] to new MailgunClientImpl
   bind [SecurityActions] to new SecurityActionsImpl
   bind [UserActions] to new UserActionsImpl
+  bind [CollectiveActions] to new CollectiveActionsImpl
   bind [ItemActions] to new ItemActionsImpl
   bind [TaskActions] to new TaskActionsImpl
   bind [NoteActions] to new NoteActionsImpl

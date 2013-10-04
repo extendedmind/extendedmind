@@ -2,8 +2,8 @@ package org.extendedmind.db.test
 
 import org.extendedmind.test._
 import org.extendedmind.test.TestGraphDatabase._
-
 import org.extendedmind.domain._
+import org.extendedmind.security.SecurityContext
 
 class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
 	
@@ -79,5 +79,44 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
       }
     }
   }
+  describe("SecurityDatabase"){
+     it("should get the right collectives with authenticate"){
+      db.authenticate(TIMO_EMAIL, TIMO_PASSWORD) match {
+        case Right(securityContext) => {
+          assert(securityContext.collectives.get.size === 2)
+          val nameSet = getCollectiveAccess(securityContext)
+          assert(nameSet.contains(("extended mind", 0)))
+          assert(nameSet.contains(("extended mind technologies", 0)))
+        }
+        case Left(e) => {
+          fail("Could not authenticate as Timo")
+        }
+      }
+      db.authenticate(LAURI_EMAIL, LAURI_PASSWORD) match {
+        case Right(securityContext) => {
+          assert(securityContext.collectives.get.size === 2)
+          val nameSet = getCollectiveAccess(securityContext)
+          assert(nameSet.contains(("extended mind", 1)))
+          assert(nameSet.contains(("extended mind technologies", 2)))
+        }
+        case Left(e) => {
+          fail("Could not authenticate as Lauri")
+        }
+      }
+      db.authenticate(INFO_EMAIL, INFO_PASSWORD) match {
+        case Right(securityContext) => {
+          assert(securityContext.collectives.get.size === 1)
+          val nameSet = getCollectiveAccess(securityContext)
+          assert(nameSet.contains(("extended mind", 1)))
+        }
+        case Left(e) => {
+          fail("Could not authenticate as info")
+        }
+      }
+    }
+  }
   
+  private def getCollectiveAccess(securityContext: SecurityContext): Set[(String, Byte)] = {
+    securityContext.collectives.get.map(collectiveAccess => collectiveAccess._2).toSet
+  }
 }
