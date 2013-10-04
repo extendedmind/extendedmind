@@ -192,11 +192,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <include>lib/angularjs/angular.js</include>
             <include>lib/angularjs/angular-route.js</include>
             <include>lib/angularjs/angular-mocks.js</include>
-            <include>lib/angular-carousel/dist/angular-carousel.js</include>
-            <include>lib/angular-carousel/dist/angular-mobile.js</include>
             <include>lib/angularjs/angular-animate.js</include>
             <include>lib/angularjs/angular-touch.js</include>
-            <include>lib/angular-ui/ui-bootstrap-tpls-0.6.0.min.js</include>
             <include>js/*.js</include>
             <include>js/**/*.js</include>
             <include>mockHelpers.js</include>
