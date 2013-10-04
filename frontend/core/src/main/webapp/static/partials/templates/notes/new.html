@@ -1,38 +1,22 @@
-<form class="form-horizontal" role="form" name="addTask">
+<form class="form-horizontal" role="form" name="addNote">
 
   <div class="form-group">
-    <label class="sr-only" for="newTaskTitle" class="col-lg-2 control-label">title</label>
+    <label class="sr-only" for="newNoteTitle">title</label>
     <div class="col-lg-10">
-      <input type="text" class="form-control" id="newTaskTitle" ng-model="newTask.title" autofocus="autofocus" placeholder="title..." required>
+      <input type="text" class="form-control" id="newNoteTitle" ng-model="newNote.title" autofocus="autofocus" placeholder="title..." required>
     </div>
   </div>
 
   <div class="form-group">
-    <label class="sr-only" for="newTaskDue" class="col-lg-2 control-label">date</label>
+    <label class="sr-only" for="newNoteContent">content</label>
     <div class="col-lg-10">
-      <input type="date" class="form-control" id="newTaskDue" ng-model="newTask.due">
+      <textarea class="form-control" id="newNoteContent" ng-model="newNote.content" placeholder="content..."></textarea>
     </div>
   </div>
 
   <div class="form-group">
-    <label class="sr-only" for="newTaskParent" class="col-lg-2 control-label">parent</label>
     <div class="col-lg-10">
-      <select class="form-control" id="newTaskParent" ng-model="parentTask" ng-options="project.title for project in projects">
-        <option value="">select list</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <label class="sr-only" for="newTaskDescription" class="col-lg-2 control-label">description</label>
-    <div class="col-lg-10">
-      <textarea class="form-control" id="newTaskDescription" ng-model="newTask.description" placeholder="description..."></textarea>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <div class="col-lg-offset-2 col-lg-10">
-      <button type="submit" class="btn btn-default" ng-disabled="!addTask.$valid" ng-click="addNewTask()">
+      <button type="submit" class="btn btn-default" ng-disabled="!addNote.$valid" ng-click="addNewNote()">
         add
       </button>
     </div>

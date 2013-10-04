@@ -18,9 +18,9 @@
       }, function(error) {
       });
 
-      $scope.addNewNote = function(task) {
+      $scope.addNewNote = function() {
 
-        notesRequest.putTask($scope.newNote, function(putNoteResponse) {
+        notesRequest.putNote($scope.newNote, function(putNoteResponse) {
 
           notesResponse.putNoteContent($scope.newNote, putNoteResponse);
           notesArray.putNewNote($scope.newNote);
