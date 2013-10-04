@@ -3,9 +3,9 @@
 
 ( function() {'use strict';
 
-    angular.module('angular-carousel', ['ngTouch']);
+    angular.module('em.carousel', ['ngTouch']);
 
-    angular.module('angular-carousel').directive('emCarousel', ['disableCarousel', '$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager',
+    angular.module('em.carousel').directive('emCarousel', ['disableCarousel', '$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager',
     function(disableCarousel, $rootScope, $compile, $parse, $swipe, $document, $window, CollectionManager) {
       /* track number of carousel instances */
       var carousels = 0;
