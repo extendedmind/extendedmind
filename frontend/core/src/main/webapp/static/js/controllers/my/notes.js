@@ -38,6 +38,10 @@
         }
       });
 
+      $scope.addNew = function() {
+        $location.path('/my/notes/new/');
+      };
+
       $scope.showNoteContent = true;
       $scope.notesListFilter = true;
 
