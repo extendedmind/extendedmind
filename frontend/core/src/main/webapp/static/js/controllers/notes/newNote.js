@@ -2,8 +2,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NewNoteController', ['$location', '$routeParams', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'notesArray', 'notesRequest', 'notesResponse', 'tagsArray',
-    function($location, $routeParams, $scope, activeItem, errorHandler, itemsArray, itemsRequest, notesArray, notesRequest, notesResponse, tagsArray) {
+    angular.module('em.app').controller('NewNoteController', ['$location', '$routeParams', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'notesArray', 'notesRequest', 'notesResponse',
+    function($location, $routeParams, $scope, activeItem, errorHandler, itemsArray, itemsRequest, notesArray, notesRequest, notesResponse) {
 
       $scope.errorHandler = errorHandler;
 
@@ -11,9 +11,6 @@
 
         itemsArray.setItems(itemsResponse.items);
         notesArray.setNotes(itemsResponse.notes);
-        tagsArray.setTags(itemsResponse.tags);
-
-        $scope.newTask = itemsArray.getItemByUuid(itemsArray.getItems(), $routeParams.uuid);
 
       }, function(error) {
       });
