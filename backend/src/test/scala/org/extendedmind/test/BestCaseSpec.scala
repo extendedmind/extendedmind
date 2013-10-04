@@ -51,7 +51,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
   
   describe("Extended Mind Backend"){
     it("should create an administrator with POST to /signup because adminSignUp is set to true"){
-      val signUp = SignUp("info@ext.md", "infopwd")
+      val signUp = SignUp("test@ext.md", "infopwd")
       Post("/signup",
           marshal(signUp).right.get
           ) ~> emRoute ~> check {
