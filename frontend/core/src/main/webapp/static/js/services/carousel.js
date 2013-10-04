@@ -3,7 +3,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.carousel').service('CollectionManager', [
+    angular.module('em.services').service('CollectionManager', [
     function() {
 
       function CollectionManager(options) {

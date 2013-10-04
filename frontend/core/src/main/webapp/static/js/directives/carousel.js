@@ -3,7 +3,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.carousel').directive('emCarousel', ['disableCarousel', '$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager',
+    angular.module('em.directives').directive('emCarousel', ['disableCarousel', '$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager',
     function(disableCarousel, $rootScope, $compile, $parse, $swipe, $document, $window, CollectionManager) {
       /* track number of carousel instances */
       var carousels = 0;

@@ -2,10 +2,9 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'em.carousel', 'em.directives', 'em.filters', 'em.services']);
+    angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'em.directives', 'em.filters', 'em.services']);
     angular.module('em.directives', []);
     angular.module('em.filters', []);
-    angular.module('em.carousel', []);
     angular.module('em.services', ['em.base64']);
 
     angular.module('em.app').config(['$locationProvider', '$routeProvider',
