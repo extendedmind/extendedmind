@@ -36,6 +36,7 @@
 
       }
 
+
       CollectionManager.prototype.log = function() {
         if (this.debug) {
           console.log.apply(console, arguments);
