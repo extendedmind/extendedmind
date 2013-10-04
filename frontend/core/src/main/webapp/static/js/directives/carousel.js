@@ -5,7 +5,7 @@
 
     angular.module('angular-carousel', ['ngTouch']);
 
-    angular.module('angular-carousel').directive('rnCarousel', ['disableCarousel', '$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager',
+    angular.module('angular-carousel').directive('emCarousel', ['disableCarousel', '$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager',
     function(disableCarousel, $rootScope, $compile, $parse, $swipe, $document, $window, CollectionManager) {
       /* track number of carousel instances */
       var carousels = 0;
@@ -15,7 +15,7 @@
         scope : true,
         compile : function(tElement, tAttrs) {
 
-          tElement.addClass('rn-carousel-slides');
+          tElement.addClass('em-carousel-slides');
 
           /* extract the ngRepeat expression from the first li attribute
            this expression will be used to update the carousel
@@ -44,14 +44,14 @@
             originalItem = exprMatch[1];
             trackProperty = exprMatch[3] || '';
             originalCollection = exprMatch[2];
-            isBuffered = angular.isDefined(tAttrs.rnCarouselBuffered);
+            isBuffered = angular.isDefined(tAttrs.emCarouselBuffered);
 
             /* update the current ngRepeat expression and add a slice operator */
             repeatAttribute.value = originalItem + ' in carouselCollection.cards ' + trackProperty;
           }
           return function(scope, iElement, iAttrs, controller) {
             carousels++;
-            var carouselId = 'rn-carousel-' + carousels, swiping = 0, // swipe status
+            var carouselId = 'em-carousel-' + carousels, swiping = 0, // swipe status
             startX = 0, // initial swipe
             startOffset = 0, // first move offset
             offset = 0, // move offset
@@ -60,7 +60,7 @@
             skipAnimation = true, carousel, container, collectionModel, collectionParams, initialIndex, indexModel, collectionReady, vendorPrefixes, indicator, lastMove, moveDelay;
 
             /* add a wrapper div that will hide the overflow */
-            carousel = iElement.wrap("<div id='" + carouselId + "' class='rn-carousel-container'></div>");
+            carousel = iElement.wrap("<div id='" + carouselId + "' class='em-carousel-container'></div>");
             container = carousel.parent();
 
             if (fakeArray) {
@@ -130,14 +130,14 @@
 
             function checkEdges() {
               var position = scope.carouselCollection.position, lastIndex = scope.carouselCollection.getLastIndex(), slides = null;
-              if (position === 0 && angular.isDefined(iAttrs.rnCarouselPrev)) {
-                slides = $parse(iAttrs.rnCarouselPrev)(scope, {
+              if (position === 0 && angular.isDefined(iAttrs.emCarouselPrev)) {
+                slides = $parse(iAttrs.emCarouselPrev)(scope, {
                   item : scope.carouselCollection.cards[0]
                 });
                 addSlides('before', slides);
               }
-              if (position === lastIndex && angular.isDefined(iAttrs.rnCarouselNext)) {
-                slides = $parse(iAttrs.rnCarouselNext)(scope, {
+              if (position === lastIndex && angular.isDefined(iAttrs.emCarouselNext)) {
+                slides = $parse(iAttrs.emCarouselNext)(scope, {
                   item : scope.carouselCollection.cards[scope.carouselCollection.cards.length - 1]
                 });
                 addSlides('after', slides);
@@ -147,10 +147,10 @@
             collectionModel = $parse(originalCollection);
             collectionParams = {};
 
-            /* rn-carousel-index attribute data binding */
+            /* em-carousel-index attribute data binding */
             initialIndex = 0;
-            if (iAttrs.rnCarouselIndex) {
-              indexModel = $parse(iAttrs.rnCarouselIndex);
+            if (iAttrs.emCarouselIndex) {
+              indexModel = $parse(iAttrs.emCarouselIndex);
               if (angular.isFunction(indexModel.assign)) {
                 /* check if this property is assignable then watch it */
                 scope.$watch('carouselCollection.index', function(newValue) {
@@ -162,13 +162,13 @@
                     scope.carouselCollection.goToIndex(newValue, true);
                   }
                 });
-              } else if (!isNaN(iAttrs.rnCarouselIndex)) {
+              } else if (!isNaN(iAttrs.emCarouselIndex)) {
                 /* if user just set an initial number, set it */
-                initialIndex = parseInt(iAttrs.rnCarouselIndex, 10);
+                initialIndex = parseInt(iAttrs.emCarouselIndex, 10);
               }
             }
 
-            if (angular.isDefined(iAttrs.rnCarouselCycle)) {
+            if (angular.isDefined(iAttrs.emCarouselCycle)) {
               collectionParams.cycle = true;
             }
             collectionParams.index = initialIndex;
@@ -199,7 +199,7 @@
               updateSlidePosition();
             });
 
-            if (angular.isDefined(iAttrs.rnCarouselWatch)) {
+            if (angular.isDefined(iAttrs.emCarouselWatch)) {
               scope.$watch(originalCollection, function(newValue, oldValue) {
                 // partial collection update, watch deeply so use carefully
                 scope.carouselCollection.setItems(newValue, false);
@@ -259,8 +259,8 @@
             }
 
             /* enable carousel indicator */
-            if (angular.isDefined(iAttrs.rnCarouselIndicator)) {
-              indicator = $compile("<div id='" + carouselId +"-indicator' index='carouselCollection.index' items='carouselCollection.items' data-rn-carousel-indicators class='rn-carousel-indicator'></div>")(scope);
+            if (angular.isDefined(iAttrs.emCarouselIndicator)) {
+              indicator = $compile("<div id='" + carouselId +"-indicator' index='carouselCollection.index' items='carouselCollection.items' data-em-carousel-indicators class='em-carousel-indicator'></div>")(scope);
               container.append(indicator);
             }
 
@@ -272,9 +272,9 @@
               }
               offset = scope.carouselCollection.getRelativeIndex() * -containerWidth;
               if (skipAnimation === true) {
-                carousel.removeClass('rn-carousel-animate').addClass('rn-carousel-noanimate').css(translateSlideProperty(offset, false));
+                carousel.removeClass('em-carousel-animate').addClass('em-carousel-noanimate').css(translateSlideProperty(offset, false));
               } else {
-                carousel.removeClass('rn-carousel-noanimate').addClass('rn-carousel-animate').css(translateSlideProperty(offset, true));
+                carousel.removeClass('em-carousel-noanimate').addClass('em-carousel-animate').css(translateSlideProperty(offset, true));
               }
               skipAnimation = false;
             }
@@ -302,7 +302,7 @@
                   });
                 } else {
                   scope.$apply(function() {
-                    if (angular.isDefined(iAttrs.rnCarouselCycle)) {
+                    if (angular.isDefined(iAttrs.emCarouselCycle)) {
                       // force slide move even if invalid position for cycle carousels
                       scope.carouselCollection.position = tmpSlideIndex;
                       updateSlidePosition();
@@ -363,7 +363,7 @@
                   }
                   /* follow cursor movement */
                   offset = startOffset + deltaX / ratio;
-                  carousel.css(translateSlideProperty(offset, true)).removeClass('rn-carousel-animate').addClass('rn-carousel-noanimate');
+                  carousel.css(translateSlideProperty(offset, true)).removeClass('em-carousel-animate').addClass('em-carousel-noanimate');
                 }
               },
               end : function(coords) {
