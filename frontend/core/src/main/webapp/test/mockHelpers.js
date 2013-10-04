@@ -7,12 +7,21 @@
     emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
     function($httpBackend, mockHttpBackendResponse) {
 
-      var api_useruuid_items, authenticateResponse, completeTask, completeTaskResponse, deleteItem, itemsResponse, putItemResponse, putTaskResponse, putExistingTask, putExistingTaskResponse, uncompleteTask, uncompleteTaskResponse, uuid;
+      var api_useruuid_items, authenticateResponse,
+      // complete
+      completeTask, completeTaskResponse, deleteItem, itemsResponse, putItemResponse, putTaskResponse,
+      // existing items
+      putExistingNote, putExistingNoteResponse, putExistingTask, putExistingTaskResponse,
+      // uncomplete
+      uncompleteTask, uncompleteTaskResponse, uuid;
 
       uuid = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
       deleteItem = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/item\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+
+      putExistingNote = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/note\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
       putExistingTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+
       completeTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/complete/;
       uncompleteTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/uncomplete/;
 
@@ -24,7 +33,9 @@
       putItemResponse = mockHttpBackendResponse.getPutItemResponse();
 
       putTaskResponse = mockHttpBackendResponse.getPutTaskResponse();
+
       putExistingTaskResponse = mockHttpBackendResponse.getputExistingTaskResponse();
+      putExistingNoteResponse = mockHttpBackendResponse.getPutExistingNoteResponse();
 
       uncompleteTaskResponse = mockHttpBackendResponse.getUncompleteTaskResponse();
 
@@ -46,6 +57,10 @@
 
       $httpBackend.whenPUT(putExistingTask).respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, putExistingTaskResponse);
+      });
+
+      $httpBackend.whenPUT(putExistingNote).respond(function(method, url, data, headers) {
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, putExistingNoteResponse);
       });
 
       $httpBackend.whenGET(completeTask).respond(function(method, url, data, headers) {
@@ -102,6 +117,9 @@
         },
         getPutTaskResponse : function() {
           return getJSONFixture('putTaskResponse.json');
+        },
+        getPutExistingNoteResponse : function() {
+          return getJSONFixture('putExistingNoteResponse.json');
         },
         getputExistingTaskResponse : function() {
           return getJSONFixture('putTaskResponse.json');

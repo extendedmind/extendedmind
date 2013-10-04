@@ -3,8 +3,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('MyController', ['$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
-    function($scope, activeItem, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    angular.module('em.app').controller('MyController', ['$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'notesRequest', 'notesResponse', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
+    function($scope, activeItem, itemsArray, itemsRequest, itemsResponse, notesArray, notesRequest, notesResponse, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       itemsRequest.getItems(function(itemsResponse) {
 
@@ -54,8 +54,23 @@
         });
       };
 
-      $scope.itemToNote = function itemToNote() {
-        $scope.completed = 'note added';
+      $scope.itemToNote = function itemToNote(item) {
+
+        notesRequest.putExistingNote(item, function(putExistingNoteResponse) {
+
+          $scope.completed = 'note added';
+          itemsArray.removeItem(item);
+
+          notesResponse.putNoteContent(item, putExistingNoteResponse);
+          notesArray.putNewNote(item);
+
+          itemsRequest.deleteItem(item, function(deleteItemResponse) {
+          }, function(deleteItemResponse) {
+          });
+
+        }, function(putExistingNoteResponse) {
+        });
       };
+
     }]);
   }());
