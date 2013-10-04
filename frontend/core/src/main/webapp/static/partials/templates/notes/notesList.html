@@ -1,10 +1,12 @@
 <div>
 
-  <ul>
+  <div ng-transclude></div>
+
+  <ul class="list-unstyled">
     <li ng-show="notesListFilter" ng-repeat="note in notes | filter:newItem">
       <span ng-click="setActiveItem(note)"><a class="text-muted" href="my/notes/edit/{{note.uuid}}">{{note.title}}</a></span>
 
-      <div note-content></div>
+      <div note-content ng-show="showNoteContent"></div>
 
     </li>
   </ul>

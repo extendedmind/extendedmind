@@ -1,11 +1,9 @@
-/*
-generic styles applied to any carousel
-must be ul/li 
-*/
-.rn-carousel-container {
+.em-carousel-container {
+  min-height: 100%;
   overflow: hidden;
 }
-ul.rn-carousel-slides {
+ul.em-carousel-slides {
+  min-height: 100%;
   position: relative;
   white-space: nowrap;
   overflow: visible;
@@ -15,7 +13,7 @@ ul.rn-carousel-slides {
   padding: 0;
   margin: 0;
 }
-ul.rn-carousel-slides li {
+ul.em-carousel-slides li {
   white-space: normal;
   vertical-align:top;
   display: inline-block;
@@ -24,19 +22,19 @@ ul.rn-carousel-slides li {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 } 
-.rn-carousel-animate {
-  -webkit-transition: -webkit-transform .2s ease-out;
-  -moz-transition: -moz-transform .2s ease-out;
-  transition: transform .2s ease-out;
+.em-carousel-animate {
+  -webkit-transition: -webkit-transform cubic-bezier(0.250, 0.460, 0.450, 0.940) .2s;
+  -moz-transition: -moz-transform cubic-bezier(0.250, 0.460, 0.450, 0.940) .2s;
+  transition: transform cubic-bezier(0.250, 0.460, 0.450, 0.940) .2s;
 }
-.rn-carousel-noanimate {
+.em-carousel-noanimate {
   -webkit-transition: none;
   -moz-transition: none;
   -ms-transition: none;
   -o-transition: none;
   transition: none;
 }
-.rn-carousel-indicator {
+.em-carousel-indicator {
   width: 100%;
   text-align:center;
   position:relative;
@@ -45,11 +43,11 @@ ul.rn-carousel-slides li {
   background-color: rgb(0, 0, 0);
   background-color: rgba(0, 0, 0, 0.6);
 }
-.rn-carousel-indicator span {
+.em-carousel-indicator span {
   padding: 0 5px;
   color: #333;
   transition: color .2s ease-out;
 }
-.rn-carousel-indicator span.active {
+.em-carousel-indicator span.active {
   color:white;
 }

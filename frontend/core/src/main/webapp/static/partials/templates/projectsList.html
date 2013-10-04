@@ -1,7 +1,13 @@
-<ul>
-  <li ng-repeat="project in projects">
+<div>
 
-    <span ng-click="setActiveItem(project)"><a class="text-muted" href="my/tasks/project/{{project.uuid}}">{{project.title}}</a></span>
+  <div ng-transclude></div>
 
-  </li>
-</ul>
+  <ul>
+    <li ng-repeat="project in projects">
+
+      <span ng-click="setActiveItem(project)"><a class="text-muted" href="my/tasks/project/{{project.uuid}}">{{project.title}}</a></span>
+
+    </li>
+  </ul>
+
+</div>

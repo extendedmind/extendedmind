@@ -66,7 +66,8 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : 'static/partials/templates/contextsList.html'
+        templateUrl : 'static/partials/templates/contextsList.html',
+        transclude : true
       };
     }]);
 
@@ -82,7 +83,8 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : 'static/partials/templates/projectsList.html'
+        templateUrl : 'static/partials/templates/projectsList.html',
+        transclude : true
       };
     }]);
   }());
