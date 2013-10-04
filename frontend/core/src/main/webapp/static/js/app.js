@@ -1,4 +1,4 @@
-/*global angular, templateUrlPrefix*/
+/*global angular*/
 
 ( function() {'use strict';
 

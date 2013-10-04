@@ -3,8 +3,10 @@
 
 ( function() {'use strict';
 
-    angular.module('angular-carousel').directive('rnCarousel', ['$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager',
-    function($compile, $parse, $swipe, $document, $window, CollectionManager) {
+    angular.module('angular-carousel', ['ngTouch']);
+
+    angular.module('angular-carousel').directive('rnCarousel', ['disableCarousel', '$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager',
+    function(disableCarousel, $rootScope, $compile, $parse, $swipe, $document, $window, CollectionManager) {
       /* track number of carousel instances */
       var carousels = 0;
 
@@ -21,7 +23,8 @@
 
            if no ng-repeat found, try to use existing <li> DOM nodes
            */
-          var liAttributes = tElement.find('li')[0].attributes, repeatAttribute = liAttributes['ng-repeat'], isBuffered = false, liChilds, originalCollection, fakeArray, originalItem, exprMatch, trackProperty;
+          var liAttributes = tElement.find('li')[0].attributes, repeatAttribute = liAttributes['ng-repeat'], isBuffered = false, originalCollection, fakeArray, liChilds, exprMatch, originalItem, trackProperty;
+
           if (!repeatAttribute) {
             repeatAttribute = liAttributes['data-ng-repeat'];
           }
@@ -52,7 +55,7 @@
             startX = 0, // initial swipe
             startOffset = 0, // first move offset
             offset = 0, // move offset
-            minSwipePercentage = 0.1, // minimum swipe required to trigger slide change
+            minSwipePercentage = 0.2, // minimum swipe required to trigger slide change
             containerWidth = 0, // store width of the first slide
             skipAnimation = true, carousel, container, collectionModel, collectionParams, initialIndex, indexModel, collectionReady, vendorPrefixes, indicator, lastMove, moveDelay;
 
@@ -267,7 +270,7 @@
               if (containerWidth === 0) {
                 updateContainerWidth();
               }
-              offset = Math.round(scope.carouselCollection.getRelativeIndex() * -containerWidth);
+              offset = scope.carouselCollection.getRelativeIndex() * -containerWidth;
               if (skipAnimation === true) {
                 carousel.removeClass('rn-carousel-animate').addClass('rn-carousel-noanimate').css(translateSlideProperty(offset, false));
               } else {
@@ -306,6 +309,7 @@
                     }
                     scope.carouselCollection.goTo(tmpSlideIndex, true);
                   });
+                  $rootScope.$broadcast('event:slideIndexChanged');
                 }
               }
               swiping = 0;
@@ -323,9 +327,12 @@
             // todo: requestAnimationFrame instead
             moveDelay = ($window.jasmine || $window.navigator.platform === 'iPad') ? 0 : 50;
 
-            $swipe.bind(carousel, {
+            $swipe.bind($(".em-slides"), {
               /* use angular $swipe service */
               start : function(coords) {
+                if (disableCarousel.getSwiping()) {
+                  return;
+                }
                 /* capture initial event position */
                 if (swiping === 0) {
                   swiping = 1;
