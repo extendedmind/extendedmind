@@ -80,6 +80,18 @@
         }
       });
 
+      $routeProvider.when('/my/notes/new/:uuid', {
+        controller : 'NewNoteController',
+        templateUrl : 'static/partials/my/notes/new.html',
+        resolve : {
+          authenticationRequired : ['$rootScope',
+          function($rootScope) {
+            $rootScope.$broadcast('event:authenticationRequired');
+          }]
+
+        }
+      });
+
       $routeProvider.when('/my/tasks', {
         controller : 'TasksController',
         templateUrl : 'static/partials/my/tasksSlides.html',

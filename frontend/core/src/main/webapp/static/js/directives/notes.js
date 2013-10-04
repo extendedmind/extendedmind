@@ -33,4 +33,12 @@
         templateUrl : 'static/partials/templates/notes/noteContent.html'
       };
     }]);
+
+    angular.module('em.directives').directive('newNote', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/notes/new.html'
+      };
+    }]);
   }());
