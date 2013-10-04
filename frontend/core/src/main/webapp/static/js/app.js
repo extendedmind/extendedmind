@@ -1,8 +1,8 @@
-/*global angular, templateUrlPrefix*/
+/*global angular*/
 
 ( function() {'use strict';
 
-    angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'ui.bootstrap', 'angular-carousel', 'em.directives', 'em.filters', 'em.services']);
+    angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'em.directives', 'em.filters', 'em.services']);
     angular.module('em.directives', []);
     angular.module('em.filters', []);
     angular.module('em.services', ['em.base64']);
@@ -41,8 +41,8 @@
       });
 
       $routeProvider.when('/my/notes', {
-        controller : 'MyNotesController',
-        templateUrl : 'static/partials/myNotes.html',
+        controller : 'NotesController',
+        templateUrl : 'static/partials/my/notesSlides.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {
@@ -80,9 +80,21 @@
         }
       });
 
+      $routeProvider.when('/my/notes/new/:uuid', {
+        controller : 'NewNoteController',
+        templateUrl : 'static/partials/my/notes/new.html',
+        resolve : {
+          authenticationRequired : ['$rootScope',
+          function($rootScope) {
+            $rootScope.$broadcast('event:authenticationRequired');
+          }]
+
+        }
+      });
+
       $routeProvider.when('/my/tasks', {
-        controller : 'MyTasksController',
-        templateUrl : 'static/partials/myTasks.html',
+        controller : 'TasksController',
+        templateUrl : 'static/partials/my/tasksSlides.html',
         resolve : {
           authenticationRequired : ['$rootScope',
           function($rootScope) {

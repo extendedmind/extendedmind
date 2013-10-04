@@ -6,16 +6,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-transcluent">
     <title ng-bind="pageTitle.getTitle()"></title>
 
     <link rel="stylesheet" href="static/lib/bootstrap/bootstrap.css"/>
-    <link href="static/lib/angular-carousel/src/css/angular-carousel.css" rel="stylesheet" type="text/css" />
 
+    <link rel="stylesheet/less" href="static/less/carousel.less"/>
     <link rel="stylesheet/less" href="static/less/em.less"/>
     <script src="static/lib/less/less-min.js"></script>
 
-    <script type='application/javascript' src="static/lib/fastclick/fastclick.js"></script>
+    <script type='application/javascript' src="static/lib/fastclick.js"></script>
     <script type="application/javascript">
       window.addEventListener('load', function() {
         FastClick.attach(document.body);
@@ -46,10 +46,6 @@
     <script src="static/lib/angularjs/angular-animate.js"></script>
     <script src="static/lib/angularjs/angular-touch.js"></script>
     <script src="static/lib/angularjs/angular-mocks.js"></script>
-    <script src="static/lib/angular-carousel/dist/angular-mobile.js"></script>
-    <script src="static/lib/angular-carousel/dist/angular-carousel.js"></script>
-
-    <script src="static/lib/angular-ui/ui-bootstrap-tpls-0.6.0.js"></script>
 
     <script src="static/lib/base64.js"></script>
 
@@ -62,23 +58,26 @@
     <script src="static/js/controllers/home.js"></script>
     <script src="static/js/controllers/login.js"></script>
     <script src="static/js/controllers/my.js"></script>
-    <script src="static/js/controllers/myNotes.js"></script>
-    <script src="static/js/controllers/myPages.js"></script>
-    <script src="static/js/controllers/myTasks.js"></script>
     <script src="static/js/controllers/navigation.js"></script>
-    <script src="static/js/controllers/newTask.js"></script>
-    <script src="static/js/controllers/notes.js"></script>
     <script src="static/js/controllers/noteEdit.js"></script>
     <script src="static/js/controllers/project.js"></script>
     <script src="static/js/controllers/pageNotFound.js"></script>
-    <script src="static/js/controllers/tasks.js"></script>
 
+    <script src="static/js/controllers/my/notes.js"></script>
+    <script src="static/js/controllers/my/tasks.js"></script>
+
+    <script src="static/js/controllers/notes/newNote.js"></script>
+    <script src="static/js/controllers/tasks/newTask.js"></script>
+
+    <script src="static/js/directives/carousel.js"></script>
     <script src="static/js/directives/emDirectives.js"></script>
     <script src="static/js/directives/items.js"></script>
-    <script src="static/js/directives/items/items.js"></script>
+    <script src="static/js/directives/notes.js"></script>
+    <script src="static/js/directives/tasks.js"></script>
 
     <script src="static/js/filters/emFilters.js"></script>
 
+    <script src="static/js/services/carousel.js"></script>
     <script src="static/js/services/emServices.js"></script>
     <script src="static/js/services/errorHandler.js"></script>
     <script src="static/js/services/httpHandler.js"></script>

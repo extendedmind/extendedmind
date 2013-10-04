@@ -1,0 +1,25 @@
+<form class="form-horizontal" role="form" name="addNote">
+
+  <div class="form-group">
+    <label class="sr-only" for="newNoteTitle">title</label>
+    <div class="col-lg-10">
+      <input type="text" class="form-control" id="newNoteTitle" ng-model="newNote.title" autofocus="autofocus" placeholder="title..." required>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="sr-only" for="newNoteContent">content</label>
+    <div class="col-lg-10">
+      <textarea class="form-control" id="newNoteContent" ng-model="newNote.content" placeholder="content..."></textarea>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-lg-10">
+      <button type="submit" class="btn btn-default" ng-disabled="!addNote.$valid" ng-click="addNewNote()">
+        add
+      </button>
+    </div>
+  </div>
+
+</form>

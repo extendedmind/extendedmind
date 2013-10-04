@@ -16,4 +16,18 @@
       return pageIndex;
     }]);
 
+    angular.module('em.services').factory('disableCarousel', [
+    function() {
+      var swiping;
+
+      return {
+        setSwiping : function(swipe) {
+          this.swiping = swipe;
+        },
+        getSwiping : function() {
+          return this.swiping;
+        }
+      };
+    }]);
+
   }());

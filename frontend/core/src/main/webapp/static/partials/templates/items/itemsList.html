@@ -1,0 +1,17 @@
+<div>
+
+  <div ng-transclude></div>
+
+  <ul class="list-unstyled" ng-show="showItemsList">
+
+    <li class="em-li" ng-class="selected" ng-repeat="item in items | filter:newItem" ng-model="activeItem">
+
+      <div class="swipe-element" ng-click="toggleItemActions()">
+        <span>{{item.title}}</span>
+      </div>
+
+      <div item-actions ng-show="showItemActions"></div>
+
+    </li>
+  </ul>
+</div>

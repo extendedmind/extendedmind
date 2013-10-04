@@ -1,25 +1,23 @@
-<div class="em-slide" ng-controller="TasksController">
+<div class="em-slide">
+
   <button type="button" class="btn btn-default pull-right" ng-click="addNew()">
     +
   </button>
 
   <h1 class="text-primary">tasks</h1>
 
-  <div>
+  <div tasks-list tasksfilter="{{tasksListFilter}}">
     <h2>inbox</h2>
-    <div tasks-list tasksfilter="{{tasksListFilter}}"></div>
   </div>
 
-  <div>
+  <div projects-list>
     <h2>projects</h2>
-    <div projects-list></div>
   </div>
 
   <h2>areas</h2>
 
-  <div>
+  <div contexts-list>
     <h2>contexts</h2>
-    <div contexts-list></div>
   </div>
 
 </div>
