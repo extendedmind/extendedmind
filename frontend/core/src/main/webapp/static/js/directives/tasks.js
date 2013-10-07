@@ -36,6 +36,12 @@
 
           scope.expandTask = function expandTask() {
             scope.showTaskContent = !scope.showTaskContent;
+
+            if (scope.showTaskContent) {
+              scope.selected = 'active-list-item';
+            } else {
+              scope.selected = '';
+            }
           };
         }
       };

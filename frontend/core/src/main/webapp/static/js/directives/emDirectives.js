@@ -8,16 +8,7 @@
         return element.text(version);
       };
     }]);
-
-    angular.module('em.directives').directive('eatClick', [
-    function() {
-      return function(scope, element, attrs) {
-        element.click(function(event) {
-          event.preventDefault();
-        });
-      };
-    }]);
-
+    
     angular.module('em.directives').directive('errorAlertBar', ['$parse',
     function($parse) {
       return {
