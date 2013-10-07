@@ -3,8 +3,11 @@
   <div ng-transclude></div>
 
   <ul class="list-unstyled">
-    <li ng-show="notesListFilter" ng-repeat="note in notes | filter:newItem">
-      <span ng-click="setActiveItem(note)"><a class="text-muted" href="my/notes/edit/{{note.uuid}}">{{note.title}}</a></span>
+    <li ng-class="selected" ng-show="notesListFilter" ng-repeat="note in notes | filter:newItem">
+
+      <div ng-click="toggleNoteContent()">
+        <span>{{note.title}}</span>
+      </div>
 
       <div note-content ng-show="showNoteContent"></div>
 

@@ -30,7 +30,20 @@
     function() {
       return {
         restrict : 'A',
-        templateUrl : 'static/partials/templates/notes/noteContent.html'
+        templateUrl : 'static/partials/templates/notes/noteContent.html',
+        link : function(scope, element, attrs) {
+          scope.showNoteContent = false;
+
+          scope.toggleNoteContent = function toggleNoteContent() {
+            scope.showNoteContent = !scope.showNoteContent;
+
+            if (scope.showNoteContent) {
+              scope.selected = 'active-list-item';
+            } else {
+              scope.selected = '';
+            }
+          };
+        }
       };
     }]);
 

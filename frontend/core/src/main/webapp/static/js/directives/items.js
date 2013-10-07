@@ -30,7 +30,6 @@
         templateUrl : 'static/partials/templates/items/itemActions.html',
         link : function(scope, element, attrs) {
           scope.showItemActions = false;
-          scope.showItemActionSuccess = false;
 
           scope.toggleItemActions = function toggleItemActions() {
 

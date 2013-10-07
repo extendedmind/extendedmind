@@ -34,7 +34,7 @@
         link : function(scope, element, attrs) {
           scope.showTaskContent = false;
 
-          scope.expandTask = function expandTask() {
+          scope.toggleTaskContent = function toggleTaskContent() {
             scope.showTaskContent = !scope.showTaskContent;
 
             if (scope.showTaskContent) {
