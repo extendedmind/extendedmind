@@ -52,11 +52,11 @@
       };
     }]);
 
-    angular.module('em.directives').directive('newNote', [
+    angular.module('em.directives').directive('editNote', [
     function() {
       return {
         restrict : 'A',
-        templateUrl : 'static/partials/templates/notes/new.html'
+        templateUrl : 'static/partials/templates/notes/edit.html'
       };
     }]);
   }());

@@ -1,27 +1,11 @@
 <div class="em-slide">
 
-  <button type="button" class="btn btn-default pull-right" ng-click="undoNoteEdit()">
-    undo
+  <button type="button" class="btn btn-default pull-right" ng-click="cancelEdit()">
+    -
   </button>
 
-  <h1 class="text-primary">{{note.title}}</h1>
+  <h1 class="text-primary"><a href="/my/notes">notes</a></h1>
 
-  <form class="boxsizingBorder" role="form" name="noteEdit">
-
-    <div class="boxsizingBorder form-group">
-      <label class="boxsizingBorder sr-only" for="noteDescription" class="col-lg-2 control-label">description</label>
-      <div class="boxsizingBorder col-lg-10">
-        <textarea class="form-control boxsizingBorder" id="noteDescription" placeholder="description..." autofocus ng-model="note.content"></textarea>
-      </div>
-    </div>
-  </form>
-
-  <div class="form-group">
-    <div class="col-lg-10">
-      <button type="submit" class="btn btn-default" ng-disabled="!noteEdit.$valid" ng-click="editNote()">
-        add
-      </button>
-    </div>
-  </div>
+  <div edit-note></div>
 
 </div>

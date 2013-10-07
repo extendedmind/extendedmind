@@ -15,19 +15,19 @@
       }, function(error) {
       });
 
-      $scope.addNewNote = function() {
+      $scope.editNote = function() {
 
-        notesRequest.putNote($scope.newNote, function(putNoteResponse) {
+        notesRequest.putNote($scope.note, function(putNoteResponse) {
 
-          notesResponse.putNoteContent($scope.newNote, putNoteResponse);
-          notesArray.putNewNote($scope.newNote);
-          $scope.newNote = {};
+          notesResponse.putNoteContent($scope.note, putNoteResponse);
+          notesArray.putNewNote($scope.note);
+          $scope.note = {};
 
         }, function(putNoteResponse) {
         });
       };
 
-      $scope.cancelNew = function() {
+      $scope.cancelEdit = function() {
         window.history.back();
       };
     }]);

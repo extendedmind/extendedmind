@@ -18,7 +18,11 @@
         });
       }
 
-      $scope.undoNoteEdit = function() {
+      $scope.editNote = function() {
+        window.history.back();
+      };
+
+      $scope.cancelEdit = function() {
         window.history.back();
       };
     }]);
