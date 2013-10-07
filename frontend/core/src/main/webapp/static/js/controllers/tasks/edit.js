@@ -27,38 +27,26 @@
         });
       }
 
-      $scope.addNewTask = function() {
+      $scope.editTask = function() {
 
         if ($scope.parentTask) {
           $scope.newTask.relationships = {};
           $scope.newTask.relationships.parentTask = $scope.parentTask.uuid;
         }
 
-        if ($routeParams.uuid) {
+        tasksRequest.putExistingTask($scope.newTask, function(putExistingTaskResponse) {
 
-          tasksRequest.putExistingTask($scope.newTask, function(putExistingTaskResponse) {
+          tasksResponse.putTaskContent($scope.newTask, putExistingTaskResponse);
+          $scope.newTask = {};
+          activeItem.setItem();
 
-            tasksResponse.putTaskContent($scope.newTask, putExistingTaskResponse);
-            $scope.newTask = {};
-            activeItem.setItem();
+        }, function(putTaskResponse) {
+        });
 
-          }, function(putTaskResponse) {
-          });
-
-        } else {
-
-          tasksRequest.putTask($scope.newTask, function(putTaskResponse) {
-
-            tasksResponse.putTaskContent($scope.newTask, putTaskResponse);
-            tasksArray.putNewTask($scope.newTask);
-            $scope.newTask = {};
-
-          }, function(putTaskResponse) {
-          });
-        }
+        window.history.back();
       };
 
-      $scope.cancelNew = function() {
+      $scope.cancelEdit = function() {
         window.history.back();
       };
     }]);
