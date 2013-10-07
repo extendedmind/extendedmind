@@ -6,12 +6,12 @@
     function($location, $scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
-      activeItem.setItem(null);
+      activeItem.setItem();
 
       if (activeItem.getItem()) {
 
         $scope.context = activeItem.getItem();
-        $scope.subtasks = itemsArray.getTagItems(tasksArray.getTasks(), $scope.context.uuid);
+        $scope.tasks = itemsArray.getTagItems(tasksArray.getTasks(), $scope.context.uuid);
 
       } else {
 
@@ -23,7 +23,7 @@
 
           $scope.context = itemsArray.getItemByUuid(tagsArray.getTags(), $routeParams.uuid);
 
-          $scope.subtasks = itemsArray.getTagItems(tasksArray.getTasks(), $scope.context.uuid);
+          $scope.tasks = itemsArray.getTagItems(tasksArray.getTasks(), $scope.context.uuid);
 
         }, function(error) {
         });
