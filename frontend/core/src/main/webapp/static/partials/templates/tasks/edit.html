@@ -1,4 +1,4 @@
-<form class="form-horizontal" role="form" name="addTask">
+<form class="form-horizontal" role="form" name="taskEdit">
 
   <div class="form-group">
     <label class="sr-only" for="newTaskTitle">title</label>
@@ -32,7 +32,7 @@
 
   <div class="form-group">
     <div class="col-lg-10">
-      <button type="submit" class="btn btn-default" ng-disabled="!addTask.$valid" ng-click="editTask()">
+      <button type="submit" class="btn btn-default" ng-disabled="!taskEdit.$valid" ng-click="editTask()">
         add
       </button>
     </div>

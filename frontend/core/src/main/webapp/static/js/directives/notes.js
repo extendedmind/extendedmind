@@ -26,8 +26,8 @@
       };
     }]);
 
-    angular.module('em.directives').directive('noteContent', [
-    function() {
+    angular.module('em.directives').directive('noteContent', ['$location',
+    function($location) {
       return {
         restrict : 'A',
         templateUrl : 'static/partials/templates/notes/noteContent.html',
@@ -42,6 +42,11 @@
             } else {
               scope.selected = '';
             }
+          };
+
+          scope.noteEdit = function(note) {
+            scope.setActiveItem(note);
+            $location.path('/my/notes/edit/' + note.uuid);
           };
         }
       };

@@ -1,7 +1,7 @@
 <ul>
+
   <li ng-repeat="value in task | visibleTaskContent">
     <span><small>{{value}}</small></span>
-
   </li>
 
   <li ng-repeat="tag in task.relationships.tags | tagTitle">
@@ -12,7 +12,7 @@
 
   <div class="item-actions">
     
-    <button type="button" class="btn btn-default" ng-click="editTask(task)">
+    <button type="button" class="btn btn-default" ng-click="taskEdit(task)">
       edit
     </button>
 

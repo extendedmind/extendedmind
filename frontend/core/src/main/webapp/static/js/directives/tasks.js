@@ -26,8 +26,8 @@
       };
     }]);
 
-    angular.module('em.directives').directive('taskContent', ['$location', 'activeItem',
-    function($location, activeItem) {
+    angular.module('em.directives').directive('taskContent', ['$location',
+    function($location) {
       return {
         restrict : 'A',
         templateUrl : 'static/partials/templates/tasks/taskContent.html',
@@ -44,7 +44,7 @@
             }
           };
 
-          scope.editTask = function(task) {
+          scope.taskEdit = function(task) {
             scope.setActiveItem(task);
             $location.path('/my/tasks/edit/' + task.uuid);
           };
