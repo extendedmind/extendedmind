@@ -12,7 +12,7 @@
     angular.module('em.directives').directive('eatClick', [
     function() {
       return function(scope, element, attrs) {
-        $(element).click(function(event) {
+        element.click(function(event) {
           event.preventDefault();
         });
       };

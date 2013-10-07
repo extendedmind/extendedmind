@@ -2,8 +2,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.directives').directive('itemsList', ['$swipe', 'disableCarousel',
-    function($swipe, disableCarousel) {
+    angular.module('em.directives').directive('itemsList', [
+    function() {
       return {
         restrict : 'A',
         templateUrl : 'static/partials/templates/items/itemsList.html',
@@ -18,20 +18,6 @@
           var itemsFilterAttr = attrs.itemsfilter;
           scope.$watch(itemsFilterAttr, function(newValue) {
             scope.itemsListFilter = newValue;
-          });
-
-          $swipe.bind(element, {
-            'start' : function(coords) {
-              disableCarousel.setSwiping(true);
-            },
-            'cancel' : function() {
-              disableCarousel.setSwiping(false);
-            },
-            'move' : function(coords) {
-            },
-            'end' : function(endCoords) {
-              disableCarousel.setSwiping(false);
-            }
           });
         }
       };

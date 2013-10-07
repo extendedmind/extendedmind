@@ -6,7 +6,7 @@
 
     <li class="em-li" ng-class="selected" ng-repeat="item in items | filter:newItem" ng-model="activeItem">
 
-      <div class="swipe-element" ng-click="toggleItemActions()">
+      <div ng-click="toggleItemActions()">
         <span>{{item.title}}</span>
       </div>
 
