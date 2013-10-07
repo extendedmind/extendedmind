@@ -26,8 +26,8 @@
       };
     }]);
 
-    angular.module('em.directives').directive('taskContent', [
-    function() {
+    angular.module('em.directives').directive('taskContent', ['$location', 'activeItem',
+    function($location, activeItem) {
       return {
         restrict : 'A',
         templateUrl : 'static/partials/templates/tasks/taskContent.html',
@@ -42,6 +42,11 @@
             } else {
               scope.selected = '';
             }
+          };
+
+          scope.editTask = function(task) {
+            scope.setActiveItem(task);
+            $location.path('/my/tasks/edit/' + task.uuid);
           };
         }
       };

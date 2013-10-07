@@ -66,11 +66,6 @@
         $location.path('/my/tasks/new/');
       };
 
-      $scope.editTask = function(task) {
-        $scope.setActiveItem(task);
-        $location.path('/my/tasks/edit/' + task.uuid);
-      };
-
       $scope.setActiveItem = function(task) {
         activeItem.setItem(task);
       };
