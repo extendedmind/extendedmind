@@ -21,15 +21,15 @@
       $scope.editTask = function() {
 
         if ($scope.parentTask) {
-          $scope.newTask.relationships = {};
-          $scope.newTask.relationships.parentTask = $scope.parentTask.uuid;
+          $scope.task.relationships = {};
+          $scope.task.relationships.parentTask = $scope.parentTask.uuid;
         }
 
-        tasksRequest.putTask($scope.newTask, function(putTaskResponse) {
+        tasksRequest.putTask($scope.task, function(putTaskResponse) {
 
-          tasksResponse.putTaskContent($scope.newTask, putTaskResponse);
-          tasksArray.putNewTask($scope.newTask);
-          $scope.newTask = {};
+          tasksResponse.putTaskContent($scope.task, putTaskResponse);
+          tasksArray.putNewTask($scope.task);
+          $scope.task = {};
 
         }, function(putTaskResponse) {
         });

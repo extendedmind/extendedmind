@@ -46,10 +46,6 @@
           tasksResponse.putTaskContent(item, putExistingTaskResponse);
           tasksArray.putNewTask(item);
 
-          itemsRequest.deleteItem(item, function(deleteItemResponse) {
-          }, function(deleteItemResponse) {
-          });
-
         }, function(putTaskResponse) {
         });
       };
@@ -63,10 +59,6 @@
 
           notesResponse.putNoteContent(item, putExistingNoteResponse);
           notesArray.putNewNote(item);
-
-          itemsRequest.deleteItem(item, function(deleteItemResponse) {
-          }, function(deleteItemResponse) {
-          });
 
         }, function(putExistingNoteResponse) {
         });

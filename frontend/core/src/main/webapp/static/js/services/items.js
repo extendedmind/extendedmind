@@ -41,9 +41,11 @@
     function() {
       return {
         putItemContent : function(item, putItemResponse) {
+
           angular.forEach(putItemResponse, function(value, key) {
             item[key] = value;
           });
+
         },
         deleteItemProperty : function(item, property) {
           delete item[property];
@@ -77,7 +79,7 @@
           return this.items;
         },
         putNewItem : function(item) {
-          if (!this.itemInArray(this.items, item.title)) {
+          if (!this.itemInArray(this.items, item.uuid)) {
             this.items.push(item);
           }
         },

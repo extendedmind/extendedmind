@@ -11,7 +11,7 @@
       // complete
       completeTask, completeTaskResponse, deleteItem, itemsResponse,
       // put new
-      putItemResponse, putNote,putNoteResponse, putTaskResponse,
+      putItemResponse, putNote, putNoteResponse, putTask, putTaskResponse,
       // existing items
       putExistingNote, putExistingNoteResponse, putExistingTask, putExistingTaskResponse,
       // uncomplete
@@ -22,6 +22,7 @@
       deleteItem = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/item\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
       putNote = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/note/;
+      putTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task/;
 
       putExistingNote = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/note\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
       putExistingTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
@@ -57,12 +58,21 @@
         return mockHttpBackendResponse.expectResponse(method, url, data, headers);
       });
 
-      $httpBackend.whenPUT('/api/' + authenticateResponse.userUUID + '/task').respond(function(method, url, data, headers) {
-        return mockHttpBackendResponse.expectResponse(method, url, data, headers, putTaskResponse);
+      // tasks
+      $httpBackend.whenGET(completeTask).respond(function(method, url, data, headers) {
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, completeTaskResponse);
+      });
+
+      $httpBackend.whenGET(uncompleteTask).respond(function(method, url, data, headers) {
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, uncompleteTaskResponse);
       });
 
       $httpBackend.whenPUT(putExistingTask).respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, putExistingTaskResponse);
+      });
+
+      $httpBackend.whenPUT(putTask).respond(function(method, url, data, headers) {
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, putTaskResponse);
       });
 
       // notes
@@ -72,15 +82,6 @@
 
       $httpBackend.whenPUT(putNote).respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, putNoteResponse);
-      });
-      
-      // tasks
-      $httpBackend.whenGET(completeTask).respond(function(method, url, data, headers) {
-        return mockHttpBackendResponse.expectResponse(method, url, data, headers, completeTaskResponse);
-      });
-
-      $httpBackend.whenGET(uncompleteTask).respond(function(method, url, data, headers) {
-        return mockHttpBackendResponse.expectResponse(method, url, data, headers, uncompleteTaskResponse);
       });
 
       $httpBackend.whenGET(api_useruuid_items).respond(function(method, url, data, headers) {
@@ -139,7 +140,7 @@
           return getJSONFixture('putExistingNoteResponse.json');
         },
         getputExistingTaskResponse : function() {
-          return getJSONFixture('putTaskResponse.json');
+          return getJSONFixture('putExistingTaskResponse.json');
         },
         getUncompleteTaskResponse : function() {
           return getJSONFixture('uncompleteTaskResponse.json');

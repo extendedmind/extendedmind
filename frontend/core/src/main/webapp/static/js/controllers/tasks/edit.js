@@ -9,7 +9,7 @@
 
       if (activeItem.getItem()) {
 
-        $scope.newTask = activeItem.getItem();
+        $scope.task = activeItem.getItem();
         $scope.projects = tasksArray.getProjects();
 
       } else {
@@ -21,7 +21,7 @@
           tagsArray.setTags(itemsResponse.tags);
 
           $scope.projects = tasksArray.getProjects();
-          $scope.newTask = itemsArray.getItemByUuid(tasksArray.getTasks(), $routeParams.uuid);
+          $scope.task = itemsArray.getItemByUuid(tasksArray.getTasks(), $routeParams.uuid);
 
         }, function(error) {
         });
@@ -30,17 +30,17 @@
       $scope.editTask = function() {
 
         if ($scope.parentTask) {
-          $scope.newTask.relationships = {};
-          $scope.newTask.relationships.parentTask = $scope.parentTask.uuid;
+          $scope.task.relationships = {};
+          $scope.task.relationships.parentTask = $scope.parentTask.uuid;
         }
 
-        tasksRequest.putExistingTask($scope.newTask, function(putExistingTaskResponse) {
+        tasksRequest.putExistingTask($scope.task, function(putExistingTaskResponse) {
 
-          tasksResponse.putTaskContent($scope.newTask, putExistingTaskResponse);
-          $scope.newTask = {};
+          tasksResponse.putTaskContent($scope.task, putExistingTaskResponse);
+          $scope.task = {};
           activeItem.setItem();
 
-        }, function(putTaskResponse) {
+        }, function(putExistingTaskResponse) {
         });
 
         window.history.back();
