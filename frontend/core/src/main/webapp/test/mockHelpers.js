@@ -11,7 +11,7 @@
       // complete
       completeTask, completeTaskResponse, deleteItem, itemsResponse,
       // put new
-      putItemResponse, putNoteResponse, putTaskResponse,
+      putItemResponse, putNote,putNoteResponse, putTaskResponse,
       // existing items
       putExistingNote, putExistingNoteResponse, putExistingTask, putExistingTaskResponse,
       // uncomplete
@@ -20,6 +20,8 @@
       uuid = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
       deleteItem = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/item\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+
+      putNote = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/note/;
 
       putExistingNote = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/note\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
       putExistingTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
@@ -68,10 +70,11 @@
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, putExistingNoteResponse);
       });
 
-      $httpBackend.whenPUT('/api/' + authenticateResponse.userUUID + '/note').respond(function(method, url, data, headers) {
+      $httpBackend.whenPUT(putNote).respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, putNoteResponse);
       });
-
+      
+      // tasks
       $httpBackend.whenGET(completeTask).respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, completeTaskResponse);
       });

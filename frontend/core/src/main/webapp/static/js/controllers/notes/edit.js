@@ -2,8 +2,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NoteEditController', ['$rootScope', '$routeParams', '$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'notesArray',
-    function($rootScope, $routeParams, $scope, activeItem, itemsArray, itemsRequest, notesArray) {
+    angular.module('em.app').controller('NoteEditController', ['$rootScope', '$routeParams', '$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'notesArray', 'notesRequest', 'notesResponse',
+    function($rootScope, $routeParams, $scope, activeItem, itemsArray, itemsRequest, notesArray, notesRequest, notesResponse) {
 
       if (activeItem.getItem()) {
         $scope.note = activeItem.getItem();
@@ -19,6 +19,16 @@
       }
 
       $scope.editNote = function() {
+
+        notesRequest.putExistingNote($scope.note, function(putExistingNoteResponse) {
+
+          notesResponse.putNoteContent($scope.note, putExistingNoteResponse);
+          $scope.note = {};
+          activeItem.setItem();
+
+        }, function(putTaskResponse) {
+        });
+
         window.history.back();
       };
 
