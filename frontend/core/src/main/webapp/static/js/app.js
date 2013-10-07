@@ -120,6 +120,18 @@
         }
       });
 
+      $routeProvider.when('/my/tasks/edit/:uuid', {
+        controller : 'EditTaskController',
+        templateUrl : 'static/partials/my/tasks/edit.html',
+        resolve : {
+          authenticationRequired : ['$rootScope',
+          function($rootScope) {
+            $rootScope.$broadcast('event:authenticationRequired');
+          }]
+
+        }
+      });
+
       $routeProvider.when('/my/tasks/new/:uuid', {
         controller : 'NewTaskController',
         templateUrl : 'static/partials/my/tasks/new.html',

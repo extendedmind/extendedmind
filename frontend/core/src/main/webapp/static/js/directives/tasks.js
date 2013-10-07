@@ -47,11 +47,11 @@
       };
     }]);
 
-    angular.module('em.directives').directive('newTask', [
+    angular.module('em.directives').directive('editTask', [
     function() {
       return {
         restrict : 'A',
-        templateUrl : 'static/partials/templates/tasks/newTask.html'
+        templateUrl : 'static/partials/templates/tasks/edit.html'
       };
     }]);
   }());
