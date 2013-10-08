@@ -43,6 +43,11 @@
           $scope.completed = 'task added';
           itemsArray.removeItem(item);
 
+          itemsRequest.deleteItem(item, function(deleteItemResponse) {
+            itemsResponse.putItemContent(item, deleteItemResponse);
+          }, function(deleteItemResponse) {
+          });
+
           tasksResponse.putTaskContent(item, putExistingTaskResponse);
           tasksArray.putNewTask(item);
 
@@ -56,6 +61,11 @@
 
           $scope.completed = 'note added';
           itemsArray.removeItem(item);
+
+          itemsRequest.deleteItem(item, function(deleteItemResponse) {
+            itemsResponse.putItemContent(item, deleteItemResponse);
+          }, function(deleteItemResponse) {
+          });
 
           notesResponse.putNoteContent(item, putExistingNoteResponse);
           notesArray.putNewNote(item);
