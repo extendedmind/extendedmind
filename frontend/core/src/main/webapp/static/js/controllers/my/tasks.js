@@ -66,6 +66,14 @@
         $location.path('/my/tasks/new/');
       };
 
+      $scope.deleteTask = function(task) {
+        tasksRequest.deleteTask(task, function(deleteTaskResponse) {
+          tasksResponse.putTaskContent(task, deleteTaskResponse);
+          tasksArray.removeTask(task);
+        }, function(deleteTaskResponse) {
+        });
+      };
+
       $scope.setActiveItem = function(task) {
         activeItem.setItem(task);
       };

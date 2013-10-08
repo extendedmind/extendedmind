@@ -8,18 +8,26 @@
     function($httpBackend, mockHttpBackendResponse) {
 
       var api_useruuid_items, authenticateResponse,
+
       // complete
-      completeTask, completeTaskResponse, deleteItem, itemsResponse,
+      completeTask, completeTaskResponse,
+
+      // delete
+      deleteItem, deleteItemResponse, itemsResponse, deleteTask, deleteTaskResponse,
+
       // put new
       putItemResponse, putNote, putNoteResponse, putTask, putTaskResponse,
+
       // existing items
       putExistingNote, putExistingNoteResponse, putExistingTask, putExistingTaskResponse,
+
       // uncomplete
       uncompleteTask, uncompleteTaskResponse, uuid;
 
       uuid = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
       deleteItem = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/item\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+      deleteTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
       putNote = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/note/;
       putTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task/;
@@ -31,6 +39,10 @@
       uncompleteTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/uncomplete/;
 
       api_useruuid_items = new RegExp('api' + uuid + 'items');
+
+      // delete
+      deleteItemResponse = mockHttpBackendResponse.getDeleteItemResponse();
+      deleteTaskResponse = mockHttpBackendResponse.getDeleteTaskResponse();
 
       authenticateResponse = mockHttpBackendResponse.getAuthenticateResponse();
       completeTaskResponse = mockHttpBackendResponse.getCompleteTaskResponse();
@@ -54,8 +66,13 @@
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, putItemResponse);
       });
 
+      // delete
       $httpBackend.whenDELETE(deleteItem).respond(function(method, url, data, headers) {
-        return mockHttpBackendResponse.expectResponse(method, url, data, headers);
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, deleteItemResponse);
+      });
+
+      $httpBackend.whenDELETE(deleteTask).respond(function(method, url, data, headers) {
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, deleteTaskResponse);
       });
 
       // tasks
@@ -119,9 +136,15 @@
         getCompleteTaskResponse : function() {
           return getJSONFixture('completeTaskResponse.json');
         },
+
+        // delete
         getDeleteItemResponse : function() {
-          return getJSONFixture('itemsResponse.json');
+          return getJSONFixture('deleteItemResponse.json');
         },
+        getDeleteTaskResponse : function() {
+          return getJSONFixture('deleteTaskResponse.json');
+        },
+
         getItemsResponse : function() {
           return getJSONFixture('itemsResponse.json');
         },
@@ -135,6 +158,7 @@
         getPutTaskResponse : function() {
           return getJSONFixture('putTaskResponse.json');
         },
+
         // existing items
         getPutExistingNoteResponse : function() {
           return getJSONFixture('putExistingNoteResponse.json');
@@ -142,6 +166,7 @@
         getputExistingTaskResponse : function() {
           return getJSONFixture('putExistingTaskResponse.json');
         },
+
         getUncompleteTaskResponse : function() {
           return getJSONFixture('uncompleteTaskResponse.json');
         },

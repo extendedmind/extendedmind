@@ -20,6 +20,13 @@
             error(putExistingTaskResponse);
           });
         },
+        deleteTask : function(task, success, error) {
+          httpRequest['delete']('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid, function(deleteTaskResponse) {
+            success(deleteTaskResponse);
+          }, function(deleteTaskResponse) {
+            error(deleteTaskResponse);
+          });
+        },
         completeTask : function(task, success, error) {
           httpRequest.get('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/complete', function(completeTaskResponse) {
             success(completeTaskResponse);
@@ -82,6 +89,9 @@
           if (!itemsArray.itemInArray(tasks, task.uuid)) {
             tasks.push(task);
           }
+        },
+        removeTask : function(task) {
+          tasks.splice(tasks.indexOf(task), 1);
         },
         setProject : function(task) {
           if (!itemsArray.itemInArray(projects, task.uuid)) {
