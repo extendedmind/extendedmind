@@ -54,8 +54,6 @@
 
         } else {
 
-          tasksArray.removeTask($scope.task);
-          
           tasksRequest.completeTask($scope.task, function(completeTaskResponse) {
             tasksResponse.putTaskContent($scope.task, completeTaskResponse);
           }, function(completeTaskResponse) {
