@@ -40,7 +40,7 @@
 
     angular.module('em.services').factory('notesArray', ['itemsArray',
     function(itemsArray) {
-      var notes;
+      var notes = [];
 
       return {
         setNotes : function(notes) {

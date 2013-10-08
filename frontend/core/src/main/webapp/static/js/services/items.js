@@ -69,7 +69,7 @@
 
     angular.module('em.services').factory('itemsArray', [
     function() {
-      var items;
+      var items = [];
 
       return {
         setItems : function(items) {
