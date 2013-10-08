@@ -84,7 +84,10 @@
           }
         },
         removeItem : function(item) {
-          this.items.splice(this.items.indexOf(item), 1);
+          this.removeItemFromArray(this.items, item);
+        },
+        removeItemFromArray : function(items, item) {
+          items.splice(items.indexOf(item), 1);
         },
         getItemByUuid : function(items, uuid) {
           var i = 0;

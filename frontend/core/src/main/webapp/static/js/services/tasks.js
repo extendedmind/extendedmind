@@ -91,7 +91,7 @@
           }
         },
         removeTask : function(task) {
-          tasks.splice(tasks.indexOf(task), 1);
+          itemsArray.removeItemFromArray(tasks, task);
         },
         setProject : function(task) {
           if (!itemsArray.itemInArray(projects, task.uuid)) {
