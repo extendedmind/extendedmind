@@ -12,6 +12,13 @@
             error(putNoteResponse);
           });
         },
+        deleteNote : function(note, success, error) {
+          httpRequest['delete']('/api/' + userSessionStorage.getUserUUID() + '/note/' + note.uuid, function(deleteNoteResponse) {
+            success(deleteNoteResponse);
+          }, function(deleteNoteResponse) {
+            error(deleteNoteResponse);
+          });
+        },
         putExistingNote : function(note, success, error) {
           httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/note/' + note.uuid, note, function(putExistingNoteResponse) {
             success(putExistingNoteResponse);
@@ -41,6 +48,9 @@
         },
         getNotes : function() {
           return this.notes;
+        },
+        removeNote : function(note) {
+          itemsArray.removeItemFromArray(this.notes, note);
         },
         putNewNote : function(note) {
           if (!itemsArray.itemInArray(this.notes, note.uuid)) {

@@ -2,8 +2,8 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NotesController', ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray',
-    function($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray) {
+    angular.module('em.app').controller('NotesController', ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'notesRequest', 'notesResponse', 'slideIndex', 'tagsArray',
+    function($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, notesRequest, notesResponse, slideIndex, tagsArray) {
 
       itemsRequest.getItems(function(itemsResponse) {
 
@@ -40,6 +40,14 @@
 
       $scope.addNew = function() {
         $location.path('/my/notes/new/');
+      };
+
+      $scope.deleteNote = function(note) {
+        notesRequest.deleteNote(note, function(deleteNoteResponse) {
+          notesResponse.putNoteContent(note, deleteNoteResponse);
+          notesArray.removeNote(note);
+        }, function(deleteNoteResponse) {
+        });
       };
 
       $scope.showNoteContent = true;

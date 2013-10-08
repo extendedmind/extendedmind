@@ -9,11 +9,14 @@
 
       var api_useruuid_items, authenticateResponse,
 
+      // get
+      itemsResponse,
+
       // complete
       completeTask, completeTaskResponse,
 
       // delete
-      deleteItem, deleteItemResponse, itemsResponse, deleteTask, deleteTaskResponse,
+      deleteItem, deleteItemResponse, deleteNote, deleteNoteResponse, deleteTask, deleteTaskResponse,
 
       // put new
       putItemResponse, putNote, putNoteResponse, putTask, putTaskResponse,
@@ -25,9 +28,6 @@
       uncompleteTask, uncompleteTaskResponse, uuid;
 
       uuid = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
-
-      deleteItem = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/item\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
-      deleteTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
       putNote = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/note/;
       putTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task/;
@@ -41,7 +41,12 @@
       api_useruuid_items = new RegExp('api' + uuid + 'items');
 
       // delete
+      deleteItem = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/item\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+      deleteNote = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/note\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+      deleteTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+
       deleteItemResponse = mockHttpBackendResponse.getDeleteItemResponse();
+      deleteNoteResponse = mockHttpBackendResponse.getDeleteNoteResponse();
       deleteTaskResponse = mockHttpBackendResponse.getDeleteTaskResponse();
 
       authenticateResponse = mockHttpBackendResponse.getAuthenticateResponse();
@@ -69,6 +74,10 @@
       // delete
       $httpBackend.whenDELETE(deleteItem).respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, deleteItemResponse);
+      });
+
+      $httpBackend.whenDELETE(deleteNote).respond(function(method, url, data, headers) {
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, deleteNoteResponse);
       });
 
       $httpBackend.whenDELETE(deleteTask).respond(function(method, url, data, headers) {
@@ -141,13 +150,18 @@
         getDeleteItemResponse : function() {
           return getJSONFixture('deleteItemResponse.json');
         },
+        getDeleteNoteResponse : function() {
+          return getJSONFixture('deleteNoteResponse.json');
+        },
         getDeleteTaskResponse : function() {
           return getJSONFixture('deleteTaskResponse.json');
         },
 
+        // get
         getItemsResponse : function() {
           return getJSONFixture('itemsResponse.json');
         },
+
         // put new
         getPutItemResponse : function() {
           return getJSONFixture('putItemResponse.json');
