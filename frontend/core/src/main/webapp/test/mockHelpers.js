@@ -86,11 +86,11 @@
       });
 
       // tasks
-      $httpBackend.whenGET(completeTask).respond(function(method, url, data, headers) {
+      $httpBackend.whenPOST(completeTask).respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, completeTaskResponse);
       });
 
-      $httpBackend.whenGET(uncompleteTask).respond(function(method, url, data, headers) {
+      $httpBackend.whenPOST(uncompleteTask).respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, uncompleteTaskResponse);
       });
 

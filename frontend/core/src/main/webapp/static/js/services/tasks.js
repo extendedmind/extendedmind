@@ -28,14 +28,14 @@
           });
         },
         completeTask : function(task, success, error) {
-          httpRequest.get('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/complete', function(completeTaskResponse) {
+          httpRequest.post('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/complete', function(completeTaskResponse) {
             success(completeTaskResponse);
           }, function(completeTaskResponse) {
             error(completeTaskResponse);
           });
         },
         uncompleteTask : function(task, success, error) {
-          httpRequest.get('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/uncomplete', function(uncompleteTaskResponse) {
+          httpRequest.post('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/uncomplete', function(uncompleteTaskResponse) {
             success(uncompleteTaskResponse);
           }, function(uncompleteTaskResponse) {
             error(uncompleteTaskResponse);
