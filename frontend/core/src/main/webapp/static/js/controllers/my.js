@@ -32,6 +32,15 @@
         });
       };
 
+      $scope.deleteItem = function(item) {
+        itemsArray.removeItem(item);
+
+        itemsRequest.deleteItem(item, function(deleteItemResponse) {
+          itemsResponse.putItemContent(item, deleteItemResponse);
+        }, function(deleteItemResponse) {
+        });
+      };
+
       $scope.setActiveItem = function(item) {
         activeItem.setItem(item);
       };

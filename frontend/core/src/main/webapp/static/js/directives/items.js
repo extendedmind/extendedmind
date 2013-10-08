@@ -23,19 +23,19 @@
       };
     }]);
 
-    angular.module('em.directives').directive('itemActions', [
+    angular.module('em.directives').directive('itemContent', [
     function() {
       return {
         restrict : 'A',
-        templateUrl : 'static/partials/templates/items/itemActions.html',
+        templateUrl : 'static/partials/templates/items/itemContent.html',
         link : function(scope, element, attrs) {
-          scope.showItemActions = false;
+          scope.showItemContent = false;
 
-          scope.toggleItemActions = function toggleItemActions() {
+          scope.toggleItemContent = function toggleItemContent() {
 
-            scope.showItemActions = !scope.showItemActions;
+            scope.showItemContent = !scope.showItemContent;
 
-            if (scope.showItemActions) {
+            if (scope.showItemContent) {
               scope.selected = 'active-list-item';
             } else {
               scope.selected = '';
