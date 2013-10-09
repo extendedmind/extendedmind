@@ -20,7 +20,7 @@
           tagsArray.setTags(itemsResponse.tags);
 
           $scope.projects = tasksArray.getProjects();
-          $scope.task = itemsArray.getItemByUuid(tasksArray.getTasks(), $routeParams.uuid);
+          $scope.task = tasksArray.getTaskByUuid($routeParams.uuid);
 
         }, function(error) {
         });

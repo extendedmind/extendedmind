@@ -85,6 +85,9 @@
         getTasks : function() {
           return tasks;
         },
+        getTaskByUuid:function(uuid){
+          return itemsArray.getItemByUuid(tasks, uuid);
+        },
         setTask : function(task) {
           if (!itemsArray.itemInArray(tasks, task.uuid)) {
             tasks.push(task);
