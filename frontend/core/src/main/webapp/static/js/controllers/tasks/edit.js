@@ -39,9 +39,17 @@
       $scope.editTask = function() {
 
         if ($scope.parentTask) {
+
+          tasksArray.setSubtask($scope.task);
           $scope.task.relationships.parentTask = $scope.parentTask.uuid;
+
         } else {
-          tasksArray.deleteTaskProperty($scope.task.relationships, 'parentTask');
+
+          if ($scope.task.relationships.parentTask) {
+            tasksArray.removeSubtask($scope.task);
+            tasksArray.deleteTaskProperty($scope.task.relationships, 'parentTask');
+          }
+
         }
 
         tasksRequest.putExistingTask($scope.task, function(putExistingTaskResponse) {

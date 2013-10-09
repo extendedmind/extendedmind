@@ -118,6 +118,9 @@
             subtasks.push(task);
           }
         },
+        removeSubtask : function(task) {
+          itemsArray.removeItemFromArray(subtasks, task);
+        },
         getSubtasks : function() {
           return subtasks;
         },
