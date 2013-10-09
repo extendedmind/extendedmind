@@ -8,7 +8,7 @@
         return element.text(version);
       };
     }]);
-    
+
     angular.module('em.directives').directive('errorAlertBar', ['$parse',
     function($parse) {
       return {

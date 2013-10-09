@@ -60,5 +60,4 @@
 
     NotesController.$inject = ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'notesRequest', 'notesResponse', 'slideIndex', 'tagsArray'];
     angular.module('em.app').controller('NotesController', NotesController);
-
   }());

@@ -24,13 +24,6 @@
   </div>
 
   <div class="form-group">
-    <label class="sr-only" for="newTaskDescription">description</label>
-    <div class="col-lg-10">
-      <textarea class="form-control" id="newTaskDescription" ng-model="task.description" placeholder="description..."></textarea>
-    </div>
-  </div>
-
-  <div class="form-group">
     <div class="col-lg-10">
       <button type="submit" class="btn btn-default" ng-disabled="!taskEdit.$valid" ng-click="editTask()">
         add
