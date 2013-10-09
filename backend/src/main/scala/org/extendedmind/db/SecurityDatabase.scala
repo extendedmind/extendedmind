@@ -239,8 +239,8 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         val title = collective.getProperty("title").asInstanceOf[String]
         val uuid = getUUID(collective)
         relationship.getType().name() match {
-          case SecurityRelationship.IS_CREATOR.relationshipName => 
-            collectiveAccessMap.put(uuid, (title, SecurityContext.CREATOR))
+          case SecurityRelationship.IS_FOUNDER.relationshipName => 
+            collectiveAccessMap.put(uuid, (title, SecurityContext.FOUNDER))
           case SecurityRelationship.CAN_READ.relationshipName => {
             if (!collectiveAccessMap.contains(uuid))
               collectiveAccessMap.put(uuid, (title, SecurityContext.READ))
@@ -269,7 +269,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   private def collectivesTraversalDescription: TraversalDescription = {
     Traversal.description()
           .depthFirst()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_CREATOR.name), Direction.OUTGOING)
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_FOUNDER.name), Direction.OUTGOING)
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ.name), Direction.OUTGOING)
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ_WRITE.name), Direction.OUTGOING)
           .evaluator(Evaluators.excludeStartPosition())

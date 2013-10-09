@@ -24,9 +24,9 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
 
   // PUBLIC
 
-  def putNewCollective(creatorUUID: UUID, collective: Collective, commonCollective: Boolean): Response[SetResult] = {
+  def putNewCollective(founderUUID: UUID, collective: Collective, commonCollective: Boolean): Response[SetResult] = {
     for{
-      collectiveNode <- createCollective(creatorUUID, collective, commonCollective).right
+      collectiveNode <- createCollective(founderUUID, collective, commonCollective).right
       result <- Right(getSetResult(collectiveNode, true)).right
     }yield result
   }
@@ -48,36 +48,36 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     }
   }
   
-  def addUserToCollective(collectiveUUID: UUID, creatorUUID: UUID, userUUID: UUID, access: Byte): Response[SetResult] = {
+  def addUserToCollective(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Byte): Response[SetResult] = {
     for {
-      collectiveNode <- addUserToCollectiveNode(collectiveUUID, creatorUUID, userUUID, access).right
+      collectiveNode <- addUserToCollectiveNode(collectiveUUID, founderUUID, userUUID, access).right
       result <- Right(getSetResult(collectiveNode, false)).right
     } yield result
   }
 
   // PRIVATE
   
-  protected def createCollective(creatorUUID: UUID, collective: Collective, commonCollective: Boolean): Response[Node] = {
+  protected def createCollective(founderUUID: UUID, collective: Collective, commonCollective: Boolean): Response[Node] = {
     withTx{
       implicit neo4j =>
         for {
-          creatorNode <- getNode(creatorUUID, OwnerLabel.USER).right
-          collectiveNode <- createCollectiveNode(creatorNode, collective, commonCollective).right
+          founderNode <- getNode(founderUUID, OwnerLabel.USER).right
+          collectiveNode <- createCollectiveNode(founderNode, collective, commonCollective).right
         } yield collectiveNode
     }
   }
   
-  protected def createCollectiveNode(creatorNode: Node, collective: Collective, commonCollective: Boolean)
+  protected def createCollectiveNode(founderNode: Node, collective: Collective, commonCollective: Boolean)
                (implicit neo4j: DatabaseService): Response[Node] = {
     val collectiveNode = createNode(collective, MainLabel.OWNER, OwnerLabel.COLLECTIVE)
-    creatorNode --> SecurityRelationship.IS_CREATOR --> collectiveNode;
+    founderNode --> SecurityRelationship.IS_FOUNDER --> collectiveNode;
 
     if (commonCollective){
       collectiveNode.setProperty("common", true)
       // Give all existing users read access to to common collective
       val userIterator = findNodesByLabel(OwnerLabel.USER);
       userIterator.foreach(user => {
-        if (user != creatorNode)
+        if (user != founderNode)
           user --> SecurityRelationship.CAN_READ --> collectiveNode;
       })
     } 
@@ -95,25 +95,25 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def addUserToCollectiveNode(collectiveUUID: UUID, creatorUUID: UUID, userUUID: UUID, access: Byte): Response[Node] = {
+  protected def addUserToCollectiveNode(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Byte): Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
-          collectiveNode <- getCreatedCollective(collectiveUUID, creatorUUID).right
+          collectiveNode <- getCreatedCollective(collectiveUUID, founderUUID).right
           userNode <- getNode(userUUID, OwnerLabel.USER).right
           relationship <- addUserToCollective(collectiveNode, userNode, access).right
         } yield collectiveNode
     }
   }
   
-  protected def getCreatedCollective(collectiveUUID: UUID, creatorUUID: UUID)
+  protected def getCreatedCollective(collectiveUUID: UUID, founderUUID: UUID)
         (implicit neo4j: DatabaseService): Response[Node] = {
     val collectiveNode = getNode(collectiveUUID, OwnerLabel.COLLECTIVE)
     if (collectiveNode.isLeft) return collectiveNode
         
-    val creatorFromCollective: TraversalDescription = {
+    val founderFromCollective: TraversalDescription = {
         Traversal.description()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_CREATOR.name),
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_FOUNDER.name),
             Direction.INCOMING)
           .depthFirst()
           .evaluator(Evaluators.excludeStartPosition())
@@ -122,17 +122,17 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
             Evaluation.EXCLUDE_AND_PRUNE,
             Evaluation.INCLUDE_AND_CONTINUE))
     }
-    val traverser = creatorFromCollective.traverse(collectiveNode.right.get)
+    val traverser = founderFromCollective.traverse(collectiveNode.right.get)
     val collectiveNodeList = traverser.nodes().toList
     if (collectiveNodeList.length == 0) {
-      fail(INTERNAL_SERVER_ERROR, "Collective " + collectiveUUID + " has no creator")
+      fail(INTERNAL_SERVER_ERROR, "Collective " + collectiveUUID + " has no founder")
     } else if (collectiveNodeList.length > 1) {
-      fail(INTERNAL_SERVER_ERROR, "More than one creator found for collective with UUID " + collectiveUUID)
+      fail(INTERNAL_SERVER_ERROR, "More than one founder found for collective with UUID " + collectiveUUID)
     } else {
-      val creator = collectiveNodeList.head
-      if (getUUID(creator) != creatorUUID){
-        fail(INVALID_PARAMETER, "Collective " + collectiveUUID + " is not created by user " 
-            + creatorUUID)
+      val founder = collectiveNodeList.head
+      if (getUUID(founder) != founderUUID){
+        fail(INVALID_PARAMETER, "Collective " + collectiveUUID + " is not founded by user " 
+            + founderUUID)
       }else{
         Right(collectiveNode.right.get)
       }
