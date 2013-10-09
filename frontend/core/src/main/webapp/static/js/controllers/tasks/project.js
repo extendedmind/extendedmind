@@ -2,8 +2,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('ProjectController', ['$location', '$scope', '$routeParams', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray',
-    function($location, $scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray) {
+    function ProjectController($location, $scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
       activeItem.setItem();
@@ -35,6 +34,9 @@
       $scope.setActiveItem = function(tag) {
         activeItem.setItem(tag);
       };
+    }
 
-    }]);
+
+    ProjectController.$inject = ['$location', '$scope', '$routeParams', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray'];
+    angular.module('em.app').controller('ProjectController', ProjectController);
   }());

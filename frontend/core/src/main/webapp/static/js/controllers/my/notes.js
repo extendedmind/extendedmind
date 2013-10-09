@@ -2,8 +2,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NotesController', ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'notesRequest', 'notesResponse', 'slideIndex', 'tagsArray',
-    function($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, notesRequest, notesResponse, slideIndex, tagsArray) {
+    function NotesController($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, notesRequest, notesResponse, slideIndex, tagsArray) {
 
       itemsRequest.getItems(function(itemsResponse) {
 
@@ -56,5 +55,10 @@
       $scope.setActiveItem = function(item) {
         activeItem.setItem(item);
       };
-    }]);
+    }
+
+
+    NotesController.$inject = ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'notesRequest', 'notesResponse', 'slideIndex', 'tagsArray'];
+    angular.module('em.app').controller('NotesController', NotesController);
+
   }());

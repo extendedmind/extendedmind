@@ -2,8 +2,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('TasksController', ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'slideIndex', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
-    function($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, slideIndex, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    function TasksController($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, slideIndex, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       itemsRequest.getItems(function(itemsResponse) {
 
@@ -77,5 +76,9 @@
       $scope.setActiveItem = function(task) {
         activeItem.setItem(task);
       };
-    }]);
+    }
+
+
+    TasksController.$inject = ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'slideIndex', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    angular.module('em.app').controller('TasksController', TasksController);
   }());
