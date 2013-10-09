@@ -8,8 +8,13 @@
 
       if (activeItem.getItem()) {
 
-        $scope.task = activeItem.getItem();
         $scope.projects = tasksArray.getProjects();
+
+        $scope.task = activeItem.getItem();
+
+        if ($scope.task.relationships.parentTask) {
+          $scope.parentTask = tasksArray.getProjectByUuid($scope.task.relationships.parentTask);
+        }
 
       } else {
 
@@ -20,7 +25,12 @@
           tagsArray.setTags(itemsResponse.tags);
 
           $scope.projects = tasksArray.getProjects();
+
           $scope.task = tasksArray.getTaskByUuid($routeParams.uuid);
+
+          if ($scope.task.relationships.parentTask) {
+            $scope.parentTask = tasksArray.getProjectByUuid($scope.task.relationships.parentTask);
+          }
 
         }, function(error) {
         });
@@ -29,8 +39,9 @@
       $scope.editTask = function() {
 
         if ($scope.parentTask) {
-          $scope.task.relationships = {};
           $scope.task.relationships.parentTask = $scope.parentTask.uuid;
+        } else {
+          tasksArray.deleteTaskProperty($scope.task.relationships, 'parentTask');
         }
 
         tasksRequest.putExistingTask($scope.task, function(putExistingTaskResponse) {
