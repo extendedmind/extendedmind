@@ -2,8 +2,10 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('HomeController', ['$scope', 'errorHandler',
-    function($scope, errorHandler) {
+    function HomeController($scope, errorHandler) {
 
-    }]);
+    }
+
+    HomeController = ['$scope', 'errorHandler'];
+    angular.module('em.app').controller('HomeController', HomeController);
   }());

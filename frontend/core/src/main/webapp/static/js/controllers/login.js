@@ -1,9 +1,9 @@
 /*global angular*/
 
 ( function() {'use strict';
-    angular.module('em.app').controller('LoginController', ['$rootScope', '$scope', 'authenticateRequest', 'errorHandler', 'userSession',
 
-    function($rootScope, $scope, authenticateRequest, errorHandler, userSession) {
+    function LoginController($rootScope, $scope, authenticateRequest, errorHandler, userSession) {
+
       $scope.errorHandler = errorHandler;
 
       $scope.userLogin = function() {
@@ -22,5 +22,9 @@
 
         });
       };
-    }]);
+    }
+
+
+    LoginController.$inject = ['$rootScope', '$scope', 'authenticateRequest', 'errorHandler', 'userSession'];
+    angular.module('em.app').controller('LoginController', LoginController);
   }());
