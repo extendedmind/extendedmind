@@ -571,7 +571,17 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
           }
         }
       }
-    } 
+    }
+    it("should successfully get user with GET /user?email=[email]") {    
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Get("/user?email=" + LAURI_EMAIL
+         ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+         ) ~> emRoute ~> check {
+        writeJsonOutput("getUserResponse", entityAs[String])
+        val publicUser = entityAs[PublicUser]
+        publicUser.uuid should not be None
+      }
+    }
   }
   
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {

@@ -139,7 +139,24 @@ trait Service extends API with Injectable {
           }
         }
       }
-    } ~ 
+    } ~
+    getUser { url =>
+      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        // Only admins can create new collectives for now
+        authorize(adminAccess(securityContext)){
+          parameters("email") { email =>
+            complete {
+              Future[PublicUser] {
+                userActions.getPublicUser(email) match {
+                  case Right(publicUser) => publicUser
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      }      
+    } ~
     postAuthenticate { url =>
       authenticate(ExtendedAuth(authenticateAuthenticator)) { securityContext =>
         complete {

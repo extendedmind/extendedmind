@@ -39,6 +39,16 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
+  def getUser(uuid: UUID): Response[User] = {
+    withTx{
+      implicit neo =>
+        for{
+          userNode <- getNode(uuid, OwnerLabel.USER).right
+          user <- toCaseClass[User](userNode).right
+        }yield user
+    }
+  }
+  
   def putNewInviteRequest(inviteRequest: InviteRequest): Response[SetResult] = {
     for{
       ir <- createInviteRequest(inviteRequest).right
@@ -133,16 +143,6 @@ trait UserDatabase extends AbstractGraphDatabase {
           })
         }
         Right(userNode)
-    }
-  }
-  
-  protected def getUser(uuid: UUID): Response[User] = {
-    withTx{
-      implicit neo =>
-        for{
-          userNode <- getNode(uuid, OwnerLabel.USER).right
-          user <- toCaseClass[User](userNode).right
-        }yield user
     }
   }
 
