@@ -4,6 +4,7 @@ import org.extendedmind.test._
 import org.extendedmind.test.TestGraphDatabase._
 import org.extendedmind.domain._
 import org.extendedmind.security.SecurityContext
+import java.util.UUID
 
 class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
 	
@@ -114,9 +115,44 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
         }
       }
     }
+    it("should be able to change the permission to collective"){
+      db.authenticate(TIMO_EMAIL, TIMO_PASSWORD) match {
+        case Right(securityContext) => {
+          val collectiveUuidMap = getCollectiveUUIDMap(securityContext)
+          
+          // Change permission for Lauri
+          val lauri = db.getUser(LAURI_EMAIL).right.get
+
+          db.setUserCollectivePermission(collectiveUuidMap.get("extended mind technologies").get, 
+                                         securityContext.userUUID, lauri.uuid.get, Some(SecurityContext.READ))
+          
+          // Authenticate as Lauri and check modified permission
+          db.authenticate(LAURI_EMAIL, LAURI_PASSWORD) match {
+            case Right(lauriSecurityContext) => {
+              assert(lauriSecurityContext.collectives.get.size === 2)
+              val nameSet = getCollectiveAccess(lauriSecurityContext)
+              assert(nameSet.contains(("extended mind", 1)))
+              assert(nameSet.contains(("extended mind technologies", 1)))
+            }
+            case Left(e) => {
+              fail("Could not authenticate as Lauri")
+            }
+          }
+        }
+        case Left(e) => {
+          fail("Could not authenticate as Timo")
+        }
+      }
+    }
+
   }
   
   private def getCollectiveAccess(securityContext: SecurityContext): Set[(String, Byte)] = {
     securityContext.collectives.get.map(collectiveAccess => collectiveAccess._2).toSet
   }
+  private def getCollectiveUUIDMap(securityContext: SecurityContext): Map[String, UUID] = {
+    securityContext.collectives.get.map(collectiveAccess => (collectiveAccess._2._1 -> collectiveAccess._1))
+  }
+
+
 }

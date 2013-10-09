@@ -48,9 +48,10 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     }
   }
   
-  def addUserToCollective(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Byte): Response[SetResult] = {
+  def setUserCollectivePermission(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]): 
+        Response[SetResult] = {
     for {
-      collectiveNode <- addUserToCollectiveNode(collectiveUUID, founderUUID, userUUID, access).right
+      collectiveNode <- setUserCollectivePermissionNode(collectiveUUID, founderUUID, userUUID, access).right
       result <- Right(getSetResult(collectiveNode, false)).right
     } yield result
   }
@@ -95,18 +96,19 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def addUserToCollectiveNode(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Byte): Response[Node] = {
+  protected def setUserCollectivePermissionNode(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]): 
+      Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
-          collectiveNode <- getCreatedCollective(collectiveUUID, founderUUID).right
+          collectiveNode <- getFoundedCollective(collectiveUUID, founderUUID).right
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          relationship <- addUserToCollective(collectiveNode, userNode, access).right
+          relationship <- setUserCollectivePermission(collectiveNode, userNode, access).right
         } yield collectiveNode
     }
   }
   
-  protected def getCreatedCollective(collectiveUUID: UUID, founderUUID: UUID)
+  protected def getFoundedCollective(collectiveUUID: UUID, founderUUID: UUID)
         (implicit neo4j: DatabaseService): Response[Node] = {
     val collectiveNode = getNode(collectiveUUID, OwnerLabel.COLLECTIVE)
     if (collectiveNode.isLeft) return collectiveNode
@@ -139,16 +141,53 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def addUserToCollective(collectiveNode: Node, userNode: Node, access: Byte) 
-       (implicit neo4j: DatabaseService): Response[Relationship] = {
+  protected def setUserCollectivePermission(collectiveNode: Node, userNode: Node, access: Option[Byte]) 
+       (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+    // Get existing relationship
+    val existingRelationship = {
+      val result = getCollectiveSecurityRelationship(collectiveNode, userNode)
+      if (result.isLeft) return result
+      else{
+        if (result.right.get.isDefined && 
+            result.right.get.get.getType.name() == SecurityRelationship.IS_FOUNDER.relationshipName){
+          return fail(INVALID_PARAMETER, "Can not change permissions for collective founder")
+        }
+        result.right.get
+      }
+    }
     access match {
-      case SecurityContext.READ => 
-        Right(userNode --> SecurityRelationship.CAN_READ --> collectiveNode <)
-      case SecurityContext.READ_WRITE => 
-        Right(userNode --> SecurityRelationship.CAN_READ_WRITE --> collectiveNode <)
+      case Some(SecurityContext.READ) => {
+        if(existingRelationship.isDefined){
+          if(existingRelationship.get.getType().name() != SecurityRelationship.CAN_READ.relationshipName)
+            existingRelationship.get.delete()
+          else
+            return Right(existingRelationship)
+        }
+        Right(Some(userNode --> SecurityRelationship.CAN_READ --> collectiveNode <))
+      }
+      case Some(SecurityContext.READ_WRITE) => 
+        if(existingRelationship.isDefined){
+          if(existingRelationship.get.getType().name() != SecurityRelationship.CAN_READ_WRITE.relationshipName)
+            existingRelationship.get.delete()
+          else
+            return Right(existingRelationship)
+        }
+        Right(Some(userNode --> SecurityRelationship.CAN_READ_WRITE --> collectiveNode <))
+      case None => {
+        if(existingRelationship.isDefined){
+          existingRelationship.get.delete()
+        }
+        Right(None)
+      }
       case _ => 
         fail(INVALID_PARAMETER, "Invalid access value: " + access)
     }
+  }
+  
+  protected def getCollectiveSecurityRelationship(collectiveNode: Node, userNode: Node)
+      (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+    getRelationship(userNode, collectiveNode, SecurityRelationship.CAN_READ, SecurityRelationship.CAN_READ_WRITE, 
+            SecurityRelationship.IS_FOUNDER)
   }
 
 }

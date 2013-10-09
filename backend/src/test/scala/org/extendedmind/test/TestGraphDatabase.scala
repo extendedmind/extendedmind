@@ -49,14 +49,16 @@ trait TestGraphDatabase extends GraphDatabase {
                                             timoNode, "extended mind technologies", 
                                             Some("private collective for extended mind technologies"), false)
     
-    // Create info node after creating common collective to check if user is added to collective
+    // Info node created after common collective "extended mind" but should still be part of it
     val infoNode = createUser(User(None, None, None, INFO_EMAIL), INFO_PASSWORD).right.get
                                             
     // Add permissions to collectives
     withTx{
       implicit neo =>
-        addUserToCollective(getUUID(extendedMindTechnologies), getUUID(timoNode), getUUID(lauriNode), SecurityContext.READ_WRITE)                                            
-        addUserToCollective(getUUID(extendedMindTechnologies), getUUID(jpNode), getUUID(jpNode), SecurityContext.READ_WRITE)
+        setUserCollectivePermission(getUUID(extendedMindTechnologies), getUUID(timoNode), getUUID(lauriNode), 
+            Some(SecurityContext.READ_WRITE))                                            
+        setUserCollectivePermission(getUUID(extendedMindTechnologies), getUUID(jpNode), getUUID(jpNode), 
+            Some(SecurityContext.READ_WRITE))
     }
     withTx{
       implicit neo =>

@@ -24,6 +24,7 @@ import org.neo4j.scala._
 import org.neo4j.graphdb.traversal._
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.Relationship
+import org.neo4j.graphdb.RelationshipType
 
 abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
@@ -143,6 +144,23 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
           }
         }
     }
+  }
+  
+  protected def getRelationship(first: Node, second: Node, relationshipType: RelationshipType*)(implicit neo4j: DatabaseService): 
+            Response[Option[Relationship]] = {
+    val relationshipList = first.getRelationships(relationshipType:_*).toList
+    var returnValue: Option[Relationship] = None
+    relationshipList.foreach(relationship => {
+      if (relationship.getEndNode() == second || relationship.getStartNode() == second){
+        if (returnValue.isDefined){
+          return fail(INTERNAL_SERVER_ERROR, "More than one relationship of types " + relationshipType 
+                      + " found between nodes " + getUUID(first) 
+                      + " and " + getUUID(second))
+        }
+        returnValue = Some(relationship)
+      }
+    })
+    Right(returnValue)
   }
 
 }
