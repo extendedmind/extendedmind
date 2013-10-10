@@ -36,7 +36,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
   }
   describe("ItemDatabase"){
      it("should getItems"){
-      db.getItems(db.timoUUID) match {
+      db.getItems(Owner(db.timoUUID, None)) match {
         case Right(items) => {
           assert(items.items.isDefined)
           assert(items.items.get.size === 2)
@@ -55,13 +55,13 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
   describe("TaskDatabase"){
      it("should remove properties of a task from the database"){
       val testTask = Task("testTitle", Some("testDescription"), None, None, None, None)
-      val result = db.putNewTask(db.timoUUID, 
+      val result = db.putNewTask(Owner(db.timoUUID, None), 
            testTask)
       // Put it back without the description
-      val updateResult = db.putExistingTask(db.timoUUID, result.right.get.uuid.get, 
+      val updateResult = db.putExistingTask(Owner(db.timoUUID, None), result.right.get.uuid.get, 
           testTask.copy(description = None))
       
-      db.getTask(db.timoUUID, result.right.get.uuid.get) match {
+      db.getTask(Owner(db.timoUUID, None), result.right.get.uuid.get) match {
         case Right(task) => {
           // Assert that the modified timestamp has changed from the previous round
           assert(task.modified.get > result.right.get.modified)

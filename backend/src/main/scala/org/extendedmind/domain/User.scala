@@ -2,6 +2,7 @@ package org.extendedmind.domain
 
 import java.util.UUID
 import Validators._
+import org.extendedmind.security.SecurityContext
 
 case class User(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long],  
                 email: String)
@@ -23,3 +24,12 @@ case class UserAccessRight(access: Option[Byte]){
 }
 
 case class PublicUser(uuid: UUID)
+
+case class Owner(userUUID: UUID, collectiveUUID: Option[UUID])
+
+object Owner{
+  def getOwner(ownerUUID: UUID, securityContext: SecurityContext): Owner = {
+    if (securityContext.userUUID == ownerUUID) new Owner(securityContext.userUUID, None) 
+    else new Owner(securityContext.userUUID, Some(ownerUUID))
+  }
+}

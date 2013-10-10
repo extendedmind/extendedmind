@@ -14,34 +14,34 @@ trait ItemActions {
 
   def db: GraphDatabase;
 
-  def putNewItem(userUUID: UUID, item: Item)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putNewItem: user {}", userUUID)
-    db.putNewItem(userUUID, item)
+  def putNewItem(owner: Owner, item: Item)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putNewItem: owner {}", owner)
+    db.putNewItem(owner, item)
   }
 
-  def putExistingItem(userUUID: UUID, itemUUID: UUID, item: Item)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putExistingItem: user {}, item {}", userUUID, itemUUID)
-    db.putExistingItem(userUUID, itemUUID, item)
+  def putExistingItem(owner: Owner, itemUUID: UUID, item: Item)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putExistingItem: owner {}, item {}", owner, itemUUID)
+    db.putExistingItem(owner, itemUUID, item)
   }
 
-  def getItems(userUUID: UUID)(implicit log: LoggingContext): Response[Items] = {
-    log.info("getItems: user {}", userUUID)
-    db.getItems(userUUID)
+  def getItems(owner: Owner)(implicit log: LoggingContext): Response[Items] = {
+    log.info("getItems: owner {}", owner)
+    db.getItems(owner)
   }
 
-  def getItem(userUUID: UUID, itemUUID: UUID)(implicit log: LoggingContext): Response[Item] = {
-    log.info("getItems: user {}, item {}", userUUID, itemUUID)
-    db.getItem(userUUID, itemUUID)
+  def getItem(owner: Owner, itemUUID: UUID)(implicit log: LoggingContext): Response[Item] = {
+    log.info("getItem: owner {}, item {}", owner, itemUUID)
+    db.getItem(owner, itemUUID)
   }
   
-  def deleteItem(userUUID: UUID, itemUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
-    log.info("deleteItem: user {}, item {}", userUUID, itemUUID)
-    db.deleteItem(userUUID, itemUUID)
+  def deleteItem(owner: Owner, itemUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
+    log.info("deleteItem: owner {}, item {}", owner, itemUUID)
+    db.deleteItem(owner, itemUUID)
   }
   
-  def undeleteItem(userUUID: UUID, itemUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("undeleteItem: user {}, item {}", userUUID, itemUUID)
-    db.undeleteItem(userUUID, itemUUID)
+  def undeleteItem(owner: Owner, itemUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("undeleteItem: owner {}, item {}", owner, itemUUID)
+    db.undeleteItem(owner, itemUUID)
   }
 }
 

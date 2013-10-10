@@ -18,53 +18,53 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PUBLIC
 
-  def putNewNote(userUUID: UUID, note: Note): Response[SetResult] = {
+  def putNewNote(owner: Owner, note: Note): Response[SetResult] = {
     for {
-      noteNode <- putNewExtendedItem(userUUID, note, ItemLabel.NOTE).right
+      noteNode <- putNewExtendedItem(owner, note, ItemLabel.NOTE).right
       result <- Right(getSetResult(noteNode, true)).right
     } yield result
   }
 
-  def putExistingNote(userUUID: UUID, noteUUID: UUID, note: Note): Response[SetResult] = {
+  def putExistingNote(owner: Owner, noteUUID: UUID, note: Note): Response[SetResult] = {
     for {
-      noteNode <- putExistingExtendedItem(userUUID, noteUUID, note, ItemLabel.NOTE).right
+      noteNode <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
       result <- Right(getSetResult(noteNode, false)).right
     } yield result
   }
 
-  def getNote(userUUID: UUID, noteUUID: UUID): Response[Note] = {
+  def getNote(owner: Owner, noteUUID: UUID): Response[Note] = {
     withTx {
       implicit neo =>
         for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
-          noteNode <- getItemNode(userNode, noteUUID, Some(ItemLabel.NOTE)).right
-          note <- toNote(noteNode, userUUID).right
+          ownerNodes <- getOwnerNodes(owner).right
+          noteNode <- getItemNode(ownerNodes, noteUUID, Some(ItemLabel.NOTE)).right
+          note <- toNote(noteNode, owner).right
         } yield note
     }
   }
   
-  def deleteNote(userUUID: UUID, noteUUID: UUID): Response[DeleteItemResult] = {
+  def deleteNote(owner: Owner, noteUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedNote <- deleteNoteNode(userUUID, noteUUID).right
+      deletedNote <- deleteNoteNode(owner, noteUUID).right
       result <- Right(getDeleteItemResult(deletedNote._1, deletedNote._2)).right
     } yield result
   }
 
   // PRIVATE
 
-  override def toNote(noteNode: Node, userUUID: UUID)
+  override def toNote(noteNode: Node, owner: Owner)
                (implicit neo4j: DatabaseService): Response[Note] = {
     for {
       note <- toCaseClass[Note](noteNode).right
-      completeNote <- addTransientNoteProperties(noteNode, userUUID, note).right
+      completeNote <- addTransientNoteProperties(noteNode, owner, note).right
     } yield completeNote
   }
 
-  protected def addTransientNoteProperties(noteNode: Node, userUUID: UUID, note: Note)
+  protected def addTransientNoteProperties(noteNode: Node, owner: Owner, note: Note)
                 (implicit neo4j: DatabaseService): Response[Note] = {
     for {
-      parents <- getParentRelationships(noteNode, userUUID).right
-      tags <- getTagRelationships(noteNode, userUUID).right
+      parents <- getParentRelationships(noteNode, owner).right
+      tags <- getTagRelationships(noteNode, owner).right
       note <- Right(note.copy(
         relationships = 
           (if (parents._1.isDefined || parents._2.isDefined || tags.isDefined)            
@@ -79,12 +79,12 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   
-  protected def deleteNoteNode(userUUID: UUID, noteUUID: UUID): Response[Tuple2[Node, Long]] = {
+  protected def deleteNoteNode(owner: Owner, noteUUID: UUID): Response[Tuple2[Node, Long]] = {
     withTx {
       implicit neo =>
         for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
-          itemNode <- getItemNode(userNode, noteUUID, Some(ItemLabel.NOTE)).right
+          ownerNodes <- getOwnerNodes(owner).right
+          itemNode <- getItemNode(ownerNodes, noteUUID, Some(ItemLabel.NOTE)).right
           deletable <- validateNoteDeletable(itemNode).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)

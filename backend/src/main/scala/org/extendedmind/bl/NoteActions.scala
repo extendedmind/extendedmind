@@ -14,29 +14,29 @@ trait NoteActions {
 
   def db: GraphDatabase;
 
-  def putNewNote(userUUID: UUID, note: Note)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putNewNote: user {}", userUUID)
-    db.putNewNote(userUUID, note)
+  def putNewNote(owner: Owner, note: Note)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putNewNote: owner {}", owner)
+    db.putNewNote(owner, note)
   }
 
-  def putExistingNote(userUUID: UUID, noteUUID: UUID, note: Note)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putExistingNote: user {}, note {}", userUUID, noteUUID)
-    db.putExistingNote(userUUID, noteUUID, note)
+  def putExistingNote(owner: Owner, noteUUID: UUID, note: Note)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putExistingNote: owner {}, note {}", owner, noteUUID)
+    db.putExistingNote(owner, noteUUID, note)
   }
 
-  def getNote(userUUID: UUID, noteUUID: UUID)(implicit log: LoggingContext): Response[Note] = {
-    log.info("getNote: user {}, note {}", userUUID, noteUUID)
-    db.getNote(userUUID, noteUUID)
+  def getNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingContext): Response[Note] = {
+    log.info("getNote: owner {}, note {}", owner, noteUUID)
+    db.getNote(owner, noteUUID)
   }
   
-  def deleteNote(userUUID: UUID, noteUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
-    log.info("deleteNote: user {}, note {}", userUUID, noteUUID)
-    db.deleteNote(userUUID, noteUUID)
+  def deleteNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
+    log.info("deleteNote: owner {}, note {}", owner, noteUUID)
+    db.deleteNote(owner, noteUUID)
   }
   
-  def undeleteNote(userUUID: UUID, noteUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("undeleteNote: user {}, note {}", userUUID, noteUUID)
-    db.undeleteItem(userUUID, noteUUID, Some(ItemLabel.NOTE))
+  def undeleteNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("undeleteNote: owner {}, note {}", owner, noteUUID)
+    db.undeleteItem(owner, noteUUID, Some(ItemLabel.NOTE))
   }
 }
 

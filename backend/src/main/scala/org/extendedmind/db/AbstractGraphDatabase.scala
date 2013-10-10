@@ -26,6 +26,8 @@ import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.RelationshipType
 
+case class OwnerNodes(user: Node, collective: Option[Node])
+
 abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   // IMPLICITS
@@ -119,6 +121,15 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     getNode("accessKey", token.accessKey: java.lang.Long, MainLabel.TOKEN, None, acceptDeleted)
   }
 
+  protected def getNodeOption(nodeUUID: Option[UUID], label: Label, acceptDeleted: Boolean = false): Response[Option[Node]] = {
+    if (nodeUUID.isDefined){
+      val nodeResponse = getNode(nodeUUID.get, label, acceptDeleted)
+      if (nodeResponse.isLeft) return Left(nodeResponse.left.get)
+      else Right(Some(nodeResponse.right.get))
+    }
+    else Right(None)
+  }
+  
   protected def getNode(nodeUUID: UUID, label: Label, acceptDeleted: Boolean = false): Response[Node] = {
     val uuidString = UUIDUtils.getTrimmedBase64UUID(nodeUUID)
     getNode("uuid", uuidString, label, Some(nodeUUID.toString()), acceptDeleted)
@@ -161,6 +172,16 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       }
     })
     Right(returnValue)
+  }
+
+  protected def getOwnerUUID(owner: Owner): UUID = {
+    if (owner.collectiveUUID.isDefined) owner.collectiveUUID.get
+    else owner.userUUID
+  }
+  
+  protected def getOwnerNode(ownerNodes: OwnerNodes): Node = {
+    if (ownerNodes.collective.isDefined) ownerNodes.collective.get
+    else ownerNodes.user
   }
 
 }
