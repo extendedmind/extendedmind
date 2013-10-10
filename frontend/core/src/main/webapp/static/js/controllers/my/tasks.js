@@ -60,17 +60,19 @@
 
         }
       };
-      
-      $scope.taskToProject=function(task){
-task.project=true;
-console.log(task);
-        // tasksRequest.putExistingTask(task, function(putExistingTaskResponse) {
-// 
-          // tasksResponse.putTaskContent(task, putExistingTaskResponse);
-// 
-        // }, function(putExistingTaskResponse) {
-        // });
-        
+
+      $scope.taskToProject = function(task) {
+
+        task.project = true;
+
+        tasksRequest.putExistingTask(task, function(putExistingTaskResponse) {
+          tasksResponse.putTaskContent(task, putExistingTaskResponse);
+          $scope.addNew();
+
+          tasksArray.removeTask(task);
+          tasksArray.setProject(task);
+        }, function(putExistingTaskResponse) {
+        });
       };
 
       $scope.addNew = function() {
@@ -78,11 +80,13 @@ console.log(task);
       };
 
       $scope.deleteTask = function(task) {
+
         tasksRequest.deleteTask(task, function(deleteTaskResponse) {
           tasksResponse.putTaskContent(task, deleteTaskResponse);
           tasksArray.removeTask(task);
         }, function(deleteTaskResponse) {
         });
+
       };
 
       $scope.setActiveItem = function(task) {

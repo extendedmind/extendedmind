@@ -9,8 +9,7 @@
 
       if (activeItem.getItem()) {
         $scope.project = activeItem.getItem();
-
-        $scope.tasks = itemsArray.getItemsByUuid(tasksArray.getSubtasks(), $scope.project.uuid);
+        $scope.tasks = tasksArray.getSubtasksByUuid($scope.project.uuid);
       } else {
         itemsRequest.getItems(function(itemsResponse) {
 
@@ -18,11 +17,8 @@
           tasksArray.setTasks(itemsResponse.tasks);
           tagsArray.setTags(itemsResponse.tags);
 
-          $scope.projects = tasksArray.getProjects();
-
           $scope.project = itemsArray.getItemByUuid(tasksArray.getProjects(), $routeParams.uuid);
-          $scope.tasks = itemsArray.getItemsByUuid(tasksArray.getSubtasks(), $scope.project.uuid);
-
+          $scope.tasks = tasksArray.getSubtasksByUuid($scope.project.uuid);
         }, function(error) {
         });
       }

@@ -91,6 +91,9 @@
         getSubtaskByUuid : function(uuid) {
           return itemsArray.getItemByUuid(subtasks, uuid);
         },
+        getSubtasksByUuid : function(uuid) {
+          return itemsArray.getItemsByUuid(subtasks, uuid);
+        },
         getTaskByUuid : function(uuid) {
           return itemsArray.getItemByUuid(tasks, uuid);
         },
@@ -103,12 +106,26 @@
           itemsArray.deleteItemProperty(task, property);
         },
         removeTask : function(task) {
+          if (task.relationships.parentTask) {
+            this.removeSubtask(task);
+            if (this.getSubtasksByUuid(task.relationships.parentTask).length === 0) {
+              this.setProjectToTask(this.getProjectByUuid(task.relationships.parentTask));
+            }
+          }
           itemsArray.removeItemFromArray(tasks, task);
         },
         setProject : function(task) {
           if (!itemsArray.itemInArray(projects, task.uuid)) {
             projects.push(task);
           }
+        },
+        removeProject : function(task) {
+          itemsArray.removeItemFromArray(projects, task);
+        },
+        setProjectToTask : function(task) {
+          this.deleteTaskProperty(task, 'project');
+          this.removeProject(task);
+          this.setTask(task);
         },
         getProjects : function() {
           return projects;
