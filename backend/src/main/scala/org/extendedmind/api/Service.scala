@@ -211,7 +211,25 @@ trait Service extends API with Injectable {
             }
           }
         }
-      }      
+      }
+    } ~
+    postCollectiveUserPermission{ (collectiveUUID, userUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        // Only founder admin can assign people to exclusive collectives for now
+        authorize(adminAccess(securityContext)){
+          entity(as[UserAccessRight]) { userAccessRight =>
+            complete{
+              Future[SetResult] {
+                collectiveActions.setCollectiveUserPermission(collectiveUUID, securityContext.userUUID, userUUID, userAccessRight.access) 
+                      match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      }    
     } ~
     getItems { ownerUUID =>
       authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>

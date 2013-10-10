@@ -48,10 +48,10 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     }
   }
   
-  def setUserCollectivePermission(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]): 
+  def setCollectiveUserPermission(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]): 
         Response[SetResult] = {
     for {
-      collectiveNode <- setUserCollectivePermissionNode(collectiveUUID, founderUUID, userUUID, access).right
+      collectiveNode <- setCollectiveUserPermissionNode(collectiveUUID, founderUUID, userUUID, access).right
       result <- Right(getSetResult(collectiveNode, false)).right
     } yield result
   }
@@ -96,14 +96,14 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def setUserCollectivePermissionNode(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]): 
+  protected def setCollectiveUserPermissionNode(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]): 
       Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
           collectiveNode <- getFoundedCollective(collectiveUUID, founderUUID).right
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          relationship <- setUserCollectivePermission(collectiveNode, userNode, access).right
+          relationship <- setCollectiveUserPermission(collectiveNode, userNode, access).right
         } yield collectiveNode
     }
   }
@@ -141,7 +141,7 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def setUserCollectivePermission(collectiveNode: Node, userNode: Node, access: Option[Byte]) 
+  protected def setCollectiveUserPermission(collectiveNode: Node, userNode: Node, access: Option[Byte]) 
        (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
     // Get existing relationship
     val existingRelationship = {

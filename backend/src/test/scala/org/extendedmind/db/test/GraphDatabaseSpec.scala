@@ -123,7 +123,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
           // Change permission for Lauri
           val lauri = db.getUser(LAURI_EMAIL).right.get
 
-          db.setUserCollectivePermission(collectiveUuidMap.get("extended mind technologies").get, 
+          db.setCollectiveUserPermission(collectiveUuidMap.get("extended mind technologies").get, 
                                          securityContext.userUUID, lauri.uuid.get, Some(SecurityContext.READ))
           
           // Authenticate as Lauri and check modified permission
