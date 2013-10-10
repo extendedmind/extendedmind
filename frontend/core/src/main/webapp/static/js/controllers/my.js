@@ -3,8 +3,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('MyController', ['$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'notesRequest', 'notesResponse', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse',
-    function($scope, activeItem, itemsArray, itemsRequest, itemsResponse, notesArray, notesRequest, notesResponse, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    function MyController($scope, activeItem, itemsArray, itemsRequest, itemsResponse, notesArray, notesRequest, notesResponse, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       itemsRequest.getItems(function(itemsResponse) {
 
@@ -82,6 +81,9 @@
         }, function(putExistingNoteResponse) {
         });
       };
+    }
 
-    }]);
+
+    MyController.$inject = ['$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'notesRequest', 'notesResponse', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    angular.module('em.app').controller('MyController', MyController);
   }());

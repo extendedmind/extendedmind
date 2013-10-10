@@ -85,10 +85,22 @@
         getTasks : function() {
           return tasks;
         },
+        getProjectByUuid : function(uuid) {
+          return itemsArray.getItemByUuid(projects, uuid);
+        },
+        getSubtaskByUuid : function(uuid) {
+          return itemsArray.getItemByUuid(subtasks, uuid);
+        },
+        getTaskByUuid : function(uuid) {
+          return itemsArray.getItemByUuid(tasks, uuid);
+        },
         setTask : function(task) {
           if (!itemsArray.itemInArray(tasks, task.uuid)) {
             tasks.push(task);
           }
+        },
+        deleteTaskProperty : function(task, property) {
+          itemsArray.deleteItemProperty(task, property);
         },
         removeTask : function(task) {
           itemsArray.removeItemFromArray(tasks, task);
@@ -105,6 +117,9 @@
           if (!itemsArray.itemInArray(subtasks, task.uuid)) {
             subtasks.push(task);
           }
+        },
+        removeSubtask : function(task) {
+          itemsArray.removeItemFromArray(subtasks, task);
         },
         getSubtasks : function() {
           return subtasks;

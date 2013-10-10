@@ -1,32 +1,32 @@
 <form class="form-horizontal" role="form" name="taskEdit">
 
   <div class="form-group">
-    <label class="sr-only" for="newTaskTitle">title</label>
+    <label class="sr-only" for="taskTitle">title</label>
     <div class="col-lg-10">
-      <input type="text" class="form-control" id="newTaskTitle" ng-model="task.title" autofocus="autofocus" placeholder="title..." required>
+      <input type="text" class="form-control" id="taskTitle" ng-model="task.title" autofocus="autofocus" placeholder="title..." required>
     </div>
   </div>
 
   <div class="form-group">
-    <label class="sr-only" for="newTaskDue">date</label>
+    <label class="sr-only" for="taskkDue">date</label>
     <div class="col-lg-10">
-      <input type="date" class="form-control" id="newTaskDue" ng-model="task.due">
+      <input type="date" class="form-control" id="taskDue" ng-model="task.due">
     </div>
   </div>
 
   <div class="form-group">
-    <label class="sr-only" for="newTaskParent">parent</label>
+    <label class="sr-only" for="taskParent">parent</label>
     <div class="col-lg-10">
-      <select class="form-control" id="newTaskParent" ng-model="parentTask" ng-options="project.title for project in projects">
+      <select class="form-control" id="taskParent" ng-model="parentTask" ng-options="project.title for project in projects">
         <option value="">select list</option>
       </select>
     </div>
   </div>
 
   <div class="form-group">
-    <label class="sr-only" for="newTaskDescription">description</label>
+    <label class="sr-only" for="taskLink">link</label>
     <div class="col-lg-10">
-      <textarea class="form-control" id="newTaskDescription" ng-model="task.description" placeholder="description..."></textarea>
+      <input type="text" class="form-control" id="taskLink" ng-model="task.link" placeholder="link...">
     </div>
   </div>
 

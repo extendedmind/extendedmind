@@ -2,8 +2,11 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('HomeController', ['$scope', 'errorHandler',
-    function($scope, errorHandler) {
+    function HomeController() {
 
-    }]);
+    }
+
+
+    HomeController.$inject = [];
+    angular.module('em.app').controller('HomeController', HomeController);
   }());

@@ -2,8 +2,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.app').controller('NoteEditController', ['$rootScope', '$routeParams', '$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'notesArray', 'notesRequest', 'notesResponse',
-    function($rootScope, $routeParams, $scope, activeItem, itemsArray, itemsRequest, notesArray, notesRequest, notesResponse) {
+    function NoteEditController($rootScope, $routeParams, $scope, activeItem, itemsArray, itemsRequest, notesArray, notesRequest, notesResponse) {
 
       if (activeItem.getItem()) {
         $scope.note = activeItem.getItem();
@@ -35,5 +34,9 @@
       $scope.cancelEdit = function() {
         window.history.back();
       };
-    }]);
+    }
+
+
+    NoteEditController.$inject = ['$rootScope', '$routeParams', '$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'notesArray', 'notesRequest', 'notesResponse'];
+    angular.module('em.app').controller('NoteEditController', NoteEditController);
   }());

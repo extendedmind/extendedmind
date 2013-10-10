@@ -46,9 +46,6 @@
             item[key] = value;
           });
 
-        },
-        deleteItemProperty : function(item, property) {
-          delete item[property];
         }
       };
     }]);
@@ -88,6 +85,9 @@
         },
         removeItemFromArray : function(items, item) {
           items.splice(items.indexOf(item), 1);
+        },
+        deleteItemProperty : function(item, property) {
+          delete item[property];
         },
         getItemByUuid : function(items, uuid) {
           var i = 0;
