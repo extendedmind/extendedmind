@@ -60,6 +60,9 @@
         if (task.due) {
           filteredValues.push(task.due);
         }
+        if (task.link) {
+          filteredValues.push(task.link);
+        }
 
         return filteredValues;
       };

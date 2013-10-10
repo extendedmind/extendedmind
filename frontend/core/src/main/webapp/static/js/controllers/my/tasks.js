@@ -60,6 +60,18 @@
 
         }
       };
+      
+      $scope.taskToProject=function(task){
+task.project=true;
+console.log(task);
+        // tasksRequest.putExistingTask(task, function(putExistingTaskResponse) {
+// 
+          // tasksResponse.putTaskContent(task, putExistingTaskResponse);
+// 
+        // }, function(putExistingTaskResponse) {
+        // });
+        
+      };
 
       $scope.addNew = function() {
         $location.path('/my/tasks/new/');
