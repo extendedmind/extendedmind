@@ -11,7 +11,14 @@
     function($locationProvider, $routeProvider) {
 
       $routeProvider.when('/', {
-        redirectTo : '/login'
+        resolve : {
+          authenticationRequired : ['userAuthenticate',
+          function(userAuthenticate) {
+            userAuthenticate.authenticate();
+          }]
+
+        },
+        redirectTo : '/my'
       });
 
       $routeProvider.when('/404', {
@@ -28,9 +35,9 @@
         controller : 'MyController',
         templateUrl : 'static/partials/my.html',
         resolve : {
-          authenticationRequired : ['$rootScope',
-          function($rootScope) {
-            $rootScope.$broadcast('event:authenticationRequired');
+          authenticationRequired : ['userAuthenticate',
+          function(userAuthenticate) {
+            userAuthenticate.authenticate();
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -44,9 +51,9 @@
         controller : 'NotesController',
         templateUrl : 'static/partials/my/notesSlides.html',
         resolve : {
-          authenticationRequired : ['$rootScope',
-          function($rootScope) {
-            $rootScope.$broadcast('event:authenticationRequired');
+          authenticationRequired : ['userAuthenticate',
+          function(userAuthenticate) {
+            userAuthenticate.authenticate();
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -60,9 +67,9 @@
         controller : 'ContextController',
         templateUrl : 'static/partials/my/notes/context.html',
         resolve : {
-          authenticationRequired : ['$rootScope',
-          function($rootScope) {
-            $rootScope.$broadcast('event:authenticationRequired');
+          authenticationRequired : ['userAuthenticate',
+          function(userAuthenticate) {
+            userAuthenticate.authenticate();
           }]
 
         }
@@ -72,9 +79,9 @@
         controller : 'NoteEditController',
         templateUrl : 'static/partials/my/notes/edit.html',
         resolve : {
-          authenticationRequired : ['$rootScope',
-          function($rootScope) {
-            $rootScope.$broadcast('event:authenticationRequired');
+          authenticationRequired : ['userAuthenticate',
+          function(userAuthenticate) {
+            userAuthenticate.authenticate();
           }]
 
         }
@@ -84,9 +91,9 @@
         controller : 'NewNoteController',
         templateUrl : 'static/partials/my/notes/new.html',
         resolve : {
-          authenticationRequired : ['$rootScope',
-          function($rootScope) {
-            $rootScope.$broadcast('event:authenticationRequired');
+          authenticationRequired : ['userAuthenticate',
+          function(userAuthenticate) {
+            userAuthenticate.authenticate();
           }]
 
         }
@@ -96,9 +103,9 @@
         controller : 'TasksController',
         templateUrl : 'static/partials/my/tasksSlides.html',
         resolve : {
-          authenticationRequired : ['$rootScope',
-          function($rootScope) {
-            $rootScope.$broadcast('event:authenticationRequired');
+          authenticationRequired : ['userAuthenticate',
+          function(userAuthenticate) {
+            userAuthenticate.authenticate();
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -112,9 +119,9 @@
         controller : 'ContextController',
         templateUrl : 'static/partials/my/tasks/context.html',
         resolve : {
-          authenticationRequired : ['$rootScope',
-          function($rootScope) {
-            $rootScope.$broadcast('event:authenticationRequired');
+          authenticationRequired : ['userAuthenticate',
+          function(userAuthenticate) {
+            userAuthenticate.authenticate();
           }]
 
         }
@@ -124,9 +131,9 @@
         controller : 'EditTaskController',
         templateUrl : 'static/partials/my/tasks/edit.html',
         resolve : {
-          authenticationRequired : ['$rootScope',
-          function($rootScope) {
-            $rootScope.$broadcast('event:authenticationRequired');
+          authenticationRequired : ['userAuthenticate',
+          function(userAuthenticate) {
+            userAuthenticate.authenticate();
           }]
 
         }
@@ -136,9 +143,9 @@
         controller : 'NewTaskController',
         templateUrl : 'static/partials/my/tasks/new.html',
         resolve : {
-          authenticationRequired : ['$rootScope',
-          function($rootScope) {
-            $rootScope.$broadcast('event:authenticationRequired');
+          authenticationRequired : ['userAuthenticate',
+          function(userAuthenticate) {
+            userAuthenticate.authenticate();
           }]
 
         }
@@ -148,9 +155,9 @@
         controller : 'ProjectController',
         templateUrl : 'static/partials/my/tasks/project.html',
         resolve : {
-          authenticationRequired : ['$rootScope',
-          function($rootScope) {
-            $rootScope.$broadcast('event:authenticationRequired');
+          authenticationRequired : ['userAuthenticate',
+          function(userAuthenticate) {
+            userAuthenticate.authenticate();
           }]
 
         }
