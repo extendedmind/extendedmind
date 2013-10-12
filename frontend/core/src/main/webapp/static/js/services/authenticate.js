@@ -1,9 +1,10 @@
 /*global $, angular*/
+/*jslint eqeq: true */
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('userAuthenticate', ['$rootScope', 'authenticateRequest', 'userSession', 'userCookie', 'userSessionStorage',
-    function($rootScope, authenticateRequest, userSession, userCookie, userSessionStorage) {
+    angular.module('em.services').factory('userAuthenticate', ['$location', '$q', 'authenticateRequest', 'userSession', 'userCookie', 'userSessionStorage',
+    function($location, $q, authenticateRequest, userSession, userCookie, userSessionStorage) {
       return {
         authenticate : function() {
 
@@ -12,17 +13,19 @@
               userSession.setEncodedCredentials(userSessionStorage.getHttpAuthorizationHeader());
             }
           } else if (userCookie.isUserRemembered()) {
+            var deferred = $q.defer();
             userSession.setCredentials('token', userCookie.getUserToken());
             userSession.setUserRemembered(true);
 
             authenticateRequest.login(function(authenticateResponse) {
-              userSession.setUserSessionData(authenticateResponse);
-              $rootScope.$broadcast('event:loginSuccess');
+              deferred.resolve(userSession.setUserSessionData(authenticateResponse));
+              $location.path('/my');
             }, function(error) {
-              $rootScope.$broadcast('event:loginRequired');
+              $location.path('/login');
             });
+            return deferred.promise;
           } else {
-            $rootScope.$broadcast('event:loginRequired');
+            $location.path('/login');
           }
         }
       };
@@ -96,7 +99,7 @@
           $.removeCookie('token');
         },
         isUserRemembered : function() {
-          return $.cookie('token') !== undefined;
+          return $.cookie('token') != null;
         }
       };
     }]);
@@ -124,7 +127,7 @@
           sessionStorage.removeItem('userUUID');
         },
         isUserAuthenticated : function() {
-          return sessionStorage.getItem('authorizationHeader') !== null;
+          return sessionStorage.getItem('authorizationHeader') != null;
         }
       };
     }]);

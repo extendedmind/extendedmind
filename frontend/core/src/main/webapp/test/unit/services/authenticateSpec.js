@@ -9,24 +9,23 @@
         beforeEach(module('em.mockHelpers'));
 
         describe('userAuthenticate', function() {
-          var $rootScope, httpBasicAuth, mockHttpBackendResponse, userAuthenticate;
+          var $location, httpBasicAuth, mockHttpBackendResponse, userAuthenticate, userSessionStorage;
 
-          beforeEach(inject(function(_$rootScope_, _httpBasicAuth_, _mockHttpBackendResponse_, _userAuthenticate_) {
-            $rootScope = _$rootScope_;
-            spyOn($rootScope, "$broadcast");
-
+          beforeEach(inject(function(_$location_, _httpBasicAuth_, _mockHttpBackendResponse_, _userAuthenticate_, _userSessionStorage_) {
             httpBasicAuth = _httpBasicAuth_;
             mockHttpBackendResponse = _mockHttpBackendResponse_;
             userAuthenticate = _userAuthenticate_;
+            userSessionStorage = _userSessionStorage_;
+
           }));
 
           afterEach(function() {
             mockHttpBackendResponse.clearCookies();
           });
 
-          it('should broadcast \'event:loginRequired\' on invalid user', inject(function() {
+          it('should not authenticate invalid user', inject(function() {
             userAuthenticate.authenticate();
-            expect($rootScope.$broadcast).toHaveBeenCalledWith('event:loginRequired');
+            expect(userSessionStorage.isUserAuthenticated()).toEqual(false);
           }));
         });
       });

@@ -82,6 +82,15 @@
             i++;
           }
         },
+        removeTask : function(task) {
+          if (task.relationships) {
+            if (task.relationships.parentTask) {
+              this.removeSubtask(task);
+              this.removeProject(task.relationships.parentTask);
+            }
+          }
+          itemsArray.removeItemFromArray(tasks, task);
+        },
         getTasks : function() {
           return tasks;
         },
@@ -105,27 +114,18 @@
         deleteTaskProperty : function(task, property) {
           itemsArray.deleteItemProperty(task, property);
         },
-        removeTask : function(task) {
-          if (task.relationships.parentTask) {
-            this.removeSubtask(task);
-            if (this.getSubtasksByUuid(task.relationships.parentTask).length === 0) {
-              this.setProjectToTask(this.getProjectByUuid(task.relationships.parentTask));
-            }
-          }
-          itemsArray.removeItemFromArray(tasks, task);
-        },
         setProject : function(task) {
           if (!itemsArray.itemInArray(projects, task.uuid)) {
             projects.push(task);
           }
         },
-        removeProject : function(task) {
-          itemsArray.removeItemFromArray(projects, task);
-        },
-        setProjectToTask : function(task) {
-          this.deleteTaskProperty(task, 'project');
-          this.removeProject(task);
-          this.setTask(task);
+        removeProject : function(uuid) {
+          if (this.getSubtasksByUuid(uuid).length === 0) {
+            var task = this.getProjectByUuid(uuid);
+            itemsArray.removeItemFromArray(projects, task);
+            this.deleteTaskProperty(task, 'project');
+            this.setTask(task);
+          }
         },
         getProjects : function() {
           return projects;
@@ -136,7 +136,11 @@
           }
         },
         removeSubtask : function(task) {
-          itemsArray.removeItemFromArray(subtasks, task);
+          if (task.relationships) {
+            if (task.relationships.parentTask) {
+              itemsArray.removeItemFromArray(subtasks, task);
+            }
+          }
         },
         getSubtasks : function() {
           return subtasks;
