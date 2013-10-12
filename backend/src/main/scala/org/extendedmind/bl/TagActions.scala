@@ -14,19 +14,19 @@ trait TagActions {
 
   def db: GraphDatabase;
 
-  def putNewTag(userUUID: UUID, tag: Tag)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putNewTag: user {}", userUUID)
-    db.putNewTag(userUUID, tag)
+  def putNewTag(owner: Owner, tag: Tag)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putNewTag: owner {}", owner)
+    db.putNewTag(owner, tag)
   }
   
-  def putExistingTag(userUUID: UUID, tagUUID: UUID, tag: Tag)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putExistingTag: user {}, tag {}", userUUID, tagUUID)
-    db.putExistingTag(userUUID, tagUUID, tag)
+  def putExistingTag(owner: Owner, tagUUID: UUID, tag: Tag)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putExistingTag: owner {}, tag {}", owner, tagUUID)
+    db.putExistingTag(owner, tagUUID, tag)
   }
   
-  def getTag(userUUID: UUID, tagUUID: UUID)(implicit log: LoggingContext): Response[Tag] = {
-    log.info("getTag: user {}, tag {}", userUUID, tagUUID)
-    db.getTag(userUUID, tagUUID)
+  def getTag(owner: Owner, tagUUID: UUID)(implicit log: LoggingContext): Response[Tag] = {
+    log.info("getTag: owner {}, tag {}", owner, tagUUID)
+    db.getTag(owner, tagUUID)
   }
 }
 

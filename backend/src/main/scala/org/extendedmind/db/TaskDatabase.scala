@@ -18,66 +18,66 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PUBLIC
 
-  def putNewTask(userUUID: UUID, task: Task): Response[SetResult] = {
+  def putNewTask(owner: Owner, task: Task): Response[SetResult] = {
     for {
-      taskNode <- putNewExtendedItem(userUUID, task, ItemLabel.TASK).right
+      taskNode <- putNewExtendedItem(owner, task, ItemLabel.TASK).right
       result <- Right(getSetResult(taskNode, true)).right
     } yield result
   }
 
-  def putExistingTask(userUUID: UUID, taskUUID: UUID, task: Task): Response[SetResult] = {
+  def putExistingTask(owner: Owner, taskUUID: UUID, task: Task): Response[SetResult] = {
     for {
-      taskNode <- putExistingExtendedItem(userUUID, taskUUID, task, ItemLabel.TASK).right
+      taskNode <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
       result <- Right(getSetResult(taskNode, false)).right
     } yield result
   }
 
-  def getTask(userUUID: UUID, taskUUID: UUID): Response[Task] = {
+  def getTask(owner: Owner, taskUUID: UUID): Response[Task] = {
     withTx {
       implicit neo =>
         for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
-          taskNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
+          ownerNodes <- getOwnerNodes(owner).right
+          taskNode <- getItemNode(ownerNodes, taskUUID, Some(ItemLabel.TASK)).right
           task <- toCaseClass[Task](taskNode).right
-          completeTask <- addTransientTaskProperties(taskNode, userUUID, task).right
+          completeTask <- addTransientTaskProperties(taskNode, owner, task).right
         } yield completeTask
     }
   }
   
-  def deleteTask(userUUID: UUID, taskUUID: UUID): Response[DeleteItemResult] = {
+  def deleteTask(owner: Owner, taskUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedTask <- deleteTaskNode(userUUID, taskUUID).right
+      deletedTask <- deleteTaskNode(owner, taskUUID).right
       result <- Right(getDeleteItemResult(deletedTask._1, deletedTask._2)).right
     } yield result
   }
   
-  def completeTask(userUUID: UUID, taskUUID: UUID): Response[CompleteTaskResult] = {
+  def completeTask(owner: Owner, taskUUID: UUID): Response[CompleteTaskResult] = {
     for {
-      task <- completeTaskNode(userUUID, taskUUID).right
+      task <- completeTaskNode(owner, taskUUID).right
       result <- Right(getCompleteTaskResult(task)).right
     } yield result
   }
   
-  def uncompleteTask(userUUID: UUID, taskUUID: UUID): Response[SetResult] = {
+  def uncompleteTask(owner: Owner, taskUUID: UUID): Response[SetResult] = {
     for {
-      taskNode <- uncompleteTaskNode(userUUID, taskUUID).right
+      taskNode <- uncompleteTaskNode(owner, taskUUID).right
       result <- Right(getSetResult(taskNode, false)).right
     } yield result
   }
 
   // PRIVATE
 
-  override def toTask(taskNode: Node, userUUID: UUID)(implicit neo4j: DatabaseService): Response[Task] = {
+  override def toTask(taskNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Task] = {
     for {
       task <- toCaseClass[Task](taskNode).right
-      completeTask <- addTransientTaskProperties(taskNode, userUUID, task).right
+      completeTask <- addTransientTaskProperties(taskNode, owner, task).right
     } yield completeTask
   }
 
-  protected def addTransientTaskProperties(taskNode: Node, userUUID: UUID, task: Task)(implicit neo4j: DatabaseService): Response[Task] = {
+  protected def addTransientTaskProperties(taskNode: Node, owner: Owner, task: Task)(implicit neo4j: DatabaseService): Response[Task] = {
     for {
-      parents <- getParentRelationships(taskNode, userUUID).right
-      tags <- getTagRelationships(taskNode, userUUID).right
+      parents <- getParentRelationships(taskNode, owner).right
+      tags <- getTagRelationships(taskNode, owner).right
       task <- Right(task.copy(
         relationships = 
           (if (parents._1.isDefined || parents._2.isDefined || tags.isDefined)            
@@ -91,12 +91,12 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield task
   }
 
-  protected def completeTaskNode(userUUID: UUID, taskUUID: UUID): Response[Node] = {
+  protected def completeTaskNode(owner: Owner, taskUUID: UUID): Response[Node] = {
     withTx {
       implicit neo =>
         for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
-          taskNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
+          ownerNodes <- getOwnerNodes(owner).right
+          taskNode <- getItemNode(ownerNodes, taskUUID, Some(ItemLabel.TASK)).right
           result <- Right(completeTaskNode(taskNode)).right
         } yield taskNode
     }
@@ -115,12 +115,12 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
   
-  protected def uncompleteTaskNode(userUUID: UUID, taskUUID: UUID): Response[Node] = {
+  protected def uncompleteTaskNode(owner: Owner, taskUUID: UUID): Response[Node] = {
     withTx {
       implicit neo =>
         for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
-          taskNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
+          ownerNodes <- getOwnerNodes(owner).right
+          taskNode <- getItemNode(ownerNodes, taskUUID, Some(ItemLabel.TASK)).right
           result <- Right(uncompleteTaskNode(taskNode)).right
         } yield taskNode
     }
@@ -130,12 +130,12 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     if (taskNode.hasProperty("completed")) taskNode.removeProperty("completed")
   }
 
-  protected def deleteTaskNode(userUUID: UUID, taskUUID: UUID): Response[Tuple2[Node, Long]] = {
+  protected def deleteTaskNode(owner: Owner, taskUUID: UUID): Response[Tuple2[Node, Long]] = {
     withTx {
       implicit neo =>
         for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
-          itemNode <- getItemNode(userNode, taskUUID, Some(ItemLabel.TASK)).right
+          ownerNodes <- getOwnerNodes(owner).right
+          itemNode <- getItemNode(ownerNodes, taskUUID, Some(ItemLabel.TASK)).right
           deletable <- validateTaskDeletable(itemNode).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)

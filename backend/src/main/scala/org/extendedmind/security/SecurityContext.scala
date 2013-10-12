@@ -10,7 +10,7 @@ case class SecurityContext(userUUID: UUID, email: String, userType: Byte, token:
 }
 
 object SecurityContext{
-  val CREATOR: Byte = 0
+  val FOUNDER: Byte = 0
   val READ: Byte = 1
   val READ_WRITE: Byte = 2
 }

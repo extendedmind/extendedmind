@@ -2,6 +2,7 @@ package org.extendedmind.domain
 
 import java.util.UUID
 import Validators._
+import org.extendedmind.security.SecurityContext
 
 case class User(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long],  
                 email: String)
@@ -18,6 +19,17 @@ case class InviteRequest(email: String, emailId: Option[String]){
 
 case class InviteRequestQueueNumber(queueNumber: Int)
 
-case class UserAccessRight(userUUID: UUID, access: Byte){
-  require(access == 1 || access == 2, "Not a valid access right, permitted values: 1 = read, 2 = read/write")
+case class UserAccessRight(access: Option[Byte]){
+  if (access.isDefined) require(access == Some(1) || access == Some(2), "Not a valid access right, permitted values: 1 = read, 2 = read/write")
+}
+
+case class PublicUser(uuid: UUID)
+
+case class Owner(userUUID: UUID, collectiveUUID: Option[UUID])
+
+object Owner{
+  def getOwner(ownerUUID: UUID, securityContext: SecurityContext): Owner = {
+    if (securityContext.userUUID == ownerUUID) new Owner(securityContext.userUUID, None) 
+    else new Owner(securityContext.userUUID, Some(ownerUUID))
+  }
 }

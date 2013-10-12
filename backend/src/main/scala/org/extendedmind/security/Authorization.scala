@@ -14,7 +14,7 @@ object Authorization {
   def readAccess(ownerUUID: UUID, sc: SecurityContext): Boolean = {
     val access = getAccess(ownerUUID, sc)
     if (access.isDefined && 
-       (access.get == CREATOR || access.get == READ_WRITE || access.get == READ)){
+       (access.get == FOUNDER || access.get == READ_WRITE || access.get == READ)){
       true
     }else{
       false
@@ -24,7 +24,7 @@ object Authorization {
   def writeAccess(ownerUUID: UUID, sc: SecurityContext): Boolean = {
     val access = getAccess(ownerUUID, sc)
     if (access.isDefined && 
-       (access.get == CREATOR || access.get == READ_WRITE)){
+       (access.get == FOUNDER || access.get == READ_WRITE)){
       true
     }else{
       false
@@ -33,7 +33,7 @@ object Authorization {
   
   private def getAccess(ownerUUID: UUID, sc: SecurityContext): Option[Byte] = {
     if (ownerUUID == sc.userUUID){
-      Some(CREATOR)
+      Some(FOUNDER)
     }else if (sc.collectives.isDefined && sc.collectives.get.contains(ownerUUID)){
       Some(sc.collectives.get.get(ownerUUID).get._2)
     }else{

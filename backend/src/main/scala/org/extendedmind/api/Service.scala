@@ -8,6 +8,7 @@ import org.extendedmind.security._
 import org.extendedmind.security.Authentication._
 import org.extendedmind.security.Authorization._
 import org.extendedmind.domain._
+import org.extendedmind.domain.Owner._
 import org.extendedmind.db._
 import scaldi._
 import spray.http._
@@ -139,7 +140,24 @@ trait Service extends API with Injectable {
           }
         }
       }
-    } ~ 
+    } ~
+    getUser { url =>
+      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        // Only admins can create new collectives for now
+        authorize(adminAccess(securityContext)){
+          parameters("email") { email =>
+            complete {
+              Future[PublicUser] {
+                userActions.getPublicUser(email) match {
+                  case Right(publicUser) => publicUser
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      }      
+    } ~
     postAuthenticate { url =>
       authenticate(ExtendedAuth(authenticateAuthenticator)) { securityContext =>
         complete {
@@ -194,14 +212,32 @@ trait Service extends API with Injectable {
             }
           }
         }
-      }      
+      }
+    } ~
+    postCollectiveUserPermission{ (collectiveUUID, userUUID) =>
+      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        // Only founder admin can assign people to exclusive collectives for now
+        authorize(adminAccess(securityContext)){
+          entity(as[UserAccessRight]) { userAccessRight =>
+            complete{
+              Future[SetResult] {
+                collectiveActions.setCollectiveUserPermission(collectiveUUID, securityContext.userUUID, userUUID, userAccessRight.access) 
+                      match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      }    
     } ~
     getItems { ownerUUID =>
       authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
         authorize(readAccess(ownerUUID, securityContext)){
 		      complete {
 		        Future[Items] {
-		          itemActions.getItems(ownerUUID) match {
+		          itemActions.getItems(getOwner(ownerUUID, securityContext)) match {
                 case Right(items) => items
                 case Left(e) => processErrors(e)
 		          }
@@ -215,7 +251,7 @@ trait Service extends API with Injectable {
         authorize(readAccess(ownerUUID, securityContext)){
           complete{
             Future[Item] {
-              itemActions.getItem(ownerUUID, itemUUID) match {
+              itemActions.getItem(getOwner(ownerUUID, securityContext), itemUUID) match {
                 case Right(item) => item
                 case Left(e) => processErrors(e)
               }
@@ -230,7 +266,7 @@ trait Service extends API with Injectable {
           entity(as[Item]) { item =>
             complete{
               Future[SetResult]{
-                itemActions.putNewItem(ownerUUID, item) match {
+                itemActions.putNewItem(getOwner(ownerUUID, securityContext), item) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -246,7 +282,7 @@ trait Service extends API with Injectable {
           entity(as[Item]) { item =>
             complete{
               Future[SetResult]{
-                itemActions.putExistingItem(ownerUUID, itemUUID, item) match {
+                itemActions.putExistingItem(getOwner(ownerUUID, securityContext), itemUUID, item) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -261,7 +297,7 @@ trait Service extends API with Injectable {
         authorize(writeAccess(ownerUUID, securityContext)){
           complete{
             Future[DeleteItemResult]{
-              itemActions.deleteItem(ownerUUID, itemUUID) match {
+              itemActions.deleteItem(getOwner(ownerUUID, securityContext), itemUUID) match {
                 case Right(dir) => dir
                 case Left(e) => processErrors(e)
               }
@@ -275,7 +311,7 @@ trait Service extends API with Injectable {
         authorize(writeAccess(ownerUUID, securityContext)){
           complete{
             Future[SetResult]{
-              itemActions.undeleteItem(ownerUUID, itemUUID) match {
+              itemActions.undeleteItem(getOwner(ownerUUID, securityContext), itemUUID) match {
                 case Right(sr) => sr
                 case Left(e) => processErrors(e)
               }
@@ -289,7 +325,7 @@ trait Service extends API with Injectable {
         authorize(readAccess(ownerUUID, securityContext)){
           complete{
             Future[Task] {
-              taskActions.getTask(ownerUUID, taskUUID) match {
+              taskActions.getTask(getOwner(ownerUUID, securityContext), taskUUID) match {
                 case Right(task) => task
                 case Left(e) => processErrors(e)
               }
@@ -304,7 +340,7 @@ trait Service extends API with Injectable {
           entity(as[Task]) { task =>
             complete {
               Future[SetResult] {
-                taskActions.putNewTask(ownerUUID, task) match {
+                taskActions.putNewTask(getOwner(ownerUUID, securityContext), task) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -320,7 +356,7 @@ trait Service extends API with Injectable {
           entity(as[Task]) { task =>
             complete {
               Future[SetResult] {
-                taskActions.putExistingTask(ownerUUID, taskUUID, task) match {
+                taskActions.putExistingTask(getOwner(ownerUUID, securityContext), taskUUID, task) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -335,7 +371,7 @@ trait Service extends API with Injectable {
         authorize(writeAccess(ownerUUID, securityContext)){
           complete{
             Future[DeleteItemResult]{
-              taskActions.deleteTask(ownerUUID, taskUUID) match {
+              taskActions.deleteTask(getOwner(ownerUUID, securityContext), taskUUID) match {
                 case Right(dir) => dir
                 case Left(e) => processErrors(e)
               }
@@ -349,7 +385,7 @@ trait Service extends API with Injectable {
         authorize(writeAccess(ownerUUID, securityContext)){
           complete{
             Future[SetResult]{
-              taskActions.undeleteTask(ownerUUID, taskUUID) match {
+              taskActions.undeleteTask(getOwner(ownerUUID, securityContext), taskUUID) match {
                 case Right(sr) => sr
                 case Left(e) => processErrors(e)
               }
@@ -363,7 +399,7 @@ trait Service extends API with Injectable {
         authorize(writeAccess(ownerUUID, securityContext)){
           complete{
             Future[CompleteTaskResult] {
-              taskActions.completeTask(ownerUUID, taskUUID) match {
+              taskActions.completeTask(getOwner(ownerUUID, securityContext), taskUUID) match {
                 case Right(task) => task
                 case Left(e) => processErrors(e)
               }
@@ -377,7 +413,7 @@ trait Service extends API with Injectable {
         authorize(writeAccess(ownerUUID, securityContext)){
           complete{
             Future[SetResult] {
-              taskActions.uncompleteTask(ownerUUID, taskUUID) match {
+              taskActions.uncompleteTask(getOwner(ownerUUID, securityContext), taskUUID) match {
                 case Right(sr) => sr
                 case Left(e) => processErrors(e)
               }
@@ -391,7 +427,7 @@ trait Service extends API with Injectable {
         authorize(readAccess(ownerUUID, securityContext)){
           complete{
             Future[Note] {
-              noteActions.getNote(ownerUUID, noteUUID) match {
+              noteActions.getNote(getOwner(ownerUUID, securityContext), noteUUID) match {
                 case Right(note) => note
                 case Left(e) => processErrors(e)
               }
@@ -406,7 +442,7 @@ trait Service extends API with Injectable {
           entity(as[Note]) { note =>
             complete {
               Future[SetResult] {
-                noteActions.putNewNote(ownerUUID, note) match {
+                noteActions.putNewNote(getOwner(ownerUUID, securityContext), note) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -422,7 +458,7 @@ trait Service extends API with Injectable {
           entity(as[Note]) { note =>
             complete {
               Future[SetResult] {
-                noteActions.putExistingNote(ownerUUID, noteUUID, note) match {
+                noteActions.putExistingNote(getOwner(ownerUUID, securityContext), noteUUID, note) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -437,7 +473,7 @@ trait Service extends API with Injectable {
         authorize(writeAccess(ownerUUID, securityContext)){
           complete{
             Future[DeleteItemResult]{
-              noteActions.deleteNote(ownerUUID, noteUUID) match {
+              noteActions.deleteNote(getOwner(ownerUUID, securityContext), noteUUID) match {
                 case Right(dir) => dir
                 case Left(e) => processErrors(e)
               }
@@ -451,7 +487,7 @@ trait Service extends API with Injectable {
         authorize(writeAccess(ownerUUID, securityContext)){
           complete{
             Future[SetResult]{
-              noteActions.undeleteNote(ownerUUID, noteUUID) match {
+              noteActions.undeleteNote(getOwner(ownerUUID, securityContext), noteUUID) match {
                 case Right(sr) => sr
                 case Left(e) => processErrors(e)
               }
@@ -465,7 +501,7 @@ trait Service extends API with Injectable {
         authorize(readAccess(ownerUUID, securityContext)){
           complete {
             Future[Tag] {
-              tagActions.getTag(ownerUUID, tagUUID) match {
+              tagActions.getTag(getOwner(ownerUUID, securityContext), tagUUID) match {
                 case Right(tag) => tag
                 case Left(e) => processErrors(e)
               }
@@ -480,7 +516,7 @@ trait Service extends API with Injectable {
           entity(as[Tag]) { tag =>
             complete {
               Future[SetResult] {
-                tagActions.putNewTag(ownerUUID, tag) match {
+                tagActions.putNewTag(getOwner(ownerUUID, securityContext), tag) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -496,7 +532,7 @@ trait Service extends API with Injectable {
           entity(as[Tag]) { tag =>
             complete {
               Future[SetResult] {
-                tagActions.putExistingTag(ownerUUID, tagUUID, tag) match {
+                tagActions.putExistingTag(getOwner(ownerUUID, securityContext), tagUUID, tag) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }

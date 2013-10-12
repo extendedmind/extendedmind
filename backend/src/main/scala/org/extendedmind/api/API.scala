@@ -19,7 +19,8 @@ trait API extends HttpService {
   val postAcceptInvite = post & path("invite" / "accept" / HexLongNumber)
   val getInviteRequests = get & path("invite" / "requests".r)
   val getInviteRequestQueueNumber = get & path("invite" / "request" / JavaUUID)
-
+  val getUser = get & path("user".r)
+  
   // Security
   val postAuthenticate = post & path("authenticate".r)
   
@@ -27,7 +28,8 @@ trait API extends HttpService {
   val putNewCollective = put & path("collective".r)
   val putExistingCollective = put & path("collective" / JavaUUID)
   val getCollective = get & path("collective" / JavaUUID)
-
+  val postCollectiveUserPermission = post & path("collective" / JavaUUID / "user" / JavaUUID)
+  
   // Items
   val getItems = get & path(JavaUUID / "items")
   val getItem = get & path(JavaUUID / "item" / JavaUUID)

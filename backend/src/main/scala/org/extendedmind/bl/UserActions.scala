@@ -38,13 +38,16 @@ trait UserActions {
       futureMailResponse onSuccess {
         case SendEmailResponse(message, id) => {
           val saveResponse = for{
-            putExistingResponse <- db.putExistingInviteRequest(setResult.right.get.uuid.get, inviteRequest.copy(emailId = Some(id))).right
-            updateResponse <- Right(db.updateInviteRequestModifiedIndex(putExistingResponse._2, putExistingResponse._3)).right
+            putExistingResponse <- db.putExistingInviteRequest(setResult.right.get.uuid.get, 
+                                                               inviteRequest.copy(emailId = Some(id))).right
+            updateResponse <- Right(db.updateInviteRequestModifiedIndex(putExistingResponse._2, 
+                                                                        putExistingResponse._3)).right
           } yield putExistingResponse._1
           if (saveResponse.isLeft) 
             log.error("Error updating invite request for email {} with id {}, error: {}", 
                 inviteRequest.email, id, saveResponse.left.get.head)
-          else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", inviteRequest.email, setResult.right.get.uuid.get, id)
+          else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", 
+                          inviteRequest.email, setResult.right.get.uuid.get, id)
         }case _ =>
           log.error("Could not send email to {}", inviteRequest.email)
       }
@@ -59,7 +62,8 @@ trait UserActions {
     } yield inviteRequests
   }
   
-  def getInviteRequestQueueNumber(inviteRequestUUID: UUID) (implicit log: LoggingContext): Response[InviteRequestQueueNumber] = {
+  def getInviteRequestQueueNumber(inviteRequestUUID: UUID) (implicit log: LoggingContext): 
+        Response[InviteRequestQueueNumber] = {
     log.info("getInviteRequestQueueNumber for UUID {}", inviteRequestUUID)
     for {
       inviteRequestQueueNumber <- db.getInviteRequestQueueNumber(inviteRequestUUID).right
@@ -69,7 +73,8 @@ trait UserActions {
   def signUp(signUp: SignUp)(implicit log: LoggingContext): Response[SetResult] = {
     log.info("signUp: email {}", signUp.email)
     if (settings.adminSignUp) 
-      log.warning("CRITICAL: Making {} an administrator because extendedmind.security.adminSignUp is set to true", signUp.email)
+      log.warning("CRITICAL: Making {} an administrator because extendedmind.security.adminSignUp is set to true", 
+          signUp.email)
 
     for {
       isUnique <- db.validateEmailUniqueness(signUp.email).right
@@ -78,9 +83,17 @@ trait UserActions {
     
     // TODO: Send verification email as Future
   }
+  
+  def getPublicUser(email: String)(implicit log: LoggingContext): Response[PublicUser] = {
+    log.info("getPublicUser: email {}", email)
+    val user = db.getUser(email)
+    if (user.isLeft) Left(user.left.get)
+    else Right(PublicUser(user.right.get.uuid.get))
+  }
 }
 
-class UserActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, implicit val implActorRefFactory: ActorRefFactory)
+class UserActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, 
+                      implicit val implActorRefFactory: ActorRefFactory)
   extends UserActions with Injectable {
   override def settings  = implSettings
   override def db = inject[GraphDatabase]

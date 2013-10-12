@@ -24,9 +24,9 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
 
   // PUBLIC
 
-  def putNewCollective(creatorUUID: UUID, collective: Collective, commonCollective: Boolean): Response[SetResult] = {
+  def putNewCollective(founderUUID: UUID, collective: Collective, commonCollective: Boolean): Response[SetResult] = {
     for{
-      collectiveNode <- createCollective(creatorUUID, collective, commonCollective).right
+      collectiveNode <- createCollective(founderUUID, collective, commonCollective).right
       result <- Right(getSetResult(collectiveNode, true)).right
     }yield result
   }
@@ -48,36 +48,37 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     }
   }
   
-  def addUserToCollective(collectiveUUID: UUID, creatorUUID: UUID, userUUID: UUID, access: Byte): Response[SetResult] = {
+  def setCollectiveUserPermission(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]): 
+        Response[SetResult] = {
     for {
-      collectiveNode <- addUserToCollectiveNode(collectiveUUID, creatorUUID, userUUID, access).right
+      collectiveNode <- setCollectiveUserPermissionNode(collectiveUUID, founderUUID, userUUID, access).right
       result <- Right(getSetResult(collectiveNode, false)).right
     } yield result
   }
 
   // PRIVATE
   
-  protected def createCollective(creatorUUID: UUID, collective: Collective, commonCollective: Boolean): Response[Node] = {
+  protected def createCollective(founderUUID: UUID, collective: Collective, commonCollective: Boolean): Response[Node] = {
     withTx{
       implicit neo4j =>
         for {
-          creatorNode <- getNode(creatorUUID, OwnerLabel.USER).right
-          collectiveNode <- createCollectiveNode(creatorNode, collective, commonCollective).right
+          founderNode <- getNode(founderUUID, OwnerLabel.USER).right
+          collectiveNode <- createCollectiveNode(founderNode, collective, commonCollective).right
         } yield collectiveNode
     }
   }
   
-  protected def createCollectiveNode(creatorNode: Node, collective: Collective, commonCollective: Boolean)
+  protected def createCollectiveNode(founderNode: Node, collective: Collective, commonCollective: Boolean)
                (implicit neo4j: DatabaseService): Response[Node] = {
     val collectiveNode = createNode(collective, MainLabel.OWNER, OwnerLabel.COLLECTIVE)
-    creatorNode --> SecurityRelationship.IS_CREATOR --> collectiveNode;
+    founderNode --> SecurityRelationship.IS_FOUNDER --> collectiveNode;
 
     if (commonCollective){
       collectiveNode.setProperty("common", true)
       // Give all existing users read access to to common collective
       val userIterator = findNodesByLabel(OwnerLabel.USER);
       userIterator.foreach(user => {
-        if (user != creatorNode)
+        if (user != founderNode)
           user --> SecurityRelationship.CAN_READ --> collectiveNode;
       })
     } 
@@ -95,25 +96,26 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def addUserToCollectiveNode(collectiveUUID: UUID, creatorUUID: UUID, userUUID: UUID, access: Byte): Response[Node] = {
+  protected def setCollectiveUserPermissionNode(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]): 
+      Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
-          collectiveNode <- getCreatedCollective(collectiveUUID, creatorUUID).right
+          collectiveNode <- getFoundedCollective(collectiveUUID, founderUUID).right
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          relationship <- addUserToCollective(collectiveNode, userNode, access).right
+          relationship <- setCollectiveUserPermission(collectiveNode, userNode, access).right
         } yield collectiveNode
     }
   }
   
-  protected def getCreatedCollective(collectiveUUID: UUID, creatorUUID: UUID)
+  protected def getFoundedCollective(collectiveUUID: UUID, founderUUID: UUID)
         (implicit neo4j: DatabaseService): Response[Node] = {
     val collectiveNode = getNode(collectiveUUID, OwnerLabel.COLLECTIVE)
     if (collectiveNode.isLeft) return collectiveNode
         
-    val creatorFromCollective: TraversalDescription = {
+    val founderFromCollective: TraversalDescription = {
         Traversal.description()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_CREATOR.name),
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_FOUNDER.name),
             Direction.INCOMING)
           .depthFirst()
           .evaluator(Evaluators.excludeStartPosition())
@@ -122,33 +124,70 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
             Evaluation.EXCLUDE_AND_PRUNE,
             Evaluation.INCLUDE_AND_CONTINUE))
     }
-    val traverser = creatorFromCollective.traverse(collectiveNode.right.get)
+    val traverser = founderFromCollective.traverse(collectiveNode.right.get)
     val collectiveNodeList = traverser.nodes().toList
     if (collectiveNodeList.length == 0) {
-      fail(INTERNAL_SERVER_ERROR, "Collective " + collectiveUUID + " has no creator")
+      fail(INTERNAL_SERVER_ERROR, "Collective " + collectiveUUID + " has no founder")
     } else if (collectiveNodeList.length > 1) {
-      fail(INTERNAL_SERVER_ERROR, "More than one creator found for collective with UUID " + collectiveUUID)
+      fail(INTERNAL_SERVER_ERROR, "More than one founder found for collective with UUID " + collectiveUUID)
     } else {
-      val creator = collectiveNodeList.head
-      if (getUUID(creator) != creatorUUID){
-        fail(INVALID_PARAMETER, "Collective " + collectiveUUID + " is not created by user " 
-            + creatorUUID)
+      val founder = collectiveNodeList.head
+      if (getUUID(founder) != founderUUID){
+        fail(INVALID_PARAMETER, "Collective " + collectiveUUID + " is not founded by user " 
+            + founderUUID)
       }else{
         Right(collectiveNode.right.get)
       }
     }
   }
   
-  protected def addUserToCollective(collectiveNode: Node, userNode: Node, access: Byte) 
-       (implicit neo4j: DatabaseService): Response[Relationship] = {
+  protected def setCollectiveUserPermission(collectiveNode: Node, userNode: Node, access: Option[Byte]) 
+       (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+    // Get existing relationship
+    val existingRelationship = {
+      val result = getCollectiveSecurityRelationship(collectiveNode, userNode)
+      if (result.isLeft) return result
+      else{
+        if (result.right.get.isDefined && 
+            result.right.get.get.getType.name() == SecurityRelationship.IS_FOUNDER.relationshipName){
+          return fail(INVALID_PARAMETER, "Can not change permissions for collective founder")
+        }
+        result.right.get
+      }
+    }
     access match {
-      case SecurityContext.READ => 
-        Right(userNode --> SecurityRelationship.CAN_READ --> collectiveNode <)
-      case SecurityContext.READ_WRITE => 
-        Right(userNode --> SecurityRelationship.CAN_READ_WRITE --> collectiveNode <)
+      case Some(SecurityContext.READ) => {
+        if(existingRelationship.isDefined){
+          if(existingRelationship.get.getType().name() != SecurityRelationship.CAN_READ.relationshipName)
+            existingRelationship.get.delete()
+          else
+            return Right(existingRelationship)
+        }
+        Right(Some(userNode --> SecurityRelationship.CAN_READ --> collectiveNode <))
+      }
+      case Some(SecurityContext.READ_WRITE) => 
+        if(existingRelationship.isDefined){
+          if(existingRelationship.get.getType().name() != SecurityRelationship.CAN_READ_WRITE.relationshipName)
+            existingRelationship.get.delete()
+          else
+            return Right(existingRelationship)
+        }
+        Right(Some(userNode --> SecurityRelationship.CAN_READ_WRITE --> collectiveNode <))
+      case None => {
+        if(existingRelationship.isDefined){
+          existingRelationship.get.delete()
+        }
+        Right(None)
+      }
       case _ => 
         fail(INVALID_PARAMETER, "Invalid access value: " + access)
     }
+  }
+  
+  protected def getCollectiveSecurityRelationship(collectiveNode: Node, userNode: Node)
+      (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+    getRelationship(userNode, collectiveNode, SecurityRelationship.CAN_READ, SecurityRelationship.CAN_READ_WRITE, 
+            SecurityRelationship.IS_FOUNDER)
   }
 
 }

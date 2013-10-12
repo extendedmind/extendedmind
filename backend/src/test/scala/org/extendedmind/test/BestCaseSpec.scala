@@ -568,10 +568,35 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             val collectiveResponse = entityAs[Collective]
             writeJsonOutput("collectiveResponse", entityAs[String])
             collectiveResponse.description.get should be("test description")
+
+            // Should be possible to assign read/write access to new collective
+            val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+            lauriAuthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._2 should equal(1)
+
+            Post("/collective/" + putCollectiveResponse.uuid.get + "/user/" + getUserUUID(LAURI_EMAIL, reauthenticateResponse),
+                marshal(UserAccessRight(Some(2))).right.get
+                ) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)
+                ) ~> emRoute ~> check {
+               val postCollectiveUserPermission = entityAs[SetResult]
+               writeJsonOutput("postCollectiveUserPermission", entityAs[String])
+               assert(postCollectiveUserPermission.modified > putExistingCollectiveResponse.modified)
+               val lauriReauthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+               lauriReauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._2 should equal(2)
+            }
           }
         }
       }
-    } 
+    }
+    it("should successfully get user with GET /user?email=[email]") {    
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Get("/user?email=" + LAURI_EMAIL
+         ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+         ) ~> emRoute ~> check {
+        writeJsonOutput("getUserResponse", entityAs[String])
+        val publicUser = entityAs[PublicUser]
+        publicUser.uuid should not be None
+      }
+    }
   }
   
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {
@@ -652,6 +677,14 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
         ) ~> emRoute ~> check {
       entityAs[Note]
+    }
+  }
+  
+  def getUserUUID(email: String, authenticateResponse: SecurityContext): UUID = {
+    Get("/user?email=" + email
+        ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+        ) ~> emRoute ~> check {
+      entityAs[PublicUser].uuid
     }
   }
   

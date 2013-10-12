@@ -42,19 +42,23 @@ trait TestGraphDatabase extends GraphDatabase {
     val timoNode = createUser(User(None, None, None, TIMO_EMAIL), TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
     val lauriNode = createUser(User(None, None, None, LAURI_EMAIL), LAURI_PASSWORD, Some(UserLabel.ADMIN)).right.get
     val jpNode = createUser(User(None, None, None, JP_EMAIL), JP_PASSWORD, Some(UserLabel.ADMIN)).right.get
-    val infoNode = createUser(User(None, None, None, INFO_EMAIL), INFO_PASSWORD).right.get
 
     // Collectives
     val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true)
     val extendedMindTechnologies = createCollective(
                                             timoNode, "extended mind technologies", 
                                             Some("private collective for extended mind technologies"), false)
+    
+    // Info node created after common collective "extended mind" but should still be part of it
+    val infoNode = createUser(User(None, None, None, INFO_EMAIL), INFO_PASSWORD).right.get
                                             
-    // Add to collectives
+    // Add permissions to collectives
     withTx{
       implicit neo =>
-        addUserToCollective(getUUID(extendedMindTechnologies), getUUID(timoNode), getUUID(lauriNode), SecurityContext.READ_WRITE)                                            
-        addUserToCollective(getUUID(extendedMindTechnologies), getUUID(jpNode), getUUID(jpNode), SecurityContext.READ_WRITE)
+        setCollectiveUserPermission(getUUID(extendedMindTechnologies), getUUID(timoNode), getUUID(lauriNode), 
+            Some(SecurityContext.READ_WRITE))                                            
+        setCollectiveUserPermission(getUUID(extendedMindTechnologies), getUUID(jpNode), getUUID(jpNode), 
+            Some(SecurityContext.READ_WRITE))
     }
     withTx{
       implicit neo =>
@@ -94,58 +98,58 @@ trait TestGraphDatabase extends GraphDatabase {
     // Timo's personal notes
     
     // Store items for user
-    putNewItem(timoUUID,
+    putNewItem(Owner(timoUUID, None),
         Item(None, None, None, "should I start yoga?", None)).right.get
-    putNewItem(timoUUID,
+    putNewItem(Owner(timoUUID, None),
         Item(None, None, None, "remember the milk", None)).right.get
     
     // Store tags for user
-    val homeTag = putNewTag(timoUUID,
+    val homeTag = putNewTag(Owner(timoUUID, None),
         Tag("home", None, CONTEXT, None, None))
-    val officeTag = putNewTag(timoUUID,
+    val officeTag = putNewTag(Owner(timoUUID, None),
         Tag("office", None, CONTEXT, None, None))
-    val computerTag = putNewTag(timoUUID,
+    val computerTag = putNewTag(Owner(timoUUID, None),
         Tag("computer", None, CONTEXT, None, None))
-    val browserTag = putNewTag(timoUUID,
+    val browserTag = putNewTag(Owner(timoUUID, None),
         Tag("browser", None, CONTEXT, None, computerTag.right.get.uuid))
-    val emailTag = putNewTag(timoUUID,
+    val emailTag = putNewTag(Owner(timoUUID, None),
         Tag("email", None, CONTEXT, None, computerTag.right.get.uuid))
-    val secretTag = putNewTag(timoUUID,
+    val secretTag = putNewTag(Owner(timoUUID, None),
         Tag("secret", None, KEYWORD, None, None))        
-    val productivityTag = putNewTag(timoUUID,
+    val productivityTag = putNewTag(Owner(timoUUID, None),
         Tag("productivity", None, KEYWORD, None, None))
 
     // Store areas for user
-    val extendedMindNote = putNewNote(timoUUID, 
+    val extendedMindNote = putNewNote(Owner(timoUUID, None), 
         Note("extended mind", None, None, Some("http://ext.md"), None)).right.get
         
     // Store tasks for user
-    putNewTask(timoUUID,
+    putNewTask(Owner(timoUUID, None),
         Task("clean closet", None, None, None, None, 
             Some(ExtendedItemRelationships(None, None, Some(List(homeTag.right.get.uuid.get)))
     ))).right.get
-    val tripTask = putNewTask(timoUUID,
+    val tripTask = putNewTask(Owner(timoUUID, None),
         Task("trip to Dublin", None, Some("2013-10-01"), None, None, None)).right.get
-    putNewTask(timoUUID,
+    putNewTask(Owner(timoUUID, None),
         Task("book flight", None, Some("2014-01-01"), None, None, 
             Some(ExtendedItemRelationships(Some(tripTask.uuid.get), None, Some(List(browserTag.right.get.uuid.get)))
     ))).right.get
-    putNewTask(timoUUID,
+    putNewTask(Owner(timoUUID, None),
         Task("print tickets", None, Some("2014-01-02"), Some("10:00"), Some("http://www.finnair.fi"), 
             Some(ExtendedItemRelationships(Some(tripTask.uuid.get), None, Some(List(officeTag.right.get.uuid.get)))
     ))).right.get
-    val completedTask = putNewTask(timoUUID,
+    val completedTask = putNewTask(Owner(timoUUID, None),
         Task("get ext.md domain", None, Some("2013-05-01"), None, None, 
             Some(ExtendedItemRelationships(None, Some(extendedMindNote.uuid.get), Some(List(browserTag.right.get.uuid.get)))
     ))).right.get
-    completeTask(timoUUID, completedTask.uuid.get)
+    completeTask(Owner(timoUUID, None), completedTask.uuid.get)
     
     // Store notes for user
-    putNewNote(timoUUID, 
+    putNewNote(Owner(timoUUID, None), 
         Note("office door code", None, Some("4321"), None, 
             Some(ExtendedItemRelationships(None, None, Some(List(secretTag.right.get.uuid.get)))
     ))).right.get
-    putNewNote(timoUUID, 
+    putNewNote(Owner(timoUUID, None), 
         Note("notes on productivity", None, Some("##what I've learned about productivity"), None, 
             Some(ExtendedItemRelationships(None, None, Some(List(productivityTag.right.get.uuid.get)))
     ))).right.get

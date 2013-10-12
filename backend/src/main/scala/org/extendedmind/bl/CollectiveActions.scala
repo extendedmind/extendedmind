@@ -39,6 +39,12 @@ trait CollectiveActions {
     log.info("getCollective: collective {}", collectiveUUID)
     db.getCollective(collectiveUUID)
   }
+  
+  def setCollectiveUserPermission(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte])
+          (implicit log: LoggingContext): Response[SetResult] = {
+    log.info("setCollectiveUserPermission: collective {}, founder {}, user {}, access {}", collectiveUUID, founderUUID, userUUID, access)
+    db.setCollectiveUserPermission(collectiveUUID, founderUUID, userUUID, access)
+  }
 }
 
 class CollectiveActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector)

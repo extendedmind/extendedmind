@@ -14,39 +14,39 @@ trait TaskActions {
 
   def db: GraphDatabase;
 
-  def putNewTask(userUUID: UUID, task: Task)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putNewTask: user {}", userUUID)
-    db.putNewTask(userUUID, task)
+  def putNewTask(owner: Owner, task: Task)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putNewTask: owner {}", owner)
+    db.putNewTask(owner, task)
   }
 
-  def putExistingTask(userUUID: UUID, taskUUID: UUID, task: Task)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putExistingTask: user {}, task {}", userUUID, taskUUID)
-    db.putExistingTask(userUUID, taskUUID, task)
+  def putExistingTask(owner: Owner, taskUUID: UUID, task: Task)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putExistingTask: owner {}, task {}", owner, taskUUID)
+    db.putExistingTask(owner, taskUUID, task)
   }
 
-  def getTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[Task] = {
-    log.info("getTask: user {}, task {}", userUUID, taskUUID)
-    db.getTask(userUUID, taskUUID)
+  def getTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingContext): Response[Task] = {
+    log.info("getTask: owner {}, task {}", owner, taskUUID)
+    db.getTask(owner, taskUUID)
   }
   
-  def deleteTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
-    log.info("deleteTask: user {}, task {}", userUUID, taskUUID)
-    db.deleteTask(userUUID, taskUUID)
+  def deleteTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
+    log.info("deleteTask: owner {}, task {}", owner, taskUUID)
+    db.deleteTask(owner, taskUUID)
   }
   
-  def undeleteTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("undeleteTask: user {}, task {}", userUUID, taskUUID)
-    db.undeleteItem(userUUID, taskUUID, Some(ItemLabel.TASK))
+  def undeleteTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("undeleteTask: owner {}, task {}", owner, taskUUID)
+    db.undeleteItem(owner: Owner, taskUUID, Some(ItemLabel.TASK))
   }
 
-  def completeTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[CompleteTaskResult] = {
-    log.info("completeTask: user {}, task {}", userUUID, taskUUID)
-    db.completeTask(userUUID, taskUUID)
+  def completeTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingContext): Response[CompleteTaskResult] = {
+    log.info("completeTask: owner {}, task {}", owner, taskUUID)
+    db.completeTask(owner, taskUUID)
   }
   
-  def uncompleteTask(userUUID: UUID, taskUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("uncompleteTask: user {}, task {}", userUUID, taskUUID)
-    db.uncompleteTask(userUUID, taskUUID)
+  def uncompleteTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("uncompleteTask: owner {}, task {}", owner, taskUUID)
+    db.uncompleteTask(owner, taskUUID)
   }
 
 }

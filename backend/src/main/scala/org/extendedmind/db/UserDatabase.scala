@@ -39,6 +39,16 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
+  def getUser(uuid: UUID): Response[User] = {
+    withTx{
+      implicit neo =>
+        for{
+          userNode <- getNode(uuid, OwnerLabel.USER).right
+          user <- toCaseClass[User](userNode).right
+        }yield user
+    }
+  }
+  
   def putNewInviteRequest(inviteRequest: InviteRequest): Response[SetResult] = {
     for{
       ir <- createInviteRequest(inviteRequest).right
@@ -124,17 +134,15 @@ trait UserDatabase extends AbstractGraphDatabase {
         userNode.setProperty("passwordHash", Base64.encodeBase64String(encryptedPassword.passwordHash))
         userNode.setProperty("passwordSalt", encryptedPassword.salt)
         userNode.setProperty("email", user.email)
+        
+        // Give user read permissions to common collectives
+        val collectivesList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
+        if (!collectivesList.isEmpty) {
+          collectivesList.foreach(collective => {
+            userNode --> SecurityRelationship.CAN_READ --> collective;
+          })
+        }
         Right(userNode)
-    }
-  }
-  
-  protected def getUser(uuid: UUID): Response[User] = {
-    withTx{
-      implicit neo =>
-        for{
-          userNode <- getNode(uuid, OwnerLabel.USER).right
-          user <- toCaseClass[User](userNode).right
-        }yield user
     }
   }
 

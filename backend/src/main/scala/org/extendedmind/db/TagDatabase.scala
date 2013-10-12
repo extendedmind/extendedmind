@@ -24,84 +24,84 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PUBLIC
 
-  def putNewTag(userUUID: UUID, tag: Tag): Response[SetResult] = {
+  def putNewTag(owner: Owner, tag: Tag): Response[SetResult] = {
     for {
-      tagNode <- putNewTagNode(userUUID, tag).right
+      tagNode <- putNewTagNode(owner, tag).right
       result <- Right(getSetResult(tagNode, true)).right
     } yield result
   }
   
-  def putExistingTag(userUUID: UUID, tagUUID: UUID, tag: Tag): Response[SetResult] = {
+  def putExistingTag(owner: Owner, tagUUID: UUID, tag: Tag): Response[SetResult] = {
     for {
-      tagNode <- putExistingTagNode(userUUID, tagUUID, tag).right
+      tagNode <- putExistingTagNode(owner, tagUUID, tag).right
       result <- Right(getSetResult(tagNode, false)).right
     } yield result
   }
 
-  def getTag(userUUID: UUID, tagUUID: UUID): Response[Tag] = {
+  def getTag(owner: Owner, tagUUID: UUID): Response[Tag] = {
     withTx {
       implicit neo =>
         for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
-          tagNode <- getItemNode(userNode, tagUUID, Some(ItemLabel.TAG)).right
-          tag <- toTag(tagNode, userUUID).right
+          ownerNodes <- getOwnerNodes(owner).right
+          tagNode <- getItemNode(ownerNodes, tagUUID, Some(ItemLabel.TAG)).right
+          tag <- toTag(tagNode, owner).right
         } yield tag
     }
   }
   
   // PRIVATE
 
-  protected def putExistingTagNode(userUUID: UUID, tagUUID: UUID, tag: Tag): 
+  protected def putExistingTagNode(owner: Owner, tagUUID: UUID, tag: Tag): 
         Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
-          tagNode <- updateItem(userUUID, tagUUID, tag, Some(ItemLabel.TAG), 
+          tagNode <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), 
               (if (tag.tagType == CONTEXT) Some((TagLabel.CONTEXT, TagLabel.KEYWORD)) 
                  else Some((TagLabel.KEYWORD, TagLabel.CONTEXT)))
               ).right
-          parentNode <- setTagParentNodes(tagNode, userUUID, tag).right
+          parentNode <- setTagParentNodes(tagNode, owner, tag).right
         } yield tagNode
     }
   }
   
-  def putNewTagNode(userUUID: UUID, tag: Tag): 
+  def putNewTagNode(owner: Owner, tag: Tag): 
           Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
-          tagNode <- createItem(userUUID, tag, Some(ItemLabel.TAG),
+          tagNode <- createItem(owner, tag, Some(ItemLabel.TAG),
                          (if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT) else Some(TagLabel.KEYWORD))              
                          ).right
-          parentNodes <- setTagParentNodes(tagNode, userUUID, tag).right
+          parentNodes <- setTagParentNodes(tagNode, owner, tag).right
         } yield tagNode
     }
   }
   
-  protected def setTagParentNodes(tagNode: Node,  userUUID: UUID, tag: Tag)(implicit neo4j: DatabaseService): 
+  protected def setTagParentNodes(tagNode: Node,  owner: Owner, tag: Tag)(implicit neo4j: DatabaseService): 
           Response[Option[Relationship]] = {
     for {
-      userNode <- getNode(userUUID, OwnerLabel.USER).right
-      oldParentRelationships <- getParentRelationships(tagNode, userUUID).right
-      newParentRelationship <- setParentRelationship(tagNode, userNode, tag.parent, 
+      ownerNodes <- getOwnerNodes(owner).right
+      oldParentRelationships <- getParentRelationships(tagNode, owner).right
+      newParentRelationship <- setParentRelationship(tagNode, ownerNodes, tag.parent, 
           oldParentRelationships._3, ItemLabel.TAG).right
       parentRelationship <- Right(newParentRelationship).right
     }yield parentRelationship
   }
   
   
-  override def toTag(tagNode: Node, userUUID: UUID)
+  override def toTag(tagNode: Node, owner: Owner)
             (implicit neo4j: DatabaseService): Response[Tag] = {
     for {
       tag <- toCaseClass[Tag](tagNode).right
-      completeTag <- addTransientTagProperties(tagNode, userUUID, tag).right
+      completeTag <- addTransientTagProperties(tagNode, owner, tag).right
     } yield completeTag
   }
 
-  protected def addTransientTagProperties(tagNode: Node, userUUID: UUID, tag: Tag)
+  protected def addTransientTagProperties(tagNode: Node, owner: Owner, tag: Tag)
             (implicit neo4j: DatabaseService): Response[Tag] = {
     for {
-      parents <- getParentRelationships(tagNode, userUUID).right
+      parents <- getParentRelationships(tagNode, owner).right
       completeTag <- Right(tag.copy(
         tagType = (if (tagNode.hasLabel(TagLabel.CONTEXT)) Some(CONTEXT) else Some(KEYWORD)),
         parent = (if (parents._3.isEmpty) None else (Some(getUUID(parents._3.get.getEndNode())))))).right
