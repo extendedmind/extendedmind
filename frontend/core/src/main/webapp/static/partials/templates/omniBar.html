@@ -1,0 +1,11 @@
+<div class="row">
+  <div class="col-lg-6">
+    <div class="input-group">
+      <input type="text" class="form-control" ng-model="newItem.title" placeholder="search / add" ng-blur="omniFocus = false" ng-focus="omniFocus = true" required>
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button" ng-disabled="!newItem.title" ng-click="addNewItem()">
+          +
+        </button> </span>
+    </div>
+  </div>
+</div>

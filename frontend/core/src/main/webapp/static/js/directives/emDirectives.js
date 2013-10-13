@@ -30,6 +30,15 @@
       };
     }]);
 
+    angular.module('em.directives').directive('omniBar', [
+    function() {
+      return {
+        controller : 'OmniBarController',
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/omniBar.html'
+      };
+    }]);
+
     angular.module('em.directives').directive('urlList', [
     function() {
       return {

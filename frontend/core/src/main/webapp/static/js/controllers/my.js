@@ -21,17 +21,6 @@
 
       });
 
-      $scope.addNewItem = function() {
-
-        itemsRequest.putItem($scope.newItem, function(putItemResponse) {
-          itemsResponse.putItemContent($scope.newItem, putItemResponse);
-          itemsArray.putNewItem($scope.newItem);
-          $scope.newItem = {};
-
-        }, function(error) {
-        });
-      };
-
       $scope.deleteItem = function(item) {
         itemsArray.removeItem(item);
 

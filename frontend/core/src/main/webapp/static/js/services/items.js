@@ -11,11 +11,9 @@
             return itemsResponse.data;
           });
         },
-        putItem : function(item, success, error) {
-          httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/item', item, function(putItemResponse) {
-            success(putItemResponse);
-          }, function(putItemResponse) {
-            error(putItemResponse);
+        putItem : function(item) {
+          return httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/item', item).then(function(putItemsResponse) {
+            return putItemsResponse.data;
           });
         },
         editItem : function(item, success, error) {
