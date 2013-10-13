@@ -15,8 +15,10 @@
 
         $scope.items = itemsArray.getItems();
         $scope.notes = notesArray.getNotes();
-        $scope.tags = tagsArray.getTags();
         $scope.tasks = tasksArray.getTasks();
+        $scope.tags = tagsArray.getTags();
+        $scope.projects = tasksArray.getProjects();
+        $scope.subtasks = tasksArray.getSubtasks();
 
       });
 

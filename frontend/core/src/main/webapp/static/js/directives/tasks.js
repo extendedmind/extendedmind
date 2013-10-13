@@ -13,6 +13,7 @@
     angular.module('em.directives').directive('tasksList', [
     function() {
       return {
+        controller : 'TasksListController',
         restrict : 'A',
         templateUrl : 'static/partials/templates/tasks/tasksList.html',
         transclude : true,
@@ -42,11 +43,6 @@
             } else {
               scope.selected = '';
             }
-          };
-
-          scope.taskEdit = function(task) {
-            scope.setActiveItem(task);
-            $location.path('/my/tasks/edit/' + task.uuid);
           };
         }
       };

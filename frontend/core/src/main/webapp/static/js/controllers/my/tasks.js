@@ -2,14 +2,17 @@
 
 ( function() {'use strict';
 
-    function TasksController($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, slideIndex, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    function TasksController($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray) {
 
       itemsRequest.getItems().then(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);
+        notesArray.setNotes(itemsResponse.notes);
         tagsArray.setTags(itemsResponse.tags);
         tasksArray.setTasks(itemsResponse.tasks);
 
+        $scope.items = itemsArray.getItems();
+        $scope.notes = notesArray.getNotes();
         $scope.tasks = tasksArray.getTasks();
         $scope.tags = tagsArray.getTags();
         $scope.projects = tasksArray.getProjects();
@@ -41,52 +44,8 @@
 
       $scope.tasksListFilter = true;
 
-      $scope.taskChecked = function(index) {
-
-        $scope.task = $scope.tasks[index];
-        if ($scope.task.completed) {
-
-          tasksRequest.uncompleteTask($scope.task, function(uncompleteTaskResponse) {
-            tasksResponse.deleteTaskProperty($scope.task, 'completed');
-          }, function(uncompleteTaskResponse) {
-          });
-
-        } else {
-
-          tasksRequest.completeTask($scope.task, function(completeTaskResponse) {
-            tasksResponse.putTaskContent($scope.task, completeTaskResponse);
-          }, function(completeTaskResponse) {
-          });
-
-        }
-      };
-
-      $scope.taskToProject = function(task) {
-
-        task.project = true;
-
-        tasksRequest.putExistingTask(task, function(putExistingTaskResponse) {
-          tasksResponse.putTaskContent(task, putExistingTaskResponse);
-          $scope.addNew();
-
-          tasksArray.removeTask(task);
-          tasksArray.setProject(task);
-        }, function(putExistingTaskResponse) {
-        });
-      };
-
       $scope.addNew = function() {
         $location.path('/my/tasks/new/');
-      };
-
-      $scope.deleteTask = function(task) {
-
-        tasksRequest.deleteTask(task, function(deleteTaskResponse) {
-          tasksResponse.putTaskContent(task, deleteTaskResponse);
-          tasksArray.removeTask(task);
-        }, function(deleteTaskResponse) {
-        });
-
       };
 
       $scope.setActiveItem = function(task) {
@@ -95,6 +54,6 @@
     }
 
 
-    TasksController.$inject = ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'slideIndex', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    TasksController.$inject = ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
     angular.module('em.app').controller('TasksController', TasksController);
   }());
