@@ -1,12 +1,11 @@
 /*global angular*/
-/*jslint plusplus: true*/
 
 ( function() {'use strict';
 
-    function MyController($scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, notesRequest, notesResponse, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    function MyController($scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
-      
+
       itemsRequest.getItems().then(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);
@@ -21,59 +20,12 @@
 
       });
 
-      $scope.deleteItem = function(item) {
-        itemsArray.removeItem(item);
-
-        itemsRequest.deleteItem(item, function(deleteItemResponse) {
-          itemsResponse.putItemContent(item, deleteItemResponse);
-        }, function(deleteItemResponse) {
-        });
-      };
-
       $scope.setActiveItem = function(item) {
         activeItem.setItem(item);
-      };
-
-      $scope.itemToTask = function itemToTask(item) {
-
-        tasksRequest.putExistingTask(item, function(putExistingTaskResponse) {
-
-          $scope.completed = 'task added';
-          itemsArray.removeItem(item);
-
-          itemsRequest.deleteItem(item, function(deleteItemResponse) {
-            itemsResponse.putItemContent(item, deleteItemResponse);
-          }, function(deleteItemResponse) {
-          });
-
-          tasksResponse.putTaskContent(item, putExistingTaskResponse);
-          tasksArray.putNewTask(item);
-
-        }, function(putTaskResponse) {
-        });
-      };
-
-      $scope.itemToNote = function itemToNote(item) {
-
-        notesRequest.putExistingNote(item, function(putExistingNoteResponse) {
-
-          $scope.completed = 'note added';
-          itemsArray.removeItem(item);
-
-          itemsRequest.deleteItem(item, function(deleteItemResponse) {
-            itemsResponse.putItemContent(item, deleteItemResponse);
-          }, function(deleteItemResponse) {
-          });
-
-          notesResponse.putNoteContent(item, putExistingNoteResponse);
-          notesArray.putNewNote(item);
-
-        }, function(putExistingNoteResponse) {
-        });
       };
     }
 
 
-    MyController.$inject = ['$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'notesRequest', 'notesResponse', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    MyController.$inject = ['$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray'];
     angular.module('em.app').controller('MyController', MyController);
   }());

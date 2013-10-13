@@ -6,39 +6,29 @@
     angular.module('em.services').factory('tasksRequest', ['httpRequest', 'userSessionStorage',
     function(httpRequest, userSessionStorage) {
       return {
-        putTask : function(task, success, error) {
-          httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/task', task, function(putTaskResponse) {
-            success(putTaskResponse);
-          }, function(putTaskResponse) {
-            error(putTaskResponse);
+        putTask : function(task) {
+          return httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/task', task).then(function(putTaskResponse) {
+            return putTaskResponse.data;
           });
         },
-        putExistingTask : function(task, success, error) {
-          httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid, task, function(putExistingTaskResponse) {
-            success(putExistingTaskResponse);
-          }, function(putExistingTaskResponse) {
-            error(putExistingTaskResponse);
+        putExistingTask : function(task) {
+          return httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid, task).then(function(putExistingTaskResponse) {
+            return putExistingTaskResponse.data;
           });
         },
-        deleteTask : function(task, success, error) {
-          httpRequest['delete']('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid, function(deleteTaskResponse) {
-            success(deleteTaskResponse);
-          }, function(deleteTaskResponse) {
-            error(deleteTaskResponse);
+        deleteTask : function(task) {
+          return httpRequest['delete']('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid).then(function(deleteTaskResponse) {
+            return deleteTaskResponse.data;
           });
         },
-        completeTask : function(task, success, error) {
-          httpRequest.post('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/complete', function(completeTaskResponse) {
-            success(completeTaskResponse);
-          }, function(completeTaskResponse) {
-            error(completeTaskResponse);
+        completeTask : function(task) {
+          return httpRequest.post('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/complete').then(function(completeTaskResponse) {
+            return completeTaskResponse.data;
           });
         },
-        uncompleteTask : function(task, success, error) {
-          httpRequest.post('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/uncomplete', function(uncompleteTaskResponse) {
-            success(uncompleteTaskResponse);
-          }, function(uncompleteTaskResponse) {
-            error(uncompleteTaskResponse);
+        uncompleteTask : function(task) {
+          return httpRequest.post('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/uncomplete').then(function(uncompleteTaskResponse) {
+            return uncompleteTaskResponse.data;
           });
         }
       };

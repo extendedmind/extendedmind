@@ -16,18 +16,14 @@
             return putItemsResponse.data;
           });
         },
-        editItem : function(item, success, error) {
-          httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/item/' + item.uuid, item, function(editItemResponse) {
-            success(editItemResponse);
-          }, function(editItemResponse) {
-            error(editItemResponse);
+        editItem : function(item) {
+          httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/item/' + item.uuid, item).then(function(editItemResponse) {
+            return editItemResponse.data;
           });
         },
-        deleteItem : function(item, success, error) {
-          httpRequest['delete']('/api/' + userSessionStorage.getUserUUID() + '/item/' + item.uuid, function(deleteItemResponse) {
-            success(deleteItemResponse);
-          }, function(deleteItemResponse) {
-            error(deleteItemResponse);
+        deleteItem : function(item) {
+          return httpRequest['delete']('/api/' + userSessionStorage.getUserUUID() + '/item/' + item.uuid).then(function(deleteItemResponse) {
+            return deleteItemResponse.data;
           });
         }
       };
