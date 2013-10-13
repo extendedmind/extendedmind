@@ -13,6 +13,7 @@
     angular.module('em.directives').directive('notesList', [
     function() {
       return {
+        controller : 'NotesListController',
         restrict : 'A',
         templateUrl : 'static/partials/templates/notes/notesList.html',
         transclude : true,
@@ -20,6 +21,7 @@
           var notesFilterAttr = attrs.notesfilter;
 
           scope.$watch(notesFilterAttr, function(newValue) {
+            console.log(newValue);
             scope.notesListFilter = newValue;
           });
         }

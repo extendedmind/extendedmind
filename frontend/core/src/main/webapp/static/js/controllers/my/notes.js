@@ -2,18 +2,23 @@
 
 ( function() {'use strict';
 
-    function NotesController($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, notesRequest, notesResponse, slideIndex, tagsArray) {
+    function NotesController($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, notesRequest, notesResponse, slideIndex, tagsArray, tasksArray) {
 
-      itemsRequest.getItems(function(itemsResponse) {
+      $scope.notesListFilter = true;
+
+      itemsRequest.getItems().then(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);
         notesArray.setNotes(itemsResponse.notes);
         tagsArray.setTags(itemsResponse.tags);
+        tasksArray.setTasks(itemsResponse.tasks);
 
+        $scope.items = itemsArray.getItems();
         $scope.notes = notesArray.getNotes();
-        $scope.contexts = tagsArray.getTags();
-
-      }, function(error) {
+        $scope.tasks = tasksArray.getTasks();
+        $scope.tags = tagsArray.getTags();
+        $scope.projects = tasksArray.getProjects();
+        $scope.subtasks = tasksArray.getSubtasks();
       });
 
       $scope.errorHandler = errorHandler;
@@ -41,23 +46,12 @@
         $location.path('/my/notes/new/');
       };
 
-      $scope.deleteNote = function(note) {
-        notesRequest.deleteNote(note, function(deleteNoteResponse) {
-          notesResponse.putNoteContent(note, deleteNoteResponse);
-          notesArray.removeNote(note);
-        }, function(deleteNoteResponse) {
-        });
-      };
-
-      $scope.showNoteContent = true;
-      $scope.notesListFilter = true;
-
       $scope.setActiveItem = function(item) {
         activeItem.setItem(item);
       };
     }
 
 
-    NotesController.$inject = ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'notesRequest', 'notesResponse', 'slideIndex', 'tagsArray'];
+    NotesController.$inject = ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'notesRequest', 'notesResponse', 'slideIndex', 'tagsArray', 'tasksArray'];
     angular.module('em.app').controller('NotesController', NotesController);
   }());
