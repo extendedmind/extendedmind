@@ -4,6 +4,7 @@
 ( function() {'use strict';
 
     function userAuthenticate($location, $rootScope, authenticateRequest, userSession, userCookie, userSessionStorage) {
+
       return {
         authenticate : function() {
 
