@@ -6,11 +6,9 @@
     angular.module('em.services').factory('itemsRequest', ['httpRequest', 'itemsArray', 'userSessionStorage',
     function(httpRequest, itemsArray, userSessionStorage) {
       return {
-        getItems : function(success, error) {
-          httpRequest.get('/api/' + userSessionStorage.getUserUUID() + '/items', function(itemsResponse) {
-            success(itemsResponse);
-          }, function(itemsResponse) {
-            error(itemsResponse);
+        getItems : function() {
+          return httpRequest.get('/api/' + userSessionStorage.getUserUUID() + '/items').then(function(itemsResponse) {
+            return itemsResponse.data;
           });
         },
         putItem : function(item, success, error) {

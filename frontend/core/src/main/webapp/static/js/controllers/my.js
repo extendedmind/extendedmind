@@ -3,9 +3,11 @@
 
 ( function() {'use strict';
 
-    function MyController($scope, activeItem, itemsArray, itemsRequest, itemsResponse, notesArray, notesRequest, notesResponse, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    function MyController($scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, notesRequest, notesResponse, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
-      itemsRequest.getItems(function(itemsResponse) {
+      $scope.errorHandler = errorHandler;
+      
+      itemsRequest.getItems().then(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);
         notesArray.setNotes(itemsResponse.notes);
@@ -17,7 +19,6 @@
         $scope.tags = tagsArray.getTags();
         $scope.tasks = tasksArray.getTasks();
 
-      }, function(error) {
       });
 
       $scope.addNewItem = function() {
@@ -84,6 +85,6 @@
     }
 
 
-    MyController.$inject = ['$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'notesRequest', 'notesResponse', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    MyController.$inject = ['$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'notesRequest', 'notesResponse', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
     angular.module('em.app').controller('MyController', MyController);
   }());

@@ -11,13 +11,6 @@
     function($locationProvider, $routeProvider) {
 
       $routeProvider.when('/', {
-        resolve : {
-          authenticationRequired : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
-          }]
-
-        },
         redirectTo : '/my'
       });
 
@@ -35,9 +28,9 @@
         controller : 'MyController',
         templateUrl : 'static/partials/my.html',
         resolve : {
-          authenticationRequired : ['userAuthenticate',
+          'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            userAuthenticate.authenticate();
+            return userAuthenticate.authenticate();
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -51,7 +44,7 @@
         controller : 'NotesController',
         templateUrl : 'static/partials/my/notesSlides.html',
         resolve : {
-          authenticationRequired : ['userAuthenticate',
+          'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
             userAuthenticate.authenticate();
           }],
@@ -67,7 +60,7 @@
         controller : 'ContextController',
         templateUrl : 'static/partials/my/notes/context.html',
         resolve : {
-          authenticationRequired : ['userAuthenticate',
+          'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
             userAuthenticate.authenticate();
           }]
@@ -79,7 +72,7 @@
         controller : 'NoteEditController',
         templateUrl : 'static/partials/my/notes/edit.html',
         resolve : {
-          authenticationRequired : ['userAuthenticate',
+          'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
             userAuthenticate.authenticate();
           }]
@@ -91,7 +84,7 @@
         controller : 'NewNoteController',
         templateUrl : 'static/partials/my/notes/new.html',
         resolve : {
-          authenticationRequired : ['userAuthenticate',
+          'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
             userAuthenticate.authenticate();
           }]
@@ -103,7 +96,7 @@
         controller : 'TasksController',
         templateUrl : 'static/partials/my/tasksSlides.html',
         resolve : {
-          authenticationRequired : ['userAuthenticate',
+          'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
             userAuthenticate.authenticate();
           }],
@@ -119,7 +112,7 @@
         controller : 'ContextController',
         templateUrl : 'static/partials/my/tasks/context.html',
         resolve : {
-          authenticationRequired : ['userAuthenticate',
+          'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
             userAuthenticate.authenticate();
           }]
@@ -131,7 +124,7 @@
         controller : 'EditTaskController',
         templateUrl : 'static/partials/my/tasks/edit.html',
         resolve : {
-          authenticationRequired : ['userAuthenticate',
+          'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
             userAuthenticate.authenticate();
           }]
@@ -143,7 +136,7 @@
         controller : 'NewTaskController',
         templateUrl : 'static/partials/my/tasks/new.html',
         resolve : {
-          authenticationRequired : ['userAuthenticate',
+          'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
             userAuthenticate.authenticate();
           }]
@@ -155,7 +148,7 @@
         controller : 'ProjectController',
         templateUrl : 'static/partials/my/tasks/project.html',
         resolve : {
-          authenticationRequired : ['userAuthenticate',
+          'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
             userAuthenticate.authenticate();
           }]

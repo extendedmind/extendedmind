@@ -62,10 +62,8 @@
             method : name,
             url : url,
             cache : true
-          }).success(function(response) {
-            success(response);
-          }).error(function(response) {
-            error(response);
+          }).then(function(response) {
+            return response;
           });
         };
       });
