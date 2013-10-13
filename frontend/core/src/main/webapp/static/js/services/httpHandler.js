@@ -20,6 +20,7 @@
           return response || $q.when(response);
         },
         responseError : function(rejection) {
+
           errorHandler.setError(rejection.data);
           // Http 401 will cause a browser to display a login dialog
           // http://stackoverflow.com/questions/86105/how-can-i-supress-the-browsers-authentication-dialog
@@ -57,7 +58,7 @@
       var httpRequest = {};
 
       angular.forEach(['get'], function(name) {
-        httpRequest[name] = function(url, success, error) {
+        httpRequest[name] = function(url) {
           return $http({
             method : name,
             url : url,
@@ -69,24 +70,20 @@
       });
 
       angular.forEach(['delete', 'head', 'jsonp'], function(name) {
-        httpRequest[name] = function(url, success, error) {
+        httpRequest[name] = function(url) {
           return $http({
             method : name,
             url : url
-          }).success(function(response) {
-            success(response);
-          }).error(function(response) {
-            error(response);
+          }).then(function(response) {
+            return response;
           });
         };
       });
 
       angular.forEach(['post', 'put'], function(name) {
-        httpRequest[name] = function(url, data, success, error) {
-          return $http[name](url, data).success(function(response) {
-            success(response);
-          }).error(function(response) {
-            error(response);
+        httpRequest[name] = function(url, data) {
+          return $http[name](url, data).then(function(response) {
+            return response;
           });
         };
       });

@@ -30,7 +30,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            return userAuthenticate.authenticate();
+            userAuthenticate.authenticate();
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -46,7 +46,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            userAuthenticate.authenticate();
+            return userAuthenticate.authenticate();
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -62,7 +62,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            userAuthenticate.authenticate();
+            return userAuthenticate.authenticate();
           }]
 
         }
@@ -74,7 +74,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            userAuthenticate.authenticate();
+            return userAuthenticate.authenticate();
           }]
 
         }
@@ -86,7 +86,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            userAuthenticate.authenticate();
+            return userAuthenticate.authenticate();
           }]
 
         }
@@ -98,7 +98,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            userAuthenticate.authenticate();
+            return userAuthenticate.authenticate();
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -114,7 +114,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            userAuthenticate.authenticate();
+            return userAuthenticate.authenticate();
           }]
 
         }
@@ -126,7 +126,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            userAuthenticate.authenticate();
+            return userAuthenticate.authenticate();
           }]
 
         }
@@ -138,7 +138,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            userAuthenticate.authenticate();
+            return userAuthenticate.authenticate();
           }]
 
         }
@@ -150,7 +150,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            userAuthenticate.authenticate();
+            return userAuthenticate.authenticate();
           }]
 
         }
@@ -164,8 +164,8 @@
       $locationProvider.html5Mode(true);
     }]);
 
-    angular.module('em.app').run(['$document', '$location', '$rootScope', 'userAuthenticate',
-    function($document, $location, $rootScope, userAuthenticate) {
+    angular.module('em.app').run(['$location', '$rootScope', 'userAuthenticate',
+    function($location, $rootScope, userAuthenticate) {
 
       $rootScope.$on('event:authenticationRequired', function() {
         userAuthenticate.authenticate();

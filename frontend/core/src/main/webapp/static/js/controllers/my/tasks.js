@@ -4,7 +4,7 @@
 
     function TasksController($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, slideIndex, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
-      itemsRequest.getItems(function(itemsResponse) {
+      itemsRequest.getItems().then(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);
         tagsArray.setTags(itemsResponse.tags);
