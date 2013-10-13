@@ -4,6 +4,10 @@
 
     function TasksController($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray) {
 
+      $scope.tasksListFilter = true;
+
+      $scope.errorHandler = errorHandler;
+
       itemsRequest.getItems().then(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);
@@ -18,10 +22,7 @@
         $scope.projects = tasksArray.getProjects();
         $scope.subtasks = tasksArray.getSubtasks();
 
-      }, function(error) {
       });
-
-      $scope.errorHandler = errorHandler;
 
       $scope.slide = slideIndex;
 
@@ -41,8 +42,6 @@
             break;
         }
       });
-
-      $scope.tasksListFilter = true;
 
       $scope.addNew = function() {
         $location.path('/my/tasks/new/');
