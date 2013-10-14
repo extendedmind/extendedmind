@@ -21,7 +21,6 @@
           var notesFilterAttr = attrs.notesfilter;
 
           scope.$watch(notesFilterAttr, function(newValue) {
-            console.log(newValue);
             scope.notesListFilter = newValue;
           });
         }

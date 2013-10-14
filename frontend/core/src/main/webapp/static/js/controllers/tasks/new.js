@@ -6,17 +6,6 @@
 
       $scope.errorHandler = errorHandler;
 
-      itemsRequest.getItems(function(itemsResponse) {
-
-        itemsArray.setItems(itemsResponse.items);
-        tasksArray.setTasks(itemsResponse.tasks);
-        tagsArray.setTags(itemsResponse.tags);
-
-        $scope.projects = tasksArray.getProjects();
-
-      }, function(error) {
-      });
-
       $scope.editTask = function() {
 
         if ($scope.parentTask) {
@@ -24,13 +13,13 @@
           $scope.task.relationships.parentTask = $scope.parentTask.uuid;
         }
 
-        tasksRequest.putTask($scope.task, function(putTaskResponse) {
+        tasksRequest.putTask($scope.task).then(function(putTaskResponse) {
 
           tasksResponse.putTaskContent($scope.task, putTaskResponse);
           tasksArray.putNewTask($scope.task);
           $scope.task = {};
 
-        }, function(putTaskResponse) {
+          window.history.back();
         });
       };
 

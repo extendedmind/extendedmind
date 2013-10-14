@@ -17,15 +17,14 @@
         $scope.completed = 'task added';
         itemsArray.removeItem(item);
 
-        itemsRequest.deleteItem(item).then(function(deleteItemResponse) {
-          itemsResponse.putItemContent(item, deleteItemResponse);
+        tasksRequest.putExistingTask(item).then(function(putExistingTaskResponse) {
+
+          tasksResponse.putTaskContent(item, putExistingTaskResponse);
+          tasksArray.putNewTask(item);
+
         }).then(function() {
-
-          tasksRequest.putExistingTask(item).then(function(putExistingTaskResponse) {
-
-            tasksResponse.putTaskContent(item, putExistingTaskResponse);
-            tasksArray.putNewTask(item);
-
+          itemsRequest.deleteItem(item).then(function(deleteItemResponse) {
+            itemsResponse.putItemContent(item, deleteItemResponse);
           });
         });
       };
@@ -35,15 +34,14 @@
         $scope.completed = 'note added';
         itemsArray.removeItem(item);
 
-        itemsRequest.deleteItem(item).then(function(deleteItemResponse) {
-          itemsResponse.putItemContent(item, deleteItemResponse);
+        notesRequest.putExistingNote(item).then(function(putExistingNoteResponse) {
+
+          notesResponse.putNoteContent(item, putExistingNoteResponse);
+          notesArray.putNewNote(item);
+
         }).then(function() {
-
-          notesRequest.putExistingNote(item).then(function(putExistingNoteResponse) {
-
-            notesResponse.putNoteContent(item, putExistingNoteResponse);
-            notesArray.putNewNote(item);
-
+          itemsRequest.deleteItem(item).then(function(deleteItemResponse) {
+            itemsResponse.putItemContent(item, deleteItemResponse);
           });
         });
       };

@@ -5,6 +5,7 @@
     function MyController($scope, activeItem, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
+      $scope.items = {};
 
       itemsRequest.getItems().then(function(itemsResponse) {
 
