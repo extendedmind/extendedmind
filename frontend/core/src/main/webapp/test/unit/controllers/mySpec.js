@@ -27,7 +27,7 @@
       });
 
       it('should return logged user\'s items', inject(function() {
-        expect($scope.items).toBe(undefined);
+        expect($scope.items).toEqual({});
         $scope.items = userItems.items;
         $httpBackend.flush();
         expect($scope.items.length).toBe(2);
