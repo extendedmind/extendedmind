@@ -5,8 +5,10 @@
     function NotesListController($scope, notesArray, notesRequest, notesResponse) {
 
       $scope.deleteNote = function(note) {
+
+        notesArray.removeNote(note);
+
         notesRequest.deleteNote(note).then(function(deleteNoteResponse) {
-          notesArray.removeNote(note);
           notesResponse.putNoteContent(note, deleteNoteResponse);
         });
       };

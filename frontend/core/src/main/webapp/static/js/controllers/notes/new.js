@@ -2,28 +2,21 @@
 
 ( function() {'use strict';
 
-    function NewNoteController($location, $routeParams, $scope, activeItem, errorHandler, itemsArray, itemsRequest, notesArray, notesRequest, notesResponse) {
+    function NewNoteController($scope, errorHandler, notesArray, notesRequest, notesResponse) {
 
       $scope.errorHandler = errorHandler;
 
-      itemsRequest.getItems(function(itemsResponse) {
-
-        itemsArray.setItems(itemsResponse.items);
-        notesArray.setNotes(itemsResponse.notes);
-
-      }, function(error) {
-      });
-
       $scope.editNote = function() {
 
-        notesRequest.putNote($scope.note, function(putNoteResponse) {
+        notesRequest.putNote($scope.note).then(function(putNoteResponse) {
+
+          notesArray.putNewNote($scope.note);
 
           notesResponse.putNoteContent($scope.note, putNoteResponse);
-          notesArray.putNewNote($scope.note);
           $scope.note = {};
 
-        }, function(putNoteResponse) {
         });
+        window.history.back();
       };
 
       $scope.cancelEdit = function() {
@@ -32,6 +25,6 @@
     }
 
 
-    NewNoteController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'notesArray', 'notesRequest', 'notesResponse'];
+    NewNoteController.$inject = ['$scope', 'errorHandler', 'notesArray', 'notesRequest', 'notesResponse'];
     angular.module('em.app').controller('NewNoteController', NewNoteController);
   }());

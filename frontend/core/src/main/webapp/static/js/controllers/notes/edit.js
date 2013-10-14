@@ -2,30 +2,24 @@
 
 ( function() {'use strict';
 
-    function NoteEditController($rootScope, $routeParams, $scope, activeItem, itemsArray, itemsRequest, notesArray, notesRequest, notesResponse) {
+    function NoteEditController($routeParams, $scope, activeItem, errorHandler, notesArray, notesRequest, notesResponse) {
+
+      $scope.errorHandler = errorHandler;
 
       if (activeItem.getItem()) {
         $scope.note = activeItem.getItem();
       } else {
-
-        itemsRequest.getItems(function(itemsResponse) {
-          notesArray.setNotes(itemsResponse.notes);
-
-          $scope.note = itemsArray.getItemByUuid(notesArray.getNotes(), $routeParams.uuid);
-
-        }, function(error) {
-        });
+        $scope.note = notesArray.getNoteByUuid($routeParams.uuid);
       }
 
       $scope.editNote = function() {
 
-        notesRequest.putExistingNote($scope.note, function(putExistingNoteResponse) {
+        notesRequest.putExistingNote($scope.note).then(function(putExistingNoteResponse) {
 
           notesResponse.putNoteContent($scope.note, putExistingNoteResponse);
           $scope.note = {};
           activeItem.setItem();
 
-        }, function(putTaskResponse) {
         });
 
         window.history.back();
@@ -37,6 +31,6 @@
     }
 
 
-    NoteEditController.$inject = ['$rootScope', '$routeParams', '$scope', 'activeItem', 'itemsArray', 'itemsRequest', 'notesArray', 'notesRequest', 'notesResponse'];
+    NoteEditController.$inject = ['$routeParams', '$scope', 'activeItem', 'errorHandler', 'notesArray', 'notesRequest', 'notesResponse'];
     angular.module('em.app').controller('NoteEditController', NoteEditController);
   }());

@@ -6,10 +6,6 @@
 
       $scope.errorHandler = errorHandler;
 
-      $scope.items = [];
-      $scope.notes = [];
-      $scope.tasks = [];
-
       itemsRequest.getItems().then(function(itemsResponse) {
 
         itemsArray.setItems(itemsResponse.items);

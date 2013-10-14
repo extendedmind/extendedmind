@@ -20,7 +20,7 @@
       }));
 
       it('should return logged user\'s notes', inject(function() {
-        expect($scope.items).toEqual([]);
+        expect($scope.items).toBeUndefined();
         $scope.items = mockHttpBackendResponse.getItemsResponse();
         expect($scope.items.notes.length).toBe(3);
       }));

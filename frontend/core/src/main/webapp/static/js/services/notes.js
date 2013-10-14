@@ -41,9 +41,19 @@
       return {
         setNotes : function(notesResponse) {
           if (notesResponse != null) {
-            notes = notesResponse;
+            var i = 0;
+
+            while (notesResponse[i]) {
+              this.setNote(notesResponse[i]);
+              i++;
+            }
           } else {
             notes = [];
+          }
+        },
+        setNote : function(note) {
+          if (!itemsArray.itemInArray(notes, note.uuid)) {
+            notes.push(note);
           }
         },
         getNotes : function() {
@@ -59,6 +69,9 @@
           if (!itemsArray.itemInArray(notes, note.uuid)) {
             notes.push(note);
           }
+        },
+        getNoteByUuid : function(uuid) {
+          return itemsArray.getItemByUuid(notes, uuid);
         }
       };
     }]);

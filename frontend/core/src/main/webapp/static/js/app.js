@@ -93,7 +93,7 @@
       });
 
       $routeProvider.when('/my/tasks', {
-        controller : 'MyController',
+        controller : 'TasksController',
         templateUrl : 'static/partials/my/tasksSlides.html',
         resolve : {
           'authenticationRequired' : ['userAuthenticate',

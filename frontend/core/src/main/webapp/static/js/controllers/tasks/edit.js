@@ -2,40 +2,22 @@
 
 ( function() {'use strict';
 
-    function EditTaskController($location, $routeParams, $scope, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    function EditTaskController($routeParams, $scope, activeItem, errorHandler, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.errorHandler = errorHandler;
 
       if (activeItem.getItem()) {
-
-        $scope.projects = tasksArray.getProjects();
         $scope.task = activeItem.getItem();
-
-        if ($scope.task.relationships) {
-          if ($scope.task.relationships.parentTask) {
-            $scope.parentTask = tasksArray.getProjectByUuid($scope.task.relationships.parentTask);
-          }
-        }
-
       } else {
-
-        itemsRequest.getItems().then(function(itemsResponse) {
-
-          itemsArray.setItems(itemsResponse.items);
-          tasksArray.setTasks(itemsResponse.tasks);
-          tagsArray.setTags(itemsResponse.tags);
-
-          $scope.projects = tasksArray.getProjects();
-          $scope.task = tasksArray.getTaskByUuid($routeParams.uuid);
-
-          if ($scope.task.relationships) {
-            if ($scope.task.relationships.parentTask) {
-              $scope.parentTask = tasksArray.getProjectByUuid($scope.task.relationships.parentTask);
-            }
-          }
-
-        });
+        $scope.task = tasksArray.getTaskByUuid($routeParams.uuid);
       }
+
+      if ($scope.task.relationships) {
+        if ($scope.task.relationships.parentTask) {
+          $scope.parentTask = tasksArray.getProjectByUuid($scope.task.relationships.parentTask);
+        }
+      }
+      $scope.projects = tasksArray.getProjects();
 
       $scope.editTask = function() {
 
@@ -52,7 +34,7 @@
         } else {
 
           if ($scope.task.relationships) {
-            if ($scope.task.relationships.parentTask) {
+            if ($scope.task.relationships.plocarentTask) {
               tasksArray.removeSubtask($scope.task);
               tasksArray.deleteTaskProperty($scope.task.relationships, 'parentTask');
             }
@@ -76,6 +58,6 @@
     }
 
 
-    EditTaskController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    EditTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'errorHandler', 'tasksArray', 'tasksRequest', 'tasksResponse'];
     angular.module('em.app').controller('EditTaskController', EditTaskController);
   }());
