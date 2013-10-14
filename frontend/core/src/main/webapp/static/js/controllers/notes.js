@@ -6,8 +6,8 @@
 
       $scope.deleteNote = function(note) {
         notesRequest.deleteNote(note).then(function(deleteNoteResponse) {
-          notesResponse.putNoteContent(note, deleteNoteResponse);
           notesArray.removeNote(note);
+          notesResponse.putNoteContent(note, deleteNoteResponse);
         });
       };
     }

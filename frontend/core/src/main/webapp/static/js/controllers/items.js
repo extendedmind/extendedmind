@@ -22,10 +22,6 @@
           tasksResponse.putTaskContent(item, putExistingTaskResponse);
           tasksArray.putNewTask(item);
 
-        }).then(function() {
-          itemsRequest.deleteItem(item).then(function(deleteItemResponse) {
-            itemsResponse.putItemContent(item, deleteItemResponse);
-          });
         });
       };
 
@@ -39,10 +35,6 @@
           notesResponse.putNoteContent(item, putExistingNoteResponse);
           notesArray.putNewNote(item);
 
-        }).then(function() {
-          itemsRequest.deleteItem(item).then(function(deleteItemResponse) {
-            itemsResponse.putItemContent(item, deleteItemResponse);
-          });
         });
       };
     }

@@ -2,9 +2,9 @@
 
   <div ng-transclude></div>
 
-  <ul class="list-unstyled">
+  <ul class="list-unstyled" ng-show="notesListFilter">
 
-    <li ng-class="selected" ng-repeat="note in notes">
+    <li ng-class="selected" ng-repeat="note in notes | filter:newItem">
 
       <div ng-click="toggleNoteContent()">
         <span>{{note.title}}</span>

@@ -11,7 +11,6 @@
           itemsResponse.putItemContent($scope.newItem, putItemResponse);
           itemsArray.putNewItem($scope.newItem);
           $scope.newItem = {};
-
         });
       };
     }

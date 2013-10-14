@@ -20,7 +20,7 @@
       }));
 
       it('should return logged user\'s tasks', inject(function() {
-        expect($scope.items).toBe(undefined);
+        expect($scope.items).toEqual([]);
         $scope.items = mockHttpBackendResponse.getItemsResponse();
         expect($scope.items.tasks.length).toBe(4);
       }));

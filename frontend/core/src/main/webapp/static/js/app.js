@@ -11,7 +11,7 @@
     function($locationProvider, $routeProvider) {
 
       $routeProvider.when('/', {
-        redirectTo : '/my'
+        redirectTo : 'my'
       });
 
       $routeProvider.when('/404', {
@@ -93,7 +93,7 @@
       });
 
       $routeProvider.when('/my/tasks', {
-        controller : 'TasksController',
+        controller : 'MyController',
         templateUrl : 'static/partials/my/tasksSlides.html',
         resolve : {
           'authenticationRequired' : ['userAuthenticate',

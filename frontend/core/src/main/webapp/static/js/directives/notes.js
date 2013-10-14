@@ -10,12 +10,12 @@
       };
     }]);
 
-    angular.module('em.directives').directive('notesList', [
+    angular.module('em.directives').directive('filteredNotesList', [
     function() {
       return {
         controller : 'NotesListController',
         restrict : 'A',
-        templateUrl : 'static/partials/templates/notes/notesList.html',
+        templateUrl : 'static/partials/templates/notes/filteredNotesList.html',
         transclude : true,
         link : function(scope, element, attrs) {
           var notesFilterAttr = attrs.notesfilter;
@@ -24,6 +24,16 @@
             scope.notesListFilter = newValue;
           });
         }
+      };
+    }]);
+
+    angular.module('em.directives').directive('notesList', [
+    function() {
+      return {
+        controller : 'NotesListController',
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/notes/notesList.html',
+        transclude : true
       };
     }]);
 

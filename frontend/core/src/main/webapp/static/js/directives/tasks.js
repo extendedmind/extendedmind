@@ -10,12 +10,12 @@
       };
     }]);
 
-    angular.module('em.directives').directive('tasksList', [
+    angular.module('em.directives').directive('filteredTasksList', [
     function() {
       return {
         controller : 'TasksListController',
         restrict : 'A',
-        templateUrl : 'static/partials/templates/tasks/tasksList.html',
+        templateUrl : 'static/partials/templates/tasks/filteredTasksList.html',
         transclude : true,
         link : function(scope, element, attrs) {
           var tasksFilterAttr = attrs.tasksfilter;
@@ -24,6 +24,16 @@
             scope.tasksListFilter = newValue;
           });
         }
+      };
+    }]);
+
+    angular.module('em.directives').directive('tasksList', [
+    function() {
+      return {
+        controller : 'TasksListController',
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/tasks/tasksList.html',
+        transclude : true
       };
     }]);
 

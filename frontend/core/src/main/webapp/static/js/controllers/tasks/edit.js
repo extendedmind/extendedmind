@@ -19,7 +19,7 @@
 
       } else {
 
-        itemsRequest.getItems(function(itemsResponse) {
+        itemsRequest.getItems().then(function(itemsResponse) {
 
           itemsArray.setItems(itemsResponse.items);
           tasksArray.setTasks(itemsResponse.tasks);
@@ -34,7 +34,6 @@
             }
           }
 
-        }, function(error) {
         });
       }
 
@@ -52,19 +51,20 @@
 
         } else {
 
-          if ($scope.task.relationships.parentTask) {
-            tasksArray.removeSubtask($scope.task);
-            tasksArray.deleteTaskProperty($scope.task.relationships, 'parentTask');
+          if ($scope.task.relationships) {
+            if ($scope.task.relationships.parentTask) {
+              tasksArray.removeSubtask($scope.task);
+              tasksArray.deleteTaskProperty($scope.task.relationships, 'parentTask');
+            }
           }
         }
 
-        tasksRequest.putExistingTask($scope.task, function(putExistingTaskResponse) {
+        tasksRequest.putExistingTask($scope.task).then(function(putExistingTaskResponse) {
 
           tasksResponse.putTaskContent($scope.task, putExistingTaskResponse);
           $scope.task = {};
           activeItem.setItem();
 
-        }, function(putExistingTaskResponse) {
         });
 
         window.history.back();

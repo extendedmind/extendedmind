@@ -4,7 +4,11 @@
 
     function NotesController($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, notesRequest, notesResponse, slideIndex, tagsArray, tasksArray) {
 
-      $scope.notesListFilter = true;
+      $scope.errorHandler = errorHandler;
+
+      $scope.items = [];
+      $scope.notes = [];
+      $scope.tasks = [];
 
       itemsRequest.getItems().then(function(itemsResponse) {
 
@@ -19,9 +23,8 @@
         $scope.tags = tagsArray.getTags();
         $scope.projects = tasksArray.getProjects();
         $scope.subtasks = tasksArray.getSubtasks();
-      });
 
-      $scope.errorHandler = errorHandler;
+      });
 
       $scope.slide = slideIndex;
 

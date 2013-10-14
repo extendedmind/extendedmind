@@ -46,8 +46,8 @@
       $scope.deleteTask = function(task) {
 
         tasksRequest.deleteTask(task).then(function(deleteTaskResponse) {
-          tasksResponse.putTaskContent(task, deleteTaskResponse);
           tasksArray.removeTask(task);
+          tasksResponse.putTaskContent(task, deleteTaskResponse);
         });
 
       };

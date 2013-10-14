@@ -133,6 +133,8 @@
 
           if (userNamePass === 'timo@ext.md:timopwd') {
             response = [200, responseData];
+          } else if (userNamePass === 'jp@ext.md:jppwd') {
+            response = [200, responseData];
           } else if (userName === 'token') {
             response = [200, responseData];
           } else {

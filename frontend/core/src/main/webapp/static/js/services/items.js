@@ -1,5 +1,5 @@
 /*global angular*/
-/*jslint plusplus: true*/
+/*jslint eqeq: true plusplus: true*/
 
 ( function() {'use strict';
 
@@ -44,14 +44,14 @@
 
     angular.module('em.services').factory('activeItem', ['$rootScope',
     function($rootScope) {
-      var item;
+      var activeItem;
 
       return {
         setItem : function(item) {
-          this.item = item;
+          activeItem = item;
         },
         getItem : function() {
-          return this.item;
+          return activeItem;
         }
       };
     }]);
@@ -61,19 +61,26 @@
       var items = [];
 
       return {
-        setItems : function(items) {
-          this.items = items;
+        setItems : function(itemsResponse) {
+          if (itemsResponse != null) {
+            items = itemsResponse;
+          } else {
+            items = [];
+          }
         },
         getItems : function() {
-          return this.items;
+          return items;
         },
         putNewItem : function(item) {
-          if (!this.itemInArray(this.items, item.uuid)) {
-            this.items.push(item);
+          if (items == null) {
+            items = [];
+          }
+          if (!this.itemInArray(items, item.uuid)) {
+            items.push(item);
           }
         },
         removeItem : function(item) {
-          this.removeItemFromArray(this.items, item);
+          this.removeItemFromArray(items, item);
         },
         removeItemFromArray : function(items, item) {
           items.splice(items.indexOf(item), 1);

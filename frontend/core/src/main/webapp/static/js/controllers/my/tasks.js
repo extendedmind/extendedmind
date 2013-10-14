@@ -4,9 +4,11 @@
 
     function TasksController($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray) {
 
-      $scope.tasksListFilter = true;
-
       $scope.errorHandler = errorHandler;
+
+      $scope.items = [];
+      $scope.notes = [];
+      $scope.tasks = [];
 
       itemsRequest.getItems().then(function(itemsResponse) {
 

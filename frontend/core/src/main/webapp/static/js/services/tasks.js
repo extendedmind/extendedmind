@@ -1,5 +1,5 @@
 /*global angular*/
-/*jslint plusplus: true*/
+/*jslint eqeq: true plusplus: true*/
 
 ( function() {'use strict';
 
@@ -54,22 +54,31 @@
       subtasks = [];
 
       return {
-        setTasks : function(tasks) {
-          var i = 0;
+        setTasks : function(tasksResponse) {
+          if (tasksResponse != null) {
+            var i = 0;
 
-          while (tasks[i]) {
-            if (tasks[i].relationships) {
-              if (tasks[i].relationships.parentTask) {
-                this.setSubtask(tasks[i]);
+            while (tasksResponse[i]) {
+              if (tasksResponse[i].relationships) {
+                if (tasksResponse[i].relationships.parentTask) {
+                  this.setSubtask(tasksResponse[i]);
+                }
               }
-            }
 
-            if (tasks[i].project) {
-              this.setProject(tasks[i]);
-            } else {
-              this.setTask(tasks[i]);
+              if (tasksResponse[i].project) {
+                this.setProject(tasksResponse[i]);
+              } else {
+                this.setTask(tasksResponse[i]);
+              }
+              i++;
             }
-            i++;
+          } else {
+            tasks = [];
+          }
+        },
+        setTask : function(task) {
+          if (!itemsArray.itemInArray(tasks, task.uuid)) {
+            tasks.push(task);
           }
         },
         removeTask : function(task) {
@@ -95,11 +104,6 @@
         },
         getTaskByUuid : function(uuid) {
           return itemsArray.getItemByUuid(tasks, uuid);
-        },
-        setTask : function(task) {
-          if (!itemsArray.itemInArray(tasks, task.uuid)) {
-            tasks.push(task);
-          }
         },
         deleteTaskProperty : function(task, property) {
           itemsArray.deleteItemProperty(task, property);

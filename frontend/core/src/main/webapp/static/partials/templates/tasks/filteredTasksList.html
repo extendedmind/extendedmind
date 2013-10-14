@@ -2,9 +2,9 @@
 
   <div ng-transclude></div>
 
-  <ul class="list-unstyled">
+  <ul class="list-unstyled" ng-show="tasksListFilter">
 
-    <li ng-class="selected" ng-repeat="task in tasks">
+    <li ng-class="selected" ng-repeat="task in tasks | filter:newItem">
 
       <input type="checkbox" name="checkbox" id="checkbox{{$index}}" class="task-checkbox" ng-checked="task.completed" ng-click="taskChecked($index)">
 
