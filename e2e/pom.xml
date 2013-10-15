@@ -38,6 +38,11 @@
       <name>JP Salo</name>
       <email>jukapeka@gmail.com</email>
     </developer>
+    <developer>
+      <id>il0</id>
+      <name>Tuomas Saarela</name>
+      <email>tuomas.saarela@iki.fi</email>
+    </developer>
   </developers>
 
   <dependencies>
@@ -128,6 +133,48 @@
                       dest="target/phantomjs-linux-64.tar" />
                     <untar src="target/phantomjs-linux-64.tar"
                       dest="target" />
+                    <chmod perm="a+x">
+                      <fileset dir="${phantomjs.binary.directory}/bin">
+                        <include name="phantomjs" />
+                      </fileset>
+                    </chmod>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>macosx-phantomjs</id>
+      <!-- Reference mac profile here: https://github.com/qa/arquillian-phantom-binary/blob/master/pom.xml -->
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <properties>
+        <target.os.family>macosx</target.os.family>
+        <phantomjs.url>https://phantomjs.googlecode.com/files/phantomjs-${phantomjs.version}-macosx.zip</phantomjs.url>
+        <phantomjs.binary.directory>${project.build.directory}/phantomjs-${phantomjs.version}-macosx</phantomjs.binary.directory>
+        <platform.classifier>mac</platform.classifier>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target name="download-phantomjs">
+                    <get src="${phantomjs.url}" dest="target/phantomjs-macosx.zip"
+                      verbose="on" skipexisting="true" />
+                    <unzip src="target/phantomjs-macosx.zip" dest="target" />
                     <chmod perm="a+x">
                       <fileset dir="${phantomjs.binary.directory}/bin">
                         <include name="phantomjs" />
