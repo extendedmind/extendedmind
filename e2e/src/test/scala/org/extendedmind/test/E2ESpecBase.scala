@@ -30,9 +30,13 @@ abstract class E2ESpecBase extends FunSpec
     prop
   }
 
-  System.setProperty(PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"target/phantomjs-1.9.1-linux-x86_64/bin/phantomjs")  
+  if (System.getProperty("os.name") == "Mac OS X") {
+    System.setProperty(PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"target/phantomjs-1.9.1-macosx/bin/phantomjs")  
+  } else {
+    System.setProperty(PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"target/phantomjs-1.9.1-linux-x86_64/bin/phantomjs")  
+  }
   implicit val webDriver: WebDriver = new PhantomJSDriver
- 
+
   
   
   // Initialize Neo4j before every file
