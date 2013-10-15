@@ -52,6 +52,18 @@
         });
 
       };
+
+      $scope.addSubtask = function() {
+
+        tasksArray.putNewTask($scope.task);
+
+        tasksRequest.putTask($scope.task).then(function(putTaskResponse) {
+
+          tasksResponse.putTaskContent($scope.task, putTaskResponse);
+          $scope.task = {};
+
+        });
+      };
     }
 
 

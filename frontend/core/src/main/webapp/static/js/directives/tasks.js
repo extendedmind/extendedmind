@@ -27,6 +27,15 @@
       };
     }]);
 
+    angular.module('em.directives').directive('subTask', [
+    function() {
+      return {
+        controller : 'TasksListController',
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/tasks/subTask.html',
+      };
+    }]);
+
     angular.module('em.directives').directive('tasksList', [
     function() {
       return {
