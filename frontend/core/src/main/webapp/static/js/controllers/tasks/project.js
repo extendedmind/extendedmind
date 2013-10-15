@@ -9,19 +9,10 @@
 
       if (activeItem.getItem()) {
         $scope.project = activeItem.getItem();
-        $scope.tasks = tasksArray.getSubtasksByUuid($scope.project.uuid);
       } else {
-        itemsRequest.getItems(function(itemsResponse) {
-
-          itemsArray.setItems(itemsResponse.items);
-          tasksArray.setTasks(itemsResponse.tasks);
-          tagsArray.setTags(itemsResponse.tags);
-
-          $scope.project = itemsArray.getItemByUuid(tasksArray.getProjects(), $routeParams.uuid);
-          $scope.tasks = tasksArray.getSubtasksByUuid($scope.project.uuid);
-        }, function(error) {
-        });
+        $scope.project = itemsArray.getItemByUuid(tasksArray.getProjects(), $routeParams.uuid);
       }
+      $scope.tasks = tasksArray.getSubtasksByUuid($scope.project.uuid);
 
       $scope.addNew = function() {
         $location.path('/my/tasks/new/');

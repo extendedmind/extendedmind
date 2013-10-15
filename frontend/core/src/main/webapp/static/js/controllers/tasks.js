@@ -54,12 +54,13 @@
       };
 
       $scope.addSubtask = function() {
-        var projectUuid = $routeParams.uuid;
 
         if ($routeParams.uuid) {
           if (tasksArray.getProjectByUuid($routeParams.uuid)) {
             $scope.task.relationships = {};
-            $scope.task.relationships.parentTask = projectUuid;
+            $scope.task.relationships.parentTask = $routeParams.uuid;
+            tasksArray.setSubtask($scope.task);
+            $scope.tasks.push($scope.task);
           }
         }
 
