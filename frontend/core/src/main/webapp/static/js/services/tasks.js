@@ -82,12 +82,6 @@
           }
         },
         removeTask : function(task) {
-          if (task.relationships) {
-            if (task.relationships.parentTask) {
-              this.removeSubtask(task);
-              this.removeProject(task.relationships.parentTask);
-            }
-          }
           itemsArray.removeItemFromArray(tasks, task);
         },
         getTasks : function() {
@@ -118,7 +112,7 @@
             var task = this.getProjectByUuid(uuid);
             itemsArray.removeItemFromArray(projects, task);
             this.deleteTaskProperty(task, 'project');
-            this.setTask(task);
+            return task;
           }
         },
         getProjects : function() {

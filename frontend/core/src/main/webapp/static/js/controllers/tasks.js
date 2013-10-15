@@ -49,8 +49,26 @@
 
         tasksRequest.deleteTask(task).then(function(deleteTaskResponse) {
           tasksResponse.putTaskContent(task, deleteTaskResponse);
-        });
+        }).then(function() {
 
+          if (task.relationships) {
+            if (task.relationships.parentTask) {
+              tasksArray.removeSubtask(task);
+
+              $scope.project = tasksArray.removeProject(task.relationships.parentTask);
+
+              if ($scope.project) {
+
+                tasksArray.putNewTask($scope.project);
+
+                tasksRequest.putExistingTask($scope.project).then(function(putExistingTaskResponse) {
+                  tasksResponse.putTaskContent($scope.project, putExistingTaskResponse);
+                  $scope.project = {};
+                });
+              }
+            }
+          }
+        });
       };
 
       $scope.addSubtask = function() {
