@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.extendedmind</groupId>
@@ -36,8 +36,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <name>JP Salo</name>
       <email>jukapeka@gmail.com</email>
     </developer>
+    <developer>
+      <id>il0</id>
+      <name>Tuomas Saarela</name>
+      <email>tuomas.saarela@iki.fi</email>
+    </developer>
   </developers>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
@@ -55,183 +60,224 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     </dependency>
   </dependencies>
   <profiles>
-
     <!-- PhantomJS profiles, copied from here: https://github.com/qa/arquillian-phantom-binary -->
     <!-- NOTE: http://stackoverflow.com/a/12181394 this needs to be in all
     projects that use PhantomJS as a dependency -->
-    <profile>
-      <id>linux-64-phantomjs</id>
-      <activation>
-        <os>
-          <name>linux</name>
-          <arch>amd64</arch>
-        </os>
-      </activation>
-      <properties>
-        <phantomjs.url>http://phantomjs.googlecode.com/files/phantomjs-${phantomjs.version}-linux-x86_64.tar.bz2</phantomjs.url>
-        <phantomjs.binary.directory>${project.build.directory}/phantomjs-${phantomjs.version}-linux-x86_64</phantomjs.binary.directory>
-        <platform.classifier>linux-64</platform.classifier>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <target name="download-phantomjs">
-                    <get src="${phantomjs.url}" dest="target/phantomjs-linux-64.tar.bz2"
-                    verbose="on" skipexisting="true" />
-                    <bunzip2 src="target/phantomjs-linux-64.tar.bz2"
-                    dest="target/phantomjs-linux-64.tar" />
-                    <untar src="target/phantomjs-linux-64.tar"
-                    dest="target" />
-                    <chmod perm="a+x">
-                      <fileset dir="${phantomjs.binary.directory}/bin">
-                        <include name="phantomjs" />
-                      </fileset>
-                    </chmod>
-                  </target>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+<profile>
+  <id>linux-64-phantomjs</id>
+  <activation>
+    <os>
+      <name>linux</name>
+      <arch>amd64</arch>
+    </os>
+  </activation>
+  <properties>
+    <phantomjs.url>http://phantomjs.googlecode.com/files/phantomjs-${phantomjs.version}-linux-x86_64.tar.bz2</phantomjs.url>
+    <phantomjs.binary.directory>${project.build.directory}/phantomjs-${phantomjs.version}-linux-x86_64</phantomjs.binary.directory>
+    <platform.classifier>linux-64</platform.classifier>
+  </properties>
   <build>
-    <testSourceDirectory>${project.basedir}/src/main/webapp/test</testSourceDirectory>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
+        <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack</id>
-            <phase>generate-test-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.extendedmind</groupId>
-                  <artifactId>backend</artifactId>
-                  <type>test-jar</type>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${project.basedir}/src/main/webapp/test/json</outputDirectory>
-                  <includes>*.json</includes>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-clean-plugin</artifactId>
-        <configuration>
-          <filesets>
-            <fileset>
-              <directory>${basedir}/src/main/webapp/static/</directory>
-              <includes>
-                <include>em.min.js</include>
-                <include>em.min.css</include>
-              </includes>
-            </fileset>
-            <fileset>
-              <directory>${basedir}/src/main/webapp/test/json</directory>
-            </fileset>
-          </filesets>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-            </manifest>
-          </archive>
-          <packagingExcludes>index_devel.html,
-            test*/**,
-            WEB-INF/wro.*,
-            static/less*/**,
-            static/js*/**,
-            static/lib/less*/**,
-            static/lib/jasmine*/**</packagingExcludes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.github.searls</groupId>
-        <artifactId>jasmine-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <jsSrcDir>${project.basedir}/src/main/webapp/static</jsSrcDir>
-          <jsTestSrcDir>${project.basedir}/src/main/webapp/test</jsTestSrcDir>
-          <preloadSources>
-            <source>lib/jasmine/jasmine-jquery.js</source>
-            <source>jsonFixtures.js</source>
-          </preloadSources>
-          <sourceIncludes>
-            <include>lib/jquery/jquery.js</include>
-            <include>lib/jquery/jquery.cookie.js</include>
-            <include>lib/angularjs/angular.js</include>
-            <include>lib/angularjs/angular-route.js</include>
-            <include>lib/angularjs/angular-mocks.js</include>
-            <include>lib/angularjs/angular-animate.js</include>
-            <include>lib/angularjs/angular-touch.js</include>
-            <include>js/*.js</include>
-            <include>js/**/*.js</include>
-            <include>mockHelpers.js</include>
-            <include>lib/base64.js</include>
-          </sourceIncludes>
-          <webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
-          <webDriverCapabilities>
-            <phantomjs.binary.path>${phantomjs.binary.directory}/bin/phantomjs</phantomjs.binary.path>
-          </webDriverCapabilities>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>ro.isdc.wro4j</groupId>
-        <artifactId>wro4j-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>wro4j-production</id>
-            <phase>prepare-package</phase>
+            <phase>generate-resources</phase>
             <goals>
               <goal>run</goal>
             </goals>
             <configuration>
-              <targetGroups>em.min</targetGroups>
+              <target name="download-phantomjs">
+                <get src="${phantomjs.url}" dest="target/phantomjs-linux-64.tar.bz2"
+                  verbose="on" skipexisting="true" />
+                <bunzip2 src="target/phantomjs-linux-64.tar.bz2"
+                  dest="target/phantomjs-linux-64.tar" />
+                <untar src="target/phantomjs-linux-64.tar"
+                  dest="target" />
+                <chmod perm="a+x">
+                  <fileset dir="${phantomjs.binary.directory}/bin">
+                    <include name="phantomjs" />
+                  </fileset>
+                </chmod>
+              </target>
             </configuration>
           </execution>
         </executions>
-        <configuration>
-          <contextFolder>${basedir}/src/main/webapp/static</contextFolder>
-          <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
-          <destinationFolder>${basedir}/src/main/webapp/static</destinationFolder>
-          <cssDestinationFolder>${basedir}/src/main/webapp/static/</cssDestinationFolder>
-          <jsDestinationFolder>${basedir}/src/main/webapp/static/</jsDestinationFolder>
-        </configuration>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings
+  </build>
+</profile>
+<profile>
+  <id>macosx-phantomjs</id>
+  <!-- Reference mac profile here: https://github.com/qa/arquillian-phantom-binary/blob/master/pom.xml -->
+  <activation>
+    <os>
+      <family>mac</family>
+    </os>
+  </activation>
+  <properties>
+    <target.os.family>macosx</target.os.family>
+    <phantomjs.url>https://phantomjs.googlecode.com/files/phantomjs-${phantomjs.version}-macosx.zip</phantomjs.url>
+    <phantomjs.binary.directory>${project.build.directory}/phantomjs-${phantomjs.version}-macosx</phantomjs.binary.directory>
+    <platform.classifier>mac</platform.classifier>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target name="download-phantomjs">
+                <get src="${phantomjs.url}" dest="target/phantomjs-macosx.zip"
+                  verbose="on" skipexisting="true" />
+                <unzip src="target/phantomjs-macosx.zip" dest="target" />
+                <chmod perm="a+x">
+                  <fileset dir="${phantomjs.binary.directory}/bin">
+                    <include name="phantomjs" />
+                  </fileset>
+                </chmod>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</profile>
+</profiles>
+<build>
+  <testSourceDirectory>${project.basedir}/src/main/webapp/test</testSourceDirectory>
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-dependency-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>unpack</id>
+          <phase>generate-test-resources</phase>
+          <goals>
+            <goal>unpack</goal>
+          </goals>
+          <configuration>
+            <artifactItems>
+              <artifactItem>
+                <groupId>org.extendedmind</groupId>
+                <artifactId>backend</artifactId>
+                <type>test-jar</type>
+                <overWrite>true</overWrite>
+                <outputDirectory>${project.basedir}/src/main/webapp/test/json</outputDirectory>
+                <includes>*.json</includes>
+              </artifactItem>
+            </artifactItems>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-clean-plugin</artifactId>
+      <configuration>
+        <filesets>
+          <fileset>
+            <directory>${basedir}/src/main/webapp/static/</directory>
+            <includes>
+              <include>em.min.js</include>
+              <include>em.min.css</include>
+            </includes>
+          </fileset>
+          <fileset>
+            <directory>${basedir}/src/main/webapp/test/json</directory>
+          </fileset>
+        </filesets>
+      </configuration>
+    </plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-war-plugin</artifactId>
+      <configuration>
+        <archive>
+          <manifest>
+            <addClasspath>true</addClasspath>
+          </manifest>
+        </archive>
+        <packagingExcludes>index_devel.html,
+          test*/**,
+          WEB-INF/wro.*,
+          static/less*/**,
+          static/js*/**,
+          static/lib/less*/**,
+          static/lib/jasmine*/**</packagingExcludes>
+      </configuration>
+    </plugin>
+    <plugin>
+      <groupId>com.github.searls</groupId>
+      <artifactId>jasmine-maven-plugin</artifactId>
+      <extensions>true</extensions>
+      <executions>
+        <execution>
+          <goals>
+            <goal>test</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <jsSrcDir>${project.basedir}/src/main/webapp/static</jsSrcDir>
+        <jsTestSrcDir>${project.basedir}/src/main/webapp/test</jsTestSrcDir>
+        <preloadSources>
+          <source>lib/jasmine/jasmine-jquery.js</source>
+          <source>jsonFixtures.js</source>
+        </preloadSources>
+        <sourceIncludes>
+          <include>lib/jquery/jquery.js</include>
+          <include>lib/jquery/jquery.cookie.js</include>
+          <include>lib/angularjs/angular.js</include>
+          <include>lib/angularjs/angular-route.js</include>
+          <include>lib/angularjs/angular-mocks.js</include>
+          <include>lib/angularjs/angular-animate.js</include>
+          <include>lib/angularjs/angular-touch.js</include>
+          <include>js/*.js</include>
+          <include>js/**/*.js</include>
+          <include>mockHelpers.js</include>
+          <include>lib/base64.js</include>
+        </sourceIncludes>
+        <webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
+        <webDriverCapabilities>
+          <phantomjs.binary.path>${phantomjs.binary.directory}/bin/phantomjs</phantomjs.binary.path>
+        </webDriverCapabilities>
+      </configuration>
+    </plugin>
+    <plugin>
+      <groupId>ro.isdc.wro4j</groupId>
+      <artifactId>wro4j-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>wro4j-production</id>
+          <phase>prepare-package</phase>
+          <goals>
+            <goal>run</goal>
+          </goals>
+          <configuration>
+            <targetGroups>em.min</targetGroups>
+          </configuration>
+        </execution>
+      </executions>
+      <configuration>
+        <contextFolder>${basedir}/src/main/webapp/static</contextFolder>
+        <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+        <destinationFolder>${basedir}/src/main/webapp/static</destinationFolder>
+        <cssDestinationFolder>${basedir}/src/main/webapp/static/</cssDestinationFolder>
+        <jsDestinationFolder>${basedir}/src/main/webapp/static/</jsDestinationFolder>
+      </configuration>
+    </plugin>
+  </plugins>
+  <pluginManagement>
+    <plugins>
+      <!--This plugin's configuration is used to store Eclipse m2e settings
         only. It has no influence on the Maven build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
