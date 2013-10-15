@@ -33,13 +33,13 @@
 
         task.project = true;
 
+        tasksArray.removeTask(task);
+        tasksArray.setProject(task);
+
+        $location.path('/my/tasks/new/' + task.uuid);
+
         tasksRequest.putExistingTask(task).then(function(putExistingTaskResponse) {
           tasksResponse.putTaskContent(task, putExistingTaskResponse);
-
-          $location.path('/my/tasks/new/');
-
-          tasksArray.removeTask(task);
-          tasksArray.setProject(task);
         });
       };
 

@@ -5,13 +5,13 @@
     function ProjectController($location, $scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
-      activeItem.setItem();
 
       if (activeItem.getItem()) {
         $scope.project = activeItem.getItem();
       } else {
         $scope.project = itemsArray.getItemByUuid(tasksArray.getProjects(), $routeParams.uuid);
       }
+      
       $scope.tasks = tasksArray.getSubtasksByUuid($scope.project.uuid);
 
       $scope.addNew = function() {
