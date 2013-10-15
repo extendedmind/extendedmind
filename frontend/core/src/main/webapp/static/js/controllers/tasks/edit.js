@@ -2,7 +2,7 @@
 
 ( function() {'use strict';
 
-    function EditTaskController($routeParams, $scope, activeItem, errorHandler, tasksArray, tasksRequest, tasksResponse) {
+    function EditTaskController($routeParams, $scope, activeItem, errorHandler, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.errorHandler = errorHandler;
 
@@ -16,11 +16,25 @@
         if ($scope.task.relationships.parentTask) {
           $scope.parentTask = tasksArray.getProjectByUuid($scope.task.relationships.parentTask);
         }
+        if ($scope.task.relationships.tags) {
+          $scope.taskContext = tagsArray.getTagByUuid($scope.task.relationships.tags[0]);
+        }
       }
+      $scope.contexts = tagsArray.getTags();
       $scope.projects = tasksArray.getProjects();
 
       $scope.editTask = function() {
 
+        if ($scope.taskContext) {
+
+          if (!$scope.task.relationships) {
+            $scope.task.relationships = {};
+          }
+          $scope.task.relationships.tags = [];
+
+          $scope.task.relationships.tags[0] = $scope.taskContext.uuid;
+        }
+        
         if ($scope.parentTask) {
 
           tasksArray.setSubtask($scope.task);
@@ -34,7 +48,7 @@
         } else {
 
           if ($scope.task.relationships) {
-            if ($scope.task.relationships.plocarentTask) {
+            if ($scope.task.relationships.parentTask) {
               tasksArray.removeSubtask($scope.task);
               tasksArray.deleteTaskProperty($scope.task.relationships, 'parentTask');
             }
@@ -58,6 +72,6 @@
     }
 
 
-    EditTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'errorHandler', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    EditTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'errorHandler', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
     angular.module('em.app').controller('EditTaskController', EditTaskController);
   }());
