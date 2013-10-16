@@ -352,7 +352,7 @@ trait Service extends API with Injectable {
     } ~
     putExistingTask { (ownerUUID, taskUUID) =>
       authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
-        authorize(securityContext.userUUID == ownerUUID){
+        authorize(writeAccess(ownerUUID, securityContext)){
           entity(as[Task]) { task =>
             complete {
               Future[SetResult] {

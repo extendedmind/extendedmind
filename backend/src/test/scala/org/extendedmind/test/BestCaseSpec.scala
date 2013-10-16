@@ -597,6 +597,32 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         publicUser.uuid should not be None
       }
     }
+    it("should successfully get collective items with GET to /[collectiveUUID]/items "
+         + "put new task on PUT to /[collectiveUUID]/task "
+         + "update it with PUT to /[collectiveUUID]/task/[itemUUID] "
+         + "and get it back with GET to /[collectiveUUID]/task/[itemUUID]") {    
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val collectiveUuidMap = getCollectiveUUIDMap(authenticateResponse)
+      val emtUUID = collectiveUuidMap.get("extended mind technologies").get
+      Get("/" + emtUUID + "/items"
+          ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+          ) ~> emRoute ~> check {
+        val itemsResponse = entityAs[Items]
+        writeJsonOutput("collectiveItemsResponse", entityAs[String])
+        itemsResponse.items should not be None
+        itemsResponse.tasks should not be None
+        itemsResponse.tasks.get.length should equal(1)
+        itemsResponse.notes should not be None
+      }
+      val newTask = Task("change border colour to lighter gray", None, None, None, None, None)
+      val putTaskResponse = putNewTask(newTask, authenticateResponse, Some(emtUUID))
+      val putExistingTaskResponse = putExistingTask(newTask.copy(description = Some("e.g. #EDEDED")), 
+                                                    putTaskResponse.uuid.get, authenticateResponse, Some(emtUUID))
+      assert(putExistingTaskResponse.modified > putTaskResponse.modified)
+      
+      val updatedTask = getTask(putTaskResponse.uuid.get, authenticateResponse, Some(emtUUID))
+      updatedTask.description should not be None
+    }
   }
   
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {
@@ -635,8 +661,9 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
      }
   }
   
-  def putNewTask(newTask: Task, authenticateResponse: SecurityContext): SetResult = {
-     Put("/" + authenticateResponse.userUUID + "/task",
+  def putNewTask(newTask: Task, authenticateResponse: SecurityContext, collectiveUUID: Option[UUID] = None): SetResult = {
+     val ownerUUID = if (collectiveUUID.isDefined) collectiveUUID.get else authenticateResponse.userUUID
+     Put("/" + ownerUUID + "/task",
         marshal(newTask).right.get
             ) ~> addHeader("Content-Type", "application/json"
             ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
@@ -645,8 +672,10 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
      }
   }
   
-  def putExistingTask(existingTask: Task, taskUUID: UUID, authenticateResponse: SecurityContext): SetResult = {
-     Put("/" + authenticateResponse.userUUID + "/task/" + taskUUID.toString(),
+  def putExistingTask(existingTask: Task, taskUUID: UUID, authenticateResponse: SecurityContext, 
+                      collectiveUUID: Option[UUID] = None): SetResult = {
+     val ownerUUID = if (collectiveUUID.isDefined) collectiveUUID.get else authenticateResponse.userUUID
+     Put("/" + ownerUUID + "/task/" + taskUUID.toString(),
         marshal(existingTask).right.get
             ) ~> addHeader("Content-Type", "application/json"
             ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
@@ -664,8 +693,9 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
     }
   }
   
-  def getTask(taskUUID: UUID, authenticateResponse: SecurityContext): Task = {
-    Get("/" + authenticateResponse.userUUID + "/task/" + taskUUID
+  def getTask(taskUUID: UUID, authenticateResponse: SecurityContext, collectiveUUID: Option[UUID] = None): Task = {
+    val ownerUUID = if (collectiveUUID.isDefined) collectiveUUID.get else authenticateResponse.userUUID    
+    Get("/" + ownerUUID + "/task/" + taskUUID
         ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
         ) ~> emRoute ~> check {
       entityAs[Task]
