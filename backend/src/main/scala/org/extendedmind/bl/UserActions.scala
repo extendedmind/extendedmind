@@ -52,7 +52,7 @@ trait UserActions {
           log.error("Could not send email to {}", inviteRequest.email)
       }
     }
-    return setResult
+    setResult
   }
 
   def getInviteRequests() (implicit log: LoggingContext): Response[List[InviteRequest]] = {
@@ -82,6 +82,33 @@ trait UserActions {
     } yield result
     
     // TODO: Send verification email as Future
+  }
+  
+  def acceptInviteRequest(userUUID: UUID, inviteRequestUUID: UUID, details: InviteRequestAcceptDetails)
+                         (implicit log: LoggingContext): Response[(SetResult, String)] = {
+    log.info("acceptInviteRequest: request {}", inviteRequestUUID)
+    
+    val invite = Invite(Token.generateAccessKey, details.message, None)
+    val acceptResult = db.acceptInviteRequest(userUUID, inviteRequestUUID, invite)
+    
+    if (acceptResult.isRight){
+      val email = acceptResult.right.get._2
+      val futureMailResponse = mailgun.sendInvite(email, invite)
+      futureMailResponse onSuccess {
+        case SendEmailResponse(message, id) => {
+          val saveResponse = db.putExistingInvite(acceptResult.right.get._1.uuid.get, 
+                                                        invite.copy(emailId = Some(id)))
+          if (saveResponse.isLeft) 
+            log.error("Error updating invite for email {} with id {}, error: {}", 
+                email, id, saveResponse.left.get.head)
+          else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", 
+                          email, acceptResult.right.get._1.uuid.get, id)
+        }case _ =>
+          log.error("Could not send email to {}", email)
+      }
+    }
+    acceptResult
+    
   }
   
   def getPublicUser(email: String)(implicit log: LoggingContext): Response[PublicUser] = {

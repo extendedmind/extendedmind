@@ -19,6 +19,10 @@ case class InviteRequest(email: String, emailId: Option[String]){
 
 case class InviteRequestQueueNumber(queueNumber: Int)
 
+case class InviteRequestAcceptDetails(message: Option[String])
+
+case class Invite(code: Long, message: Option[String], emailId: Option[String])
+
 case class UserAccessRight(access: Option[Byte]){
   if (access.isDefined) require(access == Some(1) || access == Some(2), "Not a valid access right, permitted values: 1 = read, 2 = read/write")
 }

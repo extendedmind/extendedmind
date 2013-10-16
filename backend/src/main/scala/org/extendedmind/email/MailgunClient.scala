@@ -50,6 +50,7 @@ trait MailgunClient{
   def actorRefFactory: ActorRefFactory
 
   val requestInviteConfirmationHtmlTemplate = getTemplate("requestInviteConfirmation.html", settings.emailTemplateDir)
+  val acceptInviteRequestHtmlTemplate = getTemplate("acceptInviteRequest.html", settings.emailTemplateDir)
 
   // Prepare pipeline
   implicit val implicitActorRefFactory = actorRefFactory
@@ -61,9 +62,33 @@ trait MailgunClient{
                            settings.requestInviteConfirmationTitle, 
                            requestInviteConfirmationHtmlTemplate.replaceAll(
                                "queueNumberLink", 
-                               settings.emailUrlPrefix + settings.requestInviteOrderNumberURI + inviteRequestUUID)
+                               settings.emailUrlPrefix
+                               + settings.requestInviteOrderNumberURI.replaceAll(
+                                               "uuidValue", inviteRequestUUID.toString()))
                            .replaceAll("logoLink", 
                                settings.emailUrlPrefix + "logoname.png"))
+    
+    sendEmail(sendEmailRequest)
+  }
+  
+  def sendInvite(email: String, invite: Invite): Future[SendEmailResponse] = {
+    val sendEmailRequest = SendEmailRequest(settings.emailFrom, email, 
+                           settings.acceptInviteRequestTitle, 
+                           acceptInviteRequestHtmlTemplate
+                             .replaceAll(
+                               "acceptInviteLink", 
+                               settings.emailSecureUrlPrefix 
+                               + settings.acceptInviteURI
+                                   .replaceAll("emailValue", email)
+                                   .replaceAll("inviteValue", invite.code.toHexString))
+                             .replaceAll("logoLink", settings.emailUrlPrefix + "logoname.png"))
+    
+    sendEmail(sendEmailRequest)
+  }
+  
+  
+  
+  private def sendEmail(sendEmailRequest: SendEmailRequest): Future[SendEmailResponse] = {
     implicit val timeout = Timeout(5 seconds)
     sendEmailPipeline {
       Post("https://api.mailgun.net/v2/" + settings.mailgunDomain + "/messages",

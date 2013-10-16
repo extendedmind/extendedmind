@@ -119,6 +119,22 @@ trait UserDatabase extends AbstractGraphDatabase {
         }
     }
   }
+  
+  def acceptInviteRequest(userUUID: UUID, inviteRequestUUID: UUID, invite: Invite): Response[(SetResult, String)] = {
+    for{
+      userNode <- getNode(userUUID, OwnerLabel.USER).right
+      ir <- createInvite(userNode, inviteRequestUUID, invite).right
+      result <- Right(getSetResult(ir._1, true)).right
+    }yield (result, ir._2)
+  }
+  
+  def putExistingInvite(inviteUUID: UUID, invite: Invite): Response[SetResult] = {
+    for{
+      updatedInvite <- updateInvite(inviteUUID, invite).right
+      result <- Right(getSetResult(updatedInvite, false)).right
+    }yield result
+  }
+  
   // PRIVATE
   
   protected def createUser(user: User, plainPassword: String, userLabel: Option[Label] = None): Response[Node] = {
@@ -213,4 +229,30 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
+  protected def updateInvite(inviteUUID: UUID, invite: Invite): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          inviteNode <- getNode(inviteUUID, MainLabel.INVITE).right
+          updatedNode <- updateNode(inviteNode, invite).right
+        } yield updatedNode
+    }
+  }
+  
+  protected def createInvite(userNode: Node, inviteRequestUUID: UUID, invite: Invite): Response[(Node, String)] = {
+    withTx{
+      implicit neo =>
+        val inviteRequestNode = getNode(inviteRequestUUID, MainLabel.REQUEST)
+        if (inviteRequestNode.isLeft) Left(inviteRequestNode.left.get)
+        else{
+          // Create an invite from the invite request
+          val email = inviteRequestNode.right.get.getProperty("email").asInstanceOf[String]
+          
+          val inviteNode = createNode(invite, MainLabel.INVITE)
+          inviteRequestNode.right.get --> SecurityRelationship.IS_ORIGIN --> inviteNode
+          userNode --> SecurityRelationship.IS_ACCEPTER --> inviteNode
+          Right(inviteNode,email)
+        }
+    }
+  }
 }

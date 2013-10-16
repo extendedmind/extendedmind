@@ -141,6 +141,23 @@ trait Service extends API with Injectable {
         }
       }
     } ~
+    postInviteRequestAccept {inviteRequestUUID =>
+      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        // Only admins can create new collectives for now
+        authorize(adminAccess(securityContext)){
+          entity(as[InviteRequestAcceptDetails]) { details =>
+            complete{
+              Future[SetResult] {
+                userActions.acceptInviteRequest(securityContext.userUUID, inviteRequestUUID, details) match {
+                  case Right(result) => result._1
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      }
+    } ~
     getUser { url =>
       authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
         // Only admins can create new collectives for now
