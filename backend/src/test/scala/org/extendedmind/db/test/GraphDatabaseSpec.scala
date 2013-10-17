@@ -66,7 +66,6 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
           // Assert that the modified timestamp has changed from the previous round
           assert(task.modified.get > result.right.get.modified)
           // Assert that the description has indeed been removed
-          // NOTE: For some odd reason this fails when called from Eclipse
           task.description should be (None)
         }
         case Left(e) => {
@@ -144,15 +143,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
         }
       }
     }
-
+    
   }
-  
-  private def getCollectiveAccess(securityContext: SecurityContext): Set[(String, Byte)] = {
-    securityContext.collectives.get.map(collectiveAccess => collectiveAccess._2).toSet
-  }
-  private def getCollectiveUUIDMap(securityContext: SecurityContext): Map[String, UUID] = {
-    securityContext.collectives.get.map(collectiveAccess => (collectiveAccess._2._1 -> collectiveAccess._1))
-  }
-
 
 }

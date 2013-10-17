@@ -37,6 +37,7 @@ trait TestGraphDatabase extends GraphDatabase {
   val TEST_DATA_DESTINATION = "target/test-classes"
 
   var timoUUID: UUID = null
+  var emtUUID: UUID = null
   
   def insertTestData(testDataLocation: Option[String] = None) {
     val timoNode = createUser(User(None, None, None, TIMO_EMAIL), TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
@@ -59,11 +60,12 @@ trait TestGraphDatabase extends GraphDatabase {
             Some(SecurityContext.READ_WRITE))                                            
         setCollectiveUserPermission(getUUID(extendedMindTechnologies), getUUID(jpNode), getUUID(jpNode), 
             Some(SecurityContext.READ_WRITE))
+        emtUUID = getUUID(extendedMindTechnologies)
     }
     withTx{
       implicit neo =>
         // Valid, unreplaceable
-        timoUUID = UUIDUtils.getUUID(timoNode.getProperty("uuid").asInstanceOf[String])
+        timoUUID = getUUID(timoNode)
         val token = Token(timoUUID)
         saveToken(timoNode, token, None)
         
@@ -95,7 +97,7 @@ trait TestGraphDatabase extends GraphDatabase {
         }
     }
 
-    // Timo's personal notes
+    // Timo's personal items
     
     // Store items for user
     putNewItem(Owner(timoUUID, None),
@@ -154,6 +156,22 @@ trait TestGraphDatabase extends GraphDatabase {
             Some(ExtendedItemRelationships(None, None, Some(List(productivityTag.right.get.uuid.get)))
     ))).right.get
 
+    // Extended Mind Technologies
+    
+    // Store items for EMT
+    putNewItem(Owner(timoUUID, Some(emtUUID)),
+        Item(None, None, None, "should we try a premortem?", None)).right.get
+    putNewItem(Owner(timoUUID, Some(emtUUID)),
+        Item(None, None, None, "review agile project planning tools", None)).right.get
+ 
+    // Store tasks for EMT
+    putNewTask(Owner(timoUUID, Some(emtUUID)),
+        Task("backup script changes", None, Some("2014-06-02"), None, None, None)).right.get
+
+    // Store notes for EMT
+    putNewNote(Owner(timoUUID, Some(emtUUID)),
+        Note("list of servers", None, None, None, None)).right.get
+        
   }
   
   def saveCustomToken(expires: Long, replaceable: Option[Long], userNode: Node)

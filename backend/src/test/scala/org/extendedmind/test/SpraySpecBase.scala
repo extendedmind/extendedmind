@@ -5,6 +5,8 @@ import org.extendedmind.api.Service
 import org.extendedmind.api.JsonImplicits._
 import org.extendedmind.SettingsExtension
 import scaldi.Module
+import org.extendedmind.security.SecurityContext
+import java.util.UUID
 
 abstract class SpraySpecBase extends SpecBase 
     with ScalatestRouteTest with Service{
@@ -22,4 +24,13 @@ abstract class SpraySpecBase extends SpecBase
   
   // Empty Scaldi bindings
   object EmptyTestConfiguration extends Module
+  
+    
+  protected def getCollectiveAccess(securityContext: SecurityContext): Set[(String, Byte)] = {
+    securityContext.collectives.get.map(collectiveAccess => collectiveAccess._2).toSet
+  }
+  
+  protected def getCollectiveUUIDMap(securityContext: SecurityContext): Map[String, UUID] = {
+    securityContext.collectives.get.map(collectiveAccess => (collectiveAccess._2._1 -> collectiveAccess._1))
+  }
 }
