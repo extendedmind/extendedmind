@@ -48,10 +48,12 @@
 
     angular.module('em.services').factory('tasksArray', ['itemsArray',
     function(itemsArray) {
-      var projects, subtasks, tasks;
+      var context, projects, subtasks, tasks, project;
+      context = [];
       tasks = [];
       projects = [];
       subtasks = [];
+      project = [];
 
       return {
         setTasks : function(tasksResponse) {
@@ -93,10 +95,11 @@
         },
         removeSubtask : function(task) {
           itemsArray.removeItemFromArray(subtasks, task);
+          itemsArray.removeItemFromArray(project, task);
         },
         removeProject : function(uuid) {
 
-          if (this.getSubtasksByUuid(uuid).length === 0) {
+          if (this.getSubtasksByProjectUuid(uuid).length === 0) {
             var task = this.getProjectByUuid(uuid);
             itemsArray.removeItemFromArray(projects, task);
             this.deleteTaskProperty(task, 'project');
@@ -112,8 +115,13 @@
         getSubtaskByUuid : function(uuid) {
           return itemsArray.getItemByUuid(subtasks, uuid);
         },
-        getSubtasksByUuid : function(uuid) {
-          return itemsArray.getItemsByUuid(subtasks, uuid);
+        getSubtasksByProjectUuid : function(uuid) {
+          project = itemsArray.getItemsByProjectUuid(subtasks, uuid);
+          return project;
+        },
+        getSubtasksByTagUuid : function(uuid) {
+          context = itemsArray.getItemsByTagUuid(tasks, uuid);
+          return context;
         },
         getTaskByUuid : function(uuid) {
           return itemsArray.getItemByUuid(tasks, uuid);

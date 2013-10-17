@@ -32,7 +32,7 @@
       return {
         controller : 'TasksListController',
         restrict : 'A',
-        templateUrl : 'static/partials/templates/tasks/subTask.html',
+        templateUrl : 'static/partials/templates/tasks/subTask.html'
       };
     }]);
 

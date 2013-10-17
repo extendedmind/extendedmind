@@ -14,7 +14,7 @@
       $scope.projects = tasksArray.getProjects();
 
       $scope.editTask = function() {
-        
+
         if ($scope.taskContext) {
 
           if (!$scope.task.relationships) {
@@ -24,7 +24,7 @@
 
           $scope.task.relationships.tags[0] = $scope.taskContext.uuid;
         }
-        
+
         if ($scope.parentTask) {
           $scope.task.relationships = {};
           $scope.task.relationships.parentTask = $scope.parentTask.uuid;
