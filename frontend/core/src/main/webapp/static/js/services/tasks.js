@@ -83,6 +83,25 @@
         },
         removeTask : function(task) {
           itemsArray.removeItemFromArray(tasks, task);
+
+          if (task.relationships) {
+            if (task.relationships.parentTask) {
+              this.removeSubtask(task);
+              this.removeProject(task.relationships.parentTask);
+            }
+          }
+        },
+        removeSubtask : function(task) {
+          itemsArray.removeItemFromArray(subtasks, task);
+        },
+        removeProject : function(uuid) {
+
+          if (this.getSubtasksByUuid(uuid).length === 0) {
+            var task = this.getProjectByUuid(uuid);
+            itemsArray.removeItemFromArray(projects, task);
+            this.deleteTaskProperty(task, 'project');
+            this.setTask(task);
+          }
         },
         getTasks : function() {
           return tasks;
@@ -107,27 +126,12 @@
             projects.push(task);
           }
         },
-        removeProject : function(uuid) {
-          if (this.getSubtasksByUuid(uuid).length === 0) {
-            var task = this.getProjectByUuid(uuid);
-            itemsArray.removeItemFromArray(projects, task);
-            this.deleteTaskProperty(task, 'project');
-            return task;
-          }
-        },
         getProjects : function() {
           return projects;
         },
         setSubtask : function(task) {
           if (!itemsArray.itemInArray(subtasks, task.uuid)) {
             subtasks.push(task);
-          }
-        },
-        removeSubtask : function(task) {
-          if (task.relationships) {
-            if (task.relationships.parentTask) {
-              itemsArray.removeItemFromArray(subtasks, task);
-            }
           }
         },
         getSubtasks : function() {

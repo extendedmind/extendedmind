@@ -48,25 +48,7 @@
         tasksArray.removeTask(task);
 
         tasksRequest.deleteTask(task).then(function(deleteTaskResponse) {
-          return tasksResponse.putTaskContent(task, deleteTaskResponse);
-        }).then(function() {
-
-          if (task.relationships) {
-            if (task.relationships.parentTask) {
-              tasksArray.removeSubtask(task);
-
-              $scope.project = tasksArray.removeProject(task.relationships.parentTask);
-
-              if ($scope.project) {
-
-                tasksRequest.putExistingTask($scope.project).then(function(putExistingTaskResponse) {
-                  return tasksResponse.putTaskContent($scope.project, putExistingTaskResponse);
-                }).then(function() {
-                  return tasksArray.putNewTask($scope.project);
-                });
-              }
-            }
-          }
+          tasksResponse.putTaskContent(task, deleteTaskResponse);
         });
       };
 
