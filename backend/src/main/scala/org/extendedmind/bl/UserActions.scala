@@ -55,60 +55,76 @@ trait UserActions {
     setResult
   }
 
-  def getInviteRequests() (implicit log: LoggingContext): Response[List[InviteRequest]] = {
+  def getInviteRequests() (implicit log: LoggingContext): Response[InviteRequests] = {
     log.info("getInviteRequests")
-    for {
-      inviteRequests <- db.getInviteRequests().right
-    } yield inviteRequests
+    db.getInviteRequests    
+  }
+  
+  def getInvites() (implicit log: LoggingContext): Response[Invites] = {
+    log.info("getInvites")
+    db.getInvites
   }
   
   def getInviteRequestQueueNumber(inviteRequestUUID: UUID) (implicit log: LoggingContext): 
         Response[InviteRequestQueueNumber] = {
     log.info("getInviteRequestQueueNumber for UUID {}", inviteRequestUUID)
-    for {
-      inviteRequestQueueNumber <- db.getInviteRequestQueueNumber(inviteRequestUUID).right
-    } yield inviteRequestQueueNumber
+    db.getInviteRequestQueueNumber(inviteRequestUUID)
+  }
+  
+  def getInvite(code: Long, email: String) (implicit log: LoggingContext): 
+        Response[Invite] = {
+    log.info("getInvite for code {}, email {}", code, email)
+    db.getInvite(code, email)
   }
   
   def signUp(signUp: SignUp)(implicit log: LoggingContext): Response[SetResult] = {
     log.info("signUp: email {}", signUp.email)
     if (settings.adminSignUp) 
-      log.warning("CRITICAL: Making {} an administrator because extendedmind.security.adminSignUp is set to true", 
+      log.warning("CRITICAL: Making {} an administrator because extendedmind.security.adminSignUp is true", 
           signUp.email)
-
     for {
       isUnique <- db.validateEmailUniqueness(signUp.email).right
-      result <- db.putNewUser(User(None, None, None, signUp.email), signUp.password, settings.adminSignUp).right
+      result <- db.putNewUser(User(None, None, None, signUp.email), signUp.password, settings.signUp).right
     } yield result
     
     // TODO: Send verification email as Future
   }
   
   def acceptInviteRequest(userUUID: UUID, inviteRequestUUID: UUID, details: InviteRequestAcceptDetails)
-                         (implicit log: LoggingContext): Response[(SetResult, String)] = {
+                         (implicit log: LoggingContext): Response[(SetResult, Invite)] = {
     log.info("acceptInviteRequest: request {}", inviteRequestUUID)
     
-    val invite = Invite(Token.generateAccessKey, details.message, None)
-    val acceptResult = db.acceptInviteRequest(userUUID, inviteRequestUUID, invite)
+    val acceptResult = db.acceptInviteRequest(userUUID, inviteRequestUUID, details.message)
     
     if (acceptResult.isRight){
-      val email = acceptResult.right.get._2
-      val futureMailResponse = mailgun.sendInvite(email, invite)
+      val invite = acceptResult.right.get._2
+      val futureMailResponse = mailgun.sendInvite(invite)
       futureMailResponse onSuccess {
         case SendEmailResponse(message, id) => {
           val saveResponse = db.putExistingInvite(acceptResult.right.get._1.uuid.get, 
                                                         invite.copy(emailId = Some(id)))
           if (saveResponse.isLeft) 
             log.error("Error updating invite for email {} with id {}, error: {}", 
-                email, id, saveResponse.left.get.head)
+                invite.email, id, saveResponse.left.get.head)
           else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", 
-                          email, acceptResult.right.get._1.uuid.get, id)
+                          invite.email, acceptResult.right.get._1.uuid.get, id)
         }case _ =>
-          log.error("Could not send email to {}", email)
+          log.error("Could not send email to {}", invite.email)
       }
     }
     acceptResult
     
+  }
+  
+  def acceptInvite(code: Long, signUp: SignUp) (implicit log: LoggingContext): 
+        Response[SetResult] = {
+    log.info("acceptInvite for code {}, email {}", code, signUp.email)
+    db.acceptInvite(code, signUp)
+  }
+  
+  def destroyInviteRequest(inviteRequstUUID: UUID)(implicit log: LoggingContext): Response[DestroyResult] = {
+    log.info("destroyInviteRequest: request {}", inviteRequstUUID)
+    db.destroyInviteRequest(inviteRequstUUID)
   }
   
   def getPublicUser(email: String)(implicit log: LoggingContext): Response[PublicUser] = {

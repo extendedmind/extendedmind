@@ -94,16 +94,35 @@ trait Service extends API with Injectable {
       }
     } ~
     postSignUp { url =>
-      entity(as[SignUp]) { signUp =>
-        complete{
-          Future[SetResult] {
-            userActions.signUp(signUp) match {
-              case Right(sr) => sr
-              case Left(e) => processErrors(e)
+      authorize(settings.signUp){
+        entity(as[SignUp]) { signUp =>
+          complete{
+            Future[SetResult] {
+              userActions.signUp(signUp) match {
+                case Right(sr) => sr
+                case Left(e) => processErrors(e)
+              }
             }
           }
         }
       }
+    } ~
+    getUser { url =>
+      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        // Only admins can get users for now
+        authorize(adminAccess(securityContext)){
+          parameters("email") { email =>
+            complete {
+              Future[PublicUser] {
+                userActions.getPublicUser(email) match {
+                  case Right(publicUser) => publicUser
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      }      
     } ~
     postInviteRequest { url =>
       entity(as[InviteRequest]) { inviteRequest =>
@@ -117,11 +136,26 @@ trait Service extends API with Injectable {
         }
       }
     } ~
+    deleteInviteRequest { inviteRequestUUID =>
+      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        // Only admins can destroy invite requests
+        authorize(adminAccess(securityContext)){
+          complete{
+            Future[DestroyResult]{
+              userActions.destroyInviteRequest(inviteRequestUUID) match {
+                case Right(result) => result
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      }
+    } ~
     getInviteRequests { path =>
       authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
         authorize(adminAccess(securityContext)){
           complete {
-            Future[List[InviteRequest]] {
+            Future[InviteRequests] {
               userActions.getInviteRequests match {
                 case Right(inviteRequests) => inviteRequests
                 case Left(e) => processErrors(e)
@@ -143,7 +177,7 @@ trait Service extends API with Injectable {
     } ~
     postInviteRequestAccept {inviteRequestUUID =>
       authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-        // Only admins can create new collectives for now
+        // Only admins can accept invite requests
         authorize(adminAccess(securityContext)){
           entity(as[InviteRequestAcceptDetails]) { details =>
             complete{
@@ -158,22 +192,43 @@ trait Service extends API with Injectable {
         }
       }
     } ~
-    getUser { url =>
+    getInvite { code =>
+      parameters("email") { email =>
+        complete{
+          Future[Invite] {
+            userActions.getInvite(code, email) match {
+              case Right(invite) => invite
+              case Left(e) => processErrors(e)
+            }
+          }
+        }
+      }
+    } ~
+    getInvites { path =>
       authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-        // Only admins can create new collectives for now
         authorize(adminAccess(securityContext)){
-          parameters("email") { email =>
-            complete {
-              Future[PublicUser] {
-                userActions.getPublicUser(email) match {
-                  case Right(publicUser) => publicUser
-                  case Left(e) => processErrors(e)
-                }
+          complete {
+            Future[Invites] {
+              userActions.getInvites match {
+                case Right(invites) => invites
+                case Left(e) => processErrors(e)
               }
             }
           }
         }
-      }      
+      }
+    } ~
+    postInviteAccept { code =>
+      entity(as[SignUp]) { signUp =>
+        complete{
+          Future[SetResult] {
+            userActions.acceptInvite(code, signUp) match {
+              case Right(sr) => sr
+              case Left(e) => processErrors(e)
+            }
+          }
+        }
+      }
     } ~
     postAuthenticate { url =>
       authenticate(ExtendedAuth(authenticateAuthenticator)) { securityContext =>

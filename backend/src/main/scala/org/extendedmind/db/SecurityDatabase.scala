@@ -90,7 +90,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   def validateEmailUniqueness(email: String): Response[Boolean] = {
     withTx{
       implicit neo4j => 
- 
         val userNodeList = findNodesByLabelAndProperty(OwnerLabel.USER, "email", email).toList
         if (!userNodeList.isEmpty){
           return fail(INVALID_PARAMETER, "User already exists with given email: " + email)
@@ -98,6 +97,10 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         val requestNodeList = findNodesByLabelAndProperty(MainLabel.REQUEST, "email", email).toList
         if (!requestNodeList.isEmpty){
           return fail(INVALID_PARAMETER, "Request already exists with given email: " + email)      
+        }
+        val inviteNodeList = findNodesByLabelAndProperty(MainLabel.INVITE, "email", email).toList
+        if (!requestNodeList.isEmpty){
+          return fail(INVALID_PARAMETER, "Invite already exists with given email: " + email)      
         }
         Right(true)
     }

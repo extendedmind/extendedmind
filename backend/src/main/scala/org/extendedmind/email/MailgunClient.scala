@@ -71,29 +71,25 @@ trait MailgunClient{
     sendEmail(sendEmailRequest)
   }
   
-  def sendInvite(email: String, invite: Invite): Future[SendEmailResponse] = {
-    val sendEmailRequest = SendEmailRequest(settings.emailFrom, email, 
+  def sendInvite(invite: Invite): Future[SendEmailResponse] = {
+    val sendEmailRequest = SendEmailRequest(settings.emailFrom, invite.email, 
                            settings.acceptInviteRequestTitle, 
                            acceptInviteRequestHtmlTemplate
                              .replaceAll(
                                "acceptInviteLink", 
                                settings.emailSecureUrlPrefix 
                                + settings.acceptInviteURI
-                                   .replaceAll("emailValue", email)
                                    .replaceAll("inviteValue", invite.code.toHexString))
                              .replaceAll("logoLink", settings.emailUrlPrefix + "logoname.png"))
-    
     sendEmail(sendEmailRequest)
   }
   
-  
-  
   private def sendEmail(sendEmailRequest: SendEmailRequest): Future[SendEmailResponse] = {
-    implicit val timeout = Timeout(5 seconds)
+    implicit val timeout = Timeout(10 seconds)
+    val address = "https://api.mailgun.net/v2/" + settings.mailgunDomain + "/messages"
     sendEmailPipeline {
-      Post("https://api.mailgun.net/v2/" + settings.mailgunDomain + "/messages",
+      Post(address,
           marshal(sendEmailRequest).right.get
-              ) ~> addHeader("Content-Type", `application/x-www-form-urlencoded`.toString
               ) ~> addCredentials(BasicHttpCredentials("api", settings.mailgunApiKey))  
     }
   }
