@@ -91,6 +91,9 @@
               this.removeSubtask(task);
               this.removeProject(task.relationships.parentTask);
             }
+            if (task.relationships.tags) {
+              this.removeTaskFromContext(task);
+            }
           }
         },
         removeSubtask : function(task) {
@@ -105,6 +108,9 @@
             this.deleteTaskProperty(task, 'project');
             this.setTask(task);
           }
+        },
+        removeTaskFromContext : function(task) {
+          itemsArray.removeItemFromArray(context, task);
         },
         getTasks : function() {
           return tasks;

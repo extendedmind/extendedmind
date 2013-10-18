@@ -29,19 +29,8 @@
       };
 
       $scope.taskToProject = function(task) {
-
-        // task.project = true;
-// 
-        // tasksArray.removeTask(task);
-        // tasksArray.setProject(task);
-
-
         activeItem.setItem(task);        
         $location.path('/my/tasks/new');
-
-        // tasksRequest.putExistingTask(task).then(function(putExistingTaskResponse) {
-          // tasksResponse.putTaskContent(task, putExistingTaskResponse);
-        // });
       };
 
       $scope.deleteTask = function(task) {
