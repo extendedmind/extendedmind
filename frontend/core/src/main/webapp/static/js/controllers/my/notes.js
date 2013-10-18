@@ -2,7 +2,7 @@
 
 ( function() {'use strict';
 
-    function NotesController($location, $rootScope, $scope, activeItem, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, notesRequest, notesResponse, slideIndex, tagsArray, tasksArray) {
+    function NotesController($location, $rootScope, $scope, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
 
@@ -39,13 +39,9 @@
       $scope.addNew = function() {
         $location.path('/my/notes/new/');
       };
-
-      $scope.setActiveItem = function(item) {
-        activeItem.setItem(item);
-      };
     }
 
 
-    NotesController.$inject = ['$location', '$rootScope', '$scope', 'activeItem', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'notesRequest', 'notesResponse', 'slideIndex', 'tagsArray', 'tasksArray'];
+    NotesController.$inject = ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray', 'tasksArray'];
     angular.module('em.app').controller('NotesController', NotesController);
   }());

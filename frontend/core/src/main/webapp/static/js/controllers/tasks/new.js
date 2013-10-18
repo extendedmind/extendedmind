@@ -2,16 +2,19 @@
 
 ( function() {'use strict';
 
-    function NewTaskController($routeParams, $scope, activeItem, errorHandler, itemsArray, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    function NewTaskController($routeParams, $scope, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.errorHandler = errorHandler;
 
-      if ($routeParams.uuid) {
-        $scope.parentTask = tasksArray.getProjectByUuid($routeParams.uuid);
-      }
+      itemsRequest.getItems().then(function() {
 
-      $scope.contexts = tagsArray.getTags();
-      $scope.projects = tasksArray.getProjects();
+        if ($routeParams.uuid) {
+          $scope.parentTask = tasksArray.getProjectByUuid($routeParams.uuid);
+        }
+
+        $scope.contexts = tagsArray.getTags();
+        $scope.projects = tasksArray.getProjects();
+      });
 
       $scope.editTask = function() {
 
@@ -47,6 +50,6 @@
     }
 
 
-    NewTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    NewTaskController.$inject = ['$routeParams', '$scope', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
     angular.module('em.app').controller('NewTaskController', NewTaskController);
   }());

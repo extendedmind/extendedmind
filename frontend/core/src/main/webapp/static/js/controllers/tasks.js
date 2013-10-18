@@ -5,7 +5,6 @@
     function TasksListController($location, $routeParams, $scope, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.taskEdit = function(task) {
-        $scope.setActiveItem(task);
         $location.path('/my/tasks/edit/' + task.uuid);
       };
 
