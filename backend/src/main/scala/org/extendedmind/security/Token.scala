@@ -16,12 +16,7 @@ object Token{
   val ADMIN: Byte = 0
   val NORMAL: Byte = 1
   
-  def apply(userUUID: UUID) = new Token(userUUID, generateAccessKey)
-  
-  def generateAccessKey(): Long = {
-    val random = new scala.util.Random(new java.security.SecureRandom())
-    random.nextLong
-  }
+  def apply(userUUID: UUID) = new Token(userUUID, Random.generateRandomLong)
   
   def encryptToken(token: Token)(implicit settings: Settings): String = {
     val bb = ByteBuffer.allocate(26)

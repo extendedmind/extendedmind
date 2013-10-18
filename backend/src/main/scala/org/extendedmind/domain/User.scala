@@ -8,16 +8,14 @@ case class User(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long
                 email: String)
            extends Container
 
-                      
+object User{
+  def apply(email:String) = new User(None, None, None, email)
+}
+            
 case class SignUp(email: String, password: String){
   require(validateEmailAddress(email), "Not a valid email address")
   require(validatePassword(password), "Password needs to be 7 or more characters long")
 }
-case class InviteRequest(email: String, emailId: Option[String]){
-  require(validateEmailAddress(email), "Not a valid email address")
-}
-
-case class InviteRequestQueueNumber(queueNumber: Int)
 
 case class UserAccessRight(access: Option[Byte]){
   if (access.isDefined) require(access == Some(1) || access == Some(2), "Not a valid access right, permitted values: 1 = read, 2 = read/write")

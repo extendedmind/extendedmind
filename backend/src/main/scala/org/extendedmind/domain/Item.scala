@@ -15,6 +15,7 @@ case class Items(items: Option[List[Item]], tasks: Option[List[Task]], notes: Op
 case class SharedItemVisibility(public: Option[Long], collective: Option[UUID])
 case class ExtendedItemRelationships(parentTask: Option[UUID], parentNote: Option[UUID], tags: Option[List[UUID]])
 case class DeleteItemResult(deleted: Long, result: SetResult)
+case class DestroyResult(destroyed: List[UUID])
 
 trait ItemLike extends Container {
   val uuid: Option[UUID]

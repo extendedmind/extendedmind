@@ -17,11 +17,19 @@ import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.index.lucene.ValueContext
 import org.neo4j.index.lucene.QueryContext
+import org.neo4j.graphdb.Relationship
 
 trait UserDatabase extends AbstractGraphDatabase {
 
   // PUBLIC
 
+  def signUp(signUp: SignUp, adminSignUp: Boolean): Response[SetResult] = {
+    for{
+      user <- createUser(User(signUp.email), signUp.password, (if (adminSignUp) Some(UserLabel.ADMIN) else None)).right
+      result <- Right(getSetResult(user, true)).right
+    }yield result
+  }
+  
   def putNewUser(user: User, password: String, adminSignUp: Boolean): Response[SetResult] = {
     for{
       user <- createUser(user, password, (if (adminSignUp) Some(UserLabel.ADMIN) else None)).right
@@ -83,20 +91,20 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  def getInviteRequests(): Response[List[InviteRequest]] = {
+  def getInviteRequests(): Response[InviteRequests] = {
     withTx{
       implicit neo =>
         val inviteRequests = neo.gds.index().forNodes("inviteRequests")
         val inviteRequestNodeList = inviteRequests.query( "modified", 
             QueryContext.numericRange("modified", 0, Long.MaxValue).sort("modified")).toList        
         if (inviteRequestNodeList.isEmpty){
-          Right(List())}
+          Right(InviteRequests(List()))}
         else {
-          Right(inviteRequestNodeList map (inviteRequestNode => {
+          Right(InviteRequests(inviteRequestNodeList map (inviteRequestNode => {
             val response = toCaseClass[InviteRequest](inviteRequestNode)
             if (response.isLeft) return Left(response.left.get)
             else response.right.get
-          }))
+          })))
         }
     }
   }
@@ -119,6 +127,73 @@ trait UserDatabase extends AbstractGraphDatabase {
         }
     }
   }
+  
+  def acceptInviteRequest(userUUID: UUID, inviteRequestUUID: UUID, message: Option[String]): 
+          Response[(SetResult, Invite)] = {
+    for{
+      userNode <- getNode(userUUID, OwnerLabel.USER).right
+      ir <- createInvite(userNode, inviteRequestUUID, message).right
+      result <- Right(getSetResult(ir._1, true)).right
+    }yield (result, ir._2)
+  }
+  
+  def putExistingInvite(inviteUUID: UUID, invite: Invite): Response[SetResult] = {
+    for{
+      updatedInvite <- updateInvite(inviteUUID, invite).right
+      result <- Right(getSetResult(updatedInvite, false)).right
+    }yield result
+  }
+  
+  def getInvite(code: Long, email: String): Response[Invite] = {
+    for {
+      inviteNode <- getInviteNode(code, email).right
+      invite <- toCaseClass[Invite](inviteNode).right
+    } yield invite
+  }
+  
+  def getInvites(): Response[Invites] = {
+    withTx{
+      implicit neo =>
+        val inviteNodeList = findNodesByLabel(MainLabel.INVITE).toList
+        if (inviteNodeList.isEmpty){
+          Right(Invites(List()))}
+        else {
+          Right(Invites(inviteNodeList map (inviteNode => {
+            val response = toCaseClass[Invite](inviteNode)
+            if (response.isLeft) return Left(response.left.get)
+            else response.right.get
+          })))
+        }
+    }
+  }
+
+  def acceptInvite(code: Long, signUp: SignUp): Response[SetResult] = {
+    for {
+      userNode <- acceptInviteNode(signUp, code).right
+      result <- Right(getSetResult(userNode, true)).right
+    } yield result
+  }
+
+  def destroyInviteRequest(inviteRequestUUID: UUID): Response[DestroyResult] = {
+    withTx{
+      implicit neo4j =>
+        val inviteRequest = getNode(inviteRequestUUID, MainLabel.REQUEST)
+        if (inviteRequest.isLeft) Left(inviteRequest.left.get)
+        else{
+          if (!inviteRequest.right.get.getRelationships().toList.isEmpty){
+            fail(INVALID_PARAMETER, "Can't delete accepted invite request")
+          }else{
+            // First delete it from the index
+            val inviteRequests = neo4j.gds.index().forNodes("inviteRequests")
+            inviteRequests.remove(inviteRequest.right.get)
+            // Delete it completely
+            inviteRequest.right.get.delete()
+            Right(DestroyResult(List(inviteRequestUUID)))
+          }
+        }
+    }
+  }
+  
   // PRIVATE
   
   protected def createUser(user: User, plainPassword: String, userLabel: Option[Label] = None): Response[Node] = {
@@ -203,7 +278,8 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def updateInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest): Response[Tuple2[Node, Long]] = {
+  protected def updateInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest):
+        Response[(Node, Long)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -213,4 +289,72 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
+  protected def updateInvite(inviteUUID: UUID, invite: Invite): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          inviteNode <- getNode(inviteUUID, MainLabel.INVITE).right
+          updatedNode <- updateNode(inviteNode, invite).right
+        } yield updatedNode
+    }
+  }
+  
+  protected def createInvite(userNode: Node, inviteRequestUUID: UUID, message: Option[String]):
+        Response[(Node, Invite)] = {
+    withTx{
+      implicit neo =>
+        val inviteRequestNode = getNode(inviteRequestUUID, MainLabel.REQUEST)
+        if (inviteRequestNode.isLeft) Left(inviteRequestNode.left.get)
+        else{
+          // Create an invite from the invite request
+          val email = inviteRequestNode.right.get.getProperty("email").asInstanceOf[String]
+          val invite = Invite(email, Random.generateRandomUnsignedLong, message, None)
+          val inviteNode = createNode(invite, MainLabel.INVITE)
+          inviteRequestNode.right.get --> SecurityRelationship.IS_ORIGIN --> inviteNode
+          userNode --> SecurityRelationship.IS_ACCEPTER --> inviteNode 
+          // Remove invite request from index
+          val inviteRequests = neo.gds.index().forNodes("inviteRequests")
+          inviteRequests.remove(inviteRequestNode.right.get)
+          Right(inviteNode,invite)
+        }
+    }
+  }
+  
+  protected def getInviteNode(code: Long, email: String): Response[Node] = {
+    withTx {
+      implicit neo =>
+        val nodeIter = findNodesByLabelAndProperty(MainLabel.INVITE, "code", code: java.lang.Long)
+        val invalidParameterDescription = "No invite found with given code " + code
+        if (nodeIter.toList.isEmpty) {
+          fail(INVALID_PARAMETER, invalidParameterDescription)
+        } else if (nodeIter.toList.size > 1) {
+          fail(INTERNAL_SERVER_ERROR, "Ḿore than one user found with given code " + code)
+        } else{
+          val inviteNode = nodeIter.toList(0)
+          if (inviteNode.getProperty("email").asInstanceOf[String] != email){
+            fail(INVALID_PARAMETER, invalidParameterDescription)
+          }else{
+            Right(inviteNode)
+          }
+        }
+    }
+  }
+  
+  protected def acceptInviteNode(signUp: SignUp, code: Long): Response[Node] = {
+    withTx {
+      implicit neo =>
+        val user = User(signUp.email)
+        for {
+          inviteNode <- getInviteNode(code, signUp.email).right
+          userNode <- createUser(user, signUp.password, None).right
+          relationship <- Right(linkInviteAndUser(inviteNode, userNode)).right
+        } yield userNode
+    }
+  }
+  
+  protected def linkInviteAndUser(inviteNode: Node, userNode: Node)
+                  (implicit neo4j: DatabaseService): Relationship = {
+    inviteNode --> SecurityRelationship.IS_ORIGIN --> userNode <
+  }
+
 }

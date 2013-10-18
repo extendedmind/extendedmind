@@ -43,6 +43,7 @@ class Settings(config: Config) extends Extension {
   // Email templates
   val emailFrom = config.getString("extendedmind.email.from")
   val emailUrlPrefix = config.getString("extendedmind.email.urlPrefix")
+  val emailSecureUrlPrefix = config.getString("extendedmind.email.secureUrlPrefix")
   val emailTemplateDir: Option[String] = {
     if (config.hasPath("extendedmind.email.templates.directory"))
       Some(config.getString("extendedmind.email.templates.directory"))
@@ -51,6 +52,8 @@ class Settings(config: Config) extends Extension {
   }
   val requestInviteConfirmationTitle = config.getString("extendedmind.email.templates.requestInviteConfirmationTitle")
   val requestInviteOrderNumberURI = config.getString("extendedmind.email.templates.requestInviteOrderNumberURI")
+  val acceptInviteRequestTitle = config.getString("extendedmind.email.templates.acceptInviteRequestTitle")
+  val acceptInviteURI = config.getString("extendedmind.email.templates.acceptInviteURI")
 }
 
 object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{

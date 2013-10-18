@@ -460,8 +460,10 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       }
     }
     
-    it("should successfully create invite request with POST to /invite/request") {
-
+    it("should successfully create invite requests with POST to /invite/request "
+       + "and get them back with GET to /invite/requests "
+       + "and get the right order number with GET to /invite/request/[UUID] "
+       + "and delete it with DELETE to /invite/request/[UUID]") {
       val testEmail = "example@example.com"
       val testInviteRequest = InviteRequest(testEmail, None)
       val testEmail2 = "example2@example.com"
@@ -475,6 +477,8 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
           Future{SendEmailResponse("OK", "12345")})
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail3), anyObject())).toReturn(
           Future{SendEmailResponse("OK", "123456")})
+      stub(mockMailgunClient.sendInvite(anyObject())).toReturn(
+          Future{SendEmailResponse("OK", "1234567")})
       Post("/invite/request",
          marshal(testInviteRequest).right.get
             ) ~> addHeader("Content-Type", "application/json"
@@ -504,11 +508,11 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
               Get("/invite/requests"
                     ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                     ) ~> emRoute ~> check {
-                  val inviteRequests = entityAs[String]
+                  val inviteRequests = entityAs[InviteRequests]
                   writeJsonOutput("inviteRequests", entityAs[String])
-                  inviteRequests should include(testEmail)
-                  inviteRequests should include(testEmail2)
-                  inviteRequests should include(testEmail3)
+                  inviteRequests.inviteRequests(0).email should be(testEmail)
+                  inviteRequests.inviteRequests(1).email should be(testEmail2)
+                  inviteRequests.inviteRequests(2).email should be (testEmail3)
                   // Get order number for invites
                   Get("/invite/request/" + inviteRequestResponse.uuid.get
                     ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
@@ -525,7 +529,63 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                     ) ~> emRoute ~> check {
                     entityAs[InviteRequestQueueNumber].queueNumber should be(3)
                   }
-              }
+                  
+                  // Delete the middle invite request
+                  Delete("/invite/request/" + inviteRequestResponse2.uuid.get
+                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                    ) ~> emRoute ~> check {
+                    val deleteInviteRequestResponse = entityAs[DestroyResult]
+                    writeJsonOutput("deleteInviteRequestResponse", entityAs[String])
+                    deleteInviteRequestResponse.destroyed.size should be (1)
+                  }
+                  // Verify that the last one is now number 2 
+                  Get("/invite/request/" + inviteRequestResponse3.uuid.get
+                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                    ) ~> emRoute ~> check {
+                    entityAs[InviteRequestQueueNumber].queueNumber should be(2)
+                  }
+                  // Accept invite request  
+                  Post("/invite/request/" + inviteRequestResponse.uuid.get + "/accept",
+                   marshal(InviteRequestAcceptDetails(None)).right.get
+                      ) ~> addHeader("Content-Type", "application/json"
+                      ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                      ) ~> emRoute ~> check {
+                    val acceptInviteRequestResponse = entityAs[SetResult]
+                    writeJsonOutput("acceptInviteRequestResponse", entityAs[String])
+                    acceptInviteRequestResponse.uuid should not be None
+                  }
+                  verify(mockMailgunClient).sendInvite(anyObject())
+                  
+                  // Verify that the last one is now number 1 
+                  Get("/invite/request/" + inviteRequestResponse3.uuid.get
+                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                    ) ~> emRoute ~> check {
+                    entityAs[InviteRequestQueueNumber].queueNumber should be(1)
+                  }
+                    
+                  // Get the invites
+                  Get("/invites"
+                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                    ) ~> emRoute ~> check {
+                    val invites = entityAs[Invites]
+                    writeJsonOutput("invites", entityAs[String])
+                    assert(invites.invites.size === 1)
+                    // Accept invite
+                    val testPassword = "testPassword"
+                    Post("/invite/" + invites.invites(0).code.toHexString + "/accept",
+                     marshal(SignUp(invites.invites(0).email, testPassword)).right.get
+                        ) ~> addHeader("Content-Type", "application/json"
+                        ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+                        ) ~> emRoute ~> check {
+                      val acceptInviteResponse = entityAs[SetResult]
+                      writeJsonOutput("acceptInviteResponse", entityAs[String])
+                      acceptInviteResponse.uuid should not be None
+                      // Should be possible to authenticate with the new email/password
+                      val newUserAuthenticateResponse = 
+                        emailPasswordAuthenticate(invites.invites(0).email, testPassword)
+                    }
+                  }
+               }
             }
         }
       }
