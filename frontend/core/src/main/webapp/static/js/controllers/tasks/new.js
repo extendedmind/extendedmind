@@ -2,18 +2,20 @@
 
 ( function() {'use strict';
 
-    function NewTaskController($routeParams, $scope, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    function NewTaskController($routeParams, $scope, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.errorHandler = errorHandler;
 
       itemsRequest.getItems().then(function() {
 
-        if ($routeParams.uuid) {
-          $scope.parentTask = tasksArray.getProjectByUuid($routeParams.uuid);
-        }
-
         $scope.contexts = tagsArray.getTags();
         $scope.projects = tasksArray.getProjects();
+
+        if (activeItem.getItem()) {
+          $scope.parentTask = activeItem.getItem();
+          tasksArray.removeTask($scope.parentTask);
+          tasksArray.setProject($scope.parentTask);
+        }
       });
 
       $scope.editTask = function() {
@@ -29,6 +31,15 @@
         }
 
         if ($scope.parentTask) {
+
+          if (!$scope.parentTask.project) {
+            $scope.parentTask.project = true;
+
+            tasksRequest.putExistingTask($scope.parentTask).then(function(putExistingTaskResponse) {
+              tasksResponse.putTaskContent($scope.parentTask, putExistingTaskResponse);
+            });
+          }
+
           $scope.task.relationships = {};
           $scope.task.relationships.parentTask = $scope.parentTask.uuid;
         }
@@ -41,15 +52,17 @@
           $scope.task = {};
 
         });
+        activeItem.setItem();
         window.history.back();
       };
 
       $scope.cancelEdit = function() {
+        activeItem.setItem();
         window.history.back();
       };
     }
 
 
-    NewTaskController.$inject = ['$routeParams', '$scope', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    NewTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
     angular.module('em.app').controller('NewTaskController', NewTaskController);
   }());

@@ -132,7 +132,7 @@
         }
       });
 
-      $routeProvider.when('/my/tasks/new/:uuid', {
+      $routeProvider.when('/my/tasks/new', {
         controller : 'NewTaskController',
         templateUrl : 'static/partials/my/tasks/new.html',
         resolve : {

@@ -2,7 +2,7 @@
 
 ( function() {'use strict';
 
-    function TasksListController($location, $routeParams, $scope, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    function TasksListController($location, $routeParams, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.taskEdit = function(task) {
         $location.path('/my/tasks/edit/' + task.uuid);
@@ -30,16 +30,18 @@
 
       $scope.taskToProject = function(task) {
 
-        task.project = true;
+        // task.project = true;
+// 
+        // tasksArray.removeTask(task);
+        // tasksArray.setProject(task);
 
-        tasksArray.removeTask(task);
-        tasksArray.setProject(task);
 
-        $location.path('/my/tasks/new/' + task.uuid);
+        activeItem.setItem(task);        
+        $location.path('/my/tasks/new');
 
-        tasksRequest.putExistingTask(task).then(function(putExistingTaskResponse) {
-          tasksResponse.putTaskContent(task, putExistingTaskResponse);
-        });
+        // tasksRequest.putExistingTask(task).then(function(putExistingTaskResponse) {
+          // tasksResponse.putTaskContent(task, putExistingTaskResponse);
+        // });
       };
 
       $scope.deleteTask = function(task) {
@@ -82,6 +84,6 @@
     }
 
 
-    TasksListController.$inject = ['$location', '$routeParams', '$scope', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
     angular.module('em.app').controller('TasksListController', TasksListController);
   }());

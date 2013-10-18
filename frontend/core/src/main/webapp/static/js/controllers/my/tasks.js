@@ -37,7 +37,7 @@
       });
 
       $scope.addNew = function() {
-        $location.path('/my/tasks/new/');
+        $location.path('/my/tasks/new');
       };
     }
 
