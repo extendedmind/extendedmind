@@ -18,12 +18,8 @@
             userSession.setUserRemembered(true);
 
             authenticateRequest.login().then(function(authenticateResponse) {
-              var promise = userSession.setUserSessionData(authenticateResponse);
-              promise.then(function() {
-                $rootScope.$broadcast('event:loginSuccess');
-              }, function() {
-                $rootScope.$broadcast('event:authenticationRequired');
-              });
+              userSession.setUserSessionData(authenticateResponse);
+              $rootScope.$broadcast('event:loginSuccess');
             });
 
           } else {
@@ -37,12 +33,14 @@
     userAuthenticate.$inject = ['$location', '$rootScope', 'authenticateRequest', 'userSession', 'userCookie', 'userSessionStorage'];
     angular.module('em.services').factory('userAuthenticate', userAuthenticate);
 
-    function userSession($q, base64, httpBasicAuth, userCookie, userSessionStorage) {
+    function userSession(base64, httpBasicAuth, userCookie, userSessionStorage) {
 
       var rememberMe = false;
 
       return {
         setUserSessionData : function(authenticateResponse) {
+
+          userSessionStorage.setUserUUID(authenticateResponse.userUUID);
 
           this.setCredentials('token', authenticateResponse.token);
           userSessionStorage.setHttpAuthorizationHeader(this.getCredentials());
@@ -50,11 +48,6 @@
           if (this.getUserRemembered()) {
             userCookie.setUserToken(authenticateResponse.token);
           }
-
-          var deferred = $q.defer();
-          deferred.resolve(userSessionStorage.setUserUUID(authenticateResponse.userUUID));
-          return deferred.promise;
-
         },
         setCredentials : function(username, password) {
           this.setEncodedCredentials(base64.encode(username + ':' + password));
@@ -75,7 +68,7 @@
     }
 
 
-    userSession.$inject = ['$q', 'base64', 'httpBasicAuth', 'userCookie', 'userSessionStorage'];
+    userSession.$inject = ['base64', 'httpBasicAuth', 'userCookie', 'userSessionStorage'];
     angular.module('em.services').factory('userSession', userSession);
 
     angular.module('em.services').factory('authenticateRequest', ['httpRequest', 'userSession',

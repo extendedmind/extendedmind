@@ -46,7 +46,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            return userAuthenticate.authenticate();
+            userAuthenticate.authenticate();
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -62,7 +62,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            return userAuthenticate.authenticate();
+            userAuthenticate.authenticate();
           }]
 
         }
@@ -74,7 +74,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            return userAuthenticate.authenticate();
+            userAuthenticate.authenticate();
           }]
 
         }
@@ -86,7 +86,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            return userAuthenticate.authenticate();
+            userAuthenticate.authenticate();
           }]
 
         }
@@ -98,7 +98,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            return userAuthenticate.authenticate();
+            userAuthenticate.authenticate();
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -114,7 +114,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            return userAuthenticate.authenticate();
+            userAuthenticate.authenticate();
           }]
 
         }
@@ -126,7 +126,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            return userAuthenticate.authenticate();
+            userAuthenticate.authenticate();
           }]
 
         }
@@ -138,7 +138,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            return userAuthenticate.authenticate();
+            userAuthenticate.authenticate();
           }]
 
         }
@@ -150,7 +150,7 @@
         resolve : {
           'authenticationRequired' : ['userAuthenticate',
           function(userAuthenticate) {
-            return userAuthenticate.authenticate();
+            userAuthenticate.authenticate();
           }]
 
         }
