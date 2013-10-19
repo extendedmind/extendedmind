@@ -26,6 +26,8 @@
           // http://stackoverflow.com/questions/86105/how-can-i-supress-the-browsers-authentication-dialog
           if (rejection.status === 403) {
             $rootScope.$broadcast('event:authenticationRequired');
+          } else if (rejection.status === 404) {
+            $rootScope.$broadcast('event:authenticationRequired');
           } else if (rejection.status === 419) {
             $rootScope.$broadcast('event:authenticationRequired');
           }
@@ -63,8 +65,8 @@
             method : name,
             url : url,
             cache : true
-          }).then(function(response) {
-            return response;
+          }).then(function(success) {
+            return success;
           });
         };
       });
@@ -74,16 +76,16 @@
           return $http({
             method : name,
             url : url
-          }).then(function(response) {
-            return response;
+          }).then(function(success) {
+            return success;
           });
         };
       });
 
       angular.forEach(['post', 'put'], function(name) {
         httpRequest[name] = function(url, data) {
-          return $http[name](url, data).then(function(response) {
-            return response;
+          return $http[name](url, data).then(function(success) {
+            return success;
           });
         };
       });
