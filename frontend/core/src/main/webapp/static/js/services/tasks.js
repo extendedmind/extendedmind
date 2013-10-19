@@ -48,10 +48,12 @@
 
     angular.module('em.services').factory('tasksArray', ['itemsArray',
     function(itemsArray) {
-      var projects, subtasks, tasks;
+      var context, projects, subtasks, tasks, project;
+      context = [];
       tasks = [];
       projects = [];
       subtasks = [];
+      project = [];
 
       return {
         setTasks : function(tasksResponse) {
@@ -83,6 +85,32 @@
         },
         removeTask : function(task) {
           itemsArray.removeItemFromArray(tasks, task);
+
+          if (task.relationships) {
+            if (task.relationships.parentTask) {
+              this.removeSubtask(task);
+              this.removeProject(task.relationships.parentTask);
+            }
+            if (task.relationships.tags) {
+              this.removeTaskFromContext(task);
+            }
+          }
+        },
+        removeSubtask : function(task) {
+          itemsArray.removeItemFromArray(subtasks, task);
+          itemsArray.removeItemFromArray(project, task);
+        },
+        removeProject : function(uuid) {
+
+          if (this.getSubtasksByProjectUuid(uuid).length === 0) {
+            var task = this.getProjectByUuid(uuid);
+            itemsArray.removeItemFromArray(projects, task);
+            this.deleteTaskProperty(task, 'project');
+            this.setTask(task);
+          }
+        },
+        removeTaskFromContext : function(task) {
+          itemsArray.removeItemFromArray(context, task);
         },
         getTasks : function() {
           return tasks;
@@ -93,8 +121,13 @@
         getSubtaskByUuid : function(uuid) {
           return itemsArray.getItemByUuid(subtasks, uuid);
         },
-        getSubtasksByUuid : function(uuid) {
-          return itemsArray.getItemsByUuid(subtasks, uuid);
+        getSubtasksByProjectUuid : function(uuid) {
+          project = itemsArray.getItemsByProjectUuid(subtasks, uuid);
+          return project;
+        },
+        getSubtasksByTagUuid : function(uuid) {
+          context = itemsArray.getItemsByTagUuid(tasks, uuid);
+          return context;
         },
         getTaskByUuid : function(uuid) {
           return itemsArray.getItemByUuid(tasks, uuid);
@@ -107,27 +140,12 @@
             projects.push(task);
           }
         },
-        removeProject : function(uuid) {
-          if (this.getSubtasksByUuid(uuid).length === 0) {
-            var task = this.getProjectByUuid(uuid);
-            itemsArray.removeItemFromArray(projects, task);
-            this.deleteTaskProperty(task, 'project');
-            return task;
-          }
-        },
         getProjects : function() {
           return projects;
         },
         setSubtask : function(task) {
           if (!itemsArray.itemInArray(subtasks, task.uuid)) {
             subtasks.push(task);
-          }
-        },
-        removeSubtask : function(task) {
-          if (task.relationships) {
-            if (task.relationships.parentTask) {
-              itemsArray.removeItemFromArray(subtasks, task);
-            }
           }
         },
         getSubtasks : function() {

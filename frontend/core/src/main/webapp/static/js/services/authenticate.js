@@ -18,8 +18,12 @@
             userSession.setUserRemembered(true);
 
             authenticateRequest.login().then(function(authenticateResponse) {
-              userSession.setUserSessionData(authenticateResponse);
-              $rootScope.$broadcast('event:loginSuccess');
+              var promise = userSession.setUserSessionData(authenticateResponse);
+              promise.then(function() {
+                $rootScope.$broadcast('event:loginSuccess');
+              }, function() {
+                $rootScope.$broadcast('event:authenticationRequired');
+              });
             });
 
           } else {
@@ -33,15 +37,12 @@
     userAuthenticate.$inject = ['$location', '$rootScope', 'authenticateRequest', 'userSession', 'userCookie', 'userSessionStorage'];
     angular.module('em.services').factory('userAuthenticate', userAuthenticate);
 
-    angular.module('em.services').factory('userSession', ['base64', 'httpBasicAuth', 'userCookie', 'userSessionStorage',
-    function(base64, httpBasicAuth, userCookie, userSessionStorage) {
+    function userSession($q, base64, httpBasicAuth, userCookie, userSessionStorage) {
 
       var rememberMe = false;
 
       return {
         setUserSessionData : function(authenticateResponse) {
-
-          userSessionStorage.setUserUUID(authenticateResponse.userUUID);
 
           this.setCredentials('token', authenticateResponse.token);
           userSessionStorage.setHttpAuthorizationHeader(this.getCredentials());
@@ -49,6 +50,10 @@
           if (this.getUserRemembered()) {
             userCookie.setUserToken(authenticateResponse.token);
           }
+
+          var deferred = $q.defer();
+          deferred.resolve(userSessionStorage.setUserUUID(authenticateResponse.userUUID));
+          return deferred.promise;
 
         },
         setCredentials : function(username, password) {
@@ -67,7 +72,11 @@
           return rememberMe === true;
         }
       };
-    }]);
+    }
+
+
+    userSession.$inject = ['$q', 'base64', 'httpBasicAuth', 'userCookie', 'userSessionStorage'];
+    angular.module('em.services').factory('userSession', userSession);
 
     angular.module('em.services').factory('authenticateRequest', ['httpRequest', 'userSession',
     function(httpRequest, userSession) {

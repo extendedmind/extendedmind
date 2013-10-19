@@ -2,10 +2,9 @@
 
 ( function() {'use strict';
 
-    function TasksListController($location, $routeParams, $scope, tasksArray, tasksRequest, tasksResponse) {
+    function TasksListController($location, $routeParams, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
       $scope.taskEdit = function(task) {
-        $scope.setActiveItem(task);
         $location.path('/my/tasks/edit/' + task.uuid);
       };
 
@@ -30,17 +29,8 @@
       };
 
       $scope.taskToProject = function(task) {
-
-        task.project = true;
-
-        tasksArray.removeTask(task);
-        tasksArray.setProject(task);
-
-        $location.path('/my/tasks/new/' + task.uuid);
-
-        tasksRequest.putExistingTask(task).then(function(putExistingTaskResponse) {
-          tasksResponse.putTaskContent(task, putExistingTaskResponse);
-        });
+        activeItem.setItem(task);        
+        $location.path('/my/tasks/new');
       };
 
       $scope.deleteTask = function(task) {
@@ -48,35 +38,25 @@
         tasksArray.removeTask(task);
 
         tasksRequest.deleteTask(task).then(function(deleteTaskResponse) {
-          return tasksResponse.putTaskContent(task, deleteTaskResponse);
-        }).then(function() {
-
-          if (task.relationships) {
-            if (task.relationships.parentTask) {
-              tasksArray.removeSubtask(task);
-
-              $scope.project = tasksArray.removeProject(task.relationships.parentTask);
-
-              if ($scope.project) {
-
-                tasksRequest.putExistingTask($scope.project).then(function(putExistingTaskResponse) {
-                  return tasksResponse.putTaskContent($scope.project, putExistingTaskResponse);
-                }).then(function() {
-                  return tasksArray.putNewTask($scope.project);
-                });
-              }
-            }
-          }
+          tasksResponse.putTaskContent(task, deleteTaskResponse);
         });
       };
 
       $scope.addSubtask = function() {
 
         if ($routeParams.uuid) {
+          $scope.task.relationships = {};
+
           if (tasksArray.getProjectByUuid($routeParams.uuid)) {
-            $scope.task.relationships = {};
+
             $scope.task.relationships.parentTask = $routeParams.uuid;
             tasksArray.setSubtask($scope.task);
+            $scope.tasks.push($scope.task);
+
+          } else if (tagsArray.getTagByUuid($routeParams.uuid)) {
+
+            $scope.task.relationships.tags = [];
+            $scope.task.relationships.tags[0] = $routeParams.uuid;
             $scope.tasks.push($scope.task);
           }
         }
@@ -93,6 +73,6 @@
     }
 
 
-    TasksListController.$inject = ['$location', '$routeParams', '$scope', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
     angular.module('em.app').controller('TasksListController', TasksListController);
   }());

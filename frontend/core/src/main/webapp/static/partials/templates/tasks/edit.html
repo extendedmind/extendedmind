@@ -24,6 +24,15 @@
   </div>
 
   <div class="form-group">
+    <label class="sr-only" for="taskContext">context</label>
+    <div class="col-lg-10">
+      <select class="form-control" id="taskContext" ng-model="taskContext" ng-options="context.title for context in contexts">
+        <option value="">select context</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
     <label class="sr-only" for="taskLink">link</label>
     <div class="col-lg-10">
       <input type="text" class="form-control" id="taskLink" ng-model="task.link" placeholder="link...">

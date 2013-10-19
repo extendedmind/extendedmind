@@ -2,35 +2,17 @@
 
 ( function() {'use strict';
 
-    function ContextController($location, $scope, $routeParams, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray) {
+    function ContextController($location, $scope, $routeParams, errorHandler, itemsRequest, tagsArray, tasksArray) {
 
       $scope.errorHandler = errorHandler;
-      activeItem.setItem();
 
-      if (activeItem.getItem()) {
+      itemsRequest.getItems().then(function() {
 
-        $scope.context = activeItem.getItem();
-        $scope.tasks = itemsArray.getTagItems(tasksArray.getTasks(), $scope.context.uuid);
-
-      } else {
-
-        itemsRequest.getItems(function(itemsResponse) {
-
-          itemsArray.setItems(itemsResponse.items);
-          tagsArray.setTags(itemsResponse.tags);
-          tasksArray.setTasks(itemsResponse.tasks);
-
-          $scope.context = itemsArray.getItemByUuid(tagsArray.getTags(), $routeParams.uuid);
-
-          $scope.tasks = itemsArray.getTagItems(tasksArray.getTasks(), $scope.context.uuid);
-
-        }, function(error) {
-        });
-      }
-
-      $scope.setActiveItem = function(item) {
-        activeItem.setItem(item);
-      };
+        if ($routeParams.uuid) {
+          $scope.context = tagsArray.getTagByUuid($routeParams.uuid);
+          $scope.tasks = tasksArray.getSubtasksByTagUuid($scope.context.uuid);
+        }
+      });
 
       $scope.addNew = function() {
         $location.path('/my/tasks/new/');
@@ -38,6 +20,6 @@
     }
 
 
-    ContextController.$inject = ['$location', '$scope', '$routeParams', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray'];
+    ContextController.$inject = ['$location', '$scope', '$routeParams', 'errorHandler', 'itemsRequest', 'tagsArray', 'tasksArray'];
     angular.module('em.app').controller('ContextController', ContextController);
   }());

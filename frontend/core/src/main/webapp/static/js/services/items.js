@@ -3,12 +3,16 @@
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('itemsRequest', ['httpRequest', 'itemsArray', 'userSessionStorage',
-    function(httpRequest, itemsArray, userSessionStorage) {
+    function itemsRequest(httpRequest, itemsArray, notesArray, tagsArray, tasksArray, userSessionStorage) {
       return {
         getItems : function() {
           return httpRequest.get('/api/' + userSessionStorage.getUserUUID() + '/items').then(function(itemsResponse) {
-            return itemsResponse.data;
+
+            itemsArray.setItems(itemsResponse.data.items);
+            notesArray.setNotes(itemsResponse.data.notes);
+            tagsArray.setTags(itemsResponse.data.tags);
+            tasksArray.setTasks(itemsResponse.data.tasks);
+
           });
         },
         putItem : function(item) {
@@ -27,7 +31,11 @@
           });
         }
       };
-    }]);
+    }
+
+
+    itemsRequest.$inject = ['httpRequest', 'itemsArray', 'notesArray', 'tagsArray', 'tasksArray', 'userSessionStorage'];
+    angular.module('em.services').factory('itemsRequest', itemsRequest);
 
     angular.module('em.services').factory('itemsResponse', [
     function() {
@@ -98,20 +106,22 @@
             i++;
           }
         },
-        getItemsByUuid : function(items, uuid) {
+        getItemsByProjectUuid : function(items, uuid) {
           var i, subtasks;
           i = 0;
           this.subtasks = [];
 
           while (items[i]) {
-            if (items[i].relationships.parentTask === uuid) {
-              this.subtasks.push(items[i]);
+            if (items[i].relationships) {
+              if (items[i].relationships.parentTask === uuid) {
+                this.subtasks.push(items[i]);
+              }
             }
             i++;
           }
           return this.subtasks;
         },
-        getTagItems : function(items, uuid) {
+        getItemsByTagUuid : function(items, uuid) {
           var i, j, subtasks;
           i = 0;
           this.subtasks = [];

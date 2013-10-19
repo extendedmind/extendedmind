@@ -4,7 +4,7 @@
 
   <ul class="list-unstyled" ng-show="showItemsList">
 
-    <li ng-class="selected" ng-repeat="item in items | filter:newItem" ng-model="activeItem">
+    <li ng-class="selected" ng-repeat="item in items | filter:newItem">
 
       <div ng-click="toggleItemContent()">
         <span>{{item.title}}</span>
