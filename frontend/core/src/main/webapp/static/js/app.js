@@ -80,7 +80,7 @@
         }
       });
 
-      $routeProvider.when('/my/notes/new/:uuid', {
+      $routeProvider.when('/my/notes/new', {
         controller : 'NewNoteController',
         templateUrl : 'static/partials/my/notes/new.html',
         resolve : {
