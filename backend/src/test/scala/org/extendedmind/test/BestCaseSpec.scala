@@ -683,6 +683,19 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val updatedTask = getTask(putTaskResponse.uuid.get, authenticateResponse, Some(emtUUID))
       updatedTask.description should not be None
     }
+    
+    it("should successfully lögout with POST to /logout") {    
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Post("/logout"
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+            ) ~> emRoute ~> check {
+        writeJsonOutput("logoutResponse", entityAs[String])
+        val logoutResponse = entityAs[SecurityContext]
+        logoutResponse.userUUID should equal (authenticateResponse.userUUID)
+        logoutResponse.token should be (None)
+      }
+    }
   }
   
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {

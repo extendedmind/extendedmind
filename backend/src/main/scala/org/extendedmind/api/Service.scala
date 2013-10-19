@@ -237,6 +237,13 @@ trait Service extends API with Injectable {
         }
       }
     } ~
+    postLogout { url =>
+      authenticate(ExtendedAuth(authenticator, "logout", None)) { securityContext =>
+        complete {
+          securityContext
+        }
+      }
+    } ~
     putNewCollective { url =>
       authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
         // Only admins can create new collectives for now

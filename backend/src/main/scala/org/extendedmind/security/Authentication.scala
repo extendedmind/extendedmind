@@ -75,7 +75,11 @@ trait ExtendedMindUserPassAuthenticator extends UserPassRealmAuthenticator[Secur
     userPassRealm match {
       case Some(UserPassRealm(user, pass, realm, ownerUUID)) => {
         if (user == "token") {
-          securityContextResponseToOption(db.authenticate(pass, ownerUUID))
+          if (realm == "logout"){
+            securityContextResponseToOption(db.logout(pass))
+          }else{
+            securityContextResponseToOption(db.authenticate(pass, ownerUUID))
+          }
         } else if (realm == "secure") {
           securityContextResponseToOption(db.authenticate(user, pass, ownerUUID))
         } else {
