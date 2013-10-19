@@ -1,17 +1,22 @@
 package org.extendedmind.bl
 
-import org.extendedmind.domain.User
-import org.extendedmind.db.GraphDatabase
-import org.extendedmind.Settings
+import org.extendedmind.domain._
+import org.extendedmind.db._
+import org.extendedmind._
+import org.extendedmind.Response._
 import scaldi.Injector
 import scaldi.Injectable
-import org.extendedmind.db.EmbeddedGraphDatabase
+import spray.util.LoggingContext
+import org.extendedmind.security._
 
 trait SecurityActions {
 
   def db: GraphDatabase;
-
-  // TODO: Security actions here such as registration, forgot password etc.
+/*
+  def changePassword(securityContext: SecurityContext, newPassword: String)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("changePassword: user {}", securityContext.userUUID)
+    db.changePassword(securityContext)
+  }*/
 }
 
 class SecurityActionsImpl(implicit val settings: Settings, implicit val inj: Injector)

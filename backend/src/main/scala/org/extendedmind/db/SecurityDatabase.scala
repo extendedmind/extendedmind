@@ -106,6 +106,19 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
   
+  def logout(encryptedToken: String): Response[SecurityContext] = {
+    withTx{
+      implicit neo4j => 
+        for {
+          token <- Token.decryptToken(encryptedToken).right
+          tokenNode <- getTokenNode(token).right
+          userNode <- getUserNode(tokenNode).right
+          result <- Right(destroyToken(tokenNode)).right
+          sc <- getSecurityContext(userNode, None).right
+        } yield sc
+    }
+  }
+  
   // PRIVATE
   
   protected def validateTokenReplacable(tokenNode: Node, currentTime: Long): Response[Node] = {
@@ -135,6 +148,17 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         val tokenNode = createNode(MainLabel.TOKEN)
         setTokenProperties(tokenNode, token, payload);
         tokenNode --> SecurityRelationship.IDS --> userNode
+    }
+  }
+  
+  protected def destroyToken(tokenNode: Node) {
+    withTx {
+      implicit neo =>
+        // Remove all relationships
+        val relationShipList = tokenNode.getRelationships().toList
+        relationShipList.foreach(relationship => relationship.delete())
+        // Delete token itself
+        tokenNode.delete()
     }
   }
 
