@@ -31,11 +31,6 @@ trait SecurityActions {
     db.changePassword(userUUID, newPassword)
     db.destroyTokens(userUUID)
   }
-  
-  def getUser(userUUID: UUID)(implicit log: LoggingContext): Response[User] = {
-    log.info("getUser: user {}", userUUID)
-    db.getUser(userUUID)
-  }
 }
 
 class SecurityActionsImpl(implicit val settings: Settings, implicit val inj: Injector)

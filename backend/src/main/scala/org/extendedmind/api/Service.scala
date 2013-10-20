@@ -269,9 +269,23 @@ trait Service extends API with Injectable {
       authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
         complete {
           Future[User] {
-            securityActions.getUser(securityContext.userUUID) match {
+            userActions.getUser(securityContext.userUUID) match {
               case Right(user) => user
               case Left(e) => processErrors(e)
+            }
+          }
+        }
+      }
+    } ~
+    putAccount { url =>
+      authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
+        entity(as[User]) { user =>
+          complete {
+            Future[SetResult] {
+              userActions.putUser(securityContext.userUUID, user) match {
+                case Right(sr) => sr
+                case Left(e) => processErrors(e)
+              }
             }
           }
         }

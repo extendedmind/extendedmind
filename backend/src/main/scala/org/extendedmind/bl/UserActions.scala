@@ -133,6 +133,24 @@ trait UserActions {
     if (user.isLeft) Left(user.left.get)
     else Right(PublicUser(user.right.get.uuid.get))
   }
+   
+  def getUser(userUUID: UUID)(implicit log: LoggingContext): Response[User] = {
+    log.info("getUser: user {}", userUUID)
+    db.getUser(userUUID)
+  }
+  
+  def putUser(userUUID: UUID, user: User)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putUser: user {}", userUUID)
+    db.putExistingUser(userUUID, user) match {
+      case Right(result) => {
+        Right(result._1)
+        // TODO
+        // if (result._2)
+        //   SEND EMAIL CONFIRMATION TO NEW ADDRESS! 
+      }
+      case Left(e) => Left(e)
+    }
+  }
 }
 
 class UserActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, 

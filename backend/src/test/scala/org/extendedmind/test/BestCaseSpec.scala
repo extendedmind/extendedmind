@@ -720,7 +720,9 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val newPasswordAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, newPassword)
       newPasswordAuthenticateResponse.userUUID should not be None
     }
-    it("should successfully get user with GET to /account") {    
+    it("should successfully get user with GET to /account, "
+       + "change email with PUT to /account "
+       + "and get the changed email back") {    
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/account"
             ) ~> addHeader("Content-Type", "application/json"
@@ -731,6 +733,25 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         accountResponse.uuid.get should equal (authenticateResponse.userUUID)
         accountResponse.email should equal (TIMO_EMAIL)
       }
+      val newUser = User("timo.tiuraniemi@iki.fi")
+      Put("/account",
+          marshal(newUser).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))
+            ) ~> emRoute ~> check {
+        writeJsonOutput("putAccountResponse", entityAs[String])
+        val putAccountResponse = entityAs[SetResult]
+        putAccountResponse.modified should not be None
+      }
+      Get("/account"
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+            ) ~> emRoute ~> check {
+        val accountResponse = entityAs[User]
+        accountResponse.email should equal (newUser.email)
+      }
+      val newEmailAuthenticateResponse = emailPasswordAuthenticate(newUser.email, TIMO_PASSWORD)
+      newEmailAuthenticateResponse.userUUID should not be None
     }
   }
   

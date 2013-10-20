@@ -36,6 +36,13 @@ trait UserDatabase extends AbstractGraphDatabase {
       result <- Right(getSetResult(user, true)).right
     }yield result
   }
+  
+  def putExistingUser(userUUID: UUID, user: User): Response[(SetResult, Boolean)] = {
+    for {
+      updateResult <- updateUser(userUUID, user).right
+      result <- Right(getSetResult(updateResult._1, false)).right
+    } yield (result, updateResult._2)
+  }
 
   def getUser(email: String): Response[User] = {
     withTx{
@@ -212,6 +219,25 @@ trait UserDatabase extends AbstractGraphDatabase {
           })
         }
         Right(userNode)
+    }
+  }
+  
+  protected def updateUser(userUUID: UUID, user: User): Response[(Node, Boolean)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          result <- Right(updateUser(userNode, user)).right
+        } yield (userNode, result)
+    }
+  }
+  
+  protected def updateUser(userNode: Node, user: User)(implicit neo4j: DatabaseService): Boolean = {
+    if (userNode.getProperty("email").asInstanceOf[String] != user.email){
+      userNode.setProperty("email", user.email)
+      true
+    }else{
+      false
     }
   }
 
