@@ -2,10 +2,10 @@
 
 ( function() {'use strict';
 
-    function TasksListController($location, $routeParams, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    function TasksListController($location, $routeParams, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
 
       $scope.taskEdit = function(task) {
-        $location.path('/my/tasks/edit/' + task.uuid);
+        $location.path(userPrefix.getPrefix() + '/tasks/edit/' + task.uuid);
       };
 
       $scope.taskChecked = function(index) {
@@ -29,8 +29,8 @@
       };
 
       $scope.taskToProject = function(task) {
-        activeItem.setItem(task);        
-        $location.path('/my/tasks/new');
+        activeItem.setItem(task);
+        $location.path(userPrefix.getPrefix() + '/tasks/new');
       };
 
       $scope.deleteTask = function(task) {
@@ -47,13 +47,13 @@
         if ($routeParams.uuid) {
           $scope.task.relationships = {};
 
-          if (tasksArray.getProjectByUuid($routeParams.uuid)) {
+          if (tasksArray.getProjectByUUID($routeParams.uuid)) {
 
             $scope.task.relationships.parentTask = $routeParams.uuid;
             tasksArray.setSubtask($scope.task);
             $scope.tasks.push($scope.task);
 
-          } else if (tagsArray.getTagByUuid($routeParams.uuid)) {
+          } else if (tagsArray.getTagByUUID($routeParams.uuid)) {
 
             $scope.task.relationships.tags = [];
             $scope.task.relationships.tags[0] = $routeParams.uuid;
@@ -73,6 +73,6 @@
     }
 
 
-    TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
     angular.module('em.app').controller('TasksListController', TasksListController);
   }());

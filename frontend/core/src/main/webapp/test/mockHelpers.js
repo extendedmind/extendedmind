@@ -115,11 +115,17 @@
       });
 
       $httpBackend.whenGET(api_useruuid_items).respond(function(method, url, data, headers) {
-        var uuid = url.split('/');
-        if (uuid[2] === '5ad6d916-1124-45c3-91a4-067fa750fd58') {
-          return mockHttpBackendResponse.expectResponse(method, url, data, headers, itemsResponse);
+        var uuid = url.split('/'), key;
+
+        for (key in authenticateResponse.collectives) {
+          if (authenticateResponse.collectives.hasOwnProperty(key)) {
+            if (uuid[2] === key) {
+              return mockHttpBackendResponse.expectResponse(method, url, data, headers, collectiveItemsResponse);
+            }
+          }
         }
-        return mockHttpBackendResponse.expectResponse(method, url, data, headers, collectiveItemsResponse);
+
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, itemsResponse);
       });
 
       $httpBackend.whenGET(/null/).respond(function(method, url, data, headers) {

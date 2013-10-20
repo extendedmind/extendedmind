@@ -2,6 +2,23 @@
 
 ( function() {'use strict';
 
+    angular.module('em.services').factory('userPrefix', ['userSessionStorage',
+    function(userSessionStorage) {
+      var prefix = 'my';
+
+      return {
+        setCollectivePrefix : function() {
+          this.setPrefix('collective' + '/' + userSessionStorage.getActiveUUID());
+        },
+        setPrefix : function(name) {
+          prefix = name;
+        },
+        getPrefix : function() {
+          return prefix;
+        }
+      };
+    }]);
+
     angular.module('em.services').value('version', 0.1);
 
     angular.module('em.services').factory('Enum', [

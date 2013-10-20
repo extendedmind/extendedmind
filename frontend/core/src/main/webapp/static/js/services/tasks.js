@@ -7,27 +7,27 @@
     function(httpRequest, userSessionStorage) {
       return {
         putTask : function(task) {
-          return httpRequest.put('/api/' + userSessionStorage.getActiveUuid() + '/task', task).then(function(putTaskResponse) {
+          return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/task', task).then(function(putTaskResponse) {
             return putTaskResponse.data;
           });
         },
         putExistingTask : function(task) {
-          return httpRequest.put('/api/' + userSessionStorage.getActiveUuid() + '/task/' + task.uuid, task).then(function(putExistingTaskResponse) {
+          return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid, task).then(function(putExistingTaskResponse) {
             return putExistingTaskResponse.data;
           });
         },
         deleteTask : function(task) {
-          return httpRequest['delete']('/api/' + userSessionStorage.getActiveUuid() + '/task/' + task.uuid).then(function(deleteTaskResponse) {
+          return httpRequest['delete']('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid).then(function(deleteTaskResponse) {
             return deleteTaskResponse.data;
           });
         },
         completeTask : function(task) {
-          return httpRequest.post('/api/' + userSessionStorage.getActiveUuid() + '/task/' + task.uuid + '/complete').then(function(completeTaskResponse) {
+          return httpRequest.post('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid + '/complete').then(function(completeTaskResponse) {
             return completeTaskResponse.data;
           });
         },
         uncompleteTask : function(task) {
-          return httpRequest.post('/api/' + userSessionStorage.getActiveUuid() + '/task/' + task.uuid + '/uncomplete').then(function(uncompleteTaskResponse) {
+          return httpRequest.post('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid + '/uncomplete').then(function(uncompleteTaskResponse) {
             return uncompleteTaskResponse.data;
           });
         }
@@ -102,8 +102,8 @@
         },
         removeProject : function(uuid) {
 
-          if (this.getSubtasksByProjectUuid(uuid).length === 0) {
-            var task = this.getProjectByUuid(uuid);
+          if (this.getSubtasksByProjectUUID(uuid).length === 0) {
+            var task = this.getProjectByUUID(uuid);
             itemsArray.removeItemFromArray(projects, task);
             this.deleteTaskProperty(task, 'project');
             this.setTask(task);
@@ -115,22 +115,22 @@
         getTasks : function() {
           return tasks;
         },
-        getProjectByUuid : function(uuid) {
-          return itemsArray.getItemByUuid(projects, uuid);
+        getProjectByUUID : function(uuid) {
+          return itemsArray.getItemByUUID(projects, uuid);
         },
-        getSubtaskByUuid : function(uuid) {
-          return itemsArray.getItemByUuid(subtasks, uuid);
+        getSubtaskByUUID : function(uuid) {
+          return itemsArray.getItemByUUID(subtasks, uuid);
         },
-        getSubtasksByProjectUuid : function(uuid) {
-          project = itemsArray.getItemsByProjectUuid(subtasks, uuid);
+        getSubtasksByProjectUUID : function(uuid) {
+          project = itemsArray.getItemsByProjectUUID(subtasks, uuid);
           return project;
         },
-        getSubtasksByTagUuid : function(uuid) {
-          context = itemsArray.getItemsByTagUuid(tasks, uuid);
+        getSubtasksByTagUUID : function(uuid) {
+          context = itemsArray.getItemsByTagUUID(tasks, uuid);
           return context;
         },
-        getTaskByUuid : function(uuid) {
-          return itemsArray.getItemByUuid(tasks, uuid);
+        getTaskByUUID : function(uuid) {
+          return itemsArray.getItemByUUID(tasks, uuid);
         },
         deleteTaskProperty : function(task, property) {
           itemsArray.deleteItemProperty(task, property);

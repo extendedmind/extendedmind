@@ -54,11 +54,6 @@
               scope.selected = '';
             }
           };
-
-          scope.noteEdit = function(note) {
-            scope.setActiveItem(note);
-            $location.path('/my/notes/edit/' + note.uuid);
-          };
         }
       };
     }]);

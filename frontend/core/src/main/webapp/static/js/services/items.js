@@ -6,7 +6,7 @@
     function itemsRequest(httpRequest, itemsArray, notesArray, tagsArray, tasksArray, userSessionStorage) {
       return {
         getItems : function() {
-          return httpRequest.get('/api/' + userSessionStorage.getActiveUuid() + '/items').then(function(itemsResponse) {
+          return httpRequest.get('/api/' + userSessionStorage.getActiveUUID() + '/items').then(function(itemsResponse) {
 
             itemsArray.setItems(itemsResponse.data.items);
             notesArray.setNotes(itemsResponse.data.notes);
@@ -16,17 +16,17 @@
           });
         },
         putItem : function(item) {
-          return httpRequest.put('/api/' + userSessionStorage.getActiveUuid() + '/item', item).then(function(putItemsResponse) {
+          return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/item', item).then(function(putItemsResponse) {
             return putItemsResponse.data;
           });
         },
         editItem : function(item) {
-          httpRequest.put('/api/' + userSessionStorage.getActiveUuid() + '/item/' + item.uuid, item).then(function(editItemResponse) {
+          httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/item/' + item.uuid, item).then(function(editItemResponse) {
             return editItemResponse.data;
           });
         },
         deleteItem : function(item) {
-          return httpRequest['delete']('/api/' + userSessionStorage.getActiveUuid() + '/item/' + item.uuid).then(function(deleteItemResponse) {
+          return httpRequest['delete']('/api/' + userSessionStorage.getActiveUUID() + '/item/' + item.uuid).then(function(deleteItemResponse) {
             return deleteItemResponse.data;
           });
         }
@@ -96,7 +96,7 @@
         deleteItemProperty : function(item, property) {
           delete item[property];
         },
-        getItemByUuid : function(items, uuid) {
+        getItemByUUID : function(items, uuid) {
           var i = 0;
 
           while (items[i]) {
@@ -106,7 +106,7 @@
             i++;
           }
         },
-        getItemsByProjectUuid : function(items, uuid) {
+        getItemsByProjectUUID : function(items, uuid) {
           var i, subtasks;
           i = 0;
           this.subtasks = [];
@@ -121,7 +121,7 @@
           }
           return this.subtasks;
         },
-        getItemsByTagUuid : function(items, uuid) {
+        getItemsByTagUUID : function(items, uuid) {
           var i, j, subtasks;
           i = 0;
           this.subtasks = [];
