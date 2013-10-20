@@ -1,5 +1,5 @@
 <nav class="navbar navbar-default" role="navigation">
-  
+
   <div class="navbar-header">
     <button type="button" class="navbar-toggle" ng-click="collapseNavbar()">
       <span class="sr-only">Toggle navigation</span>
@@ -12,12 +12,24 @@
   <div class="navbar-collapse" ng-show="collapse">
     <ul class="nav navbar-nav">
       <li>
-        <a href="#">logout</a>
+        <a href="" ng-click="setActiveUuid(user)">user</a>
       </li>
       <li>
-        <a href="#">collective</a>
+        <span>collectives</span>
+
+        <ul>
+
+          <li ng-repeat="(key, value) in collectives">
+
+            <div>
+              <a class="text-muted" href="" ng-click="setActiveUuid(key)">{{value[0]}}</a>
+            </div>
+
+          </li>
+
+        </ul>
       </li>
     </ul>
 
   </div>
-</nav>
+</nav>

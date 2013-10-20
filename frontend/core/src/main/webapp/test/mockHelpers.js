@@ -10,7 +10,7 @@
       var api_useruuid_items, authenticateResponse,
 
       // get
-      itemsResponse,
+      itemsResponse, collectiveItemsResponse,
 
       // complete
       completeTask, completeTaskResponse,
@@ -52,7 +52,10 @@
 
       authenticateResponse = mockHttpBackendResponse.getAuthenticateResponse();
       completeTaskResponse = mockHttpBackendResponse.getCompleteTaskResponse();
+
+      // get
       itemsResponse = mockHttpBackendResponse.getItemsResponse();
+      collectiveItemsResponse = mockHttpBackendResponse.getCollectiveItemsResponse();
 
       // put new
       putItemResponse = mockHttpBackendResponse.getPutItemResponse();
@@ -112,7 +115,11 @@
       });
 
       $httpBackend.whenGET(api_useruuid_items).respond(function(method, url, data, headers) {
-        return mockHttpBackendResponse.expectResponse(method, url, data, headers, itemsResponse);
+        var uuid = url.split('/');
+        if (uuid[2] === '5ad6d916-1124-45c3-91a4-067fa750fd58') {
+          return mockHttpBackendResponse.expectResponse(method, url, data, headers, itemsResponse);
+        }
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, collectiveItemsResponse);
       });
 
       $httpBackend.whenGET(/null/).respond(function(method, url, data, headers) {
@@ -163,6 +170,9 @@
         // get
         getItemsResponse : function() {
           return getJSONFixture('itemsResponse.json');
+        },
+        getCollectiveItemsResponse : function() {
+          return getJSONFixture('collectiveItemsResponse.json');
         },
 
         // put new

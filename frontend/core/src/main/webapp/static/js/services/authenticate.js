@@ -41,6 +41,7 @@
         setUserSessionData : function(authenticateResponse) {
 
           userSessionStorage.setUserUUID(authenticateResponse.userUUID);
+          userSessionStorage.setActiveUuid(authenticateResponse.userUUID);
 
           this.setCredentials('token', authenticateResponse.token);
           userSessionStorage.setHttpAuthorizationHeader(this.getCredentials());
@@ -124,6 +125,12 @@
         },
         clearHttpAuthorizationHeader : function() {
           sessionStorage.removeItem('authorizationHeader');
+        },
+        setActiveUuid : function(uuid) {
+          sessionStorage.setItem('activeUuid', uuid);
+        },
+        getActiveUuid : function() {
+          return sessionStorage.getItem('activeUuid');
         },
         setUserUUID : function(userUUID) {
           sessionStorage.setItem('userUUID', userUUID);
