@@ -6,7 +6,9 @@ import org.extendedmind.security.SecurityContext
 
 case class User(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long],  
                 email: String)
-           extends Container
+           extends Container{
+  require(validateEmailAddress(email), "Not a valid email address")  
+}
 
 object User{
   def apply(email:String) = new User(None, None, None, email)
