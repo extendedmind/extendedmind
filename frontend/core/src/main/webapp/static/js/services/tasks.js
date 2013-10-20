@@ -7,27 +7,27 @@
     function(httpRequest, userSessionStorage) {
       return {
         putTask : function(task) {
-          return httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/task', task).then(function(putTaskResponse) {
+          return httpRequest.put('/api/' + userSessionStorage.getActiveUuid() + '/task', task).then(function(putTaskResponse) {
             return putTaskResponse.data;
           });
         },
         putExistingTask : function(task) {
-          return httpRequest.put('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid, task).then(function(putExistingTaskResponse) {
+          return httpRequest.put('/api/' + userSessionStorage.getActiveUuid() + '/task/' + task.uuid, task).then(function(putExistingTaskResponse) {
             return putExistingTaskResponse.data;
           });
         },
         deleteTask : function(task) {
-          return httpRequest['delete']('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid).then(function(deleteTaskResponse) {
+          return httpRequest['delete']('/api/' + userSessionStorage.getActiveUuid() + '/task/' + task.uuid).then(function(deleteTaskResponse) {
             return deleteTaskResponse.data;
           });
         },
         completeTask : function(task) {
-          return httpRequest.post('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/complete').then(function(completeTaskResponse) {
+          return httpRequest.post('/api/' + userSessionStorage.getActiveUuid() + '/task/' + task.uuid + '/complete').then(function(completeTaskResponse) {
             return completeTaskResponse.data;
           });
         },
         uncompleteTask : function(task) {
-          return httpRequest.post('/api/' + userSessionStorage.getUserUUID() + '/task/' + task.uuid + '/uncomplete').then(function(uncompleteTaskResponse) {
+          return httpRequest.post('/api/' + userSessionStorage.getActiveUuid() + '/task/' + task.uuid + '/uncomplete').then(function(uncompleteTaskResponse) {
             return uncompleteTaskResponse.data;
           });
         }

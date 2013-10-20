@@ -41,6 +41,7 @@
         setUserSessionData : function(authenticateResponse) {
 
           userSessionStorage.setUserUUID(authenticateResponse.userUUID);
+          userSessionStorage.setActiveUuid(authenticateResponse.userUUID);
 
           this.setCredentials('token', authenticateResponse.token);
           userSessionStorage.setHttpAuthorizationHeader(this.getCredentials());
@@ -48,6 +49,11 @@
           if (this.getUserRemembered()) {
             userCookie.setUserToken(authenticateResponse.token);
           }
+
+          if (authenticateResponse.collectives) {
+            userSessionStorage.setCollectives(authenticateResponse.collectives);
+          }
+
         },
         setCredentials : function(username, password) {
           this.setEncodedCredentials(base64.encode(username + ':' + password));
@@ -120,6 +126,12 @@
         clearHttpAuthorizationHeader : function() {
           sessionStorage.removeItem('authorizationHeader');
         },
+        setActiveUuid : function(uuid) {
+          sessionStorage.setItem('activeUuid', uuid);
+        },
+        getActiveUuid : function() {
+          return sessionStorage.getItem('activeUuid');
+        },
         setUserUUID : function(userUUID) {
           sessionStorage.setItem('userUUID', userUUID);
         },
@@ -128,6 +140,12 @@
         },
         clearUserUUID : function() {
           sessionStorage.removeItem('userUUID');
+        },
+        setCollectives : function(collectives) {
+          sessionStorage.setItem('collectives', JSON.stringify(collectives));
+        },
+        getCollectives : function() {
+          return JSON.parse(sessionStorage.getItem('collectives'));
         },
         isUserAuthenticated : function() {
           return sessionStorage.getItem('authorizationHeader') != null;
