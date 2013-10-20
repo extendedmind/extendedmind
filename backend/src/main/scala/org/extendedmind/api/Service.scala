@@ -239,8 +239,15 @@ trait Service extends API with Injectable {
     } ~
     postLogout { url =>
       authenticate(ExtendedAuth(authenticator, "logout", None)) { securityContext =>
-        complete {
-          securityContext
+        entity(as[Option[LogoutPayload]]) { payload =>
+          complete {
+            Future[DeleteCountResult] {
+              securityActions.logout(securityContext.userUUID, payload) match {
+                case Right(deleteCount) => deleteCount
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
         }
       }
     } ~

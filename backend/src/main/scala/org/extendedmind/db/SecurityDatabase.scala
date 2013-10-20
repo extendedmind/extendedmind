@@ -119,6 +119,16 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
   
+  def destroyTokens(userUUID: UUID): Response[DeleteCountResult] = {
+    withTx{
+      implicit neo4j => 
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          result <- destroyTokens(userNode).right
+        } yield result
+    }
+  }
+  
   // PRIVATE
   
   protected def validateTokenReplacable(tokenNode: Node, currentTime: Long): Response[Node] = {
@@ -148,6 +158,25 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         val tokenNode = createNode(MainLabel.TOKEN)
         setTokenProperties(tokenNode, token, payload);
         tokenNode --> SecurityRelationship.IDS --> userNode
+    }
+  }
+  
+  def destroyTokens(userNode: Node): Response[DeleteCountResult] = {
+    withTx{
+      implicit neo4j => 
+        val tokenTraversal = Traversal.description()
+          .breadthFirst()
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IDS.name), Direction.INCOMING)
+          .evaluator(Evaluators.excludeStartPosition())
+          .evaluator(LabelEvaluator(List(MainLabel.TOKEN)))
+          .evaluator(Evaluators.toDepth(1))
+          .traverse(userNode)
+        val tokenList = tokenTraversal.nodes().toList
+        val deleteCount = tokenList.size
+        tokenList.foreach(tokenNode => {
+          destroyToken(tokenNode)
+        })
+        Right(DeleteCountResult(deleteCount))
     }
   }
   
