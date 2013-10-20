@@ -26,11 +26,11 @@ trait SecurityActions {
     }
   }
   
-  /*
-  def changePassword(securityContext: SecurityContext, newPassword: String)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("changePassword: user {}", securityContext.userUUID)
-    db.changePassword(securityContext)
-  }*/
+  def changePassword(userUUID: UUID, newPassword: String)(implicit log: LoggingContext): Response[DeleteCountResult] = {
+    log.info("changePassword: user {}", userUUID)
+    db.changePassword(userUUID, newPassword)
+    db.destroyTokens(userUUID)
+  }
 }
 
 class SecurityActionsImpl(implicit val settings: Settings, implicit val inj: Injector)

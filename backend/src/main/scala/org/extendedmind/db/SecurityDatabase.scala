@@ -129,6 +129,16 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
   
+  def changePassword(userUUID: UUID, newPassword: String): Response[Unit] = {
+    withTx{
+      implicit neo4j =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          result <- Right(setUserPassword(userNode, newPassword)).right
+        } yield result
+    }
+  }
+  
   // PRIVATE
   
   protected def validateTokenReplacable(tokenNode: Node, currentTime: Long): Response[Node] = {

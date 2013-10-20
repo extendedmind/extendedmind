@@ -201,13 +201,7 @@ trait UserDatabase extends AbstractGraphDatabase {
       implicit neo4j =>
         val userNode = createNode(user, MainLabel.OWNER, OwnerLabel.USER)
         if (userLabel.isDefined) userNode.addLabel(userLabel.get)
-        val salt = PasswordService.generateSalt
-        val encryptedPassword = PasswordService.getEncryptedPassword(
-          plainPassword, salt, PasswordService.ALGORITHM, PasswordService.ITERATIONS)
-        userNode.setProperty("passwordAlgorithm", encryptedPassword.algorithm)
-        userNode.setProperty("passwordIterations", encryptedPassword.iterations)
-        userNode.setProperty("passwordHash", Base64.encodeBase64String(encryptedPassword.passwordHash))
-        userNode.setProperty("passwordSalt", encryptedPassword.salt)
+        setUserPassword(userNode, plainPassword)
         userNode.setProperty("email", user.email)
         
         // Give user read permissions to common collectives
@@ -221,6 +215,16 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
+  protected def setUserPassword(userNode: Node, plainPassword: String)(implicit neo4j: DatabaseService) = {
+    val salt = PasswordService.generateSalt
+    val encryptedPassword = PasswordService.getEncryptedPassword(
+      plainPassword, salt, PasswordService.ALGORITHM, PasswordService.ITERATIONS)
+    userNode.setProperty("passwordAlgorithm", encryptedPassword.algorithm)
+    userNode.setProperty("passwordIterations", encryptedPassword.iterations)
+    userNode.setProperty("passwordHash", Base64.encodeBase64String(encryptedPassword.passwordHash))
+    userNode.setProperty("passwordSalt", encryptedPassword.salt)
+  }
+  
   protected def getUserNode(email: String): Response[Node] = {
     withTx {
       implicit neo =>

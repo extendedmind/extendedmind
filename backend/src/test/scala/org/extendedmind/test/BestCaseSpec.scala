@@ -705,6 +705,22 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         logoutResponse.deleteCount should equal (2)
       }
     }
+    it("should successfully change password with PUT to /password") {    
+      val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      val newPassword = "newTestPassword"
+      Put("/password",
+          marshal(NewPassword(newPassword)).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addHeader(Authorization(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD))
+            ) ~> emRoute ~> check {
+        writeJsonOutput("passwordResponse", entityAs[String])
+        val passwordResponse = entityAs[DeleteCountResult]
+        passwordResponse.deleteCount should equal (1)
+      }
+      val newPasswordAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, newPassword)
+      newPasswordAuthenticateResponse.userUUID should not be None
+    }
+    
   }
   
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {

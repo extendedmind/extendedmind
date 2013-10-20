@@ -251,6 +251,20 @@ trait Service extends API with Injectable {
         }
       }
     } ~
+    putChangePassword { url =>
+      authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
+        entity(as[NewPassword]) { newPassword =>
+          complete {
+            Future[DeleteCountResult] {
+              securityActions.changePassword(securityContext.userUUID, newPassword.password) match {
+                case Right(deleteCount) => deleteCount
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      }
+    } ~
     putNewCollective { url =>
       authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
         // Only admins can create new collectives for now
