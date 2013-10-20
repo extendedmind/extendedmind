@@ -38,6 +38,8 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implDeleteItemResult = jsonFormat2(DeleteItemResult.apply)
   implicit val implDestroyResult = jsonFormat1(DestroyResult.apply)
   implicit val implSignUp = jsonFormat2(SignUp.apply)
+  implicit val implLogoutPayload = jsonFormat1(LogoutPayload.apply)
+  implicit val implDeleteCountResult = jsonFormat1(DeleteCountResult.apply)
   implicit val implInviteRequest = jsonFormat2(InviteRequest.apply)
   implicit val implInviteRequests = jsonFormat1(InviteRequests.apply)
   implicit val implInviteRequestQueueNumber = jsonFormat1(InviteRequestQueueNumber.apply)

@@ -30,6 +30,7 @@ import java.util.UUID
 case class UserPassRealm(user: String, pass: String, realm: String, ownerUUID: Option[UUID])
 case class UserPassRemember(user: String, pass: String, payload: Option[AuthenticatePayload])
 case class AuthenticatePayload(rememberMe: Boolean)
+case class LogoutPayload(clearAll: Boolean)
 
 object Authentication{
   type UserPassRealmAuthenticator[T] = Option[UserPassRealm] => Future[Option[T]]

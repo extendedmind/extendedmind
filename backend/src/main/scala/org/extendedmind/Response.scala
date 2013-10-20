@@ -60,3 +60,8 @@ object Response{
  * Result that is returned from every PUT/POST method
  */
 case class SetResult(uuid: Option[UUID], modified: Long)
+
+/**
+ * Result that is returned from methods that delete things
+ */
+case class DeleteCountResult(deleteCount: Long)

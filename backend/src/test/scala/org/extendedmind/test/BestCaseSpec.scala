@@ -691,9 +691,18 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
             ) ~> emRoute ~> check {
         writeJsonOutput("logoutResponse", entityAs[String])
-        val logoutResponse = entityAs[SecurityContext]
-        logoutResponse.userUUID should equal (authenticateResponse.userUUID)
-        logoutResponse.token should be (None)
+        val logoutResponse = entityAs[DeleteCountResult]
+        logoutResponse.deleteCount should equal (1)
+      }
+      val authenticateResponse1 = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      val authenticateResponse2 = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      Post("/logout",
+          marshal(LogoutPayload(true)).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse1.token.get)
+            ) ~> emRoute ~> check {
+        val logoutResponse = entityAs[DeleteCountResult]
+        logoutResponse.deleteCount should equal (2)
       }
     }
   }
