@@ -265,6 +265,18 @@ trait Service extends API with Injectable {
         }
       }
     } ~
+    getAccount { url =>
+      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        complete {
+          Future[User] {
+            securityActions.getUser(securityContext.userUUID) match {
+              case Right(user) => user
+              case Left(e) => processErrors(e)
+            }
+          }
+        }
+      }
+    } ~
     putNewCollective { url =>
       authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
         // Only admins can create new collectives for now

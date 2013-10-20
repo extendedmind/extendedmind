@@ -156,7 +156,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     setTokenProperties(tokenNode, token, payload)
     SecurityContext(
       sc.userUUID,
-      sc.email,
       sc.userType,
       Some(Token.encryptToken(token)),
       None)
@@ -326,7 +325,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   private def getSecurityContextSkeleton(user: Node, userType: Byte): SecurityContext = {
     SecurityContext(
       getUUID(user),
-      user.getProperty("email").asInstanceOf[String],
       userType,
       None,
       None)
