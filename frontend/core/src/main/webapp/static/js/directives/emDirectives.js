@@ -30,6 +30,21 @@
       };
     }]);
 
+    angular.module('em.directives').directive('navbar', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/navbar.html',
+        link : function(scope, element, attrs) {
+          scope.collapse = false;
+
+          scope.collapseNavbar = function collapseNavbar() {
+            scope.collapse = !scope.collapse;
+          };
+        }
+      };
+    }]);
+
     angular.module('em.directives').directive('omniBar', [
     function() {
       return {
