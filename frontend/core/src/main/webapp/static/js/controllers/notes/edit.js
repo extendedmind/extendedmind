@@ -8,7 +8,7 @@
 
       itemsRequest.getItems().then(function() {
         if ($routeParams.uuid) {
-          $scope.note = notesArray.getNoteByUuid($routeParams.uuid);
+          $scope.note = notesArray.getNoteByUUID($routeParams.uuid);
         }
       });
 

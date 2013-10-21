@@ -22,7 +22,7 @@
           tags = tagsArray.getTags();
 
           while (itemTags[i]) {
-            tag = itemsArray.getItemByUuid(tags, itemTags[i]);
+            tag = itemsArray.getItemByUUID(tags, itemTags[i]);
             filteredValues.push(tag);
             i++;
           }

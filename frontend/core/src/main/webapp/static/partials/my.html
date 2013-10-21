@@ -1,5 +1,5 @@
 <div class="em-slide">
-  
+
   <div navbar></div>
 
   <div class="em-front">
@@ -10,15 +10,15 @@
   </div>
 
   <div items-list itemsfilter="newItem.title">
-    <h2><a class="em-slide text-muted" href="" ng-click="toggleItemsList()">inbox</a><span class="pull-right"><small>{{completed}}</small></span></h2>
+    <h2><a class="text-muted" href="" ng-click="toggleItemsList()">inbox</a><span class="pull-right"><small>{{completed}}</small></span></h2>
   </div>
 
-  <div class="em-slide" filtered-notes-list notesfilter="newItem.title">
-    <h2><a class="text-muted" href="my/notes">notes</a></h2>
+  <div class="navbar-fixed-bottom em-slide" filtered-notes-list notesfilter="newItem.title">
+    <h2><a class="text-muted" href="{{prefix}}/notes">notes</a></h2>
   </div>
 
-  <div class="em-slide" filtered-tasks-list tasksfilter="newItem.title">
-    <h2><a class="text-muted" href="my/tasks">tasks</a></h2>
+  <div class="navbar-fixed-bottom em-slide" filtered-tasks-list tasksfilter="newItem.title">
+    <h2><a class="text-muted" href="{{prefix}}/tasks">tasks</a></h2>
   </div>
 
 </div>

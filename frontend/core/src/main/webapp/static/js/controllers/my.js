@@ -2,9 +2,10 @@
 
 ( function() {'use strict';
 
-    function MyController($scope, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray) {
+    function MyController($scope, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray, userPrefix) {
 
       $scope.errorHandler = errorHandler;
+      $scope.prefix = userPrefix.getPrefix();
 
       itemsRequest.getItems().then(function() {
 
@@ -19,6 +20,6 @@
     }
 
 
-    MyController.$inject = ['$scope', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray'];
+    MyController.$inject = ['$scope', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];
     angular.module('em.app').controller('MyController', MyController);
   }());

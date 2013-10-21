@@ -2,9 +2,10 @@
 
 ( function() {'use strict';
 
-    function NewTaskController($routeParams, $scope, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+    function NewTaskController($routeParams, $scope, activeItem, errorHandler, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
 
       $scope.errorHandler = errorHandler;
+      $scope.prefix = userPrefix.getPrefix();
 
       itemsRequest.getItems().then(function() {
 
@@ -63,6 +64,6 @@
     }
 
 
-    NewTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+    NewTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'errorHandler', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
     angular.module('em.app').controller('NewTaskController', NewTaskController);
   }());

@@ -10,7 +10,7 @@
       var api_useruuid_items, authenticateResponse,
 
       // get
-      itemsResponse, collectiveItemsResponse,
+      accountResponse, itemsResponse, collectiveItemsResponse,
 
       // complete
       completeTask, completeTaskResponse,
@@ -54,6 +54,7 @@
       completeTaskResponse = mockHttpBackendResponse.getCompleteTaskResponse();
 
       // get
+      accountResponse = mockHttpBackendResponse.getAccountResponse();
       itemsResponse = mockHttpBackendResponse.getItemsResponse();
       collectiveItemsResponse = mockHttpBackendResponse.getCollectiveItemsResponse();
 
@@ -114,12 +115,23 @@
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, putNoteResponse);
       });
 
+      // get
+      $httpBackend.whenGET('/api/account').respond(function(method, url, data, headers) {
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, accountResponse);
+      });
+
       $httpBackend.whenGET(api_useruuid_items).respond(function(method, url, data, headers) {
-        var uuid = url.split('/');
-        if (uuid[2] === '5ad6d916-1124-45c3-91a4-067fa750fd58') {
-          return mockHttpBackendResponse.expectResponse(method, url, data, headers, itemsResponse);
+        var uuid = url.split('/'), key;
+
+        for (key in authenticateResponse.collectives) {
+          if (authenticateResponse.collectives.hasOwnProperty(key)) {
+            if (uuid[2] === key) {
+              return mockHttpBackendResponse.expectResponse(method, url, data, headers, collectiveItemsResponse);
+            }
+          }
         }
-        return mockHttpBackendResponse.expectResponse(method, url, data, headers, collectiveItemsResponse);
+
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, itemsResponse);
       });
 
       $httpBackend.whenGET(/null/).respond(function(method, url, data, headers) {
@@ -168,6 +180,9 @@
         },
 
         // get
+        getAccountResponse : function() {
+          return getJSONFixture('accountResponse.json');
+        },
         getItemsResponse : function() {
           return getJSONFixture('itemsResponse.json');
         },

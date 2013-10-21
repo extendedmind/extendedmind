@@ -2,9 +2,10 @@
 
 ( function() {'use strict';
 
-    function NotesController($location, $rootScope, $scope, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray) {
+    function NotesController($location, $rootScope, $scope, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray, userPrefix) {
 
       $scope.errorHandler = errorHandler;
+      $scope.prefix = userPrefix.getPrefix();
 
       itemsRequest.getItems().then(function() {
 
@@ -22,13 +23,13 @@
       $rootScope.$on('event:slideIndexChanged', function() {
         switch($scope.slide) {
           case Enum.my.my:
-            if ($location.path() !== '/my') {
-              location.skipReload().path('/my');
+            if ($location.path() !== '/' + userPrefix.getPrefix()) {
+              location.skipReload().path('/' + userPrefix.getPrefix());
             }
             break;
           case Enum.my.notes:
-            if ($location.path() !== '/my/notes') {
-              location.skipReload().path('/my/notes');
+            if ($location.path() !== '/' + userPrefix.getPrefix() + '/notes') {
+              location.skipReload().path('/' + userPrefix.getPrefix() + '/notes');
             }
             break;
           default:
@@ -37,11 +38,11 @@
       });
 
       $scope.addNew = function() {
-        $location.path('/my/notes/new');
+        $location.path(userPrefix.getPrefix() + '/notes/new');
       };
     }
 
 
-    NotesController.$inject = ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray', 'tasksArray'];
+    NotesController.$inject = ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray', 'tasksArray', 'userPrefix'];
     angular.module('em.app').controller('NotesController', NotesController);
   }());

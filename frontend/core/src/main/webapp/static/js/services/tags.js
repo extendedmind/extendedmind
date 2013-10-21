@@ -34,8 +34,8 @@
             tags.push(tag);
           }
         },
-        getTagByUuid : function(uuid) {
-          return itemsArray.getItemByUuid(tags, uuid);
+        getTagByUUID : function(uuid) {
+          return itemsArray.getItemByUUID(tags, uuid);
         }
       };
     }]);
