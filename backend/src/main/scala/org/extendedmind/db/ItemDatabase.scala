@@ -332,10 +332,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     parentRelationship.delete()
     // If there are no more children, remove the parent label as well
     if (!hasChildren(parentNode)){
-      if (parentNode.hasLabel(ItemParentLabel.PROJECT))
-        parentNode.removeLabel(ItemParentLabel.PROJECT)
-      else if (parentNode.hasLabel(ItemParentLabel.AREA))
-        parentNode.removeLabel(ItemParentLabel.AREA)
+      removeParentLabel(parentNode)
     }
   }
   
@@ -345,15 +342,34 @@ trait ItemDatabase extends AbstractGraphDatabase {
         .depthFirst()
         .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_PARENT.name), Direction.INCOMING)
         .evaluator(Evaluators.excludeStartPosition())
+        .evaluator(PropertyEvaluator(
+            MainLabel.ITEM, "deleted",
+            Evaluation.EXCLUDE_AND_PRUNE,
+            Evaluation.INCLUDE_AND_CONTINUE))
         .depthFirst()
         .evaluator(Evaluators.toDepth(1))
     val traverser = itemsFromParent.traverse(itemNode)
-    if (traverser.relationships().toList.length > 0)
+    if (traverser.nodes().toList.length > 0){
       true
-    else
+    }else{
       false
+    }
   }
 
+  protected def removeParentLabel(parentNode: Node){
+    if (parentNode.hasLabel(ItemParentLabel.PROJECT))
+      parentNode.removeLabel(ItemParentLabel.PROJECT)
+    else if (parentNode.hasLabel(ItemParentLabel.AREA))
+      parentNode.removeLabel(ItemParentLabel.AREA)    
+  }
+  
+  protected def addParentLabel(parentNode: Node){
+    if (!parentNode.hasLabel(ItemParentLabel.PROJECT))
+      parentNode.addLabel(ItemParentLabel.PROJECT)
+    else if (!parentNode.hasLabel(ItemParentLabel.AREA))
+      parentNode.addLabel(ItemParentLabel.AREA)    
+  }
+  
   protected def createParentRelationship(itemNode: Node, parentNode: Node, newParentLabel: Option[Label])
               (implicit neo4j: DatabaseService): Response[Relationship] = {
     if (newParentLabel.isDefined){
@@ -579,15 +595,41 @@ trait ItemDatabase extends AbstractGraphDatabase {
   }
 
   protected def deleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Long = {
+
     val deleted = System.currentTimeMillis()
     itemNode.setProperty("deleted", deleted)
+    // Remove parent labels from parents
+    val parentNodes = getAllParentNodes(itemNode)
+    parentNodes.foreach( parentNode => {
+        // If there are no more children, remove the parent label
+        if (!hasChildren(parentNode)){
+          removeParentLabel(parentNode)
+        }
+      }
+    )
     deleted
   }
-
+  
+  protected def getAllParentNodes(itemNode: Node)(implicit neo4j: DatabaseService): List[Node] = {
+    val parentNodesFromItem: TraversalDescription =
+      Traversal.description()
+        .depthFirst()
+        .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_PARENT.name), Direction.OUTGOING)
+        .evaluator(Evaluators.excludeStartPosition())
+        .evaluator(Evaluators.toDepth(1))
+    val traverser = parentNodesFromItem.traverse(itemNode)
+    traverser.nodes().toList
+  }
+  
   protected def undeleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Unit = {
     if(itemNode.hasProperty("deleted")){
       itemNode.removeProperty("deleted")
     }
+    val parentNodes = getAllParentNodes(itemNode)
+    parentNodes.foreach( parentNode =>
+      // If parent node does not have a parent label, set it back!
+      addParentLabel(parentNode)
+    )
   }
 
   protected def getDeleteItemResult(item: Node, deleted: Long): DeleteItemResult = {
