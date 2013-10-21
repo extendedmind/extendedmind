@@ -1,7 +1,6 @@
 <div class="em-slide">
 
   <div class="em-front">
-
     <h1 class="text-primary">extended mind</h1>
 
     <div omni-bar></div>
@@ -12,15 +11,14 @@
     <h2><a class="text-muted" href="" ng-click="toggleItemsList()">inbox</a><span class="pull-right"><small>{{completed}}</small></span></h2>
   </div>
 
-    <div class="navbar-fixed-bottom pull-left" filtered-notes-list notesfilter="newItem.title">
-      <h2><a class="text-muted" href="my/notes">notes</a></h2>
-    </div>
-
-    <div class="navbar-fixed-bottom pull-right" filtered-tasks-list tasksfilter="newItem.title">
-      <h2><a class="text-muted" href="my/tasks">tasks</a></h2>
-    </div>
+  <div class="navbar-fixed-bottom em-slide" filtered-notes-list notesfilter="newItem.title">
+    <h2><a class="text-muted" href="my/notes">notes</a></h2>
   </div>
 
-  <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
+  <div class="navbar-fixed-bottom text-right em-slide" filtered-tasks-list tasksfilter="newItem.title">
+    <h2><a class="text-muted" href="my/tasks">tasks</a></h2>
+  </div>
 
 </div>
+
+<div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
