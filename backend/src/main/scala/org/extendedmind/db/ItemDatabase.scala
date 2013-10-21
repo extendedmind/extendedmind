@@ -73,6 +73,16 @@ trait ItemDatabase extends AbstractGraphDatabase {
       result <- Right(getSetResult(item, false)).right
     } yield result
   }
+   
+  def destroyDeletedItems(owner: Owner): Response[DeleteCountResult] = {
+    withTx {
+      implicit neo4j => 
+        for {
+          ownerNodes <- getOwnerNodes(owner).right
+          deleteResult <- Right(destroyDeletedItems(ownerNodes)).right
+        } yield deleteResult
+      }
+  }
   
   // PRIVATE
 
@@ -637,5 +647,33 @@ trait ItemDatabase extends AbstractGraphDatabase {
       implicit neo4j =>
         DeleteItemResult(deleted, getSetResult(item, false))
     }
+  }
+  
+  protected def destroyDeletedItems(ownerNodes: OwnerNodes)(implicit neo4j: DatabaseService): 
+          DeleteCountResult = {
+    val deletedItemsFromOwner: TraversalDescription =
+        Traversal.description()
+            .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
+              Direction.OUTGOING)
+            .depthFirst()
+            .evaluator(Evaluators.excludeStartPosition())
+            .evaluator(LabelEvaluator(List(MainLabel.ITEM)))
+            .evaluator(PropertyEvaluator(MainLabel.ITEM, "deleted"))
+    
+    val traverser = deletedItemsFromOwner.traverse(getOwnerNode(ownerNodes))
+    val deletedItemList = traverser.nodes().toList
+    val count = deletedItemList.size
+    deletedItemList.foreach(deletedItem => {
+      destroyItem(deletedItem)
+    })
+    DeleteCountResult(count)
+  }
+  
+  protected def destroyItem(deletedItem: Node)(implicit neo4j: DatabaseService) {
+    // Remove all relationships
+    val relationShipList = deletedItem.getRelationships().toList
+    relationShipList.foreach(relationship => relationship.delete())
+    // Delete token itself
+    deletedItem.delete()
   }
 }
