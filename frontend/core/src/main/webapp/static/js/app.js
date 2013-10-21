@@ -24,6 +24,18 @@
         controller : 'LoginController'
       });
 
+      $routeProvider.when('/my/account', {
+        templateUrl : 'static/partials/account.html',
+        controller : 'AccountController',
+        resolve : {
+          'authenticationRequired' : ['userAuthenticate',
+          function(userAuthenticate) {
+            userAuthenticate.authenticate();
+          }]
+
+        }
+      });
+
       $routeProvider.when('/my', {
         controller : 'MyController',
         templateUrl : 'static/partials/my.html',

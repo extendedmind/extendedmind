@@ -87,6 +87,11 @@
           }).then(function(authenticateResponse) {
             return authenticateResponse.data;
           });
+        },
+        account : function() {
+          return httpRequest.get('/api/account').then(function(accountResponse) {
+            return accountResponse.data;
+          });
         }
       };
     }]);
