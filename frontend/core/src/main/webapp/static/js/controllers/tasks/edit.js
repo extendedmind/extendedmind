@@ -10,15 +10,20 @@
       itemsRequest.getItems().then(function() {
 
         if ($routeParams.uuid) {
-          $scope.task = tasksArray.getTaskByUUID($routeParams.uuid);
 
-          if ($scope.task.relationships) {
-            if ($scope.task.relationships.parentTask) {
-              $scope.parentTask = tasksArray.getProjectByUUID($scope.task.relationships.parentTask);
+          if (tasksArray.getTaskByUUID($routeParams.uuid)) {
+            $scope.task = tasksArray.getTaskByUUID($routeParams.uuid);
+
+            if ($scope.task.relationships) {
+              if ($scope.task.relationships.parentTask) {
+                $scope.parentTask = tasksArray.getProjectByUUID($scope.task.relationships.parentTask);
+              }
+              if ($scope.task.relationships.tags) {
+                $scope.taskContext = tagsArray.getTagByUUID($scope.task.relationships.tags[0]);
+              }
             }
-            if ($scope.task.relationships.tags) {
-              $scope.taskContext = tagsArray.getTagByUUID($scope.task.relationships.tags[0]);
-            }
+          } else if (tasksArray.getProjectByUUID($routeParams.uuid)) {
+            $scope.task = tasksArray.getProjectByUUID($routeParams.uuid);
           }
         }
 

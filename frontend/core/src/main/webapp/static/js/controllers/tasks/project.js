@@ -15,6 +15,10 @@
         }
       });
 
+      $scope.editProject = function() {
+        $location.path(userPrefix.getPrefix() + '/tasks/edit/' + $scope.project.uuid);
+      };
+
       $scope.addNew = function() {
         $location.path(userPrefix.getPrefix() + '/tasks/new/');
       };
