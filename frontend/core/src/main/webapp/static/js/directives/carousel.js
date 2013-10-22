@@ -209,7 +209,7 @@
               }, true);
             }
 
-            vendorPrefixes = ["webkit", "moz"];
+            vendorPrefixes = ["webkit", "moz", "ms", "o"];
             function genCSSProperties(property, value) {
               /* cross browser CSS properties generator */
               var css = {};

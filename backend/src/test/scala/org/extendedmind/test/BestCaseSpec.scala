@@ -465,11 +465,11 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
        + "and get the right order number with GET to /invite/request/[UUID] "
        + "and delete it with DELETE to /invite/request/[UUID]") {
       val testEmail = "example@example.com"
-      val testInviteRequest = InviteRequest(testEmail, None)
+      val testInviteRequest = InviteRequest(None, testEmail, None)
       val testEmail2 = "example2@example.com"
-      val testInviteRequest2 = InviteRequest(testEmail2, None)
+      val testInviteRequest2 = InviteRequest(None, testEmail2, None)
       val testEmail3 = "example3@example.com"
-      val testInviteRequest3 = InviteRequest(testEmail3, None)
+      val testInviteRequest3 = InviteRequest(None, testEmail3, None)
 
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail), anyObject())).toReturn(
           Future{SendEmailResponse("OK", "1234")})
@@ -509,7 +509,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                     ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                     ) ~> emRoute ~> check {
                   val inviteRequests = entityAs[InviteRequests]
-                  writeJsonOutput("inviteRequests", entityAs[String])
+                  writeJsonOutput("inviteRequestsResponse", entityAs[String])
                   inviteRequests.inviteRequests(0).email should be(testEmail)
                   inviteRequests.inviteRequests(1).email should be(testEmail2)
                   inviteRequests.inviteRequests(2).email should be (testEmail3)
@@ -568,7 +568,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                     ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                     ) ~> emRoute ~> check {
                     val invites = entityAs[Invites]
-                    writeJsonOutput("invites", entityAs[String])
+                    writeJsonOutput("invitesResponse", entityAs[String])
                     assert(invites.invites.size === 1)
                     // Accept invite
                     val testPassword = "testPassword"
@@ -637,9 +637,9 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                 marshal(UserAccessRight(Some(2))).right.get
                 ) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)
                 ) ~> emRoute ~> check {
-               val postCollectiveUserPermission = entityAs[SetResult]
-               writeJsonOutput("postCollectiveUserPermission", entityAs[String])
-               assert(postCollectiveUserPermission.modified > putExistingCollectiveResponse.modified)
+               val postCollectiveUserPermissionResponse = entityAs[SetResult]
+               writeJsonOutput("postCollectiveUserPermissionResponse", entityAs[String])
+               assert(postCollectiveUserPermissionResponse.modified > putExistingCollectiveResponse.modified)
                val lauriReauthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
                lauriReauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._2 should equal(2)
             }
@@ -652,7 +652,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       Get("/user?email=" + LAURI_EMAIL
          ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
          ) ~> emRoute ~> check {
-        writeJsonOutput("getUserResponse", entityAs[String])
+        writeJsonOutput("userResponse", entityAs[String])
         val publicUser = entityAs[PublicUser]
         publicUser.uuid should not be None
       }

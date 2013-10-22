@@ -189,15 +189,12 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
   
-  protected def destroyToken(tokenNode: Node) {
-    withTx {
-      implicit neo =>
-        // Remove all relationships
-        val relationShipList = tokenNode.getRelationships().toList
-        relationShipList.foreach(relationship => relationship.delete())
-        // Delete token itself
-        tokenNode.delete()
-    }
+  protected def destroyToken(tokenNode: Node)(implicit neo4j: DatabaseService) {
+    // Remove all relationships
+    val relationShipList = tokenNode.getRelationships().toList
+    relationShipList.foreach(relationship => relationship.delete())
+    // Delete token itself
+    tokenNode.delete()
   }
 
   private def setTokenProperties(tokenNode: Node, token: Token, payload: Option[AuthenticatePayload]) {

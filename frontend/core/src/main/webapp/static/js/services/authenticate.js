@@ -41,7 +41,7 @@
         setUserSessionData : function(authenticateResponse) {
 
           userSessionStorage.setUserUUID(authenticateResponse.userUUID);
-          userSessionStorage.setActiveUuid(authenticateResponse.userUUID);
+          userSessionStorage.setActiveUUID(authenticateResponse.userUUID);
 
           this.setCredentials('token', authenticateResponse.token);
           userSessionStorage.setHttpAuthorizationHeader(this.getCredentials());
@@ -87,6 +87,11 @@
           }).then(function(authenticateResponse) {
             return authenticateResponse.data;
           });
+        },
+        account : function() {
+          return httpRequest.get('/api/account').then(function(accountResponse) {
+            return accountResponse.data;
+          });
         }
       };
     }]);
@@ -126,11 +131,11 @@
         clearHttpAuthorizationHeader : function() {
           sessionStorage.removeItem('authorizationHeader');
         },
-        setActiveUuid : function(uuid) {
-          sessionStorage.setItem('activeUuid', uuid);
+        setActiveUUID : function(uuid) {
+          sessionStorage.setItem('activeUUID', uuid);
         },
-        getActiveUuid : function() {
-          return sessionStorage.getItem('activeUuid');
+        getActiveUUID : function() {
+          return sessionStorage.getItem('activeUUID');
         },
         setUserUUID : function(userUUID) {
           sessionStorage.setItem('userUUID', userUUID);

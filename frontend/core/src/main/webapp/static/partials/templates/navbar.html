@@ -12,7 +12,7 @@
   <div class="navbar-collapse" ng-show="collapse">
     <ul class="nav navbar-nav">
       <li>
-        <a href="" ng-click="setActiveUuid(user)">user</a>
+        <a href="my" ng-click="setActiveUuid(user)">home</a>
       </li>
       <li>
         <span>collectives</span>
@@ -22,12 +22,18 @@
           <li ng-repeat="(key, value) in collectives">
 
             <div>
-              <a class="text-muted" href="" ng-click="setActiveUuid(key)">{{value[0]}}</a>
+              <a class="text-muted" ng-click="setActiveUuid(key, true)">{{value[0]}}</a>
             </div>
 
           </li>
 
         </ul>
+      </li>
+      <li>
+        <a href="my/account">account</a>
+      </li>
+      <li>
+        <a href="logout">logout</a>
       </li>
     </ul>
 

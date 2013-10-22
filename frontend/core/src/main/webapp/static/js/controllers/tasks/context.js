@@ -2,24 +2,25 @@
 
 ( function() {'use strict';
 
-    function ContextController($location, $scope, $routeParams, errorHandler, itemsRequest, tagsArray, tasksArray) {
+    function ContextController($location, $scope, $routeParams, errorHandler, itemsRequest, tagsArray, tasksArray, userPrefix) {
 
       $scope.errorHandler = errorHandler;
+      $scope.prefix = userPrefix.getPrefix();
 
       itemsRequest.getItems().then(function() {
 
         if ($routeParams.uuid) {
-          $scope.context = tagsArray.getTagByUuid($routeParams.uuid);
-          $scope.tasks = tasksArray.getSubtasksByTagUuid($scope.context.uuid);
+          $scope.context = tagsArray.getTagByUUID($routeParams.uuid);
+          $scope.tasks = tasksArray.getSubtasksByTagUUID($scope.context.uuid);
         }
       });
 
       $scope.addNew = function() {
-        $location.path('/my/tasks/new/');
+        $location.path(userPrefix.getPrefix() + '/tasks/new/');
       };
     }
 
 
-    ContextController.$inject = ['$location', '$scope', '$routeParams', 'errorHandler', 'itemsRequest', 'tagsArray', 'tasksArray'];
+    ContextController.$inject = ['$location', '$scope', '$routeParams', 'errorHandler', 'itemsRequest', 'tagsArray', 'tasksArray', 'userPrefix'];
     angular.module('em.app').controller('ContextController', ContextController);
   }());
