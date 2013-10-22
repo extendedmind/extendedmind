@@ -35,6 +35,7 @@
       return {
         controller : 'NavbarController',
         restrict : 'A',
+        transclude : true,
         templateUrl : 'static/partials/templates/navbar.html',
         link : function(scope, element, attrs) {
           scope.collapse = false;
