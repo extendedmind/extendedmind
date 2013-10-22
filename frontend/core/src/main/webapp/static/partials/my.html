@@ -9,15 +9,15 @@
 
   </div>
 
-  <div items-list itemsfilter="newItem.title">
+  <div class="em-mainlink" items-list itemsfilter="newItem.title">
     <h2><a class="text-muted" href="" ng-click="toggleItemsList()">inbox</a><span class="pull-right"><small>{{completed}}</small></span></h2>
   </div>
 
-  <div class="navbar-fixed-bottom em-slide" filtered-notes-list notesfilter="newItem.title">
+  <div class="em-slide em-mainlink" filtered-notes-list notesfilter="newItem.title">
     <h2><a class="text-muted" href="{{prefix}}/notes">notes</a></h2>
   </div>
 
-  <div class="navbar-fixed-bottom em-slide" filtered-tasks-list tasksfilter="newItem.title">
+  <div class="em-slide em-mainlink" filtered-tasks-list tasksfilter="newItem.title">
     <h2><a class="text-muted" href="{{prefix}}/tasks">tasks</a></h2>
   </div>
 

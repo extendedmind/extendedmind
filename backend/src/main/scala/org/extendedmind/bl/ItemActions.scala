@@ -9,11 +9,16 @@ import java.util.UUID
 import org.extendedmind._
 import org.extendedmind.Response._
 import spray.util.LoggingContext
+import akka.actor.ActorRefFactory
+import scala.concurrent.Future
 
 trait ItemActions {
 
   def db: GraphDatabase;
-
+  def actorRefFactory: ActorRefFactory
+  implicit val implicitActorRefFactory = actorRefFactory
+  implicit val implicitExecutionContext = actorRefFactory.dispatcher 
+  
   def putNewItem(owner: Owner, item: Item)(implicit log: LoggingContext): Response[SetResult] = {
     log.info("putNewItem: owner {}", owner)
     db.putNewItem(owner, item)
@@ -26,7 +31,23 @@ trait ItemActions {
 
   def getItems(owner: Owner)(implicit log: LoggingContext): Response[Items] = {
     log.info("getItems: owner {}", owner)
-    db.getItems(owner)
+    val items = db.getItems(owner)
+    
+    // Destroy deleted items
+    if (items.isRight){
+      val futureDestroyResponse = Future[Response[DeleteCountResult]] {
+        db.destroyDeletedItems(owner)
+      }
+      futureDestroyResponse onSuccess {
+        case Right(DeleteCountResult(deleteCount)) => {
+          log.info("Destroyed {} deleted items for {}", 
+                          deleteCount, owner)
+        }case Left(errors) =>
+          log.error("Could not destroy deleted items for {} with the following errors", owner)
+          errors foreach (e => log.error(e.responseType + ": " + e.description, e.throwable))
+      }
+    }
+    items
   }
 
   def getItem(owner: Owner, itemUUID: UUID)(implicit log: LoggingContext): Response[Item] = {
@@ -45,7 +66,9 @@ trait ItemActions {
   }
 }
 
-class ItemActionsImpl(implicit val settings: Settings, implicit val inj: Injector)
+class ItemActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector,
+                      implicit val implActorRefFactory: ActorRefFactory)
   extends ItemActions with Injectable {
-  def db = inject[GraphDatabase]
+  override def db = inject[GraphDatabase]
+  override def actorRefFactory = implActorRefFactory
 }
