@@ -77,16 +77,32 @@
     userSession.$inject = ['base64', 'httpBasicAuth', 'userCookie', 'userSessionStorage'];
     angular.module('em.services').factory('userSession', userSession);
 
-    angular.module('em.services').factory('authenticateRequest', ['httpRequest', 'userSession',
-    function(httpRequest, userSession) {
+    angular.module('em.services').factory('authenticateRequest', ['httpRequest', 'userCookie', 'userSession', 'userSessionStorage',
+    function(httpRequest, userCookie, userSession, userSessionStorage) {
+
+      function clearUser() {
+        userSessionStorage.clearActiveUUID();
+        userSessionStorage.clearUserUUID();
+        userSessionStorage.clearCollectives();
+        userSessionStorage.clearHttpAuthorizationHeader();
+
+        userCookie.clearUserToken();
+      }
+
       return {
         login : function() {
-
           return httpRequest.post('/api/authenticate', {
             rememberMe : userSession.getUserRemembered()
           }).then(function(authenticateResponse) {
             return authenticateResponse.data;
           });
+        },
+        logout : function() {
+          return httpRequest.post('/api/logout').then(function(logoutResponse) {
+            clearUser();
+            return logoutResponse.data;
+          });
+
         },
         account : function() {
           return httpRequest.get('/api/account').then(function(accountResponse) {
@@ -137,6 +153,9 @@
         getActiveUUID : function() {
           return sessionStorage.getItem('activeUUID');
         },
+        clearActiveUUID : function() {
+          sessionStorage.removeItem('activeUUID');
+        },
         setUserUUID : function(userUUID) {
           sessionStorage.setItem('userUUID', userUUID);
         },
@@ -151,6 +170,9 @@
         },
         getCollectives : function() {
           return JSON.parse(sessionStorage.getItem('collectives'));
+        },
+        clearCollectives : function() {
+          sessionStorage.removeItem('collectives');
         },
         isUserAuthenticated : function() {
           return sessionStorage.getItem('authorizationHeader') != null;
