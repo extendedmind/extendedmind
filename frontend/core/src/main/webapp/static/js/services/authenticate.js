@@ -48,6 +48,10 @@
 
           if (this.getUserRemembered()) {
             userCookie.setUserToken(authenticateResponse.token);
+          } else {
+            // temporary token cookie clear for new user login, when !rememberMe
+            // TODO: no login page when user is logged in
+            userCookie.clearUserToken();
           }
 
           if (authenticateResponse.collectives) {
@@ -68,7 +72,7 @@
           rememberMe = remember;
         },
         getUserRemembered : function() {
-          return rememberMe === true;
+          return rememberMe;
         }
       };
     }
