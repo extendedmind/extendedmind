@@ -38,8 +38,8 @@
 
   <properties>
     <neo4j.version>2.0.0-M06</neo4j.version>
-    <spray.version>1.2-20130912</spray.version>
-    <akka.version>2.2.0</akka.version>
+    <spray.version>1.2-RC1</spray.version>
+    <akka.version>2.3-20131001-230921</akka.version>
   </properties>
 
   <dependencies>
@@ -150,13 +150,13 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>0.9.30</version>
+      <version>1.0.9</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>0.9.30</version>
+      <version>1.0.9</version>
       <scope>compile</scope>
     </dependency>
 
