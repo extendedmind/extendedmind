@@ -204,6 +204,8 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     if (payload.isDefined && payload.get.rememberMe) {
       // Remember me has been clicked
       tokenNode.setProperty("replaceable", currentTime + TOKEN_REPLACEABLE)
+    }else if (tokenNode.hasProperty("replaceable")){
+      tokenNode.removeProperty("replaceable")
     }
   }
 
