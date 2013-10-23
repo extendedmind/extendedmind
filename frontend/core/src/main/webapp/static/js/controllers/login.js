@@ -9,8 +9,10 @@
       $scope.userLogin = function() {
 
         userSession.setCredentials($scope.user.username, $scope.user.password);
-        userSession.setUserRemembered($scope.user.remember);
 
+        if ($scope.user.remember) {
+          userSession.setUserRemembered($scope.user.remember);
+        }
         authenticateRequest.login().then(function(authenticateResponse) {
           userSession.setUserSessionData(authenticateResponse);
           $location.path('/my');
