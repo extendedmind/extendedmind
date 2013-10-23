@@ -82,6 +82,21 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
           ) ~> emRoute ~> check { 
         val tokenAuthenticateResponse = entityAs[SecurityContext]
         tokenAuthenticateResponse.token.get should not be (authenticateResponse.token.get)
+        // Should be able to swap it again, but this time without rememberMe
+        Post("/authenticate"
+            ) ~> addCredentials(BasicHttpCredentials("token", tokenAuthenticateResponse.token.get)
+            ) ~> emRoute ~> check { 
+          val tokenReAuthenticateResponse = entityAs[SecurityContext]
+          tokenReAuthenticateResponse.token.get should not be (tokenAuthenticateResponse.token.get)
+          // Shouldn't be able to swap it again because rememberMe was missing the last time
+          Post("/authenticate"
+              ) ~> addCredentials(BasicHttpCredentials("token", tokenReAuthenticateResponse.token.get)
+              ) ~> emRoute ~> check { 
+            val failure = entityAs[String]
+            // TODO: Fix bug with Internal Server Error!
+            failure should include("error")
+          }
+        }
       }
     }
     it("should generate item list response on /[userUUID]/items") {
@@ -545,8 +560,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                     entityAs[InviteRequestQueueNumber].queueNumber should be(2)
                   }
                   // Accept invite request  
-                  Post("/invite/request/" + inviteRequestResponse.uuid.get + "/accept",
-                   marshal(InviteRequestAcceptDetails(None)).right.get
+                  Post("/invite/request/" + inviteRequestResponse.uuid.get + "/accept"
                       ) ~> addHeader("Content-Type", "application/json"
                       ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                       ) ~> emRoute ~> check {

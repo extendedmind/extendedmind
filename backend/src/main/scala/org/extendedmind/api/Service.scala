@@ -179,7 +179,7 @@ trait Service extends API with Injectable {
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can accept invite requests
           authorize(adminAccess(securityContext)) {
-            entity(as[InviteRequestAcceptDetails]) { details =>
+            entity(as[Option[InviteRequestAcceptDetails]]) { details =>
               complete {
                 Future[SetResult] {
                   userActions.acceptInviteRequest(securityContext.userUUID, inviteRequestUUID, details) match {

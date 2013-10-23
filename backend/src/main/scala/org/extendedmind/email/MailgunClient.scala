@@ -31,7 +31,7 @@ case class SendEmailResponse(message: String, id: String)
 object MailgunProtocol  extends DefaultJsonProtocol{
   implicit val sendEmailRequestMarshaller = 
       Marshaller.delegate[SendEmailRequest, FormData](`application/x-www-form-urlencoded`) { (sendEmailRequest, contentType) =>
-        new FormData(getCCParams(sendEmailRequest))
+        new FormData(getCCParams(sendEmailRequest).map{case(k,v) => (k, v)} toList)
       }
   implicit val sendEmailResponseFormat = jsonFormat2(SendEmailResponse)
    

@@ -90,11 +90,12 @@ trait UserActions {
     // TODO: Send verification email as Future
   }
   
-  def acceptInviteRequest(userUUID: UUID, inviteRequestUUID: UUID, details: InviteRequestAcceptDetails)
+  def acceptInviteRequest(userUUID: UUID, inviteRequestUUID: UUID, details: Option[InviteRequestAcceptDetails])
                          (implicit log: LoggingContext): Response[(SetResult, Invite)] = {
     log.info("acceptInviteRequest: request {}", inviteRequestUUID)
     
-    val acceptResult = db.acceptInviteRequest(userUUID, inviteRequestUUID, details.message)
+    val acceptResult = db.acceptInviteRequest(userUUID, inviteRequestUUID, 
+        if (details.isDefined) Some(details.get.message) else None)
     
     if (acceptResult.isRight){
       val invite = acceptResult.right.get._2
