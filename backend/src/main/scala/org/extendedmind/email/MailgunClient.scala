@@ -105,12 +105,15 @@ trait MailgunClient{
   }*/
   
   private def sendEmail(sendEmailRequest: SendEmailRequest): Future[String] = {
-    val mailgunPostWithRequestWithParameter = 
-    mailgunPostRequest << Map("from" -> sendEmailRequest.from,
+    val mailgunPostWithRequestWithAuth = mailgunPostRequest.as("api", settings.mailgunApiKey)
+    
+    val mailgunPostWithRequestWithAuthAndParameters = 
+    mailgunPostWithRequestWithAuth << Map("from" -> sendEmailRequest.from,
                                 "to" -> sendEmailRequest.to,
                                 "subject" -> sendEmailRequest.subject,
                                 "html" -> sendEmailRequest.html)
-    Http(mailgunPostRequest OK as.String)
+                                                                
+    Http(mailgunPostWithRequestWithAuthAndParameters OK as.String)
   }
     
   private def getTemplate(templateFileName: String, templateDirectory: Option[String]): String = {
