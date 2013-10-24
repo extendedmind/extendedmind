@@ -36,7 +36,14 @@ trait UserActions {
     if (setResult.isRight){
       val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email, setResult.right.get.uuid.get)
       futureMailResponse onSuccess {
-        case SendEmailResponse(message, id) => {
+        // TODO: spray-client version
+        //case SendEmailResponse(message, id) => {
+        
+        case jsonResult => {
+          val response = UserActions.toSendEmailResponse(jsonResult)
+          val id = response.id
+          val message = response.message
+          
           val saveResponse = for{
             putExistingResponse <- db.putExistingInviteRequest(setResult.right.get.uuid.get, 
                                                                inviteRequest.copy(emailId = Some(id))).right
@@ -101,7 +108,13 @@ trait UserActions {
       val invite = acceptResult.right.get._2
       val futureMailResponse = mailgun.sendInvite(invite)
       futureMailResponse onSuccess {
-        case SendEmailResponse(message, id) => {
+        // TODO: Spray-client version
+        //case SendEmailResponse(message, id) => {
+        case jsonResult => {
+          val response = UserActions.toSendEmailResponse(jsonResult)
+          val id = response.id
+          val message = response.message
+
           val saveResponse = db.putExistingInvite(acceptResult.right.get._1.uuid.get, 
                                                         invite.copy(emailId = Some(id)))
           if (saveResponse.isLeft) 
@@ -151,6 +164,15 @@ trait UserActions {
       }
       case Left(e) => Left(e)
     }
+  }
+  
+}
+
+import spray.json._
+object UserActions extends DefaultJsonProtocol {
+  private def toSendEmailResponse(jsonResponse: String): SendEmailResponse = {
+    implicit val implSendMailResponse = jsonFormat2(SendEmailResponse.apply)
+    jsonResponse.asJson.convertTo[SendEmailResponse]
   }
 }
 

@@ -487,13 +487,21 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val testInviteRequest3 = InviteRequest(None, testEmail3, None)
 
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail), anyObject())).toReturn(
-          Future{SendEmailResponse("OK", "1234")})
+          Future{"{\"message\":\"OK\", \"id\":\"1234\"}"})
+          // spray-client
+          //Future{SendEmailResponse("OK", "1234")})
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail2), anyObject())).toReturn(
-          Future{SendEmailResponse("OK", "12345")})
+          Future{"{\"message\":\"OK\", \"id\":\"12345\"}"})
+          // spray-client
+          //Future{SendEmailResponse("OK", "12345")})
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail3), anyObject())).toReturn(
-          Future{SendEmailResponse("OK", "123456")})
+          Future{"{\"message\":\"OK\", \"id\":\"123456\"}"})
+          // spray-client
+          //Future{SendEmailResponse("OK", "123456")})
       stub(mockMailgunClient.sendInvite(anyObject())).toReturn(
-          Future{SendEmailResponse("OK", "1234567")})
+          Future{"{\"message\":\"OK\", \"id\":\"1234567\"}"})
+          // spray-client
+          //Future{SendEmailResponse("OK", "1234567")})
       Post("/invite/request",
          marshal(testInviteRequest).right.get
             ) ~> addHeader("Content-Type", "application/json"
