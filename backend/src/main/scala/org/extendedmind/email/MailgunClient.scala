@@ -105,7 +105,7 @@ trait MailgunClient{
   }*/
   
   private def sendEmail(sendEmailRequest: SendEmailRequest): Future[String] = {
-    val mailgunPostWithRequestWithAuth = mailgunPostRequest.as("api", settings.mailgunApiKey)
+    val mailgunPostWithRequestWithAuth = mailgunPostRequest.as_!("api", settings.mailgunApiKey)
     
     val mailgunPostWithRequestWithAuthAndParameters = 
     mailgunPostWithRequestWithAuth << Map("from" -> sendEmailRequest.from,
