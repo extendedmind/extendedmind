@@ -14,7 +14,9 @@ case class Token(userUUID: UUID, accessKey: Long)
 object Token{
   
   val ADMIN: Byte = 0
-  val NORMAL: Byte = 1
+  val ALFA: Byte = 1
+  val BETA: Byte = 2
+  val NORMAL: Byte = 3
   
   def apply(userUUID: UUID) = new Token(userUUID, Random.generateRandomLong)
   

@@ -156,6 +156,11 @@ trait UserActions {
     }
   }
   
+  def changeUserType(userUUID: UUID, userType: Integer)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("changeUserType: user {} to type {}", userUUID, userType)
+    db.changeUserType(userUUID, userType)
+  }
+  
 }
 
 class UserActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, 

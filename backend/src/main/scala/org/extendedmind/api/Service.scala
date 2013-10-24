@@ -107,6 +107,21 @@ trait Service extends API with Injectable {
           }
         }
       } ~
+      postChangeUserType { (userUUID, userType) =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          // Only admins can change user type
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[SetResult] {
+                userActions.changeUserType(userUUID, userType) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
       getUser { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can get users for now
