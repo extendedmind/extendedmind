@@ -109,7 +109,7 @@ trait UserActions {
           if (saveResponse.isLeft) 
             log.error("Error updating invite for email {} with id {}, error: {}", 
                 invite.email, sendEmailResponse.id, saveResponse.left.get.head)
-          else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", 
+          else log.info("Accepted invite request with email: {} and UUID: {} with emailId: {}", 
                           invite.email, acceptResult.right.get._1.uuid.get, sendEmailResponse.id)
         }
         case Left(error) =>
