@@ -3,7 +3,8 @@
   xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
   <group name="em.min">
     <js>/js/**.js</js>
-    <css>/less/**.less</css>
+    <css>/lib/bootstrap/bootstrap.less</css>
+    <css>/less/em.less</css>
   </group>
 
 </groups>
