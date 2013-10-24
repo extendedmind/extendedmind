@@ -29,17 +29,10 @@ case class SendEmailRequest(from: String, to: String, subject: String, html: Str
 case class SendEmailResponse(message: String, id: String)
 
 object MailgunProtocol  extends DefaultJsonProtocol{
-  implicit val sendEmailRequestMarshaller = 
-      Marshaller.delegate[SendEmailRequest, FormData](`application/x-www-form-urlencoded`) { (sendEmailRequest, contentType) =>
-        new FormData(getCCParams(sendEmailRequest).map{case(k,v) => (k, v)} toList)
-      }
-  implicit val sendEmailResponseFormat = jsonFormat2(SendEmailResponse)
-   
-  def getCCParams(cc: AnyRef): Map[String, String] =
-    (Map[String, String]() /: cc.getClass.getDeclaredFields) {(a, f) =>
-      f.setAccessible(true)
-      a + (f.getName -> f.get(cc).asInstanceOf[String])
-    }
+  def toSendEmailResponse(jsonResponse: String): SendEmailResponse = {
+    implicit val implSendMailResponse = jsonFormat2(SendEmailResponse.apply)
+    jsonResponse.asJson.convertTo[SendEmailResponse]
+  }  
 }
 
 trait MailgunClient{
@@ -54,19 +47,10 @@ trait MailgunClient{
 
   implicit val implicitActorRefFactory = actorRefFactory
   implicit val implicitContext =  actorRefFactory.dispatcher 
-
-  // TODO: Reinstigate spray-client implementation when this:
-  // https://groups.google.com/forum/#!topic/spray-user/fCEGCCEJyWE
-  // is resolved:
-  //
-  // Prepare pipeline
-  //val sendEmailPipeline = sendReceive ~> unmarshal[SendEmailResponse]
-  
-  // Dispatch implementation
   val mailgunRequest = url("https://api.mailgun.net/v2/" + settings.mailgunDomain + "/messages")
   val mailgunPostRequest = mailgunRequest.POST
   
-  def sendRequestInviteConfirmation(email: String, inviteRequestUUID: UUID): Future[String] = {
+  def sendRequestInviteConfirmation(email: String, inviteRequestUUID: UUID): Future[Either[Throwable, String]] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, email, 
                            settings.requestInviteConfirmationTitle, 
                            requestInviteConfirmationHtmlTemplate.replaceAll(
@@ -80,7 +64,7 @@ trait MailgunClient{
     sendEmail(sendEmailRequest)
   }
   
-  def sendInvite(invite: Invite): Future[String] = {
+  def sendInvite(invite: Invite): Future[Either[Throwable, String]] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, invite.email, 
                            settings.acceptInviteRequestTitle, 
                            acceptInviteRequestHtmlTemplate
@@ -92,19 +76,8 @@ trait MailgunClient{
                              .replaceAll("logoLink", settings.emailUrlPrefix + "logoname.png"))
     sendEmail(sendEmailRequest)
   }
-  /* spray-client
-  private def sendEmail(sendEmailRequest: SendEmailRequest): Future[SendEmailResponse] = {
-    implicit val timeout = Timeout(10 seconds)
-    val address = "https://api.mailgun.net/v2/" + settings.mailgunDomain + "/messages"
-    sendEmailPipeline {
-      Post(address,
-          marshal(sendEmailRequest).right.get
-              ) ~> addCredentials(BasicHttpCredentials("api", settings.mailgunApiKey))  
-    }
-    
-  }*/
   
-  private def sendEmail(sendEmailRequest: SendEmailRequest): Future[String] = {
+  private def sendEmail(sendEmailRequest: SendEmailRequest): Future[Either[Throwable, String]] = {
     val mailgunPostWithRequestWithAuth = mailgunPostRequest.as_!("api", settings.mailgunApiKey)
     
     val mailgunPostWithRequestWithAuthAndParameters = 
@@ -113,7 +86,7 @@ trait MailgunClient{
                                 "subject" -> sendEmailRequest.subject,
                                 "html" -> sendEmailRequest.html)
                                                                 
-    Http(mailgunPostWithRequestWithAuthAndParameters OK as.String)
+    Http(mailgunPostWithRequestWithAuthAndParameters OK as.String).either
   }
     
   private def getTemplate(templateFileName: String, templateDirectory: Option[String]): String = {

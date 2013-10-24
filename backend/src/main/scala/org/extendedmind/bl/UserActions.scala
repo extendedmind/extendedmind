@@ -36,27 +36,21 @@ trait UserActions {
     if (setResult.isRight){
       val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email, setResult.right.get.uuid.get)
       futureMailResponse onSuccess {
-        // TODO: spray-client version
-        //case SendEmailResponse(message, id) => {
-        
-        case jsonResult => {
-          val response = UserActions.toSendEmailResponse(jsonResult)
-          val id = response.id
-          val message = response.message
-          
+        case Right(jsonResponse) => {
+          val sendEmailResponse = MailgunProtocol.toSendEmailResponse(jsonResponse)
           val saveResponse = for{
             putExistingResponse <- db.putExistingInviteRequest(setResult.right.get.uuid.get, 
-                                                               inviteRequest.copy(emailId = Some(id))).right
+                                                               inviteRequest.copy(emailId = Some(sendEmailResponse.id))).right
             updateResponse <- Right(db.updateInviteRequestModifiedIndex(putExistingResponse._2, 
                                                                         putExistingResponse._3)).right
           } yield putExistingResponse._1
           if (saveResponse.isLeft) 
             log.error("Error updating invite request for email {} with id {}, error: {}", 
-                inviteRequest.email, id, saveResponse.left.get.head)
+                inviteRequest.email, sendEmailResponse.id, saveResponse.left.get.head)
           else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", 
-                          inviteRequest.email, setResult.right.get.uuid.get, id)
-        }case _ =>
-          log.error("Could not send email to {}", inviteRequest.email)
+                          inviteRequest.email, setResult.right.get.uuid.get, sendEmailResponse.id)
+        }case Left(error) =>
+          log.error("Could not send invite request confirmation email to {} because of error {}", inviteRequest.email, error)
       }
     }
     setResult
@@ -86,12 +80,12 @@ trait UserActions {
   
   def signUp(signUp: SignUp)(implicit log: LoggingContext): Response[SetResult] = {
     log.info("signUp: email {}", signUp.email)
-    if (settings.adminSignUp) 
-      log.warning("CRITICAL: Making {} an administrator because extendedmind.security.adminSignUp is true", 
+    if (settings.signUpMode == MODE_ADMIN) 
+      log.warning("CRITICAL: Making {} an administrator because extendedmind.security.signUpMode is set to ADMIN", 
           signUp.email)
     for {
       isUnique <- db.validateEmailUniqueness(signUp.email).right
-      result <- db.putNewUser(User(None, None, None, signUp.email), signUp.password, settings.signUp).right
+      result <- db.putNewUser(User(None, None, None, signUp.email), signUp.password, settings.signUpMode).right
     } yield result
     
     // TODO: Send verification email as Future
@@ -108,22 +102,18 @@ trait UserActions {
       val invite = acceptResult.right.get._2
       val futureMailResponse = mailgun.sendInvite(invite)
       futureMailResponse onSuccess {
-        // TODO: Spray-client version
-        //case SendEmailResponse(message, id) => {
-        case jsonResult => {
-          val response = UserActions.toSendEmailResponse(jsonResult)
-          val id = response.id
-          val message = response.message
-
+        case Right(jsonResponse) => {
+          val sendEmailResponse = MailgunProtocol.toSendEmailResponse(jsonResponse)
           val saveResponse = db.putExistingInvite(acceptResult.right.get._1.uuid.get, 
-                                                        invite.copy(emailId = Some(id)))
+                                                        invite.copy(emailId = Some(sendEmailResponse.id)))
           if (saveResponse.isLeft) 
             log.error("Error updating invite for email {} with id {}, error: {}", 
-                invite.email, id, saveResponse.left.get.head)
+                invite.email, sendEmailResponse.id, saveResponse.left.get.head)
           else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", 
-                          invite.email, acceptResult.right.get._1.uuid.get, id)
-        }case _ =>
-          log.error("Could not send email to {}", invite.email)
+                          invite.email, acceptResult.right.get._1.uuid.get, sendEmailResponse.id)
+        }
+        case Left(error) =>
+          log.error("Could not send invite email to {}, because of error {}", invite.email, error.getMessage())
       }
     }
     acceptResult
@@ -166,14 +156,6 @@ trait UserActions {
     }
   }
   
-}
-
-import spray.json._
-object UserActions extends DefaultJsonProtocol {
-  private def toSendEmailResponse(jsonResponse: String): SendEmailResponse = {
-    implicit val implSendMailResponse = jsonFormat2(SendEmailResponse.apply)
-    jsonResponse.asJson.convertTo[SendEmailResponse]
-  }
 }
 
 class UserActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, 

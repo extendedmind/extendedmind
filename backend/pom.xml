@@ -79,15 +79,8 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-    <!-- Had to move to Dispatch as spray-client and SSL is broken
-         https://groups.google.com/forum/#!topic/spray-user/fCEGCCEJyWE-->
-    <dependency>
-      <groupId>io.spray</groupId>
-      <artifactId>spray-client</artifactId>
-      <version>${spray.version}</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
+
+    <!-- HTTP Client -->
     <dependency>
       <groupId>net.databinder.dispatch</groupId>
       <artifactId>dispatch-core_2.10</artifactId>
