@@ -33,6 +33,10 @@
             var deferred = $q.defer();
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
+          }],
+          prefix : ['userPrefix',
+          function(userPrefix) {
+            userPrefix.setMyPrefix();
           }]
 
         }
@@ -51,6 +55,10 @@
           slideIndex : ['Enum',
           function(Enum) {
             return Enum.my.my;
+          }],
+          prefix : ['userPrefix',
+          function(userPrefix) {
+            userPrefix.setMyPrefix();
           }]
 
         }
@@ -91,6 +99,10 @@
           slideIndex : ['Enum',
           function(Enum) {
             return Enum.my.notes;
+          }],
+          prefix : ['userPrefix',
+          function(userPrefix) {
+            userPrefix.setMyPrefix();
           }]
 
         }
@@ -127,6 +139,10 @@
             var deferred = $q.defer();
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
+          }],
+          prefix : ['userPrefix',
+          function(userPrefix) {
+            userPrefix.setMyPrefix();
           }]
 
         }
@@ -159,6 +175,10 @@
             var deferred = $q.defer();
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
+          }],
+          prefix : ['userPrefix',
+          function(userPrefix) {
+            userPrefix.setMyPrefix();
           }]
 
         }
@@ -191,6 +211,10 @@
             var deferred = $q.defer();
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
+          }],
+          prefix : ['userPrefix',
+          function(userPrefix) {
+            userPrefix.setMyPrefix();
           }]
 
         }
@@ -227,6 +251,10 @@
           slideIndex : ['Enum',
           function(Enum) {
             return Enum.my.tasks;
+          }],
+          prefix : ['userPrefix',
+          function(userPrefix) {
+            userPrefix.setMyPrefix();
           }]
 
         }
@@ -263,6 +291,10 @@
             var deferred = $q.defer();
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
+          }],
+          prefix : ['userPrefix',
+          function(userPrefix) {
+            userPrefix.setMyPrefix();
           }]
 
         }
@@ -295,6 +327,10 @@
             var deferred = $q.defer();
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
+          }],
+          prefix : ['userPrefix',
+          function(userPrefix) {
+            userPrefix.setMyPrefix();
           }]
 
         }
@@ -327,6 +363,10 @@
             var deferred = $q.defer();
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
+          }],
+          prefix : ['userPrefix',
+          function(userPrefix) {
+            userPrefix.setMyPrefix();
           }]
 
         }
@@ -359,6 +399,10 @@
             var deferred = $q.defer();
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
+          }],
+          prefix : ['userPrefix',
+          function(userPrefix) {
+            userPrefix.setMyPrefix();
           }]
 
         }
