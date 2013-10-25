@@ -487,13 +487,21 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val testInviteRequest3 = InviteRequest(None, testEmail3, None)
 
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail), anyObject())).toReturn(
-          Future{SendEmailResponse("OK", "1234")})
+          Future{Right("{\"message\":\"OK\", \"id\":\"1234\"}")})
+          // spray-client
+          //Future{SendEmailResponse("OK", "1234")})
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail2), anyObject())).toReturn(
-          Future{SendEmailResponse("OK", "12345")})
+          Future{Right("{\"message\":\"OK\", \"id\":\"12345\"}")})
+          // spray-client
+          //Future{SendEmailResponse("OK", "12345")})
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail3), anyObject())).toReturn(
-          Future{SendEmailResponse("OK", "123456")})
+          Future{Right("{\"message\":\"OK\", \"id\":\"123456\"}")})
+          // spray-client
+          //Future{SendEmailResponse("OK", "123456")})
       stub(mockMailgunClient.sendInvite(anyObject())).toReturn(
-          Future{SendEmailResponse("OK", "1234567")})
+          Future{Right("{\"message\":\"OK\", \"id\":\"1234567\"}")})
+          // spray-client
+          //Future{SendEmailResponse("OK", "1234567")})
       Post("/invite/request",
          marshal(testInviteRequest).right.get
             ) ~> addHeader("Content-Type", "application/json"
@@ -767,6 +775,32 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val newEmailAuthenticateResponse = emailPasswordAuthenticate(newUser.email, TIMO_PASSWORD)
       newEmailAuthenticateResponse.userUUID should not be None
     }
+    it("should successfully change user type with POST to /user/UUID/type/INT") {    
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Get("/user?email=" + INFO_EMAIL
+         ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+         ) ~> emRoute ~> check {
+        val infoUser = entityAs[PublicUser]
+        Post("/user/" + infoUser.uuid + "/type/" + Token.ALFA
+              ) ~> addHeader("Content-Type", "application/json"
+              ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+              ) ~> emRoute ~> check {
+          writeJsonOutput("changeUserTypeResponse", entityAs[String])
+          val changeUserTypeResponse = entityAs[SetResult]
+          changeUserTypeResponse.modified should not be None
+          val infoAuthenticateResponse = emailPasswordAuthenticate(INFO_EMAIL, INFO_PASSWORD)
+          infoAuthenticateResponse.userType should equal(Token.ALFA)
+          Post("/user/" + infoUser.uuid + "/type/" + Token.NORMAL
+              ) ~> addHeader("Content-Type", "application/json"
+              ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+              ) ~> emRoute ~> check {
+            val infoReAuthenticateResponse = emailPasswordAuthenticate(INFO_EMAIL, INFO_PASSWORD)
+            infoReAuthenticateResponse.userType should equal(Token.NORMAL)
+          }
+        }
+      }
+    }
+    
   }
   
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {

@@ -79,14 +79,15 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
+
+    <!-- HTTP Client -->
     <dependency>
-      <groupId>io.spray</groupId>
-      <artifactId>spray-client</artifactId>
-      <version>${spray.version}</version>
+      <groupId>net.databinder.dispatch</groupId>
+      <artifactId>dispatch-core_2.10</artifactId>
+      <version>0.11.0</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-
 
     <!-- Neo4j -->
     <dependency>

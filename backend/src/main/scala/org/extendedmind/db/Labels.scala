@@ -21,6 +21,8 @@ object OwnerLabel {
 
 object UserLabel {
   val ADMIN = Label("ADMIN")
+  val ALFA = Label("ALFA")
+  val BETA = Label("BETA")
 }
 
 object ItemLabel {

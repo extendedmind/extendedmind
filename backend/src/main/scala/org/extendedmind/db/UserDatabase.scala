@@ -30,9 +30,18 @@ trait UserDatabase extends AbstractGraphDatabase {
     }yield result
   }
   
-  def putNewUser(user: User, password: String, adminSignUp: Boolean): Response[SetResult] = {
+  def putNewUser(user: User, password: String, signUpMode: SignUpMode): Response[SetResult] = {
+    val signUpExtraLabel = {
+      signUpMode match {
+        case MODE_ADMIN => Some(UserLabel.ADMIN)
+        case MODE_ALFA => Some(UserLabel.ALFA)
+        case MODE_BETA => Some(UserLabel.BETA)
+        case _ => None
+      }
+    }
+    
     for{
-      user <- createUser(user, password, (if (adminSignUp) Some(UserLabel.ADMIN) else None)).right
+      user <- createUser(user, password, signUpExtraLabel).right
       result <- Right(getSetResult(user, true)).right
     }yield result
   }

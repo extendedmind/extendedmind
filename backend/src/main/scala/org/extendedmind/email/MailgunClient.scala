@@ -4,7 +4,6 @@ import scala.util.{Success, Failure}
 import org.extendedmind.domain._
 import org.extendedmind._
 import org.extendedmind.Response._
-import spray.client.pipelining._
 import scaldi._
 import akka.actor.ActorSystem
 import akka.io.IO
@@ -24,22 +23,16 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext
 import akka.actor.ActorRefFactory
 import java.util.UUID
+import dispatch._
 
 case class SendEmailRequest(from: String, to: String, subject: String, html: String)
 case class SendEmailResponse(message: String, id: String)
 
 object MailgunProtocol  extends DefaultJsonProtocol{
-  implicit val sendEmailRequestMarshaller = 
-      Marshaller.delegate[SendEmailRequest, FormData](`application/x-www-form-urlencoded`) { (sendEmailRequest, contentType) =>
-        new FormData(getCCParams(sendEmailRequest).map{case(k,v) => (k, v)} toList)
-      }
-  implicit val sendEmailResponseFormat = jsonFormat2(SendEmailResponse)
-   
-  def getCCParams(cc: AnyRef): Map[String, String] =
-    (Map[String, String]() /: cc.getClass.getDeclaredFields) {(a, f) =>
-      f.setAccessible(true)
-      a + (f.getName -> f.get(cc).asInstanceOf[String])
-    }
+  def toSendEmailResponse(jsonResponse: String): SendEmailResponse = {
+    implicit val implSendMailResponse = jsonFormat2(SendEmailResponse.apply)
+    jsonResponse.asJson.convertTo[SendEmailResponse]
+  }  
 }
 
 trait MailgunClient{
@@ -52,12 +45,12 @@ trait MailgunClient{
   val requestInviteConfirmationHtmlTemplate = getTemplate("requestInviteConfirmation.html", settings.emailTemplateDir)
   val acceptInviteRequestHtmlTemplate = getTemplate("acceptInviteRequest.html", settings.emailTemplateDir)
 
-  // Prepare pipeline
   implicit val implicitActorRefFactory = actorRefFactory
   implicit val implicitContext =  actorRefFactory.dispatcher 
-  val sendEmailPipeline = sendReceive ~> unmarshal[SendEmailResponse]
+  val mailgunRequest = url("https://api.mailgun.net/v2/" + settings.mailgunDomain + "/messages")
+  val mailgunPostRequest = mailgunRequest.POST
   
-  def sendRequestInviteConfirmation(email: String, inviteRequestUUID: UUID): Future[SendEmailResponse] = {
+  def sendRequestInviteConfirmation(email: String, inviteRequestUUID: UUID): Future[Either[Throwable, String]] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, email, 
                            settings.requestInviteConfirmationTitle, 
                            requestInviteConfirmationHtmlTemplate.replaceAll(
@@ -71,7 +64,7 @@ trait MailgunClient{
     sendEmail(sendEmailRequest)
   }
   
-  def sendInvite(invite: Invite): Future[SendEmailResponse] = {
+  def sendInvite(invite: Invite): Future[Either[Throwable, String]] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, invite.email, 
                            settings.acceptInviteRequestTitle, 
                            acceptInviteRequestHtmlTemplate
@@ -84,16 +77,18 @@ trait MailgunClient{
     sendEmail(sendEmailRequest)
   }
   
-  private def sendEmail(sendEmailRequest: SendEmailRequest): Future[SendEmailResponse] = {
-    implicit val timeout = Timeout(10 seconds)
-    val address = "https://api.mailgun.net/v2/" + settings.mailgunDomain + "/messages"
-    sendEmailPipeline {
-      Post(address,
-          marshal(sendEmailRequest).right.get
-              ) ~> addCredentials(BasicHttpCredentials("api", settings.mailgunApiKey))  
-    }
+  private def sendEmail(sendEmailRequest: SendEmailRequest): Future[Either[Throwable, String]] = {
+    val mailgunPostWithRequestWithAuth = mailgunPostRequest.as_!("api", settings.mailgunApiKey)
+    
+    val mailgunPostWithRequestWithAuthAndParameters = 
+    mailgunPostWithRequestWithAuth << Map("from" -> sendEmailRequest.from,
+                                "to" -> sendEmailRequest.to,
+                                "subject" -> sendEmailRequest.subject,
+                                "html" -> sendEmailRequest.html)
+                                                                
+    Http(mailgunPostWithRequestWithAuthAndParameters OK as.String).either
   }
-  
+    
   private def getTemplate(templateFileName: String, templateDirectory: Option[String]): String = {
     val source = {
       if (templateDirectory.isDefined)
