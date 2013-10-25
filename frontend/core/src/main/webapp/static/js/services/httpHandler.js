@@ -7,8 +7,7 @@
       $httpProvider.interceptors.push('httpInterceptor');
     }]);
 
-    function httpInterceptor($location, $q, $rootScope, errorHandler, httpResponseRecover) {
-      var deferred;
+    function httpInterceptor($location, $q, $rootScope, httpResponseRecover) {
 
       return {
         request : function(config) {
@@ -21,50 +20,42 @@
           return response || $q.when(response);
         },
         responseError : function(rejection) {
-
-          // Http 401 will cause a browser to display a login dialog
-          // http://stackoverflow.com/questions/86105/how-can-i-supress-the-browsers-authentication-dialog
-          if (rejection.status === 403) {
-            $location.path('/login');
-          } else if (rejection.status === 404) {
-            if (httpResponseRecover.checkActiveUUID()) {
-              deferred = $q.defer();
-              httpResponseRecover.retryNullRequest(rejection, deferred);
-              return deferred.promise;
-            }
-          } else if (rejection.status === 419) {
-
-            if (httpResponseRecover.canRecover()) {
-              deferred = $q.defer();
-              httpResponseRecover.authenticateOnResponseError(rejection, deferred);
-              return deferred.promise;
-            }
-          }
-          errorHandler.setError(rejection.data);
-          return $q.reject(rejection);
+          return httpResponseRecover.responseError(rejection);
         }
       };
     }
 
 
-    httpInterceptor.$inject = ['$location', '$q', '$rootScope', 'errorHandler', 'httpResponseRecover'];
+    httpInterceptor.$inject = ['$location', '$q', '$rootScope', 'httpResponseRecover'];
     angular.module('em.services').factory('httpInterceptor', httpInterceptor);
 
-    function httpResponseRecover($injector, $location) {
+    function httpResponseRecover($injector, $location, $q, errorHandler) {
 
-      /** Service initialized later because of circular dependency problem. */
+      /** Services initialized later because of circular dependency problem. */
       // https://groups.google.com/d/msg/angular/hlRdr5LD3as/bXnz8GZAzbEJ
-      var httpRequest, userAuthenticate, userSessionStorage;
+      var deferred, httpRequest, userAuthenticate, userSessionStorage;
 
       return {
+        responseError : function(rejection) {
+
+          // // Http 401 will cause a browser to display a login dialog
+          // // http://stackoverflow.com/questions/86105/how-can-i-supress-the-browsers-authentication-dialog
+          if (rejection.status === 403) {
+            $location.path('/login');
+          } else if (rejection.status === 419) {
+            if (this.canRecover()) {
+              deferred = $q.defer();
+              this.authenticateOnResponseError(rejection, deferred);
+              return deferred.promise;
+            }
+            $location.path('/login');
+          }
+          errorHandler.setError(rejection.data);
+          return $q.reject(rejection);
+        },
         canRecover : function() {
           userAuthenticate = userAuthenticate || $injector.get('userAuthenticate');
-
-          if (userAuthenticate.authenticateOnResponseError()) {
-            return true;
-          }
-          $location.path('/login');
-          return false;
+          return userAuthenticate.authenticateOnResponseError();
         },
         authenticateOnResponseError : function(rejection, deferred) {
           httpRequest = httpRequest || $injector.get('httpRequest');
@@ -78,23 +69,21 @@
         },
         checkActiveUUID : function() {
           userAuthenticate = userAuthenticate || $injector.get('userAuthenticate');
-          if (userAuthenticate.checkActiveUUIDOnResponseError()) {
-            return true;
-          }
-          return this.canRecover();
+          return userAuthenticate.checkActiveUUIDOnResponseError();
         },
         retryNullRequest : function(rejection, deferred) {
+          var rejectionUrl, rejectionUrlUUID;
+
           userSessionStorage = userSessionStorage || $injector.get('userSessionStorage');
           httpRequest = httpRequest || $injector.get('httpRequest');
 
-          var rejectionUrl = rejection.config.url;
-          var rejectionUrlUUID = rejectionUrl.replace('null', userSessionStorage.getActiveUUID());
+          rejectionUrl = rejection.config.url;
+          rejectionUrlUUID = rejectionUrl.replace('null', userSessionStorage.getActiveUUID());
           rejection.config.url = rejectionUrlUUID;
 
           httpRequest.config(rejection.config).then(function(response) {
             return deferred.resolve(response);
           }, function(response) {
-            $location.path('/login');
             return deferred.reject(response);
           });
         }
@@ -102,7 +91,7 @@
     }
 
 
-    httpResponseRecover.$inject = ['$injector', '$location'];
+    httpResponseRecover.$inject = ['$injector', '$location', '$q', 'errorHandler'];
     angular.module('em.services').factory('httpResponseRecover', httpResponseRecover);
 
     angular.module('em.services').factory('httpBasicAuth', ['$http',
@@ -130,23 +119,20 @@
 
       httpRequest.config = function(config) {
         return $http(config).then(function(success) {
-
           return success;
         }, function(error) {
         });
       };
 
-      angular.forEach(['get'], function(name) {
-        httpRequest[name] = function(url) {
-          return $http({
-            method : name,
-            url : url,
-            cache : true
-          }).then(function(success) {
-            return success;
-          });
-        };
-      });
+      httpRequest.get = function(url) {
+        return $http({
+          method : 'GET',
+          url : url,
+          cache : true
+        }).then(function(success) {
+          return success;
+        });
+      };
 
       angular.forEach(['delete', 'head', 'jsonp'], function(name) {
         httpRequest[name] = function(url) {

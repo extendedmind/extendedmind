@@ -6,12 +6,13 @@
     function userAuthenticate($injector, $location, $rootScope, authenticateRequest, userSession, userCookie, userSessionStorage) {
 
       return {
-        authenticate : function() {
+        authenticate : function(deferred) {
 
           if (userSessionStorage.isUserAuthenticated()) {
             if (!userSession.getCredentials()) {
               userSession.setEncodedCredentials(userSessionStorage.getHttpAuthorizationHeader());
             }
+            return deferred.resolve();
           } else if (userCookie.isUserRemembered()) {
 
             userSession.setCredentials('token', userCookie.getUserToken());
@@ -19,12 +20,14 @@
 
             authenticateRequest.login().then(function(authenticateResponse) {
               userSession.setUserSessionData(authenticateResponse);
-              $rootScope.$broadcast('event:loginSuccess');
+              return deferred.resolve();
             }, function() {
               $location.path('/login');
+              return deferred.reject();
             });
           } else {
             $location.path('/login');
+            return deferred.reject();
           }
         },
         checkActiveUUIDOnResponseError : function() {

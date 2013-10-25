@@ -28,9 +28,11 @@
         templateUrl : 'static/partials/account.html',
         controller : 'AccountController',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }]
 
         }
@@ -40,9 +42,11 @@
         controller : 'MyController',
         templateUrl : 'static/partials/my.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -56,9 +60,11 @@
         controller : 'MyController',
         templateUrl : 'static/partials/my.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -76,9 +82,11 @@
         controller : 'NotesController',
         templateUrl : 'static/partials/my/notesSlides.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -92,9 +100,11 @@
         controller : 'NotesController',
         templateUrl : 'static/partials/my/notesSlides.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -112,9 +122,11 @@
         controller : 'ContextController',
         templateUrl : 'static/partials/my/notes/context.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }]
 
         }
@@ -124,9 +136,11 @@
         controller : 'ContextController',
         templateUrl : 'static/partials/my/notes/context.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           prefix : ['userPrefix',
           function(userPrefix) {
@@ -140,9 +154,11 @@
         controller : 'NoteEditController',
         templateUrl : 'static/partials/my/notes/edit.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }]
 
         }
@@ -152,9 +168,11 @@
         controller : 'NoteEditController',
         templateUrl : 'static/partials/my/notes/edit.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           prefix : ['userPrefix',
           function(userPrefix) {
@@ -168,9 +186,11 @@
         controller : 'NewNoteController',
         templateUrl : 'static/partials/my/notes/new.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }]
 
         }
@@ -180,9 +200,11 @@
         controller : 'NewNoteController',
         templateUrl : 'static/partials/my/notes/new.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           prefix : ['userPrefix',
           function(userPrefix) {
@@ -196,9 +218,11 @@
         controller : 'TasksController',
         templateUrl : 'static/partials/my/tasksSlides.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -212,9 +236,11 @@
         controller : 'TasksController',
         templateUrl : 'static/partials/my/tasksSlides.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           slideIndex : ['Enum',
           function(Enum) {
@@ -232,9 +258,11 @@
         controller : 'ContextController',
         templateUrl : 'static/partials/my/tasks/context.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }]
 
         }
@@ -244,9 +272,11 @@
         controller : 'ContextController',
         templateUrl : 'static/partials/my/tasks/context.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           prefix : ['userPrefix',
           function(userPrefix) {
@@ -260,9 +290,11 @@
         controller : 'EditTaskController',
         templateUrl : 'static/partials/my/tasks/edit.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }]
 
         }
@@ -272,9 +304,11 @@
         controller : 'EditTaskController',
         templateUrl : 'static/partials/my/tasks/edit.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           prefix : ['userPrefix',
           function(userPrefix) {
@@ -288,9 +322,11 @@
         controller : 'NewTaskController',
         templateUrl : 'static/partials/my/tasks/new.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }]
 
         }
@@ -300,9 +336,11 @@
         controller : 'NewTaskController',
         templateUrl : 'static/partials/my/tasks/new.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           prefix : ['userPrefix',
           function(userPrefix) {
@@ -316,9 +354,11 @@
         controller : 'ProjectController',
         templateUrl : 'static/partials/my/tasks/project.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }]
 
         }
@@ -328,9 +368,11 @@
         controller : 'ProjectController',
         templateUrl : 'static/partials/my/tasks/project.html',
         resolve : {
-          'authenticationRequired' : ['userAuthenticate',
-          function(userAuthenticate) {
-            userAuthenticate.authenticate();
+          'authenticationRequired' : ['$q', 'userAuthenticate',
+          function($q, userAuthenticate) {
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
+            return deferred.promise;
           }],
           prefix : ['userPrefix',
           function(userPrefix) {
@@ -356,9 +398,6 @@
       });
       $rootScope.$on('event:loginRequired', function() {
         $location.path('/login');
-      });
-      $rootScope.$on('event:loginSuccess', function() {
-        $location.path(userPrefix.getPrefix());
       });
 
     }]);

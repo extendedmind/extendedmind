@@ -9,9 +9,10 @@
         beforeEach(module('em.mockHelpers'));
 
         describe('userAuthenticate', function() {
-          var $location, httpBasicAuth, mockHttpBackendResponse, userAuthenticate, userSessionStorage;
+          var $q, httpBasicAuth, mockHttpBackendResponse, userAuthenticate, userSessionStorage;
 
-          beforeEach(inject(function(_$location_, _httpBasicAuth_, _mockHttpBackendResponse_, _userAuthenticate_, _userSessionStorage_) {
+          beforeEach(inject(function(_$q_, _httpBasicAuth_, _mockHttpBackendResponse_, _userAuthenticate_, _userSessionStorage_) {
+            $q = _$q_;
             httpBasicAuth = _httpBasicAuth_;
             mockHttpBackendResponse = _mockHttpBackendResponse_;
             userAuthenticate = _userAuthenticate_;
@@ -24,7 +25,8 @@
           });
 
           it('should not authenticate invalid user', inject(function() {
-            userAuthenticate.authenticate();
+            var deferred = $q.defer();
+            userAuthenticate.authenticate(deferred);
             expect(userSessionStorage.isUserAuthenticated()).toEqual(false);
           }));
         });
