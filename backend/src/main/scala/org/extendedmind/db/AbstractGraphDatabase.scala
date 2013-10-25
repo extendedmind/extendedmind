@@ -99,6 +99,21 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
   
+  def forceUUID(setResult: SetResult, uuid: Option[UUID], label: Label): Response[SetResult] = {
+    if (uuid.isEmpty) Right(setResult)
+    else{
+      withTx {
+        implicit neo4j =>
+          val node = getNode(setResult.uuid.get, label)
+          if (node.isLeft) Left(node.left.get)
+          else{
+            node.right.get.setProperty("uuid", UUIDUtils.getTrimmedBase64UUID(uuid.get))
+            Right(SetResult(uuid, node.right.get.getProperty("modified").asInstanceOf[Long]))
+          }
+      }
+    }
+  }
+  
   protected def getUUID(node: Node): UUID = {
     UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
   }

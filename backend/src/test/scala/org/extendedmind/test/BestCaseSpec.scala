@@ -538,17 +538,14 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                   inviteRequests.inviteRequests(2).email should be (testEmail3)
                   // Get order number for invites
                   Get("/invite/request/" + inviteRequestResponse.uuid.get
-                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                     ) ~> emRoute ~> check {
                     entityAs[InviteRequestQueueNumber].queueNumber should be(1)
                   }
                   Get("/invite/request/" + inviteRequestResponse2.uuid.get
-                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                     ) ~> emRoute ~> check {
                     entityAs[InviteRequestQueueNumber].queueNumber should be(2)
                   }
                   Get("/invite/request/" + inviteRequestResponse3.uuid.get
-                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                     ) ~> emRoute ~> check {
                     entityAs[InviteRequestQueueNumber].queueNumber should be(3)
                   }
@@ -563,7 +560,6 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                   }
                   // Verify that the last one is now number 2 
                   Get("/invite/request/" + inviteRequestResponse3.uuid.get
-                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                     ) ~> emRoute ~> check {
                     entityAs[InviteRequestQueueNumber].queueNumber should be(2)
                   }
@@ -580,7 +576,6 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                   
                   // Verify that the last one is now number 1 
                   Get("/invite/request/" + inviteRequestResponse3.uuid.get
-                    ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                     ) ~> emRoute ~> check {
                     entityAs[InviteRequestQueueNumber].queueNumber should be(1)
                   }
@@ -609,6 +604,37 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                   }
                }
             }
+        }
+      }
+    }
+    it("should successfully put invite request with PUT to /invite/request "
+       + "and get it back with forced UUID from GET to /invite/request/[UUID]") {
+      val uuid = "f107899f-dd00-4754-bd7e-7ffa5399d604"
+      val newInviteRequest = InviteRequest(
+            Some(UUID.fromString(uuid)), 
+            "test@example.com",
+            Some("messageId"))
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Put("/invite/request",
+         marshal(newInviteRequest).right.get
+            ) ~> addHeader("Content-Type", "application/json"
+            ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+            ) ~> emRoute ~> check {
+        writeJsonOutput("inviteRequestResponse", entityAs[String])
+        val inviteRequestResponse = entityAs[SetResult]
+        inviteRequestResponse.uuid.get.toString should equal (uuid)
+        inviteRequestResponse.modified should not be None
+        
+        Get("/invite/request/" + uuid
+          ) ~> emRoute ~> check {
+          entityAs[InviteRequestQueueNumber].queueNumber should be(1)
+        }
+        Get("/invite/requests"
+             ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+             ) ~> emRoute ~> check {
+          val inviteRequests = entityAs[InviteRequests]
+          inviteRequests.inviteRequests(0).uuid.get.toString() should equal (uuid)
+          inviteRequests.inviteRequests(0).emailId.get should equal ("messageId")
         }
       }
     }

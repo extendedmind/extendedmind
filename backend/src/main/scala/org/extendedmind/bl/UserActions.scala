@@ -55,7 +55,16 @@ trait UserActions {
     }
     setResult
   }
-
+  
+  def putNewInviteRequest(inviteRequest: InviteRequest)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putNewInviteRequest: {}", inviteRequest)
+    for {
+      isUnique <- db.validateEmailUniqueness(inviteRequest.email).right
+      setResult <- db.putNewInviteRequest(inviteRequest).right
+      uuidResult <- db.forceUUID(setResult, inviteRequest.uuid, MainLabel.REQUEST).right
+    } yield uuidResult
+  }
+  
   def getInviteRequests() (implicit log: LoggingContext): Response[InviteRequests] = {
     log.info("getInviteRequests")
     db.getInviteRequests    

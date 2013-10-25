@@ -153,6 +153,23 @@ trait Service extends API with Injectable {
           }
         }
       } ~
+      putInviteRequest { url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          // Only admins can put invite requests
+          authorize(adminAccess(securityContext) && settings.signUpMethod != SIGNUP_OFF) {
+            entity(as[InviteRequest]) { inviteRequest =>
+              complete {
+                Future[SetResult] {
+                  userActions.putNewInviteRequest(inviteRequest) match {
+                    case Right(sr) => sr
+                    case Left(e) => processErrors(e)
+                  }
+                }
+              }
+            }
+          }
+        }
+      } ~
       deleteInviteRequest { inviteRequestUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can destroy invite requests
