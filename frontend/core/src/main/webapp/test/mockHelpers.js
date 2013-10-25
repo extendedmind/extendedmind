@@ -144,7 +144,7 @@
       });
 
       $httpBackend.whenGET(/null/).respond(function(method, url, data, headers) {
-        return [403, 'Forbidden'];
+        return [404, 'The requested resource could not be found.'];
       });
     }]);
 
