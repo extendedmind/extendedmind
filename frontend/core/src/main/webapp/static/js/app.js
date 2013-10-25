@@ -390,14 +390,11 @@
       $locationProvider.html5Mode(true);
     }]);
 
-    angular.module('em.app').run(['$location', '$rootScope', 'userAuthenticate', 'userPrefix',
-    function($location, $rootScope, userAuthenticate, userPrefix) {
+    angular.module('em.app').run(['$location', '$rootScope', 'errorHandler', 'userAuthenticate', 'userPrefix',
+    function($location, $rootScope, errorHandler, userAuthenticate, userPrefix) {
 
-      $rootScope.$on('event:authenticationRequired', function() {
-        userAuthenticate.authenticate();
-      });
-      $rootScope.$on('event:loginRequired', function() {
-        $location.path('/login');
+      $rootScope.$on('$routeChangeSuccess', function() {
+        errorHandler.clear();
       });
 
     }]);
