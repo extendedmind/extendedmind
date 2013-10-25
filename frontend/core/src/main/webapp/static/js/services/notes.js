@@ -47,8 +47,6 @@
               this.setNote(notesResponse[i]);
               i++;
             }
-          } else {
-            notes = [];
           }
         },
         setNote : function(note) {
