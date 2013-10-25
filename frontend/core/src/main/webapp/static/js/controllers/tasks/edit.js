@@ -9,6 +9,9 @@
 
       itemsRequest.getItems().then(function() {
 
+        $scope.contexts = tagsArray.getTags();
+        $scope.projects = tasksArray.getProjects();
+
         if ($routeParams.uuid) {
 
           if (tasksArray.getTaskByUUID($routeParams.uuid)) {
@@ -26,9 +29,6 @@
             $scope.task = tasksArray.getProjectByUUID($routeParams.uuid);
           }
         }
-
-        $scope.contexts = tagsArray.getTags();
-        $scope.projects = tasksArray.getProjects();
       });
 
       $scope.editTask = function() {
