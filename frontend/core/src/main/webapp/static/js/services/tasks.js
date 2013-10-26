@@ -57,6 +57,9 @@
 
       return {
         setTasks : function(tasksResponse) {
+
+          itemsArray.clearArray(tasks);
+
           if (tasksResponse != null) {
             var i = 0;
 

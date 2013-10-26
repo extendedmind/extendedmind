@@ -40,6 +40,9 @@
 
       return {
         setNotes : function(notesResponse) {
+
+          itemsArray.clearArray(notes);
+
           if (notesResponse != null) {
             var i = 0;
 

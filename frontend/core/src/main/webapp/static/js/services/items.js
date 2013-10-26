@@ -70,6 +70,9 @@
 
       return {
         setItems : function(itemsResponse) {
+
+          this.clearArray(items);
+
           if (itemsResponse != null) {
             items = itemsResponse;
           }
@@ -84,6 +87,11 @@
           if (!this.itemInArray(items, item.uuid)) {
             items.push(item);
           }
+        },
+        // http://stackoverflow.com/a/1234337
+        clearArray : function(itemsArray) {
+          itemsArray.length = 0;
+          return itemsArray;
         },
         removeItem : function(item) {
           this.removeItemFromArray(items, item);
