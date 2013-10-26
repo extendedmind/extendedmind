@@ -74,16 +74,23 @@
           this.clearArray(items);
 
           if (itemsResponse != null) {
-            items = itemsResponse;
+            var i = 0;
+
+            while (itemsResponse[i]) {
+              this.setItem(itemsResponse[i]);
+              i++;
+            }
+          }
+        },
+        setItem : function(item) {
+          if (!this.itemInArray(items, item.uuid)) {
+            items.push(item);
           }
         },
         getItems : function() {
           return items;
         },
         putNewItem : function(item) {
-          if (items == null) {
-            items = [];
-          }
           if (!this.itemInArray(items, item.uuid)) {
             items.push(item);
           }

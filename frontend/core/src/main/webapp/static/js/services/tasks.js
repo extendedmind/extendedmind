@@ -59,6 +59,8 @@
         setTasks : function(tasksResponse) {
 
           itemsArray.clearArray(tasks);
+          itemsArray.clearArray(projects);
+          itemsArray.clearArray(subtasks);
 
           if (tasksResponse != null) {
             var i = 0;

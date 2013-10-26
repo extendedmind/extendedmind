@@ -64,9 +64,6 @@
           itemsArray.removeItemFromArray(notes, note);
         },
         putNewNote : function(note) {
-          if (notes == null) {
-            notes = [];
-          }
           if (!itemsArray.itemInArray(notes, note.uuid)) {
             notes.push(note);
           }

@@ -10,9 +10,9 @@
 
       return {
         setTags : function(tagsResponse) {
-          
+
           itemsArray.clearArray(tags);
-          
+
           if (tagsResponse != null) {
             var i = 0;
 
