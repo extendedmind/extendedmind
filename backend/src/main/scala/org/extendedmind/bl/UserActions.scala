@@ -55,7 +55,16 @@ trait UserActions {
     }
     setResult
   }
-
+  
+  def putNewInviteRequest(inviteRequest: InviteRequest)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putNewInviteRequest: {}", inviteRequest)
+    for {
+      isUnique <- db.validateEmailUniqueness(inviteRequest.email).right
+      setResult <- db.putNewInviteRequest(inviteRequest).right
+      uuidResult <- db.forceUUID(setResult, inviteRequest.uuid, MainLabel.REQUEST).right
+    } yield uuidResult
+  }
+  
   def getInviteRequests() (implicit log: LoggingContext): Response[InviteRequests] = {
     log.info("getInviteRequests")
     db.getInviteRequests    
@@ -109,7 +118,7 @@ trait UserActions {
           if (saveResponse.isLeft) 
             log.error("Error updating invite for email {} with id {}, error: {}", 
                 invite.email, sendEmailResponse.id, saveResponse.left.get.head)
-          else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", 
+          else log.info("Accepted invite request with email: {} and UUID: {} with emailId: {}", 
                           invite.email, acceptResult.right.get._1.uuid.get, sendEmailResponse.id)
         }
         case Left(error) =>

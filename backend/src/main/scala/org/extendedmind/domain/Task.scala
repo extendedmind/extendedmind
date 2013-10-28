@@ -16,8 +16,9 @@ case class Task(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long
                 visibility: Option[SharedItemVisibility],
                 relationships: Option[ExtendedItemRelationships])
             extends ExtendedItem{
-  require(validateLength(title, 64), "Note title can not be more than 64 characters")
-  if (description.isDefined) require(validateLength(description.get, 256), "Note description can not be more than 256 characters")
+  require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
+  if (description.isDefined) require(validateDescription(description.get), 
+      "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
   if (due.isDefined) require(validateDateString(due.get), "Given due date does not match pattern yyyy-MM-dd")
   if (reminder.isDefined) require(validateTimeString(reminder.get), "Given reminder time does not match pattern hh:mm")
 }

@@ -6,8 +6,9 @@ import Validators._
 case class Collective(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long],  
                 title: String, description: Option[String], creator: Option[UUID], common: Option[Boolean])
            extends Container {
-  require(validateLength(title, 64), "Title can not be more than 64 characters")
-  if (description.isDefined) require(validateLength(description.get, 256), "Description can not be more than 256 characters")
+  require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
+  if (description.isDefined) require(validateDescription(description.get), 
+      "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
 }
 
 object Collective{
