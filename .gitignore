@@ -5,6 +5,9 @@
 .settings/
 .externalToolBuilders
 
+# Ignore Sublime Text files
+frontend/pom.sublime-workspace
+
 # Ignore Maven builds
 target/
 frontend/core/src/main/webapp/test/json/

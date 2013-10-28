@@ -41,6 +41,11 @@
           // // Http 401 will cause a browser to display a login dialog
           // // http://stackoverflow.com/questions/86105/how-can-i-supress-the-browsers-authentication-dialog
           if (rejection.status === 403) {
+            if (this.canRecover()) {
+              deferred = $q.defer();
+              this.authenticateOnResponseError(rejection, deferred);
+              return deferred.promise;
+            }
             $location.path('/login');
           } else if (rejection.status === 419) {
             if (this.canRecover()) {
