@@ -80,8 +80,10 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       Post("/authenticate", marshal(payload).right.get
           ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
           ) ~> emRoute ~> check { 
+        writeJsonOutput("swapTokenResponse", entityAs[String])
         val tokenAuthenticateResponse = entityAs[SecurityContext]
         tokenAuthenticateResponse.token.get should not be (authenticateResponse.token.get)
+        tokenAuthenticateResponse.collectives should not be None
         // Should be able to swap it again, but this time without rememberMe
         Post("/authenticate"
             ) ~> addCredentials(BasicHttpCredentials("token", tokenAuthenticateResponse.token.get)
