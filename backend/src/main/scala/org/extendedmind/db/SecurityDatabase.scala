@@ -165,7 +165,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       sc.userUUID,
       sc.userType,
       Some(Token.encryptToken(token)),
-      None)
+      sc.collectives)
   }
 
   protected def saveToken(userNode: Node, token: Token, payload: Option[AuthenticatePayload]) {
