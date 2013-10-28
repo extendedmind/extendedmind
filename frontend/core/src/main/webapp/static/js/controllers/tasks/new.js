@@ -14,8 +14,8 @@
 
         if (activeItem.getItem()) {
           $scope.parentTask = activeItem.getItem();
-          tasksArray.removeTask($scope.parentTask);
-          tasksArray.setProject($scope.parentTask);
+          tasksArray.removeTask(activeItem.getItem());
+          tasksArray.setProject(activeItem.getItem());
         }
       });
 

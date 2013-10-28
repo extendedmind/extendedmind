@@ -11,7 +11,9 @@ case class Note(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long
                 visibility: Option[SharedItemVisibility],
                 relationships: Option[ExtendedItemRelationships])
            extends ExtendedItem{
-  require(validateLength(title, 64), "Note title can not be more than 64 characters")
+  require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
+  if (description.isDefined) require(validateDescription(description.get), 
+      "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateLength(description.get, 256), "Note description can not be more than 256 characters")
 }
 

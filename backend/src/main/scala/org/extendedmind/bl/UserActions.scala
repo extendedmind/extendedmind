@@ -36,25 +36,35 @@ trait UserActions {
     if (setResult.isRight){
       val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email, setResult.right.get.uuid.get)
       futureMailResponse onSuccess {
-        case SendEmailResponse(message, id) => {
+        case Right(jsonResponse) => {
+          val sendEmailResponse = MailgunProtocol.toSendEmailResponse(jsonResponse)
           val saveResponse = for{
             putExistingResponse <- db.putExistingInviteRequest(setResult.right.get.uuid.get, 
-                                                               inviteRequest.copy(emailId = Some(id))).right
+                                                               inviteRequest.copy(emailId = Some(sendEmailResponse.id))).right
             updateResponse <- Right(db.updateInviteRequestModifiedIndex(putExistingResponse._2, 
                                                                         putExistingResponse._3)).right
           } yield putExistingResponse._1
           if (saveResponse.isLeft) 
             log.error("Error updating invite request for email {} with id {}, error: {}", 
-                inviteRequest.email, id, saveResponse.left.get.head)
+                inviteRequest.email, sendEmailResponse.id, saveResponse.left.get.head)
           else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", 
-                          inviteRequest.email, setResult.right.get.uuid.get, id)
-        }case _ =>
-          log.error("Could not send email to {}", inviteRequest.email)
+                          inviteRequest.email, setResult.right.get.uuid.get, sendEmailResponse.id)
+        }case Left(error) =>
+          log.error("Could not send invite request confirmation email to {} because of error {}", inviteRequest.email, error)
       }
     }
     setResult
   }
-
+  
+  def putNewInviteRequest(inviteRequest: InviteRequest)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putNewInviteRequest: {}", inviteRequest)
+    for {
+      isUnique <- db.validateEmailUniqueness(inviteRequest.email).right
+      setResult <- db.putNewInviteRequest(inviteRequest).right
+      uuidResult <- db.forceUUID(setResult, inviteRequest.uuid, MainLabel.REQUEST).right
+    } yield uuidResult
+  }
+  
   def getInviteRequests() (implicit log: LoggingContext): Response[InviteRequests] = {
     log.info("getInviteRequests")
     db.getInviteRequests    
@@ -79,37 +89,40 @@ trait UserActions {
   
   def signUp(signUp: SignUp)(implicit log: LoggingContext): Response[SetResult] = {
     log.info("signUp: email {}", signUp.email)
-    if (settings.adminSignUp) 
-      log.warning("CRITICAL: Making {} an administrator because extendedmind.security.adminSignUp is true", 
+    if (settings.signUpMode == MODE_ADMIN) 
+      log.warning("CRITICAL: Making {} an administrator because extendedmind.security.signUpMode is set to ADMIN", 
           signUp.email)
     for {
       isUnique <- db.validateEmailUniqueness(signUp.email).right
-      result <- db.putNewUser(User(None, None, None, signUp.email), signUp.password, settings.signUp).right
+      result <- db.putNewUser(User(None, None, None, signUp.email), signUp.password, settings.signUpMode).right
     } yield result
     
     // TODO: Send verification email as Future
   }
   
-  def acceptInviteRequest(userUUID: UUID, inviteRequestUUID: UUID, details: InviteRequestAcceptDetails)
+  def acceptInviteRequest(userUUID: UUID, inviteRequestUUID: UUID, details: Option[InviteRequestAcceptDetails])
                          (implicit log: LoggingContext): Response[(SetResult, Invite)] = {
     log.info("acceptInviteRequest: request {}", inviteRequestUUID)
     
-    val acceptResult = db.acceptInviteRequest(userUUID, inviteRequestUUID, details.message)
+    val acceptResult = db.acceptInviteRequest(userUUID, inviteRequestUUID, 
+        if (details.isDefined) Some(details.get.message) else None)
     
     if (acceptResult.isRight){
       val invite = acceptResult.right.get._2
       val futureMailResponse = mailgun.sendInvite(invite)
       futureMailResponse onSuccess {
-        case SendEmailResponse(message, id) => {
+        case Right(jsonResponse) => {
+          val sendEmailResponse = MailgunProtocol.toSendEmailResponse(jsonResponse)
           val saveResponse = db.putExistingInvite(acceptResult.right.get._1.uuid.get, 
-                                                        invite.copy(emailId = Some(id)))
+                                                        invite.copy(emailId = Some(sendEmailResponse.id)))
           if (saveResponse.isLeft) 
             log.error("Error updating invite for email {} with id {}, error: {}", 
-                invite.email, id, saveResponse.left.get.head)
-          else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", 
-                          invite.email, acceptResult.right.get._1.uuid.get, id)
-        }case _ =>
-          log.error("Could not send email to {}", invite.email)
+                invite.email, sendEmailResponse.id, saveResponse.left.get.head)
+          else log.info("Accepted invite request with email: {} and UUID: {} with emailId: {}", 
+                          invite.email, acceptResult.right.get._1.uuid.get, sendEmailResponse.id)
+        }
+        case Left(error) =>
+          log.error("Could not send invite email to {}, because of error {}", invite.email, error.getMessage())
       }
     }
     acceptResult
@@ -151,6 +164,12 @@ trait UserActions {
       case Left(e) => Left(e)
     }
   }
+  
+  def changeUserType(userUUID: UUID, userType: Integer)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("changeUserType: user {} to type {}", userUUID, userType)
+    db.changeUserType(userUUID, userType)
+  }
+  
 }
 
 class UserActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, 

@@ -8,7 +8,7 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.phantomjs.PhantomJSDriverService._
 import org.openqa.selenium.phantomjs.PhantomJSDriverService
-import org.scalatest.BeforeAndAfterAll
+import org.scalatest._
 import org.zeroturnaround.zip.ZipUtil
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -40,7 +40,7 @@ abstract class E2ESpecBase extends FunSpec
   
   
   // Initialize Neo4j before every file
-  override def beforeAll(configMap: Map[String, Any]) {
+  override def beforeAll(configMap: ConfigMap) {
     // First delete old if it exists
     val store = new File(TEST_DATA_STORE_DESTINATION)
     if (store.exists() == true){
@@ -50,7 +50,7 @@ abstract class E2ESpecBase extends FunSpec
     ZipUtil.unpack(new File(TEST_DATA_STORE), store)
   }
   
-  override def afterAll(configMap: Map[String, Any]) {
+  override def afterAll(configMap: ConfigMap) {
     webDriver.quit()
   }
 }

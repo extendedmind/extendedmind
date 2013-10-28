@@ -22,6 +22,17 @@ import akka.actor.ActorRefFactory
 
 // Custom settings from application.conf or overridden file
 
+sealed abstract class SignUpMethod
+case object SIGNUP_ON extends SignUpMethod
+case object SIGNUP_INVITE extends SignUpMethod
+case object SIGNUP_OFF extends SignUpMethod
+
+sealed abstract class SignUpMode
+case object MODE_ADMIN extends SignUpMode
+case object MODE_ALFA extends SignUpMode
+case object MODE_BETA extends SignUpMode
+case object MODE_NORMAL extends SignUpMode
+
 class Settings(config: Config) extends Extension {
   val serverPort = config.getInt("extendedmind.server.port")
   val neo4jStoreDir = config.getString("extendedmind.neo4j.storeDir")
@@ -35,8 +46,22 @@ class Settings(config: Config) extends Extension {
   val startNeo4jServer = config.getBoolean("extendedmind.neo4j.startServer")
   val neo4jServerPort = config.getInt("extendedmind.neo4j.serverPort")
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
-  val signUp = config.getBoolean("extendedmind.security.signUp")
-  val adminSignUp = config.getBoolean("extendedmind.security.adminSignUp")
+  
+  val signUpMethod: SignUpMethod  = {
+    config.getString("extendedmind.security.signUpMethod") match {
+      case "OFF" => SIGNUP_OFF
+      case "INVITE" => SIGNUP_INVITE
+      case "ON" => SIGNUP_ON
+    }
+  }
+  val signUpMode: SignUpMode  = {
+    config.getString("extendedmind.security.signUpMode") match {
+      case "ADMIN" => MODE_ADMIN
+      case "ALFA" => MODE_ALFA
+      case "BETA" => MODE_BETA
+      case "NORMAL" => MODE_NORMAL        
+    }
+  }
   val commonCollectives = config.getBoolean("extendedmind.security.commonCollectives")
   val mailgunDomain = config.getString("extendedmind.email.mailgun.domain")
   val mailgunApiKey = config.getString("extendedmind.email.mailgun.apiKey")

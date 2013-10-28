@@ -37,9 +37,9 @@
   </developers>
 
   <properties>
-    <neo4j.version>2.0.0-M05</neo4j.version>
-    <spray.version>1.2-20130912</spray.version>
-    <akka.version>2.2.0</akka.version>
+    <neo4j.version>2.0.0-M06</neo4j.version>
+    <spray.version>1.2-RC1</spray.version>
+    <akka.version>2.2.3</akka.version>
   </properties>
 
   <dependencies>
@@ -79,14 +79,15 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
+
+    <!-- HTTP Client -->
     <dependency>
-      <groupId>io.spray</groupId>
-      <artifactId>spray-client</artifactId>
-      <version>${spray.version}</version>
+      <groupId>net.databinder.dispatch</groupId>
+      <artifactId>dispatch-core_2.10</artifactId>
+      <version>0.11.0</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-
 
     <!-- Neo4j -->
     <dependency>
@@ -150,13 +151,13 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>0.9.30</version>
+      <version>1.0.9</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>0.9.30</version>
+      <version>1.0.9</version>
       <scope>compile</scope>
     </dependency>
 

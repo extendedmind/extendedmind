@@ -7,8 +7,8 @@
       $httpProvider.interceptors.push('httpInterceptor');
     }]);
 
-    angular.module('em.services').factory('httpInterceptor', ['$q', '$rootScope', 'errorHandler',
-    function($q, $rootScope, errorHandler) {
+    function httpInterceptor($location, $q, $rootScope, httpResponseRecover) {
+
       return {
         request : function(config) {
           return config || $q.when(config);
@@ -20,21 +20,79 @@
           return response || $q.when(response);
         },
         responseError : function(rejection) {
-
-          errorHandler.setError(rejection.data);
-          // Http 401 will cause a browser to display a login dialog
-          // http://stackoverflow.com/questions/86105/how-can-i-supress-the-browsers-authentication-dialog
-          if (rejection.status === 403) {
-            $rootScope.$broadcast('event:authenticationRequired');
-          } else if (rejection.status === 404) {
-            $rootScope.$broadcast('event:authenticationRequired');
-          } else if (rejection.status === 419) {
-            $rootScope.$broadcast('event:authenticationRequired');
-          }
-          return $q.reject(rejection);
+          return httpResponseRecover.responseError(rejection);
         }
       };
-    }]);
+    }
+
+
+    httpInterceptor.$inject = ['$location', '$q', '$rootScope', 'httpResponseRecover'];
+    angular.module('em.services').factory('httpInterceptor', httpInterceptor);
+
+    function httpResponseRecover($injector, $location, $q, errorHandler) {
+
+      /** Services initialized later because of circular dependency problem. */
+      // https://groups.google.com/d/msg/angular/hlRdr5LD3as/bXnz8GZAzbEJ
+      var deferred, httpRequest, userAuthenticate, userSessionStorage;
+
+      return {
+        responseError : function(rejection) {
+
+          // // Http 401 will cause a browser to display a login dialog
+          // // http://stackoverflow.com/questions/86105/how-can-i-supress-the-browsers-authentication-dialog
+          if (rejection.status === 403) {
+            $location.path('/login');
+          } else if (rejection.status === 419) {
+            if (this.canRecover()) {
+              deferred = $q.defer();
+              this.authenticateOnResponseError(rejection, deferred);
+              return deferred.promise;
+            }
+            $location.path('/login');
+          }
+          errorHandler.setError(rejection.data);
+          return $q.reject(rejection);
+        },
+        canRecover : function() {
+          userAuthenticate = userAuthenticate || $injector.get('userAuthenticate');
+          return userAuthenticate.authenticateOnResponseError();
+        },
+        authenticateOnResponseError : function(rejection, deferred) {
+          httpRequest = httpRequest || $injector.get('httpRequest');
+
+          httpRequest.loginAndRetryRequest(rejection).then(function(response) {
+            return deferred.resolve(response);
+          }, function(response) {
+            $location.path('/login');
+            return deferred.reject(response);
+          });
+        },
+        checkActiveUUID : function() {
+          userAuthenticate = userAuthenticate || $injector.get('userAuthenticate');
+          return userAuthenticate.checkActiveUUIDOnResponseError();
+        },
+        retryNullRequest : function(rejection, deferred) {
+          var rejectionUrl, rejectionUrlUUID;
+
+          userSessionStorage = userSessionStorage || $injector.get('userSessionStorage');
+          httpRequest = httpRequest || $injector.get('httpRequest');
+
+          rejectionUrl = rejection.config.url;
+          rejectionUrlUUID = rejectionUrl.replace('null', userSessionStorage.getActiveUUID());
+          rejection.config.url = rejectionUrlUUID;
+
+          httpRequest.config(rejection.config).then(function(response) {
+            return deferred.resolve(response);
+          }, function(response) {
+            return deferred.reject(response);
+          });
+        }
+      };
+    }
+
+
+    httpResponseRecover.$inject = ['$injector', '$location', '$q', 'errorHandler'];
+    angular.module('em.services').factory('httpResponseRecover', httpResponseRecover);
 
     angular.module('em.services').factory('httpBasicAuth', ['$http',
     function($http) {
@@ -59,17 +117,22 @@
     function($http) {
       var httpRequest = {};
 
-      angular.forEach(['get'], function(name) {
-        httpRequest[name] = function(url) {
-          return $http({
-            method : name,
-            url : url,
-            cache : true
-          }).then(function(success) {
-            return success;
-          });
-        };
-      });
+      httpRequest.config = function(config) {
+        return $http(config).then(function(success) {
+          return success;
+        }, function(error) {
+        });
+      };
+
+      httpRequest.get = function(url) {
+        return $http({
+          method : 'GET',
+          url : url,
+          cache : true
+        }).then(function(success) {
+          return success;
+        });
+      };
 
       angular.forEach(['delete', 'head', 'jsonp'], function(name) {
         httpRequest[name] = function(url) {

@@ -72,8 +72,6 @@
         setItems : function(itemsResponse) {
           if (itemsResponse != null) {
             items = itemsResponse;
-          } else {
-            items = [];
           }
         },
         getItems : function() {

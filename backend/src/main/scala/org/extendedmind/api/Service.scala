@@ -94,11 +94,26 @@ trait Service extends API with Injectable {
       }
     } ~
       postSignUp { url =>
-        authorize(settings.signUp) {
+        authorize(settings.signUpMethod == SIGNUP_ON) {
           entity(as[SignUp]) { signUp =>
             complete {
               Future[SetResult] {
                 userActions.signUp(signUp) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
+      postChangeUserType { (userUUID, userType) =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          // Only admins can change user type
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[SetResult] {
+                userActions.changeUserType(userUUID, userType) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -125,12 +140,31 @@ trait Service extends API with Injectable {
         }
       } ~
       postInviteRequest { url =>
-        entity(as[InviteRequest]) { inviteRequest =>
-          complete {
-            Future[SetResult] {
-              userActions.requestInvite(inviteRequest) match {
-                case Right(sr) => sr
-                case Left(e) => processErrors(e)
+        authorize(settings.signUpMethod != SIGNUP_OFF) {
+          entity(as[InviteRequest]) { inviteRequest =>
+            complete {
+              Future[SetResult] {
+                userActions.requestInvite(inviteRequest) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
+      putInviteRequest { url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          // Only admins can put invite requests
+          authorize(adminAccess(securityContext) && settings.signUpMethod != SIGNUP_OFF) {
+            entity(as[InviteRequest]) { inviteRequest =>
+              complete {
+                Future[SetResult] {
+                  userActions.putNewInviteRequest(inviteRequest) match {
+                    case Right(sr) => sr
+                    case Left(e) => processErrors(e)
+                  }
+                }
               }
             }
           }
@@ -178,8 +212,8 @@ trait Service extends API with Injectable {
       postInviteRequestAccept { inviteRequestUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can accept invite requests
-          authorize(adminAccess(securityContext)) {
-            entity(as[InviteRequestAcceptDetails]) { details =>
+          authorize(adminAccess(securityContext) && settings.signUpMethod != SIGNUP_OFF) {
+            entity(as[Option[InviteRequestAcceptDetails]]) { details =>
               complete {
                 Future[SetResult] {
                   userActions.acceptInviteRequest(securityContext.userUUID, inviteRequestUUID, details) match {
@@ -219,12 +253,14 @@ trait Service extends API with Injectable {
         }
       } ~
       postInviteAccept { code =>
-        entity(as[SignUp]) { signUp =>
-          complete {
-            Future[SetResult] {
-              userActions.acceptInvite(code, signUp) match {
-                case Right(sr) => sr
-                case Left(e) => processErrors(e)
+        authorize(settings.signUpMethod != SIGNUP_OFF) {
+          entity(as[SignUp]) { signUp =>
+            complete {
+              Future[SetResult] {
+                userActions.acceptInvite(code, signUp) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
               }
             }
           }

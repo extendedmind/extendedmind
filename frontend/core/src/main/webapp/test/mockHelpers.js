@@ -7,10 +7,13 @@
     emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
     function($httpBackend, mockHttpBackendResponse) {
 
-      var api_useruuid_items, authenticateResponse,
+      var api_useruuid_items,
 
+      // account
+      accountResponse, authenticateResponse, logoutResponse,
       // get
-      accountResponse, itemsResponse, collectiveItemsResponse,
+
+      itemsResponse, collectiveItemsResponse,
 
       // complete
       completeTask, completeTaskResponse,
@@ -50,11 +53,14 @@
       deleteNoteResponse = mockHttpBackendResponse.getDeleteNoteResponse();
       deleteTaskResponse = mockHttpBackendResponse.getDeleteTaskResponse();
 
+      // account
+      accountResponse = mockHttpBackendResponse.getAccountResponse();
       authenticateResponse = mockHttpBackendResponse.getAuthenticateResponse();
+      logoutResponse = mockHttpBackendResponse.getLogoutResponse();
+
       completeTaskResponse = mockHttpBackendResponse.getCompleteTaskResponse();
 
       // get
-      accountResponse = mockHttpBackendResponse.getAccountResponse();
       itemsResponse = mockHttpBackendResponse.getItemsResponse();
       collectiveItemsResponse = mockHttpBackendResponse.getCollectiveItemsResponse();
 
@@ -68,8 +74,15 @@
 
       uncompleteTaskResponse = mockHttpBackendResponse.getUncompleteTaskResponse();
 
+      // account
+      $httpBackend.whenGET('/api/account').respond(function(method, url, data, headers) {
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, accountResponse);
+      });
       $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data, headers) {
         return mockHttpBackendResponse.expectResponse(method, url, data, headers, authenticateResponse);
+      });
+      $httpBackend.whenPOST('/api/logout').respond(function(method, url, data, headers) {
+        return mockHttpBackendResponse.expectResponse(method, url, data, headers, logoutResponse);
       });
 
       $httpBackend.whenPUT(putItem).respond(function(method, url, data, headers) {
@@ -116,10 +129,6 @@
       });
 
       // get
-      $httpBackend.whenGET('/api/account').respond(function(method, url, data, headers) {
-        return mockHttpBackendResponse.expectResponse(method, url, data, headers, accountResponse);
-      });
-
       $httpBackend.whenGET(api_useruuid_items).respond(function(method, url, data, headers) {
         var uuid = url.split('/'), key;
 
@@ -135,7 +144,7 @@
       });
 
       $httpBackend.whenGET(/null/).respond(function(method, url, data, headers) {
-        return [403, 'Forbidden'];
+        return [404, 'The requested resource could not be found.'];
       });
     }]);
 
@@ -161,9 +170,17 @@
           }
           return response;
         },
+        // account
+        getAccountResponse : function() {
+          return getJSONFixture('accountResponse.json');
+        },
         getAuthenticateResponse : function() {
           return getJSONFixture('authenticateResponse.json');
         },
+        getLogoutResponse : function() {
+          return getJSONFixture('logoutResponse.json');
+        },
+
         getCompleteTaskResponse : function() {
           return getJSONFixture('completeTaskResponse.json');
         },
@@ -180,9 +197,6 @@
         },
 
         // get
-        getAccountResponse : function() {
-          return getJSONFixture('accountResponse.json');
-        },
         getItemsResponse : function() {
           return getJSONFixture('itemsResponse.json');
         },

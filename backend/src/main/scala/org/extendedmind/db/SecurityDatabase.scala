@@ -139,6 +139,13 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
   
+  def changeUserType(userUUID: UUID, userType: Integer): Response[SetResult] = {
+    for {
+      userNode <- changeUserNodeType(userUUID, userType).right
+      result <- Right(getSetResult(userNode, false)).right
+    } yield result
+  }
+  
   // PRIVATE
   
   protected def validateTokenReplacable(tokenNode: Node, currentTime: Long): Response[Node] = {
@@ -204,6 +211,8 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     if (payload.isDefined && payload.get.rememberMe) {
       // Remember me has been clicked
       tokenNode.setProperty("replaceable", currentTime + TOKEN_REPLACEABLE)
+    }else if (tokenNode.hasProperty("replaceable")){
+      tokenNode.removeProperty("replaceable")
     }
   }
 
@@ -251,12 +260,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     getLimitedSecurityContext(user, getUserType(user), collectiveUUID)
   }
   
-  private def getUserType(user: Node): Byte = {
-    if (user.getLabels().asScala.find(p => p.name() == "ADMIN").isDefined)
-      Token.ADMIN
-    else
-      Token.NORMAL
-  }
+  
 
   private def getCompleteSecurityContext(user: Node, userType: Byte): SecurityContext = {
     val traverser = collectivesTraversalDescription.traverse(user)
@@ -337,4 +341,58 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           .evaluator(LabelEvaluator(List(OwnerLabel.COLLECTIVE)))
           .evaluator(Evaluators.toDepth(1)) 
   }
+  
+  private def changeUserNodeType(userUUID: UUID, userType: Integer): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          result <- Right(changeUserType(userNode, userType)).right
+        } yield userNode
+    }
+  }
+  
+  private def changeUserType(userNode: Node, userType: Integer)(implicit neo4j: DatabaseService) = {
+    val currentUserType = getUserType(userNode)
+    
+    if (userType.intValue() != currentUserType){
+      if (userType == Token.ADMIN.intValue){
+        setUserTypeLabel(userNode, UserLabel.ADMIN)
+      }else if (userType == Token.ALFA.intValue){
+        setUserTypeLabel(userNode, UserLabel.ALFA)
+      }else if (userType == Token.BETA.intValue){
+        setUserTypeLabel(userNode, UserLabel.BETA)
+      }else if (userType == Token.NORMAL.intValue){
+        removeUserTypeLabel(userNode)      }
+    }
+  }
+  
+  private def getUserType(user: Node): Byte = {
+    val labels = user.getLabels().asScala
+    if (labels.find(p => p.name() == "ADMIN").isDefined)
+      Token.ADMIN
+    else if (labels.find(p => p.name() == "ALFA").isDefined)
+      Token.ALFA
+    else if (labels.find(p => p.name() == "BETA").isDefined)
+      Token.BETA
+    else
+      Token.NORMAL
+  }
+  
+  private def setUserTypeLabel(userNode: Node, label: Label)(implicit neo4j: DatabaseService){
+    removeUserTypeLabel(userNode)
+    userNode.addLabel(label)
+  }
+  
+  private def removeUserTypeLabel(userNode: Node)(implicit neo4j: DatabaseService){
+    // Remove existing user type
+    if (userNode.hasLabel(UserLabel.ADMIN))
+      userNode.removeLabel(UserLabel.ADMIN)
+    else if (userNode.hasLabel(UserLabel.ALFA))
+      userNode.removeLabel(UserLabel.ALFA)
+    else if (userNode.hasLabel(UserLabel.BETA))
+      userNode.removeLabel(UserLabel.BETA)
+  }
+
+  
 }
