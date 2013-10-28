@@ -17,12 +17,14 @@
 
           tasksRequest.uncompleteTask($scope.task).then(function(uncompleteTaskResponse) {
             tasksResponse.putTaskContent($scope.task, uncompleteTaskResponse);
+            $scope.task = {};
           });
 
         } else {
 
           tasksRequest.completeTask($scope.task).then(function(completeTaskResponse) {
             tasksResponse.putTaskContent($scope.task, completeTaskResponse);
+            $scope.task = {};
           });
 
         }

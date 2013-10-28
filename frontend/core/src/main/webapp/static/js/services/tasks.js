@@ -74,8 +74,6 @@
               }
               i++;
             }
-          } else {
-            tasks = [];
           }
         },
         setTask : function(task) {

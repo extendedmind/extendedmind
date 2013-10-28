@@ -10,6 +10,9 @@
         setCollectivePrefix : function() {
           this.setPrefix('collective' + '/' + userSessionStorage.getActiveUUID());
         },
+        setMyPrefix : function() {
+          this.setPrefix('my');
+        },
         setPrefix : function(name) {
           prefix = name;
         },

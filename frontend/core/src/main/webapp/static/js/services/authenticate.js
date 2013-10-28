@@ -3,15 +3,16 @@
 
 ( function() {'use strict';
 
-    function userAuthenticate($location, $rootScope, authenticateRequest, userSession, userCookie, userSessionStorage) {
+    function userAuthenticate($injector, $location, $rootScope, authenticateRequest, userSession, userCookie, userSessionStorage) {
 
       return {
-        authenticate : function() {
+        authenticate : function(deferred) {
 
           if (userSessionStorage.isUserAuthenticated()) {
             if (!userSession.getCredentials()) {
               userSession.setEncodedCredentials(userSessionStorage.getHttpAuthorizationHeader());
             }
+            return deferred.resolve();
           } else if (userCookie.isUserRemembered()) {
 
             userSession.setCredentials('token', userCookie.getUserToken());
@@ -19,18 +20,49 @@
 
             authenticateRequest.login().then(function(authenticateResponse) {
               userSession.setUserSessionData(authenticateResponse);
-              $rootScope.$broadcast('event:loginSuccess');
+              return deferred.resolve();
+            }, function() {
+              $location.path('/login');
+              return deferred.reject();
             });
-
           } else {
             $location.path('/login');
+            return deferred.reject();
           }
+        },
+        checkActiveUUIDOnResponseError : function() {
+          return userSessionStorage.isUserAuthenticated();
+        },
+        authenticateOnResponseError : function() {
+
+          if (userCookie.isUserRemembered()) {
+
+            userSession.setCredentials('token', userCookie.getUserToken());
+            userSession.setUserRemembered(true);
+
+            return true;
+          }
+          return false;
+        },
+        loginAndRetryRequest : function(rejection) {
+          var httpRequest;
+
+          authenticateRequest.login().then(function(authenticateResponse) {
+            userSession.setUserSessionData(authenticateResponse);
+
+            httpRequest = httpRequest || $injector.get('httpRequest');
+            httpRequest.config(rejection.config).then(function(response) {
+              return response;
+            }, function(response) {
+              return response;
+            });
+          });
         }
       };
     }
 
 
-    userAuthenticate.$inject = ['$location', '$rootScope', 'authenticateRequest', 'userSession', 'userCookie', 'userSessionStorage'];
+    userAuthenticate.$inject = ['$injector', '$location', '$rootScope', 'authenticateRequest', 'userSession', 'userCookie', 'userSessionStorage'];
     angular.module('em.services').factory('userAuthenticate', userAuthenticate);
 
     function userSession(base64, httpBasicAuth, userCookie, userSessionStorage) {
@@ -41,6 +73,7 @@
         setUserSessionData : function(authenticateResponse) {
 
           userSessionStorage.setUserUUID(authenticateResponse.userUUID);
+
           userSessionStorage.setActiveUUID(authenticateResponse.userUUID);
 
           this.setCredentials('token', authenticateResponse.token);
@@ -106,7 +139,6 @@
             clearUser();
             return logoutResponse.data;
           });
-
         },
         account : function() {
           return httpRequest.get('/api/account').then(function(accountResponse) {

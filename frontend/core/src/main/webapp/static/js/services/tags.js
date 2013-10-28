@@ -17,8 +17,6 @@
               this.setTag(tagsResponse[i]);
               i++;
             }
-          } else {
-            tags = [];
           }
         },
         setTag : function(tag) {
