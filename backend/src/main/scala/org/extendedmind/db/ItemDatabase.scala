@@ -19,6 +19,8 @@ import org.neo4j.kernel.OrderedByTypeExpander
 import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.PathExpander
 import org.neo4j.kernel.Uniqueness
+import org.neo4j.index.lucene.ValueContext
+import org.neo4j.graphdb.index.Index
 
 trait ItemDatabase extends AbstractGraphDatabase {
 
@@ -28,13 +30,15 @@ trait ItemDatabase extends AbstractGraphDatabase {
     for {
       itemNode <- createItem(owner, item).right
       result <- Right(getSetResult(itemNode, true)).right
+      unit <- Right(addToItemsIndex(owner, itemNode, result)).right
     } yield result
   }
 
   def putExistingItem(owner: Owner, itemUUID: UUID, item: Item): Response[SetResult] = {
     for {
-      item <- updateItem(owner, itemUUID, item).right
-      result <- Right(getSetResult(item, false)).right
+      itemNode <- updateItem(owner, itemUUID, item).right
+      result <- Right(getSetResult(itemNode, false)).right
+      unit <- Right(updateItemsIndex(itemNode, result)).right      
     } yield result
   }
 
@@ -62,15 +66,17 @@ trait ItemDatabase extends AbstractGraphDatabase {
   
   def deleteItem(owner: Owner, itemUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedItem <- deleteItemNode(owner, itemUUID).right
-      result <- Right(getDeleteItemResult(deletedItem._1, deletedItem._2)).right
+      deletedItemNode <- deleteItemNode(owner, itemUUID).right
+      result <- Right(getDeleteItemResult(deletedItemNode._1, deletedItemNode._2)).right
+      unit <- Right(updateItemsIndex(deletedItemNode._1, result.result)).right
     } yield result
   }
   
   def undeleteItem(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None): Response[SetResult] = {
     for {
-      item <- undeleteItemNode(owner, itemUUID, mandatoryLabel).right
-      result <- Right(getSetResult(item, false)).right
+      itemNode <- undeleteItemNode(owner, itemUUID, mandatoryLabel).right
+      result <- Right(getSetResult(itemNode, false)).right
+      unit <- Right(updateItemsIndex(itemNode, result)).right
     } yield result
   }
    
@@ -189,6 +195,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
       // User is the owner
       ownerNodes.user --> SecurityRelationship.OWNS --> itemNode
     }
+    
     Right(itemNode)
   }
 
@@ -204,6 +211,8 @@ trait ItemDatabase extends AbstractGraphDatabase {
           itemNode <- updateNode(itemNode, item).right
         } yield itemNode
     }
+    
+    
   }
 
   protected def setLabel(node: Node, additionalLabel: Option[Label], additionalSubLabel: Option[Tuple2[Label, Label]])(implicit neo4j: DatabaseService): Node = {
@@ -676,4 +685,32 @@ trait ItemDatabase extends AbstractGraphDatabase {
     // Delete token itself
     deletedItem.delete()
   }
+
+  protected def addToItemsIndex(owner: Owner, itemNode: Node, setResult: SetResult): Unit = {
+    withTx {
+      implicit neo4j =>
+	    val itemsIndex = neo4j.gds.index().forNodes("items")
+	    itemsIndex.add(itemNode, "owner", UUIDUtils.getTrimmedBase64UUID(getOwnerUUID(owner)))
+	    itemsIndex.add(itemNode, "item", itemNode.getProperty("uuid"))
+	    addModifiedIndex(itemsIndex, itemNode, setResult.modified)
+    }
+  }
+
+  protected def updateItemsIndex(itemNode: Node, setResult: SetResult): Unit = {
+    withTx {
+      implicit neo4j =>
+	    val itemsIndex = neo4j.gds.index().forNodes("items")
+	    updateModifiedIndex(itemsIndex, itemNode, setResult.modified)
+    }
+  }
+
+  protected def updateModifiedIndex(index: Index[Node], node: Node, modified: Long)(implicit neo4j: DatabaseService): Unit = {
+    index.remove(node, "modified")
+    addModifiedIndex(index, node, modified)
+  }
+  
+  protected def addModifiedIndex(index: Index[Node], node: Node, modified: Long)(implicit neo4j: DatabaseService): Unit = {
+    index.add(node, "modified", new ValueContext(node.getProperty("modified").asInstanceOf[Long] ).indexNumeric())    
+  }
+
 }

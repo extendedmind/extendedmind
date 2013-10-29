@@ -22,6 +22,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       noteNode <- putNewExtendedItem(owner, note, ItemLabel.NOTE).right
       result <- Right(getSetResult(noteNode, true)).right
+      unit <- Right(addToItemsIndex(owner, noteNode, result)).right
     } yield result
   }
 
@@ -29,6 +30,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       noteNode <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
       result <- Right(getSetResult(noteNode, false)).right
+      unit <- Right(updateItemsIndex(noteNode, result)).right
     } yield result
   }
 
@@ -45,8 +47,9 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   
   def deleteNote(owner: Owner, noteUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedNote <- deleteNoteNode(owner, noteUUID).right
-      result <- Right(getDeleteItemResult(deletedNote._1, deletedNote._2)).right
+      deletedNoteNode <- deleteNoteNode(owner, noteUUID).right
+      result <- Right(getDeleteItemResult(deletedNoteNode._1, deletedNoteNode._2)).right
+      unit <- Right(updateItemsIndex(deletedNoteNode._1, result.result)).right
     } yield result
   }
 

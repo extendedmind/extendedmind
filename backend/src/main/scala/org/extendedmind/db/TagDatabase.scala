@@ -28,6 +28,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       tagNode <- putNewTagNode(owner, tag).right
       result <- Right(getSetResult(tagNode, true)).right
+      unit <- Right(addToItemsIndex(owner, tagNode, result)).right
     } yield result
   }
   
@@ -35,6 +36,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       tagNode <- putExistingTagNode(owner, tagUUID, tag).right
       result <- Right(getSetResult(tagNode, false)).right
+      unit <- Right(updateItemsIndex(tagNode, result)).right
     } yield result
   }
 
