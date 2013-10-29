@@ -3,14 +3,14 @@
 
 ( function() {'use strict';
 
-    angular.module('em.filters').filter('interpolate', ['version',
+  angular.module('em.filters').filter('interpolate', ['version',
     function(version) {
       return function(text) {
         return String(text).replace(/\%VERSION\%/mg, version);
       };
     }]);
 
-    angular.module('em.filters').filter('tagTitle', ['itemsArray', 'tagsArray',
+  angular.module('em.filters').filter('tagTitle', ['itemsArray', 'tagsArray',
     function(itemsArray, tagsArray) {
       var userItemsFilter = function(itemTags) {
         var filteredValues, i, tag, tags;
@@ -33,7 +33,7 @@
       return userItemsFilter;
     }]);
 
-    angular.module('em.filters').filter('visibleNoteContent', [
+  angular.module('em.filters').filter('visibleNoteContent', [
     function() {
       var userItemsFilter = function(note) {
         var filteredValues, i;
@@ -51,7 +51,7 @@
       return userItemsFilter;
     }]);
 
-    angular.module('em.filters').filter('visibleTaskContent', [
+  angular.module('em.filters').filter('visibleTaskContent', [
     function() {
       var userItemsFilter = function(task) {
         var filteredValues, i;
@@ -68,4 +68,36 @@
       };
       return userItemsFilter;
     }]);
-  }());
+
+  angular.module('em.filters').filter('tasksFilter', [
+    function() {
+
+      var tasksDateFilter = function(tasks,filterValue) {
+
+        var filteredValues, d,i;
+        filteredValues=[];
+        i=0;
+
+        Date.prototype.yyyymmdd = function() {
+          var yyyy = this.getFullYear().toString();
+          var mm = (this.getMonth()+1).toString(); // getMonth() is zero-based
+          var dd  = this.getDate().toString();
+          return yyyy +'-'+ (mm[1]?mm:"0"+mm[0]) +'-'+ (dd[1]?dd:"0"+dd[0]); // padding
+        };
+        d = new Date();
+
+        while (tasks[i]) {
+          if (tasks[i].due){
+            if(tasks[i].due === d.yyyymmdd()){
+              filteredValues.push(tasks[i]);
+            }
+          }
+          i++;
+        }
+
+        return filteredValues;
+      };
+      return tasksDateFilter;
+    }]);
+
+}());

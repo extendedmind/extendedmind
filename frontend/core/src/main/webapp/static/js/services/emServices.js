@@ -2,7 +2,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('userPrefix', ['userSessionStorage',
+  angular.module('em.services').factory('userPrefix', ['userSessionStorage',
     function(userSessionStorage) {
       var prefix = 'my';
 
@@ -22,9 +22,9 @@
       };
     }]);
 
-    angular.module('em.services').value('version', 0.1);
+  angular.module('em.services').value('version', 0.1);
 
-    angular.module('em.services').factory('Enum', [
+  angular.module('em.services').factory('Enum', [
     function() {
       var pageIndex = {
         my : {
@@ -36,7 +36,14 @@
       return pageIndex;
     }]);
 
-    angular.module('em.services').factory('disableCarousel', [
+  angular.module('em.services').factory('filterService',[ 
+    function() {
+      return {
+        activeFilters: {}
+      };
+    }]);
+
+  angular.module('em.services').factory('disableCarousel', [
     function() {
       var swiping;
 
@@ -50,4 +57,4 @@
       };
     }]);
 
-  }());
+}());

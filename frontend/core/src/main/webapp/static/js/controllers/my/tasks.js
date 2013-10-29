@@ -2,10 +2,12 @@
 
 ( function() {'use strict';
 
-    function TasksController($location, $rootScope, $scope, Enum, errorHandler, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray, userPrefix) {
+    function TasksController($location, $rootScope, $scope, Enum, errorHandler,filterService, itemsArray, itemsRequest, location, notesArray, slideIndex, tagsArray, tasksArray, userPrefix) {
 
       $scope.errorHandler = errorHandler;
       $scope.prefix = userPrefix.getPrefix();
+      $scope.filterService=filterService;
+      $scope.filterService.activeFilters.today='tasksByDate';
 
       itemsRequest.getItems().then(function() {
 
@@ -43,6 +45,6 @@
     }
 
 
-    TasksController.$inject = ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray', 'tasksArray', 'userPrefix'];
+    TasksController.$inject = ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler','filterService', 'itemsArray', 'itemsRequest', 'location', 'notesArray', 'slideIndex', 'tagsArray', 'tasksArray', 'userPrefix'];
     angular.module('em.app').controller('TasksController', TasksController);
   }());
