@@ -72,14 +72,18 @@
   angular.module('em.filters').filter('tasksFilter', [
     function() {
 
-      var tasksDateFilter = function(tasks,filterValue) {
+      var filter = function(tasks,filterValue) {
 
-        var filteredValues, d,i;
-        filteredValues=[];
-        i=0;
+        var tasksFilter ={};
 
-        Date.prototype.yyyymmdd = function() {
-          var yyyy = this.getFullYear().toString();
+        tasksFilter.tasksByDate=function(tasks){
+
+          var filteredValues, d,i;
+          filteredValues=[];
+          i=0;
+
+          Date.prototype.yyyymmdd = function() {
+            var yyyy = this.getFullYear().toString();
           var mm = (this.getMonth()+1).toString(); // getMonth() is zero-based
           var dd  = this.getDate().toString();
           return yyyy +'-'+ (mm[1]?mm:"0"+mm[0]) +'-'+ (dd[1]?dd:"0"+dd[0]); // padding
@@ -94,10 +98,31 @@
           }
           i++;
         }
-
         return filteredValues;
-      };
-      return tasksDateFilter;
-    }]);
+      }
+
+      tasksFilter.projects=function(tasks){
+
+        var filteredValues,i;
+        filteredValues=[];
+        i=0;
+
+        while (tasks[i]) {
+          if (tasks[i].project){
+            filteredValues.push(tasks[i]);
+          }
+          i++;
+        }
+        return filteredValues;
+      }
+
+      if (filterValue){
+        return tasksFilter[filterValue](tasks);
+      }
+      return tasks;
+    };
+
+    return filter;
+  }]);
 
 }());

@@ -4,7 +4,7 @@
 
   <ul class="list-unstyled">
 
-    <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.today">
+    <li ng-class="selected" ng-repeat="task in tasks">
 
       <input type="checkbox" name="checkbox" id="checkbox{{$index}}" class="task-checkbox" ng-checked="task.completed" ng-click="taskChecked($index)">
 

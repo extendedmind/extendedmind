@@ -39,7 +39,8 @@
   angular.module('em.services').factory('filterService',[ 
     function() {
       return {
-        activeFilters: {}
+        activeFilters: {today:'tasksByDate',
+        project:'projects'}
       };
     }]);
 

@@ -2,7 +2,15 @@
 
 ( function() {'use strict';
 
-    angular.module('em.directives').directive('tasks', [
+  angular.module('em.directives').directive('task', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/tasks/task.html'
+      };
+    }]);
+
+  angular.module('em.directives').directive('tasks', [
     function() {
       return {
         restrict : 'A',
@@ -10,7 +18,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('filteredTasksList', [
+  angular.module('em.directives').directive('filteredTasksList', [
     function() {
       return {
         controller : 'TasksListController',
@@ -27,7 +35,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('subTask', [
+  angular.module('em.directives').directive('subTask', [
     function() {
       return {
         controller : 'TasksListController',
@@ -36,7 +44,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('tasksList', [
+  angular.module('em.directives').directive('tasksList', [
     function() {
       return {
         controller : 'TasksListController',
@@ -46,7 +54,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('taskContent', ['$location',
+  angular.module('em.directives').directive('taskContent', ['$location',
     function($location) {
       return {
         restrict : 'A',
@@ -67,11 +75,11 @@
       };
     }]);
 
-    angular.module('em.directives').directive('editTask', [
+  angular.module('em.directives').directive('editTask', [
     function() {
       return {
         restrict : 'A',
         templateUrl : 'static/partials/templates/tasks/edit.html'
       };
     }]);
-  }());
+}());

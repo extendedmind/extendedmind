@@ -3,7 +3,7 @@
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('tasksRequest', ['httpRequest', 'userSessionStorage',
+  angular.module('em.services').factory('tasksRequest', ['httpRequest', 'userSessionStorage',
     function(httpRequest, userSessionStorage) {
       return {
         putTask : function(task) {
@@ -34,136 +34,136 @@
       };
     }]);
 
-    angular.module('em.services').factory('tasksResponse', ['itemsResponse',
-    function(itemsResponse) {
-      return {
-        putTaskContent : function(task, putTaskResponse) {
-          itemsResponse.putItemContent(task, putTaskResponse);
-        },
-        deleteTaskProperty : function(task, property) {
-          itemsResponse.deleteItemProperty(task, property);
-        }
-      };
-    }]);
+angular.module('em.services').factory('tasksResponse', ['itemsResponse',
+  function(itemsResponse) {
+    return {
+      putTaskContent : function(task, putTaskResponse) {
+        itemsResponse.putItemContent(task, putTaskResponse);
+      },
+      deleteTaskProperty : function(task, property) {
+        itemsResponse.deleteItemProperty(task, property);
+      }
+    };
+  }]);
 
-    angular.module('em.services').factory('tasksArray', ['itemsArray',
-    function(itemsArray) {
-      var context, projects, subtasks, tasks, project;
-      context = [];
-      tasks = [];
-      projects = [];
-      subtasks = [];
-      project = [];
+angular.module('em.services').factory('tasksArray', ['itemsArray',
+  function(itemsArray) {
+    var context, projects, subtasks, tasks, project;
+    context = [];
+    tasks = [];
+    projects = [];
+    subtasks = [];
+    project = [];
 
-      return {
-        setTasks : function(tasksResponse) {
+    return {
+      setTasks : function(tasksResponse) {
 
-          itemsArray.clearArray(tasks);
-          itemsArray.clearArray(projects);
-          itemsArray.clearArray(subtasks);
+        itemsArray.clearArray(tasks);
+        itemsArray.clearArray(projects);
+        itemsArray.clearArray(subtasks);
 
-          if (tasksResponse != null) {
-            var i = 0;
+        if (tasksResponse != null) {
+          var i = 0;
 
-            while (tasksResponse[i]) {
-              if (tasksResponse[i].relationships) {
-                if (tasksResponse[i].relationships.parentTask) {
-                  this.setSubtask(tasksResponse[i]);
-                }
+          while (tasksResponse[i]) {
+            if (tasksResponse[i].relationships) {
+              if (tasksResponse[i].relationships.parentTask) {
+                this.setSubtask(tasksResponse[i]);
               }
-
-              if (tasksResponse[i].project) {
-                this.setProject(tasksResponse[i]);
-              } else {
-                this.setTask(tasksResponse[i]);
-              }
-              i++;
             }
-          }
-        },
-        setTask : function(task) {
-          if (!itemsArray.itemInArray(tasks, task.uuid)) {
-            tasks.push(task);
-          }
-        },
-        removeTask : function(task) {
-          itemsArray.removeItemFromArray(tasks, task);
 
+            if (tasksResponse[i].project) {
+              this.setProject(tasksResponse[i]);
+            } else {
+              this.setTask(tasksResponse[i]);
+            }
+            i++;
+          }
+        }
+      },
+      setTask : function(task) {
+        if (!itemsArray.itemInArray(tasks, task.uuid)) {
+          tasks.push(task);
+        }
+      },
+      removeTask : function(task) {
+        itemsArray.removeItemFromArray(tasks, task);
+
+        if (task.relationships) {
+          if (task.relationships.parentTask) {
+            this.removeSubtask(task);
+            this.removeProject(task.relationships.parentTask);
+          }
+          if (task.relationships.tags) {
+            this.removeTaskFromContext(task);
+          }
+        }
+      },
+      removeSubtask : function(task) {
+        itemsArray.removeItemFromArray(subtasks, task);
+        itemsArray.removeItemFromArray(project, task);
+      },
+      removeProject : function(uuid) {
+
+        if (this.getSubtasksByProjectUUID(uuid).length === 0) {
+          var task = this.getProjectByUUID(uuid);
+          itemsArray.removeItemFromArray(projects, task);
+          this.deleteTaskProperty(task, 'project');
+          this.setTask(task);
+        }
+      },
+      removeTaskFromContext : function(task) {
+        itemsArray.removeItemFromArray(context, task);
+      },
+      getTasks : function() {
+        return tasks;
+      },
+      getProjectByUUID : function(uuid) {
+        return itemsArray.getItemByUUID(projects, uuid);
+      },
+      getSubtaskByUUID : function(uuid) {
+        return itemsArray.getItemByUUID(subtasks, uuid);
+      },
+      getSubtasksByProjectUUID : function(uuid) {
+        project = itemsArray.getItemsByProjectUUID(subtasks, uuid);
+        return project;
+      },
+      getSubtasksByTagUUID : function(uuid) {
+        context = itemsArray.getItemsByTagUUID(tasks, uuid);
+        return context;
+      },
+      getTaskByUUID : function(uuid) {
+        return itemsArray.getItemByUUID(tasks, uuid);
+      },
+      deleteTaskProperty : function(task, property) {
+        itemsArray.deleteItemProperty(task, property);
+      },
+      setProject : function(task) {
+        if (!itemsArray.itemInArray(projects, task.uuid)) {
+          projects.push(task);
+        }
+      },
+      getProjects : function() {
+        return projects;
+      },
+      setSubtask : function(task) {
+        if (!itemsArray.itemInArray(subtasks, task.uuid)) {
+          subtasks.push(task);
+        }
+      },
+      getSubtasks : function() {
+        return subtasks;
+      },
+      putNewTask : function(task) {
+        if (!itemsArray.itemInArray(tasks, task.uuid)) {
+          tasks.push(task);
           if (task.relationships) {
             if (task.relationships.parentTask) {
-              this.removeSubtask(task);
-              this.removeProject(task.relationships.parentTask);
-            }
-            if (task.relationships.tags) {
-              this.removeTaskFromContext(task);
-            }
-          }
-        },
-        removeSubtask : function(task) {
-          itemsArray.removeItemFromArray(subtasks, task);
-          itemsArray.removeItemFromArray(project, task);
-        },
-        removeProject : function(uuid) {
-
-          if (this.getSubtasksByProjectUUID(uuid).length === 0) {
-            var task = this.getProjectByUUID(uuid);
-            itemsArray.removeItemFromArray(projects, task);
-            this.deleteTaskProperty(task, 'project');
-            this.setTask(task);
-          }
-        },
-        removeTaskFromContext : function(task) {
-          itemsArray.removeItemFromArray(context, task);
-        },
-        getTasks : function() {
-          return tasks;
-        },
-        getProjectByUUID : function(uuid) {
-          return itemsArray.getItemByUUID(projects, uuid);
-        },
-        getSubtaskByUUID : function(uuid) {
-          return itemsArray.getItemByUUID(subtasks, uuid);
-        },
-        getSubtasksByProjectUUID : function(uuid) {
-          project = itemsArray.getItemsByProjectUUID(subtasks, uuid);
-          return project;
-        },
-        getSubtasksByTagUUID : function(uuid) {
-          context = itemsArray.getItemsByTagUUID(tasks, uuid);
-          return context;
-        },
-        getTaskByUUID : function(uuid) {
-          return itemsArray.getItemByUUID(tasks, uuid);
-        },
-        deleteTaskProperty : function(task, property) {
-          itemsArray.deleteItemProperty(task, property);
-        },
-        setProject : function(task) {
-          if (!itemsArray.itemInArray(projects, task.uuid)) {
-            projects.push(task);
-          }
-        },
-        getProjects : function() {
-          return projects;
-        },
-        setSubtask : function(task) {
-          if (!itemsArray.itemInArray(subtasks, task.uuid)) {
-            subtasks.push(task);
-          }
-        },
-        getSubtasks : function() {
-          return subtasks;
-        },
-        putNewTask : function(task) {
-          if (!itemsArray.itemInArray(tasks, task.uuid)) {
-            tasks.push(task);
-            if (task.relationships) {
-              if (task.relationships.parentTask) {
-                this.setSubtask(task);
-              }
+              this.setSubtask(task);
             }
           }
         }
-      };
-    }]);
-  }());
+      }
+    };
+  }]);
+}());
