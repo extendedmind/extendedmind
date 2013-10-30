@@ -76,53 +76,45 @@
 
         var tasksFilter ={};
 
-        tasksFilter.tasksByDate=function(tasks){
+        tasksFilter.tasksByDate=function(tasks,filterBy){
 
-          var filteredValues, d,i;
+          var filteredValues,i;
           filteredValues=[];
           i=0;
 
-          Date.prototype.yyyymmdd = function() {
-            var yyyy = this.getFullYear().toString();
-          var mm = (this.getMonth()+1).toString(); // getMonth() is zero-based
-          var dd  = this.getDate().toString();
-          return yyyy +'-'+ (mm[1]?mm:"0"+mm[0]) +'-'+ (dd[1]?dd:"0"+dd[0]); // padding
-        };
-        d = new Date();
+          while (tasks[i]) {
+            if (tasks[i].due){
+              if(tasks[i].due === filterBy){
+                filteredValues.push(tasks[i]);
+              }
+            }
+            i++;
+          }
+          return filteredValues;
+        }
 
-        while (tasks[i]) {
-          if (tasks[i].due){
-            if(tasks[i].due === d.yyyymmdd()){
+        tasksFilter.projects=function(tasks){
+
+          var filteredValues,i;
+          filteredValues=[];
+          i=0;
+
+          while (tasks[i]) {
+            if (tasks[i].project){
               filteredValues.push(tasks[i]);
             }
+            i++;
           }
-          i++;
+          return filteredValues;
         }
-        return filteredValues;
-      }
 
-      tasksFilter.projects=function(tasks){
-
-        var filteredValues,i;
-        filteredValues=[];
-        i=0;
-
-        while (tasks[i]) {
-          if (tasks[i].project){
-            filteredValues.push(tasks[i]);
-          }
-          i++;
+        if (filterValue){
+          return tasksFilter[filterValue.name](tasks, filterValue.filterBy);
         }
-        return filteredValues;
-      }
+        return tasks;
+      };
 
-      if (filterValue){
-        return tasksFilter[filterValue](tasks);
-      }
-      return tasks;
-    };
-
-    return filter;
-  }]);
+      return filter;
+    }]);
 
 }());

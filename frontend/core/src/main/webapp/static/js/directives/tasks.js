@@ -18,6 +18,15 @@
       };
     }]);
 
+  angular.module('em.directives').directive('today', [
+    function() {
+      return {
+        restrict : 'A',
+        controller : 'TodayController',
+        templateUrl : 'static/partials/my/tasks/today.html'
+      };
+    }]);
+
   angular.module('em.directives').directive('filteredTasksList', [
     function() {
       return {
