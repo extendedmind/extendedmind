@@ -3,41 +3,33 @@
 
 ( function() {'use strict';
 
-  function TodayController($scope,date,filterService) {
+  function TodayController($scope,$swipe,date,disableCarousel,filterService) {
 
     $scope.filterService = filterService;
     
-    $scope.date={};
-    
-    $scope.date.date=date.yyyymmdd();
+    $scope.dates = date.week();
+    $scope.date=date.today();
+    $scope.filterService.activeFilters.tasksByDate.filterBy = $scope.date.yyyymmdd;
 
-    if (date.today($scope.date.date)){
-      $scope.date.day='today';
-    }
+    $scope.dateClicked = function(date) {
 
-    $scope.dates = [{
-      date: '2013-10-30',year:'2013',month:'10',day:'30'
-    }, {
-      date: '2013-10-31',year:'2013',month:'10',day:'31'
-    }, {
-      date: '2013-11-01',year:'2013',month:'11',day:'01'
-    }];
+      $scope.date=date;
+      $scope.filterService.activeFilters.tasksByDate.filterBy=$scope.date.yyyymmdd;
 
-    $scope.filterService.activeFilters.tasksByDate.filterBy=$scope.date.date;
-
-    $scope.dateClicked = function(day) {
-
-      $scope.date=day;
-
-      if (date.today($scope.date.date)){
-        $scope.date.day='today';
-      }
-
-      $scope.filterService.activeFilters.tasksByDate.filterBy = $scope.date.date;
     };
+
+    $swipe.bind($(".datebar"),
+    {
+      start : function() {
+       disableCarousel.setSwiping(true);
+     },
+     end : function() {
+       disableCarousel.setSwiping(false);
+     }
+   });
   }
 
 
-  TodayController.$inject = ['$scope','date','filterService'];
+  TodayController.$inject = ['$scope','$swipe','date','disableCarousel','filterService'];
   angular.module('em.app').controller('TodayController', TodayController);
 }());
