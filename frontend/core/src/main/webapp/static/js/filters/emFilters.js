@@ -83,9 +83,11 @@
           i=0;
 
           while (tasks[i]) {
-            if (tasks[i].due){
-              if(tasks[i].due === filterBy){
-                filteredValues.push(tasks[i]);
+            if(!tasks[i].project){
+              if (tasks[i].due){
+                if(tasks[i].due === filterBy){
+                  filteredValues.push(tasks[i]);
+                }
               }
             }
             i++;
@@ -110,20 +112,22 @@
 
         tasksFilter.unsorted=function(tasks){
 
-          var filteredValues,i;
+          var filteredValues,i,sortedTask;
           filteredValues=[];
           i=0;
+          sortedTask=false;
 
           while (tasks[i]) {
             if (tasks[i].relationships){
-              if(!tasks[i].relationships.parentTask){
-                filteredValues.push(tasks[i]);
+              if(tasks[i].relationships.parentTask){
+                sortedTask=true;
               }
             }
-            else {
-              if(!tasks[i].project){
-                filteredValues.push(tasks[i]);
-              }
+            if(tasks[i].project){
+              sortedTask=true;
+            }
+            if(!sortedTask){
+              filteredValues.push(tasks[i]);
             }
             i++;
           }

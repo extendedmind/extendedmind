@@ -28,8 +28,13 @@
     };
 
     $scope.taskToProject = function(task) {
-      activeItem.setItem(task);
       $location.path(userPrefix.getPrefix() + '/tasks/new');
+      activeItem.setItem(task);
+      task.project=true;
+
+      tasksRequest.putExistingTask(task).then(function(putExistingTaskResponse) {
+        tasksResponse.putTaskContent(task, putExistingTaskResponse);
+      });
     };
 
     $scope.deleteTask = function(task) {
