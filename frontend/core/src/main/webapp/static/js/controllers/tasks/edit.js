@@ -2,18 +2,18 @@
 
 ( function() {'use strict';
 
-    function EditTaskController($routeParams, $scope, errorHandler, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
+    function EditTaskController($routeParams, $scope, errorHandler, filterService,itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
 
       $scope.errorHandler = errorHandler;
       $scope.prefix = userPrefix.getPrefix();
+      $scope.filterService=filterService;
 
       itemsRequest.getItems().then(function() {
 
         $scope.contexts = tagsArray.getTags();
-        $scope.projects = tasksArray.getProjects();
+        $scope.tasks = tasksArray.getTasks();
 
         if ($routeParams.uuid) {
-
           if (tasksArray.getTaskByUUID($routeParams.uuid)) {
             $scope.task = tasksArray.getTaskByUUID($routeParams.uuid);
 
@@ -45,8 +45,6 @@
 
         if ($scope.parentTask) {
 
-          tasksArray.setSubtask($scope.task);
-
           if (!$scope.task.relationships) {
             $scope.task.relationships = {};
           }
@@ -57,7 +55,6 @@
 
           if ($scope.task.relationships) {
             if ($scope.task.relationships.parentTask) {
-              tasksArray.removeSubtask($scope.task);
               tasksArray.deleteTaskProperty($scope.task.relationships, 'parentTask');
             }
           }
@@ -79,6 +76,6 @@
     }
 
 
-    EditTaskController.$inject = ['$routeParams', '$scope', 'errorHandler', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
+    EditTaskController.$inject = ['$routeParams', '$scope', 'errorHandler','filterService', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
     angular.module('em.app').controller('EditTaskController', EditTaskController);
   }());

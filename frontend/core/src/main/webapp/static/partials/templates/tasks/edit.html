@@ -17,7 +17,7 @@
   <div class="form-group">
     <label class="sr-only" for="taskParent">parent</label>
     <div class="col-lg-10">
-      <select class="form-control" id="taskParent" ng-model="parentTask" ng-options="project.title for project in projects" ng-disabled="task.project">
+      <select class="form-control" id="taskParent" ng-model="parentTask" ng-options="project.title for project in tasks | tasksFilter:filterService.activeFilters.project" ng-disabled="task.project">
         <option value="">select list</option>
       </select>
     </div>
