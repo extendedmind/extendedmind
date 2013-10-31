@@ -108,6 +108,23 @@
           return filteredValues;
         }
 
+        tasksFilter.unsorted=function(tasks){
+
+          var filteredValues,i;
+          filteredValues=[];
+          i=0;
+
+          while (tasks[i]) {
+            if (tasks[i].relationships){
+              if(!tasks[i].relationships.parentTask){
+                filteredValues.push(tasks[i]);
+              }
+            }
+            i++;
+          }
+          return filteredValues;
+        }
+
         if (filterValue){
           return tasksFilter[filterValue.name](tasks, filterValue.filterBy);
         }

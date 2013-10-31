@@ -117,12 +117,17 @@ angular.module('em.services').factory('filterService',[
     return {
       activeFilters: {
         tasksByDate:{
-          "name":'tasksByDate',
-          "filterBy": "2013-10-30"
+          name:'tasksByDate'
         },
-        project:'projects'}
-      };
-    }]);
+        project:{
+          name:'projects'
+        },
+        unsorted:{
+          name:'unsorted'
+        }
+      }
+    };
+  }]);
 
 angular.module('em.services').factory('disableCarousel', [
   function() {

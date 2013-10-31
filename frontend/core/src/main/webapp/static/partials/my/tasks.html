@@ -6,13 +6,25 @@
 
   <h1 class="text-primary">tasks</h1>
 
-  <div tasks-list>
-    <h2>unsorted</h2>
-  </div>
+  <h2>unsorted</h2>
 
-  <div projects-list>
-    <h2>projects</h2>
-  </div>
+  <ul class="list-unstyled">
+  <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.unsorted">
+
+      <div task></div>
+
+    </li>
+  </ul>
+
+  <h2>projects</h2>
+
+  <ul class="list-unstyled">
+    <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.project">
+
+      <div project></div>
+
+    </li>
+  </ul>
 
   <h2>areas</h2>
 

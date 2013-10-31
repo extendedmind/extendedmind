@@ -58,27 +58,8 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
     return {
       setTasks : function(tasksResponse) {
 
-        itemsArray.clearArray(tasks);
-        itemsArray.clearArray(projects);
-        itemsArray.clearArray(subtasks);
-
         if (tasksResponse != null) {
-          var i = 0;
-
-          while (tasksResponse[i]) {
-            if (tasksResponse[i].relationships) {
-              if (tasksResponse[i].relationships.parentTask) {
-                this.setSubtask(tasksResponse[i]);
-              }
-            }
-
-            if (tasksResponse[i].project) {
-              this.setProject(tasksResponse[i]);
-            } else {
-              this.setTask(tasksResponse[i]);
-            }
-            i++;
-          }
+          tasks=tasksResponse;
         }
       },
       setTask : function(task) {

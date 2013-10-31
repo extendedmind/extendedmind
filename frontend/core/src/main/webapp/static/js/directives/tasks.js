@@ -10,6 +10,14 @@
       };
     }]);
 
+  angular.module('em.directives').directive('project', [
+    function() {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/tasks/project.html'
+      };
+    }]);
+
   angular.module('em.directives').directive('tasks', [
     function() {
       return {
