@@ -8,23 +8,20 @@
       $location.path(userPrefix.getPrefix() + '/tasks/edit/' + task.uuid);
     };
 
-    $scope.taskChecked = function(index) {
+    $scope.taskChecked = function(task) {
 
-      $scope.task = $scope.tasks[index];
-      if ($scope.task.completed) {
+      if (task.completed) {
 
-        tasksArray.deleteTaskProperty($scope.task, 'completed');
+        tasksArray.deleteTaskProperty(task, 'completed');
 
-        tasksRequest.uncompleteTask($scope.task).then(function(uncompleteTaskResponse) {
-          tasksResponse.putTaskContent($scope.task, uncompleteTaskResponse);
-          $scope.task = {};
+        tasksRequest.uncompleteTask(task).then(function(uncompleteTaskResponse) {
+          tasksResponse.putTaskContent(task, uncompleteTaskResponse);
         });
 
       } else {
 
-        tasksRequest.completeTask($scope.task).then(function(completeTaskResponse) {
-          tasksResponse.putTaskContent($scope.task, completeTaskResponse);
-          $scope.task = {};
+        tasksRequest.completeTask(task).then(function(completeTaskResponse) {
+          tasksResponse.putTaskContent(task, completeTaskResponse);
         });
 
       }
@@ -47,29 +44,25 @@
     $scope.addSubtask = function() {
 
       if ($routeParams.uuid) {
-        $scope.task.relationships = {};
+        $scope.subtask.relationships = {};
 
         if (tasksArray.getProjectByUUID($routeParams.uuid)) {
 
-          $scope.task.relationships.parentTask = $routeParams.uuid;
-          tasksArray.setSubtask($scope.task);
-          $scope.tasks.push($scope.task);
+          $scope.subtask.relationships.parentTask = $routeParams.uuid;
 
         } else if (tagsArray.getTagByUUID($routeParams.uuid)) {
 
-          $scope.task.relationships.tags = [];
-          $scope.task.relationships.tags[0] = $routeParams.uuid;
-          $scope.tasks.push($scope.task);
+          $scope.subtask.relationships.tags = [];
+          $scope.subtask.relationships.tags[0] = $routeParams.uuid;
         }
       }
 
-      tasksArray.putNewTask($scope.task);
+      tasksArray.putNewTask($scope.subtask);
 
-      tasksRequest.putTask($scope.task).then(function(putTaskResponse) {
+      tasksRequest.putTask($scope.subtask).then(function(putTaskResponse) {
+        tasksResponse.putTaskContent($scope.subtask, putTaskResponse);
 
-        tasksResponse.putTaskContent($scope.task, putTaskResponse);
-        $scope.task = {};
-
+        $scope.subtask = {};
       });
     };
   }

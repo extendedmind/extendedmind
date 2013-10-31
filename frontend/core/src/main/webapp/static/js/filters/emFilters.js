@@ -120,6 +120,11 @@
                 filteredValues.push(tasks[i]);
               }
             }
+            else {
+              if(!tasks[i].project){
+                filteredValues.push(tasks[i]);
+              }
+            }
             i++;
           }
           return filteredValues;

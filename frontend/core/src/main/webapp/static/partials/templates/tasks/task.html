@@ -1,6 +1,6 @@
 <div>
 
-  <input type="checkbox" name="checkbox" id="checkbox{{$index}}" class="task-checkbox" ng-checked="task.completed" ng-click="taskChecked($index)">
+  <input type="checkbox" name="checkbox" id="checkbox{{$index}}" class="task-checkbox" ng-checked="task.completed" ng-click="taskChecked(task)">
 
   <span ng-click="toggleTaskContent()">{{task.title}}</span>
 

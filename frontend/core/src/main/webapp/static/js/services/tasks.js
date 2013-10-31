@@ -72,25 +72,17 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
 
         if (task.relationships) {
           if (task.relationships.parentTask) {
-            this.removeSubtask(task);
             this.removeProject(task.relationships.parentTask);
-          }
-          if (task.relationships.tags) {
-            this.removeTaskFromContext(task);
           }
         }
       },
       removeSubtask : function(task) {
-        itemsArray.removeItemFromArray(subtasks, task);
-        itemsArray.removeItemFromArray(project, task);
       },
       removeProject : function(uuid) {
 
         if (this.getSubtasksByProjectUUID(uuid).length === 0) {
           var task = this.getProjectByUUID(uuid);
-          itemsArray.removeItemFromArray(projects, task);
           this.deleteTaskProperty(task, 'project');
-          this.setTask(task);
         }
       },
       removeTaskFromContext : function(task) {
@@ -100,13 +92,13 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
         return tasks;
       },
       getProjectByUUID : function(uuid) {
-        return itemsArray.getItemByUUID(projects, uuid);
+        return itemsArray.getItemByUUID(tasks, uuid);
       },
       getSubtaskByUUID : function(uuid) {
         return itemsArray.getItemByUUID(subtasks, uuid);
       },
       getSubtasksByProjectUUID : function(uuid) {
-        project = itemsArray.getItemsByProjectUUID(subtasks, uuid);
+        project = itemsArray.getItemsByProjectUUID(tasks, uuid);
         return project;
       },
       getSubtasksByTagUUID : function(uuid) {
@@ -138,11 +130,6 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
       putNewTask : function(task) {
         if (!itemsArray.itemInArray(tasks, task.uuid)) {
           tasks.push(task);
-          if (task.relationships) {
-            if (task.relationships.parentTask) {
-              this.setSubtask(task);
-            }
-          }
         }
       }
     };
