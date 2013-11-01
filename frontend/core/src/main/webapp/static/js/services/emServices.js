@@ -124,6 +124,9 @@ angular.module('em.services').factory('filterService',[
         },
         unsorted:{
           name:'unsorted'
+        },
+        tasksByProjectUUID:{
+          name:'byProjectUUID'
         }
       }
     };

@@ -76,7 +76,25 @@
 
         var tasksFilter ={};
 
-        tasksFilter.tasksByDate=function(tasks,filterBy){
+        tasksFilter.byProjectUUID=function(tasks,uuid){
+          var filteredValues,i;
+          filteredValues=[];
+          i=0;
+
+          while(tasks[i]){
+            if(tasks[i].relationships){
+              if(tasks[i].relationships.parentTask){
+                if(tasks[i].relationships.parentTask===uuid){
+                  filteredValues.push(tasks[i]);
+                }
+              }
+            }
+            i++;
+          }
+          return filteredValues;
+        }
+
+        tasksFilter.tasksByDate=function(tasks,date){
 
           var filteredValues,i;
           filteredValues=[];
@@ -85,7 +103,7 @@
           while (tasks[i]) {
             if(!tasks[i].project){
               if (tasks[i].due){
-                if(tasks[i].due === filterBy){
+                if(tasks[i].due === date){
                   filteredValues.push(tasks[i]);
                 }
               }

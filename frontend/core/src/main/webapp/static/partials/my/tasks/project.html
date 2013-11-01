@@ -6,8 +6,16 @@
 
   <h1 class="text-primary"><a href="{{prefix}}/tasks">tasks</a></h1>
 
-  <div tasks-list>
+  <div>
     <h2 ng-click="editProject()"><a class="text-muted" href="">{{project.title}}</a></h2>
+    <ul class="list-unstyled">
+      <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.tasksByProjectUUID">
+
+        <div task></div>
+        
+      </li>
+      <div sub-task></div>
+    </ul>
   </div>
 
 </div>
