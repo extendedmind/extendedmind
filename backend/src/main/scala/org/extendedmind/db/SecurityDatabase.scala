@@ -119,7 +119,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
   
-  def destroyTokens(userUUID: UUID): Response[DeleteCountResult] = {
+  def destroyTokens(userUUID: UUID): Response[CountResult] = {
     withTx{
       implicit neo4j => 
         for {
@@ -144,6 +144,19 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       userNode <- changeUserNodeType(userUUID, userType).right
       result <- Right(getSetResult(userNode, false)).right
     } yield result
+  }
+  
+  def destroyAllTokens: Response[CountResult] = {
+    withTx {
+      implicit neo4j =>
+        val tokens = findNodesByLabel(MainLabel.TOKEN)
+        val count = tokens.size
+        tokens.foreach { token => {
+         token.getRelationships() foreach {relationship => relationship.delete}
+         token.delete() 
+        }}
+        Right(CountResult(count))
+    }
   }
   
   // PRIVATE
@@ -177,7 +190,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
   
-  def destroyTokens(userNode: Node): Response[DeleteCountResult] = {
+  def destroyTokens(userNode: Node): Response[CountResult] = {
     withTx{
       implicit neo4j => 
         val tokenTraversal = Traversal.description()
@@ -192,7 +205,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         tokenList.foreach(tokenNode => {
           destroyToken(tokenNode)
         })
-        Right(DeleteCountResult(deleteCount))
+        Right(CountResult(deleteCount))
     }
   }
   

@@ -46,8 +46,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     withTx {
       implicit neo =>
         for {
-          ownerNodes <- getOwnerNodes(owner).right
-          itemNode <- getItemNode(ownerNodes, itemUUID).right
+          itemNode <- getItemNode(owner, itemUUID).right
           item <- toCaseClass[Item](itemNode).right
         } yield item
     }
@@ -80,13 +79,23 @@ trait ItemDatabase extends AbstractGraphDatabase {
     } yield result
   }
    
-  def destroyDeletedItems(owner: Owner): Response[DeleteCountResult] = {
+  def destroyDeletedItems(owner: Owner): Response[CountResult] = {
     withTx {
       implicit neo4j => 
         for {
           ownerNodes <- getOwnerNodes(owner).right
           deleteResult <- Right(destroyDeletedItems(ownerNodes)).right
         } yield deleteResult
+      }
+  }
+  
+  def rebuildItemsIndex(ownerUUID: UUID): Response[CountResult] = {
+    withTx {
+      implicit neo4j => 
+        for {
+          ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
+          result <- rebuildItemsIndex(ownerNode).right
+        } yield result
       }
   }
   
@@ -139,13 +148,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
   def toTag(tagNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Tag];
 
   protected def getItemNodes(ownerNodes: OwnerNodes)(implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
-    val itemsFromOwner: TraversalDescription =
-      Traversal.description()
-        .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
-          Direction.OUTGOING)
-        .depthFirst()
-        .evaluator(Evaluators.excludeStartPosition())
-        .evaluator(LabelEvaluator(List(MainLabel.ITEM)))
+    val itemsFromOwner: TraversalDescription = itemsTraversal
         .evaluator(PropertyEvaluator(
             ItemLabel.TASK, "completed",
             Evaluation.EXCLUDE_AND_PRUNE,
@@ -159,6 +162,15 @@ trait ItemDatabase extends AbstractGraphDatabase {
     Right(traverser.nodes())
   }
 
+  protected def itemsTraversal(): TraversalDescription = { 
+      Traversal.description()
+        .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
+          Direction.OUTGOING)
+        .depthFirst()
+        .evaluator(Evaluators.excludeStartPosition())
+        .evaluator(LabelEvaluator(List(MainLabel.ITEM)))
+  }
+  
   protected def createItem(owner: Owner, item: AnyRef, 
                            extraLabel: Option[Label] = None, extraSubLabel: Option[Label] = None): 
                            Response[Node] = {
@@ -205,8 +217,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     withTx {
       implicit neo4j =>
         for {
-          ownerNodes <- getOwnerNodes(owner).right
-          itemNode <- getItemNode(ownerNodes, itemUUID, exactLabelMatch = false).right
+          itemNode <- getItemNode(owner, itemUUID, exactLabelMatch = false).right
           itemNode <- Right(setLabel(itemNode, additionalLabel, additionalSubLabel)).right
           itemNode <- updateNode(itemNode, item).right
         } yield itemNode
@@ -228,11 +239,11 @@ trait ItemDatabase extends AbstractGraphDatabase {
     node
   }
 
-  protected def getItemNode(ownerNodes: OwnerNodes, itemUUID: UUID, mandatoryLabel: Option[Label] = None, 
+  protected def getItemNode(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None, 
                             acceptDeleted: Boolean = false, exactLabelMatch: Boolean = true)
                            (implicit neo4j: DatabaseService): Response[Node] = {
-    val itemNode = if (mandatoryLabel.isDefined) getNode(itemUUID, mandatoryLabel.get, acceptDeleted)
-                   else getNode(itemUUID, MainLabel.ITEM, acceptDeleted)
+    val itemNode = if (mandatoryLabel.isDefined) getItemNode(getOwnerUUID(owner), itemUUID, mandatoryLabel.get, acceptDeleted)
+                   else getItemNode(getOwnerUUID(owner), itemUUID, MainLabel.ITEM, acceptDeleted)
     if (itemNode.isLeft) return itemNode              
     
     // If searching for just ITEM, needs to fail for tasks and notes
@@ -242,48 +253,31 @@ trait ItemDatabase extends AbstractGraphDatabase {
          || itemNode.right.get.hasLabel(ItemLabel.TAG))){
       return fail(INVALID_PARAMETER, "item already either note, task or tag with UUID " + itemUUID)
     }
-        
-    val ownerFromItem: TraversalDescription = {
-      if (acceptDeleted){
-        Traversal.description()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
-            Direction.INCOMING)
-          .depthFirst()
-          .evaluator(Evaluators.excludeStartPosition())
-      }else{
-        Traversal.description()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
-            Direction.INCOMING)
-          .depthFirst()
-          .evaluator(Evaluators.excludeStartPosition())
-          .evaluator(PropertyEvaluator(
-            MainLabel.ITEM, "deleted",
-            Evaluation.EXCLUDE_AND_PRUNE,
-            Evaluation.INCLUDE_AND_CONTINUE))
-      }
-    }
-    val traverser = ownerFromItem.traverse(itemNode.right.get)
-    val ownerNodeList = traverser.nodes().toArray
-    if (ownerNodeList.length == 0) {
-      fail(INTERNAL_SERVER_ERROR, "Item " + itemUUID + " has no owner")
-    } else if (ownerNodeList.length > 1) {
-      fail(INTERNAL_SERVER_ERROR, "More than one owner found for item with UUID " + itemUUID)
-    } else {
-      val owner = ownerNodeList.head
-      if (ownerNodes.collective.isDefined && ownerNodes.collective.get != owner){
-        fail(INVALID_PARAMETER, "Item " + itemUUID + " does not belong to collective " 
-            + getUUID(ownerNodes.collective.get))
-      }
-      else if (ownerNodes.collective.isEmpty && ownerNodes.user != owner){
-        fail(INVALID_PARAMETER, "Item " + itemUUID + " does not belong to user " 
-            + getUUID(ownerNodes.user))
-      }else{
-        Right(itemNode.right.get)
+    itemNode
+  }
+  
+  protected def getItemNode(ownerUUID: UUID, itemUUID: UUID, label: Label, acceptDeleted: Boolean)
+  						   (implicit neo4j: DatabaseService): Response[Node] = {
+    val itemsIndex = neo4j.gds.index().forNodes("items")
+    val itemNodeList = itemsIndex.query( "owner:\"" + UUIDUtils.getTrimmedBase64UUID(ownerUUID) 
+                                        + "\" AND item:\"" + UUIDUtils.getTrimmedBase64UUID(itemUUID)+ "\"").toList        
+    if (itemNodeList.length == 0) {
+      fail(INVALID_PARAMETER, "Could not find item " + itemUUID + " for owner " + ownerUUID)
+    } else if (itemNodeList.length == 0) {
+      fail(INTERNAL_SERVER_ERROR, "More than one item found with item " + itemUUID + " and owner + " + ownerUUID)
+    } else{
+      val itemNode = itemNodeList(0)
+      if (!itemNode.hasLabel(label)){
+        fail(INVALID_PARAMETER, "Item " + itemUUID + " does not have label " + label.labelName)
+      }else if (!acceptDeleted && itemNode.hasProperty("deleted")){
+        fail(INVALID_PARAMETER, "Item " + itemUUID + " is deleted")
+      }else {
+        Right(itemNode)
       }
     }
   }
 
-  def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, 
+  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, 
                               label: Label, subLabel: Option[Tuple2[Label, Label]] = None): 
         Response[Node] = {
     withTx {
@@ -296,7 +290,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     }
   }
 
-  def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None): 
+  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None): 
           Response[Node] = {
     withTx {
       implicit neo4j =>
@@ -310,17 +304,16 @@ trait ItemDatabase extends AbstractGraphDatabase {
 
   protected def setParentNodes(itemNode: Node,  owner: Owner, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Tuple2[Option[Relationship], Option[Relationship]]] = {
     for {
-      ownerNodes <- getOwnerNodes(owner).right
       oldParentRelationships <- getParentRelationships(itemNode, owner).right
-      newParentTaskRelationship <- setParentRelationship(itemNode, ownerNodes, extItem.parentTask, 
+      newParentTaskRelationship <- setParentRelationship(itemNode, owner, extItem.parentTask, 
           oldParentRelationships._1, ItemLabel.TASK).right
-      newParentNoteRelationship <- setParentRelationship(itemNode, ownerNodes, extItem.parentNote, 
+      newParentNoteRelationship <- setParentRelationship(itemNode, owner, extItem.parentNote, 
           oldParentRelationships._2, ItemLabel.NOTE).right
       parentList <- Right((newParentTaskRelationship, newParentNoteRelationship)).right
     }yield parentList
   }
 
-  protected def setParentRelationship(itemNode: Node, ownerNodes: OwnerNodes, parentUUID: Option[UUID], oldParentRelationship: Option[Relationship],
+  protected def setParentRelationship(itemNode: Node, owner: Owner, parentUUID: Option[UUID], oldParentRelationship: Option[Relationship],
                               parentLabel: Label)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
     if (parentUUID.isDefined){
       if (oldParentRelationship.isDefined){
@@ -335,7 +328,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
                            else if (parentLabel == ItemLabel.TASK) Some(ItemParentLabel.PROJECT)
                            else None
       for{
-        parentNode <- getItemNode(ownerNodes, parentUUID.get, Some(parentLabel)).right
+        parentNode <- getItemNode(owner, parentUUID.get, Some(parentLabel)).right
         parentRelationship <- createParentRelationship(itemNode, parentNode, newParentLabel).right
       }yield Some(parentRelationship)
     }else{
@@ -445,7 +438,6 @@ trait ItemDatabase extends AbstractGraphDatabase {
 
     Right((parentProject, parentArea, parentTag))
   }
-  
   
   protected def setTagNodes(itemNode: Node, owner: Owner, extItem: ExtendedItem)
         (implicit neo4j: DatabaseService): Response[Option[List[Relationship]]] = {
@@ -595,8 +587,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     withTx {
       implicit neo =>
         for {
-          ownerNodes <- getOwnerNodes(owner).right
-          itemNode <- getItemNode(ownerNodes, itemUUID).right
+          itemNode <- getItemNode(owner, itemUUID).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)
     }
@@ -606,8 +597,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     withTx {
       implicit neo =>
         for {
-          ownerNodes <- getOwnerNodes(owner).right
-          itemNode <- getItemNode(ownerNodes, itemUUID, mandatoryLabel, acceptDeleted = true).right
+          itemNode <- getItemNode(owner, itemUUID, mandatoryLabel, acceptDeleted = true).right
           success <- Right(undeleteItem(itemNode)).right
         } yield itemNode
     }
@@ -659,7 +649,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
   }
   
   protected def destroyDeletedItems(ownerNodes: OwnerNodes)(implicit neo4j: DatabaseService): 
-          DeleteCountResult = {
+          CountResult = {
     val deletedItemsFromOwner: TraversalDescription =
         Traversal.description()
             .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
@@ -675,7 +665,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     deletedItemList.foreach(deletedItem => {
       destroyItem(deletedItem)
     })
-    DeleteCountResult(count)
+    CountResult(count)
   }
   
   protected def destroyItem(deletedItem: Node)(implicit neo4j: DatabaseService) {
@@ -689,11 +679,15 @@ trait ItemDatabase extends AbstractGraphDatabase {
   protected def addToItemsIndex(owner: Owner, itemNode: Node, setResult: SetResult): Unit = {
     withTx {
       implicit neo4j =>
-	    val itemsIndex = neo4j.gds.index().forNodes("items")
-	    itemsIndex.add(itemNode, "owner", UUIDUtils.getTrimmedBase64UUID(getOwnerUUID(owner)))
-	    itemsIndex.add(itemNode, "item", itemNode.getProperty("uuid"))
-	    addModifiedIndex(itemsIndex, itemNode, setResult.modified)
-    }
+        addToItemsIndex(getOwnerUUID(owner), itemNode, setResult.modified)
+    }  
+  }
+  
+  protected def addToItemsIndex(ownerUUID: UUID, itemNode: Node, modified: Long)(implicit neo4j: DatabaseService): Unit = {
+    val itemsIndex = neo4j.gds.index().forNodes("items")
+    itemsIndex.add(itemNode, "owner", UUIDUtils.getTrimmedBase64UUID(ownerUUID))
+    itemsIndex.add(itemNode, "item", itemNode.getProperty("uuid"))
+    addModifiedIndex(itemsIndex, itemNode, modified)
   }
 
   protected def updateItemsIndex(itemNode: Node, setResult: SetResult): Unit = {
@@ -711,6 +705,18 @@ trait ItemDatabase extends AbstractGraphDatabase {
   
   protected def addModifiedIndex(index: Index[Node], node: Node, modified: Long)(implicit neo4j: DatabaseService): Unit = {
     index.add(node, "modified", new ValueContext(node.getProperty("modified").asInstanceOf[Long] ).indexNumeric())    
+  }
+  
+  protected def rebuildItemsIndex(ownerNode: Node)(implicit neo4j: DatabaseService): Response[CountResult] = {
+    val itemsFromOwner: TraversalDescription = itemsTraversal
+    val traverser = itemsFromOwner.traverse(ownerNode)
+    val itemsIndex = neo4j.gds.index().forNodes("items")
+    val ownerUUID = getUUID(ownerNode)
+    traverser.nodes.foreach(itemNode => {
+      itemsIndex.remove(itemNode)
+      addToItemsIndex(ownerUUID, itemNode, itemNode.getProperty("modified").asInstanceOf[Long])
+    })
+    Right(CountResult(traverser.nodes.size))
   }
 
 }

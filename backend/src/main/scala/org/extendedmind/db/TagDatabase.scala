@@ -44,8 +44,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          ownerNodes <- getOwnerNodes(owner).right
-          tagNode <- getItemNode(ownerNodes, tagUUID, Some(ItemLabel.TAG)).right
+          tagNode <- getItemNode(owner, tagUUID, Some(ItemLabel.TAG)).right
           tag <- toTag(tagNode, owner).right
         } yield tag
     }
@@ -83,9 +82,8 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def setTagParentNodes(tagNode: Node,  owner: Owner, tag: Tag)(implicit neo4j: DatabaseService): 
           Response[Option[Relationship]] = {
     for {
-      ownerNodes <- getOwnerNodes(owner).right
       oldParentRelationships <- getParentRelationships(tagNode, owner).right
-      newParentRelationship <- setParentRelationship(tagNode, ownerNodes, tag.parent, 
+      newParentRelationship <- setParentRelationship(tagNode, owner, tag.parent, 
           oldParentRelationships._3, ItemLabel.TAG).right
       parentRelationship <- Right(newParentRelationship).right
     }yield parentRelationship

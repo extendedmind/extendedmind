@@ -38,8 +38,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          ownerNodes <- getOwnerNodes(owner).right
-          noteNode <- getItemNode(ownerNodes, noteUUID, Some(ItemLabel.NOTE)).right
+          noteNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
           note <- toNote(noteNode, owner).right
         } yield note
     }
@@ -86,8 +85,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          ownerNodes <- getOwnerNodes(owner).right
-          itemNode <- getItemNode(ownerNodes, noteUUID, Some(ItemLabel.NOTE)).right
+          itemNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
           deletable <- validateNoteDeletable(itemNode).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)
