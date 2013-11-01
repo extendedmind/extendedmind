@@ -109,7 +109,16 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
         return itemsArray.getItemByUUID(tasks, uuid);
       },
       deleteTaskProperty : function(task, property) {
+
+        if(property==='parentTask'){
+          var parentTaskUUID=task.parentTask;
+        }
+
         itemsArray.deleteItemProperty(task, property);
+
+        if(parentTaskUUID){
+          this.removeProject(parentTaskUUID);
+        }
       },
       setProject : function(task) {
         if (!itemsArray.itemInArray(projects, task.uuid)) {
