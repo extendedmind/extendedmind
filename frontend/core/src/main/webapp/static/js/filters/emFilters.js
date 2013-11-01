@@ -133,9 +133,10 @@
           var filteredValues,i,sortedTask;
           filteredValues=[];
           i=0;
-          sortedTask=false;
 
           while (tasks[i]) {
+            sortedTask=false;
+
             if (tasks[i].relationships){
               if(tasks[i].relationships.parentTask){
                 sortedTask=true;
