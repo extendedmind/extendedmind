@@ -187,11 +187,13 @@
               <directory>${basedir}/src/main/webapp/static/</directory>
               <includes>
                 <include>em.min.js</include>
-                <include>em.min.css</include>
               </includes>
             </fileset>
             <fileset>
               <directory>${basedir}/src/main/webapp/test/json</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/main/webapp/static/css</directory>
             </fileset>
           </filesets>
         </configuration>
@@ -294,7 +296,7 @@
           <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
           <destinationFolder>${basedir}/src/main/webapp/static</destinationFolder>
           <jsDestinationFolder>${basedir}/src/main/webapp/static/</jsDestinationFolder>
-          <cssDestinationFolder>${basedir}/src/main/webapp/static/</cssDestinationFolder>  
+          <cssDestinationFolder>${basedir}/src/main/webapp/static/css/</cssDestinationFolder>  
         </configuration>
       </plugin>
     </plugins>
