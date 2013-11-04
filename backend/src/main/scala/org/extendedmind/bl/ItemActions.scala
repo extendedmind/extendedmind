@@ -35,11 +35,11 @@ trait ItemActions {
     
     // Destroy deleted items
     if (items.isRight){
-      val futureDestroyResponse = Future[Response[DeleteCountResult]] {
+      val futureDestroyResponse = Future[Response[CountResult]] {
         db.destroyDeletedItems(owner)
       }
       futureDestroyResponse onSuccess {
-        case Right(DeleteCountResult(deleteCount)) => {
+        case Right(CountResult(deleteCount)) => {
           log.info("Destroyed {} deleted items for {}", 
                           deleteCount, owner)
         }case Left(errors) =>

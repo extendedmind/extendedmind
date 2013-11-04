@@ -72,5 +72,8 @@ trait API extends HttpService {
   val putNewTag = put & path(JavaUUID / "tag")
   val putExistingTag = put & path(JavaUUID / "tag" / JavaUUID)
 
-
+  // Admin
+  val resetTokens = post & path("tokens" / "reset".r)
+  val rebuildItemsIndex = post & path(JavaUUID / "items" / "rebuild")
+  val rebuildUserIndexes = post & path("users"/ "rebuild".r)
 }

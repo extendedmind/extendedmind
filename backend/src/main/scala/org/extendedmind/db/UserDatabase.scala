@@ -210,6 +210,16 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
+  def rebuildUserIndexes: Response[CountResult] = {
+    dropIndexes(OwnerLabel.USER)
+    createNewIndex(OwnerLabel.USER, "uuid")
+    dropIndexes(OwnerLabel.COLLECTIVE)
+    createNewIndex(OwnerLabel.COLLECTIVE, "modified")
+    dropIndexes(MainLabel.TOKEN)
+    createNewIndex(MainLabel.TOKEN, "accessKey")
+    Right(CountResult(3))
+  }
+  
   // PRIVATE
   
   protected def createUser(user: User, plainPassword: String, userLabel: Option[Label] = None): Response[Node] = {
@@ -395,5 +405,22 @@ trait UserDatabase extends AbstractGraphDatabase {
                   (implicit neo4j: DatabaseService): Relationship = {
     inviteNode --> SecurityRelationship.IS_ORIGIN --> userNode <
   }
+  
+  protected def dropIndexes(label: Label): Unit = {
+    withTx {
+      implicit neo4j =>
+      	val indexes = neo4j.gds.schema().getIndexes(label)
+      	if (!indexes.isEmpty){
+      	  indexes.foreach (index => index.drop())
+      	}
+    }
+  }
 
+  protected def createNewIndex(label: Label, property: String): Unit = {
+    withTx {
+      implicit neo4j =>
+      	neo4j.gds.schema().indexFor(label).on(property).create()
+    }
+  }
+  
 }

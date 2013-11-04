@@ -741,8 +741,8 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
             ) ~> emRoute ~> check {
         writeJsonOutput("logoutResponse", entityAs[String])
-        val logoutResponse = entityAs[DeleteCountResult]
-        logoutResponse.deleteCount should equal (1)
+        val logoutResponse = entityAs[CountResult]
+        logoutResponse.count should equal (1)
       }
       val authenticateResponse1 = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       val authenticateResponse2 = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
@@ -751,8 +751,8 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             ) ~> addHeader("Content-Type", "application/json"
             ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse1.token.get)
             ) ~> emRoute ~> check {
-        val logoutResponse = entityAs[DeleteCountResult]
-        logoutResponse.deleteCount should equal (2)
+        val logoutResponse = entityAs[CountResult]
+        logoutResponse.count should equal (2)
       }
     }
     it("should successfully change password with PUT to /password") {    
@@ -764,8 +764,8 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
             ) ~> addHeader(Authorization(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD))
             ) ~> emRoute ~> check {
         writeJsonOutput("passwordResponse", entityAs[String])
-        val passwordResponse = entityAs[DeleteCountResult]
-        passwordResponse.deleteCount should equal (1)
+        val passwordResponse = entityAs[CountResult]
+        passwordResponse.count should equal (1)
       }
       val newPasswordAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, newPassword)
       newPasswordAuthenticateResponse.userUUID should not be None
@@ -828,7 +828,32 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         }
       }
     }
-    
+    it("should successfully reset tokens with POST to /tokens/reset, " +
+       "rebuild user indexes with POST to /users/rebuild, " +
+       "and rebuild item indexes with POST to /[userUUID]/items/rebuild") {    
+      Post("/tokens/reset"
+         ) ~> addCredentials(BasicHttpCredentials("token", emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD).token.get)
+         ) ~> emRoute ~> check {
+        writeJsonOutput("tokensResetResponse", entityAs[String])
+        val countResult = entityAs[CountResult]
+        countResult.count should be (6)
+      }
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Post("/users/rebuild"
+         ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+         ) ~> emRoute ~> check {
+        writeJsonOutput("usersRebuildResponse", entityAs[String])
+        val countResult = entityAs[CountResult]
+        countResult.count should be (3)
+      }
+      Post("/" + authenticateResponse.userUUID + "/items/rebuild"
+         ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
+         ) ~> emRoute ~> check {
+        writeJsonOutput("itemsRebuildResponse", entityAs[String])
+        val countResult = entityAs[CountResult]
+        countResult.count should be (17)
+      }
+    }
   }
   
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {
