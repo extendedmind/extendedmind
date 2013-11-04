@@ -14,7 +14,7 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
     else
       null
   }
-  def graphDatabaseFactory = {
+  override def graphDatabaseFactory = {
     if (settings.isHighAvailability){
       new HighlyAvailableGraphDatabaseFactory().addKernelExtensions(kernelExtensions(false))
     }else{
