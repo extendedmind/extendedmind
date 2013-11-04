@@ -56,7 +56,6 @@
       {name:'dec',days:31}
       ];
 
-
       return{
         yyyymmdd:function(d){
           var yyyy = d.getFullYear().toString();
@@ -74,7 +73,7 @@
           week=[];
           i=0;
 
-          for(i=0;i<7;i++){
+          for(i=0;i<70;i++){
             day={};
             day.date = date.getDate();
 
@@ -95,7 +94,7 @@
               day.displayDateShort = day.date;
             }
 
-            if(date.getDate() < months[date.getMonth()].days){
+            if(date.getDate() < new Date(date.getFullYear(), date.getMonth()+1,0).getDate()){
               date.setDate(date.getDate()+1);
             } else{
               date.setDate(1);
