@@ -29,6 +29,11 @@ trait AdminActions {
     db.rebuildItemsIndex(ownerUUID)
   }
 
+  def shutdown(implicit log: LoggingContext): Unit = {
+    log.info("shutdown")
+    db.shutdownServer
+  }
+  
 }
 
 class AdminActionsImpl(implicit val settings: Settings, implicit val inj: Injector)
