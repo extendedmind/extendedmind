@@ -25,6 +25,7 @@ import org.neo4j.graphdb.traversal._
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.RelationshipType
+import spray.util.LoggingContext
 
 case class OwnerNodes(user: Node, collective: Option[Node])
 
@@ -141,7 +142,8 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }))
   }
   
-  protected def getTokenNode(token: Token, acceptDeleted: Boolean = false): Response[Node] = {
+  protected def getTokenNode(token: Token, acceptDeleted: Boolean = false)
+        (implicit log: LoggingContext): Response[Node] = {
     getNode("accessKey", token.accessKey: java.lang.Long, MainLabel.TOKEN, None, acceptDeleted)
   }
 
@@ -160,17 +162,23 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   }
   
   protected def getNode(nodeProperty: String, nodeValue: AnyRef, label: Label, nodeStringValue: Option[String], 
-                        acceptDeleted: Boolean): Response[Node] = {
+                        acceptDeleted: Boolean)(implicit log: LoggingContext): Response[Node] = {
     withTx {
       implicit neo =>
         val nodeList = findNodesByLabelAndProperty(label, nodeProperty, nodeValue).toList
         if (nodeList.isEmpty)
           fail(INVALID_PARAMETER, label.labelName.toLowerCase() + " not found with given " + nodeProperty + 
               (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
-        else if (nodeList.size > 1)
-          fail(INTERNAL_SERVER_ERROR, "Ḿore than one " + label.labelName.toLowerCase() + " found with given  " + nodeProperty + 
+        else if (nodeList.size > 1){
+          // Check if nodeList contains the same node multiple times
+          if (nodeList.distinct.size() > 1){
+            fail(INTERNAL_SERVER_ERROR, "Ḿore than one " + label.labelName.toLowerCase() + " found with given " + nodeProperty + 
               (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
-        else {
+          }else{
+            log.warning("Found " + nodeList.size + " duplicate values in index for " + label.labelName + ":" + nodeProperty)
+            Right(nodeList(0))
+          }
+        }else {
           if (!acceptDeleted && nodeList(0).hasProperty("deleted")){
             fail(INVALID_PARAMETER, label.labelName.toLowerCase() + " deleted with given " + nodeProperty + 
                 (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
