@@ -14,19 +14,19 @@ trait SecurityActions {
 
   def db: GraphDatabase;
 
-  def logout(userUUID: UUID, payload: Option[LogoutPayload])(implicit log: LoggingContext): Response[DeleteCountResult] = {
+  def logout(userUUID: UUID, payload: Option[LogoutPayload])(implicit log: LoggingContext): Response[CountResult] = {
     log.info("logout: user {} payload {}", userUUID, payload)
     if (payload.isEmpty || payload.get.clearAll == false)
-      Right(DeleteCountResult(1))
+      Right(CountResult(1))
     else{
       db.destroyTokens(userUUID) match {
-        case Right(deleteCount) => Right(DeleteCountResult(deleteCount.deleteCount + 1))
+        case Right(deleteCount) => Right(CountResult(deleteCount.count + 1))
         case Left(e) => Left(e)
       }
     }
   }
   
-  def changePassword(userUUID: UUID, newPassword: String)(implicit log: LoggingContext): Response[DeleteCountResult] = {
+  def changePassword(userUUID: UUID, newPassword: String)(implicit log: LoggingContext): Response[CountResult] = {
     log.info("changePassword: user {}", userUUID)
     db.changePassword(userUUID, newPassword)
     db.destroyTokens(userUUID)

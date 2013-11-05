@@ -22,6 +22,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       taskNode <- putNewExtendedItem(owner, task, ItemLabel.TASK).right
       result <- Right(getSetResult(taskNode, true)).right
+      unit <- Right(addToItemsIndex(owner, taskNode, result)).right
     } yield result
   }
 
@@ -29,6 +30,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       taskNode <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
       result <- Right(getSetResult(taskNode, false)).right
+      unit <- Right(updateItemsIndex(taskNode, result)).right
     } yield result
   }
 
@@ -36,8 +38,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          ownerNodes <- getOwnerNodes(owner).right
-          taskNode <- getItemNode(ownerNodes, taskUUID, Some(ItemLabel.TASK)).right
+          taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
           task <- toCaseClass[Task](taskNode).right
           completeTask <- addTransientTaskProperties(taskNode, owner, task).right
         } yield completeTask
@@ -46,15 +47,17 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   
   def deleteTask(owner: Owner, taskUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedTask <- deleteTaskNode(owner, taskUUID).right
-      result <- Right(getDeleteItemResult(deletedTask._1, deletedTask._2)).right
+      deletedTaskNode <- deleteTaskNode(owner, taskUUID).right
+      result <- Right(getDeleteItemResult(deletedTaskNode._1, deletedTaskNode._2)).right
+      unit <- Right(updateItemsIndex(deletedTaskNode._1, result.result)).right
     } yield result
   }
   
   def completeTask(owner: Owner, taskUUID: UUID): Response[CompleteTaskResult] = {
     for {
-      task <- completeTaskNode(owner, taskUUID).right
-      result <- Right(getCompleteTaskResult(task)).right
+      taskNode <- completeTaskNode(owner, taskUUID).right
+      result <- Right(getCompleteTaskResult(taskNode)).right
+      unit <- Right(updateItemsIndex(taskNode, result.result)).right
     } yield result
   }
   
@@ -62,6 +65,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       taskNode <- uncompleteTaskNode(owner, taskUUID).right
       result <- Right(getSetResult(taskNode, false)).right
+      unit <- Right(updateItemsIndex(taskNode, result)).right
     } yield result
   }
 
@@ -95,8 +99,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          ownerNodes <- getOwnerNodes(owner).right
-          taskNode <- getItemNode(ownerNodes, taskUUID, Some(ItemLabel.TASK)).right
+          taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
           result <- Right(completeTaskNode(taskNode)).right
         } yield taskNode
     }
@@ -119,8 +122,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          ownerNodes <- getOwnerNodes(owner).right
-          taskNode <- getItemNode(ownerNodes, taskUUID, Some(ItemLabel.TASK)).right
+          taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
           result <- Right(uncompleteTaskNode(taskNode)).right
         } yield taskNode
     }
@@ -134,8 +136,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          ownerNodes <- getOwnerNodes(owner).right
-          itemNode <- getItemNode(ownerNodes, taskUUID, Some(ItemLabel.TASK)).right
+          itemNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
           deletable <- validateTaskDeletable(itemNode).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)

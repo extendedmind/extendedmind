@@ -2,9 +2,8 @@
 <groups xmlns="http://www.isdc.ro/wro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
   <group name="em.min">
-    <js>/js/**.js</js>
-    <css>/lib/bootstrap/bootstrap.less</css>
-    <css>/less/em.less</css>
+    <js>/src/main/webapp/static/js/**.js</js>
+    <css>/target/less/**.css</css>
   </group>
 
 </groups>

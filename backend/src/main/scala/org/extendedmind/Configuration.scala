@@ -100,4 +100,5 @@ class Configuration(settings: Settings, actorRefFactory: ActorRefFactory) extend
   bind [TaskActions] to new TaskActionsImpl
   bind [NoteActions] to new NoteActionsImpl
   bind [TagActions] to new TagActionsImpl
+  bind [AdminActions] to new AdminActionsImpl
 }

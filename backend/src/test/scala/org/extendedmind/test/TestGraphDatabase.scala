@@ -171,7 +171,9 @@ trait TestGraphDatabase extends GraphDatabase {
     // Store notes for EMT
     putNewNote(Owner(timoUUID, Some(emtUUID)),
         Note("list of servers", None, None, None, None)).right.get
-        
+    
+    // Build indexes
+    rebuildUserIndexes
   }
   
   def saveCustomToken(expires: Long, replaceable: Option[Long], userNode: Node)
