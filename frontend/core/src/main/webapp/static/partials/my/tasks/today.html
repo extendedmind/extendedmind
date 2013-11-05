@@ -1,0 +1,33 @@
+<div class="em-slide">
+  <button type="button" class="btn btn-default pull-right" ng-click="addNew()">
+    +
+  </button>
+
+  <h1 class="text-primary">tasks</h1>
+
+  <h2>{{date.displayDate}}</h2>
+
+  <ul class="list-unstyled">
+    <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.tasksByDate">
+
+      <div task></div>
+
+    </li>
+  </ul>
+  <div sub-task></div>
+
+  <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+
+    <div class="datebar">
+      <table>
+        <tbody>
+          <tr>
+            <td ng-repeat="date in dates"><a class="text-muted" href="" ng-click="dateClicked(date)">{{date.displayDateShort}}</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </nav>
+
+</div>
