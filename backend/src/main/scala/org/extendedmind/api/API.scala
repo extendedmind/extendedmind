@@ -76,4 +76,6 @@ trait API extends HttpService {
   val resetTokens = post & path("tokens" / "reset".r)
   val rebuildItemsIndex = post & path(JavaUUID / "items" / "rebuild")
   val rebuildUserIndexes = post & path("users"/ "rebuild".r)
+  val shutdown = post & path("shutdown".r)
+
 }

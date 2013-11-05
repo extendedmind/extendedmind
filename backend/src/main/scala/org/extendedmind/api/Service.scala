@@ -18,7 +18,10 @@ import spray.json._
 import spray.routing._
 import AuthenticationFailedRejection._
 import java.util.UUID
-import spray.util.LoggingContext
+import spray.can.Http
+import spray.util._
+import scala.concurrent.duration._
+import MediaTypes._
 
 object Service {
   def rejectionHandler: RejectionHandler = {
@@ -744,6 +747,17 @@ trait Service extends API with Injectable {
             }
           }
         }
+      } ~
+      shutdown{ url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            complete {
+              adminActions.shutdown
+              in(1.second){ actorSystem.shutdown() }
+              "Shutting down in 1 second..."
+            }
+          }
+        }
       }
   }
 
@@ -786,5 +800,8 @@ trait Service extends API with Injectable {
   def adminActions: AdminActions = {
     inject[AdminActions]
   }
+  
+  def in[U](duration: FiniteDuration)(body: => U): Unit =
+    actorSystem.scheduler.scheduleOnce(duration)(body)
 
 }

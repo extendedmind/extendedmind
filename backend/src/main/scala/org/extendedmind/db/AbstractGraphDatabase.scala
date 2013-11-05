@@ -70,6 +70,15 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       srv.start();
     }
   }
+  
+  // SHUTDOWN
+  
+  def shutdownServer(): Unit = {
+    withTx {
+      implicit neo4j =>
+        neo4j.gds.shutdown()
+    }
+  }
 
   // CONVERSION
 
