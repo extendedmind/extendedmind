@@ -6,7 +6,7 @@
 .externalToolBuilders
 
 # Ignore Sublime Text files
-frontend/pom.sublime-workspace
+frontend/core/pom.sublime-workspace
 
 # Ignore Maven builds
 target/
