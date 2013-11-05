@@ -2,7 +2,7 @@
     "folders":
     [
         {
-            "path": "/home/jpsalo/devel/extendedmind/frontend/core/",
+            "path": "~/devel/extendedmind/frontend/core",
             "folder_exclude_patterns": ["target", ".*"],
             "file_exclude_patterns": [".*"]
         }
