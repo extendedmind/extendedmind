@@ -18,6 +18,7 @@ import scala.collection.mutable.ListBuffer
 import org.neo4j.index.lucene.ValueContext
 import org.neo4j.index.lucene.QueryContext
 import org.neo4j.graphdb.Relationship
+import spray.util.LoggingContext
 
 trait UserDatabase extends AbstractGraphDatabase {
 
@@ -310,7 +311,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
-  protected def getUserNode(token: Token): Response[Node] = {
+  protected def getUserNode(token: Token)(implicit log: LoggingContext): Response[Node] = {
     withTx {
       implicit neo =>
         for {

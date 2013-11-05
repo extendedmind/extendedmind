@@ -17,6 +17,7 @@ import org.neo4j.scala.DatabaseService
 import org.neo4j.graphdb.traversal.Evaluation
 import scala.collection.mutable.HashMap
 import org.neo4j.graphdb.Relationship
+import spray.util.LoggingContext
 
 trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   
@@ -75,7 +76,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
 
-  def authenticate(token: String, ownerUUID: Option[UUID]): Response[SecurityContext] = {
+  def authenticate(token: String, ownerUUID: Option[UUID])(implicit log: LoggingContext): Response[SecurityContext] = {
     withTx{
       implicit neo4j => 
         for {
@@ -217,7 +218,8 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     tokenNode.delete()
   }
 
-  private def setTokenProperties(tokenNode: Node, token: Token, payload: Option[AuthenticatePayload]) {
+  private def setTokenProperties(tokenNode: Node, token: Token, payload: Option[AuthenticatePayload])
+                                (implicit neo4j: DatabaseService){
     val currentTime = System.currentTimeMillis()
     tokenNode.setProperty("accessKey", token.accessKey)
     tokenNode.setProperty("expires", currentTime + TOKEN_DURATION)
@@ -407,5 +409,4 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       userNode.removeLabel(UserLabel.BETA)
   }
 
-  
 }
