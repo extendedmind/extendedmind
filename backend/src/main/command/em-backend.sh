@@ -1,8 +1,7 @@
 #!/bin/bash
 if [ $# -eq 0 ]
   then
-    echo "No arguments supplied"
+    echo "First argument is the path to the configuration file"
 else
   java -Dconfig.file=$1 -cp "../lib/*" org.extendedmind.Server
 fi
-
