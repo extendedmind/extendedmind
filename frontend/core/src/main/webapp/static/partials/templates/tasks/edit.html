@@ -17,7 +17,7 @@
   <div class="form-group">
     <label class="sr-only" for="taskParent">parent</label>
     <div class="col-lg-10">
-      <select class="form-control" id="taskParent" ng-model="parentTask" ng-options="project.title for project in projects" ng-disabled="task.project">
+      <select class="form-control" id="taskParent" ng-model="parentTask" ng-options="project.title for project in tasks | tasksFilter:filterService.activeFilters.project" ng-hide="task.project">
         <option value="">select list</option>
       </select>
     </div>
@@ -26,7 +26,7 @@
   <div class="form-group">
     <label class="sr-only" for="taskContext">context</label>
     <div class="col-lg-10">
-      <select class="form-control" id="taskContext" ng-model="taskContext" ng-options="context.title for context in contexts" ng-disabled="task.project">
+      <select class="form-control" id="taskContext" ng-model="taskContext" ng-options="context.title for context in contexts" ng-hide="task.project">
         <option value="">select context</option>
       </select>
     </div>
@@ -35,7 +35,7 @@
   <div class="form-group">
     <label class="sr-only" for="taskLink">link</label>
     <div class="col-lg-10">
-      <input type="text" class="form-control" id="taskLink" ng-model="task.link" placeholder="link..." ng-disabled="task.project">
+      <input type="text" class="form-control" id="taskLink" ng-model="task.link" placeholder="link..." ng-hide="task.project">
     </div>
   </div>
 
