@@ -162,10 +162,13 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
   
   def getInvite(code: Long, email: String): Response[Invite] = {
-    for {
-      inviteNode <- getInviteNode(code, email).right
-      invite <- toCaseClass[Invite](inviteNode).right
-    } yield invite
+    withTx{
+      implicit neo =>
+        for {
+          inviteNode <- getInviteNode(code, email).right
+          invite <- toCaseClass[Invite](inviteNode).right
+        } yield invite
+    }
   }
   
   def getInvites(): Response[Invites] = {
