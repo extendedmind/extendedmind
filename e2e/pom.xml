@@ -214,6 +214,14 @@
                   <outputDirectory>${project.build.directory}</outputDirectory>
                   <includes>*.zip, testData.properties</includes>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.extendedmind</groupId>
+                  <artifactId>backend</artifactId>
+                  <type>zip</type>
+                  <classifier>dist</classifier>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
+                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
@@ -230,14 +238,6 @@
                   <artifactId>frontend-core</artifactId>
                   <type>war</type>
                   <overWrite>false</overWrite>
-                  <outputDirectory>${project.build.directory}</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.extendedmind</groupId>
-                  <artifactId>backend</artifactId>
-                  <type>jar</type>
-                  <classifier>jar-with-dependencies</classifier>
-                  <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}</outputDirectory>
                 </artifactItem>
               </artifactItems>
@@ -353,10 +353,7 @@
         </executions>
         <configuration>
           <executable>java</executable>
-          <arguments>
-            <argument>-jar</argument>
-            <argument>target/backend-${project.version}-jar-with-dependencies.jar</argument>
-          </arguments>
+          <commandlineArgs>-cp "${project.build.directory}/backend-${project.version}/lib/*" org.extendedmind.Server</commandlineArgs>
           <background>true</background>
           <!-- Poll for backend server to be up and running -->
           <backgroundPollingAddress>127.0.0.1:8081</backgroundPollingAddress>
