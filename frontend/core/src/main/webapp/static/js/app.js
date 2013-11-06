@@ -1,13 +1,14 @@
 /*global angular*/
+/*jslint white: true */
 
 ( function() {'use strict';
 
-    angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'em.directives', 'em.filters', 'em.services']);
-    angular.module('em.directives', []);
-    angular.module('em.filters', []);
-    angular.module('em.services', ['em.base64']);
+  angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'em.directives', 'em.filters', 'em.services']);
+  angular.module('em.directives', []);
+  angular.module('em.filters', []);
+  angular.module('em.services', ['em.base64']);
 
-    angular.module('em.app').config(['$locationProvider', '$routeProvider',
+  angular.module('em.app').config(['$locationProvider', '$routeProvider',
     function($locationProvider, $routeProvider) {
 
       $routeProvider.when('/', {
@@ -434,12 +435,12 @@
       $locationProvider.html5Mode(true);
     }]);
 
-    angular.module('em.app').run(['$location', '$rootScope', 'errorHandler', 'userAuthenticate', 'userPrefix',
-    function($location, $rootScope, errorHandler, userAuthenticate, userPrefix) {
+angular.module('em.app').run(['$location', '$rootScope', 'errorHandler', 'userAuthenticate', 'userPrefix',
+  function($location, $rootScope, errorHandler, userAuthenticate, userPrefix) {
 
-      $rootScope.$on('$routeChangeSuccess', function() {
-        errorHandler.clear();
-      });
+    $rootScope.$on('$routeChangeSuccess', function() {
+      errorHandler.clear();
+    });
 
-    }]);
-  }());
+  }]);
+}());
