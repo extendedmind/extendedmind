@@ -480,7 +480,9 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
     it("should successfully create invite requests with POST to /invite/request "
        + "and get them back with GET to /invite/requests "
        + "and get the right order number with GET to /invite/request/[UUID] "
-       + "and delete it with DELETE to /invite/request/[UUID]") {
+       + "and delete it with DELETE to /invite/request/[UUID] "
+       + "and accept the request with POST to /invite/request/[UUID]/accept "
+       + "and accept the invite with POST to /invite/request/[UUID]/accept ") {
       val testEmail = "example@example.com"
       val testInviteRequest = InviteRequest(None, testEmail, None)
       val testEmail2 = "example2@example.com"
@@ -589,12 +591,19 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                     val invites = entityAs[Invites]
                     writeJsonOutput("invitesResponse", entityAs[String])
                     assert(invites.invites.size === 1)
+                    // Get invite
+                    Get("/invite/" + invites.invites(0).code.toHexString + "?email=" + invites.invites(0).email
+                        ) ~> addHeader("Content-Type", "application/json"
+                        ) ~> emRoute ~> check {
+                      val inviteResponse = entityAs[Invite]
+                      writeJsonOutput("inviteResponse", entityAs[String])
+                      inviteResponse.email should be(invites.invites(0).email)
+                    }
                     // Accept invite
                     val testPassword = "testPassword"
                     Post("/invite/" + invites.invites(0).code.toHexString + "/accept",
                      marshal(SignUp(invites.invites(0).email, testPassword)).right.get
                         ) ~> addHeader("Content-Type", "application/json"
-                        ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)
                         ) ~> emRoute ~> check {
                       val acceptInviteResponse = entityAs[SetResult]
                       writeJsonOutput("acceptInviteResponse", entityAs[String])
