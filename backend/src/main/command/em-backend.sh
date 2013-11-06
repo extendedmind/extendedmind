@@ -1,7 +1,8 @@
 #!/bin/bash
 if [ $# -eq 0 ]
   then
-    echo "First argument is the path to the configuration file"
+    echo "No arguments supplied"
 else
-  java -Dconfig.file=$1 -cp "../lib/*" org.extendedmind.Server
+  export LOGBACK_CONFIG_FILE_LOCATION=$2
+  java -Dconfig.file=$1 -Dlogback.configurationFile$
 fi
