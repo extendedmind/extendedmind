@@ -1,6 +1,6 @@
 <!doctype html>
 <html ng-app="em.devApp">
-  <head>
+<head>
     <base href="/" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
@@ -15,19 +15,15 @@
     <script src="static/lib/less/less-min.js"></script>
     <script type='application/javascript' src="static/lib/fastclick.js"></script>
     <script type="application/javascript">
-      window.addEventListener('load', function() {
-        FastClick.attach(document.body);
-      }, false);
+        window.addEventListener('load', function() {
+            FastClick.attach(document.body);
+        }, false);
     </script>
-  </head>
-  <body>
+</head>
+<body>
 
-    <div class="container">
-      <div class="row">
-
-        <div class="em-page" ng-view></div>
-
-      </div>
+    <div class="container em-page">
+        <div ng-view></div>
     </div>
 
     <script src="static/lib/jquery/jquery.js"></script>
@@ -36,7 +32,7 @@
     <script src="static/lib/jasmine/jasmine-jquery.js"></script>
 
     <script>
-      jasmine.getJSONFixtures().fixturesPath = 'test/json'
+        jasmine.getJSONFixtures().fixturesPath = 'test/json'
     </script>
 
     <script src="static/lib/angularjs/angular.js"></script>
@@ -95,5 +91,5 @@
     <script src="static/js/services/tasks.js"></script>
     <script src="static/js/services/authenticate.js"></script>
 
-  </body>
+</body>
 </html>
