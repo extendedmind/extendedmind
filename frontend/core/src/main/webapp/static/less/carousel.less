@@ -1,13 +1,11 @@
 .em-carousel-container {
-  min-height: 100%;
   overflow: hidden;
+  height: inherit;
 }
 
 ul.em-carousel-slides {
-  min-height: 100%;
   position: relative;
   white-space: nowrap;
-  overflow: visible;
   -webkit-transform: translate(0, 0);
   -moz-transform: translate(0, 0);
   -ms-transform: translate(0, 0);
@@ -17,12 +15,11 @@ ul.em-carousel-slides {
   margin: 0;
 }
 
-ul.em-carousel-slides li {
+ul.em-carousel-slides > li {
   white-space: normal;
   vertical-align: top;
   display: inline-block;
   width: 100%;
-  height: 100%;
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
   -ms-backface-visibility: hidden;

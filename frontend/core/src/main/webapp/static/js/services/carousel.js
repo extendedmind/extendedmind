@@ -1,9 +1,9 @@
 /*global $, angular, checkEdges, updateSlidePosition, translateSlideProperty, updateSlidePosition, updateContainerWidth, resize, documentMouseUpEvent, console: true */
-/*jslint plusplus: true, regexp: true */
+/*jslint plusplus: true, regexp: true white: true */
 
 ( function() {'use strict';
 
-    angular.module('em.services').service('CollectionManager', [
+  angular.module('em.services').service('CollectionManager', [
     function() {
 
       function CollectionManager(options) {
@@ -29,11 +29,8 @@
         for ( i = 0; i < initial.length; i++) {
           this[i] = initial[i];
         }
-
         angular.extend(this, initial, options);
-
         this.init();
-
       }
 
 
@@ -56,6 +53,7 @@
           return false;
         }
         var position = this.getPositionFromIndex(index);
+
         return this.goTo(position, delayedUpdate);
       };
 
@@ -68,7 +66,9 @@
         }
         // cap position
         position = Math.max(0, Math.min(position, this.getLastIndex()));
-        var cycled = false, realIndex;
+
+        var cycled, realIndex;
+        cycled = false;
 
         if (this.cycle) {
           if (position === 0) {
@@ -100,7 +100,6 @@
         if (!cycled) {
           this.updated = new Date();
         }
-
       };
 
       CollectionManager.prototype.next = function() {
@@ -158,6 +157,7 @@
       CollectionManager.prototype.init = function() {
         //this.log('init', this);
         this.setBufferSize(this.isBuffered() ? this.bufferSize : this.length());
+
         if (this.length() > 0) {
           this.goToIndex(this.index);
         }
@@ -165,10 +165,12 @@
 
       CollectionManager.prototype.setItems = function(items, reset) {
         this.log('setItems', items, reset);
+
         if (reset) {
           this.index = 0;
           this.position = 0;
         }
+
         this.items = items || [];
         // prevent internal errors when items is undefined
         this.init();
@@ -187,11 +189,13 @@
         //     return;
         // }
         this.items.push(slide);
+
         if (updateIndex) {
           // no need to change index when appending items
           this.adjustBuffer();
           this.updated = new Date();
         }
+        
         if (!this.buffered) {
           this.bufferSize++;
         }
@@ -205,9 +209,11 @@
         //     return;
         // }
         this.items.unshift(slide);
+
         if (!this.buffered) {
           this.bufferSize++;
         }
+        
         if (updateIndex) {
           this.position++;
           this.adjustBuffer();
@@ -219,6 +225,7 @@
         // extract last item and put it at beginning
         this.unshift(this.items.pop());
       };
+      
       return {
         create : function(options) {
           return new CollectionManager(options);
@@ -227,5 +234,5 @@
 
     }]);
 
-  }());
+}());
 
