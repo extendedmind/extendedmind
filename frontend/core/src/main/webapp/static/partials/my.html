@@ -1,30 +1,31 @@
-<div class="row center-block em-logo">
-  <h1 class="text-primary"><span>extended mind</span></h1>
-</div>
 
-<div class="row em-omnibar" omni-bar></div>
-
-<div class="row em-inbox" items-list itemsfilter="newItem.title">
-  <h2><a class="text-muted" href="" ng-click="toggleItemsList()">inbox</a><span class="pull-right"><small>{{completed}}</small></span></h2>
-</div>
-
-<div class="row em-filtered-items" filtered-notes-list notesfilter="newItem.title">
-  <h2><a class="text-muted" href="{{prefix}}/notes">notes</a></h2>
-</div>
-
-<div class="row em-filtered-items" filtered-tasks-list tasksfilter="newItem.title">
-  <h2><a class="text-muted" href="{{prefix}}/tasks">tasks</a></h2>
-</div>
-
-<div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
-
-<div class="row em-mainlinks">
-  <div class="pull-left em-feature">
-    <a href="">tasks</a>
+  <div class="row center-block em-logo">
+    <h1 class="text-primary"><span>extended mind</span></h1>
   </div>
-  <div class="pull-right em-feature">
-    <a href="">notes</a>
-  </div>
-</div>
 
-<div class="row" navbar></div>
+  <div class="row em-omnibar" omni-bar></div>
+
+  <div class="row em-inbox" items-list itemsfilter="newItem.title">
+    <h2><a class="text-muted" href="" ng-click="toggleItemsList()">inbox</a><span class="pull-right"><small>{{completed}}</small></span></h2>
+  </div>
+
+  <div class="row em-filtered-items" filtered-notes-list notesfilter="newItem.title">
+    <h2><a class="text-muted" href="{{prefix}}/notes">notes</a></h2>
+  </div>
+
+  <div class="row em-filtered-items" filtered-tasks-list tasksfilter="newItem.title">
+    <h2><a class="text-muted" href="{{prefix}}/tasks">tasks</a></h2>
+  </div>
+
+  <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
+
+  <div class="row em-mainlinks">
+    <div class="pull-left em-feature">
+      <a href="">tasks</a>
+    </div>
+    <div class="pull-right em-feature">
+      <a href="">notes</a>
+    </div>
+  </div>
+
+<div class="row em-menu-footer" navbar></div>
