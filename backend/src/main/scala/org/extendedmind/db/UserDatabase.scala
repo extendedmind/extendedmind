@@ -215,12 +215,14 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
   
   def rebuildUserIndexes: Response[CountResult] = {
+    // TODO: Try this again when 2.0 is ready! It seems at least the token 
+    //       index gets all screwed up in some circumstanses
     dropIndexes(OwnerLabel.USER)
-    createNewIndex(OwnerLabel.USER, "uuid")
+    //createNewIndex(OwnerLabel.USER, "uuid")
     dropIndexes(OwnerLabel.COLLECTIVE)
-    createNewIndex(OwnerLabel.COLLECTIVE, "modified")
+    //createNewIndex(OwnerLabel.COLLECTIVE, "uuid")
     dropIndexes(MainLabel.TOKEN)
-    createNewIndex(MainLabel.TOKEN, "accessKey")
+    //createNewIndex(MainLabel.TOKEN, "accessKey")
     Right(CountResult(3))
   }
   
