@@ -1,29 +1,28 @@
 <div class="row em-feature-header">
 
   <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
 
-    <button type="button" class="btn btn-default pull-right" ng-click="addNew()">
-      +
-    </button>
-
-    <h1 class="text-primary">tasks</h1>
+      <button type="button" class="btn btn-default pull-right" ng-click="addNew()">
+        +
+      </button>
+      <h1 class="text-primary">tasks</h1>
+    </div>
   </nav>
 
 </div>
 
 <div class="row em-scrollable">
 
-  <div>
-    <h2>unsorted</h2>
-    <ul class="list-unstyled">
-      <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.unsorted">
+  <h2>unsorted</h2>
+  <ul class="list-unstyled">
+    <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.unsorted">
 
-        <div task></div>
+      <div task></div>
 
-      </li>
-      <div sub-task></div>
-    </ul>
-  </div>
+    </li>
+    <div sub-task></div>
+  </ul>
 
   <div>
     <h2>projects</h2>
@@ -42,10 +41,4 @@
     <h2>contexts</h2>
   </div>
 
-</div>
-
-<div class="row em-date-footer">
-  <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-    <span>asd</span>
-  </nav>
 </div>
