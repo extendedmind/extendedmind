@@ -1,9 +1,18 @@
-<div>
-  <button type="button" class="btn btn-default pull-right" ng-click="addNew()">
-    +
-  </button>
+<div class="row em-feature-header">
 
-  <h1 class="text-primary">tasks</h1>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+      <button type="button" class="btn btn-default pull-right" ng-click="addNew()">
+        +
+      </button>
+      <h1 class="text-primary">date</h1>
+    </div>
+  </nav>
+
+</div>
+
+<div class="row em-scrollable">
 
   <h2>{{date.displayDate}}</h2>
 
@@ -16,14 +25,20 @@
   </ul>
   <div sub-task></div>
 
-  <div class="datebar">
-    <table>
-      <tbody>
-        <tr>
-          <td ng-repeat="date in dates"><a class="text-muted" href="" ng-click="dateClicked(date)">{{date.displayDateShort}}</a></td>
-        </tr>
-      </tbody>
-    </table>
+</div>
+
+<div class="row em-date-footer">
+  <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+
+    <div class="datebar">
+      <table>
+        <tbody>
+          <tr>
+            <td ng-repeat="date in dates"><a class="text-muted" href="" ng-click="dateClicked(date)">{{date.displayDateShort}}</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-</div>
+</nav>
