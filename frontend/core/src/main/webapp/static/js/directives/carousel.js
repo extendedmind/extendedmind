@@ -276,13 +276,6 @@
               return containerWidth;
             }
 
-            function updateContainerHeight () {
-              container.css('height', 'auto');
-              var innerHeight = window.innerHeight;
-              container.css('height', innerHeight);
-              console.log(container.css('height'));
-            }
-
             /* enable carousel indicator */
             if (angular.isDefined(iAttrs.emCarouselIndicator)) {
               indicator = $compile("<div id='" + carouselId +"-indicator' index='carouselCollection.index' items='carouselCollection.items' data-em-carousel-indicators class='em-carousel-indicator'></div>")(scope);

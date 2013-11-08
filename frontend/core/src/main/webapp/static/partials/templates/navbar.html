@@ -1,36 +1,38 @@
 <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+  <div class="container">
 
-  <div class="row">
-    <button type="button" ng-click="collapseNavbar()">menu</button>
-  </div>
+    <div class="row">
+      <button type="button" ng-click="collapseNavbar()">menu</button>
+    </div>
 
-  <div ng-show="collapse">
-    <ul>
-      <li>
-        <a href="my" ng-click="setActiveUuid(user)">home</a>
-      </li>
-      <li>
-        <span>collectives</span>
+    <div ng-show="collapse">
+      <ul>
+        <li>
+          <a href="my" ng-click="setActiveUuid(user)">home</a>
+        </li>
+        <li>
+          <span>collectives</span>
 
-        <ul>
+          <ul>
 
-          <li ng-repeat="(key, value) in collectives">
+            <li ng-repeat="(key, value) in collectives">
 
-            <div>
-              <a class="text-muted" ng-click="setActiveUuid(key, true)">{{value[0]}}</a>
-            </div>
+              <div>
+                <a class="text-muted" ng-click="setActiveUuid(key, true)">{{value[0]}}</a>
+              </div>
 
-          </li>
+            </li>
 
-        </ul>
-      </li>
-      <li>
-        <a href="my/account">account</a>
-      </li>
-      <li>
-        <a href="" ng-click="logout()">logout</a>
-      </li>
-    </ul>
+          </ul>
+        </li>
+        <li>
+          <a href="my/account">account</a>
+        </li>
+        <li>
+          <a href="" ng-click="logout()">logout</a>
+        </li>
+      </ul>
 
+    </div>
   </div>
 </nav>

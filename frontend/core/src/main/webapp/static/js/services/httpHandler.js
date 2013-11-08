@@ -1,37 +1,38 @@
 /*global angular*/
+/*jslint white: true */
 
 ( function() {'use strict';
 
-    angular.module('em.services').config(['$httpProvider',
+  angular.module('em.services').config(['$httpProvider',
     function($httpProvider) {
       $httpProvider.interceptors.push('httpInterceptor');
     }]);
 
-    function httpInterceptor($location, $q, $rootScope, httpResponseRecover) {
+  function httpInterceptor($location, $q, $rootScope, httpResponseRecover) {
 
-      return {
-        request : function(config) {
-          return config || $q.when(config);
-        },
-        requestError : function(rejection) {
-          return $q.reject(rejection);
-        },
-        response : function(response) {
-          return response || $q.when(response);
-        },
-        responseError : function(rejection) {
-          return httpResponseRecover.responseError(rejection);
-        }
-      };
-    }
+    return {
+      request : function(config) {
+        return config || $q.when(config);
+      },
+      requestError : function(rejection) {
+        return $q.reject(rejection);
+      },
+      response : function(response) {
+        return response || $q.when(response);
+      },
+      responseError : function(rejection) {
+        return httpResponseRecover.responseError(rejection);
+      }
+    };
+  }
 
 
-    httpInterceptor.$inject = ['$location', '$q', '$rootScope', 'httpResponseRecover'];
-    angular.module('em.services').factory('httpInterceptor', httpInterceptor);
+  httpInterceptor.$inject = ['$location', '$q', '$rootScope', 'httpResponseRecover'];
+  angular.module('em.services').factory('httpInterceptor', httpInterceptor);
 
-    function httpResponseRecover($injector, $location, $q, errorHandler) {
+  function httpResponseRecover($injector, $location, $q, errorHandler) {
 
-      /** Services initialized later because of circular dependency problem. */
+    /** Services initialized later because of circular dependency problem. */
       // https://groups.google.com/d/msg/angular/hlRdr5LD3as/bXnz8GZAzbEJ
       var deferred, httpRequest, userAuthenticate, userSessionStorage;
 
@@ -100,64 +101,64 @@
     angular.module('em.services').factory('httpResponseRecover', httpResponseRecover);
 
     angular.module('em.services').factory('httpBasicAuth', ['$http',
-    function($http) {
-      $http.defaults.headers.common.Authorization = 'Basic ';
-      var encoded;
+      function($http) {
+        $http.defaults.headers.common.Authorization = 'Basic ';
+        var encoded;
 
-      return {
-        setEncodedCredentials : function(userpass) {
-          encoded = userpass;
-          $http.defaults.headers.common.Authorization = 'Basic ' + encoded;
-        },
-        getCredentials : function() {
-          return encoded;
-        },
-        clearCredentials : function() {
-          $http.defaults.headers.common.Authorization = 'Basic ';
-        }
-      };
-    }]);
+        return {
+          setEncodedCredentials : function(userpass) {
+            encoded = userpass;
+            $http.defaults.headers.common.Authorization = 'Basic ' + encoded;
+          },
+          getCredentials : function() {
+            return encoded;
+          },
+          clearCredentials : function() {
+            $http.defaults.headers.common.Authorization = 'Basic ';
+          }
+        };
+      }]);
 
     angular.module('em.services').factory('httpRequest', ['$http',
-    function($http) {
-      var httpRequest = {};
+      function($http) {
+        var httpRequest = {};
 
-      httpRequest.config = function(config) {
-        return $http(config).then(function(success) {
-          return success;
-        }, function(error) {
-        });
-      };
+        httpRequest.config = function(config) {
+          return $http(config).then(function(success) {
+            return success;
+          }, function(error) {
+          });
+        };
 
-      httpRequest.get = function(url) {
-        return $http({
-          method : 'GET',
-          url : url,
-          cache : true
-        }).then(function(success) {
-          return success;
-        });
-      };
-
-      angular.forEach(['delete', 'head', 'jsonp'], function(name) {
-        httpRequest[name] = function(url) {
+        httpRequest.get = function(url) {
           return $http({
-            method : name,
-            url : url
+            method : 'GET',
+            url : url,
+            cache : true
           }).then(function(success) {
             return success;
           });
         };
-      });
 
-      angular.forEach(['post', 'put'], function(name) {
-        httpRequest[name] = function(url, data) {
-          return $http[name](url, data).then(function(success) {
-            return success;
-          });
-        };
-      });
+        angular.forEach(['delete', 'head', 'jsonp'], function(name) {
+          httpRequest[name] = function(url) {
+            return $http({
+              method : name,
+              url : url
+            }).then(function(success) {
+              return success;
+            });
+          };
+        });
 
-      return httpRequest;
-    }]);
-  }());
+        angular.forEach(['post', 'put'], function(name) {
+          httpRequest[name] = function(url, data) {
+            return $http[name](url, data).then(function(success) {
+              return success;
+            });
+          };
+        });
+
+        return httpRequest;
+      }]);
+}());
