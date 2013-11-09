@@ -21,7 +21,7 @@
 //@import "../lib/bootstrap/dropdowns.less";
 @import "../lib/bootstrap/button-groups.less";
 @import "../lib/bootstrap/input-groups.less";
-//@import "../lib/bootstrap/navs.less";
+@import "../lib/bootstrap/navs.less";
 @import "../lib/bootstrap/navbar.less";
 //@import "../lib/bootstrap/breadcrumbs.less";
 //@import "../lib/bootstrap/pagination.less";
@@ -47,3 +47,37 @@
 // Utility classes
 @import "../lib/bootstrap/utilities.less";
 @import "../lib/bootstrap/responsive-utilities.less";
+
+// Fix for navbar-justified
+// ref: https://github.com/twbs/bootstrap/issues/10548
+.nav-justified {
+  @media (max-width: @screen-sm-min) {
+    > li {
+      display: table-cell;
+      width: 1%;
+      > a {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+.navbar-nav.nav-justified > li {
+  float:none;
+}
+
+.btn {
+  font-size: 28px;
+  font-weight: 100;
+}
+
+.navbar-default, .navbar-collapse {
+  background-color: white;
+  border: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.nav > li > span {
+  padding: 10px 15px;
+}
+
