@@ -1,15 +1,16 @@
 /*global $, angular*/
+/*jslint white: true */
 
 ( function() {'use strict';
 
-    angular.module('em.directives').directive('appVersion', ['version',
+  angular.module('em.directives').directive('appVersion', ['version',
     function(version) {
       return function(scope, element, attrs) {
         return element.text(version);
       };
     }]);
 
-    angular.module('em.directives').directive('errorAlertBar', ['$parse',
+  angular.module('em.directives').directive('errorAlertBar', ['$parse',
     function($parse) {
       return {
         restrict : 'A',
@@ -30,7 +31,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('navbar', [
+  angular.module('em.directives').directive('navbar', [
     function() {
       return {
         controller : 'NavbarController',
@@ -38,7 +39,12 @@
         transclude : true,
         templateUrl : 'static/partials/templates/navbar.html',
         link : function(scope, element, attrs) {
+          var mainlinksFilterAttr = attrs.mainlinksfilter;
           scope.collapse = false;
+
+          scope.$watch(mainlinksFilterAttr, function(newValue) {
+            scope.mainlinksFilter = newValue;
+          });
 
           scope.collapseNavbar = function collapseNavbar() {
             scope.collapse = !scope.collapse;
@@ -47,7 +53,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('omniBar', [
+  angular.module('em.directives').directive('omniBar', [
     function() {
       return {
         controller : 'OmniBarController',
@@ -56,7 +62,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('urlList', [
+  angular.module('em.directives').directive('urlList', [
     function() {
       return {
         restrict : 'A',
@@ -64,7 +70,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('newTag', [
+  angular.module('em.directives').directive('newTag', [
     function() {
       return {
         restrict : 'A',
@@ -79,7 +85,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('contextsList', [
+  angular.module('em.directives').directive('contextsList', [
     function() {
       return {
         restrict : 'A',
@@ -88,7 +94,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('my', [
+  angular.module('em.directives').directive('my', [
     function() {
       return {
         restrict : 'A',
@@ -96,7 +102,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('projectsList', [
+  angular.module('em.directives').directive('projectsList', [
     function() {
       return {
         restrict : 'A',
@@ -104,4 +110,4 @@
         transclude : true
       };
     }]);
-  }());
+}());

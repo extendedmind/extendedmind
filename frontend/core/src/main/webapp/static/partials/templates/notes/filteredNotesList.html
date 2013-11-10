@@ -1,19 +1,13 @@
 <div>
-  <!-- FIXME: set ng-show based on if there is text in the omnibar! -->
-  <div ng-show="false" ng-transclude></div>
+  <div ng-if="notesListFilter" ng-transclude></div>
 
-  <ul class="list-unstyled" ng-show="notesListFilter">
+  <ul class="list-unstyled" ng-if="notesListFilter">
 
-    <li ng-class="selected" ng-repeat="note in notes | filter:newItem">
+    <li ng-class="selected" ng-repeat="note in notes | filter:{title:notesListFilter}">
 
-      <div ng-click="toggleNoteContent()">
-        <span>{{note.title}}</span>
-      </div>
-
-      <div note-content ng-show="showNoteContent"></div>
+      <span>{{note.title}}</span>
 
     </li>
 
   </ul>
-
 </div>
