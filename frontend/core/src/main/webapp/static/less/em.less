@@ -77,12 +77,14 @@ ul {
 // Pages with two sections
 .em-scrollable-top {
   height: inherit;
-  padding-bottom: 2em;
+  margin-bottom: 2em;
 }
 
 .em-scrollable-bottom {
   height: inherit;
-  padding-top: 2em;
+  margin-top: 2em;
+  // Padding needed to make scrolling reach bottom
+  padding-bottom: 2.5em;
 }
 
 .em-menu-footer .navbar-fixed-bottom {
@@ -97,8 +99,8 @@ ul {
 // Pages with three sections
 .em-scrollable-middle {
   height: inherit;
-  padding-top: 2em;
-  padding-bottom: 2em;
+  margin-top: 2em;
+  margin-bottom: 2em;
   overflow-y: auto;
 }
 
@@ -233,6 +235,21 @@ input[type="checkbox"].task-checkbox:checked + span {
     div {
       text-align: left;
     } 
+  }
+  #em-noteslink {
+    text-align: right;
+  }
+}
+
+.em-feature-header {
+  #em-iconlink {
+    padding-left: 15px;
+    text-align: left;
+  }
+  #em-featurelink{
+    text-align: center;
+    min-width: 3em;
+    width:100%;
   }
   #em-noteslink {
     text-align: right;
