@@ -1,28 +1,27 @@
 <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
   <div class="container">
-
-    <div class="row">
-      <button type="button" ng-click="collapseNavbar()">menu</button>
+    <div class="row em-mainlinks">
+      <ul class="nav navbar-nav nav-justified">
+        <li id="em-taskslink"><a class="em-feature" href="{{prefix}}/tasks"><span class="em-icon">t</span>tasks</a></li>
+        <li id="em-menubutton">
+          <button type="button" class="em-simple-input" ng-click="collapseNavbar()">&#x25B2;</button>
+        </li>
+        <li id="em-noteslink"><a href="{{prefix}}/notes" class="em-feature"><span class="em-icon">n</span>notes</a></li>
+      </ul>
     </div>
-
-    <div ng-show="collapse">
+    <div class="row" ng-show="collapse">
       <ul>
         <li>
           <a href="my" ng-click="setActiveUuid(user)">home</a>
         </li>
         <li>
           <span>collectives</span>
-
           <ul>
-
             <li ng-repeat="(key, value) in collectives">
-
               <div>
                 <a class="text-muted" ng-click="setActiveUuid(key, true)">{{value[0]}}</a>
               </div>
-
             </li>
-
           </ul>
         </li>
         <li>
@@ -32,7 +31,6 @@
           <a href="" ng-click="logout()">logout</a>
         </li>
       </ul>
-
     </div>
   </div>
 </nav>

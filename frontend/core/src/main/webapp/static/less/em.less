@@ -1,10 +1,20 @@
+// VARIABLES
+
+@em-max-width: 480px;
+@em-font: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+// padding: 0 15px; // http://getbootstrap.com/css/#grid
+@em-page-padding: 15px;
+@em-blue: #428bca;
+
+// GENERAL
+
 h1 {
-  font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue UltraLight', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-family: @em-font;
   font-weight: 100;
 }
 
 h2, h3, h4, h5, h6 {
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-family: @em-font;
   font-weight: 300;
 }
 
@@ -17,36 +27,62 @@ html {
 }
 
 body {
-  font-family: 'Helvetica Neue UltraLight', "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-family: @em-font;
   font-weight: 300;
   font-size: 24px;
 }
 
+label {
+  font-weight: normal;
+}
+
+ul {
+  list-style-type: none;
+  .entry-list {
+    padding-left: 0;
+  }
+}
+
+// EM COMMON
+
 .em-page {
-  // padding: 0 15px; // http://getbootstrap.com/css/#grid
-  max-width: 400px;
+  max-width: @em-max-width;
+  .row {
+    padding-left: @em-page-padding;
+    padding-right: @em-page-padding;
+  }
+  .container {
+    max-width: @em-max-width;
+  }
 }
 
-.em-slides {
-  height: inherit;
+.em-simple-input {
+  outline: none;
+  border:none !important;
+  box-shadow:none !important;
+  padding: 0;
+  border-radius: 0 !important;
+  background: none;
+  font-size: 16px;
 }
 
-.em-slide {
-  height: inherit;
-}
+// EM SECTIONS
 
+// Pages with only one section
 .em-scrollable {
   height: inherit;
-  padding-left: 15px;
-  padding-right: 15px;
-  padding-top: 3em;
-  padding-bottom: 3em;
   overflow-y: auto;
 }
 
-.em-mainlink {
-  padding-left: 15px;
-  padding-right: 15px;
+// Pages with two sections
+.em-scrollable-top {
+  height: inherit;
+  padding-bottom: 2em;
+}
+
+.em-scrollable-bottom {
+  height: inherit;
+  padding-top: 2em;
 }
 
 .em-menu-footer .navbar-fixed-bottom {
@@ -54,7 +90,16 @@ body {
   // left: auto;
 }
 
-.em-date-footer .navbar-fixed-bottom {
+.em-scrollable-top, .em-scrollable-bottom {
+  overflow-y: auto;
+}
+
+// Pages with three sections
+.em-scrollable-middle {
+  height: inherit;
+  padding-top: 2em;
+  padding-bottom: 2em;
+  overflow-y: auto;
 }
 
 .navbar-default, .navbar-collapse {
@@ -64,8 +109,14 @@ body {
   // padding-right: 0;
 }
 
-.nav > li > span {
-  padding: 10px 15px;
+// EM SLIDES
+
+.em-slides {
+  height: inherit;
+}
+
+.em-slide {
+  height: inherit;
 }
 
 .datebar {
@@ -75,19 +126,6 @@ body {
 
 .datebar > table > tbody> tr > td {
   // padding-right: 30px;
-}
-
-label {
-  font-weight: normal;
-}
-
-.em-front {
-  height: 100%;
-  text-align: center;
-}
-
-.em-anchor {
-  padding-top: 30px;
 }
 
 ul.em-headers {
@@ -104,10 +142,6 @@ ul {
   padding-bottom: 10px;
 }
 
-ul.entry-list {
-  padding-left: 0;
-}
-
 input[type="checkbox"].task-checkbox:checked + span {
   text-decoration: line-through;
   color: gray;
@@ -119,26 +153,17 @@ input[type="checkbox"].task-checkbox:checked + span {
   border-color: #8E8E93;
 }
 
-.em-padding
-{
-  padding-left: 15px;
-  padding-right: 15px;
+.em-filtered-items {
+  a {
+    color: @em-blue;
+  }
 }
 
-.em-simple-input {
-  outline: none;
-  border:none !important;
-  box-shadow:none !important;
-  padding: 0;
-  border-radius: 0 !important;
-  background: none;
-  font-size: 16px;
-}
-
-.btn {
-  font-size: 28px;
-  font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue UltraLight', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  font-weight: 100;
+.em-inbox {
+  a {
+    color: @em-blue;
+    font-size: 14px;
+  }
 }
 
 #remember {
@@ -149,9 +174,68 @@ input[type="checkbox"].task-checkbox:checked + span {
   background-image: url(../img/extmd_logo_final_small.png);
   height: 70px;
   width: 160px;
-  margin-bottom: 30px;
+  margin-bottom: 1em;
+  margin-top: 3em;
   background-repeat: no-repeat;
   span {
     display: none;
+  }
+}
+
+.em-omnibar {
+  .form-control { 
+    width: 85%;
+  }
+  input {
+    border-radius:8px;
+    display: inline;
+  }
+}
+
+.em-plus {
+  font-size:14px;
+  border-color: #cccccc;
+  border-radius:50%;
+  background:#FFFFFF;
+}
+
+.em-icon {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  position:relative; top:-2px;
+  margin-right: 2px;
+  text-transform: uppercase;
+  border-radius:50%;
+  border: solid 1px;
+  border-color: @em-blue;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.em-feature {
+  color: @em-blue !important;
+}
+
+.em-mainlinks {
+  #em-taskslink {
+    text-align: left;
+  }
+  #em-menubutton{
+    text-align: center;
+    min-width: 3em;
+    width:100%;
+    button {
+      padding-left: 12%;
+      font-size: 10px;
+      color: @em-blue;     
+    }
+    div {
+      text-align: left;
+    } 
+  }
+  #em-noteslink {
+    text-align: right;
   }
 }
