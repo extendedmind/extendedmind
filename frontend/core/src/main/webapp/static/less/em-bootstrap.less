@@ -81,3 +81,14 @@
   padding: 10px 15px;
 }
 
+// Set the navbar-nav footer settings
+// to be identical for desktop and mobile.
+@media (min-width: @screen-sm-min) {
+  .navbar-nav {
+  	margin: 7.5px -15px;  	
+  }
+  .navbar-nav > li > a {
+  	padding-top: 10px;
+  	padding-bottom: 10px;
+  }
+}
