@@ -92,3 +92,11 @@
   	padding-bottom: 10px;
   }
 }
+
+// The original position:fixed caused carousel
+// to show the headers ok, but clicking on the
+// links did not work -> every link was on the
+// leftmost slide.
+.navbar-fixed-top, .navbar-fixed-bottom {
+  position: absolute;
+}
