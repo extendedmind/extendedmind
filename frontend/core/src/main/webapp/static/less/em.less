@@ -43,7 +43,7 @@ ul {
   }
 }
 
-// EM SPECIFIC
+// EM COMMON
 
 .em-page {
   max-width: @em-max-width;
@@ -56,22 +56,54 @@ ul {
   }
 }
 
+.em-simple-input {
+  outline: none;
+  border:none !important;
+  box-shadow:none !important;
+  padding: 0;
+  border-radius: 0 !important;
+  background: none;
+  font-size: 16px;
+}
+
+// EM SECTIONS
+
+// Pages with only one section
+.em-scrollable {
+  height: inherit;
+  overflow-y: auto;
+}
+
+// Pages with two sections
+.em-scrollable-top {
+  height: inherit;
+  padding-bottom: 2em;
+}
+.em-scrollable-bottom {
+  height: inherit;
+  padding-top: 2em;
+}
+
+.em-scrollable-top, .em-scrollable-bottom {
+  overflow-y: auto;
+}
+
+// Pages with three sections
+.em-scrollable-middle {
+  height: inherit;
+  padding-top: 2em;
+  padding-bottom: 2em;
+  overflow-y: auto;
+}
+
+// EM SLIDES
+
 .em-slides {
   height: inherit;
 }
 
 .em-slide {
   height: inherit;
-}
-
-.em-unscrollable, .em-scrollable {
-  height: inherit;
-  padding-top: 1em;
-  padding-bottom: 1em;  
-}
-
-.em-scrollable {
-  overflow-y: auto;
 }
 
 .datebar {
@@ -81,16 +113,6 @@ ul {
 
 .datebar > table > tbody> tr > td {
   padding-right: 30px;
-}
-
-
-.em-front {
-  height: 100%;
-  text-align: center;
-}
-
-.em-anchor {
-  padding-top: 30px;
 }
 
 ul.em-headers {
@@ -128,16 +150,6 @@ input[type="checkbox"].task-checkbox:checked + span {
   }
 }
 
-.em-simple-input {
-  outline: none;
-  border:none !important;
-  box-shadow:none !important;
-  padding: 0;
-  border-radius: 0 !important;
-  background: none;
-  font-size: 16px;
-}
-
 #remember {
   font-size: 20px !important;
 }
@@ -146,7 +158,8 @@ input[type="checkbox"].task-checkbox:checked + span {
   background-image: url(../img/extmd_logo_final_small.png);
   height: 70px;
   width: 160px;
-  margin-bottom: 30px;
+  margin-bottom: 1em;
+  margin-top: 3em;
   background-repeat: no-repeat;
   span {
     display: none;
