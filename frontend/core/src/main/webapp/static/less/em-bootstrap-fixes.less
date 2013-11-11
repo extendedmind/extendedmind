@@ -1,0 +1,54 @@
+@import "em-bootstrap.less";
+
+// Fix for navbar-justified
+// ref: https://github.com/twbs/bootstrap/issues/10548
+.nav-justified {
+  @media (max-width: @screen-sm-min) {
+    > li {
+      display: table-cell;
+      width: 1%;
+      > a {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+.navbar-nav.nav-justified > li {
+  float:none;
+}
+
+.btn {
+  font-size: 28px;
+  font-weight: 100;
+}
+
+.navbar-default, .navbar-collapse {
+  background-color: white;
+  border: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.nav > li > span {
+  padding: 10px 15px;
+}
+
+// Set the navbar-nav footer settings
+// to be identical for desktop and mobile.
+@media (min-width: @screen-sm-min) {
+  .navbar-nav {
+  	margin: 7.5px -15px;  	
+  }
+  .navbar-nav > li > a {
+  	padding-top: 10px;
+  	padding-bottom: 10px;
+  }
+}
+
+// The original position:fixed caused carousel
+// to show the headers ok, but clicking on the
+// links did not work -> every link was on the
+// leftmost slide.
+.navbar-fixed-top, .navbar-fixed-bottom {
+  position: absolute;
+}

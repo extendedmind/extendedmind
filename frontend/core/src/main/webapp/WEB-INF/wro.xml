@@ -11,7 +11,6 @@
   	<js>/src/main/webapp/static/lib/base64.js</js>
     <js>/src/main/webapp/static/lib/fastclick.js</js>
     <js>/src/main/webapp/static/js/**.js</js>
-    <css>/target/less/**.css</css>
   </group>
 
 </groups>
