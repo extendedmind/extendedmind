@@ -3,8 +3,8 @@
 
 ( function() {'use strict';
 
-  angular.module('em.directives').directive('datebar', ['$swipe','disableCarousel',
-    function($swipe,disableCarousel) {
+  angular.module('em.directives').directive('datebar', ['disableCarousel',
+    function(disableCarousel) {
       return {
         restrict : 'A',
         templateUrl : 'static/partials/templates/tasks/datebar.html',
@@ -106,6 +106,21 @@
             } else {
               scope.selected = '';
             }
+          };
+        }
+      };
+    }]);
+
+  angular.module('em.directives').directive('projectContent',[
+    function() {
+      return {
+        restrict: 'A',
+        templateUrl: 'static/partials/templates/tasks/projectContent.html',
+        link : function(scope, element, attrs) {
+          scope.showProjectContent = false;
+
+          scope.toggleProjectContent = function toggleProjectContent() {
+            scope.showProjectContent = !scope.showProjectContent;
           };
         }
       };

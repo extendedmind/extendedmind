@@ -7,15 +7,20 @@
   <h1 class="text-primary"><a href="{{prefix}}/tasks">tasks</a></h1>
 
   <div>
-    <h2 ng-click="editProject()"><a class="text-muted" href="">{{project.title}}</a></h2>
+
+    <h2 ng-click="toggleProjectContent()">{{project.title}}</h2>
+    <div project-content ng-show="showProjectContent"></div>
+
     <ul class="list-unstyled">
       <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.tasksByProjectUUID">
 
         <div task></div>
-        
+
       </li>
       <div sub-task></div>
     </ul>
   </div>
+  
+  <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
 
 </div>
