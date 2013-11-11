@@ -3,6 +3,24 @@
 
 ( function() {'use strict';
 
+  angular.module('em.directives').directive('datebar', ['$swipe','disableCarousel',
+    function($swipe,disableCarousel) {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/tasks/datebar.html',
+        link: function(scope, element, attrs) {
+
+          element.on('touchmove', function(event) {
+            disableCarousel.setSwiping(true);
+          });
+
+          element.on('touchend', function(event) {
+            disableCarousel.setSwiping(false);
+          });
+        }
+      };
+    }]);
+
   angular.module('em.directives').directive('task', [
     function() {
       return {

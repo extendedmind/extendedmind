@@ -47,7 +47,7 @@ ul {
 
 .em-page {
   max-width: @em-max-width;
-  .row {
+  .row, .em-date-footer > div {
     padding-left: @em-page-padding;
     padding-right: @em-page-padding;
   }
@@ -233,4 +233,13 @@ input[type="checkbox"].task-checkbox:checked + span {
   #em-noteslink {
     text-align: right;
   }
+}
+
+.em-date-footer > div {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.em-date-footer > div > table > tbody> tr > td {
+  padding-right: 0.5em;
 }

@@ -20,7 +20,6 @@
     });
   }
 
-
   MyController.$inject = ['$scope', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];
   angular.module('em.app').controller('MyController', MyController);
 }());
