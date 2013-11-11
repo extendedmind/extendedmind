@@ -3,21 +3,18 @@
 
 ( function() {'use strict';
 
-  function ProjectController($location, $scope, $routeParams, errorHandler, filterService, itemsRequest, tasksArray, tasksRequest, tasksResponse, userPrefix) {
+  function ProjectController($location, $scope, $routeParams, errorHandler, filterService, tasksArray, tasksRequest, tasksResponse, userPrefix) {
 
     $scope.errorHandler = errorHandler;
     $scope.prefix = userPrefix.getPrefix();
-    $scope.filterService=filterService;
+    $scope.filterService = filterService;
 
-    itemsRequest.getItems().then(function() {
+    $scope.tasks=tasksArray.getTasks();
 
-      $scope.tasks=tasksArray.getTasks();
-
-      if ($routeParams.uuid) {
-        $scope.project = tasksArray.getProjectByUUID($routeParams.uuid);
-        $scope.filterService.activeFilters.tasksByProjectUUID.filterBy=$routeParams.uuid;
-      }
-    });
+    if ($routeParams.uuid) {
+      $scope.project = tasksArray.getProjectByUUID($routeParams.uuid);
+      $scope.filterService.activeFilters.tasksByProjectUUID.filterBy=$routeParams.uuid;
+    }
 
     $scope.editProject = function() {
       $location.path(userPrefix.getPrefix() + '/tasks/edit/' + $scope.project.uuid);
@@ -69,6 +66,6 @@
     };
   }
 
-  ProjectController.$inject = ['$location', '$scope', '$routeParams', 'errorHandler', 'filterService','itemsRequest', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
+  ProjectController.$inject = ['$location', '$scope', '$routeParams', 'errorHandler', 'filterService', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
   angular.module('em.app').controller('ProjectController', ProjectController);
 }());

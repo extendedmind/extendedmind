@@ -1,5 +1,5 @@
-/*global angular*/
-/*jslint plusplus: true, regexp: true white: true */
+/*global angular */
+/*jslint white: true */
 
 ( function() {'use strict';
 
@@ -8,16 +8,16 @@
     $scope.filterService = filterService;
 
     $scope.dates = date.week();
-    $scope.date=date.today();
+    $scope.date = date.today();
     $scope.filterService.activeFilters.tasksByDate.filterBy = $scope.date.yyyymmdd;
-    $scope.subtask={};
-    $scope.subtask.due=$scope.date.yyyymmdd;
+    $scope.subtask = {};
+    $scope.subtask.due = $scope.date.yyyymmdd;
 
     $scope.dateClicked = function(date) {
 
-      $scope.date=date;
-      $scope.filterService.activeFilters.tasksByDate.filterBy=$scope.date.yyyymmdd;
-      $scope.subtask.due=$scope.date.yyyymmdd;
+      $scope.date = date;
+      $scope.filterService.activeFilters.tasksByDate.filterBy = $scope.date.yyyymmdd;
+      $scope.subtask.due = $scope.date.yyyymmdd;
 
     };
   }

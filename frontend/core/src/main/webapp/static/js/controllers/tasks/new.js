@@ -1,22 +1,20 @@
-/*global angular*/
+/*global angular, window */
+/*jslint white: true */
 
 ( function() {'use strict';
 
-  function NewTaskController($routeParams, $scope, activeItem, errorHandler,filterService, itemsArray, itemsRequest, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
+  function NewTaskController($routeParams, $scope, activeItem, errorHandler, filterService, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
 
     $scope.errorHandler = errorHandler;
     $scope.prefix = userPrefix.getPrefix();
-    $scope.filterService=filterService;
+    $scope.filterService = filterService;
 
-    itemsRequest.getItems().then(function() {
+    $scope.contexts = tagsArray.getTags();
+    $scope.tasks = tasksArray.getTasks();
 
-      $scope.contexts = tagsArray.getTags();
-      $scope.tasks = tasksArray.getTasks();
-
-      if (activeItem.getItem()) {
-        $scope.parentTask = activeItem.getItem();
-      }
-    });
+    if (activeItem.getItem()) {
+      $scope.parentTask = activeItem.getItem();
+    }
 
     $scope.editTask = function() {
 
@@ -57,7 +55,6 @@
     };
   }
 
-
-  NewTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'errorHandler','filterService', 'itemsArray', 'itemsRequest', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
+  NewTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'errorHandler','filterService', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
   angular.module('em.app').controller('NewTaskController', NewTaskController);
 }());
