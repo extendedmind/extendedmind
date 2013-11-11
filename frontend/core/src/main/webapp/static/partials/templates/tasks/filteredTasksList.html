@@ -1,7 +1,7 @@
 <div>
-    <div ng-if="tasksListFilter" ng-transclude></div>
+    <div ng-show="tasksListFilter" ng-transclude></div>
 
-    <ul class="list-unstyled" ng-if="tasksListFilter">
+    <ul class="list-unstyled" ng-show="tasksListFilter">
 
         <li ng-class="selected" ng-repeat="task in tasks | filter:{title:tasksListFilter}">
 
