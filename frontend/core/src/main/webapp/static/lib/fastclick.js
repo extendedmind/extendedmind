@@ -75,7 +75,7 @@ function FastClick(layer) {
 	 *
 	 * @type number
 	 */
-	this.touchBoundary = 10;
+	this.touchBoundary = 50;
 
 
 	/**
