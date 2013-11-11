@@ -9,18 +9,11 @@
     <title ng-bind="pageTitle.getTitle()"></title>
     <link rel="stylesheet/less" href="static/less/em.less"/>
     <script src="static/lib/less/less-min.js"></script>
-    <script type='application/javascript' src="static/lib/fastclick.js"></script>
-    <script type="application/javascript">
-        window.addEventListener('load', function() {
-            FastClick.attach(document.body);
-        }, false);
-    </script>
+
 </head>
 <body>
 
-    <div class="container em-page">
-      <div ng-view />
-    </div>
+    <div class="container em-page" ng-view />
 
     <script src="static/lib/jquery/jquery.js"></script>
     <script src="static/lib/jquery/jquery.cookie.js"></script>
@@ -86,6 +79,13 @@
     <script src="static/js/services/tags.js"></script>
     <script src="static/js/services/tasks.js"></script>
     <script src="static/js/services/authenticate.js"></script>
+    
+    <script type='application/javascript' src="static/lib/fastclick.js"></script>
+    <script type="application/javascript">
+        window.addEventListener('load', function() {
+            FastClick.attach(document.body);
+        }, false);
+    </script>
 
 </body>
 </html>

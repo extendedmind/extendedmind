@@ -119,9 +119,16 @@
         };
       }]);
 
-    angular.module('em.services').factory('httpRequest', ['$http',
-      function($http) {
+    angular.module('em.services').factory('httpRequest', ['$http', '$rootScope',
+      function($http, $rootScope) {
         var httpRequest = {};
+
+        function getUrlPrefix() {
+          if ($rootScope.urlPrefix) {
+            console.log($rootScope.urlPrefix);
+            return $rootScope.urlPrefix;
+          }
+        }
 
         httpRequest.config = function(config) {
           return $http(config).then(function(success) {
@@ -133,7 +140,7 @@
         httpRequest.get = function(url) {
           return $http({
             method : 'GET',
-            url : url,
+            url : getUrlPrefix() + url,
             cache : true
           }).then(function(success) {
             return success;
