@@ -2,7 +2,7 @@
     "folders":
     [
         {
-            "path": "~/devel/extendedmind/frontend/core/",
+            "path": "./",
             "folder_exclude_patterns": ["target", ".*"],
             "file_exclude_patterns": [".*"]
         }
