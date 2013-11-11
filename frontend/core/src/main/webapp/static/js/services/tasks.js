@@ -1,5 +1,5 @@
-/*global angular*/
-/*jslint eqeq: true plusplus: true*/
+/*global angular */
+/*jslint eqeq: true plusplus: true, white: true */
 
 ( function() {'use strict';
 
@@ -109,9 +109,10 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
         return itemsArray.getItemByUUID(tasks, uuid);
       },
       deleteTaskProperty : function(task, property) {
+        var parentTaskUUID;
 
         if(property==='parentTask'){
-          var parentTaskUUID=task.parentTask;
+          parentTaskUUID=task.parentTask;
         }
 
         itemsArray.deleteItemProperty(task, property);

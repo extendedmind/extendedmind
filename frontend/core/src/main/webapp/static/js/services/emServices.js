@@ -1,4 +1,5 @@
-/*global angular*/
+/*global angular */
+/*jslint white: true */
 
 ( function() {'use strict';
 
@@ -57,10 +58,12 @@
       ];
 
       return{
-        yyyymmdd:function(d){
-          var yyyy = d.getFullYear().toString();
-          var mm = (d.getMonth()+1).toString(); // getMonth() is zero-based
-          var dd  = d.getDate().toString();
+        yyyymmdd: function(d) {
+          var yyyy, mm, dd;
+
+          yyyy = d.getFullYear().toString();
+          mm = (d.getMonth()+1).toString(); // getMonth() is zero-based
+          dd  = d.getDate().toString();
 
           return yyyy +'-'+ (mm[1]?mm:"0"+mm[0]) +'-'+ (dd[1]?dd:"0"+dd[0]); // padding
         },
@@ -108,7 +111,7 @@
           }
           return week;
         }
-      }
+      };
     }]);
 
 angular.module('em.services').factory('filterService',[ 

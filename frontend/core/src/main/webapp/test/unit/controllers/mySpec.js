@@ -1,5 +1,5 @@
 /*global module, beforeEach, inject, describe, afterEach, it, expect*/
-/*jslint nomen: true */
+/*jslint nomen: true, white: true */
 
 ( function() {'use strict';
     beforeEach(module('em.app'));

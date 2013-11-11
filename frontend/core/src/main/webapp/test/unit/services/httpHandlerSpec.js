@@ -1,5 +1,5 @@
 /*global module, beforeEach, inject, describe, afterEach, it, expect, spyOn*/
-/*jslint nomen: true */
+/*jslint nomen: true, white: true */
 
 ( function() {'use strict';
     describe('em.service', function() {
