@@ -58,8 +58,15 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
     return {
       setTasks : function(tasksResponse) {
 
+        itemsArray.clearArray(tasks);
+
         if (tasksResponse != null) {
-          tasks=tasksResponse;
+          var i = 0;
+
+          while (tasksResponse[i]) {
+            this.setTask(tasksResponse[i]);
+            i++;
+          }
         }
       },
       setTask : function(task) {
