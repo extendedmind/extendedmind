@@ -119,15 +119,9 @@ angular.module('em.services').factory('httpBasicAuth', ['$http',
     };
   }]);
 
-angular.module('em.services').factory('httpRequest', ['$http', '$rootScope',
-  function($http, $rootScope) {
+angular.module('em.services').factory('httpRequest', ['$http',
+  function($http) {
     var httpRequest = {};
-
-    function getUrlPrefix() {
-      if (urlPrefix) {
-        return urlPrefix;
-      }
-    }
 
     httpRequest.config = function(config) {
       return $http(config).then(function(success) {
@@ -139,7 +133,7 @@ angular.module('em.services').factory('httpRequest', ['$http', '$rootScope',
     httpRequest.get = function(url) {
       return $http({
         method : 'GET',
-        url : getUrlPrefix() + url,
+        url : url,
         cache : true
       }).then(function(success) {
         return success;
