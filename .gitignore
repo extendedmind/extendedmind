@@ -17,3 +17,6 @@ phantomjsdriver.log
 
 # Ignore Logback logs
 logs/
+
+# Ignore OSX DS store
+.DS_Store

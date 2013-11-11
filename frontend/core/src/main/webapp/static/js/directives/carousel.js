@@ -293,9 +293,7 @@
               offset = Math.round(scope.carouselCollection.getRelativeIndex() * -containerWidth);
               
               // dirty offset hack to center slides
-              if (offset !== 0) {
-                offset = offset - (scope.carouselCollection.position) * 7;
-              }
+              offset = offset - (scope.carouselCollection.position) * 7;
 
               if (skipAnimation === true) {
                 carousel.removeClass('em-carousel-animate').addClass('em-carousel-noanimate').css(translateSlideProperty(offset, false));

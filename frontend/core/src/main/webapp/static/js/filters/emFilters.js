@@ -1,5 +1,5 @@
 /*global angular*/
-/*jslint plusplus: true*/
+/*jslint plusplus: true white: true */
 
 ( function() {'use strict';
 
@@ -73,8 +73,7 @@
     function() {
 
       var filter = function(tasks,filterValue) {
-
-        var tasksFilter ={};
+        var tasksFilter = {};
 
         tasksFilter.byProjectUUID=function(tasks,uuid){
           var filteredValues,i;

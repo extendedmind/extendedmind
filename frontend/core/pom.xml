@@ -212,8 +212,7 @@
             WEB-INF/wro.*,
             static/less*/**,
             static/js*/**,
-            static/lib/less*/**,
-            static/lib/jasmine*/**</packagingExcludes>
+            static/lib/**</packagingExcludes>
         </configuration>
       </plugin>
       <plugin>

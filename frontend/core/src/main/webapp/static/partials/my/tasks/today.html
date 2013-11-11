@@ -1,18 +1,24 @@
 <div class="row em-feature-header">
-
   <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 
-      <button type="button" class="btn btn-default pull-right" ng-click="addNew()">
-        +
-      </button>
-      <h1 class="text-primary">date</h1>
+    <ul class="nav navbar-nav nav-justified">
+      <li id="em-iconlink">
+        <a href="{{prefix}}"><span class="em-icon">t</span></a>
+      </li>
+      <li id="em-featurelink">
+        <a class="em-feature" href="{{prefix}}/projects">today</a>
+      </li>
+      <li id="em-addnewbutton">
+        <button type="button" class="btn em-plus" ng-click="addNew()">+</button>
+      </li>
+    </ul>
+    
   </nav>
-
 </div>
 
-<div class="row em-scrollable">
+<div class="row em-scrollable-middle">
 
-  <h2>{{date.displayDate}}</h2>
+  <h3>{{date.displayDate}}</h3>
 
   <ul class="list-unstyled">
     <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.tasksByDate">
@@ -26,7 +32,7 @@
 </div>
 
 <div class="row em-date-footer">
-  <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+  <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
 
     <div class="datebar">
       <table>
@@ -38,5 +44,4 @@
       </table>
     </div>
   </div>
-
-</nav>
+</div>

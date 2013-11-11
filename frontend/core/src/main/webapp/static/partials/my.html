@@ -1,4 +1,4 @@
-<div class="row em-scrollable">
+<div class="row em-scrollable-top">
   <div class="row center-block em-logo">
     <h1 class="text-primary"><span>extended mind</span></h1>
   </div>
@@ -6,29 +6,22 @@
   <div class="row em-omnibar" omni-bar></div>
 
   <div class="row em-inbox" items-list itemsfilter="newItem.title">
-    <h2><a class="text-muted" href="" ng-click="toggleItemsList()">inbox</a><span class="pull-right"><small>{{completed}}</small></span></h2>
+    <a href="" ng-click="toggleItemsList()">inbox</a>
+    <span class="text-muted">{{items.length}}</span>
+    <span class="pull-right"><small>{{completed}}</small></span>
   </div>
 
   <div class="row em-filtered-items" filtered-notes-list notesfilter="newItem.title">
-    <h2><a class="text-muted" href="{{prefix}}/notes">notes</a></h2>
+    <h3><a class="text-muted" href="{{prefix}}/notes">notes</a></h3>
   </div>
 
   <div class="row em-filtered-items" filtered-tasks-list tasksfilter="newItem.title">
-    <h2><a class="text-muted" href="{{prefix}}/tasks">tasks</a></h2>
+    <h3><a class="text-muted" href="{{prefix}}/tasks">tasks</a></h3>
   </div>
 
   <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
-
-  <div class="row em-mainlinks">
-    <div class="pull-left em-feature">
-      <a href="">tasks</a>
-    </div>
-    <div class="pull-right em-feature">
-      <a href="">notes</a>
-    </div>
-  </div>
 </div>
 
 <div class="row em-menu-footer">
-  <div navbar></div>
+  <div navbar mainlinksfilter="newItem.title"></div>
 </div>

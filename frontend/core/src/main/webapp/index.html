@@ -1,20 +1,14 @@
 <!doctype html>
 <html ng-app="em.app">
   <head>
-    <base href="/"/>
+    <base href="/" />
+    <meta charset="utf-8" />
     <meta name="fragment" content="!" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta charset="utf-8" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-transcluent">
     <title ng-bind="page.getTitle()"></title>
     <link rel="stylesheet" href="static/css/em.min.css"/>
-    <script type='application/javascript' src="static/lib/fastclick.js"></script>
-    <script type="application/javascript">
-      window.addEventListener('load', function() {
-        FastClick.attach(document.body);
-      }, false);
-    </script>
   </head>
   <body>
 <<<<<<< HEAD
@@ -26,16 +20,12 @@
       <div ng-view />
 >>>>>>> ce615260d3646f76715fa318cfe3bfb00fa84c86
     </div>
-
-    <script src="static/lib/jquery/jquery.js"></script>
-    <script src="static/lib/jquery/jquery.cookie.min.js"></script>
-    <script src="static/lib/angularjs/angular.min.js"></script>
-    <script src="static/lib/angularjs/angular-route.min.js"></script>
-    <script src="static/lib/angularjs/angular-animate.min.js"></script>
-    <script src="static/lib/angularjs/angular-touch.min.js"></script>
-
-    <script src="static/lib/base64.js"></script>
-
+    
     <script src="static/em.min.js"></script>
+    <script type="application/javascript">
+      window.addEventListener('load', function() {
+        FastClick.attach(document.body);
+      }, false);
+    </script>
   </body>
 </html>
