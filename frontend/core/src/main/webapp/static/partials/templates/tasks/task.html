@@ -1,9 +1,9 @@
 <div>
 
-    <input type="checkbox" name="checkbox" id="checkbox{{$index}}" class="em-input-checkbox" ng-checked="task.completed" ng-click="taskChecked(task)" />
+    <input type="checkbox" name="checkbox" id="{{task.uuid}}" class="em-input-checkbox" ng-checked="{{task.completed}}" ng-click="taskChecked(task)" />
 
-    <label class="em-input-text em-checkbox" id="checkbox{{$index}}" for="checkbox{{$index}}"></label>
-    <span ng-click="toggleTaskContent()">{{task.title}}</span>
+    <label class="em-input-text em-checkbox" id="{{task.uuid}}" for="{{task.uuid}}"></label>
+    <span  ng-click="toggleTaskContent()">{{task.title}}</span>
 
     <div task-content ng-show="showTaskContent"></div>
 
