@@ -142,10 +142,6 @@ input[type="checkbox"].task-checkbox:checked + span {
   }
 }
 
-#remember {
-  font-size: 0.7em !important;
-}
-
 .em-logo {
   background-image: url(../img/extmd_logo_final_234x114.png);
   width: 234px;
@@ -251,10 +247,10 @@ label {
   user-select: none;
 }
 
-input[type=checkbox].input-checkbox {
+input[type=checkbox].em-input-checkbox {
   position: absolute; 
   overflow: hidden; 
-  clip: rect(0 0 0 0); 
+  clip: rect(0 0 0 0);
   height:1px; 
   width:1px; 
   margin:-1px; 
@@ -262,7 +258,7 @@ input[type=checkbox].input-checkbox {
   border:0;
 }
 
-input[type=checkbox].input-checkbox + label.input-label {
+input[type=checkbox].em-input-checkbox + .em-input-text {
   padding-left:20px;
   height:15px; 
   display:inline-block;
@@ -274,8 +270,12 @@ input[type=checkbox].input-checkbox + label.input-label {
   cursor:pointer;
 }
 
-input[type=checkbox].input-checkbox:checked + label.input-label {
+input[type=checkbox].em-input-checkbox:checked + .em-input-text {
   background-position: 0 -15px;
 }
 
 .em-checkbox{background-image:url(../img/checkbox.png); }
+
+.form-group > label, .form-group > span {
+   font-size: 16px !important;
+}
