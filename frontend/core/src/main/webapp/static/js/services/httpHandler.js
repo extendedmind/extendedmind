@@ -38,8 +38,6 @@
 
     return {
       responseError : function(rejection) {
-        console.log(rejection);
-
         // Http 401 will cause a browser to display a login dialog
         // http://stackoverflow.com/questions/86105/how-can-i-supress-the-browsers-authentication-dialog
         if (rejection.status === 403) {
@@ -124,6 +122,14 @@
     function($http) {
       var httpRequest = {};
 
+      function getUrlPrefix() {
+        // http://stackoverflow.com/a/3390426
+        if (typeof urlPrefix !== 'undefined') {
+          return urlPrefix;
+        }
+        return '';
+      }
+
       httpRequest.config = function(config) {
         return $http(config).then(function(success) {
           return success;
@@ -134,7 +140,7 @@
       httpRequest.get = function(url) {
         return $http({
           method : 'GET',
-          url : url,
+          url : getUrlPrefix() + url,
           cache : true
         }).then(function(success) {
           return success;
@@ -145,7 +151,7 @@
         httpRequest[name] = function(url) {
           return $http({
             method : name,
-            url : url
+            url : getUrlPrefix() + url
           }).then(function(success) {
             return success;
           });
@@ -154,7 +160,7 @@
 
       angular.forEach(['post', 'put'], function(name) {
         httpRequest[name] = function(url, data) {
-          return $http[name](url, data).then(function(success) {
+          return $http[name](getUrlPrefix() + url, data).then(function(success) {
             return success;
           });
         };

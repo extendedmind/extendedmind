@@ -43,6 +43,10 @@
         }
         return deferred.promise;
       },
+      setActiveUUID : function(uuid) {
+        userSessionStorage.setActiveUUID(uuid);
+        initData();
+      },
       checkActiveUUIDOnResponseError : function() {
         return userSessionStorage.isUserAuthenticated();
       },
