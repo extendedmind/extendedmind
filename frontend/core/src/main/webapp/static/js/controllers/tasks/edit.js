@@ -3,7 +3,7 @@
 
 ( function() {'use strict';
 
-  function EditTaskController($routeParams, $scope, errorHandler, filterService, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
+  function EditTaskController($timeout,$routeParams, $scope, errorHandler, filterService, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
 
     $scope.errorHandler = errorHandler;
     $scope.prefix = userPrefix.getPrefix();
@@ -28,6 +28,10 @@
         $scope.task = tasksArray.getProjectByUUID($routeParams.uuid);
       }
     }
+
+    $scope.focusDate = function() {
+      $('#asd').focus();
+    };
 
     $scope.editTask = function() {
 
@@ -73,6 +77,6 @@
     };
   }
 
-  EditTaskController.$inject = ['$routeParams', '$scope', 'errorHandler','filterService', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
+  EditTaskController.$inject = ['$timeout','$routeParams', '$scope', 'errorHandler','filterService', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
   angular.module('em.app').controller('EditTaskController', EditTaskController);
 }());

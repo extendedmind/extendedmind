@@ -1,9 +1,14 @@
-<div>
-  <button type="button" class="btn btn-default" ng-click="editProject()">
-    more
-  </button>
-
-  <button type="button" class="btn btn-default" ng-click="completeProject(project)">
-    complete
-  </button>
+<div class="em-item-actions container">
+<ul class="nav nav-justified em-horizontal-buttons">
+  <li class="em-gray-button" ng-hide="mainlinksFilter">
+    <button class="em-simple-input" type="button" ng-hide="task.relationships.parentTask" ng-click="editProject()">
+      more
+    </button>
+  </li>
+  <li class="em-green-button">
+    <button class="em-simple-input" type="button" ng-click="completeProject(project)">
+      complete
+    </button>
+  </li>
+</ul>
 </div>

@@ -29,6 +29,23 @@
       };
     }]);
 
+  angular.module('em.directives').directive('date', ['$timeout',
+    function($timeout) {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/tasks/date.html',
+        link: function(scope, element) {
+          scope.$watch('trigger', function(value) {
+            if(value === "true") { 
+              $timeout(function() {
+                element[0].focus(); 
+              });
+            }
+          });
+        }
+      };
+    }]);
+
   angular.module('em.directives').directive('project', [
     function() {
       return {

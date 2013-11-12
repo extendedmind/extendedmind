@@ -7,7 +7,7 @@
 
     $scope.errorHandler = errorHandler;
     $scope.prefix = userPrefix.getPrefix();
-    $scope.filterService=filterService;
+    $scope.filterService = filterService;
 
     $scope.items = itemsArray.getItems();
     $scope.notes = notesArray.getNotes();
@@ -34,6 +34,18 @@
         break;
       }
     });
+
+    $scope.gotoHome = function() {
+      $scope.slide = 0;
+    }
+
+    $scope.prevSlide = function() {
+      $scope.slide = $scope.slide - 1;
+    }
+
+    $scope.nextSlide = function() {
+      $scope.slide = $scope.slide + 1;
+    }
 
     $scope.addNew = function() {
       $location.path(userPrefix.getPrefix() + '/tasks/new');
