@@ -1,11 +1,19 @@
-<div class="em-slide">
-
-  <button type="button" class="btn btn-default pull-right" ng-click="cancelEdit()">
-    -
-  </button>
-
-  <h1 class="text-primary"><a href="{{prefix}}/tasks">tasks</a></h1>
-
-  <div edit-task></div>
-
+<div id="em-feature-header-tasks" class="row em-feature-header">
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <ul class="nav navbar-nav nav-justified">
+                <li id="em-iconlink">
+                    <a href="{{prefix}}"><span class="em-icon">t</span></a>
+                </li>
+                <li id="em-featurelink">
+                    <a class="em-feature" href="{{prefix}}/tasks">new</a>
+                </li>
+                <li id="em-addnewbutton">
+                    <button type="button" class="btn em-plus" ng-click="cancelEdit()">-</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
 </div>
+
+<div class="row em-scrollable-bottom" edit-task></div>
