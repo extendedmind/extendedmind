@@ -1,4 +1,4 @@
-<ul>
+<ul class="list-inline">
 
   <li ng-repeat="value in task | visibleTaskContent">
     <span><small>{{value}}</small></span>
@@ -9,21 +9,23 @@
     <span><small><a class="text-muted" href="{{prefix}}/tasks/context/{{tag.uuid}}">@{{tag.title}}</a></small></span>
 
   </li>
-
-  <div class="item-actions">
-
-    <button type="button" class="btn btn-default" ng-hide="task.relationships.parentTask" ng-click="taskToProject(task)">
-      add subtask
-    </button>
-
-    <button type="button" class="btn btn-default" ng-click="taskEdit(task)">
-      edit
-    </button>
-
-    <button type="button" class="btn btn-default" ng-hide="task.project" ng-click="deleteTask(task)">
-      delete
-    </button>
-
+  <div class="em-item-actions container">
+    <ul class="nav nav-justified em-horizontal-buttons">
+      <li class="em-gray-button" ng-hide="mainlinksFilter">
+        <button class="em-simple-input" type="button" ng-hide="task.relationships.parentTask" ng-click="taskToProject(task)">
+          add subtask
+        </button>
+      </li>
+      <li class="em-gray-button">
+        <button class="em-simple-input" type="button" ng-click="taskEdit(task)">
+          edit
+        </button>
+      </li>
+      <li class="em-red-button">
+        <button class="em-simple-input" type="button" ng-hide="task.project" ng-click="deleteTask(task)">
+          delete
+        </button>
+      </li>
+    </ul>
   </div>
-
 </ul>

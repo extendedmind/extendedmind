@@ -1,21 +1,29 @@
-<div class="item-actions">
-
-  <button type="button" class="btn btn-default" ng-click="editNewTag()">
-    tag
-  </button>
-
-  <button type="button" class="btn btn-default" ng-click="itemToNote(item)">
-    note
-  </button>
-
-  <button type="button" class="btn btn-default" ng-click="itemToTask(item)">
-    task
-  </button>
-
-  <button type="button" class="btn btn-default" ng-click="deleteItem(item)">
-    delete
-  </button>
-
-  <div ng-show="showEditNewTag" new-tag></div>
-
+<div class="em-item-actions container">
+  <div class="row">
+    <ul class="nav nav-justified em-horizontal-buttons">
+      <li class="em-gray-button" ng-hide="mainlinksFilter">
+        <button class="em-simple-input" type="button" ng-click="editNewTag()">
+          tag
+        </button>
+      </li>
+      <li class="em-gray-button">
+        <button class="em-simple-input" type="button" ng-click="itemToNote(item)">
+          note
+        </button>
+      </li>
+      <li class="em-gray-button">
+        <button class="em-simple-input" type="button" ng-click="itemToTask(item)">
+          task
+        </button>
+      </li>
+      <li class="em-red-button">
+        <button class="em-simple-input" type="button" ng-click="deleteItem(item)">
+          delete
+        </button>
+      </li>
+    </ul>
+  </div>
+  <div class="row">
+    <div ng-show="showEditNewTag" new-tag></div>
+  </div>
 </div>

@@ -114,8 +114,32 @@ ul.em-headers {
   margin-left: 0;
 }
 
-.item-actions {
-  padding-bottom: 10px;
+.em-item-actions.container {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.em-horizontal-buttons {
+  border-top: solid 1px @em-gray;
+  li {
+    text-align:center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  button {
+    color:white;
+    font-size: 15px;
+    background-repeat: repeat-x;
+  }
+  .em-gray-button {
+    background-color: @em-darkgray;
+  }
+  .em-red-button {
+    background-color: @em-red;
+  }
+  .em-green-button {
+    background-color: @em-green;
+  }
 }
 
 input[type="checkbox"].em-input-checkbox:checked + span {
@@ -125,7 +149,7 @@ input[type="checkbox"].em-input-checkbox:checked + span {
 .active-list-item {
   border-style: solid none;
   border-width: 1px;
-  border-color: #8E8E93;
+  border-color: @em-gray;
 }
 
 .em-filtered-items {
