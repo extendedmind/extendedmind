@@ -17,6 +17,8 @@
       authenticateRequest.login().then(function(authenticateResponse) {
         userSession.setUserSessionData(authenticateResponse);
         $location.path('/my');
+      }, function(authenticateResponse){
+        $scope.errorHandler.errorMessage = authenticateResponse.data;
       });
     };
   }

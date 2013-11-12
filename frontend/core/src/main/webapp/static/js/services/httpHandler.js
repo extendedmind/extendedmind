@@ -127,6 +127,7 @@
         if (typeof urlPrefix !== 'undefined') {
           return urlPrefix;
         }
+        return '';
       }
 
       httpRequest.config = function(config) {
