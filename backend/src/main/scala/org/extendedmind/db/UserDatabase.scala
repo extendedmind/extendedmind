@@ -290,39 +290,23 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
 
   protected def getUserNode(tokenNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
-    // Check that token is still valid
-    val expires = tokenNode.getProperty("expires").asInstanceOf[Long]
-    if (System.currentTimeMillis() > expires) {
-      fail(TOKEN_EXPIRED, "Token has expired")
-    }else{
-      val userFromToken: TraversalDescription = 
-        Traversal.description()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IDS.name), 
-                         Direction.OUTGOING)
-          .depthFirst()
-          .evaluator(Evaluators.excludeStartPosition())
-          .evaluator(LabelEvaluator(List(OwnerLabel.USER)))
-          
-      val traverser = userFromToken.traverse(tokenNode)
-      val userNodeList = traverser.nodes().toArray
+    val userFromToken: TraversalDescription = 
+      Traversal.description()
+        .relationships(DynamicRelationshipType.withName(SecurityRelationship.IDS.name), 
+                       Direction.OUTGOING)
+        .depthFirst()
+        .evaluator(Evaluators.excludeStartPosition())
+        .evaluator(LabelEvaluator(List(OwnerLabel.USER)))
+        
+    val traverser = userFromToken.traverse(tokenNode)
+    val userNodeList = traverser.nodes().toArray
 
-      if (userNodeList.length == 0) {
-        fail(INTERNAL_SERVER_ERROR, "Token attached to no users")
-      } else if (userNodeList.length > 1) {
-        fail(INTERNAL_SERVER_ERROR, "Token attached to more than one user")
-      } else {
-        Right(userNodeList.head)
-      }
-    }
-  }
-
-  protected def getUserNode(token: Token)(implicit log: LoggingContext): Response[Node] = {
-    withTx {
-      implicit neo =>
-        for {
-          tokenNode <- getTokenNode(token).right
-          userNode <- getUserNode(tokenNode).right
-        }yield userNode
+    if (userNodeList.length == 0) {
+      fail(INTERNAL_SERVER_ERROR, "Token attached to no users")
+    } else if (userNodeList.length > 1) {
+      fail(INTERNAL_SERVER_ERROR, "Token attached to more than one user")
+    } else {
+      Right(userNodeList.head)
     }
   }
   

@@ -47,7 +47,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         for {
           token <- Token.decryptToken(oldToken).right
           tokenNode <- getTokenNode(token).right
-          tokenNode <- validateTokenReplacable(tokenNode, currentTime).right
+          result <- validateTokenReplacable(tokenNode, currentTime).right
           userNode <- getUserNode(tokenNode).right
           sc <- Right(getSecurityContext(userNode)).right
           sc <- Right(createNewAccessKey(tokenNode, sc, payload)).right
@@ -77,13 +77,16 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   }
 
   def authenticate(token: String, ownerUUID: Option[UUID])(implicit log: LoggingContext): Response[SecurityContext] = {
+    val currentTime = System.currentTimeMillis()
     withTx{
       implicit neo4j => 
         for {
           token <- Token.decryptToken(token).right
-          user <- getUserNode(token).right
-          collectiveUUID <- Right(getCollectiveUUID(user, ownerUUID)).right
-          sc <- getSecurityContext(user, collectiveUUID).right
+          tokenNode <- getTokenNode(token).right
+          result <- validateToken(tokenNode, currentTime).right
+          userNode <- getUserNode(tokenNode).right
+          collectiveUUID <- Right(getCollectiveUUID(userNode, ownerUUID)).right
+          sc <- getSecurityContext(userNode, collectiveUUID).right
         } yield sc
     }
   }
@@ -162,11 +165,20 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   
   // PRIVATE
   
-  protected def validateTokenReplacable(tokenNode: Node, currentTime: Long): Response[Node] = {
+  protected def validateToken(tokenNode: Node, currentTime: Long): Response[Unit] = {
+    if (tokenNode.hasProperty("expires")) {
+      val tokenValid = tokenNode.getProperty("expires").asInstanceOf[Long];
+      if (currentTime < tokenValid) {
+        Right(Unit)
+      } else fail(TOKEN_EXPIRED, "Token has expired")
+    } else fail(INTERNAL_SERVER_ERROR, "Token " + tokenNode.getId() + " is missing expired property")
+  }
+  
+  protected def validateTokenReplacable(tokenNode: Node, currentTime: Long): Response[Unit] = {
     if (tokenNode.hasProperty("replaceable")) {
       val replaceable = tokenNode.getProperty("replaceable").asInstanceOf[Long];
       if (currentTime < replaceable) {
-        Right(tokenNode)
+        Right(Unit)
       } else fail(TOKEN_EXPIRED, "Token no longer replaceable")
     } else fail(INVALID_PARAMETER, "Token not replaceable")
   }
