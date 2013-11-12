@@ -63,3 +63,15 @@
   margin-bottom: 5px;
 }
 
+// Set the container to not change width when widening
+@media (min-width: @screen-sm-min) {
+  .container {
+    width:inherit;    
+  }
+}
+
+// List inline has annoying padding for <li>
+.list-inline li {
+  padding:0px;
+}
+
