@@ -53,6 +53,10 @@
       }
       window.history.back();
     };
+
+    $scope.focusDate = function() {
+      $('#asd').focus();
+    };
   }
 
   NewTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'errorHandler','filterService', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];

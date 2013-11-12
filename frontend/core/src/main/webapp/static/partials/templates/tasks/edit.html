@@ -3,14 +3,15 @@
   <div class="form-group">
     <label class="sr-only" for="taskTitle">title</label>
     <div class="col-lg-10">
-      <input type="text" class="form-control em-simple-input" id="taskTitle" ng-model="task.title" autofocus="autofocus" placeholder="title..." required>
+      <input type="text" class="form-control em-simple-input" id="taskTitle" ng-model="task.title" placeholder="title..." required>
     </div>
   </div>
 
   <div class="form-group">
-    <label class="sr-only" for="taskkDue">date</label>
+    <label for="taskkDue" class="sr-only">select date...</label>
     <div class="col-lg-10">
-      <input type="date" class="form-control em-simple-input" id="taskDue" ng-model="task.due">
+      <span class="em-span" ng-click="focusDate()">select date...</span>
+      <div date />
     </div>
   </div>
 
@@ -18,7 +19,7 @@
     <label class="sr-only" for="taskParent">parent</label>
     <div class="col-lg-10">
       <select class="form-control em-simple-input" id="taskParent" ng-model="parentTask" ng-options="project.title for project in tasks | tasksFilter:filterService.activeFilters.project" ng-hide="task.project">
-        <option value="">select list...</option>
+        <option value="">select project...</option>
       </select>
     </div>
   </div>

@@ -1,4 +1,4 @@
-<ul class="list-inline">
+<ul class="list-unstyled">
 
   <li ng-repeat="value in task | visibleTaskContent">
     <span><small>{{value}}</small></span>
@@ -11,8 +11,8 @@
   </li>
   <div class="em-item-actions container">
     <ul class="nav nav-justified em-horizontal-buttons">
-      <li class="em-gray-button" ng-hide="mainlinksFilter">
-        <button class="em-simple-input" type="button" ng-hide="task.relationships.parentTask" ng-click="taskToProject(task)">
+      <li class="em-gray-button" ng-hide="task.relationships.parentTask">
+        <button class="em-simple-input" type="button" ng-click="taskToProject(task)">
           add subtask
         </button>
       </li>
