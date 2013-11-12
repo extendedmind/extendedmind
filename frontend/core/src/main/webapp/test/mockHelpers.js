@@ -1,4 +1,5 @@
-/*global $, angular, getJSONFixture*/
+/*global $, angular, getJSONFixture, sessionStorage */
+/*jslint white: true */
 
 ( function() {'use strict';
 
