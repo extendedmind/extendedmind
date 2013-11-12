@@ -118,9 +118,8 @@ ul.em-headers {
   padding-bottom: 10px;
 }
 
-input[type="checkbox"].task-checkbox:checked + span {
-  text-decoration: line-through;
-  color: gray;
+input[type="checkbox"].em-input-checkbox:checked + span {
+  color: @em-completed;
 }
 
 .active-list-item {
@@ -164,14 +163,21 @@ input[type="checkbox"].task-checkbox:checked + span {
   input {
     border-radius:8px;
     display: inline;
+    -webkit-appearance: none;
   }
 }
 
 .em-plus {
-  font-size:14px;
+  font-size: 14px;
   border-color: #cccccc;
-  border-radius:50%;
-  background:#FFFFFF;
+  border-radius: 50%;
+  background: white;
+}
+
+.em-big-button {
+  font-size: 24px;
+  color: @em-blue;
+  padding-top: 15px;
 }
 
 .em-icon {
@@ -191,6 +197,13 @@ input[type="checkbox"].task-checkbox:checked + span {
 
 .em-feature {
   color: @em-blue !important;
+}
+
+.em-feature-disabled {
+  color: @em-blue-disabled !important;
+  .em-icon {
+  border-color: @em-blue-disabled;
+  }
 }
 
 .em-mainlinks {

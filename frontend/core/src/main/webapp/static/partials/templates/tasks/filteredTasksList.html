@@ -5,10 +5,11 @@
 
         <li ng-class="selected" ng-repeat="task in tasks | filter:{title:tasksListFilter}">
 
-            <input type="checkbox" name="checkbox" id="checkbox{{$index}}" class="task-checkbox" ng-checked="task.completed" ng-click="taskChecked(task)">
+            <input type="checkbox" name="checkbox" id="checkbox{{$index}}" class="em-input-checkbox" ng-checked="task.completed" ng-click="taskChecked(task)" />
 
+            <label class="em-input-text em-checkbox" id="checkbox{{$index}}" for="checkbox{{$index}}"></label>
             <span>{{task.title}}</span>
-
+            
         </li>
 
     </ul>
