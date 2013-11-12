@@ -12,6 +12,7 @@ frontend/core/*.sublime-workspace
 target/
 frontend/core/src/main/webapp/test/json/
 frontend/core/src/main/webapp/static/em.min.js
+frontend/core/src/main/webapp/static/favicon.ico
 frontend/core/src/main/webapp/static/css
 
 # Ignore PhantomJS logs
