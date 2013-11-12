@@ -118,9 +118,8 @@ ul.em-headers {
   padding-bottom: 10px;
 }
 
-input[type="checkbox"].task-checkbox:checked + span {
-  text-decoration: line-through;
-  color: gray;
+input[type="checkbox"].em-input-checkbox:checked + span {
+  color: @em-completed;
 }
 
 .active-list-item {
@@ -191,6 +190,13 @@ input[type="checkbox"].task-checkbox:checked + span {
 
 .em-feature {
   color: @em-blue !important;
+}
+
+.em-feature-disabled {
+  color: @em-blue-disabled !important;
+  .em-icon {
+  border-color: @em-blue-disabled;
+  }
 }
 
 .em-mainlinks {
