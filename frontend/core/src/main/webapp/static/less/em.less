@@ -150,7 +150,7 @@ input[type="checkbox"].task-checkbox:checked + span {
 }
 
 #remember {
-  font-size: 20px !important;
+  font-size: 0.7em !important;
 }
 
 .em-logo {
@@ -237,6 +237,44 @@ input[type="checkbox"].task-checkbox:checked + span {
     text-align: right;
   }
 }
+
+label {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+input[type=checkbox].input-checkbox {
+  position: absolute; 
+  overflow: hidden; 
+  clip: rect(0 0 0 0); 
+  height:1px; 
+  width:1px; 
+  margin:-1px; 
+  padding:0;
+  border:0;
+}
+
+input[type=checkbox].input-checkbox + label.input-label {
+  padding-left:20px;
+  height:15px; 
+  display:inline-block;
+  line-height:15px;
+  background-repeat:no-repeat;
+  background-position: 0 0;
+  font-size:15px;
+  vertical-align:middle;
+  cursor:pointer;
+}
+
+input[type=checkbox].input-checkbox:checked + label.input-label {
+  background-position: 0 -15px;
+}
+
+.em-checkbox{background-image:url(../img/checkbox.png);
 
 .em-date-footer > div {
   width: 100%;
