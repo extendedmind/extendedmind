@@ -1,13 +1,6 @@
+@import "variables.less";
 @import "em-bootstrap-fixes.less";
 @import "carousel.less";
-
-// VARIABLES
-
-@em-max-width: 480px;
-@em-font: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-// padding: 0 15px; // http://getbootstrap.com/css/#grid
-@em-page-padding: 15px;
-@em-blue: #428bca;
 
 // GENERAL
 
@@ -238,6 +231,17 @@ input[type="checkbox"].task-checkbox:checked + span {
   }
 }
 
+.em-date-footer > div {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.em-date-footer > div > table > tbody> tr > td {
+  padding-right: 0.5em;
+}
+
+// Checkbox
+
 label {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -274,13 +278,4 @@ input[type=checkbox].input-checkbox:checked + label.input-label {
   background-position: 0 -15px;
 }
 
-.em-checkbox{background-image:url(../img/checkbox.png);
-
-.em-date-footer > div {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.em-date-footer > div > table > tbody> tr > td {
-  padding-right: 0.5em;
-}
+.em-checkbox{background-image:url(../img/checkbox.png); }
