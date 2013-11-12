@@ -1,9 +1,9 @@
-/*global angular*/
-/*jslint eqeq: true plusplus: true*/
+/*global angular */
+/*jslint eqeq: true plusplus: true, white: true*/
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('notesRequest', ['httpRequest', 'itemsResponse', 'userSessionStorage',
+  angular.module('em.services').factory('notesRequest', ['httpRequest', 'itemsResponse', 'userSessionStorage',
     function(httpRequest, itemsResponse, userSessionStorage) {
       return {
         putNote : function(note) {
@@ -24,7 +24,7 @@
       };
     }]);
 
-    angular.module('em.services').factory('notesResponse', ['itemsResponse',
+  angular.module('em.services').factory('notesResponse', ['itemsResponse',
     function(itemsResponse) {
       return {
         putNoteContent : function(note, putNoteResponse) {
@@ -33,7 +33,7 @@
       };
     }]);
 
-    angular.module('em.services').factory('notesArray', ['itemsArray',
+  angular.module('em.services').factory('notesArray', ['itemsArray',
     function(itemsArray) {
       var notes;
       notes = [];
@@ -73,4 +73,4 @@
         }
       };
     }]);
-  }());
+}());

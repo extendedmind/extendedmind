@@ -374,11 +374,23 @@
             // todo: requestAnimationFrame instead
             moveDelay = ($window.jasmine || $window.navigator.platform === 'iPad') ? 0 : 50;
 
+            carousel.on('touchmove mousemove', function(event) {
+              if (disableCarousel.getSwiping()) {
+                event.preventDefault = function() {
+                  return;
+                };
+              }
+            });
+
             $swipe.bind(carousel, {
               /* use angular $swipe service */
-              start : function(coords) {
+              start : function(coords,event) {
 
                 if (disableCarousel.getSwiping()) {
+                  event.preventDefault = function() {
+                    return;
+                  };
+                  event.preventDefault();
                   return;
                 }
                 /* capture initial event position */
@@ -389,6 +401,10 @@
                 $document.bind('mouseup', documentMouseUpEvent);
               },
               move : function(coords) {
+
+                if (disableCarousel.getSwiping()) {
+                  return;
+                }
 
                 if (swiping === 0) {
                   return;

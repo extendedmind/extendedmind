@@ -1,8 +1,9 @@
-/*global angular*/
+/*global angular */
+/*jslint white: true */
 
 ( function() {'use strict';
 
-    angular.module('em.directives').directive('itemsList', [
+  angular.module('em.directives').directive('itemsList', [
     function() {
       return {
         controller : 'ItemsController',
@@ -24,7 +25,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('itemContent', [
+  angular.module('em.directives').directive('itemContent', [
     function() {
       return {
         restrict : 'A',
@@ -46,4 +47,4 @@
         }
       };
     }]);
-  }());
+}());

@@ -1,38 +1,27 @@
-/*global angular*/
-
+/*global angular */
+/*jslint white: true */
 
 ( function() {'use strict';
 
-  function TodayController($scope,$swipe,date,disableCarousel,filterService) {
+  function TodayController($scope, date, filterService) {
 
     $scope.filterService = filterService;
-    
+
     $scope.dates = date.week();
-    $scope.date=date.today();
+    $scope.date = date.today();
     $scope.filterService.activeFilters.tasksByDate.filterBy = $scope.date.yyyymmdd;
-    $scope.subtask={};
-    $scope.subtask.due=$scope.date.yyyymmdd;
+    $scope.subtask = {};
+    $scope.subtask.due = $scope.date.yyyymmdd;
 
     $scope.dateClicked = function(date) {
 
-      $scope.date=date;
-      $scope.filterService.activeFilters.tasksByDate.filterBy=$scope.date.yyyymmdd;
-      $scope.subtask.due=$scope.date.yyyymmdd;
+      $scope.date = date;
+      $scope.filterService.activeFilters.tasksByDate.filterBy = $scope.date.yyyymmdd;
+      $scope.subtask.due = $scope.date.yyyymmdd;
 
     };
-
-    $swipe.bind($(".datebar"),
-    {
-      start : function() {
-       disableCarousel.setSwiping(true);
-     },
-     end : function() {
-       disableCarousel.setSwiping(false);
-     }
-   });
   }
 
-
-  TodayController.$inject = ['$scope','$swipe','date','disableCarousel','filterService'];
+  TodayController.$inject = ['$scope', 'date', 'filterService'];
   angular.module('em.app').controller('TodayController', TodayController);
 }());

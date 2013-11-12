@@ -1,7 +1,7 @@
 <div>
-  <div ng-if="notesListFilter" ng-transclude></div>
+  <div ng-show="notesListFilter" ng-transclude></div>
 
-  <ul class="list-unstyled" ng-if="notesListFilter">
+  <ul class="list-unstyled" ng-show="notesListFilter">
 
     <li ng-class="selected" ng-repeat="note in notes | filter:{title:notesListFilter}">
 

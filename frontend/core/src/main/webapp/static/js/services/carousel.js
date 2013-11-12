@@ -1,5 +1,5 @@
 /*global $, angular, checkEdges, updateSlidePosition, translateSlideProperty, updateSlidePosition, updateContainerWidth, resize, documentMouseUpEvent, console: true */
-/*jslint plusplus: true, regexp: true white: true */
+/*jslint plusplus: true, regexp: true, white: true */
 
 ( function() {'use strict';
 

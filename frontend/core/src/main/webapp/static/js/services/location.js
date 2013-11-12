@@ -1,8 +1,9 @@
-/*global angular*/
+/*global angular */
+/*jslint white: true */
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('location', ['$location', '$rootScope', '$route',
+  angular.module('em.services').factory('location', ['$location', '$rootScope', '$route',
     function($location, $rootScope, $route) {
 
       $location.skipReload = function() {
@@ -20,4 +21,4 @@
 
       return $location;
     }]);
-  }());
+}());

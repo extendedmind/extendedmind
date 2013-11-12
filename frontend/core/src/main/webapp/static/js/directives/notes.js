@@ -1,8 +1,9 @@
-/*global angular*/
+/*global angular */
+/*jslint white: true */
 
 ( function() {'use strict';
 
-    angular.module('em.directives').directive('notes', [
+  angular.module('em.directives').directive('notes', [
     function() {
       return {
         restrict : 'A',
@@ -10,7 +11,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('filteredNotesList', [
+  angular.module('em.directives').directive('filteredNotesList', [
     function() {
       return {
         controller : 'NotesListController',
@@ -27,7 +28,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('notesList', [
+  angular.module('em.directives').directive('notesList', [
     function() {
       return {
         controller : 'NotesListController',
@@ -37,7 +38,7 @@
       };
     }]);
 
-    angular.module('em.directives').directive('noteContent', ['$location',
+  angular.module('em.directives').directive('noteContent', ['$location',
     function($location) {
       return {
         restrict : 'A',
@@ -58,11 +59,11 @@
       };
     }]);
 
-    angular.module('em.directives').directive('editNote', [
+  angular.module('em.directives').directive('editNote', [
     function() {
       return {
         restrict : 'A',
         templateUrl : 'static/partials/templates/notes/edit.html'
       };
     }]);
-  }());
+}());

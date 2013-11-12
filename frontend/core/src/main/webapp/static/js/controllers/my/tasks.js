@@ -1,4 +1,5 @@
-/*global angular*/
+/*global angular */
+/*jslint white: true */
 
 ( function() {'use strict';
 
@@ -8,16 +9,12 @@
     $scope.prefix = userPrefix.getPrefix();
     $scope.filterService=filterService;
 
-    itemsRequest.getItems().then(function() {
-
-      $scope.items = itemsArray.getItems();
-      $scope.notes = notesArray.getNotes();
-      $scope.tasks = tasksArray.getTasks();
-      $scope.tags = tagsArray.getTags();
-      $scope.projects = tasksArray.getProjects();
-      $scope.subtasks = tasksArray.getSubtasks();
-
-    });
+    $scope.items = itemsArray.getItems();
+    $scope.notes = notesArray.getNotes();
+    $scope.tasks = tasksArray.getTasks();
+    $scope.tags = tagsArray.getTags();
+    $scope.projects = tasksArray.getProjects();
+    $scope.subtasks = tasksArray.getSubtasks();
 
     $scope.slide = slideIndex;
 

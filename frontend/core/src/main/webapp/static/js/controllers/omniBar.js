@@ -1,4 +1,5 @@
-/*global angular*/
+/*global angular */
+/*jslint white: true */
 
 ( function() {'use strict';
 
@@ -14,7 +15,6 @@
         });
       };
     }
-
 
     OmniBarController.$inject = ['$scope', 'itemsArray', 'itemsRequest', 'itemsResponse'];
     angular.module('em.app').controller('OmniBarController', OmniBarController);

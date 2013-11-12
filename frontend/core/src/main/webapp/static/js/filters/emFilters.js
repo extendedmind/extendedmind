@@ -1,5 +1,5 @@
-/*global angular*/
-/*jslint plusplus: true white: true */
+/*global angular */
+/*jslint plusplus: true, white: true */
 
 ( function() {'use strict';
 

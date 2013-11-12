@@ -1,7 +1,25 @@
-/*global angular*/
+/*global angular */
 /*jslint white: true */
 
 ( function() {'use strict';
+
+  angular.module('em.directives').directive('datebar', ['disableCarousel',
+    function(disableCarousel) {
+      return {
+        restrict : 'A',
+        templateUrl : 'static/partials/templates/tasks/datebar.html',
+        link: function(scope, element, attrs) {
+
+          element.on('touchmove', function(event) {
+            disableCarousel.setSwiping(true);
+          });
+
+          element.on('touchend', function(event) {
+            disableCarousel.setSwiping(false);
+          });
+        }
+      };
+    }]);
 
   angular.module('em.directives').directive('task', [
     function() {
@@ -88,6 +106,21 @@
             } else {
               scope.selected = '';
             }
+          };
+        }
+      };
+    }]);
+
+  angular.module('em.directives').directive('projectContent',[
+    function() {
+      return {
+        restrict: 'A',
+        templateUrl: 'static/partials/templates/tasks/projectContent.html',
+        link : function(scope, element, attrs) {
+          scope.showProjectContent = false;
+
+          scope.toggleProjectContent = function toggleProjectContent() {
+            scope.showProjectContent = !scope.showProjectContent;
           };
         }
       };

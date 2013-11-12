@@ -1,9 +1,9 @@
 /*global angular*/
-/*jslint eqeq: true plusplus: true*/
+/*jslint eqeq: true plusplus: true, white: true */
 
 ( function() {'use strict';
 
-    angular.module('em.services').factory('tagsArray', ['itemsArray',
+  angular.module('em.services').factory('tagsArray', ['itemsArray',
     function(itemsArray) {
       var tags;
       tags = [];
@@ -40,4 +40,4 @@
         }
       };
     }]);
-  }());
+}());

@@ -1,4 +1,4 @@
-/*global angular*/
+/*global angular */
 /*jslint white: true */
 
 ( function() {'use strict';
@@ -72,7 +72,6 @@
       });
     };
   }
-
 
   TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
   angular.module('em.app').controller('TasksListController', TasksListController);
