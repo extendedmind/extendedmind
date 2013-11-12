@@ -3,7 +3,7 @@
 
 ( function() {'use strict';
 
-  function LoginController($location, $scope, authenticateRequest, errorHandler, userSession) {
+  function LoginController($location, $scope, authenticateRequest, errorHandler, itemsRequest, userSession) {
 
     $scope.errorHandler = errorHandler;
 
@@ -16,6 +16,7 @@
       }
       authenticateRequest.login().then(function(authenticateResponse) {
         userSession.setUserSessionData(authenticateResponse);
+        itemsRequest.getItems();
         $location.path('/my');
       }, function(authenticateResponse){
         $scope.errorHandler.errorMessage = authenticateResponse.data;
@@ -23,6 +24,6 @@
     };
   }
 
-  LoginController.$inject = ['$location', '$scope', 'authenticateRequest', 'errorHandler', 'userSession'];
+  LoginController.$inject = ['$location', '$scope', 'authenticateRequest', 'errorHandler', 'itemsRequest', 'userSession'];
   angular.module('em.app').controller('LoginController', LoginController);
 }());

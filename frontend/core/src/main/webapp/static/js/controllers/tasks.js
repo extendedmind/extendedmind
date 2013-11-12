@@ -47,28 +47,29 @@
       });
     };
 
-    $scope.addSubtask = function() {
+    $scope.addSubtask = function(subtask) {
+
+      $scope.subtask = {};
 
       if ($routeParams.uuid) {
-        $scope.subtask.relationships = {};
+        subtask.relationships = {};
 
         if (tasksArray.getProjectByUUID($routeParams.uuid)) {
 
-          $scope.subtask.relationships.parentTask = $routeParams.uuid;
+          subtask.relationships.parentTask = $routeParams.uuid;
 
         } else if (tagsArray.getTagByUUID($routeParams.uuid)) {
 
-          $scope.subtask.relationships.tags = [];
-          $scope.subtask.relationships.tags[0] = $routeParams.uuid;
+          subtask.relationships.tags = [];
+          subtask.relationships.tags[0] = $routeParams.uuid;
         }
       }
 
-      tasksArray.putNewTask($scope.subtask);
+      tasksRequest.putTask(subtask).then(function(putTaskResponse) {
+        tasksResponse.putTaskContent(subtask, putTaskResponse);
 
-      tasksRequest.putTask($scope.subtask).then(function(putTaskResponse) {
-        tasksResponse.putTaskContent($scope.subtask, putTaskResponse);
+        tasksArray.putNewTask(subtask);
 
-        $scope.subtask = {};
       });
     };
   }

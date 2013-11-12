@@ -140,8 +140,7 @@
       httpRequest.get = function(url) {
         return $http({
           method : 'GET',
-          url : getUrlPrefix() + url,
-          cache : true
+          url : getUrlPrefix() + url
         }).then(function(success) {
           return success;
         });

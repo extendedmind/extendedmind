@@ -187,6 +187,7 @@
               <directory>${basedir}/src/main/webapp/static/</directory>
               <includes>
                 <include>em.min.js</include>
+                <include>favicon.ico</include>
               </includes>
             </fileset>
             <fileset>
@@ -208,6 +209,7 @@
             </manifest>
           </archive>
           <packagingExcludes>index_devel.html,
+            index_async.html,
             test*/**,
             WEB-INF/wro.*,
             static/less*/**,
@@ -314,6 +316,25 @@
                               <directory>${project.build.directory}/less/</directory>
                               <includes>
                                   <include>em.css</include>
+                              </includes>
+                          </resource>
+                      </resources>
+                  </configuration>
+              </execution>
+              <execution>
+                  <id>copy-favicon</id>
+                  <phase>prepare-package</phase>
+                  <goals>
+                      <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                      <outputDirectory>${project.basedir}/src/main/webapp/static/</outputDirectory>
+                      <overwrite>true</overwrite>
+                      <resources>
+                          <resource>
+                              <directory>${project.basedir}/src/main/webapp/landing/</directory>
+                              <includes>
+                                  <include>favicon.ico</include>
                               </includes>
                           </resource>
                       </resources>
