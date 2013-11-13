@@ -1,22 +1,14 @@
 <div>
+  <div ng-transclude></div>
 
-    <div ng-transclude></div>
+  <ul class="list-unstyled">
 
-    <ul class="list-unstyled">
+    <li ng-class="selected" ng-repeat="task in tasks">
+      <div task></div>
 
-        <li ng-class="selected" ng-repeat="task in tasks">
+    </li>
 
-            <input type="checkbox" name="checkbox" id="{{task.uuid}}" class="em-input-checkbox" ng-checked="task.completed" ng-click="taskChecked(task)" />
+  </ul>
 
-            <label class="em-input-text em-checkbox" id="{{task.uuid}}" for="{{task.uuid}}"></label>
-            <span ng-click="toggleTaskContent()">{{task.title}}</span>
-
-            <div task-content ng-show="showTaskContent"></div>
-
-        </li>
-
-    </ul>
-
-    <div sub-task></div>
-
+  <div sub-task></div>
 </div>

@@ -3,38 +3,43 @@
 
 ( function() {'use strict';
 
-  function itemsRequest(httpRequest, itemsArray, notesArray, tagsArray, tasksArray, userSessionStorage) {
+  function itemsRequest(httpRequest, itemsArray, itemsResponse, notesArray, tagsArray, tasksArray, userSessionStorage) {
     return {
       getItems : function() {
-        return httpRequest.get('/api/' + userSessionStorage.getActiveUUID() + '/items').then(function(itemsResponse) {
+        return httpRequest.get('/api/' + userSessionStorage.getActiveUUID() + '/items').then(function(itemsResponses) {
 
-          itemsArray.setItems(itemsResponse.data.items);
-          notesArray.setNotes(itemsResponse.data.notes);
-          tagsArray.setTags(itemsResponse.data.tags);
-          tasksArray.setTasks(itemsResponse.data.tasks);
+          itemsArray.setItems(itemsResponses.data.items);
+          notesArray.setNotes(itemsResponses.data.notes);
+          tagsArray.setTags(itemsResponses.data.tags);
+          tasksArray.setTasks(itemsResponses.data.tasks);
 
         });
       },
       putItem : function(item) {
-        return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/item', item).then(function(putItemsResponse) {
-          return putItemsResponse.data;
+        httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/item', item).then(function(putItemsResponse) {
+          itemsArray.putNewItem(item);
+          itemsResponse.putItemContent(item, putItemsResponse.data);
         });
       },
       editItem : function(item) {
-        httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/item/' + item.uuid, item).then(function(editItemResponse) {
+        return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/item/' + item.uuid, item).then(function(editItemResponse) {
           return editItemResponse.data;
         });
       },
       deleteItem : function(item) {
-        return httpRequest['delete']('/api/' + userSessionStorage.getActiveUUID() + '/item/' + item.uuid).then(function(deleteItemResponse) {
-          return deleteItemResponse.data;
+        itemsArray.removeItem(item);
+        
+        httpRequest['delete']('/api/' + userSessionStorage.getActiveUUID() + '/item/' + item.uuid).then(function(deleteItemResponse) {
+          itemsResponse.putItemContent(item, deleteItemResponse.data);
+        }, function() {
+          itemsArray.setItem(item);
         });
       }
     };
   }
 
 
-  itemsRequest.$inject = ['httpRequest', 'itemsArray', 'notesArray', 'tagsArray', 'tasksArray', 'userSessionStorage'];
+  itemsRequest.$inject = ['httpRequest', 'itemsArray', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray', 'userSessionStorage'];
   angular.module('em.services').factory('itemsRequest', itemsRequest);
 
   angular.module('em.services').factory('itemsResponse', [

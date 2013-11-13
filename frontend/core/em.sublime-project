@@ -6,5 +6,10 @@
             "folder_exclude_patterns": ["target", ".*"],
             "file_exclude_patterns": [".*"]
         }
-    ]
+    ],
+    "settings":
+    {
+      "tab_size": 2,
+      "translate_tabs_to_spaces": true
+    }
 }

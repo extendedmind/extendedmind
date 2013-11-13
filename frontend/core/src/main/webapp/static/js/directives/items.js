@@ -11,13 +11,8 @@
         templateUrl : 'static/partials/templates/items/itemsList.html',
         transclude : true,
         link : function(scope, element, attrs) {
-          scope.showItemsList = false;
-
-          scope.toggleItemsList = function toggleItemsList() {
-            scope.showItemsList = !scope.showItemsList;
-          };
-
           var itemsFilterAttr = attrs.itemsfilter;
+
           scope.$watch(itemsFilterAttr, function(newValue) {
             scope.itemsListFilter = newValue;
           });

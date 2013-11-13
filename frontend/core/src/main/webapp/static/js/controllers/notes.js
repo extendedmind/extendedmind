@@ -3,10 +3,10 @@
 
 ( function() {'use strict';
 
-  function NotesListController($location, $scope, notesArray, notesRequest, notesResponse, userPrefix) {
+  function NotesListController($location, $scope, notesArray, notesRequest, notesResponse) {
 
     $scope.noteEdit = function(note) {
-      $location.path(userPrefix.getPrefix() + '/notes/edit/' + note.uuid);
+      $location.path($scope.prefix + '/notes/edit/' + note.uuid);
     };
 
     $scope.deleteNote = function(note) {
@@ -19,6 +19,6 @@
     };
   }
 
-  NotesListController.$inject = ['$location', '$scope', 'notesArray', 'notesRequest', 'notesResponse', 'userPrefix'];
+  NotesListController.$inject = ['$location', '$scope', 'notesArray', 'notesRequest', 'notesResponse'];
   angular.module('em.app').controller('NotesListController', NotesListController);
 }());

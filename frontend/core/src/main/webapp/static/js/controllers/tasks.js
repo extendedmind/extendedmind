@@ -3,10 +3,10 @@
 
 ( function() {'use strict';
 
-  function TasksListController($location, $routeParams, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
+  function TasksListController($location, $routeParams, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse) {
 
     $scope.taskEdit = function(task) {
-      $location.path(userPrefix.getPrefix() + '/tasks/edit/' + task.uuid);
+      $location.path($scope.prefix + '/tasks/edit/' + task.uuid);
     };
 
     $scope.taskChecked = function(task) {
@@ -29,7 +29,7 @@
     };
 
     $scope.taskToProject = function(task) {
-      $location.path(userPrefix.getPrefix() + '/tasks/new');
+      $location.path($scope.prefix + '/tasks/new');
       activeItem.setItem(task);
       task.project=true;
 
@@ -74,6 +74,6 @@
     };
   }
 
-  TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
+  TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
   angular.module('em.app').controller('TasksListController', TasksListController);
 }());

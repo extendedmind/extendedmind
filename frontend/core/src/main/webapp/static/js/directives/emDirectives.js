@@ -97,6 +97,7 @@
   angular.module('em.directives').directive('my', [
     function() {
       return {
+        controller : 'MyController',
         restrict : 'A',
         templateUrl : 'static/partials/my.html'
       };

@@ -3,19 +3,17 @@
 
 ( function() {'use strict';
 
-  function MyController($scope, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray, userPrefix) {
-
-    $scope.errorHandler = errorHandler;
-    $scope.prefix = userPrefix.getPrefix();
+  function MyController($scope, errorHandler, itemsArray, notesArray, tagsArray, tasksArray, userPrefix) {
 
     $scope.items = itemsArray.getItems();
     $scope.notes = notesArray.getNotes();
-    $scope.tasks = tasksArray.getTasks();
     $scope.tags = tagsArray.getTags();
-    $scope.projects = tasksArray.getProjects();
-    $scope.subtasks = tasksArray.getSubtasks();
+    $scope.tasks = tasksArray.getTasks();
+
+    $scope.prefix = userPrefix.getPrefix();
+    $scope.errorHandler = errorHandler;
   }
 
-  MyController.$inject = ['$scope', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];
+  MyController.$inject = ['$scope', 'errorHandler', 'itemsArray', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];
   angular.module('em.app').controller('MyController', MyController);
 }());
