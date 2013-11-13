@@ -3,19 +3,14 @@
 
 ( function() {'use strict';
 
-  function OmniBarController($scope, itemsArray, itemsRequest, itemsResponse) {
+  function OmniBarController($scope, itemsRequest) {
 
-    $scope.addNewItem = function() {
-
-      itemsRequest.putItem($scope.newItem).then(function(putItemResponse) {
-
-        itemsResponse.putItemContent($scope.newItem, putItemResponse);
-        itemsArray.putNewItem($scope.newItem);
-        $scope.newItem = {};
-      });
+    $scope.addNewItem = function(item) {
+      $scope.newItem = {};
+      itemsRequest.putItem(item);
     };
   }
 
-  OmniBarController.$inject = ['$scope', 'itemsArray', 'itemsRequest', 'itemsResponse'];
+  OmniBarController.$inject = ['$scope', 'itemsRequest'];
   angular.module('em.app').controller('OmniBarController', OmniBarController);
 }());

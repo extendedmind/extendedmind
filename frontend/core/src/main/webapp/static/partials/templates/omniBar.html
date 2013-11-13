@@ -2,7 +2,7 @@
     <div class="row">
         <input type="text" class="inline form-control" ng-model="newItem.title" placeholder="store / recall" required>
         <span>
-            <button class="btn em-plus inline" type="button" ng-disabled="!newItem.title" ng-click="addNewItem()">
+            <button class="btn em-plus inline" type="button" ng-disabled="!newItem.title" ng-click="addNewItem(newItem)">
                 +
             </button>
         </span>
