@@ -7,10 +7,11 @@
   describe('TasksController', function() {
     beforeEach(module('em.services', 'em.mockHelpers'));
 
-    var $controller, $scope, mockHttpBackendResponse, slideIndex;
+    var $controller, $scope, mockHttpBackendResponse, slideIndex, userTasks;
 
     beforeEach(inject(function(_$controller_, _$rootScope_, _mockHttpBackendResponse_) {
       mockHttpBackendResponse = _mockHttpBackendResponse_;
+      userTasks = mockHttpBackendResponse.getItemsResponse().tasks;
 
       $scope = _$rootScope_.$new();
       $controller = _$controller_('TasksController', {
@@ -20,9 +21,9 @@
     }));
 
     it('should return logged user\'s tasks', inject(function() {
-      expect($scope.items).toEqual([]);
-      $scope.items = mockHttpBackendResponse.getItemsResponse();
-      expect($scope.items.tasks.length).toBe(4);
+      expect($scope.tasks).toEqual([]);
+      $scope.tasks = userTasks;
+      expect($scope.tasks.length).toBe(4);
     }));
   });
 }());
