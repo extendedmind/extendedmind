@@ -1,10 +1,15 @@
-<div class="col-6">
-    <div class="row">
-        <input type="text" class="inline form-control" ng-model="newItem.title" placeholder="store / recall" required>
-        <span>
-            <button class="btn em-plus inline" type="button" ng-disabled="!newItem.title" ng-click="addNewItem(newItem)">
-                +
-            </button>
-        </span>
-    </div>
-</div>
+<form class="form" role="form" name="addOmniItem" ng-submit="addNewItem(newItem)">
+
+  <div class="form-group">
+
+    <label class="sr-only" for="omniItem">omniItem</label>
+    <input type="search" class="inline form-control" id="omniItem" ng-model="newItem.title" placeholder="store / recall" required>
+    <span>
+      <button class="btn em-plus inline" type="button" ng-disabled="!newItem.title" ng-click="addNewItem(newItem)">
+        +
+      </button>
+    </span>
+
+  </div>
+
+</form>
