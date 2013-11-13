@@ -1,19 +1,15 @@
 <div>
-
-  <div ng-transclude ng-show=false></div>
+  <div ng-transclude></div>
 
   <ul class="list-unstyled">
 
     <li ng-class="selected" ng-repeat="note in notes">
 
-      <div ng-click="toggleNoteContent()">
-        <span>{{note.title}}</span>
-      </div>
+      <span ng-click="toggleNoteContent()">{{note.title}}</span>
 
       <div note-content ng-show="showNoteContent"></div>
 
     </li>
 
   </ul>
-
 </div>

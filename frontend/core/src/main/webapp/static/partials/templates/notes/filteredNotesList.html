@@ -5,7 +5,9 @@
 
     <li ng-class="selected" ng-repeat="note in notes | filter:{title:notesListFilter}">
 
-      <span>{{note.title}}</span>
+      <span ng-click="toggleNoteContent()">{{note.title}}</span>
+
+      <div note-content ng-show="showNoteContent"></div>
 
     </li>
 

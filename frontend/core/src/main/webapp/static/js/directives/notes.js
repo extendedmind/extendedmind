@@ -20,10 +20,21 @@
         transclude : true,
         link : function(scope, element, attrs) {
           var notesFilterAttr = attrs.notesfilter;
+          scope.showNoteContent = false;
 
           scope.$watch(notesFilterAttr, function(newValue) {
             scope.notesListFilter = newValue;
           });
+
+          scope.toggleNoteContent = function toggleNoteContent() {
+            scope.showNoteContent = !scope.showNoteContent;
+
+            if (scope.showNoteContent) {
+              scope.selected = 'active-list-item';
+            } else {
+              scope.selected = '';
+            }
+          };
         }
       };
     }]);
