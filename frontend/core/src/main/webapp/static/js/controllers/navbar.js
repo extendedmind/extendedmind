@@ -1,26 +1,23 @@
-/*global angular */
-/*jslint eqeq: true, white: true */
+/*jslint white: true */
+'use strict';
 
-( function () {'use strict';
+function NavbarController($location, $scope, authenticateRequest, userAuthenticate, userSessionStorage) {
+  $scope.user = userSessionStorage.getUserUUID();
+  $scope.collectives = userSessionStorage.getCollectives();
 
-  function NavbarController($location, carouselSlide, $rootScope, $scope, authenticateRequest, Enum, location, userAuthenticate, userSessionStorage) {
-    $scope.user = userSessionStorage.getUserUUID();
-    $scope.collectives = userSessionStorage.getCollectives();
+  $scope.logout = function() {
+    authenticateRequest.logout().then(function() {
+      $location.path('/login');
+    });
+  };
 
-    $scope.logout = function() {
-      authenticateRequest.logout().then(function() {
-        $location.path('/login');
-      });
-    };
+  $scope.setActiveUuid = function(uuid, collective) {
+    userAuthenticate.setActiveUUID(uuid);
+    if (collective) {
+      $location.path('/collective/' + uuid);
+    }
+  };
+}
 
-    $scope.setActiveUuid = function(uuid, collective) {
-      userAuthenticate.setActiveUUID(uuid);
-      if (collective) {
-        $location.path('/collective/' + uuid);
-      }
-    };
-  }
-
-  NavbarController.$inject = ['$location', 'carouselSlide', '$rootScope', '$scope', 'authenticateRequest', 'Enum', 'location', 'userAuthenticate', 'userSessionStorage'];
-  angular.module('em.app').controller('NavbarController', NavbarController);
-}());
+NavbarController.$inject = ['$location', '$scope', 'authenticateRequest', 'userAuthenticate', 'userSessionStorage'];
+angular.module('em.app').controller('NavbarController', NavbarController);

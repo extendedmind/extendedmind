@@ -1,12 +1,6 @@
-/*global angular */
-/*jslint white: true */
+'use strict';
 
-( function() {'use strict';
+function HomeController() {}
 
-    function HomeController() {
-
-    }
-
-    HomeController.$inject = [];
-    angular.module('em.app').controller('HomeController', HomeController);
-}());
+HomeController.$inject = [];
+angular.module('em.app').controller('HomeController', HomeController);
