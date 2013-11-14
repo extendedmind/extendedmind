@@ -1,9 +1,9 @@
 /*global angular */
-/*jslint white: true */
+/*jslint eqeq: true, white: true */
 
 ( function () {'use strict';
 
-  function NavbarController($location, $rootScope, $scope, authenticateRequest, userAuthenticate, userSessionStorage) {
+  function NavbarController($location, carouselSlide, $rootScope, $scope, authenticateRequest, Enum, location, userAuthenticate, userSessionStorage) {
     $scope.user = userSessionStorage.getUserUUID();
     $scope.collectives = userSessionStorage.getCollectives();
 
@@ -21,6 +21,6 @@
     };
   }
 
-  NavbarController.$inject = ['$location', '$rootScope', '$scope', 'authenticateRequest', 'userAuthenticate', 'userSessionStorage'];
+  NavbarController.$inject = ['$location', 'carouselSlide', '$rootScope', '$scope', 'authenticateRequest', 'Enum', 'location', 'userAuthenticate', 'userSessionStorage'];
   angular.module('em.app').controller('NavbarController', NavbarController);
 }());

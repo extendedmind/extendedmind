@@ -53,7 +53,7 @@
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
           }],
-          slideIndex : ['Enum',
+          slide : ['Enum',
           function(Enum) {
             return Enum.my.my;
           }],
@@ -75,7 +75,7 @@
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
           }],
-          slideIndex : ['Enum',
+          slide : ['Enum',
           function(Enum) {
             return Enum.my.my;
           }],
@@ -97,7 +97,7 @@
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
           }],
-          slideIndex : ['Enum',
+          slide : ['Enum',
           function(Enum) {
             return Enum.my.notes;
           }],
@@ -119,7 +119,7 @@
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
           }],
-          slideIndex : ['Enum',
+          slide : ['Enum',
           function(Enum) {
             return Enum.my.notes;
           }],
@@ -249,7 +249,7 @@
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
           }],
-          slideIndex : ['Enum',
+          slide : ['Enum',
           function(Enum) {
             return Enum.my.tasks;
           }],
@@ -271,7 +271,7 @@
             userAuthenticate.authenticate(deferred);
             return deferred.promise;
           }],
-          slideIndex : ['Enum',
+          slide : ['Enum',
           function(Enum) {
             return Enum.my.tasks;
           }],

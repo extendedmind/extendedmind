@@ -3,17 +3,16 @@
 
 ( function() {'use strict';
 
-  angular.module('em.directives').directive('emCarousel', ['disableCarousel', '$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager',
-    function(disableCarousel, $rootScope, $compile, $parse, $swipe, $document, $window, CollectionManager) {
-      /* track number of carousel instances */
-      var carousels = 0;
+  function emCarousel(disableCarousel, carouselSlide, location, $rootScope, $compile, $parse, $swipe, $document, $window, CollectionManager) {
+    /* track number of carousel instances */
+    var carousels = 0;
 
-      return {
-        restrict : 'A',
-        scope : true,
-        compile : function(tElement, tAttrs) {
+    return {
+      restrict : 'A',
+      scope : true,
+      compile : function(tElement, tAttrs) {
 
-          tElement.addClass('em-carousel-slides');
+        tElement.addClass('em-carousel-slides');
 
           /* extract the ngRepeat expression from the first li attribute
            this expression will be used to update the carousel
@@ -55,6 +54,7 @@
             /* update the current ngRepeat expression and add a slice operator */
             repeatAttribute.value = originalItem + ' in carouselCollection.cards ' + trackProperty;
           }
+          
           return function(scope, iElement, iAttrs, controller) {
             carousels++;
 
@@ -170,6 +170,7 @@
                 /* check if this property is assignable then watch it */
                 scope.$watch('carouselCollection.index', function(newValue) {
                   indexModel.assign(scope.$parent, newValue);
+                  carouselSlide.setSlideIndex(newValue);
                 });
                 initialIndex = indexModel(scope);
                 scope.$parent.$watch(indexModel, function(newValue, oldValue) {
@@ -343,7 +344,6 @@
                     }
                     scope.carouselCollection.goTo(tmpSlideIndex, true);
                   });
-                  $rootScope.$broadcast('event:slideIndexChanged');
                 }
               }
               swiping = 0;
@@ -355,7 +355,6 @@
               var containerRect, isInside;
 
               containerRect = container[0].getBoundingClientRect();
-              console.log(container[0]);
 
               isInside = (coords.x > containerRect.left && coords.x < (containerRect.left + containerWidth) && (coords.y > containerRect.top && coords.y < containerRect.top + containerRect.height));
 
@@ -453,5 +452,8 @@
           };
         }
       };
-    }]);
-}());
+    }
+
+    emCarousel.$inject = ['disableCarousel', 'carouselSlide', 'location', '$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager'];
+    angular.module('em.directives').directive('emCarousel', emCarousel);
+  }());

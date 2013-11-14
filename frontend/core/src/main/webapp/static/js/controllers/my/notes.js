@@ -3,9 +3,9 @@
 
 ( function() {'use strict';
 
-  function NotesController($location, $rootScope, $scope, Enum, errorHandler, location, notesArray, slideIndex, userPrefix) {
+  function NotesController($location, $rootScope, $scope, Enum, errorHandler, location, notesArray, slide, userPrefix) {
 
-    $scope.slide = slideIndex;
+    $scope.slide = slide;
 
     $scope.notes = notesArray.getNotes();
 
@@ -39,6 +39,6 @@
   }
 
 
-  NotesController.$inject = ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler', 'location', 'notesArray', 'slideIndex', 'userPrefix'];
+  NotesController.$inject = ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler', 'location', 'notesArray', 'slide', 'userPrefix'];
   angular.module('em.app').controller('NotesController', NotesController);
 }());
