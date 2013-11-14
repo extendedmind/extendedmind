@@ -409,12 +409,12 @@ function emCarousel(disableCarousel, carouselSlide, location, $rootScope, $compi
               return;
             }
 
-            //  // cancel movement if not inside
-            //  if (!isInsideCarousel(coords)) {
-            //   // console.log('force end');
-            //   swipeEnd(coords);
-            //   return;
-            // }
+            // cancel movement if not inside
+            if (!isInsideCarousel(coords)) {
+              // console.log('force end');
+              swipeEnd(coords);
+              return;
+            }
 
             var deltaX, now, lastIndex, position, ratio;
 
