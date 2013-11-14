@@ -1,4 +1,3 @@
-/*global angular */
 /*jslint white: true */
 'use strict';
 
