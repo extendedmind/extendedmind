@@ -1,104 +1,103 @@
-/*global $, angular, sessionStorage */
+/*global sessionStorage */
 /*jslint eqeq: true, white: true */
+'use strict';
 
-( function() {'use strict';
+function userAuthenticate($injector, $location, $rootScope, authenticateRequest, itemsRequest, userSession, userCookie, userSessionStorage) {
 
-  function userAuthenticate($injector, $location, $rootScope, authenticateRequest, itemsRequest, userSession, userCookie, userSessionStorage) {
+  function initData() {
+    itemsRequest.getItems();
+  }
 
-    function initData() {
-      itemsRequest.getItems();
-    }
-
-    function isUserAuthenticated() {
-      if (userSessionStorage.isUserAuthenticated()) {
-        if (!userSession.getCredentials()) {
-          userSession.setEncodedCredentials(userSessionStorage.getHttpAuthorizationHeader());
-          initData();
-        }
-        return true;
-      }      
-    }
-
-    return {
-      authenticate : function(deferred) {
-
-        if (isUserAuthenticated()) {
-          deferred.resolve();
-        } else if (userCookie.isUserRemembered()) {
-
-          userSession.setCredentials('token', userCookie.getUserToken());
-          userSession.setUserRemembered(true);
-
-          authenticateRequest.login().then(function(authenticateResponse) {
-            userSession.setUserSessionData(authenticateResponse);
-            deferred.resolve();
-            initData();
-          }, function() {
-            $location.path('/login');
-            deferred.reject();
-          });
-        } else {
-          $location.path('/login');
-          deferred.reject();
-        }
-        return deferred.promise;
-      },
-      setActiveUUID : function(uuid) {
-        userSessionStorage.setActiveUUID(uuid);
+  function isUserAuthenticated() {
+    if (userSessionStorage.isUserAuthenticated()) {
+      if (!userSession.getCredentials()) {
+        userSession.setEncodedCredentials(userSessionStorage.getHttpAuthorizationHeader());
         initData();
-      },
-      checkActiveUUIDOnResponseError : function() {
-        return userSessionStorage.isUserAuthenticated();
-      },
-      authenticateOnResponseError : function() {
+      }
+      return true;
+    }      
+  }
 
-        if (userCookie.isUserRemembered()) {
+  return {
+    authenticate : function(deferred) {
 
-          userSession.setCredentials('token', userCookie.getUserToken());
-          userSession.setUserRemembered(true);
+      if (isUserAuthenticated()) {
+        deferred.resolve();
+      } else if (userCookie.isUserRemembered()) {
 
-          return true;
-        }
-        return false;
-      },
-      loginAndRetryRequest : function(rejection) {
-        var httpRequest;
+        userSession.setCredentials('token', userCookie.getUserToken());
+        userSession.setUserRemembered(true);
 
         authenticateRequest.login().then(function(authenticateResponse) {
           userSession.setUserSessionData(authenticateResponse);
-
-          httpRequest = httpRequest || $injector.get('httpRequest');
-          httpRequest.config(rejection.config).then(function(response) {
-            return response;
-          }, function(response) {
-            return response;
-          });
+          deferred.resolve();
+          initData();
+        }, function() {
+          $location.path('/login');
+          deferred.reject();
         });
+      } else {
+        $location.path('/login');
+        deferred.reject();
       }
-    };
-  }
+      return deferred.promise;
+    },
+    setActiveUUID : function(uuid) {
+      userSessionStorage.setActiveUUID(uuid);
+      initData();
+    },
+    checkActiveUUIDOnResponseError : function() {
+      return userSessionStorage.isUserAuthenticated();
+    },
+    authenticateOnResponseError : function() {
+
+      if (userCookie.isUserRemembered()) {
+
+        userSession.setCredentials('token', userCookie.getUserToken());
+        userSession.setUserRemembered(true);
+
+        return true;
+      }
+      return false;
+    },
+    loginAndRetryRequest : function(rejection) {
+      var httpRequest;
+
+      authenticateRequest.login().then(function(authenticateResponse) {
+        userSession.setUserSessionData(authenticateResponse);
+
+        httpRequest = httpRequest || $injector.get('httpRequest');
+        httpRequest.config(rejection.config).then(function(response) {
+          return response;
+        }, function(response) {
+          return response;
+        });
+      });
+    }
+  };
+}
 
 
-  userAuthenticate.$inject = ['$injector', '$location', '$rootScope', 'authenticateRequest', 'itemsRequest', 'userSession', 'userCookie', 'userSessionStorage'];
-  angular.module('em.services').factory('userAuthenticate', userAuthenticate);
+userAuthenticate.$inject = ['$injector', '$location', '$rootScope', 'authenticateRequest', 'itemsRequest', 'userSession', 'userCookie', 'userSessionStorage'];
+angular.module('em.services').factory('userAuthenticate', userAuthenticate);
 
-  function userSession(base64, httpBasicAuth, userCookie, userSessionStorage) {
+function userSession(base64, httpBasicAuth, userCookie, userSessionStorage) {
 
-    var rememberMe = false;
+  var rememberMe = false;
 
-    return {
-      setUserSessionData : function(authenticateResponse) {
+  return {
+    setUserSessionData : function(authenticateResponse) {
 
-        userSessionStorage.setUserUUID(authenticateResponse.userUUID);
+      userSessionStorage.setUserUUID(authenticateResponse.userUUID);
 
-        userSessionStorage.setActiveUUID(authenticateResponse.userUUID);
+      userSessionStorage.setActiveUUID(authenticateResponse.userUUID);
 
-        this.setCredentials('token', authenticateResponse.token);
-        userSessionStorage.setHttpAuthorizationHeader(this.getCredentials());
+      this.setCredentials('token', authenticateResponse.token);
+      userSessionStorage.setHttpAuthorizationHeader(this.getCredentials());
 
-        if (this.getUserRemembered()) {
-          userCookie.setUserToken(authenticateResponse.token);
-        } else {
+      if (this.getUserRemembered()) {
+        userCookie.setUserToken(authenticateResponse.token);
+      } else {
           // temporary token cookie clear for new user login, when !rememberMe
           // TODO: no login page when user is logged in
           userCookie.clearUserToken();
@@ -232,4 +231,3 @@ angular.module('em.services').factory('userSessionStorage', [
       }
     };
   }]);
-}());

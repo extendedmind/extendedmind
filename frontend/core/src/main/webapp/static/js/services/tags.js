@@ -1,43 +1,40 @@
-/*global angular*/
-/*jslint eqeq: true plusplus: true, white: true */
+/*jslint eqeq: true, white: true */
+'use strict';
 
-( function() {'use strict';
+angular.module('em.services').factory('tagsArray', ['itemsArray',
+  function(itemsArray) {
+    var tags;
+    tags = [];
 
-  angular.module('em.services').factory('tagsArray', ['itemsArray',
-    function(itemsArray) {
-      var tags;
-      tags = [];
+    return {
+      setTags : function(tagsResponse) {
 
-      return {
-        setTags : function(tagsResponse) {
+        itemsArray.clearArray(tags);
 
-          itemsArray.clearArray(tags);
+        if (tagsResponse != null) {
+          var i = 0;
 
-          if (tagsResponse != null) {
-            var i = 0;
-
-            while (tagsResponse[i]) {
-              this.setTag(tagsResponse[i]);
-              i++;
-            }
+          while (tagsResponse[i]) {
+            this.setTag(tagsResponse[i]);
+            i++;
           }
-        },
-        setTag : function(tag) {
-          if (!itemsArray.itemInArray(tags, tag.uuid)) {
-            tags.push(tag);
-          }
-        },
-        getTags : function() {
-          return tags;
-        },
-        putNewTag : function(tag) {
-          if (!itemsArray.itemInArray(tags, tag.title)) {
-            tags.push(tag);
-          }
-        },
-        getTagByUUID : function(uuid) {
-          return itemsArray.getItemByUUID(tags, uuid);
         }
-      };
-    }]);
-}());
+      },
+      setTag : function(tag) {
+        if (!itemsArray.itemInArray(tags, tag.uuid)) {
+          tags.push(tag);
+        }
+      },
+      getTags : function() {
+        return tags;
+      },
+      putNewTag : function(tag) {
+        if (!itemsArray.itemInArray(tags, tag.title)) {
+          tags.push(tag);
+        }
+      },
+      getTagByUUID : function(uuid) {
+        return itemsArray.getItemByUUID(tags, uuid);
+      }
+    };
+  }]);

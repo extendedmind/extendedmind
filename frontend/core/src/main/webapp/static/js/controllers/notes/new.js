@@ -1,30 +1,28 @@
-/*global angular*/
+/*global window */
+/*jslint white: true */
+'use strict';
 
-( function() {'use strict';
+function NewNoteController($scope, errorHandler, notesArray, notesRequest, notesResponse) {
 
-    function NewNoteController($scope, errorHandler, notesArray, notesRequest, notesResponse) {
+  $scope.errorHandler = errorHandler;
 
-      $scope.errorHandler = errorHandler;
+  $scope.editNote = function() {
 
-      $scope.editNote = function() {
+    notesRequest.putNote($scope.note).then(function(putNoteResponse) {
 
-        notesRequest.putNote($scope.note).then(function(putNoteResponse) {
+      notesArray.putNewNote($scope.note);
 
-          notesArray.putNewNote($scope.note);
+      notesResponse.putNoteContent($scope.note, putNoteResponse);
+      $scope.note = {};
 
-          notesResponse.putNoteContent($scope.note, putNoteResponse);
-          $scope.note = {};
+    });
+    window.history.back();
+  };
 
-        });
-        window.history.back();
-      };
+  $scope.cancelEdit = function() {
+    window.history.back();
+  };
+}
 
-      $scope.cancelEdit = function() {
-        window.history.back();
-      };
-    }
-
-
-    NewNoteController.$inject = ['$scope', 'errorHandler', 'notesArray', 'notesRequest', 'notesResponse'];
-    angular.module('em.app').controller('NewNoteController', NewNoteController);
-  }());
+NewNoteController.$inject = ['$scope', 'errorHandler', 'notesArray', 'notesRequest', 'notesResponse'];
+angular.module('em.app').controller('NewNoteController', NewNoteController);

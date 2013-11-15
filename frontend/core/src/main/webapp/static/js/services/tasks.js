@@ -1,38 +1,36 @@
-/*global angular */
-/*jslint eqeq: true plusplus: true, white: true */
+/*jslint eqeq: true, white: true */
+'use strict';
 
-( function() {'use strict';
-
-  angular.module('em.services').factory('tasksRequest', ['httpRequest', 'userSessionStorage',
-    function(httpRequest, userSessionStorage) {
-      return {
-        putTask : function(task) {
-          return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/task', task).then(function(putTaskResponse) {
-            return putTaskResponse.data;
-          });
-        },
-        putExistingTask : function(task) {
-          return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid, task).then(function(putExistingTaskResponse) {
-            return putExistingTaskResponse.data;
-          });
-        },
-        deleteTask : function(task) {
-          return httpRequest['delete']('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid).then(function(deleteTaskResponse) {
-            return deleteTaskResponse.data;
-          });
-        },
-        completeTask : function(task) {
-          return httpRequest.post('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid + '/complete').then(function(completeTaskResponse) {
-            return completeTaskResponse.data;
-          });
-        },
-        uncompleteTask : function(task) {
-          return httpRequest.post('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid + '/uncomplete').then(function(uncompleteTaskResponse) {
-            return uncompleteTaskResponse.data;
-          });
-        }
-      };
-    }]);
+angular.module('em.services').factory('tasksRequest', ['httpRequest', 'userSessionStorage',
+  function(httpRequest, userSessionStorage) {
+    return {
+      putTask : function(task) {
+        return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/task', task).then(function(putTaskResponse) {
+          return putTaskResponse.data;
+        });
+      },
+      putExistingTask : function(task) {
+        return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid, task).then(function(putExistingTaskResponse) {
+          return putExistingTaskResponse.data;
+        });
+      },
+      deleteTask : function(task) {
+        return httpRequest['delete']('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid).then(function(deleteTaskResponse) {
+          return deleteTaskResponse.data;
+        });
+      },
+      completeTask : function(task) {
+        return httpRequest.post('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid + '/complete').then(function(completeTaskResponse) {
+          return completeTaskResponse.data;
+        });
+      },
+      uncompleteTask : function(task) {
+        return httpRequest.post('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid + '/uncomplete').then(function(uncompleteTaskResponse) {
+          return uncompleteTaskResponse.data;
+        });
+      }
+    };
+  }]);
 
 angular.module('em.services').factory('tasksResponse', ['itemsResponse',
   function(itemsResponse) {
@@ -151,4 +149,3 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
       }
     };
   }]);
-}());

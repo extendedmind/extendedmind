@@ -1,17 +1,14 @@
-/*global angular */
 /*jslint white: true */
+'use strict';
 
-( function() {'use strict';
+function AccountController($location, $scope, authenticateRequest, errorHandler) {
 
-    function AccountController($location, $scope, authenticateRequest, errorHandler) {
+  $scope.errorHandler = errorHandler;
 
-        $scope.errorHandler = errorHandler;
+  authenticateRequest.account().then(function(authenticateResponse) {
+    $scope.email = authenticateResponse.email;
+  });
+}
 
-        authenticateRequest.account().then(function(authenticateResponse) {
-            $scope.email = authenticateResponse.email;
-        });
-    }
-
-    AccountController.$inject = ['$location', '$scope', 'authenticateRequest', 'errorHandler'];
-    angular.module('em.app').controller('AccountController', AccountController);
-}());
+AccountController.$inject = ['$location', '$scope', 'authenticateRequest', 'errorHandler'];
+angular.module('em.app').controller('AccountController', AccountController);

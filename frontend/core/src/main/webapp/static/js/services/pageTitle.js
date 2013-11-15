@@ -1,25 +1,22 @@
-/*global angular */
 /*jslint white: true */
+'use strict';
 
-( function() {'use strict';
+angular.module('em.services').factory('pageTitle', function() {
+  var pageTitle, subTitle;
 
-  angular.module('em.services').factory('pageTitle', function() {
-    var pageTitle, subTitle;
+  pageTitle = null;
+  subTitle = null;
 
-    pageTitle = null;
-    subTitle = null;
-
-    return {
-      getSubTitle : function() {
-        return subTitle;
-      },
-      getTitle : function() {
-        return pageTitle;
-      },
-      setSubTitle : function(newsubTitle) {
-        subTitle = newsubTitle;
-        return subTitle;
-      }
-    };
-  });
-}());
+  return {
+    getSubTitle : function() {
+      return subTitle;
+    },
+    getTitle : function() {
+      return pageTitle;
+    },
+    setSubTitle : function(newsubTitle) {
+      subTitle = newsubTitle;
+      return subTitle;
+    }
+  };
+});

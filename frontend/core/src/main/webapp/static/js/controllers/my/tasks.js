@@ -1,60 +1,33 @@
-/*global angular */
 /*jslint white: true */
+'use strict';
 
-( function() {'use strict';
+function TasksController($location, $rootScope, $scope, errorHandler, filterService, slide, tagsArray, tasksArray, userPrefix) {
 
-  function TasksController($location, $rootScope, $scope, Enum, errorHandler, filterService, location, slideIndex, tagsArray, tasksArray, userPrefix) {
+  $scope.slide = slide;
 
-    $scope.slide = slideIndex;
+  $scope.tags = tagsArray.getTags();
+  $scope.tasks = tasksArray.getTasks();
 
-    $scope.tags = tagsArray.getTags();
-    $scope.tasks = tasksArray.getTasks();
+  $scope.filterService = filterService;
+  $scope.prefix = userPrefix.getPrefix();
+  $scope.errorHandler = errorHandler;
 
-    $scope.filterService = filterService;
-    $scope.prefix = userPrefix.getPrefix();
-    $scope.errorHandler = errorHandler;
+  $scope.gotoHome = function() {
+    $scope.slide = 0;
+  };
 
-    function changePath() {
-      switch($scope.slide) {
-        case Enum.my.my:
-        if ($location.path() !== '/' + $scope.prefix) {
-          location.skipReload().path('/' + $scope.prefix);
-        }
-        break;
-        case Enum.my.tasks:
-        if ($location.path() !== '/' + $scope.prefix + '/tasks') {
-          location.skipReload().path('/' + $scope.prefix + '/tasks');
-        }
-        break;
-        default:
-        break;
-      }
-    }
+  $scope.prevSlide = function() {
+    $scope.slide--;
+  };
 
-    $rootScope.$on('event:slideIndexChanged', function() {
-      changePath();
-    });
+  $scope.nextSlide = function() {
+    $scope.slide++;
+  };
 
-    $scope.gotoHome = function() {
-      $scope.slide = 0;
-      changePath();
-    };
+  $scope.addNew = function() {
+    $location.path($scope.prefix + '/tasks/new');
+  };
+}
 
-    $scope.prevSlide = function() {
-      $scope.slide--;
-      changePath();
-    };
-
-    $scope.nextSlide = function() {
-      $scope.slide++;
-      changePath();
-    };
-
-    $scope.addNew = function() {
-      $location.path(userPrefix.getPrefix() + '/tasks/new');
-    };
-  }
-
-  TasksController.$inject = ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler', 'filterService', 'location', 'slideIndex', 'tagsArray', 'tasksArray', 'userPrefix'];
-  angular.module('em.app').controller('TasksController', TasksController);
-}());
+TasksController.$inject = ['$location', '$rootScope', '$scope', 'errorHandler', 'filterService', 'slide', 'tagsArray', 'tasksArray', 'userPrefix'];
+angular.module('em.app').controller('TasksController', TasksController);
