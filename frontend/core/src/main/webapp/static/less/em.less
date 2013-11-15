@@ -331,6 +331,25 @@ input[type=checkbox].em-input-checkbox:checked + .em-input-text {
 
 .em-checkbox{background-image:url(../img/checkbox.png); }
 
+.fade-color(@fade-time) {
+  -o-transition: @fade-time linear;
+  -moz-transition: @fade-time linear;
+  -khtml-transition: @fade-time linear;
+  -webkit-transition: @fade-time linear;
+  -ms-transition: @fade-time linear;
+  transition: @fade-time linear;
+}
+
+input[checked=checked] ~ .fade {
+  color: @em-gray;
+  .fade-color(@em-fade-time);
+}
+
+input ~ .fade {
+  color: @em-black;
+  .fade-color(@em-fade-time);
+}
+
 .form-group > label, .form-group > span {
  font-size: 26px !important;
 }
