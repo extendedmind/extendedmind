@@ -43,11 +43,12 @@ angular.module('em.services').factory('itemsResponse', [
   function() {
     return {
       putItemContent: function(item, putItemResponse) {
-
         angular.forEach(putItemResponse, function(value, key) {
           item[key] = value;
         });
-
+      },
+      deleteItemProperty: function(item, property) {
+        delete item[property];
       }
     };
   }]);

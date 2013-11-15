@@ -47,6 +47,11 @@ angular.module('em.services').factory('tasksResponse', ['itemsResponse',
       },
       deleteTaskProperty: function(task, property) {
         itemsResponse.deleteItemProperty(task, property);
+      },
+      checkDate: function(task) {
+        if (task.due === '') {
+          this.deleteTaskProperty(task, 'due');
+        }
       }
     };
   }]);

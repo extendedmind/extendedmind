@@ -34,6 +34,8 @@ function EditTaskController($timeout,$routeParams, $scope, errorHandler, filterS
 
   $scope.editTask = function() {
 
+    tasksResponse.checkDate($scope.task);
+
     if ($scope.taskContext) {
 
       if (!$scope.task.relationships) {

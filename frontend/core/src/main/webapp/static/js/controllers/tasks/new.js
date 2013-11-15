@@ -16,6 +16,8 @@ function NewTaskController($routeParams, $scope, activeItem, errorHandler, filte
   }
 
   $scope.editTask = function() {
+    
+    tasksResponse.checkDate($scope.task);
 
     if ($scope.taskContext) {
 
