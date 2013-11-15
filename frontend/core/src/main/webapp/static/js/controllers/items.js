@@ -18,8 +18,7 @@ function ItemsController($scope, $timeout, itemsArray, itemsRequest, notesArray,
     $scope.completed = 'task added';
     itemsArray.removeItem(item);
 
-    tasksRequest.putExistingTask(item).then(function(putExistingTaskResponse) {
-      tasksResponse.putTaskContent(item, putExistingTaskResponse);
+    tasksRequest.putExistingTask(item).then(function() {
       tasksArray.putNewTask(item);
       clearCompletedText();
     });

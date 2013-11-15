@@ -61,11 +61,8 @@ function EditTaskController($timeout,$routeParams, $scope, errorHandler, filterS
       }
     }
 
-    tasksRequest.putExistingTask($scope.task).then(function(putExistingTaskResponse) {
-
-      tasksResponse.putTaskContent($scope.task, putExistingTaskResponse);
+    tasksRequest.putExistingTask($scope.task).then(function() {
       $scope.task = {};
-
     });
 
     window.history.back();

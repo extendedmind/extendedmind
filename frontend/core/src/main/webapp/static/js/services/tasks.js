@@ -1,8 +1,8 @@
 /*jslint eqeq: true, white: true */
 'use strict';
 
-angular.module('em.services').factory('tasksRequest', ['httpRequest', 'userSessionStorage',
-  function(httpRequest, userSessionStorage) {
+angular.module('em.services').factory('tasksRequest', ['httpRequest', 'tasksResponse', 'userSessionStorage',
+  function(httpRequest, tasksResponse, userSessionStorage) {
     return {
       putTask : function(task) {
         return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/task', task).then(function(putTaskResponse) {
@@ -11,7 +11,7 @@ angular.module('em.services').factory('tasksRequest', ['httpRequest', 'userSessi
       },
       putExistingTask : function(task) {
         return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid, task).then(function(putExistingTaskResponse) {
-          return putExistingTaskResponse.data;
+          tasksResponse.putTaskContent(task, putExistingTaskResponse.data);
         });
       },
       deleteTask : function(task) {

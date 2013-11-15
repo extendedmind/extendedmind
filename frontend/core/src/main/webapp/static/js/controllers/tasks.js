@@ -29,11 +29,9 @@ function TasksListController($location, $routeParams, $scope, activeItem, tagsAr
   $scope.taskToProject = function(task) {
     $location.path($scope.prefix + '/tasks/new');
     activeItem.setItem(task);
-    task.project=true;
+    task.project = true;
 
-    tasksRequest.putExistingTask(task).then(function(putExistingTaskResponse) {
-      tasksResponse.putTaskContent(task, putExistingTaskResponse);
-    });
+    tasksRequest.putExistingTask(task);
   };
 
   $scope.deleteTask = function(task) {
