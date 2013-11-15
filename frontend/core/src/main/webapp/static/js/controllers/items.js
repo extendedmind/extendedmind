@@ -1,7 +1,7 @@
 /*jslint white: true */
 'use strict';
 
-function ItemsController($scope, $timeout, itemsArray, itemsRequest, notesArray, notesRequest, notesResponse, tasksArray, tasksRequest, tasksResponse) {
+function ItemsController($scope, $timeout, itemsArray, itemsRequest, notesArray, notesRequest, notesResponse, tasksRequest) {
 
   function clearCompletedText() {
     $timeout(function() {
@@ -14,12 +14,9 @@ function ItemsController($scope, $timeout, itemsArray, itemsRequest, notesArray,
   };
 
   $scope.itemToTask = function(item) {
-
     $scope.completed = 'task added';
-    itemsArray.removeItem(item);
 
-    tasksRequest.putExistingTask(item).then(function() {
-      tasksArray.putNewTask(item);
+    tasksRequest.itemToTask(item).then(function() {
       clearCompletedText();
     });
   };
@@ -37,5 +34,5 @@ function ItemsController($scope, $timeout, itemsArray, itemsRequest, notesArray,
   };
 }
 
-ItemsController.$inject = ['$scope', '$timeout', 'itemsArray', 'itemsRequest', 'notesArray', 'notesRequest', 'notesResponse', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+ItemsController.$inject = ['$scope', '$timeout', 'itemsArray', 'itemsRequest', 'notesArray', 'notesRequest', 'notesResponse', 'tasksRequest'];
 angular.module('em.app').controller('ItemsController', ItemsController);

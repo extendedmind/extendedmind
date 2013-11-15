@@ -3,7 +3,7 @@
 
 function itemsRequest(httpRequest, itemsArray, itemsResponse, notesArray, tagsArray, tasksArray, userSessionStorage) {
   return {
-    getItems : function() {
+    getItems: function() {
       return httpRequest.get('/api/' + userSessionStorage.getActiveUUID() + '/items').then(function(itemsResponses) {
 
         itemsArray.setItems(itemsResponses.data.items);
@@ -13,18 +13,18 @@ function itemsRequest(httpRequest, itemsArray, itemsResponse, notesArray, tagsAr
 
       });
     },
-    putItem : function(item) {
+    putItem: function(item) {
       httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/item', item).then(function(putItemsResponse) {
         itemsArray.putNewItem(item);
         itemsResponse.putItemContent(item, putItemsResponse.data);
       });
     },
-    editItem : function(item) {
+    editItem: function(item) {
       return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/item/' + item.uuid, item).then(function(editItemResponse) {
         return editItemResponse.data;
       });
     },
-    deleteItem : function(item) {
+    deleteItem: function(item) {
       itemsArray.removeItem(item);
 
       httpRequest['delete']('/api/' + userSessionStorage.getActiveUUID() + '/item/' + item.uuid).then(function(deleteItemResponse) {
@@ -42,7 +42,7 @@ angular.module('em.services').factory('itemsRequest', itemsRequest);
 angular.module('em.services').factory('itemsResponse', [
   function() {
     return {
-      putItemContent : function(item, putItemResponse) {
+      putItemContent: function(item, putItemResponse) {
 
         angular.forEach(putItemResponse, function(value, key) {
           item[key] = value;
@@ -57,10 +57,10 @@ angular.module('em.services').factory('activeItem', ['$rootScope',
     var activeItem;
 
     return {
-      setItem : function(item) {
+      setItem: function(item) {
         activeItem = item;
       },
-      getItem : function() {
+      getItem: function() {
         return activeItem;
       }
     };
@@ -71,7 +71,7 @@ angular.module('em.services').factory('itemsArray', [
     var items = [];
 
     return {
-      setItems : function(itemsResponse) {
+      setItems: function(itemsResponse) {
 
         this.clearArray(items);
 
@@ -84,34 +84,34 @@ angular.module('em.services').factory('itemsArray', [
           }
         }
       },
-      setItem : function(item) {
+      setItem: function(item) {
         if (!this.itemInArray(items, item.uuid)) {
           items.push(item);
         }
       },
-      getItems : function() {
+      getItems: function() {
         return items;
       },
-      putNewItem : function(item) {
+      putNewItem: function(item) {
         if (!this.itemInArray(items, item.uuid)) {
           items.push(item);
         }
       },
-      clearArray : function(itemsArray) {
+      clearArray: function(itemsArray) {
         // http://stackoverflow.com/a/1234337
         itemsArray.length = 0;
         return itemsArray;
       },
-      removeItem : function(item) {
+      removeItem: function(item) {
         this.removeItemFromArray(items, item);
       },
-      removeItemFromArray : function(items, item) {
+      removeItemFromArray: function(items, item) {
         items.splice(items.indexOf(item), 1);
       },
-      deleteItemProperty : function(item, property) {
+      deleteItemProperty: function(item, property) {
         delete item[property];
       },
-      getItemByUUID : function(items, uuid) {
+      getItemByUUID: function(items, uuid) {
         var i = 0;
 
         while (items[i]) {
@@ -121,7 +121,7 @@ angular.module('em.services').factory('itemsArray', [
           i++;
         }
       },
-      getItemsByProjectUUID : function(items, uuid) {
+      getItemsByProjectUUID: function(items, uuid) {
         var i, subtasks;
         i = 0;
         this.subtasks = [];
@@ -136,7 +136,7 @@ angular.module('em.services').factory('itemsArray', [
         }
         return this.subtasks;
       },
-      getItemsByTagUUID : function(items, uuid) {
+      getItemsByTagUUID: function(items, uuid) {
         var i, j, subtasks;
         i = 0;
         this.subtasks = [];
@@ -157,7 +157,7 @@ angular.module('em.services').factory('itemsArray', [
         }
         return this.subtasks;
       },
-      itemInArray : function(items, uuid) {
+      itemInArray: function(items, uuid) {
         var i = 0;
 
         while (items[i]) {
