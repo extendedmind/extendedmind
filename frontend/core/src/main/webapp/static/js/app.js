@@ -430,7 +430,8 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       redirectTo : '404'
     });
 
-    $locationProvider.html5Mode(true);
+    var h5m = (typeof html5Mode !== 'undefined') ? html5Mode : true;
+    $locationProvider.html5Mode(h5m);
   }]);
 
 angular.module('em.app').run(['$location', '$rootScope', 'errorHandler', 'userAuthenticate', 'userPrefix',
