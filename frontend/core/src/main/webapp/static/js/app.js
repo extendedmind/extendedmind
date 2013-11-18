@@ -64,7 +64,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/inbox', {
-      // controller: 'Inbox',
+      controller: 'InboxController',
       templateUrl: 'static/partials/my/inbox.html',
       resolve: {
         'authenticationRequired': ['$q', 'userAuthenticate',

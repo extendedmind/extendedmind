@@ -1,6 +1,16 @@
 /*jslint white: true */
 'use strict';
 
+angular.module('em.directives').directive('item', [
+  function() {
+    return {
+      controller : 'ItemsController',
+      restrict : 'A',
+      templateUrl : 'static/partials/templates/items/item.html',
+      transclude : true
+    };
+  }]);
+
 angular.module('em.directives').directive('itemsList', [
   function() {
     return {
@@ -25,6 +35,12 @@ angular.module('em.directives').directive('itemContent', [
       templateUrl : 'static/partials/templates/items/itemContent.html',
       link : function(scope, element, attrs) {
         scope.showItemContent = false;
+
+        var itemTypeAttr = attrs.itemtype;
+
+        scope.$watch(itemTypeAttr, function(newValue) {
+          scope.itemType = newValue;
+        });
 
         scope.toggleItemContent = function toggleItemContent() {
 

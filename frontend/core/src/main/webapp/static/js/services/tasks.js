@@ -30,11 +30,15 @@ angular.module('em.services').factory('tasksRequest', ['httpRequest', 'itemsArra
         });
       },
       itemToTask: function(item) {
-        itemsArray.removeItem(item);
-
         return this.putExistingTask(item).then(function() {
           tasksArray.putNewTask(item);
         });
+      },
+      itemToTaskDone: function(item) {
+        itemsArray.removeItem(item);
+        tasksResponse.checkParentTask(item);
+
+        this.putExistingTask(item);
       }
     };
   }]);
@@ -51,6 +55,13 @@ angular.module('em.services').factory('tasksResponse', ['itemsResponse',
       checkDate: function(task) {
         if (task.due === '') {
           this.deleteTaskProperty(task, 'due');
+        }
+      },
+      checkParentTask: function(task) {
+        if (task.relationships) {
+          if (task.relationships.parentTask === '') {
+            this.deleteTaskProperty(task.relationships.parentTask);
+          }
         }
       }
     };
