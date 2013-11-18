@@ -63,6 +63,27 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    $routeProvider.when('/my/inbox', {
+      // controller: 'Inbox',
+      templateUrl: 'static/partials/my/inbox.html',
+      resolve: {
+        'authenticationRequired': ['$q', 'userAuthenticate',
+        function($q, userAuthenticate) {
+          var deferred = $q.defer();
+          userAuthenticate.authenticate(deferred);
+          return deferred.promise;
+        }],
+        slide: ['Enum',
+        function(Enum) {
+          return Enum.my.inbox;
+        }],
+        prefix : ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+      }
+    });
+
     $routeProvider.when('/collective/:collectiveUUID', {
       controller : 'MyController',
       templateUrl : 'static/partials/my.html',
@@ -247,8 +268,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
           userAuthenticate.authenticate(deferred);
           return deferred.promise;
         }],
-        slide : ['Enum',
-        function(Enum) {
+        slide : ['Enum', 'carouselSlide',
+        function(Enum, carouselSlide) {
+          carouselSlide.setTasksSlides();
           return Enum.my.tasks;
         }],
         prefix : ['userPrefix',
@@ -278,6 +300,50 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
           userPrefix.setCollectivePrefix();
         }]
 
+      }
+    });
+
+    $routeProvider.when('/my/tasks/today', {
+      controller: 'TasksController',
+      templateUrl: 'static/partials/my/tasksSlides.html',
+      resolve: {
+        'authenticationRequired': ['$q', 'userAuthenticate',
+        function($q, userAuthenticate) {
+          var deferred = $q.defer();
+          userAuthenticate.authenticate(deferred);
+          return deferred.promise;
+        }],
+        slide: ['Enum', 'carouselSlide',
+        function(Enum, carouselSlide) {
+          carouselSlide.setTasksSlides();
+          return Enum.my.today;
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/tasks/today', {
+      controller: 'TasksController',
+      templateUrl: 'static/partials/my/tasksSlides.html',
+      resolve: {
+        'authenticationRequired': ['$q', 'userAuthenticate',
+        function($q, userAuthenticate) {
+          var deferred = $q.defer();
+          userAuthenticate.authenticate(deferred);
+          return deferred.promise;
+        }],
+        slide: ['Enum', 'carouselSlide',
+        function(Enum, carouselSlide) {
+          carouselSlide.setTasksSlides();
+          return Enum.my.today;
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
       }
     });
 
