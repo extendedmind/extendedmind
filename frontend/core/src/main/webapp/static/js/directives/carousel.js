@@ -3,7 +3,7 @@
 
 'use strict';
 
-function emCarousel(disableCarousel, carouselSlide, location, $rootScope, $compile, $parse, $swipe, $document, $window, CollectionManager) {
+function emCarousel($compile, $document, $parse, $rootScope, $swipe, $window, CollectionManager, disableCarousel) {
   /* track number of carousel instances */
   var carousels = 0;
 
@@ -170,7 +170,6 @@ function emCarousel(disableCarousel, carouselSlide, location, $rootScope, $compi
             /* check if this property is assignable then watch it */
             scope.$watch('carouselCollection.index', function(newValue) {
               indexModel.assign(scope.$parent, newValue);
-              carouselSlide.setSlideIndex(newValue);
             });
             initialIndex = indexModel(scope);
             scope.$parent.$watch(indexModel, function(newValue, oldValue) {
@@ -338,27 +337,15 @@ function emCarousel(disableCarousel, carouselSlide, location, $rootScope, $compi
             } else {
               scope.$apply(function() {
                 if (angular.isDefined(iAttrs.emCarouselCycle)) {
-              // force slide move even if invalid position for cycle carousels
-              scope.carouselCollection.position = tmpSlideIndex;
-              updateSlidePosition();
-            }
-            scope.carouselCollection.goTo(tmpSlideIndex, true);
-          });
+                  // force slide move even if invalid position for cycle carousels
+                  scope.carouselCollection.position = tmpSlideIndex;
+                  updateSlidePosition();
+                }
+                scope.carouselCollection.goTo(tmpSlideIndex, true);
+              });
             }
           }
           swiping = 0;
-        }
-
-        function isInsideCarousel(coords) {
-          // check coords are inside the carousel area
-          // we always compute the container dimensions in case user have scrolled the page
-          var containerRect, isInside;
-
-          containerRect = container[0].getBoundingClientRect();
-
-          isInside = (coords.x > containerRect.left && coords.x < (containerRect.left + containerWidth) && (coords.y > containerRect.top && coords.y < containerRect.top + containerRect.height));
-
-          return isInside;
         }
 
         function documentMouseUpEvent(event) {
@@ -384,14 +371,6 @@ function emCarousel(disableCarousel, carouselSlide, location, $rootScope, $compi
         $swipe.bind(carousel, {
           /* use angular $swipe service */
           start : function(coords,event) {
-
-            if (disableCarousel.getSwiping()) {
-              event.preventDefault = function() {
-                return;
-              };
-              event.preventDefault();
-              return;
-            }
             /* capture initial event position */
             if (swiping === 0) {
               swiping = 1;
@@ -409,13 +388,6 @@ function emCarousel(disableCarousel, carouselSlide, location, $rootScope, $compi
               return;
             }
 
-            // cancel movement if not inside
-            if (!isInsideCarousel(coords)) {
-              // console.log('force end');
-              swipeEnd(coords);
-              return;
-            }
-
             var deltaX, now, lastIndex, position, ratio;
 
             deltaX = coords.x - startX;
@@ -423,7 +395,7 @@ function emCarousel(disableCarousel, carouselSlide, location, $rootScope, $compi
             if (swiping === 1 && deltaX !== 0) {
               swiping = 2;
               startOffset = offset;
-            }else if (swiping === 2) {
+            } else if (swiping === 2) {
               now = (new Date()).getTime();
 
               if (lastMove && (now - lastMove) < moveDelay) {
@@ -454,5 +426,5 @@ function emCarousel(disableCarousel, carouselSlide, location, $rootScope, $compi
   };
 }
 
-emCarousel.$inject = ['disableCarousel', 'carouselSlide', 'location', '$rootScope', '$compile', '$parse', '$swipe', '$document', '$window', 'CollectionManager'];
+emCarousel.$inject = ['$compile', '$document', '$parse', '$rootScope', '$swipe', '$window', 'CollectionManager', 'disableCarousel'];
 angular.module('em.directives').directive('emCarousel', emCarousel);
