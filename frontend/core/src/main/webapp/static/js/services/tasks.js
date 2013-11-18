@@ -59,8 +59,15 @@ angular.module('em.services').factory('tasksResponse', ['itemsResponse',
       },
       checkParentTask: function(task) {
         if (task.relationships) {
-          if (task.relationships.parentTask === '') {
-            this.deleteTaskProperty(task.relationships.parentTask);
+          if (!task.relationships.parentTask) {
+            this.deleteTaskProperty(task.relationships, 'parentTask');
+          }
+        }
+      },
+      checkContexts: function(task) {
+        if (task.relationships) {
+          if (!task.relationships.tags) {
+            this.deleteTaskProperty(task.relationships, 'tags');
           }
         }
       }
@@ -139,8 +146,8 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
       deleteTaskProperty: function(task, property) {
         var parentTaskUUID;
 
-        if(property==='parentTask'){
-          parentTaskUUID=task.parentTask;
+        if(property === 'parentTask'){
+          parentTaskUUID = task.parentTask;
         }
 
         itemsArray.deleteItemProperty(task, property);

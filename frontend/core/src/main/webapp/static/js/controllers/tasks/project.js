@@ -8,7 +8,7 @@ function ProjectController($location, $scope, $routeParams, errorHandler, filter
   $scope.prefix = userPrefix.getPrefix();
   $scope.filterService = filterService;
 
-  $scope.tasks=tasksArray.getTasks();
+  $scope.tasks = tasksArray.getTasks();
 
   if ($routeParams.uuid) {
     $scope.project = tasksArray.getProjectByUUID($routeParams.uuid);

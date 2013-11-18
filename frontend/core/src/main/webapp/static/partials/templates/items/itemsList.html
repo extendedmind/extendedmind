@@ -1,19 +1,15 @@
 <div>
 
-    <div ng-transclude ng-show="(items.length != 0)"></div>
+  <div ng-transclude ng-show="(items.length != 0)"></div>
 
-    <ul class="list-unstyled" ng-show="itemsListFilter">
+  <ul class="list-unstyled" ng-show="itemsListFilter">
 
-        <li ng-class="selected" ng-repeat="item in items | filter:{title:itemsListFilter}">
+    <li ng-class="selected" ng-repeat="item in items | filter:{title:itemsListFilter}">
 
-            <div ng-click="toggleItemContent()">
-                <span>{{item.title}}</span>
-            </div>
+      <div item></div>
 
-            <div item-content ng-show="showItemContent"></div>
+    </li>
 
-        </li>
-
-    </ul>
+  </ul>
 
 </div>

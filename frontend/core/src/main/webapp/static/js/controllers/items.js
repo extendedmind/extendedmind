@@ -1,15 +1,13 @@
 /*jslint white: true */
 'use strict';
 
-function ItemsController($location, $scope, $timeout, filterService, itemsArray, itemsRequest, notesArray, notesRequest, notesResponse, tasksResponse, tasksRequest) {
+function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, notesArray, notesRequest, notesResponse, tasksRequest) {
 
   function clearCompletedText() {
     $timeout(function() {
       $scope.completed = '';
     }, 2000);
   }
-
-  $scope.filterService = filterService;
 
   $scope.deleteItem = function(item) {
     itemsRequest.deleteItem(item);
@@ -19,6 +17,10 @@ function ItemsController($location, $scope, $timeout, filterService, itemsArray,
     $scope.itemType = 'task';
     tasksRequest.itemToTask(item);
     $scope.task = item;
+    $scope.task.relationships = {
+      parentTask: '',
+      tags: []
+    };
   };
 
   $scope.itemToNote = function(item) {
@@ -42,5 +44,5 @@ function ItemsController($location, $scope, $timeout, filterService, itemsArray,
   };
 }
 
-ItemsController.$inject = ['$location', '$scope', '$timeout', 'filterService', 'itemsArray', 'itemsRequest', 'notesArray', 'notesRequest', 'notesResponse', 'tasksResponse', 'tasksRequest'];
+ItemsController.$inject = ['$location', '$scope', '$timeout', 'itemsArray', 'itemsRequest', 'notesArray', 'notesRequest', 'notesResponse', 'tasksRequest'];
 angular.module('em.app').controller('ItemsController', ItemsController);

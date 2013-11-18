@@ -14,7 +14,6 @@ angular.module('em.directives').directive('item', [
 angular.module('em.directives').directive('itemsList', [
   function() {
     return {
-      controller : 'ItemsController',
       restrict : 'A',
       templateUrl : 'static/partials/templates/items/itemsList.html',
       transclude : true,
