@@ -245,7 +245,7 @@ function emCarousel($compile, $document, $parse, $rootScope, $swipe, $window, Co
           return genCSSProperties('transform', 'translate(' + offset + 'px,0)');
         }
 
-        carousel[0].addEventListener('webkitTransitionEnd', transitionEndCallback, false);
+        carousel[0].addEventListener('wegenCSSPbkitTransitionEnd', transitionEndCallback, false);
         // webkit
         carousel[0].addEventListener('transitionend', transitionEndCallback, false);
         // mozilla
@@ -370,7 +370,7 @@ function emCarousel($compile, $document, $parse, $rootScope, $swipe, $window, Co
 
         $swipe.bind(carousel, {
           /* use angular $swipe service */
-          start : function(coords,event) {
+          start : function(coords) {
             /* capture initial event position */
             if (swiping === 0) {
               swiping = 1;

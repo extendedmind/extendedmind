@@ -70,18 +70,18 @@ angular.module('em.filters').filter('visibleTaskContent', [
 angular.module('em.filters').filter('tasksFilter', [
   function() {
 
-    var filter = function(tasks,filterValue) {
+    var filter = function(tasks, filterValue) {
       var tasksFilter = {};
 
-      tasksFilter.byProjectUUID=function(tasks,uuid){
-        var filteredValues,i;
-        filteredValues=[];
-        i=0;
+      tasksFilter.byProjectUUID = function(tasks, uuid) {
+        var filteredValues, i;
+        filteredValues = [];
+        i = 0;
 
-        while(tasks[i]){
-          if(tasks[i].relationships){
-            if(tasks[i].relationships.parentTask){
-              if(tasks[i].relationships.parentTask===uuid){
+        while (tasks[i]) {
+          if (tasks[i].relationships) {
+            if (tasks[i].relationships.parentTask) {
+              if (tasks[i].relationships.parentTask === uuid) {
                 filteredValues.push(tasks[i]);
               }
             }
@@ -91,16 +91,16 @@ angular.module('em.filters').filter('tasksFilter', [
         return filteredValues;
       }
 
-      tasksFilter.tasksByDate=function(tasks,date){
+      tasksFilter.tasksByDate = function(tasks, date) {
 
-        var filteredValues,i;
-        filteredValues=[];
-        i=0;
+        var filteredValues, i;
+        filteredValues = [];
+        i = 0;
 
         while (tasks[i]) {
-          if(!tasks[i].project){
-            if (tasks[i].due){
-              if(tasks[i].due === date){
+          if (!tasks[i].project) {
+            if (tasks[i].due) {
+              if (tasks[i].due === date) {
                 filteredValues.push(tasks[i]);
               }
             }
@@ -110,14 +110,14 @@ angular.module('em.filters').filter('tasksFilter', [
         return filteredValues;
       }
 
-      tasksFilter.projects=function(tasks){
+      tasksFilter.projects = function(tasks){
 
-        var filteredValues,i;
-        filteredValues=[];
-        i=0;
+        var filteredValues, i;
+        filteredValues = [];
+        i = 0;
 
         while (tasks[i]) {
-          if (tasks[i].project){
+          if (tasks[i].project) {
             filteredValues.push(tasks[i]);
           }
           i++;
@@ -125,24 +125,24 @@ angular.module('em.filters').filter('tasksFilter', [
         return filteredValues;
       }
 
-      tasksFilter.unsorted=function(tasks){
+      tasksFilter.unsorted = function(tasks){
 
-        var filteredValues,i,sortedTask;
-        filteredValues=[];
-        i=0;
+        var filteredValues, i, sortedTask;
+        filteredValues = [];
+        i = 0;
 
         while (tasks[i]) {
-          sortedTask=false;
+          sortedTask = false;
 
-          if (tasks[i].relationships){
-            if(tasks[i].relationships.parentTask){
-              sortedTask=true;
+          if (tasks[i].relationships) {
+            if (tasks[i].relationships.parentTask) {
+              sortedTask = true;
             }
           }
-          if(tasks[i].project){
-            sortedTask=true;
+          if (tasks[i].project) {
+            sortedTask = true;
           }
-          if(!sortedTask){
+          if (!sortedTask) {
             filteredValues.push(tasks[i]);
           }
           i++;
@@ -150,7 +150,7 @@ angular.module('em.filters').filter('tasksFilter', [
         return filteredValues;
       }
 
-      if (filterValue){
+      if (filterValue) {
         return tasksFilter[filterValue.name](tasks, filterValue.filterBy);
       }
       return tasks;
