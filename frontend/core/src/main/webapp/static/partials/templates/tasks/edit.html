@@ -18,7 +18,7 @@
   <div class="form-group">
     <label class="sr-only" for="taskParent">parent</label>
     <div class="col-lg-10">
-        <select class="form-control em-simple-input" id="taskParent" ng-model="task.relationships.parentTask" ng-options="project.uuid as project.title for project in tasks | tasksFilter:filterService.activeFilters.project" ng-hide="task.project">
+      <select class="form-control em-simple-input" id="taskParent" ng-model="task.relationships.parentTask" ng-options="project.uuid as project.title for project in tasks | tasksFilter:filterService.activeFilters.project" ng-hide="task.project">
         <option value="">select project...</option>
       </select>
     </div>
