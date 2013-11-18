@@ -19,10 +19,6 @@ function EditTaskController($timeout,$routeParams, $scope, errorHandler, filterS
     }
   }
 
-  $scope.focusDate = function() {
-    $('#asd').focus();
-  };
-
   $scope.editTask = function() {
 
     tasksResponse.checkDate($scope.task);

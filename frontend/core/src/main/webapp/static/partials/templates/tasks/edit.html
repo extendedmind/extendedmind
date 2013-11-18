@@ -7,11 +7,23 @@
     </div>
   </div>
 
-  <div class="form-group">
-    <label for="taskkDue" class="sr-only">select date...</label>
-    <div class="col-lg-10">
+
+
+  <div ng-switch="showDate">
+
+    <div ng-switch-default>
       <span class="em-span" ng-click="focusDate()">select date...</span>
-      <div date />
+    </div>
+
+    <div ng-switch-when="date">
+      <div class="form-group">
+        <label for="taskDue" class="sr-only">select date...</label>
+        <div class="col-lg-10">
+
+          <input type="date" id="taskDue" class="form-control em-simple-input" ng-model="task.due" date>
+
+        </div>
+      </div>
     </div>
   </div>
 

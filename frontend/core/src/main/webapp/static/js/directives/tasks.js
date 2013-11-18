@@ -27,23 +27,6 @@ angular.module('em.directives').directive('task', [
     };
   }]);
 
-angular.module('em.directives').directive('date', ['$timeout',
-  function($timeout) {
-    return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/tasks/date.html',
-      link: function(scope, element) {
-        scope.$watch('trigger', function(value) {
-          if(value === "true") { 
-            $timeout(function() {
-              element[0].focus(); 
-            });
-          }
-        });
-      }
-    };
-  }]);
-
 angular.module('em.directives').directive('project', [
   function() {
     return {
@@ -145,6 +128,30 @@ angular.module('em.directives').directive('editTask', [
   function() {
     return {
       restrict : 'A',
-      templateUrl : 'static/partials/templates/tasks/edit.html'
+      templateUrl : 'static/partials/templates/tasks/edit.html',
+      link : function(scope, element, attrs) {
+        scope.showProjectContent = false;
+        
+        if (scope.task.due) {
+          scope.showDate = 'date';
+        }
+
+        scope.focusDate = function() {
+          scope.showDate = 'date';
+        };
+      }
+    };
+  }]);
+
+angular.module('em.directives').directive('date', ['$timeout',
+  function($timeout) {
+    return {
+      restrict : 'A',
+      link: function(scope, element, attrs) {
+        if (!scope.task.due) {
+          element[0].focus();
+          element[0].value = new Date().toISOString().substring(0, 10);
+        }
+      }
     };
   }]);
