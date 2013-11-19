@@ -66,6 +66,16 @@ ul {
   font-size: 18px;
 }
 
+.em-inbox-active #em-inboxlink, .em-tasks-active #em-taskslink, .em-notes-active #em-noteslink {
+  font-weight: bold;
+}
+
+.em-active-list-item {
+  border-style: solid none;
+  border-width: 1px;
+  border-color: @em-gray;
+}
+
 // EM SECTIONS
 
 // Pages with only one section
@@ -140,12 +150,6 @@ ul.em-headers {
   .em-green-button {
     background-color: @em-green;
   }
-}
-
-.active-list-item {
-  border-style: solid none;
-  border-width: 1px;
-  border-color: @em-gray;
 }
 
 .em-filtered-items {

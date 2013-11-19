@@ -28,7 +28,7 @@ angular.module('em.directives').directive('filteredNotesList', [
           scope.showNoteContent = !scope.showNoteContent;
 
           if (scope.showNoteContent) {
-            scope.selected = 'active-list-item';
+            scope.selected = 'em-active-list-item';
           } else {
             scope.selected = '';
           }

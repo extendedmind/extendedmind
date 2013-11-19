@@ -1,14 +1,18 @@
 /*jslint white: true */
 'use strict';
 
-function NotesController($location, $rootScope, $scope, Enum, errorHandler, location, notesArray, slide, userPrefix) {
+function NotesController($location, $rootScope, $scope, Enum, errorHandler, filterService, itemsArray, location, notesArray, slide, tagsArray, tasksArray, userPrefix) {
 
   $scope.slide = slide;
 
   $scope.notes = notesArray.getNotes();
+  $scope.items = itemsArray.getItems();
+  $scope.tasks = tasksArray.getTasks();
+  $scope.contexts = tagsArray.getTags();
 
-  $scope.errorHandler = errorHandler;
+  $scope.filterService = filterService;
   $scope.prefix = userPrefix.getPrefix();
+  $scope.errorHandler = errorHandler;
 
   function changePath() {
     switch($scope.slide) {
@@ -37,5 +41,5 @@ function NotesController($location, $rootScope, $scope, Enum, errorHandler, loca
 }
 
 
-NotesController.$inject = ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler', 'location', 'notesArray', 'slide', 'userPrefix'];
+NotesController.$inject = ['$location', '$rootScope', '$scope', 'Enum', 'errorHandler', 'filterService', 'itemsArray', 'location', 'notesArray', 'slide', 'tagsArray', 'tasksArray', 'userPrefix'];
 angular.module('em.app').controller('NotesController', NotesController);

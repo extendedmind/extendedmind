@@ -46,7 +46,7 @@ angular.module('em.directives').directive('itemContent', [
           scope.showItemContent = !scope.showItemContent;
 
           if (scope.showItemContent) {
-            scope.selected = 'active-list-item';
+            scope.selected = 'em-active-list-item';
           } else {
             scope.selected = '';
           }

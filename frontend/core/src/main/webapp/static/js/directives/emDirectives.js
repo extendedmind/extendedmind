@@ -95,9 +95,16 @@ angular.module('em.directives').directive('contextsList', [
 angular.module('em.directives').directive('my', [
   function() {
     return {
-      controller : 'MyController',
       restrict : 'A',
       templateUrl : 'static/partials/my.html'
+    };
+  }]);
+
+angular.module('em.directives').directive('inbox', [
+  function() {
+    return {
+      restrict : 'A',
+      templateUrl : 'static/partials/my/inbox.html'
     };
   }]);
 

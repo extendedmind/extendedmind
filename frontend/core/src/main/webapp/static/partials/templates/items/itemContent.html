@@ -1,35 +1,32 @@
-
 <div ng-switch="itemType">
 
   <div ng-switch-default>
 
-    <div class="em-item-actions container">
-      <div class="row">
-        <ul class="nav nav-justified em-horizontal-buttons">
-          <li class="em-gray-button">
-            <button class="em-simple-input" type="button" ng-click="itemToNote(item)">
-              note
-            </button>
-          </li>
-          <li class="em-gray-button">
-            <button class="em-simple-input" type="button" ng-click="itemToTask(item)">
-              task
-            </button>
-          </li>
-          <li class="em-red-button">
-            <button class="em-simple-input" type="button" ng-click="deleteItem(item)">
-              delete
-            </button>
-          </li>
-        </ul>
-      </div>
+    <div class="em-item-actions">
+      <ul class="nav nav-justified em-horizontal-buttons">
+        <li class="em-gray-button">
+          <button class="em-simple-input" type="button" ng-click="itemToNote(item)">
+            note
+          </button>
+        </li>
+        <li class="em-gray-button">
+          <button class="em-simple-input" type="button" ng-click="itemToTask(item)">
+            task
+          </button>
+        </li>
+        <li class="em-red-button">
+          <button class="em-simple-input" type="button" ng-click="deleteItem(item)">
+            delete
+          </button>
+        </li>
+      </ul>
 
     </div>
   </div>
 
   <div ng-switch-when="task">
 
-    <div class="form-group">
+    <div class="row form-group">
       <label class="sr-only" for="taskContext">context</label>
       <div class="col-lg-10">
         <select class="form-control em-simple-input" id="taskContext" ng-model="task.relationships.tags[0]" ng-options="context.uuid as context.title for context in contexts" ng-hide="task.project">
@@ -38,7 +35,7 @@
       </div>
     </div>
 
-    <div class="form-group">
+    <div class="row form-group">
       <label class="sr-only" for="taskParent">parent</label>
       <div class="col-lg-10">
         <select class="form-control em-simple-input" id="taskParent" ng-model="task.relationships.parentTask" ng-options="project.uuid as project.title for project in tasks | tasksFilter:filterService.activeFilters.project" ng-hide="task.project">
@@ -47,7 +44,7 @@
       </div>
     </div>
 
-    <div class="em-item-actions container">
+    <div class="row em-item-actions">
       <ul class="nav nav-justified em-horizontal-buttons">
         <li class="em-gray-button">
           <button class="em-simple-input" type="button" ng-click="taskEditMore(task)">

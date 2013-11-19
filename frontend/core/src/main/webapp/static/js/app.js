@@ -1,3 +1,4 @@
+/*global html5Mode */
 /*jslint white: true */
 'use strict';
 
@@ -8,6 +9,9 @@ angular.module('em.services', ['em.base64']);
 
 angular.module('em.app').config(['$locationProvider', '$routeProvider',
   function($locationProvider, $routeProvider) {
+
+    var h5m = (typeof html5Mode !== 'undefined') ? html5Mode : true;
+    $locationProvider.html5Mode(h5m);
 
     $routeProvider.when('/', {
       redirectTo : 'my'
@@ -43,7 +47,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my', {
       controller : 'MyController',
-      templateUrl : 'static/partials/my.html',
+      templateUrl : 'static/partials/mySlides.html',
       resolve : {
         'authenticationRequired' : ['$q', 'userAuthenticate',
         function($q, userAuthenticate) {
@@ -63,9 +67,31 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    $routeProvider.when('/collective/:collectiveUUID', {
+      controller : 'MyController',
+      templateUrl : 'static/partials/mySlides.html',
+      resolve : {
+        'authenticationRequired' : ['$q', 'userAuthenticate',
+        function($q, userAuthenticate) {
+          var deferred = $q.defer();
+          userAuthenticate.authenticate(deferred);
+          return deferred.promise;
+        }],
+        slide : ['Enum',
+        function(Enum) {
+          return Enum.my.my;
+        }],
+        prefix : ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+
+      }
+    });
+
     $routeProvider.when('/my/inbox', {
       controller: 'InboxController',
-      templateUrl: 'static/partials/my/inbox.html',
+      templateUrl: 'static/partials/my/inboxSlides.html',
       resolve: {
         'authenticationRequired': ['$q', 'userAuthenticate',
         function($q, userAuthenticate) {
@@ -84,25 +110,24 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/collective/:collectiveUUID', {
-      controller : 'MyController',
-      templateUrl : 'static/partials/my.html',
-      resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
+    $routeProvider.when('/collective/:collectiveUUID/inbox', {
+      controller: 'InboxController',
+      templateUrl: 'static/partials/my/inboxSlides.html',
+      resolve: {
+        'authenticationRequired': ['$q', 'userAuthenticate',
         function($q, userAuthenticate) {
           var deferred = $q.defer();
           userAuthenticate.authenticate(deferred);
           return deferred.promise;
         }],
-        slide : ['Enum',
+        slide: ['Enum',
         function(Enum) {
-          return Enum.my.my;
+          return Enum.my.inbox;
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
-
       }
     });
 
@@ -495,9 +520,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'PageNotFoundController',
       redirectTo : '404'
     });
-
-    var h5m = (typeof html5Mode !== 'undefined') ? html5Mode : true;
-    $locationProvider.html5Mode(h5m);
   }]);
 
 angular.module('em.app').run(['$location', '$rootScope', 'errorHandler', 'userAuthenticate', 'userPrefix',
