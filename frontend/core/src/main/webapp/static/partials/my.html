@@ -7,17 +7,17 @@
   <div class="row em-omnibar" omni-bar></div>
 
   <div class="row em-inbox" items-list itemsfilter="newItem.title">
-    <a id="em-inboxlink" href="#{{prefix}}/inbox" ng-click="nextSlide()">inbox</a>
+    <a id="em-inboxlink" href="#{{prefix}}/inbox">inbox</a>
     <span class="text-muted">{{items.length}}</span>
     <span class="pull-right"><small>{{completed}}</small></span>
   </div>
 
   <div class="row em-filtered-items" filtered-notes-list notesfilter="newItem.title">
-    <h3><a class="text-muted" href="#/{{prefix}}/notes" ng-click="nextSlide()">notes</a></h3>
+    <h3><a class="text-muted" href="#/{{prefix}}/notes">notes</a></h3>
   </div>
 
   <div class="row em-filtered-items" filtered-tasks-list tasksfilter="newItem.title">
-    <h3><a class="text-muted" href="#/{{prefix}}/tasks" ng-click="nextSlide()">tasks</a></h3>
+    <h3><a class="text-muted" href="#/{{prefix}}/tasks">tasks</a></h3>
   </div>
 
   <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>

@@ -3,7 +3,7 @@
 
 'use strict';
 
-function emCarousel($compile, $document, $parse, $rootScope, $swipe, $window, CollectionManager, disableCarousel) {
+function emCarousel($compile, $document, $parse, $swipe, $window, CollectionManager, disableCarousel) {
   /* track number of carousel instances */
   var carousels = 0;
 
@@ -426,5 +426,5 @@ function emCarousel($compile, $document, $parse, $rootScope, $swipe, $window, Co
   };
 }
 
-emCarousel.$inject = ['$compile', '$document', '$parse', '$rootScope', '$swipe', '$window', 'CollectionManager', 'disableCarousel'];
+emCarousel.$inject = ['$compile', '$document', '$parse', '$swipe', '$window', 'CollectionManager', 'disableCarousel'];
 angular.module('em.directives').directive('emCarousel', emCarousel);
