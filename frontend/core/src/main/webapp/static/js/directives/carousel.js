@@ -245,6 +245,7 @@ function emCarousel($compile, $document, $parse, $rootScope, $swipe, $window, Co
           if (is3d) {
             return genCSSProperties('transform', 'translate3d(' + offset + 'px,0,0)');
           }
+          
           return genCSSProperties('transform', 'translate(' + offset + 'px,0)');
         }
 
