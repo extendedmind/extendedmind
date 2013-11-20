@@ -3,7 +3,7 @@
 
 'use strict';
 
-function emCarousel($compile, $document, $parse, $swipe, $window, CollectionManager, disableCarousel) {
+function emCarousel($compile, $document, $parse, $rootScope, $swipe, $window, CollectionManager, disableCarousel) {
   /* track number of carousel instances */
   var carousels = 0;
 
@@ -100,6 +100,7 @@ function emCarousel($compile, $document, $parse, $swipe, $window, CollectionMana
             carousel.css(translateSlideProperty(getTransformCoordinates(carousel[0]), true));
 
           }
+          // $rootScope.$broadcast('event:slideIndexChanged', this.index);
         }
 
         function updateSlides(method, items) {
@@ -232,9 +233,11 @@ function emCarousel($compile, $document, $parse, $swipe, $window, CollectionMana
           /* cross browser CSS properties generator */
           var css = {};
           css[property] = value;
+          
           angular.forEach(vendorPrefixes, function(prefix, idx) {
             css['-' + prefix.toLowerCase() + '-' + property] = value;
           });
+
           return css;
         }
 
@@ -426,5 +429,5 @@ function emCarousel($compile, $document, $parse, $swipe, $window, CollectionMana
   };
 }
 
-emCarousel.$inject = ['$compile', '$document', '$parse', '$swipe', '$window', 'CollectionManager', 'disableCarousel'];
+emCarousel.$inject = ['$compile', '$document', '$parse', '$rootScope', '$swipe', '$window', 'CollectionManager', 'disableCarousel'];
 angular.module('em.directives').directive('emCarousel', emCarousel);

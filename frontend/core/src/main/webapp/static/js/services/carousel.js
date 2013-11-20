@@ -2,8 +2,8 @@
 /*jslint regexp: true, white: true */
 'use strict';
 
-angular.module('em.services').service('CollectionManager', ['$rootScope',
-  function($rootScope) {
+angular.module('em.services').service('CollectionManager', [
+  function() {
 
     function CollectionManager(options) {
       var initial = {
@@ -98,7 +98,6 @@ angular.module('em.services').service('CollectionManager', ['$rootScope',
         if (!cycled) {
           this.updated = new Date();
         }
-        $rootScope.$broadcast('event:slideIndexChanged', this.index);
       };
 
       CollectionManager.prototype.next = function() {
