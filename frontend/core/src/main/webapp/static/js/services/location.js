@@ -54,25 +54,26 @@ angular.module('em.services').factory('Enum', [
     return slide;
   }]);
 
-angular.module('em.services').factory('carouselSlide', ['$location', '$rootScope', 'location', 'Enum', 'userPrefix',
-  function($location, $rootScope, location, Enum, userPrefix) {
+angular.module('em.services').factory('carouselSlide', ['$rootScope', 'location', 'userPrefix',
+  function($rootScope, location, userPrefix) {
 
     var carouselPath, carouselSlideIndex, carouselSlides;
 
     function setSlidePath() {
-
-      if ($location.path() !== '/' + userPrefix.getPrefix() + carouselSlides[carouselSlideIndex].path) {
-        location.skipReload().path('/' + userPrefix.getPrefix() + carouselSlides[carouselSlideIndex].path);
-      }
+      location.skipReload().path('/' + userPrefix.getPrefix() + carouselSlides[carouselSlideIndex].path);
+      $rootScope.$apply();
     }
 
-    $rootScope.$on('event:slideIndexChanged', function(e, slide) {
+    $rootScope.$on('event:slideIndexChanged', function(event, slide) {
       carouselSlideIndex = slide;
-      carouselPath = carouselSlides[carouselSlideIndex].path;
       setSlidePath();
     });
 
     return {
+      setSlideIndex: function(slide) {
+        carouselSlideIndex = slide;
+        setSlidePath();
+      },
       getSlideIndex: function() {
         return carouselSlideIndex;
       },

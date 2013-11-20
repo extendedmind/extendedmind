@@ -100,7 +100,7 @@ function emCarousel($compile, $document, $parse, $rootScope, $swipe, $window, Co
             carousel.css(translateSlideProperty(getTransformCoordinates(carousel[0]), true));
 
           }
-          // $rootScope.$broadcast('event:slideIndexChanged', this.index);
+          $rootScope.$broadcast('event:slideIndexChanged', scope.carouselCollection.position);
         }
 
         function updateSlides(method, items) {
@@ -245,7 +245,7 @@ function emCarousel($compile, $document, $parse, $rootScope, $swipe, $window, Co
           if (is3d) {
             return genCSSProperties('transform', 'translate3d(' + offset + 'px,0,0)');
           }
-          
+
           return genCSSProperties('transform', 'translate(' + offset + 'px,0)');
         }
 
@@ -300,9 +300,9 @@ function emCarousel($compile, $document, $parse, $rootScope, $swipe, $window, Co
           offset = offset - (scope.carouselCollection.position) * 7;
 
           if (skipAnimation === true) {
-            carousel.removeClass('em-carousel-animate').addClass('em-carousel-noanimate').css(translateSlideProperty(offset, false));
+            carousel.removeClass('em-carousel-animate').addClass('em-carousel-noanimate').css('transform', 'translate3d(' + offset + 'px,0,0)');
           } else {
-            carousel.removeClass('em-carousel-noanimate').addClass('em-carousel-animate').css(translateSlideProperty(offset, true));
+            carousel.removeClass('em-carousel-noanimate').addClass('em-carousel-animate').css('transform', 'translate3d(' + offset + 'px,0,0)');
           }
           skipAnimation = false;
         }
@@ -417,7 +417,7 @@ function emCarousel($compile, $document, $parse, $rootScope, $swipe, $window, Co
               }
               /* follow cursor movement */
               offset = startOffset + deltaX / ratio;
-              carousel.css(translateSlideProperty(offset, true)).removeClass('em-carousel-animate').addClass('em-carousel-noanimate');
+              carousel.css('transform', 'translate3d(' + offset + 'px,0,0)').removeClass('em-carousel-animate').addClass('em-carousel-noanimate');
             }
           },
           end : function(coords) {
