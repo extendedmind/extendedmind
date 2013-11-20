@@ -9,8 +9,12 @@ function SignupController($location, $scope, $routeParams, authenticateRequest, 
   $scope.errorHandler = errorHandler;
 
   httpRequest.get('/api/invite/' + $routeParams.hex_code + '?email=' + $routeParams.email).then(function(inviteResponse) {
-    $scope.user.email = inviteResponse.data.email;
-    inviteResponseCode = inviteResponse.data.code;
+    if (inviteResponse.data.accepted) {
+      $location.path('/login');
+    } else {
+      $scope.user.email = inviteResponse.data.email;
+      inviteResponseCode = inviteResponse.data.code;
+    }
   });
 
   function userLogin() {
