@@ -54,14 +54,19 @@ angular.module('em.services').factory('Enum', [
     return slide;
   }]);
 
-angular.module('em.services').factory('carouselSlide', ['$rootScope', 'location', 'userPrefix',
-  function($rootScope, location, userPrefix) {
+angular.module('em.services').factory('carouselSlide', ['$location', '$rootScope', 'location', 'userPrefix',
+  function($location, $rootScope, location, userPrefix) {
 
     var carouselPath, carouselSlideIndex, carouselSlides;
 
     function setSlidePath() {
-      location.skipReload().path('/' + userPrefix.getPrefix() + carouselSlides[carouselSlideIndex].path);
-      $rootScope.$apply();
+
+      if ($location.path() !== '/' + userPrefix.getPrefix() + carouselSlides[carouselSlideIndex].path) {
+
+        location.skipReload().path('/' + userPrefix.getPrefix() + carouselSlides[carouselSlideIndex].path);
+        $rootScope.$apply();
+
+      }
     }
 
     $rootScope.$on('event:slideIndexChanged', function(event, slide) {
