@@ -116,3 +116,33 @@ angular.module('em.directives').directive('projectsList', [
       transclude : true
     };
   }]);
+
+angular.module('em.directives').directive('emPassword', [
+  function() {
+    return {
+      restrict: 'A',
+      require: '?ngModel',
+      link: function(scope, elem, attrs, ngModel) {
+        if(!ngModel) {
+          return;
+        }
+
+        var validate = function() {
+          var val1 = ngModel.$viewValue;
+          var val2 = attrs.equals;
+
+          ngModel.$setValidity('equals', val1 === val2 && val1.length >= 8);
+        };
+
+        // watch own value and re-validate on change
+        scope.$watch(attrs.ngModel, function() {
+          validate();
+        });
+
+        // observe the other value and re-validate on change
+        attrs.$observe('equals', function (val) {
+          validate();
+        });
+      }
+    };
+  }]);

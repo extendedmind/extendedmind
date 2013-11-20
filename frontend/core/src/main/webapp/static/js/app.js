@@ -17,6 +17,19 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       redirectTo : 'my'
     });
 
+    $routeProvider.when('/accept/:hex_code', {
+      templateUrl: 'static/partials/signup.html',
+      controller: 'SignupController',
+      resolve: {
+        routes: ['$location', '$route',
+        function($location, $route) {
+          if (!$route.current.params.hex_code || !$route.current.params.email) {
+            $location.path('/login');
+          }
+        }]
+      }
+    });
+
     $routeProvider.when('/404', {
       templateUrl : 'static/partials/pageNotFound.html',
       controller : 'PageNotFoundController'
@@ -55,8 +68,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
           userAuthenticate.authenticate(deferred);
           return deferred.promise;
         }],
-        slide : ['Enum',
-        function(Enum) {
+        slide: ['Enum', 'carouselSlide',
+        function(Enum, carouselSlide) {
+          carouselSlide.setMySlides();
           return Enum.my.my;
         }],
         prefix : ['userPrefix',
@@ -77,8 +91,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
           userAuthenticate.authenticate(deferred);
           return deferred.promise;
         }],
-        slide : ['Enum',
-        function(Enum) {
+        slide: ['Enum', 'carouselSlide',
+        function(Enum, carouselSlide) {
+          carouselSlide.setMySlides();
           return Enum.my.my;
         }],
         prefix : ['userPrefix',
@@ -99,8 +114,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
           userAuthenticate.authenticate(deferred);
           return deferred.promise;
         }],
-        slide: ['Enum',
-        function(Enum) {
+        slide: ['Enum', 'carouselSlide',
+        function(Enum, carouselSlide) {
+          carouselSlide.setInboxSlides();
           return Enum.my.inbox;
         }],
         prefix : ['userPrefix',
@@ -120,8 +136,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
           userAuthenticate.authenticate(deferred);
           return deferred.promise;
         }],
-        slide: ['Enum',
-        function(Enum) {
+        slide: ['Enum', 'carouselSlide',
+        function(Enum, carouselSlide) {
+          carouselSlide.setInboxSlides();
           return Enum.my.inbox;
         }],
         prefix : ['userPrefix',
@@ -141,8 +158,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
           userAuthenticate.authenticate(deferred);
           return deferred.promise;
         }],
-        slide : ['Enum',
-        function(Enum) {
+        slide: ['Enum', 'carouselSlide',
+        function(Enum, carouselSlide) {
+          carouselSlide.setNotesSlides();
           return Enum.my.notes;
         }],
         prefix : ['userPrefix',
@@ -163,8 +181,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
           userAuthenticate.authenticate(deferred);
           return deferred.promise;
         }],
-        slide : ['Enum',
-        function(Enum) {
+        slide: ['Enum', 'carouselSlide',
+        function(Enum, carouselSlide) {
+          carouselSlide.setNotesSlides();
           return Enum.my.notes;
         }],
         prefix : ['userPrefix',
@@ -316,8 +335,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
           userAuthenticate.authenticate(deferred);
           return deferred.promise;
         }],
-        slide : ['Enum',
-        function(Enum) {
+        slide : ['Enum', 'carouselSlide',
+        function(Enum, carouselSlide) {
+          carouselSlide.setTasksSlides();
           return Enum.my.tasks;
         }],
         prefix : ['userPrefix',
@@ -345,7 +365,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
-          userPrefix.setCollectivePrefix();
+          userPrefix.setMyPrefix();
         }]
       }
     });
@@ -367,7 +387,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
-          userPrefix.setMyPrefix();
+          userPrefix.setCollectivePrefix();
         }]
       }
     });

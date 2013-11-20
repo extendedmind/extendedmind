@@ -16,10 +16,11 @@
         <label for="input-password" class="sr-only">password</label>
         <input type="password" class="form-control em-simple-input" id="input-password" ng-model="user.password" placeholder="enter password..." required />
       </div>
-   
-       <div class="form-group">        
+      
+      <div class="form-group">        
         <input class="em-input-checkbox" type="checkbox" name="checkbox" id="remember" ng-model="user.remember" checked="checked" />
         <label class="em-input-text em-checkbox" id="remember" for="remember">remember</label>
+      </div>
 
       <div class="form-group">
         <button type="submit" class="em-big-button btn em-simple-input" id="login-button" ng-disabled="!loginForm.$valid" ng-click="userLogin()">

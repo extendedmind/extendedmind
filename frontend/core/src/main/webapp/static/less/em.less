@@ -56,7 +56,21 @@ ul {
   padding: 0;
 }
 
+.em-signup {
+  padding-bottom: 2.5em;
+}
+
 .em-simple-input {
+  outline: none;
+  border:none !important;
+  box-shadow:none !important;
+  padding: 0;
+  border-radius: 0 !important;
+  background: none;
+  font-size: 18px;
+}
+
+.em-simple-input[readonly="readonly"] {
   outline: none;
   border:none !important;
   box-shadow:none !important;
@@ -74,6 +88,10 @@ ul {
   border-style: solid none;
   border-width: 1px;
   border-color: @em-gray;
+}
+
+.em-prompt {
+  font-size: 14px;
 }
 
 // EM SECTIONS
@@ -215,6 +233,12 @@ ul.em-headers {
 .em-big-button {
   font-size: 24px;
   color: @em-blue;
+  padding-top: 15px;
+}
+
+.em-big-button:disabled {
+  font-size: 24px;
+  color: @em-gray;
   padding-top: 15px;
 }
 
