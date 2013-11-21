@@ -31,7 +31,7 @@ function SignupController($location, $scope, $routeParams, authenticateRequest, 
   }
 
   $scope.signUp = function() {
-    httpRequest.post('/api/invite/' + inviteResponseCode, {email: $scope.user.email, password: $scope.user.password}).then(function() {
+    httpRequest.post('/api/invite/' + inviteResponseCode + '/accept', {email: $scope.user.email, password: $scope.user.password}).then(function() {
       userLogin();
     });
   };
