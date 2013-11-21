@@ -13,6 +13,6 @@ case class InviteRequestQueueNumber(queueNumber: Int)
 
 case class InviteRequestAcceptDetails(message: String)
 
-case class Invite(email: String, code: Long, message: Option[String], emailId: Option[String])
+case class Invite(email: String, code: Long, accepted: Option[Long], message: Option[String], emailId: Option[String])
 
 case class Invites(invites: List[Invite])

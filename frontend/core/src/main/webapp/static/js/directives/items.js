@@ -1,50 +1,57 @@
-/*global angular */
 /*jslint white: true */
+'use strict';
 
-( function() {'use strict';
+angular.module('em.directives').directive('item', [
+  function() {
+    return {
+      controller : 'ItemsController',
+      restrict : 'A',
+      templateUrl : 'static/partials/templates/items/item.html',
+      transclude : true
+    };
+  }]);
 
-  angular.module('em.directives').directive('itemsList', [
-    function() {
-      return {
-        controller : 'ItemsController',
-        restrict : 'A',
-        templateUrl : 'static/partials/templates/items/itemsList.html',
-        transclude : true,
-        link : function(scope, element, attrs) {
-          scope.showItemsList = false;
+angular.module('em.directives').directive('itemsList', [
+  function() {
+    return {
+      restrict : 'A',
+      templateUrl : 'static/partials/templates/items/itemsList.html',
+      transclude : true,
+      link : function(scope, element, attrs) {
+        var itemsFilterAttr = attrs.itemsfilter;
 
-          scope.toggleItemsList = function toggleItemsList() {
-            scope.showItemsList = !scope.showItemsList;
-          };
+        scope.$watch(itemsFilterAttr, function(newValue) {
+          scope.itemsListFilter = newValue;
+        });
+      }
+    };
+  }]);
 
-          var itemsFilterAttr = attrs.itemsfilter;
-          scope.$watch(itemsFilterAttr, function(newValue) {
-            scope.itemsListFilter = newValue;
-          });
-        }
-      };
-    }]);
+angular.module('em.directives').directive('itemContent', [
+  function() {
+    return {
+      restrict : 'A',
+      templateUrl : 'static/partials/templates/items/itemContent.html',
+      link : function(scope, element, attrs) {
+        scope.showItemContent = false;
 
-  angular.module('em.directives').directive('itemContent', [
-    function() {
-      return {
-        restrict : 'A',
-        templateUrl : 'static/partials/templates/items/itemContent.html',
-        link : function(scope, element, attrs) {
-          scope.showItemContent = false;
+        var itemTypeAttr = attrs.itemtype;
 
-          scope.toggleItemContent = function toggleItemContent() {
+        scope.$watch(itemTypeAttr, function(newValue) {
+          scope.itemType = newValue;
+        });
 
-            scope.showItemContent = !scope.showItemContent;
+        scope.toggleItemContent = function toggleItemContent() {
 
-            if (scope.showItemContent) {
-              scope.selected = 'active-list-item';
-            } else {
-              scope.selected = '';
-            }
+          scope.showItemContent = !scope.showItemContent;
 
-          };
-        }
-      };
-    }]);
-}());
+          if (scope.showItemContent) {
+            scope.selected = 'active-list-item';
+          } else {
+            scope.selected = '';
+          }
+
+        };
+      }
+    };
+  }]);

@@ -1,47 +1,75 @@
-/*global angular */
-/*jslint eqeq: true plusplus: true, white: true */
+/*jslint eqeq: true, white: true */
+'use strict';
 
-( function() {'use strict';
+angular.module('em.services').factory('tasksRequest', ['httpRequest', 'itemsArray', 'tasksArray', 'tasksResponse', 'userSessionStorage',
+  function(httpRequest, itemsArray, tasksArray, tasksResponse, userSessionStorage) {
+    return {
+      putTask: function(task) {
+        return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/task', task).then(function(putTaskResponse) {
+          return putTaskResponse.data;
+        });
+      },
+      putExistingTask: function(task) {
+        return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid, task).then(function(putExistingTaskResponse) {
+          tasksResponse.putTaskContent(task, putExistingTaskResponse.data);
+        });
+      },
+      deleteTask: function(task) {
+        return httpRequest['delete']('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid).then(function(deleteTaskResponse) {
+          return deleteTaskResponse.data;
+        });
+      },
+      completeTask: function(task) {
+        return httpRequest.post('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid + '/complete').then(function(completeTaskResponse) {
+          return completeTaskResponse.data;
+        });
+      },
+      uncompleteTask: function(task) {
+        return httpRequest.post('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid + '/uncomplete').then(function(uncompleteTaskResponse) {
+          return uncompleteTaskResponse.data;
+        });
+      },
+      itemToTask: function(item) {
+        return this.putExistingTask(item).then(function() {
+          tasksArray.putNewTask(item);
+        });
+      },
+      itemToTaskDone: function(item) {
+        itemsArray.removeItem(item);
+        tasksResponse.checkParentTask(item);
 
-  angular.module('em.services').factory('tasksRequest', ['httpRequest', 'userSessionStorage',
-    function(httpRequest, userSessionStorage) {
-      return {
-        putTask : function(task) {
-          return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/task', task).then(function(putTaskResponse) {
-            return putTaskResponse.data;
-          });
-        },
-        putExistingTask : function(task) {
-          return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid, task).then(function(putExistingTaskResponse) {
-            return putExistingTaskResponse.data;
-          });
-        },
-        deleteTask : function(task) {
-          return httpRequest['delete']('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid).then(function(deleteTaskResponse) {
-            return deleteTaskResponse.data;
-          });
-        },
-        completeTask : function(task) {
-          return httpRequest.post('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid + '/complete').then(function(completeTaskResponse) {
-            return completeTaskResponse.data;
-          });
-        },
-        uncompleteTask : function(task) {
-          return httpRequest.post('/api/' + userSessionStorage.getActiveUUID() + '/task/' + task.uuid + '/uncomplete').then(function(uncompleteTaskResponse) {
-            return uncompleteTaskResponse.data;
-          });
-        }
-      };
-    }]);
+        this.putExistingTask(item);
+      }
+    };
+  }]);
 
 angular.module('em.services').factory('tasksResponse', ['itemsResponse',
   function(itemsResponse) {
     return {
-      putTaskContent : function(task, putTaskResponse) {
+      putTaskContent: function(task, putTaskResponse) {
         itemsResponse.putItemContent(task, putTaskResponse);
       },
-      deleteTaskProperty : function(task, property) {
+      deleteTaskProperty: function(task, property) {
         itemsResponse.deleteItemProperty(task, property);
+      },
+      checkDate: function(task) {
+        if (!task.due) {
+          this.deleteTaskProperty(task, 'due');
+        }
+      },
+      checkParentTask: function(task) {
+        if (task.relationships) {
+          if (!task.relationships.parentTask) {
+            this.deleteTaskProperty(task.relationships, 'parentTask');
+          }
+        }
+      },
+      checkContexts: function(task) {
+        if (task.relationships) {
+          if (!task.relationships.tags) {
+            this.deleteTaskProperty(task.relationships, 'tags');
+          }
+        }
       }
     };
   }]);
@@ -56,7 +84,7 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
     project = [];
 
     return {
-      setTasks : function(tasksResponse) {
+      setTasks: function(tasksResponse) {
 
         itemsArray.clearArray(tasks);
 
@@ -69,12 +97,12 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
           }
         }
       },
-      setTask : function(task) {
+      setTask: function(task) {
         if (!itemsArray.itemInArray(tasks, task.uuid)) {
           tasks.push(task);
         }
       },
-      removeTask : function(task) {
+      removeTask: function(task) {
         itemsArray.removeItemFromArray(tasks, task);
 
         if (task.relationships) {
@@ -83,43 +111,43 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
           }
         }
       },
-      removeSubtask : function(task) {
+      removeSubtask: function(task) {
       },
-      removeProject : function(uuid) {
+      removeProject: function(uuid) {
 
         if (this.getSubtasksByProjectUUID(uuid).length === 0) {
           var task = this.getProjectByUUID(uuid);
           this.deleteTaskProperty(task, 'project');
         }
       },
-      removeTaskFromContext : function(task) {
+      removeTaskFromContext: function(task) {
         itemsArray.removeItemFromArray(context, task);
       },
-      getTasks : function() {
+      getTasks: function() {
         return tasks;
       },
-      getProjectByUUID : function(uuid) {
+      getProjectByUUID: function(uuid) {
         return itemsArray.getItemByUUID(tasks, uuid);
       },
-      getSubtaskByUUID : function(uuid) {
+      getSubtaskByUUID: function(uuid) {
         return itemsArray.getItemByUUID(subtasks, uuid);
       },
-      getSubtasksByProjectUUID : function(uuid) {
+      getSubtasksByProjectUUID: function(uuid) {
         project = itemsArray.getItemsByProjectUUID(tasks, uuid);
         return project;
       },
-      getSubtasksByTagUUID : function(uuid) {
+      getSubtasksByTagUUID: function(uuid) {
         context = itemsArray.getItemsByTagUUID(tasks, uuid);
         return context;
       },
-      getTaskByUUID : function(uuid) {
+      getTaskByUUID: function(uuid) {
         return itemsArray.getItemByUUID(tasks, uuid);
       },
-      deleteTaskProperty : function(task, property) {
+      deleteTaskProperty: function(task, property) {
         var parentTaskUUID;
 
-        if(property==='parentTask'){
-          parentTaskUUID=task.parentTask;
+        if(property === 'parentTask'){
+          parentTaskUUID = task.parentTask;
         }
 
         itemsArray.deleteItemProperty(task, property);
@@ -128,27 +156,26 @@ angular.module('em.services').factory('tasksArray', ['itemsArray',
           this.removeProject(parentTaskUUID);
         }
       },
-      setProject : function(task) {
+      setProject: function(task) {
         if (!itemsArray.itemInArray(projects, task.uuid)) {
           projects.push(task);
         }
       },
-      getProjects : function() {
+      getProjects: function() {
         return projects;
       },
-      setSubtask : function(task) {
+      setSubtask: function(task) {
         if (!itemsArray.itemInArray(subtasks, task.uuid)) {
           subtasks.push(task);
         }
       },
-      getSubtasks : function() {
+      getSubtasks: function() {
         return subtasks;
       },
-      putNewTask : function(task) {
+      putNewTask: function(task) {
         if (!itemsArray.itemInArray(tasks, task.uuid)) {
           tasks.push(task);
         }
       }
     };
   }]);
-}());

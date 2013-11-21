@@ -1,11 +1,19 @@
-<div class="em-slide">
-
-  <button type="button" class="btn btn-default pull-right" ng-click="cancelEdit()">
-    -
-  </button>
-
-  <h1 class="text-primary"><a href="{{prefix}}/notes">notes</a></h1>
-
-  <div edit-note></div>
-
+<div id="em-feature-header-notes" class="row em-feature-header">
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+      <ul class="nav navbar-nav nav-justified">
+        <li id="em-iconlink">
+          <a href="#/{{prefix}}"><span class="em-icon">t</span></a>
+        </li>
+        <li id="em-featurelink">
+          <a class="em-feature" href="#/{{prefix}}/notes">edit</a>
+        </li>
+        <li id="em-addnewbutton">
+          <button type="button" class="btn em-minus" ng-click="cancelEdit()">-</button>
+        </li>
+      </ul>
+    </div>
+  </nav>
 </div>
+
+<div class="row em-scrollable-bottom" edit-note></div>

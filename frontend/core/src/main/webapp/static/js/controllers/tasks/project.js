@@ -1,71 +1,69 @@
-/*global angular, window */
+/*global window */
 /*jslint white: true */
+'use strict';
 
-( function() {'use strict';
+function ProjectController($location, $scope, $routeParams, errorHandler, filterService, tasksArray, tasksRequest, tasksResponse, userPrefix) {
 
-  function ProjectController($location, $scope, $routeParams, errorHandler, filterService, tasksArray, tasksRequest, tasksResponse, userPrefix) {
+  $scope.errorHandler = errorHandler;
+  $scope.prefix = userPrefix.getPrefix();
+  $scope.filterService = filterService;
 
-    $scope.errorHandler = errorHandler;
-    $scope.prefix = userPrefix.getPrefix();
-    $scope.filterService = filterService;
+  $scope.tasks = tasksArray.getTasks();
 
-    $scope.tasks=tasksArray.getTasks();
+  if ($routeParams.uuid) {
+    $scope.project = tasksArray.getProjectByUUID($routeParams.uuid);
+    $scope.filterService.activeFilters.tasksByProjectUUID.filterBy=$routeParams.uuid;
+  }
 
-    if ($routeParams.uuid) {
-      $scope.project = tasksArray.getProjectByUUID($routeParams.uuid);
-      $scope.filterService.activeFilters.tasksByProjectUUID.filterBy=$routeParams.uuid;
+  $scope.editProject = function() {
+    $location.path(userPrefix.getPrefix() + '/tasks/edit/' + $scope.project.uuid);
+  };
+
+  $scope.completeProject = function(project) {
+
+    var i = 0;
+
+    while ($scope.tasks[i]) {
+      if (!$scope.tasks[i].completed) {
+        if ($scope.tasks[i].relationships) {
+          if ($scope.tasks[i].relationships.parentTask) {
+            if ($scope.tasks[i].relationships.parentTask === project.uuid) {
+              $scope.errorHandler.errorMessage = 'Cannot complete project. Project still has uncompleted subtasks.';
+              return;
+            }
+          }
+        }
+      }
+      i++;
     }
 
-    $scope.editProject = function() {
-      $location.path(userPrefix.getPrefix() + '/tasks/edit/' + $scope.project.uuid);
-    };
+    tasksRequest.completeTask(project).then(function(completeTaskResponse) {
+      tasksResponse.putTaskContent(project, completeTaskResponse);
 
-    $scope.completeProject = function(project) {
-
-      var i = 0;
+      i = 0;
 
       while ($scope.tasks[i]) {
-        if (!$scope.tasks[i].completed) {
-          if ($scope.tasks[i].relationships) {
-            if ($scope.tasks[i].relationships.parentTask) {
-              if ($scope.tasks[i].relationships.parentTask === project.uuid) {
-                $scope.errorHandler.errorMessage = 'Cannot complete project. Project still has uncompleted subtasks.';
-                return;
-              }
+        if ($scope.tasks[i].relationships) {
+          if ($scope.tasks[i].relationships.parentTask) {
+            if ($scope.tasks[i].relationships.parentTask === project.uuid) {
+              tasksArray.removeTask($scope.tasks[i]);
             }
           }
         }
         i++;
       }
 
-      tasksRequest.completeTask(project).then(function(completeTaskResponse) {
-        tasksResponse.putTaskContent(project, completeTaskResponse);
+      tasksArray.removeTask(project);
 
-        i = 0;
+      window.history.back();
 
-        while ($scope.tasks[i]) {
-          if ($scope.tasks[i].relationships) {
-            if ($scope.tasks[i].relationships.parentTask) {
-              if ($scope.tasks[i].relationships.parentTask === project.uuid) {
-                tasksArray.removeTask($scope.tasks[i]);
-              }
-            }
-          }
-          i++;
-        }
+    });
+  };
 
-        tasksArray.removeTask(project);
+  $scope.addNew = function() {
+    $location.path(userPrefix.getPrefix() + '/tasks/new/');
+  };
+}
 
-        window.history.back();
-
-      });
-    };
-
-    $scope.addNew = function() {
-      $location.path(userPrefix.getPrefix() + '/tasks/new/');
-    };
-  }
-
-  ProjectController.$inject = ['$location', '$scope', '$routeParams', 'errorHandler', 'filterService', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
-  angular.module('em.app').controller('ProjectController', ProjectController);
-}());
+ProjectController.$inject = ['$location', '$scope', '$routeParams', 'errorHandler', 'filterService', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
+angular.module('em.app').controller('ProjectController', ProjectController);

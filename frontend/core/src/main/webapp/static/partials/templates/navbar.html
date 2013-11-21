@@ -3,18 +3,24 @@
 
     <div class="row em-mainlinks">
       <ul class="nav navbar-nav nav-justified">
-        <li id="em-taskslink" ng-hide="mainlinksFilter"><a class="em-feature" href="{{prefix}}/tasks"><span class="em-icon">t</span>tasks</a></li>
-        <li id="em-menubutton">
-          <button type="button" class="em-simple-input" ng-click="collapseNavbar()">&#x25B2;</button>
+        <li id="em-taskslink" ng-hide="mainlinksFilter">
+          <a class="em-feature" href="#/{{prefix}}/tasks" ng-click="nextSlide()">
+            <span class="em-icon">t</span>tasks
+          </a>
         </li>
-        <li id="em-noteslink" ng-hide="mainlinksFilter"><a href="{{prefix}}/notes" class="em-feature"><span class="em-icon">n</span>notes</a></li>
+        <li id="em-menubutton">
+          <button id="em-triangle" type="button" class="em-simple-input" ng-click="collapseNavbar()">&#x25B2;</button>
+        </li>
+        <li id="em-noteslink" ng-hide="mainlinksFilter">
+          <a href="" class="em-feature-disabled"><span id="em-letter-n"class="em-icon">n</span>notes</a>
+        </li>
       </ul>
     </div>
 
     <div class="row" ng-show="collapse">
       <ul>
         <li>
-          <a href="my" ng-click="setActiveUuid(user)">home</a>
+          <a href="#/my" ng-click="setActiveUuid(user)">home</a>
         </li>
         <li>
           <span>collectives</span>
@@ -27,7 +33,7 @@
           </ul>
         </li>
         <li>
-          <a href="my/account">account</a>
+          <a href="#/my/account">account</a>
         </li>
         <li>
           <a href="" ng-click="logout()">logout</a>

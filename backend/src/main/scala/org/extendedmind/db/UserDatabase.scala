@@ -347,7 +347,7 @@ trait UserDatabase extends AbstractGraphDatabase {
         else{
           // Create an invite from the invite request
           val email = inviteRequestNode.right.get.getProperty("email").asInstanceOf[String]
-          val invite = Invite(email, Random.generateRandomUnsignedLong, message, None)
+          val invite = Invite(email, Random.generateRandomUnsignedLong, None, message, None)
           val inviteNode = createNode(invite, MainLabel.INVITE)
           inviteRequestNode.right.get --> SecurityRelationship.IS_ORIGIN --> inviteNode
           userNode --> SecurityRelationship.IS_ACCEPTER --> inviteNode 
@@ -393,6 +393,7 @@ trait UserDatabase extends AbstractGraphDatabase {
   
   protected def linkInviteAndUser(inviteNode: Node, userNode: Node)
                   (implicit neo4j: DatabaseService): Relationship = {
+    inviteNode.setProperty("accepted", System.currentTimeMillis().asInstanceOf[java.lang.Long])
     inviteNode --> SecurityRelationship.IS_ORIGIN --> userNode <
   }
   

@@ -1,24 +1,23 @@
-/*global module, beforeEach, inject, describe, afterEach, it, expect, spyOn*/
-/*jslint nomen: true */
+/*global beforeEach, inject, describe, afterEach, it */
+/*jslint white: true */
+'use strict';
 
-( function() {'use strict';
-    describe('em.service', function() {
-      beforeEach(module('em.services'));
+describe('em.service', function() {
+  beforeEach(module('em.services'));
 
-      describe('items', function() {
-        beforeEach(module('em.mockHelpers'));
+  describe('items', function() {
+    beforeEach(module('em.mockHelpers'));
 
-        describe('userItemsFactory', function() {
+    describe('userItemsFactory', function() {
 
-          beforeEach(inject(function() {
-          }));
+      beforeEach(inject(function() {
+      }));
 
-          afterEach(function() {
-          });
-
-          it('should get user\'s items', inject(function() {
-          }));
-        });
+      afterEach(function() {
       });
+
+      it('should get user\'s items', inject(function() {
+      }));
     });
-  }());
+  });
+});

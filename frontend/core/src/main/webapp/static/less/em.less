@@ -52,6 +52,10 @@ ul {
   }
 }
 
+.em-feature-header > nav > .container {
+  padding: 0;
+}
+
 .em-simple-input {
   outline: none;
   border:none !important;
@@ -59,7 +63,7 @@ ul {
   padding: 0;
   border-radius: 0 !important;
   background: none;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 // EM SECTIONS
@@ -73,14 +77,13 @@ ul {
 // Pages with two sections
 .em-scrollable-top {
   height: inherit;
-  margin-bottom: 2em;
+  padding-bottom: 2.5em;
 }
 
 .em-scrollable-bottom {
   height: inherit;
-  margin-top: 2em;
   // Padding needed to make scrolling reach bottom
-  padding-bottom: 2.5em;
+  padding-top: 2.5em;
 }
 
 .em-scrollable-top, .em-scrollable-bottom {
@@ -90,9 +93,9 @@ ul {
 // Pages with three sections
 .em-scrollable-middle {
   height: inherit;
-  margin-top: 2em;
-  margin-bottom: 2em;
   overflow-y: auto;
+  padding-top: 2.5em;
+  padding-bottom: 2.5em;
 }
 
 // EM SLIDES
@@ -111,24 +114,44 @@ ul.em-headers {
   margin-left: 0;
 }
 
-.item-actions {
-  padding-bottom: 10px;
+.em-item-actions.container {
+  padding-left: 0px;
+  padding-right: 0px;
 }
 
-input[type="checkbox"].task-checkbox:checked + span {
-  text-decoration: line-through;
-  color: gray;
+.em-horizontal-buttons {
+  border-top: solid 1px @em-gray;
+  li {
+    text-align:center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  button {
+    color:white;
+    font-size: 15px;
+    background-repeat: repeat-x;
+  }
+  .em-gray-button {
+    background-color: @em-darkgray;
+  }
+  .em-red-button {
+    background-color: @em-red;
+  }
+  .em-green-button {
+    background-color: @em-green;
+  }
 }
 
 .active-list-item {
   border-style: solid none;
   border-width: 1px;
-  border-color: #8E8E93;
+  border-color: @em-gray;
 }
 
 .em-filtered-items {
   a {
     color: @em-blue;
+    padding-top: 15px;
   }
 }
 
@@ -142,14 +165,10 @@ input[type="checkbox"].task-checkbox:checked + span {
   }
 }
 
-#remember {
-  font-size: 0.7em !important;
-}
-
 .em-logo {
-  background-image: url(../img/extmd_logo_final_234x114.png);
-  height: 114px;
-  width: 234px;
+  img {
+    width: 185px;
+  }
   margin-bottom: 1em;
   margin-top: 3em;
   background-repeat: no-repeat;
@@ -165,14 +184,34 @@ input[type="checkbox"].task-checkbox:checked + span {
   input {
     border-radius:8px;
     display: inline;
+    -webkit-appearance: none;
   }
 }
 
+.em-span {
+  font-size: 18px;
+}
+
 .em-plus {
-  font-size:14px;
+  font-size: 14px;
   border-color: #cccccc;
-  border-radius:50%;
-  background:#FFFFFF;
+  border-radius: 50%;
+  background: white;
+}
+
+.em-minus {
+  font-size: 14px;
+  border-color: #cccccc;
+  border-radius: 50%;
+  background: white;
+  padding-right: 0.95em;
+  padding-left: 0.95em;
+}
+
+.em-big-button {
+  font-size: 24px;
+  color: @em-blue;
+  padding-top: 15px;
 }
 
 .em-icon {
@@ -190,8 +229,20 @@ input[type="checkbox"].task-checkbox:checked + span {
   font-weight: bold;
 }
 
+#em-letter-n{
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;  
+}
+
 .em-feature {
   color: @em-blue !important;
+}
+
+.em-feature-disabled {
+  color: @em-blue-disabled !important;
+  .em-icon {
+    border-color: @em-blue-disabled;
+  }
 }
 
 .em-mainlinks {
@@ -251,10 +302,10 @@ label {
   user-select: none;
 }
 
-input[type=checkbox].input-checkbox {
+input[type=checkbox].em-input-checkbox {
   position: absolute; 
   overflow: hidden; 
-  clip: rect(0 0 0 0); 
+  clip: rect(0 0 0 0);
   height:1px; 
   width:1px; 
   margin:-1px; 
@@ -262,7 +313,7 @@ input[type=checkbox].input-checkbox {
   border:0;
 }
 
-input[type=checkbox].input-checkbox + label.input-label {
+input[type=checkbox].em-input-checkbox + .em-input-text {
   padding-left:20px;
   height:15px; 
   display:inline-block;
@@ -274,8 +325,35 @@ input[type=checkbox].input-checkbox + label.input-label {
   cursor:pointer;
 }
 
-input[type=checkbox].input-checkbox:checked + label.input-label {
+input[type=checkbox].em-input-checkbox:checked + .em-input-text {
   background-position: 0 -15px;
 }
 
 .em-checkbox{background-image:url(../img/checkbox.png); }
+
+.fade-color(@fade-time) {
+  -o-transition: @fade-time linear;
+  -moz-transition: @fade-time linear;
+  -khtml-transition: @fade-time linear;
+  -webkit-transition: @fade-time linear;
+  -ms-transition: @fade-time linear;
+  transition: @fade-time linear;
+}
+
+input[checked=checked] ~ .fade {
+  color: @em-gray;
+  .fade-color(@em-fade-time);
+}
+
+input ~ .fade {
+  color: @em-black;
+  .fade-color(@em-fade-time);
+}
+
+.form-group > label, .form-group > span {
+ font-size: 26px !important;
+}
+
+#em-triangle{
+  color: @em-lightblue !important;
+}

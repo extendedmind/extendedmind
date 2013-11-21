@@ -1,21 +1,16 @@
-/*global angular */
 /*jslint white: true */
+'use strict';
 
-( function() {'use strict';
+function OmniBarController($scope, itemsRequest) {
 
-    function OmniBarController($scope, itemsArray, itemsRequest, itemsResponse) {
+  $scope.addNewItem = function(item) {
+    // FIXME: refactor jQuery into directive!
+    $('#omniItem').focus();
+    $scope.newItem = {};
+    $scope.focusOmnibar = true;
+    itemsRequest.putItem(item);
+  };
+}
 
-      $scope.addNewItem = function() {
-
-        itemsRequest.putItem($scope.newItem).then(function(putItemResponse) {
-
-          itemsResponse.putItemContent($scope.newItem, putItemResponse);
-          itemsArray.putNewItem($scope.newItem);
-          $scope.newItem = {};
-        });
-      };
-    }
-
-    OmniBarController.$inject = ['$scope', 'itemsArray', 'itemsRequest', 'itemsResponse'];
-    angular.module('em.app').controller('OmniBarController', OmniBarController);
-  }());
+OmniBarController.$inject = ['$scope', 'itemsRequest'];
+angular.module('em.app').controller('OmniBarController', OmniBarController);

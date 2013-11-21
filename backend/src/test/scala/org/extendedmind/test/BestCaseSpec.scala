@@ -598,6 +598,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                       val inviteResponse = entityAs[Invite]
                       writeJsonOutput("inviteResponse", entityAs[String])
                       inviteResponse.email should be(invites.invites(0).email)
+                      inviteResponse.accepted should be (None)
                     }
                     // Accept invite
                     val testPassword = "testPassword"
@@ -611,6 +612,16 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                       // Should be possible to authenticate with the new email/password
                       val newUserAuthenticateResponse = 
                         emailPasswordAuthenticate(invites.invites(0).email, testPassword)
+                        
+                      // Should return accepted when getting invite again
+                      Get("/invite/" + invites.invites(0).code.toHexString + "?email=" + invites.invites(0).email
+                        ) ~> addHeader("Content-Type", "application/json"
+                        ) ~> emRoute ~> check {
+                        val acceptedInviteResponse = entityAs[Invite]
+                        writeJsonOutput("acceptedInviteResponse", entityAs[String])
+                        acceptedInviteResponse.email should be(invites.invites(0).email)
+                        acceptedInviteResponse.accepted should not be None
+                      }
                     }
                   }
                }

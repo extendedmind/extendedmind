@@ -1,17 +1,16 @@
-/*global $, angular, checkEdges, updateSlidePosition, translateSlideProperty, updateSlidePosition, updateContainerWidth, resize, documentMouseUpEvent, console: true */
-/*jslint plusplus: true, regexp: true, white: true */
+/*global */
+/*jslint regexp: true, white: true */
+'use strict';
 
-( function() {'use strict';
+angular.module('em.services').service('CollectionManager', ['carouselSlide',
+  function(carouselSlide) {
 
-  angular.module('em.services').service('CollectionManager', [
-    function() {
-
-      function CollectionManager(options) {
-        var initial = {
-          bufferSize : 0,
-          bufferStart : 0,
-          buffered : false,
-          cycle : false,
+    function CollectionManager(options) {
+      var initial = {
+        bufferSize : 0,
+        bufferStart : 0,
+        buffered : false,
+        cycle : false,
           cycleOffset : 0, // offset
           index : 0, // index relative to the original collection
           position : 0, // position relative to the current elements
@@ -32,7 +31,6 @@
         angular.extend(this, initial, options);
         this.init();
       }
-
 
       CollectionManager.prototype.log = function() {
         if (this.debug) {
@@ -100,6 +98,7 @@
         if (!cycled) {
           this.updated = new Date();
         }
+        carouselSlide.setSlideIndex(this.index);
       };
 
       CollectionManager.prototype.next = function() {
@@ -233,6 +232,3 @@
       };
 
     }]);
-
-}());
-

@@ -3,22 +3,35 @@
   <div class="form-group">
     <label class="sr-only" for="taskTitle">title</label>
     <div class="col-lg-10">
-      <input type="text" class="form-control" id="taskTitle" ng-model="task.title" autofocus="autofocus" placeholder="title..." required>
+      <input type="text" class="form-control em-simple-input" id="taskTitle" ng-model="task.title" placeholder="title..." required>
     </div>
   </div>
 
-  <div class="form-group">
-    <label class="sr-only" for="taskkDue">date</label>
-    <div class="col-lg-10">
-      <input type="date" class="form-control" id="taskDue" ng-model="task.due">
+
+
+  <div ng-switch="showDate">
+
+    <div ng-switch-default>
+      <span class="em-span" ng-click="focusDate()">select date...</span>
+    </div>
+
+    <div ng-switch-when="date">
+      <div class="form-group">
+        <label for="taskDue" class="sr-only">select date...</label>
+        <div class="col-lg-10">
+
+          <input type="date" id="taskDue" class="form-control em-simple-input" ng-model="task.due" date>
+
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="form-group">
     <label class="sr-only" for="taskParent">parent</label>
     <div class="col-lg-10">
-      <select class="form-control" id="taskParent" ng-model="parentTask" ng-options="project.title for project in tasks | tasksFilter:filterService.activeFilters.project" ng-hide="task.project">
-        <option value="">select list</option>
+      <select class="form-control em-simple-input" id="taskParent" ng-model="task.relationships.parentTask" ng-options="project.uuid as project.title for project in tasks | tasksFilter:filterService.activeFilters.project" ng-hide="task.project">
+        <option value="">select project...</option>
       </select>
     </div>
   </div>
@@ -26,8 +39,8 @@
   <div class="form-group">
     <label class="sr-only" for="taskContext">context</label>
     <div class="col-lg-10">
-      <select class="form-control" id="taskContext" ng-model="taskContext" ng-options="context.title for context in contexts" ng-hide="task.project">
-        <option value="">select context</option>
+      <select class="form-control em-simple-input" id="taskContext" ng-model="task.relationships.tags[0]" ng-options="context.uuid as context.title for context in contexts" ng-hide="task.project">
+        <option value="">select context...</option>
       </select>
     </div>
   </div>
@@ -35,7 +48,7 @@
   <div class="form-group">
     <label class="sr-only" for="taskLink">link</label>
     <div class="col-lg-10">
-      <input type="text" class="form-control" id="taskLink" ng-model="task.link" placeholder="link..." ng-hide="task.project">
+      <input type="text" class="form-control em-simple-input" id="taskLink" ng-model="task.link" placeholder="link..." ng-hide="task.project">
     </div>
   </div>
 

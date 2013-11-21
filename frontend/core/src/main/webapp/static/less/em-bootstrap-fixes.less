@@ -50,12 +50,30 @@
 // to show the headers ok, but clicking on the
 // links did not work -> every link was on the
 // leftmost slide.
-.navbar-fixed-top, .navbar-fixed-bottom {
-  position: absolute;
+.em-slides {
+  .navbar-fixed-top, .navbar-fixed-bottom {
+    position: absolute;
+  }
 }
 
 // Override Bootstrap active link color
-.navbar-default .navbar-nav > li > a {
-color: @em-blue;
+.navbar-default .navbar-nav > li > a { color: @em-blue; }
+.navbar-default .navbar-nav > li > a:hover { color: @em-blue; }
+
+// label had this, but span didn't
+.form-group > span {
+  margin-bottom: 5px;
+}
+
+// Set the container to not change width when widening
+@media (min-width: @screen-sm-min) {
+  .container {
+    width:inherit;    
+  }
+}
+
+// List inline has annoying padding for <li>
+.list-inline li {
+  padding:0px;
 }
 

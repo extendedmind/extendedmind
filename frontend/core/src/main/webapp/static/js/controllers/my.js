@@ -1,21 +1,16 @@
-/*global angular */
-/*jslint white: true */
+'use strict';
 
-( function() {'use strict';
+function MyController($scope, errorHandler, filterService, itemsArray, notesArray, tagsArray, tasksArray, userPrefix) {
 
-  function MyController($scope, errorHandler, itemsArray, itemsRequest, itemsResponse, notesArray, tagsArray, tasksArray, userPrefix) {
+  $scope.items = itemsArray.getItems();
+  $scope.notes = notesArray.getNotes();
+  $scope.tags = tagsArray.getTags();
+  $scope.tasks = tasksArray.getTasks();
 
-    $scope.errorHandler = errorHandler;
-    $scope.prefix = userPrefix.getPrefix();
+  $scope.prefix = userPrefix.getPrefix();
+  $scope.filterService = filterService;
+  $scope.errorHandler = errorHandler;
+}
 
-    $scope.items = itemsArray.getItems();
-    $scope.notes = notesArray.getNotes();
-    $scope.tasks = tasksArray.getTasks();
-    $scope.tags = tagsArray.getTags();
-    $scope.projects = tasksArray.getProjects();
-    $scope.subtasks = tasksArray.getSubtasks();
-  }
-
-  MyController.$inject = ['$scope', 'errorHandler', 'itemsArray', 'itemsRequest', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];
-  angular.module('em.app').controller('MyController', MyController);
-}());
+MyController.$inject = ['$scope', 'errorHandler', 'filterService', 'itemsArray', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];
+angular.module('em.app').controller('MyController', MyController);
