@@ -72,7 +72,8 @@ trait MailgunClient{
                                "acceptInviteLink", 
                                settings.emailSecureUrlPrefix 
                                + settings.acceptInviteURI
-                                   .replaceAll("inviteValue", invite.code.toHexString))
+                                   .replaceAll("inviteValue", invite.code.toHexString)
+                                   .replaceAll("emailValue", invite.email))
                              .replaceAll("logoLink", settings.emailUrlPrefix + "logoname.png"))
     sendEmail(sendEmailRequest)
   }
