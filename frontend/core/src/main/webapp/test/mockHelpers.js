@@ -10,9 +10,11 @@ emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
     var api_useruuid_items,
 
     // account
-    accountResponse, authenticateResponse, logoutResponse,
+    accountResponse, authenticateResponse,
+    invitePostFix, inviteResponse,
+    logoutResponse, signUpPostFix, signUpResponse,
+    
     // get
-
     itemsResponse, collectiveItemsResponse,
 
     // complete
@@ -31,6 +33,11 @@ emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
     uncompleteTask, uncompleteTaskResponse, uuid;
 
     uuid = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+    // invitePostFix = 'hex_code?email=example@example.com';
+    // signUpPostFix = /^[0-9]{19}$/;
+    signUpPostFix = 5170675547180559977;
+
+    invitePostFix = '/api/invite/hex_code?email=example@example.com';
 
     putItem = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/item/;
     putNote = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/note/;
@@ -56,6 +63,8 @@ emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
     // account
     accountResponse = mockHttpBackendResponse.getAccountResponse();
     authenticateResponse = mockHttpBackendResponse.getAuthenticateResponse();
+    inviteResponse = mockHttpBackendResponse.getInviteResponse();
+    signUpResponse = mockHttpBackendResponse.getSignUpResponse();
     logoutResponse = mockHttpBackendResponse.getLogoutResponse();
 
     completeTaskResponse = mockHttpBackendResponse.getCompleteTaskResponse();
@@ -75,6 +84,14 @@ emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
     uncompleteTaskResponse = mockHttpBackendResponse.getUncompleteTaskResponse();
 
     // account
+    $httpBackend.whenGET(invitePostFix).respond(function(method, url, data, headers) {
+      mockHttpBackendResponse.setSkipAuthenticationCheck();
+      return mockHttpBackendResponse.expectResponse(method, url, data, headers, inviteResponse);
+    });
+    $httpBackend.whenPOST('/api/invite/' + signUpPostFix).respond(function(method, url, data, headers) {
+      mockHttpBackendResponse.setSkipAuthenticationCheck();
+      return mockHttpBackendResponse.expectResponse(method, url, data, headers, signUpResponse);
+    });
     $httpBackend.whenGET('/api/account').respond(function(method, url, data, headers) {
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, accountResponse);
     });
@@ -150,7 +167,13 @@ emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
 
 emMockHelpers.factory('mockHttpBackendResponse', ['base64',
   function(base64) {
+
+    var skipAuthenticationCheck;
+    
     return {
+      setSkipAuthenticationCheck: function() {
+        skipAuthenticationCheck = true;
+      },
       expectResponse : function(method, url, data, headers, responseData) {
         var parsedAuthorizationHeader, userNamePass, parsedUserNamePass, userName, response;
 
@@ -159,14 +182,22 @@ emMockHelpers.factory('mockHttpBackendResponse', ['base64',
         parsedUserNamePass = userNamePass.split(':');
         userName = parsedUserNamePass[0];
 
-        if (userNamePass === 'timo@ext.md:timopwd') {
-          response = [200, responseData];
-        } else if (userNamePass === 'jp@ext.md:jppwd') {
-          response = [200, responseData];
-        } else if (userName === 'token') {
-          response = [200, responseData];
+        if (!skipAuthenticationCheck) {
+
+          if (userNamePass === 'timo@ext.md:timopwd') {
+            response = [200, responseData];
+          } else if (userNamePass === 'jp@ext.md:jppwd') {
+            response = [200, responseData];
+          } else if (userName === 'token') {
+            response = [200, responseData];
+          } else if (userNamePass === 'example@example.com:examplePass') {
+            response = [200, responseData];
+          } else {
+            response = [403, 'Forbidden'];
+          }
         } else {
-          response = [403, 'Forbidden'];
+          response = [200, responseData];
+          skipAuthenticationCheck = false;
         }
         return response;
       },
@@ -176,6 +207,12 @@ emMockHelpers.factory('mockHttpBackendResponse', ['base64',
       },
       getAuthenticateResponse : function() {
         return getJSONFixture('authenticateResponse.json');
+      },
+      getInviteResponse : function() {
+        return getJSONFixture('inviteResponse.json');
+      },
+      getSignUpResponse : function() {
+        return getJSONFixture('signUpResponse.json');
       },
       getLogoutResponse : function() {
         return getJSONFixture('logoutResponse.json');

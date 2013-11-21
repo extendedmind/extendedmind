@@ -100,7 +100,7 @@ angular.module('em.directives').directive('taskContent', ['$location',
           scope.showTaskContent = !scope.showTaskContent;
 
           if (scope.showTaskContent) {
-            scope.selected = 'active-list-item';
+            scope.selected = 'em-active-list-item';
           } else {
             scope.selected = '';
           }

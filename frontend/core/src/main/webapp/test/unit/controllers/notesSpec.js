@@ -20,7 +20,7 @@ describe('NotesController', function() {
   }));
 
   it('should return logged user\'s notes', inject(function() {
-    expect($scope.items).toBeUndefined();
+    expect($scope.items).toEqual([]);
     $scope.items = mockHttpBackendResponse.getItemsResponse();
     expect($scope.items.notes.length).toBe(3);
   }));

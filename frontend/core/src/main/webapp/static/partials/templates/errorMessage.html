@@ -1,10 +1,11 @@
 <div class="alert alert-error error-alert-bar" ng-show="errorMessage">
 
-  <button type="button" class="close" aria-hidden="true" ng-click="hideAlert()">
+  <span class="text-danger">
+    {{errorMessage}}
+  </span>
+
+  <button class="btn em-plus inline" class="close" aria-hidden="true" ng-click="hideAlert()">
     &times;
   </button>
-  <p class="text-danger">
-    {{errorMessage}}
-  </p>
 
 </div>

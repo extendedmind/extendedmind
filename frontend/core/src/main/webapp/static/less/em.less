@@ -56,6 +56,10 @@ ul {
   padding: 0;
 }
 
+.em-signup {
+  padding-bottom: 2.5em;
+}
+
 .em-simple-input {
   outline: none;
   border:none !important;
@@ -64,6 +68,30 @@ ul {
   border-radius: 0 !important;
   background: none;
   font-size: 18px;
+}
+
+.em-simple-input[readonly="readonly"] {
+  outline: none;
+  border:none !important;
+  box-shadow:none !important;
+  padding: 0;
+  border-radius: 0 !important;
+  background: none;
+  font-size: 18px;
+}
+
+.em-inbox-active #em-inboxlink, .em-tasks-active #em-taskslink, .em-notes-active #em-noteslink {
+  font-weight: bold;
+}
+
+.em-active-list-item {
+  border-style: solid none;
+  border-width: 1px;
+  border-color: @em-gray;
+}
+
+.em-prompt {
+  font-size: 14px;
 }
 
 // EM SECTIONS
@@ -142,12 +170,6 @@ ul.em-headers {
   }
 }
 
-.active-list-item {
-  border-style: solid none;
-  border-width: 1px;
-  border-color: @em-gray;
-}
-
 .em-filtered-items {
   a {
     color: @em-blue;
@@ -214,22 +236,28 @@ ul.em-headers {
   padding-top: 15px;
 }
 
+.em-big-button:disabled {
+  font-size: 24px;
+  color: @em-gray;
+  padding-top: 15px;
+}
+
 .em-icon {
   padding-left: 0.5em;
   padding-right: 0.5em;
   padding-top: 0.2em;
   padding-bottom: 0.2em;
-  position:relative; top:-2px;
+  position: relative; top:-2px;
   margin-right: 2px;
   text-transform: uppercase;
-  border-radius:50%;
+  border-radius: 50%;
   border: solid 1px;
   border-color: @em-blue;
   font-size: 16px;
   font-weight: bold;
 }
 
-#em-letter-n{
+#em-letter-n {
   padding-top: 0.25em;
   padding-bottom: 0.25em;  
 }

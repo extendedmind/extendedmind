@@ -54,29 +54,54 @@ angular.module('em.services').factory('Enum', [
     return slide;
   }]);
 
-angular.module('em.services').factory('carouselSlide', ['$location', 'location', 'Enum', 'userPrefix',
-  function($location, location, Enum, userPrefix) {
+angular.module('em.services').factory('carouselSlide', ['$location', '$rootScope', 'location', 'userPrefix',
+  function($location, $rootScope, location, userPrefix) {
 
     var carouselPath, carouselSlideIndex, carouselSlides;
 
     function setSlidePath() {
 
-      if ($location.path() !== '/' + userPrefix.getPrefix() + carouselPath) {
-        location.skipReload().path('/' + userPrefix.getPrefix() + carouselPath);
+      if ($location.path() !== '/' + userPrefix.getPrefix() + carouselSlides[carouselSlideIndex].path) {
+
+        location.skipReload().path('/' + userPrefix.getPrefix() + carouselSlides[carouselSlideIndex].path);
+        $rootScope.$apply();
+
       }
     }
+
+    $rootScope.$on('event:slideIndexChanged', function(event, slide) {
+      carouselSlideIndex = slide;
+      setSlidePath();
+    });
 
     return {
       setSlideIndex: function(slide) {
         carouselSlideIndex = slide;
-        // carouselPath = carouselSlides[carouselSlideIndex].path;
-        // setSlidePath();
+        setSlidePath();
       },
       getSlideIndex: function() {
         return carouselSlideIndex;
       },
       setSlidePath: function() {
 
+      },
+      getCarouselSlides: function() {
+
+      },
+      setMySlides: function() {
+        carouselSlides = [
+        {
+          path: '',
+          index: 0
+        },
+        {
+          path: '/tasks',
+          index: 1
+        },
+        {
+          path: '/tasks/today',
+          indes: 2
+        }];
       },
       setTasksSlides: function() {
         carouselSlides = [
@@ -91,6 +116,17 @@ angular.module('em.services').factory('carouselSlide', ['$location', 'location',
         {
           path: '/tasks/today',
           indes: 2
+        }];
+      },
+      setNotesSlides: function() {
+        carouselSlides = [
+        {
+          path: '',
+          index: 0
+        },
+        {
+          path: '/notes',
+          index: 1
         }];
       },
       setInboxSlides: function() {

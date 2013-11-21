@@ -7,7 +7,7 @@ beforeEach(module('em.app'));
 describe('MyController', function() {
   beforeEach(module('em.services', 'em.mockHelpers'));
 
-  var $controller, $httpBackend, $scope, mockHttpBackendResponse, userItems;
+  var $controller, $httpBackend, $scope, mockHttpBackendResponse, slide, userItems;
 
   beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_, _mockHttpBackendResponse_) {
     $httpBackend = _$httpBackend_;
@@ -16,7 +16,8 @@ describe('MyController', function() {
 
     $scope = _$rootScope_.$new();
     $controller = _$controller_('MyController', {
-      $scope : $scope
+      $scope : $scope,
+      slide : slide
     });
   }));
 

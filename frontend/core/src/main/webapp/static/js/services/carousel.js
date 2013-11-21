@@ -2,8 +2,8 @@
 /*jslint regexp: true, white: true */
 'use strict';
 
-angular.module('em.services').service('CollectionManager', ['carouselSlide',
-  function(carouselSlide) {
+angular.module('em.services').service('CollectionManager', [
+  function() {
 
     function CollectionManager(options) {
       var initial = {
@@ -98,7 +98,6 @@ angular.module('em.services').service('CollectionManager', ['carouselSlide',
         if (!cycled) {
           this.updated = new Date();
         }
-        carouselSlide.setSlideIndex(this.index);
       };
 
       CollectionManager.prototype.next = function() {
