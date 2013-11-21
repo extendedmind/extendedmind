@@ -4,16 +4,15 @@
 function SignupController($location, $scope, $routeParams, authenticateRequest, errorHandler, httpRequest, itemsRequest, userSession) {
 
   $scope.user = {};
-  var inviteResponseCode;
+  var inviteResponseCode = $routeParams.hex_code;
 
   $scope.errorHandler = errorHandler;
 
-  httpRequest.get('/api/invite/' + $routeParams.hex_code + '?email=' + $routeParams.email).then(function(inviteResponse) {
+  httpRequest.get('/api/invite/' + inviteResponseCode + '?email=' + $routeParams.email).then(function(inviteResponse) {
     if (inviteResponse.data.accepted) {
       $location.path('/login');
     } else {
       $scope.user.email = inviteResponse.data.email;
-      inviteResponseCode = inviteResponse.data.code;
     }
   });
 
