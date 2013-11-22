@@ -1,6 +1,22 @@
 /*jslint white: true */
 'use strict';
 
+angular.module('em.directives').directive("swiperDirective", ["$rootScope", function($rootScope) {
+  return {
+    restrict: "A",
+    controller: function() {
+      this.ready = function() {
+        $rootScope.doReady();
+      };
+    },
+    link: function(scope, element, attrs) {
+      mySwiper = new Swiper(".swiper-container", {
+        simulateTouch: false
+      });
+    }
+  };
+}]);
+
 angular.module('em.directives').directive('appVersion', ['version',
   function(version) {
     return function(scope, element, attrs) {
@@ -96,6 +112,7 @@ angular.module('em.directives').directive('my', [
   function() {
     return {
       restrict : 'A',
+      require: "^swiperDirective",
       templateUrl : 'static/partials/my.html'
     };
   }]);
@@ -104,6 +121,7 @@ angular.module('em.directives').directive('inbox', [
   function() {
     return {
       restrict : 'A',
+      require: "^swiperDirective",
       templateUrl : 'static/partials/my/inbox.html'
     };
   }]);
