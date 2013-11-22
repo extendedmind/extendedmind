@@ -1,27 +1,29 @@
 <!doctype html>
 <html ng-app="em.app">
-  <head>
-    <base href="/" />
-    <meta charset="utf-8" />
-    <meta name="fragment" content="!" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title ng-bind="page.getTitle()"></title>
-    <link rel="stylesheet" href="static/css/em.css"/>
-    <link rel="shortcut icon" href="static/favicon.ico"/>
-  </head>
-  <body>
+<head>
+  <base href="/" />
+  <meta charset="utf-8" />
+  <meta name="fragment" content="!" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title ng-bind="page.getTitle()"></title>
+  <link rel="stylesheet" href="static/css/em.css"/>
+  <link rel="shortcut icon" href="static/favicon.ico"/>
+  <link rel="stylesheet" href="static/idangerous.swiper.css"/>
+  <script defer src="static/idangerous.swiper-2.3.min.js"></script>
+</head>
+<body>
 
-    <div class="container em-page">
-        <div ng-view></div>
-    </div>
+  <div class="container em-page">
+    <div ng-view></div>
+  </div>
 
-    <script src="static/em.min.js"></script>
-    <script type="application/javascript">
-      window.addEventListener('load', function() {
-        FastClick.attach(document.body);
-      }, false);
-    </script>
-  </body>
+  <script src="static/em.min.js"></script>
+  <script>
+    window.addEventListener('load', function() {
+      FastClick.attach(document.body);
+    }, false);
+  </script>
+</body>
 </html>

@@ -4,14 +4,9 @@
 angular.module('em.directives').directive("swiperDirective", ["$rootScope", function($rootScope) {
   return {
     restrict: "A",
-    controller: function() {
-      this.ready = function() {
-        $rootScope.doReady();
-      };
-    },
     link: function(scope, element, attrs) {
-      mySwiper = new Swiper(".swiper-container", {
-        simulateTouch: false
+      var mySwiper = new Swiper(".swiper-container", {
+        simulateTouch: true
       });
     }
   };

@@ -2,8 +2,6 @@
 /*jslint white: true */
 'use strict';
 
-var mySwiper;
-
 angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'em.directives', 'em.filters', 'em.services']);
 angular.module('em.directives', []);
 angular.module('em.filters', []);
@@ -546,11 +544,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
 angular.module('em.app').run(['$location', '$rootScope', 'errorHandler', 'userAuthenticate', 'userPrefix',
   function($location, $rootScope, errorHandler, userAuthenticate, userPrefix) {
-
-    $rootScope.doReady = function () {
-      // http://www.idangero.us/sliders/swiper/api.php
-      mySwiper.reInit();
-    };
 
     $rootScope.$on('$routeChangeSuccess', function() {
       errorHandler.clear();
