@@ -1,20 +1,4 @@
-<!-- <div id="em-feature-header-tasks" class="row em-feature-header">
-  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <ul class="nav navbar-nav nav-justified">
-      <li id="em-iconlink">
-        <a href ng-click="gotoHome()"><span class="em-icon">t</span></a>
-      </li>
-      <li id="em-featurelink">
-        <a class="em-feature" href ng-click="nextSlide()">home</a>
-      </li>
-      <li id="em-addnewbutton">
-        <button type="button" class="btn em-plus" ng-click="addNew()">+</button>
-      </li>
-    </ul>
-  </nav>
-</div> -->
-
-<div class="row em-scrollable-bottom">
+<div class="row">
   <h3>unsorted</h3>
   <ul class="list-unstyled">
     <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.unsorted">

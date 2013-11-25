@@ -1,13 +1,34 @@
+/*global Swiper */
 /*jslint white: true */
 'use strict';
 
-angular.module('em.directives').directive("swiperDirective", ["$rootScope", function($rootScope) {
+angular.module('em.directives').directive('swiperDirective', ['$rootScope', 'location', 'userPrefix', function($rootScope, location, userPrefix) {
   return {
-    restrict: "A",
+    restrict: 'A',
     link: function(scope, element, attrs) {
-      var mySwiper = new Swiper(".swiper-container", {
-        simulateTouch: true
+      var mySwiper;
+      $rootScope.slideIndex = 0;
+
+      function changePath() {
+        location.skipReload().path('/' + userPrefix.getPrefix() + mySwiper.getSlide(mySwiper.activeIndex).getData('path'));
+        $rootScope.$apply();
+      }
+
+      // http://www.idangero.us/sliders/swiper/api.php
+      mySwiper = new Swiper('.swiper-container', {
+        // initialSlide: 0,
+        noSwiping: true,
+        simulateTouch: true,
+        queueEndCallbacks: true,
+        onSlideChangeEnd: function(sw) {
+          $rootScope.slideIndex = sw.activeIndex;
+          changePath();
+        }
       });
+
+      mySwiper.getSlide(0).setData('path', '');
+      mySwiper.getSlide(1).setData('path', '/tasks');
+      mySwiper.getSlide(2).setData('path', '/tasks/today');
     }
   };
 }]);
@@ -40,13 +61,13 @@ angular.module('em.directives').directive('errorAlertBar', ['$parse',
     };
   }]);
 
-angular.module('em.directives').directive('navbar', [
+angular.module('em.directives').directive('emFooter', [
   function() {
     return {
       controller : 'NavbarController',
       restrict : 'A',
       transclude : true,
-      templateUrl : 'static/partials/templates/navbar.html',
+      templateUrl : 'static/partials/templates/footer.html',
       link : function(scope, element, attrs) {
         var mainlinksFilterAttr = attrs.mainlinksfilter;
         scope.collapse = false;
@@ -59,6 +80,14 @@ angular.module('em.directives').directive('navbar', [
           scope.collapse = !scope.collapse;
         };
       }
+    };
+  }]);
+
+angular.module('em.directives').directive('emHeader', [
+  function() {
+    return {
+      restrict : 'A',
+      templateUrl : 'static/partials/templates/header.html'
     };
   }]);
 
@@ -107,7 +136,6 @@ angular.module('em.directives').directive('my', [
   function() {
     return {
       restrict : 'A',
-      require: "^swiperDirective",
       templateUrl : 'static/partials/my.html'
     };
   }]);
@@ -116,7 +144,6 @@ angular.module('em.directives').directive('inbox', [
   function() {
     return {
       restrict : 'A',
-      require: "^swiperDirective",
       templateUrl : 'static/partials/my/inbox.html'
     };
   }]);
@@ -132,6 +159,7 @@ angular.module('em.directives').directive('projectsList', [
 
 angular.module('em.directives').directive('emPassword', [
   function() {
+    // http://stackoverflow.com/a/18014975
     return {
       restrict: 'A',
       require: '?ngModel',

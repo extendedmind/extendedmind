@@ -39,7 +39,6 @@ angular.module('em.directives').directive('tasks', [
   function() {
     return {
       restrict : 'A',
-      require: "^swiperDirective",
       templateUrl : 'static/partials/my/tasks.html'
     };
   }]);
@@ -47,8 +46,8 @@ angular.module('em.directives').directive('tasks', [
 angular.module('em.directives').directive('today', [
   function() {
     return {
+      controller: 'TodayController',
       restrict : 'A',
-      require: "^swiperDirective",
       templateUrl : 'static/partials/my/tasks/today.html'
     };
   }]);

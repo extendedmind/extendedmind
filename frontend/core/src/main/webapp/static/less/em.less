@@ -43,9 +43,9 @@ ul {
 
 .em-page {
   max-width: @em-max-width;
-  .row, .em-date-footer > div {
-    padding-left: @em-page-padding;
-    padding-right: @em-page-padding;
+  .row {
+    margin-right: 0;
+    margin-left: 0;
   }
   .container {
     max-width: @em-max-width;
@@ -114,8 +114,9 @@ ul {
   padding-top: 2.5em;
 }
 
-.em-scrollable-top, .em-scrollable-bottom {
+.em-scrollable-top, .em-scrollable-bottom, .em-scrollable-middle {
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch; // http://stackoverflow.com/a/9419027
 }
 
 // Pages with three sections
@@ -310,13 +311,17 @@ ul.em-headers {
   }
 }
 
-.em-date-footer > div {
+#em-date-picker {
+  padding-left: @em-page-padding;
+  padding-right: @em-page-padding;date
   width: 100%;
   overflow-x: auto;
-}
-
-.em-date-footer > div > table > tbody> tr > td {
-  padding-right: 0.5em;
+  table {
+    // width: 300px;
+    td {
+      padding-right: 0.5em;
+    }
+  }
 }
 
 // Checkbox
