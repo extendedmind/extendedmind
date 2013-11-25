@@ -62,7 +62,6 @@ class Settings(config: Config) extends Extension {
       case "NORMAL" => MODE_NORMAL        
     }
   }
-  val commonCollectives = config.getBoolean("extendedmind.security.commonCollectives")
   val mailgunDomain = config.getString("extendedmind.email.mailgun.domain")
   val mailgunApiKey = config.getString("extendedmind.email.mailgun.apiKey")
   // Email templates

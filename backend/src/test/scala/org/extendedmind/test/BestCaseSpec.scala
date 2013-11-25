@@ -680,6 +680,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         reauthenticateResponse.collectives should not be None
         reauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._1 should equal(testCollective.title)
         reauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._2 should equal(0)
+        reauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._3 should equal(false)
         
         // Update collective
         Put("/collective/" + putCollectiveResponse.uuid.get,
@@ -701,7 +702,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
 
             // Should be possible to assign read/write access to new collective
             val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
-            lauriAuthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._2 should equal(1)
+            lauriAuthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get) should equal(None)
 
             Post("/collective/" + putCollectiveResponse.uuid.get + "/user/" + getUserUUID(LAURI_EMAIL, reauthenticateResponse),
                 marshal(UserAccessRight(Some(2))).right.get
