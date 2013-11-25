@@ -1,37 +1,5 @@
-/*global Swiper */
 /*jslint white: true */
 'use strict';
-
-angular.module('em.directives').directive('swiperDirective', ['$rootScope', 'location', 'userPrefix', function($rootScope, location, userPrefix) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      var mySwiper;
-      $rootScope.slideIndex = 0;
-
-      function changePath() {
-        location.skipReload().path('/' + userPrefix.getPrefix() + mySwiper.getSlide(mySwiper.activeIndex).getData('path'));
-        $rootScope.$apply();
-      }
-
-      // http://www.idangero.us/sliders/swiper/api.php
-      mySwiper = new Swiper('.swiper-container', {
-        // initialSlide: 0,
-        noSwiping: true,
-        simulateTouch: true,
-        queueEndCallbacks: true,
-        onSlideChangeEnd: function(sw) {
-          $rootScope.slideIndex = sw.activeIndex;
-          changePath();
-        }
-      });
-
-      mySwiper.getSlide(0).setData('path', '');
-      mySwiper.getSlide(1).setData('path', '/tasks');
-      mySwiper.getSlide(2).setData('path', '/tasks/today');
-    }
-  };
-}]);
 
 angular.module('em.directives').directive('appVersion', ['version',
   function(version) {
@@ -83,11 +51,19 @@ angular.module('em.directives').directive('emFooter', [
     };
   }]);
 
-angular.module('em.directives').directive('emHeader', [
+angular.module('em.directives').directive('emFeatureHeader', [
   function() {
     return {
       restrict : 'A',
-      templateUrl : 'static/partials/templates/header.html'
+      templateUrl : 'static/partials/templates/featureHeader.html'
+    };
+  }]);
+
+angular.module('em.directives').directive('emMainHeader', [
+  function() {
+    return {
+      restrict : 'A',
+      templateUrl : 'static/partials/templates/mainHeader.html'
     };
   }]);
 

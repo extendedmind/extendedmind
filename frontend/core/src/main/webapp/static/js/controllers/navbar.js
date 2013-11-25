@@ -17,6 +17,10 @@ function NavbarController($location, $scope, authenticateRequest, userAuthentica
       $location.path('/collective/' + uuid);
     }
   };
+
+  $scope.addNew = function() {
+    $location.path($scope.prefix + '/tasks/new');
+  };
 }
 
 NavbarController.$inject = ['$location', '$scope', 'authenticateRequest', 'userAuthenticate', 'userSessionStorage'];

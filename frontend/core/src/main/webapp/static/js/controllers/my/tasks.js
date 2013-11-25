@@ -13,22 +13,6 @@ function TasksController($location, $rootScope, $scope, errorHandler, filterServ
   $scope.filterService = filterService;
   $scope.prefix = userPrefix.getPrefix();
   $scope.errorHandler = errorHandler;
-
-  $scope.gotoHome = function() {
-    $scope.slide = 0;
-  };
-
-  $scope.prevSlide = function() {
-    $scope.slide--;
-  };
-
-  $scope.nextSlide = function() {
-    $scope.slide++;
-  };
-
-  $scope.addNew = function() {
-    $location.path($scope.prefix + '/tasks/new');
-  };
 }
 
 TasksController.$inject = ['$location', '$rootScope', '$scope', 'errorHandler', 'filterService', 'itemsArray', 'notesArray', 'slide', 'tagsArray', 'tasksArray', 'userPrefix'];

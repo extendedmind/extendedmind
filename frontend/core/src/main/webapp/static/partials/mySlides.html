@@ -1,6 +1,4 @@
-<div em-header></div>
-
-<div class="swiper-container" swiper-directive>
+<div class="swiper-container" em-swiper>
 
   <div class="swiper-wrapper">
     <div class="swiper-slide em-scrollable-top" my></div>
@@ -10,17 +8,15 @@
 </div>
 
 <div ng-switch="slideIndex">
+
   <div ng-switch-default>
+    <div class="row em-feature-header" em-feature-header></div>
     <div class="row em-menu-footer" em-footer mainlinksfilter="newItem.title"></div>
   </div>
+
   <div ng-switch-when=0>
+    <div em-main-header></div>
     <div class="row em-menu-footer" em-footer mainlinksfilter="newItem.title"></div>
   </div>
-  <div ng-switch-when=1>
-    <!-- <div class="row em-menu-footer" em-navbar-footer mainlinksfilter="newItem.title"></div> -->
-    <span>tasks</span>
-  </div>
-  <div ng-switch-when=2>
-    <div class="row em-menu-footer" em-footer mainlinksfilter="newItem.title"></div>
-  </div>
+
 </div>
