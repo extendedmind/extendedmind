@@ -23,11 +23,13 @@ trait CollectiveActions {
     
   def putNewCollective(creatorUUID: UUID, collective: Collective)(implicit log: LoggingContext): Response[SetResult] = {
     log.info("putNewCollective: creator {}", creatorUUID)
-   
-    if (settings.commonCollectives) 
-      log.warning("CRITICAL: Making collective {} a common collective to all "
-                 +"users because extendedmind.security.commonCollectives is set to true", collective.title)
-    db.putNewCollective(creatorUUID, collective, settings.commonCollectives)
+    if (!db.hasCommonCollective){
+      log.info("Making collective {} a common collective to all "
+                 +"users because it is the first inserted collective", collective.title)
+      db.putNewCollective(creatorUUID, collective, true)
+    }else{
+      db.putNewCollective(creatorUUID, collective, false)
+    }
   }
   
   def putExistingCollective(collectiveUUID: UUID, collective: Collective)(implicit log: LoggingContext): Response[SetResult] = {

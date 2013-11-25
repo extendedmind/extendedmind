@@ -26,7 +26,7 @@ abstract class SpraySpecBase extends SpecBase
   object EmptyTestConfiguration extends Module
   
     
-  protected def getCollectiveAccess(securityContext: SecurityContext): Set[(String, Byte)] = {
+  protected def getCollectiveAccess(securityContext: SecurityContext): Set[(String, Byte, Boolean)] = {
     securityContext.collectives.get.map(collectiveAccess => collectiveAccess._2).toSet
   }
   

@@ -38,16 +38,14 @@ trait Neo4jHelper {
 
   private def removeNodes(graphDatabaseService: GraphDatabaseService): Unit = {
 
-    val refNode = graphDatabaseService.getReferenceNode()
     graphDatabaseService.getAllNodes() foreach (node =>
       node.getRelationships(Direction.OUTGOING) foreach (rel =>
         rel.delete()  
       ))
         
     graphDatabaseService.getAllNodes() foreach (node =>
-      if (!refNode.equals(node)) {
-        node.delete()
-      })
+      node.delete()
+    )
   }
 
   private def clearIndex(gds: GraphDatabaseService) = {
