@@ -4,7 +4,7 @@ import java.util.UUID
 import org.neo4j.graphdb.Node
 
 case class SecurityContext(userUUID: UUID, userType: Byte, token: Option[String], 
-                           collectives: Option[Map[UUID,(String, Byte)]]){
+                           collectives: Option[Map[UUID,(String, Byte, Boolean)]]){
   // Tweak that helps skip one database call when creating a token
   @transient var user: Node = null
 }

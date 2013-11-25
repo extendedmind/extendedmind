@@ -48,6 +48,17 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     }
   }
   
+  def hasCommonCollective(): Boolean = {
+    withTx {
+      implicit neo4j =>
+        val collectives = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
+        if (collectives.isEmpty)
+          false
+        else
+          true
+    }
+  }
+  
   def setCollectiveUserPermission(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]): 
         Response[SetResult] = {
     for {
