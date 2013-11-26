@@ -81,10 +81,6 @@ ul {
   font-size: 18px;
 }
 
-.em-inbox-active #em-inboxlink, .em-tasks-active #em-taskslink, .em-notes-active #em-noteslink {
-  font-weight: bold;
-}
-
 .em-active-list-item {
   border-style: solid none;
   border-width: 1px;
@@ -265,7 +261,7 @@ ul.em-headers {
   text-transform: uppercase;
   border-radius: 50%;
   border: solid 1px;
-  border-color: @em-blue;
+  border-color: @em-gray;
   font-size: 16px;
   font-weight: bold;
 }
@@ -275,14 +271,27 @@ ul.em-headers {
   padding-bottom: 0.25em;  
 }
 
+.em-inbox-footer #em-inboxlink, .em-my-footer #em-homelink, .em-tasks-footer #em-taskslink, .em-date-footer #em-taskslink {
+  .em-footer-feature {
+    color: @em-blue !important;
+  }
+  .em-icon {
+    border-color: @em-blue;
+  }
+}
+
+.em-footer-feature {
+  color: @em-gray !important;  
+}
+
 .em-feature {
   color: @em-blue !important;
 }
 
-.em-feature-disabled {
-  color: @em-blue-disabled !important;
+.em-footer-feature-disabled {
+  color: @em-darkgray !important;
   .em-icon {
-    border-color: @em-blue-disabled;
+    border-color: @em-darkgray;
   }
 }
 
