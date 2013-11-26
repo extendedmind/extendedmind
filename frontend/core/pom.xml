@@ -243,10 +243,11 @@
             <include>lib/angularjs/angular-mocks.js</include>
             <include>lib/angularjs/angular-animate.js</include>
             <include>lib/angularjs/angular-touch.js</include>
+            <include>lib/base64.js</include>
+            <include>lib/idangerous/idangerous.swiper-2.3.js</include>
             <include>js/*.js</include>
             <include>js/**/*.js</include>
             <include>mockHelpers.js</include>
-            <include>lib/base64.js</include>
           </sourceIncludes>
           <webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
           <webDriverCapabilities>
