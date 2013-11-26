@@ -2,7 +2,7 @@
 /*jslint white: true */
 'use strict';
 
-angular.module('em.directives').directive('emSwiper', ['$location', '$rootScope', 'Enum', 'location', 'userPrefix', 'swiperSlides', function($location, $rootScope, Enum, location, userPrefix, swiperSlides) {
+angular.module('em.directives').directive('emSwiper', ['$rootScope', 'Enum', 'location', 'userPrefix', 'swiperSlides', function($rootScope, Enum, location, userPrefix, swiperSlides) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
