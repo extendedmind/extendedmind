@@ -43,102 +43,26 @@ angular.module('em.services').factory('userPrefix', ['userSessionStorage',
 angular.module('em.services').factory('Enum', [
   function() {
     var slide = {
-      my: {
-        my: 0,
-        tasks: 1,
-        today: 2,
-        inbox: 1,
-        notes: 1
-      }
+      MY: 1,
+      TASKS: 2,
+      TODAY: 3,
+      INBOX: 0,
+      NOTES: 2
     };
+
     return slide;
   }]);
 
-angular.module('em.services').factory('carouselSlide', ['$location', '$rootScope', 'location', 'userPrefix',
-  function($location, $rootScope, location, userPrefix) {
-
-    var carouselPath, carouselSlideIndex, carouselSlides;
-
-    function setSlidePath() {
-
-      if ($location.path() !== '/' + userPrefix.getPrefix() + carouselSlides[carouselSlideIndex].path) {
-
-        location.skipReload().path('/' + userPrefix.getPrefix() + carouselSlides[carouselSlideIndex].path);
-        $rootScope.$apply();
-
-      }
-    }
-
-    $rootScope.$on('event:slideIndexChanged', function(event, slide) {
-      carouselSlideIndex = slide;
-      setSlidePath();
-    });
+angular.module('em.services').factory('swiperSlides', [
+  function() {
+    var initialSlideIndex;
 
     return {
-      setSlideIndex: function(slide) {
-        carouselSlideIndex = slide;
-        setSlidePath();
+      getInitiaSlideIndex: function() {
+        return initialSlideIndex;
       },
-      getSlideIndex: function() {
-        return carouselSlideIndex;
-      },
-      setSlidePath: function() {
-
-      },
-      getCarouselSlides: function() {
-
-      },
-      setMySlides: function() {
-        carouselSlides = [
-        {
-          path: '',
-          index: 0
-        },
-        {
-          path: '/tasks',
-          index: 1
-        },
-        {
-          path: '/tasks/today',
-          indes: 2
-        }];
-      },
-      setTasksSlides: function() {
-        carouselSlides = [
-        {
-          path: '',
-          index: 0
-        },
-        {
-          path: '/tasks',
-          index: 1
-        },
-        {
-          path: '/tasks/today',
-          indes: 2
-        }];
-      },
-      setNotesSlides: function() {
-        carouselSlides = [
-        {
-          path: '',
-          index: 0
-        },
-        {
-          path: '/notes',
-          index: 1
-        }];
-      },
-      setInboxSlides: function() {
-        carouselSlides = [
-        {
-          path: '',
-          index: 0
-        },
-        {
-          path: '/inbox',
-          index: 1
-        }];
+      setInitialSlideIndex: function(slideIndex) {
+        initialSlideIndex = slideIndex;
       }
     };
   }]);

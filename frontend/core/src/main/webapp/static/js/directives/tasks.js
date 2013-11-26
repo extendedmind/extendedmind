@@ -46,8 +46,8 @@ angular.module('em.directives').directive('tasks', [
 angular.module('em.directives').directive('today', [
   function() {
     return {
+      controller: 'TodayController',
       restrict : 'A',
-      controller : 'TodayController',
       templateUrl : 'static/partials/my/tasks/today.html'
     };
   }]);

@@ -1,4 +1,4 @@
-<div class="row em-scrollable-top">
+<div class="row">
   <div class="row center-block em-logo-only">
     <img class="center-block" src="static/img/em_logo.png"/>
     <h1 class="text-primary"><span>extended mind</span></h1>
@@ -7,21 +7,19 @@
   <div class="row em-omnibar" omni-bar></div>
 
   <div class="row em-inbox" items-list itemsfilter="newItem.title">
-    <a id="em-inboxlink" href="#{{prefix}}/inbox">inbox</a>
+    <a id="em-inboxlink" href ng-click="gotoInbox()">inbox</a>
     <span class="text-muted">{{items.length}}</span>
     <span class="pull-right"><small>{{completed}}</small></span>
   </div>
 
   <div class="row em-filtered-items" filtered-notes-list notesfilter="newItem.title">
-    <h3><a class="text-muted" href="#/{{prefix}}/notes">notes</a></h3>
+    <h3><a class="text-muted" href ng-click="gotoNotes()">notes</a></h3>
   </div>
 
   <div class="row em-filtered-items" filtered-tasks-list tasksfilter="newItem.title">
-    <h3><a class="text-muted" href="#/{{prefix}}/tasks">tasks</a></h3>
+    <h3><a class="text-muted" href ng-click="gotoTasks()">tasks</a></h3>
   </div>
 
   <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
 
 </div>
-
-<div class="row em-menu-footer" navbar mainlinksfilter="newItem.title"></div>
