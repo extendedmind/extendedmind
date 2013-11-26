@@ -1,9 +1,7 @@
 /*jslint white: true */
 'use strict';
 
-function TasksController($location, $rootScope, $scope, errorHandler, filterService, itemsArray, notesArray, slide, tagsArray, tasksArray, userPrefix) {
-
-  $scope.slide = slide;
+function TasksController($scope, errorHandler, filterService, itemsArray, notesArray, tagsArray, tasksArray, userPrefix) {
 
   $scope.tasks = tasksArray.getTasks();
   $scope.tags = tagsArray.getTags();
@@ -15,5 +13,5 @@ function TasksController($location, $rootScope, $scope, errorHandler, filterServ
   $scope.errorHandler = errorHandler;
 }
 
-TasksController.$inject = ['$location', '$rootScope', '$scope', 'errorHandler', 'filterService', 'itemsArray', 'notesArray', 'slide', 'tagsArray', 'tasksArray', 'userPrefix'];
+TasksController.$inject = ['$scope', 'errorHandler', 'filterService', 'itemsArray', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];
 angular.module('em.app').controller('TasksController', TasksController);

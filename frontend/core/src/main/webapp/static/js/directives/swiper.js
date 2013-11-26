@@ -2,12 +2,12 @@
 /*jslint white: true */
 'use strict';
 
-angular.module('em.directives').directive('emSwiper', ['$location', '$rootScope', 'location', 'userPrefix', function($location, $rootScope, location, userPrefix) {
+angular.module('em.directives').directive('emSwiper', ['$location', '$rootScope', 'Enum', 'location', 'userPrefix', 'swiperSlides', function($location, $rootScope, Enum, location, userPrefix, swiperSlides) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
       var swiper;
-      $rootScope.slideIndex = 0;
+      $rootScope.slideIndex = swiperSlides.getInitiaSlideIndex();
 
       function changePath() {
         scope.feature = swiper.getSlide(swiper.activeIndex).getData('feature');
@@ -17,7 +17,7 @@ angular.module('em.directives').directive('emSwiper', ['$location', '$rootScope'
 
       // http://www.idangero.us/sliders/swiper/api.php
       swiper = new Swiper('.swiper-container', {
-        // initialSlide: 0,
+        initialSlide: swiperSlides.getInitiaSlideIndex(),
         noSwiping: true,
         simulateTouch: true,
         queueEndCallbacks: true,
@@ -26,8 +26,6 @@ angular.module('em.directives').directive('emSwiper', ['$location', '$rootScope'
           changePath();
         }
       });
-
-      swiper.params.emFeature = 'tasks';
 
       scope.nextSlide = function() {
         swiper.swipeNext();
@@ -38,21 +36,24 @@ angular.module('em.directives').directive('emSwiper', ['$location', '$rootScope'
       };
 
       scope.gotoHome = function() {
-        swiper.swipeTo(0);
+        swiper.swipeTo(Enum.MY);
       };
 
       scope.gotoTasks = function() {
-        if (swiper.params.emFeature === 'tasks') {
-          swiper.swipeTo(1);
-        }
-        else {
-          $location.path(userPrefix.getPrefix + '/tasks');
-        }
+        swiper.swipeTo(Enum.TASKS);
       };
 
-      swiper.getSlide(0).setData('path', '');
-      swiper.getSlide(1).setData('path', '/tasks').setData('feature', 'tasks');
-      swiper.getSlide(2).setData('path', '/tasks/today').setData('feature', 'date');
+      scope.gotoInbox = function() {
+        swiper.swipeTo(Enum.INBOX);
+      };
+
+      swiper.getSlide(Enum.INBOX).setData('path', '/inbox').setData('feature', 'inbox');
+      swiper.getSlide(Enum.MY).setData('path', '').setData('feature', 'my');
+      swiper.getSlide(Enum.TASKS).setData('path', '/tasks').setData('feature', 'tasks');
+      swiper.getSlide(Enum.TODAY).setData('path', '/tasks/today').setData('feature', 'date');
+
+      scope.feature = swiper.getSlide(swiperSlides.getInitiaSlideIndex()).getData('feature');
+
     }
   };
 }]);
