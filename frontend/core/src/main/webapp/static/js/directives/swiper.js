@@ -16,7 +16,7 @@ angular.module('em.directives').directive('emSwiper', ['$rootScope', 'Enum', 'lo
       }
 
       // http://www.idangero.us/sliders/swiper/api.php
-      swiper = new Swiper('.swiper-container', {
+      swiper = new Swiper(element[0], {
         initialSlide: swiperSlides.getInitiaSlideIndex(),
         noSwiping: true,
         simulateTouch: true,
