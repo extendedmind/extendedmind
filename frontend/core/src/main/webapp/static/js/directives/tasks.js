@@ -5,17 +5,7 @@ angular.module('em.directives').directive('datebar', ['disableCarousel',
   function(disableCarousel) {
     return {
       restrict : 'A',
-      templateUrl : 'static/partials/templates/tasks/datebar.html',
-      link: function(scope, element, attrs) {
-
-        element.on('touchmove', function(event) {
-          disableCarousel.setSwiping(true);
-        });
-
-        element.on('touchend', function(event) {
-          disableCarousel.setSwiping(false);
-        });
-      }
+      templateUrl : 'static/partials/templates/tasks/datebar.html'
     };
   }]);
 
