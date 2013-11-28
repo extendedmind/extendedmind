@@ -44,7 +44,12 @@ function TasksListController($location, $routeParams, $scope, activeItem, tagsAr
   };
 
   $scope.addSubtask = function(subtask) {
+
     $scope.subtask = {};
+
+    if (subtask.due) {
+      $scope.subtask.due = subtask.due;
+    }
 
     if ($routeParams.uuid) {
       subtask.relationships = {};
