@@ -44,11 +44,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl : 'static/partials/account.html',
       controller : 'AccountController',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -62,11 +60,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'MyController',
       templateUrl : 'static/partials/emSlides.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         slide: ['Enum', 'swiperSlides',
         function(Enum, swiperSlides) {
@@ -84,11 +80,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'MyController',
       templateUrl : 'static/partials/emSlides.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         slide: ['Enum', 'swiperSlides',
         function(Enum, swiperSlides) {
@@ -106,11 +100,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'InboxController',
       templateUrl : 'static/partials/emSlides.html',
       resolve: {
-        'authenticationRequired': ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         slide: ['Enum', 'swiperSlides',
         function(Enum, swiperSlides) {
@@ -127,11 +119,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'InboxController',
       templateUrl : 'static/partials/emSlides.html',
       resolve: {
-        'authenticationRequired': ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         slide: ['Enum', 'swiperSlides',
         function(Enum, swiperSlides) {
@@ -148,11 +138,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NotesController',
       templateUrl : 'static/partials/emSlides.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         slide: ['Enum', 'swiperSlides',
         function(Enum, swiperSlides) {
@@ -170,11 +158,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NotesController',
       templateUrl : 'static/partials/emSlides.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         slide: ['Enum', 'swiperSlides',
         function(Enum, swiperSlides) {
@@ -192,11 +178,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'ContextController',
       templateUrl : 'static/partials/my/notes/context.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -210,11 +194,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'ContextController',
       templateUrl : 'static/partials/my/notes/context.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -228,11 +210,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NoteEditController',
       templateUrl : 'static/partials/my/notes/edit.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -246,11 +226,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NoteEditController',
       templateUrl : 'static/partials/my/notes/edit.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -264,11 +242,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NewNoteController',
       templateUrl : 'static/partials/my/notes/new.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -282,11 +258,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NewNoteController',
       templateUrl : 'static/partials/my/notes/new.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -300,11 +274,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'TasksController',
       templateUrl : 'static/partials/emSlides.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         slide: ['Enum', 'swiperSlides',
         function(Enum, swiperSlides) {
@@ -322,11 +294,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'TasksController',
       templateUrl : 'static/partials/emSlides.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         slide: ['Enum', 'swiperSlides',
         function(Enum, swiperSlides) {
@@ -344,11 +314,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'TasksController',
       templateUrl : 'static/partials/emSlides.html',
       resolve: {
-        'authenticationRequired': ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         slide: ['Enum', 'swiperSlides',
         function(Enum, swiperSlides) {
@@ -365,11 +333,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'TasksController',
       templateUrl : 'static/partials/emSlides.html',
       resolve: {
-        'authenticationRequired': ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         slide: ['Enum', 'swiperSlides',
         function(Enum, swiperSlides) {
@@ -386,11 +352,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'ContextController',
       templateUrl : 'static/partials/my/tasks/context.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -404,11 +368,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'ContextController',
       templateUrl : 'static/partials/my/tasks/context.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -422,11 +384,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'EditTaskController',
       templateUrl : 'static/partials/my/tasks/edit.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -440,11 +400,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'EditTaskController',
       templateUrl : 'static/partials/my/tasks/edit.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -458,11 +416,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NewTaskController',
       templateUrl : 'static/partials/my/tasks/new.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -476,11 +432,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NewTaskController',
       templateUrl : 'static/partials/my/tasks/new.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -494,11 +448,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'ProjectController',
       templateUrl : 'static/partials/my/tasks/project.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -512,11 +464,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'ProjectController',
       templateUrl : 'static/partials/my/tasks/project.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {

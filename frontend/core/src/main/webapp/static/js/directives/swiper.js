@@ -2,7 +2,7 @@
 /*jslint white: true */
 'use strict';
 
-angular.module('em.directives').directive('emSwiper', ['$location', '$rootScope', 'Enum', 'location', 'userPrefix', 'swiperSlides', function($location, $rootScope, Enum, location, userPrefix, swiperSlides) {
+angular.module('em.directives').directive('emSwiper', ['$rootScope', 'Enum', 'location', 'userPrefix', 'swiperSlides', function($rootScope, Enum, location, userPrefix, swiperSlides) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
@@ -16,7 +16,7 @@ angular.module('em.directives').directive('emSwiper', ['$location', '$rootScope'
       }
 
       // http://www.idangero.us/sliders/swiper/api.php
-      swiper = new Swiper('.swiper-container', {
+      swiper = new Swiper(element[0], {
         initialSlide: swiperSlides.getInitiaSlideIndex(),
         noSwiping: true,
         simulateTouch: true,

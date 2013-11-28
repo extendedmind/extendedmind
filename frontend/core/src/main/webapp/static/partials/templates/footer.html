@@ -1,16 +1,33 @@
-<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+<nav class="navbar navbar-default navbar-fixed-bottom em-{{feature}}-footer" role="navigation">
   <div class="container">
 
     <div class="row em-mainlinks">
       <ul class="nav navbar-nav nav-justified">
-        <li id="em-taskslink" ng-hide="mainlinksFilter">
-          <a class="em-feature" href ng-click="gotoTasks()">
-            <span class="em-icon">t</span>tasks
+
+        <li id="em-inboxlink" ng-hide="mainlinksFilter">
+          <a class="em-footer-feature" href ng-click="gotoInbox()">
+            <span id="em-letter-i" class="em-icon">i</span>
           </a>
         </li>
-        <li id="em-noteslink" ng-hide="mainlinksFilter">
-          <a href class="em-feature-disabled"><span id="em-letter-n" class="em-icon">n</span>notes</a>
+        
+        <li id="em-homelink" ng-hide="mainlinksFilter">
+          <a class="em-footer-feature" href ng-click="gotoHome()">
+            <span id="em-letter-h" class="em-icon">h</span>
+          </a>
         </li>
+        
+        <li id="em-taskslink" ng-hide="mainlinksFilter">
+          <a class="em-footer-feature" href ng-click="gotoTasks()">
+            <span class="em-icon">t</span>
+          </a>
+        </li>
+        
+        <li id="em-noteslink" ng-hide="mainlinksFilter">
+          <a href class="em-footer-feature-disabled">
+            <span id="em-letter-n" class="em-icon">n</span>
+          </a>
+        </li>
+
       </ul>
     </div>
 
