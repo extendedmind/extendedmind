@@ -44,7 +44,6 @@ function TasksListController($location, $routeParams, $scope, activeItem, tagsAr
   };
 
   $scope.addSubtask = function(subtask) {
-
     $scope.subtask = {};
 
     if ($routeParams.uuid) {
