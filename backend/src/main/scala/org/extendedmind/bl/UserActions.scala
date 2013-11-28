@@ -94,7 +94,7 @@ trait UserActions {
           signUp.email)
     for {
       isUnique <- db.validateEmailUniqueness(signUp.email).right
-      result <- db.putNewUser(User(None, None, None, signUp.email), signUp.password, settings.signUpMode).right
+      result <- db.putNewUser(User(signUp.email), signUp.password, settings.signUpMode).right
     } yield result
     
     // TODO: Send verification email as Future
@@ -131,8 +131,8 @@ trait UserActions {
   
   def acceptInvite(code: Long, signUp: SignUp) (implicit log: LoggingContext): 
         Response[SetResult] = {
-    log.info("acceptInvite for code {}, email {}", code, signUp.email)
-    db.acceptInvite(code, signUp)
+    log.info("acceptInvite for code {}, email {}, with signUpMode {}", code, signUp.email, settings.signUpMode)
+    db.acceptInvite(signUp, code, settings.signUpMode)
   }
   
   def destroyInviteRequest(inviteRequstUUID: UUID)(implicit log: LoggingContext): Response[DestroyResult] = {

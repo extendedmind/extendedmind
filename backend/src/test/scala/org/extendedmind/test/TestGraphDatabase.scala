@@ -40,9 +40,9 @@ trait TestGraphDatabase extends GraphDatabase {
   var emtUUID: UUID = null
   
   def insertTestData(testDataLocation: Option[String] = None) {
-    val timoNode = createUser(User(None, None, None, TIMO_EMAIL), TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
-    val lauriNode = createUser(User(None, None, None, LAURI_EMAIL), LAURI_PASSWORD, Some(UserLabel.ADMIN)).right.get
-    val jpNode = createUser(User(None, None, None, JP_EMAIL), JP_PASSWORD, Some(UserLabel.ADMIN)).right.get
+    val timoNode = createUser(User(TIMO_EMAIL), TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
+    val lauriNode = createUser(User(LAURI_EMAIL), LAURI_PASSWORD, Some(UserLabel.ADMIN)).right.get
+    val jpNode = createUser(User(JP_EMAIL), JP_PASSWORD, Some(UserLabel.ADMIN)).right.get
 
     // Collectives
     val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true)
@@ -51,7 +51,7 @@ trait TestGraphDatabase extends GraphDatabase {
                                             Some("private collective for extended mind technologies"), false)
     
     // Info node created after common collective "extended mind" but should still be part of it
-    val infoNode = createUser(User(None, None, None, INFO_EMAIL), INFO_PASSWORD).right.get
+    val infoNode = createUser(User(INFO_EMAIL), INFO_PASSWORD).right.get
                                             
     // Add permissions to collectives
     withTx{
