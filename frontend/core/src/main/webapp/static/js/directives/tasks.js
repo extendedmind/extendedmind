@@ -46,15 +46,21 @@ angular.module('em.directives').directive('filteredTasksList', [
   function() {
     return {
       controller : 'TasksListController',
+      scope: {
+        tasks: '=filteredTasksList',
+        tasksListFilter: '=tasksFilter'
+      },
       restrict : 'A',
       templateUrl : 'static/partials/templates/tasks/filteredTasksList.html',
       transclude : true,
       link : function(scope, element, attrs) {
-        var tasksFilterAttr = attrs.tasksfilter;
+        // console.log(scope.tasks);
+        // var tasksFilterAttr = attrs.tasksfilter;
 
-        scope.$watch(tasksFilterAttr, function(newValue) {
-          scope.tasksListFilter = newValue;
-        });
+        // scope.$watch(scope.tasksListFilter, function(newValue) {
+          // console.log(newValue);
+          // scope.tasksListFilter = newValue;
+        // });
       }
     };
   }]);

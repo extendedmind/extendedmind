@@ -8,6 +8,7 @@ function TasksListController($location, $routeParams, $scope, activeItem, tagsAr
   };
 
   $scope.taskChecked = function(task) {
+      console.log(task);
 
     if (task.completed) {
 
