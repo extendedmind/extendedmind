@@ -64,6 +64,9 @@ angular.module('em.directives').directive('subTask', [
     return {
       controller : 'TasksListController',
       restrict : 'A',
+      scope: {
+        subtask: '='
+      },
       templateUrl : 'static/partials/templates/tasks/subTask.html'
     };
   }]);
