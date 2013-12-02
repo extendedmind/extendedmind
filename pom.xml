@@ -49,13 +49,14 @@
     <scala.version.short>2.10</scala.version.short>
     <scala.version>${scala.version.short}.3</scala.version>
     <phantomjs.version>1.9.2</phantomjs.version>
+    <phantomjs.jar.version>1.0-SNAPSHOT</phantomjs.jar.version>
     <jetty.version>9.0.4.v20130625</jetty.version>
   </properties>
 
   <repositories>
     <repository>
       <id>oss-sonatype-public</id>
-      <name>OSS Sonatype public</name>
+      <name>OSS Sonatype Public</name>
       <url>https://oss.sonatype.org/content/repositories/public</url>
     </repository>
     <repository>
@@ -124,7 +125,7 @@
       <dependency>
         <groupId>org.extendedmind</groupId>
         <artifactId>phantomjs</artifactId>
-        <version>${phantomjs.version}</version>
+        <version>${phantomjs.jar.version}</version>
         <classifier>dist</classifier>
         <type>jar</type>
       </dependency>
