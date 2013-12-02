@@ -1,0 +1,209 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.extendedmind</groupId>
+    <artifactId>frontend</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+  <groupId>org.extendedmind.frontend</groupId>
+  <artifactId>frontend-phonegap</artifactId>
+  <packaging>war</packaging>
+  <name>Extended Mind :: Frontend :: Phonegap</name>
+  <description>Extended Mind Frontend Phonegap</description>
+  <inceptionYear>2013</inceptionYear>
+  <url>https://github.com/extendedmind/extendedmind</url>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:extendedmind/extendedmind.git</connection>
+    <developerConnection>scm:git:git@github.com:extendedmind/extendedmind.git</developerConnection>
+    <url>git@github.com:extendedmind/extendedmind.git</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>ttiurani</id>
+      <name>Timo Tiuraniemi</name>
+      <email>timo.tiuraniemi@iki.fi</email>
+    </developer>
+  </developers>
+
+  <properties>
+    <encoding>UTF-8</encoding>
+    <!-- Setup these in ~/.m2/settings.xml as fields -->
+    <phonegap-build.server>phonegap-build</phonegap-build.server>
+    <phonegap-build.ios.server>ios-developer-certificate</phonegap-build.ios.server>
+    <phonegap-build.android.server>android-developer-certificate</phonegap-build.android.server>
+  </properties>
+
+  <build>
+    <sourceDirectory>${basedir}/src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-to-src</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.extendedmind.frontend</groupId>
+                  <artifactId>frontend-core</artifactId>
+                  <type>war</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${basedir}/src/main/webapp</outputDirectory>
+                  <includes>static/**,WEB-INF/web.xml</includes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-to-www</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.extendedmind.frontend</groupId>
+                  <artifactId>frontend-core</artifactId>
+                  <type>war</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${basedir}/www</outputDirectory>
+                  <includes>static/**</includes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-to-src</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target name="copy-to-src">
+                <copy file="${project.basedir}/www/index.html" tofile="${project.basedir}/src/main/webapp/index.html"/>
+                <copy todir="${project.basedir}/src/main/webapp/res" >  
+                  <fileset dir="${project.basedir}/www/res" includes="**"/>  
+                </copy>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${basedir}/www/static</directory>
+            </fileset>
+            <fileset>
+              <directory>${project.basedir}/src</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+           <skip>true</skip>
+       </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.github.chrisprice</groupId>
+        <artifactId>phonegap-build-maven-plugin</artifactId>
+        <version>0.0.4</version>
+        <executions>
+          <execution>
+            <id>phonegap-build</id>
+            <goals>
+              <goal>clean</goal>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <configFile>${basedir}/www/config.xml</configFile>
+              <androidSign>true</androidSign>
+              <iOsMobileProvision>${user.home}/.phonegap/ios/Testflight_Distribution_Profile.mobileprovision</iOsMobileProvision>
+              <platforms>
+                <platform>ios</platform>
+                <platform>android</platform>
+              </platforms>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings 
+          only. It has no influence on the Maven build itself. -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <versionRange>[2.8,)</versionRange>
+                    <goals>
+                      <goal>unpack</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      org.apache.maven.plugins
+                    </groupId>
+                    <artifactId>
+                      maven-antrun-plugin
+                    </artifactId>
+                    <versionRange>[1.7,)</versionRange>
+                    <goals>
+                      <goal>run</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>
