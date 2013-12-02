@@ -48,7 +48,7 @@
     <encoding>UTF-8</encoding>
     <scala.version.short>2.10</scala.version.short>
     <scala.version>${scala.version.short}.3</scala.version>
-    <phantomjs.version>1.9.1</phantomjs.version>
+    <phantomjs.version>1.9.2</phantomjs.version>
     <jetty.version>9.0.4.v20130625</jetty.version>
   </properties>
 
@@ -121,6 +121,14 @@
         <type>war</type>
       </dependency>
 
+      <dependency>
+        <groupId>org.extendedmind</groupId>
+        <artifactId>phantomjs</artifactId>
+        <version>${phantomjs.version}</version>
+        <classifier>dist</classifier>
+        <type>jar</type>
+      </dependency>
+
       <!-- Scala -->
       <dependency>
         <groupId>org.scala-lang</groupId>
@@ -152,6 +160,33 @@
     <module>frontend</module>
     <module>e2e</module>
   </modules>
+
+
+  <profiles>
+    <profile>
+      <id>linux-64-phantomjs</id>
+      <activation>
+        <os>
+          <name>linux</name>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <properties>
+        <platform.classifier>linux</platform.classifier>
+      </properties>
+    </profile>
+    <profile>
+      <id>macosx-properties</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <properties>
+        <platform.classifier>mac</platform.classifier>
+      </properties>
+    </profile>
+  </profiles>
 
   <build>
     <pluginManagement>
