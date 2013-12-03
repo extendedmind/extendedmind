@@ -482,11 +482,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
   }]);
 
-angular.module('em.app').run(['$location', '$rootScope', 'errorHandler', 'userAuthenticate', 'userPrefix',
-  function($location, $rootScope, errorHandler, userAuthenticate, userPrefix) {
+angular.module('em.app').run(['$rootScope', 'analytics', 'errorHandler',
+  function($rootScope, analytics, errorHandler) {
 
     $rootScope.$on('$routeChangeSuccess', function() {
       errorHandler.clear();
+    });
+
+    $rootScope.$on('$viewContentLoaded', function() {
+      analytics.open();
     });
 
   }]);
