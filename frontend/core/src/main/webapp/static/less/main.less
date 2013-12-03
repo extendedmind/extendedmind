@@ -1,0 +1,42 @@
+// Start everything with normalize.css
+@import (less) "normalize.css";
+
+// iPad specifies the maximum width and height of the content area
+@maximum-width: 1024px;
+@maximum-height: 1024px;
+
+*{
+  // Use the same font throughout
+  font-family: @em-font;
+
+  // Use border box everywhere
+  -moz-box-sizing: border-box; 
+  -webkit-box-sizing: border-box; 
+  box-sizing: border-box; 
+
+  // Default to no background repeat
+  background-repeat: no-repeat;
+}
+
+html {
+  // There is never any full page scrolling
+  height: 100%;
+  body, div[role=main], section.one-column-grid, section.two-columns-grid {
+    height: inherit;
+  }
+  div[role="main"] {
+    max-width: @maximum-width;
+    max-height: @maximum-height;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+h1 {
+  
+  font-weight: 100;
+}
+
+h2, h3, h4, h5, h6 {
+  font-weight: 300;
+}

@@ -1,35 +1,36 @@
-<div class="row em-scrollable">
-  <div class="row center-block em-logo-with-text">
-    <img class="center-block" src="static/img/em_logo_with_text.png"/>
-    <h1 class="text-primary"><span>extended mind</span></h1>
+<section class="one-column-grid">
+  <div class="column">
+    <banner class="row-2 top-row">
+      <img src="static/img/em_logo_with_text.png" alt="extended mind"/>
+    </banner>
+
+    <div class="module">
+      <form role="form" name="loginForm">
+
+        <div class="row">
+          <label for="input-email" class="sr-only">email</label>
+          <input type="email" class="form-control em-simple-input" id="input-email" ng-model="user.username" placeholder="enter email..." autofocus="autofocus" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="input-password" class="sr-only">password</label>
+          <input type="password" class="form-control em-simple-input" id="input-password" ng-model="user.password" placeholder="enter password..." required />
+        </div>
+        
+        <div class="form-group">        
+          <input class="em-input-checkbox" type="checkbox" name="checkbox" id="remember" ng-model="user.remember" checked="checked" />
+          <label class="em-input-text em-checkbox" id="remember" for="remember">remember</label>
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="em-big-button btn em-simple-input" id="login-button" ng-disabled="!loginForm.$valid" ng-click="userLogin()">
+            login
+          </button>
+        </div>
+        
+      </form>
+
+      <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
+    </div>
   </div>
-
-  <div class="row col-xs-offset-1">
-    <form role="form" name="loginForm">
-
-      <div class="form-group">
-        <label for="input-email" class="sr-only">email</label>
-        <input type="email" class="form-control em-simple-input" id="input-email" ng-model="user.username" placeholder="enter email..." autofocus="autofocus" required />
-      </div>
-      
-      <div class="form-group">
-        <label for="input-password" class="sr-only">password</label>
-        <input type="password" class="form-control em-simple-input" id="input-password" ng-model="user.password" placeholder="enter password..." required />
-      </div>
-      
-      <div class="form-group">        
-        <input class="em-input-checkbox" type="checkbox" name="checkbox" id="remember" ng-model="user.remember" checked="checked" />
-        <label class="em-input-text em-checkbox" id="remember" for="remember">remember</label>
-      </div>
-
-      <div class="form-group">
-        <button type="submit" class="em-big-button btn em-simple-input" id="login-button" ng-disabled="!loginForm.$valid" ng-click="userLogin()">
-          login
-        </button>
-      </div>
-      
-    </form>
-
-    <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
-  </div>
-</div>
+</section>

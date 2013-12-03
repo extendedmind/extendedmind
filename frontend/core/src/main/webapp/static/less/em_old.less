@@ -1,5 +1,6 @@
-@import "main.less";
-@import "grid.less";
+@import "variables.less";
+@import "em-bootstrap-fixes.less";
+@import "carousel.less";
 @import "idangerous.swiper.less";
 
 // GENERAL
@@ -98,11 +99,6 @@ ul {
   overflow-y: auto;
 }
 
-.em-scrollable-inner {
-  height: inherit;
-  padding-bottom: 2.5em;
-}
-
 // Pages with two sections
 .em-scrollable-top {
   height: inherit;
@@ -115,7 +111,7 @@ ul {
   padding-top: 2.5em;
 }
 
-.em-scrollable-top, .em-scrollable-bottom, .em-scrollable-middle, .em-scrollable-inner {
+.em-scrollable-top, .em-scrollable-bottom, .em-scrollable-middle {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch; // http://stackoverflow.com/a/9419027
 }
@@ -201,7 +197,7 @@ ul.em-headers {
 .em-logo-with-text {
   .em-logo-general;
   img {
-    width: 182px;
+    width: 180px;
   }
 }
 
@@ -425,8 +421,8 @@ input ~ .fade {
   height: 0.1em;
   background: @em-lightblue;
   box-shadow: 
-  0 0.25em 0 0 @em-lightblue,
-  0 0.5em 0 0 @em-lightblue;
+    0 0.25em 0 0 @em-lightblue,
+    0 0.5em 0 0 @em-lightblue;
 }
 
 #em-menu {
