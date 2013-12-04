@@ -12,20 +12,19 @@ div[role=main] {
   }
 }
 
-
-
-
 // We want to horizontally and vertically center everything
 // once the screen size is bigger than a tablet
 @media (min-width: @maximum-width) and (min-height: @maximum-landscape-height) {
   body {
-    .center-container;
     div[role=main] {
-      .absolute-center;
-      min-width: @maximum-width;
-      max-width: @maximum-width;
-      min-height: @maximum-landscape-height;
-      max-height: @maximum-landscape-height;
+      .center-container;
+      section {
+        .absolute-center;
+        min-width: @maximum-width;
+        max-width: @maximum-width;
+        min-height: @maximum-landscape-height;
+        max-height: @maximum-landscape-height;
+      }
     }
   }
 }
