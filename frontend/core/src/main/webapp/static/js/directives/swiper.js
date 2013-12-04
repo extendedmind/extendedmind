@@ -21,7 +21,7 @@ angular.module('em.directives').directive('emSwiper', ['$rootScope', 'Enum', 'lo
 
       // http://www.idangero.us/sliders/swiper/api.php
       swiper = new Swiper(element[0], {
-        // mode: 'vertical',
+        mode: 'vertical',
         freeModeFluid: true,
         initialSlide: swiperSlides.getInitiaSlideIndex(),
         noSwiping: true,
@@ -68,8 +68,8 @@ angular.module('em.directives').directive('emSwiper', ['$rootScope', 'Enum', 'lo
         }
       }
 
-      // swiper.getSlide(2).addEventListener('touchstart', slideTouchStart, false);
-      // swiper.getSlide(2).addEventListener('touchmove', slideTouchMove, false);
+      swiper.getSlide(2).addEventListener('touchstart', slideTouchStart, false);
+      swiper.getSlide(2).addEventListener('touchmove', slideTouchMove, false);
 
       scope.nextSlide = function() {
         swiper.swipeNext();
