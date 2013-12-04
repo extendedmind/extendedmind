@@ -1,4 +1,3 @@
-
 div[role=main] {
   line-height: @vertical-grid;
   max-width: @maximum-width;
@@ -7,14 +6,31 @@ div[role=main] {
   margin-right: auto;
 }
 
-// We want to horzontally and vertically center everything
+// We want to horizontally and vertically center everything
 // once the screen size is bigger than a tablet
-@media (min-width: @maximum-width) {
+@media (min-width: @maximum-width) and (min-height: @maximum-landscape-height) {
   body {
     .center-container;
     div[role=main] {
       .absolute-center;
+      min-width: @maximum-width;
+      max-width: @maximum-width;
+      min-height: @maximum-landscape-height;
+      max-height: @maximum-landscape-height;
+      .one-column-grid, .two-column-grid, .column{
+        height:100%;
+        min-height: inherit;
+        max-height: inherit;
+      }
     }
+  }
+}
+
+// Pages with fixed content need a smaller height
+@media (min-height: @fixed-page-height) {
+  section.fixed-height {
+    min-height: @fixed-page-height !important;
+    max-height: @fixed-page-height !important;
   }
 }
 

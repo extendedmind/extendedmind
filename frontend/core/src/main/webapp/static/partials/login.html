@@ -1,10 +1,9 @@
-<section id="login" class="one-column-grid">
+<section id="login" class="one-column-grid fixed-height">
   <div class="column">
-    <div class="banner row">
+    <div class="banner">
       <img src="static/img/em_logo_with_text.png" alt="extended mind"/>
     </div>
-
-    <div class="content row">
+    <div class="content">
       <form role="form" name="loginForm">
         <div class="form-group">
           <label for="input-email" class="sr-only">email</label>
@@ -15,8 +14,8 @@
           <input type="password" class="form-control simple-input" id="input-password" ng-model="user.password" placeholder="enter password..." required />
         </div>
         <div class="form-group">        
-          <input class="em-input-checkbox" type="checkbox" name="checkbox" id="remember" ng-model="user.remember" checked="checked" />
-          <label class="em-input-text em-checkbox" id="remember" for="remember">remember</label>
+          <input class="input-checkbox" type="checkbox" name="checkbox" id="remember" ng-model="user.remember" checked="checked" />
+          <label class="input-text checkbox" id="remember" for="remember">remember</label>
         </div>
         <div class="form-group">
           <button type="submit" class="simple-input" id="login-button" ng-disabled="!loginForm.$valid" ng-click="userLogin()">

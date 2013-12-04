@@ -1,17 +1,25 @@
+@login-content-height: @vertical-grid*4;
+
 section#login {
   .banner {
-    margin-top: @vertical-grid;
-    height: @vertical-grid*2;
+    padding-top: @vertical-grid;
     img {
-      height: 80%;
       margin-left: auto;
       margin-right: auto;
       display: block;
       padding-top: 10px;
     }
+    // Make content a "sticky footer"
+    min-height: 100%;
+    margin-bottom: -@login-content-height; 
+  }
+  .banner:after {
+    content: "";
+    display: block;
+    height: @login-content-height;
   }
   .content {
-    margin-top: @vertical-grid*4;
+    height: @login-content-height;
   }
 }
 
