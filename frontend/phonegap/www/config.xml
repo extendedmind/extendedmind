@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="org.extendedmind" version="0.5" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="org.extendedmind" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>em</name>
     <description>
-        Mobile application for Extended Mind.
+        Mobile applications for Extended Mind.
     </description>
     <author email="timo.tiuraniemi@iki.fi" href="http://www.extendedmind.org">
         Extended Mind Team
