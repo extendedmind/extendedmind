@@ -1,14 +1,13 @@
 /*jslint white: true */
 'use strict';
 
-function TasksListController($location, $routeParams, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse) {
+function TasksListController($location, $routeParams, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
 
   $scope.taskEdit = function(task) {
-    $location.path($scope.prefix + '/tasks/edit/' + task.uuid);
+    $location.path(userPrefix.getPrefix() + '/tasks/edit/' + task.uuid);
   };
 
   $scope.taskChecked = function(task) {
-      console.log(task);
 
     if (task.completed) {
 
@@ -28,7 +27,7 @@ function TasksListController($location, $routeParams, $scope, activeItem, tagsAr
   };
 
   $scope.taskToProject = function(task) {
-    $location.path($scope.prefix + '/tasks/new');
+    $location.path(userPrefix.getPrefix() + '/tasks/new');
     activeItem.setItem(task);
     task.project = true;
 
@@ -75,5 +74,5 @@ function TasksListController($location, $routeParams, $scope, activeItem, tagsAr
   };
 }
 
-TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse'];
+TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
 angular.module('em.app').controller('TasksListController', TasksListController);
