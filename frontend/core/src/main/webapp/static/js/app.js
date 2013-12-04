@@ -14,7 +14,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $locationProvider.html5Mode(h5m);
 
     $routeProvider.when('/', {
-      redirectTo : 'my'
+      redirectTo: 'my'
     });
 
     $routeProvider.when('/accept/:hex_code', {
@@ -31,24 +31,22 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/404', {
-      templateUrl : 'static/partials/pageNotFound.html',
-      controller : 'PageNotFoundController'
+      templateUrl: 'static/partials/pageNotFound.html',
+      controller: 'PageNotFoundController'
     });
 
     $routeProvider.when('/login', {
-      templateUrl : 'static/partials/login.html',
-      controller : 'LoginController'
+      templateUrl: 'static/partials/login.html',
+      controller: 'LoginController'
     });
 
     $routeProvider.when('/my/account', {
       templateUrl : 'static/partials/account.html',
       controller : 'AccountController',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -60,18 +58,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my', {
       controller : 'MyController',
-      templateUrl : 'static/partials/mySlides.html',
+      templateUrl : 'static/partials/emSlides.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
-        slide: ['Enum', 'carouselSlide',
-        function(Enum, carouselSlide) {
-          carouselSlide.setMySlides();
-          return Enum.my.my;
+        slide: ['Enum', 'swiperSlides',
+        function(Enum, swiperSlides) {
+          swiperSlides.setInitialSlideIndex(Enum.MY);
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -83,18 +78,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID', {
       controller : 'MyController',
-      templateUrl : 'static/partials/mySlides.html',
+      templateUrl : 'static/partials/emSlides.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
-        slide: ['Enum', 'carouselSlide',
-        function(Enum, carouselSlide) {
-          carouselSlide.setMySlides();
-          return Enum.my.my;
+        slide: ['Enum', 'swiperSlides',
+        function(Enum, swiperSlides) {
+          swiperSlides.setInitialSlideIndex(Enum.MY);
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -106,18 +98,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/inbox', {
       controller: 'InboxController',
-      templateUrl: 'static/partials/my/inboxSlides.html',
+      templateUrl : 'static/partials/emSlides.html',
       resolve: {
-        'authenticationRequired': ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
-        slide: ['Enum', 'carouselSlide',
-        function(Enum, carouselSlide) {
-          carouselSlide.setInboxSlides();
-          return Enum.my.inbox;
+        slide: ['Enum', 'swiperSlides',
+        function(Enum, swiperSlides) {
+          swiperSlides.setInitialSlideIndex(Enum.INBOX);
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -128,18 +117,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/inbox', {
       controller: 'InboxController',
-      templateUrl: 'static/partials/my/inboxSlides.html',
+      templateUrl : 'static/partials/emSlides.html',
       resolve: {
-        'authenticationRequired': ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
-        slide: ['Enum', 'carouselSlide',
-        function(Enum, carouselSlide) {
-          carouselSlide.setInboxSlides();
-          return Enum.my.inbox;
+        slide: ['Enum', 'swiperSlides',
+        function(Enum, swiperSlides) {
+          swiperSlides.setInitialSlideIndex(Enum.INBOX);
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -150,18 +136,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/notes', {
       controller : 'NotesController',
-      templateUrl : 'static/partials/my/notesSlides.html',
+      templateUrl : 'static/partials/emSlides.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
-        slide: ['Enum', 'carouselSlide',
-        function(Enum, carouselSlide) {
-          carouselSlide.setNotesSlides();
-          return Enum.my.notes;
+        slide: ['Enum', 'swiperSlides',
+        function(Enum, swiperSlides) {
+          swiperSlides.setInitialSlideIndex(Enum.NOTES);
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -173,18 +156,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/notes', {
       controller : 'NotesController',
-      templateUrl : 'static/partials/my/notesSlides.html',
+      templateUrl : 'static/partials/emSlides.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
-        slide: ['Enum', 'carouselSlide',
-        function(Enum, carouselSlide) {
-          carouselSlide.setNotesSlides();
-          return Enum.my.notes;
+        slide: ['Enum', 'swiperSlides',
+        function(Enum, swiperSlides) {
+          swiperSlides.setInitialSlideIndex(Enum.NOTES);
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -198,11 +178,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'ContextController',
       templateUrl : 'static/partials/my/notes/context.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -216,11 +194,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'ContextController',
       templateUrl : 'static/partials/my/notes/context.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -234,11 +210,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NoteEditController',
       templateUrl : 'static/partials/my/notes/edit.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -252,11 +226,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NoteEditController',
       templateUrl : 'static/partials/my/notes/edit.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -270,11 +242,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NewNoteController',
       templateUrl : 'static/partials/my/notes/new.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -288,11 +258,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NewNoteController',
       templateUrl : 'static/partials/my/notes/new.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -304,18 +272,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks', {
       controller : 'TasksController',
-      templateUrl : 'static/partials/my/tasksSlides.html',
+      templateUrl : 'static/partials/emSlides.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
-        slide : ['Enum', 'carouselSlide',
-        function(Enum, carouselSlide) {
-          carouselSlide.setTasksSlides();
-          return Enum.my.tasks;
+        slide: ['Enum', 'swiperSlides',
+        function(Enum, swiperSlides) {
+          swiperSlides.setInitialSlideIndex(Enum.TASKS);
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -327,18 +292,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks', {
       controller : 'TasksController',
-      templateUrl : 'static/partials/my/tasksSlides.html',
+      templateUrl : 'static/partials/emSlides.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
-        slide : ['Enum', 'carouselSlide',
-        function(Enum, carouselSlide) {
-          carouselSlide.setTasksSlides();
-          return Enum.my.tasks;
+        slide: ['Enum', 'swiperSlides',
+        function(Enum, swiperSlides) {
+          swiperSlides.setInitialSlideIndex(Enum.TASKS);
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -350,18 +312,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks/today', {
       controller: 'TasksController',
-      templateUrl: 'static/partials/my/tasksSlides.html',
+      templateUrl : 'static/partials/emSlides.html',
       resolve: {
-        'authenticationRequired': ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
-        slide: ['Enum', 'carouselSlide',
-        function(Enum, carouselSlide) {
-          carouselSlide.setTasksSlides();
-          return Enum.my.today;
+        slide: ['Enum', 'swiperSlides',
+        function(Enum, swiperSlides) {
+          swiperSlides.setInitialSlideIndex(Enum.TODAY);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
@@ -372,18 +331,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/today', {
       controller: 'TasksController',
-      templateUrl: 'static/partials/my/tasksSlides.html',
+      templateUrl : 'static/partials/emSlides.html',
       resolve: {
-        'authenticationRequired': ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
-        slide: ['Enum', 'carouselSlide',
-        function(Enum, carouselSlide) {
-          carouselSlide.setTasksSlides();
-          return Enum.my.today;
+        slide: ['Enum', 'swiperSlides',
+        function(Enum, swiperSlides) {
+          swiperSlides.setInitialSlideIndex(Enum.TODAY);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
@@ -396,11 +352,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'ContextController',
       templateUrl : 'static/partials/my/tasks/context.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -414,11 +368,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'ContextController',
       templateUrl : 'static/partials/my/tasks/context.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -432,11 +384,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'EditTaskController',
       templateUrl : 'static/partials/my/tasks/edit.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -450,11 +400,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'EditTaskController',
       templateUrl : 'static/partials/my/tasks/edit.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -468,11 +416,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NewTaskController',
       templateUrl : 'static/partials/my/tasks/new.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -486,11 +432,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'NewTaskController',
       templateUrl : 'static/partials/my/tasks/new.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -504,11 +448,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'ProjectController',
       templateUrl : 'static/partials/my/tasks/project.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -522,11 +464,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller : 'ProjectController',
       templateUrl : 'static/partials/my/tasks/project.html',
       resolve : {
-        'authenticationRequired' : ['$q', 'userAuthenticate',
-        function($q, userAuthenticate) {
-          var deferred = $q.defer();
-          userAuthenticate.authenticate(deferred);
-          return deferred.promise;
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
         }],
         prefix : ['userPrefix',
         function(userPrefix) {
@@ -542,11 +482,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
   }]);
 
-angular.module('em.app').run(['$location', '$rootScope', 'errorHandler', 'userAuthenticate', 'userPrefix',
-  function($location, $rootScope, errorHandler, userAuthenticate, userPrefix) {
+angular.module('em.app').run(['$rootScope', 'analytics', 'errorHandler',
+  function($rootScope, analytics, errorHandler) {
 
     $rootScope.$on('$routeChangeSuccess', function() {
       errorHandler.clear();
+    });
+
+    $rootScope.$on('$viewContentLoaded', function() {
+      analytics.open();
     });
 
   }]);

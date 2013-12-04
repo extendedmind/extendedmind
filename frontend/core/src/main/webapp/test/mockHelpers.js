@@ -2,9 +2,9 @@
 /*jslint white: true */
 'use strict';
 
-var emMockHelpers = angular.module('em.mockHelpers', ['em.base64']);
+angular.module('em.mockHelpers', ['em.base64']);
 
-emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
+angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
   function($httpBackend, mockHttpBackendResponse) {
 
     var api_useruuid_items,
@@ -165,7 +165,7 @@ emMockHelpers.run(['$httpBackend', 'mockHttpBackendResponse',
     });
   }]);
 
-emMockHelpers.factory('mockHttpBackendResponse', ['base64',
+angular.module('em.mockHelpers').factory('mockHttpBackendResponse', ['base64',
   function(base64) {
 
     var skipAuthenticationCheck;

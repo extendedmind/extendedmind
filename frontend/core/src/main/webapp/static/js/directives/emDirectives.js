@@ -29,13 +29,13 @@ angular.module('em.directives').directive('errorAlertBar', ['$parse',
     };
   }]);
 
-angular.module('em.directives').directive('navbar', [
+angular.module('em.directives').directive('emFooter', [
   function() {
     return {
       controller : 'NavbarController',
       restrict : 'A',
       transclude : true,
-      templateUrl : 'static/partials/templates/navbar.html',
+      templateUrl : 'static/partials/templates/footer.html',
       link : function(scope, element, attrs) {
         var mainlinksFilterAttr = attrs.mainlinksfilter;
         scope.collapse = false;
@@ -48,6 +48,22 @@ angular.module('em.directives').directive('navbar', [
           scope.collapse = !scope.collapse;
         };
       }
+    };
+  }]);
+
+angular.module('em.directives').directive('emFeatureHeader', [
+  function() {
+    return {
+      restrict : 'A',
+      templateUrl : 'static/partials/templates/featureHeader.html'
+    };
+  }]);
+
+angular.module('em.directives').directive('emMainHeader', [
+  function() {
+    return {
+      restrict : 'A',
+      templateUrl : 'static/partials/templates/mainHeader.html'
     };
   }]);
 
@@ -119,6 +135,7 @@ angular.module('em.directives').directive('projectsList', [
 
 angular.module('em.directives').directive('emPassword', [
   function() {
+    // http://stackoverflow.com/a/18014975
     return {
       restrict: 'A',
       require: '?ngModel',

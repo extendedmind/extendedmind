@@ -14,7 +14,6 @@ function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, 
   };
 
   $scope.itemToTask = function(item) {
-    console.log(item);
     $scope.itemType = 'task';
     tasksRequest.itemToTask(item);
     $scope.task = item;

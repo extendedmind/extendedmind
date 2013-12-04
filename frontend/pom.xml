@@ -35,4 +35,18 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <module>core</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>phonegap</id>
+      <activation>
+        <file>
+          <exists>${user.home}/.phonegap</exists>
+        </file>
+      </activation>
+      <modules>
+        <module>phonegap</module>
+      </modules>
+    </profile>
+  </profiles>
+
 </project>

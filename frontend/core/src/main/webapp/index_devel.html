@@ -10,6 +10,9 @@
     <link rel="stylesheet/less" href="static/less/em.less"/>
     <script src="static/lib/less/less-min.js"></script>
     <link rel="shortcut icon" href="landing/favicon.ico"/>
+    <script>
+    var analyticsKey = 'd467fb835d4f2c5d9436498-a88ea50e-50f7-11e3-969d-009c5fda0a25';
+    </script>
 </head>
 <body>
 
@@ -64,15 +67,15 @@
     <script src="static/js/controllers/tasks/project.js"></script>
     <script src="static/js/controllers/tasks/today.js"></script>
 
-    <script src="static/js/directives/carousel.js"></script>
     <script src="static/js/directives/emDirectives.js"></script>
     <script src="static/js/directives/items.js"></script>
     <script src="static/js/directives/notes.js"></script>
+    <script src="static/js/directives/swiper.js"></script>
     <script src="static/js/directives/tasks.js"></script>
 
     <script src="static/js/filters/emFilters.js"></script>
 
-    <script src="static/js/services/carousel.js"></script>
+    <script src="static/js/services/analytics.js"></script>
     <script src="static/js/services/emServices.js"></script>
     <script src="static/js/services/errorHandler.js"></script>
     <script src="static/js/services/httpHandler.js"></script>
@@ -84,12 +87,14 @@
     <script src="static/js/services/tasks.js"></script>
     <script src="static/js/services/authenticate.js"></script>
 
+    <script src="static/lib/idangerous/idangerous.swiper-2.3.js"></script>
+
     <script src="static/lib/fastclick.js"></script>
+    <script src="static/lib/localytics.js"></script>
     <script>
         window.addEventListener('load', function() {
             FastClick.attach(document.body);
         }, false);
     </script>
-
 </body>
 </html>
