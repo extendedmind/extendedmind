@@ -59,7 +59,97 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
-
+  <profiles>
+    <!-- PhantomJS profiles, copied from here: https://github.com/qa/arquillian-phantom-binary -->
+    <!-- NOTE: http://stackoverflow.com/a/12181394 this needs to be in all 
+      projects that use PhantomJS as a dependency -->
+    <profile>
+      <id>linux-64-phantomjs</id>
+      <activation>
+        <os>
+          <name>linux</name>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <properties>
+        <phantomjs.url>http://phantomjs.googlecode.com/files/phantomjs-${phantomjs.version}-linux-x86_64.tar.bz2</phantomjs.url>
+        <phantomjs.binary.directory>${project.build.directory}/phantomjs-${phantomjs.version}-linux-x86_64</phantomjs.binary.directory>
+        <platform.classifier>linux-64</platform.classifier>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target name="download-phantomjs">
+                    <get src="${phantomjs.url}" dest="target/phantomjs-linux-64.tar.bz2"
+                      verbose="on" skipexisting="true" />
+                    <bunzip2 src="target/phantomjs-linux-64.tar.bz2"
+                      dest="target/phantomjs-linux-64.tar" />
+                    <untar src="target/phantomjs-linux-64.tar"
+                      dest="target" />
+                    <chmod perm="a+x">
+                      <fileset dir="${phantomjs.binary.directory}/bin">
+                        <include name="phantomjs" />
+                      </fileset>
+                    </chmod>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>macosx-phantomjs</id>
+      <!-- Reference mac profile here: https://github.com/qa/arquillian-phantom-binary/blob/master/pom.xml -->
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <properties>
+        <target.os.family>macosx</target.os.family>
+        <phantomjs.url>https://phantomjs.googlecode.com/files/phantomjs-${phantomjs.version}-macosx.zip</phantomjs.url>
+        <phantomjs.binary.directory>${project.build.directory}/phantomjs-${phantomjs.version}-macosx</phantomjs.binary.directory>
+        <platform.classifier>mac</platform.classifier>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target name="download-phantomjs">
+                    <get src="${phantomjs.url}" dest="target/phantomjs-macosx.zip"
+                      verbose="on" skipexisting="true" />
+                    <unzip src="target/phantomjs-macosx.zip" dest="target" />
+                    <chmod perm="a+x">
+                      <fileset dir="${phantomjs.binary.directory}/bin">
+                        <include name="phantomjs" />
+                      </fileset>
+                    </chmod>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <build>
     <testSourceDirectory>${project.basedir}/src/main/webapp/test</testSourceDirectory>
     <plugins>
@@ -82,14 +172,6 @@
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.basedir}/src/main/webapp/test/json</outputDirectory>
                   <includes>*.json</includes>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.extendedmind</groupId>
-                  <artifactId>phantomjs</artifactId>
-                  <type>zip</type>
-                  <classifier>dist</classifier>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${project.build.directory}</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -161,16 +243,14 @@
             <include>lib/angularjs/angular-mocks.js</include>
             <include>lib/angularjs/angular-animate.js</include>
             <include>lib/angularjs/angular-touch.js</include>
-            <include>lib/base64.js</include>
-            <include>lib/idangerous/idangerous.swiper-2.3.js</include>
             <include>js/*.js</include>
             <include>js/**/*.js</include>
             <include>mockHelpers.js</include>
+            <include>lib/base64.js</include>
           </sourceIncludes>
           <webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
           <webDriverCapabilities>
-            
-<phantomjs.binary.path>${project.build.directory}/phantomjs-${phantomjs.jar.version}/${platform.classifier}/bin/phantomjs</phantomjs.binary.path>
+            <phantomjs.binary.path>${phantomjs.binary.directory}/bin/phantomjs</phantomjs.binary.path>
           </webDriverCapabilities>
         </configuration>
       </plugin>

@@ -7,7 +7,7 @@ angular.module('em.services').config(['$httpProvider',
     $httpProvider.interceptors.push('httpInterceptor');
   }]);
 
-function httpInterceptor($q, httpResponseRecover) {
+function httpInterceptor($location, $q, $rootScope, httpResponseRecover) {
 
   return {
     request : function(config) {
@@ -20,12 +20,13 @@ function httpInterceptor($q, httpResponseRecover) {
       return response || $q.when(response);
     },
     responseError : function(rejection) {
-      // return httpResponseRecover.responseError(rejection);
-      return $q.reject(rejection);
+      return httpResponseRecover.responseError(rejection);
     }
   };
 }
-httpInterceptor.$inject = ['$q', 'httpResponseRecover'];
+
+
+httpInterceptor.$inject = ['$location', '$q', '$rootScope', 'httpResponseRecover'];
 angular.module('em.services').factory('httpInterceptor', httpInterceptor);
 
 function httpResponseRecover($injector, $location, $q, errorHandler) {
@@ -92,6 +93,7 @@ function httpResponseRecover($injector, $location, $q, errorHandler) {
     }
   };
 }
+
 httpResponseRecover.$inject = ['$injector', '$location', '$q', 'errorHandler'];
 angular.module('em.services').factory('httpResponseRecover', httpResponseRecover);
 
@@ -114,9 +116,8 @@ angular.module('em.services').factory('httpBasicAuth', ['$http',
     };
   }]);
 
-angular.module('em.services').factory('httpRequest', ['$http', 'userSession',
-  function($http, userSession) {
-
+angular.module('em.services').factory('httpRequest', ['$http',
+  function($http) {
     var httpRequest = {};
 
     function getUrlPrefix() {
@@ -128,8 +129,6 @@ angular.module('em.services').factory('httpRequest', ['$http', 'userSession',
     }
 
     httpRequest.config = function(config) {
-      userSession.getAuth();
-
       return $http(config).then(function(success) {
         return success;
       }, function(error) {
@@ -137,8 +136,6 @@ angular.module('em.services').factory('httpRequest', ['$http', 'userSession',
     };
 
     httpRequest.get = function(url) {
-      userSession.getAuth();
-
       return $http({
         method : 'GET',
         url : getUrlPrefix() + url
@@ -149,8 +146,6 @@ angular.module('em.services').factory('httpRequest', ['$http', 'userSession',
 
     angular.forEach(['delete', 'head', 'jsonp'], function(name) {
       httpRequest[name] = function(url) {
-        userSession.getAuth();
-
         return $http({
           method : name,
           url : getUrlPrefix() + url
@@ -162,8 +157,6 @@ angular.module('em.services').factory('httpRequest', ['$http', 'userSession',
 
     angular.forEach(['post', 'put'], function(name) {
       httpRequest[name] = function(url, data) {
-        userSession.getAuth();
-
         return $http[name](getUrlPrefix() + url, data).then(function(success) {
           return success;
         });

@@ -23,9 +23,3 @@ logs/
 
 # Ignore OSX DS store
 .DS_Store
-
-# Ignore generated PhoneGap directories
-frontend/phonegap/src/
-frontend/phonegap/bin/
-frontend/phonegap/platforms/
-frontend/phonegap/www/static/

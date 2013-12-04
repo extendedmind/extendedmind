@@ -4,14 +4,13 @@
 function itemsRequest(httpRequest, itemsArray, itemsResponse, notesArray, tagsArray, tasksArray, userSessionStorage) {
   return {
     getItems: function() {
-
       return httpRequest.get('/api/' + userSessionStorage.getActiveUUID() + '/items').then(function(itemsResponses) {
 
         itemsArray.setItems(itemsResponses.data.items);
         notesArray.setNotes(itemsResponses.data.notes);
         tagsArray.setTags(itemsResponses.data.tags);
         tasksArray.setTasks(itemsResponses.data.tasks);
-        
+
       });
     },
     putItem: function(item) {
@@ -36,6 +35,7 @@ function itemsRequest(httpRequest, itemsArray, itemsResponse, notesArray, tagsAr
     }
   };
 }
+
 itemsRequest.$inject = ['httpRequest', 'itemsArray', 'itemsResponse', 'notesArray', 'tagsArray', 'tasksArray', 'userSessionStorage'];
 angular.module('em.services').factory('itemsRequest', itemsRequest);
 

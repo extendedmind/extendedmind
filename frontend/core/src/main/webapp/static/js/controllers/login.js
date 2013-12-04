@@ -1,19 +1,26 @@
 /*jslint white: true */
 'use strict';
 
-function LoginController($location, $scope, auth, errorHandler) {
+function LoginController($location, $scope, authenticateRequest, errorHandler, itemsRequest, userSession) {
 
   $scope.errorHandler = errorHandler;
 
   $scope.userLogin = function() {
 
-    auth.login($scope.user).then(function() {
+    userSession.setCredentials($scope.user.username, $scope.user.password);
+
+    if ($scope.user.remember) {
+      userSession.setUserRemembered($scope.user.remember);
+    }
+    authenticateRequest.login().then(function(authenticateResponse) {
+      userSession.setUserSessionData(authenticateResponse);
+      itemsRequest.getItems();
       $location.path('/my');
-    }, function(authenticateResponse) {
+    }, function(authenticateResponse){
       $scope.errorHandler.errorMessage = authenticateResponse.data;
     });
   };
 }
 
-LoginController.$inject = ['$location', '$scope', 'auth', 'errorHandler'];
+LoginController.$inject = ['$location', '$scope', 'authenticateRequest', 'errorHandler', 'itemsRequest', 'userSession'];
 angular.module('em.app').controller('LoginController', LoginController);

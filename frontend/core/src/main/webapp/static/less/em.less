@@ -1,7 +1,6 @@
 @import "variables.less";
 @import "em-bootstrap-fixes.less";
 @import "carousel.less";
-@import "idangerous.swiper.less";
 
 // GENERAL
 
@@ -44,9 +43,9 @@ ul {
 
 .em-page {
   max-width: @em-max-width;
-  .row {
-    margin-right: 0;
-    margin-left: 0;
+  .row, .em-date-footer > div {
+    padding-left: @em-page-padding;
+    padding-right: @em-page-padding;
   }
   .container {
     max-width: @em-max-width;
@@ -81,6 +80,10 @@ ul {
   font-size: 18px;
 }
 
+.em-inbox-active #em-inboxlink, .em-tasks-active #em-taskslink, .em-notes-active #em-noteslink {
+  font-weight: bold;
+}
+
 .em-active-list-item {
   border-style: solid none;
   border-width: 1px;
@@ -111,9 +114,8 @@ ul {
   padding-top: 2.5em;
 }
 
-.em-scrollable-top, .em-scrollable-bottom, .em-scrollable-middle {
+.em-scrollable-top, .em-scrollable-bottom {
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; // http://stackoverflow.com/a/9419027
 }
 
 // Pages with three sections
@@ -197,7 +199,7 @@ ul.em-headers {
 .em-logo-with-text {
   .em-logo-general;
   img {
-    width: 182px;
+    width: 180px;
   }
 }
 
@@ -261,7 +263,7 @@ ul.em-headers {
   text-transform: uppercase;
   border-radius: 50%;
   border: solid 1px;
-  border-color: @em-gray;
+  border-color: @em-blue;
   font-size: 16px;
   font-weight: bold;
 }
@@ -271,27 +273,14 @@ ul.em-headers {
   padding-bottom: 0.25em;  
 }
 
-.em-inbox-footer #em-inboxlink, .em-my-footer #em-homelink, .em-tasks-footer #em-taskslink, .em-date-footer #em-taskslink {
-  .em-footer-feature {
-    color: @em-blue !important;
-  }
-  .em-icon {
-    border-color: @em-blue;
-  }
-}
-
-.em-footer-feature {
-  color: @em-gray !important;  
-}
-
 .em-feature {
   color: @em-blue !important;
 }
 
-.em-footer-feature-disabled {
-  color: @em-darkgray !important;
+.em-feature-disabled {
+  color: @em-blue-disabled !important;
   .em-icon {
-    border-color: @em-darkgray;
+    border-color: @em-blue-disabled;
   }
 }
 
@@ -332,17 +321,13 @@ ul.em-headers {
   }
 }
 
-#em-date-picker {
-  padding-left: @em-page-padding;
-  padding-right: @em-page-padding;
+.em-date-footer > div {
   width: 100%;
   overflow-x: auto;
-  table {
-    // width: 300px;
-    td {
-      padding-right: 0.5em;
-    }
-  }
+}
+
+.em-date-footer > div > table > tbody> tr > td {
+  padding-right: 0.5em;
 }
 
 // Checkbox
@@ -408,28 +393,6 @@ input ~ .fade {
  font-size: 26px !important;
 }
 
-.em-box-shadow-menu {
-  position: relative;
-  padding-left: 1.25em;
-}
-.em-box-shadow-menu:before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.25em;
-  width: 1em;
-  height: 0.1em;
-  background: @em-lightblue;
-  box-shadow: 
-    0 0.25em 0 0 @em-lightblue,
-    0 0.5em 0 0 @em-lightblue;
-}
-
-#em-menu {
-  text-align: right;
-  padding-right: @em-page-padding * 2;
-}
-
-#em-menu-button{
+#em-triangle{
   color: @em-lightblue !important;
 }

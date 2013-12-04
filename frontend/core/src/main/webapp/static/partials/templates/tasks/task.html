@@ -2,7 +2,7 @@
 
   <input type="checkbox" name="checkbox" id="{{task.uuid}}" class="em-input-checkbox" ng-checked="task.completed" ng-click="taskChecked(task)" />
 
-  <label class="em-input-text em-checkbox swiper-no-swiping" id="{{task.uuid}}" for="{{task.uuid}}"></label>
+  <label class="em-input-text em-checkbox" id="{{task.uuid}}" for="{{task.uuid}}"></label>
   <span class="fade" ng-click="toggleTaskContent()">{{task.title}}</span>
 
   <div task-content ng-show="showTaskContent"></div>

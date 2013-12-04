@@ -1,6 +1,22 @@
-<div class="row swiper-no-swiping" id="em-date-picker" datebar></div>
+<div class="row em-feature-header">
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 
-<div class="row">
+    <ul class="nav navbar-nav nav-justified">
+      <li id="em-iconlink">
+        <a href ng-click="gotoHome()"><span class="em-icon">t</span></a>
+      </li>
+      <li id="em-featurelink">
+        <a class="em-feature" href ng-click="prevSlide()">date</a>
+      </li>
+      <li id="em-addnewbutton">
+        <button type="button" class="btn em-plus" ng-click="addNew()">+</button>
+      </li>
+    </ul>
+
+  </nav>
+</div>
+
+<div class="row em-scrollable-middle">
 
   <h3>{{date.displayDate}}</h3>
 
@@ -11,6 +27,8 @@
 
     </li>
   </ul>
-  <div sub-task subtask="subtaskWithDate"></div>
+  <div sub-task></div>
 
 </div>
+
+<div class="row em-date-footer" datebar></div>

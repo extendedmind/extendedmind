@@ -1,8 +1,6 @@
-/*jslint white: true */
 'use strict';
 
-function HomeController($scope) {
-}
+function HomeController() {}
 
-HomeController.$inject = ['$scope'];
+HomeController.$inject = [];
 angular.module('em.app').controller('HomeController', HomeController);

@@ -22,11 +22,27 @@ import spray.util.LoggingContext
 
 trait UserDatabase extends AbstractGraphDatabase {
 
-  // PUBLICs
+  // PUBLIC
+
+  def signUp(signUp: SignUp, adminSignUp: Boolean): Response[SetResult] = {
+    for{
+      user <- createUser(User(signUp.email), signUp.password, (if (adminSignUp) Some(UserLabel.ADMIN) else None)).right
+      result <- Right(getSetResult(user, true)).right
+    }yield result
+  }
   
   def putNewUser(user: User, password: String, signUpMode: SignUpMode): Response[SetResult] = {
+    val signUpExtraLabel = {
+      signUpMode match {
+        case MODE_ADMIN => Some(UserLabel.ADMIN)
+        case MODE_ALFA => Some(UserLabel.ALFA)
+        case MODE_BETA => Some(UserLabel.BETA)
+        case _ => None
+      }
+    }
+    
     for{
-      user <- createUser(user, password, getExtraUserLabel(signUpMode)).right
+      user <- createUser(user, password, signUpExtraLabel).right
       result <- Right(getSetResult(user, true)).right
     }yield result
   }
@@ -171,9 +187,9 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
-  def acceptInvite(signUp: SignUp, code: Long, signUpMode: SignUpMode): Response[SetResult] = {
+  def acceptInvite(code: Long, signUp: SignUp): Response[SetResult] = {
     for {
-      userNode <- acceptInviteNode(signUp, code, signUpMode).right
+      userNode <- acceptInviteNode(signUp, code).right
       result <- Right(getSetResult(userNode, true)).right
     } yield result
   }
@@ -361,34 +377,21 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def acceptInviteNode(signUp: SignUp, code: Long, signUpMode: SignUpMode): Response[Node] = {
+  protected def acceptInviteNode(signUp: SignUp, code: Long): Response[Node] = {
     withTx {
       implicit neo =>
         val user = User(signUp.email)
         for {
           inviteNode <- getInviteNode(code, signUp.email).right
-          userNode <- createUser(user, signUp.password, getExtraUserLabel(signUpMode)).right
+          userNode <- createUser(user, signUp.password, None).right
           relationship <- Right(linkInviteAndUser(inviteNode, userNode)).right
         } yield userNode
     }
   }
   
-  protected def getExtraUserLabel(signUpMode: SignUpMode): Option[Label] = {
-    signUpMode match {
-      case MODE_ADMIN => Some(UserLabel.ADMIN)
-      case MODE_ALFA => Some(UserLabel.ALFA)
-      case MODE_BETA => Some(UserLabel.BETA)
-      case _ => None
-    } 
-  }
-  
   protected def linkInviteAndUser(inviteNode: Node, userNode: Node)
                   (implicit neo4j: DatabaseService): Relationship = {
-    val currentTime = System.currentTimeMillis().asInstanceOf[java.lang.Long]
-    inviteNode.setProperty("accepted", currentTime)
-    // When the user accepts invite using a code sent to her email, 
-    // that means that the email is also verified
-    userNode.setProperty("emailVerified", currentTime)
+    inviteNode.setProperty("accepted", System.currentTimeMillis().asInstanceOf[java.lang.Long])
     inviteNode --> SecurityRelationship.IS_ORIGIN --> userNode <
   }
   

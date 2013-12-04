@@ -482,7 +482,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
        + "and get the right order number with GET to /invite/request/[UUID] "
        + "and delete it with DELETE to /invite/request/[UUID] "
        + "and accept the request with POST to /invite/request/[UUID]/accept "
-       + "and accept the invite with POST to /invite/[code]/accept ") {
+       + "and accept the invite with POST to /invite/request/[UUID]/accept ") {
       val testEmail = "example@example.com"
       val testInviteRequest = InviteRequest(None, testEmail, None)
       val testEmail2 = "example2@example.com"
@@ -612,20 +612,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                       // Should be possible to authenticate with the new email/password
                       val newUserAuthenticateResponse = 
                         emailPasswordAuthenticate(invites.invites(0).email, testPassword)
-                      
-                      // Should create admin because of signUpMode="ALFA" setting in application.conf
-                      newUserAuthenticateResponse.userType should equal (Token.ADMIN)
-                      
-                      // When getting account, emailConfirmed should not be none
-                      Get("/account"
-				            ) ~> addHeader("Content-Type", "application/json"
-				            ) ~> addCredentials(BasicHttpCredentials("token", newUserAuthenticateResponse.token.get)
-				            ) ~> emRoute ~> check {
-				        writeJsonOutput("emailVerifiedAccountResponse", entityAs[String])
-				        val accountResponse = entityAs[User]
-				        accountResponse.emailVerified should not be None
-				      }
-                      
+                        
                       // Should return accepted when getting invite again
                       Get("/invite/" + invites.invites(0).code.toHexString + "?email=" + invites.invites(0).email
                         ) ~> addHeader("Content-Type", "application/json"
