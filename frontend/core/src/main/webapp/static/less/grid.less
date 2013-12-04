@@ -4,7 +4,16 @@ div[role=main] {
   max-height: @maximum-height;
   margin-left: auto;
   margin-right: auto;
+
+  .one-column-grid, .two-column-grid, .column{
+    height:100%;
+    min-height: inherit;
+    max-height: inherit;
+  }
 }
+
+
+
 
 // We want to horizontally and vertically center everything
 // once the screen size is bigger than a tablet
@@ -17,11 +26,6 @@ div[role=main] {
       max-width: @maximum-width;
       min-height: @maximum-landscape-height;
       max-height: @maximum-landscape-height;
-      .one-column-grid, .two-column-grid, .column{
-        height:100%;
-        min-height: inherit;
-        max-height: inherit;
-      }
     }
   }
 }

@@ -7,6 +7,57 @@
   background: none;
 }
 
+// Placeholder colour 
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    @text-gray;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    @text-gray;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    @text-gray;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    @text-gray;
+}
+
+
+// Buttons
+
+.button-container {
+  text-align: center;
+}
+
+.wide-button {
+  outline: none;
+  border:none !important;
+  box-shadow:none !important;
+  padding: 0;
+  background: none;
+  color: white;
+  height: @vertical-grid;
+  width: 100%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 7px;
+}
+
+// Normal blue button
+
+.normal-button {
+  button {
+    background-color: @active-button;
+  }
+  button[disabled] {
+    background-color: @inactive-button;
+  }
+  button:active {
+    background-color: @pressed-button;
+  }
+}
+
 input[type=checkbox].input-checkbox {
   position: absolute; 
   overflow: hidden; 
@@ -19,10 +70,10 @@ input[type=checkbox].input-checkbox {
 }
 
 input[type=checkbox].input-checkbox + .input-text {
-  padding-left:20px;
-  height:@default-font-size; 
+  padding-left:35px;
+  height:29px; 
   display:inline-block;
-  line-height:@default-font-size;
+  line-height:29px;
   background-repeat:no-repeat;
   background-position: 0 0;
   vertical-align:middle;
@@ -30,7 +81,7 @@ input[type=checkbox].input-checkbox + .input-text {
 }
 
 input[type=checkbox].input-checkbox:checked + .input-text {
-  background-position: 0 -@default-font-size;
+  background-position: 0 -79px;
 }
 
 .checkbox{background-image:url(../img/checkbox.png); }
