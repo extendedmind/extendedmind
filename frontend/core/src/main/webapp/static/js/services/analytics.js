@@ -1,3 +1,4 @@
+/*global analyticsKey*/
 /*jslint white: true */
 'use strict';
 
