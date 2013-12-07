@@ -1,39 +1,31 @@
-<div id="em-feature-header-tasks" class="row em-feature-header">
-  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div id="em-menu" class="container">
-      <div class="row">
-        <button id="em-menu-button" 
-                type="button" 
-                class="em-simple-input" 
-                ng-click="collapseNavbar()">
-          <span class="em-box-shadow-menu"></span>
-        </button>
-      </div>
-
-      <div class="row pull-right" ng-show="collapse">
+<nav id="main-header" role="navigation">
+  <div id="menu-icon">
+    <button id="menu-button" 
+            type="button" 
+            ng-click="collapseNavbar()"
+            alt="menu"/>
+  </div>
+  <div id="menu-content" ng-show="collapse">
+    <ul>
+      <li>
+        <a href="#/my" ng-click="setActiveUuid(user)">home</a>
+      </li>
+      <li>
+        <span>collectives</span>
         <ul>
-          <li>
-            <a href="#/my" ng-click="setActiveUuid(user)">home</a>
-          </li>
-          <li>
-            <span>collectives</span>
-            <ul>
-              <li ng-repeat="(key, value) in collectives">
-                <div>
-                  <a class="text-muted" ng-click="setActiveUuid(key, true)">{{value[0]}}</a>
-                </div>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <a href="#/my/account">account</a>
-          </li>
-          <li>
-            <a href="" ng-click="logout()">logout</a>
+          <li ng-repeat="(key, value) in collectives">
+            <div>
+              <a ng-click="setActiveUuid(key, true)">{{value[0]}}</a>
+            </div>
           </li>
         </ul>
-      </div>
-
-    </div>
-  </nav>
-</div>
+      </li>
+      <li>
+        <a href="#/my/account">account</a>
+      </li>
+      <li>
+        <a href="" ng-click="logout()">logout</a>
+      </li>
+    </ul>
+  </div>
+</nav>

@@ -1,6 +1,5 @@
-@login-content-height: @vertical-grid*5.5;
 
-section#login {
+section.page {
   .banner {
     padding-top: @vertical-grid;
     img {
@@ -8,6 +7,17 @@ section#login {
       margin-right: auto;
       display: block;
       padding-top: 10px;
+    }
+  }
+}
+
+// LOGIN PAGE
+
+@login-content-height: @vertical-grid*5.5;
+
+section#login {
+  .banner {
+    img {
       width: 150px;
     }
     // Make content a "sticky footer"
@@ -28,4 +38,27 @@ section#login {
     }
   }
 }
+
+// FRONT PAGE
+
+section#my {
+  .banner {
+    img {
+      width: 75px;
+    }
+  }
+  button#menu-button{
+    background:url('../img/menu.png');
+    cursor:pointer;
+    border:none;
+    width:20px;
+    height:16px;
+    display: inline-block; 
+    text-align:center; 
+    margin: 0px; 
+    border: 0px; 
+    padding: 0px;
+  }
+}
+
 

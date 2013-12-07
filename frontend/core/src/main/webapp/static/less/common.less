@@ -112,3 +112,43 @@ input[type=checkbox].input-checkbox:checked + .input-text {
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
 }
+
+.main-header-container {
+  background:#eee;
+  border:1px solid #666;
+  height:@main-header-height;
+  left:0; position:fixed;
+  width:100%;
+  top:0; 
+}
+
+.content-container { 
+  margin:0 auto; 
+  overflow:auto; 
+  padding:80px 0; 
+}
+
+.fixed-top {
+  top: 0;
+  border-width: 0 0 1px;
+  position: absolute;
+  max-width: @maximum-width;
+  text-align: center;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+
+  min-height: 50px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  background-color: white;
+  border: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.one-column-grid {
+  .fixed-top {
+    max-width: @single-column-width;
+  }
+}
