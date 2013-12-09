@@ -57,6 +57,7 @@ object Service {
       }
     }
   }
+  
 }
 
 // we don't implement our route structure directly in the service actor because
@@ -71,10 +72,19 @@ class ServiceActor extends HttpServiceActor with Service {
   implicit val implRejectionHandler = Service.rejectionHandler
   implicit val implExceptionHandler = Service.exceptionHandler
 
+  override def preStart = {
+    // Load database on start
+    if (!adminActions.loadDatabase){
+      throw new RuntimeException("Could not load database")
+    }
+  }
+  
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling
-  def receive = runRoute(emRoute)
+  def receive = {
+    runRoute(emRoute)
+  }
 }
 
 // this class defines our service behavior independently from the service actor
@@ -89,11 +99,11 @@ trait Service extends API with Injectable {
   implicit val executor = actorRefFactory.dispatcher
 
   import JsonImplicits._
-
+  
   val emRoute = {
     getRoot {
       complete {
-        "Extended Mind backend is running"
+        "Extended Mind backend is running"  
       }
     } ~
       postSignUp { url =>

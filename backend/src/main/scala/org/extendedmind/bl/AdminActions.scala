@@ -29,6 +29,16 @@ trait AdminActions {
     db.rebuildItemsIndex(ownerUUID)
   }
 
+  def loadDatabase(implicit log: LoggingContext): Boolean = {
+    log.info("loadDatabase")
+    db.loadDatabase
+  }
+  
+  def checkDatabase(implicit log: LoggingContext): Boolean = {
+    log.info("checkDatabase")
+    db.checkDatabase
+  }
+  
   def shutdown(implicit log: LoggingContext): Unit = {
     log.info("shutdown")
     db.shutdownServer
