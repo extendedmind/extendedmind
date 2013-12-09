@@ -47,18 +47,29 @@ section#my {
       width: 75px;
     }
   }
+  nav#main-header {
+    max-width: @single-column-width;
+    text-align: right;
+    margin-right: auto;
+    margin-left: auto;
+    width: inherit;
+  }
   button#menu-button{
     background:url('../img/menu.png');
+    background-position: 0 -50px;
     cursor:pointer;
     border:none;
-    width:20px;
-    height:16px;
+    width:29px;
+    height:29px;
     display: inline-block; 
     text-align:center; 
     margin: 0px; 
     border: 0px; 
     padding: 0px;
+
   }
+  button#menu-button:active{
+    background-position: 0 0;
+  }
+
 }
-
-

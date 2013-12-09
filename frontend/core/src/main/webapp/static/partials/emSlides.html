@@ -1,31 +1,15 @@
 <div class="swiper-container" em-swiper-slider="horizontal">
   <div class="swiper-wrapper">
-    <div class="swiper-slide em-scrollable-middle" inbox></div>
-    <div class="swiper-slide em-scrollable-top" my></div>
-    <div class="swiper-slide em-scrollable-middle" dates></div>
+    <div class="swiper-slide" inbox></div>
+    <div class="swiper-slide" my></div>
+    <div class="swiper-slide" dates></div>
     <!-- lists -->
-    <div class="swiper-slide em-scrollable-middle" em-projects></div>
+    <div class="swiper-slide" em-projects></div>
     <!-- areas -->
     <!-- contexts -->
-    <div class="swiper-slide em-scrollable-middle" tasks></div>
+    <div class="swiper-slide" tasks></div>
     <!-- single tasks -->
   </div>
 </div>
 
-<div class="em-menu-footer" em-footer mainlinksfilter="newItem.title"></div>
-
-
-
-<div ng-switch="slideIndex">
-
-  <div ng-switch-default>
-    <div class="em-feature-header" em-feature-header></div>
-    <div class="em-menu-footer" em-footer mainlinksfilter="newItem.title"></div>
-  </div>
-
-  <div ng-switch-when=1>
-    <div em-main-header></div>
-    <div class="em-menu-footer" em-footer mainlinksfilter="newItem.title"></div>
-  </div>
-
-</div>
+<div class="footer-container" em-footer mainlinksfilter="newItem.title"></div>

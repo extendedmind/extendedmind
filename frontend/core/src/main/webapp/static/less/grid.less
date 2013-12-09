@@ -8,7 +8,11 @@ div[role=main] {
   .one-column-grid, .two-column-grid, .column{
     height:100%;
     min-height: inherit;
-    max-height: inherit;
+    min-width: inherit;
+  }
+  .column {
+    position: relative;
+    width:100%;
   }
 }
 
@@ -50,13 +54,11 @@ div[role=main] {
   }
 }
 
-.one-column-grid {
-  .column {
-    padding-left: @horizontal-grid;
-    padding-right: @horizontal-grid;
-    max-width: @single-column-width;
-    margin-left: auto;
-    margin-right: auto;
-  }
+.one-column-grid .column, .footer-container {
+  padding-left: @horizontal-grid;
+  padding-right: @horizontal-grid;
+  max-width: @single-column-width;
+  margin-left: auto;
+  margin-right: auto;
 }
 

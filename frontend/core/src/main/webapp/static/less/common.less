@@ -114,41 +114,55 @@ input[type=checkbox].input-checkbox:checked + .input-text {
 }
 
 .main-header-container {
-  background:#eee;
-  border:1px solid #666;
-  height:@main-header-height;
-  left:0; position:fixed;
+  position:absolute;
+  top:0px; 
+  left:0px;
+  min-height:@main-header-height;
+  overflow:hidden;
   width:100%;
-  top:0; 
+  padding-left: inherit;
+  padding-right: inherit;
 }
 
-.content-container { 
-  margin:0 auto; 
-  overflow:auto; 
-  padding:80px 0; 
-}
-
-.fixed-top {
-  top: 0;
-  border-width: 0 0 1px;
-  position: absolute;
-  max-width: @maximum-width;
-  text-align: center;
-  right: 0;
-  left: 0;
-  z-index: 1030;
-
-  min-height: 50px;
-  margin-bottom: 20px;
-  box-sizing: border-box;
-  background-color: white;
-  border: none;
-  padding-left: 0;
-  padding-right: 0;
+.main-content-container { 
+  padding-top:@main-header-height;
+  margin-bottom:@footer-heigth;
+  overflow-y:auto;
+  width: 100%;
 }
 
 .one-column-grid {
   .fixed-top {
     max-width: @single-column-width;
+  }
+}
+
+// FOOTER
+
+.footer-container {
+  height: @footer-heigth;
+  text-align: justify;
+  -ms-text-justify: distribute-all-lines;
+  text-justify: distribute-all-lines;
+}
+
+nav#footer {
+  text-align: justify;
+  * {
+    display: inline;
+  }
+  li.footer-link {
+    width: 30px;
+    height: @footer-heigth;
+    vertical-align: top;
+    display: inline-block;
+    *display: inline;
+    zoom: 1
+  }
+  li#stretch {
+    width: 100%;
+    display: inline-block;
+    font-size: 0;
+    line-height: 0
   }
 }
