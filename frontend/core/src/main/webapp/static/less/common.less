@@ -139,6 +139,14 @@ input[type=checkbox].input-checkbox:checked + .input-text {
 
 // FOOTER
 
+.swiper-container, .swiper-wrapper, .swiper-slide, .no-swiper-container {
+  height: inherit !important;
+}
+
+.swiper-container {
+  margin-bottom: -@footer-height;
+}
+
 .footer-container {
   height: @footer-height;
   text-align: justify;
@@ -157,7 +165,6 @@ nav#footer {
     vertical-align: top;
     display: inline-block;
     *display: inline;
-    zoom: 1
   }
   li#stretch {
     width: 100%;

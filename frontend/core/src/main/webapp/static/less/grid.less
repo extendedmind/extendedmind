@@ -4,9 +4,9 @@ div[role=main] {
   max-height: @maximum-height;
   margin-left: auto;
   margin-right: auto;
+  position:relative;
 
   .one-column-grid, .two-column-grid, .column{
-    height:100%;
     min-height: inherit;
     min-width: inherit;
   }
@@ -20,15 +20,17 @@ div[role=main] {
 // once the screen size is bigger than a tablet
 @media (min-width: @maximum-width) and (min-height: @maximum-landscape-height) {
   body {
-    div[role=main] {
+    div[role=main] > div.no-slides-container {
       .center-container;
-      section {
+      section.page{
         .absolute-center;
-        min-width: @maximum-width;
-        max-width: @maximum-width;
         min-height: @maximum-landscape-height;
         max-height: @maximum-landscape-height;
       }
+    }
+    div[role=main] > div.slides-container {
+      min-height: @maximum-landscape-height;
+      max-height: @maximum-landscape-height;
     }
   }
 }

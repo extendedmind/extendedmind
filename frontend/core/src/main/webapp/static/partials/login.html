@@ -1,29 +1,31 @@
-<section id="login" class="one-column-grid fixed-height page">
-  <div class="column">
-    <div class="banner">
-      <img src="static/img/em_logo_with_text.png" alt="extended mind"/>
+<div class="no-slides-container">
+  <section id="login" class="one-column-grid fixed-height page">
+    <div class="column">
+      <div class="banner">
+        <img src="static/img/em_logo_with_text.png" alt="extended mind"/>
+      </div>
+      <div class="content">
+        <form role="form" name="loginForm">
+          <div class="form-group">
+            <label for="input-email" class="sr-only">email</label>
+            <input type="email" class="simple-input" id="input-email" ng-model="user.username" placeholder="enter email..." autofocus="autofocus" required />
+          </div>
+          <div class="form-group">
+            <label for="input-password" class="sr-only">password</label>
+            <input type="password" class="form-control simple-input" id="input-password" ng-model="user.password" placeholder="enter password..." required />
+          </div>
+          <div class="form-group">        
+            <input class="input-checkbox" type="checkbox" name="checkbox" id="remember" ng-model="user.remember" checked="checked" />
+            <label class="input-text checkbox" id="remember" for="remember">remember</label>
+          </div>
+          <div class="form-group button-container">
+            <button type="submit" id="login-button" class="wide-button" ng-disabled="!loginForm.$valid" ng-click="userLogin()">
+              <span class="button-text">login</span>
+            </button>
+          </div>
+        </form>
+        <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
+      </div>
     </div>
-    <div class="content">
-      <form role="form" name="loginForm">
-        <div class="form-group">
-          <label for="input-email" class="sr-only">email</label>
-          <input type="email" class="simple-input" id="input-email" ng-model="user.username" placeholder="enter email..." autofocus="autofocus" required />
-        </div>
-        <div class="form-group">
-          <label for="input-password" class="sr-only">password</label>
-          <input type="password" class="form-control simple-input" id="input-password" ng-model="user.password" placeholder="enter password..." required />
-        </div>
-        <div class="form-group">        
-          <input class="input-checkbox" type="checkbox" name="checkbox" id="remember" ng-model="user.remember" checked="checked" />
-          <label class="input-text checkbox" id="remember" for="remember">remember</label>
-        </div>
-        <div class="form-group button-container">
-          <button type="submit" id="login-button" class="wide-button" ng-disabled="!loginForm.$valid" ng-click="userLogin()">
-            <span class="button-text">login</span>
-          </button>
-        </div>
-      </form>
-      <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
-    </div>
-  </div>
-</section>
+  </section>
+</div>
