@@ -24,7 +24,6 @@ angular.module('em.services').factory('auth', ['$location', '$q', 'authenticateR
 
       return authenticateRequest.login().then(function(authenticateResponse) {
         userSession.setUserData(authenticateResponse);
-        initUserData();
       });
     }
 
@@ -40,6 +39,7 @@ angular.module('em.services').factory('auth', ['$location', '$q', 'authenticateR
             if (hoursFromAuth() >= swapTokenTimeThreshold) { // auth expired
               swapToken().then(function() {
                 deferred.resolve();
+                initUserData();
               });
             }
             else { // auth valid

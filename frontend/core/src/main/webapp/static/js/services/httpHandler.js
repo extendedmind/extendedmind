@@ -1,5 +1,4 @@
-/*global urlPrefix */
-/*jslint white: true */
+/*global angular, urlPrefix */
 'use strict';
 
 angular.module('em.services').config(['$httpProvider',
@@ -7,7 +6,7 @@ angular.module('em.services').config(['$httpProvider',
     $httpProvider.interceptors.push('httpInterceptor');
   }]);
 
-function httpInterceptor($q, httpResponseRecover) {
+function httpInterceptor($q, errorHandler) {
 
   return {
     request : function(config) {
@@ -20,12 +19,12 @@ function httpInterceptor($q, httpResponseRecover) {
       return response || $q.when(response);
     },
     responseError : function(rejection) {
-      // return httpResponseRecover.responseError(rejection);
+      errorHandler.setError(rejection.data);
       return $q.reject(rejection);
     }
   };
 }
-httpInterceptor.$inject = ['$q', 'httpResponseRecover'];
+httpInterceptor.$inject = ['$q', 'errorHandler'];
 angular.module('em.services').factory('httpInterceptor', httpInterceptor);
 
 function httpResponseRecover($injector, $location, $q, errorHandler) {
@@ -132,7 +131,6 @@ angular.module('em.services').factory('httpRequest', ['$http', 'userSession',
 
       return $http(config).then(function(success) {
         return success;
-      }, function(error) {
       });
     };
 
