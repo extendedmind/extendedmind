@@ -17,10 +17,12 @@ angular.module('em.services').factory('analytics', [ 'userSessionStorage',
    }
 
    function localyticsUser () {
-    if (userSessionStorage.getUserType() === 2 || 
+  // REMOVE WHEN LOCALYTICS TRIAL ENDS
+    return true;
+  /*  if (userSessionStorage.getUserType() === 2 || 
       userSessionStorage.getUserType() === 3) {
       return true;
-  }
+  }*/
 }
 
 return {
