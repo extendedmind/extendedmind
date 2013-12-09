@@ -2,7 +2,6 @@
 <groups xmlns="http://www.isdc.ro/wro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
   <group name="em.min">
-    <js>/src/main/webapp/static/lib/localytics.js</js>
   	<js>/src/main/webapp/static/lib/jquery/jquery.min.js</js>
   	<js>/src/main/webapp/static/lib/jquery/jquery.cookie.min.js</js>
   	<js>/src/main/webapp/static/lib/angularjs/angular.min.js</js>
@@ -12,6 +11,7 @@
   	<js>/src/main/webapp/static/lib/base64.js</js>
     <js>/src/main/webapp/static/lib/idangerous/idangerous.swiper-2.3.min.js</js>
     <js>/src/main/webapp/static/lib/fastclick.js</js>
+    <js>/src/main/webapp/static/lib/localytics.js</js>
     <js>/src/main/webapp/static/js/**.js</js>
   </group>
 
