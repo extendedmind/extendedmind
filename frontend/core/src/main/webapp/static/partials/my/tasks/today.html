@@ -1,9 +1,11 @@
 <div class="row swiper-no-swiping" id="em-date-picker" datebar></div>
 
-<div class="row">
+<div class="swiper-container" em-swiper-slider="vertical">
+  <div class="swiper-wrapper">
 
-  <h3>{{date.displayDate}}</h3>
+    <div class="swiper-slide em-scrollable-inner" ng-repeat="date in dates" swiper-slide="{{date.yyyymmdd}}">
+      <div class="row" date-slide="date" date-tasks="tasks"></div>
+    </div>
 
-  <div tasks-list="tasks" subtask="subtaskWithDate" tasks-filter="filterService.activeFilters.tasksByDate"></div>
-
+  </div>
 </div>

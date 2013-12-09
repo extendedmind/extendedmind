@@ -9,7 +9,7 @@ angular.module('em.services', ['em.base64']);
 angular.module('em.app').config(['$locationProvider', '$routeProvider',
   function($locationProvider, $routeProvider) {
 
-    var h5m = (typeof html5Mode !== 'undefined') ? html5Mode : true;
+    var h5m = (typeof html5Mode !== 'undefined') ? html5Mode: true;
     $locationProvider.html5Mode(h5m);
 
     $routeProvider.when('/', {
@@ -40,14 +40,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/account', {
-      templateUrl : 'static/partials/account.html',
-      controller : 'AccountController',
-      resolve : {
+      templateUrl: 'static/partials/account.html',
+      controller: 'AccountController',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -56,18 +56,18 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my', {
-      controller : 'MyController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve : {
+      controller: 'MyController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.MY);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.MY);
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -76,18 +76,18 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID', {
-      controller : 'MyController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve : {
+      controller: 'MyController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.MY);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.MY);
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -97,17 +97,17 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/inbox', {
       controller: 'InboxController',
-      templateUrl : 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.INBOX);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.INBOX);
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -116,17 +116,17 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/inbox', {
       controller: 'InboxController',
-      templateUrl : 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.INBOX);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.INBOX);
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -134,18 +134,18 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/notes', {
-      controller : 'NotesController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve : {
+      controller: 'NotesController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.NOTES);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.NOTES);
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -154,18 +154,18 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/notes', {
-      controller : 'NotesController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve : {
+      controller: 'NotesController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.NOTES);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.NOTES);
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -174,14 +174,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/notes/context/:uuid', {
-      controller : 'ContextController',
-      templateUrl : 'static/partials/my/notes/context.html',
-      resolve : {
+      controller: 'ContextController',
+      templateUrl: 'static/partials/my/notes/context.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -190,14 +190,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/notes/context/:uuid', {
-      controller : 'ContextController',
-      templateUrl : 'static/partials/my/notes/context.html',
-      resolve : {
+      controller: 'ContextController',
+      templateUrl: 'static/partials/my/notes/context.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -206,14 +206,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/notes/edit/:uuid', {
-      controller : 'NoteEditController',
-      templateUrl : 'static/partials/my/notes/edit.html',
-      resolve : {
+      controller: 'NoteEditController',
+      templateUrl: 'static/partials/my/notes/edit.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -222,14 +222,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/notes/edit/:uuid', {
-      controller : 'NoteEditController',
-      templateUrl : 'static/partials/my/notes/edit.html',
-      resolve : {
+      controller: 'NoteEditController',
+      templateUrl: 'static/partials/my/notes/edit.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -238,14 +238,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/notes/new', {
-      controller : 'NewNoteController',
-      templateUrl : 'static/partials/my/notes/new.html',
-      resolve : {
+      controller: 'NewNoteController',
+      templateUrl: 'static/partials/my/notes/new.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -254,14 +254,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/notes/new', {
-      controller : 'NewNoteController',
-      templateUrl : 'static/partials/my/notes/new.html',
-      resolve : {
+      controller: 'NewNoteController',
+      templateUrl: 'static/partials/my/notes/new.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -270,18 +270,18 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks', {
-      controller : 'TasksController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve : {
+      controller: 'TasksController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.TASKS);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.TASKS);
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -290,18 +290,18 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks', {
-      controller : 'TasksController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve : {
+      controller: 'TasksController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.TASKS);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.TASKS);
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -310,16 +310,35 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/today', {
-      controller: 'TasksController',
-      templateUrl : 'static/partials/emSlides.html',
+      controller: 'TodayController',
+      templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.TODAY);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.TODAY);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/my/tasks/today/:date', {
+      controller: 'TasksController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.TODAY);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
@@ -330,15 +349,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/today', {
       controller: 'TasksController',
-      templateUrl : 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.TODAY);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.TODAY);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
@@ -348,14 +367,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/context/:uuid', {
-      controller : 'ContextController',
-      templateUrl : 'static/partials/my/tasks/context.html',
-      resolve : {
+      controller: 'ContextController',
+      templateUrl: 'static/partials/my/tasks/context.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -364,14 +383,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/context/:uuid', {
-      controller : 'ContextController',
-      templateUrl : 'static/partials/my/tasks/context.html',
-      resolve : {
+      controller: 'ContextController',
+      templateUrl: 'static/partials/my/tasks/context.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -380,14 +399,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/edit/:uuid', {
-      controller : 'EditTaskController',
-      templateUrl : 'static/partials/my/tasks/edit.html',
-      resolve : {
+      controller: 'EditTaskController',
+      templateUrl: 'static/partials/my/tasks/edit.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -396,14 +415,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/edit/:uuid', {
-      controller : 'EditTaskController',
-      templateUrl : 'static/partials/my/tasks/edit.html',
-      resolve : {
+      controller: 'EditTaskController',
+      templateUrl: 'static/partials/my/tasks/edit.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -412,14 +431,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/new', {
-      controller : 'NewTaskController',
-      templateUrl : 'static/partials/my/tasks/new.html',
-      resolve : {
+      controller: 'NewTaskController',
+      templateUrl: 'static/partials/my/tasks/new.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -428,14 +447,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/new', {
-      controller : 'NewTaskController',
-      templateUrl : 'static/partials/my/tasks/new.html',
-      resolve : {
+      controller: 'NewTaskController',
+      templateUrl: 'static/partials/my/tasks/new.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -444,14 +463,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/project/:uuid', {
-      controller : 'ProjectController',
-      templateUrl : 'static/partials/my/tasks/project.html',
-      resolve : {
+      controller: 'ProjectController',
+      templateUrl: 'static/partials/my/tasks/project.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -460,14 +479,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/project/:uuid', {
-      controller : 'ProjectController',
-      templateUrl : 'static/partials/my/tasks/project.html',
-      resolve : {
+      controller: 'ProjectController',
+      templateUrl: 'static/partials/my/tasks/project.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -476,8 +495,8 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.otherwise({
-      controller : 'PageNotFoundController',
-      redirectTo : '404'
+      controller: 'PageNotFoundController',
+      redirectTo: '404'
     });
   }]);
 

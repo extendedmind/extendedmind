@@ -1,8 +1,7 @@
-/*jslint white: true */
+/*global angular */
 'use strict';
 
 function MyController($scope, errorHandler, filterService, itemsArray, notesArray, tagsArray, tasksArray, userPrefix) {
-
   $scope.items = itemsArray.getItems();
   $scope.notes = notesArray.getNotes();
   $scope.tags = tagsArray.getTags();

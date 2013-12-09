@@ -1,14 +1,6 @@
 /*global angular */
 'use strict';
 
-angular.module('em.directives').directive('datebar', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/partials/templates/tasks/datebar.html'
-    };
-  }]);
-
 angular.module('em.directives').directive('project', [
   function() {
     return {
@@ -31,6 +23,33 @@ angular.module('em.directives').directive('today', [
       controller: 'TodayController',
       restrict: 'A',
       templateUrl: 'static/partials/my/tasks/today.html'
+    };
+  }]);
+
+angular.module('em.directives').directive('dateSlide', [
+ function() {
+  return {
+    restrict: 'A',
+    templateUrl: 'static/partials/templates/tasks/dateSlide.html',
+    scope: {
+      tasks: '=dateTasks',
+      date: '=dateSlide'
+    },
+    link: function(scope) {
+      scope.subtaskWithDate = {};
+      scope.subtaskWithDate.due = scope.date.yyyymmdd;
+      scope.filter = {};
+      scope.filter.name = 'tasksByDate';
+      scope.filter.filterBy = scope.date.yyyymmdd;
+    },
+  };
+}]);
+
+angular.module('em.directives').directive('datebar', [
+  function() {
+    return {
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/tasks/datebar.html'
     };
   }]);
 

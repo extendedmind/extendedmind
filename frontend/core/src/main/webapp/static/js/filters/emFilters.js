@@ -1,4 +1,4 @@
-/*jslint white: true */
+/*global angular */
 'use strict';
 
 angular.module('em.filters').filter('interpolate', ['version',
@@ -34,7 +34,7 @@ angular.module('em.filters').filter('tagTitle', ['itemsArray', 'tagsArray',
 angular.module('em.filters').filter('visibleNoteContent', [
   function() {
     var userItemsFilter = function(note) {
-      var filteredValues, i;
+      var filteredValues;
       filteredValues = [];
 
       if (note.content) {
@@ -52,7 +52,7 @@ angular.module('em.filters').filter('visibleNoteContent', [
 angular.module('em.filters').filter('visibleTaskContent', [
   function() {
     var userItemsFilter = function(task) {
-      var filteredValues, i;
+      var filteredValues;
       filteredValues = [];
 
       if (task.due) {
@@ -89,7 +89,7 @@ angular.module('em.filters').filter('tasksFilter', [
           i++;
         }
         return filteredValues;
-      }
+      };
 
       tasksFilter.tasksByDate = function(tasks, date) {
 
@@ -108,7 +108,7 @@ angular.module('em.filters').filter('tasksFilter', [
           i++;
         }
         return filteredValues;
-      }
+      };
 
       tasksFilter.projects = function(tasks){
 
@@ -123,7 +123,7 @@ angular.module('em.filters').filter('tasksFilter', [
           i++;
         }
         return filteredValues;
-      }
+      };
 
       tasksFilter.unsorted = function(tasks){
 
@@ -148,7 +148,7 @@ angular.module('em.filters').filter('tasksFilter', [
           i++;
         }
         return filteredValues;
-      }
+      };
 
       if (filterValue) {
         return tasksFilter[filterValue.name](tasks, filterValue.filterBy);

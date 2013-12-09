@@ -1,4 +1,4 @@
-/*jslint eqeq: true, white: true */
+/*global angular */
 'use strict';
 
 angular.module('em.services').factory('location', ['$location', '$rootScope', '$route',
@@ -51,18 +51,4 @@ angular.module('em.services').factory('Enum', [
     };
 
     return slide;
-  }]);
-
-angular.module('em.services').factory('swiperSlides', [
-  function() {
-    var initialSlideIndex;
-
-    return {
-      getInitiaSlideIndex: function() {
-        return initialSlideIndex;
-      },
-      setInitialSlideIndex: function(slideIndex) {
-        initialSlideIndex = slideIndex;
-      }
-    };
   }]);
