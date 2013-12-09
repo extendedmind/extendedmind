@@ -1,4 +1,4 @@
-/*jslint white: true */
+/*global angular */
 'use strict';
 
 function NavbarController($location, $scope, authenticateRequest, userAuthenticate, userSessionStorage) {

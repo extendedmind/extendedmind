@@ -1,4 +1,4 @@
-/*jslint white: true */
+/*global angular */
 'use strict';
 
 angular.module('em.services').value('version', 0.1);
@@ -31,7 +31,7 @@ angular.module('em.services').factory('date', [
         mm = (d.getMonth() + 1).toString(); // getMonth() is zero-based
         dd  = d.getDate().toString();
 
-        return yyyy +'-'+ (mm[1]?mm:"0"+mm[0]) +'-'+ (dd[1]?dd:"0"+dd[0]); // padding
+        return yyyy +'-'+ (mm[1]?mm:'0'+mm[0]) +'-'+ (dd[1]?dd:'0'+dd[0]); // padding
       },
       today: function() {
         return today;
@@ -42,7 +42,7 @@ angular.module('em.services').factory('date', [
         week = [];
         i = 0;
 
-        for (i = 0; i < 70; i++) {
+        for (i = 0; i < 14; i++) {
           day = {};
           day.date = date.getDate();
 
@@ -80,7 +80,7 @@ angular.module('em.services').factory('date', [
     };
   }]);
 
-angular.module('em.services').factory('filterService',[ 
+angular.module('em.services').factory('filterService',[
   function() {
     return {
       activeFilters: {
@@ -96,20 +96,6 @@ angular.module('em.services').factory('filterService',[
         tasksByProjectUUID:{
           name:'byProjectUUID'
         }
-      }
-    };
-  }]);
-
-angular.module('em.services').factory('disableCarousel', [
-  function() {
-    var swiping;
-
-    return {
-      setSwiping : function(swipe) {
-        this.swiping = swipe;
-      },
-      getSwiping : function() {
-        return this.swiping;
       }
     };
   }]);

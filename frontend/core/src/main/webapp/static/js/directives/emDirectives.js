@@ -1,9 +1,9 @@
-/*jslint white: true */
+/*global angular */
 'use strict';
 
 angular.module('em.directives').directive('appVersion', ['version',
   function(version) {
-    return function(scope, element, attrs) {
+    return function(scope, element) {
       return element.text(version);
     };
   }]);
@@ -11,9 +11,9 @@ angular.module('em.directives').directive('appVersion', ['version',
 angular.module('em.directives').directive('errorAlertBar', ['$parse',
   function($parse) {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/errorMessage.html',
-      link : function(scope, elem, attrs) {
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/errorMessage.html',
+      link: function(scope, elem, attrs) {
         var alertMessageAttr = attrs.alertmessage;
         scope.errorMessage = null;
 
@@ -32,11 +32,10 @@ angular.module('em.directives').directive('errorAlertBar', ['$parse',
 angular.module('em.directives').directive('emFooter', [
   function() {
     return {
-      controller : 'NavbarController',
-      restrict : 'A',
-      transclude : true,
-      templateUrl : 'static/partials/templates/footer.html',
-      link : function(scope, element, attrs) {
+      controller: 'NavbarController',
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/footer.html',
+      link: function(scope, element, attrs) {
         var mainlinksFilterAttr = attrs.mainlinksfilter;
         scope.collapse = false;
 
@@ -54,42 +53,42 @@ angular.module('em.directives').directive('emFooter', [
 angular.module('em.directives').directive('emFeatureHeader', [
   function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/featureHeader.html'
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/featureHeader.html'
     };
   }]);
 
 angular.module('em.directives').directive('emMainHeader', [
   function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/mainHeader.html'
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/mainHeader.html'
     };
   }]);
 
 angular.module('em.directives').directive('omniBar', [
   function() {
     return {
-      controller : 'OmniBarController',
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/omniBar.html'
+      controller: 'OmniBarController',
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/omniBar.html'
     };
   }]);
 
 angular.module('em.directives').directive('urlList', [
   function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/urlList.html'
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/urlList.html'
     };
   }]);
 
 angular.module('em.directives').directive('newTag', [
   function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/newTag.html',
-      link : function(scope, element, attrs) {
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/newTag.html',
+      link: function(scope) {
         scope.showEditNewTag = false;
 
         scope.editNewTag = function editNewTag() {
@@ -102,17 +101,17 @@ angular.module('em.directives').directive('newTag', [
 angular.module('em.directives').directive('contextsList', [
   function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/contextsList.html',
-      transclude : true
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/contextsList.html',
+      transclude: true
     };
   }]);
 
 angular.module('em.directives').directive('my', [
   function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/my.html'
+      restrict: 'A',
+      templateUrl: 'static/partials/my.html'
     };
   }]);
 
@@ -127,9 +126,9 @@ angular.module('em.directives').directive('inbox', [
 angular.module('em.directives').directive('projectsList', [
   function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/projectsList.html',
-      transclude : true
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/projectsList.html',
+      transclude: true
     };
   }]);
 
@@ -157,7 +156,7 @@ angular.module('em.directives').directive('emPassword', [
         });
 
         // observe the other value and re-validate on change
-        attrs.$observe('equals', function (val) {
+        attrs.$observe('equals', function() {
           validate();
         });
       }
