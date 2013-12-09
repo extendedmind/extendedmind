@@ -20,15 +20,8 @@
 
   <h2 ng-click="toggleProjectContent()">{{project.title}}</h2>
   <div project-content ng-show="showProjectContent"></div>
-
-  <ul class="list-unstyled">
-    <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.tasksByProjectUUID">
-
-      <div task></div>
-
-    </li>
-    <div sub-task subtask="subtask"></div>
-  </ul>
+  
+  <div tasks-list="tasks" tasks-filter="filterService.activeFilters.tasksByProjectUUID" subtask="subtask"></div>
 
   <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
 

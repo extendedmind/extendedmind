@@ -1,5 +1,4 @@
-/*global html5Mode */
-/*jslint white: true */
+/*global angular, html5Mode */
 'use strict';
 
 angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'em.directives', 'em.filters', 'em.services']);
@@ -482,11 +481,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
   }]);
 
-angular.module('em.app').run(['$location', '$rootScope', 'errorHandler', 'userAuthenticate', 'userPrefix',
-  function($location, $rootScope, errorHandler, userAuthenticate, userPrefix) {
+angular.module('em.app').run(['$rootScope', 'analytics', 'errorHandler',
+  function($rootScope, analytics, errorHandler) {
 
     $rootScope.$on('$routeChangeSuccess', function() {
       errorHandler.clear();
     });
+
+    $rootScope.$on('$viewContentLoaded', function() {
+     analytics.open();
+   });
 
   }]);

@@ -1,13 +1,7 @@
 <div class="row">
+
   <h3>unsorted</h3>
-  <ul class="list-unstyled">
-    <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.unsorted">
-
-      <div task></div>
-
-    </li>
-    <div sub-task subtask="subtask"></div>
-  </ul>
+  <div tasks-list="tasks" tasks-filter="filterService.activeFilters.unsorted" subtask="subtask"></div>
 
   <div>
     <h3>projects</h3>

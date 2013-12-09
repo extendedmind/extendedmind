@@ -163,6 +163,7 @@
             <include>lib/angularjs/angular-touch.js</include>
             <include>lib/base64.js</include>
             <include>lib/idangerous/idangerous.swiper-2.3.js</include>
+            <include>lib/localytics.js</include>
             <include>js/*.js</include>
             <include>js/**/*.js</include>
             <include>mockHelpers.js</include>

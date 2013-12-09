@@ -1,35 +1,27 @@
-/*jslint white: true */
+/*global angular */
 'use strict';
 
-angular.module('em.directives').directive('datebar', ['disableCarousel',
-  function(disableCarousel) {
-    return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/tasks/datebar.html'
-    };
-  }]);
-
-angular.module('em.directives').directive('task', [
+angular.module('em.directives').directive('datebar', [
   function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/tasks/task.html'
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/tasks/datebar.html'
     };
   }]);
 
 angular.module('em.directives').directive('project', [
   function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/tasks/project.html'
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/tasks/project.html'
     };
   }]);
 
 angular.module('em.directives').directive('tasks', [
   function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/my/tasks.html'
+      restrict: 'A',
+      templateUrl: 'static/partials/my/tasks.html'
     };
   }]);
 
@@ -37,56 +29,65 @@ angular.module('em.directives').directive('today', [
   function() {
     return {
       controller: 'TodayController',
-      restrict : 'A',
-      templateUrl : 'static/partials/my/tasks/today.html'
+      restrict: 'A',
+      templateUrl: 'static/partials/my/tasks/today.html'
     };
   }]);
 
 angular.module('em.directives').directive('filteredTasksList', [
   function() {
     return {
-      controller : 'TasksListController',
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/tasks/filteredTasksList.html',
-      transclude : true,
-      link : function(scope, element, attrs) {
-        var tasksFilterAttr = attrs.tasksfilter;
-
-        scope.$watch(tasksFilterAttr, function(newValue) {
-          scope.tasksListFilter = newValue;
-        });
-      }
-    };
-  }]);
-
-angular.module('em.directives').directive('subTask', [
-  function() {
-    return {
-      controller : 'TasksListController',
-      restrict : 'A',
+      controller: 'TasksListController',
       scope: {
-        subtask: '='
+        tasks: '=filteredTasksList',
+        tasksListFilter: '=tasksFilter'
       },
-      templateUrl : 'static/partials/templates/tasks/subTask.html'
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/tasks/filteredTasksList.html',
+      transclude: true
     };
   }]);
 
 angular.module('em.directives').directive('tasksList', [
   function() {
     return {
-      controller : 'TasksListController',
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/tasks/tasksList.html',
-      transclude : true
+      controller: 'TasksListController',
+      restrict: 'A',
+      scope: {
+        tasks: '=tasksList',
+        tasksFilter: '=',
+        subtask: '='
+      },
+      templateUrl: 'static/partials/templates/tasks/tasksList.html'
     };
   }]);
 
-angular.module('em.directives').directive('taskContent', ['$location',
-  function($location) {
+angular.module('em.directives').directive('task', [
+  function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/tasks/taskContent.html',
-      link : function(scope, element, attrs) {
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/tasks/task.html'
+    };
+  }]);
+
+angular.module('em.directives').directive('subTask', [
+  function() {
+    return {
+      restrict: 'A',
+      scope: {
+        subtask: '=',
+        add: '&'
+      },
+      templateUrl : 'static/partials/templates/tasks/subTask.html'
+    };
+  }]);
+
+angular.module('em.directives').directive('taskContent', [
+  function() {
+    return {
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/tasks/taskContent.html',
+      link: function(scope) {
         scope.showTaskContent = false;
 
         scope.toggleTaskContent = function toggleTaskContent() {
@@ -107,7 +108,7 @@ angular.module('em.directives').directive('projectContent',[
     return {
       restrict: 'A',
       templateUrl: 'static/partials/templates/tasks/projectContent.html',
-      link : function(scope, element, attrs) {
+      link: function(scope) {
         scope.showProjectContent = false;
 
         scope.toggleProjectContent = function toggleProjectContent() {
@@ -120,9 +121,9 @@ angular.module('em.directives').directive('projectContent',[
 angular.module('em.directives').directive('editTask', [
   function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/tasks/edit.html',
-      link : function(scope, element, attrs) {
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/tasks/edit.html',
+      link: function(scope) {
         scope.showProjectContent = false;
         
         if (scope.task.due) {
@@ -136,11 +137,11 @@ angular.module('em.directives').directive('editTask', [
     };
   }]);
 
-angular.module('em.directives').directive('date', ['$timeout',
-  function($timeout) {
+angular.module('em.directives').directive('date', [
+  function() {
     return {
-      restrict : 'A',
-      link: function(scope, element, attrs) {
+      restrict: 'A',
+      link: function(scope, element) {
         if (!scope.task.due) {
           element[0].focus();
           element[0].value = new Date().toISOString().substring(0, 10);

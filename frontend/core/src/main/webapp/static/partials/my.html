@@ -16,7 +16,7 @@
     <h3><a class="text-muted" href ng-click="gotoNotes()">notes</a></h3>
   </div>
 
-  <div class="row em-filtered-items" filtered-tasks-list tasksfilter="newItem.title">
+  <div class="row em-filtered-items" ng-show="newItem.title" filtered-tasks-list="tasks" tasks-filter="newItem.title">
     <h3><a class="text-muted" href ng-click="gotoTasks()">tasks</a></h3>
   </div>
 

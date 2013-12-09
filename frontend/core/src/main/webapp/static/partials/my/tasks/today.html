@@ -4,13 +4,6 @@
 
   <h3>{{date.displayDate}}</h3>
 
-  <ul class="list-unstyled">
-    <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.tasksByDate">
-
-      <div task></div>
-
-    </li>
-  </ul>
-  <div sub-task subtask="subtaskWithDate"></div>
+  <div tasks-list="tasks" subtask="subtaskWithDate" tasks-filter="filterService.activeFilters.tasksByDate"></div>
 
 </div>

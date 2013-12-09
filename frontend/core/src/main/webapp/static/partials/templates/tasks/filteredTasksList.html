@@ -1,12 +1,10 @@
 <div>
-  <div ng-show="tasksListFilter" ng-transclude></div>
+  <div ng-transclude></div>
 
-  <ul class="list-unstyled" ng-show="tasksListFilter">
+  <ul class="list-unstyled">
 
     <li ng-class="selected" ng-repeat="task in tasks | filter:{title:tasksListFilter}">
-
       <div task></div>
-
     </li>
 
   </ul>
