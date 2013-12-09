@@ -26,6 +26,7 @@ import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.RelationshipType
 import spray.util.LoggingContext
+import java.lang.Boolean
 
 case class OwnerNodes(user: Node, collective: Option[Node])
 
@@ -69,6 +70,23 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       val srv: WrappingNeoServerBootstrapper =
         new WrappingNeoServerBootstrapper(ds.gds.asInstanceOf[GraphDatabaseAPI], config);
       srv.start();
+    }
+  }
+  
+  // LOAD DATABASE TO MEMORY
+  
+  def loadDatabase(): Boolean = {
+    withTx {
+      implicit neo4j =>
+        // Sixty seconds wait for first load
+        neo4j.gds.isAvailable(1000*60)
+    }
+  }
+  
+  def checkDatabase(): Boolean = {
+    withTx {
+      implicit neo4j =>
+        neo4j.gds.isAvailable(1000)
     }
   }
   

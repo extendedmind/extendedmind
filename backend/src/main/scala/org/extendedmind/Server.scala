@@ -12,15 +12,6 @@ import ch.qos.logback.classic.LoggerContext
 
 object Server extends App {
 
-  if (!args.isEmpty) {
-    // The first parameter is the location of the logback configuration file
-    val context = LoggerFactory.getILoggerFactory().asInstanceOf[LoggerContext];
-    val configurator = new JoranConfigurator();
-    configurator.setContext(context);
-    configurator.doConfigure(args(0)); // loads logback file
-    StatusPrinter.printInCaseOfErrorsOrWarnings(context); // Internal status data is printed in case of warnings or errors.
-  }
-
   // This makes it possible to use -Dconfig.file="" notation
   implicit val system = ActorSystem("extendedmind", ConfigFactory.load())
 
