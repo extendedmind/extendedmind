@@ -135,26 +135,32 @@ function emSwiperSlider($rootScope, Enum, location, userPrefix, emSwiper) {
       var bottom = false;
       var up = false;
       var down = false;
-      var startY, distY;
+      var startX, startY, distX, distY;
 
       function slideTouchStart() {
         var touchobj = event.changedTouches[0];
+        startX = touchobj.pageX;
         startY = touchobj.pageY;
       }
 
       function slideTouchMove() {
         /*jshint validthis: true */
         var touchobj = event.changedTouches[0];
+        distX = touchobj.pageX - startX;
         distY = touchobj.pageY - startY;
 
         // http://www.javascriptkit.com/javatutors/touchevents2.shtml
-        if (distY < 0) {
-          down = true;
-          up = false;
-        } else {
-          down = false;
-          up = true;
-        }
+        if (Math.abs(distX) > Math.abs(distY)) { // horizontal
+          return;
+        } else if (Math.abs(distX) < Math.abs(distY)) { // vertical
+
+          if (distY < 0) {
+            down = true;
+            up = false;
+          } else {
+            down = false;
+            up = true;
+          }
 
         // https://developer.mozilla.org/en-US/docs/Web/API/Element.scrollHeight#Determine_if_an_element_has_been_totally_scrolled
         if (this.scrollHeight - this.scrollTop <= this.clientHeight && down) {
@@ -168,7 +174,8 @@ function emSwiperSlider($rootScope, Enum, location, userPrefix, emSwiper) {
         }
       }
     }
-  };
+  }
+};
 }
 angular.module('em.directives').directive('emSwiperSlider', emSwiperSlider);
 emSwiperSlider.$inject = ['$rootScope', 'Enum', 'location', 'userPrefix', 'emSwiper'];
