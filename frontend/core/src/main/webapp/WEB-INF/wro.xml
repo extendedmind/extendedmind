@@ -9,7 +9,7 @@
   	<js>/src/main/webapp/static/lib/angularjs/angular-animate.min.js</js>
   	<js>/src/main/webapp/static/lib/angularjs/angular-touch.min.js</js>
   	<js>/src/main/webapp/static/lib/base64.js</js>
-    <js>/src/main/webapp/static/lib/idangerous/idangerous.swiper-2.3.min.js</js>
+    <js>/src/main/webapp/static/lib/idangerous/idangerous.swiper-2.4.min.js</js>
     <js>/src/main/webapp/static/lib/fastclick.js</js>
     <js>/src/main/webapp/static/lib/localytics.js</js>
     <js>/src/main/webapp/static/js/**.js</js>

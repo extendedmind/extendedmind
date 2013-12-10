@@ -129,6 +129,7 @@ function emSwiperSlider($rootScope, Enum, location, userPrefix, emSwiper) {
         swiper.params.activePath = swiper.getSlide(swiper.params.initialSlide).getData('path');
         swiper.reInit();
       }
+
       swipers[swiper.params.mode] = swiper;
 
       var top = false;
