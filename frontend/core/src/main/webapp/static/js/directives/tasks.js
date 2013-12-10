@@ -20,7 +20,7 @@ angular.module('em.directives').directive('tasks', [
 angular.module('em.directives').directive('today', [
   function() {
     return {
-      controller: 'TodayController',
+      // controller: 'TodayController',
       restrict: 'A',
       templateUrl: 'static/partials/my/tasks/today.html'
     };
@@ -41,15 +41,20 @@ angular.module('em.directives').directive('dateSlide', [
       scope.filter = {};
       scope.filter.name = 'tasksByDate';
       scope.filter.filterBy = scope.date.yyyymmdd;
-    },
+    }
   };
 }]);
 
-angular.module('em.directives').directive('datebar', [
-  function() {
+angular.module('em.directives').directive('datebar', ['emSwiper',
+  function(emSwiper) {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/templates/tasks/datebar.html'
+      templateUrl: 'static/partials/templates/tasks/datebar.html',
+      link: function(scope) {
+        scope.dateClicked = function(index) {
+          emSwiper.setSlideIndex('vertical', index);
+        };
+      }
     };
   }]);
 
@@ -122,7 +127,7 @@ angular.module('em.directives').directive('taskContent', [
     };
   }]);
 
-angular.module('em.directives').directive('projectContent',[
+angular.module('em.directives').directive('projectContent', [
   function() {
     return {
       restrict: 'A',

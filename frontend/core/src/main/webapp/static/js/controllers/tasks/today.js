@@ -13,10 +13,6 @@ function TodayController($scope, date, errorHandler, filterService, itemsArray, 
 
   $scope.dates = date.week();
   $scope.date = date.today();
-
-  $scope.dateClicked = function(date) {
-    $scope.date = date;
-  };
 }
 
 TodayController.$inject = ['$scope', 'date', 'errorHandler', 'filterService', 'itemsArray', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];

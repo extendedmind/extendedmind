@@ -329,16 +329,16 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/today/:date', {
-      controller: 'TasksController',
+      controller: 'TodayController',
       templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.TODAY);
+        slide: ['$route', 'Enum', 'emSwiper',
+        function($route, Enum, emSwiper) {
+          emSwiper.setSlides(Enum.TODAY, $route.current.params.date);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {

@@ -3,32 +3,46 @@
 
 angular.module('em.services').factory('emSwiper', [
   function() {
-    var initialSlideIndex, slides, swiper;
+    var initialSlideIndex, initialSubPath, slides, swiper, swipers;
     slides = [];
+    swipers = {};
 
     return {
       initSwiper: function(container, params) {
         // http://www.idangero.us/sliders/swiper/api.php
         initialSlideIndex = 0;
         swiper = new Swiper(container, params);
+        swipers[swiper.params.mode] = swiper;
         return swiper;
       },
-      setSlides: function(initialIndex) {
+      getSwiper: function(mode) {
+        return swipers[mode];
+      },
+      setSlides: function(initialIndex, subPath) {
+        initialSubPath = subPath;
         slides = ['inbox', '', 'tasks', 'tasks/today'];
         initialSlideIndex = initialIndex;
       },
       getSlides: function() {
         return slides;
       },
+      setSlideIndex: function(swiper, index) {
+        swipers[swiper].swipeTo(index);
+      },
+      setInitialSlideIndex: function(initialIndex) {
+        initialSlideIndex = initialIndex;
+      },
       getInitiaSlideIndex: function() {
         return initialSlideIndex;
+      },
+      getInitialSubPath: function() {
+        return initialSubPath;
       }
     };
   }]);
 
-angular.module('em.directives').directive('swiperSlide', [
-  function() {
-
+angular.module('em.directives').directive('swiperSlide', ['emSwiper',
+  function(emSwiper) {
     return {
       restrict: 'A',
       require: '^emSwiperSlider',
@@ -44,6 +58,16 @@ angular.module('em.directives').directive('swiperSlide', [
           post: function postLink(scope, element, attrs, ctrl) {
             // http://stackoverflow.com/a/18757437
             if (scope.$last) {
+              var i = 0;
+
+              if (emSwiper.getInitialSubPath()) {
+                while (slidePathData[i]) {
+                  if (slidePathData[i] === emSwiper.getInitialSubPath()) {
+                    emSwiper.setInitialSlideIndex(i);
+                  }
+                  i++;
+                }
+              }
               ctrl.slidesReady(slidePathData);
             }
           }
@@ -52,8 +76,7 @@ angular.module('em.directives').directive('swiperSlide', [
     };
   }]);
 
-function emSwiperSlider($rootScope, Enum, location, userPrefix, emSwiper) {
-  var swipers = {};
+function emSwiperSlider($timeout, $rootScope, Enum, location, userPrefix, emSwiper) {
   return {
     restrict: 'A',
     scope: {
@@ -71,6 +94,7 @@ function emSwiperSlider($rootScope, Enum, location, userPrefix, emSwiper) {
             slide = swiper.getSlide(i);
             slide.setData('path', pathData[i]);
           }
+          swiper.swipeTo(emSwiper.getInitiaSlideIndex(), 0, false);
         }
       };
 
@@ -92,7 +116,7 @@ function emSwiperSlider($rootScope, Enum, location, userPrefix, emSwiper) {
           }
         } else {
           slideSubPath = activeSlide.getData('path');
-          slidePath = '/' + userPrefix.getPrefix() + '/' + swipers.horizontal.params.activePath + '/' + slideSubPath;
+          slidePath = '/' + userPrefix.getPrefix() + '/' + emSwiper.getSwiper('horizontal').params.activePath + '/' + slideSubPath;
         }
         location.skipReload().path(slidePath);
         $rootScope.$apply();
@@ -127,10 +151,7 @@ function emSwiperSlider($rootScope, Enum, location, userPrefix, emSwiper) {
           i++;
         }
         swiper.params.activePath = swiper.getSlide(swiper.params.initialSlide).getData('path');
-        swiper.reInit();
       }
-
-      swipers[swiper.params.mode] = swiper;
 
       var top = false;
       var bottom = false;
@@ -179,4 +200,4 @@ function emSwiperSlider($rootScope, Enum, location, userPrefix, emSwiper) {
   };
 }
 angular.module('em.directives').directive('emSwiperSlider', emSwiperSlider);
-emSwiperSlider.$inject = ['$rootScope', 'Enum', 'location', 'userPrefix', 'emSwiper'];
+emSwiperSlider.$inject = ['$timeout', '$rootScope', 'Enum', 'location', 'userPrefix', 'emSwiper'];
