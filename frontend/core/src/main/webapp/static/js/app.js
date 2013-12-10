@@ -309,6 +309,82 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    $routeProvider.when('/my/tasks/projects', {
+      controller: 'ProjectsController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.PROJECTS);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/tasks/projects', {
+      controller: 'ProjectsController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.PROJECTS);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/my/tasks/projects/:projectUUID', {
+      controller: 'ProjectsController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['$route', 'Enum', 'emSwiper',
+        function($route, Enum, emSwiper) {
+          emSwiper.setSlides(Enum.PROJECTS, $route.current.params.projectUUID);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/tasks/projects/:projectUUID', {
+      controller: 'ProjectsController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['$route', 'Enum', 'emSwiper',
+        function($route, Enum, emSwiper) {
+          emSwiper.setSlides(Enum.PROJECTS, $route.current.params.projectUUID);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+      }
+    });
+
     $routeProvider.when('/my/tasks/dates', {
       controller: 'DatesController',
       templateUrl: 'static/partials/emSlides.html',
@@ -328,6 +404,25 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    $routeProvider.when('/collective/:collectiveUUID/tasks/dates', {
+      controller: 'DatesController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.DATES);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+      }
+    });
+
     $routeProvider.when('/my/tasks/dates/:date', {
       controller: 'DatesController',
       templateUrl: 'static/partials/emSlides.html',
@@ -343,6 +438,25 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/tasks/dates/:date', {
+      controller: 'DatesController',
+      templateUrl: 'static/partials/emSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['$route', 'Enum', 'emSwiper',
+        function($route, Enum, emSwiper) {
+          emSwiper.setSlides(Enum.DATES, $route.current.params.date);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
         }]
       }
     });

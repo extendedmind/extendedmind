@@ -46,7 +46,8 @@ function Enum() {
     INBOX: 0,
     MY: 1,
     DATES: 2,
-    TASKS: 3,
+    PROJECTS: 3,
+    TASKS: 4,
     NOTES: 2
   };
 

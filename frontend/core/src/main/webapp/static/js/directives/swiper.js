@@ -19,7 +19,7 @@ function emSwiper() {
     },
     setSlides: function(initialIndex, subPath) {
       initialSubPath = subPath;
-      slides = ['inbox', '', 'tasks/dates', 'tasks'];
+      slides = ['inbox', '', 'tasks/dates', 'tasks/projects', 'tasks'];
       initialSlideIndex = initialIndex;
     },
     getSlides: function() {

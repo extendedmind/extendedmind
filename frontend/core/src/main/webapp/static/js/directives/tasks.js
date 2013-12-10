@@ -17,6 +17,23 @@ angular.module('em.directives').directive('tasks', [
     };
   }]);
 
+function emProjects() {
+  return {
+    restrict: 'A',
+    templateUrl: 'static/partials/my/tasks/projects.html'
+  };
+}
+angular.module('em.directives').directive('emProjects', emProjects);
+
+function projectSlide() {
+  return {
+    scope: true,
+    restrict: 'A',
+    templateUrl: 'static/partials/templates/tasks/projectSlide.html'
+  };
+}
+angular.module('em.directives').directive('projectSlide', projectSlide);
+
 angular.module('em.directives').directive('dates', [
   function() {
     return {
