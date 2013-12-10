@@ -1,3 +1,5 @@
+// GENERAL INPUTS
+
 .simple-input {
   outline: none;
   border:none !important;
@@ -11,7 +13,7 @@ input {
   width: 100%;
 }
 
-// Placeholder colour 
+// PLACEHOLDER TWEAK 
 
 ::-webkit-input-placeholder { /* WebKit browsers */
     color:    @text-gray;
@@ -26,7 +28,7 @@ input {
     color:    @text-gray;
 }
 
-// Buttons
+// BUTTONS
 
 .button-container {
   text-align: center;
@@ -47,8 +49,6 @@ input {
   border-radius: 7px;
 }
 
-// BLUE BUTTON
-
 .normal-button {
   button {
     background-color: @active-button;
@@ -60,6 +60,8 @@ input {
     background-color: @pressed-button;
   }
 }
+
+// CHECKBOXES
 
 input[type=checkbox].input-checkbox {
   position: absolute; 
@@ -89,6 +91,8 @@ input[type=checkbox].input-checkbox:checked + .input-text {
 
 .checkbox{background-image:url(../img/checkbox.png); }
 
+// SCREEN READERS
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -99,6 +103,8 @@ input[type=checkbox].input-checkbox:checked + .input-text {
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+
+// ABSOLUTE CENTER
 
 .center-container {
   position: relative;
@@ -113,12 +119,7 @@ input[type=checkbox].input-checkbox:checked + .input-text {
   top: 0; left: 0; bottom: 0; right: 0;
 }
 
-.one-column-grid {
-  .fixed-top {
-    max-width: @single-column-width;
-  }
-}
-
+// SWIPER
 
 .swiper-container, .swiper-wrapper, .swiper-slide, .no-swiper-container {
   height: inherit !important;
