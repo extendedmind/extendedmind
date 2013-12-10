@@ -1,82 +1,83 @@
 /*global angular, Swiper */
 'use strict';
 
-angular.module('em.services').factory('emSwiper', [
-  function() {
-    var initialSlideIndex, initialSubPath, slides, swiper, swipers;
-    slides = [];
-    swipers = {};
+function emSwiper() {
+  var initialSlideIndex, initialSubPath, slides, swiper, swipers;
+  slides = [];
+  swipers = {};
 
-    return {
-      initSwiper: function(container, params) {
-        // http://www.idangero.us/sliders/swiper/api.php
-        initialSlideIndex = 0;
-        swiper = new Swiper(container, params);
-        swipers[swiper.params.mode] = swiper;
-        return swiper;
-      },
-      getSwiper: function(mode) {
-        return swipers[mode];
-      },
-      setSlides: function(initialIndex, subPath) {
-        initialSubPath = subPath;
-        slides = ['inbox', '', 'tasks/dates', 'tasks'];
-        initialSlideIndex = initialIndex;
-      },
-      getSlides: function() {
-        return slides;
-      },
-      setSlideIndex: function(swiper, index) {
-        swipers[swiper].swipeTo(index);
-      },
-      setInitialSlideIndex: function(initialIndex) {
-        initialSlideIndex = initialIndex;
-      },
-      getInitiaSlideIndex: function() {
-        return initialSlideIndex;
-      },
-      getInitialSubPath: function() {
-        return initialSubPath;
-      }
-    };
-  }]);
+  return {
+    initSwiper: function(container, params) {
+      // http://www.idangero.us/sliders/swiper/api.php
+      initialSlideIndex = 0;
+      swiper = new Swiper(container, params);
+      swipers[swiper.params.mode] = swiper;
+      return swiper;
+    },
+    getSwiper: function(mode) {
+      return swipers[mode];
+    },
+    setSlides: function(initialIndex, subPath) {
+      initialSubPath = subPath;
+      slides = ['inbox', '', 'tasks/dates', 'tasks'];
+      initialSlideIndex = initialIndex;
+    },
+    getSlides: function() {
+      return slides;
+    },
+    setSlideIndex: function(swiper, index) {
+      swipers[swiper].swipeTo(index);
+    },
+    setInitialSlideIndex: function(initialIndex) {
+      initialSlideIndex = initialIndex;
+    },
+    getInitiaSlideIndex: function() {
+      return initialSlideIndex;
+    },
+    getInitialSubPath: function() {
+      return initialSubPath;
+    }
+  };
+}
+angular.module('em.services').factory('emSwiper', emSwiper);
 
-angular.module('em.directives').directive('swiperSlide', ['emSwiper',
-  function(emSwiper) {
-    return {
-      restrict: 'A',
-      require: '^emSwiperSlider',
-      scope: true,
-      compile: function compile() {
-        var slidePathData = [];
+function swiperSlide(emSwiper) {
+  return {
+    restrict: 'A',
+    require: '^emSwiperSlider',
+    scope: true,
+    compile: function compile() {
+      var slidePathData = [];
 
-        return {
-          pre: function preLink(scope, element, attrs, ctrl) {
-            ctrl.scrollVerticalSlide(element[0]);
-            slidePathData.push(attrs.swiperSlide);
-          },
-          post: function postLink(scope, element, attrs, ctrl) {
-            // http://stackoverflow.com/a/18757437
-            if (scope.$last) {
-              var i = 0;
+      return {
+        pre: function preLink(scope, element, attrs, ctrl) {
+          ctrl.scrollVerticalSlide(element[0]);
+          slidePathData.push(attrs.swiperSlide);
+        },
+        post: function postLink(scope, element, attrs, ctrl) {
+          // http://stackoverflow.com/a/18757437
+          if (scope.$last) {
+            var i = 0;
 
-              if (emSwiper.getInitialSubPath()) {
-                while (slidePathData[i]) {
-                  if (slidePathData[i] === emSwiper.getInitialSubPath()) {
-                    emSwiper.setInitialSlideIndex(i);
-                  }
-                  i++;
+            if (emSwiper.getInitialSubPath()) {
+              while (slidePathData[i]) {
+                if (slidePathData[i] === emSwiper.getInitialSubPath()) {
+                  emSwiper.setInitialSlideIndex(i);
                 }
+                i++;
               }
-              ctrl.slidesReady(slidePathData);
             }
+            ctrl.slidesReady(slidePathData);
           }
-        };
-      }
-    };
-  }]);
+        }
+      };
+    }
+  };
+}
+angular.module('em.directives').directive('swiperSlide', swiperSlide);
+swiperSlide.$inject = ['emSwiper'];
 
-function emSwiperSlider($timeout, $rootScope, Enum, location, userPrefix, emSwiper) {
+function emSwiperSlider($rootScope, emLocation, Enum, userPrefix, emSwiper) {
   return {
     restrict: 'A',
     scope: {
@@ -118,7 +119,7 @@ function emSwiperSlider($timeout, $rootScope, Enum, location, userPrefix, emSwip
           slideSubPath = activeSlide.getData('path');
           slidePath = '/' + userPrefix.getPrefix() + '/' + emSwiper.getSwiper('horizontal').params.activePath + '/' + slideSubPath;
         }
-        location.skipReload().path(slidePath);
+        emLocation.skipReload().path(slidePath);
         $rootScope.$apply();
       }
 
@@ -200,4 +201,4 @@ function emSwiperSlider($timeout, $rootScope, Enum, location, userPrefix, emSwip
   };
 }
 angular.module('em.directives').directive('emSwiperSlider', emSwiperSlider);
-emSwiperSlider.$inject = ['$timeout', '$rootScope', 'Enum', 'location', 'userPrefix', 'emSwiper'];
+emSwiperSlider.$inject = ['$rootScope', 'emLocation', 'Enum', 'userPrefix', 'emSwiper'];
