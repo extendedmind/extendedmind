@@ -47,7 +47,7 @@ input {
   border-radius: 7px;
 }
 
-// Normal blue button
+// BLUE BUTTON
 
 .normal-button {
   button {
@@ -113,31 +113,12 @@ input[type=checkbox].input-checkbox:checked + .input-text {
   top: 0; left: 0; bottom: 0; right: 0;
 }
 
-.main-header-container {
-  position:absolute;
-  top:0px; 
-  left:0px;
-  min-height:@main-header-height;
-  overflow:hidden;
-  width:100%;
-  padding-left: inherit;
-  padding-right: inherit;
-}
-
-.main-content-container { 
-  padding-top:@main-header-height;
-  margin-bottom:@footer-height;
-  overflow-y:auto;
-  width: 100%;
-}
-
 .one-column-grid {
   .fixed-top {
     max-width: @single-column-width;
   }
 }
 
-// FOOTER
 
 .swiper-container, .swiper-wrapper, .swiper-slide, .no-swiper-container {
   height: inherit !important;
@@ -146,6 +127,27 @@ input[type=checkbox].input-checkbox:checked + .input-text {
 .swiper-container {
   margin-bottom: -@footer-height;
 }
+
+// HEADER
+
+.header-container {
+  position:absolute;
+  top:0px; 
+  left:0px;
+  overflow:hidden;
+  width:100%;
+  padding-left: inherit;
+  padding-right: inherit;
+}
+
+// CONTENT
+
+.content-container {
+  overflow-y: auto;
+  width: inherit;
+}
+
+// FOOTER
 
 .footer-container {
   height: @footer-height;

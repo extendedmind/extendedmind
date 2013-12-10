@@ -47,6 +47,13 @@ section#my {
       width: 75px;
     }
   }
+  #main-header-container {
+    min-height:@main-header-height;
+  }
+  #main-content-container { 
+    padding-top:@main-header-height;
+    margin-bottom:@footer-height;
+  }
   nav#main-header {
     max-width: @single-column-width;
     text-align: right;
@@ -66,7 +73,6 @@ section#my {
     margin: 0px; 
     border: 0px; 
     padding: 0px;
-
   }
   button#menu-button:active{
     background-position: 0 0;
