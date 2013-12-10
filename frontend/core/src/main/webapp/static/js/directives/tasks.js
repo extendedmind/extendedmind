@@ -17,12 +17,11 @@ angular.module('em.directives').directive('tasks', [
     };
   }]);
 
-angular.module('em.directives').directive('today', [
+angular.module('em.directives').directive('dates', [
   function() {
     return {
-      // controller: 'TodayController',
       restrict: 'A',
-      templateUrl: 'static/partials/my/tasks/today.html'
+      templateUrl: 'static/partials/my/tasks/dates.html'
     };
   }]);
 

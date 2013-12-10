@@ -309,8 +309,8 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/my/tasks/today', {
-      controller: 'TodayController',
+    $routeProvider.when('/my/tasks/dates', {
+      controller: 'DatesController',
       templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
@@ -319,7 +319,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['Enum', 'emSwiper',
         function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.TODAY);
+          emSwiper.setSlides(Enum.DATES);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
@@ -328,8 +328,8 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/my/tasks/today/:date', {
-      controller: 'TodayController',
+    $routeProvider.when('/my/tasks/dates/:date', {
+      controller: 'DatesController',
       templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
@@ -338,7 +338,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['$route', 'Enum', 'emSwiper',
         function($route, Enum, emSwiper) {
-          emSwiper.setSlides(Enum.TODAY, $route.current.params.date);
+          emSwiper.setSlides(Enum.DATES, $route.current.params.date);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
@@ -347,7 +347,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/collective/:collectiveUUID/tasks/today', {
+    $routeProvider.when('/collective/:collectiveUUID/tasks/dates', {
       controller: 'TasksController',
       templateUrl: 'static/partials/emSlides.html',
       resolve: {
@@ -357,7 +357,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['Enum', 'emSwiper',
         function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.TODAY);
+          emSwiper.setSlides(Enum.DATES);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {

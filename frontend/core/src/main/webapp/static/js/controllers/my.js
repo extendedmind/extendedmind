@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function MyController($scope, errorHandler, filterService, itemsArray, notesArray, tagsArray, tasksArray, userPrefix) {
+function MyController($scope, date, errorHandler, filterService, itemsArray, notesArray, tagsArray, tasksArray, userPrefix) {
   $scope.items = itemsArray.getItems();
   $scope.notes = notesArray.getNotes();
   $scope.tags = tagsArray.getTags();
@@ -10,7 +10,9 @@ function MyController($scope, errorHandler, filterService, itemsArray, notesArra
   $scope.filterService = filterService;
   $scope.prefix = userPrefix.getPrefix();
   $scope.errorHandler = errorHandler;
+
+  $scope.dates = date.week();
 }
 
-MyController.$inject = ['$scope', 'errorHandler', 'filterService', 'itemsArray', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];
+MyController.$inject = ['$scope', 'date', 'errorHandler', 'filterService', 'itemsArray', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];
 angular.module('em.app').controller('MyController', MyController);

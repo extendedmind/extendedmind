@@ -43,10 +43,10 @@ angular.module('em.services').factory('userPrefix', ['userSessionStorage',
 angular.module('em.services').factory('Enum', [
   function() {
     var slide = {
-      MY: 1,
-      TASKS: 2,
-      TODAY: 3,
       INBOX: 0,
+      MY: 1,
+      DATES: 2,
+      TASKS: 3,
       NOTES: 2
     };
 

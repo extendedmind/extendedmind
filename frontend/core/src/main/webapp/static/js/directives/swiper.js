@@ -20,7 +20,7 @@ angular.module('em.services').factory('emSwiper', [
       },
       setSlides: function(initialIndex, subPath) {
         initialSubPath = subPath;
-        slides = ['inbox', '', 'tasks', 'tasks/today'];
+        slides = ['inbox', '', 'tasks/dates', 'tasks'];
         initialSlideIndex = initialIndex;
       },
       getSlides: function() {
