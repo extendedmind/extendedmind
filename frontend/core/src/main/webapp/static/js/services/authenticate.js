@@ -1,5 +1,4 @@
-/*global localStorage, sessionStorage */
-/*jslint eqeq: true, white: true */
+/*global $, angular */
 'use strict';
 
 angular.module('em.services').factory('auth', ['$location', '$q', 'authenticateRequest', 'itemsRequest', 'userLocalStorage', 'userSession', 'userSessionStorage',
