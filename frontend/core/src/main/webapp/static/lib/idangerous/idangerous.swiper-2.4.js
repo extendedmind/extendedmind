@@ -1,5 +1,5 @@
 /*
- * Swiper 2.3 - Mobile Touch Slider
+ * Swiper 2.4+ - Mobile Touch Slider
  * http://www.idangero.us/sliders/swiper/
  *
  * Copyright 2012-2013, Vladimir Kharlampidi
@@ -8,7 +8,7 @@
  *
  * Licensed under GPL & MIT
  *
- * Updated on: November 2, 2013
+ * Updated on: December 6, 2013
 */
 var Swiper = function (selector, params) {
     /*=========================
@@ -133,7 +133,6 @@ var Swiper = function (selector, params) {
         followFinger : true,
         shortSwipes : true,
         moveStartThreshold:false,
-        autoplay: false,
         onlyExternal : false,
         createPagination : true,
         pagination : false,
@@ -148,16 +147,16 @@ var Swiper = function (selector, params) {
         initialSlide: 0,
         keyboardControl: false,
         mousewheelControl : false,
-        mousewheelDebounce: 600,
         useCSS3Transforms : true,
         // Autoplay
         autoplay: false,
-        autoplayDisableOnInteraction: false,
+        autoplayDisableOnInteraction: true,
         //Loop mode
         loop:false,
         loopAdditionalSlides:0,
         //Auto Height
         calculateHeight: false,
+        cssWidthAndHeight: false,
         //Images Preloader
         updateOnImagesReady : true,
         //Form elements
@@ -488,6 +487,56 @@ var Swiper = function (selector, params) {
     }
 
     /*=========================
+     Wrapper for Callbacks : Allows additive callbacks via function arrays
+     ===========================*/
+    _this.fireCallback = function() {
+        var callback = arguments[0];
+        if( Object.prototype.toString.call( callback ) === '[object Array]' ) {
+            for (var i = 0; i < callback.length; i++) {
+                if (typeof callback[i] === 'function') {
+                    callback[i](arguments[1], arguments[2], arguments[3], arguments[4], arguments[5])
+                }
+            }
+        } else {
+            callback(arguments[1], arguments[2], arguments[3], arguments[4], arguments[5]);
+        }
+    }
+    function isArray (obj) {
+        "use strict";
+        if (Object.prototype.toString.apply( obj ) === '[object Array]') return true;
+        return false;
+    }
+
+    /**
+     * Allows user to add callbacks, rather than replace them
+     * @param callback
+     * @param func
+     * @return {*}
+     */
+    _this.addCallback = function (callback, func) {
+        "use strict";
+        var _this = this, tempFunc;
+        if (_this.params['on' + callback]) {
+            if (isArray(this.params['on' + callback])) {
+                return this.params['on' + callback].push(func);
+            } else if (typeof this.params['on' + callback] === 'function') {
+                tempFunc = this.params['on' + callback];
+                this.params['on' + callback] = [];
+                this.params['on' + callback].push(tempFunc);
+                return this.params['on' + callback].push(func);
+            }
+        } else {
+            this.params['on' + callback] = [];
+            return this.params['on' + callback].push(func);
+        }
+    }
+    _this.removeCallbacks = function (callback) {
+        if (_this.params['on' + callback]) {
+            return _this.params['on' + callback] = null;
+        }
+    }
+
+    /*=========================
       WP8 Fix
       ===========================*/
     if (_this.browser.ie10 && !params.onlyExternal) {
@@ -700,8 +749,14 @@ var Swiper = function (selector, params) {
             }
 
             wrapperSize = isH ? wrapperWidth + _this.wrapperRight + _this.wrapperLeft : wrapperHeight + _this.wrapperTop + _this.wrapperBottom;
-            wrapper.style.width = wrapperWidth+'px';
-            wrapper.style.height = wrapperHeight+'px';
+            if (!params.cssWidthAndHeight) {
+                if (parseFloat(wrapperWidth) > 0) {
+                    wrapper.style.width = wrapperWidth+'px';
+                }
+                if (parseFloat(wrapperHeight) > 0) {
+                    wrapper.style.height = wrapperHeight+'px';
+                }
+            }
             var slideLeft = 0;
             _this.snapGrid = [];
             _this.slidesGrid = [];
@@ -709,19 +764,25 @@ var Swiper = function (selector, params) {
                 _this.snapGrid.push(slideLeft);
                 _this.slidesGrid.push(slideLeft);
                 slideLeft+=slideSize;
-                _this.slides[i].style.width = slideWidth+'px';
-                _this.slides[i].style.height = slideHeight+'px';
+                if (!params.cssWidthAndHeight) {
+                    if (parseFloat(slideWidth) > 0) {
+                        _this.slides[i].style.width = slideWidth+'px';
+                    }
+                    if (parseFloat(slideHeight) > 0) {
+                        _this.slides[i].style.height = slideHeight+'px';
+                    }
+                }
             }
 
         }
 
         if (!_this.initialized) {
             _this.callPlugins('onFirstInit');
-            if (params.onFirstInit) params.onFirstInit(_this);
+            if (params.onFirstInit) _this.fireCallback(params.onFirstInit,_this);
         }
         else {
             _this.callPlugins('onInit');
-            if (params.onInit) params.onInit(_this);
+            if (params.onInit) _this.fireCallback(params.onInit,_this);
         }
         _this.initialized = true;
     }
@@ -835,7 +896,7 @@ var Swiper = function (selector, params) {
                 _this.imagesLoaded++;
                 if (_this.imagesLoaded==_this.imagesToLoad.length) {
                     _this.reInit();
-                    if (params.onImagesReady) params.onImagesReady(_this);
+                    if (params.onImagesReady) _this.fireCallback(params.onImagesReady, _this);
                 }
             }
             image.src = src;
@@ -1010,23 +1071,45 @@ var Swiper = function (selector, params) {
     /*==========================================
         Mousewheel Control
     ============================================*/
-    var allowScrollChange = true;
+    var lastScrollTime = (new Date()).getTime();
     function handleMousewheel (e) {
         var we = _this._wheelEvent;
-        var delta;
+        var delta = 0;
+        
         //Opera & IE
         if (e.detail) delta = -e.detail;
         //WebKits
-        else if (we == 'mousewheel') delta = e.wheelDelta;
+        else if (we == 'mousewheel') {
+            if (isH) {
+                if (Math.abs(e.wheelDeltaX)>Math.abs(e.wheelDeltaY)) delta = e.wheelDeltaX;
+                else return;
+            }
+            else {
+                if (Math.abs(e.wheelDeltaY)>Math.abs(e.wheelDeltaX)) delta = e.wheelDeltaY;
+                else return;
+            }
+        }
         //Old FireFox
         else if (we == 'DOMMouseScroll') delta = -e.detail;
         //New FireFox
         else if (we == 'wheel') {
-            delta = Math.abs(e.deltaX)>Math.abs(e.deltaY) ? - e.deltaX : - e.deltaY;
+            if (isH) {
+                if (Math.abs(e.deltaX)>Math.abs(e.deltaY)) delta = -e.deltaX;
+                else return;
+            }
+            else {
+                if (Math.abs(e.deltaY)>Math.abs(e.deltaX)) delta = -e.deltaY;
+                else return;
+            }
         }
+
         if (!params.freeMode) {
-            if(delta<0) _this.swipeNext();
-            else _this.swipePrev();
+            if ((new Date()).getTime() - lastScrollTime > 60) {
+                if(delta<0) _this.swipeNext();
+                else _this.swipePrev();
+            }
+            lastScrollTime = (new Date()).getTime();    
+            
         }
         else {
             //Freemode or scrollContainer:
@@ -1038,6 +1121,9 @@ var Swiper = function (selector, params) {
             _this.setWrapperTransition(0);
             _this.setWrapperTranslate(position);
             _this.updateActiveSlide(position);
+
+            // Return page scroll on edge positions
+            if (position == 0 || position == -maxWrapperPosition()) return;
         }
         if (params.autoplay) _this.stopAutoplay(true);
 
@@ -1065,13 +1151,13 @@ var Swiper = function (selector, params) {
     function slideClick(event) {
         if (_this.allowSlideClick) {
             setClickedSlide(event);
-            params.onSlideClick(_this, event);
+            _this.fireCallback(params.onSlideClick, _this, event);
         }
     }
     
     function slideTouch(event) {
         setClickedSlide(event);
-        params.onSlideTouch(_this, event);
+        _this.fireCallback(params.onSlideTouch, _this, event);
     }
     
     function setClickedSlide(event) {
@@ -1166,7 +1252,7 @@ var Swiper = function (selector, params) {
             if (params.moveStartThreshold>0) allowThresholdMove = false;
 
             //CallBack
-            if (params.onTouchStart) params.onTouchStart(_this);
+            if (params.onTouchStart) _this.fireCallback(params.onTouchStart, _this);
             _this.callPlugins('onTouchStartEnd');
 
         }
@@ -1221,7 +1307,7 @@ var Swiper = function (selector, params) {
                     _this.fixLoop();
                     _this.positions.start = _this.getWrapperTranslate();
                 }
-                if (params.onTouchMoveStart) params.onTouchMoveStart(_this);
+                if (params.onTouchMoveStart) _this.fireCallback(params.onTouchMoveStart, _this);
             }
             _this.isMoved = true;
             
@@ -1235,10 +1321,10 @@ var Swiper = function (selector, params) {
 
             //Resistance Callbacks
             if(_this.positions.current > 0 && params.onResistanceBefore) {
-                params.onResistanceBefore(_this, _this.positions.current);
+                _this.fireCallback(params.onResistanceBefore, _this, _this.positions.current);
             }
             if(_this.positions.current < -maxWrapperPosition() && params.onResistanceAfter) {
-                params.onResistanceAfter(_this, Math.abs(_this.positions.current + maxWrapperPosition()));
+                _this.fireCallback(params.onResistanceAfter, _this, Math.abs(_this.positions.current + maxWrapperPosition()));
             }
             //Resistance
             if (params.resistance && params.resistance!='100%') {
@@ -1310,7 +1396,7 @@ var Swiper = function (selector, params) {
             velocityPrevTime = (new Date).getTime();
             //Callbacks
             _this.callPlugins('onTouchMoveEnd');
-            if (params.onTouchMove) params.onTouchMove(_this);
+            if (params.onTouchMove) _this.fireCallback(params.onTouchMove, _this);
 
             return false;
         }
@@ -1382,13 +1468,13 @@ var Swiper = function (selector, params) {
         //Not moved or Prevent Negative Back Sliding/After-End Sliding
         if (!_this.isMoved && params.freeMode) {
             _this.isMoved = false;
-            if (params.onTouchEnd) params.onTouchEnd(_this);
+            if (params.onTouchEnd) _this.fireCallback(params.onTouchEnd, _this);
             _this.callPlugins('onTouchEnd');
             return;   
         }
         if (!_this.isMoved || _this.positions.current > 0 || _this.positions.current < -maxPosition) {
             _this.swipeReset();
-            if (params.onTouchEnd) params.onTouchEnd(_this);
+            if (params.onTouchEnd) _this.fireCallback(params.onTouchEnd, _this);
             _this.callPlugins('onTouchEnd');
             return;
         }
@@ -1432,8 +1518,8 @@ var Swiper = function (selector, params) {
                 if (params.momentumBounce && doBounce) {
                     _this.wrapperTransitionEnd(function () {
                         if (!allowMomentumBounce) return;
-                        
-                        if (params.onMomentumBounce) params.onMomentumBounce(_this);
+                        if (params.onMomentumBounce) _this.fireCallback(params.onMomentumBounce, _this);
+                        _this.callPlugins('onMomentumBounce');
                         
                         _this.setWrapperTranslate(afterBouncePosition);
                         _this.setWrapperTransition(300);
@@ -1444,7 +1530,7 @@ var Swiper = function (selector, params) {
             }
             if (!params.freeModeFluid || timeDiff >= 300) _this.updateActiveSlide(_this.positions.current)
 
-            if (params.onTouchEnd) params.onTouchEnd(_this)
+            if (params.onTouchEnd) _this.fireCallback(params.onTouchEnd, _this);
             _this.callPlugins('onTouchEnd');
             return;
         }
@@ -1561,9 +1647,7 @@ var Swiper = function (selector, params) {
         if (newPosition < - maxWrapperPosition()) {
             newPosition = - maxWrapperPosition()
         };
-
         if (newPosition == currentPosition) return false;
-
         swipeToPosition(newPosition, 'next');
         return true
     }
@@ -1689,7 +1773,7 @@ var Swiper = function (selector, params) {
                 }, 1000 / 60)
             }
             else {
-                if (params.onSlideChangeEnd) params.onSlideChangeEnd(_this);
+                if (params.onSlideChangeEnd) _this.fireCallback(params.onSlideChangeEnd, _this);
                 _this.setWrapperTranslate(newPosition);
                 _this._DOMAnimating = false;
             }
@@ -1700,19 +1784,19 @@ var Swiper = function (selector, params) {
 
         //Callbacks
         if (params.onSlideNext && action=='next') {
-            params.onSlideNext(_this, newPosition);
+            _this.fireCallback(params.onSlideNext, _this, newPosition);
         }
         if (params.onSlidePrev && action=='prev') {
-            params.onSlidePrev(_this, newPosition);
+            _this.fireCallback(params.onSlidePrev, _this, newPosition);
         }
         //"Reset" Callback
         if (params.onSlideReset && action=='reset') {
-            params.onSlideReset(_this, newPosition);
+            _this.fireCallback(params.onSlideReset, _this, newPosition);
         }
 
         //"Next", "Prev" and "To" Callbacks
         if (action=='next' || action=='prev' || (action=='to' && toOptions.runCallbacks==true))
-            slideChangeCallbacks();
+            slideChangeCallbacks(action);
     }
     /*==================================================
         Transition Callbacks
@@ -1720,19 +1804,19 @@ var Swiper = function (selector, params) {
     //Prevent Multiple Callbacks
     _this._queueStartCallbacks = false;
     _this._queueEndCallbacks = false;
-    function slideChangeCallbacks() {
+    function slideChangeCallbacks(direction) {
         //Transition Start Callback
         _this.callPlugins('onSlideChangeStart');
         if (params.onSlideChangeStart) {
             if (params.queueStartCallbacks && _this.support.transitions) {
                 if (_this._queueStartCallbacks) return;
                 _this._queueStartCallbacks = true;
-                params.onSlideChangeStart(_this)
+                _this.fireCallback(params.onSlideChangeStart, _this, direction)
                 _this.wrapperTransitionEnd(function(){
                     _this._queueStartCallbacks = false;
                 })
             }
-            else params.onSlideChangeStart(_this)
+            else _this.fireCallback(params.onSlideChangeStart, _this, direction)
         }
         //Transition End Callback
         if (params.onSlideChangeEnd) {
@@ -1740,14 +1824,14 @@ var Swiper = function (selector, params) {
                 if (params.queueEndCallbacks) {
                     if (_this._queueEndCallbacks) return;
                     _this._queueEndCallbacks = true;
-                    _this.wrapperTransitionEnd(params.onSlideChangeEnd)
+                    _this.wrapperTransitionEnd(function(swiper){_this.fireCallback(params.onSlideChangeEnd, swiper, direction)})
                 }
-                else _this.wrapperTransitionEnd(params.onSlideChangeEnd)
+                else _this.wrapperTransitionEnd(function(swiper){_this.fireCallback(params.onSlideChangeEnd, swiper, direction)})
             }
             else {
                 if (!params.DOMAnimation) {
                     setTimeout(function(){
-                        params.onSlideChangeEnd(_this)
+                        _this.fireCallback(params.onSlideChangeStart, _this, direction)
                     },10)
                 }
             }
@@ -1960,20 +2044,34 @@ var Swiper = function (selector, params) {
     /*==========================================
         Autoplay
     ============================================*/
-    _this.autoPlayIntervalId = undefined;
+    var autoplayTimeoutId = undefined;
     _this.startAutoplay = function () {
-        if (typeof _this.autoPlayIntervalId !== 'undefined') return false;
+        if (typeof autoplayTimeoutId !== 'undefined') return false;
         if (!params.autoplay) return;
-        _this.autoPlayIntervalId = setInterval(function(){
-            if (params.loop) _this.swipeNext();
-            else if (!_this.swipeNext(true)) _this.swipeTo(0);
-        }, params.autoplay)
         _this.callPlugins('onAutoplayStart');
+        autoplay();
     }
-    _this.stopAutoplay = function () {
-        if (_this.autoPlayIntervalId) clearInterval(_this.autoPlayIntervalId);
-        _this.autoPlayIntervalId = undefined;
+    _this.stopAutoplay = function (internal) {
+        if (autoplayTimeoutId) clearTimeout(autoplayTimeoutId);
+        autoplayTimeoutId = undefined;
+        if (internal && !params.autoplayDisableOnInteraction) {
+            _this.wrapperTransitionEnd(function(){
+                autoplay();
+            })
+        }
         _this.callPlugins('onAutoplayStop');
+    }
+    function autoplay(){
+        autoplayTimeoutId = setTimeout(function(){
+            if(params.loop) {
+                _this.fixLoop();
+                _this.swipeNext(true);
+            }
+            else if (!_this.swipeNext(true)) _this.swipeTo(0);
+            _this.wrapperTransitionEnd(function(){
+                if (typeof autoplayTimeoutId !== 'undefined') autoplay();
+            })
+        },params.autoplay)
     }
     /*==================================================
         Loop
@@ -1990,7 +2088,7 @@ var Swiper = function (selector, params) {
     _this.createLoop = function() {
         if (_this.slides.length==0) return;
         if (params.slidesPerView=='auto') {
-            _this.loopedSlides = params.loopedSlides;
+            _this.loopedSlides = params.loopedSlides||1;
         }
         else {
             _this.loopedSlides = params.slidesPerView + params.loopAdditionalSlides;    
@@ -2173,7 +2271,7 @@ var Swiper = function (selector, params) {
         _this.centerIndex = _this.activeIndex;
 
         // Callbacks
-        if (params.onSwiperCreated) params.onSwiperCreated(this);
+        if (params.onSwiperCreated) _this.fireCallback(params.onSwiperCreated, _this);
         _this.callPlugins('onSwiperCreated');
     }
     
@@ -2218,16 +2316,16 @@ Swiper.prototype = {
             axis = this.params.mode == 'horizontal' ? 'x' : 'y';
         }
         
-        curStyle = window.getComputedStyle(el, null);
-        if (window.WebKitCSSMatrix) {
-            transformMatrix = new WebKitCSSMatrix(curStyle.webkitTransform);
-        }
-        else {
-            transformMatrix = curStyle.MozTransform || curStyle.OTransform || curStyle.MsTransform || curStyle.msTransform  || curStyle.transform || curStyle.getPropertyValue("transform").replace("translate(", "matrix(1, 0, 0, 1,");
-            matrix = transformMatrix.toString().split(',');
-        }
-        
         if (this.support.transforms && this.params.useCSS3Transforms) {
+            curStyle = window.getComputedStyle(el, null);
+            if (window.WebKitCSSMatrix) {
+                transformMatrix = new WebKitCSSMatrix(curStyle.webkitTransform);
+            }
+            else {
+                transformMatrix = curStyle.MozTransform || curStyle.OTransform || curStyle.MsTransform || curStyle.msTransform  || curStyle.transform || curStyle.getPropertyValue("transform").replace("translate(", "matrix(1, 0, 0, 1,");
+                matrix = transformMatrix.toString().split(',');
+            }
+            
             if (axis=='x') {
                 //Latest Chrome and webkits Fix
                 if (window.WebKitCSSMatrix)
@@ -2287,14 +2385,14 @@ Swiper.prototype = {
             es.top  = coords.y + 'px';
         }
         this.callPlugins('onSetWrapperTransform', coords);
-        if (this.params.onSetWrapperTransform) this.params.onSetWrapperTransform(this,coords);
+        if (this.params.onSetWrapperTransform) this.fireCallback(this.params.onSetWrapperTransform, this, coords);
     },
 
     setWrapperTransition : function (duration) {
         var es = this.wrapper.style;
         es.webkitTransitionDuration = es.MsTransitionDuration = es.msTransitionDuration = es.MozTransitionDuration = es.OTransitionDuration = es.transitionDuration = (duration / 1000) + 's';
         this.callPlugins('onSetWrapperTransition', {duration: duration});
-        if (this.params.onSetWrapperTransition) this.params.onSetWrapperTransition(this);
+        if (this.params.onSetWrapperTransition) this.fireCallback(this.params.onSetWrapperTransition, this, duration);
         
     },
 

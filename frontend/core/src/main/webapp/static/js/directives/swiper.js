@@ -162,20 +162,20 @@ function emSwiperSlider($rootScope, Enum, location, userPrefix, emSwiper) {
             up = true;
           }
 
-        // https://developer.mozilla.org/en-US/docs/Web/API/Element.scrollHeight#Determine_if_an_element_has_been_totally_scrolled
-        if (this.scrollHeight - this.scrollTop <= this.clientHeight && down) {
-          bottom = true;
-        } else if (this.scrollTop <= 0 && up) {
-          top = true;
-        } else {
-          bottom = false;
-          top = false;
-          event.stopPropagation();
+          // https://developer.mozilla.org/en-US/docs/Web/API/Element.scrollHeight#Determine_if_an_element_has_been_totally_scrolled
+          if (this.scrollHeight - this.scrollTop <= this.clientHeight && down) {
+            bottom = true;
+          } else if (this.scrollTop <= 0 && up) {
+            top = true;
+          } else {
+            bottom = false;
+            top = false;
+            event.stopPropagation();
+          }
         }
       }
     }
-  }
-};
+  };
 }
 angular.module('em.directives').directive('emSwiperSlider', emSwiperSlider);
 emSwiperSlider.$inject = ['$rootScope', 'Enum', 'location', 'userPrefix', 'emSwiper'];
