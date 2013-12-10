@@ -29,8 +29,10 @@ div[role=main] {
       }
     }
     div[role=main] > div.slides-container {
-      min-height: @maximum-landscape-height;
-      max-height: @maximum-landscape-height;
+      position:inherit;
+      top:50%;
+      height:@maximum-landscape-height;
+      margin-top:-@maximum-landscape-height / 2;
     }
   }
 }
