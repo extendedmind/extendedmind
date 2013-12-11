@@ -310,7 +310,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/projects', {
-      controller: 'ProjectsController',
+      controller: 'ProjectController',
       templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
@@ -329,7 +329,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/projects', {
-      controller: 'ProjectsController',
+      controller: 'ProjectController',
       templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
@@ -347,8 +347,8 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/my/tasks/projects/:projectUUID', {
-      controller: 'ProjectsController',
+    $routeProvider.when('/my/tasks/projects/:uuid', {
+      controller: 'ProjectController',
       templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
@@ -357,7 +357,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['$route', 'Enum', 'emSwiper',
         function($route, Enum, emSwiper) {
-          emSwiper.setSlides(Enum.PROJECTS, $route.current.params.projectUUID);
+          emSwiper.setSlides(Enum.PROJECTS, $route.current.params.uuid);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
@@ -366,8 +366,8 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/collective/:collectiveUUID/tasks/projects/:projectUUID', {
-      controller: 'ProjectsController',
+    $routeProvider.when('/collective/:collectiveUUID/tasks/projects/:uuid', {
+      controller: 'ProjectController',
       templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
@@ -376,7 +376,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['$route', 'Enum', 'emSwiper',
         function($route, Enum, emSwiper) {
-          emSwiper.setSlides(Enum.PROJECTS, $route.current.params.projectUUID);
+          emSwiper.setSlides(Enum.PROJECTS, $route.current.params.uuid);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
@@ -453,25 +453,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         slide: ['$route', 'Enum', 'emSwiper',
         function($route, Enum, emSwiper) {
           emSwiper.setSlides(Enum.DATES, $route.current.params.date);
-        }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks/dates', {
-      controller: 'TasksController',
-      templateUrl: 'static/partials/emSlides.html',
-      resolve: {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.DATES);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
@@ -563,38 +544,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/tasks/new', {
       controller: 'NewTaskController',
       templateUrl: 'static/partials/my/tasks/new.html',
-      resolve: {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/my/tasks/project/:uuid', {
-      controller: 'ProjectController',
-      templateUrl: 'static/partials/my/tasks/project.html',
-      resolve: {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks/project/:uuid', {
-      controller: 'ProjectController',
-      templateUrl: 'static/partials/my/tasks/project.html',
       resolve: {
         auth: ['auth',
         function(auth) {

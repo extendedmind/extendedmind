@@ -7,9 +7,7 @@
     <h3>projects</h3>
     <ul class="list-unstyled">
       <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:filterService.activeFilters.project">
-
-        <div project></div>
-
+        <span><a class="text-muted" href="#/{{prefix}}/tasks/projects/{{task.uuid}}">{{task.title}}</a></span>
       </li>
     </ul>
   </div>

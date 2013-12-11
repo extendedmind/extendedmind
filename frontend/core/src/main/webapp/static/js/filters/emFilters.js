@@ -15,7 +15,6 @@ angular.module('em.filters').filter('tagTitle', ['itemsArray', 'tagsArray',
       filteredValues = [];
 
       if (itemTags) {
-
         i = 0;
         tags = tagsArray.getTags();
 
