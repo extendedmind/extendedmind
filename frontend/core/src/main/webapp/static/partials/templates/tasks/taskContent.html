@@ -4,11 +4,6 @@
     <span><small>{{value}}</small></span>
   </li>
 
-  <li ng-repeat="tag in task.relationships.tags | tagTitle">
-
-    <span><small><a class="text-muted" href="#/{{prefix}}/tasks/context/{{tag.uuid}}">@{{tag.title}}</a></small></span>
-
-  </li>
   <div class="em-item-actions container">
     <ul class="nav nav-justified em-horizontal-buttons">
       <li class="em-gray-button" ng-hide="task.relationships.parentTask">
