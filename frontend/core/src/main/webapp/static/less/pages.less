@@ -61,21 +61,22 @@ section#my {
   #main-content-container { 
     padding-top:@main-header-height;
     margin-bottom:@footer-height;
-
-    #omnibar {
-      margin-top: 20px;
+    
+    #omnibar{
       .top-bottom-borders;
-      input, button{
-        display:inline;
+      display: table;
+      width: 100%;
+      div#omni-input-wrapper, div#plus-wrapper{
+        vertical-align: middle;
       }
-      input {
-        width: inherit;
-        min-width: 90%;
-        max-width: 90%;
+      div#omni-input-wrapper {
+        width: 100%;
+        display:table-cell;
       }
-      button {
-        margin-left: 10px;
-      }      
+      div#plus-wrapper { 
+        display:table-cell;
+        width: @plus-button-width;
+      }
     }
   }
   nav#main-header {
