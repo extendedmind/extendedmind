@@ -46,13 +46,37 @@ section#my {
     img {
       width: 75px;
     }
+    margin-bottom: 10%;
   }
   #main-header-container {
     min-height:@main-header-height;
+
+    #menu-content {
+      background-color: white;
+      width: auto;
+      margin-top: 10px;
+      .top-bottom-borders;
+    }
   }
   #main-content-container { 
     padding-top:@main-header-height;
     margin-bottom:@footer-height;
+
+    #omnibar {
+      margin-top: 20px;
+      .top-bottom-borders;
+      input, button{
+        display:inline;
+      }
+      input {
+        width: inherit;
+        min-width: 90%;
+        max-width: 90%;
+      }
+      button {
+        margin-left: 10px;
+      }      
+    }
   }
   nav#main-header {
     max-width: @single-column-width;
@@ -77,5 +101,4 @@ section#my {
   button#menu-button:active{
     background-position: 0 0;
   }
-
 }
