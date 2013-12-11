@@ -1,49 +1,65 @@
 /*global angular */
 'use strict';
 
-angular.module('em.directives').directive('project', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/partials/templates/tasks/project.html'
-    };
-  }]);
+function tasks() {
+  return {
+    restrict: 'A',
+    templateUrl: 'static/partials/my/tasks.html'
+  };
+}
+angular.module('em.directives').directive('tasks', tasks);
 
-angular.module('em.directives').directive('tasks', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/partials/my/tasks.html'
-    };
-  }]);
-
-function emProjects() {
+function projects() {
   return {
     restrict: 'A',
     templateUrl: 'static/partials/my/tasks/projects.html'
   };
 }
-angular.module('em.directives').directive('emProjects', emProjects);
+angular.module('em.directives').directive('projects', projects);
 
 function projectSlide() {
   return {
+    controller: 'ProjectController',
     scope: true,
     restrict: 'A',
-    templateUrl: 'static/partials/templates/tasks/projectSlide.html'
+    templateUrl: 'static/partials/templates/tasks/projectSlide.html',
+    link: function(scope) {
+      scope.filter = {};
+      scope.filter.name = 'byProjectUUID';
+      scope.filter.filterBy = scope.project.uuid;
+
+      scope.subtask = {};
+      scope.subtask.relationships = {};
+      scope.subtask.relationships.parentTask = scope.project.uuid;
+
+      scope.showProjectContent = false;
+
+      scope.toggleProjectContent = function toggleProjectContent() {
+        scope.showProjectContent = !scope.showProjectContent;
+      };
+    }
   };
 }
 angular.module('em.directives').directive('projectSlide', projectSlide);
 
-angular.module('em.directives').directive('dates', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/partials/my/tasks/dates.html'
-    };
-  }]);
+function projectContent() {
+  return {
+    scope: true,
+    restrict: 'A',
+    templateUrl: 'static/partials/templates/tasks/projectContent.html'
+  };
+}
+angular.module('em.directives').directive('projectContent', projectContent);
 
-angular.module('em.directives').directive('dateSlide', [
- function() {
+function dates() {
+  return {
+    restrict: 'A',
+    templateUrl: 'static/partials/my/tasks/dates.html'
+  };
+}
+angular.module('em.directives').directive('dates', dates);
+
+function dateSlide() {
   return {
     restrict: 'A',
     templateUrl: 'static/partials/templates/tasks/dateSlide.html',
@@ -59,34 +75,36 @@ angular.module('em.directives').directive('dateSlide', [
       scope.filter.filterBy = scope.date.yyyymmdd;
     }
   };
-}]);
+}
+angular.module('em.directives').directive('dateSlide', dateSlide);
 
-angular.module('em.directives').directive('datebar', ['emSwiper',
-  function(emSwiper) {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/partials/templates/tasks/datebar.html',
-      link: function(scope) {
-        scope.dateClicked = function(index) {
-          emSwiper.setSlideIndex('vertical', index);
-        };
-      }
-    };
-  }]);
+function datebar(emSwiper) {
+  return {
+    restrict: 'A',
+    templateUrl: 'static/partials/templates/tasks/datebar.html',
+    link: function(scope) {
+      scope.dateClicked = function(index) {
+        emSwiper.setSlideIndex('vertical', index);
+      };
+    }
+  };
+}
+angular.module('em.directives').directive('datebar', datebar);
+datebar.$inject = ['emSwiper'];
 
-angular.module('em.directives').directive('filteredTasksList', [
-  function() {
-    return {
-      controller: 'TasksListController',
-      scope: {
-        tasks: '=filteredTasksList',
-        tasksListFilter: '=tasksFilter'
-      },
-      restrict: 'A',
-      templateUrl: 'static/partials/templates/tasks/filteredTasksList.html',
-      transclude: true
-    };
-  }]);
+function filteredTasksList() {
+  return {
+    controller: 'TasksListController',
+    scope: {
+      tasks: '=filteredTasksList',
+      tasksListFilter: '=tasksFilter'
+    },
+    restrict: 'A',
+    templateUrl: 'static/partials/templates/tasks/filteredTasksList.html',
+    transclude: true
+  };
+}
+angular.module('em.directives').directive('filteredTasksList', filteredTasksList);
 
 angular.module('em.directives').directive('tasksList', [
   function() {
@@ -138,21 +156,6 @@ angular.module('em.directives').directive('taskContent', [
           } else {
             scope.selected = '';
           }
-        };
-      }
-    };
-  }]);
-
-angular.module('em.directives').directive('projectContent', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/partials/templates/tasks/projectContent.html',
-      link: function(scope) {
-        scope.showProjectContent = false;
-
-        scope.toggleProjectContent = function toggleProjectContent() {
-          scope.showProjectContent = !scope.showProjectContent;
         };
       }
     };
