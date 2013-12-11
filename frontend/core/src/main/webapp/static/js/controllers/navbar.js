@@ -21,6 +21,13 @@ function NavbarController($location, $scope, authenticateRequest, userAuthentica
   $scope.addNew = function() {
     $location.path($scope.prefix + '/tasks/new');
   };
+
+  $scope.useCollectives = function () {
+    if (userSessionStorage.getCollectives() 
+        && Object.keys(userSessionStorage.getCollectives()).length > 1) {
+      return true;
+    }
+  }
 }
 
 NavbarController.$inject = ['$location', '$scope', 'authenticateRequest', 'userAuthenticate', 'userSessionStorage'];

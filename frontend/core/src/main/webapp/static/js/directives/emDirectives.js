@@ -58,7 +58,7 @@ angular.module('em.directives').directive('emFeatureHeader', [
     };
   }]);
 
-angular.module('em.directives').directive('emMainHeader', [
+angular.module('em.directives').directive('mainHeader', [
   function() {
     return {
       restrict: 'A',
