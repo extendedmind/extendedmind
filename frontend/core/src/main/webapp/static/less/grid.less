@@ -1,8 +1,15 @@
+
+// COMMON PADDING
+
+.apply-padding{
+  padding-left: @horizontal-grid;
+  padding-right: @horizontal-grid;
+}
+
 div[role=main] {
   line-height: @vertical-grid;
   max-height: @maximum-height;
-  margin-left: auto;
-  margin-right: auto;
+  .center-horizontally;
   position:relative;
 
   .one-column-grid, .two-column-grid, .column{
@@ -19,6 +26,81 @@ div[role=main] {
     }
   }
 }
+
+.one-column-grid {
+  .apply-padding;
+  max-width: @one-column-grid-width;
+  .center-horizontally;
+}
+
+.two-column-grid {
+  max-width: @two-column-grid-width;
+  .center-horizontally;
+  padding-left: @horizontal-grid;
+  aside.column, div.column {
+    width:auto;
+    padding-right: @horizontal-grid;
+  }
+  aside.column {
+    max-width: @two-column-grid-aside-width;
+  }
+  div.column {
+    max-width: @two-column-grid-main-width;
+  }
+}
+
+// HEADER
+
+.header-container {
+  position:absolute;
+  top:0px; 
+  left:0px;
+  overflow:hidden;
+  width:100%;
+  padding-left: inherit;
+  padding-right: inherit;
+}
+
+// CONTENT
+
+.content-container {
+  width: inherit;
+}
+
+// FOOTER
+
+.footer-container {
+  position:relative;
+  height: @footer-height;
+  text-align: justify;
+  -ms-text-justify: distribute-all-lines;
+  text-justify: distribute-all-lines;
+  .apply-padding;
+  .center-horizontally;
+  max-width: @two-column-grid-width;
+}
+
+nav#footer {
+  text-align: justify;
+  * {
+    display: inline;
+  }
+  li.footer-link {
+    width: 30px;
+    height: @footer-height;
+    vertical-align: top;
+    display: inline-block;
+    *display: inline;
+  }
+  li#stretch {
+    width: 100%;
+    display: inline-block;
+    font-size: 0;
+    line-height: 0
+  }
+}
+
+// RESPONSIVE
 
 // We want to horizontally and vertically center everything
 // once the screen size is bigger than a tablet
@@ -49,74 +131,12 @@ div[role=main] {
   }
 }
 
-.two-column-grid {
-    padding-left: @horizontal-grid;
-  aside.column, div.column {
-    display:inline;
-    width:auto;
-    padding-right: @horizontal-grid;
+// For smaller screens, aside is hidden, and we revert to single column width
+@media (max-width: @maximum-width) {
+  .two-column-grid, div.column, .footer-container {
+    max-width: @one-column-grid-width;
   }
-  aside.column {
-    max-width: @two-column-aside-width;
-  }
-  div.column {
-    max-width: @two-column-main-width;
-  }
-}
-
-.one-column-grid .column, .footer-container {
-  padding-left: @horizontal-grid;
-  padding-right: @horizontal-grid;
-  max-width: @single-column-width;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-// HEADER
-
-.header-container {
-  position:absolute;
-  top:0px; 
-  left:0px;
-  overflow:hidden;
-  width:100%;
-  padding-left: inherit;
-  padding-right: inherit;
-}
-
-// CONTENT
-
-.content-container {
-  width: inherit;
-}
-
-// FOOTER
-
-.footer-container {
-  position:relative;
-  height: @footer-height;
-  text-align: justify;
-  -ms-text-justify: distribute-all-lines;
-  text-justify: distribute-all-lines;
-  z-index: 100;
-}
-
-nav#footer {
-  text-align: justify;
-  * {
-    display: inline;
-  }
-  li.footer-link {
-    width: 30px;
-    height: @footer-height;
-    vertical-align: top;
-    display: inline-block;
-    *display: inline;
-  }
-  li#stretch {
-    width: 100%;
-    display: inline-block;
-    font-size: 0;
-    line-height: 0
+  aside {
+    display:none;
   }
 }
