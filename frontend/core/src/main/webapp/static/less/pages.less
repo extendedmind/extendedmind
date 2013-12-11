@@ -42,64 +42,77 @@ section#login {
 // FRONT PAGE
 
 section#my {
-  .banner {
-    img {
-      width: 75px;
-    }
-    margin-bottom: 10%;
-  }
   #main-header-container {
-    min-height:@main-header-height;
-
+    min-height: @main-header-height;
     #menu-content {
       background-color: white;
       width: auto;
-      margin-top: 10px;
+      padding-top: 10px;
       .top-bottom-borders;
     }
+    nav#main-header {
+      max-width: @single-column-width;
+      text-align: right;
+      margin-right: auto;
+      margin-left: auto;
+      width: inherit;
+    }
+    button#menu-button{
+      background:url('../img/menu.png');
+      background-position: 0 -50px;
+      cursor:pointer;
+      border:none;
+      width:29px;
+      height:29px;
+      display: inline-block; 
+      text-align:center; 
+      margin: 0px; 
+      border: 0px; 
+      padding: 0px;
+    }
+    button#menu-button:active{
+      background-position: 0 0;
+    }
   }
-  #main-content-container { 
+
+  #main-content-container {
     padding-top:@main-header-height;
-    margin-bottom:@footer-height;
-    
-    #omnibar{
-      .top-bottom-borders;
-      display: table;
-      width: 100%;
-      div#omni-input-wrapper, div#plus-wrapper{
-        vertical-align: middle;
+    height:100%;
+    .banner {
+      height: 100px;
+      img {
+        width: 75px;
       }
-      div#omni-input-wrapper {
-        width: 100%;
-        display:table-cell;
-      }
-      div#plus-wrapper { 
-        display:table-cell;
-        width: @plus-button-width;
-      }
+      padding-bottom: 20px;
     }
-  }
-  nav#main-header {
-    max-width: @single-column-width;
-    text-align: right;
-    margin-right: auto;
-    margin-left: auto;
-    width: inherit;
-  }
-  button#menu-button{
-    background:url('../img/menu.png');
-    background-position: 0 -50px;
-    cursor:pointer;
-    border:none;
-    width:29px;
-    height:29px;
-    display: inline-block; 
-    text-align:center; 
-    margin: 0px; 
-    border: 0px; 
-    padding: 0px;
-  }
-  button#menu-button:active{
-    background-position: 0 0;
+    .content {
+      height:inherit;
+
+      #omnibar{
+        .top-bottom-borders;
+        display: table;
+        width: 100%;
+        div#omni-input-wrapper, div#plus-wrapper{
+          vertical-align: middle;
+        }
+        div#omni-input-wrapper {
+          width: 100%;
+          display:table-cell;
+        }
+        div#plus-wrapper { 
+          display:table-cell;
+          width: @plus-button-width;
+        }
+      }
+      div#filtered-items-container {
+        height: inherit;
+        overflow-y: auto;
+      }
+      padding-bottom: @footer-height + @main-header-height + @vertical-grid;
+    }
   }
 }
+
+// INBOX
+
+

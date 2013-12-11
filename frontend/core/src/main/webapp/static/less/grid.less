@@ -72,3 +72,51 @@ div[role=main] {
   margin-right: auto;
 }
 
+// HEADER
+
+.header-container {
+  position:absolute;
+  top:0px; 
+  left:0px;
+  overflow:hidden;
+  width:100%;
+  padding-left: inherit;
+  padding-right: inherit;
+}
+
+// CONTENT
+
+.content-container {
+  width: inherit;
+}
+
+// FOOTER
+
+.footer-container {
+  position:relative;
+  height: @footer-height;
+  text-align: justify;
+  -ms-text-justify: distribute-all-lines;
+  text-justify: distribute-all-lines;
+  z-index: 100;
+}
+
+nav#footer {
+  text-align: justify;
+  * {
+    display: inline;
+  }
+  li.footer-link {
+    width: 30px;
+    height: @footer-height;
+    vertical-align: top;
+    display: inline-block;
+    *display: inline;
+  }
+  li#stretch {
+    width: 100%;
+    display: inline-block;
+    font-size: 0;
+    line-height: 0
+  }
+}

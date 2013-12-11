@@ -5,16 +5,14 @@
       <div class="banner">
         <img src="static/img/em_logo.png" alt="extended mind"/>
       </div>
-
-      <div class="swiper-no-swiping" omni-bar></div>
-
-      <div class="filtered-items" filtered-items-list="items" items-filter="newItem.title"></div>
-
-      <div class="filtered-items" filtered-tasks-list="tasks" tasks-filter="newItem.title"></div>
-
-      <div class="filtered-items" filtered-notes-list="notes" notes-filter="newItem.title"></div>
-
-      <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
+      <div class="content">
+        <div class="swiper-no-swiping" omni-bar></div>
+        <div id="filtered-items-container">
+          <div class="filtered-items" filtered-items-list="items" items-filter="newItem.title"></div>
+          <div class="filtered-items" filtered-tasks-list="tasks" tasks-filter="newItem.title"></div>
+          <div class="filtered-items" filtered-notes-list="notes" notes-filter="newItem.title"></div>
+        </div>
+        <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
     </div>
   </div>
 </section>
