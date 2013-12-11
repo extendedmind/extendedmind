@@ -13,13 +13,6 @@ div[role=main] {
     position: relative;
     width:100%;
   }
-
-  .one-column-grid {
-    .fixed-top {
-      max-width: @single-column-width;
-    }
-  }
-
   .header-container {
     * {
       vertical-align: middle;
@@ -57,8 +50,10 @@ div[role=main] {
 }
 
 .two-column-grid {
-  padding-left: @horizontal-grid;
+    padding-left: @horizontal-grid;
   aside.column, div.column {
+    display:inline;
+    width:auto;
     padding-right: @horizontal-grid;
   }
   aside.column {

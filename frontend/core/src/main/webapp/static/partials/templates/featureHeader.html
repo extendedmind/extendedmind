@@ -1,14 +1,8 @@
-<div id="em-feature-header" class="row em-feature-header">
-  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
-      <ul class="nav navbar-nav nav-justified">
-        <li id="em-featurelink">
-          <a class="em-feature" href ng-click="nextSlide()">{{feature}}</a>
-        </li>
-        <li id="em-addnewbutton">
-          <button type="button" class="btn em-plus" ng-click="addNew()">+</button>
-        </li>
-      </ul>
-    </div>
-  </nav>
-</div>
+<nav id="feature-header" role="navigation">
+  <div class="left-of-three" id="collective"></div>
+  <div class="center-of-three" id="feature-heading">{{feature}}</div>
+  <div class="right-of-three" id="add-new-button">
+    <button type="button" class="plus" ng-click="addNew()">+</button>
+  </div>
+  </ul>
+</nav>

@@ -4,26 +4,22 @@
 angular.module('em.directives').directive('item', [
   function() {
     return {
-      controller : 'ItemsController',
       restrict : 'A',
       templateUrl : 'static/partials/templates/items/item.html',
       transclude : true
     };
   }]);
 
-angular.module('em.directives').directive('itemsList', [
+angular.module('em.directives').directive('filteredItemsList', [
   function() {
     return {
+      controller : 'ItemsController',
+      scope: {
+        items: '=filteredItemsList',
+        itemsListFilter: '=itemsFilter'
+      },
       restrict : 'A',
-      templateUrl : 'static/partials/templates/items/itemsList.html',
-      transclude : true,
-      link : function(scope, element, attrs) {
-        var itemsFilterAttr = attrs.itemsfilter;
-
-        scope.$watch(itemsFilterAttr, function(newValue) {
-          scope.itemsListFilter = newValue;
-        });
-      }
+      templateUrl : 'static/partials/templates/items/filteredItemsList.html',
     };
   }]);
 

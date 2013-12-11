@@ -1,11 +1,17 @@
-<div class="row">
 
-  <ul class="list-unstyled">
-    <li ng-class="selected" ng-repeat="item in items">
+<section id="inbox" class="two-column-grid page">
+  <div class="column">
+    <div id="feature-header-container" class="header-container" em-feature-header></div>
+    <div id="feature-content-container" class="content-container">
+      <ul class="list-unstyled">
+        <li ng-class="selected" ng-repeat="item in items">
+          <div item></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <aside class="column">
+    size: {{items.length}}
+  </aside>
 
-      <div item></div>
-
-    </li>
-  </ul>
-
-</div>
+</section>

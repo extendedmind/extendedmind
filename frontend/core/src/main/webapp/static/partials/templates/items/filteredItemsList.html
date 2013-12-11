@@ -1,0 +1,8 @@
+<div ng-show="itemsListFilter && filteredItems.length">
+  <h3><a class="text-muted" href ng-click="gotoInbox()">inbox</a></h3>
+  <ul class="list-unstyled">
+    <li ng-class="selected" ng-repeat="item in filteredItems = (items | filter:{title:itemsListFilter})">
+      <div item></div>
+    </li>
+  </ul>
+</div>
