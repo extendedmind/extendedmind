@@ -1,12 +1,11 @@
 
 section.page {
   .banner {
-    padding-top: @vertical-grid;
+    padding-top: @vertical-grid * 1.5;
     img {
       margin-left: auto;
       margin-right: auto;
       display: block;
-      padding-top: 10px;
     }
   }
 }
@@ -76,18 +75,16 @@ section#my {
   }
 
   #main-content-container {
-    padding-top:@main-header-height;
     height:100%;
     .banner {
-      height: 100px;
-      img {
-        width: 75px;
+      padding-bottom: @vertical-grid;
+      img {
+        width: 67.5px;
       }
-      padding-bottom: 20px;
     }
     .content {
       height:inherit;
-
+      padding-bottom: @footer-height + @main-header-height + @vertical-grid;
       #omnibar{
         .top-bottom-borders;
         display: table;
@@ -108,7 +105,6 @@ section#my {
         height: inherit;
         overflow-y: auto;
       }
-      padding-bottom: @footer-height + @main-header-height + @vertical-grid;
     }
   }
 }
