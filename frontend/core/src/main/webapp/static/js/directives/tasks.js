@@ -1,21 +1,32 @@
 /*global angular */
 'use strict';
 
-function tasks() {
+function projects(emSwiper, Enum) {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/my/tasks.html'
-  };
-}
-angular.module('em.directives').directive('tasks', tasks);
-
-function projects() {
-  return {
-    restrict: 'A',
-    templateUrl: 'static/partials/my/tasks/projects.html'
+    templateUrl: 'static/partials/my/tasks/projects.html',
+    link: function() {
+      emSwiper.setVerticalSwiper(Enum.PROJECTS);
+    }
   };
 }
 angular.module('em.directives').directive('projects', projects);
+projects.$inject = ['emSwiper', 'Enum'];
+
+function projectTitle(emSwiper, Enum) {
+  return {
+    restrict: 'A',
+    scope: true,
+    templateUrl: 'static/partials/templates/tasks/projectTitle.html',
+    link: function(scope) {
+      scope.goToProject = function(index) {
+        emSwiper.setSlideIndex(Enum.PROJECTS, index);
+      };
+    }
+  };
+}
+angular.module('em.directives').directive('projectTitle', projectTitle);
+projectTitle.$inject = ['emSwiper', 'Enum'];
 
 function projectSlide() {
   return {
@@ -51,13 +62,17 @@ function projectContent() {
 }
 angular.module('em.directives').directive('projectContent', projectContent);
 
-function dates() {
+function dates(emSwiper, Enum) {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/my/tasks/dates.html'
+    templateUrl: 'static/partials/my/tasks/dates.html',
+    link: function() {
+      emSwiper.setVerticalSwiper(Enum.DATES);
+    }
   };
 }
 angular.module('em.directives').directive('dates', dates);
+dates.$inject = ['emSwiper', 'Enum'];
 
 function dateSlide() {
   return {
@@ -78,19 +93,27 @@ function dateSlide() {
 }
 angular.module('em.directives').directive('dateSlide', dateSlide);
 
-function datebar(emSwiper) {
+function datebar(emSwiper, Enum) {
   return {
     restrict: 'A',
     templateUrl: 'static/partials/templates/tasks/datebar.html',
     link: function(scope) {
       scope.dateClicked = function(index) {
-        emSwiper.setSlideIndex('vertical', index);
+        emSwiper.setSlideIndex(Enum.DATES, index);
       };
     }
   };
 }
 angular.module('em.directives').directive('datebar', datebar);
-datebar.$inject = ['emSwiper'];
+datebar.$inject = ['emSwiper', 'Enum'];
+
+function tasks() {
+  return {
+    restrict: 'A',
+    templateUrl: 'static/partials/my/tasks.html'
+  };
+}
+angular.module('em.directives').directive('tasks', tasks);
 
 function filteredTasksList() {
   return {
@@ -106,19 +129,19 @@ function filteredTasksList() {
 }
 angular.module('em.directives').directive('filteredTasksList', filteredTasksList);
 
-angular.module('em.directives').directive('tasksList', [
-  function() {
-    return {
-      controller: 'TasksListController',
-      restrict: 'A',
-      scope: {
-        tasks: '=tasksList',
-        tasksFilter: '=',
-        subtask: '='
-      },
-      templateUrl: 'static/partials/templates/tasks/tasksList.html'
-    };
-  }]);
+function tasksList() {
+  return {
+    controller: 'TasksListController',
+    restrict: 'A',
+    scope: {
+      tasks: '=tasksList',
+      tasksFilter: '=',
+      subtask: '='
+    },
+    templateUrl: 'static/partials/templates/tasks/tasksList.html'
+  };
+}
+angular.module('em.directives').directive('tasksList', tasksList);
 
 angular.module('em.directives').directive('task', [
   function() {

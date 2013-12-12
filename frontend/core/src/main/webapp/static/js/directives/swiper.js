@@ -6,10 +6,12 @@ function emSwiper() {
   slides = [];
   swipers = {};
 
+  var slideX, slideY;
+  var sw = {};
+
   return {
     initSwiper: function(container, params) {
       // http://www.idangero.us/sliders/swiper/api.php
-      initialSlideIndex = 0;
       swiper = new Swiper(container, params);
       swipers[swiper.params.mode] = swiper;
       return swiper;
@@ -25,14 +27,28 @@ function emSwiper() {
     getSlides: function() {
       return slides;
     },
-    setSlideIndex: function(swiper, index) {
-      swipers[swiper].swipeTo(index);
+    setSlideIndex: function(coordX, coordY) {
+      swipers.horizontal.swipeTo(coordX);
+
+      sw[coordX].swipeTo(coordY);
     },
     setInitialSlideIndex: function(initialIndex) {
       initialSlideIndex = initialIndex;
     },
     getInitiaSlideIndex: function() {
       return initialSlideIndex;
+    },
+    setVerticalSwiper: function(coordX) {
+      sw[coordX] = swiper;
+    },
+    getSlideX: function() {
+      return slideX;
+    },
+    setSlideY: function(coordY) {
+      slideY = coordY;
+    },
+    getSlideY: function() {
+      return slideY;
     },
     getInitialSubPath: function() {
       return initialSubPath;
