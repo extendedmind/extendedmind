@@ -15,25 +15,28 @@ section.page {
 @login-content-height: @vertical-grid*5.5;
 
 section#login {
-  .banner {
-    img {
-      width: 150px;
+  .column {
+    overflow-y: auto;
+    .banner {
+      img {
+        width: 150px;
+      }
+      // Make content a "sticky footer"
+      min-height: 100%;
+      margin-bottom: -@login-content-height; 
     }
-    // Make content a "sticky footer"
-    min-height: 100%;
-    margin-bottom: -@login-content-height; 
-  }
-  .banner:after {
-    content: "";
-    display: block;
-    height: @login-content-height;
-  }
-  .content {
-    height: @login-content-height;
-    .button-container{
-      padding-top: @vertical-grid;
-      padding-bottom: @vertical-grid / 2;
-      .normal-button;
+    .banner:after {
+      content: "";
+      display: block;
+      height: @login-content-height;
+    }
+    .content {
+      height: @login-content-height;
+      .button-container{
+        padding-top: @vertical-grid;
+        padding-bottom: @vertical-grid / 2;
+        .normal-button;
+      }
     }
   }
 }
