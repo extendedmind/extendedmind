@@ -7,9 +7,8 @@ angular.module('em.services').factory('auth', ['$location', '$q', 'authenticateR
 
     function hoursFromAuth() {
       var lastAuth = Date.now() - userLocalStorage.getAuthenticated();
-      // http://stackoverflow.com/a/10874133
-      lastAuth = (lastAuth / (1000 * 60 * 60)) % 24;
-
+      // https://gist.github.com/remino/1563878#file-msconvert-js
+      lastAuth = Math.floor((lastAuth / (1000 * 60 * 60)));
       return lastAuth;
     }
 
