@@ -2,7 +2,7 @@
 'use strict';
 
 function emSwiper($rootScope, emLocation, userPrefix) {
-  var initialSlideIndex, initialSubPath, slides, swiper, swipers;
+  var initialSlideX, initialSlideY, initialSubPath, slides, swiper, swipers;
   slides = [];
   swipers = {};
 
@@ -16,15 +16,24 @@ function emSwiper($rootScope, emLocation, userPrefix) {
       swipers[swiper.params.mode] = swiper;
       return swiper;
     },
-    changePath: function(swiper) {
-      var activeSlide, slidePath, slideSubPath;
-      activeSlide = swiper.getSlide(swiper.activeIndex);
+    changePath: function(activeSwiper) {
+      var activeSlide, activeSlideY, slidePath, slideSubPath;
+      activeSlide = activeSwiper.getSlide(activeSwiper.activeIndex);
 
-      if (swiper.params.mode === 'horizontal') {
+      if (activeSwiper.params.mode === 'horizontal') {
         if (activeSlide.getData('path')) {
           slidePath = '/' + userPrefix.getPrefix() + '/' + activeSlide.getData('path');
         } else {
           slidePath = '/' + userPrefix.getPrefix();
+        }
+        if (sw[activeSwiper.activeIndex]) {
+          if (isNaN(sw[activeSwiper.activeIndex].activeIndex)) {
+            activeSlideY = 0;
+          } else {
+            activeSlideY = sw[activeSwiper.activeIndex].activeIndex;
+          }
+          slideSubPath = sw[activeSwiper.activeIndex].getSlide(activeSlideY).getData('path');
+          slidePath += '/' + slideSubPath;
         }
       } else { // vertical
         slideSubPath = activeSlide.getData('path');
@@ -36,24 +45,26 @@ function emSwiper($rootScope, emLocation, userPrefix) {
     getSwiper: function(mode) {
       return swipers[mode];
     },
-    setSlides: function(initialIndex, subPath) {
+    setSlides: function(slideX, subPath) {
       initialSubPath = subPath;
       slides = ['inbox', '', 'tasks/dates', 'tasks/projects', 'tasks'];
-      initialSlideIndex = initialIndex;
+      initialSlideX = slideX;
     },
     getSlides: function() {
       return slides;
     },
     setSlideIndex: function(coordX, coordY) {
       swipers.horizontal.swipeTo(coordX);
-
       sw[coordX].swipeTo(coordY);
     },
-    setInitialSlideIndex: function(initialIndex) {
-      initialSlideIndex = initialIndex;
+    setInitialSlideY: function(slideY) {
+      initialSlideY = slideY;
     },
-    getInitiaSlideIndex: function() {
-      return initialSlideIndex;
+    getInitiaSlideIndex: function(mode) {
+      if (mode === 'horizontal') {
+        return initialSlideX;
+      }
+      return initialSlideY;
     },
     setVerticalSwiper: function(coordX) {
       sw[coordX] = swiper;
@@ -96,7 +107,7 @@ function swiperSlide(emSwiper) {
             if (emSwiper.getInitialSubPath()) {
               while (slidePathData[i]) {
                 if (slidePathData[i] === emSwiper.getInitialSubPath()) {
-                  emSwiper.setInitialSlideIndex(i);
+                  emSwiper.setInitialSlideY(i);
                 }
                 i++;
               }
@@ -129,7 +140,7 @@ function emSwiperSlider(emSwiper) {
             slide = swiper.getSlide(i);
             slide.setData('path', pathData[i]);
           }
-          swiper.swipeTo(emSwiper.getInitiaSlideIndex(), 0, false);
+          swiper.swipeTo(emSwiper.getInitiaSlideIndex($scope.mode), 0, false);
         }
       };
 
@@ -148,7 +159,7 @@ function emSwiperSlider(emSwiper) {
         queueStartCallbacks: true,
         queueEndCallbacks: true,
         simulateTouch: true,
-        initialSlide: emSwiper.getInitiaSlideIndex(),
+        initialSlide: emSwiper.getInitiaSlideIndex($scope.mode),
         onSlideChangeEnd: emOnSlideChangeEnd
       };
 
