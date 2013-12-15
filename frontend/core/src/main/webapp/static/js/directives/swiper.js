@@ -1,7 +1,7 @@
 /*global angular, Swiper */
 'use strict';
 
-function emSwiper() {
+function emSwiper($rootScope, emLocation, userPrefix) {
   var initialSlideIndex, initialSubPath, slides, swiper, swipers;
   slides = [];
   swipers = {};
@@ -15,6 +15,23 @@ function emSwiper() {
       swiper = new Swiper(container, params);
       swipers[swiper.params.mode] = swiper;
       return swiper;
+    },
+    changePath: function(swiper) {
+      var activeSlide, slidePath, slideSubPath;
+      activeSlide = swiper.getSlide(swiper.activeIndex);
+
+      if (swiper.params.mode === 'horizontal') {
+        if (activeSlide.getData('path')) {
+          slidePath = '/' + userPrefix.getPrefix() + '/' + activeSlide.getData('path');
+        } else {
+          slidePath = '/' + userPrefix.getPrefix();
+        }
+      } else { // vertical
+        slideSubPath = activeSlide.getData('path');
+        slidePath = '/' + userPrefix.getPrefix() + '/' + this.getSwiper('horizontal').getSlide(this.getSwiper('horizontal').activeIndex).getData('path') + '/' + slideSubPath;
+      }
+      emLocation.skipReload().path(slidePath);
+      $rootScope.$apply();
     },
     getSwiper: function(mode) {
       return swipers[mode];
@@ -56,6 +73,7 @@ function emSwiper() {
   };
 }
 angular.module('em.services').factory('emSwiper', emSwiper);
+emSwiper.$inject = ['$rootScope', 'emLocation', 'userPrefix'];
 
 function swiperSlide(emSwiper) {
   return {
@@ -93,7 +111,7 @@ function swiperSlide(emSwiper) {
 angular.module('em.directives').directive('swiperSlide', swiperSlide);
 swiperSlide.$inject = ['emSwiper'];
 
-function emSwiperSlider($rootScope, emLocation, Enum, userPrefix, emSwiper) {
+function emSwiperSlider(emSwiper) {
   return {
     restrict: 'A',
     scope: {
@@ -120,30 +138,9 @@ function emSwiperSlider($rootScope, emLocation, Enum, userPrefix, emSwiper) {
         elem.addEventListener('touchmove', slideTouchMove, false);
       };
 
-      function changePath() {
-        var activeSlide, slidePath, slideSubPath;
-        activeSlide = swiper.getSlide(swiper.activeIndex);
-
-        if (swiper.params.mode === 'horizontal') {
-          swiper.params.activePath = activeSlide.getData('path');
-          if (swiper.params.activePath) {
-            slidePath = '/' + userPrefix.getPrefix() + '/' + swiper.params.activePath;
-          } else {
-            slidePath = '/' + userPrefix.getPrefix();
-          }
-        } else {
-          slideSubPath = activeSlide.getData('path');
-          slidePath = '/' + userPrefix.getPrefix() + '/' + emSwiper.getSwiper('horizontal').params.activePath + '/' + slideSubPath;
-        }
-        emLocation.skipReload().path(slidePath);
-        $rootScope.$apply();
-      }
-
       function emOnSlideChangeEnd() {
-        changePath();
+        emSwiper.changePath(swiper);
       }
-
-      $rootScope.slideIndex = emSwiper.getInitiaSlideIndex();
 
       var swiperParams = {
         mode: $scope.mode,
@@ -167,7 +164,6 @@ function emSwiperSlider($rootScope, emLocation, Enum, userPrefix, emSwiper) {
           slide.setData('path', slides[i]);
           i++;
         }
-        swiper.params.activePath = swiper.getSlide(swiper.params.initialSlide).getData('path');
       }
 
       var top = false;
@@ -217,4 +213,4 @@ function emSwiperSlider($rootScope, emLocation, Enum, userPrefix, emSwiper) {
   };
 }
 angular.module('em.directives').directive('emSwiperSlider', emSwiperSlider);
-emSwiperSlider.$inject = ['$rootScope', 'emLocation', 'Enum', 'userPrefix', 'emSwiper'];
+emSwiperSlider.$inject = ['emSwiper'];
