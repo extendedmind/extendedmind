@@ -57,7 +57,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my', {
       controller: 'HomeController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -77,7 +77,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID', {
       controller: 'HomeController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -97,7 +97,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/inbox', {
       controller: 'InboxController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -116,7 +116,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/inbox', {
       controller: 'InboxController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -135,7 +135,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/notes', {
       controller: 'NotesController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -155,7 +155,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/notes', {
       controller: 'NotesController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -271,7 +271,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks', {
       controller: 'TasksController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -291,7 +291,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks', {
       controller: 'TasksController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -311,7 +311,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks/projects', {
       controller: 'ProjectController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -330,7 +330,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/projects', {
       controller: 'ProjectController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -349,7 +349,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks/projects/:uuid', {
       controller: 'ProjectController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -368,7 +368,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/projects/:uuid', {
       controller: 'ProjectController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -387,7 +387,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks/dates', {
       controller: 'DatesController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -406,7 +406,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/dates', {
       controller: 'DatesController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -425,7 +425,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks/dates/:date', {
       controller: 'DatesController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -444,7 +444,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/dates/:date', {
       controller: 'DatesController',
-      templateUrl: 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
