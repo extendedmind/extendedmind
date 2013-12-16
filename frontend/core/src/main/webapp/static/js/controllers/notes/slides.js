@@ -1,4 +1,4 @@
-/*jslint white: true */
+/*global angular */
 'use strict';
 
 function NotesSlidesController($location, $scope, errorHandler, filterService, itemsArray, notesArray, tagsArray, tasksArray, userPrefix) {
@@ -12,9 +12,6 @@ function NotesSlidesController($location, $scope, errorHandler, filterService, i
   $scope.prefix = userPrefix.getPrefix();
   $scope.errorHandler = errorHandler;
 
-  $scope.addNew = function() {
-    $location.path(userPrefix.getPrefix() + '/notes/new');
-  };
 }
 
 NotesSlidesController.$inject = ['$location', '$scope', 'errorHandler', 'filterService', 'itemsArray', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];

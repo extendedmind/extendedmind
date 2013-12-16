@@ -57,10 +57,6 @@ function ProjectController($location, $scope, $routeParams, date, errorHandler, 
 
     });
   };
-
-  $scope.addNew = function() {
-    $location.path(userPrefix.getPrefix() + '/tasks/new/');
-  };
 }
 
 ProjectController.$inject = ['$location', '$scope', '$routeParams', 'date', 'errorHandler', 'filterService', 'itemsArray', 'notesArray', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];

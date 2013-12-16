@@ -1,9 +1,11 @@
 /*global angular */
 'use strict';
 
-function NavbarController($location, $scope, authenticateRequest, emSwiper, userAuthenticate, userSessionStorage) {
+function NavbarController($location, $scope, authenticateRequest, emSwiper, userAuthenticate, userPrefix, userSessionStorage) {
   $scope.user = userSessionStorage.getUserUUID();
   $scope.collectives = userSessionStorage.getCollectives();
+  $scope.prefix = userPrefix.getPrefix();
+
 
   $scope.logout = function() {
     authenticateRequest.logout().then(function() {
@@ -41,5 +43,5 @@ function NavbarController($location, $scope, authenticateRequest, emSwiper, user
   };
 }
 
-NavbarController.$inject = ['$location', '$scope', 'authenticateRequest', 'emSwiper', 'userAuthenticate', 'userSessionStorage'];
+NavbarController.$inject = ['$location', '$scope', 'authenticateRequest', 'emSwiper', 'userAuthenticate', 'userPrefix', 'userSessionStorage'];
 angular.module('em.app').controller('NavbarController', NavbarController);

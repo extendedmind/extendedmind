@@ -1,10 +1,10 @@
-/*global beforeEach, inject, describe, it, expect */
+/*global module, beforeEach, inject, describe, it, expect */
 /*jslint white: true */
 'use strict';
 
 beforeEach(module('em.app'));
 
-describe('TasksController', function() {
+describe('TasksSlidesController', function() {
   beforeEach(module('em.services', 'em.mockHelpers'));
 
   var $controller, $scope, mockHttpBackendResponse, slide, userTasks;
@@ -14,7 +14,7 @@ describe('TasksController', function() {
     userTasks = mockHttpBackendResponse.getItemsResponse().tasks;
 
     $scope = _$rootScope_.$new();
-    $controller = _$controller_('TasksController', {
+    $controller = _$controller_('TasksSlidesController', {
       $scope : $scope,
       slide : slide
     });
