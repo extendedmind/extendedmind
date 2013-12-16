@@ -1,0 +1,157 @@
+// GENERAL INPUTS
+
+.simple-input {
+  outline: none;
+  border:none !important;
+  box-shadow:none !important;
+  padding: 0;
+  border-radius: 0 !important;
+  background: none;
+}
+
+input {
+  width: 100%;
+}
+
+// PLACEHOLDER TWEAK 
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    @text-gray;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    @text-gray;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    @text-gray;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    @text-gray;
+}
+
+// BUTTONS
+
+.button-container {
+  text-align: center;
+}
+
+.wide-button {
+  outline: none;
+  border:none !important;
+  box-shadow:none !important;
+  padding: 0;
+  background: none;
+  color: white;
+  height: @vertical-grid;
+  width: 100%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 7px;
+}
+
+.normal-button {
+  button {
+    background-color: @active-button;
+  }
+  button[disabled] {
+    background-color: @inactive-button;
+  }
+  button:active {
+    background-color: @pressed-button;
+  }
+}
+
+// CHECKBOXES
+
+input[type=checkbox].input-checkbox {
+  position: absolute; 
+  overflow: hidden; 
+  clip: rect(0 0 0 0);
+  height:1px; 
+  width:1px; 
+  margin:-1px; 
+  padding:0;
+  border:0;
+}
+
+input[type=checkbox].input-checkbox + .input-text {
+  padding-left:35px;
+  height:29px; 
+  display:inline-block;
+  line-height:29px;
+  background-repeat:no-repeat;
+  background-position: 0 0;
+  vertical-align:middle;
+  cursor:pointer;
+}
+
+input[type=checkbox].input-checkbox:checked + .input-text {
+  background-position: 0 -79px;
+}
+
+.checkbox{background-image:url(../img/checkbox.png); }
+
+// LISTS
+
+ul {
+  list-style-type: none;
+  padding:0;
+}
+
+// BORDERS
+
+.top-bottom-borders{
+  border-top: solid 2px @text-gray;
+  border-bottom: solid 2px @text-gray;
+}
+
+// SCREEN READERS
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+// ABSOLUTE CENTER
+
+.center-container {
+  position: relative;
+}
+
+.absolute-center {
+  width: 50%;
+  height: 50%;
+  overflow: auto;
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+}
+
+.center-horizontally {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// COMMON LAYOUT TRICKS
+
+.left-of-three {
+  float:left;
+  width: 33.3%
+}
+.right-of-three {
+  float:right;
+  width: 33.3%;
+  text-align: right;
+}
+.center-of-three {
+  float: left;
+  width: 33.3%;
+  text-align: center;
+} 
+

@@ -58,7 +58,7 @@ angular.module('em.directives').directive('emFeatureHeader', [
     };
   }]);
 
-angular.module('em.directives').directive('emMainHeader', [
+angular.module('em.directives').directive('mainHeader', [
   function() {
     return {
       restrict: 'A',
@@ -162,3 +162,18 @@ angular.module('em.directives').directive('emPassword', [
       }
     };
   }]);
+
+angular.module('em.directives').directive('scrollTo',
+  function ($location, $anchorScroll) {
+    return function(scope, element, attrs) {
+      element.bind('click', function(event) {
+        event.stopPropagation();
+        scope.$on('$locationChangeStart', function(ev) {
+          ev.preventDefault();
+        });
+        var location = attrs.scrollTo;
+        $location.hash(location);
+        $anchorScroll();
+      });
+    };
+  });
