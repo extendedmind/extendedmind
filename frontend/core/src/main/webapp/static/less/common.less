@@ -129,3 +129,19 @@ input[type=checkbox].input-checkbox:checked + .input-text {
   text-align: center;
 } 
 
+// ANIMATIONS
+
+.animate-hide {
+  -webkit-transition:all linear 0.2s;
+  transition:all linear 0.2s;
+  opacity:1;
+}
+
+.animate-hide.ng-hide-add,
+.animate-hide.ng-hide-remove {
+  display:block!important;
+}
+
+.animate-hide.ng-hide {
+  opacity:0;
+}

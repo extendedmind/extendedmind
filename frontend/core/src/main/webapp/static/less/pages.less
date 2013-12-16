@@ -73,7 +73,6 @@ section#home {
     height:100%;
     .banner {
       padding-top: @vertical-grid * 1.5;
-      padding-bottom: @vertical-grid;
       img {
         width: 67.5px;
         .center-horizontally;
@@ -82,7 +81,8 @@ section#home {
     }
     .content {
       height:inherit;
-      padding-bottom: @footer-height + @main-header-height + @vertical-grid;
+      padding-top: @vertical-grid / 2;
+      padding-bottom: @footer-height + @vertical-grid / 4;
       #omnibar{
         .top-bottom-borders;
         display: table;
