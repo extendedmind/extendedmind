@@ -1,7 +1,7 @@
 /*global angular, Swiper */
 'use strict';
 
-function emSwiper($rootScope, emLocation, userPrefix) {
+function emSwiper($rootScope, emLocation, Enum, userPrefix) {
   var initialSlideX, initialSlideY, initialSubPath, slides, swiper, swipers;
   slides = [];
   swipers = {};
@@ -80,11 +80,20 @@ function emSwiper($rootScope, emLocation, userPrefix) {
     },
     getInitialSubPath: function() {
       return initialSubPath;
+    },
+    gotoInbox: function() {
+      swipers.horizontal.swipeTo(Enum.INBOX);
+    },
+    gotoHome: function() {
+      swipers.horizontal.swipeTo(Enum.MY);
+    },
+    gotoTasks: function() {
+      swipers.horizontal.swipeTo(Enum.TASKS);
     }
   };
 }
 angular.module('em.services').factory('emSwiper', emSwiper);
-emSwiper.$inject = ['$rootScope', 'emLocation', 'userPrefix'];
+emSwiper.$inject = ['$rootScope', 'emLocation', 'Enum', 'userPrefix'];
 
 function swiperSlide(emSwiper) {
   return {
@@ -129,7 +138,30 @@ function emSwiperSlider(emSwiper) {
       mode: '@emSwiperSlider'
     },
     controller: function($scope, $element) {
-      var swiper;
+      var swiper, swiperParams;
+
+      swiperParams = {
+        mode: $scope.mode,
+        noSwiping: true,
+        queueStartCallbacks: true,
+        queueEndCallbacks: true,
+        simulateTouch: true,
+        initialSlide: emSwiper.getInitiaSlideIndex($scope.mode),
+        onSlideChangeEnd: emOnSlideChangeEnd
+      };
+      swiper = emSwiper.initSwiper($element[0], swiperParams);
+
+      if (swiper.params.mode === 'horizontal') {
+        var i, slide, slides;
+        i = 0;
+        slides = emSwiper.getSlides();
+
+        while (swiper.slides[i]) {
+          slide = swiper.slides[i];
+          slide.setData('path', slides[i]);
+          i++;
+        }
+      }
 
       this.slidesReady = function(pathData) {
         var i, slide;
@@ -151,30 +183,6 @@ function emSwiperSlider(emSwiper) {
 
       function emOnSlideChangeEnd() {
         emSwiper.changePath(swiper);
-      }
-
-      var swiperParams = {
-        mode: $scope.mode,
-        noSwiping: true,
-        queueStartCallbacks: true,
-        queueEndCallbacks: true,
-        simulateTouch: true,
-        initialSlide: emSwiper.getInitiaSlideIndex($scope.mode),
-        onSlideChangeEnd: emOnSlideChangeEnd
-      };
-
-      swiper = emSwiper.initSwiper($element[0], swiperParams);
-
-      if (swiper.params.mode === 'horizontal') {
-        var i, slide, slides;
-        i = 0;
-        slides = emSwiper.getSlides();
-
-        while (swiper.slides[i]) {
-          slide = swiper.slides[i];
-          slide.setData('path', slides[i]);
-          i++;
-        }
       }
 
       var top = false;
