@@ -42,7 +42,7 @@ userPrefix.$inject = ['userSessionStorage'];
 function Enum() {
   var slide = {
     INBOX: 0,
-    MY: 1,
+    HOME: 1,
     DATES: 2,
     LISTS: 3,
     PROJECTS: 4,

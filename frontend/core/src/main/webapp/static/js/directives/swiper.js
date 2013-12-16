@@ -85,7 +85,7 @@ function emSwiper($rootScope, emLocation, Enum, userPrefix) {
       swipers.horizontal.swipeTo(Enum.INBOX);
     },
     gotoHome: function() {
-      swipers.horizontal.swipeTo(Enum.MY);
+      swipers.horizontal.swipeTo(Enum.HOME);
     },
     gotoTasks: function() {
       swipers.horizontal.swipeTo(Enum.LISTS);

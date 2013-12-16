@@ -65,7 +65,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['Enum', 'emSwiper',
         function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.MY);
+          emSwiper.setSlides(Enum.HOME);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
@@ -85,7 +85,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['Enum', 'emSwiper',
         function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.MY);
+          emSwiper.setSlides(Enum.HOME);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
