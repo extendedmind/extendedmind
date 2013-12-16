@@ -61,6 +61,14 @@ div[role=main] {
   padding-right: inherit;
 }
 
+.feature-header-container {
+  min-height: @feature-header-height;
+}
+
+.feature-content-container {
+  
+}
+
 // CONTENT
 
 .content-container {
@@ -145,11 +153,12 @@ nav#footer {
 }
 
 // For smaller screens, aside is hidden, and we revert to single column width
-@media (max-width: @maximum-width) {
+// TODO: Aside hidden for now from everyone!
+//@media (max-width: @maximum-width) {
   .two-column-grid, div.column, .footer-container {
     max-width: @one-column-grid-width;
   }
   aside {
     display:none;
   }
-}
+//}

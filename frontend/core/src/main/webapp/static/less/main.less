@@ -24,6 +24,8 @@ html {
   font-size: @default-font-size;
 }
 
+// HEADINGS
+
 h1 {
   font-weight: 100;
 }
@@ -32,7 +34,38 @@ h2, h3, h4, h5, h6 {
   font-weight: 300;
 }
 
+// LINKS
+
 a {
   text-decoration: none;
   color: @link-color;
 }
+
+// LISTS
+
+ul {
+  list-style-type: none;
+  padding:0;
+}
+
+// INPUTS
+
+input {
+  width: 100%;
+}
+
+// PLACEHOLDER TWEAK 
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    @text-gray;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    @text-gray;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    @text-gray;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    @text-gray;
+}
+
