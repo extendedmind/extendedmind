@@ -107,11 +107,11 @@ angular.module('em.directives').directive('contextsList', [
     };
   }]);
 
-angular.module('em.directives').directive('my', [
+angular.module('em.directives').directive('home', [
   function() {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/my.html'
+      templateUrl: 'static/partials/home.html'
     };
   }]);
 

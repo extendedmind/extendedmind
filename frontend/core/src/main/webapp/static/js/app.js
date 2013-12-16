@@ -56,7 +56,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my', {
-      controller: 'MyController',
+      controller: 'HomeController',
       templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
@@ -76,7 +76,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID', {
-      controller: 'MyController',
+      controller: 'HomeController',
       templateUrl: 'static/partials/emSlides.html',
       resolve: {
         auth: ['auth',
