@@ -50,10 +50,14 @@ angular.module('em.directives').directive('emFooter', [
     };
   }]);
 
-angular.module('em.directives').directive('emFeatureHeader', [
+angular.module('em.directives').directive('featureHeader', [
   function() {
     return {
+      controller: 'NavbarController',
       restrict: 'A',
+      scope: {
+        feature: '@featureHeader'
+      },
       templateUrl: 'static/partials/templates/featureHeader.html'
     };
   }]);
