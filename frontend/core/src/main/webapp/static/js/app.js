@@ -17,7 +17,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/accept/:hex_code', {
-      templateUrl: 'static/partials/signup.html',
+      templateUrl: 'static/partials/pages/signup.html',
       controller: 'SignupController',
       resolve: {
         routes: ['$location', '$route',
@@ -30,17 +30,17 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/404', {
-      templateUrl: 'static/partials/pageNotFound.html',
+      templateUrl: 'static/partials/pages/pageNotFound.html',
       controller: 'PageNotFoundController'
     });
 
     $routeProvider.when('/login', {
-      templateUrl: 'static/partials/login.html',
+      templateUrl: 'static/partials/pages/login.html',
       controller: 'LoginController'
     });
 
     $routeProvider.when('/my/account', {
-      templateUrl: 'static/partials/account.html',
+      templateUrl: 'static/partials/pages/account.html',
       controller: 'AccountController',
       resolve: {
         auth: ['auth',

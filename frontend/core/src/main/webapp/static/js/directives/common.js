@@ -111,7 +111,7 @@ angular.module('em.directives').directive('home', [
   function() {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/home.html'
+      templateUrl: 'static/partials/pages/home.html'
     };
   }]);
 
