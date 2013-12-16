@@ -88,7 +88,7 @@ function emSwiper($rootScope, emLocation, Enum, userPrefix) {
       swipers.horizontal.swipeTo(Enum.MY);
     },
     gotoTasks: function() {
-      swipers.horizontal.swipeTo(Enum.TASKS);
+      swipers.horizontal.swipeTo(Enum.LISTS);
     }
   };
 }

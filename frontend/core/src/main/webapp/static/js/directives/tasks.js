@@ -107,13 +107,13 @@ function datebar(emSwiper, Enum) {
 angular.module('em.directives').directive('datebar', datebar);
 datebar.$inject = ['emSwiper', 'Enum'];
 
-function tasks() {
+function lists() {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/my/tasks.html'
+    templateUrl: 'static/partials/my/lists.html'
   };
 }
-angular.module('em.directives').directive('tasks', tasks);
+angular.module('em.directives').directive('lists', lists);
 
 function filteredTasksList() {
   return {
