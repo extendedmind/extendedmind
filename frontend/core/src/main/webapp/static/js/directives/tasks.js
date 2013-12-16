@@ -4,7 +4,7 @@
 function projects(emSwiper, Enum) {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/my/tasks/projects.html',
+    templateUrl: 'static/partials/pages/tasks/projects.html',
     link: function() {
       emSwiper.setVerticalSwiper(Enum.PROJECTS);
     }
@@ -65,7 +65,7 @@ angular.module('em.directives').directive('projectContent', projectContent);
 function dates(emSwiper, Enum) {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/my/tasks/dates.html',
+    templateUrl: 'static/partials/pages/tasks/dates.html',
     link: function() {
       emSwiper.setVerticalSwiper(Enum.DATES);
     }
@@ -110,7 +110,7 @@ datebar.$inject = ['emSwiper', 'Enum'];
 function lists() {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/my/tasks/lists.html'
+    templateUrl: 'static/partials/pages/tasks/lists.html'
   };
 }
 angular.module('em.directives').directive('lists', lists);

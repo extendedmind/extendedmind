@@ -175,7 +175,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/notes/context/:uuid', {
       controller: 'ContextController',
-      templateUrl: 'static/partials/my/notes/context.html',
+      templateUrl: 'static/partials/pages/notes/context.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -191,7 +191,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/notes/context/:uuid', {
       controller: 'ContextController',
-      templateUrl: 'static/partials/my/notes/context.html',
+      templateUrl: 'static/partials/pages/notes/context.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -207,7 +207,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/notes/edit/:uuid', {
       controller: 'NoteEditController',
-      templateUrl: 'static/partials/my/notes/edit.html',
+      templateUrl: 'static/partials/pages/notes/edit.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -223,7 +223,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/notes/edit/:uuid', {
       controller: 'NoteEditController',
-      templateUrl: 'static/partials/my/notes/edit.html',
+      templateUrl: 'static/partials/pages/notes/edit.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -239,7 +239,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/notes/new', {
       controller: 'NewNoteController',
-      templateUrl: 'static/partials/my/notes/new.html',
+      templateUrl: 'static/partials/pages/notes/new.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -255,7 +255,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/notes/new', {
       controller: 'NewNoteController',
-      templateUrl: 'static/partials/my/notes/new.html',
+      templateUrl: 'static/partials/pages/notes/new.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -463,7 +463,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks/context/:uuid', {
       controller: 'ContextController',
-      templateUrl: 'static/partials/my/tasks/context.html',
+      templateUrl: 'static/partials/pages/tasks/context.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -479,7 +479,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/context/:uuid', {
       controller: 'ContextController',
-      templateUrl: 'static/partials/my/tasks/context.html',
+      templateUrl: 'static/partials/pages/tasks/context.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -495,7 +495,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks/edit/:uuid', {
       controller: 'EditTaskController',
-      templateUrl: 'static/partials/my/tasks/edit.html',
+      templateUrl: 'static/partials/pages/tasks/edit.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -511,7 +511,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/edit/:uuid', {
       controller: 'EditTaskController',
-      templateUrl: 'static/partials/my/tasks/edit.html',
+      templateUrl: 'static/partials/pages/tasks/edit.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -527,7 +527,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks/new', {
       controller: 'NewTaskController',
-      templateUrl: 'static/partials/my/tasks/new.html',
+      templateUrl: 'static/partials/pages/tasks/new.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -543,7 +543,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/new', {
       controller: 'NewTaskController',
-      templateUrl: 'static/partials/my/tasks/new.html',
+      templateUrl: 'static/partials/pages/tasks/new.html',
       resolve: {
         auth: ['auth',
         function(auth) {

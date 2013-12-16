@@ -119,7 +119,7 @@ angular.module('em.directives').directive('inbox', [
   function() {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/my/inbox.html'
+      templateUrl: 'static/partials/pages/inbox.html'
     };
   }]);
 

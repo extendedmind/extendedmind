@@ -5,7 +5,7 @@ angular.module('em.directives').directive('notes', [
   function() {
     return {
       restrict : 'A',
-      templateUrl : 'static/partials/my/notes.html'
+      templateUrl : 'static/partials/pages/notes.html'
     };
   }]);
 
