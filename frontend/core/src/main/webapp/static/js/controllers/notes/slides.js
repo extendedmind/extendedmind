@@ -1,4 +1,4 @@
-/*jslint white: true */
+/*global angular */
 'use strict';
 
 function NotesSlidesController($location, $scope, errorHandler, filterService, itemsArray, notesArray, tagsArray, tasksArray, userPrefix) {
