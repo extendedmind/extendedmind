@@ -110,7 +110,7 @@ datebar.$inject = ['emSwiper', 'Enum'];
 function lists() {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/my/lists.html'
+    templateUrl: 'static/partials/my/tasks/lists.html'
   };
 }
 angular.module('em.directives').directive('lists', lists);
