@@ -1,10 +1,9 @@
 <nav id="main-header" role="navigation">
-  <div id="menu-icon">
-    <button id="menu-button" 
-            type="button" 
-            ng-click="collapseNavbar()"
-            alt="menu"/>
-  </div>
+  <button id="menu-button" 
+  type="button" 
+  ng-click="collapseNavbar()"
+  alt="menu">
+  <span class="icon-menu">icon-menu</span></button>
   <div id="menu-content" ng-show="collapse">
     <ul>
       <li>
@@ -15,18 +14,18 @@
         <ul>
           <li ng-repeat="(key, value) in collectives">
             <div ng-if="value[2] === false">
-            <div>
-              <a href ng-click="setActiveUuid(key, true)">{{value[0]}}</a>
-            </div>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="#/my/account">account</a>
-      </li>
-      <li>
-        <a href="" ng-click="logout()">logout</a>
-      </li>
-    </ul>
-  </div>
-</nav>
+              <div>
+                <a href ng-click="setActiveUuid(key, true)">{{value[0]}}</a>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a href="#/my/account">account</a>
+        </li>
+        <li>
+          <a href="" ng-click="logout()">logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
