@@ -1,7 +1,7 @@
 /*jslint white: true */
 'use strict';
 
-function NotesController($location, $scope, errorHandler, filterService, itemsArray, notesArray, tagsArray, tasksArray, userPrefix) {
+function NotesSlidesController($location, $scope, errorHandler, filterService, itemsArray, notesArray, tagsArray, tasksArray, userPrefix) {
 
   $scope.notes = notesArray.getNotes();
   $scope.items = itemsArray.getItems();
@@ -17,5 +17,5 @@ function NotesController($location, $scope, errorHandler, filterService, itemsAr
   };
 }
 
-NotesController.$inject = ['$location', '$scope', 'errorHandler', 'filterService', 'itemsArray', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];
-angular.module('em.app').controller('NotesController', NotesController);
+NotesSlidesController.$inject = ['$location', '$scope', 'errorHandler', 'filterService', 'itemsArray', 'notesArray', 'tagsArray', 'tasksArray', 'userPrefix'];
+angular.module('em.app').controller('NotesSlidesController', NotesSlidesController);

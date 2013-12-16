@@ -134,7 +134,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/notes', {
-      controller: 'NotesController',
+      controller: 'NotesSlidesController',
       templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
@@ -154,7 +154,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/notes', {
-      controller: 'NotesController',
+      controller: 'NotesSlidesController',
       templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
@@ -270,7 +270,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/lists', {
-      controller: 'TasksController',
+      controller: 'TasksSlidesController',
       templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
@@ -290,7 +290,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/lists', {
-      controller: 'TasksController',
+      controller: 'TasksSlidesController',
       templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
