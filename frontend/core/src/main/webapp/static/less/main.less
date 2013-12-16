@@ -1,0 +1,38 @@
+*{
+  // Use the same font throughout
+  font-family: @font;
+
+  // Use border box everywhere
+  -moz-box-sizing: border-box; 
+  -webkit-box-sizing: border-box; 
+  box-sizing: border-box; 
+
+  // Default to no background repeat
+  background-repeat: no-repeat;
+}
+
+html {
+  // There is never any full page scrolling
+  height: 100%;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+  body, div[role=main], .no-slides-container, .slides-container, section.one-column-grid, section.two-columns-grid, .column {
+    height: inherit;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  font-size: @default-font-size;
+}
+
+h1 {
+  font-weight: 100;
+}
+
+h2, h3, h4, h5, h6 {
+  font-weight: 300;
+}
+
+a {
+  text-decoration: none;
+  color: @link-color;
+}

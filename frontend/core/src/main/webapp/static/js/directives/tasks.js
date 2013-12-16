@@ -123,8 +123,7 @@ function filteredTasksList() {
       tasksListFilter: '=tasksFilter'
     },
     restrict: 'A',
-    templateUrl: 'static/partials/templates/tasks/filteredTasksList.html',
-    transclude: true
+    templateUrl: 'static/partials/templates/tasks/filteredTasksList.html'
   };
 }
 angular.module('em.directives').directive('filteredTasksList', filteredTasksList);

@@ -1,11 +1,10 @@
-<div>
-  <div ng-transclude></div>
+<div ng-show="tasksListFilter && filteredTasks.length">
+
+  <h3><a class="text-muted" href ng-click="gotoTasks()">tasks</a></h3>
 
   <ul class="list-unstyled">
-
-    <li ng-class="selected" ng-repeat="task in tasks | filter:{title:tasksListFilter}">
+    <li ng-class="selected" ng-repeat="task in filteredTasks = (tasks | filter:{title:tasksListFilter})">
       <div task></div>
     </li>
-
   </ul>
 </div>

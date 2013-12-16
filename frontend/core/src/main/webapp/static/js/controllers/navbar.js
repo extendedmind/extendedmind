@@ -33,6 +33,12 @@ function NavbarController($location, $scope, authenticateRequest, emSwiper, user
   $scope.gotoTasks = function() {
     emSwiper.gotoTasks();
   };
+
+  $scope.useCollectives = function () {
+    if (userSessionStorage.getCollectives() && Object.keys(userSessionStorage.getCollectives()).length > 1) {
+      return true;
+    }
+  };
 }
 
 NavbarController.$inject = ['$location', '$scope', 'authenticateRequest', 'emSwiper', 'userAuthenticate', 'userSessionStorage'];
