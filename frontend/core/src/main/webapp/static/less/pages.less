@@ -1,16 +1,5 @@
 
-section.page {
-  .banner {
-    padding-top: @vertical-grid * 1.5;
-    img {
-      margin-left: auto;
-      margin-right: auto;
-      display: block;
-    }
-  }
-}
-
-// LOGIN PAGE
+// LOGIN
 
 @login-content-height: @vertical-grid*5.5;
 
@@ -20,10 +9,13 @@ section#login {
     .banner {
       img {
         width: 150px;
+        .center-horizontally;
+        display: block;
       }
       // Make content a "sticky footer"
       min-height: 100%;
       margin-bottom: -@login-content-height; 
+      padding-top: @vertical-grid * 1.5;
     }
     .banner:after {
       content: "";
@@ -80,9 +72,12 @@ section#home {
   #main-content-container {
     height:100%;
     .banner {
+      padding-top: @vertical-grid * 1.5;
       padding-bottom: @vertical-grid;
       img {
         width: 67.5px;
+        .center-horizontally;
+        display: block;
       }
     }
     .content {
