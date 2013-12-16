@@ -66,8 +66,17 @@ div[role=main] {
 }
 
 .feature-content-container {
-  height:100%;
+  height:inherit;
   padding-top: @feature-header-height;
+  padding-bottom: @footer-height;
+  overflow-y: auto;
+  position:relative;
+  ul {
+    height:inherit;
+    position:relative;
+    overflow-y: auto;
+    display:block;
+  }
 }
 
 // CONTENT
@@ -157,7 +166,7 @@ nav#footer {
 
 // FIXME: FORCING ONE COLUMN TO EVERYONE
 //@media (max-width: @maximum-width) {
-  .two-column-grid, .two-column-grid div.column, .two-column-grid .footer-container, .two-column-grid .header-container {
+  .two-column-grid, .two-column-grid div.column, .two-column-grid .footer-container, .two-column-grid .header-container, .footer-container {
     max-width: @one-column-grid-width;
   }
   aside {
