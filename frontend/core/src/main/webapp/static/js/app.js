@@ -269,7 +269,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/my/tasks', {
+    $routeProvider.when('/my/tasks/lists', {
       controller: 'TasksController',
       templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
@@ -289,7 +289,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/collective/:collectiveUUID/tasks', {
+    $routeProvider.when('/collective/:collectiveUUID/tasks/lists', {
       controller: 'TasksController',
       templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
