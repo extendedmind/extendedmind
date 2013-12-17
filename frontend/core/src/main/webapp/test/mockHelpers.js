@@ -1,5 +1,4 @@
-/*global getJSONFixture, sessionStorage */
-/*jslint white: true */
+/*global angular, getJSONFixture, sessionStorage */
 'use strict';
 
 angular.module('em.mockHelpers', ['em.base64']);
@@ -160,7 +159,7 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, itemsResponse);
     });
 
-    $httpBackend.whenGET(/null/).respond(function(method, url, data, headers) {
+    $httpBackend.whenGET(/null/).respond(function() {
       return [404, 'The requested resource could not be found.'];
     });
   }]);
@@ -265,17 +264,6 @@ angular.module('em.mockHelpers').factory('mockHttpBackendResponse', ['base64',
       },
       clearSessionStorage : function() {
         sessionStorage.clear();
-      },
-      clearCookies : function() {
-        var cookie, cookies, eqPos, i, name;
-        cookies = document.cookie.split(';');
-
-        for ( i = 0; i < cookies.length; i += 1) {
-          cookie = cookies[i];
-          eqPos = cookie.indexOf("=");
-          name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        }
       }
     };
   }]);
