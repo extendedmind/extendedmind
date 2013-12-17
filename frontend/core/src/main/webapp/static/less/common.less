@@ -24,7 +24,7 @@
   float:left;
   width: 33.33%;
   .small-border-right:after{
-    margin-left: 11%;
+    margin-left: 12%;
   }
 }
 .right-of-three {
@@ -57,6 +57,33 @@
   }
 }
 
+
+// ANIMATIONS
+
+.animate-hide {
+  -webkit-transition:all linear 0.2s;
+  transition:all linear 0.2s;
+  opacity:1;
+}
+
+.animate-hide.ng-hide-add,
+.animate-hide.ng-hide-remove {
+  display:block!important;
+}
+
+.animate-hide.ng-hide {
+  opacity:0;
+}
+
+.fade-color(@fade-time) {
+  -o-transition: @fade-time linear;
+  -moz-transition: @fade-time linear;
+  -khtml-transition: @fade-time linear;
+  -webkit-transition: @fade-time linear;
+  -ms-transition: @fade-time linear;
+  transition: @fade-time linear;
+}
+
 // GENERAL INPUTS
 
 .simple-input {
@@ -65,6 +92,21 @@
   box-shadow:none !important;
   padding: 0;
   background-image: none;
+}
+
+.click-to-slide{
+  display: table;
+  width: 100%;
+  vertical-align: middle;
+  span.link-title {
+    width: 100%;
+    display:table-cell;
+  }
+  span.slide-indicator { 
+    display:table-cell;
+    width: @slide-indicator-width;
+    color:@text-gray;
+  }
 }
 
 // BUTTONS
@@ -130,7 +172,6 @@ button.delete-button {
   }
 }
 
-
 // CHECKBOXES
 
 input[type=checkbox].input-checkbox {
@@ -159,6 +200,11 @@ input[type=checkbox].input-checkbox:checked + .input-text {
   background-position: 0 -79px;
 }
 
+input[type=checkbox].input-checkbox:checked ~ span.fade {
+  color:@text-gray;
+  .fade-color(0.1s);
+}
+
 .checkbox{background-image:url(../img/checkbox.png); }
 
 // BORDERS
@@ -179,21 +225,4 @@ input[type=checkbox].input-checkbox:checked + .input-text {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
-}
-
-// ANIMATIONS
-
-.animate-hide {
-  -webkit-transition:all linear 0.2s;
-  transition:all linear 0.2s;
-  opacity:1;
-}
-
-.animate-hide.ng-hide-add,
-.animate-hide.ng-hide-remove {
-  display:block!important;
-}
-
-.animate-hide.ng-hide {
-  opacity:0;
 }

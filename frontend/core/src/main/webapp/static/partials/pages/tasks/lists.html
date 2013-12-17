@@ -3,20 +3,20 @@
     <header id="tasks-lists-header" class="feature-header" feature-header="lists"></header>
     <div id="tasks-lists-feature-content-container" class="content-container feature-content-container">
       <div class="inner-feature-content-container">
-        <section>
+        <section ng-show="filteredProjects && filteredProjects.length">
           <h3>projects</h3>
-          <ul>
-            <li ng-class="selected" ng-repeat="project in tasks | tasksFilter:filterService.activeFilters.project">
-              <div project-title></div>
+          <ul class="indent">
+            <li ng-class="selected" ng-repeat="project in filteredProjects = (tasks | tasksFilter:filterService.activeFilters.project)">
+              <a class="text-muted click-to-slide" href ng-click="goToProject($index)">
+                <span class="link-title">{{project.title}}</span><span class="slide-indicator">&gt;</span>
+              </a>
             </li>
           </ul>
         </section>
 
-        <section>
-          <h3>areas</h3>
-          <div contexts-list>
-            <h3>contexts</h3>
-          </div>
+        <section ng-show="tags && tags.length">
+          <h3>contexts</h3>
+          <div class="indent" contexts-list></div>
         </section>
 
         <section>
