@@ -65,6 +65,7 @@ angular.module('em.directives').directive('featureHeader', [
 angular.module('em.directives').directive('mainHeader', [
   function() {
     return {
+      controller: 'NavbarController',
       restrict: 'A',
       templateUrl: 'static/partials/templates/mainHeader.html'
     };
@@ -76,7 +77,7 @@ angular.module('em.directives').directive('omniBar', [ '$rootScope',
       controller: 'OmniBarController',
       restrict: 'A',
       templateUrl: 'static/partials/templates/omniBar.html',
-      link: function(scope, element) {
+      link: function(scope) {
         $rootScope.omniBarActive = false;
         scope.omniBarFocus = function(focus) {
           if (focus){
