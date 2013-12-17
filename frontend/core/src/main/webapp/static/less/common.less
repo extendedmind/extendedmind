@@ -1,3 +1,62 @@
+// ABSOLUTE CENTER
+
+.center-container {
+  position: relative;
+}
+
+.absolute-center {
+  width: 50%;
+  height: 50%;
+  overflow: auto;
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+}
+
+.center-horizontally {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// HORIZONTAL LAYOUT
+
+.left-of-three {
+  float:left;
+  width: 33.33%;
+  .small-border-right:after{
+    margin-left: 11%;
+  }
+}
+.right-of-three {
+  float:right;
+  width: 33.33%;
+  text-align: right;
+}
+.center-of-three {
+  float: left;
+  width: 33.34%;
+  text-align: center;
+}
+
+.horizontally-justified {
+  text-align: justify;
+  * {
+    display: inline;
+  }
+  .justified-element {
+    height: @footer-height;
+    vertical-align: top;
+    display: inline-block;
+    *display: inline;
+  }
+  #stretch {
+    width: 100%;
+    display: inline-block;
+    font-size: 0;
+    line-height: 0
+  }
+}
+
 // GENERAL INPUTS
 
 .simple-input {
@@ -5,8 +64,7 @@
   border:none !important;
   box-shadow:none !important;
   padding: 0;
-  border-radius: 0 !important;
-  background: none;
+  background-image: none;
 }
 
 // BUTTONS
@@ -16,31 +74,62 @@
 }
 
 .wide-button {
-  outline: none;
-  border:none !important;
-  box-shadow:none !important;
-  padding: 0;
-  background: none;
-  color: white;
+  .simple-input;
+  .center-horizontally;
   height: @vertical-grid;
   width: 100%;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
   border-radius: 7px;
 }
 
-.normal-button {
-  button {
+.button-row{
+  width:100%;
+  height: @vertical-grid;
+  vertical-align: middle;
+  .button-container{
+    button {
+      .simple-input;
+      width: 100%;
+      height: @vertical-grid;
+    }
+  }
+  .small-border-right:after {
+    float:right;
+    height:25px;
+    background:white;
+    width:1px;
+    content:"";
+    position:absolute;
+    text-align: right;
+  }
+}
+
+button.normal-button {
+  & {
+    color: white;
     background-color: @active-button;
   }
-  button[disabled] {
+  &[disabled] {
+    color: white;
     background-color: @inactive-button;
   }
-  button:active {
+  &:active {
+    color: white;
     background-color: @pressed-button;
   }
 }
+
+button.delete-button {
+  & {
+    color: white;
+    background-color: @delete-button;
+  }
+  &:active {
+    color: white;
+    background-color: @pressed-delete-button;
+  }
+}
+
 
 // CHECKBOXES
 
@@ -91,43 +180,6 @@ input[type=checkbox].input-checkbox:checked + .input-text {
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
-
-// ABSOLUTE CENTER
-
-.center-container {
-  position: relative;
-}
-
-.absolute-center {
-  width: 50%;
-  height: 50%;
-  overflow: auto;
-  margin: auto;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-}
-
-.center-horizontally {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-// COMMON LAYOUT TRICKS
-
-.left-of-three {
-  float:left;
-  width: 33.3%
-}
-.right-of-three {
-  float:right;
-  width: 33.3%;
-  text-align: right;
-}
-.center-of-three {
-  float: left;
-  width: 33.3%;
-  text-align: center;
-} 
 
 // ANIMATIONS
 

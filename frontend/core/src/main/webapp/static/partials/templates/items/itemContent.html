@@ -1,31 +1,24 @@
 <div ng-switch="itemType">
-
-  <div ng-switch-default>
-
-    <div class="em-item-actions">
-      <ul class="nav nav-justified em-horizontal-buttons">
-        <li class="em-gray-button">
-          <button class="em-simple-input" type="button" ng-click="itemToNote(item)">
-            note
-          </button>
-        </li>
-        <li class="em-gray-button">
-          <button class="em-simple-input" type="button" ng-click="itemToTask(item)">
-            task
-          </button>
-        </li>
-        <li class="em-red-button">
-          <button class="em-simple-input" type="button" ng-click="deleteItem(item)">
-            delete
-          </button>
-        </li>
-      </ul>
-
-    </div>
+  <div class="item-sorting-container" ng-switch-default>
+    <ul class="button-row">
+      <li class="button-container left-of-three">
+        <button class="normal-button small-border-right" type="button" ng-click="itemToNote(item)">
+          <span class="button-text">note</span>
+        </button>
+      </li>
+      <li class="button-container center-of-three">
+        <button class="normal-button" type="button" ng-click="itemToTask(item)">
+          <span class="button-text">task</span>
+        </button>
+      </li>
+      <li class="button-container right-of-three">
+        <button class="delete-button" type="button" ng-click="deleteItem(item)">
+          <span class="button-text">delete</span>
+        </button>
+      </li>
+    </ul>
   </div>
-
   <div ng-switch-when="task">
-
     <div class="row form-group">
       <label class="sr-only" for="taskContext">context</label>
       <div class="col-lg-10">
@@ -34,7 +27,6 @@
         </select>
       </div>
     </div>
-
     <div class="row form-group">
       <label class="sr-only" for="taskParent">parent</label>
       <div class="col-lg-10">
@@ -43,7 +35,6 @@
         </select>
       </div>
     </div>
-
     <div class="row em-item-actions">
       <ul class="nav nav-justified em-horizontal-buttons">
         <li class="em-gray-button">
