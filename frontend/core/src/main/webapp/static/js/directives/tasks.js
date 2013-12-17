@@ -13,21 +13,6 @@ function projects(emSwiper, Enum) {
 angular.module('em.directives').directive('projects', projects);
 projects.$inject = ['emSwiper', 'Enum'];
 
-function projectTitle(emSwiper, Enum) {
-  return {
-    restrict: 'A',
-    scope: true,
-    templateUrl: 'static/partials/templates/tasks/projectTitle.html',
-    link: function(scope) {
-      scope.goToProject = function(index) {
-        emSwiper.setSlideIndex(Enum.PROJECTS, index);
-      };
-    }
-  };
-}
-angular.module('em.directives').directive('projectTitle', projectTitle);
-projectTitle.$inject = ['emSwiper', 'Enum'];
-
 function projectSlide() {
   return {
     controller: 'ProjectController',

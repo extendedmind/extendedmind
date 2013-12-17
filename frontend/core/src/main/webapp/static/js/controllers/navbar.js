@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function NavbarController($location, $scope, auth, authenticateRequest, emSwiper, userPrefix, userSessionStorage) {
+function NavbarController($location, $scope, auth, authenticateRequest, emSwiper, Enum, userPrefix, userSessionStorage) {
   $scope.user = userSessionStorage.getUserUUID();
   $scope.collectives = userSessionStorage.getCollectives();
   $scope.prefix = userPrefix.getPrefix();
@@ -40,7 +40,11 @@ function NavbarController($location, $scope, auth, authenticateRequest, emSwiper
       return true;
     }
   };
+
+  $scope.goToProject = function(index) {
+    emSwiper.setSlideIndex(Enum.PROJECTS, index);
+  };
 }
 
-NavbarController.$inject = ['$location', '$scope', 'auth', 'authenticateRequest', 'emSwiper', 'userPrefix', 'userSessionStorage'];
+NavbarController.$inject = ['$location', '$scope', 'auth', 'authenticateRequest', 'emSwiper', 'Enum', 'userPrefix', 'userSessionStorage'];
 angular.module('em.app').controller('NavbarController', NavbarController);
