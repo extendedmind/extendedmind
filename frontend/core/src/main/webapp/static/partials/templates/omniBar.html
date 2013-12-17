@@ -7,8 +7,7 @@
       <input type="search" class="simple-input form-control" id="omniItem" ng-model="newItem.title" ng-focus="omniBarFocus(true)" ng-blur="omniBarFocus(false)" placeholder="store / recall" required>
     </div>
     <div id="plus-wrapper">
-      <button class="plus" type="button" ng-disabled="!newItem.title" ng-click="addNewItem(newItem)">
-        +
+      <button class="button" type="button" ng-disabled="!newItem.title" ng-click="addNewItem(newItem)"><span class="icon-plus" />
       </button>
     </div>
   </div>
