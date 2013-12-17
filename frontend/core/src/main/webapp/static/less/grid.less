@@ -20,7 +20,7 @@ div[role=main] {
     position: relative;
     width:100%;
   }
-  .header-container {
+  header {
     * {
       vertical-align: middle;
     }
@@ -51,7 +51,7 @@ div[role=main] {
 
 // HEADER
 
-.header-container {
+header {
   position:absolute;
   top:0px; 
   left:0px;
@@ -61,9 +61,11 @@ div[role=main] {
   padding-right: inherit;
 }
 
-.feature-header-container {
+.feature-header {
   min-height: @feature-header-height;
 }
+
+// CONTENT
 
 .feature-content-container {
   height:inherit;
@@ -77,15 +79,13 @@ div[role=main] {
   }
 }
 
-// CONTENT
-
 .content-container {
   width: inherit;
 }
 
 // FOOTER
 
-.footer-container {
+footer {
   position:relative;
   height: @footer-height;
   text-align: justify;
@@ -165,7 +165,7 @@ nav#footer {
 
 // FIXME: FORCING ONE COLUMN TO EVERYONE
 //@media (max-width: @maximum-width) {
-  .two-column-grid, .two-column-grid div.column, .two-column-grid .footer-container, .two-column-grid .header-container, .footer-container {
+  .two-column-grid, .two-column-grid div.column, footer, .two-column-grid header {
     max-width: @one-column-grid-width;
   }
   aside {
