@@ -14,7 +14,7 @@
         <ul>
           <li ng-repeat="(key, value) in collectives">
             <div ng-if="value[2] === false">
-              <a href ng-click="setActiveUuid(key, true)">{{value[0]}}</a>
+              <a class="collective" href ng-click="setActiveUuid(key, true)">{{value[0]}}</a>
             </div>
           </li>
         </ul>
