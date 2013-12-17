@@ -69,8 +69,6 @@ div[role=main] {
   height:inherit;
   padding-top: @feature-header-height;
   padding-bottom: @footer-height;
-  overflow-y: auto;
-  position:relative;
   ul {
     height:inherit;
     position:relative;
@@ -96,6 +94,7 @@ div[role=main] {
   .apply-padding;
   .center-horizontally;
   max-width: @two-column-grid-width;
+  background-color: white;
   li {
     text-align: center;
   }
@@ -123,11 +122,11 @@ nav#footer {
 
 // SWIPER
 
-.swiper-container, .swiper-wrapper, .swiper-slide, .no-swiper-container {
+.swiper-container, .swiper-wrapper, .swiper-slide {
   height: inherit !important;
 }
 
-.swiper-container {
+.swiper-container.main-slides {
   margin-bottom: -@footer-height;
 }
 
