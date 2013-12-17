@@ -1,5 +1,4 @@
-/*global window */
-/*jslint white: true */
+/*global angular */
 'use strict';
 
 function EditTaskController($timeout,$routeParams, $scope, errorHandler, filterService, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
@@ -20,7 +19,6 @@ function EditTaskController($timeout,$routeParams, $scope, errorHandler, filterS
   }
 
   $scope.editTask = function() {
-
     tasksResponse.checkDate($scope.task);
     tasksResponse.checkParentTask($scope.task);
     tasksResponse.checkContexts($scope.task);
@@ -28,7 +26,6 @@ function EditTaskController($timeout,$routeParams, $scope, errorHandler, filterS
     tasksRequest.putExistingTask($scope.task).then(function() {
       $scope.task = {};
     });
-
     window.history.back();
   };
 

@@ -66,8 +66,8 @@ angular.module('em.filters').filter('visibleTaskContent', [
     return userItemsFilter;
   }]);
 
-angular.module('em.filters').filter('tasksFilter', [
-  function() {
+angular.module('em.filters').filter('tasksFilter', ['date',
+  function(date) {
 
     var filter = function(tasks, filterValue) {
       var tasksFilter = {};
@@ -90,7 +90,7 @@ angular.module('em.filters').filter('tasksFilter', [
         return filteredValues;
       };
 
-      tasksFilter.tasksByDate = function(tasks, date) {
+      tasksFilter.tasksByDate = function(tasks, listDate) {
 
         var filteredValues, i;
         filteredValues = [];
@@ -99,7 +99,9 @@ angular.module('em.filters').filter('tasksFilter', [
         while (tasks[i]) {
           if (!tasks[i].project) {
             if (tasks[i].due) {
-              if (tasks[i].due === date) {
+              if (tasks[i].due === listDate) {
+                filteredValues.push(tasks[i]);
+              } else if (listDate === date.today().yyyymmdd && date.today().yyyymmdd > tasks[i].due) { // if task date < today
                 filteredValues.push(tasks[i]);
               }
             }
@@ -109,7 +111,7 @@ angular.module('em.filters').filter('tasksFilter', [
         return filteredValues;
       };
 
-      tasksFilter.projects = function(tasks){
+      tasksFilter.projects = function(tasks) {
 
         var filteredValues, i;
         filteredValues = [];
@@ -124,7 +126,7 @@ angular.module('em.filters').filter('tasksFilter', [
         return filteredValues;
       };
 
-      tasksFilter.unsorted = function(tasks){
+      tasksFilter.unsorted = function(tasks) {
 
         var filteredValues, i, sortedTask;
         filteredValues = [];

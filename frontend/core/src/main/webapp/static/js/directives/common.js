@@ -80,10 +80,10 @@ angular.module('em.directives').directive('omniBar', [ '$rootScope',
       link: function(scope) {
         $rootScope.omniBarActive = false;
         scope.omniBarFocus = function(focus) {
-          if (focus){
+          if (focus) {
             $rootScope.omniBarActive = true;
-          }else{
-            if (scope.newItem == null || scope.newItem.title == null || scope.newItem.title.length === 0){
+          } else {
+            if (scope.newItem == null || scope.newItem.title == null || scope.newItem.title.length === 0) {
               $rootScope.omniBarActive = false;
             }
           }

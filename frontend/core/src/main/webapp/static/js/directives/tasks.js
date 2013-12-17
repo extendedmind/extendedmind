@@ -176,7 +176,7 @@ angular.module('em.directives').directive('editTask', [
       link: function(scope) {
         scope.showProjectContent = false;
         
-        if (scope.task.due) {
+        if (scope.task && scope.task.due) {
           scope.showDate = 'date';
         }
 

@@ -1,8 +1,7 @@
-/*jslint white: true */
+/*global angular */
 'use strict';
 
 function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, notesArray, notesRequest, notesResponse, tasksRequest) {
-
   function clearCompletedText() {
     $timeout(function() {
       $scope.completed = '';
@@ -15,16 +14,12 @@ function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, 
 
   $scope.itemToTask = function(item) {
     $scope.itemType = 'task';
-    tasksRequest.itemToTask(item);
-    $scope.task = item;
-    $scope.task.relationships = {
-      parentTask: '',
-      tags: []
-    };
+    tasksRequest.itemToTask(item).then(function() {
+      $scope.task = item;
+    });
   };
 
   $scope.itemToNote = function(item) {
-
     $scope.completed = 'note added';
     itemsArray.removeItem(item);
 
