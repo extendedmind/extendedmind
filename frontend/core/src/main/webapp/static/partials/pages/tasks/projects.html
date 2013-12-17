@@ -5,7 +5,7 @@
       <div class="swiper-container vertical-slides" em-swiper-slider="vertical">
         <div class="swiper-wrapper">
           <div class="swiper-slide" ng-repeat="project in tasks | tasksFilter:filterService.activeFilters.project" swiper-slide="{{project.uuid}}">
-            <div class="project-container" project-slide></div>
+            <div class="inner-slide-content-container" project-slide></div>
           </div>
         </div>
       </div>
