@@ -36,7 +36,7 @@ section#login {
 // HOME
 
 section#home {
-  #main-header-container {
+  header#main-header {
     min-height: @main-header-height;
     #menu-content {
       background-color: white;
@@ -44,7 +44,7 @@ section#home {
       padding-top: 10px;
       .top-bottom-borders;
     }
-    nav#main-header {
+    nav {
       max-width: @one-column-grid-width;
       text-align: right;
       margin-right: auto;
@@ -52,17 +52,13 @@ section#home {
       width: inherit;
     }
     button#menu-button{
-     // background:url('../img/menu.png');
-     // background-position: 0 -50px;
      background: none;
       cursor:pointer;
       border:none;
       width:29px;
       height:29px;
       display: inline-block; 
-     // text-align:center; 
       margin: 0px; 
-     // border: 0px; 
       padding: 0px;
     }
     button#menu-button:active{
@@ -74,7 +70,6 @@ section#home {
     height:100%;
     .banner {
       padding-top: @vertical-grid * 1.5;
-      padding-bottom: @vertical-grid;
       img {
         width: 67.5px;
         .center-horizontally;
@@ -83,7 +78,8 @@ section#home {
     }
     .content {
       height:inherit;
-      padding-bottom: @footer-height + @main-header-height + @vertical-grid;
+      padding-top: @vertical-grid / 2;
+      padding-bottom: @footer-height + @vertical-grid / 4;
       #omnibar{
         .top-bottom-borders;
         display: table;
@@ -108,8 +104,10 @@ section#home {
   }
 }
 
-// INBOX
+// TASKS DATES
 
-section#inbox {
-
+section#tasks-dates {
+  .inner-slide-content-container{
+    padding-bottom: @footer-height;
+  }
 }

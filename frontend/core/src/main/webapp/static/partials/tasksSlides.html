@@ -1,5 +1,5 @@
 <div class="slides-container">
-  <div class="swiper-container" em-swiper-slider="horizontal">
+  <div class="swiper-container main-slides" em-swiper-slider="horizontal">
     <div class="swiper-wrapper">
       <div class="swiper-slide" inbox></div>
       <div class="swiper-slide" home></div>
@@ -11,5 +11,5 @@
       <!-- single tasks -->
     </div>
   </div>
-  <div class="footer-container" em-footer mainlinksfilter="newItem.title"></div>
+  <footer ng-hide="mainlinksFilter" em-footer mainlinksfilter="newItem.title"></footer>
 </div>

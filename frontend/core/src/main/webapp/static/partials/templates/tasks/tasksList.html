@@ -1,11 +1,6 @@
-<div>
-  <ul class="list-unstyled">
-
-    <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:tasksFilter">
-      <div task="task"></div>
-    </li>
-
-    <div sub-task add="addSubtask(subtask)" subtask="subtask"></div>
-
-  </ul>
-</div>
+<ul class="list-unstyled">
+  <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:tasksFilter">
+    <div task="task"></div>
+  </li>
+  <div sub-task add="addSubtask(subtask)" subtask="subtask"></div>
+</ul>

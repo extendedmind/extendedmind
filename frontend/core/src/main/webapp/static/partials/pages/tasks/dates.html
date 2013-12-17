@@ -1,11 +1,18 @@
-<div class="row swiper-no-swiping" id="em-date-picker" datebar></div>
-
-<div class="swiper-container" em-swiper-slider="vertical">
-  <div class="swiper-wrapper">
-
-    <div class="swiper-slide em-scrollable-inner" ng-repeat="date in dates" swiper-slide="{{date.yyyymmdd}}">
-      <div class="row" date-slide="date" date-tasks="tasks"></div>
+<section id="tasks-dates" class="two-column-grid page">
+  <div class="column">
+    <header id="tasks-dates-header" class="feature-header" feature-header="dates"></header>
+    <div id="tasks-dates-feature-content-container" class="content-container feature-content-container">
+      <div class="swiper-no-swiping" id="date-picker" datebar></div>
+      <div class="swiper-container vertical-slides" em-swiper-slider="vertical">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" ng-repeat="date in dates" swiper-slide="{{date.yyyymmdd}}">
+            <div class="inner-slide-content-container" date-slide="date" date-tasks="tasks"></div>
+          </div>
+        </div>
+      </div>
     </div>
-
   </div>
-</div>
+  <aside class="column">
+    TODO
+  </aside>
+</section>

@@ -1,31 +1,33 @@
-<nav id="main-header" role="navigation">
+<nav class="swiper-no-swiping" role="navigation">
   <button id="menu-button" 
   type="button" 
   ng-click="collapseNavbar()"
   alt="menu">
-  <span class="icon-menu" /></button>
-  <div id="menu-content" ng-show="collapse">
-    <ul>
-      <li>
-        <a href="#/my" ng-click="setActiveUuid(user)">home</a>
+  <span class="icon-menu" />
+</button>
+<div id="menu-content" ng-show="collapse">
+  <ul>
+    <li>
+      <a href="#/my" ng-click="setActiveUuid(user)">home</a>
+    </li>
+    <li ng-show="useCollectives()">
+      <span>collectives</span>
+      <ul>
+        <li ng-repeat="(key, value) in collectives">
+          <div ng-if="value[2] === false">
+            <div>
+              <a href ng-click="setActiveUuid(key, true)">{{value[0]}}</a>
+            </div>
+          </li>
+        </ul>
       </li>
-      <li ng-show="useCollectives()">
-        <span>collectives</span>
-        <ul>
-          <li ng-repeat="(key, value) in collectives">
-            <div ng-if="value[2] === false">
-              <div>
-                <a href ng-click="setActiveUuid(key, true)">{{value[0]}}</a>
-              </div>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <a href="#/my/account">account</a>
-        </li>
-        <li>
-          <a href="" ng-click="logout()">logout</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+      <li>
+        <a href="#/my/account">account</a>
+      </li>
+      <li>
+        <a href="" ng-click="logout()">logout</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+

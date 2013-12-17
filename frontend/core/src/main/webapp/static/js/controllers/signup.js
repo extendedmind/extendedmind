@@ -1,7 +1,7 @@
-/*jslint white: true */
+/*global angular */
 'use strict';
 
-function SignupController($location, $scope, $routeParams, authenticateRequest, errorHandler, httpRequest, itemsRequest, userSession) {
+function SignupController($location, $scope, $routeParams, auth, authenticateRequest, errorHandler, httpRequest) {
 
   $scope.user = {};
   var inviteResponseCode = $routeParams.hex_code;
@@ -18,11 +18,7 @@ function SignupController($location, $scope, $routeParams, authenticateRequest, 
 
   function userLogin() {
 
-    userSession.setCredentials($scope.user.email, $scope.user.password);
-
-    authenticateRequest.login().then(function(authenticateResponse) {
-      userSession.setUserSessionData(authenticateResponse);
-      itemsRequest.getItems();
+    auth.login($scope.user).then(function() {
       $location.path('/my');
     }, function(authenticateResponse) {
       $scope.errorHandler.errorMessage = authenticateResponse.data;
@@ -36,5 +32,5 @@ function SignupController($location, $scope, $routeParams, authenticateRequest, 
   };
 }
 
-SignupController.$inject = ['$location', '$scope', '$routeParams', 'authenticateRequest', 'errorHandler', 'httpRequest', 'itemsRequest', 'userSession'];
+SignupController.$inject = ['$location', '$scope', '$routeParams', 'auth', 'authenticateRequest', 'errorHandler', 'httpRequest'];
 angular.module('em.app').controller('SignupController', SignupController);

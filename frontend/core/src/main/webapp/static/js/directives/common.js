@@ -65,17 +65,30 @@ angular.module('em.directives').directive('featureHeader', [
 angular.module('em.directives').directive('mainHeader', [
   function() {
     return {
+      controller: 'NavbarController',
       restrict: 'A',
       templateUrl: 'static/partials/templates/mainHeader.html'
     };
   }]);
 
-angular.module('em.directives').directive('omniBar', [
-  function() {
+angular.module('em.directives').directive('omniBar', [ '$rootScope',
+  function($rootScope) {
     return {
       controller: 'OmniBarController',
       restrict: 'A',
-      templateUrl: 'static/partials/templates/omniBar.html'
+      templateUrl: 'static/partials/templates/omniBar.html',
+      link: function(scope) {
+        $rootScope.omniBarActive = false;
+        scope.omniBarFocus = function(focus) {
+          if (focus){
+            $rootScope.omniBarActive = true;
+          }else{
+            if (scope.newItem == null || scope.newItem.title == null || scope.newItem.title.length === 0){
+              $rootScope.omniBarActive = false;
+            }
+          }
+        };
+      }
     };
   }]);
 
