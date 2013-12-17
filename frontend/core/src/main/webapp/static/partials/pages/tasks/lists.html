@@ -1,21 +1,33 @@
-<div class="row">
+<section id="tasks-lists" class="two-column-grid page">
+  <div class="column">
+    <header id="tasks-lists-header" class="feature-header" feature-header="lists"></header>
+    <div id="tasks-lists-feature-content-container" class="content-container feature-content-container">
+      <div class="inner-feature-content-container">
+        <section>
+          <h3>projects</h3>
+          <ul>
+            <li ng-class="selected" ng-repeat="project in tasks | tasksFilter:filterService.activeFilters.project">
+              <div project-title></div>
+            </li>
+          </ul>
+        </section>
 
-  <h3>unsorted</h3>
-  <div tasks-list="tasks" tasks-filter="filterService.activeFilters.unsorted" subtask="subtask"></div>
+        <section>
+          <h3>areas</h3>
+          <div contexts-list>
+            <h3>contexts</h3>
+          </div>
+        </section>
 
-  <div>
-    <h3>projects</h3>
-    <ul class="list-unstyled">
-      <li ng-class="selected" ng-repeat="project in tasks | tasksFilter:filterService.activeFilters.project">
-        <div project-title></div>
-      </li>
-    </ul>
+        <section>
+          <h3>unsorted</h3>
+          <div tasks-list="tasks" tasks-filter="filterService.activeFilters.unsorted" subtask="subtask"></div>
+        </section>
+      </div>
+    </div>
   </div>
+  <aside class="column">
+    TODO
+  </aside>
 
-  <h3>areas</h3>
-
-  <div contexts-list>
-    <h3>contexts</h3>
-  </div>
-
-</div>
+</section>
