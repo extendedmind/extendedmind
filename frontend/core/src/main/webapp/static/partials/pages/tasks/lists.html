@@ -7,12 +7,14 @@
           <h3>projects</h3>
           <ul class="indent">
             <li ng-class="selected" ng-repeat="project in filteredProjects = (tasks | tasksFilter:filterService.activeFilters.project)">
-              <div project-title></div>
+              <a class="text-muted click-to-slide" href ng-click="goToProject($index)">
+                <span class="link-title">{{project.title}}</span><span class="slide-indicator">&gt;</span>
+              </a>
             </li>
           </ul>
         </section>
 
-        <section>
+        <section ng-show="tags && tags.length">
           <h3>contexts</h3>
           <div class="indent" contexts-list></div>
         </section>
