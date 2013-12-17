@@ -1,5 +1,4 @@
-/*global window */
-/*jslint white: true */
+/*global angular */
 'use strict';
 
 function NewTaskController($routeParams, $scope, activeItem, errorHandler, filterService, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
