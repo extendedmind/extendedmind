@@ -54,15 +54,8 @@ section#home {
       width: inherit;
     }
     button#menu-button{
-     background: none;
-      cursor:pointer;
-      border:none;
-      width:29px;
-      height:29px;
-      display: inline-block; 
-      margin: 0px; 
-      padding: 0px;
-      font-size: 1.5em;
+      .button;
+      padding: 0 0 20px 20px !important; // increased clicking area
     }
     button#menu-button:active{
       background-position: 0 0;
@@ -99,6 +92,10 @@ section#home {
         div#plus-wrapper { 
           display:table-cell;
           width: @plus-button-width;
+          line-height: 100%;
+          button {
+            padding-top: 8px; // quick fix to center the plus button
+          }
         }
       }
       div#filtered-items-container {
