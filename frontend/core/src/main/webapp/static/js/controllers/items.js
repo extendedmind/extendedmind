@@ -43,8 +43,17 @@ function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, 
   };
 
   $scope.taskEditDone = function(task) {
+    cleanContext(task);
     tasksRequest.itemToTaskDone(task);
   };
+
+  var cleanContext = function(task) {
+    if (task.relationships && task.relationships.context){
+      task.relationships.tags = [task.relationships.context];
+      delete task.relationships.context;
+    }
+  }
+
 }
 
 ItemsController.$inject = ['$location', '$scope', '$timeout', 'itemsArray', 'itemsRequest', 'notesArray', 'notesRequest', 'notesResponse', 'tasksRequest', 'tagsArray', 'tasksArray', 'userPrefix', 'filterService'];

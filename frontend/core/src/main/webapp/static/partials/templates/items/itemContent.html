@@ -28,7 +28,7 @@
     </div>
     <div class="form-group">
       <label class="sr-only" for="taskContext">context</label>
-      <select class="simple-input swiper-no-swiping" id="taskContext" ng-model="task.relationships.tags[0]" ng-options="context.uuid as context.title for context in contexts" ng-hide="task.project">
+      <select class="simple-input swiper-no-swiping" id="taskContext" ng-model="task.relationships.context" ng-options="context.uuid as context.title for context in contexts" ng-hide="task.project">
         <option value="">select context...</option>
       </select>
     </div>
