@@ -461,6 +461,45 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    $routeProvider.when('/my/tasks/single', {
+      controller: 'TasksSlidesController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.SINGLE_TASKS);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/tasks/single', {
+      controller: 'TasksSlidesController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.SINGLE_TASKS);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+      }
+    });
+
     $routeProvider.when('/my/tasks/context/:uuid', {
       controller: 'ContextController',
       templateUrl: 'static/partials/pages/tasks/context.html',

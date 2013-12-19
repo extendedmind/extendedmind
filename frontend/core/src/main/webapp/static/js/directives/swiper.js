@@ -47,7 +47,7 @@ function emSwiper($rootScope, emLocation, Enum, userPrefix) {
     },
     setSlides: function(slideX, subPath) {
       initialSubPath = subPath;
-      slides = ['inbox', '', 'tasks/dates', 'tasks/lists', 'tasks/projects'];
+      slides = ['inbox', '', 'tasks/dates', 'tasks/lists', 'tasks/projects', 'tasks/single'];
       initialSlideX = slideX;
     },
     getSlides: function() {
