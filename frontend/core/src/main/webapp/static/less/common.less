@@ -136,7 +136,6 @@ select.simple-input {
   height: @vertical-grid;
   width: 100%;
   display: block;
-  border-radius: 7px;
 }
 
 .button-row{
@@ -161,28 +160,42 @@ select.simple-input {
   }
 }
 
+.vertical-buttons {
+  button{
+    margin-bottom: @vertical-grid / 2;
+  }
+}
+
 button.normal-button {
+  color: white;
   & {
-    color: white;
     background-color: @active-button;
   }
   &[disabled] {
-    color: white;
     background-color: @inactive-button;
   }
   &:active {
-    color: white;
     background-color: @pressed-button;
   }
 }
 
-button.delete-button {
+button.cancel-button {
+  color: white;
   & {
-    color: white;
+    background-color: @cancel-button;
+  }
+  &:active {
+    background-color: @pressed-cancel-button;
+  }
+}
+
+
+button.delete-button {
+  color: white;
+  & {
     background-color: @delete-button;
   }
   &:active {
-    color: white;
     background-color: @pressed-delete-button;
   }
 }

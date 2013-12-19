@@ -27,7 +27,7 @@ function NewTaskController($routeParams, $scope, activeItem, errorHandler, filte
   }
 
   $scope.editTask = function() {
-
+    cleanContext($scope.task);
     tasksResponse.checkDate($scope.task);
     tasksResponse.checkParentTask($scope.task);
     tasksResponse.checkContexts($scope.task);
@@ -50,6 +50,13 @@ function NewTaskController($routeParams, $scope, activeItem, errorHandler, filte
     }
     window.history.back();
   };
+
+  var cleanContext = function(task) {
+    if (task.relationships && task.relationships.context){
+      task.relationships.tags = [task.relationships.context];
+      delete task.relationships.context;
+    }
+  }
 }
 
 NewTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'errorHandler','filterService', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];

@@ -46,6 +46,7 @@ function Enum() {
     DATES: 2,
     LISTS: 3,
     PROJECTS: 4,
+    SINGLE_TASKS: 5,
     NOTES: 2
   };
 

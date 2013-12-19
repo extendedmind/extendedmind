@@ -100,6 +100,14 @@ function lists() {
 }
 angular.module('em.directives').directive('lists', lists);
 
+function singleTasks() {
+  return {
+    restrict: 'A',
+    templateUrl: 'static/partials/pages/tasks/singleTasks.html'
+  };
+}
+angular.module('em.directives').directive('singleTasks', singleTasks);
+
 function filteredTasksList() {
   return {
     controller: 'TasksListController',
