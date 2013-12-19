@@ -42,7 +42,7 @@ angular.module('em.services').factory('date', [
         week = [];
         i = 0;
 
-        for (i = 0; i < 14; i++) {
+        for (i = 0; i < 30; i++) {
           day = {};
           day.date = date.getDate();
 
