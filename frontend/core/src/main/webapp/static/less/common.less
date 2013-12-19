@@ -136,7 +136,6 @@ select.simple-input {
   height: @vertical-grid;
   width: 100%;
   display: block;
-  border-radius: 7px;
 }
 
 .button-row{
@@ -162,27 +161,24 @@ select.simple-input {
 }
 
 button.normal-button {
+  color: white;
   & {
-    color: white;
     background-color: @active-button;
   }
   &[disabled] {
-    color: white;
     background-color: @inactive-button;
   }
   &:active {
-    color: white;
     background-color: @pressed-button;
   }
 }
 
 button.delete-button {
+  color: white;
   & {
-    color: white;
     background-color: @delete-button;
   }
   &:active {
-    color: white;
     background-color: @pressed-delete-button;
   }
 }
