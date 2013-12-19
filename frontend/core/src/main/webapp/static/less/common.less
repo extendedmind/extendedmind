@@ -94,11 +94,8 @@
   background-image: none;
 }
 
-select.simple-input {
-  background: none;
-  // Without this the text is slightly indented
-  margin-left:-4px;
-  padding:0;
+.input-placeholder {
+  color: @text-gray;
 }
 
 .click-to-slide{
@@ -162,7 +159,8 @@ select.simple-input {
 
 .vertical-buttons {
   button{
-    margin-bottom: @vertical-grid / 2;
+    margin-top: @vertical-grid / 4;
+    margin-bottom: @vertical-grid / 4;
   }
 }
 
@@ -234,6 +232,24 @@ input[type=checkbox].input-checkbox:checked ~ span.fade {
 }
 
 .checkbox{background-image:url(../img/checkbox.png); }
+
+// SELECTIONS
+
+select {
+  &.simple-input {
+    color: @text-gray;
+    background: none;
+    // Without this the text is slightly indented
+    margin-left:-4px;
+    padding:0;
+  }
+  option {
+    color: black;
+  }
+  option:first-child{
+    color: @text-gray;
+  }
+}
 
 // BORDERS
 
