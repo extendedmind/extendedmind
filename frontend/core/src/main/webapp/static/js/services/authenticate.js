@@ -2,12 +2,10 @@
 'use strict';
 
 function auth($location, $q, authenticateRequest, itemsRequest, userLocalStorage, userSession, userSessionStorage) {
-  var swapTokenTimeThreshold = 10; // hours
+  var swapTokenTimeThreshold = 10*60*60*1000; // 10 hours in milliseconds
 
-  function hoursFromAuth() {
+  function millisecondsFromAuth() {
     var lastAuth = Date.now() - userLocalStorage.getAuthenticated();
-    // https://gist.github.com/remino/1563878#file-msconvert-js
-    lastAuth = Math.floor((lastAuth / (1000 * 60 * 60)));
     return lastAuth;
   }
 
@@ -28,30 +26,34 @@ function auth($location, $q, authenticateRequest, itemsRequest, userLocalStorage
     check: function() {
       var deferred = $q.defer();
 
-      if (!userSessionStorage.getAuthenticated()) { // new session
-        if (!userLocalStorage.getAuthenticated()) { // login
-          deferred.reject();
-        }
-        else { // remembered
-          if (hoursFromAuth() >= swapTokenTimeThreshold) { // auth expired
-            swapToken().then(function() {
-              deferred.resolve();
-              initUserData();
-            });
-          }
-          else { // auth valid
-            userSession.setUserSessionStorageData();
+      // 1. should the user be sent to login
+      if (!userSessionStorage.getAuthenticated() && 
+          !userLocalStorage.getAuthenticated()) { // login
+        deferred.reject();
+      } // 2. is remember checked
+      else if (userLocalStorage.getAuthenticated()){
+        // 3. should token be swapped
+        if (millisecondsFromAuth() >= swapTokenTimeThreshold) {
+          swapToken().then(function() {
             deferred.resolve();
             initUserData();
-          }
-        }
-      }
-      else { // current session
-        if (!userSession.getCredentials()) { // refresh
-          userSession.setEncodedCredentials(userSessionStorage.getHttpAuthorizationHeader());
+          });
+        } // 4. should session storage be reinitialized
+        else if (!userSessionStorage.getAuthenticated()){
+          userSession.setUserSessionStorageData();
+          deferred.resolve();
           initUserData();
+        }else{
+          deferred.resolve();
         }
+      } // 5. current session but refresh needed
+      else if (userSessionStorage.getAuthenticated() && !userSession.getCredentials()){ 
+        userSession.setEncodedCredentials(userSessionStorage.getHttpAuthorizationHeader());
+        initUserData();
         deferred.resolve();
+      } // 6. do nothing
+      else {
+        deferred.resolve();        
       }
 
       deferred.promise.then(function() {
