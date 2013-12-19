@@ -160,6 +160,12 @@ select.simple-input {
   }
 }
 
+.vertical-buttons {
+  button{
+    margin-bottom: @vertical-grid / 2;
+  }
+}
+
 button.normal-button {
   color: white;
   & {
@@ -172,6 +178,17 @@ button.normal-button {
     background-color: @pressed-button;
   }
 }
+
+button.cancel-button {
+  color: white;
+  & {
+    background-color: @cancel-button;
+  }
+  &:active {
+    background-color: @pressed-cancel-button;
+  }
+}
+
 
 button.delete-button {
   color: white;
