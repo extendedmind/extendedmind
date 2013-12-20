@@ -1,5 +1,4 @@
-/*global html5Mode */
-/*jslint white: true */
+/*global angular, html5Mode */
 'use strict';
 
 angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'em.directives', 'em.filters', 'em.services']);
@@ -10,7 +9,7 @@ angular.module('em.services', ['em.base64']);
 angular.module('em.app').config(['$locationProvider', '$routeProvider',
   function($locationProvider, $routeProvider) {
 
-    var h5m = (typeof html5Mode !== 'undefined') ? html5Mode : true;
+    var h5m = (typeof html5Mode !== 'undefined') ? html5Mode: true;
     $locationProvider.html5Mode(h5m);
 
     $routeProvider.when('/', {
@@ -18,7 +17,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/accept/:hex_code', {
-      templateUrl: 'static/partials/signup.html',
+      templateUrl: 'static/partials/pages/signup.html',
       controller: 'SignupController',
       resolve: {
         routes: ['$location', '$route',
@@ -31,24 +30,24 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/404', {
-      templateUrl: 'static/partials/pageNotFound.html',
+      templateUrl: 'static/partials/pages/pageNotFound.html',
       controller: 'PageNotFoundController'
     });
 
     $routeProvider.when('/login', {
-      templateUrl: 'static/partials/login.html',
+      templateUrl: 'static/partials/pages/login.html',
       controller: 'LoginController'
     });
 
     $routeProvider.when('/my/account', {
-      templateUrl : 'static/partials/account.html',
-      controller : 'AccountController',
-      resolve : {
+      templateUrl: 'static/partials/pages/account.html',
+      controller: 'AccountController',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -57,18 +56,18 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my', {
-      controller : 'MyController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve : {
+      controller: 'HomeController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.MY);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.HOME);
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -77,18 +76,18 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID', {
-      controller : 'MyController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve : {
+      controller: 'HomeController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.MY);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.HOME);
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -98,229 +97,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/inbox', {
       controller: 'InboxController',
-      templateUrl : 'static/partials/emSlides.html',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.INBOX);
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/inbox', {
-      controller: 'InboxController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve: {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.INBOX);
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/my/notes', {
-      controller : 'NotesController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve : {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.NOTES);
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/notes', {
-      controller : 'NotesController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve : {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.NOTES);
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/my/notes/context/:uuid', {
-      controller : 'ContextController',
-      templateUrl : 'static/partials/my/notes/context.html',
-      resolve : {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/notes/context/:uuid', {
-      controller : 'ContextController',
-      templateUrl : 'static/partials/my/notes/context.html',
-      resolve : {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/my/notes/edit/:uuid', {
-      controller : 'NoteEditController',
-      templateUrl : 'static/partials/my/notes/edit.html',
-      resolve : {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/notes/edit/:uuid', {
-      controller : 'NoteEditController',
-      templateUrl : 'static/partials/my/notes/edit.html',
-      resolve : {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/my/notes/new', {
-      controller : 'NewNoteController',
-      templateUrl : 'static/partials/my/notes/new.html',
-      resolve : {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/notes/new', {
-      controller : 'NewNoteController',
-      templateUrl : 'static/partials/my/notes/new.html',
-      resolve : {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/my/tasks', {
-      controller : 'TasksController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve : {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.TASKS);
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks', {
-      controller : 'TasksController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve : {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.TASKS);
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/my/tasks/today', {
-      controller: 'TasksController',
-      templateUrl : 'static/partials/emSlides.html',
-      resolve: {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.TODAY);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.INBOX);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
@@ -329,17 +114,384 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/collective/:collectiveUUID/tasks/today', {
-      controller: 'TasksController',
-      templateUrl : 'static/partials/emSlides.html',
+    $routeProvider.when('/collective/:collectiveUUID/inbox', {
+      controller: 'InboxController',
+      templateUrl: 'static/partials/tasksSlides.html',
       resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'swiperSlides',
-        function(Enum, swiperSlides) {
-          swiperSlides.setInitialSlideIndex(Enum.TODAY);
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.INBOX);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/my/notes', {
+      controller: 'NotesSlidesController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.NOTES);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/notes', {
+      controller: 'NotesSlidesController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.NOTES);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/my/notes/context/:uuid', {
+      controller: 'ContextController',
+      templateUrl: 'static/partials/pages/notes/context.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/notes/context/:uuid', {
+      controller: 'ContextController',
+      templateUrl: 'static/partials/pages/notes/context.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/my/notes/edit/:uuid', {
+      controller: 'NoteEditController',
+      templateUrl: 'static/partials/pages/notes/edit.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/notes/edit/:uuid', {
+      controller: 'NoteEditController',
+      templateUrl: 'static/partials/pages/notes/edit.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/my/notes/new', {
+      controller: 'NewNoteController',
+      templateUrl: 'static/partials/pages/notes/new.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/notes/new', {
+      controller: 'NewNoteController',
+      templateUrl: 'static/partials/pages/notes/new.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/my/tasks/lists', {
+      controller: 'TasksSlidesController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.LISTS);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/tasks/lists', {
+      controller: 'TasksSlidesController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.LISTS);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/my/tasks/projects', {
+      controller: 'ProjectController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.PROJECTS);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/tasks/projects', {
+      controller: 'ProjectController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.PROJECTS);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/my/tasks/projects/:uuid', {
+      controller: 'ProjectController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['$route', 'Enum', 'emSwiper',
+        function($route, Enum, emSwiper) {
+          emSwiper.setSlides(Enum.PROJECTS, $route.current.params.uuid);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/tasks/projects/:uuid', {
+      controller: 'ProjectController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['$route', 'Enum', 'emSwiper',
+        function($route, Enum, emSwiper) {
+          emSwiper.setSlides(Enum.PROJECTS, $route.current.params.uuid);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/my/tasks/dates', {
+      controller: 'DatesController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.DATES);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/tasks/dates', {
+      controller: 'DatesController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.DATES);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/my/tasks/dates/:date', {
+      controller: 'DatesController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['$route', 'Enum', 'emSwiper',
+        function($route, Enum, emSwiper) {
+          emSwiper.setSlides(Enum.DATES, $route.current.params.date);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/tasks/dates/:date', {
+      controller: 'DatesController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['$route', 'Enum', 'emSwiper',
+        function($route, Enum, emSwiper) {
+          emSwiper.setSlides(Enum.DATES, $route.current.params.date);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setCollectivePrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/my/tasks/single', {
+      controller: 'TasksSlidesController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.SINGLE_TASKS);
+        }],
+        prefix: ['userPrefix',
+        function(userPrefix) {
+          userPrefix.setMyPrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/tasks/single', {
+      controller: 'TasksSlidesController',
+      templateUrl: 'static/partials/tasksSlides.html',
+      resolve: {
+        auth: ['auth',
+        function(auth) {
+          return auth.check();
+        }],
+        slide: ['Enum', 'emSwiper',
+        function(Enum, emSwiper) {
+          emSwiper.setSlides(Enum.SINGLE_TASKS);
         }],
         prefix: ['userPrefix',
         function(userPrefix) {
@@ -349,14 +501,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/context/:uuid', {
-      controller : 'ContextController',
-      templateUrl : 'static/partials/my/tasks/context.html',
-      resolve : {
+      controller: 'ContextController',
+      templateUrl: 'static/partials/pages/tasks/context.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -365,14 +517,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/context/:uuid', {
-      controller : 'ContextController',
-      templateUrl : 'static/partials/my/tasks/context.html',
-      resolve : {
+      controller: 'ContextController',
+      templateUrl: 'static/partials/pages/tasks/context.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -381,14 +533,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/edit/:uuid', {
-      controller : 'EditTaskController',
-      templateUrl : 'static/partials/my/tasks/edit.html',
-      resolve : {
+      controller: 'EditTaskController',
+      templateUrl: 'static/partials/pages/tasks/edit.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -397,14 +549,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/edit/:uuid', {
-      controller : 'EditTaskController',
-      templateUrl : 'static/partials/my/tasks/edit.html',
-      resolve : {
+      controller: 'EditTaskController',
+      templateUrl: 'static/partials/pages/tasks/edit.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -413,14 +565,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/new', {
-      controller : 'NewTaskController',
-      templateUrl : 'static/partials/my/tasks/new.html',
-      resolve : {
+      controller: 'NewTaskController',
+      templateUrl: 'static/partials/pages/tasks/new.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setMyPrefix();
         }]
@@ -429,46 +581,14 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/new', {
-      controller : 'NewTaskController',
-      templateUrl : 'static/partials/my/tasks/new.html',
-      resolve : {
+      controller: 'NewTaskController',
+      templateUrl: 'static/partials/pages/tasks/new.html',
+      resolve: {
         auth: ['auth',
         function(auth) {
           return auth.check();
         }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/my/tasks/project/:uuid', {
-      controller : 'ProjectController',
-      templateUrl : 'static/partials/my/tasks/project.html',
-      resolve : {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        prefix : ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks/project/:uuid', {
-      controller : 'ProjectController',
-      templateUrl : 'static/partials/my/tasks/project.html',
-      resolve : {
-        auth: ['auth',
-        function(auth) {
-          return auth.check();
-        }],
-        prefix : ['userPrefix',
+        prefix: ['userPrefix',
         function(userPrefix) {
           userPrefix.setCollectivePrefix();
         }]
@@ -477,16 +597,20 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.otherwise({
-      controller : 'PageNotFoundController',
-      redirectTo : '404'
+      controller: 'PageNotFoundController',
+      redirectTo: '404'
     });
   }]);
 
-angular.module('em.app').run(['$location', '$rootScope', 'errorHandler', 'userAuthenticate', 'userPrefix',
-  function($location, $rootScope, errorHandler, userAuthenticate, userPrefix) {
+angular.module('em.app').run(['$rootScope', 'analytics', 'errorHandler',
+  function($rootScope, analytics, errorHandler) {
 
     $rootScope.$on('$routeChangeSuccess', function() {
       errorHandler.clear();
     });
+
+    $rootScope.$on('$viewContentLoaded', function() {
+     analytics.open();
+   });
 
   }]);

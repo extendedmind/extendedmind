@@ -5,7 +5,7 @@ angular.module('em.directives').directive('notes', [
   function() {
     return {
       restrict : 'A',
-      templateUrl : 'static/partials/my/notes.html'
+      templateUrl : 'static/partials/pages/notes.html'
     };
   }]);
 
@@ -13,27 +13,12 @@ angular.module('em.directives').directive('filteredNotesList', [
   function() {
     return {
       controller : 'NotesListController',
+      scope: {
+        notes: '=filteredNotesList',
+        notesListFilter: '=notesFilter'
+      },
       restrict : 'A',
-      templateUrl : 'static/partials/templates/notes/filteredNotesList.html',
-      transclude : true,
-      link : function(scope, element, attrs) {
-        var notesFilterAttr = attrs.notesfilter;
-        scope.showNoteContent = false;
-
-        scope.$watch(notesFilterAttr, function(newValue) {
-          scope.notesListFilter = newValue;
-        });
-
-        scope.toggleNoteContent = function toggleNoteContent() {
-          scope.showNoteContent = !scope.showNoteContent;
-
-          if (scope.showNoteContent) {
-            scope.selected = 'em-active-list-item';
-          } else {
-            scope.selected = '';
-          }
-        };
-      }
+      templateUrl : 'static/partials/templates/notes/filteredNotesList.html'
     };
   }]);
 
@@ -44,6 +29,14 @@ angular.module('em.directives').directive('notesList', [
       restrict : 'A',
       templateUrl : 'static/partials/templates/notes/notesList.html',
       transclude : true
+    };
+  }]);
+
+angular.module('em.directives').directive('note', [
+  function() {
+    return {
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/notes/note.html'
     };
   }]);
 

@@ -1,0 +1,187 @@
+
+// COMMON PADDING
+
+.apply-padding{
+  padding-left: @horizontal-grid;
+  padding-right: @horizontal-grid;
+}
+
+.indent {
+  padding-left: @horizontal-grid;
+}
+
+div[role=main] {
+  line-height: @vertical-grid;
+  max-height: @maximum-height;
+  .center-horizontally;
+  position:relative;
+
+  .one-column-grid, .two-column-grid, .column{
+    min-height: inherit;
+    min-width: inherit;
+  }
+  .column {
+    position: relative;
+    width:100%;
+  }
+  header {
+    * {
+      vertical-align: middle;
+    }
+  }
+}
+
+.one-column-grid {
+  .apply-padding;
+  max-width: @one-column-grid-width;
+  .center-horizontally;
+}
+
+.two-column-grid {
+  max-width: @two-column-grid-width;
+  .center-horizontally;
+  padding-left: @horizontal-grid;
+  aside.column, div.column {
+    width:auto;
+    padding-right: @horizontal-grid;
+  }
+  aside.column {
+    max-width: @two-column-grid-aside-width;
+  }
+  div.column {
+    max-width: @two-column-grid-main-width;
+  }
+}
+
+// HEADER
+
+header {
+  position:absolute;
+  top:0px; 
+  left:0px;
+  overflow:hidden;
+  width:100%;
+  padding-left: inherit;
+  padding-right: inherit;
+}
+
+.feature-header {
+  min-height: @feature-header-height;
+  .left-of-three {
+    width: 20%;
+  }
+  .right-of-three {
+    width: 20%;
+  }
+  .center-of-three {
+    width: 60%;
+  }
+}
+
+.heading-header {
+  text-align: center;
+}
+
+// CONTENT
+
+.feature-content-container {
+  height:inherit;
+  padding-top: @feature-header-height;
+  padding-bottom: @footer-height;
+  .inner-feature-content-container {
+    height:inherit;
+    position:relative;
+    overflow-y: auto;
+    display:block;
+  }
+  .inner-slide-content-container{
+    height: inherit;
+    section {
+      height: inherit;
+      overflow-y: auto;
+    }
+  }
+}
+
+.simple-content-container{
+  height: inherit;
+  padding-top: @heading-header-height;
+  overflow-y: auto;
+}
+
+.content-container {
+  width: inherit;
+}
+
+// FOOTER
+
+footer {
+  position:relative;
+  height: @footer-height;
+  text-align: justify;
+  -ms-text-justify: distribute-all-lines;
+  text-justify: distribute-all-lines;
+  .apply-padding;
+  .center-horizontally;
+  max-width: @two-column-grid-width;
+  background-color: white;
+  li {
+    text-align: center;
+  }
+  .justified-element {
+    width: 30px;
+  }
+}
+
+// SWIPER
+
+.swiper-container, .swiper-wrapper, .swiper-slide {
+  height: inherit !important;
+}
+
+.swiper-container.main-slides {
+  margin-bottom: -@footer-height;
+}
+
+// RESPONSIVE
+
+// We want to horizontally and vertically center everything
+// once the screen size is bigger than a tablet
+@media (min-width: @maximum-width) and (min-height: @maximum-landscape-height) {
+  body {
+    div[role=main] > div.no-slides-container {
+      .center-container;
+      section.page{
+        .absolute-center;
+        min-height: @maximum-landscape-height;
+        max-height: @maximum-landscape-height;
+      }
+    }
+    div[role=main] > div.slides-container {
+      position:inherit;
+      top:50%;
+      height:@maximum-landscape-height;
+      margin-top:-@maximum-landscape-height / 2;
+    }
+  }
+}
+
+// Pages with fixed content need a smaller height
+@media (min-height: @fixed-page-height) {
+  section.fixed-height {
+    min-height: @fixed-page-height !important;
+    max-height: @fixed-page-height !important;
+  }
+}
+
+// For smaller screens, aside is hidden, and we revert to single column width
+
+// FIXME: FORCING ONE COLUMN TO EVERYONE
+//@media (max-width: @maximum-width) {
+  .two-column-grid, .two-column-grid div.column, footer, .two-column-grid header {
+    max-width: @one-column-grid-width;
+  }
+  aside {
+    display:none;
+  }
+//}

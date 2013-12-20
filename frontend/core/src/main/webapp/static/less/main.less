@@ -1,0 +1,74 @@
+*{
+  // Use the same font throughout
+  font-family: @font;
+
+  // Use border box everywhere
+  -moz-box-sizing: border-box; 
+  -webkit-box-sizing: border-box; 
+  box-sizing: border-box; 
+
+  // Default to no background repeat
+  background-repeat: no-repeat;
+}
+
+html {
+  // There is never any full page scrolling
+  height: 100%;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+  body, div[role=main], .no-slides-container, .slides-container, section.one-column-grid, section.two-column-grid, .column {
+    height: inherit;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  font-size: @default-font-size;
+}
+
+// HEADINGS
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 300;
+  margin:0;
+}
+
+// LINKS
+
+a {
+  text-decoration: none;
+  color: @link-color;
+}
+
+// LISTS
+
+ul {
+  list-style-type: none;
+  padding:0;
+  margin:0;
+}
+
+// INPUTS
+
+input {
+  width: 100%;
+}
+
+button {
+  padding: 0;
+  margin: 0;
+}
+
+// PLACEHOLDER TWEAK 
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    @text-gray;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    @text-gray;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    @text-gray;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    @text-gray;
+}
+

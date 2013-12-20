@@ -10,10 +10,6 @@ function ContextController($location, $scope, $routeParams, errorHandler, tagsAr
     $scope.context = tagsArray.getTagByUUID($routeParams.uuid);
     $scope.tasks = tasksArray.getSubtasksByTagUUID($scope.context.uuid);
   }
-
-  $scope.addNew = function() {
-    $location.path(userPrefix.getPrefix() + '/tasks/new/');
-  };
 }
 
 ContextController.$inject = ['$location', '$scope', '$routeParams', 'errorHandler', 'tagsArray', 'tasksArray', 'userPrefix'];

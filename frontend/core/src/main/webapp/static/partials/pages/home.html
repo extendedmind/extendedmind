@@ -1,0 +1,19 @@
+<section id="home" class="one-column-grid page">
+  <div class="column">
+    <header ng-hide="omniBarActive" main-header id="main-header"></header>
+    <div id="main-content-container" class="content-container">
+      <div ng-hide="omniBarActive" class="banner">
+        <span class="icon-logo_only" />
+      </div>
+      <div class="content">
+        <div class="swiper-no-swiping" omni-bar></div>
+        <div id="filtered-items-container">
+          <div class="filtered-items" filtered-items-list="items" items-filter="newItem.title"></div>
+          <div class="filtered-items" filtered-tasks-list="tasks" tasks-filter="newItem.title"></div>
+          <div class="filtered-items" filtered-notes-list="notes" notes-filter="newItem.title"></div>
+        </div>
+        <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
+      </div>
+    </div>
+  </div>
+</section>

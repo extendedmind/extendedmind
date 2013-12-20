@@ -1,5 +1,4 @@
-/*global urlPrefix */
-/*jslint white: true */
+/*global angular, urlPrefix */
 'use strict';
 
 angular.module('em.services').config(['$httpProvider',
@@ -7,7 +6,7 @@ angular.module('em.services').config(['$httpProvider',
     $httpProvider.interceptors.push('httpInterceptor');
   }]);
 
-function httpInterceptor($q, httpResponseRecover) {
+function httpInterceptor($q, errorHandler) {
 
   return {
     request : function(config) {
@@ -20,80 +19,13 @@ function httpInterceptor($q, httpResponseRecover) {
       return response || $q.when(response);
     },
     responseError : function(rejection) {
-      // return httpResponseRecover.responseError(rejection);
-      return $q.reject(rejection);
-    }
-  };
-}
-httpInterceptor.$inject = ['$q', 'httpResponseRecover'];
-angular.module('em.services').factory('httpInterceptor', httpInterceptor);
-
-function httpResponseRecover($injector, $location, $q, errorHandler) {
-
-  /** Services initialized later because of circular dependency problem. */
-  // https://groups.google.com/d/msg/angular/hlRdr5LD3as/bXnz8GZAzbEJ
-  var deferred, httpRequest, userAuthenticate, userSessionStorage;
-
-  return {
-    responseError : function(rejection) {
-      // Http 401 will cause a browser to display a login dialog
-      // http://stackoverflow.com/questions/86105/how-can-i-supress-the-browsers-authentication-dialog
-      if (rejection.status === 403) {
-        if (this.canRecover()) {
-          deferred = $q.defer();
-          this.authenticateOnResponseError(rejection, deferred);
-          return deferred.promise;
-        }
-        $location.path('/login');
-      } else if (rejection.status === 419) {
-        if (this.canRecover()) {
-          deferred = $q.defer();
-          this.authenticateOnResponseError(rejection, deferred);
-          return deferred.promise;
-        }
-        $location.path('/login');
-      }
       errorHandler.setError(rejection.data);
       return $q.reject(rejection);
-    },
-    canRecover : function() {
-      userAuthenticate = userAuthenticate || $injector.get('userAuthenticate');
-      return userAuthenticate.authenticateOnResponseError();
-    },
-    authenticateOnResponseError : function(rejection, deferred) {
-      httpRequest = httpRequest || $injector.get('httpRequest');
-
-      httpRequest.loginAndRetryRequest(rejection).then(function(response) {
-        return deferred.resolve(response);
-      }, function(response) {
-        $location.path('/login');
-        return deferred.reject(response);
-      });
-    },
-    checkActiveUUID : function() {
-      userAuthenticate = userAuthenticate || $injector.get('userAuthenticate');
-      return userAuthenticate.checkActiveUUIDOnResponseError();
-    },
-    retryNullRequest : function(rejection, deferred) {
-      var rejectionUrl, rejectionUrlUUID;
-
-      userSessionStorage = userSessionStorage || $injector.get('userSessionStorage');
-      httpRequest = httpRequest || $injector.get('httpRequest');
-
-      rejectionUrl = rejection.config.url;
-      rejectionUrlUUID = rejectionUrl.replace('null', userSessionStorage.getActiveUUID());
-      rejection.config.url = rejectionUrlUUID;
-
-      httpRequest.config(rejection.config).then(function(response) {
-        return deferred.resolve(response);
-      }, function(response) {
-        return deferred.reject(response);
-      });
     }
   };
 }
-httpResponseRecover.$inject = ['$injector', '$location', '$q', 'errorHandler'];
-angular.module('em.services').factory('httpResponseRecover', httpResponseRecover);
+httpInterceptor.$inject = ['$q', 'errorHandler'];
+angular.module('em.services').factory('httpInterceptor', httpInterceptor);
 
 angular.module('em.services').factory('httpBasicAuth', ['$http',
   function($http) {
@@ -132,7 +64,6 @@ angular.module('em.services').factory('httpRequest', ['$http', 'userSession',
 
       return $http(config).then(function(success) {
         return success;
-      }, function(error) {
       });
     };
 

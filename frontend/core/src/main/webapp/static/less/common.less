@@ -1,0 +1,264 @@
+// ABSOLUTE CENTER
+
+.center-container {
+  position: relative;
+}
+
+.absolute-center {
+  width: 50%;
+  height: 50%;
+  overflow: auto;
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+}
+
+.center-horizontally {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// HORIZONTAL LAYOUT
+
+.left-of-three {
+  float:left;
+  width: 33.33%;
+  .small-border-right:after{
+    margin-left: 12%;
+  }
+}
+.right-of-three {
+  float:right;
+  width: 33.33%;
+  text-align: right;
+}
+.center-of-three {
+  float: left;
+  width: 33.34%;
+  text-align: center;
+}
+
+.horizontally-justified {
+  text-align: justify;
+  * {
+    display: inline;
+  }
+  .justified-element {
+    height: @footer-height;
+    vertical-align: top;
+    display: inline-block;
+    *display: inline;
+  }
+  #stretch {
+    width: 100%;
+    display: inline-block;
+    font-size: 0;
+    line-height: 0
+  }
+}
+
+
+// ANIMATIONS
+
+.animate-hide {
+  -webkit-transition:all linear 0.2s;
+  transition:all linear 0.2s;
+  opacity:1;
+}
+
+.animate-hide.ng-hide-add,
+.animate-hide.ng-hide-remove {
+  display:block!important;
+}
+
+.animate-hide.ng-hide {
+  opacity:0;
+}
+
+.fade-color(@fade-time) {
+  -o-transition: @fade-time linear;
+  -moz-transition: @fade-time linear;
+  -khtml-transition: @fade-time linear;
+  -webkit-transition: @fade-time linear;
+  -ms-transition: @fade-time linear;
+  transition: @fade-time linear;
+}
+
+// GENERAL INPUTS
+
+.simple-input {
+  outline: none;
+  border:none !important;
+  box-shadow:none !important;
+  padding: 0;
+  background-image: none;
+}
+
+.input-placeholder {
+  color: @text-gray;
+}
+
+.click-to-slide{
+  display: table;
+  width: 100%;
+  vertical-align: middle;
+  span.link-title {
+    width: 100%;
+    display:table-cell;
+  }
+  span.slide-indicator { 
+    display:table-cell;
+    width: @slide-indicator-width;
+    color:@text-gray;
+  }
+}
+
+// BUTTONS
+
+.button {
+  background: none;
+  cursor: pointer;
+  border: none;
+  border: 0px;
+  display: inline-block;
+}
+
+.button-container {
+  text-align: center;
+}
+
+.wide-button {
+  .simple-input;
+  .center-horizontally;
+  height: @vertical-grid;
+  width: 100%;
+  display: block;
+}
+
+.button-row{
+  width:100%;
+  height: @vertical-grid;
+  vertical-align: middle;
+  .button-container{
+    button {
+      .simple-input;
+      width: 100%;
+      height: @vertical-grid;
+    }
+  }
+  .small-border-right:after {
+    float:right;
+    height:25px;
+    background:white;
+    width:1px;
+    content:"";
+    position:absolute;
+    text-align: right;
+  }
+}
+
+.vertical-buttons {
+  button{
+    margin-top: @vertical-grid / 4;
+    margin-bottom: @vertical-grid / 4;
+  }
+}
+
+button.normal-button {
+  color: white;
+  & {
+    background-color: @active-button;
+  }
+  &[disabled] {
+    background-color: @inactive-button;
+  }
+  &:active {
+    background-color: @pressed-button;
+  }
+}
+
+button.cancel-button {
+  color: white;
+  & {
+    background-color: @cancel-button;
+  }
+  &:active {
+    background-color: @pressed-cancel-button;
+  }
+}
+
+
+button.delete-button {
+  color: white;
+  & {
+    background-color: @delete-button;
+  }
+  &:active {
+    background-color: @pressed-delete-button;
+  }
+}
+
+// CHECKBOXES
+
+// Make labels clickable
+label {  
+  cursor: pointer;  
+}  
+
+ // Never show default checkbox
+ input[type=checkbox] {
+   display:none;
+ }
+
+ input[type='checkbox'] + label:before {
+   font-family: 'icomoon';
+   font-size: @icon-size;
+   padding-right: 10px;
+   vertical-align: middle;
+ }
+
+ input[type="checkbox"] + label:before {
+  content: "\e601";
+}
+
+input[type="checkbox"]:checked + label:before {
+  content: "\e602";
+}
+
+// SELECTIONS
+
+select {
+  &.simple-input {
+    color: @text-gray;
+    background: none;
+    // Without this the text is slightly indented
+    margin-left:-4px;
+    padding:0;
+  }
+  option {
+    color: black;
+  }
+  option:first-child{
+    color: @text-gray;
+  }
+}
+
+// BORDERS
+
+.top-bottom-borders{
+  border-top: solid 2px @text-gray;
+  border-bottom: solid 2px @text-gray;
+}
+
+// SCREEN READERS
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

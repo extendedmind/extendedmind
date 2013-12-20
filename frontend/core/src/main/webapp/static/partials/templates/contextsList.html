@@ -1,13 +1,7 @@
-<div>
-
-  <div ng-transclude></div>
-
-  <ul>
-    <li ng-repeat="context in tags">
-
-      <span><a class="text-muted" href="#/{{prefix}}/tasks/context/{{context.uuid}}">@{{context.title}}</a></span>
-
-    </li>
-  </ul>
-
-</div>
+<ul>
+  <li ng-repeat="context in tags">
+    <a class="click-to-slide" href="#/{{prefix}}/tasks/context/{{context.uuid}}">
+      <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right" />
+    </a>
+  </li>
+</ul>

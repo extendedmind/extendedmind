@@ -1,15 +1,15 @@
-<form class="form" role="form" name="addOmniItem" ng-submit="addNewItem(newItem)">
+<form id="omnibar" role="form" name="addOmniItem" ng-submit="addNewItem(newItem)">
 
   <div class="form-group">
 
-    <label class="sr-only" for="omniItem">omniItem</label>
-    <input type="search" class="inline form-control" id="omniItem" ng-model="newItem.title" placeholder="store / recall" required>
-    <span>
-      <button class="btn em-plus inline" type="button" ng-disabled="!newItem.title" ng-click="addNewItem(newItem)">
-        +
+    <div id="omni-input-wrapper">
+      <label class="sr-only" for="omniItem">omniItem</label>
+      <input type="search" class="simple-input form-control" id="omniItem" ng-model="newItem.title" ng-focus="omniBarFocus(true)" ng-blur="omniBarFocus(false)" placeholder="store / recall" required>
+    </div>
+    <div id="plus-wrapper">
+      <button class="button" type="button" ng-disabled="!newItem.title" ng-click="addNewItem(newItem)"><span class="icon-plus" />
       </button>
-    </span>
-
+    </div>
   </div>
 
 </form>

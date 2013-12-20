@@ -1,28 +1,23 @@
-/*jslint white: true */
+/*global angular */
 'use strict';
 
 angular.module('em.directives').directive('item', [
   function() {
     return {
-      controller : 'ItemsController',
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/items/item.html',
-      transclude : true
-    };
-  }]);
+      restrict: 'A',
+      scope: true,
+      templateUrl: 'static/partials/templates/items/item.html',
+      link: function(scope) {
+        scope.showItemContent = false;
 
-angular.module('em.directives').directive('itemsList', [
-  function() {
-    return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/items/itemsList.html',
-      transclude : true,
-      link : function(scope, element, attrs) {
-        var itemsFilterAttr = attrs.itemsfilter;
-
-        scope.$watch(itemsFilterAttr, function(newValue) {
-          scope.itemsListFilter = newValue;
-        });
+        scope.toggleItemContent = function toggleItemContent() {
+          scope.showItemContent = !scope.showItemContent;
+          if (scope.showItemContent) {
+            scope.selected = 'em-active-list-item';
+          } else {
+            scope.selected = '';
+          }
+        };
       }
     };
   }]);
@@ -30,28 +25,21 @@ angular.module('em.directives').directive('itemsList', [
 angular.module('em.directives').directive('itemContent', [
   function() {
     return {
-      restrict : 'A',
-      templateUrl : 'static/partials/templates/items/itemContent.html',
-      link : function(scope, element, attrs) {
-        scope.showItemContent = false;
+      restrict: 'A',
+      scope: true,
+      templateUrl: 'static/partials/templates/items/itemContent.html'
+    };
+  }]);
 
-        var itemTypeAttr = attrs.itemtype;
-
-        scope.$watch(itemTypeAttr, function(newValue) {
-          scope.itemType = newValue;
-        });
-
-        scope.toggleItemContent = function toggleItemContent() {
-
-          scope.showItemContent = !scope.showItemContent;
-
-          if (scope.showItemContent) {
-            scope.selected = 'em-active-list-item';
-          } else {
-            scope.selected = '';
-          }
-
-        };
-      }
+angular.module('em.directives').directive('filteredItemsList', [
+  function() {
+    return {
+      controller: 'ItemsController',
+      scope: {
+        items: '=filteredItemsList',
+        itemsListFilter: '=itemsFilter'
+      },
+      restrict: 'A',
+      templateUrl: 'static/partials/templates/items/filteredItemsList.html',
     };
   }]);

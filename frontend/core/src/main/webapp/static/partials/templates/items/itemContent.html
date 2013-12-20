@@ -1,47 +1,36 @@
 <div ng-switch="itemType">
-
-  <div ng-switch-default>
-
-    <div class="em-item-actions">
-      <ul class="nav nav-justified em-horizontal-buttons">
-        <li class="em-gray-button">
-          <button class="em-simple-input" type="button" ng-click="itemToNote(item)">
-            note
-          </button>
-        </li>
-        <li class="em-gray-button">
-          <button class="em-simple-input" type="button" ng-click="itemToTask(item)">
-            task
-          </button>
-        </li>
-        <li class="em-red-button">
-          <button class="em-simple-input" type="button" ng-click="deleteItem(item)">
-            delete
-          </button>
-        </li>
-      </ul>
-
-    </div>
+  <div class="item-sorting-container" ng-switch-default>
+    <ul class="button-row">
+      <li class="button-container left-of-three">
+        <button class="normal-button small-border-right" type="button" ng-click="itemToNote(item)">
+          <span class="button-text">note</span>
+        </button>
+      </li>
+      <li class="button-container center-of-three">
+        <button class="normal-button" type="button" ng-click="itemToTask(item)">
+          <span class="button-text">task</span>
+        </button>
+      </li>
+      <li class="button-container right-of-three">
+        <button class="delete-button" type="button" ng-click="deleteItem(item)">
+          <span class="button-text">delete</span>
+        </button>
+      </li>
+    </ul>
   </div>
 
   <div ng-switch-when="task">
-
-    <div class="row form-group">
-      <label class="sr-only" for="taskContext">context</label>
-      <div class="col-lg-10">
-        <select class="form-control em-simple-input" id="taskContext" ng-model="task.relationships.tags[0]" ng-options="context.uuid as context.title for context in contexts" ng-hide="task.project">
-          <option value="">select context...</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="row form-group">
+    <div class="form-group">
       <label class="sr-only" for="taskParent">parent</label>
-      <div class="col-lg-10">
-        <select class="form-control em-simple-input" id="taskParent" ng-model="task.relationships.parentTask" ng-options="project.uuid as project.title for project in tasks | tasksFilter:filterService.activeFilters.project" ng-hide="task.project">
-          <option value="">select project...</option>
-        </select>
-      </div>
+      <select class="simple-input swiper-no-swiping" id="taskParent" ng-model="task.relationships.parentTask" ng-options="project.uuid as project.title for project in tasks | tasksFilter:filterService.activeFilters.project" ng-hide="task.project">
+        <option value="">select project...</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="sr-only" for="taskContext">context</label>
+      <select class="simple-input swiper-no-swiping" id="taskContext" ng-model="task.relationships.context" ng-options="context.uuid as context.title for context in contexts" ng-hide="task.project">
+        <option value="">select context...</option>
+      </select>
     </div>
 
     <div class="row em-item-actions">

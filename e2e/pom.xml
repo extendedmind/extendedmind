@@ -107,7 +107,7 @@
         <executions>
           <execution>
             <id>unpack</id>
-            <phase>generate-test-resources</phase>
+            <phase>generate-resources</phase>
             <goals>
               <goal>unpack</goal>
             </goals>
@@ -156,6 +156,23 @@
                   <outputDirectory>${project.build.directory}</outputDirectory>
                 </artifactItem>
               </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unzip-database</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target name="unzip-database">
+                <unzip src="target/neo4j-test.zip" dest="target/neo4j-test" />
+              </target>
             </configuration>
           </execution>
         </executions>

@@ -1,14 +1,6 @@
-<div>
-  <div ng-transclude></div>
-
-  <ul class="list-unstyled">
-
-    <li ng-class="selected" ng-repeat="task in tasks">
-      <div task></div>
-
-    </li>
-
-  </ul>
-
-  <div sub-task subtask="subtask"></div>
-</div>
+<ul class="list-unstyled">
+  <li ng-class="selected" ng-repeat="task in tasks | tasksFilter:tasksFilter">
+    <div task="task"></div>
+  </li>
+  <div sub-task add="addSubtask(subtask)" subtask="subtask"></div>
+</ul>

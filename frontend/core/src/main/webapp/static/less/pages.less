@@ -1,0 +1,140 @@
+
+// LOGIN
+
+@login-content-height: @vertical-grid*5.6;
+
+section#login {
+  .column {
+    overflow-y: auto;
+    .banner {
+      padding-bottom: @vertical-grid / 10;
+      span {
+        width: 200px;
+        display: block;
+        .center-horizontally;
+      }
+      // Make content a "sticky footer"
+      min-height: 100%;
+      margin-bottom: -@login-content-height; 
+      padding-top: @vertical-grid * 1.5;
+    }
+    .banner:after {
+      content: "";
+      display: block;
+      height: @login-content-height;
+
+    }
+    .content {
+      height: @login-content-height;
+      .button-container{
+        padding-top: @vertical-grid;
+        padding-bottom: @vertical-grid / 2;
+      }
+    }
+  }
+}
+
+// HOME
+
+section#home {
+  header#main-header {
+    min-height: @main-header-height;
+    #menu-content {
+      background-color: white;
+      width: auto;
+      padding-top: 10px;
+      .top-bottom-borders;
+      a.collective{
+        color: @text-gray;
+      }
+    }
+    nav {
+      max-width: @one-column-grid-width;
+      text-align: right;
+      margin-right: auto;
+      margin-left: auto;
+      width: inherit;
+    }
+    button#menu-button{
+      .button;
+      padding: 10px 0 10px 20px; // increased clicking area
+    }
+    button#menu-button:active{
+      background-position: 0 0;
+    }
+  }
+
+  #main-content-container {
+    height:100%;
+    .banner {
+      padding-top: @vertical-grid * 1.5;
+      padding-bottom: @vertical-grid / 2;
+      span {
+        width: 2em;
+        .center-horizontally;
+        display: block;
+        font-size: 2em;
+      }
+    }
+    .content {
+      height:inherit;
+      padding-top: @vertical-grid / 2;
+      padding-bottom: @footer-height + @vertical-grid / 4;
+      #omnibar{
+        .top-bottom-borders;
+        display: table;
+        width: 100%;
+        div#omni-input-wrapper, div#plus-wrapper{
+          vertical-align: middle;
+        }
+        div#omni-input-wrapper {
+          width: 100%;
+          display:table-cell;
+        }
+        div#plus-wrapper { 
+          display:table-cell;
+          width: @plus-button-width;
+          line-height: 100%;
+          button {
+            padding-top: 8px; // quick fix to center the plus button
+          }
+        }
+      }
+      div#filtered-items-container {
+        height: inherit;
+        overflow-y: auto;
+      }
+    }
+  }
+}
+
+// TASKS
+
+input[type="checkbox"]:checked ~ .task {
+  color:@text-gray;
+  .fade-color(@fade-time);
+}
+
+// TASKS DATES
+
+section#tasks-dates {
+  #date-picker {
+    width: 100%;
+    overflow-x: auto;
+    table {
+      max-width: 100%;
+      td {
+        padding-right: 0.5em;
+        a {
+          color:@text-gray;
+        }
+        a:active{
+          color:black;
+        }
+      }
+    }
+  }
+  .inner-slide-content-container{
+    padding-bottom: @footer-height;
+  }
+}
