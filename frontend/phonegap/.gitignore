@@ -1,0 +1,12 @@
+# Phonegap specific git ignore
+
+# all of these get copied from source folder automatically during "phonegap build"
+www
+app/www
+
+# ios
+app/platforms/ios/build
+app/platforms/ios/www
+
+# android
+app/platforms/android/assets
