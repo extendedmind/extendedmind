@@ -7,7 +7,7 @@ section#login {
   .column {
     overflow-y: auto;
     .banner {
-      padding-bottom: 20px;
+      padding-bottom: @vertical-grid / 10;
       span {
         width: 200px;
         display: block;
@@ -22,6 +22,7 @@ section#login {
       content: "";
       display: block;
       height: @login-content-height;
+
     }
     .content {
       height: @login-content-height;
@@ -96,7 +97,6 @@ section#home {
           line-height: 100%;
           button {
             padding-top: 8px; // quick fix to center the plus button
-            margin-right: -6px; // move button all the way to the right side
           }
         }
       }
