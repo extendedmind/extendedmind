@@ -203,20 +203,20 @@ button.delete-button {
 // Make labels clickable
 label {  
   cursor: pointer;  
- }  
+}  
 
  // Never show default checkbox
  input[type=checkbox] {
    display:none;
-}
+ }
 
  input[type='checkbox'] + label:before {
    font-family: 'icomoon';
-   font-size: 1.3em;
+   font-size: @checkbox-size;
    padding-right: 10px;
  }
 
-input[type="checkbox"] + label:before {
+ input[type="checkbox"] + label:before {
   content: "\e601";
 }
 
