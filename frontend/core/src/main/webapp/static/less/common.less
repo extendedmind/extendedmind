@@ -206,19 +206,23 @@ label {
 }  
 
  // Never show default checkbox
- input[type=checkbox] {
-   display:none;
- }
+input[type=checkbox] {
+  display:none;
+}
 
- input[type='checkbox'] + label:before {
-   font-family: 'icomoon';
-   font-size: @icon-size;
-   padding-right: 10px;
-   vertical-align: middle;
- }
+input[type='checkbox'] + label:before {
+  font-family: 'icomoon';
+  font-size: @icon-size;
+  padding-right: 10px;
+  vertical-align: middle;
+}
 
- input[type="checkbox"] + label:before {
+input[type="checkbox"] + label:before {
   content: "\e601";
+}
+
+input[type="checkbox"] + label.overdue:before {
+  color: @overdue-task;
 }
 
 input[type="checkbox"]:checked + label:before {

@@ -6,6 +6,17 @@ angular.module('em.mockHelpers', ['em.base64']);
 angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
   function($httpBackend, mockHttpBackendResponse) {
 
+    // http://stackoverflow.com/a/105074/2659424
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+                 .toString(16)
+                 .substring(1);
+    };
+    function randomUUID() {
+      return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+             s4() + '-' + s4() + s4() + s4();
+    }
+
     var api_useruuid_items,
 
     // account
@@ -102,6 +113,7 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     });
 
     $httpBackend.whenPUT(putItem).respond(function(method, url, data, headers) {
+      putItemResponse['uuid'] = randomUUID();
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, putItemResponse);
     });
 
@@ -132,6 +144,7 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     });
 
     $httpBackend.whenPUT(putTask).respond(function(method, url, data, headers) {
+      putTaskResponse['uuid'] = randomUUID();
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, putTaskResponse);
     });
 
@@ -141,6 +154,7 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     });
 
     $httpBackend.whenPUT(putNote).respond(function(method, url, data, headers) {
+      putNoteResponse['uuid'] = randomUUID();
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, putNoteResponse);
     });
 
@@ -242,6 +256,8 @@ angular.module('em.mockHelpers').factory('mockHttpBackendResponse', ['base64',
 
       // put new
       getPutItemResponse : function() {
+        var returnValue = getJSONFixture('putItemResponse.json');
+        //console.log(returnValue);
         return getJSONFixture('putItemResponse.json');
       },
       getPutNoteResponse : function() {

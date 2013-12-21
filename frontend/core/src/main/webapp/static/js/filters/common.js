@@ -91,11 +91,9 @@ angular.module('em.filters').filter('tasksFilter', ['date',
       };
 
       tasksFilter.tasksByDate = function(tasks, listDate) {
-
         var filteredValues, i;
         filteredValues = [];
         i = 0;
-
         while (tasks[i]) {
           if (!tasks[i].project) {
             if (tasks[i].due) {
