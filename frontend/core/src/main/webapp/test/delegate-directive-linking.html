@@ -1,0 +1,325 @@
+<!doctype html>
+<html ng-app="Demo" ng-controller="DemoController">
+<head>
+	<meta charset="utf-8" />
+
+	<title>
+		Delegating Nested Directive Behavior To Parent Directive In AngularJS
+	</title>
+
+	<style type="text/css">
+
+		ul {
+			font-size: 20px ;
+		}
+
+		li {
+			margin-bottom: 5px ;
+			width: 300px ;
+		}
+
+		span.remove,
+		span.remove a {
+			color: #999999 ;
+		}
+
+		span.remove a:hover {
+			color: #CC0000 ;
+		}
+
+	</style>
+</head>
+<body>
+
+	<h1>
+		Delegating Nested Directive Behavior To Parent Directive In AngularJS
+	</h1>
+
+	<form ng-submit="addFriend()">
+
+		<p>
+			New Friend:
+			<input type="text" ng-model="newFriendName" size="25" />
+			<input type="submit" value="Add New Friend" />
+		</p>
+
+	</form>
+
+	<h2>
+		You Have {{ friends.length }} Friends
+	</h2>
+
+	<!--
+		Notice that my UL has a "helper" directive. This will take
+		care of adding behavior to the list that cannot be provided
+		[easily] using the core AngularJS hooks.
+	-->
+	<ul bn-list-helper>
+
+		<!--
+			As we repeat the list, each list item is going to have
+			it's own behavior; but rather than creating a directive
+			just for the list items, we'll simply delegate to the
+			"list helper" directive that we already have in play.
+		-->
+		<li
+			ng-repeat="friend in friends"
+			bn-delegate-directive="listItem">
+
+			{{ friend.name }}
+
+			<span class="remove">
+				( <a ng-click="removeFriend( friend )">remove</a> )
+			</span>
+
+		</li>
+
+		<!--
+			Demonstrate that this can be used outside of ngRepeat
+			due to the fact that we're defining a directive Controller.
+		-->
+		<li bn-delegate-directive="listItem" bn-is-last="true">
+
+			Static list item, not in ngRepeat.
+
+		</li>
+
+	</ul>
+
+
+
+	<!-- Load jQuery and AngularJS from the CDN. -->
+	<script
+		type="text/javascript"
+		src="//code.jquery.com/jquery-2.0.0.min.js">
+	</script>
+	<script
+		type="text/javascript"
+		src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js">
+	</script>
+	<script type="text/javascript">
+
+
+		// Create an application module for our demo.
+		var Demo = angular.module( "Demo", [] );
+
+
+		// -------------------------------------------------- //
+		// -------------------------------------------------- //
+
+
+		// I am the controller for Demo.
+		Demo.controller(
+			"DemoController",
+			function( $scope ) {
+
+				// I add a new friend to the collection.
+				$scope.addFriend = function() {
+
+					if ( ! $scope.newFriendName ) {
+
+						return;
+
+					}
+
+					$scope.friends.push({
+						id: ( new Date() ).getTime(),
+						name: $scope.newFriendName
+					});
+
+					$scope.newFriendName = "";
+
+				};
+
+
+				// I remove the given friend from the collection.
+				$scope.removeFriend = function( friend ) {
+
+					var index = $scope.friends.indexOf( friend );
+
+					$scope.friends.splice( index, 1 );
+
+				};
+
+
+				// I am the model for the new friend name.
+				$scope.newFriendName = "";
+
+				// I am the initial list of friends to render.
+				$scope.friends = [
+					{
+						id: 1,
+						name: "Sarah"
+					},
+					{
+						id: 2,
+						name: "Tricia"
+					},
+					{
+						id: 3,
+						name: "Joana"
+					}
+				];
+
+			}
+		);
+
+
+		// -------------------------------------------------- //
+		// -------------------------------------------------- //
+
+
+		// I am the helper directive for the demo.
+		Demo.directive(
+			"bnListHelper",
+			function() {
+
+				// I bind the DOM events to the scope.
+				function link( $scope, element, attributes ) {
+
+					// Add behavior to the list as a whole (just for
+					// demonstrating purposes).
+					element.on(
+						"mouseenter",
+						"li",
+						function( event ) {
+
+							console.log(
+								$( this ).text().replace( /\s+/g, " " )
+							);
+
+						}
+					);
+
+				} // END: Helper Link Function.
+
+
+				// I am the linking function for the list item directive
+				// which is being delegated to the list helper.
+				function linkListItem( $scope, element, attributes ) {
+
+					// Log that the link has been delegated!
+					console.log( "linking delegated:", element );
+
+
+					// Don't override the removeFriend for the last
+					// list item. We only have to do this here because
+					// the last list item is not in the ngRepeat, and
+					// therefore does NOT have its own scope.
+					if ( attributes.bnIsLast ) {
+
+						return;
+
+					}
+
+
+					// When a user removes a friend, we don't want to
+					// remove it immediately - we want to hide it
+					// gradually and then pass the "remove" request up
+					// to the parent scope.
+					$scope.removeFriend = function( friend ) {
+
+						element.slideUp({
+							duration: 500,
+							queue: false
+						})
+
+						element.fadeOut({
+							duration: 500,
+							queue: false,
+							always: function() {
+
+								$scope.$parent.removeFriend( friend );
+								$scope.$apply();
+
+							}
+						});
+
+					};
+
+					// Show the new element gradually.
+					element
+						.hide()
+						.fadeIn( 1000 )
+					;
+
+				} // END: Delegate Link Function.
+
+
+				// Return the directive configuration. In this case,
+				// we have to define the Controller for the directive
+				// since this is the only way we can access the $scope,
+				// pre-linking (without a compile function). If we try
+				// to provide this hook in the parent "link" function,
+				// we'll miss the directives that were linked in the
+				// depth-first, bottom-up linking lifecycle.
+				return({
+					controller: function( $scope ) {
+
+						// Provide a hook for the nested directive such
+						// that it can delegate its linking method to
+						// the overall helper.
+						$scope.delegateDirectiveLinking = function( type, $scope, element, attributes ) {
+
+							if ( type === "listItem" ) {
+
+								linkListItem( $scope, element, attributes );
+
+							}
+
+						};
+
+					},
+					link: link,
+					restrict: "A"
+				});
+
+			}
+		);
+
+
+		// -------------------------------------------------- //
+		// -------------------------------------------------- //
+
+
+		// I attempt to delegate the linking responsibilities of this
+		// directive up to a parent directive that has exposed the
+		// appropriate delegate method.
+		Demo.directive(
+			"bnDelegateDirective",
+			function() {
+
+				// I bind the DOM events to the scope.
+				function link( $scope, element, attributes ) {
+
+					// Check to see if a parent directive has exposed
+					// a delegating link method.
+					if ( ! $scope.delegateDirectiveLinking ) {
+
+						return;
+
+					}
+
+					$scope.delegateDirectiveLinking(
+						attributes.bnDelegateDirective,
+						$scope,
+						element,
+						attributes
+					);
+
+				}
+
+				// Return the directive configuration.
+				return({
+					link: link,
+					restrict: "A"
+				});
+
+			}
+		);
+
+
+	</script>
+
+</body>
+</html>
