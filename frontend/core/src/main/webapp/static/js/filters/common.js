@@ -30,24 +30,6 @@ angular.module('em.filters').filter('tagTitle', ['itemsArray', 'tagsArray',
     return userItemsFilter;
   }]);
 
-angular.module('em.filters').filter('visibleNoteContent', [
-  function() {
-    var userItemsFilter = function(note) {
-      var filteredValues;
-      filteredValues = [];
-
-      if (note.content) {
-        filteredValues.push(note.content);
-      }
-      if (note.link) {
-        filteredValues.push(note.link);
-      }
-
-      return filteredValues;
-    };
-    return userItemsFilter;
-  }]);
-
 angular.module('em.filters').filter('visibleTaskContent', [
   function() {
     var userItemsFilter = function(task) {

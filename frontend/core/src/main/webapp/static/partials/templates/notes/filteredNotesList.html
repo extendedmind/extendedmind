@@ -1,8 +1,0 @@
-<div ng-show="notesListFilter && filteredNotes.length">
-  <h3><a class="text-muted" href ng-click="gotoNotes()">notes</a></h3>
-  <ul class="list-unstyled">
-    <li ng-class="selected" ng-repeat="note in filteredNotes = (notes | filter:{title:notesListFilter})">
-      <div note></div>
-    </li>
-  </ul>
-</div>
