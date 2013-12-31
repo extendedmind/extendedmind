@@ -1,8 +1,6 @@
 /*global angular */
 'use strict';
 
-angular.module('em.services').value('version', 0.1);
-
 angular.module('em.services').factory('date', [
   function() {
     var today, months;

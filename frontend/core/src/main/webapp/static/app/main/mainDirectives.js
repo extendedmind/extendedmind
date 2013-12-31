@@ -1,13 +1,6 @@
 /*global angular */
 'use strict';
 
-angular.module('em.directives').directive('appVersion', ['version',
-  function(version) {
-    return function(scope, element) {
-      return element.text(version);
-    };
-  }]);
-
 angular.module('em.directives').directive('errorAlertBar', ['$parse',
   function($parse) {
     return {

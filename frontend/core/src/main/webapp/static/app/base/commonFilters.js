@@ -1,13 +1,6 @@
 /*global angular */
 'use strict';
 
-angular.module('em.filters').filter('interpolate', ['version',
-  function(version) {
-    return function(text) {
-      return String(text).replace(/\%VERSION\%/mg, version);
-    };
-  }]);
-
 angular.module('em.filters').filter('tagTitle', ['itemsArray', 'tagsArray',
   function(itemsArray, tagsArray) {
     var userItemsFilter = function(itemTags) {
