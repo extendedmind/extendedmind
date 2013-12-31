@@ -129,6 +129,12 @@
 }
 */
 
+#pragma mark Hide StatusBar
+
+- (BOOL)prefersStatusBarHidden {
+    return YES;
+}
+
 @end
 
 @implementation MainCommandDelegate

@@ -1,8 +1,6 @@
 #!/bin/bash
 
 echo "starting phonegap build.sh"
-echo $1
-echo $2
 
 # copy www source files to project
 cp -rf www app/
