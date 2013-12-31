@@ -3,6 +3,10 @@ package org.extendedmind.test
 import org.scalatest.FunSpec
 import java.util.UUID
 
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+
+@RunWith(classOf[JUnitRunner])
 class AdHocSpec extends FunSpec{
   describe("Regular expressions in Scala/Java"){
     it("should work with negative lookahead"){

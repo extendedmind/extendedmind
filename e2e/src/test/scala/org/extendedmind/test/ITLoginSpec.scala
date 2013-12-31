@@ -5,7 +5,7 @@ import org.scalatest.time.Span
 import org.scalatest.time.Seconds
 import org.openqa.selenium.By
 
-class LoginSpec extends E2ESpecBase {
+class ITLoginSpec extends E2ESpecBase {
   describe("Extended Mind Website") {
     it("should return error on invalid email") {
       go to "http://localhost:8080/login"

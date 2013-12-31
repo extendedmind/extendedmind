@@ -1,5 +1,7 @@
 package org.extendedmind.test
 
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 import org.scalatest.BeforeAndAfter
 import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers
@@ -15,13 +17,11 @@ import java.io.File
 import java.util.Properties
 import java.io.FileInputStream
 
-
+@RunWith(classOf[JUnitRunner])
 abstract class E2ESpecBase extends FunSpec 
     with BeforeAndAfter with BeforeAndAfterAll with ShouldMatchers
     with WebBrowser{
   
-  val TEST_DATA_STORE_DESTINATION = "target/neo4j-test"
-  val TEST_DATA_STORE = "target/neo4j-test.zip"
   val TEST_DATA_PROPERTIES = "target/testData.properties"
     
   val testData: Properties = {
@@ -36,17 +36,6 @@ abstract class E2ESpecBase extends FunSpec
     System.setProperty(PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"target/phantomjs-1.0-SNAPSHOT/linux/bin/phantomjs")  
   }
   implicit val webDriver: WebDriver = new PhantomJSDriver
-  
-  // Initialize Neo4j before every file
-  override def beforeAll(configMap: ConfigMap) {
-    // First delete old if it exists
-    val store = new File(TEST_DATA_STORE_DESTINATION)
-    if (store.exists() == true){
-    	FileUtils.deleteDirectory(store);
-    }
-    // Unpack test data
-    ZipUtil.unpack(new File(TEST_DATA_STORE), store)
-  }
   
   override def afterAll(configMap: ConfigMap) {
     webDriver.quit()
