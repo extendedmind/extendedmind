@@ -6,7 +6,7 @@ angular.module('em.directives').directive('item', [
     return {
       restrict: 'A',
       scope: true,
-      templateUrl: 'static/partials/templates/items/item.html',
+      templateUrl: 'static/app/main/item.html',
       link: function(scope) {
         scope.showItemContent = false;
 
@@ -27,7 +27,7 @@ angular.module('em.directives').directive('itemContent', [
     return {
       restrict: 'A',
       scope: true,
-      templateUrl: 'static/partials/templates/items/itemContent.html'
+      templateUrl: 'static/app/main/itemContent.html'
     };
   }]);
 
@@ -40,6 +40,6 @@ angular.module('em.directives').directive('filteredItemsList', [
         itemsListFilter: '=itemsFilter'
       },
       restrict: 'A',
-      templateUrl: 'static/partials/templates/items/filteredItemsList.html',
+      templateUrl: 'static/app/main/filteredItemsList.html',
     };
   }]);

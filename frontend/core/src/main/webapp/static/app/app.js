@@ -17,7 +17,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/accept/:hex_code', {
-      templateUrl: 'static/partials/pages/signup.html',
+      templateUrl: 'static/app/entry/signup.html',
       controller: 'SignupController',
       resolve: {
         routes: ['$location', '$route',
@@ -30,17 +30,17 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/404', {
-      templateUrl: 'static/partials/pages/pageNotFound.html',
+      templateUrl: 'static/app/main/pageNotFound.html',
       controller: 'PageNotFoundController'
     });
 
     $routeProvider.when('/login', {
-      templateUrl: 'static/partials/pages/login.html',
+      templateUrl: 'static/app/entry/login.html',
       controller: 'LoginController'
     });
 
     $routeProvider.when('/my/account', {
-      templateUrl: 'static/partials/pages/account.html',
+      templateUrl: 'static/app/account/account.html',
       controller: 'AccountController',
       resolve: {
         auth: ['auth',
@@ -366,7 +366,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks/context/:uuid', {
       controller: 'ContextController',
-      templateUrl: 'static/partials/pages/tasks/context.html',
+      templateUrl: 'static/app/tasks/context.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -382,7 +382,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/context/:uuid', {
       controller: 'ContextController',
-      templateUrl: 'static/partials/pages/tasks/context.html',
+      templateUrl: 'static/app/tasks/context.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -398,7 +398,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks/edit/:uuid', {
       controller: 'EditTaskController',
-      templateUrl: 'static/partials/pages/tasks/edit.html',
+      templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -414,7 +414,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/edit/:uuid', {
       controller: 'EditTaskController',
-      templateUrl: 'static/partials/pages/tasks/edit.html',
+      templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -430,7 +430,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/my/tasks/new', {
       controller: 'NewTaskController',
-      templateUrl: 'static/partials/pages/tasks/new.html',
+      templateUrl: 'static/app/tasks/newTask.html',
       resolve: {
         auth: ['auth',
         function(auth) {
@@ -446,7 +446,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/new', {
       controller: 'NewTaskController',
-      templateUrl: 'static/partials/pages/tasks/new.html',
+      templateUrl: 'static/app/tasks/newTask.html',
       resolve: {
         auth: ['auth',
         function(auth) {

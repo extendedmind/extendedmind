@@ -4,7 +4,7 @@
 function projects(emSwiper, Enum) {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/pages/tasks/projects.html',
+    templateUrl: 'static/app/tasks/projects.html',
     link: function() {
       emSwiper.setVerticalSwiper(Enum.PROJECTS);
     }
@@ -18,7 +18,7 @@ function projectSlide() {
     controller: 'ProjectController',
     scope: true,
     restrict: 'A',
-    templateUrl: 'static/partials/templates/tasks/projectSlide.html',
+    templateUrl: 'static/app/tasks/projectSlide.html',
     link: function(scope) {
       scope.filter = {};
       scope.filter.name = 'byProjectUUID';
@@ -42,7 +42,7 @@ function projectContent() {
   return {
     scope: true,
     restrict: 'A',
-    templateUrl: 'static/partials/templates/tasks/projectContent.html'
+    templateUrl: 'static/app/tasks/projectContent.html'
   };
 }
 angular.module('em.directives').directive('projectContent', projectContent);
@@ -50,7 +50,7 @@ angular.module('em.directives').directive('projectContent', projectContent);
 function dates(emSwiper, Enum) {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/pages/tasks/dates.html',
+    templateUrl: 'static/app/tasks/dates.html',
     link: function() {
       emSwiper.setVerticalSwiper(Enum.DATES);
     }
@@ -62,7 +62,7 @@ dates.$inject = ['emSwiper', 'Enum'];
 function dateSlide() {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/templates/tasks/dateSlide.html',
+    templateUrl: 'static/app/tasks/dateSlide.html',
     scope: {
       tasks: '=dateTasks',
       date: '=dateSlide'
@@ -81,7 +81,7 @@ angular.module('em.directives').directive('dateSlide', dateSlide);
 function datebar(emSwiper, Enum) {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/templates/tasks/datebar.html',
+    templateUrl: 'static/app/tasks/datebar.html',
     link: function(scope) {
       scope.dateClicked = function(index) {
         emSwiper.setSlideIndex(Enum.DATES, index);
@@ -95,7 +95,7 @@ datebar.$inject = ['emSwiper', 'Enum'];
 function lists() {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/pages/tasks/lists.html'
+    templateUrl: 'static/app/tasks/lists.html'
   };
 }
 angular.module('em.directives').directive('lists', lists);
@@ -103,7 +103,7 @@ angular.module('em.directives').directive('lists', lists);
 function singleTasks() {
   return {
     restrict: 'A',
-    templateUrl: 'static/partials/pages/tasks/singleTasks.html'
+    templateUrl: 'static/app/tasks/singleTasks.html'
   };
 }
 angular.module('em.directives').directive('singleTasks', singleTasks);
@@ -116,7 +116,7 @@ function filteredTasksList() {
       tasksListFilter: '=tasksFilter'
     },
     restrict: 'A',
-    templateUrl: 'static/partials/templates/tasks/filteredTasksList.html'
+    templateUrl: 'static/app/tasks/filteredTasksList.html'
   };
 }
 angular.module('em.directives').directive('filteredTasksList', filteredTasksList);
@@ -130,7 +130,7 @@ function tasksList() {
       tasksFilter: '=',
       subtask: '='
     },
-    templateUrl: 'static/partials/templates/tasks/tasksList.html'
+    templateUrl: 'static/app/tasks/tasksList.html'
   };
 }
 angular.module('em.directives').directive('tasksList', tasksList);
@@ -139,7 +139,7 @@ angular.module('em.directives').directive('task', [
   function() {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/templates/tasks/task.html'
+      templateUrl: 'static/app/tasks/task.html'
     };
   }]);
 
@@ -151,7 +151,7 @@ angular.module('em.directives').directive('subTask', [
         subtask: '=',
         add: '&'
       },
-      templateUrl : 'static/partials/templates/tasks/subTask.html'
+      templateUrl : 'static/app/tasks/subTask.html'
     };
   }]);
 
@@ -159,7 +159,7 @@ angular.module('em.directives').directive('taskContent', [
   function() {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/templates/tasks/taskContent.html',
+      templateUrl: 'static/app/tasks/taskContent.html',
       link: function(scope) {
         scope.showTaskContent = false;
 
@@ -180,7 +180,7 @@ angular.module('em.directives').directive('editTask', [
   function() {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/templates/tasks/edit.html',
+      templateUrl: 'static/app/tasks/editTaskContent.html',
       link: function(scope) {
         scope.showProjectContent = false;
         

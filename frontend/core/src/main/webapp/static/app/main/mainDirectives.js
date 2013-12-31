@@ -12,7 +12,7 @@ angular.module('em.directives').directive('errorAlertBar', ['$parse',
   function($parse) {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/templates/errorMessage.html',
+      templateUrl: 'static/app/base/errorMessage.html',
       link: function(scope, elem, attrs) {
         var alertMessageAttr = attrs.alertmessage;
         scope.errorMessage = null;
@@ -34,7 +34,7 @@ angular.module('em.directives').directive('emFooter', [
     return {
       controller: 'NavbarController',
       restrict: 'A',
-      templateUrl: 'static/partials/templates/footer.html',
+      templateUrl: 'static/app/main/footer.html',
       link: function(scope, element, attrs) {
         var mainlinksFilterAttr = attrs.mainlinksfilter;
         scope.collapse = false;
@@ -58,7 +58,7 @@ angular.module('em.directives').directive('featureHeader', [
       scope: {
         feature: '@featureHeader'
       },
-      templateUrl: 'static/partials/templates/featureHeader.html'
+      templateUrl: 'static/app/base/featureHeader.html'
     };
   }]);
 
@@ -67,7 +67,7 @@ angular.module('em.directives').directive('mainHeader', [
     return {
       controller: 'NavbarController',
       restrict: 'A',
-      templateUrl: 'static/partials/templates/mainHeader.html'
+      templateUrl: 'static/app/main/mainHeader.html'
     };
   }]);
 
@@ -76,7 +76,7 @@ angular.module('em.directives').directive('omniBar', [ '$rootScope',
     return {
       controller: 'OmniBarController',
       restrict: 'A',
-      templateUrl: 'static/partials/templates/omniBar.html',
+      templateUrl: 'static/app/main/omniBar.html',
       link: function(scope) {
         $rootScope.omniBarActive = false;
         scope.omniBarFocus = function(focus) {
@@ -96,22 +96,7 @@ angular.module('em.directives').directive('urlList', [
   function() {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/templates/urlList.html'
-    };
-  }]);
-
-angular.module('em.directives').directive('newTag', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/partials/templates/newTag.html',
-      link: function(scope) {
-        scope.showEditNewTag = false;
-
-        scope.editNewTag = function editNewTag() {
-          scope.showEditNewTag = !scope.showEditNewTag;
-        };
-      }
+      templateUrl: 'static/app/main/urlList.html'
     };
   }]);
 
@@ -119,7 +104,7 @@ angular.module('em.directives').directive('contextsList', [
   function() {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/templates/contextsList.html',
+      templateUrl: 'static/app/main/contextsList.html',
       transclude: true
     };
   }]);
@@ -128,7 +113,7 @@ angular.module('em.directives').directive('home', [
   function() {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/pages/home.html'
+      templateUrl: 'static/app/main/home.html'
     };
   }]);
 
@@ -136,7 +121,7 @@ angular.module('em.directives').directive('inbox', [
   function() {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/pages/inbox.html'
+      templateUrl: 'static/app/main/inbox.html'
     };
   }]);
 
@@ -144,7 +129,7 @@ angular.module('em.directives').directive('projectsList', [
   function() {
     return {
       restrict: 'A',
-      templateUrl: 'static/partials/templates/projectsList.html',
+      templateUrl: 'static/app/base/projectsList.html',
       transclude: true
     };
   }]);
