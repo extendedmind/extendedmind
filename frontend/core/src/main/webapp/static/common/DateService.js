@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-angular.module('em.services').factory('date', [
+angular.module('em.services').factory('DateService', [
   function() {
     var today, months;
 
@@ -74,26 +74,6 @@ angular.module('em.services').factory('date', [
           }
         }
         return week;
-      }
-    };
-  }]);
-
-angular.module('em.services').factory('filterService',[
-  function() {
-    return {
-      activeFilters: {
-        tasksByDate:{
-          name:'tasksByDate'
-        },
-        project:{
-          name:'projects'
-        },
-        unsorted:{
-          name:'unsorted'
-        },
-        tasksByProjectUUID:{
-          name:'byProjectUUID'
-        }
       }
     };
   }]);

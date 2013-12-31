@@ -1,13 +1,13 @@
 /*global angular */
 'use strict';
 
-function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, tasksRequest, tagsArray, tasksArray, userPrefix, filterService) {
+function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, tasksRequest, tagsArray, tasksArray, userPrefix, FilterService) {
   
   $scope.items = itemsArray.getItems();
   $scope.tasks = tasksArray.getTasks();
   $scope.contexts = tagsArray.getTags();
   $scope.prefix = userPrefix.getPrefix();
-  $scope.filterService = filterService;
+  $scope.filterService = FilterService;
 
   function clearCompletedText() {
     $timeout(function() {
@@ -44,5 +44,5 @@ function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, 
 
 }
 
-ItemsController.$inject = ['$location', '$scope', '$timeout', 'itemsArray', 'itemsRequest', 'tasksRequest', 'tagsArray', 'tasksArray', 'userPrefix', 'filterService'];
+ItemsController.$inject = ['$location', '$scope', '$timeout', 'itemsArray', 'itemsRequest', 'tasksRequest', 'tagsArray', 'tasksArray', 'userPrefix', 'FilterService'];
 angular.module('em.app').controller('ItemsController', ItemsController);

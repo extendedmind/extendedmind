@@ -41,8 +41,8 @@ angular.module('em.filters').filter('visibleTaskContent', [
     return userItemsFilter;
   }]);
 
-angular.module('em.filters').filter('tasksFilter', ['date',
-  function(date) {
+angular.module('em.filters').filter('tasksFilter', ['DateService',
+  function(DateService) {
 
     var filter = function(tasks, filterValue) {
       var tasksFilter = {};
@@ -74,7 +74,7 @@ angular.module('em.filters').filter('tasksFilter', ['date',
             if (tasks[i].due) {
               if (tasks[i].due === listDate) {
                 filteredValues.push(tasks[i]);
-              } else if (listDate === date.today().yyyymmdd && date.today().yyyymmdd > tasks[i].due) { // if task date < today
+              } else if (listDate === DateService.today().yyyymmdd && DateService.today().yyyymmdd > tasks[i].due) { // if task date < today
                 filteredValues.push(tasks[i]);
               }
             }
