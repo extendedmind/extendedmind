@@ -43,7 +43,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/account/account.html',
       controller: 'AccountController',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -59,7 +59,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'HomeController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -79,7 +79,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'HomeController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -99,7 +99,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'InboxController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -118,7 +118,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'InboxController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -137,7 +137,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'TasksSlidesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -157,7 +157,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'TasksSlidesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -177,7 +177,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'ProjectController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -196,7 +196,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'ProjectController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -215,7 +215,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'ProjectController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -234,7 +234,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'ProjectController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -253,7 +253,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'DatesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -272,7 +272,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'DatesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -291,7 +291,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'DatesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -310,7 +310,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'DatesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -329,7 +329,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'TasksSlidesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -349,7 +349,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'TasksSlidesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -368,7 +368,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'ContextController',
       templateUrl: 'static/app/tasks/context.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -384,7 +384,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'ContextController',
       templateUrl: 'static/app/tasks/context.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -400,7 +400,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'EditTaskController',
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -416,7 +416,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'EditTaskController',
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -432,7 +432,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'NewTaskController',
       templateUrl: 'static/app/tasks/newTask.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -448,7 +448,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'NewTaskController',
       templateUrl: 'static/app/tasks/newTask.html',
       resolve: {
-        auth: ['auth',
+        auth: ['AuthenticationService',
         function(auth) {
           return auth.check();
         }],
@@ -466,15 +466,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
   }]);
 
-angular.module('em.app').run(['$rootScope', 'analytics', 'errorHandler',
-  function($rootScope, analytics, errorHandler) {
+angular.module('em.app').run(['$rootScope', 'AnalyticsService', 'errorHandler',
+  function($rootScope, AnalyticsService, errorHandler) {
 
     $rootScope.$on('$routeChangeSuccess', function() {
       errorHandler.clear();
     });
 
     $rootScope.$on('$viewContentLoaded', function() {
-     analytics.open();
+     AnalyticsService.open();
    });
 
   }]);

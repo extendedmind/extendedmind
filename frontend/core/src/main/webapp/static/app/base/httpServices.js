@@ -46,8 +46,8 @@ angular.module('em.services').factory('httpBasicAuth', ['$http',
     };
   }]);
 
-angular.module('em.services').factory('httpRequest', ['$http', 'userSession',
-  function($http, userSession) {
+angular.module('em.services').factory('httpRequest', ['$http', 'UserSessionService',
+  function($http, UserSessionService) {
 
     var httpRequest = {};
 
@@ -60,7 +60,7 @@ angular.module('em.services').factory('httpRequest', ['$http', 'userSession',
     }
 
     httpRequest.config = function(config) {
-      userSession.getAuth();
+      UserSessionService.getAuth();
 
       return $http(config).then(function(success) {
         return success;
@@ -68,7 +68,7 @@ angular.module('em.services').factory('httpRequest', ['$http', 'userSession',
     };
 
     httpRequest.get = function(url) {
-      userSession.getAuth();
+      UserSessionService.getAuth();
 
       return $http({
         method : 'GET',
@@ -80,7 +80,7 @@ angular.module('em.services').factory('httpRequest', ['$http', 'userSession',
 
     angular.forEach(['delete', 'head', 'jsonp'], function(name) {
       httpRequest[name] = function(url) {
-        userSession.getAuth();
+        UserSessionService.getAuth();
 
         return $http({
           method : name,
@@ -93,7 +93,7 @@ angular.module('em.services').factory('httpRequest', ['$http', 'userSession',
 
     angular.forEach(['post', 'put'], function(name) {
       httpRequest[name] = function(url, data) {
-        userSession.getAuth();
+        UserSessionService.getAuth();
 
         return $http[name](getUrlPrefix() + url, data).then(function(success) {
           return success;

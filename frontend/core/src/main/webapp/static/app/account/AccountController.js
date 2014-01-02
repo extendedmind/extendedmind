@@ -1,14 +1,14 @@
 /*jslint white: true */
 'use strict';
 
-function AccountController($location, $scope, authenticateRequest, errorHandler) {
+function AccountController($location, $scope, AccountService, errorHandler) {
 
   $scope.errorHandler = errorHandler;
 
-  authenticateRequest.account().then(function(authenticateResponse) {
+  AccountService.account().then(function(authenticateResponse) {
     $scope.email = authenticateResponse.email;
   });
 }
 
-AccountController.$inject = ['$location', '$scope', 'authenticateRequest', 'errorHandler'];
+AccountController.$inject = ['$location', '$scope', 'AccountService', 'errorHandler'];
 angular.module('em.app').controller('AccountController', AccountController);

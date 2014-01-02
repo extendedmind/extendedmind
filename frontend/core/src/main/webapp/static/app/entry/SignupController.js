@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function SignupController($location, $scope, $routeParams, auth, authenticateRequest, errorHandler, httpRequest) {
+function SignupController($location, $scope, $routeParams, AuthenticationService, errorHandler, httpRequest) {
 
   $scope.user = {};
   var inviteResponseCode = $routeParams.hex_code;
@@ -18,7 +18,7 @@ function SignupController($location, $scope, $routeParams, auth, authenticateReq
 
   function userLogin() {
 
-    auth.login($scope.user).then(function() {
+    AuthenticationService.login($scope.user).then(function() {
       $location.path('/my');
     }, function(authenticateResponse) {
       $scope.errorHandler.errorMessage = authenticateResponse.data;
@@ -32,5 +32,5 @@ function SignupController($location, $scope, $routeParams, auth, authenticateReq
   };
 }
 
-SignupController.$inject = ['$location', '$scope', '$routeParams', 'auth', 'authenticateRequest', 'errorHandler', 'httpRequest'];
+SignupController.$inject = ['$location', '$scope', '$routeParams', 'AuthenticationService', 'errorHandler', 'httpRequest'];
 angular.module('em.app').controller('SignupController', SignupController);

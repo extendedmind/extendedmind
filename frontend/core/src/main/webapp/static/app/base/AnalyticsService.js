@@ -2,7 +2,7 @@
 /*jslint white: true */
 //'use strict';
 
-angular.module('em.services').factory('analytics', [ 'userSessionStorage',
+angular.module('em.services').factory('AnalyticsService', [ 'userSessionStorage',
 
   function(userSessionStorage) {
 

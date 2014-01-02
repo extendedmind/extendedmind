@@ -1,20 +1,20 @@
 /*global angular */
 'use strict';
 
-function NavbarController($location, $scope, $window, auth, authenticateRequest, emSwiper, Enum, userPrefix, userSessionStorage) {
+function NavbarController($location, $scope, $window, AuthenticationService, emSwiper, Enum, userPrefix, userSessionStorage) {
 
   $scope.user = userSessionStorage.getUserUUID();
   $scope.collectives = userSessionStorage.getCollectives();
   $scope.prefix = userPrefix.getPrefix();
 
   $scope.logout = function() {
-    authenticateRequest.logout().then(function() {
+    AuthenticationService.logout().then(function() {
       $location.path('/login');
     });
   };
 
   $scope.setActiveUuid = function(uuid, collective) {
-    auth.switchActiveUUID(uuid);
+    AuthenticationService.switchActiveUUID(uuid);
     if (collective) {
       $location.path('/collective/' + uuid);
     }
@@ -48,5 +48,5 @@ function NavbarController($location, $scope, $window, auth, authenticateRequest,
 
 }
 
-NavbarController.$inject = ['$location', '$scope', '$window', 'auth', 'authenticateRequest', 'emSwiper', 'Enum', 'userPrefix', 'userSessionStorage'];
+NavbarController.$inject = ['$location', '$scope', '$window', 'AuthenticationService', 'emSwiper', 'Enum', 'userPrefix', 'userSessionStorage'];
 angular.module('em.app').controller('NavbarController', NavbarController);
