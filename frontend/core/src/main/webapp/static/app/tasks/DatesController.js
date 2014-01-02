@@ -1,9 +1,9 @@
 /*global angular */
 'use strict';
 
-function DatesController($scope, DateService, ErrorHandlerService, FilterService, itemsArray, tagsArray, tasksArray, OwnerService) {
+function DatesController($scope, DateService, ErrorHandlerService, FilterService, itemsArray, TagsService, tasksArray, OwnerService) {
   $scope.tasks = tasksArray.getTasks();
-  $scope.tags = tagsArray.getTags();
+  $scope.tags = TagsService.getTags();
   $scope.items = itemsArray.getItems();
 
   $scope.filterService = FilterService;
@@ -14,5 +14,5 @@ function DatesController($scope, DateService, ErrorHandlerService, FilterService
   $scope.date = DateService.today();
 }
 
-DatesController.$inject = ['$scope', 'DateService', 'ErrorHandlerService', 'FilterService', 'itemsArray', 'tagsArray', 'tasksArray', 'OwnerService'];
+DatesController.$inject = ['$scope', 'DateService', 'ErrorHandlerService', 'FilterService', 'itemsArray', 'TagsService', 'tasksArray', 'OwnerService'];
 angular.module('em.app').controller('DatesController', DatesController);

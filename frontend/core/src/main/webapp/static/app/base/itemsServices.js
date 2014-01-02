@@ -1,14 +1,14 @@
 /*jslint eqeq: true, white: true */
 'use strict';
 
-function itemsRequest(BackendClientService, itemsArray, itemsResponse, tagsArray, tasksArray, UserSessionService) {
+function itemsRequest(BackendClientService, itemsArray, itemsResponse, TagsService, tasksArray, UserSessionService) {
   return {
     getItems: function() {
 
       return BackendClientService.get('/api/' + UserSessionService.getActiveUUID() + '/items').then(function(itemsResponses) {
 
         itemsArray.setItems(itemsResponses.data.items);
-        tagsArray.setTags(itemsResponses.data.tags);
+        TagsService.setTags(itemsResponses.data.tags);
         tasksArray.setTasks(itemsResponses.data.tasks);
         
       });
@@ -35,7 +35,7 @@ function itemsRequest(BackendClientService, itemsArray, itemsResponse, tagsArray
     }
   };
 }
-itemsRequest.$inject = ['BackendClientService', 'itemsArray', 'itemsResponse', 'tagsArray', 'tasksArray', 'UserSessionService'];
+itemsRequest.$inject = ['BackendClientService', 'itemsArray', 'itemsResponse', 'TagsService', 'tasksArray', 'UserSessionService'];
 angular.module('em.services').factory('itemsRequest', itemsRequest);
 
 angular.module('em.services').factory('itemsResponse', [

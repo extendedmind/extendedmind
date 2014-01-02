@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function TasksListController($location, $routeParams, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse, OwnerService) {
+function TasksListController($location, $routeParams, $scope, activeItem, TagsService, tasksArray, tasksRequest, tasksResponse, OwnerService) {
 
   $scope.taskEdit = function(task) {
     $location.path(OwnerService.getPrefix() + '/tasks/edit/' + task.uuid);
@@ -43,5 +43,5 @@ function TasksListController($location, $routeParams, $scope, activeItem, tagsAr
   };
 }
 
-TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'OwnerService'];
+TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'TagsService', 'tasksArray', 'tasksRequest', 'tasksResponse', 'OwnerService'];
 angular.module('em.app').controller('TasksListController', TasksListController);

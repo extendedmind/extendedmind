@@ -1,7 +1,7 @@
 /*jslint eqeq: true, white: true */
 'use strict';
 
-angular.module('em.services').factory('tagsArray', ['itemsArray',
+angular.module('em.services').factory('TagsService', ['itemsArray',
   function(itemsArray) {
     var tags;
     tags = [];

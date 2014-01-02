@@ -1,9 +1,9 @@
 /*global angular */
 'use strict';
 
-function HomeController($scope, DateService, ErrorHandlerService, FilterService, itemsArray, tagsArray, tasksArray, OwnerService) {
+function HomeController($scope, DateService, ErrorHandlerService, FilterService, itemsArray, TagsService, tasksArray, OwnerService) {
   $scope.items = itemsArray.getItems();
-  $scope.tags = tagsArray.getTags();
+  $scope.tags = TagsService.getTags();
   $scope.tasks = tasksArray.getTasks();
 
   $scope.filterService = FilterService;
@@ -14,4 +14,4 @@ function HomeController($scope, DateService, ErrorHandlerService, FilterService,
 }
 
 angular.module('em.app').controller('HomeController', HomeController);
-HomeController.$inject = ['$scope', 'DateService', 'ErrorHandlerService', 'FilterService', 'itemsArray', 'tagsArray', 'tasksArray', 'OwnerService'];
+HomeController.$inject = ['$scope', 'DateService', 'ErrorHandlerService', 'FilterService', 'itemsArray', 'TagsService', 'tasksArray', 'OwnerService'];

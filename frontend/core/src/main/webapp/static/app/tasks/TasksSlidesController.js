@@ -1,9 +1,9 @@
 /*global angular */
 'use strict';
 
-function TasksSlidesController($scope, DateService, ErrorHandlerService, FilterService, itemsArray, tagsArray, tasksArray, OwnerService) {
+function TasksSlidesController($scope, DateService, ErrorHandlerService, FilterService, itemsArray, TagsService, tasksArray, OwnerService) {
   $scope.tasks = tasksArray.getTasks();
-  $scope.tags = tagsArray.getTags();
+  $scope.tags = TagsService.getTags();
   $scope.items = itemsArray.getItems();
 
   $scope.filterService = FilterService;
@@ -13,5 +13,5 @@ function TasksSlidesController($scope, DateService, ErrorHandlerService, FilterS
   $scope.dates = DateService.week();
 }
 
-TasksSlidesController.$inject = ['$scope', 'DateService', 'ErrorHandlerService', 'FilterService', 'itemsArray', 'tagsArray', 'tasksArray', 'OwnerService'];
+TasksSlidesController.$inject = ['$scope', 'DateService', 'ErrorHandlerService', 'FilterService', 'itemsArray', 'TagsService', 'tasksArray', 'OwnerService'];
 angular.module('em.app').controller('TasksSlidesController', TasksSlidesController);

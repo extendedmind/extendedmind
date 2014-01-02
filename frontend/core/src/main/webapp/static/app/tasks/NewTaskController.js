@@ -1,13 +1,13 @@
 /*global angular */
 'use strict';
 
-function NewTaskController($routeParams, $scope, activeItem, ErrorHandlerService, FilterService, tagsArray, tasksArray, tasksRequest, tasksResponse, OwnerService) {
+function NewTaskController($routeParams, $scope, activeItem, ErrorHandlerService, FilterService, TagsService, tasksArray, tasksRequest, tasksResponse, OwnerService) {
 
   $scope.errorHandler = ErrorHandlerService;
   $scope.prefix = OwnerService.getPrefix();
   $scope.filterService = FilterService;
 
-  $scope.contexts = tagsArray.getTags();
+  $scope.contexts = TagsService.getTags();
   $scope.tasks = tasksArray.getTasks();
 
   function newEmptyTask() {
@@ -59,5 +59,5 @@ function NewTaskController($routeParams, $scope, activeItem, ErrorHandlerService
   }
 }
 
-NewTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'ErrorHandlerService','FilterService', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'OwnerService'];
+NewTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'ErrorHandlerService','FilterService', 'TagsService', 'tasksArray', 'tasksRequest', 'tasksResponse', 'OwnerService'];
 angular.module('em.app').controller('NewTaskController', NewTaskController);

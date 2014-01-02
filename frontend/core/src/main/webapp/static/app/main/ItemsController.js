@@ -1,11 +1,11 @@
 /*global angular */
 'use strict';
 
-function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, tasksRequest, tagsArray, tasksArray, OwnerService, FilterService) {
+function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, tasksRequest, TagsService, tasksArray, OwnerService, FilterService) {
   
   $scope.items = itemsArray.getItems();
   $scope.tasks = tasksArray.getTasks();
-  $scope.contexts = tagsArray.getTags();
+  $scope.contexts = TagsService.getTags();
   $scope.prefix = OwnerService.getPrefix();
   $scope.filterService = FilterService;
 
@@ -44,5 +44,5 @@ function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, 
 
 }
 
-ItemsController.$inject = ['$location', '$scope', '$timeout', 'itemsArray', 'itemsRequest', 'tasksRequest', 'tagsArray', 'tasksArray', 'OwnerService', 'FilterService'];
+ItemsController.$inject = ['$location', '$scope', '$timeout', 'itemsArray', 'itemsRequest', 'tasksRequest', 'TagsService', 'tasksArray', 'OwnerService', 'FilterService'];
 angular.module('em.app').controller('ItemsController', ItemsController);
