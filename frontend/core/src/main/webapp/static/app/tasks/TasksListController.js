@@ -1,10 +1,10 @@
 /*global angular */
 'use strict';
 
-function TasksListController($location, $routeParams, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
+function TasksListController($location, $routeParams, $scope, activeItem, tagsArray, tasksArray, tasksRequest, tasksResponse, OwnerService) {
 
   $scope.taskEdit = function(task) {
-    $location.path(userPrefix.getPrefix() + '/tasks/edit/' + task.uuid);
+    $location.path(OwnerService.getPrefix() + '/tasks/edit/' + task.uuid);
   };
 
   $scope.taskChecked = function(task) {
@@ -21,7 +21,7 @@ function TasksListController($location, $routeParams, $scope, activeItem, tagsAr
   };
 
   $scope.taskToProject = function(task) {
-    $location.path(userPrefix.getPrefix() + '/tasks/new');
+    $location.path(OwnerService.getPrefix() + '/tasks/new');
     activeItem.setItem(task);
     task.project = true;
     tasksRequest.putExistingTask(task);
@@ -43,5 +43,5 @@ function TasksListController($location, $routeParams, $scope, activeItem, tagsAr
   };
 }
 
-TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
+TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'OwnerService'];
 angular.module('em.app').controller('TasksListController', TasksListController);

@@ -47,9 +47,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
         }]
 
       }
@@ -63,13 +63,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.HOME);
+        slide: ['TasksSlidesService', 'emSwiper',
+        function(TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.HOME);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
         }]
 
       }
@@ -83,13 +83,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.HOME);
+        slide: ['TasksSlidesService', 'emSwiper',
+        function(TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.HOME);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
         }]
 
       }
@@ -103,13 +103,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.INBOX);
+        slide: ['TasksSlidesService', 'emSwiper',
+        function(TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.INBOX);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
         }]
       }
     });
@@ -122,13 +122,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.INBOX);
+        slide: ['TasksSlidesService', 'emSwiper',
+        function(TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.INBOX);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
         }]
       }
     });
@@ -141,13 +141,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.LISTS);
+        slide: ['TasksSlidesService', 'emSwiper',
+        function(TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.LISTS);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
         }]
 
       }
@@ -161,13 +161,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.LISTS);
+        slide: ['TasksSlidesService', 'emSwiper',
+        function(TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.LISTS);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
         }]
 
       }
@@ -181,13 +181,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.PROJECTS);
+        slide: ['TasksSlidesService', 'emSwiper',
+        function(TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.PROJECTS);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
         }]
       }
     });
@@ -200,13 +200,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.PROJECTS);
+        slide: ['TasksSlidesService', 'emSwiper',
+        function(TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.PROJECTS);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
         }]
       }
     });
@@ -219,13 +219,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['$route', 'Enum', 'emSwiper',
-        function($route, Enum, emSwiper) {
-          emSwiper.setSlides(Enum.PROJECTS, $route.current.params.uuid);
+        slide: ['$route', 'TasksSlidesService', 'emSwiper',
+        function($route, TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.PROJECTS, $route.current.params.uuid);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
         }]
       }
     });
@@ -238,13 +238,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['$route', 'Enum', 'emSwiper',
-        function($route, Enum, emSwiper) {
-          emSwiper.setSlides(Enum.PROJECTS, $route.current.params.uuid);
+        slide: ['$route', 'TasksSlidesService', 'emSwiper',
+        function($route, TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.PROJECTS, $route.current.params.uuid);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
         }]
       }
     });
@@ -257,13 +257,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.DATES);
+        slide: ['TasksSlidesService', 'emSwiper',
+        function(TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.DATES);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
         }]
       }
     });
@@ -276,13 +276,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.DATES);
+        slide: ['TasksSlidesService', 'emSwiper',
+        function(TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.DATES);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
         }]
       }
     });
@@ -295,13 +295,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['$route', 'Enum', 'emSwiper',
-        function($route, Enum, emSwiper) {
-          emSwiper.setSlides(Enum.DATES, $route.current.params.date);
+        slide: ['$route', 'TasksSlidesService', 'emSwiper',
+        function($route, TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.DATES, $route.current.params.date);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
         }]
       }
     });
@@ -314,13 +314,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['$route', 'Enum', 'emSwiper',
-        function($route, Enum, emSwiper) {
-          emSwiper.setSlides(Enum.DATES, $route.current.params.date);
+        slide: ['$route', 'TasksSlidesService', 'emSwiper',
+        function($route, TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.DATES, $route.current.params.date);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
         }]
       }
     });
@@ -333,13 +333,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.SINGLE_TASKS);
+        slide: ['TasksSlidesService', 'emSwiper',
+        function(TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.SINGLE_TASKS);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
         }]
 
       }
@@ -353,13 +353,13 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['Enum', 'emSwiper',
-        function(Enum, emSwiper) {
-          emSwiper.setSlides(Enum.SINGLE_TASKS);
+        slide: ['TasksSlidesService', 'emSwiper',
+        function(TasksSlidesService, emSwiper) {
+          emSwiper.setSlides(TasksSlidesService.SINGLE_TASKS);
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
         }]
       }
     });
@@ -372,9 +372,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
         }]
 
       }
@@ -388,9 +388,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
         }]
 
       }
@@ -404,9 +404,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
         }]
 
       }
@@ -420,9 +420,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
         }]
 
       }
@@ -436,9 +436,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setMyPrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
         }]
 
       }
@@ -452,9 +452,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        prefix: ['userPrefix',
-        function(userPrefix) {
-          userPrefix.setCollectivePrefix();
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
         }]
 
       }

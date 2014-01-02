@@ -1,12 +1,12 @@
 /*jslint white: true */
 'use strict';
 
-function PageNotFoundController($scope, ErrorHandlerService, userPrefix) {
+function PageNotFoundController($scope, ErrorHandlerService, OwnerService) {
 
   $scope.errorHandler = ErrorHandlerService;
-  $scope.prefix = userPrefix.getPrefix();
+  $scope.prefix = OwnerService.getPrefix();
 
 }
 
-PageNotFoundController.$inject = ['$scope', 'ErrorHandlerService', 'userPrefix'];
+PageNotFoundController.$inject = ['$scope', 'ErrorHandlerService', 'OwnerService'];
 angular.module('em.app').controller('PageNotFoundController', PageNotFoundController);

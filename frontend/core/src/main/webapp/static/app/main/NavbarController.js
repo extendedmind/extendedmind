@@ -1,11 +1,11 @@
 /*global angular */
 'use strict';
 
-function NavbarController($location, $scope, $window, AuthenticationService, emSwiper, Enum, userPrefix, UserSessionService) {
+function NavbarController($location, $scope, $window, AuthenticationService, emSwiper, TasksSlidesService, OwnerService, UserSessionService) {
 
   $scope.user = UserSessionService.getUserUUID();
   $scope.collectives = UserSessionService.getCollectives();
-  $scope.prefix = userPrefix.getPrefix();
+  $scope.prefix = OwnerService.getPrefix();
 
   $scope.logout = function() {
     AuthenticationService.logout().then(function() {
@@ -43,10 +43,10 @@ function NavbarController($location, $scope, $window, AuthenticationService, emS
   };
 
   $scope.goToProject = function(index) {
-    emSwiper.setSlideIndex(Enum.PROJECTS, index);
+    emSwiper.setSlideIndex(TasksSlidesService.PROJECTS, index);
   };
 
 }
 
-NavbarController.$inject = ['$location', '$scope', '$window', 'AuthenticationService', 'emSwiper', 'Enum', 'userPrefix', 'UserSessionService'];
+NavbarController.$inject = ['$location', '$scope', '$window', 'AuthenticationService', 'emSwiper', 'TasksSlidesService', 'OwnerService', 'UserSessionService'];
 angular.module('em.app').controller('NavbarController', NavbarController);

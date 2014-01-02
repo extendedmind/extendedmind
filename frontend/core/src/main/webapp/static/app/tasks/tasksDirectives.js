@@ -1,17 +1,17 @@
 /*global angular */
 'use strict';
 
-function projects(emSwiper, Enum) {
+function projects(emSwiper, TasksSlidesService) {
   return {
     restrict: 'A',
     templateUrl: 'static/app/tasks/projects.html',
     link: function() {
-      emSwiper.setVerticalSwiper(Enum.PROJECTS);
+      emSwiper.setVerticalSwiper(TasksSlidesService.PROJECTS);
     }
   };
 }
 angular.module('em.directives').directive('projects', projects);
-projects.$inject = ['emSwiper', 'Enum'];
+projects.$inject = ['emSwiper', 'TasksSlidesService'];
 
 function projectSlide() {
   return {
@@ -47,17 +47,17 @@ function projectContent() {
 }
 angular.module('em.directives').directive('projectContent', projectContent);
 
-function dates(emSwiper, Enum) {
+function dates(emSwiper, TasksSlidesService) {
   return {
     restrict: 'A',
     templateUrl: 'static/app/tasks/dates.html',
     link: function() {
-      emSwiper.setVerticalSwiper(Enum.DATES);
+      emSwiper.setVerticalSwiper(TasksSlidesService.DATES);
     }
   };
 }
 angular.module('em.directives').directive('dates', dates);
-dates.$inject = ['emSwiper', 'Enum'];
+dates.$inject = ['emSwiper', 'TasksSlidesService'];
 
 function dateSlide() {
   return {
@@ -78,19 +78,19 @@ function dateSlide() {
 }
 angular.module('em.directives').directive('dateSlide', dateSlide);
 
-function datebar(emSwiper, Enum) {
+function datebar(emSwiper, TasksSlidesService) {
   return {
     restrict: 'A',
     templateUrl: 'static/app/tasks/datebar.html',
     link: function(scope) {
       scope.dateClicked = function(index) {
-        emSwiper.setSlideIndex(Enum.DATES, index);
+        emSwiper.setSlideIndex(TasksSlidesService.DATES, index);
       };
     }
   };
 }
 angular.module('em.directives').directive('datebar', datebar);
-datebar.$inject = ['emSwiper', 'Enum'];
+datebar.$inject = ['emSwiper', 'TasksSlidesService'];
 
 function lists() {
   return {

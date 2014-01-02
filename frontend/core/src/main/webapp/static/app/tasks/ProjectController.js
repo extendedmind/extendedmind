@@ -1,20 +1,20 @@
 /*global angular */
 'use strict';
 
-function ProjectController($location, $scope, $routeParams, DateService, ErrorHandlerService, FilterService, itemsArray, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
+function ProjectController($location, $scope, $routeParams, DateService, ErrorHandlerService, FilterService, itemsArray, tagsArray, tasksArray, tasksRequest, tasksResponse, OwnerService) {
   $scope.tasks = tasksArray.getTasks();
   $scope.tags = tagsArray.getTags();
   $scope.items = itemsArray.getItems();
 
   $scope.errorHandler = ErrorHandlerService;
-  $scope.prefix = userPrefix.getPrefix();
+  $scope.prefix = OwnerService.getPrefix();
   $scope.filterService = FilterService;
 
   $scope.dates = DateService.week();
   $scope.date = DateService.today();
 
   $scope.editProject = function() {
-    $location.path(userPrefix.getPrefix() + '/tasks/edit/' + $scope.project.uuid);
+    $location.path(OwnerService.getPrefix() + '/tasks/edit/' + $scope.project.uuid);
   };
 
   $scope.completeProject = function() {
@@ -58,5 +58,5 @@ function ProjectController($location, $scope, $routeParams, DateService, ErrorHa
   };
 }
 
-ProjectController.$inject = ['$location', '$scope', '$routeParams', 'DateService', 'ErrorHandlerService', 'FilterService', 'itemsArray', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
+ProjectController.$inject = ['$location', '$scope', '$routeParams', 'DateService', 'ErrorHandlerService', 'FilterService', 'itemsArray', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'OwnerService'];
 angular.module('em.app').controller('ProjectController', ProjectController);

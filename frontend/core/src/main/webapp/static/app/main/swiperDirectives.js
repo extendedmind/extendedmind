@@ -1,7 +1,7 @@
 /*global angular, Swiper */
 'use strict';
 
-function emSwiper($rootScope, emLocation, Enum, userPrefix) {
+function emSwiper($rootScope, LocationService, TasksSlidesService, OwnerService) {
   var initialSlideX, initialSlideY, initialSubPath, slides, swiper, swipers;
   slides = [];
   swipers = {};
@@ -22,9 +22,9 @@ function emSwiper($rootScope, emLocation, Enum, userPrefix) {
 
       if (activeSwiper.params.mode === 'horizontal') {
         if (activeSlide.getData('path')) {
-          slidePath = '/' + userPrefix.getPrefix() + '/' + activeSlide.getData('path');
+          slidePath = '/' + OwnerService.getPrefix() + '/' + activeSlide.getData('path');
         } else {
-          slidePath = '/' + userPrefix.getPrefix();
+          slidePath = '/' + OwnerService.getPrefix();
         }
         if (sw[activeSwiper.activeIndex]) {
           if (isNaN(sw[activeSwiper.activeIndex].activeIndex)) {
@@ -37,9 +37,9 @@ function emSwiper($rootScope, emLocation, Enum, userPrefix) {
         }
       } else { // vertical
         slideSubPath = activeSlide.getData('path');
-        slidePath = '/' + userPrefix.getPrefix() + '/' + this.getSwiper('horizontal').getSlide(this.getSwiper('horizontal').activeIndex).getData('path') + '/' + slideSubPath;
+        slidePath = '/' + OwnerService.getPrefix() + '/' + this.getSwiper('horizontal').getSlide(this.getSwiper('horizontal').activeIndex).getData('path') + '/' + slideSubPath;
       }
-      emLocation.skipReload().path(slidePath);
+      LocationService.skipReload().path(slidePath);
       $rootScope.$apply();
     },
     getSwiper: function(mode) {
@@ -82,18 +82,18 @@ function emSwiper($rootScope, emLocation, Enum, userPrefix) {
       return initialSubPath;
     },
     gotoInbox: function() {
-      swipers.horizontal.swipeTo(Enum.INBOX);
+      swipers.horizontal.swipeTo(TasksSlidesService.INBOX);
     },
     gotoHome: function() {
-      swipers.horizontal.swipeTo(Enum.HOME);
+      swipers.horizontal.swipeTo(TasksSlidesService.HOME);
     },
     gotoTasks: function() {
-      swipers.horizontal.swipeTo(Enum.LISTS);
+      swipers.horizontal.swipeTo(TasksSlidesService.LISTS);
     }
   };
 }
 angular.module('em.services').factory('emSwiper', emSwiper);
-emSwiper.$inject = ['$rootScope', 'emLocation', 'Enum', 'userPrefix'];
+emSwiper.$inject = ['$rootScope', 'LocationService', 'TasksSlidesService', 'OwnerService'];
 
 function swiperSlide(emSwiper) {
   return {
