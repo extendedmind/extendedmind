@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function UserSessionService($q, base64, httpBasicAuth, LocalStorageService, SessionStorageService) {
+function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalStorageService, SessionStorageService) {
   var rememberMe = false;
 
   return {
@@ -39,10 +39,10 @@ function UserSessionService($q, base64, httpBasicAuth, LocalStorageService, Sess
       this.setEncodedCredentials(base64.encode(username + ':' + password));
     },
     setEncodedCredentials: function(userpass) {
-      httpBasicAuth.setEncodedCredentials(userpass);
+      HttpBasicAuthenticationService.setEncodedCredentials(userpass);
     },
     getCredentials: function() {
-      return httpBasicAuth.getCredentials();
+      return HttpBasicAuthenticationService.getCredentials();
     },
     setUserRemembered: function(remember) {
       rememberMe = remember || false;
@@ -65,5 +65,5 @@ function UserSessionService($q, base64, httpBasicAuth, LocalStorageService, Sess
     }
   };
 }
-UserSessionService.$inject = ['$q', 'base64', 'httpBasicAuth', 'LocalStorageService', 'SessionStorageService'];
+UserSessionService.$inject = ['$q', 'base64', 'HttpBasicAuthenticationService', 'LocalStorageService', 'SessionStorageService'];
 angular.module('em.services').factory('UserSessionService', UserSessionService);

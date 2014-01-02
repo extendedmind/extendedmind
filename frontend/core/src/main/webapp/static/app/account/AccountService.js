@@ -1,14 +1,14 @@
 /*global angular */
 'use strict';
 
-function AccountService(httpRequest) {
+function AccountService(BackendClientService) {
   return {
     account: function() {
-      return httpRequest.get('/api/account').then(function(accountResponse) {
+      return BackendClientService.get('/api/account').then(function(accountResponse) {
         return accountResponse.data;
       });
     }
   };
 }
-AccountService.$inject = ['httpRequest'];
+AccountService.$inject = ['BackendClientService'];
 angular.module('em.services').factory('AccountService', AccountService);

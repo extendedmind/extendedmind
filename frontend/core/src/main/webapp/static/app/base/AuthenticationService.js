@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function AuthenticationService($location, $q, httpRequest, itemsRequest, LocalStorageService, UserSessionService, SessionStorageService) {
+function AuthenticationService($location, $q, BackendClientService, itemsRequest, LocalStorageService, UserSessionService, SessionStorageService) {
   var swapTokenTimeThreshold = 10*60*60*1000; // 10 hours in milliseconds
 
   function millisecondsFromAuth() {
@@ -28,7 +28,7 @@ function AuthenticationService($location, $q, httpRequest, itemsRequest, LocalSt
   }
 
   function requestLogin() {
-    return httpRequest.post('/api/authenticate', {
+    return BackendClientService.post('/api/authenticate', {
         rememberMe: UserSessionService.getUserRemembered()
       }).then(function(authenticateResponse) {
       return authenticateResponse.data;
@@ -86,7 +86,7 @@ function AuthenticationService($location, $q, httpRequest, itemsRequest, LocalSt
       });
     },
     logout: function() {
-      return httpRequest.post('/api/logout').then(function(logoutResponse) {
+      return BackendClientService.post('/api/logout').then(function(logoutResponse) {
         clearUser();
         return logoutResponse.data;
       });
@@ -97,5 +97,5 @@ function AuthenticationService($location, $q, httpRequest, itemsRequest, LocalSt
     }
   };
 }
-AuthenticationService.$inject = ['$location', '$q', 'httpRequest', 'itemsRequest', 'LocalStorageService', 'UserSessionService', 'SessionStorageService'];
+AuthenticationService.$inject = ['$location', '$q', 'BackendClientService', 'itemsRequest', 'LocalStorageService', 'UserSessionService', 'SessionStorageService'];
 angular.module('em.services').factory('AuthenticationService', AuthenticationService);
