@@ -2,9 +2,9 @@
 /*jslint white: true */
 //'use strict';
 
-angular.module('em.services').factory('AnalyticsService', [ 'userSessionStorage',
+angular.module('em.services').factory('AnalyticsService', [ 'SessionStorageService',
 
-  function(userSessionStorage) {
+  function(SessionStorageService) {
 
     var localyticsSession,options;
 
@@ -19,8 +19,8 @@ angular.module('em.services').factory('AnalyticsService', [ 'userSessionStorage'
    function localyticsUser () {
   // REMOVE WHEN LOCALYTICS TRIAL ENDS
     return true;
-  /*  if (userSessionStorage.getUserType() === 2 || 
-      userSessionStorage.getUserType() === 3) {
+  /*  if (SessionStorageService.getUserType() === 2 || 
+      SessionStorageService.getUserType() === 3) {
       return true;
   }*/
 }

@@ -1,11 +1,11 @@
 /*jslint eqeq: true, white: true */
 'use strict';
 
-function itemsRequest(httpRequest, itemsArray, itemsResponse, tagsArray, tasksArray, userSessionStorage) {
+function itemsRequest(httpRequest, itemsArray, itemsResponse, tagsArray, tasksArray, SessionStorageService) {
   return {
     getItems: function() {
 
-      return httpRequest.get('/api/' + userSessionStorage.getActiveUUID() + '/items').then(function(itemsResponses) {
+      return httpRequest.get('/api/' + SessionStorageService.getActiveUUID() + '/items').then(function(itemsResponses) {
 
         itemsArray.setItems(itemsResponses.data.items);
         tagsArray.setTags(itemsResponses.data.tags);
@@ -14,20 +14,20 @@ function itemsRequest(httpRequest, itemsArray, itemsResponse, tagsArray, tasksAr
       });
     },
     putItem: function(item) {
-      httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/item', item).then(function(putItemsResponse) {
+      httpRequest.put('/api/' + SessionStorageService.getActiveUUID() + '/item', item).then(function(putItemsResponse) {
         itemsArray.putNewItem(item);
         itemsResponse.putItemContent(item, putItemsResponse.data);
       });
     },
     editItem: function(item) {
-      return httpRequest.put('/api/' + userSessionStorage.getActiveUUID() + '/item/' + item.uuid, item).then(function(editItemResponse) {
+      return httpRequest.put('/api/' + SessionStorageService.getActiveUUID() + '/item/' + item.uuid, item).then(function(editItemResponse) {
         return editItemResponse.data;
       });
     },
     deleteItem: function(item) {
       itemsArray.removeItem(item);
 
-      httpRequest['delete']('/api/' + userSessionStorage.getActiveUUID() + '/item/' + item.uuid).then(function(deleteItemResponse) {
+      httpRequest['delete']('/api/' + SessionStorageService.getActiveUUID() + '/item/' + item.uuid).then(function(deleteItemResponse) {
         itemsResponse.putItemContent(item, deleteItemResponse.data);
       }, function() {
         itemsArray.setItem(item);
@@ -35,7 +35,7 @@ function itemsRequest(httpRequest, itemsArray, itemsResponse, tagsArray, tasksAr
     }
   };
 }
-itemsRequest.$inject = ['httpRequest', 'itemsArray', 'itemsResponse', 'tagsArray', 'tasksArray', 'userSessionStorage'];
+itemsRequest.$inject = ['httpRequest', 'itemsArray', 'itemsResponse', 'tagsArray', 'tasksArray', 'SessionStorageService'];
 angular.module('em.services').factory('itemsRequest', itemsRequest);
 
 angular.module('em.services').factory('itemsResponse', [

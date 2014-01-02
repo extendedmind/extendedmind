@@ -18,12 +18,12 @@ function emLocation($location, $rootScope, $route) {
 angular.module('em.services').factory('emLocation', emLocation);
 emLocation.$inject = ['$location', '$rootScope', '$route'];
 
-function userPrefix(userSessionStorage) {
+function userPrefix(SessionStorageService) {
   var prefix = 'my';
 
   return {
     setCollectivePrefix: function() {
-      this.setPrefix('collective' + '/' + userSessionStorage.getActiveUUID());
+      this.setPrefix('collective' + '/' + SessionStorageService.getActiveUUID());
     },
     setMyPrefix: function() {
       this.setPrefix('my');
@@ -37,7 +37,7 @@ function userPrefix(userSessionStorage) {
   };
 }
 angular.module('em.services').factory('userPrefix', userPrefix);
-userPrefix.$inject = ['userSessionStorage'];
+userPrefix.$inject = ['SessionStorageService'];
 
 function Enum() {
   var slide = {

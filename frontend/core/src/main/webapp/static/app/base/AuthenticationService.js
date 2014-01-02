@@ -1,11 +1,11 @@
 /*global angular */
 'use strict';
 
-function AuthenticationService($location, $q, httpRequest, itemsRequest, userLocalStorage, UserSessionService, userSessionStorage) {
+function AuthenticationService($location, $q, httpRequest, itemsRequest, LocalStorageService, UserSessionService, SessionStorageService) {
   var swapTokenTimeThreshold = 10*60*60*1000; // 10 hours in milliseconds
 
   function millisecondsFromAuth() {
-    var lastAuth = Date.now() - userLocalStorage.getAuthenticated();
+    var lastAuth = Date.now() - LocalStorageService.getAuthenticated();
     return lastAuth;
   }
 
@@ -14,7 +14,7 @@ function AuthenticationService($location, $q, httpRequest, itemsRequest, userLoc
   }
 
   function swapToken() {
-    UserSessionService.setEncodedCredentials(userLocalStorage.getHttpAuthorizationHeader());
+    UserSessionService.setEncodedCredentials(LocalStorageService.getHttpAuthorizationHeader());
     UserSessionService.setUserRemembered(true);
 
     return requestLogin().then(function(authenticateResponse) {
@@ -23,8 +23,8 @@ function AuthenticationService($location, $q, httpRequest, itemsRequest, userLoc
   }
 
   function clearUser() {
-    userSessionStorage.clearUser();
-    userLocalStorage.clearUser();
+    SessionStorageService.clearUser();
+    LocalStorageService.clearUser();
   }
 
   function requestLogin() {
@@ -40,11 +40,11 @@ function AuthenticationService($location, $q, httpRequest, itemsRequest, userLoc
       var deferred = $q.defer();
 
       // 1. should the user be sent to login
-      if (!userSessionStorage.getAuthenticated() & 
-          !userLocalStorage.getAuthenticated()) { // login
+      if (!SessionStorageService.getAuthenticated() & 
+          !LocalStorageService.getAuthenticated()) { // login
         deferred.reject();
       } // 2. is remember checked
-      else if (userLocalStorage.getAuthenticated()){
+      else if (LocalStorageService.getAuthenticated()){
         // 3. should token be swapped
         if (millisecondsFromAuth() >= swapTokenTimeThreshold) {
           swapToken().then(function() {
@@ -52,7 +52,7 @@ function AuthenticationService($location, $q, httpRequest, itemsRequest, userLoc
             initUserData();
           });
         } // 4. should session storage be reinitialized
-        else if (!userSessionStorage.getAuthenticated()){
+        else if (!SessionStorageService.getAuthenticated()){
           UserSessionService.setUserSessionStorageData();
           deferred.resolve();
           initUserData();
@@ -60,8 +60,8 @@ function AuthenticationService($location, $q, httpRequest, itemsRequest, userLoc
           deferred.resolve();
         }
       } // 5. current session but refresh needed
-      else if (userSessionStorage.getAuthenticated() && !UserSessionService.getCredentials()){ 
-        UserSessionService.setEncodedCredentials(userSessionStorage.getHttpAuthorizationHeader());
+      else if (SessionStorageService.getAuthenticated() && !UserSessionService.getCredentials()){ 
+        UserSessionService.setEncodedCredentials(SessionStorageService.getHttpAuthorizationHeader());
         initUserData();
         deferred.resolve();
       } // 6. do nothing
@@ -92,10 +92,10 @@ function AuthenticationService($location, $q, httpRequest, itemsRequest, userLoc
       });
     },
     switchActiveUUID: function(uuid) {
-      userSessionStorage.setActiveUUID(uuid);
+      SessionStorageService.setActiveUUID(uuid);
       initUserData();
     }
   };
 }
-AuthenticationService.$inject = ['$location', '$q', 'httpRequest', 'itemsRequest', 'userLocalStorage', 'UserSessionService', 'userSessionStorage'];
+AuthenticationService.$inject = ['$location', '$q', 'httpRequest', 'itemsRequest', 'LocalStorageService', 'UserSessionService', 'SessionStorageService'];
 angular.module('em.services').factory('AuthenticationService', AuthenticationService);

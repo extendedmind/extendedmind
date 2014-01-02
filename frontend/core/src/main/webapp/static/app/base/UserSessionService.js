@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function UserSessionService($q, base64, httpBasicAuth, userLocalStorage, userSessionStorage) {
+function UserSessionService($q, base64, httpBasicAuth, LocalStorageService, SessionStorageService) {
   var rememberMe = false;
 
   return {
@@ -9,31 +9,31 @@ function UserSessionService($q, base64, httpBasicAuth, userLocalStorage, userSes
       var authEpoch = Date.now();
 
       this.setCredentials('token', authenticateResponse.token);
-      userSessionStorage.setHttpAuthorizationHeader(this.getCredentials());
+      SessionStorageService.setHttpAuthorizationHeader(this.getCredentials());
 
-      userSessionStorage.setUserUUID(authenticateResponse.userUUID);
-      userSessionStorage.setUserType(authenticateResponse.userType);
-      userSessionStorage.setCollectives(authenticateResponse.collectives);
-      userSessionStorage.setActiveUUID(authenticateResponse.userUUID);
-      userSessionStorage.setAuthenticated(authEpoch);
+      SessionStorageService.setUserUUID(authenticateResponse.userUUID);
+      SessionStorageService.setUserType(authenticateResponse.userType);
+      SessionStorageService.setCollectives(authenticateResponse.collectives);
+      SessionStorageService.setActiveUUID(authenticateResponse.userUUID);
+      SessionStorageService.setAuthenticated(authEpoch);
 
       if (this.getUserRemembered()) {
-        userLocalStorage.setUserUUID(authenticateResponse.userUUID);
-        userLocalStorage.setHttpAuthorizationHeader(this.getCredentials());
-        userLocalStorage.setUserType(authenticateResponse.userType);
-        userLocalStorage.setCollectives(authenticateResponse.collectives);
-        userLocalStorage.setAuthenticated(authEpoch);
+        LocalStorageService.setUserUUID(authenticateResponse.userUUID);
+        LocalStorageService.setHttpAuthorizationHeader(this.getCredentials());
+        LocalStorageService.setUserType(authenticateResponse.userType);
+        LocalStorageService.setCollectives(authenticateResponse.collectives);
+        LocalStorageService.setAuthenticated(authEpoch);
       }
 
     },
     setUserSessionStorageData: function() {
-      userSessionStorage.setUserUUID(userLocalStorage.getUserUUID());
-      userSessionStorage.setHttpAuthorizationHeader(userLocalStorage.getHttpAuthorizationHeader());
-      userSessionStorage.setUserType(userLocalStorage.getUserType());
-      userSessionStorage.setCollectives(userLocalStorage.getCollectives());
-      userSessionStorage.setActiveUUID(userLocalStorage.getUserUUID());
-      userSessionStorage.setAuthenticated(userLocalStorage.getAuthenticated());
-      this.setEncodedCredentials(userSessionStorage.getHttpAuthorizationHeader());
+      SessionStorageService.setUserUUID(LocalStorageService.getUserUUID());
+      SessionStorageService.setHttpAuthorizationHeader(LocalStorageService.getHttpAuthorizationHeader());
+      SessionStorageService.setUserType(LocalStorageService.getUserType());
+      SessionStorageService.setCollectives(LocalStorageService.getCollectives());
+      SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
+      SessionStorageService.setAuthenticated(LocalStorageService.getAuthenticated());
+      this.setEncodedCredentials(SessionStorageService.getHttpAuthorizationHeader());
     },
     setCredentials: function(username, password) {
       this.setEncodedCredentials(base64.encode(username + ':' + password));
@@ -53,17 +53,17 @@ function UserSessionService($q, base64, httpBasicAuth, userLocalStorage, userSes
     getAuth: function() {
       if (localStorage.getItem('authenticated') && sessionStorage.getItem('authenticated') !== localStorage.getItem('authenticated')) {
 
-        userSessionStorage.setUserUUID(userLocalStorage.getUserUUID());
-        userSessionStorage.setHttpAuthorizationHeader(userLocalStorage.getHttpAuthorizationHeader());
-        userSessionStorage.setUserType(userLocalStorage.getUserType());
-        userSessionStorage.setCollectives(userLocalStorage.getCollectives());
-        userSessionStorage.setActiveUUID(userLocalStorage.getUserUUID());
-        userSessionStorage.setAuthenticated(userLocalStorage.getAuthenticated());
+        SessionStorageService.setUserUUID(LocalStorageService.getUserUUID());
+        SessionStorageService.setHttpAuthorizationHeader(LocalStorageService.getHttpAuthorizationHeader());
+        SessionStorageService.setUserType(LocalStorageService.getUserType());
+        SessionStorageService.setCollectives(LocalStorageService.getCollectives());
+        SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
+        SessionStorageService.setAuthenticated(LocalStorageService.getAuthenticated());
 
-        this.setEncodedCredentials(userSessionStorage.getHttpAuthorizationHeader());
+        this.setEncodedCredentials(SessionStorageService.getHttpAuthorizationHeader());
       }
     }
   };
 }
-UserSessionService.$inject = ['$q', 'base64', 'httpBasicAuth', 'userLocalStorage', 'userSessionStorage'];
+UserSessionService.$inject = ['$q', 'base64', 'httpBasicAuth', 'LocalStorageService', 'SessionStorageService'];
 angular.module('em.services').factory('UserSessionService', UserSessionService);
