@@ -1,31 +1,31 @@
 /*jslint eqeq: true, white: true */
 'use strict';
 
-angular.module('em.services').factory('tasksRequest', ['BackendClientService', 'itemsArray', 'tasksArray', 'tasksResponse', 'SessionStorageService',
-  function(BackendClientService, itemsArray, tasksArray, tasksResponse, SessionStorageService) {
+angular.module('em.services').factory('tasksRequest', ['BackendClientService', 'itemsArray', 'tasksArray', 'tasksResponse', 'UserSessionService',
+  function(BackendClientService, itemsArray, tasksArray, tasksResponse, UserSessionService) {
     return {
       putTask: function(task) {
-        return BackendClientService.put('/api/' + SessionStorageService.getActiveUUID() + '/task', task).then(function(putTaskResponse) {
+        return BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/task', task).then(function(putTaskResponse) {
           return putTaskResponse.data;
         });
       },
       putExistingTask: function(task) {
-        return BackendClientService.put('/api/' + SessionStorageService.getActiveUUID() + '/task/' + task.uuid, task).then(function(putExistingTaskResponse) {
+        return BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/task/' + task.uuid, task).then(function(putExistingTaskResponse) {
           tasksResponse.putTaskContent(task, putExistingTaskResponse.data);
         });
       },
       deleteTask: function(task) {
-        return BackendClientService['delete']('/api/' + SessionStorageService.getActiveUUID() + '/task/' + task.uuid).then(function(deleteTaskResponse) {
+        return BackendClientService['delete']('/api/' + UserSessionService.getActiveUUID() + '/task/' + task.uuid).then(function(deleteTaskResponse) {
           return deleteTaskResponse.data;
         });
       },
       completeTask: function(task) {
-        return BackendClientService.post('/api/' + SessionStorageService.getActiveUUID() + '/task/' + task.uuid + '/complete').then(function(completeTaskResponse) {
+        return BackendClientService.post('/api/' + UserSessionService.getActiveUUID() + '/task/' + task.uuid + '/complete').then(function(completeTaskResponse) {
           return completeTaskResponse.data;
         });
       },
       uncompleteTask: function(task) {
-        return BackendClientService.post('/api/' + SessionStorageService.getActiveUUID() + '/task/' + task.uuid + '/uncomplete').then(function(uncompleteTaskResponse) {
+        return BackendClientService.post('/api/' + UserSessionService.getActiveUUID() + '/task/' + task.uuid + '/uncomplete').then(function(uncompleteTaskResponse) {
           return uncompleteTaskResponse.data;
         });
       },

@@ -1,11 +1,11 @@
 /*jslint eqeq: true, white: true */
 'use strict';
 
-function itemsRequest(BackendClientService, itemsArray, itemsResponse, tagsArray, tasksArray, SessionStorageService) {
+function itemsRequest(BackendClientService, itemsArray, itemsResponse, tagsArray, tasksArray, UserSessionService) {
   return {
     getItems: function() {
 
-      return BackendClientService.get('/api/' + SessionStorageService.getActiveUUID() + '/items').then(function(itemsResponses) {
+      return BackendClientService.get('/api/' + UserSessionService.getActiveUUID() + '/items').then(function(itemsResponses) {
 
         itemsArray.setItems(itemsResponses.data.items);
         tagsArray.setTags(itemsResponses.data.tags);
@@ -14,20 +14,20 @@ function itemsRequest(BackendClientService, itemsArray, itemsResponse, tagsArray
       });
     },
     putItem: function(item) {
-      BackendClientService.put('/api/' + SessionStorageService.getActiveUUID() + '/item', item).then(function(putItemsResponse) {
+      BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item', item).then(function(putItemsResponse) {
         itemsArray.putNewItem(item);
         itemsResponse.putItemContent(item, putItemsResponse.data);
       });
     },
     editItem: function(item) {
-      return BackendClientService.put('/api/' + SessionStorageService.getActiveUUID() + '/item/' + item.uuid, item).then(function(editItemResponse) {
+      return BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid, item).then(function(editItemResponse) {
         return editItemResponse.data;
       });
     },
     deleteItem: function(item) {
       itemsArray.removeItem(item);
 
-      BackendClientService['delete']('/api/' + SessionStorageService.getActiveUUID() + '/item/' + item.uuid).then(function(deleteItemResponse) {
+      BackendClientService['delete']('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid).then(function(deleteItemResponse) {
         itemsResponse.putItemContent(item, deleteItemResponse.data);
       }, function() {
         itemsArray.setItem(item);
@@ -35,7 +35,7 @@ function itemsRequest(BackendClientService, itemsArray, itemsResponse, tagsArray
     }
   };
 }
-itemsRequest.$inject = ['BackendClientService', 'itemsArray', 'itemsResponse', 'tagsArray', 'tasksArray', 'SessionStorageService'];
+itemsRequest.$inject = ['BackendClientService', 'itemsArray', 'itemsResponse', 'tagsArray', 'tasksArray', 'UserSessionService'];
 angular.module('em.services').factory('itemsRequest', itemsRequest);
 
 angular.module('em.services').factory('itemsResponse', [

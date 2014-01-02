@@ -62,6 +62,15 @@ function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalSto
 
         this.setEncodedCredentials(SessionStorageService.getHttpAuthorizationHeader());
       }
+    },
+    getActiveUUID: function() {
+      return SessionStorageService.getActiveUUID();
+    },
+    getUserUUID: function() {
+      return SessionStorageService.getUserUUID();
+    },
+    getCollectives: function() {
+      return SessionStorageService.getCollectives();
     }
   };
 }
