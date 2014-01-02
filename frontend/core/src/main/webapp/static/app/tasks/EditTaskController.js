@@ -1,9 +1,9 @@
 /*global angular */
 'use strict';
 
-function EditTaskController($timeout,$routeParams, $scope, errorHandler, FilterService, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
+function EditTaskController($timeout,$routeParams, $scope, ErrorHandlerService, FilterService, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
 
-  $scope.errorHandler = errorHandler;
+  $scope.errorHandler = ErrorHandlerService;
   $scope.prefix = userPrefix.getPrefix();
   $scope.filterService = FilterService;
 
@@ -34,5 +34,5 @@ function EditTaskController($timeout,$routeParams, $scope, errorHandler, FilterS
   };
 }
 
-EditTaskController.$inject = ['$timeout','$routeParams', '$scope', 'errorHandler','FilterService', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
+EditTaskController.$inject = ['$timeout','$routeParams', '$scope', 'ErrorHandlerService','FilterService', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
 angular.module('em.app').controller('EditTaskController', EditTaskController);

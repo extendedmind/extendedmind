@@ -1,12 +1,12 @@
 /*global angular */
 'use strict';
 
-function SignupController($location, $scope, $routeParams, AuthenticationService, errorHandler, httpRequest) {
+function SignupController($location, $scope, $routeParams, AuthenticationService, ErrorHandlerService, httpRequest) {
 
   $scope.user = {};
   var inviteResponseCode = $routeParams.hex_code;
 
-  $scope.errorHandler = errorHandler;
+  $scope.errorHandler = ErrorHandlerService;
 
   httpRequest.get('/api/invite/' + inviteResponseCode + '?email=' + $routeParams.email).then(function(inviteResponse) {
     if (inviteResponse.data.accepted) {
@@ -32,5 +32,5 @@ function SignupController($location, $scope, $routeParams, AuthenticationService
   };
 }
 
-SignupController.$inject = ['$location', '$scope', '$routeParams', 'AuthenticationService', 'errorHandler', 'httpRequest'];
+SignupController.$inject = ['$location', '$scope', '$routeParams', 'AuthenticationService', 'ErrorHandlerService', 'httpRequest'];
 angular.module('em.app').controller('SignupController', SignupController);

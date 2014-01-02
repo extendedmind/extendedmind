@@ -1,7 +1,7 @@
 /*jslint white: true */
 'use strict';
 
-angular.module('em.services').factory('errorHandler', [
+angular.module('em.services').factory('ErrorHandlerService', [
   function() {
     return {
       errorMessage : null,

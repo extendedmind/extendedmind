@@ -1,12 +1,12 @@
 /*global angular */
 'use strict';
 
-function ProjectController($location, $scope, $routeParams, DateService, errorHandler, FilterService, itemsArray, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
+function ProjectController($location, $scope, $routeParams, DateService, ErrorHandlerService, FilterService, itemsArray, tagsArray, tasksArray, tasksRequest, tasksResponse, userPrefix) {
   $scope.tasks = tasksArray.getTasks();
   $scope.tags = tagsArray.getTags();
   $scope.items = itemsArray.getItems();
 
-  $scope.errorHandler = errorHandler;
+  $scope.errorHandler = ErrorHandlerService;
   $scope.prefix = userPrefix.getPrefix();
   $scope.filterService = FilterService;
 
@@ -58,5 +58,5 @@ function ProjectController($location, $scope, $routeParams, DateService, errorHa
   };
 }
 
-ProjectController.$inject = ['$location', '$scope', '$routeParams', 'DateService', 'errorHandler', 'FilterService', 'itemsArray', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
+ProjectController.$inject = ['$location', '$scope', '$routeParams', 'DateService', 'ErrorHandlerService', 'FilterService', 'itemsArray', 'tagsArray', 'tasksArray', 'tasksRequest', 'tasksResponse', 'userPrefix'];
 angular.module('em.app').controller('ProjectController', ProjectController);

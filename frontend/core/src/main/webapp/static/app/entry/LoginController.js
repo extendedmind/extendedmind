@@ -1,9 +1,9 @@
 /*jslint white: true */
 'use strict';
 
-function LoginController($location, $scope, AuthenticationService, errorHandler) {
+function LoginController($location, $scope, AuthenticationService, ErrorHandlerService) {
 
-  $scope.errorHandler = errorHandler;
+  $scope.errorHandler = ErrorHandlerService;
 
   $scope.userLogin = function() {
 
@@ -15,5 +15,5 @@ function LoginController($location, $scope, AuthenticationService, errorHandler)
   };
 }
 
-LoginController.$inject = ['$location', '$scope', 'AuthenticationService', 'errorHandler'];
+LoginController.$inject = ['$location', '$scope', 'AuthenticationService', 'ErrorHandlerService'];
 angular.module('em.app').controller('LoginController', LoginController);

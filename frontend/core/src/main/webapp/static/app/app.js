@@ -466,11 +466,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
   }]);
 
-angular.module('em.app').run(['$rootScope', 'AnalyticsService', 'errorHandler',
-  function($rootScope, AnalyticsService, errorHandler) {
+angular.module('em.app').run(['$rootScope', 'AnalyticsService', 'ErrorHandlerService',
+  function($rootScope, AnalyticsService, ErrorHandlerService) {
 
     $rootScope.$on('$routeChangeSuccess', function() {
-      errorHandler.clear();
+      ErrorHandlerService.clear();
     });
 
     $rootScope.$on('$viewContentLoaded', function() {

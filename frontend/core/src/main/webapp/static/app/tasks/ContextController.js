@@ -1,9 +1,9 @@
 /*jslint white: true */
 'use strict';
 
-function ContextController($location, $scope, $routeParams, errorHandler, tagsArray, tasksArray, userPrefix) {
+function ContextController($location, $scope, $routeParams, ErrorHandlerService, tagsArray, tasksArray, userPrefix) {
 
-  $scope.errorHandler = errorHandler;
+  $scope.errorHandler = ErrorHandlerService;
   $scope.prefix = userPrefix.getPrefix();
 
   if ($routeParams.uuid) {
@@ -12,5 +12,5 @@ function ContextController($location, $scope, $routeParams, errorHandler, tagsAr
   }
 }
 
-ContextController.$inject = ['$location', '$scope', '$routeParams', 'errorHandler', 'tagsArray', 'tasksArray', 'userPrefix'];
+ContextController.$inject = ['$location', '$scope', '$routeParams', 'ErrorHandlerService', 'tagsArray', 'tasksArray', 'userPrefix'];
 angular.module('em.app').controller('ContextController', ContextController);

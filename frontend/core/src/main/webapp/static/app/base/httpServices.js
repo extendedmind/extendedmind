@@ -6,7 +6,7 @@ angular.module('em.services').config(['$httpProvider',
     $httpProvider.interceptors.push('httpInterceptor');
   }]);
 
-function httpInterceptor($q, errorHandler) {
+function httpInterceptor($q, ErrorHandlerService) {
 
   return {
     request : function(config) {
@@ -19,12 +19,12 @@ function httpInterceptor($q, errorHandler) {
       return response || $q.when(response);
     },
     responseError : function(rejection) {
-      errorHandler.setError(rejection.data);
+      ErrorHandlerService.setError(rejection.data);
       return $q.reject(rejection);
     }
   };
 }
-httpInterceptor.$inject = ['$q', 'errorHandler'];
+httpInterceptor.$inject = ['$q', 'ErrorHandlerService'];
 angular.module('em.services').factory('httpInterceptor', httpInterceptor);
 
 angular.module('em.services').factory('httpBasicAuth', ['$http',
