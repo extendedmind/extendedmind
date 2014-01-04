@@ -17,7 +17,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/accept/:hex_code', {
-      templateUrl: 'static/app/entry/signup.html',
+      templateUrl: 'static/app/auth/signup.html',
       controller: 'SignupController',
       resolve: {
         routes: ['$location', '$route',
@@ -35,7 +35,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/login', {
-      templateUrl: 'static/app/entry/login.html',
+      templateUrl: 'static/app/auth/login.html',
       controller: 'LoginController'
     });
 
