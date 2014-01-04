@@ -11,7 +11,7 @@ describe('LoginController', function() {
 
   beforeEach(inject(function(_$controller_, _$httpBackend_, _$rootScope_, _mockHttpBackendResponse_) {
     $httpBackend = _$httpBackend_;
-    $httpBackend.expectPOST('/api/authenticate');
+    $httpBackend.expectPOST('/api/AuthenticationServiceenticate');
 
     mockHttpBackendResponse = _mockHttpBackendResponse_;
 
