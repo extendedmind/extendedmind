@@ -1,46 +1,6 @@
 /*global angular */
 'use strict';
 
-angular.module('em.filters').filter('tagTitle', ['itemsArray', 'TagsService',
-  function(itemsArray, TagsService) {
-    var userItemsFilter = function(itemTags) {
-      var filteredValues, i, tag, tags;
-      filteredValues = [];
-
-      if (itemTags) {
-        i = 0;
-        tags = TagsService.getTags();
-
-        while (itemTags[i]) {
-          tag = itemsArray.getItemByUUID(tags, itemTags[i]);
-          filteredValues.push(tag);
-          i++;
-        }
-      }
-
-      return filteredValues;
-    };
-    return userItemsFilter;
-  }]);
-
-angular.module('em.filters').filter('visibleTaskContent', [
-  function() {
-    var userItemsFilter = function(task) {
-      var filteredValues;
-      filteredValues = [];
-
-      if (task.due) {
-        filteredValues.push(task.due);
-      }
-      if (task.link) {
-        filteredValues.push(task.link);
-      }
-
-      return filteredValues;
-    };
-    return userItemsFilter;
-  }]);
-
 angular.module('em.filters').filter('tasksFilter', ['DateService',
   function(DateService) {
 
