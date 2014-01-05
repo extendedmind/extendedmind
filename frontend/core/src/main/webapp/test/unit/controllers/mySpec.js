@@ -39,7 +39,7 @@ describe('HomeController', function() {
 
   it('should return logged user\'s tasks', inject(function() {
     $scope.tasks = userItems.tasks;
-    expect($scope.tasks.length).toBe(4);
+    expect($scope.tasks.length).toBe(8);
   }));
 
   it('should add new item', inject(function(_HttpBasicAuthenticationService_, _itemsArray_, _SessionStorageService_) {
