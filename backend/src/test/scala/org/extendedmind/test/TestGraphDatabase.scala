@@ -145,6 +145,20 @@ trait TestGraphDatabase extends GraphDatabase {
             Some(ExtendedItemRelationships(None, Some(extendedMindNote.uuid.get), Some(List(browserTag.right.get.uuid.get)))
     ))).right.get
     completeTask(Owner(timoUUID, None), completedTask.uuid.get)
+    val essayTask = putNewTask(Owner(timoUUID, None),
+        Task("write essay on cognitive biases", None, None, None, None, None)).right.get
+    putNewTask(Owner(timoUUID, None),
+        Task("sketch outline for essay", None, Some("2014-01-08"), None, None, 
+            Some(ExtendedItemRelationships(Some(essayTask.uuid.get), None, None)
+    ))).right.get
+    putNewTask(Owner(timoUUID, None),
+        Task("write essay body", None, Some("2014-01-09"), None, None, 
+            Some(ExtendedItemRelationships(Some(essayTask.uuid.get), None, None)
+    ))).right.get
+    putNewTask(Owner(timoUUID, None),
+        Task("finalize essay", None, Some("2014-01-10"), None, None, 
+            Some(ExtendedItemRelationships(Some(essayTask.uuid.get), None, None)
+    ))).right.get
     
     // Store notes for user
     putNewNote(Owner(timoUUID, None), 
