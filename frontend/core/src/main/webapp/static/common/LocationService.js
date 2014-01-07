@@ -15,5 +15,5 @@ function LocationService($location, $rootScope, $route) {
   };
   return $location;
 }
-angular.module('em.services').factory('LocationService', LocationService);
+angular.module('common').factory('LocationService', LocationService);
 LocationService.$inject = ['$location', '$rootScope', '$route'];

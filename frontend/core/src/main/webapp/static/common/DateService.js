@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-angular.module('em.services').factory('DateService', [
+angular.module('common').factory('DateService', [
   function() {
     var today, months;
 
