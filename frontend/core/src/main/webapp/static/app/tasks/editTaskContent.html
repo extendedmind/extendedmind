@@ -1,0 +1,50 @@
+<form class="form-horizontal" role="form" name="taskEdit" data-tpl="editTaskContent">
+
+  <div class="form-group">
+    <label class="sr-only" for="taskTitle">title</label>
+    <input type="text" class="simple-input" id="taskTitle" ng-model="task.title" placeholder="title..." required>
+  </div>
+
+  <div ng-switch="showDate">
+
+    <div ng-switch-default>
+      <span class="input-placeholder" ng-click="focusDate()">select date...</span>
+    </div>
+
+    <div ng-switch-when="date">
+      <div class="form-group">
+        <label for="taskDue" class="sr-only">select date...</label>
+        <input type="date" id="taskDue" class="simple-input" ng-model="task.due" date>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="sr-only" for="taskParent">project</label>
+    <select class="simple-input" id="taskParent" ng-model="task.relationships.parentTask" ng-options="project.uuid as project.title for project in tasks | tasksFilter:filterService.activeFilters.project" ng-hide="task.project">
+      <option value="">select project...</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label class="sr-only" for="taskContext">context</label>
+    <select class="simple-input" id="taskContext" ng-model="task.relationships.context" ng-options="context.uuid as context.title for context in contexts" ng-hide="task.project">
+      <option value="">select context...</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label class="sr-only" for="taskLink">url</label>
+    <input type="text" class="simple-input" id="taskLink" ng-model="task.link" placeholder="url..." ng-hide="task.project">
+  </div>
+
+  <div class="form-group vertical-buttons">
+    <button type="submit" class="wide-button normal-button" ng-disabled="!taskEdit.$valid" ng-click="editTask()">
+      save
+    </button>
+    <button type="button" class="wide-button cancel-button" ng-click="cancelEdit()">cancel</button>
+  </div>
+
+</form>
+
+

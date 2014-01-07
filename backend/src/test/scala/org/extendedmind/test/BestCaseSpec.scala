@@ -110,7 +110,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         writeJsonOutput("itemsResponse", entityAs[String])
         itemsResponse.items should not be None
         itemsResponse.tasks should not be None
-        itemsResponse.tasks.get.length should equal(4)
+        itemsResponse.tasks.get.length should equal(8)
         itemsResponse.notes should not be None
       }
     }
@@ -438,7 +438,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
         writeJsonOutput("itemsResponse", entityAs[String])
         itemsResponse.items should not be None
         itemsResponse.tasks should not be None
-        itemsResponse.tasks.get.length should equal(4)
+        itemsResponse.tasks.get.length should equal(8)
         itemsResponse.notes should not be None
         
         val numberOfItems = itemsResponse.items.get.length
@@ -885,7 +885,7 @@ class BestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
          ) ~> emRoute ~> check {
         writeJsonOutput("itemsRebuildResponse", entityAs[String])
         val countResult = entityAs[CountResult]
-        countResult.count should be (17)
+        countResult.count should be (21)
       }
     }
   }

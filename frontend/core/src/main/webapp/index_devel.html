@@ -21,7 +21,7 @@
     <script src="static/lib/jasmine/jasmine-jquery.js"></script>
 
     <script>
-        jasmine.getJSONFixtures().fixturesPath = 'test/json'
+        jasmine.getJSONFixtures().fixturesPath = 'test/json';
     </script>
 
     <script src="static/lib/angularjs/angular.js"></script>
@@ -32,55 +32,62 @@
 
     <script src="static/lib/base64.js"></script>
 
-    <script src="static/js/app.js"></script>
+    <script src="static/app/app.js"></script>
 
     <script src="test/e2e/devApp.js"></script>
     <script src="test/mockHelpers.js"></script>
 
-    <script src="static/js/controllers/account.js"></script>
-    <script src="static/js/controllers/home.js"></script>
-    <script src="static/js/controllers/items.js"></script>
-    <script src="static/js/controllers/login.js"></script>
-    <script src="static/js/controllers/home.js"></script>
-    <script src="static/js/controllers/navbar.js"></script>
-    <script src="static/js/controllers/omniBar.js"></script>
-    <script src="static/js/controllers/pageNotFound.js"></script>
-    <script src="static/js/controllers/signup.js"></script>
+    <script src="static/common/common.js"></script>
+    <script src="static/common/DateService.js"></script>
+    <script src="static/common/LocationService.js"></script>
 
-    <script src="static/js/controllers/notes/edit.js"></script>
-    <script src="static/js/controllers/notes/list.js"></script>
-    <script src="static/js/controllers/notes/new.js"></script>
-    <script src="static/js/controllers/notes/slides.js"></script>
+    <script src="static/app/base/http/HttpInterceptorService.js"></script>
+    <script src="static/app/base/http/HttpBasicAuthenticationService.js"></script>
+    <script src="static/app/base/storage/LocalStorageService.js"></script>
+    <script src="static/app/base/storage/SessionStorageService.js"></script>
+    <script src="static/app/base/AnalyticsService.js"></script>
+    <script src="static/app/base/BackendClientService.js"></script>
+    <script src="static/app/base/ErrorHandlerService.js"></script>
+    <script src="static/app/base/FilterService.js"></script>
+    <script src="static/app/base/OwnerService.js"></script>
+    <script src="static/app/base/SwiperService.js"></script>
+    <script src="static/app/base/TagsService.js"></script>
+    <script src="static/app/base/UserSessionService.js"></script>
+    <script src="static/app/base/itemsServices.js"></script>
+    <script src="static/app/base/swiperContainerDirective.js"></script>
+    <script src="static/app/base/swiperSlideDirective.js"></script>
+    <script src="static/app/base/tagTitleFilter.js"></script>
 
-    <script src="static/js/controllers/tasks/context.js"></script>
-    <script src="static/js/controllers/tasks/dates.js"></script>
-    <script src="static/js/controllers/tasks/edit.js"></script>
-    <script src="static/js/controllers/tasks/inbox.js"></script>
-    <script src="static/js/controllers/tasks/list.js"></script>
-    <script src="static/js/controllers/tasks/new.js"></script>
-    <script src="static/js/controllers/tasks/project.js"></script>
-    <script src="static/js/controllers/tasks/projects.js"></script>
-    <script src="static/js/controllers/tasks/slides.js"></script>
+    <script src="static/app/auth/AuthenticationService.js"></script>
+    <script src="static/app/auth/LoginController.js"></script>
+    <script src="static/app/auth/SignupController.js"></script>
 
-    <script src="static/js/directives/common.js"></script>
-    <script src="static/js/directives/items.js"></script>
-    <script src="static/js/directives/notes.js"></script>
-    <script src="static/js/directives/swiper.js"></script>
-    <script src="static/js/directives/tasks.js"></script>
+    <script src="static/app/account/AccountController.js"></script>
+    <script src="static/app/account/AccountService.js"></script>
 
-    <script src="static/js/filters/common.js"></script>
+    <script src="static/app/tasks/tasksDirectives.js"></script>
+    <script src="static/app/tasks/ContextController.js"></script>
+    <script src="static/app/tasks/DatesController.js"></script>
+    <script src="static/app/tasks/EditTaskController.js"></script>
+    <script src="static/app/tasks/TasksListController.js"></script>
+    <script src="static/app/tasks/NewTaskController.js"></script>
+    <script src="static/app/tasks/ProjectController.js"></script>
+    <script src="static/app/tasks/ProjectsController.js"></script>
+    <script src="static/app/tasks/TasksSlidesController.js"></script>
+    <script src="static/app/tasks/TasksSlidesService.js"></script>
+    <script src="static/app/tasks/tasksFilter.js"></script>
+    <script src="static/app/tasks/tasksServices.js"></script>
+    <script src="static/app/tasks/visibleTaskContentFilter.js"></script>
 
-    <script src="static/js/services/analytics.js"></script>
-    <script src="static/js/services/authenticate.js"></script>
-    <script src="static/js/services/common.js"></script>
-    <script src="static/js/services/errorHandler.js"></script>
-    <script src="static/js/services/httpHandler.js"></script>
-    <script src="static/js/services/items.js"></script>
-    <script src="static/js/services/location.js"></script>
-    <script src="static/js/services/notes.js"></script>
-    <script src="static/js/services/pageTitle.js"></script>
-    <script src="static/js/services/tags.js"></script>
-    <script src="static/js/services/tasks.js"></script>
+    <script src="static/app/main/InboxController.js"></script>
+    <script src="static/app/main/HomeController.js"></script>
+    <script src="static/app/main/ItemsController.js"></script>
+    <script src="static/app/main/MainController.js"></script>
+    <script src="static/app/main/NavbarController.js"></script>
+    <script src="static/app/main/OmniBarController.js"></script>
+    <script src="static/app/main/mainDirectives.js"></script>
+    <script src="static/app/main/itemsDirectives.js"></script>
+    <script src="static/app/main/PageNotFoundController.js"></script>
 
     <script src="static/lib/idangerous/idangerous.swiper-2.4.js"></script>
     <script src="static/lib/fastclick.js"></script>

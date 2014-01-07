@@ -1,0 +1,52 @@
+<div ng-switch="itemType" data-tpl="itemContent">
+  <div class="item-sorting-container" ng-switch-default>
+    <ul class="button-row">
+      <li class="button-container left-of-three">
+        <button class="normal-button small-border-right" type="button" ng-disabled="true">
+          <span class="button-text">note</span>
+        </button>
+      </li>
+      <li class="button-container center-of-three">
+        <button class="normal-button" type="button" ng-click="itemToTask(item)">
+          <span class="button-text">task</span>
+        </button>
+      </li>
+      <li class="button-container right-of-three">
+        <button class="delete-button" type="button" ng-click="deleteItem(item)">
+          <span class="button-text">delete</span>
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <div ng-switch-when="task">
+    <div class="form-group">
+      <label class="sr-only" for="taskParent">parent</label>
+      <select class="simple-input swiper-no-swiping" id="taskParent" ng-model="task.relationships.parentTask" ng-options="project.uuid as project.title for project in tasks | tasksFilter:filterService.activeFilters.project" ng-hide="task.project">
+        <option value="">select project...</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="sr-only" for="taskContext">context</label>
+      <select class="simple-input swiper-no-swiping" id="taskContext" ng-model="task.relationships.context" ng-options="context.uuid as context.title for context in contexts" ng-hide="task.project">
+        <option value="">select context...</option>
+      </select>
+    </div>
+
+    <div class="row em-item-actions">
+      <ul class="nav nav-justified em-horizontal-buttons">
+        <li class="em-gray-button">
+          <button class="em-simple-input" type="button" ng-click="taskEditMore(task)">
+            more
+          </button>
+        </li>
+        <li class="em-green-button">
+          <button class="em-simple-input" type="button" ng-click="taskEditDone(task)">
+            done
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>

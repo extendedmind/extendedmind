@@ -23,6 +23,6 @@ describe('TasksSlidesController', function() {
   it('should return logged user\'s tasks', inject(function() {
     expect($scope.tasks).toEqual([]);
     $scope.tasks = userTasks;
-    expect($scope.tasks.length).toBe(4);
+    expect($scope.tasks.length).toBe(8);
   }));
 });

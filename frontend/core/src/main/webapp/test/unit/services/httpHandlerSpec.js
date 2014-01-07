@@ -7,57 +7,57 @@ describe('em.service', function() {
 
   describe('http', function() {
 
-    describe('httpBasicAuth', function() {
-      var httpBasicAuth;
+    describe('HttpBasicAuthenticationService', function() {
+      var HttpBasicAuthenticationService;
 
-      beforeEach(inject(function(_httpBasicAuth_) {
-        httpBasicAuth = _httpBasicAuth_;
+      beforeEach(inject(function(_HttpBasicAuthenticationService_) {
+        HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       }));
 
       it('should set credentials', inject(function() {
-        httpBasicAuth.setEncodedCredentials('timo@ext.md', 'timopwd');
-        expect(httpBasicAuth.getCredentials()).toBeDefined();
+        HttpBasicAuthenticationService.setEncodedCredentials('timo@ext.md', 'timopwd');
+        expect(HttpBasicAuthenticationService.getCredentials()).toBeDefined();
       }));
 
       it('should call setter for credentials', inject(function() {
-        spyOn(httpBasicAuth, 'setEncodedCredentials');
-        httpBasicAuth.setEncodedCredentials('timo@ext.md', 'timopwd');
-        expect(httpBasicAuth.setEncodedCredentials).toHaveBeenCalledWith('timo@ext.md', 'timopwd');
+        spyOn(HttpBasicAuthenticationService, 'setEncodedCredentials');
+        HttpBasicAuthenticationService.setEncodedCredentials('timo@ext.md', 'timopwd');
+        expect(HttpBasicAuthenticationService.setEncodedCredentials).toHaveBeenCalledWith('timo@ext.md', 'timopwd');
       }));
 
       it('should get new credentials', inject(function() {
-        httpBasicAuth.setEncodedCredentials('timo@ext.md' + ':' + 'timopwd');
-        expect(httpBasicAuth.getCredentials()).toEqual('timo@ext.md:timopwd');
+        HttpBasicAuthenticationService.setEncodedCredentials('timo@ext.md' + ':' + 'timopwd');
+        expect(HttpBasicAuthenticationService.getCredentials()).toEqual('timo@ext.md:timopwd');
       }));
     });
 
-    describe('httpRequest', function() {
-      var $httpBackend, httpRequest;
+    describe('BackendClientService', function() {
+      var $httpBackend, BackendClientService;
 
-      beforeEach(inject(function(_httpRequest_) {
-        httpRequest = _httpRequest_;
+      beforeEach(inject(function(_BackendClientService_) {
+        BackendClientService = _BackendClientService_;
       }));
 
       it('should call http get', inject(function() {
-        httpRequest.get('url');
-        expect(httpRequest.get('')).toBeDefined();
+        BackendClientService.get('url');
+        expect(BackendClientService.get('')).toBeDefined();
       }));
 
       it('should call http get with url parameter', inject(function() {
-        spyOn(httpRequest, 'get');
-        httpRequest.get('url');
-        expect(httpRequest.get).toHaveBeenCalledWith('url');
+        spyOn(BackendClientService, 'get');
+        BackendClientService.get('url');
+        expect(BackendClientService.get).toHaveBeenCalledWith('url');
       }));
 
       it('should call http post', inject(function() {
-        httpRequest.post('url', undefined);
-        expect(httpRequest.post('')).toBeDefined();
+        BackendClientService.post('url', undefined);
+        expect(BackendClientService.post('')).toBeDefined();
       }));
 
       it('should call http post with url parameter', inject(function() {
-        spyOn(httpRequest, 'post');
-        httpRequest.post('url', undefined);
-        expect(httpRequest.post).toHaveBeenCalledWith('url', undefined);
+        spyOn(BackendClientService, 'post');
+        BackendClientService.post('url', undefined);
+        expect(BackendClientService.post).toHaveBeenCalledWith('url', undefined);
       }));
     });
   });

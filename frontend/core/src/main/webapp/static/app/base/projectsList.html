@@ -1,0 +1,13 @@
+<div data-tpl="projectsList">
+
+  <div ng-transclude></div>
+
+  <ul>
+    <li ng-repeat="project in projects">
+
+      <span><a class="text-muted" href="#/{{prefix}}/tasks/project/{{project.uuid}}">{{project.title}}</a></span>
+
+    </li>
+  </ul>
+
+</div>
