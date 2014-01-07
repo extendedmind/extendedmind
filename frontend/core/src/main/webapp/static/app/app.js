@@ -13,7 +13,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $locationProvider.html5Mode(h5m);
 
     $routeProvider.when('/', {
-      redirectTo: 'my'
+      redirectTo: 'my/tasks/home'
     });
 
     $routeProvider.when('/accept/:hex_code', {

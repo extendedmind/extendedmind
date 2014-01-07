@@ -77,7 +77,6 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
   return {
     initializeSwiper: function(containerElement, swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback) {
       if (swipers[swiperPath]){
-        console.log("swiper deleted");
         delete swipers[swiperPath].swiper;
       }
       var params = getSwiperParameters(

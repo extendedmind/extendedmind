@@ -13,13 +13,16 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
     });
   };
 
-  $scope.setActiveUuid = function(uuid, collective) {
+  $scope.setCollectiveActive = function(uuid) {
     AuthenticationService.switchActiveUUID(uuid);
-    if (collective) {
-      $location.path('/collective/' + uuid + '/' + TasksSlidesService.HOME);
-    }
+    $location.path('/collective/' + uuid + '/' + TasksSlidesService.HOME);
   };
-
+  
+  $scope.setMyActive = function() {
+    AuthenticationService.switchActiveUUID(UserSessionService.getUserUUID());
+    $location.path('/my/tasks/home');
+  };
+  
   $scope.addNew = function() {
     $location.path($scope.prefix + '/tasks/new');
   };
