@@ -20,7 +20,7 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     var api_useruuid_items,
 
     // account
-    accountResponse, AuthenticationServiceenticateResponse,
+    accountResponse, authenticateResponse,
     invitePostFix, inviteResponse,
     logoutResponse, signUpPostFix, signUpResponse,
     
@@ -72,7 +72,7 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
 
     // account
     accountResponse = mockHttpBackendResponse.getAccountResponse();
-    AuthenticationServiceenticateResponse = mockHttpBackendResponse.getAuthenticateResponse();
+    authenticateResponse = mockHttpBackendResponse.getAuthenticateResponse();
     inviteResponse = mockHttpBackendResponse.getInviteResponse();
     signUpResponse = mockHttpBackendResponse.getSignUpResponse();
     logoutResponse = mockHttpBackendResponse.getLogoutResponse();
@@ -105,8 +105,8 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     $httpBackend.whenGET('/api/account').respond(function(method, url, data, headers) {
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, accountResponse);
     });
-    $httpBackend.whenPOST('/api/AuthenticationServiceenticate').respond(function(method, url, data, headers) {
-      return mockHttpBackendResponse.expectResponse(method, url, data, headers, AuthenticationServiceenticateResponse);
+    $httpBackend.whenPOST('/api/authenticate').respond(function(method, url, data, headers) {
+      return mockHttpBackendResponse.expectResponse(method, url, data, headers, authenticateResponse);
     });
     $httpBackend.whenPOST('/api/logout').respond(function(method, url, data, headers) {
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, logoutResponse);
@@ -162,8 +162,8 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     $httpBackend.whenGET(api_useruuid_items).respond(function(method, url, data, headers) {
       var uuid = url.split('/'), key;
 
-      for (key in AuthenticationServiceenticateResponse.collectives) {
-        if (AuthenticationServiceenticateResponse.collectives.hasOwnProperty(key)) {
+      for (key in authenticateResponse.collectives) {
+        if (authenticateResponse.collectives.hasOwnProperty(key)) {
           if (uuid[2] === key) {
             return mockHttpBackendResponse.expectResponse(method, url, data, headers, collectiveItemsResponse);
           }
@@ -219,7 +219,7 @@ angular.module('em.mockHelpers').factory('mockHttpBackendResponse', ['base64',
         return getJSONFixture('accountResponse.json');
       },
       getAuthenticateResponse : function() {
-        return getJSONFixture('AuthenticationServiceenticateResponse.json');
+        return getJSONFixture('authenticateResponse.json');
       },
       getInviteResponse : function() {
         return getJSONFixture('inviteResponse.json');
