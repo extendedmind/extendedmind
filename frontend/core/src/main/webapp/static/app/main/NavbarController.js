@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function NavbarController($location, $scope, $window, AuthenticationService, emSwiper, TasksSlidesService, OwnerService, UserSessionService) {
+function NavbarController($location, $scope, $window, AuthenticationService, SwiperService, TasksSlidesService, OwnerService, UserSessionService) {
 
   $scope.user = UserSessionService.getUserUUID();
   $scope.collectives = UserSessionService.getCollectives();
@@ -16,7 +16,7 @@ function NavbarController($location, $scope, $window, AuthenticationService, emS
   $scope.setActiveUuid = function(uuid, collective) {
     AuthenticationService.switchActiveUUID(uuid);
     if (collective) {
-      $location.path('/collective/' + uuid);
+      $location.path('/collective/' + uuid + '/' + TasksSlidesService.HOME);
     }
   };
 
@@ -25,15 +25,27 @@ function NavbarController($location, $scope, $window, AuthenticationService, emS
   };
 
   $scope.gotoInbox = function() {
-    emSwiper.gotoInbox();
+    if ($location.path().indexOf("/tasks/") != -1){
+      SwiperService.swipeTo(TasksSlidesService.INBOX);
+    }else{
+      $location.path($scope.prefix + '/' + TasksSlidesService.INBOX);
+    }
   };
 
   $scope.gotoHome = function() {
-    emSwiper.gotoHome();
+    if ($location.path().indexOf("/tasks/") != -1){
+      SwiperService.swipeTo(TasksSlidesService.HOME);
+    }else{
+      $location.path($scope.prefix + '/' + TasksSlidesService.HOME);
+    }
   };
 
   $scope.gotoTasks = function() {
-    emSwiper.gotoTasks();
+    if ($location.path().indexOf("/tasks/") != -1){
+      SwiperService.swipeTo(TasksSlidesService.DATES);
+    }else{
+      $location.path($scope.prefix + '/' + TasksSlidesService.DATES);
+    }
   };
 
   $scope.useCollectives = function () {
@@ -42,11 +54,11 @@ function NavbarController($location, $scope, $window, AuthenticationService, emS
     }
   };
 
-  $scope.goToProject = function(index) {
-    emSwiper.setSlideIndex(TasksSlidesService.PROJECTS, index);
+  $scope.goToProject = function(uuid) {
+    SwiperService.swipeTo(TasksSlidesService.PROJECTS + '/' + uuid);
   };
 
 }
 
-NavbarController.$inject = ['$location', '$scope', '$window', 'AuthenticationService', 'emSwiper', 'TasksSlidesService', 'OwnerService', 'UserSessionService'];
+NavbarController.$inject = ['$location', '$scope', '$window', 'AuthenticationService', 'SwiperService', 'TasksSlidesService', 'OwnerService', 'UserSessionService'];
 angular.module('em.app').controller('NavbarController', NavbarController);

@@ -1,10 +1,10 @@
 /*global angular, html5Mode */
 'use strict';
 
-angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'em.directives', 'em.filters', 'em.services']);
-angular.module('em.directives', []);
-angular.module('em.filters', []);
-angular.module('em.services', ['em.base64']);
+angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'common', 'em.directives', 'em.filters', 'em.services']);
+angular.module('em.directives', ['common']);
+angular.module('em.filters', ['common']);
+angular.module('em.services', ['common', 'em.base64']);
 
 angular.module('em.app').config(['$locationProvider', '$routeProvider',
   function($locationProvider, $routeProvider) {
@@ -53,9 +53,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }]
 
       }
+      
     });
 
-    $routeProvider.when('/my', {
+    $routeProvider.when('/my/tasks/home', {
       controller: 'HomeController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
@@ -63,9 +64,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['TasksSlidesService', 'emSwiper',
-        function(TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.HOME);
+        slide: ['TasksSlidesService', 'SwiperService',
+        function(TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(TasksSlidesService.HOME);
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -75,7 +76,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/collective/:collectiveUUID', {
+    $routeProvider.when('/collective/:collectiveUUID/tasks/home', {
       controller: 'HomeController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
@@ -83,9 +84,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['TasksSlidesService', 'emSwiper',
-        function(TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.HOME);
+        slide: ['TasksSlidesService', 'SwiperService',
+        function(TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(TasksSlidesService.HOME);
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -95,7 +96,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/my/inbox', {
+    $routeProvider.when('/my/tasks/inbox', {
       controller: 'InboxController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
@@ -103,9 +104,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['TasksSlidesService', 'emSwiper',
-        function(TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.INBOX);
+        slide: ['TasksSlidesService', 'SwiperService',
+        function(TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(TasksSlidesService.INBOX);
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -114,7 +115,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/collective/:collectiveUUID/inbox', {
+    $routeProvider.when('/collective/:collectiveUUID/tasks/inbox', {
       controller: 'InboxController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
@@ -122,9 +123,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['TasksSlidesService', 'emSwiper',
-        function(TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.INBOX);
+        slide: ['TasksSlidesService', 'SwiperService',
+        function(TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(TasksSlidesService.INBOX);
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -141,9 +142,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['TasksSlidesService', 'emSwiper',
-        function(TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.LISTS);
+        slide: ['TasksSlidesService', 'SwiperService',
+        function(TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(TasksSlidesService.LISTS);
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -161,9 +162,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['TasksSlidesService', 'emSwiper',
-        function(TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.LISTS);
+        slide: ['TasksSlidesService', 'SwiperService',
+        function(TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(TasksSlidesService.LISTS);
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -181,9 +182,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['TasksSlidesService', 'emSwiper',
-        function(TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.PROJECTS);
+        slide: ['TasksSlidesService', 'SwiperService',
+        function(TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(TasksSlidesService.PROJECTS);
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -200,9 +201,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['TasksSlidesService', 'emSwiper',
-        function(TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.PROJECTS);
+        slide: ['TasksSlidesService', 'SwiperService',
+        function(TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(TasksSlidesService.PROJECTS);
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -219,9 +220,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['$route', 'TasksSlidesService', 'emSwiper',
-        function($route, TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.PROJECTS, $route.current.params.uuid);
+        slide: ['$route', 'TasksSlidesService', 'SwiperService',
+        function($route, TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(
+            TasksSlidesService.PROJECTS,
+            TasksSlidesService.getProjectSlidePath($route.current.params.uuid));
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -238,9 +241,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['$route', 'TasksSlidesService', 'emSwiper',
-        function($route, TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.PROJECTS, $route.current.params.uuid);
+        slide: ['$route', 'TasksSlidesService', 'SwiperService',
+        function($route, TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(
+            TasksSlidesService.PROJECTS,
+            TasksSlidesService.getProjectSlidePath($route.current.params.uuid));
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -257,9 +262,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['TasksSlidesService', 'emSwiper',
-        function(TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.DATES);
+        slide: ['TasksSlidesService', 'SwiperService',
+        function(TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(TasksSlidesService.DATES);
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -276,9 +281,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['TasksSlidesService', 'emSwiper',
-        function(TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.DATES);
+        slide: ['TasksSlidesService', 'SwiperService',
+        function(TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(TasksSlidesService.DATES);
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -295,9 +300,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['$route', 'TasksSlidesService', 'emSwiper',
-        function($route, TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.DATES, $route.current.params.date);
+        slide: ['$route', 'TasksSlidesService', 'SwiperService',
+        function($route, TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(
+            TasksSlidesService.DATES,
+            TasksSlidesService.getDateSlidePath($route.current.params.date));
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -314,9 +321,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['$route', 'TasksSlidesService', 'emSwiper',
-        function($route, TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.DATES, $route.current.params.date);
+        slide: ['$route', 'TasksSlidesService', 'SwiperService',
+        function($route, TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(
+            TasksSlidesService.DATES,
+            TasksSlidesService.getDateSlidePath($route.current.params.uuid));
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -333,9 +342,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['TasksSlidesService', 'emSwiper',
-        function(TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.SINGLE_TASKS);
+        slide: ['TasksSlidesService', 'SwiperService',
+        function(TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(TasksSlidesService.SINGLE_TASKS);
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -353,9 +362,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(auth) {
           return auth.check();
         }],
-        slide: ['TasksSlidesService', 'emSwiper',
-        function(TasksSlidesService, emSwiper) {
-          emSwiper.setSlides(TasksSlidesService.SINGLE_TASKS);
+        slide: ['TasksSlidesService', 'SwiperService',
+        function(TasksSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(TasksSlidesService.SINGLE_TASKS);
         }],
         prefix: ['OwnerService',
         function(OwnerService) {

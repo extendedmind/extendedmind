@@ -1,14 +1,14 @@
-<div class="slides-container" data-tpl="tasksSlides">
-  <div class="swiper-container main-slides" em-swiper-slider="horizontal">
+<div class="slides-container" ng-controller="MainController" data-tpl="tasksSlides">
+  <div class="swiper-container main-slides" swiper-container="tasks" swiper-type="main">
     <div class="swiper-wrapper">
-      <div class="swiper-slide" inbox></div>
-      <div class="swiper-slide" home></div>
-      <div class="swiper-slide" dates></div>
-      <div class="swiper-slide" lists></div>
-      <div class="swiper-slide" projects></div>
+      <div class="swiper-slide" swiper-slide="tasks/inbox" ng-include="'static/app/main/inbox.html'"></div>
+      <div class="swiper-slide priority-slide" swiper-slide="tasks/home" ng-include="'static/app/main/home.html'"></div>
+      <div class="swiper-slide" swiper-slide="tasks/dates" ng-if="tasks.length > 0" ng-include="'static/app/tasks/dates.html'"></div>
+      <div class="swiper-slide" swiper-slide="tasks/lists" ng-if="tasks.length > 0" ng-include="'static/app/tasks/lists.html'"></div>
+      <div class="swiper-slide" swiper-slide="tasks/projects" ng-if="tasks.length > 0" ng-include="'static/app/tasks/projects.html'"></div>
       <!-- areas -->
       <!-- contexts -->
-      <div class="swiper-slide" single-tasks></div>
+      <div class="swiper-slide" swiper-slide="tasks/single" ng-if="tasks.length > 0" ng-include="'static/app/tasks/singleTasks.html'"></div>
     </div>
   </div>
   <footer ng-hide="mainlinksFilter" em-footer mainlinksfilter="newItem.title"></footer>

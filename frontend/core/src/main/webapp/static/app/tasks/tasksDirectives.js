@@ -1,18 +1,6 @@
 /*global angular */
 'use strict';
 
-function projects(emSwiper, TasksSlidesService) {
-  return {
-    restrict: 'A',
-    templateUrl: 'static/app/tasks/projects.html',
-    link: function() {
-      emSwiper.setVerticalSwiper(TasksSlidesService.PROJECTS);
-    }
-  };
-}
-angular.module('em.directives').directive('projects', projects);
-projects.$inject = ['emSwiper', 'TasksSlidesService'];
-
 function projectSlide() {
   return {
     controller: 'ProjectController',
@@ -47,18 +35,6 @@ function projectContent() {
 }
 angular.module('em.directives').directive('projectContent', projectContent);
 
-function dates(emSwiper, TasksSlidesService) {
-  return {
-    restrict: 'A',
-    templateUrl: 'static/app/tasks/dates.html',
-    link: function() {
-      emSwiper.setVerticalSwiper(TasksSlidesService.DATES);
-    }
-  };
-}
-angular.module('em.directives').directive('dates', dates);
-dates.$inject = ['emSwiper', 'TasksSlidesService'];
-
 function dateSlide() {
   return {
     restrict: 'A',
@@ -68,45 +44,17 @@ function dateSlide() {
       date: '=dateSlide'
     },
     link: function(scope) {
-      scope.subtaskWithDate = {};
-      scope.subtaskWithDate.due = scope.date.yyyymmdd;
-      scope.filter = {};
-      scope.filter.name = 'tasksByDate';
-      scope.filter.filterBy = scope.date.yyyymmdd;
-    }
-  };
-}
-angular.module('em.directives').directive('dateSlide', dateSlide);
-
-function datebar(emSwiper, TasksSlidesService) {
-  return {
-    restrict: 'A',
-    templateUrl: 'static/app/tasks/datebar.html',
-    link: function(scope) {
-      scope.dateClicked = function(index) {
-        emSwiper.setSlideIndex(TasksSlidesService.DATES, index);
+      scope.subtaskWithDate = {
+        due: scope.date.yyyymmdd
+      };
+      scope.filter = {
+        name:'tasksByDate',
+        filterBy: scope.date.yyyymmdd
       };
     }
   };
 }
-angular.module('em.directives').directive('datebar', datebar);
-datebar.$inject = ['emSwiper', 'TasksSlidesService'];
-
-function lists() {
-  return {
-    restrict: 'A',
-    templateUrl: 'static/app/tasks/lists.html'
-  };
-}
-angular.module('em.directives').directive('lists', lists);
-
-function singleTasks() {
-  return {
-    restrict: 'A',
-    templateUrl: 'static/app/tasks/singleTasks.html'
-  };
-}
-angular.module('em.directives').directive('singleTasks', singleTasks);
+angular.module('em.directives').directive('dateSlide', dateSlide);
 
 function filteredTasksList() {
   return {

@@ -1,16 +1,27 @@
 /*global angular */
 'use strict';
 
-function TasksSlidesService() {
-  var slide = {
-    INBOX: 0,
-    HOME: 1,
-    DATES: 2,
-    LISTS: 3,
-    PROJECTS: 4,
-    SINGLE_TASKS: 5
-  };
+function TasksSlidesService(LocationService, OwnerService) {
 
-  return slide;
+  return {
+    // Enumeration values
+
+    INBOX: 'tasks/inbox',
+    HOME: 'tasks/home',
+    DATES: 'tasks/dates',
+    LISTS: 'tasks/lists',
+    PROJECTS: 'tasks/projects',
+    SINGLE_TASKS: 'tasks/single',
+
+    // Functions
+    getProjectSlidePath: function(uuid){
+      return this.PROJECTS + '/' + uuid;
+    },
+
+    getDateSlidePath: function(dateString){
+      return this.DATES + '/' + dateString;
+    }
+  };
 }
+TasksSlidesService.$inject = ['LocationService', 'OwnerService'];
 angular.module('em.services').factory('TasksSlidesService', TasksSlidesService);

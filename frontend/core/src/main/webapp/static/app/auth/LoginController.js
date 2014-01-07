@@ -8,7 +8,7 @@ function LoginController($location, $scope, AuthenticationService, ErrorHandlerS
   $scope.userLogin = function() {
 
     AuthenticationService.login($scope.user).then(function() {
-      $location.path('/my');
+      $location.path('/my/tasks/home');
     }, function(authenticateResponse) {
       $scope.errorHandler.errorMessage = authenticateResponse.data;
     });
