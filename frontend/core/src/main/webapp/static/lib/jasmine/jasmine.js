@@ -1725,13 +1725,17 @@ jasmine.Clock = {
 jasmine.Clock.installed = jasmine.Clock.real;
 
 //else for IE support
-jasmine.getGlobal().setTimeout = function(funcToCall, millis) {
-  if (jasmine.Clock.installed.setTimeout.apply) {
-    return jasmine.Clock.installed.setTimeout.apply(this, arguments);
-  } else {
-    return jasmine.Clock.installed.setTimeout(funcToCall, millis);
-  }
-};
+
+// Causes infinite recursion with this defined. Started for some 
+// reason when upgrading AngularJS from 1.2.4 to 1.2.7.
+//
+// jasmine.getGlobal().setTimeout = function(funcToCall, millis) {
+//   if (jasmine.Clock.installed.setTimeout.apply) {
+//     return jasmine.Clock.installed.setTimeout.apply(this, arguments);
+//   } else {
+//     return jasmine.Clock.installed.setTimeout(funcToCall, millis);
+//   }
+// };
 
 jasmine.getGlobal().setInterval = function(funcToCall, millis) {
   if (jasmine.Clock.installed.setInterval.apply) {
