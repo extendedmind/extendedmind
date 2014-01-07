@@ -85,14 +85,6 @@ angular.module('em.directives').directive('omniBar', [ '$rootScope',
     };
   }]);
 
-angular.module('em.directives').directive('urlList', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/app/main/urlList.html'
-    };
-  }]);
-
 angular.module('em.directives').directive('contextsList', [
   function() {
     return {
