@@ -18,7 +18,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/accept/:hex_code', {
       templateUrl: 'static/app/auth/signup.html',
-      controller: 'SignupController',
       resolve: {
         routes: ['$location', '$route',
         function($location, $route) {
@@ -35,13 +34,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/login', {
-      templateUrl: 'static/app/auth/login.html',
-      controller: 'LoginController'
+      templateUrl: 'static/app/auth/login.html'
     });
 
     $routeProvider.when('/my/account', {
       templateUrl: 'static/app/account/account.html',
-      controller: 'AccountController',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
@@ -57,7 +54,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/home', {
-      controller: 'HomeController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -77,7 +73,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/home', {
-      controller: 'HomeController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -97,7 +92,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/inbox', {
-      controller: 'InboxController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -116,7 +110,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/inbox', {
-      controller: 'InboxController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -135,7 +128,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/lists', {
-      controller: 'TasksSlidesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -155,7 +147,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/lists', {
-      controller: 'TasksSlidesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -175,7 +166,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/projects', {
-      controller: 'ProjectController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -194,7 +184,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/projects', {
-      controller: 'ProjectController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -213,7 +202,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/projects/:uuid', {
-      controller: 'ProjectController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -234,7 +222,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/projects/:uuid', {
-      controller: 'ProjectController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -255,7 +242,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/dates', {
-      controller: 'DatesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -274,7 +260,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/dates', {
-      controller: 'DatesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -293,7 +278,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/dates/:date', {
-      controller: 'DatesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -314,7 +298,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/dates/:date', {
-      controller: 'DatesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -335,7 +318,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/single', {
-      controller: 'TasksSlidesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -355,7 +337,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/single', {
-      controller: 'TasksSlidesController',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',

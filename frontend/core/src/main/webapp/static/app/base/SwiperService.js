@@ -104,8 +104,6 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
     swipeTo: function(slidePath) {
       var swiperInfos = getSwiperInfosBySlidePath(slidePath);
 
-      console.log(swiperInfos + " " + slidePath);
-
       // First, swipe in the main swiper to the right index 
       if (swiperInfos.main){
         var mainSwiperIndex = getSlideIndexBySlidePath(slidePath, swiperInfos.main.slidesPaths);
