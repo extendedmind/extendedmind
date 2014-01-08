@@ -75,3 +75,22 @@ button {
     color:    @text-gray;
 }
 
+// SWIPER
+
+// To prevent flickering, swiper-slide is hidden before
+// Swiper has time to make its own style element directly
+// to the element.
+div.swiper-slide {
+  width:0;
+  height:0;
+  
+  // The following will make "home" screen visible
+  // before Swiper is ready, but not centered.
+  // TODO: Make this work to get home screen available
+  //       maybe a second earlier!
+  //
+  //&:not(.priority-slide){
+    //width:0;
+    //height:0;
+  //}
+}

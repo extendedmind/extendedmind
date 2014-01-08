@@ -39,16 +39,16 @@ describe('HomeController', function() {
 
   it('should return logged user\'s tasks', inject(function() {
     $scope.tasks = userItems.tasks;
-    expect($scope.tasks.length).toBe(4);
+    expect($scope.tasks.length).toBe(8);
   }));
 
-  it('should add new item', inject(function(_httpBasicAuth_, _itemsArray_, _userSessionStorage_) {
-    var httpBasicAuth, itemsArray, userSessionStorage;
+  it('should add new item', inject(function(_HttpBasicAuthenticationService_, _itemsArray_, _SessionStorageService_) {
+    var HttpBasicAuthenticationService, itemsArray, SessionStorageService;
 
-    httpBasicAuth = _httpBasicAuth_;
+    HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
 
     itemsArray = _itemsArray_;
-    userSessionStorage = _userSessionStorage_;
+    SessionStorageService = _SessionStorageService_;
 
     $scope.newItem = {
       title : 'Buy more milk'

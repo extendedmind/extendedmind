@@ -1,0 +1,16 @@
+<section id="inbox" class="two-column-grid page" ng-controller="InboxController">
+  <div class="column">
+    <header class="feature-header" feature-header="inbox"></header>
+    <div id="inbox-feature-content-container" class="content-container feature-content-container">
+      <ul class="inner-feature-content-container">
+        <li ng-class="selected" ng-repeat="item in items" ng-controller="ItemsController">
+          <div item></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <aside class="column">
+    size: {{items.length}}
+  </aside>
+
+</section>

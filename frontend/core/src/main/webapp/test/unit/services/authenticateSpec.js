@@ -4,17 +4,17 @@
 describe('em.service', function() {
   beforeEach(module('em.services'));
 
-  describe('auth', function() {
+  describe('authentication', function() {
     beforeEach(module('em.mockHelpers'));
 
-    describe('auth', function() {
-      var httpBasicAuth, mockHttpBackendResponse, auth, userSessionStorage;
+    describe('authentication', function() {
+      var HttpBasicAuthenticationService, mockHttpBackendResponse, AuthenticationService, SessionStorageService;
 
-      beforeEach(inject(function(_httpBasicAuth_, _mockHttpBackendResponse_, _auth_, _userSessionStorage_) {
-        httpBasicAuth = _httpBasicAuth_;
+      beforeEach(inject(function(_HttpBasicAuthenticationService_, _mockHttpBackendResponse_, _AuthenticationService_, _SessionStorageService_) {
+        HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
         mockHttpBackendResponse = _mockHttpBackendResponse_;
-        auth = _auth_;
-        userSessionStorage = _userSessionStorage_;
+        AuthenticationService = _AuthenticationService_;
+        SessionStorageService = _SessionStorageService_;
 
       }));
 

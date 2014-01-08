@@ -48,6 +48,8 @@
     <encoding>UTF-8</encoding>
     <scala.version.short>2.10</scala.version.short>
     <scala.version>${scala.version.short}.3</scala.version>
+    <skipScalaTestTests>false</skipScalaTestTests>
+    <skipJUnitTests>true</skipJUnitTests>
     <phantomjs.version>1.9.2</phantomjs.version>
     <phantomjs.jar.version>1.0-SNAPSHOT</phantomjs.jar.version>
     <jetty.version>9.0.4.v20130625</jetty.version>
@@ -143,6 +145,11 @@
         <artifactId>scalatest_${scala.version.short}</artifactId>
         <version>2.0</version>
       </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.11</version>
+      </dependency>      
       <dependency>
         <groupId>org.zeroturnaround</groupId>
         <artifactId>zt-zip</artifactId>
@@ -241,6 +248,11 @@
           <groupId>org.scalatest</groupId>
           <artifactId>scalatest-maven-plugin</artifactId>
           <version>1.0-RC2</version>
+        </plugin>      
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.16</version>
         </plugin>
       </plugins>
     </pluginManagement>
