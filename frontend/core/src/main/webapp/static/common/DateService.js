@@ -40,7 +40,7 @@ angular.module('common').factory('DateService', [
         week = [];
         i = 0;
 
-        for (i = 0; i < 90; i++) {
+        for (i = 0; i < 7; i++) {
           day = {};
           day.date = date.getDate();
 
