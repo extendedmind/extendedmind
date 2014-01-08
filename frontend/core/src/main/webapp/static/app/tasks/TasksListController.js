@@ -36,6 +36,19 @@ function TasksListController($location, $routeParams, $scope, activeItem, TagsSe
 
   $scope.addSubtask = function(subtask) {
     $scope.subtask = {};
+
+    // Quick hack to save the possible due date and project to prevent 
+    // bug with adding a second subtask in view
+    // TODO: Refactor task lists handling.
+    if (subtask.due){
+      $scope.subtask.due = subtask.due;
+    }
+    if (subtask.relationships && subtask.relationships.parentTask){
+      $scope.subtask.relationships = {
+        parentTask: subtask.relationships.parentTask
+      };
+    }
+
     tasksRequest.putTask(subtask).then(function(putTaskResponse) {
       tasksResponse.putTaskContent(subtask, putTaskResponse);
       tasksArray.putNewTask(subtask);
