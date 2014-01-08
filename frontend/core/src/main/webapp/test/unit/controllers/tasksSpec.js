@@ -4,7 +4,7 @@
 
 beforeEach(module('em.app'));
 
-describe('TasksSlidesController', function() {
+describe('MainController', function() {
   beforeEach(module('em.services', 'em.mockHelpers'));
 
   var $controller, $scope, mockHttpBackendResponse, slide, userTasks;
@@ -14,7 +14,7 @@ describe('TasksSlidesController', function() {
     userTasks = mockHttpBackendResponse.getItemsResponse().tasks;
 
     $scope = _$rootScope_.$new();
-    $controller = _$controller_('TasksSlidesController', {
+    $controller = _$controller_('MainController', {
       $scope : $scope,
       slide : slide
     });

@@ -12,7 +12,10 @@
     <js>/src/main/webapp/static/lib/idangerous/idangerous.swiper-2.4.min.js</js>
     <js>/src/main/webapp/static/lib/fastclick.js</js>
     <js>/src/main/webapp/static/lib/localytics.js</js>
-    <js>/src/main/webapp/static/js/**.js</js>
+    <js>/src/main/webapp/static/app/app.js</js>
+    <js>/src/main/webapp/static/common/common.js</js>
+    <js>/src/main/webapp/static/common/*.js</js>
+    <js>/src/main/webapp/static/app/**.js</js>
   </group>
 
 </groups>

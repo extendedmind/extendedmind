@@ -1,5 +1,7 @@
-<section class="project" ng-controller="ProjectController">
-  <h3 ng-click="toggleProjectContent()">{{project.title}}</h3>
-  <div project-content="project" ng-show="showProjectContent"></div>
-  <div tasks-list="tasks" tasks-filter="filter" subtask="subtask"></div>
-</section>
+<div class="inner-slide-content-container">
+  <section class="project" ng-controller="ProjectController">
+    <h3 ng-click="toggleProjectContent()">{{project.title}}</h3>
+    <div project-content="project" ng-show="showProjectContent"></div>
+    <div tasks-list="tasks" tasks-filter="filter" subtask="subtask"></div>
+  </section>
+</div>

@@ -39,10 +39,6 @@ function dateSlide() {
   return {
     restrict: 'A',
     templateUrl: 'static/app/tasks/dateSlide.html',
-    scope: {
-      tasks: '=dateTasks',
-      date: '=dateSlide'
-    },
     link: function(scope) {
       scope.subtaskWithDate = {
         due: scope.date.yyyymmdd
