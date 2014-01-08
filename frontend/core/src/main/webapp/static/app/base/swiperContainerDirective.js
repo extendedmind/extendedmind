@@ -68,6 +68,7 @@ function swiperContainerDirective(SwiperService) {
       var startX, startY, distX, distY;
 
       function slideTouchStart() {
+        console.log("slide touch start");
         var touchobj = event.changedTouches[0];
         startX = touchobj.pageX;
         startY = touchobj.pageY;
@@ -83,7 +84,7 @@ function swiperContainerDirective(SwiperService) {
         if (Math.abs(distX) > Math.abs(distY)) { // horizontal
           return;
         } else if (Math.abs(distX) < Math.abs(distY)) { // vertical
-
+          console.log("vertical scroll detected");
           if (distY < 0) {
             down = true;
             up = false;
@@ -98,6 +99,7 @@ function swiperContainerDirective(SwiperService) {
           } else if (this.scrollTop <= 0 && up) {
             top = true;
           } else {
+            console.log("stopping propagation");
             bottom = false;
             top = false;
             event.stopPropagation();
