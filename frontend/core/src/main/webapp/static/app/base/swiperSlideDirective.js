@@ -9,9 +9,13 @@ function swiperSlideDirective() {
     // elements for direcitive.
     require: '^swiperContainer',
     scope: {
-      slidePath: '@swiperSlide'
+      slidePath: '@swiperSlide',
+      expectedSlides: '=?expectedSlides'
     },
     link: function link(scope, element, attrs, swiperContainerDirectiveController) {
+      if (scope.expectedSlides){
+        swiperContainerDirectiveController.setExpectedSlides(scope.expectedSlides);
+      }
       swiperContainerDirectiveController.registerSlidePath(scope.slidePath);
     }
   };

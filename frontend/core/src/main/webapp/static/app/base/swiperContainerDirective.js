@@ -1,13 +1,14 @@
 /*global angular */
 'use strict';
 
-function swiperContainerDirective($timeout, SwiperService) {
+function swiperContainerDirective(SwiperService) {
 
   return {
     restrict: 'A',
     scope: {
       swiperPath: '@swiperContainer',
-      swiperType: '@swiperType'
+      swiperType: '@swiperType',
+      expectedSlides: '=?expectedSlides'
     },
     controller: function($scope, $element, $attrs) {
       var swiperSlidePaths = [];
@@ -21,6 +22,10 @@ function swiperContainerDirective($timeout, SwiperService) {
         $element[0].addEventListener('touchmove', slideTouchMove, false);
       }
 
+      this.setExpectedSlides = function(expectedSlides){
+        $scope.expectedSlides = expectedSlides;
+      }
+
       // Registers the path of the slide to the swiper
       this.registerSlidePath = function(path) {
         swiperSlidePaths.push(path); 
@@ -30,20 +35,21 @@ function swiperContainerDirective($timeout, SwiperService) {
         // the slides. It is in here to prevent the DOM from being incomplete before
         // the swiper is created.
         //
-        // $scope.$evalAsync would be better, but it doesn't work. Currently there
-        // is no better way to do this than with timeout:
+        // $scope.$evalAsync required that we know the expected slide count is known.
         // https://groups.google.com/forum/#!topic/angular/SCc45uVhTt9
         // even though this claims that evalAsync would be done in the right place:
         // http://stackoverflow.com/a/17303759/2659424
-        $timeout( function() {
+        $scope.$evalAsync( function() {
           if (!initializeSwiperCalled){
-            SwiperService.initializeSwiper(
-              $element[0],
-              $scope.swiperPath,
-              $scope.swiperType,
-              swiperSlidePaths,
-              onSlideChangeEndCallback);
-            initializeSwiperCalled = true;
+            if ($scope.expectedSlides == swiperSlidePaths.length){
+              SwiperService.initializeSwiper(
+                $element[0],
+                $scope.swiperPath,
+                $scope.swiperType,
+                swiperSlidePaths,
+                onSlideChangeEndCallback);
+              initializeSwiperCalled = true;
+            }
           }
         });
 
@@ -102,4 +108,4 @@ function swiperContainerDirective($timeout, SwiperService) {
   };
 }
 angular.module('em.directives').directive('swiperContainer', swiperContainerDirective);
-swiperContainerDirective.$inject = ['$timeout', 'SwiperService'];
+swiperContainerDirective.$inject = ['SwiperService'];

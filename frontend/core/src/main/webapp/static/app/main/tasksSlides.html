@@ -1,5 +1,6 @@
 <div class="slides-container" ng-controller="MainController">
-  <div class="swiper-container main-slides" swiper-container="tasks" swiper-type="main">
+  <div class="swiper-container main-slides" swiper-container="tasks" swiper-type="main"
+       expected-slides="tasks.length > 0 && 6 || 2">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="tasks/inbox" ng-include="'static/app/main/inbox.html'"></div>
       <div class="swiper-slide priority-slide" swiper-slide="tasks/home" ng-include="'static/app/main/home.html'"></div>
