@@ -16,7 +16,7 @@ function swiperSlideDirective() {
       if (scope.expectedSlides){
         swiperContainerDirectiveController.setExpectedSlides(scope.expectedSlides);
       }
-      swiperContainerDirectiveController.registerSlidePath(scope.slidePath);
+      swiperContainerDirectiveController.registerSlide(scope.slidePath, element);
     }
   };
 }

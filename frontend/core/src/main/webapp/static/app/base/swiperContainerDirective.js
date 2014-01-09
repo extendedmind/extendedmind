@@ -14,20 +14,22 @@ function swiperContainerDirective(SwiperService) {
       var swiperSlidePaths = [];
       var initializeSwiperCalled = false;
 
-      // For vertical page swiping, we need to the register touch elements
-      // to decide whether events should propagate to the underlying horizontal
-      // swiper or not.
-      if ($scope.swiperType === "page"){
-        $element[0].addEventListener('touchstart', slideTouchStart, false);
-        $element[0].addEventListener('touchmove', slideTouchMove, false);
-      }
-
       this.setExpectedSlides = function(expectedSlides){
         $scope.expectedSlides = expectedSlides;
       }
 
       // Registers the path of the slide to the swiper
-      this.registerSlidePath = function(path) {
+      // and sets up listeners for element, if needed
+      this.registerSlide = function(path, element) {
+
+        // For vertical page swiping, we need to the register touch elements
+        // to decide whether events should propagate to the underlying horizontal
+        // swiper or not.
+        if ($scope.swiperType === "page"){
+          element[0].firstElementChild.addEventListener('touchstart', slideTouchStart, false);
+          element[0].firstElementChild.addEventListener('touchmove', slideTouchMove, false);
+        }
+
         swiperSlidePaths.push(path); 
 
         // (Re)inializes the swiper after the digest to make sure the whole
@@ -52,7 +54,6 @@ function swiperContainerDirective(SwiperService) {
             }
           }
         });
-
       };
 
       function onSlideChangeEndCallback() {
@@ -61,8 +62,6 @@ function swiperContainerDirective(SwiperService) {
 
       // Overlapping swipers, should stopPropagation be called?
 
-      var top = false;
-      var bottom = false;
       var up = false;
       var down = false;
       var startX, startY, distX, distY;
@@ -84,24 +83,27 @@ function swiperContainerDirective(SwiperService) {
         if (Math.abs(distX) > Math.abs(distY)) { // horizontal
           return;
         } else if (Math.abs(distX) < Math.abs(distY)) { // vertical
-          console.log("vertical scroll detected");
           if (distY < 0) {
+            console.log("vertical scroll down");
             down = true;
             up = false;
           } else {
+            console.log("vertical scroll up");
             down = false;
             up = true;
           }
 
+          console.log("scrollHeight: " + this.scrollHeight);
+          console.log("scrollTop: " + this.scrollTop);
+          console.log("clientHeight: " + this.clientHeight);
+
           // https://developer.mozilla.org/en-US/docs/Web/API/Element.scrollHeight#Determine_if_an_element_has_been_totally_scrolled
-          if (this.scrollHeight - this.scrollTop <= this.clientHeight && down) {
-            bottom = true;
-          } else if (this.scrollTop <= 0 && up) {
-            top = true;
+          if (((this.scrollHeight - this.scrollTop) <= this.clientHeight) && down) {
+            // bottom
+          } else if ((this.scrollTop <= 0) && up) {
+            // top
           } else {
             console.log("stopping propagation");
-            bottom = false;
-            top = false;
             event.stopPropagation();
           }
         }
