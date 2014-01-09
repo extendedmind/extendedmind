@@ -55,15 +55,6 @@ angular.module('em.directives').directive('featureHeader', [
     };
   }]);
 
-angular.module('em.directives').directive('mainHeader', [
-  function() {
-    return {
-      controller: 'NavbarController',
-      restrict: 'A',
-      templateUrl: 'static/app/main/mainHeader.html'
-    };
-  }]);
-
 angular.module('em.directives').directive('omniBar', [ '$rootScope',
   function($rootScope) {
     return {
@@ -82,40 +73,6 @@ angular.module('em.directives').directive('omniBar', [ '$rootScope',
           }
         };
       }
-    };
-  }]);
-
-angular.module('em.directives').directive('contextsList', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/app/main/contextsList.html',
-      transclude: true
-    };
-  }]);
-
-angular.module('em.directives').directive('home', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/app/main/home.html'
-    };
-  }]);
-
-angular.module('em.directives').directive('inbox', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/app/main/inbox.html'
-    };
-  }]);
-
-angular.module('em.directives').directive('projectsList', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/app/base/projectsList.html',
-      transclude: true
     };
   }]);
 
