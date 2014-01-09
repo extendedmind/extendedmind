@@ -26,8 +26,9 @@ function swiperContainerDirective(SwiperService) {
         // to decide whether events should propagate to the underlying horizontal
         // swiper or not.
         if ($scope.swiperType === "page"){
-          element[0].firstElementChild.addEventListener('touchstart', slideTouchStart, false);
-          element[0].firstElementChild.addEventListener('touchmove', slideTouchMove, false);
+          // We're expecting an slide, which has "inner-slide-content-container", which has section
+          element[0].firstElementChild.firstElementChild.addEventListener('touchstart', slideTouchStart, false);
+          element[0].firstElementChild.firstElementChild.addEventListener('touchmove', slideTouchMove, false);
         }
 
         swiperSlidePaths.push(path); 
@@ -67,7 +68,6 @@ function swiperContainerDirective(SwiperService) {
       var startX, startY, distX, distY;
 
       function slideTouchStart() {
-        console.log("slide touch start");
         var touchobj = event.changedTouches[0];
         startX = touchobj.pageX;
         startY = touchobj.pageY;
@@ -84,18 +84,12 @@ function swiperContainerDirective(SwiperService) {
           return;
         } else if (Math.abs(distX) < Math.abs(distY)) { // vertical
           if (distY < 0) {
-            console.log("vertical scroll down");
             down = true;
             up = false;
           } else {
-            console.log("vertical scroll up");
             down = false;
             up = true;
           }
-
-          console.log("scrollHeight: " + this.scrollHeight);
-          console.log("scrollTop: " + this.scrollTop);
-          console.log("clientHeight: " + this.clientHeight);
 
           // https://developer.mozilla.org/en-US/docs/Web/API/Element.scrollHeight#Determine_if_an_element_has_been_totally_scrolled
           if (((this.scrollHeight - this.scrollTop) <= this.clientHeight) && down) {
@@ -103,7 +97,6 @@ function swiperContainerDirective(SwiperService) {
           } else if ((this.scrollTop <= 0) && up) {
             // top
           } else {
-            console.log("stopping propagation");
             event.stopPropagation();
           }
         }
