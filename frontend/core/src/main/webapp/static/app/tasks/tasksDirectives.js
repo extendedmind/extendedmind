@@ -26,15 +26,6 @@ function projectSlide() {
 }
 angular.module('em.directives').directive('projectSlide', projectSlide);
 
-function projectContent() {
-  return {
-    scope: true,
-    restrict: 'A',
-    templateUrl: 'static/app/tasks/projectContent.html'
-  };
-}
-angular.module('em.directives').directive('projectContent', projectContent);
-
 function dateSlide() {
   return {
     restrict: 'A',

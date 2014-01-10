@@ -13,10 +13,10 @@ function swiperSlideDirective() {
       expectedSlides: '=?expectedSlides'
     },
     link: function link(scope, element, attrs, swiperContainerDirectiveController) {
+      swiperContainerDirectiveController.registerSlide(scope.slidePath, element);
       if (scope.expectedSlides){
         swiperContainerDirectiveController.setExpectedSlides(scope.expectedSlides);
       }
-      swiperContainerDirectiveController.registerSlidePath(scope.slidePath);
     }
   };
 }

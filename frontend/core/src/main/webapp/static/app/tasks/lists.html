@@ -15,9 +15,15 @@
           </ul>
         </section>
 
-        <section ng-show="tags && tags.length">
+        <section ng-if="contexts && contexts.length">
           <h3>contexts</h3>
-          <div class="indent" contexts-list></div>
+          <ul class="indent">
+            <li ng-repeat="context in contexts">
+              <a class="click-to-slide" href="#/{{prefix}}/tasks/context/{{context.uuid}}">
+                <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right" />
+              </a>
+            </li>
+          </ul>        
         </section>
       </div>
     </div>

@@ -1,7 +1,20 @@
 <div class="inner-slide-content-container">
   <section class="project" ng-controller="ProjectController">
     <h3 ng-click="toggleProjectContent()">{{project.title}}</h3>
-    <div project-content="project" ng-show="showProjectContent"></div>
+    <div ng-if="showProjectContent" class="em-item-actions container">
+      <ul class="nav nav-justified em-horizontal-buttons">
+        <li class="em-gray-button" ng-hide="mainlinksFilter">
+          <button class="em-simple-input" type="button" ng-hide="task.relationships.parentTask" ng-click="editProject()">
+            more
+          </button>
+        </li>
+        <li class="em-green-button">
+          <button class="em-simple-input" type="button" ng-click="completeProject()">
+            complete
+          </button>
+        </li>
+      </ul>
+    </div>
     <div tasks-list="tasks" tasks-filter="filter" subtask="subtask"></div>
   </section>
 </div>
