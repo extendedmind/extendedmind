@@ -102,14 +102,19 @@ section#home {
           button {
             padding-top: 8px; // quick fix to center the plus button
           }
+          // onboarding highlight
+          button {
+            color: @highlight-button;
+          }
+
+          button:disabled {
+            color: @inactive-button;
+          }
         }
-
-        // Input placeholder browser tweaks
-
         .input-placeholder {
-          color: @active-button;
+          color: @highlight-button;
         }
-
+        // Input placeholder browser tweaks
         *::-webkit-input-placeholder {
           .input-placeholder
         }    
@@ -124,14 +129,6 @@ section#home {
         *:-ms-input-placeholder {
           /* IE 10+ */
           .input-placeholder
-        }
-
-        button {
-          color: @active-button;
-        }
-
-        button:disabled {
-          color: @inactive-button;
         }
       }
     }
