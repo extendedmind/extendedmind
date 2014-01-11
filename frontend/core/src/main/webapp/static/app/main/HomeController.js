@@ -1,17 +1,28 @@
 /*global angular */
 'use strict';
 
-function HomeController($scope, DateService, ErrorHandlerService, FilterService, itemsArray, TagsService, tasksArray, OwnerService) {
-  $scope.items = itemsArray.getItems();
-  $scope.tags = TagsService.getTags();
-  $scope.tasks = tasksArray.getTasks();
+function HomeController($scope, itemsSRequest) {
 
-  $scope.filterService = FilterService;
-  $scope.prefix = OwnerService.getPrefix();
-  $scope.errorHandler = ErrorHandlerService;
+  $scope.omniBarActive = false;
 
-  $scope.dates = DateService.week();
+  $scope.addNewItem = function(item) {
+    // FIXME: refactor jQuery into directive!
+    // $('#omniItem').focus();
+    $scope.newItem = {};
+    $scope.focusOmnibar = true;
+    itemsRequest.putItem(item);
+  };
+
+  $scope.omniBarFocus = function(focus) {
+    if (focus) {
+      $scope.omniBarActive = true;
+    } else {
+      if ($scope.newItem == null || $scope.newItem.title == null || $scope.newItem.title.length === 0) {
+        $scope.omniBarActive = false;
+      }
+    }
+  };
 }
 
 angular.module('em.app').controller('HomeController', HomeController);
-HomeController.$inject = ['$scope', 'DateService', 'ErrorHandlerService', 'FilterService', 'itemsArray', 'TagsService', 'tasksArray', 'OwnerService'];
+HomeController.$inject = ['$scope','itemsRequest'];

@@ -37,7 +37,20 @@
         <span class="icon-logo_only" />
       </div>
       <div class="content">
-        <div class="swiper-no-swiping" omni-bar></div>
+        <div class="swiper-no-swiping">
+          <form id="omnibar" role="form" name="addOmniItem" ng-submit="addNewItem(newItem)">
+            <div class="form-group">
+              <div id="omni-input-wrapper">
+                <label class="sr-only" for="omniItem">omniItem</label>
+                <input type="search" class="simple-input form-control" id="omniItem" ng-model="newItem.title" ng-focus="omniBarFocus(true)" ng-blur="omniBarFocus(false)" placeholder="store / recall" required>
+              </div>
+              <div id="plus-wrapper">
+                <button class="button" type="button" ng-disabled="!newItem.title" ng-click="addNewItem(newItem)"><span class="icon-plus" />
+                </button>
+              </div>
+            </div>
+          </form>                
+        </div>
         <div id="filtered-items-container">
           <div class="filtered-items" filtered-items-list="items" items-filter="newItem.title"></div>
           <div class="filtered-items" filtered-tasks-list="tasks" tasks-filter="newItem.title"></div>
