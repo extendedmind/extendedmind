@@ -3,23 +3,10 @@
 
 angular.module('common').factory('DateService', [
   function() {
-    var today, months;
-
-    today = {};
-    months = [
-    {name:'jan',days:31},
-    {name:'feb',days:28},
-    {name:'mar',days:31},
-    {name:'apr',days:30},
-    {name:'may',days:31},
-    {name:'jun',days:30},
-    {name:'jul',days:31},
-    {name:'aug',days:31},
-    {name:'sep',days:30},
-    {name:'oct',days:31},
-    {name:'nov',days:30},
-    {name:'dec',days:31}
-    ];
+    var today = {};
+    var monthNames = ['jan', 'feb', 'mar', 'apr', 
+                  'may', 'jun', 'jul', 'aug',
+                  'sep', 'oct', 'nov', 'dec'];
 
     return{
       yyyymmdd: function(d) {
@@ -45,7 +32,7 @@ angular.module('common').factory('DateService', [
           day.date = date.getDate();
 
           day.month = {};
-          day.month.name = months[date.getMonth()].name;
+          day.month.name = monthNames[date.getMonth()];
           day.month.day = date.getMonth();
 
           day.year = date.getFullYear();
