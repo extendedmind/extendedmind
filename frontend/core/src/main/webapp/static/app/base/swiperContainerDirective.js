@@ -21,6 +21,7 @@ function swiperContainerDirective(SwiperService) {
       // Registers the path of the slide to the swiper
       // and sets up listeners for element, if needed
       this.registerSlide = function(path, element) {
+        swiperSlidePaths.push(path); 
 
         // For vertical page swiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal
@@ -30,31 +31,29 @@ function swiperContainerDirective(SwiperService) {
           element[0].firstElementChild.firstElementChild.addEventListener('touchstart', slideTouchStart, false);
           element[0].firstElementChild.firstElementChild.addEventListener('touchmove', slideTouchMove, false);
         }
-
-        swiperSlidePaths.push(path); 
-
+        
         // (Re)inializes the swiper after the digest to make sure the whole
         // DOM is ready before this is done. Otherwise Swiper does not register
-        // the slides. It is in here to prevent the DOM from being incomplete before
-        // the swiper is created.
+        // the slides. It is in the registerSlide function to prevent the DOM 
+        // from being incomplete before the swiper is created.
         //
-        // $scope.$evalAsync required that we know the expected slide count is known.
+        // To get this to work, we have to know the expected slide count. 
+        // Using $scope.$evalAsync should have done the right thing, but it is 
+        // fired way too early - only the first slides is evaluated before it 
+        // is fired. Using $timeout causes flickering and slows down everything.
         // https://groups.google.com/forum/#!topic/angular/SCc45uVhTt9
-        // even though this claims that evalAsync would be done in the right place:
         // http://stackoverflow.com/a/17303759/2659424
-        $scope.$evalAsync( function() {
-          if (!initializeSwiperCalled){
-            if ($scope.expectedSlides == swiperSlidePaths.length){
-              SwiperService.initializeSwiper(
-                $element[0],
-                $scope.swiperPath,
-                $scope.swiperType,
-                swiperSlidePaths,
-                onSlideChangeEndCallback);
-              initializeSwiperCalled = true;
-            }
+        if (!initializeSwiperCalled){
+          if ($scope.expectedSlides == swiperSlidePaths.length){
+            SwiperService.initializeSwiper(
+              $element[0],
+              $scope.swiperPath,
+              $scope.swiperType,
+              swiperSlidePaths,
+              onSlideChangeEndCallback);
+            initializeSwiperCalled = true;
           }
-        });
+        }
       };
 
       function onSlideChangeEndCallback() {
