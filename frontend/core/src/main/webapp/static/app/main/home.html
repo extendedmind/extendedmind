@@ -56,7 +56,7 @@
             <h3><a href ng-click="gotoInbox()">inbox</a></h3>
             <div class="inner-feature-content-container" accordion>
               <div ng-repeat="item in filteredItems = (items | filter:{title:omnibarText.title})" accordion-item heading="{{item.title}}" >
-                <div item-content></div>
+                <div ng-include="'static/app/main/itemActions.html'"></div>
               </div>
             </div>
           </div>
