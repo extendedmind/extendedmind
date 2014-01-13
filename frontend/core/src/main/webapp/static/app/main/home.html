@@ -51,8 +51,8 @@
             </div>
           </form>                
         </div>
-        <div id="filtered-items-container">          
-          <div class="filtered-items" ng-show="omnibarText.title && filteredItems.length">
+        <div ng-if="omnibarText.title" id="filtered-items-container">          
+          <div class="filtered-items" ng-show="filteredItems.length">
             <h3><a href ng-click="gotoInbox()">inbox</a></h3>
             <div class="inner-feature-content-container" accordion>
               <div ng-repeat="item in filteredItems = (items | filter:{title:omnibarText.title})" accordion-item heading="{{item.title}}" >
@@ -60,7 +60,7 @@
               </div>
             </div>
           </div>
-          <div class="filtered-items" ng-show="omnibarText.title && filteredTasks.length">
+          <div class="filtered-items" ng-show="filteredTasks.length">
             <h3><a href ng-click="gotoTasks()">tasks</a></h3>
             <div class="inner-feature-content-container" accordion>
               <div ng-repeat="task in filteredTasks = (tasks | filter:{title:omnibarText.title})" accordion-item heading="{{task.title}}" >
