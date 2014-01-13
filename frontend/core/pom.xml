@@ -129,6 +129,7 @@
           <packagingExcludes>index_devel.html,
             index_async.html,
             static/app/**/*.js,
+            static/common/**/*.js,
             test*/**,
             WEB-INF/wro.*,
             static/less*/**,
