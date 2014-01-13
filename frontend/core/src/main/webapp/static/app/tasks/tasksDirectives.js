@@ -43,19 +43,6 @@ function dateSlide() {
 }
 angular.module('em.directives').directive('dateSlide', dateSlide);
 
-function filteredTasksList() {
-  return {
-    controller: 'TasksListController',
-    scope: {
-      tasks: '=filteredTasksList',
-      tasksListFilter: '=tasksFilter'
-    },
-    restrict: 'A',
-    templateUrl: 'static/app/tasks/filteredTasksList.html'
-  };
-}
-angular.module('em.directives').directive('filteredTasksList', filteredTasksList);
-
 function tasksList() {
   return {
     controller: 'TasksListController',

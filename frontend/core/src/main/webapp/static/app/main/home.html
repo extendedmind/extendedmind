@@ -3,11 +3,11 @@
     <header ng-hide="omniBarActive" id="main-header">
       <nav role="navigation" ng-controller="NavbarController">
         <div id="menu-icon">
-          <button id="menu-button" type="button" ng-click="collapseNavbar()" alt="menu">
+          <button id="menu-button" type="button" ng-click="toggleMenu()" alt="menu">
             <span class="icon-menu"></span>
           </button>
         </div>
-        <div id="menu-content" ng-show="collapse">
+        <div id="menu-content" ng-if="menuActive">
           <ul>
             <li>
               <a href ng-click="setMyActive()">home</a>
@@ -38,22 +38,36 @@
       </div>
       <div class="content">
         <div class="swiper-no-swiping">
-          <form id="omnibar" role="form" name="addOmniItem" ng-submit="addNewItem(newItem)">
+          <form id="omnibar" role="form" name="addOmniItem" ng-submit="addNewItem(omnibarText)">
             <div class="form-group">
               <div id="omni-input-wrapper">
                 <label class="sr-only" for="omniItem">omniItem</label>
-                <input type="search" class="simple-input form-control" id="omniItem" ng-model="newItem.title" ng-focus="omniBarFocus(true)" ng-blur="omniBarFocus(false)" placeholder="store or recall" required>
+                <input type="search" class="simple-input form-control" id="omniItem" ng-model="omnibarText.title" ng-focus="omniBarFocus(true)" ng-blur="omniBarFocus(false)" placeholder="store or recall" required>
               </div>
               <div id="plus-wrapper">
-                <button class="button" type="button" ng-disabled="!newItem.title" ng-click="addNewItem(newItem)"><span class="icon-plus" />
+                <button class="button" type="button" ng-disabled="!omnibarText.title" ng-click="addNewItem(omnibarText)"><span class="icon-plus" />
                 </button>
               </div>
             </div>
           </form>                
         </div>
-        <div id="filtered-items-container">
-          <div class="filtered-items" filtered-items-list="items" items-filter="newItem.title"></div>
-          <div class="filtered-items" filtered-tasks-list="tasks" tasks-filter="newItem.title"></div>
+        <div id="filtered-items-container">          
+          <div class="filtered-items" ng-show="omnibarText.title && filteredItems.length">
+            <h3><a href ng-click="gotoInbox()">inbox</a></h3>
+            <div class="inner-feature-content-container" accordion>
+              <div ng-repeat="item in filteredItems = (items | filter:{title:omnibarText.title})" accordion-item heading="{{item.title}}" >
+                <div item-content></div>
+              </div>
+            </div>
+          </div>
+          <div class="filtered-items" ng-show="omnibarText.title && filteredTasks.length">
+            <h3><a href ng-click="gotoTasks()">tasks</a></h3>
+            <div class="inner-feature-content-container" accordion>
+              <div ng-repeat="task in filteredTasks = (tasks | filter:{title:omnibarText.title})" accordion-item heading="{{task.title}}" >
+                <div task-content></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
       </div>

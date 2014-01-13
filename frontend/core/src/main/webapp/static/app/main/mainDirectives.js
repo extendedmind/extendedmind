@@ -30,15 +30,9 @@ angular.module('em.directives').directive('emFooter', [
       templateUrl: 'static/app/main/footer.html',
       link: function(scope, element, attrs) {
         var mainlinksFilterAttr = attrs.mainlinksfilter;
-        scope.collapse = false;
-
         scope.$watch(mainlinksFilterAttr, function(newValue) {
           scope.mainlinksFilter = newValue;
         });
-
-        scope.collapseNavbar = function collapseNavbar() {
-          scope.collapse = !scope.collapse;
-        };
       }
     };
   }]);

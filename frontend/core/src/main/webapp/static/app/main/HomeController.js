@@ -1,23 +1,28 @@
 /*global angular */
 'use strict';
 
-function HomeController($scope, itemsSRequest) {
+function HomeController($scope, itemsRequest) {
 
   $scope.omniBarActive = false;
+  $scope.menuActive = false;
 
-  $scope.addNewItem = function(item) {
+  $scope.toggleMenu = function toggleMenu() {
+    $scope.menuActive = !$scope.menuActive;
+  };
+
+  $scope.addNewItem = function(omnibarText) {
     // FIXME: refactor jQuery into directive!
     // $('#omniItem').focus();
-    $scope.newItem = {};
+    $scope.omnibarText = {};
     $scope.focusOmnibar = true;
-    itemsRequest.putItem(item);
+    itemsRequest.putItem(omnibarText);
   };
 
   $scope.omniBarFocus = function(focus) {
     if (focus) {
       $scope.omniBarActive = true;
     } else {
-      if ($scope.newItem == null || $scope.newItem.title == null || $scope.newItem.title.length === 0) {
+      if ($scope.omnibarText == null || $scope.omnibarText.title == null || $scope.omnibarText.title.length === 0) {
         $scope.omniBarActive = false;
       }
     }

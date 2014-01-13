@@ -30,16 +30,3 @@ angular.module('em.directives').directive('itemContent', [
       templateUrl: 'static/app/main/itemContent.html'
     };
   }]);
-
-angular.module('em.directives').directive('filteredItemsList', [
-  function() {
-    return {
-      controller: 'ItemsController',
-      scope: {
-        items: '=filteredItemsList',
-        itemsListFilter: '=itemsFilter'
-      },
-      restrict: 'A',
-      templateUrl: 'static/app/main/filteredItemsList.html',
-    };
-  }]);
