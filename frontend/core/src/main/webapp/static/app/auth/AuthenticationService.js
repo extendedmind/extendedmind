@@ -29,8 +29,8 @@ function AuthenticationService($location, $q, BackendClientService, itemsRequest
 
   function requestLogin() {
     return BackendClientService.post('/api/authenticate', {
-        rememberMe: UserSessionService.getUserRemembered()
-      }).then(function(authenticateResponse) {
+      rememberMe: UserSessionService.getUserRemembered()
+    }).then(function(authenticateResponse) {
       return authenticateResponse.data;
     });
   }
@@ -40,11 +40,10 @@ function AuthenticationService($location, $q, BackendClientService, itemsRequest
       var deferred = $q.defer();
 
       // 1. should the user be sent to login
-      if (!SessionStorageService.getAuthenticated() && 
-          !LocalStorageService.getAuthenticated()) { // login
+      if (!SessionStorageService.getAuthenticated() && !LocalStorageService.getAuthenticated()) { // login
         deferred.reject();
       } // 2. is remember checked
-      else if (LocalStorageService.getAuthenticated()){
+      else if (LocalStorageService.getAuthenticated()) {
         // 3. should token be swapped
         if (millisecondsFromAuth() >= swapTokenTimeThreshold) {
           swapToken().then(function() {
@@ -52,21 +51,25 @@ function AuthenticationService($location, $q, BackendClientService, itemsRequest
             initUserData();
           });
         } // 4. should session storage be reinitialized
-        else if (!SessionStorageService.getAuthenticated()){
+        else if (!SessionStorageService.getAuthenticated()) {
           UserSessionService.setUserSessionStorageData();
           deferred.resolve();
           initUserData();
-        }else{
+        } else {
+          if (!UserSessionService.getCredentials()) {
+            UserSessionService.setEncodedCredentials(SessionStorageService.getHttpAuthorizationHeader());
+          }
           deferred.resolve();
+          initUserData();
         }
       } // 5. current session but refresh needed
-      else if (SessionStorageService.getAuthenticated() && !UserSessionService.getCredentials()){ 
+      else if (SessionStorageService.getAuthenticated() && !UserSessionService.getCredentials()){
         UserSessionService.setEncodedCredentials(SessionStorageService.getHttpAuthorizationHeader());
-        initUserData();
         deferred.resolve();
+        initUserData();
       } // 6. do nothing
       else {
-        deferred.resolve();        
+        deferred.resolve();
       }
 
       deferred.promise.then(function() {
