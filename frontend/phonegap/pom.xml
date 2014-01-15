@@ -31,13 +31,113 @@
             <email>timo.tiuraniemi@iki.fi</email>
         </developer>
     </developers>
+    
     <properties>
-        <encoding>UTF-8</encoding>
-        <!-- Setup these in ~/.m2/settings.xml as fields -->
-        <phonegap-build.server>phonegap-build</phonegap-build.server>
-        <phonegap-build.ios.server>ios-developer-certificate</phonegap-build.ios.server>
-        <phonegap-build.android.server>android-developer-certificate</phonegap-build.android.server>
+       <encoding>UTF-8</encoding>
     </properties>
+
+    <profiles>
+        <profile>
+          <id>phonegap-android</id>
+          <activation>
+            <file>
+              <exists>${user.home}/.phonegap/android</exists>
+            </file>
+          </activation>
+          <build>
+            <resources>
+                <resource>
+                    <directory>${basedir}/src/main/resources</directory>
+                    <targetPath>${basedir}/app/platforms/android</targetPath>
+                    <filtering>true</filtering>
+                </resource>
+            </resources>            
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <executable>sh</executable>
+                        <commandlineArgs>build-android.sh</commandlineArgs>
+                        <background>false</background>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <configuration>
+                        <filesets>
+                            <fileset>
+                                <directory>${basedir}/app/platforms/android</directory>
+                                <includes>
+                                    <include>ant.properties</include>
+                                </includes>
+                            </fileset>
+                            <fileset>
+                                <directory>${basedir}/app/www/static</directory>
+                            </fileset>
+                            <fileset>
+                                <directory>${basedir}/app/platforms/android/bin</directory>
+                            </fileset>                            
+                        </filesets>
+                    </configuration>
+                </plugin>
+            </plugins>
+          </build>
+        </profile>
+        <profile>
+          <id>phonegap-ios</id>
+          <activation>
+            <file>
+              <exists>${user.home}/.phonegap/ios</exists>
+            </file>
+          </activation>
+          <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <executable>sh</executable>
+                        <commandlineArgs>build-ios.sh ${settings.servers.ios-developer-certificate.username} ${settings.servers.ios-developer-certificate.password}</commandlineArgs>
+                        <background>false</background>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <configuration>
+                        <filesets>
+                            <fileset>
+                                <directory>${basedir}/app/www/static</directory>
+                            </fileset>
+                            <fileset>
+                                <directory>${basedir}/app/platforms/ios/build</directory>
+                            </fileset>
+                        </filesets>
+                    </configuration>
+                </plugin>
+            </plugins>
+          </build>
+        </profile>        
+    </profiles>
+
     <build>
         <sourceDirectory>${basedir}/src</sourceDirectory>
         <plugins>
@@ -68,64 +168,11 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${basedir}/www/static</directory>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1.jbossorg-3</version>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>sh</executable>
-                    <commandlineArgs>build-ios.sh</commandlineArgs>
-                    <background>false</background>
-                    <location>scp://${settings.servers.ssh-server.username}:from-key-file@${ssh-server.url}</location>
-                    <keyfile>${settings.servers.ssh-server.privateKey}</keyfile>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1.jbossorg-3</version>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>sh</executable>
-                    <commandlineArgs>build-android.sh</commandlineArgs>
-                    <background>false</background>
-                    <location>scp://${settings.servers.ssh-server.username}:from-key-file@${ssh-server.url}</location>
-                    <keyfile>${settings.servers.ssh-server.privateKey}</keyfile>
-                </configuration>
-            </plugin>
-            <!-- <plugin><groupId>com.github.chrisprice</groupId><artifactId>phonegap-build-maven-plugin</artifactId><version>0.0.4</version><executions><execution><id>phonegap-build</id><goals><goal>clean</goal><goal>build</goal></goals><configuration><configFile>${basedir}/www/config.xml</configFile><androidSign>true</androidSign><iOsMobileProvision>${user.home}/.phonegap/ios/Testflight_Distribution_Profile.mobileprovision</iOsMobileProvision><platforms><platform>ios</platform><platform>android</platform></platforms></configuration></execution></executions></plugin>-->
         </plugins>
         <pluginManagement>
             <plugins>
