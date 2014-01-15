@@ -45,7 +45,7 @@ section#home {
       padding-top: 10px;
       .top-bottom-borders;
       a.collective{
-        color: @text-gray;
+        color: @inactive-text;
       }
       a.collective:active{
         color: @active-button;
@@ -143,7 +143,7 @@ section#home {
 // TASKS
 
 input[type="checkbox"]:checked ~ .task {
-  color:@text-gray;
+  color:@inactive-text;
   .fade-color(@fade-time);
 }
 
@@ -158,7 +158,7 @@ section#tasks-dates {
       td {
         padding-right: 0.5em;
         a {
-          color:@text-gray;
+          color:@inactive-text;
         }
         a:active{
           color:black;

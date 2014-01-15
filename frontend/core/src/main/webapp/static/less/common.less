@@ -94,8 +94,8 @@
   background-image: none;
 }
 
-.text-gray {
-  color: @text-gray;
+.inactive-text {
+  color: @inactive-text;
 }
 
 
@@ -110,8 +110,8 @@
   span.slide-indicator { 
     display:table-cell;
     width: @slide-indicator-width;
-    color:@text-gray;
-  }
+    color:@inactive-text;
+  }1
 }
 
 // BUTTONS
@@ -234,7 +234,7 @@ input[type="checkbox"]:checked + label:before {
 
 select {
   &.simple-input {
-    color: @text-gray;
+    color: @inactive-text;
     background: none;
     // Without this the text is slightly indented
     margin-left:-4px;
@@ -244,15 +244,15 @@ select {
     color: black;
   }
   option:first-child{
-    color: @text-gray;
+    color: @inactive-text;
   }
 }
 
 // BORDERS
 
 .top-bottom-borders{
-  border-top: solid 2px @text-gray;
-  border-bottom: solid 2px @text-gray;
+  border-top: solid 2px @inactive-text;
+  border-bottom: solid 2px @inactive-text;
 }
 
 // SCREEN READERS
