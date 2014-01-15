@@ -26,22 +26,6 @@ describe('HomeController', function() {
     mockHttpBackendResponse.clearSessionStorage();
   });
 
-  it('should return logged user\'s items', inject(function() {
-    expect($scope.items).toEqual([]);
-    $scope.items = userItems.items;
-    expect($scope.items.length).toBe(2);
-  }));
-
-  it('should return logged user\'s notes', inject(function() {
-    $scope.notes = userItems.notes;
-    expect($scope.notes.length).toBe(3);
-  }));
-
-  it('should return logged user\'s tasks', inject(function() {
-    $scope.tasks = userItems.tasks;
-    expect($scope.tasks.length).toBe(8);
-  }));
-
   it('should add new item', inject(function(_HttpBasicAuthenticationService_, _itemsArray_, _SessionStorageService_) {
     var HttpBasicAuthenticationService, itemsArray, SessionStorageService;
 
