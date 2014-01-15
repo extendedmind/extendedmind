@@ -40,7 +40,7 @@ function AuthenticationService($location, $q, BackendClientService, itemsRequest
       var deferred = $q.defer();
 
       // 1. should the user be sent to login
-      if (!SessionStorageService.getAuthenticated() & 
+      if (!SessionStorageService.getAuthenticated() && 
           !LocalStorageService.getAuthenticated()) { // login
         deferred.reject();
       } // 2. is remember checked
