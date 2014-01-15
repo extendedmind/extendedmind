@@ -1,8 +1,7 @@
 # Phonegap specific git ignore
 
 # all of these get copied from source folder automatically during "phonegap build"
-www
-app/www
+app/www/static
 
 # ios
 app/platforms/ios/build

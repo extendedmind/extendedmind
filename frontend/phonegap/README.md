@@ -17,6 +17,9 @@ Open in Eclipse Window->Customize Perspective.. and enable Android links.
 Open Window->Android SDK Manager and install API 18, API 17 and Tools.
 NOTE: You need to try to install them multiple times, as everything won't be installed with one click!
 
+Setup ANDROID_HOME enviroment variable with:
+export ANDROID_HOME="[PATH_TO_ANDROID_SDK_FOLDER]"
+
 * Phonegap
 
 sudo pacman -S npm
