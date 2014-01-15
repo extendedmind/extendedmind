@@ -26,8 +26,8 @@ angular.module('em.services').factory('BackendClientService', ['$http', 'UserSes
       UserSessionService.getAuth();
 
       return $http({
-        method : 'GET',
-        url : getUrlPrefix() + url
+        method: 'GET',
+        url: getUrlPrefix() + url
       }).then(function(success) {
         return success;
       });
@@ -38,8 +38,8 @@ angular.module('em.services').factory('BackendClientService', ['$http', 'UserSes
         UserSessionService.getAuth();
 
         return $http({
-          method : name,
-          url : getUrlPrefix() + url
+          method: name,
+          url: getUrlPrefix() + url
         }).then(function(success) {
           return success;
         });

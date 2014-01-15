@@ -1,11 +1,10 @@
-/*jslint eqeq: true, white: true */
+/*global angular */
 'use strict';
 
 function itemsRequest(BackendClientService, itemsArray, itemsResponse, TagsService, tasksArray, UserSessionService) {
   return {
     getItems: function() {
-
-      return BackendClientService.get('/api/' + UserSessionService.getActiveUUID() + '/items').then(function(itemsResponses) {
+      BackendClientService.get('/api/' + UserSessionService.getActiveUUID() + '/items').then(function(itemsResponses) {
 
         itemsArray.setItems(itemsResponses.data.items);
         TagsService.setTags(itemsResponses.data.tags);
@@ -52,8 +51,8 @@ angular.module('em.services').factory('itemsResponse', [
     };
   }]);
 
-angular.module('em.services').factory('activeItem', ['$rootScope',
-  function($rootScope) {
+angular.module('em.services').factory('activeItem', [
+  function() {
     var activeItem;
 
     return {
@@ -122,7 +121,7 @@ angular.module('em.services').factory('itemsArray', [
         }
       },
       getItemsByProjectUUID: function(items, uuid) {
-        var i, subtasks;
+        var i;
         i = 0;
         this.subtasks = [];
 
@@ -137,7 +136,7 @@ angular.module('em.services').factory('itemsArray', [
         return this.subtasks;
       },
       getItemsByTagUUID: function(items, uuid) {
-        var i, j, subtasks;
+        var i, j;
         i = 0;
         this.subtasks = [];
 

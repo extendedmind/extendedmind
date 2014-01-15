@@ -1,4 +1,4 @@
-/*global angular, urlPrefix */
+/*global angular */
 'use strict';
 
 angular.module('em.services').factory('HttpBasicAuthenticationService', ['$http',
@@ -7,14 +7,14 @@ angular.module('em.services').factory('HttpBasicAuthenticationService', ['$http'
     var encoded;
 
     return {
-      setEncodedCredentials : function(userpass) {
+      setEncodedCredentials: function(userpass) {
         encoded = userpass;
         $http.defaults.headers.common.Authorization = 'Basic ' + encoded;
       },
-      getCredentials : function() {
+      getCredentials: function() {
         return encoded;
       },
-      clearCredentials : function() {
+      clearCredentials: function() {
         $http.defaults.headers.common.Authorization = 'Basic ';
       }
     };
