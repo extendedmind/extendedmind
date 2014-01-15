@@ -30,15 +30,9 @@ angular.module('em.directives').directive('emFooter', [
       templateUrl: 'static/app/main/footer.html',
       link: function(scope, element, attrs) {
         var mainlinksFilterAttr = attrs.mainlinksfilter;
-        scope.collapse = false;
-
         scope.$watch(mainlinksFilterAttr, function(newValue) {
           scope.mainlinksFilter = newValue;
         });
-
-        scope.collapseNavbar = function collapseNavbar() {
-          scope.collapse = !scope.collapse;
-        };
       }
     };
   }]);
@@ -52,27 +46,6 @@ angular.module('em.directives').directive('featureHeader', [
         feature: '@featureHeader'
       },
       templateUrl: 'static/app/base/featureHeader.html'
-    };
-  }]);
-
-angular.module('em.directives').directive('omniBar', [ '$rootScope',
-  function($rootScope) {
-    return {
-      controller: 'OmniBarController',
-      restrict: 'A',
-      templateUrl: 'static/app/main/omniBar.html',
-      link: function(scope) {
-        $rootScope.omniBarActive = false;
-        scope.omniBarFocus = function(focus) {
-          if (focus) {
-            $rootScope.omniBarActive = true;
-          } else {
-            if (scope.newItem == null || scope.newItem.title == null || scope.newItem.title.length === 0) {
-              $rootScope.omniBarActive = false;
-            }
-          }
-        };
-      }
     };
   }]);
 

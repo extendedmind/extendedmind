@@ -12,8 +12,8 @@
     <link rel="shortcut icon" href="landing/favicon.ico"/>
 </head>
 <body>
-
-    <div role="main" ng-view/>
+    
+    <div main-view></div>
 
     <script src="static/lib/jquery/jquery.js"></script>
     <script src="static/lib/jquery/jquery.cookie.js"></script>
@@ -38,6 +38,8 @@
     <script src="test/mockHelpers.js"></script>
 
     <script src="static/common/common.js"></script>
+    <script src="static/common/accordionDirective.js"></script>
+    <script src="static/common/accordionItemDirective.js"></script>
     <script src="static/common/DateService.js"></script>
     <script src="static/common/LocationService.js"></script>
 
@@ -61,6 +63,7 @@
     <script src="static/app/auth/AuthenticationService.js"></script>
     <script src="static/app/auth/LoginController.js"></script>
     <script src="static/app/auth/SignupController.js"></script>
+    <script src="static/app/auth/mainViewDirective.js"></script>
 
     <script src="static/app/account/AccountController.js"></script>
     <script src="static/app/account/AccountService.js"></script>
@@ -82,9 +85,7 @@
     <script src="static/app/main/ItemsController.js"></script>
     <script src="static/app/main/MainController.js"></script>
     <script src="static/app/main/NavbarController.js"></script>
-    <script src="static/app/main/OmniBarController.js"></script>
     <script src="static/app/main/mainDirectives.js"></script>
-    <script src="static/app/main/itemsDirectives.js"></script>
     <script src="static/app/main/PageNotFoundController.js"></script>
 
     <script src="static/lib/idangerous/idangerous.swiper-2.4.js"></script>
