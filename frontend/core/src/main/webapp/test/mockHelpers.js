@@ -9,12 +9,12 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     // http://stackoverflow.com/a/105074/2659424
     function s4() {
       return Math.floor((1 + Math.random()) * 0x10000)
-                 .toString(16)
-                 .substring(1);
-    };
+      .toString(16)
+      .substring(1);
+    }
     function randomUUID() {
       return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-             s4() + '-' + s4() + s4() + s4();
+      s4() + '-' + s4() + s4() + s4();
     }
 
     var api_useruuid_items,
@@ -113,7 +113,7 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     });
 
     $httpBackend.whenPUT(putItem).respond(function(method, url, data, headers) {
-      putItemResponse['uuid'] = randomUUID();
+      putItemResponse.uuid = randomUUID();
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, putItemResponse);
     });
 
@@ -144,7 +144,7 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     });
 
     $httpBackend.whenPUT(putTask).respond(function(method, url, data, headers) {
-      putTaskResponse['uuid'] = randomUUID();
+      putTaskResponse.uuid = randomUUID();
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, putTaskResponse);
     });
 
@@ -154,7 +154,7 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     });
 
     $httpBackend.whenPUT(putNote).respond(function(method, url, data, headers) {
-      putNoteResponse['uuid'] = randomUUID();
+      putNoteResponse.uuid = randomUUID();
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, putNoteResponse);
     });
 
@@ -187,7 +187,7 @@ angular.module('em.mockHelpers').factory('mockHttpBackendResponse', ['base64',
       setSkipAuthenticationCheck: function() {
         skipAuthenticationCheck = true;
       },
-      expectResponse : function(method, url, data, headers, responseData) {
+      expectResponse: function(method, url, data, headers, responseData) {
         var parsedAuthorizationHeader, userNamePass, parsedUserNamePass, userName, response;
 
         parsedAuthorizationHeader = headers.Authorization.split(' ');
@@ -215,70 +215,68 @@ angular.module('em.mockHelpers').factory('mockHttpBackendResponse', ['base64',
         return response;
       },
       // account
-      getAccountResponse : function() {
+      getAccountResponse: function() {
         return getJSONFixture('accountResponse.json');
       },
-      getAuthenticateResponse : function() {
+      getAuthenticateResponse: function() {
         return getJSONFixture('authenticateResponse.json');
       },
-      getInviteResponse : function() {
+      getInviteResponse: function() {
         return getJSONFixture('inviteResponse.json');
       },
-      getSignUpResponse : function() {
+      getSignUpResponse: function() {
         return getJSONFixture('signUpResponse.json');
       },
-      getLogoutResponse : function() {
+      getLogoutResponse: function() {
         return getJSONFixture('logoutResponse.json');
       },
 
-      getCompleteTaskResponse : function() {
+      getCompleteTaskResponse: function() {
         return getJSONFixture('completeTaskResponse.json');
       },
 
       // delete
-      getDeleteItemResponse : function() {
+      getDeleteItemResponse: function() {
         return getJSONFixture('deleteItemResponse.json');
       },
-      getDeleteNoteResponse : function() {
+      getDeleteNoteResponse: function() {
         return getJSONFixture('deleteNoteResponse.json');
       },
-      getDeleteTaskResponse : function() {
+      getDeleteTaskResponse: function() {
         return getJSONFixture('deleteTaskResponse.json');
       },
 
       // get
-      getItemsResponse : function() {
+      getItemsResponse: function() {
         return getJSONFixture('itemsResponse.json');
       },
-      getCollectiveItemsResponse : function() {
+      getCollectiveItemsResponse: function() {
         return getJSONFixture('collectiveItemsResponse.json');
       },
 
       // put new
-      getPutItemResponse : function() {
-        var returnValue = getJSONFixture('putItemResponse.json');
-        //console.log(returnValue);
+      getPutItemResponse: function() {
         return getJSONFixture('putItemResponse.json');
       },
-      getPutNoteResponse : function() {
+      getPutNoteResponse: function() {
         return getJSONFixture('putNoteResponse.json');
       },
-      getPutTaskResponse : function() {
+      getPutTaskResponse: function() {
         return getJSONFixture('putTaskResponse.json');
       },
 
       // existing items
-      getPutExistingNoteResponse : function() {
+      getPutExistingNoteResponse: function() {
         return getJSONFixture('putExistingNoteResponse.json');
       },
-      getputExistingTaskResponse : function() {
+      getputExistingTaskResponse: function() {
         return getJSONFixture('putExistingTaskResponse.json');
       },
 
-      getUncompleteTaskResponse : function() {
+      getUncompleteTaskResponse: function() {
         return getJSONFixture('uncompleteTaskResponse.json');
       },
-      clearSessionStorage : function() {
+      clearSessionStorage: function() {
         sessionStorage.clear();
       }
     };
