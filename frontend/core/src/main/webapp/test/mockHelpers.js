@@ -37,7 +37,7 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     putItem, putItemResponse, putNote, putNoteResponse, putTask, putTaskResponse,
 
     // existing items
-    putExistingNote, putExistingNoteResponse, putExistingTask, putExistingTaskResponse,
+    putExistingItem, putExistingItemResponse, putExistingNote, putExistingNoteResponse, putExistingTask, putExistingTaskResponse,
 
     // uncomplete
     uncompleteTask, uncompleteTaskResponse, uuid;
@@ -53,6 +53,7 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     putNote = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/note/;
     putTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task/;
 
+    putExistingItem = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/item\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
     putExistingNote = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/note\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
     putExistingTask = /\/api\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/task\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
@@ -88,7 +89,8 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
     putNoteResponse = mockHttpBackendResponse.getPutNoteResponse();
     putTaskResponse = mockHttpBackendResponse.getPutTaskResponse();
 
-    putExistingTaskResponse = mockHttpBackendResponse.getputExistingTaskResponse();
+    putExistingItemResponse = mockHttpBackendResponse.getPutExistingItemResponse();
+    putExistingTaskResponse = mockHttpBackendResponse.getPutExistingTaskResponse();
     putExistingNoteResponse = mockHttpBackendResponse.getPutExistingNoteResponse();
 
     uncompleteTaskResponse = mockHttpBackendResponse.getUncompleteTaskResponse();
@@ -112,11 +114,6 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, logoutResponse);
     });
 
-    $httpBackend.whenPUT(putItem).respond(function(method, url, data, headers) {
-      putItemResponse['uuid'] = randomUUID();
-      return mockHttpBackendResponse.expectResponse(method, url, data, headers, putItemResponse);
-    });
-
     // delete
     $httpBackend.whenDELETE(deleteItem).respond(function(method, url, data, headers) {
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, deleteItemResponse);
@@ -128,6 +125,17 @@ angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
 
     $httpBackend.whenDELETE(deleteTask).respond(function(method, url, data, headers) {
       return mockHttpBackendResponse.expectResponse(method, url, data, headers, deleteTaskResponse);
+    });
+
+    // Items
+
+    $httpBackend.whenPUT(putItem).respond(function(method, url, data, headers) {
+      putItemResponse['uuid'] = randomUUID();
+      return mockHttpBackendResponse.expectResponse(method, url, data, headers, putItemResponse);
+    });
+
+    $httpBackend.whenPUT(putExistingItem).respond(function(method, url, data, headers) {
+      return mockHttpBackendResponse.expectResponse(method, url, data, headers, putExistingItemResponse);
     });
 
     // tasks
@@ -268,10 +276,13 @@ angular.module('em.mockHelpers').factory('mockHttpBackendResponse', ['base64',
       },
 
       // existing items
+      getPutExistingItemResponse : function() {
+        return getJSONFixture('putExistingItemResponse.json');
+      },
       getPutExistingNoteResponse : function() {
         return getJSONFixture('putExistingNoteResponse.json');
       },
-      getputExistingTaskResponse : function() {
+      getPutExistingTaskResponse : function() {
         return getJSONFixture('putExistingTaskResponse.json');
       },
 

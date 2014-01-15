@@ -19,9 +19,9 @@ function itemsRequest(BackendClientService, itemsArray, itemsResponse, TagsServi
         itemsResponse.putItemContent(item, putItemsResponse.data);
       });
     },
-    editItem: function(item) {
-      return BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid, item).then(function(editItemResponse) {
-        return editItemResponse.data;
+    putExistingItem: function(item) {
+      BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid, item).then(function(putExistingItemResponse) {
+        itemsResponse.putItemContent(item, putExistingItemResponse.data);
       });
     },
     deleteItem: function(item) {

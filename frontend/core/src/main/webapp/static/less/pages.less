@@ -88,32 +88,20 @@ section#home {
         .top-bottom-borders;
         display: table;
         width: 100%;
-        div#omni-input-wrapper, div#plus-wrapper{
-          vertical-align: middle;
-        }
-        div#omni-input-wrapper {
-          width: 100%;
-          display:table-cell;
-        }
-        div#plus-wrapper { 
-          display:table-cell;
-          width: @plus-button-width;
-          line-height: 100%;
-          button {
-            padding-top: 8px; // quick fix to center the plus button
-          }
-          // onboarding highlight
-          button {
-            color: @highlight-button;
-          }
 
-          button:disabled {
-            color: @inactive-button;
-          }
+        // onboarding highlight
+        button {
+          color: @highlight-button;
         }
+
+        button:disabled {
+          color: @inactive-button;
+        }
+      
         .input-placeholder {
           color: @highlight-button;
         }
+        
         // Input placeholder browser tweaks
         *::-webkit-input-placeholder {
           .input-placeholder

@@ -450,6 +450,37 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    $routeProvider.when('/my/items/edit/:uuid', {
+      controller: 'EditItemController',
+      templateUrl: 'static/app/main/editItem.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.check();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/items/edit/:uuid', {
+      controller: 'EditItemController',
+      templateUrl: 'static/app/tasks/editItem.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.check();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
+        }]
+      }
+    });
+
     $routeProvider.otherwise({
       controller: 'PageNotFoundController',
       redirectTo: '404'

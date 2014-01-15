@@ -9,11 +9,22 @@ function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, 
   $scope.prefix = OwnerService.getPrefix();
   $scope.filterService = FilterService;
 
+  $scope.editItemTitle = function(item) {
+    console.log("editItemTitle: " + item.title);
+    itemsRequest.putExistingItem(item);
+  }
+
+  $scope.editItem  = function(item) {
+    console.log("editItem: " + item.title);
+    $location.path($scope.prefix + '/items/edit/' + item.uuid);
+  }
+
   function clearCompletedText() {
     $timeout(function() {
       $scope.completed = '';
     }, 2000);
   }
+
 
   $scope.deleteItem = function(item) {
     itemsRequest.deleteItem(item);
