@@ -45,7 +45,7 @@ section#home {
       padding-top: 10px;
       .top-bottom-borders;
       a.collective{
-        color: @text-gray;
+        color: @inactive-text;
       }
       a.collective:active{
         color: @active-button;
@@ -89,49 +89,31 @@ section#home {
         display: table;
         width: 100%;
 
-        // onboarding highlight
-        button {
-          color: @highlight-button;
-        }
-
-        button:disabled {
-          color: @inactive-button;
-        }
-      
-        .input-placeholder {
-          color: @highlight-button;
-        }
-        
-        // Input placeholder browser tweaks
-        *::-webkit-input-placeholder {
-          .input-placeholder
-        }    
-        *:-moz-placeholder {
-          /* FF 4-18 */
-          .input-placeholder
-        }
-        *::-moz-placeholder {
-          /* FF 19+ */
-          .input-placeholder
-        }    
-        *:-ms-input-placeholder {
-          /* IE 10+ */
-          .input-placeholder
+        div.right-button-wrapper { 
+          display:table-cell;
+          width: @plus-button-width;
+          line-height: 100%;
+          button {
+            padding-top: 8px; // quick fix to center the plus button
+          }
+          // onboarding highlight
+          [class^="icon-"], [class*=" icon-"] button {
+            color: @highlight-button !important;
+          }
         }
       }
-    }
-    div#filtered-items-container {
-      height: inherit;
-      overflow-y: auto;
+      div#filtered-items-container {
+        height: inherit;
+        overflow-y: auto;
+      }
     }
   }
 }
 
-
 // TASKS
 
 input[type="checkbox"]:checked ~ .task {
-  color:@text-gray;
+  color:@inactive-text;
   .fade-color(@fade-time);
 }
 
@@ -146,7 +128,7 @@ section#tasks-dates {
       td {
         padding-right: 0.5em;
         a {
-          color:@text-gray;
+          color:@inactive-text;
         }
         a:active{
           color:black;
@@ -156,5 +138,26 @@ section#tasks-dates {
   }
   .inner-slide-content-container{
     padding-bottom: @footer-height;
+  }
+}
+
+// Indented lists
+section#date {
+  li {
+   list-style-position: inside;
+   text-indent: -44px;
+   padding-left: 44px;
+   span {
+    line-height: 100%;
+  }
+}
+}
+
+// INBOX
+
+button.normal-button.inactive-button{
+  color: white;
+  & {
+    background-color: @inactive-button;
   }
 }

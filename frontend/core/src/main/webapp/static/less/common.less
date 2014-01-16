@@ -94,11 +94,6 @@
   background-image: none;
 }
 
-.text-gray {
-  color: @text-gray;
-}
-
-
 .click-to-slide{
   display: table;
   width: 100%;
@@ -110,7 +105,7 @@
   span.slide-indicator { 
     display:table-cell;
     width: @slide-indicator-width;
-    color:@text-gray;
+    color:@inactive-text;
   }
 }
 
@@ -225,7 +220,7 @@ label {
 }  
 
  // Never show default checkbox
-input[type=checkbox] {
+ input[type=checkbox] {
   display:none;
 }
 
@@ -237,7 +232,7 @@ input[type='checkbox'] + label:before {
 }
 
 input[type="checkbox"] + label:before {
-  content: "\e601";
+  .icon-selection-empty;
 }
 
 input[type="checkbox"] + label.overdue:before {
@@ -245,14 +240,14 @@ input[type="checkbox"] + label.overdue:before {
 }
 
 input[type="checkbox"]:checked + label:before {
-  content: "\e602";
+  .icon-selection-checked;
 }
 
 // SELECTIONS
 
 select {
   &.simple-input {
-    color: @text-gray;
+    color: @inactive-text;
     background: none;
     // Without this the text is slightly indented
     margin-left:-4px;
@@ -262,15 +257,16 @@ select {
     color: black;
   }
   option:first-child{
-    color: @text-gray;
+    color: @inactive-text;
   }
 }
 
 // BORDERS
 
 .top-bottom-borders{
-  border-top: solid 2px @text-gray;
-  border-bottom: solid 2px @text-gray;
+  border-top: solid 2px @inactive-text;
+  border-bottom: solid 2px @inactive-text;
+  border-color: @separator;
 }
 
 // SCREEN READERS
@@ -284,4 +280,22 @@ select {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+// SCROLLBARS
+
+::-webkit-scrollbar {
+  width: 4px;
+  background: white;
+}
+::-webkit-scrollbar-thumb {
+  background: @inactive-button;
+}
+::-webkit-scrollbar-corner {
+  background: white;
+}
+
+// Temporary classes (to be refactored)
+.inactive-text {
+  color: @inactive-text;
 }
