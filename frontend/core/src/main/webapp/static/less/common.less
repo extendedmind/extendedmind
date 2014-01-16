@@ -264,6 +264,19 @@ select {
   border: 0;
 }
 
+// SCROLLBARS
+
+::-webkit-scrollbar {
+  width: 4px;
+  background: white;
+}
+::-webkit-scrollbar-thumb {
+  background: @inactive-button;
+}
+::-webkit-scrollbar-corner {
+  background: white;
+}
+
 // Temporary classes (to be refactored)
 .inactive-text {
   color: @inactive-text;
