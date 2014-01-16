@@ -78,7 +78,9 @@ function accordionDirective($document){
             !$(event.target).parents('.accordion').length && 
             !$(event.target).parents('.item-actions').length){
           $scope.$apply(function(){
-            $scope.thisController.closeOthers();
+            angular.forEach($scope.thisController.items, function (item) {
+              item.closeItem();
+            });
             $scope.unbindElsewhereEvents();
           })
         }

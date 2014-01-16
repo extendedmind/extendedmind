@@ -36,6 +36,7 @@ function accordionItemDirective($document){
 
       scope.closeItem = function() {
         if (scope.isOpen){
+          scope.endTitleEdit();
           element.removeClass("accordion-item-active");
           scope.isOpen = false;
         }
