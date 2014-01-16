@@ -20,7 +20,7 @@ function itemsRequest(BackendClientService, itemsArray, itemsResponse, TagsServi
       });
     },
     putExistingItem: function(item) {
-      BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid, item).then(function(putExistingItemResponse) {
+      return BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid, item).then(function(putExistingItemResponse) {
         itemsResponse.putItemContent(item, putExistingItemResponse.data);
       });
     },

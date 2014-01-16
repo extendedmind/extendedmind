@@ -7,7 +7,7 @@ function EditItemController($scope, $routeParams, ErrorHandlerService, itemsArra
   $scope.prefix = OwnerService.getPrefix();
 
   if ($routeParams.uuid) {
-    var item = itemsArray.getItemByUUID($routeParams.uuid);
+    var item = itemsArray.getItemByUUID(itemsArray.getItems(), $routeParams.uuid);
     if (item) {
       $scope.item = item;
     } else {
@@ -27,5 +27,5 @@ function EditItemController($scope, $routeParams, ErrorHandlerService, itemsArra
   };
 }
 
-EditItemController.$inject = ['$scope', '$routeParams', 'ErrorHandlerService', 'itemsArray', 'itemsRequest'];
+EditItemController.$inject = ['$scope', '$routeParams', 'ErrorHandlerService', 'itemsArray', 'itemsRequest', 'OwnerService'];
 angular.module('em.app').controller('EditItemController', EditItemController);

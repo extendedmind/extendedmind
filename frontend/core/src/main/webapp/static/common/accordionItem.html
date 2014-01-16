@@ -1,14 +1,14 @@
 <div class="accordion-item">
   <div class="accordion-title" ng-switch="isOpen">
-    <a ng-switch-when="false" class="accordion-toggle" href ng-click="clickTitle()">{{item.title}}</a>
+    <a ng-switch-when="false" id="accordionTitleLink" class="accordion-toggle" href ng-click="clickTitle()">{{item.title}}</a>
     <form ng-switch-when="true" role="form" name="itemTitleEdit">
       <div class="form-group">
         <div class="left-input-wrapper">
-          <label class="sr-only" for="itemTitle">title</label>
-          <input type="text" ng-focus="startTitleEdit($event)" ng-keypress="evaluateKeyPress($event)"  class="simple-input swiper-no-swiping" id="itemTitle" ng-model="item.title" placeholder="title..." required>
+          <label class="sr-only" for="accordionTitleInput">title</label>
+          <input id="accordionTitleInput" type="text" ng-focus="startTitleEdit($event)" ng-keypress="evaluateKeyPress($event)" class="simple-input swiper-no-swiping" ng-model="item.title" placeholder="title..." required>
         </div>
         <div class="right-button-wrapper">
-          <button class="button" type="button" ng-click="startItemEdit()"><span class="icon-i" />
+          <button class="button" type="button" ng-click="pressItemEdit()"><span class="icon-i" />
           </button>
         </div>
       </div>

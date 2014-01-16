@@ -5,19 +5,14 @@
   </li>
 
   <div class="em-item-actions container">
-    <ul class="nav nav-justified em-horizontal-buttons">
+    <ul class="nav nav-justified">
       <li class="em-gray-button" ng-hide="task.relationships.parentTask">
-        <button class="em-simple-input" type="button" ng-click="taskToProject(task)">
+        <button class="simple-input" type="button" ng-click="taskToProject(task)">
           add subtask
         </button>
       </li>
-      <li class="em-gray-button">
-        <button class="em-simple-input" type="button" ng-click="taskEdit(task)">
-          edit
-        </button>
-      </li>
       <li class="em-red-button">
-        <button class="em-simple-input" type="button" ng-hide="task.project" ng-click="deleteTask(task)">
+        <button class="simple-input" type="button" ng-hide="task.project" ng-click="deleteTask(task)">
           delete
         </button>
       </li>

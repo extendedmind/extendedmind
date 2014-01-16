@@ -7,8 +7,7 @@
 function expandingTextareaDirective(){
   return {
     restrict:'A',
-    require:'ngModel',
-    link: function(scope, element, attrs, ngModelCtrl) {
+    link: function(scope, element) {
       element.expandingTextarea();
     }
   };

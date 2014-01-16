@@ -45,7 +45,7 @@ angular.module('em.directives').directive('dateSlide', dateSlide);
 
 function tasksList() {
   return {
-    controller: 'TasksListController',
+    controller: 'TasksController',
     restrict: 'A',
     scope: {
       tasks: '=tasksList',

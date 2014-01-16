@@ -22,22 +22,32 @@ function accordionItemDirective($document){
       scope.isOpen = false;
       scope.oldTitle = scope.item.title;
 
+      scope.toggleOpen = function() {
+        if (!scope.isOpen){
+          scope.isOpen = true;
+          element.addClass("accordion-item-active");
+        }else{
+          scope.closeItem();          
+        }
+        return scope.isOpen;
+      }
+
+      scope.closeItem = function() {
+        if (scope.isOpen){
+          element.removeClass("accordion-item-active");
+          scope.isOpen = false;
+        }
+      }
+
       scope.clickTitle = function() {
-        scope.isOpen = !scope.isOpen;
-        if (scope.isOpen) {
+        if (scope.toggleOpen()) {
           accordionCtrl.closeOthers(scope);
         }
       };
 
       scope.endTitleEdit = function(){
-        var inputElement = element.find('input')[0];
-        if ($document[0].activeElement === inputElement){
-          // Programmatically blur the input
-          inputElement.blur();
-        }else{
-          // Second click elsewhere, close the accordion
-          scope.isOpen = false;
-        }
+        // Programmatically blur the input
+        element.find('input')[0].blur();
         if (scope.oldTitle !== scope.item.title){
           // Title has changed, call edit title method with new title
           scope.editItemTitle({item: scope.item});
@@ -45,31 +55,12 @@ function accordionItemDirective($document){
         }
       };
 
-      scope.startItemEdit = function(){
+      scope.pressItemEdit = function(){
         scope.editItem({item: scope.item});
       };
 
       scope.startTitleEdit = function($event) {  
         $event.stopPropagation();
-        var unbindEvents = function(scope) {
-          $document.unbind('click', this);
-          $document.unbind('touchstart', this);
-          scope.endTitleEdit();
-        };
-        $document.bind('click', function(event) {
-          if (event.target.id !== $event.target.id){
-            scope.$apply(function(){
-              unbindEvents(scope);
-            })
-          }
-        });
-        $document.bind('touchstart', function(event) {
-          if (event.target.id !== $event.target.id){
-            scope.$apply(function(){
-              unbindEvents(scope);
-            })
-          }
-        });
       };
 
       scope.evaluateKeyPress = function($event) {
