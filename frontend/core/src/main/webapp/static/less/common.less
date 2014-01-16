@@ -109,16 +109,17 @@
   }
 }
 
-// Input on the left, button on the right
+// Input on the left and  button on the right OR 
+// Checkbox on the left, input in the center, and button on the right
 
-.left-input-wrapper,.right-button-wrapper{
+.left-input-wrapper,.right-button-wrapper, .center-input-wrapper, .left-checkbox-wrapper{
   vertical-align: middle;
 }
-.left-input-wrapper {
+.left-input-wrapper, .center-input-wrapper {
   width: 100%;
   display:table-cell;
 }
-.right-button-wrapper { 
+.right-button-wrapper, .left-checkbox-wrapper { 
   display:table-cell;
   width: @icon-button-width;
   line-height: 100%;

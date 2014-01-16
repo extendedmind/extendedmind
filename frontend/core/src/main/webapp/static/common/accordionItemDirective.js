@@ -15,8 +15,10 @@ function accordionItemDirective($document){
     scope:{ 
       item:'=accordionItem',
       editItemTitle:'&',
-      editItem:'&'
-    },          // Create an isolated scope
+      editItem:'&',
+      hasComplete:'=',
+      toggleComplete:'&'
+    },  // Create an isolated scope
     link: function(scope, element, attrs, accordionCtrl) {
       accordionCtrl.addItem(scope);
       scope.isOpen = false;
@@ -47,7 +49,7 @@ function accordionItemDirective($document){
 
       scope.endTitleEdit = function(){
         // Programmatically blur the input
-        element.find('input')[0].blur();
+        element.find('input#accordionTitleInput')[0].blur();
         if (scope.oldTitle !== scope.item.title){
           // Title has changed, call edit title method with new title
           scope.editItemTitle({item: scope.item});
@@ -68,6 +70,19 @@ function accordionItemDirective($document){
         if(event.which === 13) {
           scope.endTitleEdit();
           event.preventDefault();
+        }
+      };
+
+      scope.getTitleInputClass = function() {
+        if (scope.hasComplete){
+          return 'center-input-wrapper';
+        }
+        return 'left-input-wrapper';
+      }
+
+      scope.itemChecked = function() {
+        if (scope.toggleComplete){
+          scope.toggleComplete({item: scope.item});
         }
       };
     }
