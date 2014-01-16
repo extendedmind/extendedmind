@@ -21,6 +21,9 @@
 	// Better Font Rendering
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+
+	// default icon color
+	color: @inactive-button;
 }
 
 [class^="icon-"]:active {
@@ -29,19 +32,15 @@
 
 .icon-menu:before {
 	content: "\e600";
-	color: @inactive-button;
 }
 .icon-selection-empty {
 	content: "\e601";
-	color: @inactive-button;
 }
 .icon-selection-checked {
 	content: "\e602";
-	color: @inactive-button;
 }
 .icon-plus:before {
 	content: "\e603";
-	color: @inactive-button;
 }
 .icon-i:before {
 	content: "\e604";
@@ -67,8 +66,10 @@
 }
 .icon-logo_only:before {
 	content: "\e60a";
+	color: @logo;
 }
 .icon-logo_with_text:before {
 	content: "\e60b";
 	font-size: @banner-logo-size;
+	color: @logo;
 }
