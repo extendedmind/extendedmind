@@ -9,7 +9,7 @@
             <li ng-class="selected" ng-repeat="project in filteredProjects = (tasks | tasksFilter:filterService.activeFilters.project)">
               <a class="text-muted click-to-slide" href ng-click="goToProject(project.uuid)">
                 <span class="link-title">{{project.title}}</span>
-                <span class="icon-arrow-left" />
+                <span class="icon-arrow-right" />
               </a>
             </li>
           </ul>
