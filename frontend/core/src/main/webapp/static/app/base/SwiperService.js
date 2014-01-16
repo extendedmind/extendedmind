@@ -12,7 +12,7 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
   var initialMainSlidePath;
   var initialPageSlidePath;
 
-  // Gets al swipers that match the given slide path
+  // Gets all swipers that match the given slide path
   var getSwiperInfosBySlidePath = function(slidePath) {
     var swiperInfos = {};
     for (var swiperPath in swipers) {
@@ -25,7 +25,7 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       }
     }
     return swiperInfos;
-  }
+  };
 
   // Finds the index of the slide that starts with the given slide
   var getSlideIndexBySlidePath = function(slidePath, slides) {
@@ -36,7 +36,7 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
         }
       }
     }
-  }
+  };
 
   var getSwiperParameters = function(swiperType, swiperSlidesPaths, onSlideChangeEndCallback) {
     var swiperParams = {
@@ -47,8 +47,8 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       onSlideChangeEnd: onSlideChangeEndCallback
     };
     
-    if (swiperType === "main"){
-      swiperParams.mode = "horizontal";
+    if (swiperType === 'main'){
+      swiperParams.mode = 'horizontal';
       var mainSlideIndex = getSlideIndexBySlidePath(initialMainSlidePath, swiperSlidesPaths);
 
       if (mainSlideIndex !== undefined){
@@ -56,8 +56,8 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       }else {
         swiperParams.initialSlide = 1;
       }
-    } else if (swiperType === "page"){
-      swiperParams.mode = "vertical";
+    } else if (swiperType === 'page'){
+      swiperParams.mode = 'vertical';
       var pageSlideIndex = getSlideIndexBySlidePath(initialPageSlidePath, swiperSlidesPaths);
       if (pageSlideIndex !== undefined){
         swiperParams.initialSlide = pageSlideIndex;
@@ -66,13 +66,13 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       }
     }
     return swiperParams;
-  }
+  };
 
   var setPathsToSlides = function(swiperInfo, swiperSlidesPaths) {
     for (var i = 0; i < swiperInfo.swiper.slides.length; i++) {
       swiperInfo.swiper.slides[i].setData('path', swiperSlidesPaths[i]);
     }
-  }
+  };
 
   return {
     initializeSwiper: function(containerElement, swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback) {
@@ -80,16 +80,16 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
         delete swipers[swiperPath].swiper;
       }
       var params = getSwiperParameters(
-                                  swiperType,
-                                  swiperSlidesPaths, 
-                                  onSlideChangeEndCallback);
+        swiperType,
+        swiperSlidesPaths,
+        onSlideChangeEndCallback);
       var swiper = new Swiper(containerElement, params);
 
       swipers[swiperPath] = {
         swiper: swiper,
         swiperType: swiperType,
         slidesPaths: swiperSlidesPaths
-      }
+      };
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
     },
     onSlideChangeEnd: function(swiperPath) {
@@ -108,7 +108,7 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       if (swiperInfos.main){
         var mainSwiperIndex = getSlideIndexBySlidePath(slidePath, swiperInfos.main.slidesPaths);
         if (mainSwiperIndex !== undefined){
-          swiperInfos.main.swiper.swipeTo(mainSwiperIndex)
+          swiperInfos.main.swiper.swipeTo(mainSwiperIndex);
         }
       }
 

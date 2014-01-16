@@ -10,23 +10,23 @@ function swiperContainerDirective(SwiperService) {
       swiperType: '@swiperType',
       expectedSlides: '=?expectedSlides'
     },
-    controller: function($scope, $element, $attrs) {
+    controller: function($scope, $element) {
       var swiperSlidePaths = [];
       var initializeSwiperCalled = false;
 
       this.setExpectedSlides = function(expectedSlides){
         $scope.expectedSlides = expectedSlides;
-      }
+      };
 
       // Registers the path of the slide to the swiper
       // and sets up listeners for element, if needed
       this.registerSlide = function(path, element) {
-        swiperSlidePaths.push(path); 
+        swiperSlidePaths.push(path);
 
         // For vertical page swiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal
         // swiper or not.
-        if ($scope.swiperType === "page"){
+        if ($scope.swiperType === 'page'){
           // We're expecting an slide, which has "inner-slide-content-container", which has section
           element[0].firstElementChild.firstElementChild.addEventListener('touchstart', slideTouchStart, false);
           element[0].firstElementChild.firstElementChild.addEventListener('touchmove', slideTouchMove, false);
@@ -58,7 +58,7 @@ function swiperContainerDirective(SwiperService) {
 
       function onSlideChangeEndCallback() {
         SwiperService.onSlideChangeEnd($scope.swiperPath);
-      };
+      }
 
       // Overlapping swipers, should stopPropagation be called?
 
