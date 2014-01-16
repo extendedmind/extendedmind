@@ -112,15 +112,22 @@
 // Input on the left and  button on the right OR 
 // Checkbox on the left, input in the center, and button on the right
 
+.table-wrapper {
+  display: table;
+  .center-horizontally;
+  width:100%;
+}
+
 .left-input-wrapper,.right-button-wrapper, .center-input-wrapper, .left-checkbox-wrapper{
+  display:table-cell;
   vertical-align: middle;
 }
+
 .left-input-wrapper, .center-input-wrapper {
   width: 100%;
-  display:table-cell;
 }
+
 .right-button-wrapper, .left-checkbox-wrapper { 
-  display:table-cell;
   width: @icon-button-width;
   line-height: 100%;
   button {
