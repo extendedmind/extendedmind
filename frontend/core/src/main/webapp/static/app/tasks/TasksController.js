@@ -59,6 +59,22 @@ function TasksController($location, $scope, OwnerService, activeItem, tasksReque
     });
   };
 
+  $scope.getSubtaskButtonClass = function(task) {
+    if (!task.project && !task.relationships.parentTask){
+      return "left-of-two";
+    }
+  }
+
+  $scope.getDeleteButtonClass = function(task) {
+    if (!task.project){
+      if (!task.relationships.parentTask){
+        return "right-of-two";
+      }else{
+        return "wide-button"
+      }
+    }
+  }
+
 }
 
 TasksController.$inject = ['$location', '$scope', 'OwnerService', 'activeItem', 'tasksRequest', 'tasksResponse', 'tasksArray'];

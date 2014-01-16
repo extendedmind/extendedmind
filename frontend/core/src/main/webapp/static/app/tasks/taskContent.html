@@ -1,18 +1,17 @@
-<ul class="list-unstyled">
-
+<div ng-controller="TasksController">
   <li ng-repeat="value in task | visibleTaskContent">
     <span><small>{{value}}</small></span>
   </li>
 
-  <div class="em-item-actions container">
-    <ul class="nav nav-justified">
-      <li class="em-gray-button" ng-hide="task.relationships.parentTask">
-        <button class="simple-input" type="button" ng-click="taskToProject(task)">
+  <div class="task-actions">
+    <ul class="button-row">
+      <li ng-if="!task.relationships.parentTask" class="button-container" ng-class="getSubtaskButtonClass(task)">
+        <button type="button" class="normal-button" ng-click="taskToProject(task)">
           add subtask
         </button>
       </li>
-      <li class="em-red-button">
-        <button class="simple-input" type="button" ng-hide="task.project" ng-click="deleteTask(task)">
+      <li ng-if="!task.project" class="button-container" ng-class="getDeleteButtonClass(task)">
+        <button type="button" class="delete-button" ng-click="deleteTask(task)">
           delete
         </button>
       </li>
