@@ -103,8 +103,8 @@ section#home {
             padding-top: 8px; // quick fix to center the plus button
           }
           // onboarding highlight
-          button {
-            color: @highlight-button;
+          [class^="icon-"], [class*=" icon-"] button {
+            color: @highlight-button !important;
           }
         }
       }
