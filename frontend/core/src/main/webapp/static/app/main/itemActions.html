@@ -1,13 +1,13 @@
 <div ng-switch="itemType" ng-controller="ItemsController">
-  <div class="item-sorting-container" ng-switch-default>
+  <div class="item-actions" ng-switch-default>
     <ul class="button-row">
       <li class="button-container left-of-three">
-        <button class="normal-button small-border-right" type="button" ng-disabled="true">
+        <button class="normal-button inactive-button small-border-right" type="button" ng-disabled="true">
           <span class="button-text">note</span>
         </button>
       </li>
       <li class="button-container center-of-three">
-        <button class="normal-button" type="button" ng-click="itemToTask(item)">
+        <button class="normal-button inactive-button" type="button" ng-click="itemToTask(item)">
           <span class="button-text">task</span>
         </button>
       </li>

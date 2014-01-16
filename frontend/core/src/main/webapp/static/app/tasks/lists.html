@@ -5,7 +5,7 @@
       <div class="inner-feature-content-container">
         <section ng-show="filteredProjects && filteredProjects.length">
           <h3>projects</h3>
-          <ul class="indent">
+          <ul class="indent list-arrow-right">
             <li ng-class="selected" ng-repeat="project in filteredProjects = (tasks | tasksFilter:filterService.activeFilters.project)">
               <a class="text-muted click-to-slide" href ng-click="goToProject(project.uuid)">
                 <span class="link-title">{{project.title}}</span>
@@ -17,13 +17,13 @@
 
         <section ng-if="contexts && contexts.length">
           <h3>contexts</h3>
-          <ul class="indent">
+          <ul class="indent list-arrow-right">
             <li ng-repeat="context in contexts">
               <a class="click-to-slide" href="#/{{prefix}}/tasks/context/{{context.uuid}}">
                 <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right" />
               </a>
             </li>
-          </ul>        
+          </ul>      
         </section>
       </div>
     </div>

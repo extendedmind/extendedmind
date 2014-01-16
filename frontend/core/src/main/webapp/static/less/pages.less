@@ -45,7 +45,7 @@ section#home {
       padding-top: 10px;
       .top-bottom-borders;
       a.collective{
-        color: @text-gray;
+        color: @inactive-text;
       }
       a.collective:active{
         color: @active-button;
@@ -88,62 +88,27 @@ section#home {
         .top-bottom-borders;
         display: table;
         width: 100%;
-        div#omni-input-wrapper, div#plus-wrapper{
-          vertical-align: middle;
-        }
-        div#omni-input-wrapper {
-          width: 100%;
-          display:table-cell;
-        }
-        div#plus-wrapper { 
-          display:table-cell;
-          width: @plus-button-width;
+
+        div.right-button-wrapper { 
           line-height: 100%;
-          button {
+          [class^="icon-"], [class*=" icon-"] button {
+            color: @highlight-button; // plus button always highlighted
             padding-top: 8px; // quick fix to center the plus button
           }
-          // onboarding highlight
-          button {
-            color: @highlight-button;
-          }
-
-          button:disabled {
-            color: @inactive-button;
-          }
-        }
-        .input-placeholder {
-          color: @highlight-button;
-        }
-        // Input placeholder browser tweaks
-        *::-webkit-input-placeholder {
-          .input-placeholder
-        }    
-        *:-moz-placeholder {
-          /* FF 4-18 */
-          .input-placeholder
-        }
-        *::-moz-placeholder {
-          /* FF 19+ */
-          .input-placeholder
-        }    
-        *:-ms-input-placeholder {
-          /* IE 10+ */
-          .input-placeholder
         }
       }
-    }
-    div#filtered-items-container {
-      height: inherit;
-      overflow-y: auto;
+      div#filtered-items-container {
+        height: inherit;
+        overflow-y: auto;
+      }
     }
   }
 }
 
-
 // TASKS
 
 input[type="checkbox"]:checked ~ .task {
-  color:@text-gray;
+  color:@inactive-text;
   .fade-color(@fade-time);
 }
 
@@ -158,7 +123,7 @@ section#tasks-dates {
       td {
         padding-right: 0.5em;
         a {
-          color:@text-gray;
+          color:@inactive-text;
         }
         a:active{
           color:black;
@@ -168,5 +133,14 @@ section#tasks-dates {
   }
   .inner-slide-content-container{
     padding-bottom: @footer-height;
+  }
+}
+
+// INBOX
+
+button.normal-button.inactive-button{
+  color: white;
+  & {
+    background-color: @inactive-button;
   }
 }

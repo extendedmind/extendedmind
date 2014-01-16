@@ -40,31 +40,31 @@
         <div class="swiper-no-swiping">
           <form id="omnibar" role="form" name="addOmniItem" ng-submit="addNewItem(omnibarText)">
             <div class="form-group">
-              <div id="omni-input-wrapper">
+              <div class="left-input-wrapper">
                 <label class="sr-only" for="omniItem">omniItem</label>
                 <input type="search" class="simple-input form-control" id="omniItem" ng-model="omnibarText.title" ng-focus="omniBarFocus(true)" ng-blur="omniBarFocus(false)" placeholder="store or recall" required>
               </div>
-              <div id="plus-wrapper">
-                <button class="button" type="button" ng-disabled="!omnibarText.title" ng-click="addNewItem(omnibarText)"><span class="icon-plus" />
+              <div class="right-button-wrapper">
+                <button class="button" type="button" ng-click="addNewItem(omnibarText)"><span class="icon-plus" />
                 </button>
               </div>
             </div>
           </form>                
         </div>
         <div ng-if="omnibarText.title" id="filtered-items-container">          
-          <div class="filtered-items" ng-show="filteredItems.length">
+          <div class="filtered-items" ng-show="filteredItems.length" ng-controller="ItemsController">
             <h3><a href ng-click="gotoInbox()">inbox</a></h3>
             <div class="inner-feature-content-container" accordion>
-              <div ng-repeat="item in filteredItems = (items | filter:{title:omnibarText.title})" accordion-item heading="{{item.title}}" >
+              <div ng-repeat="item in filteredItems = (items | filter:{title:omnibarText.title})" accordion-item="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" toggle-complete="false">
                 <div ng-include="'static/app/main/itemActions.html'"></div>
               </div>
             </div>
           </div>
-          <div class="filtered-items" ng-show="filteredTasks.length">
+          <div class="filtered-items" ng-show="filteredTasks.length" ng-controller="TasksController">
             <h3><a href ng-click="gotoTasks()">tasks</a></h3>
             <div class="inner-feature-content-container" accordion>
-              <div ng-repeat="task in filteredTasks = (tasks | filter:{title:omnibarText.title})" accordion-item heading="{{task.title}}" >
-                <div task-content></div>
+              <div ng-repeat="task in filteredTasks = (tasks | filter:{title:omnibarText.title})" accordion-item="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)">
+                <div class="accordion-inner" ng-include="'static/app/tasks/taskContent.html'"></div>
               </div>
             </div>
           </div>

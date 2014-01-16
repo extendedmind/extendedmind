@@ -9,6 +9,14 @@ function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, 
   $scope.prefix = OwnerService.getPrefix();
   $scope.filterService = FilterService;
 
+  $scope.editItemTitle = function(item) {
+    itemsRequest.putExistingItem(item);
+  }
+
+  $scope.editItem  = function(item) {
+    $location.path($scope.prefix + '/items/edit/' + item.uuid);
+  }
+
   function clearCompletedText() {
     $timeout(function() {
       $scope.completed = '';

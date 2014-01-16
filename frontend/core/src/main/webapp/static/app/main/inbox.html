@@ -1,10 +1,10 @@
 <section id="inbox" class="two-column-grid page" ng-controller="InboxController">
   <div class="column">
     <header class="feature-header" feature-header="inbox"></header>
-    <div id="inbox-feature-content-container" class="content-container feature-content-container">
+    <div id="inbox-feature-content-container" class="content-container feature-content-container" ng-controller="ItemsController">
       <div class="inner-feature-content-container" accordion>
-        <div ng-repeat="item in items" accordion-item heading="{{item.title}}" >
-          <div ng-include="'static/app/main/itemActions.html'"></div>
+        <div ng-repeat="item in items" accordion-item="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" has-complete="false" toggle-complete>
+          <div class="accordion-inner" ng-include="'static/app/main/itemActions.html'"></div>
         </div>
       </div>
     </div>

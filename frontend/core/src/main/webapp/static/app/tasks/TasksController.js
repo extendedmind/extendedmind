@@ -1,11 +1,15 @@
 /*global angular */
 'use strict';
 
-function TasksListController($location, $routeParams, $scope, activeItem, TagsService, tasksArray, tasksRequest, tasksResponse, OwnerService) {
+function TasksController($location, $scope, OwnerService, activeItem, tasksRequest, tasksResponse, tasksArray) {
 
-  $scope.taskEdit = function(task) {
+  $scope.editTaskTitle = function(task) {
+    tasksRequest.putExistingTask(task);
+  }
+
+  $scope.editTask = function(task) {
     $location.path(OwnerService.getPrefix() + '/tasks/edit/' + task.uuid);
-  };
+  }
 
   $scope.taskChecked = function(task) {
     if (task.completed) {
@@ -54,7 +58,24 @@ function TasksListController($location, $routeParams, $scope, activeItem, TagsSe
       tasksArray.putNewTask(subtask);
     });
   };
+
+  $scope.getSubtaskButtonClass = function(task) {
+    if (!task.project && !task.relationships.parentTask){
+      return "left-of-two";
+    }
+  }
+
+  $scope.getDeleteButtonClass = function(task) {
+    if (!task.project){
+      if (!task.relationships.parentTask){
+        return "right-of-two";
+      }else{
+        return "wide-button"
+      }
+    }
+  }
+
 }
 
-TasksListController.$inject = ['$location', '$routeParams', '$scope', 'activeItem', 'TagsService', 'tasksArray', 'tasksRequest', 'tasksResponse', 'OwnerService'];
-angular.module('em.app').controller('TasksListController', TasksListController);
+TasksController.$inject = ['$location', '$scope', 'OwnerService', 'activeItem', 'tasksRequest', 'tasksResponse', 'tasksArray'];
+angular.module('em.app').controller('TasksController', TasksController);

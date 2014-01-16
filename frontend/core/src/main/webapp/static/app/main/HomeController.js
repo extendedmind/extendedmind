@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function HomeController($scope, itemsRequest) {
+function HomeController($scope, $location, itemsRequest) {
 
   $scope.omniBarActive = false;
   $scope.menuActive = false;
@@ -11,11 +11,15 @@ function HomeController($scope, itemsRequest) {
   };
 
   $scope.addNewItem = function(omnibarText) {
-    // FIXME: refactor jQuery into directive!
-    // $('#omniItem').focus();
-    $scope.omnibarText = {};
-    $scope.focusOmnibar = true;
-    itemsRequest.putItem(omnibarText);
+    if (omnibarText){
+      // FIXME: refactor jQuery into directive!
+      // $('#omniItem').focus();
+      $scope.omnibarText = {};
+      $scope.focusOmnibar = true;
+      itemsRequest.putItem(omnibarText);
+    }else{
+      $location.path($scope.prefix + '/items/new');
+    }
   };
 
   $scope.omniBarFocus = function(focus) {
@@ -30,4 +34,4 @@ function HomeController($scope, itemsRequest) {
 }
 
 angular.module('em.app').controller('HomeController', HomeController);
-HomeController.$inject = ['$scope','itemsRequest'];
+HomeController.$inject = ['$scope','$location','itemsRequest'];

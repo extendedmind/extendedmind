@@ -20,6 +20,19 @@
 
 // HORIZONTAL LAYOUT
 
+.left-of-two {
+  float:left;
+  width: 50%;
+  .small-border-right:after{
+    margin-left: 12%;
+  }
+}
+.right-of-two {
+  float:right;
+  width: 50%;
+  text-align: right;
+}
+
 .left-of-three {
   float:left;
   width: 33.33%;
@@ -84,7 +97,7 @@
   transition: @fade-time linear;
 }
 
-// GENERAL INPUTS
+// INPUTS
 
 .simple-input {
   outline: none;
@@ -93,11 +106,6 @@
   padding: 0;
   background-image: none;
 }
-
-.text-gray {
-  color: @text-gray;
-}
-
 
 .click-to-slide{
   display: table;
@@ -110,7 +118,33 @@
   span.slide-indicator { 
     display:table-cell;
     width: @slide-indicator-width;
-    color:@text-gray;
+    color:@inactive-text;
+  }
+}
+
+// Input on the left and  button on the right OR 
+// Checkbox on the left, input in the center, and button on the right
+
+.table-wrapper {
+  display: table;
+  .center-horizontally;
+  width:100%;
+}
+
+.left-input-wrapper,.right-button-wrapper, .center-input-wrapper, .left-checkbox-wrapper{
+  display:table-cell;
+  vertical-align: middle;
+}
+
+.left-input-wrapper, .center-input-wrapper {
+  width: 100%;
+}
+
+.right-button-wrapper, .left-checkbox-wrapper { 
+  width: @icon-button-width;
+  line-height: 100%;
+  button {
+    padding-top: 4px; // quick fix to center the plus button
   }
 }
 
@@ -207,7 +241,7 @@ label {
 }  
 
  // Never show default checkbox
-input[type=checkbox] {
+ input[type=checkbox] {
   display:none;
 }
 
@@ -216,10 +250,11 @@ input[type='checkbox'] + label:before {
   font-size: @icon-size;
   padding-right: 10px;
   vertical-align: middle;
+  color: @inactive-button;
 }
 
 input[type="checkbox"] + label:before {
-  content: "\e601";
+  .icon-selection-empty;
 }
 
 input[type="checkbox"] + label.overdue:before {
@@ -227,14 +262,14 @@ input[type="checkbox"] + label.overdue:before {
 }
 
 input[type="checkbox"]:checked + label:before {
-  content: "\e602";
+  .icon-selection-checked;
 }
 
 // SELECTIONS
 
 select {
   &.simple-input {
-    color: @text-gray;
+    color: @inactive-text;
     background: none;
     // Without this the text is slightly indented
     margin-left:-4px;
@@ -244,15 +279,16 @@ select {
     color: black;
   }
   option:first-child{
-    color: @text-gray;
+    color: @inactive-text;
   }
 }
 
 // BORDERS
 
 .top-bottom-borders{
-  border-top: solid 2px @text-gray;
-  border-bottom: solid 2px @text-gray;
+  border-top: solid 2px @inactive-text;
+  border-bottom: solid 2px @inactive-text;
+  border-color: @separator;
 }
 
 // SCREEN READERS
@@ -266,4 +302,32 @@ select {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+// SCROLLBARS
+
+::-webkit-scrollbar {
+  width: 4px;
+  background: white;
+}
+::-webkit-scrollbar-thumb {
+  background: @inactive-button;
+}
+::-webkit-scrollbar-corner {
+  background: white;
+}
+
+// Temporary classes (to be refactored)
+.inactive-text {
+  color: @inactive-text;
+}
+
+// LISTS
+
+.list-arrow-right {
+  span.icon-arrow-right {
+    // Add small margin to prevent arrow from touching scrollbar
+    // on desktop
+    margin-right:5px;
+  }
 }
