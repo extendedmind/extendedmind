@@ -13,7 +13,7 @@ function itemsRequest(BackendClientService, itemsArray, itemsResponse, TagsServi
       });
     },
     putItem: function(item) {
-      BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item', item).then(function(putItemsResponse) {
+      return BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item', item).then(function(putItemsResponse) {
         itemsArray.putNewItem(item);
         itemsResponse.putItemContent(item, putItemsResponse.data);
       });

@@ -16,9 +16,15 @@ function EditItemController($scope, $routeParams, ErrorHandlerService, itemsArra
   }
 
   $scope.editItem = function() {
-    itemsRequest.putExistingItem($scope.item).then(function() {
-      $scope.item = {};
-    });
+    if ($scope.item.uuid){
+      itemsRequest.putExistingItem($scope.item).then(function() {
+        $scope.item = {};
+      });
+    }else{
+      itemsRequest.putItem($scope.item).then(function() {
+        $scope.item = {};
+      });
+    }
     window.history.back();
   };
 

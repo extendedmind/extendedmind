@@ -90,15 +90,10 @@ section#home {
         width: 100%;
 
         div.right-button-wrapper { 
-          display:table-cell;
-          width: @plus-button-width;
           line-height: 100%;
-          button {
-            padding-top: 8px; // quick fix to center the plus button
-          }
-          // onboarding highlight
           [class^="icon-"], [class*=" icon-"] button {
-            color: @highlight-button !important;
+            color: @highlight-button; // plus button always highlighted
+            padding-top: 8px; // quick fix to center the plus button
           }
         }
       }
