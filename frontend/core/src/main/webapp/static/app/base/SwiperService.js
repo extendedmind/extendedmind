@@ -92,10 +92,10 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       };
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
     },
-    onSlideChangeEnd: function(swiperPath) {
+    onSlideChangeEnd: function(scope, swiperPath) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
       LocationService.skipReload().path(OwnerService.getPrefix() + '/' + activeSlide.getData('path'));
-      $rootScope.$apply();
+      scope.$apply();
     },
     setInitialSlidePath: function(mainSlide, pageSlide) {
       initialMainSlidePath = mainSlide;

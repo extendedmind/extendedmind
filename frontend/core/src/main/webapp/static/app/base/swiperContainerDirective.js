@@ -57,7 +57,7 @@ function swiperContainerDirective(SwiperService) {
       };
 
       function onSlideChangeEndCallback() {
-        SwiperService.onSlideChangeEnd($scope.swiperPath);
+        SwiperService.onSlideChangeEnd($scope, $scope.swiperPath);
       }
 
       // Overlapping swipers, should stopPropagation be called?
