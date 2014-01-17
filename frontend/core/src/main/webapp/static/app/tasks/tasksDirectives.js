@@ -3,8 +3,6 @@
 
 function projectSlide() {
   return {
-    controller: 'ProjectController',
-    scope: true,
     restrict: 'A',
     templateUrl: 'static/app/tasks/projectSlide.html',
     link: function(scope) {
