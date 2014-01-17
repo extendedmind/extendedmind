@@ -1,24 +1,26 @@
 <div class="accordion-item">
-  <div class="table-wrapper" ng-switch="isOpen">  
-    <div ng-if="hasComplete && !isOpen" class="left-checkbox-wrapper">
-      <input type="checkbox" id="{{item.uuid}}" name="checkbox" class="input-checkbox" ng-checked="item.completed" ng-click="itemChecked()" />
-      <label class="checkbox swiper-no-swiping" for="{{item.uuid}}"></label>
+  <div ng-switch="isOpen">
+    <div ng-switch-when="false" class="table-wrapper">
+      <div ng-if="hasComplete" class="left-checkbox-wrapper">
+        <input type="checkbox" id="{{item.uuid}}" name="checkbox" class="input-checkbox" ng-checked="item.completed" ng-click="itemChecked()" />
+        <label class="checkbox swiper-no-swiping" for="{{item.uuid}}"></label>
+      </div>
+      <div ng-class="getTitleInputClass()">
+        <a id="accordionTitleLink" class="accordion-toggle" href ng-click="clickTitle()">{{item.title}}</a>
+      </div>
     </div>
-    <a ng-switch-when="false" id="accordionTitleLink" class="accordion-toggle center-input-wrapper" href ng-click="clickTitle()">{{item.title}}</a>
-    <form ng-switch-when="true" role="form" name="itemTitleEdit">
-      <div class="form-group table-wrapper">
-        <div ng-if="hasComplete" class="left-checkbox-wrapper">
-          <input type="checkbox" id="{{item.uuid}}" name="checkbox" class="input-checkbox" ng-checked="item.completed" ng-click="itemChecked()" />
-          <label class="checkbox swiper-no-swiping" for="{{item.uuid}}"></label>
-        </div>
-        <div ng-class="getTitleInputClass()">
-          <label class="sr-only" for="accordionTitleInput">title</label>
-          <input id="accordionTitleInput" type="text" ng-focus="startTitleEdit($event)" ng-keypress="evaluateKeyPress($event)" class="simple-input swiper-no-swiping" ng-model="item.title" placeholder="title..." required>
-        </div>
-        <div class="right-button-wrapper">
-          <button class="button" type="button" ng-click="pressItemEdit()"><span class="icon-i" />
-          </button>
-        </div>
+    <form ng-switch-when="true" role="form" name="itemTitleEdit" class="table-wrapper">
+      <div ng-if="hasComplete" class="left-checkbox-wrapper">
+        <input type="checkbox" id="{{item.uuid}}" name="checkbox" class="input-checkbox" ng-checked="item.completed" ng-click="itemChecked()" />
+        <label class="checkbox swiper-no-swiping" for="{{item.uuid}}"></label>
+      </div>
+      <div ng-class="getTitleInputClass()">
+        <label class="sr-only" for="accordionTitleInput">title</label>
+        <input id="accordionTitleInput" type="text" ng-focus="startTitleEdit($event)" ng-keypress="evaluateKeyPress($event)" class="simple-input swiper-no-swiping" ng-model="item.title" placeholder="title..." required>
+      </div>
+      <div class="right-button-wrapper">
+        <button class="button" type="button" ng-click="pressItemEdit()"><span class="icon-i" />
+        </button>
       </div>
     </form>
   </div>
