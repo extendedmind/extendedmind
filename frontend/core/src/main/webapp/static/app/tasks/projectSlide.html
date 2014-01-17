@@ -1,7 +1,7 @@
 <div class="inner-slide-content-container">
   <section class="project">
     <h3 ng-click="toggleProjectContent()">{{project.title}}</h3>
-    <div ng-if="showProjectContent" class="em-item-actions container">
+    <div ng-if="showProjectContent">
       <ul class="button-row">
         <li class="button-container left-of-two" ng-hide="mainlinksFilter">
           <button class="normal-button inactive-button" type="button" ng-hide="task.relationships.parentTask" ng-click="editProject()">

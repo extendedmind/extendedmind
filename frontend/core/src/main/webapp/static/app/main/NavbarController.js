@@ -3,6 +3,9 @@
 
 function NavbarController($location, $scope, $window, AuthenticationService, SwiperService, TasksSlidesService, OwnerService, UserSessionService) {
 
+  // TODO: Use these to build * * * * * subnavigation on top of tasks icon
+  var tasksSubNavigationPaths = ['tasks/dates', 'tasks/lists', 'tasks/projects', 'tasks/single'];
+
   $scope.user = UserSessionService.getUserUUID();
   $scope.collectives = UserSessionService.getCollectives();
   $scope.prefix = OwnerService.getPrefix();
@@ -60,6 +63,30 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
   $scope.goToProject = function(uuid) {
     SwiperService.swipeTo(TasksSlidesService.PROJECTS + '/' + uuid);
   };
+
+  $scope.isActiveSlide = function(pathFragment) {
+    if ($location.path().indexOf("tasks" != -1)){
+      var activeSlide = SwiperService.getActiveSlidePath("tasks");
+      if (activeSlide && (activeSlide.indexOf(pathFragment) != -1)){
+        return true;
+      }
+    }
+  };
+
+  $scope.getFeatureClasses = function(feature) {
+    var classes = "";
+    var activeSlide = SwiperService.getActiveSlidePath("tasks");
+    if (activeSlide){
+      classes += "active-feature";
+      for (var i = 0; i < tasksSubNavigationPaths.length; i++) {
+        if (tasksSubNavigationPaths[i] === activeSlide){
+          classes += " active-slide-parent";
+          break;
+        }
+      }
+    }
+    return classes;
+  }
 
 }
 

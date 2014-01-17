@@ -119,6 +119,15 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
           swiperInfos.page.swiper.swipeTo(pageSwiperIndex);
         }
       }
+    },
+    getActiveSlidePath: function(swiperPath) {
+      if (swipers[swiperPath]){
+        for (var i = 0; i < swipers[swiperPath].swiper.slides.length; i++) {
+          if (swipers[swiperPath].swiper.slides[i].isActive()){
+            return swipers[swiperPath].swiper.slides[i].getData('path');
+          }
+        }    
+      }
     }
   };
 }

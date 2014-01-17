@@ -1,19 +1,19 @@
 <nav class="{{feature}}-footer swiper-no-swiping" role="navigation">
   <ul class="horizontally-justified">
     <li id="inbox-link" class="justified-element">
-      <a href ng-click="gotoInbox()">
+      <a href ng-click="gotoInbox()" ng-class="isActiveSlide('inbox') && 'active-slide'">
         <span class="icon-inbox" />
       </a>
     </li>
     
     <li id="home-link" class="justified-element">
-      <a href ng-click="gotoHome()">
+      <a href ng-click="gotoHome()" ng-class="isActiveSlide('home') && 'active-slide'">
         <span class="icon-home" />
       </a>
     </li>
     
     <li id="tasks-link" class="justified-element">
-      <a href ng-click="gotoTasks()">
+      <a href ng-click="gotoTasks()" ng-class="getFeatureClasses('tasks')">
         <span class="icon-tasks" />
       </a>
     </li>
