@@ -10,6 +10,13 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
   $scope.collectives = UserSessionService.getCollectives();
   $scope.prefix = OwnerService.getPrefix();
 
+  // Register a callback to swiper service
+  SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks', 'navbar-tasks');
+  function slideChangeCallback(activeSlidePath){
+    // Run digest to change only navbar when swiping to new location
+    $scope.$digest();
+  }
+
   $scope.logout = function() {
     AuthenticationService.logout().then(function() {
       $location.path('/login');
@@ -87,6 +94,7 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
     }
     return classes;
   }
+
 
 }
 

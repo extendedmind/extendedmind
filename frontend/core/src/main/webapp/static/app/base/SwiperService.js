@@ -3,10 +3,12 @@
 
 // iDangero.us Swiper Service       
 // http://www.idangero.us/sliders/swiper/api.php
-function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerService) {
+function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerService, AuthenticationService) {
 
   // Holds reference to all the swipers and their respective paths
   var swipers = {};
+
+  var slideChangeCallbacks = [];
 
   // Initial slides, these must be set by the route provider
   var initialMainSlidePath;
@@ -74,6 +76,14 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
     }
   };
 
+  var executeSlideChangeCallbacks = function(swiperPath, path){
+    if (slideChangeCallbacks[swiperPath]) {
+      for (var i = 0; i < slideChangeCallbacks[swiperPath].length; i++) {
+        slideChangeCallbacks[swiperPath][i].callback(path);
+      }
+    }
+  }
+
   return {
     initializeSwiper: function(containerElement, swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback) {
       if (swipers[swiperPath]){
@@ -94,8 +104,22 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
     },
     onSlideChangeEnd: function(scope, swiperPath) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
-      LocationService.skipReload().path(OwnerService.getPrefix() + '/' + activeSlide.getData('path'));
-      scope.$apply();
+      var path = OwnerService.getPrefix() + '/' + activeSlide.getData('path');
+      // Use global html5Mode declaration to check how to handle route changes
+      if ((typeof html5Mode === 'undefined') || (html5Mode)){
+        if (history.pushState) {
+          // Modern browser
+          history.pushState(null, '', path);
+          executeSlideChangeCallbacks(swiperPath, path);
+        } else{
+          // Legacy browser
+          LocationService.skipReload().path(path);
+          scope.$apply();
+        }
+      }else{
+        // Phonegap
+        executeSlideChangeCallbacks(swiperPath, path);
+      }
     },
     setInitialSlidePath: function(mainSlide, pageSlide) {
       initialMainSlidePath = mainSlide;
@@ -122,14 +146,29 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
     },
     getActiveSlidePath: function(swiperPath) {
       if (swipers[swiperPath]){
-        for (var i = 0; i < swipers[swiperPath].swiper.slides.length; i++) {
-          if (swipers[swiperPath].swiper.slides[i].isActive()){
-            return swipers[swiperPath].swiper.slides[i].getData('path');
-          }
-        }    
+        var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
+        if (activeSlide) {
+          return activeSlide.getData('path');
+        }
       }
+    },
+    registerSlideChangeCallback: function(slideChangeCallback, swiperPath, id) {
+      if (!slideChangeCallbacks[swiperPath]) {
+        slideChangeCallbacks[swiperPath] = [];
+      }else{
+        for (var i = 0; i < slideChangeCallbacks[swiperPath].length; i++) {
+          if (slideChangeCallbacks[swiperPath][i].id === id){
+            // Already registered
+            return;
+          }
+        }
+      }
+      slideChangeCallbacks[swiperPath].push({
+        callback: slideChangeCallback,
+        id: id
+      });
     }
   };
 }
 angular.module('em.services').factory('SwiperService', SwiperService);
-SwiperService.$inject = ['$rootScope', 'LocationService', 'TasksSlidesService', 'OwnerService'];
+SwiperService.$inject = ['$rootScope', 'LocationService', 'TasksSlidesService', 'OwnerService', 'AuthenticationService'];
