@@ -60,20 +60,31 @@ function TasksController($location, $scope, OwnerService, activeItem, tasksReque
   };
 
   $scope.getSubtaskButtonClass = function(task) {
-    if (!task.project && !task.relationships.parentTask){
+    if (!task.project && !(task.relationships && task.relationships.parentTask)){
       return "left-of-two";
     }
   }
 
   $scope.getDeleteButtonClass = function(task) {
     if (!task.project){
-      if (!task.relationships.parentTask){
+      if (!(task.relationships && task.relationships.parentTask)){
         return "right-of-two";
       }else{
-        return "wide-button"
+        return "wide-button";
       }
     }
   }
+
+  $scope.showDate = function(task) {
+    if (task && task.due || $scope.focusDateInput) {
+      return true;
+    }
+    return false;
+  };
+
+  $scope.focusDate = function(task) {
+    $scope.focusDateInput = true;
+  };
 
 }
 
