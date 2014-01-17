@@ -33,19 +33,10 @@
       </select>
     </div>
 
-    <div class="row em-item-actions">
-      <ul class="nav nav-justified em-horizontal-buttons">
-        <li class="em-gray-button">
-          <button class="em-simple-input" type="button" ng-click="taskEditMore(task)">
-            more
-          </button>
-        </li>
-        <li class="em-green-button">
-          <button class="em-simple-input" type="button" ng-click="taskEditDone(task)">
-            done
-          </button>
-        </li>
-      </ul>
+    <div class="item-actions">
+      <button class="wide-button normal-button" type="button" ng-click="taskEditDone(task)">
+        <span class="button-text">done</span>
+      </button>
     </div>
   </div>
 
