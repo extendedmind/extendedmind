@@ -13,5 +13,5 @@
     <div class="swiper-slide" swiper-slide="tasks/single" ng-include="'static/app/tasks/singleTasks.html'"></div>
   </div>
 </div>
-<footer ng-hide="mainlinksFilter" em-footer mainlinksfilter="newItem.title"></footer>
+<footer ng-hide="mainlinksFilter" ng-init="feature='tasks'" ng-include="'static/app/main/footer.html'"></footer>
 </div>

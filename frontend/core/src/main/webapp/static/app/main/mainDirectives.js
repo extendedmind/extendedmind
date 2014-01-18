@@ -22,33 +22,6 @@ angular.module('em.directives').directive('errorAlertBar', ['$parse',
     };
   }]);
 
-angular.module('em.directives').directive('emFooter', [
-  function() {
-    return {
-      controller: 'NavbarController',
-      restrict: 'A',
-      templateUrl: 'static/app/main/footer.html',
-      link: function(scope, element, attrs) {
-        var mainlinksFilterAttr = attrs.mainlinksfilter;
-        scope.$watch(mainlinksFilterAttr, function(newValue) {
-          scope.mainlinksFilter = newValue;
-        });
-      }
-    };
-  }]);
-
-angular.module('em.directives').directive('featureHeader', [
-  function() {
-    return {
-      controller: 'NavbarController',
-      restrict: 'A',
-      scope: {
-        feature: '@featureHeader'
-      },
-      templateUrl: 'static/app/base/featureHeader.html'
-    };
-  }]);
-
 angular.module('em.directives').directive('emPassword', [
   function() {
     // http://stackoverflow.com/a/18014975

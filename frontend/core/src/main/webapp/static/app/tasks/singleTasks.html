@@ -1,8 +1,8 @@
-<section id="tasks-single" class="two-column-grid page">
+<section id="tasks-single" class="two-column-grid page" ng-controller="TasksController">
   <div class="column">
-    <header id="tasks-lists-header" class="feature-header" feature-header="single tasks"></header>
-    <div id="tasks-single-feature-content-container" class="content-container feature-content-container">
-      <div class="inner-feature-content-container">
+    <header id="tasks-lists-header" class="page-header" ng-init="heading='single tasks'" ng-include="'static/app/base/pageHeader.html'"></header>
+    <div id="tasks-single-page-content-container" class="content-container page-content-container">
+      <div class="inner-page-content-container">
         <div tasks-list="tasks" tasks-filter="filterService.activeFilters.unsorted" subtask="subtask"></div>
       </div>
     </div>

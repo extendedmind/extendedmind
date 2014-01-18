@@ -105,6 +105,8 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
     onSlideChangeEnd: function(scope, swiperPath) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
       var path = OwnerService.getPrefix() + '/' + activeSlide.getData('path');
+
+      /* TODO: Concider using something like this
       // Use global html5Mode declaration to check how to handle route changes
       if ((typeof html5Mode === 'undefined') || (html5Mode)){
         if (history.pushState) {
@@ -119,7 +121,11 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       }else{
         // Phonegap
         executeSlideChangeCallbacks(swiperPath, path);
-      }
+      }*/
+
+      LocationService.skipReload().path(path);
+      executeSlideChangeCallbacks(swiperPath, path);
+      AuthenticationService.check();
     },
     setInitialSlidePath: function(mainSlide, pageSlide) {
       initialMainSlidePath = mainSlide;
@@ -165,8 +171,7 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       }
       slideChangeCallbacks[swiperPath].push({
         callback: slideChangeCallback,
-        id: id
-      });
+        id: id});
     }
   };
 }

@@ -1,7 +1,15 @@
 /*global angular */
 'use strict';
 
-function TasksController($location, $scope, OwnerService, activeItem, tasksRequest, tasksResponse, tasksArray) {
+function TasksController($location, $scope, OwnerService, activeItem, tasksRequest, tasksResponse, tasksArray, SwiperService, TasksSlidesService) {
+
+  $scope.addNew = function() {
+    $location.path($scope.prefix + '/tasks/new');
+  };
+
+  $scope.dateClicked = function(dateString) {
+    SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(dateString));
+  };
 
   $scope.editTaskTitle = function(task) {
     tasksRequest.putExistingTask(task);
@@ -86,7 +94,10 @@ function TasksController($location, $scope, OwnerService, activeItem, tasksReque
     $scope.focusDateInput = true;
   };
 
+  $scope.goToProject = function(uuid) {
+    SwiperService.swipeTo(TasksSlidesService.PROJECTS + '/' + uuid);
+  };
 }
 
-TasksController.$inject = ['$location', '$scope', 'OwnerService', 'activeItem', 'tasksRequest', 'tasksResponse', 'tasksArray'];
+TasksController.$inject = ['$location', '$scope', 'OwnerService', 'activeItem', 'tasksRequest', 'tasksResponse', 'tasksArray', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('TasksController', TasksController);
