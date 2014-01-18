@@ -11,31 +11,11 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
   $scope.prefix = OwnerService.getPrefix();
 
   // Register a callback to swiper service
-  SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks', 'navbar-tasks');
+  SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks', 'NavbarController');
   function slideChangeCallback(activeSlidePath){
     // Run digest to change only navbar when swiping to new location
     $scope.$digest();
   }
-
-  $scope.logout = function() {
-    AuthenticationService.logout().then(function() {
-      $location.path('/login');
-    });
-  };
-
-  $scope.setCollectiveActive = function(uuid) {
-    AuthenticationService.switchActiveUUID(uuid);
-    $location.path('/collective/' + uuid + '/' + TasksSlidesService.HOME);
-  };
-  
-  $scope.setMyActive = function() {
-    AuthenticationService.switchActiveUUID(UserSessionService.getUserUUID());
-    $location.path('/my/tasks/home');
-  };
-  
-  $scope.addNew = function() {
-    $location.path($scope.prefix + '/tasks/new');
-  };
 
   $scope.gotoInbox = function() {
     if ($location.path().indexOf("/tasks/") != -1){
@@ -59,16 +39,6 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
     }else{
       $location.path($scope.prefix + '/' + TasksSlidesService.DATES);
     }
-  };
-
-  $scope.useCollectives = function () {
-    if (UserSessionService.getCollectives() && Object.keys(UserSessionService.getCollectives()).length > 1) {
-      return true;
-    }
-  };
-
-  $scope.goToProject = function(uuid) {
-    SwiperService.swipeTo(TasksSlidesService.PROJECTS + '/' + uuid);
   };
 
   $scope.isActiveSlide = function(pathFragment) {

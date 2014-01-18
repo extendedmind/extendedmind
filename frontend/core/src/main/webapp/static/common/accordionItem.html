@@ -1,11 +1,12 @@
 <div class="accordion-item">
   <div ng-switch="isOpen">
-    <div ng-switch-when="false" class="table-wrapper">
-      <div ng-if="hasComplete" class="left-checkbox-wrapper">
-        <input type="checkbox" id="{{item.uuid}}" name="checkbox" class="input-checkbox" ng-checked="item.completed" ng-click="itemChecked()" />
+    <div ng-switch-when="false">
+      <div ng-if="hasComplete" class="table-wrapper">
+        <input type="checkbox" class="left-checkbox-wrapper" id="{{item.uuid}}" name="checkbox" class="input-checkbox" ng-checked="item.completed" ng-click="itemChecked()" />
         <label class="checkbox swiper-no-swiping" for="{{item.uuid}}"></label>
+        <a id="accordionTitleLink" ng-class="getTitleInputClass()" class="accordion-toggle" href ng-click="clickTitle()">{{item.title}}</a>
       </div>
-      <div ng-class="getTitleInputClass()">
+      <div ng-if="!hasComplete">
         <a id="accordionTitleLink" class="accordion-toggle" href ng-click="clickTitle()">{{item.title}}</a>
       </div>
     </div>
