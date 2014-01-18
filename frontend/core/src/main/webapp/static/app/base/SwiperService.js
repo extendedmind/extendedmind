@@ -3,7 +3,7 @@
 
 // iDangero.us Swiper Service       
 // http://www.idangero.us/sliders/swiper/api.php
-function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerService, AuthenticationService) {
+function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerService) {
 
   // Holds reference to all the swipers and their respective paths
   var swipers = {};
@@ -122,10 +122,8 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
         // Phonegap
         executeSlideChangeCallbacks(swiperPath, path);
       }*/
-
-      LocationService.skipReload().path(path);
+      //LocationService.skipReload().path(path);
       executeSlideChangeCallbacks(swiperPath, path);
-      AuthenticationService.check();
     },
     setInitialSlidePath: function(mainSlide, pageSlide) {
       initialMainSlidePath = mainSlide;
@@ -164,7 +162,8 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       }else{
         for (var i = 0; i < slideChangeCallbacks[swiperPath].length; i++) {
           if (slideChangeCallbacks[swiperPath][i].id === id){
-            // Already registered
+            // Already registered, replace callback
+            slideChangeCallbacks[swiperPath][i].callback = slideChangeCallback;
             return;
           }
         }
@@ -176,4 +175,4 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
   };
 }
 angular.module('em.services').factory('SwiperService', SwiperService);
-SwiperService.$inject = ['$rootScope', 'LocationService', 'TasksSlidesService', 'OwnerService', 'AuthenticationService'];
+SwiperService.$inject = ['$rootScope', 'LocationService', 'TasksSlidesService', 'OwnerService'];

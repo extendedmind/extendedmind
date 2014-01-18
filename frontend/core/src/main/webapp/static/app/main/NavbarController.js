@@ -18,7 +18,7 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
   }
 
   $scope.gotoInbox = function() {
-    if ($location.path().indexOf("/tasks/") != -1){
+    if ($location.path().indexOf("/tasks") != -1){
       SwiperService.swipeTo(TasksSlidesService.INBOX);
     }else{
       $location.path($scope.prefix + '/' + TasksSlidesService.INBOX);
@@ -26,7 +26,7 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
   };
 
   $scope.gotoHome = function() {
-    if ($location.path().indexOf("/tasks/") != -1){
+    if ($location.path().indexOf("/tasks") != -1){
       SwiperService.swipeTo(TasksSlidesService.HOME);
     }else{
       $location.path($scope.prefix + '/' + TasksSlidesService.HOME);
@@ -34,10 +34,10 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
   };
 
   $scope.gotoTasks = function() {
-    if ($location.path().indexOf("/tasks/") != -1){
+    if ($location.path().indexOf("/tasks") != -1){
       SwiperService.swipeTo(TasksSlidesService.DATES);
     }else{
-      $location.path($scope.prefix + '/' + TasksSlidesService.DATES);
+      $location.path($scope.prefix + '/tasks');
     }
   };
 

@@ -13,13 +13,13 @@ function HomeController($scope, $location, itemsRequest, UserSessionService, Aut
 
   $scope.setCollectiveActive = function(uuid) {
     AuthenticationService.switchActiveUUID(uuid);
-    $location.path('/collective/' + uuid + '/' + TasksSlidesService.HOME);
+    $location.path('/collective/' + uuid + '/tasks');
     $scope.menuActive = false;
   };
   
   $scope.setMyActive = function() {
     AuthenticationService.switchActiveUUID(UserSessionService.getUserUUID());
-    $location.path('/my/tasks/home');
+    $location.path('/my/tasks');
     $scope.menuActive = false;
   };
 
