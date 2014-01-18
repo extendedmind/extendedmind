@@ -3,7 +3,7 @@
 
 beforeEach(module('em.app'));
 
-describe('HomeController', function() {
+describe('ItemsController', function() {
   beforeEach(module('em.services', 'em.mockHelpers'));
 
   var $controller, $httpBackend, $scope, mockHttpBackendResponse, slide, userItems;
@@ -14,7 +14,7 @@ describe('HomeController', function() {
     userItems = mockHttpBackendResponse.getItemsResponse();
 
     $scope = _$rootScope_.$new();
-    $controller = _$controller_('HomeController', {
+    $controller = _$controller_('ItemsController', {
       $scope : $scope,
       slide : slide
     });
