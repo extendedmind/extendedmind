@@ -64,7 +64,6 @@ function accordionDirective($document){
       $scope.unbindElsewhereEvents = function() {
         if ($scope.eventsBound){
           $document.unbind('click', $scope.elsewhereCallback);
-          $document.unbind('touchstart', $scope.elsewhereCallback);
         }
         $scope.eventsBound = false;
       };
