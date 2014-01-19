@@ -14,11 +14,15 @@ function accordionDirective($document){
       // This array keeps track of the accordion items
       this.items = [];
 
-      // Ensure that all the items in this accordion are closed, unless close-others explicitly says not to
+      // Ensure that all the items in this accordion are closed
+      $scope.closedOtherItems = false;
       this.closeOthers = function(openItem) {
+        $scope.closedOtherItems = false;
         angular.forEach(this.items, function (item) {
           if ( item !== openItem ) {
-            item.closeItem();
+            if (item.closeItem()){
+              $scope.closedOtherItems = true;
+            }
           }
         });
 
@@ -28,6 +32,7 @@ function accordionDirective($document){
         if (!$scope.eventsBound){
           $scope.bindElsewhereEvents();
         }
+        $scope.closedOtherItems;
       };
       
       // This is called from the accordion-item directive to add itself to the accordion
@@ -58,31 +63,34 @@ function accordionDirective($document){
       $scope.eventsBound = false;
       $scope.unbindElsewhereEvents = function() {
         if ($scope.eventsBound){
-          $document.unbind('click', $scope.elswhereCallback);
-          $document.unbind('touchstart', $scope.elswhereCallback);
+          $document.unbind('click', $scope.elsewhereCallback);
+          $document.unbind('touchstart', $scope.elsewhereCallback);
         }
         $scope.eventsBound = false;
       };
 
       $scope.bindElsewhereEvents = function () {
-        $document.bind('click touchstart', $scope.elswhereCallback);
+        $document.bind('click touchstart', $scope.elsewhereCallback);
         $scope.eventsBound = true;
       }
 
-      $scope.elswhereCallback = function(event) {
-        // If clicking elswehere than on the link or on an element that has as parent
-        // this accordion, close accordion and unbind events.
-        // NOTE: Class item-actions is needed to get clicking on buttons inside the 
-        //       accordion to work!
-        if (event.target.id !== "accordionTitleLink" && 
-            !$(event.target).parents('.accordion').length && 
-            !$(event.target).parents('.item-actions').length){
-          $scope.$apply(function(){
-            angular.forEach($scope.thisController.items, function (item) {
-              item.closeItem();
-            });
-            $scope.unbindElsewhereEvents();
-          })
+      $scope.elsewhereCallback = function(event) {
+        // First rule out clicking on link with a closed accordion
+        if (!(!$scope.closedOtherItems && event.target.id === "accordionTitleLink")){
+          // If clicking elswehere than on the input or on an element that has as parent
+          // the accordion-item, close accordion and unbind events.
+          // NOTE: Class item-actions is needed to get clicking on buttons inside the 
+          //       accordion to work!
+          if (($scope.closedOtherItems && event.target.id === "accordionTitleLink") ||
+              (!$(event.target).parents('.accordion-item-open').length && 
+              !$(event.target).parents('.item-actions').length)){
+            $scope.$apply(function(){
+              angular.forEach($scope.thisController.items, function (item) {
+                item.closeItem();
+              });
+              $scope.unbindElsewhereEvents();
+            })
+          }
         }
       };
 
