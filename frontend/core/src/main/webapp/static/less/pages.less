@@ -105,20 +105,6 @@ section#home {
   }
 }
 
-// TASKS
-
-input[type="checkbox"]:checked ~ a#accordionTitleLink {
-  color:@inactive-text;
-  .fade-color(@fade-time);
-}
-
-// DATES
-
-section#date {
-  a#accordionTitleLink {
-    line-height: normal;
-  }
-}
 
 // TASKS DATES
 
@@ -144,7 +130,7 @@ section#tasks-dates {
   }
 }
 
-// INBOX
+// TODO: Move these to the right place!
 
 button.normal-button.inactive-button{
   color: white;
@@ -161,4 +147,17 @@ button.normal-button.inactive-button{
   border-color: @separator;
   padding-top: 5px;
   padding-bottom: 5px;
+}
+
+input[type="checkbox"]:checked ~ a#accordionTitleLink {
+  color:@inactive-text;
+  .fade-color(@fade-time);
+}
+
+div#accordionTitleHeightFix {
+  height: @vertical-grid;
+}
+
+a#accordionTitleLink {
+  line-height: normal;
 }
