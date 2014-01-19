@@ -1,7 +1,7 @@
 <section id="home" class="one-column-grid page" ng-controller="HomeController">
   <div class="column">
     <header ng-hide="omniBarActive" id="main-header">
-      <nav role="navigation" ng-controller="NavbarController">
+      <nav role="navigation">
         <div id="menu-icon">
           <button id="menu-button" type="button" ng-click="toggleMenu()" alt="menu">
             <span class="icon-menu"></span>
@@ -54,7 +54,7 @@
         <div ng-if="omnibarText.title" id="filtered-items-container">          
           <div class="filtered-items" ng-show="filteredItems.length" ng-controller="ItemsController">
             <h3><a href ng-click="gotoInbox()">inbox</a></h3>
-            <div class="inner-feature-content-container" accordion>
+            <div class="inner-page-content-container" accordion>
               <div ng-repeat="item in filteredItems = (items | filter:{title:omnibarText.title})" accordion-item="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" toggle-complete="false">
                 <div ng-include="'static/app/main/itemActions.html'"></div>
               </div>
@@ -62,9 +62,9 @@
           </div>
           <div class="filtered-items" ng-show="filteredTasks.length" ng-controller="TasksController">
             <h3><a href ng-click="gotoTasks()">tasks</a></h3>
-            <div class="inner-feature-content-container" accordion>
+            <div class="inner-page-content-container" accordion>
               <div ng-repeat="task in filteredTasks = (tasks | filter:{title:omnibarText.title})" accordion-item="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)">
-                <div class="accordion-inner" ng-include="'static/app/tasks/taskContent.html'"></div>
+                <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
               </div>
             </div>
           </div>

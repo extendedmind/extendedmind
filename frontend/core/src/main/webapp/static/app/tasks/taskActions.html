@@ -1,9 +1,11 @@
 <div ng-controller="TasksController">
-  <li ng-repeat="value in task | visibleTaskContent">
-    <span><small>{{value}}</small></span>
-  </li>
+  <ul class="indent">
+    <li ng-repeat="value in task | visibleTaskContent">
+      <span><small>{{value}}</small></span>
+    </li>
+  </ul>
 
-  <div class="task-actions">
+  <div class="item-actions">
     <ul class="button-row">
       <li ng-if="!task.relationships.parentTask" class="button-container" ng-class="getSubtaskButtonClass(task)">
         <button type="button" class="normal-button" ng-click="taskToProject(task)">

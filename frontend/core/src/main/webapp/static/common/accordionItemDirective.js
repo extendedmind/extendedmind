@@ -39,12 +39,20 @@ function accordionItemDirective($document){
           scope.endTitleEdit();
           element.removeClass("accordion-item-active");
           scope.isOpen = false;
+          return true;
         }
+        return false;
       }
 
       scope.clickTitle = function() {
-        if (scope.toggleOpen()) {
+        if (scope.isOpen){
+          scope.toggleOpen();
           accordionCtrl.closeOthers(scope);
+        }else{
+          // Not open, don't open unless nothing else was closed
+          if (!accordionCtrl.closeOthers(scope)){
+            scope.toggleOpen();
+          }
         }
       };
 

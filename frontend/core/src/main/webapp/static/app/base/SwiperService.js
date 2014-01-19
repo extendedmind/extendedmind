@@ -8,6 +8,8 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
   // Holds reference to all the swipers and their respective paths
   var swipers = {};
 
+  var slideChangeCallbacks = [];
+
   // Initial slides, these must be set by the route provider
   var initialMainSlidePath;
   var initialPageSlidePath;
@@ -74,6 +76,14 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
     }
   };
 
+  var executeSlideChangeCallbacks = function(swiperPath, path){
+    if (slideChangeCallbacks[swiperPath]) {
+      for (var i = 0; i < slideChangeCallbacks[swiperPath].length; i++) {
+        slideChangeCallbacks[swiperPath][i].callback(path);
+      }
+    }
+  }
+
   return {
     initializeSwiper: function(containerElement, swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback) {
       if (swipers[swiperPath]){
@@ -92,10 +102,28 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       };
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
     },
-    onSlideChangeEnd: function(swiperPath) {
+    onSlideChangeEnd: function(scope, swiperPath) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
-      LocationService.skipReload().path(OwnerService.getPrefix() + '/' + activeSlide.getData('path'));
-      $rootScope.$apply();
+      var path = OwnerService.getPrefix() + '/' + activeSlide.getData('path');
+
+      /* TODO: Concider using something like this
+      // Use global html5Mode declaration to check how to handle route changes
+      if ((typeof html5Mode === 'undefined') || (html5Mode)){
+        if (history.pushState) {
+          // Modern browser
+          history.pushState(null, '', path);
+          executeSlideChangeCallbacks(swiperPath, path);
+        } else{
+          // Legacy browser
+          LocationService.skipReload().path(path);
+          scope.$apply();
+        }
+      }else{
+        // Phonegap
+        executeSlideChangeCallbacks(swiperPath, path);
+      }*/
+      //LocationService.skipReload().path(path);
+      executeSlideChangeCallbacks(swiperPath, path);
     },
     setInitialSlidePath: function(mainSlide, pageSlide) {
       initialMainSlidePath = mainSlide;
@@ -119,6 +147,30 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
           swiperInfos.page.swiper.swipeTo(pageSwiperIndex);
         }
       }
+    },
+    getActiveSlidePath: function(swiperPath) {
+      if (swipers[swiperPath]){
+        var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
+        if (activeSlide) {
+          return activeSlide.getData('path');
+        }
+      }
+    },
+    registerSlideChangeCallback: function(slideChangeCallback, swiperPath, id) {
+      if (!slideChangeCallbacks[swiperPath]) {
+        slideChangeCallbacks[swiperPath] = [];
+      }else{
+        for (var i = 0; i < slideChangeCallbacks[swiperPath].length; i++) {
+          if (slideChangeCallbacks[swiperPath][i].id === id){
+            // Already registered, replace callback
+            slideChangeCallbacks[swiperPath][i].callback = slideChangeCallback;
+            return;
+          }
+        }
+      }
+      slideChangeCallbacks[swiperPath].push({
+        callback: slideChangeCallback,
+        id: id});
     }
   };
 }

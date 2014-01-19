@@ -3,8 +3,6 @@
 
 function projectSlide() {
   return {
-    controller: 'ProjectController',
-    scope: true,
     restrict: 'A',
     templateUrl: 'static/app/tasks/projectSlide.html',
     link: function(scope) {
@@ -57,14 +55,6 @@ function tasksList() {
 }
 angular.module('em.directives').directive('tasksList', tasksList);
 
-angular.module('em.directives').directive('task', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/app/tasks/task.html'
-    };
-  }]);
-
 angular.module('em.directives').directive('subTask', [
   function() {
     return {
@@ -74,27 +64,6 @@ angular.module('em.directives').directive('subTask', [
         add: '&'
       },
       templateUrl : 'static/app/tasks/subTask.html'
-    };
-  }]);
-
-angular.module('em.directives').directive('taskContent', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/app/tasks/taskContent.html',
-      link: function(scope) {
-        scope.showTaskContent = false;
-
-        scope.toggleTaskContent = function toggleTaskContent() {
-          scope.showTaskContent = !scope.showTaskContent;
-
-          if (scope.showTaskContent) {
-            scope.selected = 'em-active-list-item';
-          } else {
-            scope.selected = '';
-          }
-        };
-      }
     };
   }]);
 

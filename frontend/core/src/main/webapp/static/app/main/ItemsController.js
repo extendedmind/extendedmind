@@ -50,6 +50,10 @@ function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, 
     }
   }
 
+  $scope.addNew = function() {
+    $location.path($scope.prefix + '/items/new');
+  };
+
 }
 
 ItemsController.$inject = ['$location', '$scope', '$timeout', 'itemsArray', 'itemsRequest', 'tasksRequest', 'TagsService', 'tasksArray', 'OwnerService', 'FilterService'];

@@ -1,7 +1,7 @@
 
 // LOGIN
 
-@login-content-height: @vertical-grid*5.6;
+@login-content-height: @vertical-grid*5.1;
 
 section#login {
   .column {
@@ -11,6 +11,7 @@ section#login {
       span {
         width: 200px;
         display: block;
+        text-align: center;
         .center-horizontally;
       }
       // Make content a "sticky footer"
@@ -22,12 +23,11 @@ section#login {
       content: "";
       display: block;
       height: @login-content-height;
-
     }
     .content {
       height: @login-content-height;
       .button-container{
-        padding-top: @vertical-grid;
+        padding-top: @vertical-grid / 2;
         padding-bottom: @vertical-grid / 2;
       }
     }
@@ -107,9 +107,17 @@ section#home {
 
 // TASKS
 
-input[type="checkbox"]:checked ~ .task {
+input[type="checkbox"]:checked ~ a#accordionTitleLink {
   color:@inactive-text;
   .fade-color(@fade-time);
+}
+
+// DATES
+
+section#date {
+  a#accordionTitleLink {
+    line-height: normal;
+  }
 }
 
 // TASKS DATES
@@ -143,4 +151,14 @@ button.normal-button.inactive-button{
   & {
     background-color: @inactive-button;
   }
+}
+
+// When item open, show top&bottom borders
+.accordion-item-active {
+  border-top-style: solid;
+  border-bottom-style: solid;
+  border-width: 1px;
+  border-color: @separator;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }

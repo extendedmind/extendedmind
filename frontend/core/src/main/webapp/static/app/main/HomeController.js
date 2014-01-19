@@ -1,13 +1,38 @@
 /*global angular */
 'use strict';
 
-function HomeController($scope, $location, itemsRequest) {
+function HomeController($scope, $location, itemsRequest, UserSessionService, AuthenticationService, TasksSlidesService) {
 
   $scope.omniBarActive = false;
   $scope.menuActive = false;
+  $scope.collectives = UserSessionService.getCollectives();
 
   $scope.toggleMenu = function toggleMenu() {
     $scope.menuActive = !$scope.menuActive;
+  };
+
+  $scope.setCollectiveActive = function(uuid) {
+    AuthenticationService.switchActiveUUID(uuid);
+    $location.path('/collective/' + uuid + '/tasks');
+    $scope.menuActive = false;
+  };
+  
+  $scope.setMyActive = function() {
+    AuthenticationService.switchActiveUUID(UserSessionService.getUserUUID());
+    $location.path('/my/tasks');
+    $scope.menuActive = false;
+  };
+
+  $scope.logout = function() {
+    AuthenticationService.logout().then(function() {
+      $location.path('/login');
+    });
+  };
+
+  $scope.useCollectives = function () {
+    if ($scope.collectives && Object.keys($scope.collectives).length > 1) {
+      return true;
+    }
   };
 
   $scope.addNewItem = function(omnibarText) {
@@ -34,4 +59,4 @@ function HomeController($scope, $location, itemsRequest) {
 }
 
 angular.module('em.app').controller('HomeController', HomeController);
-HomeController.$inject = ['$scope','$location','itemsRequest'];
+HomeController.$inject = ['$scope','$location','itemsRequest', 'UserSessionService', 'AuthenticationService', 'TasksSlidesService'];

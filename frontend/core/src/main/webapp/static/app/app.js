@@ -13,7 +13,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $locationProvider.html5Mode(h5m);
 
     $routeProvider.when('/', {
-      redirectTo: 'my/tasks/home'
+      redirectTo: 'my/tasks'
     });
 
     $routeProvider.when('/accept/:hex_code', {
@@ -53,7 +53,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       
     });
 
-    $routeProvider.when('/my/tasks/home', {
+    $routeProvider.when('/my/tasks', {
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -68,11 +68,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(OwnerService) {
           OwnerService.setMyPrefix();
         }]
-
       }
     });
 
-    $routeProvider.when('/collective/:collectiveUUID/tasks/home', {
+    $routeProvider.when('/collective/:collectiveUUID/tasks', {
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -89,270 +88,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }]
 
       }
-    });
-
-    $routeProvider.when('/my/tasks/inbox', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['TasksSlidesService', 'SwiperService',
-        function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(TasksSlidesService.INBOX);
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks/inbox', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['TasksSlidesService', 'SwiperService',
-        function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(TasksSlidesService.INBOX);
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/my/tasks/lists', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['TasksSlidesService', 'SwiperService',
-        function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(TasksSlidesService.LISTS);
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks/lists', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['TasksSlidesService', 'SwiperService',
-        function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(TasksSlidesService.LISTS);
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/my/tasks/projects', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['TasksSlidesService', 'SwiperService',
-        function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(TasksSlidesService.PROJECTS);
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks/projects', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['TasksSlidesService', 'SwiperService',
-        function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(TasksSlidesService.PROJECTS);
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/my/tasks/projects/:uuid', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['$route', 'TasksSlidesService', 'SwiperService',
-        function($route, TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(
-            TasksSlidesService.PROJECTS,
-            TasksSlidesService.getProjectSlidePath($route.current.params.uuid));
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks/projects/:uuid', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['$route', 'TasksSlidesService', 'SwiperService',
-        function($route, TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(
-            TasksSlidesService.PROJECTS,
-            TasksSlidesService.getProjectSlidePath($route.current.params.uuid));
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/my/tasks/dates', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['TasksSlidesService', 'SwiperService',
-        function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(TasksSlidesService.DATES);
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks/dates', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['TasksSlidesService', 'SwiperService',
-        function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(TasksSlidesService.DATES);
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/my/tasks/dates/:date', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['$route', 'TasksSlidesService', 'SwiperService',
-        function($route, TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(
-            TasksSlidesService.DATES,
-            TasksSlidesService.getDateSlidePath($route.current.params.date));
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks/dates/:date', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['$route', 'TasksSlidesService', 'SwiperService',
-        function($route, TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(
-            TasksSlidesService.DATES,
-            TasksSlidesService.getDateSlidePath($route.current.params.uuid));
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
-        }]
-      }
-    });
-
-    $routeProvider.when('/my/tasks/single', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['TasksSlidesService', 'SwiperService',
-        function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(TasksSlidesService.SINGLE_TASKS);
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks/single', {
-      templateUrl: 'static/app/main/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.check();
-        }],
-        slide: ['TasksSlidesService', 'SwiperService',
-        function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(TasksSlidesService.SINGLE_TASKS);
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
-        }]
-      }
-    });
+    });    
 
     $routeProvider.when('/my/tasks/context/:uuid', {
       controller: 'ContextController',
