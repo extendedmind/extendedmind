@@ -70,7 +70,7 @@ function accordionDirective($document){
       };
 
       $scope.bindElsewhereEvents = function () {
-        $document.bind('click touchstart', $scope.elsewhereCallback);
+        $document.bind('click', $scope.elsewhereCallback);
         $scope.eventsBound = true;
       }
 
