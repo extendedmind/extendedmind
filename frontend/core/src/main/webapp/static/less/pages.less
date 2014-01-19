@@ -1,7 +1,7 @@
 
 // LOGIN
 
-@login-content-height: @vertical-grid*5.6;
+@login-content-height: @vertical-grid*5.1;
 
 section#login {
   .column {
@@ -11,6 +11,7 @@ section#login {
       span {
         width: 200px;
         display: block;
+        text-align: center;
         .center-horizontally;
       }
       // Make content a "sticky footer"
@@ -22,12 +23,11 @@ section#login {
       content: "";
       display: block;
       height: @login-content-height;
-
     }
     .content {
       height: @login-content-height;
       .button-container{
-        padding-top: @vertical-grid;
+        padding-top: @vertical-grid / 2;
         padding-bottom: @vertical-grid / 2;
       }
     }
