@@ -1,9 +1,10 @@
-/*global analyticsKey, angular, LocalyticsSession*/
+/*global angular, LocalyticsSession*/
 'use strict';
 
 function AnalyticsService() {
 
-  var localyticsSession, options;
+  var localyticsSession, options, analyticsKey;
+  analyticsKey = '86ca78fb61cf6399b3db19b-17d1de8e-5be8-11e3-1702-004a77f8b47f';
 
   options = {
     logger: true
@@ -19,24 +20,24 @@ function AnalyticsService() {
   }
 
   return {
-    open : function() {
+    open: function() {
       if (localyticsSession && localyticsUser) {
         localyticsSession.open();
         localyticsSession.upload();
       }
     },
-    close : function() {
+    close: function() {
       if (localyticsSession && localyticsUser) {
         localyticsSession.upload();
         localyticsSession.close();
       }
     },
-    tag : function(event) {
+    tag: function(event) {
       if (localyticsSession && localyticsUser) {
         localyticsSession.tagEvent(event);
       }
     },
-    multitag : function(event, data) {
+    multitag: function(event, data) {
       if (localyticsSession && localyticsUser) {
         localyticsSession.tagEvent(event, data);
       }
