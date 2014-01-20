@@ -88,7 +88,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }]
 
       }
-    });    
+    });
 
     $routeProvider.when('/my/tasks/context/:uuid', {
       controller: 'ContextController',
@@ -260,5 +260,4 @@ angular.module('em.app').run(['$rootScope', 'AnalyticsService', 'ErrorHandlerSer
     $rootScope.$on('$viewContentLoaded', function() {
      AnalyticsService.open();
    });
-
   }]);
