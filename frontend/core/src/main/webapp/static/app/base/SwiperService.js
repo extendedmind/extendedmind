@@ -82,7 +82,7 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
         slideChangeCallbacks[swiperPath][i].callback(path);
       }
     }
-  }
+  };
 
   return {
     initializeSwiper: function(containerElement, swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback) {
