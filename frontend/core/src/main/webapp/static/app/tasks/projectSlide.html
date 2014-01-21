@@ -3,13 +3,13 @@
     <h3 ng-click="toggleProjectContent()">{{project.title}}</h3>
     <div ng-if="showProjectContent">
       <ul class="button-row">
-        <li class="button-container left-of-two" ng-hide="mainlinksFilter">
-          <button class="normal-button inactive-button" type="button" ng-hide="task.relationships.parentTask" ng-click="editProject()">
+        <li class="button-container left-of-two border-right" ng-hide="mainlinksFilter">
+          <button class="enabled-button" type="button" ng-hide="task.relationships.parentTask" ng-click="editProject()">
             more
           </button>
         </li>
         <li class="button-container right-of-two">
-          <button class="normal-button" type="button" ng-click="completeProject()">
+          <button class="enabled-button" type="button" ng-click="completeProject()">
             complete
           </button>
         </li>

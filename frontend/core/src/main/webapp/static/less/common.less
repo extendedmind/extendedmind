@@ -24,7 +24,10 @@
   float:left;
   width: 50%;
   .small-border-right:after{
-    margin-left: 12%;
+    margin-left: 22%;
+  }
+  &.border-right{
+    border-right: solid 1px white !important;
   }
 }
 .right-of-two {
@@ -38,6 +41,9 @@
   width: 33.33%;
   .small-border-right:after{
     margin-left: 12%;
+  }
+  &.border-right{
+    border-right: solid 1px white !important;
   }
 }
 .right-of-three {
@@ -140,11 +146,20 @@
   width: 100%;
 }
 
-.right-button-wrapper, .left-checkbox-wrapper { 
-  width: @icon-button-width;
+.right-button-wrapper, .left-checkbox-wrapper{ 
   line-height: 100%;
   button {
     padding-top: 4px; // quick fix to center the plus button
+  }
+}
+.left-checkbox-wrapper {
+  width: @icon-button-width + 8px;
+}
+
+.right-button-wrapper {
+  width: @icon-button-width + 8px;
+  button {
+    padding-left: 8px;    
   }
 }
 
@@ -250,7 +265,7 @@ input[type='checkbox'] + label:before {
   font-size: @icon-size;
   padding-right: 10px;
   vertical-align: middle;
-  color: @inactive-button;
+  color: @enabled-button;
 }
 
 input[type="checkbox"] + label:before {
@@ -311,7 +326,7 @@ select {
   background: white;
 }
 ::-webkit-scrollbar-thumb {
-  background: @inactive-button;
+  background: @enabled-button;
 }
 ::-webkit-scrollbar-corner {
   background: white;
@@ -345,6 +360,20 @@ select {
 
 a[class^='active-slide'],a[class*=' active-slide']{
   span {
-    color: @link-color;
+    color: @active-link;
+  }
+}
+
+a.click-to-slide {
+  color: @active-link;
+}
+
+span.icon-i {
+  color: @highlighted;
+}
+
+.disabled {
+  span {
+    color: @inactive-link !important; 
   }
 }
