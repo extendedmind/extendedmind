@@ -366,9 +366,19 @@ a.click-to-slide {
   color: @active-link;
 }
 
-span.icon-i {
+span.icon-i, span.icon-plus {
   color: @highlighted;
 }
+span.icon-i:active, span.icon-plus:active {
+  color: @highlighted-pressed;
+}
+
+/*
+          [class^="icon-"], [class*=" icon-"] button {
+            color: @highlighted; // plus button always highlighted
+            padding-top: 8px; // quick fix to center the plus button
+          }
+*/
 
 .disabled {
   span {
