@@ -10,7 +10,7 @@ BUILD_HISTORY_DIR="app/platforms/ios/build/archive"
 APPLICATION_NAME="em"
 CONFIGURATION="Release"
 DEVELOPER_NAME="iPhone\ Distribution:\ Extended\ Mind\ Technologies\ Oy\ (Z9X5PYT4CA)"
-PROVISIONING_UUID="lkqwjrkl-rqwljk-qwrkjl"
+PROVISIONING_UUID="9F8C79AB-2F00-46EE-9250-FB8962687B77"
 
 echo "unlocking security keychain"
 security unlock-keychain -p KEYCHAIN_PASSWORD
@@ -22,6 +22,12 @@ phonegap build ios
 
 #/usr/bin/xcrun -sdk iphoneos PackageApplication -v "${RELEASE_BUILDDIR}/${APPLICATION_NAME}.app" -o "${BUILD_HISTORY_DIR}/${APPLICATION_NAME}.ipa" --sign "${DEVELOPER_NAME}" --embed "${PROVISONING_PROFILE}"
 
-## this is enough to make a build:
+## change dir:
 cd platforms/ios
-xcodebuild -scheme em -configuration ${CONFIGURATION} -sdk iphoneos CODE_SIGN_IDENTITY="${DEVELOPER_NAME}" PROVISIONING_PROFILE="${PROVISIONING_UUID}"
+
+# builds .xcarchive file that is archive of the build, but not packaged for distribution
+xcodebuild -scheme em -configuration ${CONFIGURATION} -sdk iphoneos archive -archivePath "~/Desktop/em" CODE_SIGN_IDENTITY="${DEVELOPER_NAME}" PROVISIONING_PROFILE="${PROVISIONING_UUID}"
+# xcodebuild -exportArchive -exportFormat IPA -archivePath MyMacApp.xcarchive -exportPath em-testflight.ipa # -exportSigningIdentity 'Developer ID Application: My Team'
+
+# package for distribution
+xcodebuild -archivePath ~/Desktop/em.xcarchive -exportPath '~/Desktop/emrelease' -exportArchive
