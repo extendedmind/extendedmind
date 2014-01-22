@@ -41,23 +41,6 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      getUser { url =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          // Only admins can get users for now
-          authorize(adminAccess(securityContext)) {
-            parameters("email") { email =>
-              complete {
-                Future[PublicUser] {
-                  userActions.getPublicUser(email) match {
-                    case Right(publicUser) => publicUser
-                    case Left(e) => processErrors(e)
-                  }
-                }
-              }
-            }
-          }
-        }
-      } ~
       getAccount { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           complete {
