@@ -36,21 +36,20 @@ trait UserActions {
     if (setResult.isRight){
       val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email, setResult.right.get.uuid.get)
       futureMailResponse onSuccess {
-        case Right(jsonResponse) => {
-          val sendEmailResponse = MailgunProtocol.toSendEmailResponse(jsonResponse)
+        case SendEmailResponse(message, id) => {
           val saveResponse = for{
             putExistingResponse <- db.putExistingInviteRequest(setResult.right.get.uuid.get, 
-                                                               inviteRequest.copy(emailId = Some(sendEmailResponse.id))).right
+                                                               inviteRequest.copy(emailId = Some(id))).right
             updateResponse <- Right(db.updateInviteRequestModifiedIndex(putExistingResponse._2, 
                                                                         putExistingResponse._3)).right
           } yield putExistingResponse._1
           if (saveResponse.isLeft) 
             log.error("Error updating invite request for email {} with id {}, error: {}", 
-                inviteRequest.email, sendEmailResponse.id, saveResponse.left.get.head)
+                inviteRequest.email, id, saveResponse.left.get.head)
           else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", 
-                          inviteRequest.email, setResult.right.get.uuid.get, sendEmailResponse.id)
-        }case Left(error) =>
-          log.error("Could not send invite request confirmation email to {} because of error {}", inviteRequest.email, error)
+                          inviteRequest.email, setResult.right.get.uuid.get, id)
+        }case _ =>
+          log.error("Could not send invite request confirmation email to {}", inviteRequest.email)
       }
     }
     setResult
@@ -111,18 +110,17 @@ trait UserActions {
       val invite = acceptResult.right.get._2
       val futureMailResponse = mailgun.sendInvite(invite)
       futureMailResponse onSuccess {
-        case Right(jsonResponse) => {
-          val sendEmailResponse = MailgunProtocol.toSendEmailResponse(jsonResponse)
+       case SendEmailResponse(message, id) => {
           val saveResponse = db.putExistingInvite(acceptResult.right.get._1.uuid.get, 
-                                                        invite.copy(emailId = Some(sendEmailResponse.id)))
+                                                        invite.copy(emailId = Some(id)))
           if (saveResponse.isLeft) 
             log.error("Error updating invite for email {} with id {}, error: {}", 
-                invite.email, sendEmailResponse.id, saveResponse.left.get.head)
+                invite.email, id, saveResponse.left.get.head)
           else log.info("Accepted invite request with email: {} and UUID: {} with emailId: {}", 
-                          invite.email, acceptResult.right.get._1.uuid.get, sendEmailResponse.id)
+                          invite.email, acceptResult.right.get._1.uuid.get, id)
         }
-        case Left(error) =>
-          log.error("Could not send invite email to {}, because of error {}", invite.email, error.getMessage())
+        case _ =>
+          log.error("Could not send invite email to {}", invite.email)
       }
     }
     acceptResult

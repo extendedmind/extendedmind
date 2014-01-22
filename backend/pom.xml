@@ -75,16 +75,14 @@
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-json_${scala.version.short}</artifactId>
-      <version>1.2.4</version>
+      <version>1.2.5</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-
-    <!-- HTTP Client -->
-    <dependency>
-      <groupId>net.databinder.dispatch</groupId>
-      <artifactId>dispatch-core_2.10</artifactId>
-      <version>0.11.0</version>
+	<dependency>
+      <groupId>io.spray</groupId>
+      <artifactId>spray-client</artifactId>
+      <version>${spray.version}</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
