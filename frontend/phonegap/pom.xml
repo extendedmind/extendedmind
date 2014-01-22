@@ -34,6 +34,8 @@
     
     <properties>
        <encoding>UTF-8</encoding>
+       <skipAndroid>true</skipAndroid>
+       <skipIos>true</skipIos>
     </properties>
 
     <profiles>
@@ -44,6 +46,9 @@
               <exists>${user.home}/.phonegap/android</exists>
             </file>
           </activation>
+          <properties>
+            <skipAndroid>false</skipAndroid>
+          </properties>
           <build>
             <resources>
                 <resource>
@@ -52,45 +57,6 @@
                     <filtering>true</filtering>
                 </resource>
             </resources>            
-            <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <phase>compile</phase>
-                            <goals>
-                                <goal>exec</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <executable>sh</executable>
-                        <commandlineArgs>build-android.sh</commandlineArgs>
-                        <background>false</background>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <configuration>
-                        <filesets>
-                            <fileset>
-                                <directory>${basedir}/app/platforms/android</directory>
-                                <includes>
-                                    <include>ant.properties</include>
-                                </includes>
-                            </fileset>
-                            <fileset>
-                                <directory>${basedir}/app/www/static</directory>
-                            </fileset>
-                            <fileset>
-                                <directory>${basedir}/app/platforms/android/bin</directory>
-                            </fileset>                            
-                        </filesets>
-                    </configuration>
-                </plugin>
-            </plugins>
           </build>
         </profile>
         <profile>
@@ -100,41 +66,9 @@
               <exists>${user.home}/.phonegap/ios</exists>
             </file>
           </activation>
-          <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <phase>compile</phase>
-                            <goals>
-                                <goal>exec</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <executable>sh</executable>
-                        <commandlineArgs>build-ios.sh ${settings.servers.ios-developer-certificate.username} ${settings.servers.ios-developer-certificate.password}</commandlineArgs>
-                        <background>false</background>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <configuration>
-                        <filesets>
-                            <fileset>
-                                <directory>${basedir}/app/www/static</directory>
-                            </fileset>
-                            <fileset>
-                                <directory>${basedir}/app/platforms/ios/build</directory>
-                            </fileset>
-                        </filesets>
-                    </configuration>
-                </plugin>
-            </plugins>
-          </build>
+          <properties>
+            <skipIos>false</skipIos>
+          </properties>
         </profile>        
     </profiles>
 
@@ -173,7 +107,66 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-        </plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>phonegap-android-build</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipAndroid}</skip>
+                            <executable>sh</executable>
+                            <commandlineArgs>build-android.sh</commandlineArgs>
+                            <background>false</background>
+                        </configuration>                            
+                    </execution>
+                    <execution>
+                        <id>phonegap-ios-build</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipIos}</skip>
+                            <executable>sh</executable>
+                            <commandlineArgs>build-ios.sh ${settings.servers.ios-developer-certificate.username} ${settings.servers.ios-developer-certificate.password}</commandlineArgs>
+                            <background>false</background>
+                        </configuration>                            
+                    </execution>
+
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${basedir}/app/platforms/android</directory>
+                            <includes>
+                                <include>ant.properties</include>
+                            </includes>
+                        </fileset>
+                        <fileset>
+                            <directory>${basedir}/app/www/static</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>${basedir}/app/platforms/android/bin</directory>
+                        </fileset> 
+                        <fileset>
+                            <directory>${basedir}/app/www/static</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>${basedir}/app/platforms/ios/build</directory>
+                        </fileset>                                                   
+                    </filesets>
+                </configuration>
+            </plugin>
+       </plugins>
         <pluginManagement>
             <plugins>
                 <!--This plugin's configuration is used to store Eclipse m2e settings 
