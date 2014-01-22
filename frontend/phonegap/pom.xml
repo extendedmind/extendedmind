@@ -204,6 +204,25 @@
                                         <ignore/>
                                     </action>
                                 </pluginExecution>
+                                <pluginExecution>
+                                	<pluginExecutionFilter>
+                                		<groupId>
+                                			org.codehaus.mojo
+                                		</groupId>
+                                		<artifactId>
+                                			exec-maven-plugin
+                                		</artifactId>
+                                		<versionRange>
+                                			[1.2.1.jbossorg-3,)
+                                		</versionRange>
+                                		<goals>
+                                			<goal>exec</goal>
+                                		</goals>
+                                	</pluginExecutionFilter>
+                                	<action>
+                                		<ignore></ignore>
+                                	</action>
+                                </pluginExecution>
                             </pluginExecutions>
                         </lifecycleMappingMetadata>
                     </configuration>
