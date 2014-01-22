@@ -41,8 +41,8 @@ object Service {
 
     ExceptionHandler.apply {
       case e: TokenExpiredException => ctx => {
-        log.error(e, "Status code: " + 419 + " @" + currentTime)
-        ctx.complete(419, e.description)
+        log.error(e, "Status code: " + Forbidden + " @" + currentTime)
+        ctx.complete(Forbidden, e.description)
       }
       case e: InvalidParameterException => ctx => {
         log.error(e, "Status code: " + BadRequest + " @" + currentTime)
