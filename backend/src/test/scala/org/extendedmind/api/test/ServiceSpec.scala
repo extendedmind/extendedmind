@@ -43,14 +43,14 @@ class ServiceSpec extends SpraySpecBase with ImpermanentGraphDatabaseSpecBase{
   describe("Service") {
 
     it("should return a list of available commands at root") {
-      Get() ~> emRoute ~> check { entityAs[String] should include("is running") }
+      Get() ~> route ~> check { entityAs[String] should include("is running") }
     }
 
     it("should generate token response on /authenticate") {
       stubTimoAuthenticate()
       Post("/authenticate"
           ) ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))
-          ) ~> emRoute ~> check {
+          ) ~> route ~> check {
         val authenticateResponse = entityAs[String]
         authenticateResponse should include("token")
       }
