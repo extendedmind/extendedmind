@@ -157,7 +157,7 @@ trait Service extends API with Injectable {
           entity(as[InviteRequest]) { inviteRequest =>
             complete {
               Future[SetResult] {
-                userActions.requestInvite(inviteRequest) match {
+                inviteActions.requestInvite(inviteRequest) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -173,7 +173,7 @@ trait Service extends API with Injectable {
             entity(as[InviteRequest]) { inviteRequest =>
               complete {
                 Future[SetResult] {
-                  userActions.putNewInviteRequest(inviteRequest) match {
+                  inviteActions.putNewInviteRequest(inviteRequest) match {
                     case Right(sr) => sr
                     case Left(e) => processErrors(e)
                   }
@@ -189,7 +189,7 @@ trait Service extends API with Injectable {
           authorize(adminAccess(securityContext)) {
             complete {
               Future[DestroyResult] {
-                userActions.destroyInviteRequest(inviteRequestUUID) match {
+                inviteActions.destroyInviteRequest(inviteRequestUUID) match {
                   case Right(result) => result
                   case Left(e) => processErrors(e)
                 }
@@ -203,7 +203,7 @@ trait Service extends API with Injectable {
           authorize(adminAccess(securityContext)) {
             complete {
               Future[InviteRequests] {
-                userActions.getInviteRequests match {
+                inviteActions.getInviteRequests match {
                   case Right(inviteRequests) => inviteRequests
                   case Left(e) => processErrors(e)
                 }
@@ -215,7 +215,7 @@ trait Service extends API with Injectable {
       getInviteRequestQueueNumber { inviteRequestUUID =>
         complete {
           Future[InviteRequestQueueNumber] {
-            userActions.getInviteRequestQueueNumber(inviteRequestUUID) match {
+            inviteActions.getInviteRequestQueueNumber(inviteRequestUUID) match {
               case Right(queueNumber) => queueNumber
               case Left(e) => processErrors(e)
             }
@@ -229,7 +229,7 @@ trait Service extends API with Injectable {
             entity(as[Option[InviteRequestAcceptDetails]]) { details =>
               complete {
                 Future[SetResult] {
-                  userActions.acceptInviteRequest(securityContext.userUUID, inviteRequestUUID, details) match {
+                  inviteActions.acceptInviteRequest(securityContext.userUUID, inviteRequestUUID, details) match {
                     case Right(result) => result._1
                     case Left(e) => processErrors(e)
                   }
@@ -243,7 +243,7 @@ trait Service extends API with Injectable {
         parameters("email") { email =>
           complete {
             Future[Invite] {
-              userActions.getInvite(code, email) match {
+              inviteActions.getInvite(code, email) match {
                 case Right(invite) => invite
                 case Left(e) => processErrors(e)
               }
@@ -256,7 +256,7 @@ trait Service extends API with Injectable {
           authorize(adminAccess(securityContext)) {
             complete {
               Future[Invites] {
-                userActions.getInvites match {
+                inviteActions.getInvites match {
                   case Right(invites) => invites
                   case Left(e) => processErrors(e)
                 }
@@ -270,7 +270,7 @@ trait Service extends API with Injectable {
           entity(as[SignUp]) { signUp =>
             complete {
               Future[SetResult] {
-                userActions.acceptInvite(code, signUp) match {
+                inviteActions.acceptInvite(code, signUp) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -787,6 +787,10 @@ trait Service extends API with Injectable {
     inject[UserActions]
   }
 
+  def inviteActions: InviteActions = {
+    inject[InviteActions]
+  }
+  
   def collectiveActions: CollectiveActions = {
     inject[CollectiveActions]
   }
