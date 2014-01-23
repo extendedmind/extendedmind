@@ -9,7 +9,7 @@ import java.util.UUID
 class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
 	
   def configurations = EmptyTestConfiguration 
-  
+
   before{
     db.insertTestData()
   }

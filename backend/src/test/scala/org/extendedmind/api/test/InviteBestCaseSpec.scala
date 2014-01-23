@@ -1,4 +1,4 @@
-package org.extendedmind.test
+package org.extendedmind.api.test
 
 import java.io.PrintWriter
 import java.util.UUID
@@ -39,7 +39,7 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
-
+  
   before {
     db.insertTestData()
   }

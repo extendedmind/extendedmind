@@ -29,7 +29,7 @@ class ServiceSpec extends SpraySpecBase with ImpermanentGraphDatabaseSpecBase{
   }
 
   override def configurations = ServiceTestConfiguration
-
+ 
   before{
     db.insertTestData()
   }

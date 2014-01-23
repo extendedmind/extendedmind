@@ -1,4 +1,4 @@
-package org.extendedmind.test
+package org.extendedmind.api.test
 
 import java.io.PrintWriter
 import java.util.UUID
@@ -29,7 +29,7 @@ import scala.concurrent.Future
 /**
  * Best case test for notes. Also generates .json files.
  */
-class NoteBestCaseSpec extends ServiceBestCaseSpecBase {
+class NoteBestCaseSpec extends ServiceSpecBase {
 
   val mockMailgunClient = mock[MailgunClient]
 
@@ -39,7 +39,7 @@ class NoteBestCaseSpec extends ServiceBestCaseSpecBase {
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
-
+  
   before {
     db.insertTestData()
   }

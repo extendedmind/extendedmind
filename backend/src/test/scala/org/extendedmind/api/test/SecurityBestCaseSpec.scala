@@ -1,4 +1,4 @@
-package org.extendedmind.test
+package org.extendedmind.api.test
 
 import java.io.PrintWriter
 import java.util.UUID
@@ -29,7 +29,7 @@ import scala.concurrent.Future
 /**
  * Best case test for security routes. Also generates .json files.
  */
-class SecurityBestCaseSpec extends ServiceBestCaseSpecBase {
+class SecurityBestCaseSpec extends ServiceSpecBase {
 
   val mockMailgunClient = mock[MailgunClient]
 
@@ -39,7 +39,7 @@ class SecurityBestCaseSpec extends ServiceBestCaseSpecBase {
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
-
+  
   before {
     db.insertTestData()
   }

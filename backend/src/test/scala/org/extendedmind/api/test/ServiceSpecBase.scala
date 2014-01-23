@@ -1,4 +1,4 @@
-package org.extendedmind.test
+package org.extendedmind.api.test
 
 import java.io.PrintWriter
 import java.util.UUID
@@ -26,7 +26,7 @@ import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
 
-abstract class ServiceBestCaseSpecBase extends ImpermanentGraphDatabaseSpecBase {
+abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
 
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {
     Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(email, password))) ~> route ~> check {
