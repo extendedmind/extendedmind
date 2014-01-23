@@ -166,6 +166,7 @@
             <include>lib/base64.js</include>
             <include>lib/idangerous/idangerous.swiper-2.4.js</include>
             <include>lib/localytics.js</include>
+            <include>lib/expanding.js</include>
             <include>app/*.js</include>
             <include>common/common.js</include>
             <include>common/*.js</include>
