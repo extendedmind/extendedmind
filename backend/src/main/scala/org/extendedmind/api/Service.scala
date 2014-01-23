@@ -37,24 +37,26 @@ object Service {
   }
 
   def exceptionHandler(implicit log: LoggingContext): ExceptionHandler = {
-    val currentTime = System.currentTimeMillis()
-
-    ExceptionHandler.apply {
+    ExceptionHandler {
       case e: TokenExpiredException => ctx => {
-        log.error(e, "Status code: " + Forbidden + " @" + currentTime)
+        val currentTime = System.currentTimeMillis()
+        log.error("Status code: " + Forbidden + ": " + e.description + " @" + currentTime)
         ctx.complete(Forbidden, e.description)
       }
       case e: InvalidParameterException => ctx => {
-        log.error(e, "Status code: " + BadRequest + " @" + currentTime)
+        val currentTime = System.currentTimeMillis()
+        log.error("Status code: " + BadRequest + ": " + e.description + " @" + currentTime)
         ctx.complete(BadRequest, e.description + " @" + currentTime)
       }
       case e: InternalServerErrorException => ctx => {
-        log.error(e, "Status code: " + InternalServerError + " @" + currentTime)
+        val currentTime = System.currentTimeMillis()
+        log.error("Status code: " + InternalServerError + ": " + e.description + " @" + currentTime)
         ctx.complete(InternalServerError, e.description + " @" + currentTime)
       }
       case t: Throwable => ctx => {
-        log.error(t, "Status code: " + InternalServerError + " @" + currentTime)
-        ctx.complete(InternalServerError, "Unknown error occured  @" + currentTime)
+        val currentTime = System.currentTimeMillis()
+        log.error(t, "Status code: " + InternalServerError + ": " + t.getMessage() + " @" + currentTime)
+        ctx.complete(InternalServerError, "Unknown error occured @" + currentTime)
       }
     }
   }
@@ -70,8 +72,8 @@ class ServiceActor extends HttpServiceActor with Service {
   def configurations = new Configuration(settings, actorRefFactory)
 
   // Setup implicits
-  implicit val implRejectionHandler = Service.rejectionHandler
-  implicit val implExceptionHandler = Service.exceptionHandler
+  implicit def implRejectionHandler(implicit log: LoggingContext) = Service.rejectionHandler
+  implicit def implExceptionHandler(implicit log: LoggingContext) = Service.exceptionHandler
 
   override def preStart = {
     // Load database on start

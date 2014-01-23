@@ -25,6 +25,8 @@ import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
+import spray.http.StatusCodes._
+
 
 /**
  * Best case test for notes. Also generates .json files.
@@ -79,9 +81,9 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                   writeJsonOutput("deleteNoteResponse", deleteNoteResponse)
                   deleteNoteResponse should include("deleted")
                   Get("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                    val failure = entityAs[String]
-                    // TODO: Fix bug with Internal Server Error!
-                    failure should include("error")
+                	val failure = responseAs[String]        
+                	status should be (BadRequest)
+                    failure should startWith("Item " + putNoteResponse.uuid.get + " is deleted")
                   }
                   Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val undeleteNoteResponse = entityAs[String]

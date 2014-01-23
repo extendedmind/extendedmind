@@ -24,7 +24,8 @@ import org.extendedmind.api.JsonImplicits._
 import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
-import scala.concurrent.Future
+import spray.http.StatusCodes._
+
 
 /**
  * Worst case test for item routes.
@@ -48,11 +49,12 @@ class ItemWorstCaseSpec extends ServiceSpecBase{
   describe("In the worst case, ItemService") {
     it("should return 'not found' when getting item that does not exist") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      Get("/" + authenticateResponse.userUUID + "/item/" + UUID.randomUUID().toString()
+      val randomUUID = UUID.randomUUID().toString()
+      Get("/" + authenticateResponse.userUUID + "/item/" + randomUUID
           ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val failure = entityAs[String]
-        // TODO: Fix bug with Internal Server Error!
-        failure should include("error")
+        val failure = responseAs[String]        
+        status should be (BadRequest)
+        failure should startWith("Could not find item " + randomUUID + " for owner " + authenticateResponse.userUUID)
       }
     }
   }

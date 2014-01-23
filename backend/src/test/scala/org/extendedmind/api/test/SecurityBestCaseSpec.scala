@@ -25,6 +25,7 @@ import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
+import spray.http.StatusCodes._
 
 /**
  * Best case test for security routes. Also generates .json files.
@@ -73,9 +74,9 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
           tokenReAuthenticateResponse.token.get should not be (tokenAuthenticateResponse.token.get)
           // Shouldn't be able to swap it again because rememberMe was missing the last time
           Post("/authenticate") ~> addCredentials(BasicHttpCredentials("token", tokenReAuthenticateResponse.token.get)) ~> route ~> check {
-            val failure = entityAs[String]
-            // TODO: Fix bug with Internal Server Error!
-            failure should include("error")
+        	val failure = responseAs[String]        
+        	status should be (BadRequest)
+            failure should startWith("Token not replaceable")
           }
         }
       }

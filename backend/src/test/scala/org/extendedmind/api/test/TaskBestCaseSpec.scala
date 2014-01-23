@@ -25,6 +25,8 @@ import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
+import spray.http.StatusCodes._
+
 
 /**
  * Best case test for task routes. Also generates .json files.
@@ -79,9 +81,9 @@ class TaskBestCaseSpec extends ServiceSpecBase {
                   writeJsonOutput("deleteTaskResponse", deleteTaskResponse)
                   deleteTaskResponse should include("deleted")
                   Get("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                    val failure = entityAs[String]
-                    // TODO: Fix bug with Internal Server Error!
-                    failure should include("error")
+                	val failure = responseAs[String]        
+                	status should be (BadRequest)
+                    failure should startWith("Item " + putTaskResponse.uuid.get + " is deleted")
                   }
                   Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val undeleteTaskResponse = entityAs[String]
