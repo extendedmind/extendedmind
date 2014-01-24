@@ -9,7 +9,7 @@
             <li ng-class="selected" ng-repeat="project in filteredProjects = (tasks | tasksFilter:filterService.activeFilters.project)">
               <a class="text-muted click-to-slide" href ng-click="goToProject(project.uuid)">
                 <span class="link-title">{{project.title}}</span>
-                <span class="icon-arrow-right" />
+                <span class="icon-arrow-right"></span>
               </a>
             </li>
           </ul>
@@ -20,7 +20,7 @@
           <ul class="indent list-arrow-right">
             <li ng-repeat="context in contexts">
               <a class="click-to-slide" href="#/{{prefix}}/tasks/context/{{context.uuid}}">
-                <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right" />
+                <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right"></span>
               </a>
             </li>
           </ul>      

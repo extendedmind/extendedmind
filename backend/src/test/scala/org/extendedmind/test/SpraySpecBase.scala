@@ -7,13 +7,16 @@ import org.extendedmind.SettingsExtension
 import scaldi.Module
 import org.extendedmind.security.SecurityContext
 import java.util.UUID
+import spray.util.LoggingContext
 
 abstract class SpraySpecBase extends SpecBase 
     with ScalatestRouteTest with Service{
 
   // Setup implicits to scope
-  implicit val rejectionHandler = Service.rejectionHandler
+  implicit def rejectionHandler(implicit log: LoggingContext) = Service.rejectionHandler
+  implicit def exceptionHandler(implicit log: LoggingContext) = Service.exceptionHandler
 
+  
   // spray-testkit
   def actorRefFactory = system
 

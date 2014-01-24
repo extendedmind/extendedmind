@@ -29,11 +29,6 @@ div[role=main] {
     position: relative;
     width:100%;
   }
-  header {
-    * {
-      vertical-align: middle;
-    }
-  }
 }
 
 .one-column-grid {
@@ -67,7 +62,13 @@ header {
   overflow:hidden;
   width:100%;
   padding-left: inherit;
-  padding-right: inherit;
+  display:table;
+  * {
+    vertical-align: middle;
+  }
+  nav {
+    display:table-cell;
+  }
 }
 
 .page-header {
