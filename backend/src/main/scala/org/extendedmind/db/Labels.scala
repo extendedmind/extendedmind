@@ -28,12 +28,14 @@ object UserLabel {
 object ItemLabel {
   val NOTE = Label("NOTE")
   val TASK = Label("TASK")
+  val LIST = Label("LIST")
   val TAG = Label("TAG")
 }
 
 object TagLabel {
   val KEYWORD = Label("KEYWORD")
   val CONTEXT = Label("CONTEXT")
+  val HISTORY = Label("HISTORY")
 }
 
 object ItemParentLabel {

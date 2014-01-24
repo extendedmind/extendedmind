@@ -67,6 +67,15 @@ trait API extends HttpService {
   val deleteNote = delete & path(JavaUUID / "note" / JavaUUID)
   val undeleteNote = post & path(JavaUUID / "note" / JavaUUID / "undelete")
   
+  // Lists
+  val getList = get & path(JavaUUID / "list" / JavaUUID)
+  val putNewList = put & path(JavaUUID / "list")
+  val putExistingList = put & path(JavaUUID / "list" / JavaUUID)
+  val deleteList = delete & path(JavaUUID / "list" / JavaUUID)
+  val undeleteList = post & path(JavaUUID / "list" / JavaUUID / "undelete")
+  val archiveList = post & path(JavaUUID / "list" / JavaUUID / "archive")
+  val unarchiveList = post & path(JavaUUID / "list" / JavaUUID / "unarchive")
+  
   // Tags
   val getTag = get & path(JavaUUID / "tag" / JavaUUID)
   val putNewTag = put & path(JavaUUID / "tag")
