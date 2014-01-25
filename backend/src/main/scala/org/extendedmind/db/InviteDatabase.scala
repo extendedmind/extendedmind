@@ -65,7 +65,7 @@ trait InviteDatabase extends UserDatabase {
         val inviteRequestNodeList = inviteRequests.query( "modified", 
             QueryContext.numericRange("modified", 0, Long.MaxValue).sort("modified")).toList        
         if (inviteRequestNodeList.isEmpty){
-          Right(InviteRequests(List()))}
+          Right(InviteRequests(scala.List()))}
         else {
           Right(InviteRequests(inviteRequestNodeList map (inviteRequestNode => {
             val response = toCaseClass[InviteRequest](inviteRequestNode)
@@ -126,7 +126,7 @@ trait InviteDatabase extends UserDatabase {
       implicit neo =>
         val inviteNodeList = findNodesByLabel(MainLabel.INVITE).toList
         if (inviteNodeList.isEmpty){
-          Right(Invites(List()))}
+          Right(Invites(scala.List()))}
         else {
           Right(Invites(inviteNodeList map (inviteNode => {
             val response = toCaseClass[Invite](inviteNode)
@@ -158,7 +158,7 @@ trait InviteDatabase extends UserDatabase {
             inviteRequests.remove(inviteRequest.right.get)
             // Delete it completely
             inviteRequest.right.get.delete()
-            Right(DestroyResult(List(inviteRequestUUID)))
+            Right(DestroyResult(scala.List(inviteRequestUUID)))
           }
         }
     }

@@ -20,29 +20,36 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   def putNewList(owner: Owner, list: List): Response[SetResult] = {
     for {
-      taskNode <- putNewExtendedItem(owner, task, ItemLabel.TASK).right
-      result <- Right(getSetResult(taskNode, true)).right
-      unit <- Right(addToItemsIndex(owner, taskNode, result)).right
+      listNode <- putNewExtendedItem(owner, list, ItemLabel.LIST).right
+      result <- Right(getSetResult(listNode, true)).right
+      unit <- Right(addToItemsIndex(owner, listNode, result)).right
     } yield result
   }
 
+  def putExistingList(owner: Owner, listUUID: UUID, list: List): Response[SetResult] = {
+    for {
+      listNode <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST).right
+      result <- Right(getSetResult(listNode, false)).right
+      unit <- Right(updateItemsIndex(listNode, result)).right
+    } yield result
+  }
+  
   def getList(owner: Owner, listUUID: UUID): Response[List] = {
     withTx {
       implicit neo =>
         for {
           listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
           list <- toCaseClass[List](listNode).right
-          completeTask <- addTransientListProperties(listNode, owner, task).right
-        } yield completeTask
+          fullList <- addTransientListProperties(listNode, owner, list).right
+        } yield fullList
     }
   }
-  
-  
-  def deleteTask(owner: Owner, taskUUID: UUID): Response[DeleteItemResult] = {
+  /*
+  def deleteList(owner: Owner, taskUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedTaskNode <- deleteTaskNode(owner, taskUUID).right
-      result <- Right(getDeleteItemResult(deletedTaskNode._1, deletedTaskNode._2)).right
-      unit <- Right(updateItemsIndex(deletedTaskNode._1, result.result)).right
+      deletedListNode <- deleteListNode(owner, taskUUID).right
+      result <- Right(getDeleteItemResult(deletedListNode._1, deletedTaskNode._2)).right
+      unit <- Right(updateItemsIndex(deletedListNode._1, result.result)).right
     } yield result
   }
   
@@ -61,33 +68,31 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(updateItemsIndex(taskNode, result)).right
     } yield result
   }
-
+*/
   // PRIVATE
 
-  override def toTask(taskNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Task] = {
+  override def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List] = {
     for {
-      task <- toCaseClass[Task](taskNode).right
-      completeTask <- addTransientTaskProperties(taskNode, owner, task).right
-    } yield completeTask
+      list <- toCaseClass[List](listNode).right
+      completeList <- addTransientListProperties(listNode, owner, list).right
+    } yield completeList
   }
 
-  protected def addTransientTaskProperties(taskNode: Node, owner: Owner, task: Task)(implicit neo4j: DatabaseService): Response[Task] = {
+  protected def addTransientListProperties(listNode: Node, owner: Owner, list: List)(implicit neo4j: DatabaseService): Response[List] = {
     for {
-      parents <- getParentRelationships(taskNode, owner).right
-      tags <- getTagRelationships(taskNode, owner).right
-      task <- Right(task.copy(
+      parent <- getParentRelationship(listNode, owner, ItemLabel.LIST).right
+      tags <- getTagRelationships(listNode, owner).right
+      task <- Right(list.copy(
         relationships = 
-          (if (parents._1.isDefined || parents._2.isDefined || tags.isDefined)            
+          (if (parent.isDefined || tags.isDefined)            
             Some(ExtendedItemRelationships(  
-              parentTask = (if (parents._1.isEmpty) None else (Some(getUUID(parents._1.get.getEndNode())))),
-              parentNote = (if (parents._2.isEmpty) None else (Some(getUUID(parents._2.get.getEndNode())))),
+              parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
               tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
            else None
-          ),
-        project = (if (taskNode.hasLabel(ItemParentLabel.PROJECT)) Some(true) else None))).right
+          ))).right
     } yield task
   }
-
+/*
   protected def completeTaskNode(owner: Owner, taskUUID: UUID): Response[Node] = {
     withTx {
       implicit neo =>
@@ -142,4 +147,6 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
     else
       Right(true)
   }  
+  *  
+  */
 }

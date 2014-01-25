@@ -70,6 +70,10 @@ trait ServiceBase extends API with Injectable {
     inject[NoteActions]
   }
 
+  def listActions: ListActions = {
+    inject[ListActions]
+  }
+  
   def tagActions: TagActions = {
     inject[TagActions]
   }

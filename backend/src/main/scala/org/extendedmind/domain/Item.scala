@@ -11,10 +11,14 @@ case class Item(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
 }
 
-case class Items(items: Option[scala.List[Item]], tasks: Option[scala.List[Task]], notes: Option[scala.List[Note]], tags: Option[scala.List[Tag]])
+case class Items(items: Option[scala.List[Item]], 
+				 tasks: Option[scala.List[Task]],
+				 notes: Option[scala.List[Note]],
+				 lists: Option[scala.List[List]],
+				 tags: Option[scala.List[Tag]])
 
 case class SharedItemVisibility(public: Option[Long], collective: Option[UUID])
-case class ExtendedItemRelationships(parentList: Option[UUID], tags: Option[scala.List[UUID]])
+case class ExtendedItemRelationships(parent: Option[UUID], tags: Option[scala.List[UUID]])
 case class DeleteItemResult(deleted: Long, result: SetResult)
 case class DestroyResult(destroyed: scala.List[UUID])
 
@@ -47,8 +51,8 @@ trait ExtendedItem extends ShareableItem{
   val visibility: Option[SharedItemVisibility]
   val relationships: Option[ExtendedItemRelationships]
   
-  def parentList: Option[UUID] = {
-    if (relationships.isDefined) relationships.get.parentList
+  def parent: Option[UUID] = {
+    if (relationships.isDefined) relationships.get.parent
     else None
   }
   

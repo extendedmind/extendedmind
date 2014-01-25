@@ -14,21 +14,21 @@ trait ListActions {
 
   def db: GraphDatabase;
   
-  def getList(owner: Owner, listUUID: UUID)(implicit log: LoggingContext): Response[List] = {
-    log.info("getTask: owner {}, list {}", owner, listUUID)
-    db.getList(owner, listUUID)
-  }
-
   def putNewList(owner: Owner, list: List)(implicit log: LoggingContext): Response[SetResult] = {
     log.info("putNewList: owner {}", owner)
     db.putNewList(owner, list)
   }
-/*
-  def putExistingTask(owner: Owner, taskUUID: UUID, task: Task)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putExistingTask: owner {}, task {}", owner, taskUUID)
-    db.putExistingTask(owner, taskUUID, task)
+
+  def putExistingList(owner: Owner, listUUID: UUID, list: List)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("putExistingList: owner {}, list {}", owner, listUUID)
+    db.putExistingList(owner, listUUID, list)
   }
   
+   def getList(owner: Owner, listUUID: UUID)(implicit log: LoggingContext): Response[List] = {
+    log.info("getList: owner {}, list {}", owner, listUUID)
+    db.getList(owner, listUUID)
+  }
+  /*
   def deleteTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
     log.info("deleteTask: owner {}, task {}", owner, taskUUID)
     db.deleteTask(owner, taskUUID)

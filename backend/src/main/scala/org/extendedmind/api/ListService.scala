@@ -32,9 +32,9 @@ trait ListService extends ServiceBase {
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(readAccess(ownerUUID, securityContext)) {
             complete {
-              Future[Task] {
+              Future[List] {
                 listActions.getList(getOwner(ownerUUID, securityContext), listUUID) match {
-                  case Right(task) => task
+                  case Right(list) => list
                   case Left(e) => processErrors(e)
                 }
               }
@@ -57,14 +57,14 @@ trait ListService extends ServiceBase {
             }
           }
         }
-      }/* ~
-      putExistingTask { (ownerUUID, taskUUID) =>
+      } ~
+      putExistingList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
-            entity(as[Task]) { task =>
+            entity(as[List]) { list =>
               complete {
                 Future[SetResult] {
-                  taskActions.putExistingTask(getOwner(ownerUUID, securityContext), taskUUID, task) match {
+                  listActions.putExistingList(getOwner(ownerUUID, securityContext), listUUID, list) match {
                     case Right(sr) => sr
                     case Left(e) => processErrors(e)
                   }
@@ -73,7 +73,7 @@ trait ListService extends ServiceBase {
             }
           }
         }
-      } ~
+      }/* ~
       deleteTask { (ownerUUID, taskUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
