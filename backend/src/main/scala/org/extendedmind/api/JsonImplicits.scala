@@ -30,7 +30,30 @@ object JsonImplicits extends DefaultJsonProtocol {
         else if (x == "context") CONTEXT 
         else deserializationError("Expected 'context' or 'keyword' but got " + x)
       }
-      case x => deserializationError("Expected UUID as JsString, but got " + x)
+      case x => deserializationError("Expected TagType as JsString, but got " + x)
+    }
+  }
+  implicit object RepeatingTypeJsonFormat extends JsonFormat[RepeatingType] {
+    def write(x: RepeatingType) = JsString(
+        x match {
+          case DAILY => "daily"
+          case WEEKLY => "weekly"
+          case BIWEEKLY => "biweekly"
+          case MONTHLY => "monthly"
+          case BIMONTHLY => "bimonthly"
+          case YEARLY => "yearly"
+        })
+    def read(value: JsValue) = value match {
+      case JsString(x) => {
+        if (x == "daily") DAILY
+        else if (x == "weekly") WEEKLY 
+        else if (x == "biweekly") BIWEEKLY
+        else if (x == "monthly") MONTHLY
+        else if (x == "bimonthly") BIMONTHLY
+        else if (x == "monthly") YEARLY
+        else deserializationError("Expected 'daily', 'weekly', 'biweekly', 'monthly', 'bimonthly', 'yearly' but got " + x)
+      }
+      case x => deserializationError("Expected RepeatingType as JsString, but got " + x)
     }
   }
 
@@ -51,10 +74,10 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implPublicUser = jsonFormat1(PublicUser.apply)
   implicit val implVisibility = jsonFormat2(SharedItemVisibility.apply)
   implicit val implRelationships = jsonFormat2(ExtendedItemRelationships.apply)
-  implicit val implItem = jsonFormat5(Item.apply)
-  implicit val implTask = jsonFormat13(Task.apply)
+  implicit val implItem = jsonFormat6(Item.apply)
+  implicit val implTask = jsonFormat14(Task.apply)
   implicit val implNote = jsonFormat9(Note.apply)
-  implicit val implList = jsonFormat10(List.apply)  
+  implicit val implList = jsonFormat13(List.apply)  
   implicit val implTag = jsonFormat9(Tag.apply)  
   implicit val implItems = jsonFormat5(Items.apply)
   implicit val implCollective = jsonFormat7(Collective.apply)

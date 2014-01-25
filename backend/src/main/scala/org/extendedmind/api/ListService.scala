@@ -73,13 +73,13 @@ trait ListService extends ServiceBase {
             }
           }
         }
-      }/* ~
-      deleteTask { (ownerUUID, taskUUID) =>
+      } ~
+      deleteList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[DeleteItemResult] {
-                taskActions.deleteTask(getOwner(ownerUUID, securityContext), taskUUID) match {
+                listActions.deleteList(getOwner(ownerUUID, securityContext), listUUID) match {
                   case Right(dir) => dir
                   case Left(e) => processErrors(e)
                 }
@@ -88,12 +88,12 @@ trait ListService extends ServiceBase {
           }
         }
       } ~
-      undeleteTask { (ownerUUID, taskUUID) =>
+      undeleteList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[SetResult] {
-                taskActions.undeleteTask(getOwner(ownerUUID, securityContext), taskUUID) match {
+                listActions.undeleteList(getOwner(ownerUUID, securityContext), listUUID) match {
                   case Right(sr) => sr
                   case Left(e) => processErrors(e)
                 }
@@ -101,7 +101,7 @@ trait ListService extends ServiceBase {
             }
           }
         }
-      } ~
+      }/* ~
       completeTask { (ownerUUID, taskUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {

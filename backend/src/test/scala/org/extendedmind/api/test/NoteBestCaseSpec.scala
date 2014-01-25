@@ -56,7 +56,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
       + "update it with PUT to /[userUUID]/note/[noteUUID] "
       + "and get it back with GET to /[userUUID]/note/[noteUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newNote = Note("home measurements", None, Some("bedroom wall: 420cm*250cm"), None, None)
+      val newNote = Note("home measurements", None, None, Some("bedroom wall: 420cm*250cm"), None)
       Put("/" + authenticateResponse.userUUID + "/note",
         marshal(newNote).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putNoteResponse = entityAs[SetResult]

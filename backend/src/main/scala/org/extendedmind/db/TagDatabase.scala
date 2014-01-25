@@ -54,13 +54,12 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   protected def putExistingTagNode(owner: Owner, tagUUID: UUID, tag: Tag): 
         Response[Node] = {
+    val subLabel = if (tag.tagType == CONTEXT) Some(TagLabel.CONTEXT) else Some(TagLabel.KEYWORD)
+    val subLabelAlternative = if (tag.tagType == CONTEXT) Some(scala.List(TagLabel.KEYWORD)) else Some(scala.List(TagLabel.CONTEXT))
     withTx {
       implicit neo4j =>
         for {
-          tagNode <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), 
-              (if (tag.tagType == CONTEXT) Some((TagLabel.CONTEXT, TagLabel.KEYWORD)) 
-                 else Some((TagLabel.KEYWORD, TagLabel.CONTEXT)))
-              ).right
+          tagNode <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), subLabel, subLabelAlternative).right
           parentNode <- setTagParentNodes(tagNode, owner, tag).right
         } yield tagNode
     }

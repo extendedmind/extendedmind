@@ -54,7 +54,7 @@ class TagBestCaseSpec extends ServiceSpecBase {
       + "update it with PUT to /[userUUID]/tag/[tagUUID] "
       + "and get it back with GET to /[userUUID]/tag/[tagUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newTag = Tag("home", None, CONTEXT, None, None)
+      val newTag = Tag("home", None, None, CONTEXT, None)
       Put("/" + authenticateResponse.userUUID + "/tag",
         marshal(newTag).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putTagResponse = entityAs[SetResult]
@@ -74,10 +74,10 @@ class TagBestCaseSpec extends ServiceSpecBase {
                 tagResponse.description.get should be("my home")
                 // Add the tag to a Note
                 val newNote = Note("bike details", None, Some("model: 12345"), None,
-                  Some(ExtendedItemRelationships(None, None, Some(List(putTagResponse.uuid.get)))))
+                  Some(ExtendedItemRelationships(None, Some(scala.List(putTagResponse.uuid.get)))))
                 val putNoteResponse = putNewNote(newNote, authenticateResponse)
                 val noteWithTag = getNote(putNoteResponse.uuid.get, authenticateResponse)
-                noteWithTag.relationships.get.tags.get should be(List(putTagResponse.uuid.get))
+                noteWithTag.relationships.get.tags.get should be(scala.List(putTagResponse.uuid.get))
               }
             }
         }

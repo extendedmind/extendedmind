@@ -28,17 +28,17 @@ trait ListActions {
     log.info("getList: owner {}, list {}", owner, listUUID)
     db.getList(owner, listUUID)
   }
-  /*
-  def deleteTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
-    log.info("deleteTask: owner {}, task {}", owner, taskUUID)
-    db.deleteTask(owner, taskUUID)
+  
+  def deleteList(owner: Owner, listUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
+    log.info("deleteList: owner {}, list {}", owner, listUUID)
+    db.deleteList(owner, listUUID)
   }
   
-  def undeleteTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("undeleteTask: owner {}, task {}", owner, taskUUID)
-    db.undeleteItem(owner: Owner, taskUUID, Some(ItemLabel.TASK))
+  def undeleteList(owner: Owner, listUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("undeleteList: owner {}, list {}", owner, listUUID)
+    db.undeleteItem(owner: Owner, listUUID, Some(ItemLabel.LIST))
   }
-
+/*
   def completeTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingContext): Response[CompleteTaskResult] = {
     log.info("completeTask: owner {}, task {}", owner, taskUUID)
     db.completeTask(owner, taskUUID)
