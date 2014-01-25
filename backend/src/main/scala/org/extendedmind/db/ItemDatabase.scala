@@ -105,6 +105,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     val itemBuffer = new ListBuffer[Item]
     val taskBuffer = new ListBuffer[Task]
     val noteBuffer = new ListBuffer[Note]
+    val listBuffer = new ListBuffer[List]
     val tagBuffer = new ListBuffer[Tag]
     
     itemNodes foreach (itemNode =>
@@ -120,13 +121,18 @@ trait ItemDatabase extends AbstractGraphDatabase {
           return fail(INTERNAL_SERVER_ERROR, task.left.get.toString)
         }
         taskBuffer.append(task.right.get)
+      } else if (itemNode.hasLabel(ItemLabel.LIST)) {
+        val list = toList(itemNode, owner)
+        if (list.isLeft) {
+          return fail(INTERNAL_SERVER_ERROR, list.left.get.toString)
+        }
+        listBuffer.append(list.right.get)        
       } else if (itemNode.hasLabel(ItemLabel.TAG)) {
         val tag = toTag(itemNode, owner)
         if (tag.isLeft) {
           return fail(INTERNAL_SERVER_ERROR, tag.left.get.toString)
         }
-        tagBuffer.append(tag.right.get)
-        
+        tagBuffer.append(tag.right.get)        
       }
       else {
         val item = toCaseClass[Item](itemNode)
@@ -139,6 +145,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
       if (itemBuffer.isEmpty) None else Some(itemBuffer.toList),
       if (taskBuffer.isEmpty) None else Some(taskBuffer.toList),
       if (noteBuffer.isEmpty) None else Some(noteBuffer.toList),
+      if (listBuffer.isEmpty) None else Some(listBuffer.toList),
       if (tagBuffer.isEmpty) None else Some(tagBuffer.toList)))
   }
   
@@ -146,13 +153,18 @@ trait ItemDatabase extends AbstractGraphDatabase {
   def toTask(taskNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Task];
   def toNote(noteNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Note];
   def toTag(tagNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Tag];
-
+  def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List];
+  
   protected def getItemNodes(ownerNodes: OwnerNodes)(implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
     val itemsFromOwner: TraversalDescription = itemsTraversal
         .evaluator(PropertyEvaluator(
             ItemLabel.TASK, "completed",
             Evaluation.EXCLUDE_AND_PRUNE,
             Evaluation.INCLUDE_AND_CONTINUE))
+        .evaluator(PropertyEvaluator(
+            ItemLabel.LIST, "archived",
+            Evaluation.EXCLUDE_AND_PRUNE,
+            Evaluation.INCLUDE_AND_CONTINUE))            
         .evaluator(PropertyEvaluator(
             MainLabel.ITEM, "deleted",
             Evaluation.EXCLUDE_AND_PRUNE,
@@ -250,8 +262,9 @@ trait ItemDatabase extends AbstractGraphDatabase {
     if (exactLabelMatch && mandatoryLabel.isEmpty && 
         (itemNode.right.get.hasLabel(ItemLabel.NOTE) 
          || itemNode.right.get.hasLabel(ItemLabel.TASK)
+         || itemNode.right.get.hasLabel(ItemLabel.LIST)
          || itemNode.right.get.hasLabel(ItemLabel.TAG))){
-      return fail(INVALID_PARAMETER, "item already either note, task or tag with UUID " + itemUUID)
+      return fail(INVALID_PARAMETER, "item already either note, task, list or tag with UUID " + itemUUID)
     }
     itemNode
   }
@@ -305,7 +318,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
   protected def setParentNode(itemNode: Node,  owner: Owner, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
     for {
       oldParentRelationship <- getParentRelationship(itemNode, owner, ItemLabel.LIST).right
-      newParentRelationship <- setParentRelationship(itemNode, owner, extItem.parentList, 
+      newParentRelationship <- setParentRelationship(itemNode, owner, extItem.parent, 
           oldParentRelationship, ItemLabel.LIST).right
     }yield newParentRelationship
   }
@@ -336,10 +349,6 @@ trait ItemDatabase extends AbstractGraphDatabase {
   protected def deleteParentRelationship(parentRelationship: Relationship)(implicit neo4j: DatabaseService) : Unit = {
     val parentNode = parentRelationship.getEndNode()
     parentRelationship.delete()
-    // If there are no more children, remove the parent label as well
-    if (!hasChildren(parentNode)){
-      removeParentLabel(parentNode)
-    }
   }
   
   protected def hasChildren(itemNode: Node)(implicit neo4j: DatabaseService): Boolean = {
@@ -362,20 +371,6 @@ trait ItemDatabase extends AbstractGraphDatabase {
     }
   }
 
-  protected def removeParentLabel(parentNode: Node){
-    if (parentNode.hasLabel(ItemParentLabel.PROJECT))
-      parentNode.removeLabel(ItemParentLabel.PROJECT)
-    else if (parentNode.hasLabel(ItemParentLabel.AREA))
-      parentNode.removeLabel(ItemParentLabel.AREA)    
-  }
-  
-  protected def addParentLabel(parentNode: Node){
-    if (!parentNode.hasLabel(ItemParentLabel.PROJECT))
-      parentNode.addLabel(ItemParentLabel.PROJECT)
-    else if (!parentNode.hasLabel(ItemParentLabel.AREA))
-      parentNode.addLabel(ItemParentLabel.AREA)    
-  }
-  
   protected def createParentRelationship(itemNode: Node, parentNode: Node)
               (implicit neo4j: DatabaseService): Response[Relationship] = {
     val relationship = itemNode --> ItemRelationship.HAS_PARENT --> parentNode <;
@@ -586,38 +581,13 @@ trait ItemDatabase extends AbstractGraphDatabase {
 
     val deleted = System.currentTimeMillis()
     itemNode.setProperty("deleted", deleted)
-    // Remove parent labels from parents
-    val parentNodes = getAllParentNodes(itemNode)
-    parentNodes.foreach( parentNode => {
-        // If there are no more children, remove the parent label
-        if (!hasChildren(parentNode)){
-          removeParentLabel(parentNode)
-        }
-      }
-    )
     deleted
   }
-  
-  protected def getAllParentNodes(itemNode: Node)(implicit neo4j: DatabaseService): scala.List[Node] = {
-    val parentNodesFromItem: TraversalDescription =
-      Traversal.description()
-        .depthFirst()
-        .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_PARENT.name), Direction.OUTGOING)
-        .evaluator(Evaluators.excludeStartPosition())
-        .evaluator(Evaluators.toDepth(1))
-    val traverser = parentNodesFromItem.traverse(itemNode)
-    traverser.nodes().toList
-  }
-  
+    
   protected def undeleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Unit = {
     if(itemNode.hasProperty("deleted")){
       itemNode.removeProperty("deleted")
     }
-    val parentNodes = getAllParentNodes(itemNode)
-    parentNodes.foreach( parentNode =>
-      // If parent node does not have a parent label, set it back!
-      addParentLabel(parentNode)
-    )
   }
 
   protected def getDeleteItemResult(item: Node, deleted: Long): DeleteItemResult = {
@@ -649,8 +619,8 @@ trait ItemDatabase extends AbstractGraphDatabase {
   
   protected def destroyItem(deletedItem: Node)(implicit neo4j: DatabaseService) {
     // Remove all relationships
-    val relationShipList = deletedItem.getRelationships().toList
-    relationShipList.foreach(relationship => relationship.delete())
+    val relationshipList = deletedItem.getRelationships().toList
+    relationshipList.foreach(relationship => relationship.delete())
     // Delete token itself
     deletedItem.delete()
   }

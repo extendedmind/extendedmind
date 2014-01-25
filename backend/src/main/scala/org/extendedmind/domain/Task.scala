@@ -12,7 +12,6 @@ case class Task(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long
                 completed: Option[Long],
                 assignee: Option[UUID],
                 assigner: Option[UUID],
-                project: Option[Boolean],
                 visibility: Option[SharedItemVisibility],
                 relationships: Option[ExtendedItemRelationships])
             extends ExtendedItem{
@@ -31,7 +30,7 @@ object Task{
             relationships: Option[ExtendedItemRelationships]) 
         = new Task(None, None, None, title, description, 
                    due, reminder, link, None, None, None, 
-                   None, None, relationships)
+                   None, relationships)
 }
 
 case class CompleteTaskResult(completed: Long, result: SetResult)

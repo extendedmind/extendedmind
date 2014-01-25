@@ -10,10 +10,10 @@ case class List(
       description: Option[String], 
       link: Option[String],
       completable: Option[Boolean],
-      completed: Option[Long],
+      archived: Option[Long],
       visibility: Option[SharedItemVisibility],
-      parent: Option[UUID])
-      extends ShareableItem{
+      relationships: Option[ExtendedItemRelationships])
+      extends ExtendedItem{
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get), 
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
@@ -24,9 +24,9 @@ object List{
 		  	link: Option[String],
 		  	completable: Option[Boolean],
             visibility: Option[SharedItemVisibility],
-            parent: Option[UUID]) 
+            relationships: Option[ExtendedItemRelationships]) 
         = new List(None, None, None, title, description, 
-                   link, completable, None, visibility, parent)
+                   link, completable, None, visibility, relationships)
 }
 
 case class CompleteListResult(completed: Long, history: Tag, result: SetResult)

@@ -138,7 +138,7 @@ trait UserDatabase extends AbstractGraphDatabase {
                        Direction.OUTGOING)
         .depthFirst()
         .evaluator(Evaluators.excludeStartPosition())
-        .evaluator(LabelEvaluator(List(OwnerLabel.USER)))
+        .evaluator(LabelEvaluator(scala.List(OwnerLabel.USER)))
         
     val traverser = userFromToken.traverse(tokenNode)
     val userNodeList = traverser.nodes().toArray
