@@ -13,8 +13,8 @@ case class Tag(
       uuid: Option[UUID], modified: Option[Long], deleted: Option[Long],
       title: String, 
       description: Option[String], 
-      tagType: Option[TagType], // This is always Some 
       link: Option[String],
+      tagType: Option[TagType], // This is always Some 
       visibility: Option[SharedItemVisibility],
       parent: Option[UUID])
       extends ShareableItem{
@@ -24,10 +24,10 @@ case class Tag(
 }
 
 object Tag{
-  def apply(title: String, description: Option[String], 
+  def apply(title: String, description: Option[String],
+		  	link: Option[String],
             tagType: TagType,
-            link: Option[String],
             parent: Option[UUID]) 
-        = new Tag(None, None, None, title, description, Some(tagType), 
-                   link, None, parent)
+        = new Tag(None, None, None, title, description, link, Some(tagType), 
+                   None, parent)
 }

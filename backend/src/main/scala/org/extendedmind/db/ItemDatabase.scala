@@ -225,27 +225,30 @@ trait ItemDatabase extends AbstractGraphDatabase {
 
   protected def updateItem(owner: Owner, itemUUID: UUID, item: AnyRef, 
                           additionalLabel: Option[Label] = None, 
-                          additionalSubLabel: Option[Tuple2[Label, Label]] = None): Response[Node] = {
+                          additionalSubLabel: Option[Label]  = None, 
+                          additionalSubLabelAlternatives: Option[scala.List[Label]] = None): Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
           itemNode <- getItemNode(owner, itemUUID, exactLabelMatch = false).right
-          itemNode <- Right(setLabel(itemNode, additionalLabel, additionalSubLabel)).right
+          itemNode <- Right(setLabel(itemNode, additionalLabel, additionalSubLabel, additionalSubLabelAlternatives)).right
           itemNode <- updateNode(itemNode, item).right
         } yield itemNode
     }
-    
-    
   }
 
-  protected def setLabel(node: Node, additionalLabel: Option[Label], additionalSubLabel: Option[Tuple2[Label, Label]])(implicit neo4j: DatabaseService): Node = {
+  protected def setLabel(node: Node, additionalLabel: Option[Label], additionalSubLabel: Option[Label], additionalSubLabelAlternatives: Option[scala.List[Label]])(implicit neo4j: DatabaseService): Node = {
     if (additionalLabel.isDefined && !node.hasLabel(additionalLabel.get)){
       node.addLabel(additionalLabel.get)
-      if (additionalSubLabel.isDefined && !node.hasLabel(additionalSubLabel.get._1)){
-        node.addLabel(additionalSubLabel.get._1)
-        // Need to remove the other as the sublabel is either or
-        if (node.hasLabel(additionalSubLabel.get._2))
-          node.removeLabel(additionalSubLabel.get._2)
+    }
+    if (additionalSubLabel.isDefined && !node.hasLabel(additionalSubLabel.get)) {
+      node.addLabel(additionalSubLabel.get)
+      // Need to remove the alternatives
+      if (additionalSubLabelAlternatives.isDefined){
+        additionalSubLabelAlternatives.get foreach ( additionalSubLabelAlternative => {
+	      if (node.hasLabel(additionalSubLabelAlternative))
+	        node.removeLabel(additionalSubLabelAlternative)          
+        })
       }
     }
     node
@@ -291,12 +294,13 @@ trait ItemDatabase extends AbstractGraphDatabase {
   }
 
   protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, 
-                              label: Label, subLabel: Option[Tuple2[Label, Label]] = None): 
-        Response[Node] = {
+                              label: Label, 
+                              subLabel: Option[Label]  = None, 
+                              subLabelAlternatives: Option[scala.List[Label]] = None): Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- updateItem(owner, itemUUID, extItem, Some(label), subLabel).right
+          itemNode <- updateItem(owner, itemUUID, extItem, Some(label), subLabel, subLabelAlternatives).right
           parentNode <- setParentNode(itemNode, owner, extItem).right
           tagNodes <- setTagNodes(itemNode, owner, extItem).right
         } yield itemNode
@@ -351,7 +355,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     parentRelationship.delete()
   }
   
-  protected def hasChildren(itemNode: Node)(implicit neo4j: DatabaseService): Boolean = {
+  protected def hasChildren(itemNode: Node, label: Option[Label])(implicit neo4j: DatabaseService): Boolean = {
     val itemsFromParent: TraversalDescription =
       Traversal.description()
         .depthFirst()
@@ -363,7 +367,11 @@ trait ItemDatabase extends AbstractGraphDatabase {
             Evaluation.INCLUDE_AND_CONTINUE))
         .depthFirst()
         .evaluator(Evaluators.toDepth(1))
-    val traverser = itemsFromParent.traverse(itemNode)
+    
+    val traverser = 
+      if (label.isDefined) itemsFromParent.evaluator(LabelEvaluator(scala.List(label.get))).traverse(itemNode)
+      else itemsFromParent.traverse(itemNode)
+      
     if (traverser.nodes().toList.length > 0){
       true
     }else{

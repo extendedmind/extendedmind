@@ -5,7 +5,7 @@ import Validators._
 import org.extendedmind.SetResult
 
 case class Item(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long], 
-                title: String, description: Option[String]) extends ItemLike{
+                title: String, description: Option[String], link: Option[String]) extends ItemLike{
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get), 
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")

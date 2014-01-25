@@ -54,7 +54,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
   }
   describe("TaskDatabase"){
      it("should remove properties of a task from the database"){
-      val testTask = Task("testTitle", Some("testDescription"), None, None, None, None)
+      val testTask = Task("testTitle", Some("testDescription"), None, None, None, None, None)
       val result = db.putNewTask(Owner(db.timoUUID, None), 
            testTask)
       // Put it back without the description

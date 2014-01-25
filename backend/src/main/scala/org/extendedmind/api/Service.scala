@@ -98,6 +98,7 @@ trait Service extends AdminService
 			  with ItemService
 			  with TaskService
 			  with NoteService
+			  with ListService
 			  with TagService {
 
   import JsonImplicits._
@@ -107,6 +108,6 @@ trait Service extends AdminService
       complete {
         "Extended Mind backend is running"  
       }
-    } ~ adminRoutes ~ securityRoutes ~ userRoutes ~ inviteRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ tagRoutes
+    } ~ adminRoutes ~ securityRoutes ~ userRoutes ~ inviteRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes
   }
 }

@@ -26,9 +26,9 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield result
   }
 
-  def putExistingList(owner: Owner, listUUID: UUID, list: List): Response[SetResult] = {
+  def putExistingList(owner: Owner, listUUID: UUID, list: List): Response[SetResult] = { 
     for {
-      listNode <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST).right
+      listNode <- putExistingListNode(owner, listUUID, list).right
       result <- Right(getSetResult(listNode, false)).right
       unit <- Right(updateItemsIndex(listNode, result)).right
     } yield result
@@ -44,14 +44,15 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield fullList
     }
   }
-  /*
-  def deleteList(owner: Owner, taskUUID: UUID): Response[DeleteItemResult] = {
+  
+  def deleteList(owner: Owner, listUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedListNode <- deleteListNode(owner, taskUUID).right
-      result <- Right(getDeleteItemResult(deletedListNode._1, deletedTaskNode._2)).right
+      deletedListNode <- deleteListNode(owner, listUUID).right
+      result <- Right(getDeleteItemResult(deletedListNode._1, deletedListNode._2)).right
       unit <- Right(updateItemsIndex(deletedListNode._1, result.result)).right
     } yield result
   }
+  /*
   
   def completeTask(owner: Owner, taskUUID: UUID): Response[CompleteTaskResult] = {
     for {
@@ -70,6 +71,20 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 */
   // PRIVATE
+
+  protected def putExistingListNode(owner: Owner, listUUID: UUID, list: List): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          itemNode <- getItemNode(owner, listUUID, exactLabelMatch = false).right
+          updatable <- validateListUpdatable(itemNode).right
+          listNode <- Right(setLabel(itemNode, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.TASK)))).right
+          listNode <- updateNode(listNode, list).right
+          parentNode <- setParentNode(listNode, owner, list).right
+          tagNodes <- setTagNodes(listNode, owner, list).right
+        } yield listNode
+    }
+  }
 
   override def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List] = {
     for {
@@ -92,6 +107,20 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
           ))).right
     } yield task
   }
+  
+  protected def validateListUpdatable(itemNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
+    if (itemNode.hasLabel(ItemLabel.TAG))
+      fail(INVALID_PARAMETER, "Tag can not be updated to list, only task or item")
+    else if (itemNode.hasLabel(ItemLabel.NOTE))
+      fail(INVALID_PARAMETER, "Note can not be updated to list, only task or item")
+    else if (itemNode.hasLabel(ItemLabel.TASK) && itemNode.hasProperty("completed"))
+      fail(INVALID_PARAMETER, "Completed task can not be updated to list")
+    else if (itemNode.hasLabel(ItemLabel.TASK) && (itemNode.hasProperty("reminder") || itemNode.hasProperty("repeating")))
+      fail(INVALID_PARAMETER, "Repeating task or task with reminder can not be updated to list")
+    else
+      Right(true)
+  }
+  
 /*
   protected def completeTaskNode(owner: Owner, taskUUID: UUID): Response[Node] = {
     withTx {
@@ -129,24 +158,25 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def uncompleteTaskNode(taskNode: Node)(implicit neo4j: DatabaseService): Unit = {
     if (taskNode.hasProperty("completed")) taskNode.removeProperty("completed")
   }
+  *  
+  */
 
-  protected def deleteTaskNode(owner: Owner, taskUUID: UUID): Response[Tuple2[Node, Long]] = {
+  protected def deleteListNode(owner: Owner, listUUID: UUID): Response[Tuple2[Node, Long]] = {
     withTx {
       implicit neo =>
         for {
-          itemNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
-          deletable <- validateTaskDeletable(itemNode).right
+          itemNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
+          deletable <- validateListDeletable(itemNode).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)
     }
   }
 
-  protected def validateTaskDeletable(taskNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
-    if (taskNode.hasLabel(ItemParentLabel.PROJECT))
-      fail(INVALID_PARAMETER, "can not delete project, only tasks")
+  protected def validateListDeletable(listNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
+    // Can't delete if list has child lists
+    if (hasChildren(listNode, Some(ItemLabel.LIST)))
+      fail(INVALID_PARAMETER, "can not delete list with child lists")
     else
       Right(true)
   }  
-  *  
-  */
 }
