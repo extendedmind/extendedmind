@@ -108,47 +108,51 @@ class ListBestCaseSpec extends ServiceSpecBase {
             }
         }
     }
-    /*
-    it("should successfully update task parent task and note with PUT to /[userUUID]/task/[itemUUID]") {
+    
+    it("should successfully add tasks and notes to lists with PUT to /[userUUID]/[task or note]/[itemUUID] "
+       + "and add sublist to existing list with PUT to /[userUUID]/list/[itemUUID] "
+       + "and turn task into list with PUT to /[userUUID]/list/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
 
-      // Create task and note
-      val newTask = Task("learn Spanish", None, None, None, None, None)
+      // Create task and list
+      val newTask = Task("learn Spanish", None, None, None, None, None, None)
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
-      val newNote = Note("studies", None, Some("area for studies"), None, None)
+      val newList = List("studies", None, None, None, None, None, None)
+      val putListResponse = putNewList(newList, authenticateResponse)
+      
+      // Put existing task and new note into list 
+      val existingTaskInList = newTask.copy(relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None)))
+      val putTaskInListResponse = putExistingTask(existingTaskInList, putTaskResponse.uuid.get, authenticateResponse)
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), 
+    		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None)))
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
-      // Create subtask for both new task and for new note and one for task
-      val newSubTask = Task("google for a good Spanish textbook", None, Some("2014-03-01"), None, None,
-        Some(ExtendedItemRelationships(Some(putTaskResponse.uuid.get),
-          Some(putNoteResponse.uuid.get), None)))
-      val putSubTaskResponse = putNewTask(newSubTask, authenticateResponse)
-      val newSecondSubTask = Task("loan textbook from library", None, Some("2014-03-02"), None, None,
-        Some(ExtendedItemRelationships(Some(putTaskResponse.uuid.get), None, None)))
-      val putSecondSubTaskResponse = putNewTask(newSecondSubTask, authenticateResponse)
-
-      // Get subtask, task and note and verify right values
-      val taskResponse = getTask(putSubTaskResponse.uuid.get, authenticateResponse)
-      taskResponse.parentNote.get should equal(putNoteResponse.uuid.get)
-      taskResponse.parentTask.get should equal(putTaskResponse.uuid.get)
-      val parentTaskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
-      parentTaskResponse.project.get should equal(true)
-      val parentNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
-      parentNoteResponse.area.get should equal(true)
-
-      // Remove parents, verify that they are removed from subtask, and that project is still a project
-      // but note is no longer an area
-      putExistingTask(taskResponse.copy(relationships = None), putSubTaskResponse.uuid.get,
-        authenticateResponse)
-      val taskResponse2 = getTask(putSubTaskResponse.uuid.get, authenticateResponse)
-      taskResponse2.parentNote should be(None)
-      taskResponse2.parentTask should be(None)
-      val parentTaskResponse2 = getTask(putTaskResponse.uuid.get, authenticateResponse)
-      parentTaskResponse2.project.get should equal(true)
-      val parentNoteResponse2 = getNote(putNoteResponse.uuid.get, authenticateResponse)
-      parentNoteResponse2.area should be(None)
+      // Get note and task and check that they are in the list
+      getTask(putTaskResponse.uuid.get, authenticateResponse)
+      			.relationships.get.parent.get should be (putListResponse.uuid.get)
+      getNote(putNoteResponse.uuid.get, authenticateResponse)
+      			.relationships.get.parent.get should be (putListResponse.uuid.get)
+      
+      // Create sublist and move note below it
+      val newSubList = List("Spanish studies", None, None, None, None, None, 
+    		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None)))
+      val putSubListResponse = putNewList(newSubList, authenticateResponse)
+      getList(putSubListResponse.uuid.get, authenticateResponse)
+      		    .relationships.get.parent.get should be (putListResponse.uuid.get)
+      val existingNoteInSubList = newNote.copy(relationships = 
+    		  				Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None)))
+      val putExistingNoteResponse = putExistingNote(existingNoteInSubList, putNoteResponse.uuid.get, authenticateResponse)
+      getNote(putNoteResponse.uuid.get, authenticateResponse)
+      			.relationships.get.parent.get should be (putSubListResponse.uuid.get)
+      
+      // Turn task into list
+      val putTaskToListResponse = putExistingList(List(Some(putTaskResponse.uuid.get), Some(putTaskResponse.modified), None, 
+    		  newTask.title, None, None, None, None, None, None,None, None, None),
+          putTaskResponse.uuid.get, authenticateResponse)
+      val listFromTask = getList(putTaskResponse.uuid.get, authenticateResponse)
+      listFromTask.completable.get should be (true)
+      listFromTask.uuid.get should be (putTaskResponse.uuid.get)
+      listFromTask.title should be (newTask.title)
     }
-    */
-  }
-  
+  }  
 }
