@@ -34,4 +34,4 @@ object List{
                    link, completable, due, None, None, None, visibility, relationships)
 }
 
-case class CompleteListResult(completed: Long, history: Tag, result: SetResult)
+case class ArchiveListResult(archived: Long, result: SetResult, history: Tag)

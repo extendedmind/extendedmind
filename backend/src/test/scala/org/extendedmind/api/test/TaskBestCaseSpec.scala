@@ -131,5 +131,23 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
+    it("should successfully create repeating task with PUT to /[userUUID]/task "
+      + "and create a new task with complete with POST to /[userUUID]/task/[itemUUID]/complete"
+      + "and stop the repeating by deleting the created task with DELETE to /[userUUID]/task/[itemUUID]/complete") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val newTask = Task("review inbox", None, None, Some("2013-12-31"), None, Some(RepeatingType.WEEKLY), None)
+      val putTaskResponse = putNewTask(newTask, authenticateResponse)
+
+      Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        writeJsonOutput("completeRepeatingTaskResponse", entityAs[String])
+        val completeTaskResponse = entityAs[CompleteTaskResult]
+        completeTaskResponse.created.get.due.get should be ("2014-01-07")
+        val taskResponse = getTask(completeTaskResponse.created.get.uuid.get, authenticateResponse)
+        Delete("/" + authenticateResponse.userUUID + "/task/" + taskResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val deleteTaskResponse = entityAs[DeleteItemResult]
+          deleteTaskResponse.deleted should not be None
+        }
+      }
+    }
   }
 }
