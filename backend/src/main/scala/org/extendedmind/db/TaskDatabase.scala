@@ -55,9 +55,9 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   
   def completeTask(owner: Owner, taskUUID: UUID): Response[CompleteTaskResult] = {
     for {
-      taskNode <- completeTaskNode(owner, taskUUID).right
-      result <- Right(getCompleteTaskResult(taskNode)).right
-      unit <- Right(updateItemsIndex(taskNode, result.result)).right
+      completeInfo <- completeTaskNode(owner, taskUUID).right
+      result <- Right(getCompleteTaskResult(completeInfo)).right
+      unit <- Right(updateItemsIndex(completeInfo._1, result.result)).right
     } yield result
   }
   
@@ -93,27 +93,87 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield task
   }
 
-  protected def completeTaskNode(owner: Owner, taskUUID: UUID): Response[Node] = {
+  protected def completeTaskNode(owner: Owner, taskUUID: UUID): Response[(Node, Long, Option[Task])] = {
+    for {
+      taskNode <- markTaskNodeComplete(owner, taskUUID).right
+      generatedTask <- evaluateRepeating(owner, taskNode._1).right
+      fullGeneratedTask <- putGeneratedTask(owner, generatedTask).right
+    } yield (taskNode._1, taskNode._2, fullGeneratedTask)
+  }
+  
+  protected def markTaskNodeComplete(owner: Owner, taskUUID: UUID): Response[(Node, Long)] = {
     withTx {
       implicit neo =>
         for {
           taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
-          result <- Right(completeTaskNode(taskNode)).right
-        } yield taskNode
+          completed <- markTaskNodeComplete(owner, taskNode).right
+        } yield (taskNode, completed)
     }
-  }
-
-  protected def completeTaskNode(taskNode: Node)(implicit neo4j: DatabaseService): Unit = {
-    val currentTime = System.currentTimeMillis()
-    taskNode.setProperty("completed", currentTime)
-  }
-
-  protected def getCompleteTaskResult(task: Node): CompleteTaskResult = {
+  }    
+  
+  protected def markTaskNodeComplete(owner: Owner, taskNode: Node)(implicit neo4j: DatabaseService): Response[Long] = {
     withTx {
       implicit neo =>
-        CompleteTaskResult(task.getProperty("completed").asInstanceOf[Long],
-          getSetResult(task, false))
+	    val currentTime = System.currentTimeMillis()
+	    taskNode.setProperty("completed", currentTime)
+	    Right(currentTime)
     }
+  }
+
+  protected def evaluateRepeating(owner: Owner, taskNode: Node): Response[Option[Task]] = {
+    withTx {
+      implicit neo =>
+        if (taskNode.hasProperty("repeating")) {
+          // Generate new task on complete
+
+          // First, get new due string
+          val repeatingType = RepeatingType.withName(taskNode.getProperty("repeating").asInstanceOf[String])
+          val oldDue: java.util.Calendar = java.util.Calendar.getInstance();
+          oldDue.setTime(Validators.dateFormat.parse(taskNode.getProperty("due").asInstanceOf[String]))
+          val newDue = repeatingType match {
+            case RepeatingType.DAILY => oldDue.add(java.util.Calendar.DATE, 1)
+            case RepeatingType.WEEKLY => oldDue.add(java.util.Calendar.DATE, 7)
+            case RepeatingType.BIWEEKLY => oldDue.add(java.util.Calendar.DATE, 14)
+            case RepeatingType.MONTHLY => oldDue.add(java.util.Calendar.MONTH, 1)
+            case RepeatingType.BIMONTHLY => oldDue.add(java.util.Calendar.MONTH, 2)
+            case RepeatingType.YEARLY => oldDue.add(java.util.Calendar.YEAR, 1)
+          }
+          val newDueString = Validators.dateFormat.format(oldDue.getTime())
+
+          // Second, duplicate old task
+          val oldTask = for {
+            task <- toCaseClass[Task](taskNode).right
+            completeTask <- addTransientTaskProperties(taskNode, owner, task).right
+          } yield completeTask
+          if (oldTask.isLeft) Left(oldTask.left.get)
+          else {
+            Right(Some(oldTask.right.get.copy(uuid = None, modified = None, due = Some(newDueString))))
+          }
+        } else {
+          Right(None)
+        }
+    }
+  }
+  
+  protected def putGeneratedTask(owner: Owner, task: Option[Task]): Response[Option[Task]] = {
+    if (task.isDefined){
+      val putTaskResponse = putNewTask(owner, task.get)
+      if (putTaskResponse.isLeft) Left(putTaskResponse.left.get)
+      else {
+        val getTaskResponse = getTask(owner, putTaskResponse.right.get.uuid.get)
+        if (getTaskResponse.isLeft) Left(getTaskResponse.left.get)
+        else Right(Some(getTaskResponse.right.get))
+      }
+    }
+    else{
+      Right(None)
+    }
+  }
+
+  protected def getCompleteTaskResult(completeInfo: (Node, Long, Option[Task])): CompleteTaskResult = {
+    CompleteTaskResult(completeInfo._2,
+      getSetResult(completeInfo._1, false),
+      completeInfo._3)
   }
   
   protected def uncompleteTaskNode(owner: Owner, taskUUID: UUID): Response[Node] = {

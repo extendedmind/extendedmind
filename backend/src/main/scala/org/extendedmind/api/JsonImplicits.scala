@@ -33,29 +33,6 @@ object JsonImplicits extends DefaultJsonProtocol {
       case x => deserializationError("Expected TagType as JsString, but got " + x)
     }
   }
-  implicit object RepeatingTypeJsonFormat extends JsonFormat[RepeatingType] {
-    def write(x: RepeatingType) = JsString(
-        x match {
-          case DAILY => "daily"
-          case WEEKLY => "weekly"
-          case BIWEEKLY => "biweekly"
-          case MONTHLY => "monthly"
-          case BIMONTHLY => "bimonthly"
-          case YEARLY => "yearly"
-        })
-    def read(value: JsValue) = value match {
-      case JsString(x) => {
-        if (x == "daily") DAILY
-        else if (x == "weekly") WEEKLY 
-        else if (x == "biweekly") BIWEEKLY
-        else if (x == "monthly") MONTHLY
-        else if (x == "bimonthly") BIMONTHLY
-        else if (x == "monthly") YEARLY
-        else deserializationError("Expected 'daily', 'weekly', 'biweekly', 'monthly', 'bimonthly', 'yearly' but got " + x)
-      }
-      case x => deserializationError("Expected RepeatingType as JsString, but got " + x)
-    }
-  }
 
   implicit val implSetResult = jsonFormat2(SetResult.apply)
   implicit val implDeleteItemResult = jsonFormat2(DeleteItemResult.apply)
@@ -84,5 +61,5 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implUser = jsonFormat5(User.apply)
   implicit val implSecurityContext = jsonFormat4(SecurityContext.apply)
   implicit val implAuthenticatePayload = jsonFormat1(AuthenticatePayload.apply)
-  implicit val implCompleteTaskResult = jsonFormat2(CompleteTaskResult.apply)
+  implicit val implCompleteTaskResult = jsonFormat3(CompleteTaskResult.apply)
 }
