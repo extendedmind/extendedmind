@@ -77,11 +77,12 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo4j =>
         for {
           itemNode <- getItemNode(owner, listUUID, exactLabelMatch = false).right
-          updatable <- validateListUpdatable(itemNode).right
+          wasTask <- validateListUpdatable(itemNode).right
           listNode <- Right(setLabel(itemNode, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.TASK)))).right
           listNode <- updateNode(listNode, list).right
           parentNode <- setParentNode(listNode, owner, list).right
           tagNodes <- setTagNodes(listNode, owner, list).right
+          completable <- setCompletable(listNode, wasTask).right
         } yield listNode
     }
   }
@@ -117,9 +118,26 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
       fail(INVALID_PARAMETER, "Completed task can not be updated to list")
     else if (itemNode.hasLabel(ItemLabel.TASK) && (itemNode.hasProperty("reminder") || itemNode.hasProperty("repeating")))
       fail(INVALID_PARAMETER, "Repeating task or task with reminder can not be updated to list")
-    else
-      Right(true)
+    else{
+      if (itemNode.hasLabel(ItemLabel.TASK))
+        Right(true)
+      else
+    	Right(false)
+    }
   }
+  
+  protected def setCompletable(itemNode: Node, wasTask: Boolean)(implicit neo4j: DatabaseService): Response[Boolean] = {
+    if (itemNode.hasProperty("completable") && itemNode.getProperty("completable").asInstanceOf[Boolean]){
+      Right(true);
+    }else if (wasTask){
+      // If a task is turned into a list, it is automatically completable
+      itemNode.setProperty("completable", java.lang.Boolean.TRUE) 
+      Right(true);
+    }else{
+      Right(false)
+    }
+  }
+    
   
 /*
   protected def completeTaskNode(owner: Owner, taskUUID: UUID): Response[Node] = {
