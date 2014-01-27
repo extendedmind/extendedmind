@@ -38,4 +38,4 @@ object Owner{
   }
 }
 
-case class ForgotPasswordResult(resetCodeValid: Long)
+case class ForgotPasswordResult(resetCodeExpires: Long)

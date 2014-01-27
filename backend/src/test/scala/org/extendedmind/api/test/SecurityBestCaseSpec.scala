@@ -26,6 +26,7 @@ import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
 import spray.http.StatusCodes._
+import org.mockito.ArgumentCaptor
 
 /**
  * Best case test for security routes. Also generates .json files.
@@ -118,6 +119,37 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
         }
       val newPasswordAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, newPassword)
       newPasswordAuthenticateResponse.userUUID should not be None
+    }
+    it("should successfully send password with email with POST to /password/forgot "
+       + "get password expires with given code to ") {
+      stub(mockMailgunClient.sendPasswordResetLink(mockEq(TIMO_EMAIL), anyObject())).toReturn(Future { SendEmailResponse("OK", "1234") })
+      val resetCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])      
+      val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])      
+              
+      Post("/password/forgot", marshal(UserEmail(TIMO_EMAIL)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+        writeJsonOutput("forgotPasswordResponse", entityAs[String])
+        val forgotPasswordResponse = entityAs[ForgotPasswordResult]
+        forgotPasswordResponse.resetCodeExpires should not be None
+        verify(mockMailgunClient).sendPasswordResetLink(emailCaptor.capture(), resetCodeCaptor.capture())
+        // Get reset code expiration
+        Get("/password/" + resetCodeCaptor.getValue().toHexString + "?email=" + TIMO_EMAIL) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+          val passwordResetExpiresResponse = entityAs[ForgotPasswordResult]
+          writeJsonOutput("passwordResetExpiresResponse", entityAs[String])
+        }
+        // Reset password
+        val testPassword = "testPassword"
+        Post("/password/" + resetCodeCaptor.getValue.toHexString + "/reset", marshal(SignUp(TIMO_EMAIL, testPassword)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+          val resetPasswordResponse = entityAs[SetResult]
+          writeJsonOutput("resetPasswordResponse", entityAs[String])
+          val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, testPassword)
+          // Make sure that reset password again with the same code fails
+          Post("/password/" + resetCodeCaptor.getValue.toHexString + "/reset", marshal(SignUp(TIMO_EMAIL, testPassword)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+            val failure = responseAs[String]
+            status should be(BadRequest)
+            failure should startWith("Password not resetable anymore")
+          }
+        }
+      }
     }
   }
 

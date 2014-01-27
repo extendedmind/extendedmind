@@ -35,7 +35,9 @@ trait API extends HttpService {
   val getAccount = get & path("account".r)
   val putAccount = put & path("account".r)
   val postChangeUserType = post & path("user" / JavaUUID / "type" / IntNumber)
-  val postForgotPassword = post & path("forgot".r)
+  val postForgotPassword = post & path("password" / "forgot".r)
+  val getPasswordResetExpires = get & path("password" / HexLongNumber)
+  val postResetPassword = post & path("password" / HexLongNumber / "reset")
   
   // Collectives
   val putNewCollective = put & path("collective".r)

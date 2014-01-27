@@ -11,6 +11,7 @@ import org.extendedmind.security._
 import java.util.UUID
 import org.extendedmind.email.MailgunClient
 import akka.actor.ActorRefFactory
+import org.extendedmind.email.SendEmailResponse
 
 trait SecurityActions {
 
@@ -48,23 +49,35 @@ trait SecurityActions {
     } yield result
   }
   
+  def getPasswordResetExpires(code: Long, email: String)(implicit log: LoggingContext): Response[ForgotPasswordResult] = {
+    log.info("getPasswordResetable: user {}", email)
+    for {
+      expires <- db.getPasswordResetExpires(code, email).right
+    } yield ForgotPasswordResult(expires)
+  }
+  
+  def resetPassword(code: Long, signUp: SignUp)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("resetPassword: user {}", signUp.email)
+    db.resetPassword(code, signUp)
+  }  
+  
   private def sendPasswordResetLink(user: User)(implicit log: LoggingContext): Response[ForgotPasswordResult] = {
-    val resetCode = Random.generateRandomLong()
+    val resetCode = Random.generateRandomUnsignedLong
     val currentTime = System.currentTimeMillis
     val resetCodeValid = currentTime + db.PASSWORD_RESET_DURATION
 
     val futureMailResponse = mailgun.sendPasswordResetLink(user.email, resetCode)
     futureMailResponse onSuccess {
       case SendEmailResponse(message, id) => {
-        val saveResponse = db.savePasswordResetCode(user, resetCode, resetCodeValid)
+        val saveResponse = db.savePasswordResetInformation(user.uuid.get, resetCode, resetCodeValid, id)
         if (saveResponse.isLeft)
           log.error("Error saving password reset code for email {} with emailId {}, error: {}",
             user.email, id, saveResponse.left.get.head)
         else log.info("Saved reset code for email {} with emailId: {}",
-          user.email, acceptResult.right.get._1.uuid.get, id)
+          user.email, id)
       }
       case _ =>
-        log.error("Could not send invite email to {}", invite.email)
+        log.error("Could not send password reset email to {}", user.email)
     }
     Right(ForgotPasswordResult(resetCodeValid))
   }
@@ -73,7 +86,7 @@ trait SecurityActions {
 
 class SecurityActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, 
                       implicit val implActorRefFactory: ActorRefFactory)
-  extends InviteActions with Injectable {
+  extends SecurityActions with Injectable {
   override def settings  = implSettings
   override def db = inject[GraphDatabase]
   override def mailgun = inject[MailgunClient]

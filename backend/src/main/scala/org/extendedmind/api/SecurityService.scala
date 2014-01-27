@@ -74,6 +74,30 @@ trait SecurityService extends ServiceBase {
             }
           }
         }
+      } ~
+      getPasswordResetExpires { code =>
+        parameters("email") { email =>
+          complete {
+            Future[ForgotPasswordResult] {
+              securityActions.getPasswordResetExpires(code, email) match {
+                case Right(result) => result
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      } ~
+      postResetPassword { code =>
+        entity(as[SignUp]) { signUp =>
+          complete {
+            Future[SetResult] {
+              securityActions.resetPassword(code, signUp) match {
+                case Right(sr) => sr
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
       }
   }
 
