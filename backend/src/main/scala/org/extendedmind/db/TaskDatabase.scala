@@ -13,14 +13,16 @@ import org.neo4j.graphdb.traversal.TraversalDescription
 import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
+import org.neo4j.graphdb.Relationship
 
 trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PUBLIC
 
-  def putNewTask(owner: Owner, task: Task): Response[SetResult] = {
+  def putNewTask(owner: Owner, task: Task, originTaskNode: Option[Node] = None): Response[SetResult] = {
     for {
       taskNode <- putNewExtendedItem(owner, task, ItemLabel.TASK).right
+      relationship <- setTaskOriginRelationship(taskNode, originTaskNode).right
       result <- Right(getSetResult(taskNode, true)).right
       unit <- Right(addToItemsIndex(owner, taskNode, result)).right
     } yield result
@@ -80,13 +82,15 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   protected def addTransientTaskProperties(taskNode: Node, owner: Owner, task: Task)(implicit neo4j: DatabaseService): Response[Task] = {
     for {
-      parent <- getParentRelationship(taskNode, owner, ItemLabel.LIST).right
+      parent <- getItemRelationship(taskNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST).right
+      origin <- getItemRelationship(taskNode, owner, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK).right
       tags <- getTagRelationships(taskNode, owner).right
       task <- Right(task.copy(
         relationships = 
-          (if (parent.isDefined || tags.isDefined)            
-            Some(ExtendedItemRelationships(  
+          (if (parent.isDefined || origin.isDefined || tags.isDefined )            
+            Some(ExtendedItemRelationships(
               parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
+              origin = (if (origin.isEmpty) None else (Some(getUUID(origin.get.getEndNode())))),
               tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
            else None
           ))).right
@@ -95,10 +99,10 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   protected def completeTaskNode(owner: Owner, taskUUID: UUID): Response[(Node, Long, Option[Task])] = {
     for {
-      taskNode <- markTaskNodeComplete(owner, taskUUID).right
-      generatedTask <- evaluateRepeating(owner, taskNode._1).right
-      fullGeneratedTask <- putGeneratedTask(owner, generatedTask).right
-    } yield (taskNode._1, taskNode._2, fullGeneratedTask)
+      completeInfo <- markTaskNodeComplete(owner, taskUUID).right
+      generatedTask <- evaluateRepeating(owner, completeInfo._1).right
+      fullGeneratedTask <- putGeneratedTask(owner, generatedTask, completeInfo._1).right
+    } yield (completeInfo._1, completeInfo._2, fullGeneratedTask)
   }
   
   protected def markTaskNodeComplete(owner: Owner, taskUUID: UUID): Response[(Node, Long)] = {
@@ -124,40 +128,48 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         if (taskNode.hasProperty("repeating")) {
-          // Generate new task on complete
-
-          // First, get new due string
-          val repeatingType = RepeatingType.withName(taskNode.getProperty("repeating").asInstanceOf[String])
-          val oldDue: java.util.Calendar = java.util.Calendar.getInstance();
-          oldDue.setTime(Validators.dateFormat.parse(taskNode.getProperty("due").asInstanceOf[String]))
-          val newDue = repeatingType match {
-            case RepeatingType.DAILY => oldDue.add(java.util.Calendar.DATE, 1)
-            case RepeatingType.WEEKLY => oldDue.add(java.util.Calendar.DATE, 7)
-            case RepeatingType.BIWEEKLY => oldDue.add(java.util.Calendar.DATE, 14)
-            case RepeatingType.MONTHLY => oldDue.add(java.util.Calendar.MONTH, 1)
-            case RepeatingType.BIMONTHLY => oldDue.add(java.util.Calendar.MONTH, 2)
-            case RepeatingType.YEARLY => oldDue.add(java.util.Calendar.YEAR, 1)
+          // Generate new task on complete if a new task has not already been created
+          val originRelationshipResponse = getItemRelationship(taskNode, owner, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK, Direction.INCOMING)
+          if (originRelationshipResponse.isLeft) Left(originRelationshipResponse.left.get)
+          else if (originRelationshipResponse.right.get.isEmpty){
+	          // First, get new due string
+	          val repeatingType = RepeatingType.withName(taskNode.getProperty("repeating").asInstanceOf[String])
+	          val oldDue: java.util.Calendar = java.util.Calendar.getInstance();
+	          oldDue.setTime(Validators.dateFormat.parse(taskNode.getProperty("due").asInstanceOf[String]))
+	          val newDue = repeatingType match {
+	            case RepeatingType.DAILY => oldDue.add(java.util.Calendar.DATE, 1)
+	            case RepeatingType.WEEKLY => oldDue.add(java.util.Calendar.DATE, 7)
+	            case RepeatingType.BIWEEKLY => oldDue.add(java.util.Calendar.DATE, 14)
+	            case RepeatingType.MONTHLY => oldDue.add(java.util.Calendar.MONTH, 1)
+	            case RepeatingType.BIMONTHLY => oldDue.add(java.util.Calendar.MONTH, 2)
+	            case RepeatingType.YEARLY => oldDue.add(java.util.Calendar.YEAR, 1)
+	          }
+	          val newDueString = Validators.dateFormat.format(oldDue.getTime())
+	
+	          // Second, duplicate old task
+	          val oldTask = for {
+	            task <- toCaseClass[Task](taskNode).right
+	            completeTask <- addTransientTaskProperties(taskNode, owner, task).right
+	          } yield completeTask
+	          if (oldTask.isLeft) Left(oldTask.left.get)
+	          else {
+	            Right(Some(oldTask.right.get.copy(uuid = None, modified = None, due = Some(newDueString))))
+	          }
           }
-          val newDueString = Validators.dateFormat.format(oldDue.getTime())
-
-          // Second, duplicate old task
-          val oldTask = for {
-            task <- toCaseClass[Task](taskNode).right
-            completeTask <- addTransientTaskProperties(taskNode, owner, task).right
-          } yield completeTask
-          if (oldTask.isLeft) Left(oldTask.left.get)
-          else {
-            Right(Some(oldTask.right.get.copy(uuid = None, modified = None, due = Some(newDueString))))
+          else{
+            // A new task has already been created
+            Right(None)
           }
         } else {
+          // Not a repeating task
           Right(None)
         }
     }
   }
   
-  protected def putGeneratedTask(owner: Owner, task: Option[Task]): Response[Option[Task]] = {
+  protected def putGeneratedTask(owner: Owner, task: Option[Task], originTaskNode: Node): Response[Option[Task]] = {
     if (task.isDefined){
-      val putTaskResponse = putNewTask(owner, task.get)
+      val putTaskResponse = putNewTask(owner, task.get, Some(originTaskNode))
       if (putTaskResponse.isLeft) Left(putTaskResponse.left.get)
       else {
         val getTaskResponse = getTask(owner, putTaskResponse.right.get.uuid.get)
@@ -168,6 +180,18 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     else{
       Right(None)
     }
+  }
+  
+  protected def setTaskOriginRelationship(taskNode: Node, originTaskNode: Option[Node]): Response[Option[Relationship]] = {
+    if (originTaskNode.isDefined){
+      withTx {
+        implicit neo =>
+          val relationship = taskNode --> ItemRelationship.HAS_ORIGIN --> originTaskNode.get <;
+          Right(Some(relationship))
+      }
+    }else{
+      Right(None)
+    }    
   }
 
   protected def getCompleteTaskResult(completeInfo: (Node, Long, Option[Task])): CompleteTaskResult = {

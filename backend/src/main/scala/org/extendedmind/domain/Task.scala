@@ -55,4 +55,4 @@ object Task{
                    None, relationships)
 }
 
-case class CompleteTaskResult(completed: Long, result: SetResult, created: Option[Task])
+case class CompleteTaskResult(completed: Long, result: SetResult, generated: Option[Task])

@@ -121,10 +121,10 @@ class ListBestCaseSpec extends ServiceSpecBase {
       val putListResponse = putNewList(newList, authenticateResponse)
       
       // Put existing task and new note into list 
-      val existingTaskInList = newTask.copy(relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None)))
+      val existingTaskInList = newTask.copy(relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
       val putTaskInListResponse = putExistingTask(existingTaskInList, putTaskResponse.uuid.get, authenticateResponse)
       val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), 
-    		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None)))
+    		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
       // Get note and task and check that they are in the list
@@ -135,12 +135,12 @@ class ListBestCaseSpec extends ServiceSpecBase {
       
       // Create sublist and move note below it
       val newSubList = List("Spanish studies", None, None, None, None, None, 
-    		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None)))
+    		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
       val putSubListResponse = putNewList(newSubList, authenticateResponse)
       getList(putSubListResponse.uuid.get, authenticateResponse)
       		    .relationships.get.parent.get should be (putListResponse.uuid.get)
       val existingNoteInSubList = newNote.copy(relationships = 
-    		  				Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None)))
+    		  				Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None)))
       val putExistingNoteResponse = putExistingNote(existingNoteInSubList, putNoteResponse.uuid.get, authenticateResponse)
       getNote(putNoteResponse.uuid.get, authenticateResponse)
       			.relationships.get.parent.get should be (putSubListResponse.uuid.get)
