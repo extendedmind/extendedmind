@@ -19,6 +19,10 @@ case class SignUp(email: String, password: String){
   require(validatePassword(password), "Password needs to be 7 or more characters long")
 }
 
+case class UserEmail(email: String){
+  require(validateEmailAddress(email), "Not a valid email address")
+}
+
 case class UserAccessRight(access: Option[Byte]){
   if (access.isDefined) require(access == Some(1) || access == Some(2), "Not a valid access right, permitted values: 1 = read, 2 = read/write")
 }
@@ -33,3 +37,5 @@ object Owner{
     else new Owner(securityContext.userUUID, Some(ownerUUID))
   }
 }
+
+case class ForgotPasswordResult(resetCodeValid: Long)

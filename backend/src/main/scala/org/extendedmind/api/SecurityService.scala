@@ -55,9 +55,21 @@ trait SecurityService extends ServiceBase {
             complete {
               Future[CountResult] {
                 securityActions.changePassword(securityContext.userUUID, newPassword.password) match {
-                  case Right(deleteCount) => deleteCount
+                  case Right(count) => count
                   case Left(e) => processErrors(e)
                 }
+              }
+            }
+          }
+        }
+      } ~
+      postForgotPassword { url =>
+        entity(as[UserEmail]) { userEmail =>
+          complete {
+            Future[ForgotPasswordResult] {
+              securityActions.forgotPassword(userEmail) match {
+                case Right(result) => result
+                case Left(e) => processErrors(e)
               }
             }
           }

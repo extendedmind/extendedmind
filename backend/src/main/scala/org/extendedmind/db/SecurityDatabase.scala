@@ -26,6 +26,9 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   // If rememberMe is set, the token can be replaced for 7 days
   val TOKEN_REPLACEABLE: Long = 7 * 24 * 60 * 60 * 1000
 
+  // Password reset is valid for one hour
+  val PASSWORD_RESET_DURATION: Long = 1 * 60 * 60 * 1000
+  
   // PUBLIC
 
   def generateToken(email: String, attemptedPassword: String, payload: Option[AuthenticatePayload]): Response[SecurityContext] = {
@@ -153,6 +156,16 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       userNode <- changeUserNodeType(userUUID, userType).right
       result <- Right(getSetResult(userNode, false)).right
     } yield result
+  }
+  
+  def savePasswordResetCode(userUUID: UUID, resetCode: Long, resetCodeValid: Long): Response[Unit] = {
+    withTx {
+      implicit neo4j =>
+	    for {
+	      userNode <- getNode(userUUID, OwnerLabel.USER).right
+	      result <- Right(savePasswordResetCode(userNode, resetCode, resetCodeValid)).right
+	    } yield result
+    }
   }
   
   def destroyAllTokens: Response[CountResult] = {
@@ -443,5 +456,9 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     else if (userNode.hasLabel(UserLabel.BETA))
       userNode.removeLabel(UserLabel.BETA)
   }
-
+  
+  private def savePasswordResetCode(userNode: Node, resetCode: Long, resetCodeExpires: Long)(implicit neo4j: DatabaseService){
+    userNode.setProperty("passwordResetCode", resetCode)
+    userNode.setProperty("passwordResetCodeExpires", resetCodeExpires)
+  }
 }
