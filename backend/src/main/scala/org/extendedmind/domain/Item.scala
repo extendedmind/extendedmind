@@ -18,7 +18,7 @@ case class Items(items: Option[scala.List[Item]],
 				 tags: Option[scala.List[Tag]])
 
 case class SharedItemVisibility(public: Option[Long], collective: Option[UUID])
-case class ExtendedItemRelationships(parent: Option[UUID], tags: Option[scala.List[UUID]])
+case class ExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID], tags: Option[scala.List[UUID]])
 case class DeleteItemResult(deleted: Long, result: SetResult)
 case class DestroyResult(destroyed: scala.List[UUID])
 

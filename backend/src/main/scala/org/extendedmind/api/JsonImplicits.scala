@@ -50,7 +50,7 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implUserAccessRight = jsonFormat1(UserAccessRight.apply)
   implicit val implPublicUser = jsonFormat1(PublicUser.apply)
   implicit val implVisibility = jsonFormat2(SharedItemVisibility.apply)
-  implicit val implRelationships = jsonFormat2(ExtendedItemRelationships.apply)
+  implicit val implRelationships = jsonFormat3(ExtendedItemRelationships.apply)
   implicit val implItem = jsonFormat6(Item.apply)
   implicit val implTask = jsonFormat14(Task.apply)
   implicit val implNote = jsonFormat9(Note.apply)

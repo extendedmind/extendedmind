@@ -132,7 +132,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       }
     }
     it("should successfully create repeating task with PUT to /[userUUID]/task "
-      + "and create a new task with complete with POST to /[userUUID]/task/[itemUUID]/complete"
+      + "and create a new task with first complete with POST to /[userUUID]/task/[itemUUID]/complete"
       + "and stop the repeating by deleting the created task with DELETE to /[userUUID]/task/[itemUUID]/complete") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newTask = Task("review inbox", None, None, Some("2013-12-31"), None, Some(RepeatingType.WEEKLY), None)
@@ -141,11 +141,37 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("completeRepeatingTaskResponse", entityAs[String])
         val completeTaskResponse = entityAs[CompleteTaskResult]
-        completeTaskResponse.created.get.due.get should be ("2014-01-07")
-        val taskResponse = getTask(completeTaskResponse.created.get.uuid.get, authenticateResponse)
-        Delete("/" + authenticateResponse.userUUID + "/task/" + taskResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          val deleteTaskResponse = entityAs[DeleteItemResult]
-          deleteTaskResponse.deleted should not be None
+        completeTaskResponse.generated.get.due.get should be ("2014-01-07")
+        val generatedTaskResponse = getTask(completeTaskResponse.generated.get.uuid.get, authenticateResponse)
+        generatedTaskResponse.completed should be (None)
+        generatedTaskResponse.repeating.get should be (RepeatingType.WEEKLY.toString())
+        generatedTaskResponse.relationships.get.origin.get should be (putTaskResponse.uuid.get)
+        
+        // Uncomplete and re-complete and make sure another new task isn't generated
+        Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/uncomplete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val uncompletedTaskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
+          uncompletedTaskResponse.completed should be(None)
+        }
+        Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val recompleteTaskResponse = entityAs[CompleteTaskResult]
+          recompleteTaskResponse.generated should be (None)	  
+          val completedTaskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
+          completedTaskResponse.completed should not be None
+        }
+
+        // Complete subtask, and make sure another child is created
+        Post("/" + authenticateResponse.userUUID + "/task/" + generatedTaskResponse.uuid.get + "/complete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val completeSubTaskResponse = entityAs[CompleteTaskResult]
+          completeSubTaskResponse.generated.get.due.get should be("2014-01-14")
+          val generatedSubTaskResponse = getTask(completeTaskResponse.generated.get.uuid.get, authenticateResponse)
+          generatedSubTaskResponse.completed should not be (None)
+          generatedSubTaskResponse.repeating.get should be(RepeatingType.WEEKLY.toString())
+
+          // Deleting subtask ends repeating
+          Delete("/" + authenticateResponse.userUUID + "/task/" + generatedSubTaskResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            val deleteTaskResponse = entityAs[DeleteItemResult]
+            deleteTaskResponse.deleted should not be None
+          }
         }
       }
     }

@@ -96,13 +96,14 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   protected def addTransientListProperties(listNode: Node, owner: Owner, list: List)(implicit neo4j: DatabaseService): Response[List] = {
     for {
-      parent <- getParentRelationship(listNode, owner, ItemLabel.LIST).right
+      parent <- getItemRelationship(listNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST).right
       tags <- getTagRelationships(listNode, owner).right
       task <- Right(list.copy(
         relationships = 
           (if (parent.isDefined || tags.isDefined)            
             Some(ExtendedItemRelationships(  
               parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
+              None,
               tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
            else None
           ))).right

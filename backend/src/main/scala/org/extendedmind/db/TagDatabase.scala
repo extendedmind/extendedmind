@@ -81,7 +81,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def setTagParentNodes(tagNode: Node,  owner: Owner, tag: Tag)(implicit neo4j: DatabaseService): 
           Response[Option[Relationship]] = {
     for {
-      oldParentRelationship <- getParentRelationship(tagNode, owner, ItemLabel.TAG).right
+      oldParentRelationship <- getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG).right
       newParentRelationship <- setParentRelationship(tagNode, owner, tag.parent, 
           oldParentRelationship, ItemLabel.TAG).right
       parentRelationship <- Right(newParentRelationship).right
@@ -99,7 +99,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def addTransientTagProperties(tagNode: Node, owner: Owner, tag: Tag)
             (implicit neo4j: DatabaseService): Response[Tag] = {
     for {
-      parent <- getParentRelationship(tagNode, owner, ItemLabel.TAG).right
+      parent <- getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG).right
       completeTag <- Right(tag.copy(
         tagType = (if (tagNode.hasLabel(TagLabel.CONTEXT)) Some(CONTEXT) else Some(KEYWORD)),
         parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))))).right

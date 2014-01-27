@@ -21,6 +21,7 @@ import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.PathExpander
 import org.neo4j.index.lucene.ValueContext
 import org.neo4j.graphdb.index.Index
+import org.neo4j.graphdb.RelationshipType
 
 trait ItemDatabase extends AbstractGraphDatabase {
 
@@ -321,7 +322,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
 
   protected def setParentNode(itemNode: Node,  owner: Owner, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
     for {
-      oldParentRelationship <- getParentRelationship(itemNode, owner, ItemLabel.LIST).right
+      oldParentRelationship <- getItemRelationship(itemNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST).right
       newParentRelationship <- setParentRelationship(itemNode, owner, extItem.parent, 
           oldParentRelationship, ItemLabel.LIST).right
     }yield newParentRelationship
@@ -385,13 +386,16 @@ trait ItemDatabase extends AbstractGraphDatabase {
     Right(relationship)
   }
   
-  protected def getParentRelationship(itemNode: Node, owner: Owner, parentLabel: Label)(implicit neo4j: DatabaseService): 
+  protected def getItemRelationship(itemNode: Node, owner: Owner, 
+		  							relationshipType: RelationshipType, 
+		  							endNodeLabel: Label, 
+		  							direction: Direction = Direction.OUTGOING)(implicit neo4j: DatabaseService): 
             Response[Option[Relationship]] = {
-    val parentNodeFromItem: TraversalDescription =
+    val relatedNodeFromItem: TraversalDescription =
       Traversal.description()
         .depthFirst()
         .expand(new OrderedByTypeExpander()
-          .add(DynamicRelationshipType.withName(ItemRelationship.HAS_PARENT.name), Direction.OUTGOING)
+          .add(DynamicRelationshipType.withName(relationshipType.name), direction)
           .add(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name), Direction.INCOMING)
           .asInstanceOf[PathExpander[_]])
         .evaluator(Evaluators.excludeStartPosition())
@@ -402,23 +406,25 @@ trait ItemDatabase extends AbstractGraphDatabase {
         .evaluator(UUIDEvaluator(getOwnerUUID(owner), length = Some(2)))
         .evaluator(Evaluators.toDepth(2))
         .uniqueness(Uniqueness.NODE_PATH) // We want to get the userUUID twice to be sure that we have the same owner for both paths
-        
-    val traverser = parentNodeFromItem.traverse(itemNode)
-    val relationshipList = traverser.relationships().toArray
 
+    val traverser = relatedNodeFromItem.traverse(itemNode)
+    val relationshipList = traverser.relationships().toArray
+    
     // Correct relationships are in order ITEM->ITEM then OWNER->ITEM
-    var parentRelationship: Option[Relationship] = None
+    var itemRelationship: Option[Relationship] = None
     var previousRelationship: Relationship = null
     relationshipList foreach (relationship => {
       if (relationship.getStartNode().hasLabel(MainLabel.OWNER) 
-          && (previousRelationship != null && previousRelationship.getEndNode() == relationship.getEndNode())){
-        if (relationship.getEndNode().hasLabel(parentLabel))
-          parentRelationship = Some(previousRelationship)
+          && previousRelationship != null
+          && ((direction == Direction.OUTGOING && previousRelationship.getEndNode() == relationship.getEndNode()) || 
+              (direction == Direction.INCOMING && previousRelationship.getStartNode() == relationship.getEndNode()))) {
+        if (relationship.getEndNode().hasLabel(endNodeLabel)){
+          itemRelationship= Some(previousRelationship)
+        }
       }
       previousRelationship = relationship
-    })
-
-    Right(parentRelationship)
+    })    
+    Right(itemRelationship)
   }
   
   protected def setTagNodes(itemNode: Node, owner: Owner, extItem: ExtendedItem)

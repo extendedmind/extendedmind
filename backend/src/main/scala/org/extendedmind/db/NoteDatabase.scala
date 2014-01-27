@@ -65,13 +65,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def addTransientNoteProperties(noteNode: Node, owner: Owner, note: Note)
                 (implicit neo4j: DatabaseService): Response[Note] = {
     for {
-      parent <- getParentRelationship(noteNode, owner, ItemLabel.LIST).right
+      parent <- getItemRelationship(noteNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST).right
       tags <- getTagRelationships(noteNode, owner).right
       note <- Right(note.copy(
         relationships = 
           (if (parent.isDefined || tags.isDefined)            
             Some(ExtendedItemRelationships(  
               parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
+              None,
               tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
            else None
           ))).right
