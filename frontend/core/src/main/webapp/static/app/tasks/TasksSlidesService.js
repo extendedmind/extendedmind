@@ -11,6 +11,7 @@ function TasksSlidesService(LocationService, OwnerService) {
     DATES: 'tasks/dates',
     LISTS: 'tasks/lists',
     PROJECTS: 'tasks/projects',
+    CONTEXTS: 'tasks/contexts',
     SINGLE_TASKS: 'tasks/single',
 
     // Functions

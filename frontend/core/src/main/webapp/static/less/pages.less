@@ -44,11 +44,15 @@ section#home {
       width: auto;
       padding-top: 10px;
       .top-bottom-borders;
+      a {
+        color: @active-link;
+      }
       a.collective{
+        // FIXME: This color is strange
         color: @inactive-text;
       }
       a.collective:active{
-        color: @active-button;
+        color: @pressed-link;
       }
     }
     nav {
@@ -91,10 +95,6 @@ section#home {
 
         div.right-button-wrapper { 
           line-height: 100%;
-          [class^="icon-"], [class*=" icon-"] button {
-            color: @highlight-button; // plus button always highlighted
-            padding-top: 8px; // quick fix to center the plus button
-          }
         }
       }
       div#filtered-items-container {
@@ -116,12 +116,6 @@ section#tasks-dates {
       max-width: 100%;
       td {
         padding-right: 0.5em;
-        a {
-          color:@inactive-text;
-        }
-        a:active{
-          color:black;
-        }
       }
     }
   }
@@ -132,10 +126,10 @@ section#tasks-dates {
 
 // TODO: Move these to the right place!
 
-button.normal-button.inactive-button{
+button.enabled-button{
   color: white;
   & {
-    background-color: @inactive-button;
+    background-color: @enabled-button;
   }
 }
 
@@ -147,6 +141,16 @@ button.normal-button.inactive-button{
   border-color: @separator;
   padding-top: 5px;
   padding-bottom: 5px;
+  .accordion-item-open {
+    margin-top: -5px;
+    padding-bottom: 5px;
+    .left-input-wrapper {
+      padding-left: 1px;
+    }
+    &.no-checkbox {
+      margin-top: -6px;
+    }
+  }
 }
 
 input[type="checkbox"]:checked ~ a#accordionTitleLink {
@@ -159,5 +163,6 @@ div#accordionTitleHeightFix {
 }
 
 a#accordionTitleLink {
-  line-height: normal;
+  color: @active-link;
+  line-height: 19px;
 }

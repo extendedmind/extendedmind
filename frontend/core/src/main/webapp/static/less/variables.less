@@ -29,18 +29,25 @@
 @heading-header-height: 60px;
 
 // Footer
-@footer-height: @vertical-grid;
+@footer-height: 50px;
 
 // Colors
 @logo: #3b3b3b;
 @separator: #dadada;
 @inactive-text: #919191;
-@active-text: black; // not used yet?
-@link-color: black;
-@inactive-button: #b0b0b6;
-@active-button: #2a2a2a;
-@pressed-button: lighten(@active-button, 20%);
-@highlight-button: #0f82fe;
+
+@active-link: black;
+@enabled-link: #919191;
+@pressed-link: darken(@enabled-link, 20%);
+@inactive-link: lighten(@enabled-link, 20%);
+
+@highlighted: #0f82fe;
+@highlighted-pressed: #00baff;
+
+@enabled-button: #b0b0b6;
+@inactive-button: lighten(@enabled-button, 20%);
+@active-button: #0f82fe;
+@pressed-button: #00baff;
 @cancel-button: #7e7e7e;
 @pressed-cancel-button: lighten(@cancel-button, 20%);
 @delete-button: #e22c09;

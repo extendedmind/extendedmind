@@ -25,12 +25,15 @@ object Response{
   case class ResponseContent(responseType: ResponseType, description: String, throwable: Option[Throwable] = None){
     def throwRejectionError() = {
       responseType match {
-        case INVALID_PARAMETER => 
+        case INVALID_PARAMETER => {
           throw new InvalidParameterException(description, throwable)
-        case INTERNAL_SERVER_ERROR => 
+        }
+        case INTERNAL_SERVER_ERROR => {
           throw new InternalServerErrorException(description, throwable)
-        case TOKEN_EXPIRED => 
+        }
+        case TOKEN_EXPIRED => {
           throw new TokenExpiredException(description)
+        }
       }
     }
   }
@@ -51,8 +54,9 @@ object Response{
     if (!errors.isEmpty){
       // Reject based on the first exception
       errors(0).throwRejectionError
+    }else {
+      throw new InternalServerErrorException("Unknown error")
     }
-    throw new InternalServerErrorException("Unknown error")
   }
 }
 

@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function NavbarController($location, $scope, $window, AuthenticationService, SwiperService, TasksSlidesService, OwnerService, UserSessionService) {
+function NavbarController($location, $scope, $window, AuthenticationService, SwiperService, OwnerService, UserSessionService) {
 
   // TODO: Use these to build * * * * * subnavigation on top of tasks icon
   var tasksSubNavigationPaths = ['tasks/dates', 'tasks/lists', 'tasks/projects', 'tasks/single'];
@@ -16,30 +16,6 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
     // Run digest to change only navbar when swiping to new location
     $scope.$digest();
   }
-
-  $scope.gotoInbox = function() {
-    if ($location.path().indexOf("/tasks") != -1){
-      SwiperService.swipeTo(TasksSlidesService.INBOX);
-    }else{
-      $location.path($scope.prefix + '/' + TasksSlidesService.INBOX);
-    }
-  };
-
-  $scope.gotoHome = function() {
-    if ($location.path().indexOf("/tasks") != -1){
-      SwiperService.swipeTo(TasksSlidesService.HOME);
-    }else{
-      $location.path($scope.prefix + '/' + TasksSlidesService.HOME);
-    }
-  };
-
-  $scope.gotoTasks = function() {
-    if ($location.path().indexOf("/tasks") != -1){
-      SwiperService.swipeTo(TasksSlidesService.DATES);
-    }else{
-      $location.path($scope.prefix + '/tasks');
-    }
-  };
 
   $scope.isActiveSlide = function(pathFragment) {
     if ($location.path().indexOf("tasks" != -1)){
@@ -64,9 +40,7 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
     }
     return classes;
   }
-
-
 }
 
-NavbarController.$inject = ['$location', '$scope', '$window', 'AuthenticationService', 'SwiperService', 'TasksSlidesService', 'OwnerService', 'UserSessionService'];
+NavbarController.$inject = ['$location', '$scope', '$window', 'AuthenticationService', 'SwiperService','OwnerService', 'UserSessionService'];
 angular.module('em.app').controller('NavbarController', NavbarController);

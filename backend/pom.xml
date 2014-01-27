@@ -37,8 +37,8 @@
   </developers>
 
   <properties>
-    <neo4j.version>2.0.0-RC1</neo4j.version>
-    <spray.version>1.2-RC2</spray.version>
+    <neo4j.version>2.0.0</neo4j.version>
+    <spray.version>1.2.0</spray.version>
     <akka.version>2.2.3</akka.version>
   </properties>
 
@@ -75,16 +75,14 @@
     <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-json_${scala.version.short}</artifactId>
-      <version>1.2.4</version>
+      <version>1.2.5</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-
-    <!-- HTTP Client -->
-    <dependency>
-      <groupId>net.databinder.dispatch</groupId>
-      <artifactId>dispatch-core_2.10</artifactId>
-      <version>0.11.0</version>
+	<dependency>
+      <groupId>io.spray</groupId>
+      <artifactId>spray-client</artifactId>
+      <version>${spray.version}</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
