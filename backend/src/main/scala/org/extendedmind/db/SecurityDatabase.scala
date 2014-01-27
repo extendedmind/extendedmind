@@ -34,8 +34,13 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         for {
           scWithoutToken <- authenticate(email, attemptedPassword).right
           token <- Right(Token(scWithoutToken.userUUID)).right
-          saved <- Right(saveToken(scWithoutToken.user, token, payload)).right
-          sc <- Right(scWithoutToken.copy(token = Some(Token.encryptToken(token)))).right
+          tokenInfo <- Right(saveToken(scWithoutToken.user, token, payload)).right
+          sc <- Right(scWithoutToken.copy(
+              token = Some(Token.encryptToken(token)),
+              authenticated = Some(tokenInfo._1),
+              expires = Some(tokenInfo._2),
+              replaceable = tokenInfo._3
+              )).right
           } yield sc
     }
   }
@@ -86,7 +91,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           result <- validateToken(tokenNode, currentTime).right
           userNode <- getUserNode(tokenNode).right
           collectiveUUID <- Right(getCollectiveUUID(userNode, ownerUUID)).right
-          sc <- getSecurityContext(userNode, collectiveUUID).right
+          sc <- getLimitedSecurityContext(userNode, collectiveUUID).right
         } yield sc
     }
   }
@@ -118,7 +123,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           tokenNode <- getTokenNode(token).right
           userNode <- getUserNode(tokenNode).right
           result <- Right(destroyToken(tokenNode)).right
-          sc <- getSecurityContext(userNode, None).right
+          sc <- getLimitedSecurityContext(userNode, None).right
         } yield sc
     }
   }
@@ -186,20 +191,24 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   protected def createNewAccessKey(tokenNode: Node, sc: SecurityContext, payload: Option[AuthenticatePayload])(implicit neo4j: DatabaseService): SecurityContext = {
     // Make new token and set properties to the token node
     val token = Token(sc.userUUID)
-    setTokenProperties(tokenNode, token, payload)
+    val tokenInfo = setTokenProperties(tokenNode, token, payload)
     SecurityContext(
       sc.userUUID,
       sc.userType,
       Some(Token.encryptToken(token)),
+      Some(tokenInfo._1),
+      Some(tokenInfo._2),
+      tokenInfo._3,
       sc.collectives)
   }
 
-  protected def saveToken(userNode: Node, token: Token, payload: Option[AuthenticatePayload]) {
+  protected def saveToken(userNode: Node, token: Token, payload: Option[AuthenticatePayload]): (Long, Long, Option[Long]) = {
     withTx {
       implicit neo =>
         val tokenNode = createNode(MainLabel.TOKEN)
-        setTokenProperties(tokenNode, token, payload);
+        val tokenInfo = setTokenProperties(tokenNode, token, payload);
         tokenNode --> SecurityRelationship.IDS --> userNode
+        tokenInfo
     }
   }
   
@@ -230,17 +239,20 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     tokenNode.delete()
   }
 
-  private def setTokenProperties(tokenNode: Node, token: Token, payload: Option[AuthenticatePayload])
-                                (implicit neo4j: DatabaseService){
-    val currentTime = System.currentTimeMillis()
+  private def setTokenProperties(tokenNode: Node, token: Token, payload: Option[AuthenticatePayload])(implicit neo4j: DatabaseService): (Long, Long, Option[Long]) = {
+    val currentTime = System.currentTimeMillis
+    val expires = currentTime + TOKEN_DURATION
     tokenNode.setProperty("accessKey", token.accessKey)
-    tokenNode.setProperty("expires", currentTime + TOKEN_DURATION)
+    tokenNode.setProperty("expires", expires)
     if (payload.isDefined && payload.get.rememberMe) {
       // Remember me has been clicked
-      tokenNode.setProperty("replaceable", currentTime + TOKEN_REPLACEABLE)
+      val replaceable = currentTime + TOKEN_REPLACEABLE
+      tokenNode.setProperty("replaceable", replaceable)
+      return (currentTime, expires, Some(replaceable))
     }else if (tokenNode.hasProperty("replaceable")){
       tokenNode.removeProperty("replaceable")
     }
+    (currentTime, expires, None)
   }
 
   private def getStoredPassword(user: Node): Password = {
@@ -261,7 +273,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   private def validatePassword(user: Node, attemptedPassword: String, collectiveUUID: Option[UUID]): Response[SecurityContext] = {
     for{
       validPassword <- validatePassword(attemptedPassword, getStoredPassword(user)).right
-      sc <- getSecurityContext(user, collectiveUUID).right
+      sc <- getLimitedSecurityContext(user, collectiveUUID).right
     } yield sc
   }
   
@@ -283,23 +295,20 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     getCompleteSecurityContext(user, getUserType(user))
   }
   
-  private def getSecurityContext(user: Node, collectiveUUID: Option[UUID]): Response[SecurityContext] = {
+  private def getLimitedSecurityContext(user: Node, collectiveUUID: Option[UUID]): Response[SecurityContext] = {
     getLimitedSecurityContext(user, getUserType(user), collectiveUUID)
   }
-  
-  
 
   private def getCompleteSecurityContext(user: Node, userType: Byte): SecurityContext = {
-    val traverser = collectivesTraversalDescription.traverse(user)
-    val relationshipList = traverser.relationships().toList
+    val collectivesTraverser = collectivesTraversalDescription.traverse(user)
+    val collectivesRelationshipList = collectivesTraverser.relationships().toList
     val sc = getSecurityContextSkeleton(user, userType).copy(
-               collectives = getCollectiveAccess(relationshipList))
+    		   collectives = getCollectiveAccess(collectivesRelationshipList))
     sc.user = user
     sc
   }
   
-  private def getLimitedSecurityContext(user: Node, userType: Byte, collectiveUUID: Option[UUID]):
-                  Response[SecurityContext] = {
+  private def getLimitedSecurityContext(user: Node, userType: Byte, collectiveUUID: Option[UUID]): Response[SecurityContext] = {
     val collectives: Option[Map[UUID,(String, Byte, Boolean)]] = {
       if (collectiveUUID.isEmpty){
         None
@@ -350,11 +359,24 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       Some(collectiveAccessMap.toMap)
     }
   }
+  
+  private def getAuthenticationInfo(tokenNode: Node): (Long, Long, Option[Long]) = {
+    val authenticated = tokenNode.getProperty("modified").asInstanceOf[Long]
+    val expires = tokenNode.getProperty("expires").asInstanceOf[Long]
+    if (tokenNode.hasProperty("replaceable")){
+      (authenticated, expires, Some(tokenNode.getProperty("replaceable").asInstanceOf[Long]))
+    }else{
+      (authenticated, expires, None)
+    }
+  }
 
   private def getSecurityContextSkeleton(user: Node, userType: Byte): SecurityContext = {
     SecurityContext(
       getUUID(user),
       userType,
+      None,
+      None,
+      None,
       None,
       None)
   }
