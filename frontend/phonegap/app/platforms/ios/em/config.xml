@@ -23,6 +23,10 @@
     <description>
         Mobile application for Extended Mind.
     </description>
+    <name>em</name>
+    <description>
+        Mobile application for Extended Mind.
+    </description>
     <author email="timo.tiuraniemi@iki.fi" href="http://www.extendedmind.org">
         Extended Mind Team
     </author>

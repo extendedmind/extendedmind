@@ -18,6 +18,11 @@ security unlock-keychain -p KEYCHAIN_PASSWORD
 echo "running .. phonegap build iOS"
 # make new iOS project from sources
 cd app
+
+# make sure cordova assets are updated
+cordova platform update ios
+
+# make build
 phonegap build ios
 
 #/usr/bin/xcrun -sdk iphoneos PackageApplication -v "${RELEASE_BUILDDIR}/${APPLICATION_NAME}.app" -o "${BUILD_HISTORY_DIR}/${APPLICATION_NAME}.ipa" --sign "${DEVELOPER_NAME}" --embed "${PROVISONING_PROFILE}"

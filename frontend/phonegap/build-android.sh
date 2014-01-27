@@ -13,6 +13,9 @@ if [ -d ${RELEASE_BUILDDIR} ]; then
     rm -r ${RELEASE_BUILDDIR}
 fi
 
+# make sure cordova assets are updated
+cordova platform update android
+
 # run phonegap command locally
 phonegap local build android
 
