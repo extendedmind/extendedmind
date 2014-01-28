@@ -23,12 +23,14 @@ object JsonImplicits extends DefaultJsonProtocol {
         x match {
           case CONTEXT => "context"
           case KEYWORD => "keyword"
+          case HISTORY => "history"
         })
     def read(value: JsValue) = value match {
       case JsString(x) => {
         if (x == "keyword") KEYWORD
         else if (x == "context") CONTEXT 
-        else deserializationError("Expected 'context' or 'keyword' but got " + x)
+        else if (x == "history") HISTORY 
+        else deserializationError("Expected 'context', 'keyword' or 'history' but got " + x)
       }
       case x => deserializationError("Expected TagType as JsString, but got " + x)
     }
