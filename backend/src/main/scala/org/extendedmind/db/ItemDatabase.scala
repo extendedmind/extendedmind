@@ -106,6 +106,17 @@ trait ItemDatabase extends AbstractGraphDatabase {
       }
   }
   
+  def migrateToLists(ownerUUID: UUID): Response[CountResult] = {
+    withTx {
+      implicit neo4j => 
+        for {
+          ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
+          countResult <- Right(migrateToLists(ownerNode)).right
+        } yield countResult
+    }    
+  }
+
+  
   // PRIVATE
 
   protected def getItems(itemNodes: Iterable[Node], owner: Owner)(implicit neo4j: DatabaseService): Response[Items] = {
@@ -728,6 +739,28 @@ trait ItemDatabase extends AbstractGraphDatabase {
       addToItemsIndex(ownerUUID, itemNode, itemNode.getProperty("modified").asInstanceOf[Long])
     })
     Right(CountResult(traverser.nodes.size))
+  }
+  
+  protected def migrateToLists(ownerNode: Node)(implicit neo4j: DatabaseService): CountResult = {
+    val projectsFromOwner: TraversalDescription =
+       Traversal.description()
+        .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
+          Direction.OUTGOING)
+        .depthFirst()
+        .evaluator(Evaluators.excludeStartPosition())
+        .evaluator(LabelEvaluator(scala.List(Label("PROJECT"))))
+
+    val traverser = projectsFromOwner.traverse(ownerNode)
+    traverser.nodes.foreach(projectNode => {
+      projectNode.removeLabel(Label("PROJECT"))
+      projectNode.addLabel(ItemLabel.LIST)
+      projectNode.setProperty("completable", true)
+      if (projectNode.hasProperty("completed")){
+        projectNode.setProperty("archived", projectNode.getProperty("completed"))
+        projectNode.removeProperty("completed")
+      }
+    })
+    CountResult(traverser.nodes.toList.length)
   }
 
 }

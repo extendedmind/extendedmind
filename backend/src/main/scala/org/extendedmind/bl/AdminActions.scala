@@ -28,6 +28,13 @@ trait AdminActions {
     log.info("rebuildItemsIndex")
     db.rebuildItemsIndex(ownerUUID)
   }
+  
+  def migrateToLists(ownerUUID: UUID)(implicit log: LoggingContext): Response[CountResult] = {
+    log.info("migrateToLists")
+    val countResult = db.migrateToLists(ownerUUID)
+    if (countResult.isRight) log.info("migrated " + countResult.right.get.count + " projects to lists")
+    countResult
+  }
 
   def loadDatabase(implicit log: LoggingContext): Boolean = {
     log.info("loadDatabase")
