@@ -751,6 +751,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
         .evaluator(LabelEvaluator(scala.List(ItemParentLabel.PROJECT)))
 
     val traverser = projectsFromOwner.traverse(ownerNode)
+    var projectCount = 0
     traverser.nodes.foreach(projectNode => {
       projectNode.removeLabel(ItemParentLabel.PROJECT)
       projectNode.addLabel(ItemLabel.LIST)
@@ -759,8 +760,9 @@ trait ItemDatabase extends AbstractGraphDatabase {
         projectNode.setProperty("archived", projectNode.getProperty("completed"))
         projectNode.removeProperty("completed")
       }
+      projectCount += 1
     })
-    CountResult(traverser.nodes.toList.length)
+    CountResult(projectCount)
   }
 
 }
