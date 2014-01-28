@@ -748,11 +748,11 @@ trait ItemDatabase extends AbstractGraphDatabase {
           Direction.OUTGOING)
         .depthFirst()
         .evaluator(Evaluators.excludeStartPosition())
-        .evaluator(LabelEvaluator(scala.List(Label("PROJECT"))))
+        .evaluator(LabelEvaluator(scala.List(ItemParentLabel.PROJECT)))
 
     val traverser = projectsFromOwner.traverse(ownerNode)
     traverser.nodes.foreach(projectNode => {
-      projectNode.removeLabel(Label("PROJECT"))
+      projectNode.removeLabel(ItemParentLabel.PROJECT)
       projectNode.addLabel(ItemLabel.LIST)
       projectNode.setProperty("completable", true)
       if (projectNode.hasProperty("completed")){
