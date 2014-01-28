@@ -40,6 +40,13 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
     }
   }
 
+  def putNewItem(newItem: Item, authenticateResponse: SecurityContext): SetResult = {
+    Put("/" + authenticateResponse.userUUID + "/item",
+      marshal(newItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        entityAs[SetResult]
+      }
+  }
+  
   def putNewNote(newNote: Note, authenticateResponse: SecurityContext): SetResult = {
     Put("/" + authenticateResponse.userUUID + "/note",
       marshal(newNote).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {

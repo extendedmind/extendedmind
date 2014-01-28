@@ -22,6 +22,12 @@ import org.neo4j.graphdb.PathExpander
 import org.neo4j.index.lucene.ValueContext
 import org.neo4j.graphdb.index.Index
 import org.neo4j.graphdb.RelationshipType
+import org.neo4j.index.lucene.QueryContext
+import org.apache.lucene.search.TermQuery
+import org.apache.lucene.index.Term
+import org.apache.lucene.search.NumericRangeQuery
+import org.apache.lucene.search.BooleanQuery
+import org.apache.lucene.search.BooleanClause
 
 trait ItemDatabase extends AbstractGraphDatabase {
 
@@ -53,12 +59,12 @@ trait ItemDatabase extends AbstractGraphDatabase {
     }
   }
 
-  def getItems(owner: Owner): Response[Items] = {
+  def getItems(owner: Owner, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean): Response[Items] = {
     withTx {
       implicit neo =>
         for {
-          ownerNodes <- getOwnerNodes(owner).right
-          itemNodes <- getItemNodes(ownerNodes).right
+          ownerUUID <- Right(getOwnerUUID(owner)).right
+          itemNodes <- getItemNodes(ownerUUID, modified, active, deleted, archived, completed).right
           items <- getItems(itemNodes, owner).right
         } yield items
     }
@@ -156,23 +162,37 @@ trait ItemDatabase extends AbstractGraphDatabase {
   def toTag(tagNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Tag];
   def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List];
   
-  protected def getItemNodes(ownerNodes: OwnerNodes)(implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
-    val itemsFromOwner: TraversalDescription = itemsTraversal
-        .evaluator(PropertyEvaluator(
-            ItemLabel.TASK, "completed",
-            Evaluation.EXCLUDE_AND_PRUNE,
-            Evaluation.INCLUDE_AND_CONTINUE))
-        .evaluator(PropertyEvaluator(
-            ItemLabel.LIST, "archived",
-            Evaluation.EXCLUDE_AND_PRUNE,
-            Evaluation.INCLUDE_AND_CONTINUE))            
-        .evaluator(PropertyEvaluator(
-            MainLabel.ITEM, "deleted",
-            Evaluation.EXCLUDE_AND_PRUNE,
-            Evaluation.INCLUDE_AND_CONTINUE))
+  protected def getItemNodes(ownerUUID: UUID, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean)(implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
+    val itemsIndex = neo4j.gds.index().forNodes("items")
 
-    val traverser = itemsFromOwner.traverse(getOwnerNode(ownerNodes))
-    Right(traverser.nodes())
+    val itemNodeList = 
+      if (modified.isDefined){
+        val ownerQuery = new TermQuery( new Term( "owner", UUIDUtils.getTrimmedBase64UUID(ownerUUID) ) )
+        val modifiedRangeQuery = NumericRangeQuery.newLongRange("modified", 8, modified.get, null, false, false)
+        val combinedQuery = new BooleanQuery;        
+        combinedQuery.add(ownerQuery, BooleanClause.Occur.MUST);
+        combinedQuery.add(modifiedRangeQuery, BooleanClause.Occur.MUST);
+        itemsIndex.query(combinedQuery).toList
+      }else{
+        itemsIndex.query( "owner:\"" + UUIDUtils.getTrimmedBase64UUID(ownerUUID) + "\"").toList
+      }
+    
+    if (!itemNodeList.isEmpty && (!active || !deleted || !archived || !completed)){
+      // Filter out active, deleted, archived and/or completed
+      Right(itemNodeList filter (itemNode => {
+        var include = true
+        if (!deleted && itemNode.hasProperty("deleted")) include = false
+        if (include && !archived && itemNode.hasProperty("archived")) include = false
+        if (include && !completed && itemNode.hasProperty("completed")) include = false
+        if (include && !active && 
+            (!itemNode.hasProperty("deleted") && !itemNode.hasProperty("archived") && !itemNode.hasProperty("completed"))){
+          include = false
+        }
+        include
+      }))
+    }else{
+      Right(itemNodeList)
+    }
   }
 
   protected def itemsTraversal(): TraversalDescription = { 

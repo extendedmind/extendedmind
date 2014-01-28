@@ -11,6 +11,12 @@ case class Item(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
 }
 
+object Item{
+  def apply(title: String, description: Option[String], 
+            link: Option[String]) 
+        = new Item(None, None, None, title, description, link)
+}
+
 case class Items(items: Option[scala.List[Item]], 
 				 tasks: Option[scala.List[Task]],
 				 notes: Option[scala.List[Note]],

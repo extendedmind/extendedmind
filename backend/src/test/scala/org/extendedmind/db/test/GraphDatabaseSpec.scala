@@ -36,7 +36,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
   }
   describe("ItemDatabase"){
      it("should getItems"){
-      db.getItems(Owner(db.timoUUID, None)) match {
+      db.getItems(Owner(db.timoUUID, None), None, true, false, false, false) match {
         case Right(items) => {
           assert(items.items.isDefined)
           assert(items.items.get.size === 2)

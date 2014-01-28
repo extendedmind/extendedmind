@@ -29,9 +29,9 @@ trait ItemActions {
     db.putExistingItem(owner, itemUUID, item)
   }
 
-  def getItems(owner: Owner)(implicit log: LoggingContext): Response[Items] = {
+  def getItems(owner: Owner, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean)(implicit log: LoggingContext): Response[Items] = {
     log.info("getItems: owner {}", owner)
-    val items = db.getItems(owner)
+    val items = db.getItems(owner, modified, active, deleted, archived, completed)
     
     // Destroy deleted items
     if (items.isRight){
