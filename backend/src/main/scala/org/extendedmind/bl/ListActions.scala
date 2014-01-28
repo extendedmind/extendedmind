@@ -38,17 +38,11 @@ trait ListActions {
     log.info("undeleteList: owner {}, list {}", owner, listUUID)
     db.undeleteItem(owner: Owner, listUUID, Some(ItemLabel.LIST))
   }
-/*
-  def completeTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingContext): Response[CompleteTaskResult] = {
-    log.info("completeTask: owner {}, task {}", owner, taskUUID)
-    db.completeTask(owner, taskUUID)
+
+  def archiveList(owner: Owner, listUUID: UUID)(implicit log: LoggingContext): Response[ArchiveListResult] = {
+    log.info("archiveList: owner {}, list {}", owner, listUUID)
+    db.archiveList(owner, listUUID)
   }
-  
-  def uncompleteTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("uncompleteTask: owner {}, task {}", owner, taskUUID)
-    db.uncompleteTask(owner, taskUUID)
-  }
-*/
 }
 
 class ListActionsImpl(implicit val settings: Settings, implicit val inj: Injector)

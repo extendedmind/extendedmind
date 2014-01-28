@@ -14,7 +14,7 @@ import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 
-trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
+trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
 
   // PUBLIC
 
@@ -52,24 +52,18 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(updateItemsIndex(deletedListNode._1, result.result)).right
     } yield result
   }
-  /*
   
-  def completeTask(owner: Owner, taskUUID: UUID): Response[CompleteTaskResult] = {
+  def archiveList(owner: Owner, listUUID: UUID): Response[ArchiveListResult] = {
     for {
-      taskNode <- completeTaskNode(owner, taskUUID).right
-      result <- Right(getCompleteTaskResult(taskNode)).right
-      unit <- Right(updateItemsIndex(taskNode, result.result)).right
+      listNode <- validateListArchivable(owner, listUUID).right
+      tagResult <- putNewTag(owner, Tag(listUUID.toString(), None, None, HISTORY, None)).right
+      count <- archiveListNode(listNode, owner, tagResult.uuid.get).right
+      tag <- getTag(owner, tagResult.uuid.get).right
+      result <- Right(getArchiveListResult(listNode, tag, count)).right
+      unit <- Right(updateItemsIndex(listNode, result.result)).right
     } yield result
   }
-  
-  def uncompleteTask(owner: Owner, taskUUID: UUID): Response[SetResult] = {
-    for {
-      taskNode <- uncompleteTaskNode(owner, taskUUID).right
-      result <- Right(getSetResult(taskNode, false)).right
-      unit <- Right(updateItemsIndex(taskNode, result)).right
-    } yield result
-  }
-*/
+
   // PRIVATE
 
   protected def putExistingListNode(owner: Owner, listUUID: UUID, list: List): Response[Node] = {
@@ -138,48 +132,55 @@ trait ListDatabase extends AbstractGraphDatabase with ItemDatabase {
       Right(false)
     }
   }
-    
-  
-/*
-  protected def completeTaskNode(owner: Owner, taskUUID: UUID): Response[Node] = {
+
+  protected def validateListArchivable(owner: Owner, listUUID: UUID): Response[Node] = {
     withTx {
       implicit neo =>
         for {
-          taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
-          result <- Right(completeTaskNode(taskNode)).right
-        } yield taskNode
+          listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
+          listNode <- validateListArchivable(listNode).right
+        } yield listNode        
+    }    
+  }
+
+  protected def validateListArchivable(listNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
+    if (hasChildren(listNode, Some(ItemLabel.LIST)))
+      fail(INVALID_PARAMETER, "List " + getUUID(listNode) + " has child lists, can not archive")
+    else
+      Right(listNode)
+  }
+
+  protected def archiveListNode(listNode: Node, owner: Owner, tagUUID: UUID): Response[Int] = {
+    withTx {
+      implicit neo =>
+        val tagNodeResult = getItemNode(owner, tagUUID, Some(ItemLabel.TAG))
+        if (tagNodeResult.isLeft) fail(INTERNAL_SERVER_ERROR, "Failed to find newly created history tag for list " + getUUID(listNode))
+        else {
+          val tagNode = tagNodeResult.right.get
+          val childNodes = getChildren(listNode, None)
+          // Mark all as archived and add a history tag
+          val currentTime = System.currentTimeMillis()
+          childNodes foreach (childNode => {
+            childNode.setProperty("archived", currentTime)
+            createTagRelationships(childNode, scala.List(tagNode))
+          })
+          createTagRelationships(listNode, scala.List(tagNode))
+          listNode.setProperty("archived", currentTime)
+          Right(1+childNodes.length)
+        }
     }
   }
 
-  protected def completeTaskNode(taskNode: Node)(implicit neo4j: DatabaseService): Unit = {
-    val currentTime = System.currentTimeMillis()
-    taskNode.setProperty("completed", currentTime)
-  }
-
-  protected def getCompleteTaskResult(task: Node): CompleteTaskResult = {
+  protected def getArchiveListResult(listNode: Node, tag: Tag, count: Int): ArchiveListResult = {
     withTx {
       implicit neo =>
-        CompleteTaskResult(task.getProperty("completed").asInstanceOf[Long],
-          getSetResult(task, false))
+        ArchiveListResult(listNode.getProperty("archived").asInstanceOf[Long],
+            count,
+            tag,
+            getSetResult(listNode, false))
     }
   }
   
-  protected def uncompleteTaskNode(owner: Owner, taskUUID: UUID): Response[Node] = {
-    withTx {
-      implicit neo =>
-        for {
-          taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
-          result <- Right(uncompleteTaskNode(taskNode)).right
-        } yield taskNode
-    }
-  }
-
-  protected def uncompleteTaskNode(taskNode: Node)(implicit neo4j: DatabaseService): Unit = {
-    if (taskNode.hasProperty("completed")) taskNode.removeProperty("completed")
-  }
-  *  
-  */
-
   protected def deleteListNode(owner: Owner, listUUID: UUID): Response[Tuple2[Node, Long]] = {
     withTx {
       implicit neo =>

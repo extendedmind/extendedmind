@@ -53,9 +53,10 @@ trait ExtendedItem extends ShareableItem{
   val deleted: Option[Long]
   val title: String
   val description: Option[String]
-  val link: Option[String]  
+  val link: Option[String]
   val visibility: Option[SharedItemVisibility]
   val relationships: Option[ExtendedItemRelationships]
+  val archived: Option[Long]
   
   def parent: Option[UUID] = {
     if (relationships.isDefined) relationships.get.parent

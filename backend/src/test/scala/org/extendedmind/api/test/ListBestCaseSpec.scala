@@ -54,7 +54,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
       + "and delete it with DELETE to /[userUUID]/list/[listUUID] "
       + "and undelete it with POST to /[userUUID]/list/[listUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newList = List("learn Spanish", None, None, None, None, None, None)
+      val newList = List("learn Spanish", None, None, None, None, None)
       Put("/" + authenticateResponse.userUUID + "/list",
         marshal(newList).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putListResponse = entityAs[SetResult]
@@ -100,7 +100,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
       Put("/" + authenticateResponse.userUUID + "/item",
         marshal(newItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putItemResponse = entityAs[SetResult]
-          val updatedToList = List("learn how to fly", None, None, None, Some("2014-03-01"), None, None)
+          val updatedToList = List("learn how to fly", None, None, None, Some("2014-03-01"), None)
           Put("/" + authenticateResponse.userUUID + "/list/" + putItemResponse.uuid.get,
             marshal(updatedToList).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               val list = getList(putItemResponse.uuid.get, authenticateResponse)
@@ -117,7 +117,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
       // Create task and list
       val newTask = Task("learn Spanish", None, None, None, None, None, None)
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
-      val newList = List("studies", None, None, None, None, None, None)
+      val newList = List("studies", None, None, None, None, None)
       val putListResponse = putNewList(newList, authenticateResponse)
       
       // Put existing task and new note into list 
@@ -134,7 +134,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
       			.relationships.get.parent.get should be (putListResponse.uuid.get)
       
       // Create sublist and move note below it
-      val newSubList = List("Spanish studies", None, None, None, None, None, 
+      val newSubList = List("Spanish studies", None, None, None, None, 
     		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
       val putSubListResponse = putNewList(newSubList, authenticateResponse)
       getList(putSubListResponse.uuid.get, authenticateResponse)
@@ -146,13 +146,54 @@ class ListBestCaseSpec extends ServiceSpecBase {
       			.relationships.get.parent.get should be (putSubListResponse.uuid.get)
       
       // Turn task into list
-      val putTaskToListResponse = putExistingList(List(Some(putTaskResponse.uuid.get), Some(putTaskResponse.modified), None, 
-    		  newTask.title, None, None, None, None, None, None,None, None, None),
+      val putTaskToListResponse = putExistingList(List(Some(putTaskResponse.uuid.get), Some(putTaskResponse.modified), None, None, 
+    		  newTask.title, None, None, None, None, None, None, None, None),
           putTaskResponse.uuid.get, authenticateResponse)
       val listFromTask = getList(putTaskResponse.uuid.get, authenticateResponse)
       listFromTask.completable.get should be (true)
       listFromTask.uuid.get should be (putTaskResponse.uuid.get)
       listFromTask.title should be (newTask.title)
+    }
+    it("should successfully archive list with POST to /[userUUID]/list/[listUUID]/archive") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      
+      // Create list and put task and note on it
+      val newList = List("studies", None, None, None, None, None)
+      val putListResponse = putNewList(newList, authenticateResponse)
+      val newTask = Task("learn Spanish", None, None, None, None, None, 
+          Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+      val putTaskResponse = putNewTask(newTask, authenticateResponse)
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), 
+    		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+      val putNoteResponse = putNewNote(newNote, authenticateResponse)
+      
+      // Archive list
+      Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/archive"
+        ) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val archiveListResponse = entityAs[ArchiveListResult]
+        writeJsonOutput("archiveListResponse", entityAs[String])
+        archiveListResponse.count should be (3)
+        // Check that getting archived items returns the right tasks
+        Get("/" + authenticateResponse.userUUID + "/items" + "?archived=true&active=false") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val itemsResponse = entityAs[Items]
+          itemsResponse.tasks.get.length should be (1)
+          itemsResponse.tasks.get(0).archived.get should be (archiveListResponse.archived)
+          itemsResponse.tasks.get(0).relationships.get.tags.get(0) should be (archiveListResponse.history.uuid.get)          
+          itemsResponse.lists.get.length should be (1)
+          itemsResponse.lists.get(0).archived.get should be (archiveListResponse.archived)
+          itemsResponse.lists.get(0).relationships.get.tags.get(0) should be (archiveListResponse.history.uuid.get)
+          itemsResponse.notes.get.length should be (1)
+          itemsResponse.notes.get(0).archived.get should be (archiveListResponse.archived)
+          itemsResponse.notes.get(0).relationships.get.tags.get(0) should be (archiveListResponse.history.uuid.get)
+
+          // Remove note from list and make sure it is no longer archived but still has the history tag
+          putExistingNote(itemsResponse.notes.get(0).copy(
+            relationships = Some(ExtendedItemRelationships(None, None, itemsResponse.notes.get(0).relationships.get.tags))), putNoteResponse.uuid.get, authenticateResponse)
+          val note = getNote(putNoteResponse.uuid.get, authenticateResponse)
+          note.archived should be(None)
+          note.relationships.get.tags.get(0) should be(archiveListResponse.history.uuid.get)
+        }
+      }
     }
   }  
 }

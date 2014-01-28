@@ -3,7 +3,7 @@ package org.extendedmind.domain
 import java.util.UUID
 import Validators._
 
-case class Note(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long], 
+case class Note(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
                 title: String, description: Option[String], 
                 link: Option[String],
                 content: Option[String],
@@ -21,6 +21,6 @@ object Note{
             link: Option[String],
             content: Option[String],
             relationships: Option[ExtendedItemRelationships]) 
-        = new Note(None, None, None, title, description, link, content, 
+        = new Note(None, None, None, None, title, description, link, content, 
                    None, relationships)
 }

@@ -54,8 +54,8 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implVisibility = jsonFormat2(SharedItemVisibility.apply)
   implicit val implRelationships = jsonFormat3(ExtendedItemRelationships.apply)
   implicit val implItem = jsonFormat6(Item.apply)
-  implicit val implTask = jsonFormat14(Task.apply)
-  implicit val implNote = jsonFormat9(Note.apply)
+  implicit val implTask = jsonFormat15(Task.apply)
+  implicit val implNote = jsonFormat10(Note.apply)
   implicit val implList = jsonFormat13(List.apply)  
   implicit val implTag = jsonFormat9(Tag.apply)  
   implicit val implItems = jsonFormat5(Items.apply)
@@ -64,4 +64,6 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implSecurityContext = jsonFormat7(SecurityContext.apply)
   implicit val implAuthenticatePayload = jsonFormat1(AuthenticatePayload.apply)
   implicit val implCompleteTaskResult = jsonFormat3(CompleteTaskResult.apply)
+  implicit val implArchiveListResult = jsonFormat4(ArchiveListResult.apply)
+
 }

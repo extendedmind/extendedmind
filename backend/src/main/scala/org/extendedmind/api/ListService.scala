@@ -101,35 +101,20 @@ trait ListService extends ServiceBase {
             }
           }
         }
-      }/* ~
-      completeTask { (ownerUUID, taskUUID) =>
-        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
-          authorize(writeAccess(ownerUUID, securityContext)) {
-            complete {
-              Future[CompleteTaskResult] {
-                taskActions.completeTask(getOwner(ownerUUID, securityContext), taskUUID) match {
-                  case Right(task) => task
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
       } ~
-      uncompleteTask { (ownerUUID, taskUUID) =>
+      archiveList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
-              Future[SetResult] {
-                taskActions.uncompleteTask(getOwner(ownerUUID, securityContext), taskUUID) match {
-                  case Right(sr) => sr
+              Future[ArchiveListResult] {
+                listActions.archiveList(getOwner(ownerUUID, securityContext), listUUID) match {
+                  case Right(result) => result
                   case Left(e) => processErrors(e)
                 }
               }
             }
           }
         }
-      }*/
-  }
-
+      }
+    }
 }

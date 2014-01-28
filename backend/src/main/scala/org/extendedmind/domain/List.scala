@@ -5,7 +5,7 @@ import org.extendedmind.SetResult
 import Validators._
 
 case class List(
-      uuid: Option[UUID], modified: Option[Long], deleted: Option[Long],
+      uuid: Option[UUID], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
       title: String, 
       description: Option[String], 
       link: Option[String],
@@ -13,7 +13,6 @@ case class List(
       due: Option[String],
       assignee: Option[UUID],
       assigner: Option[UUID],
-      archived: Option[Long],
       visibility: Option[SharedItemVisibility],
       relationships: Option[ExtendedItemRelationships])
       extends ExtendedItem{
@@ -28,10 +27,9 @@ object List{
 		  	link: Option[String],
 		  	completable: Option[Boolean],
 		  	due: Option[String],
-            visibility: Option[SharedItemVisibility],
             relationships: Option[ExtendedItemRelationships]) 
-        = new List(None, None, None, title, description, 
-                   link, completable, due, None, None, None, visibility, relationships)
+        = new List(None, None, None, None,  title, description, 
+                   link, completable, due, None, None, None, relationships)
 }
 
-case class ArchiveListResult(archived: Long, result: SetResult, history: Tag)
+case class ArchiveListResult(archived: Long, count: Int, history: Tag, result: SetResult)

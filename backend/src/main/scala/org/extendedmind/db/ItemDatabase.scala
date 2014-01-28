@@ -361,7 +361,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
       }
       for{
         parentNode <- getItemNode(owner, parentUUID.get, Some(parentLabel)).right
-        parentRelationship <- createParentRelationship(itemNode, parentNode).right
+        parentRelationship <- createParentRelationship(itemNode, owner, parentNode).right
       }yield Some(parentRelationship)
     }else{
       if (oldParentRelationship.isDefined){
@@ -372,11 +372,20 @@ trait ItemDatabase extends AbstractGraphDatabase {
   }
   
   protected def deleteParentRelationship(parentRelationship: Relationship)(implicit neo4j: DatabaseService) : Unit = {
-    val parentNode = parentRelationship.getEndNode()
+    val itemNode = parentRelationship.getStartNode()
+    // When deleting a relationship to a parent list, item is no longer archived
+    if (itemNode.hasProperty("archived") && !itemNode.hasLabel(ItemLabel.LIST)) itemNode.removeProperty("archived")
     parentRelationship.delete()
   }
   
-  protected def hasChildren(itemNode: Node, label: Option[Label])(implicit neo4j: DatabaseService): Boolean = {
+  protected def hasChildren(itemNode: Node, label: Option[Label])(implicit neo4j: DatabaseService): Boolean = {    
+    if (getChildren(itemNode, label).length > 0)
+      true
+    else
+      false  
+  }
+  
+  protected def getChildren(itemNode: Node, label: Option[Label])(implicit neo4j: DatabaseService): scala.List[Node] = {
     val itemsFromParent: TraversalDescription =
       Traversal.description()
         .depthFirst()
@@ -388,21 +397,40 @@ trait ItemDatabase extends AbstractGraphDatabase {
             Evaluation.INCLUDE_AND_CONTINUE))
         .depthFirst()
         .evaluator(Evaluators.toDepth(1))
-    
-    val traverser = 
-      if (label.isDefined) itemsFromParent.evaluator(LabelEvaluator(scala.List(label.get))).traverse(itemNode)
-      else itemsFromParent.traverse(itemNode)
-      
-    if (traverser.nodes().toList.length > 0){
-      true
-    }else{
-      false
-    }
+     
+    if (label.isDefined) itemsFromParent.evaluator(LabelEvaluator(scala.List(label.get))).traverse(itemNode).nodes().toList
+    else itemsFromParent.traverse(itemNode).nodes().toList
   }
 
-  protected def createParentRelationship(itemNode: Node, parentNode: Node)
+  protected def createParentRelationship(itemNode: Node, owner: Owner, parentNode: Node)
               (implicit neo4j: DatabaseService): Response[Relationship] = {
     val relationship = itemNode --> ItemRelationship.HAS_PARENT --> parentNode <;
+    // When adding a relationship to a parent list, item needs to match the archived status of the parent
+    if (parentNode.hasProperty("archived")){
+      if (!itemNode.hasProperty("archived")){
+        itemNode.setProperty("archived", System.currentTimeMillis)
+      }
+      // Get the history tag of the parent and add it to the child
+      val historyTagRelationship = getItemRelationship(parentNode, owner, ItemRelationship.HAS_TAG, TagLabel.HISTORY)
+      if (historyTagRelationship.isLeft) return Left(historyTagRelationship.left.get)
+      if (historyTagRelationship.right.get.isDefined) {
+        val historyTagNode = historyTagRelationship.right.get.get.getEndNode()
+        
+        // Need to make sure the child does not already have this tag
+        val tagRelationshipsResult = getTagRelationships(itemNode, owner)
+        if (tagRelationshipsResult.isLeft) return Left(tagRelationshipsResult.left.get)
+        if (tagRelationshipsResult.right.get.isDefined){
+          tagRelationshipsResult.right.get.get foreach (tagRelationship => {
+            if (tagRelationship.getEndNode() == historyTagNode){
+              // Already has this history tag, return
+              return Right(relationship)
+            }
+          })
+        }
+        // Does not have the tag, add it
+        createTagRelationships(itemNode, scala.List(historyTagNode))
+      }
+    }
     Right(relationship)
   }
   
@@ -469,7 +497,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
       
       for {
         newTagNodes <- getTagNodes(newUUIDList, ownerNodes).right
-        newTagRelationships <- createTagRelationships(itemNode, newTagNodes).right 
+        newTagRelationships <- Right(createTagRelationships(itemNode, newTagNodes)).right 
         removedTagNodes <- getTagNodes(removedUUIDList, ownerNodes).right
         removedTagRelationships <- getTagRelationships(itemNode, removedTagNodes).right
         result <- Right(deleteTagRelationships(removedTagRelationships)).right
@@ -524,11 +552,11 @@ trait ItemDatabase extends AbstractGraphDatabase {
   }
   
   protected def createTagRelationships(itemNode: Node, tagNodes: scala.List[Node])
-              (implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
-    if (tagNodes.isEmpty) return Right(None)
-    Right(Some(tagNodes map (tagNode => {
+              (implicit neo4j: DatabaseService): Option[scala.List[Relationship]] = {
+    if (tagNodes.isEmpty) return None
+    Some(tagNodes map (tagNode => {
       itemNode --> ItemRelationship.HAS_TAG --> tagNode <;
-    })))
+    }))
   }
   
   protected def getTagRelationships(itemNode: Node, owner: Owner)(implicit neo4j: DatabaseService): 
