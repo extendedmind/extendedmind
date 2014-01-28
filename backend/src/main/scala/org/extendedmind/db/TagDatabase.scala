@@ -50,6 +50,14 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
   
+  def deleteTag(owner: Owner, tagUUID: UUID): Response[DeleteItemResult] = {
+    for {
+      deletedTagNode <- deleteTagNode(owner, tagUUID).right
+      result <- Right(getDeleteItemResult(deletedTagNode._1, deletedTagNode._2)).right
+      unit <- Right(updateItemsIndex(deletedTagNode._1, result.result)).right
+    } yield result
+  }
+  
   // PRIVATE
 
   protected def putExistingTagNode(owner: Owner, tagUUID: UUID, tag: Tag): 
@@ -106,4 +114,15 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield completeTag
   }
  
+  protected def deleteTagNode(owner: Owner, tagUUID: UUID): Response[Tuple2[Node, Long]] = {
+    withTx {
+      implicit neo =>
+        for {
+          tagNode <- getItemNode(owner, tagUUID, Some(ItemLabel.TAG)).right
+          deleted <- Right(deleteItem(tagNode)).right
+        } yield (tagNode, deleted)
+    }
+  }
+
+  
 }

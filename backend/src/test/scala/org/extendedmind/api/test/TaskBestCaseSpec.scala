@@ -54,7 +54,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
   describe("In the best case, TaskService") {
     it("should successfully put new task on PUT to /[userUUID]/task, "
       + "update it with PUT to /[userUUID]/task/[taskUUID] "
-      + "and get it back with GET to /[userUUID]/task/[taskUUID]"
+      + "and get it back with GET to /[userUUID]/task/[taskUUID] "
       + "and delete it with DELETE to /[userUUID]/task/[itemUUID] "
       + "and undelete it with POST to /[userUUID]/task/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)

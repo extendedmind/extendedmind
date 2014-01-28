@@ -25,6 +25,8 @@ import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
+import spray.http.StatusCodes._
+
 
 /**
  * Best case test for tags. Also generates .json files.
@@ -52,7 +54,9 @@ class TagBestCaseSpec extends ServiceSpecBase {
   describe("In the best case, TagService") {
     it("should successfully put new tag on PUT to /[userUUID]/tag, "
       + "update it with PUT to /[userUUID]/tag/[tagUUID] "
-      + "and get it back with GET to /[userUUID]/tag/[tagUUID]") {
+      + "and get it back with GET to /[userUUID]/tag/[tagUUID] "
+      + "and delete it with DELETE to /[userUUID]/tag/[itemUUID] "
+      + "and undelete it with POST to /[userUUID]/tag/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newTag = Tag("home", None, None, CONTEXT, None)
       Put("/" + authenticateResponse.userUUID + "/tag",
@@ -78,6 +82,24 @@ class TagBestCaseSpec extends ServiceSpecBase {
                 val putNoteResponse = putNewNote(newNote, authenticateResponse)
                 val noteWithTag = getNote(putNoteResponse.uuid.get, authenticateResponse)
                 noteWithTag.relationships.get.tags.get should be(scala.List(putTagResponse.uuid.get))
+                Delete("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  val deleteTagResponse = entityAs[String]
+                  writeJsonOutput("deleteTagResponse", deleteTagResponse)
+                  deleteTagResponse should include("deleted")
+                  Get("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                	val failure = responseAs[String]        
+                	status should be (BadRequest)
+                    failure should startWith("Item " + putTagResponse.uuid.get + " is deleted")
+                  }
+                  Post("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    val undeleteTagResponse = entityAs[String]
+                    writeJsonOutput("undeleteTagResponse", undeleteTagResponse)
+                    undeleteTagResponse should include("modified")
+                    val undeletedTag = getTag(putTagResponse.uuid.get, authenticateResponse)
+                    undeletedTag.deleted should be(None)
+                    undeletedTag.modified should not be (None)
+                  }
+                }
               }
             }
         }

@@ -85,16 +85,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo =>
         for {
           itemNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
-          deletable <- validateNoteDeletable(itemNode).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)
     }
   }
-
-  protected def validateNoteDeletable(noteNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
-    if (noteNode.hasLabel(ItemParentLabel.AREA))
-      fail(INVALID_PARAMETER, "can not delete area, only note")
-    else
-      Right(true)
-  }  
 }

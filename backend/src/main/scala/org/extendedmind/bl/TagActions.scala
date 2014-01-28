@@ -28,6 +28,16 @@ trait TagActions {
     log.info("getTag: owner {}, tag {}", owner, tagUUID)
     db.getTag(owner, tagUUID)
   }
+  
+  def deleteTag(owner: Owner, tagUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
+    log.info("deleteTag: owner {}, tag {}", owner, tagUUID)
+    db.deleteTag(owner, tagUUID)
+  }
+  
+  def undeleteTag(owner: Owner, tagUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
+    log.info("undeleteTag: owner {}, tag {}", owner, tagUUID)
+    db.undeleteItem(owner: Owner, tagUUID, Some(ItemLabel.TAG))
+  }
 }
 
 class TagActionsImpl(implicit val settings: Settings, implicit val inj: Injector)

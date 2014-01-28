@@ -219,16 +219,9 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo =>
         for {
           itemNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
-          deletable <- validateTaskDeletable(itemNode).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)
     }
   }
 
-  protected def validateTaskDeletable(taskNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
-    if (taskNode.hasLabel(ItemParentLabel.PROJECT))
-      fail(INVALID_PARAMETER, "can not delete project, only tasks")
-    else
-      Right(true)
-  }  
 }

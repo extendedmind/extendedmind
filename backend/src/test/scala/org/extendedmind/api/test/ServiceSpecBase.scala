@@ -120,6 +120,12 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
       entityAs[List]
     }
   }
+  
+  def getTag(tagUUID: UUID, authenticateResponse: SecurityContext): Tag = {
+    Get("/" + authenticateResponse.userUUID + "/tag/" + tagUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      entityAs[Tag]
+    }
+  }
 
   def getUserUUID(email: String, authenticateResponse: SecurityContext): UUID = {
     Get("/user?email=" + email) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
