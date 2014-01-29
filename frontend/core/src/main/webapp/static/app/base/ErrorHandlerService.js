@@ -1,15 +1,15 @@
-/*jslint white: true */
+/*global angular */
 'use strict';
 
-angular.module('em.services').factory('ErrorHandlerService', [
-  function() {
-    return {
-      errorMessage : null,
-      setError : function(errorMessage) {
-        this.errorMessage = errorMessage;
-      },
-      clear : function() {
-        this.errorMessage = null;
-      }
-    };
-  }]);
+function ErrorHandlerService() {
+  return {
+    errorMessage : null,
+    setError : function(errorMessage) {
+      this.errorMessage = errorMessage;
+    },
+    clear : function() {
+      this.errorMessage = null;
+    }
+  };
+}
+angular.module('em.services').factory('ErrorHandlerService', ErrorHandlerService);

@@ -1,50 +1,57 @@
-/*global angular */
 'use strict';
 
-angular.module('em.services').factory('LocalStorageService', [
-  function() {
-    return {
+function LocalStorageService() {
+  return {
 
-      // setters
-      setUserUUID: function(uuid) {
-        localStorage.setItem('userUUID', uuid);
-      },
-      setHttpAuthorizationHeader: function(authorizationHeader) {
-        localStorage.setItem('authorizationHeader', authorizationHeader);
-      },
-      setUserType: function(userType) {
-        localStorage.setItem('userType', userType);
-      },
-      setCollectives: function(collectives) {
-        localStorage.setItem('collectives', JSON.stringify(collectives));
-      },
-      setAuthenticated: function(epoch) {
-        localStorage.setItem('authenticated', epoch);
-      },
+    // setters
+    setCollectives: function(collectives) {
+      localStorage.setItem('collectives', JSON.stringify(collectives));
+    },
+    setExpires: function(expires) {
+      localStorage.setItem('expires', parseInt(expires));
+    },
+    setHttpAuthorizationHeader: function(authorizationHeader) {
+      localStorage.setItem('authorizationHeader', authorizationHeader);
+    },
+    setReplaceable: function(replaceable) {
+      localStorage.setItem('replaceable', replaceable);
+    },
+    setUserType: function(userType) {
+      localStorage.setItem('userType', userType);
+    },
+    setUserUUID: function(uuid) {
+      localStorage.setItem('userUUID', uuid);
+    },
 
-      // getters
-      getUserUUID: function() {
-        return localStorage.getItem('userUUID');
-      },
-      getHttpAuthorizationHeader: function() {
-        return localStorage.getItem('authorizationHeader');
-      },
-      getUserType: function() {
-        return localStorage.getItem('userType');
-      },
-      getCollectives: function() {
-        return JSON.parse(localStorage.getItem('collectives'));
-      },
-      getAuthenticated: function() {
-        return localStorage.getItem('authenticated');
-      },
+    // getters
+    getCollectives: function() {
+      return JSON.parse(localStorage.getItem('collectives'));
+    },
+    getExpires: function() {
+      return localStorage.getItem('expires');
+    },
+    getHttpAuthorizationHeader: function() {
+      return localStorage.getItem('authorizationHeader');
+    },
+    getReplaceable: function() {
+      return localStorage.getItem('replaceable');
+    },
+    getUserType: function() {
+      return localStorage.getItem('userType');
+    },
+    getUserUUID: function() {
+      return localStorage.getItem('userUUID');
+    },
 
-      clearUser: function() {
-        localStorage.removeItem('userUUID');
-        localStorage.removeItem('authorizationHeader');
-        localStorage.removeItem('userType');
-        localStorage.removeItem('collectives');
-        localStorage.removeItem('authenticated');
-      }
-    };
-  }]);
+    clearUser: function() {
+      localStorage.removeItem('collectives');
+      localStorage.removeItem('expires');
+      localStorage.removeItem('authorizationHeader');
+      localStorage.removeItem('replaceable');
+      localStorage.removeItem('userType');
+      localStorage.removeItem('userUUID');
+    }
+  };
+}
+
+angular.module('em.services').factory('LocalStorageService', LocalStorageService);

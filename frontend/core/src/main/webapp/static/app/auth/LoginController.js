@@ -1,4 +1,3 @@
-/*jslint white: true */
 'use strict';
 
 function LoginController($location, $scope, AuthenticationService, ErrorHandlerService) {

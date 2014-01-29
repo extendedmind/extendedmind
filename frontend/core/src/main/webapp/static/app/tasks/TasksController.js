@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function TasksController($location, $scope, OwnerService, activeItem, tasksRequest, tasksResponse, tasksArray, SwiperService, TasksSlidesService) {
@@ -13,11 +12,11 @@ function TasksController($location, $scope, OwnerService, activeItem, tasksReque
 
   $scope.editTaskTitle = function(task) {
     tasksRequest.putExistingTask(task);
-  }
+  };
 
   $scope.editTask = function(task) {
     $location.path(OwnerService.getPrefix() + '/tasks/edit/' + task.uuid);
-  }
+  };
 
   $scope.taskChecked = function(task) {
     if (task.completed) {
@@ -69,19 +68,19 @@ function TasksController($location, $scope, OwnerService, activeItem, tasksReque
 
   $scope.getSubtaskButtonClass = function(task) {
     if (!task.project && !(task.relationships && task.relationships.parentTask)){
-      return "left-of-two";
+      return 'left-of-two';
     }
-  }
+  };
 
   $scope.getDeleteButtonClass = function(task) {
     if (!task.project){
       if (!(task.relationships && task.relationships.parentTask)){
-        return "right-of-two";
+        return 'right-of-two';
       }else{
-        return "wide-button";
+        return 'wide-button';
       }
     }
-  }
+  };
 
   $scope.showDate = function(task) {
     if (task && task.due || $scope.focusDateInput) {
@@ -90,7 +89,7 @@ function TasksController($location, $scope, OwnerService, activeItem, tasksReque
     return false;
   };
 
-  $scope.focusDate = function(task) {
+  $scope.focusDate = function() {
     $scope.focusDateInput = true;
   };
 
