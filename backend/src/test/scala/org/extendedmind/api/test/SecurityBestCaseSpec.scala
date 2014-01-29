@@ -56,6 +56,9 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
         val authenticateResponse = entityAs[String]
         writeJsonOutput("authenticateResponse", authenticateResponse)
         authenticateResponse should include("token")
+        authenticateResponse should include("authenticated")
+        authenticateResponse should include("expires")
+        authenticateResponse should not include("replaceable")
       }
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       authenticateResponse.token should not be (None)
@@ -68,10 +71,18 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
         val tokenAuthenticateResponse = entityAs[SecurityContext]
         tokenAuthenticateResponse.token.get should not be (authenticateResponse.token.get)
         tokenAuthenticateResponse.collectives should not be None
+        tokenAuthenticateResponse.authenticated should not be None
+        tokenAuthenticateResponse.expires should not be None
+        tokenAuthenticateResponse.replaceable should not be None
+
         // Should be able to swap it again, but this time without rememberMe
         Post("/authenticate") ~> addCredentials(BasicHttpCredentials("token", tokenAuthenticateResponse.token.get)) ~> route ~> check {
           val tokenReAuthenticateResponse = entityAs[SecurityContext]
           tokenReAuthenticateResponse.token.get should not be (tokenAuthenticateResponse.token.get)
+          tokenAuthenticateResponse.authenticated should not be None
+          tokenAuthenticateResponse.expires should not be None
+          tokenReAuthenticateResponse.replaceable should be (None)
+          
           // Shouldn't be able to swap it again because rememberMe was missing the last time
           Post("/authenticate") ~> addCredentials(BasicHttpCredentials("token", tokenReAuthenticateResponse.token.get)) ~> route ~> check {
         	val failure = responseAs[String]        
