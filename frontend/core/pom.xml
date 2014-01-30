@@ -170,9 +170,6 @@
             <include>common/common.js</include>
             <include>common/*.js</include>
             <include>app/**/*.js</include>
-            <include>testApp.js</include>
-            <include>Mock*.js</include>
-            <include>apptest/**/*.js</include>
           </sourceIncludes>
           <webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
           <webDriverCapabilities>

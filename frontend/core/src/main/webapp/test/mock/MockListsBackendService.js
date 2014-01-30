@@ -16,7 +16,6 @@ function MockListsBackendService($httpBackend, ListsService, UUIDService) {
     $httpBackend.whenPUT(ListsService.putExistingListRegex)
       .respond(function(method, url, data, headers) {
         var putExistingListResponse = getJSONFixture('putExistingListResponse.json');
-        putExistingListResponse.uuid = UUIDService.randomUUID();
         return expectResponse(method, url, data, headers, putExistingListResponse);
       });
   };
@@ -30,4 +29,4 @@ function MockListsBackendService($httpBackend, ListsService, UUIDService) {
 };
 
 MockListsBackendService.$inject = ['$httpBackend', 'ListsService', 'UUIDService'];
-angular.module('em.testApp').factory('MockListsBackendService', MockListsBackendService);
+angular.module('em.appTest').factory('MockListsBackendService', MockListsBackendService);
