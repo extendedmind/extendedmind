@@ -453,7 +453,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = em;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "A6105942-B272-4FB0-BCB3-4999C39A7F70";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -487,7 +487,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = em;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "A6105942-B272-4FB0-BCB3-4999C39A7F70";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -533,7 +533,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)/libCordova.a\"",
 					"-ObjC",
 				);
-				PROVISIONING_PROFILE = "2887DCDE-4743-463F-9914-488171F51355";
+				PROVISIONING_PROFILE = "A6105942-B272-4FB0-BCB3-4999C39A7F70";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = NO;
 				USER_HEADER_SEARCH_PATHS = "";
@@ -550,8 +550,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Extended Mind Technologies Oy (Z9X5PYT4CA)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Extended Mind Technologies Oy (Z9X5PYT4CA)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
@@ -581,7 +581,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)/libCordova.a\"",
 					"-ObjC",
 				);
-				PROVISIONING_PROFILE = "2887DCDE-4743-463F-9914-488171F51355";
+				PROVISIONING_PROFILE = "A6105942-B272-4FB0-BCB3-4999C39A7F70";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = NO;
 				USER_HEADER_SEARCH_PATHS = "";
