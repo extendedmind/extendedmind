@@ -157,7 +157,6 @@
           </preloadSources>
           <sourceIncludes>
             <include>lib/jquery/jquery.js</include>
-            <include>lib/jquery/jquery.cookie.js</include>
             <include>lib/angularjs/angular.js</include>
             <include>lib/angularjs/angular-route.js</include>
             <include>lib/angularjs/angular-mocks.js</include>
