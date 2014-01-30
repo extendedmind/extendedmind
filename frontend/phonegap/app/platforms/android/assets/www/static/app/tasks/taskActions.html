@@ -1,0 +1,22 @@
+<div ng-controller="TasksController">
+  <ul class="indent">
+    <li ng-repeat="value in task | visibleTaskContent">
+      <span><small>{{value}}</small></span>
+    </li>
+  </ul>
+
+  <div class="item-actions">
+    <ul class="button-row">
+      <li ng-if="!task.relationships.parentTask" class="button-container" ng-class="getSubtaskButtonClass(task)">
+        <button type="button" class="enabled-button" ng-click="taskToProject(task)">
+          make list
+        </button>
+      </li>
+      <li ng-if="!task.project" class="button-container" ng-class="getDeleteButtonClass(task)">
+        <button type="button" class="delete-button" ng-click="deleteTask(task)">
+          delete
+        </button>
+      </li>
+    </ul>
+  </div>
+</ul>
