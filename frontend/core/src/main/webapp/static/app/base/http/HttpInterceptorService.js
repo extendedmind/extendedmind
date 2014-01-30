@@ -7,7 +7,6 @@ angular.module('em.services').config(['$httpProvider',
   }]);
 
 function HttpInterceptorService($q, ErrorHandlerService) {
-
   return {
     request : function(config) {
       return config || $q.when(config);

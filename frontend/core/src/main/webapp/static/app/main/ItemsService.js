@@ -1,6 +1,6 @@
 /*global angular */
 'use strict';
-
+/*
 function ItemsService(BackendClientService, TagsService, TasksService, NotesService, ListsService, UserSessionService) {
   var putItemContent = function(item, putItemResponse) {
       angular.forEach(putItemResponse, function(value, key) {
@@ -69,11 +69,6 @@ function ItemsService(BackendClientService, TagsService, TasksService, NotesServ
       if (!this.itemInArray(items, item.uuid)) {
         items.push(item);
       }
-    },
-    clearArray: function(itemsArray) {
-      // http://stackoverflow.com/a/1234337
-      itemsArray.length = 0;
-      return itemsArray;
     },
     removeItem: function(item) {
       this.removeItemFromArray(items, item);
@@ -145,3 +140,4 @@ function ItemsService(BackendClientService, TagsService, TasksService, NotesServ
 }
 ItemsService.$inject = ['BackendClientService', 'TagsService', 'TasksService', 'NotesService', 'ListsService', 'UserSessionService'];
 angular.module('em.services').factory('ItemsService', ItemsService);
+*/

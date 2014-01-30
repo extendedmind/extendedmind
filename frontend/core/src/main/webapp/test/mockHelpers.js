@@ -1,6 +1,6 @@
 /*global angular, getJSONFixture, sessionStorage */
 'use strict';
-
+/*
 angular.module('em.mockHelpers', ['em.base64']);
 
 angular.module('em.mockHelpers').run(['$httpBackend', 'mockHttpBackendResponse',
@@ -292,3 +292,5 @@ angular.module('em.mockHelpers').factory('mockHttpBackendResponse', ['base64',
       }
     };
   }]);
+
+*/

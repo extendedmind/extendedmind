@@ -4,18 +4,15 @@
 angular.module('em.services').factory('HttpBasicAuthenticationService', ['$http',
   function($http) {
     $http.defaults.headers.common.Authorization = 'Basic ';
-    var encoded;
+    var credentials;
 
     return {
-      setEncodedCredentials: function(userpass) {
-        encoded = userpass;
-        $http.defaults.headers.common.Authorization = 'Basic ' + encoded;
+      setCredentials: function(encodedCredentials) {
+        credentials = encodedCredentials;
+        $http.defaults.headers.common.Authorization = 'Basic ' + credentials;
       },
       getCredentials: function() {
-        return encoded;
-      },
-      clearCredentials: function() {
-        $http.defaults.headers.common.Authorization = 'Basic ';
+        return credentials;
       }
     };
   }]);

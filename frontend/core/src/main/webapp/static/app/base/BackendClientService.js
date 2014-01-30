@@ -1,60 +1,64 @@
 /*global angular, urlPrefix */
 'use strict';
 
-angular.module('em.services').factory('BackendClientService', ['$http', 'UserSessionService',
-  function($http, UserSessionService) {
+function BackendClientService($http, HttpClientService, HttpBasicAuthenticationService, UserSessionService, ErrorHandlerService) {
+  var methods = {};
 
-    var BackendClientService = {};
-
-    function getUrlPrefix() {
-      // http://stackoverflow.com/a/3390426
-      if (typeof urlPrefix !== 'undefined') {
-        return urlPrefix;
-      }
-      return '';
+  function getUrlPrefix() {
+    if (typeof urlPrefix !== 'undefined') {
+      return urlPrefix;
     }
+    return '';
+  }
 
-    BackendClientService.config = function(config) {
-      UserSessionService.getAuth();
+  methods.uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+  methods.apiPrefixRegex = /\/api\//;
 
-      return $http(config).then(function(success) {
-        return success;
-      });
-    };
+  var refreshCredentials = function() {
+    var credentials = UserSessionService.getCredentials();
+    if (HttpBasicAuthenticationService.getCredentials() !== credentials){
+      HttpBasicAuthenticationService.setCredentials(credentials);
+    }
+  };
 
-    BackendClientService.get = function(url) {
-      UserSessionService.getAuth();
+  methods.get = function(url, regex) {
+    refreshCredentials();
+    if (regex.test(url)){
+      return HttpClientService.get(getUrlPrefix() + url);
+    }else {
+      ErrorHandlerService.setError("GET to URL " + url + " did not match pattern " + regex);
+    }
+  };
 
-      return $http({
-        method: 'GET',
-        url: getUrlPrefix() + url
-      }).then(function(success) {
-        return success;
-      });
-    };
+  methods.delete = function(url, regex) {
+    refreshCredentials();
+    if (regex.test(url)){
+      return HttpClientService.delete(getUrlPrefix() + url);
+    }else {
+      ErrorHandlerService.setError("DELETE to URL " + url + " did not match pattern " + regex);
+    }
+  };
 
-    angular.forEach(['delete', 'head', 'jsonp'], function(name) {
-      BackendClientService[name] = function(url) {
-        UserSessionService.getAuth();
+  methods.put = function(url, regex, data) {
+    refreshCredentials();
+    if (regex.test(url)){
+      return HttpClientService.put(getUrlPrefix() + url, data)
+    }else {
+      ErrorHandlerService.setError("PUT to URL " + url + " did not match pattern " + regex);
+    }
+  };
 
-        return $http({
-          method: name,
-          url: getUrlPrefix() + url
-        }).then(function(success) {
-          return success;
-        });
-      };
-    });
+  methods.post = function(url, regex, data) {
+    refreshCredentials();
+    if (regex.test(url)){
+    return HttpClientService.post(getUrlPrefix() + url, data)
+    }else {
+      ErrorHandlerService.setError("POST to URL " + url + " did not match pattern " + regex);
+    }
+  };
 
-    angular.forEach(['post', 'put'], function(name) {
-      BackendClientService[name] = function(url, data) {
-        UserSessionService.getAuth();
+  return methods;
+};
 
-        return $http[name](getUrlPrefix() + url, data).then(function(success) {
-          return success;
-        });
-      };
-    });
-
-    return BackendClientService;
-  }]);
+BackendClientService.$inject = ['$http', 'HttpClientService', 'HttpBasicAuthenticationService', 'UserSessionService', 'ErrorHandlerService'];
+angular.module('em.services').factory('BackendClientService', BackendClientService);

@@ -1,6 +1,6 @@
 /*jslint eqeq: true, white: true */
 'use strict';
-
+/*
 function TasksService(BackendClientService, TagsService, ListsService, UserSessionService) {
 
   var context, projects, subtasks, tasks, project;
@@ -174,3 +174,4 @@ function TasksService(BackendClientService, TagsService, ListsService, UserSessi
 };
 TasksService.$inject = ['BackendClientService', 'TagsService', 'ListsService', 'UserSessionService'];
 angular.module('em.services').factory('TasksService', TasksService);
+*/
