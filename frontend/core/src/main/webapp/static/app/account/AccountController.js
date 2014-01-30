@@ -1,4 +1,3 @@
-/*jslint white: true */
 'use strict';
 
 function AccountController($location, $scope, AccountService, ErrorHandlerService) {
