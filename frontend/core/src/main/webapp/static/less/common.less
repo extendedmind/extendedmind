@@ -385,3 +385,37 @@ span.icon-i:active, span.icon-plus:active {
     color: @inactive-link !important; 
   }
 }
+
+.arrow-box {
+  margin-top: 40px;
+  position: relative;
+  border: 1px solid @separator;
+  border-radius: 15px;
+  padding: 20px 10px;
+  text-align: center;
+  line-height: normal;
+  color: @inactive-text;
+}
+.arrow-box:after, .arrow-box:before {
+  bottom: 100%;
+  left: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.arrow-box:after {
+  border-color: rgba(255, 255, 255, 0);
+  border-bottom-color: white;
+  border-width: 15px;
+  margin-left: -15px;
+}
+.arrow-box:before {
+  border-color: rgba(255, 255, 255, 0);
+  border-bottom-color: @separator;
+  border-width: 16px;
+  margin-left: -16px;
+}
