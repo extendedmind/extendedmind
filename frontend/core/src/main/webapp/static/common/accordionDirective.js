@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 // From:
@@ -6,7 +5,7 @@
 
 // The accordion directive simply sets up the directive controller
 // and adds an accordion CSS class to itself element.
-function accordionDirective($document){
+function accordionDirective($document) {
   return {
     restrict:'A',
     controller: function($scope) {
@@ -32,7 +31,6 @@ function accordionDirective($document){
         if (!$scope.eventsBound){
           $scope.bindElsewhereEvents();
         }
-        $scope.closedOtherItems;
       };
       
       // This is called from the accordion-item directive to add itself to the accordion
@@ -40,7 +38,7 @@ function accordionDirective($document){
         var that = this;
         this.items.push(itemScope);
 
-        itemScope.$on('$destroy', function (event) {
+        itemScope.$on('$destroy', function() {
           that.removeItem(itemScope);
         });
       };
@@ -71,32 +69,32 @@ function accordionDirective($document){
       $scope.bindElsewhereEvents = function () {
         $document.bind('click', $scope.elsewhereCallback);
         $scope.eventsBound = true;
-      }
+      };
 
       $scope.elsewhereCallback = function(event) {
         // First rule out clicking on link with a closed accordion
-        if (!(!$scope.closedOtherItems && event.target.id === "accordionTitleLink")){
+        if (!(!$scope.closedOtherItems && event.target.id === 'accordionTitleLink')) {
           // If clicking elswehere than on the input or on an element that has as parent
           // the accordion-item, close accordion and unbind events.
           // NOTE: Class item-actions is needed to get clicking on buttons inside the 
           //       accordion to work!
-          if (($scope.closedOtherItems && event.target.id === "accordionTitleLink") ||
-              (!$(event.target).parents('.accordion-item-open').length && 
-              !$(event.target).parents('.item-actions').length)){
-            $scope.$apply(function(){
+          if (($scope.closedOtherItems && event.target.id === 'accordionTitleLink') ||
+            (!$(event.target).parents('.accordion-item-open').length &&
+              !$(event.target).parents('.item-actions').length)) {
+            $scope.$apply(function() {
               angular.forEach($scope.thisController.items, function (item) {
                 item.closeItem();
               });
               $scope.unbindElsewhereEvents();
-            })
+            });
           }
         }
       };
-
     },
-    link: function(scope, element, attrs) {
+    link: function(scope, element) {
       element.addClass('accordion');
     }
   };
-};
-angular.module('common').directive('accordion', ['$document', accordionDirective]);
+}
+angular.module('common').directive('accordion', accordionDirective);
+accordionDirective.$inject = ['$document'];

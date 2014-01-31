@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function projectSlide() {
@@ -55,46 +54,46 @@ function tasksList() {
 }
 angular.module('em.directives').directive('tasksList', tasksList);
 
-angular.module('em.directives').directive('subTask', [
-  function() {
-    return {
-      restrict: 'A',
-      scope: {
-        subtask: '=',
-        add: '&'
-      },
-      templateUrl : 'static/app/tasks/subTask.html'
-    };
-  }]);
+function subTask() {
+  return {
+    restrict: 'A',
+    scope: {
+      subtask: '=',
+      add: '&'
+    },
+    templateUrl : 'static/app/tasks/subTask.html'
+  };
+}
+angular.module('em.directives').directive('subTask', subTask);
 
-angular.module('em.directives').directive('editTask', [
-  function() {
-    return {
-      restrict: 'A',
-      templateUrl: 'static/app/tasks/editTaskContent.html',
-      link: function(scope) {
-        scope.showProjectContent = false;
-        
-        if (scope.task && scope.task.due) {
-          scope.showDate = 'date';
-        }
+function editTask() {
+  return {
+    restrict: 'A',
+    templateUrl: 'static/app/tasks/editTaskContent.html',
+    link: function(scope) {
+      scope.showProjectContent = false;
 
-        scope.focusDate = function() {
-          scope.showDate = 'date';
-        };
+      if (scope.task && scope.task.due) {
+        scope.showDate = 'date';
       }
-    };
-  }]);
 
-angular.module('em.directives').directive('date', [
-  function() {
-    return {
-      restrict: 'A',
-      link: function(scope, element) {
-        if (!scope.task.due) {
-          element[0].focus();
-          element[0].value = new Date().toISOString().substring(0, 10);
-        }
+      scope.focusDate = function() {
+        scope.showDate = 'date';
+      };
+    }
+  };
+}
+angular.module('em.directives').directive('editTask', editTask);
+
+function date() {
+  return {
+    restrict: 'A',
+    link: function(scope, element) {
+      if (!scope.task.due) {
+        element[0].focus();
+        element[0].value = new Date().toISOString().substring(0, 10);
       }
-    };
-  }]);
+    }
+  };
+}
+angular.module('em.directives').directive('date', date);
