@@ -7,7 +7,7 @@
 // and adds an accordion CSS class to itself element.
 function accordionDirective($document) {
   return {
-    restrict:'A',
+    restrict: 'A',
     controller: function($scope) {
 
       // This array keeps track of the accordion items
