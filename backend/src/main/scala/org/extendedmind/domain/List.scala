@@ -32,4 +32,4 @@ object List{
                    link, completable, due, None, None, None, relationships)
 }
 
-case class ArchiveListResult(archived: Long, count: Int, history: Tag, result: SetResult)
+case class ArchiveListResult(archived: Long, children: Option[scala.List[SetResult]], history: Tag, result: SetResult)

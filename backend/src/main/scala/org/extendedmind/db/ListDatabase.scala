@@ -26,14 +26,14 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
     } yield result
   }
 
-  def putExistingList(owner: Owner, listUUID: UUID, list: List): Response[SetResult] = { 
+  def putExistingList(owner: Owner, listUUID: UUID, list: List): Response[SetResult] = {
     for {
       listNode <- putExistingListNode(owner, listUUID, list).right
       result <- Right(getSetResult(listNode, false)).right
       unit <- Right(updateItemsIndex(listNode, result)).right
     } yield result
   }
-  
+
   def getList(owner: Owner, listUUID: UUID): Response[List] = {
     withTx {
       implicit neo =>
@@ -44,7 +44,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
         } yield fullList
     }
   }
-  
+
   def deleteList(owner: Owner, listUUID: UUID): Response[DeleteItemResult] = {
     for {
       deletedListNode <- deleteListNode(owner, listUUID).right
@@ -52,14 +52,15 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
       unit <- Right(updateItemsIndex(deletedListNode._1, result.result)).right
     } yield result
   }
-  
+
   def archiveList(owner: Owner, listUUID: UUID): Response[ArchiveListResult] = {
     for {
       listNode <- validateListArchivable(owner, listUUID).right
       tagResult <- putNewTag(owner, Tag(listUUID.toString(), None, None, HISTORY, None)).right
-      count <- archiveListNode(listNode, owner, tagResult.uuid.get).right
+      archivedChildren <- archiveListNode(listNode, owner, tagResult.uuid.get).right
+      setResults <- Right(updateItemsIndex(archivedChildren)).right
       tag <- getTag(owner, tagResult.uuid.get).right
-      result <- Right(getArchiveListResult(listNode, tag, count)).right
+      result <- Right(getArchiveListResult(listNode, tag, setResults)).right
       unit <- Right(updateItemsIndex(listNode, result.result)).right
     } yield result
   }
@@ -93,17 +94,16 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
       parent <- getItemRelationship(listNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST).right
       tags <- getTagRelationships(listNode, owner).right
       task <- Right(list.copy(
-        relationships = 
-          (if (parent.isDefined || tags.isDefined)            
-            Some(ExtendedItemRelationships(  
-              parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
-              None,
-              tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
-           else None
-          ))).right
+        relationships =
+          (if (parent.isDefined || tags.isDefined)
+            Some(ExtendedItemRelationships(
+            parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
+            None,
+            tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
+          else None))).right
     } yield task
   }
-  
+
   protected def validateListUpdatable(itemNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
     if (itemNode.hasLabel(ItemLabel.TAG))
       fail(INVALID_PARAMETER, "Tag can not be updated to list, only task or item")
@@ -113,22 +113,22 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
       fail(INVALID_PARAMETER, "Completed task can not be updated to list")
     else if (itemNode.hasLabel(ItemLabel.TASK) && (itemNode.hasProperty("reminder") || itemNode.hasProperty("repeating")))
       fail(INVALID_PARAMETER, "Repeating task or task with reminder can not be updated to list")
-    else{
+    else {
       if (itemNode.hasLabel(ItemLabel.TASK))
         Right(true)
       else
-    	Right(false)
+        Right(false)
     }
   }
-  
+
   protected def setCompletable(itemNode: Node, wasTask: Boolean)(implicit neo4j: DatabaseService): Response[Boolean] = {
-    if (itemNode.hasProperty("completable") && itemNode.getProperty("completable").asInstanceOf[Boolean]){
+    if (itemNode.hasProperty("completable") && itemNode.getProperty("completable").asInstanceOf[Boolean]) {
       Right(true);
-    }else if (wasTask){
+    } else if (wasTask) {
       // If a task is turned into a list, it is automatically completable
-      itemNode.setProperty("completable", java.lang.Boolean.TRUE) 
+      itemNode.setProperty("completable", java.lang.Boolean.TRUE)
       Right(true);
-    }else{
+    } else {
       Right(false)
     }
   }
@@ -139,8 +139,8 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
         for {
           listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
           listNode <- validateListArchivable(listNode).right
-        } yield listNode        
-    }    
+        } yield listNode
+    }
   }
 
   protected def validateListArchivable(listNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
@@ -150,14 +150,14 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
       Right(listNode)
   }
 
-  protected def archiveListNode(listNode: Node, owner: Owner, tagUUID: UUID): Response[Int] = {
+  protected def archiveListNode(listNode: Node, owner: Owner, tagUUID: UUID): Response[scala.List[Node]] = {
     withTx {
       implicit neo =>
         val tagNodeResult = getItemNode(owner, tagUUID, Some(ItemLabel.TAG))
         if (tagNodeResult.isLeft) fail(INTERNAL_SERVER_ERROR, "Failed to find newly created history tag for list " + getUUID(listNode))
         else {
           val tagNode = tagNodeResult.right.get
-          val childNodes = getChildren(listNode, None)
+          val childNodes = getChildren(listNode, None, true)
           // Mark all as archived and add a history tag
           val currentTime = System.currentTimeMillis()
           childNodes foreach (childNode => {
@@ -166,21 +166,21 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
           })
           createTagRelationships(listNode, scala.List(tagNode))
           listNode.setProperty("archived", currentTime)
-          Right(1+childNodes.length)
+          Right(childNodes)
         }
     }
   }
 
-  protected def getArchiveListResult(listNode: Node, tag: Tag, count: Int): ArchiveListResult = {
+  protected def getArchiveListResult(listNode: Node, tag: Tag, setResults: Option[scala.List[SetResult]]): ArchiveListResult = {
     withTx {
       implicit neo =>
         ArchiveListResult(listNode.getProperty("archived").asInstanceOf[Long],
-            count,
-            tag,
-            getSetResult(listNode, false))
+          setResults,
+          tag,
+          getSetResult(listNode, false))
     }
   }
-  
+
   protected def deleteListNode(owner: Owner, listUUID: UUID): Response[Tuple2[Node, Long]] = {
     withTx {
       implicit neo =>
@@ -198,5 +198,21 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
       fail(INVALID_PARAMETER, "can not delete list with child lists")
     else
       Right(true)
-  }  
+  }
+
+  protected def updateItemsIndex(itemNodes: scala.List[Node]): Option[scala.List[SetResult]] = {
+    if (itemNodes.isEmpty) {
+      None
+    } else {
+      withTx {
+        implicit neo4j =>
+          val itemsIndex = neo4j.gds.index().forNodes("items")
+          Some(itemNodes map (itemNode => {
+            val setResult = SetResult(Some(getUUID(itemNode)), itemNode.getProperty("modified").asInstanceOf[Long])
+            updateModifiedIndex(itemsIndex, itemNode, setResult.modified)
+            setResult
+          }))
+      }
+    }
+  }
 }

@@ -8,7 +8,7 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
   // Holds reference to all the swipers and their respective paths
   var swipers = {};
 
-  var slideChangeCallbacks = [];
+  var slideChangeCallbacks = {};
 
   // Initial slides, these must be set by the route provider
   var initialMainSlidePath;

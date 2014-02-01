@@ -6,12 +6,28 @@ describe('ListService', function() {
   // INJECTS 
 
   var $httpBackend;
-  var ListsService, BackendClientService, HttpBasicAuthenticationService, HttpClientService;
+  var ListsService,
+      ArrayService,
+      TagsService,
+      BackendClientService,
+      HttpBasicAuthenticationService,
+      HttpClientService;
 
   // TEST DATA
 
+  var now = new Date;
   var putNewListResponse = getJSONFixture('putListResponse.json');
+  putNewListResponse.modified = now.getTime();
   var putExistingListResponse = getJSONFixture('putExistingListResponse.json');
+  putExistingListResponse.modified = now.getTime();
+  var deleteListResponse = getJSONFixture('deleteListResponse.json');
+  deleteListResponse.result.modified = now.getTime();
+  var undeleteListResponse = getJSONFixture('undeleteListResponse.json');
+  undeleteListResponse.modified = now.getTime();
+  var archiveListResponse = getJSONFixture('archiveListResponse.json');
+  archiveListResponse.result.modified = now.getTime();
+
+
   var MockUserSessionService = {
       getCredentials: function () {
         return '123456789';
@@ -47,9 +63,11 @@ describe('ListService', function() {
       $provide.value('UserSessionService', MockUserSessionService);
     });
 
-    inject(function (_$httpBackend_, _ListsService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_) {
+    inject(function (_$httpBackend_, _ListsService_, _ArrayService_, _TagsService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_) {
       $httpBackend = _$httpBackend_;
       ListsService = _ListsService_;
+      ArrayService = _ArrayService_;
+      TagsService = _TagsService_;
       BackendClientService = _BackendClientService_;
       HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       HttpClientService = _HttpClientService_;
@@ -66,8 +84,13 @@ describe('ListService', function() {
   // TESTS
 
   it('should get lists', function () {
-    expect(ListsService.getLists().length)
+    var lists = ListsService.getLists();
+    expect(lists.length)
       .toBe(3);
+    // Lists should be in modified order
+    expect(lists[0].title).toBe('trip to Dublin');
+    expect(lists[1].title).toBe('extended mind technologies');
+    expect(lists[2].title).toBe('write essay on cognitive biases');
   });
 
   it('should find list by uuid', function () {
@@ -90,6 +113,12 @@ describe('ListService', function() {
     $httpBackend.flush();
     expect(ListsService.getListByUUID(putNewListResponse.uuid))
       .toBeDefined();
+    // Should go to the end of the array
+    var lists = ListsService.getLists();
+    expect(lists.length)
+      .toBe(4);
+    expect(lists[3].uuid)
+      .toBe(putNewListResponse.uuid);
   });
 
   it('should update existing list', function () {
@@ -99,7 +128,79 @@ describe('ListService', function() {
        .respond(200, putExistingListResponse);
     ListsService.saveList(tripToDublin);
     $httpBackend.flush();
+
     expect(ListsService.getListByUUID(tripToDublin.uuid).modified)
       .toBe(putExistingListResponse.modified);
+    // Should move to the end of the array
+    var lists = ListsService.getLists();
+    expect(lists.length)
+      .toBe(3);
+    expect(lists[2].uuid)
+      .toBe(tripToDublin.uuid);
   });
+
+  it('should delete and undelete list', function () {
+    var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51');
+    $httpBackend.expectDELETE('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + tripToDublin.uuid)
+       .respond(200, deleteListResponse);
+    ListsService.deleteList(tripToDublin);
+    $httpBackend.flush();
+    expect(ListsService.getListByUUID(tripToDublin.uuid))
+      .toBeUndefined();
+
+    // There should be just two left
+    var lists = ListsService.getLists();
+    expect(lists.length)
+      .toBe(2);
+
+    // Undelete the list
+    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + tripToDublin.uuid + '/undelete')
+       .respond(200, undeleteListResponse);
+    ListsService.undeleteList(tripToDublin);
+    $httpBackend.flush();
+    expect(ListsService.getListByUUID(tripToDublin.uuid).modified)
+      .toBe(undeleteListResponse.modified);
+
+    // There should be three left with trip to dublin the last
+    lists = ListsService.getLists();
+    expect(lists.length)
+      .toBe(3);
+    expect(lists[2].uuid)
+      .toBe(tripToDublin.uuid);
+  });
+
+  it('should archive list', function () {
+    // First register callback to list service
+    var childItems, archivedTimestamp;
+    var testArchiveItemCallback = function(children, archived){
+      childItems = children;
+      archivedTimestamp = archived;
+    };
+    ListsService.registerItemArchiveCallback(testArchiveItemCallback, 'test');
+
+    // Make call
+    var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51');
+    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + tripToDublin.uuid + '/archive')
+       .respond(200, archiveListResponse);
+    ListsService.archiveList(tripToDublin);
+    $httpBackend.flush();
+
+    // Validate that callback was called
+    expect(childItems.length)
+      .toBe(archiveListResponse.children.length);
+
+    expect(archivedTimestamp)
+      .toBe(archiveListResponse.archived);
+
+    // The list should not be there anymore
+    expect(ListsService.getListByUUID(tripToDublin.uuid))
+      .toBeUndefined();
+    expect(ListsService.getLists().length)
+      .toBe(2);
+
+    // Lists service should have the tag
+    expect(TagsService.getTagByUUID(archiveListResponse.history.uuid))
+      .toBeDefined();
+  });
+
 });

@@ -396,18 +396,25 @@ trait ItemDatabase extends AbstractGraphDatabase {
       false  
   }
   
-  protected def getChildren(itemNode: Node, label: Option[Label])(implicit neo4j: DatabaseService): scala.List[Node] = {
-    val itemsFromParent: TraversalDescription =
+  protected def getChildren(itemNode: Node, label: Option[Label], includeDeleted: Boolean = false)(implicit neo4j: DatabaseService): scala.List[Node] = {
+    val itemsFromParentSkeleton: TraversalDescription =
       Traversal.description()
         .depthFirst()
         .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_PARENT.name), Direction.INCOMING)
         .evaluator(Evaluators.excludeStartPosition())
-        .evaluator(PropertyEvaluator(
-            MainLabel.ITEM, "deleted",
-            Evaluation.EXCLUDE_AND_PRUNE,
-            Evaluation.INCLUDE_AND_CONTINUE))
         .depthFirst()
         .evaluator(Evaluators.toDepth(1))
+
+    val itemsFromParent = {
+      if (includeDeleted){
+        itemsFromParentSkeleton
+      }else{
+        itemsFromParentSkeleton.evaluator(PropertyEvaluator(
+            MainLabel.ITEM, "deleted",
+            Evaluation.EXCLUDE_AND_PRUNE,
+            Evaluation.INCLUDE_AND_CONTINUE))        
+      }
+    }
      
     if (label.isDefined) itemsFromParent.evaluator(LabelEvaluator(scala.List(label.get))).traverse(itemNode).nodes().toList
     else itemsFromParent.traverse(itemNode).nodes().toList

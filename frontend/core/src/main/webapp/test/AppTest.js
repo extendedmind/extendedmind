@@ -1,5 +1,8 @@
-/*jslint white: true */
+/* global angular */
 'use strict';
+
+// NOTE: This file starts with an uppercase A to make sure it is loaded first by
+//       Jasmine maven plugin!
 
 angular.module('em.appTest', ['em.app', 'common', 'ngMockE2E']);
 

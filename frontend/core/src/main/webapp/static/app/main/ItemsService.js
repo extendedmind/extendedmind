@@ -1,143 +1,90 @@
 /*global angular */
 'use strict';
-/*
-function ItemsService(BackendClientService, TagsService, TasksService, NotesService, ListsService, UserSessionService) {
-  var putItemContent = function(item, putItemResponse) {
-      angular.forEach(putItemResponse, function(value, key) {
-        item[key] = value;
-      });
-  };
 
-  var deleteItemProperty = function(item, property) {
-    delete item[property];
-  };
-
+function ItemsService(BackendClientService, UserSessionService, ArrayService){
   var items = [];
+  var itemRegex = /\/item/;
+  var itemSlashRegex = /\/item\//;
+  var deletedItems = [];
 
   return {
-    getItems: function() {
-      BackendClientService.get('/api/' + UserSessionService.getActiveUUID() + '/items').then(function(itemsResponses) {
-
-        itemsArray.setItems(itemsResponses.data.items);
-        TagsService.setTags(itemsResponses.data.tags);
-        tasksArray.setTasks(itemsResponses.data.tasks);
-        
-      });
+    setItems : function(itemsResponse) {
+      ArrayService.setArrays(itemsResponse, items, deletedItems);
     },
-    putItem: function(item) {
-      return BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item', item).then(function(putItemsResponse) {
-        itemsArray.putNewItem(item);
-        this.putItemContent(item, putItemsResponse.data);
-      });
+    updateItems: function(itemsResponse) {
+      ArrayService.updateArrays(itemsResponse, items, deletedItems);
     },
-    putExistingItem: function(item) {
-      return BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid, item).then(function(putExistingItemResponse) {
-        this.putItemContent(item, putExistingItemResponse.data);
-      });
-    },
-    deleteItem: function(item) {
-      itemsArray.removeItem(item);
-
-      BackendClientService['delete']('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid).then(function(deleteItemResponse) {
-        this.putItemContent(item, deleteItemResponse.data);
-      }, function() {
-        itemsArray.setItem(item);
-      });
-    },
-    setItems: function(itemsResponse) {
-
-      this.clearArray(items);
-
-      if (itemsResponse != null) {
-        var i = 0;
-
-        while (itemsResponse[i]) {
-          this.setItem(itemsResponse[i]);
-          i++;
-        }
-      }
-    },
-    setItem: function(item) {
-      if (!this.itemInArray(items, item.uuid)) {
-        items.push(item);
-      }
-    },
-    getItems: function() {
+    getItems : function() {
       return items;
     },
-    putNewItem: function(item) {
-      if (!this.itemInArray(items, item.uuid)) {
-        items.push(item);
-      }
+    getItemByUUID : function(uuid) {
+      return items.findFirstObjectByKeyValue('uuid', uuid);
     },
-    removeItem: function(item) {
-      this.removeItemFromArray(items, item);
-    },
-    removeItemFromArray: function(items, item) {
-      items.splice(items.indexOf(item), 1);
-    },
-    deleteItemProperty: function(item, property) {
-      delete item[property];
-    },
-    getItemByUUID: function(items, uuid) {
-      var i = 0;
-
-      while (items[i]) {
-        if (items[i].uuid === uuid) {
-          return items[i];
-        }
-        i++;
-      }
-    },
-    getItemsByListUUID: function(items, uuid) {
-      var i;
-      i = 0;
-      this.subtasks = [];
-
-      while (items[i]) {
-        if (items[i].relationships) {
-          if (items[i].relationships.parent === uuid) {
-            this.subtasks.push(items[i]);
+    saveItem : function(item) {
+      if (item.uuid){
+        // Existing item
+        BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid,
+                 this.putExistingItemRegex, item).then(function(result) {
+          if (result.data){
+            item.modified = result.data.modified;
+            ArrayService.updateItem(item, items, deletedItems);
           }
-        }
-        i++;
-      }
-      return this.subtasks;
-    },
-    getItemsByTagUUID: function(items, uuid) {
-      var i, j;
-      i = 0;
-      this.subtasks = [];
-
-      while (items[i]) {
-        if (items[i].relationships) {
-          if (items[i].relationships.tags) {
-            j = 0;
-            while (items[i].relationships.tags[j]) {
-              if (items[i].relationships.tags[j] === uuid) {
-                this.subtasks.push(items[i]);
-              }
-              j++;
-            }
+        });
+      }else{
+        // New item
+        BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item',
+                 this.putNewItemRegex, item).then(function(result) {
+          if (result.data){
+            item.uuid = result.data.uuid;
+            item.modified = result.data.modified;
+            ArrayService.setItem(item, items, deletedItems);
           }
-        }
-        i++;
+        });
       }
-      return this.subtasks;
     },
-    itemInArray: function(items, uuid) {
-      var i = 0;
-
-      while (items[i]) {
-        if (items[i].uuid === uuid) {
-          return true;
+    deleteItem : function(item) {
+      BackendClientService.delete('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid,
+               this.deleteItemRegex).then(function(result) {
+        if (result.data){
+          item.deleted = result.data.deleted;
+          item.modified = result.data.result.modified;
+          ArrayService.updateItem(item, items, deletedItems);
         }
-        i++;
-      }
-      return false;
-    }
-  }
+      });
+    },
+    undeleteItem : function(item) {
+      BackendClientService.post('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid + '/undelete',
+               this.deleteItemRegex).then(function(result) {
+        if (result.data){
+          delete item.deleted;
+          item.modified = result.data.modified;
+          ArrayService.updateItem(item, items, deletedItems);
+        }
+      });
+    },
+    // Regular expressions for item requests
+    putNewItemRegex :
+        new RegExp(BackendClientService.apiPrefixRegex.source +
+                   BackendClientService.uuidRegex.source +
+                   itemRegex.source),
+    putExistingItemRegex:
+        new RegExp(BackendClientService.apiPrefixRegex.source +
+                   BackendClientService.uuidRegex.source +
+                   itemSlashRegex.source +
+                   BackendClientService.uuidRegex.source),
+    deleteItemRegex:
+        new RegExp(BackendClientService.apiPrefixRegex.source +
+                   BackendClientService.uuidRegex.source +
+                   itemSlashRegex.source +
+                   BackendClientService.uuidRegex.source),
+    undeleteItemRegex:
+        new RegExp(BackendClientService.apiPrefixRegex.source +
+                   BackendClientService.uuidRegex.source +
+                   itemSlashRegex.source +
+                   BackendClientService.uuidRegex.source  +
+                   BackendClientService.undeleteRegex.source),
+  };
 }
-ItemsService.$inject = ['BackendClientService', 'TagsService', 'TasksService', 'NotesService', 'ListsService', 'UserSessionService'];
+  
+ItemsService.$inject = ['BackendClientService', 'UserSessionService', 'ArrayService'];
 angular.module('em.services').factory('ItemsService', ItemsService);
-*/

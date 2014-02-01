@@ -36,10 +36,13 @@ function MockBackendService(MockListsBackendService, base64) {
       return response;
     },
     mockBackend: function() {
-      MockListsBackendService.mockListsBackend(this.expectResponse);
+      this.mockListsBackend();
     },
     mockListsBackend: function() {
       MockListsBackendService.mockListsBackend(this.expectResponse);
+    },
+    mockTagsBackend: function() {
+      MockTagsBackendService.mockTagsBackend(this.expectResponse);
     }
   };
 };

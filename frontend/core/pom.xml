@@ -172,9 +172,12 @@
             <include>app/**/*.js</include>
           </sourceIncludes>
           <webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
+          <webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
           <webDriverCapabilities>
-            
-<phantomjs.binary.path>${project.build.directory}/phantomjs-${phantomjs.jar.version}/${platform.classifier}/bin/phantomjs</phantomjs.binary.path>
+            <capability>
+              <name>phantomjs.binary.path</name>
+              <value>${project.build.directory}/phantomjs-${phantomjs.jar.version}/${platform.classifier}/bin/phantomjs</value>
+            </capability>
           </webDriverCapabilities>
         </configuration>
       </plugin>

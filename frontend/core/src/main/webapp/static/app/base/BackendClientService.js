@@ -13,6 +13,7 @@ function BackendClientService($http, HttpClientService, HttpBasicAuthenticationS
 
   methods.uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
   methods.apiPrefixRegex = /\/api\//;
+  methods.undeleteRegex = /\/undelete/;
 
   var refreshCredentials = function() {
     var credentials = UserSessionService.getCredentials();

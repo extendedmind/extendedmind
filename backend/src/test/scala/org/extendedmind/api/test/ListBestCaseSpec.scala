@@ -172,7 +172,8 @@ class ListBestCaseSpec extends ServiceSpecBase {
         ) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val archiveListResponse = entityAs[ArchiveListResult]
         writeJsonOutput("archiveListResponse", entityAs[String])
-        archiveListResponse.count should be (3)
+        archiveListResponse.children.get.size should be (2)
+        
         // Check that getting archived items returns the right tasks
         Get("/" + authenticateResponse.userUUID + "/items" + "?archived=true&active=false") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val itemsResponse = entityAs[Items]

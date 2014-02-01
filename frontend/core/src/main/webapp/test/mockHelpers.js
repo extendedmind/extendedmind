@@ -292,5 +292,4 @@ angular.module('em.mockHelpers').factory('mockHttpBackendResponse', ['base64',
       }
     };
   }]);
-
 */

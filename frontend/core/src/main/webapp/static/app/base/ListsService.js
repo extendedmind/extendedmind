@@ -1,22 +1,23 @@
 /*global angular */
 'use strict';
 
-function ListsService(BackendClientService, UserSessionService){
+function ListsService(BackendClientService, UserSessionService, ArrayService, TagsService){
   var lists = [];
+  var deletedLists = [];
+  var arhivedLists = [];
+
   var listRegex = /\/list/;
   var listSlashRegex = /\/list\//;
+  var archiveRegex = /\/archive/;
+
+  var itemArchiveCallbacks = {};
 
   return {
-    // Called by ItemsService to initialize with existing data
     setLists : function(listsResponse) {
-      lists.length = 0;
-      if (listsResponse) {
-        var i = 0;
-        while (listsResponse[i]) {
-          lists.push(listsResponse[i]);
-          i++;
-        }
-      }
+      ArrayService.setArrays(listsResponse, lists, deletedLists, arhivedLists, 'archived');
+    },
+    updateLists: function(listsResponse) {
+      ArrayService.updateArrays(listsResponse, lists, deletedLists, arhivedLists, 'archived');
     },
     getLists : function() {
       return lists;
@@ -24,19 +25,14 @@ function ListsService(BackendClientService, UserSessionService){
     getListByUUID : function(uuid) {
       return lists.findFirstObjectByKeyValue('uuid', uuid);
     },
-    updateListByUUID : function(uuid, list) {
-      var index = lists.findFirstIndexByKeyValue('uuid', uuid);
-      lists[index] = list;
-    },
     saveList : function(list) {
       if (list.uuid){
-        var thisService = this;
         // Existing list
         BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid,
                  this.putExistingListRegex, list).then(function(result) {
           if (result.data){
             list.modified = result.data.modified;
-            thisService.updateListByUUID(list.uuid, list);
+            ArrayService.updateItem(list, lists, deletedLists, arhivedLists, 'archived');
           }
         });
       }else{
@@ -46,12 +42,50 @@ function ListsService(BackendClientService, UserSessionService){
           if (result.data){
             list.uuid = result.data.uuid;
             list.modified = result.data.modified;
-            lists.push(list);
+            ArrayService.setItem(list, lists, deletedLists, arhivedLists, 'archived');
           }
         });
       }
     },
-    // Regular expressions used in tests
+    deleteList : function(list) {
+      BackendClientService.delete('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid,
+               this.deleteListRegex).then(function(result) {
+        if (result.data){
+          list.deleted = result.data.deleted;
+          list.modified = result.data.result.modified;
+          ArrayService.updateItem(list, lists, deletedLists, arhivedLists, 'archived');
+        }
+      });
+    },
+    undeleteList : function(list) {
+      BackendClientService.post('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid + '/undelete',
+               this.deleteListRegex).then(function(result) {
+        if (result.data){
+          delete list.deleted;
+          list.modified = result.data.modified;
+          ArrayService.updateItem(list, lists, deletedLists, arhivedLists, 'archived');
+        }
+      });
+    },
+    archiveList : function(list) {
+      BackendClientService.post('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid + '/archive',
+               this.deleteListRegex).then(function(result) {
+        if (result.data){
+          list.archived = result.data.archived;
+          list.modified = result.data.modified;
+          ArrayService.updateItem(list, lists, deletedLists, arhivedLists, 'archived');
+          // Add generated tag to the tag array
+          TagsService.setGeneratedTag(result.data.history);
+          // Call child callbacks
+          if (result.data.children){
+            for (var id in itemArchiveCallbacks) {
+              itemArchiveCallbacks[id](result.data.children, result.data.archived);
+            }
+          }
+        }
+      });
+    },
+    // Regular expressions for list requests
     putNewListRegex :
         new RegExp(BackendClientService.apiPrefixRegex.source +
                    BackendClientService.uuidRegex.source +
@@ -60,10 +94,29 @@ function ListsService(BackendClientService, UserSessionService){
         new RegExp(BackendClientService.apiPrefixRegex.source +
                    BackendClientService.uuidRegex.source +
                    listSlashRegex.source +
-                   BackendClientService.uuidRegex.source)
-
+                   BackendClientService.uuidRegex.source),
+    deleteListRegex:
+        new RegExp(BackendClientService.apiPrefixRegex.source +
+                   BackendClientService.uuidRegex.source +
+                   listSlashRegex.source +
+                   BackendClientService.uuidRegex.source),
+    undeleteListRegex:
+        new RegExp(BackendClientService.apiPrefixRegex.source +
+                   BackendClientService.uuidRegex.source +
+                   listSlashRegex.source +
+                   BackendClientService.uuidRegex.source  +
+                   BackendClientService.undeleteRegex.source),
+    archiveListRegex:
+        new RegExp(BackendClientService.apiPrefixRegex.source +
+                   BackendClientService.uuidRegex.source +
+                   listSlashRegex.source +
+                   BackendClientService.uuidRegex.source  +
+                   archiveRegex.source),
+    registerItemArchiveCallback : function (itemArchiveCallback, id){
+      itemArchiveCallbacks[id] = itemArchiveCallback;
+    }
   };
 }
   
-ListsService.$inject = ['BackendClientService', 'UserSessionService'];
+ListsService.$inject = ['BackendClientService', 'UserSessionService', 'ArrayService', 'TagsService'];
 angular.module('em.services').factory('ListsService', ListsService);
