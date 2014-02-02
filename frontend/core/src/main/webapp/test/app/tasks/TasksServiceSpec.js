@@ -6,11 +6,11 @@ describe('TaskService', function() {
   // INJECTS 
 
   var $httpBackend;
-  var TasksService, BackendClientService, HttpBasicAuthenticationService, HttpClientService;
+  var TasksService, BackendClientService, HttpBasicAuthenticationService, HttpClientService, ListsService;
 
-  // TEST DATA
+  // MOCKS
 
-  var now = new Date;
+  var now = new Date();
   var putNewTaskResponse = getJSONFixture('putTaskResponse.json');
   putNewTaskResponse.modified = now.getTime();
   var putExistingTaskResponse = getJSONFixture('putExistingTaskResponse.json');
@@ -25,37 +25,20 @@ describe('TaskService', function() {
   uncompleteTaskResponse.modified = now.getTime();
 
   var MockUserSessionService = {
+      latestModified: undefined,
       getCredentials: function () {
         return '123456789';
       },
       getActiveUUID: function () {
         return '6be16f46-7b35-4b2d-b875-e13d19681e77';
+      },
+      getLatestModified: function () {
+        return this.latestModified;
+      },
+      setLatestModified: function (modified) {
+        this.latestModified = modified;
       }
     };
-  var testTaskData = [{
-      'uuid': '7a612ca2-7de0-45ad-a758-d949df37f51e',
-      'modified': 1391278509745,
-      'title': 'write essay body',
-      'due': '2014-03-09',
-      'relationships': {
-        'parent': '0a9a7ba1-3f1c-4541-842d-cff4d226628e'
-      }
-    }, {
-      'uuid': '7b53d509-853a-47de-992c-c572a6952629',
-      'modified': 1391278509698,
-      'title': 'clean closet'
-    }, {
-      'uuid': '9a1ce3aa-f476-43c4-845e-af59a9a33760',
-      'modified': 1391278509717,
-      'title': 'print tickets',
-      'link': 'http://www.finnair.fi',
-      'due': '2014-01-02',
-      'reminder': '10:00',
-      'relationships': {
-        'parent': 'dbff4507-927d-4f99-940a-ee0cfcf6e84c',
-        'tags': ['8bd8376c-6257-4623-9c8f-7ca8641d2cf5']
-      }
-    }];
 
   // SETUP / TEARDOWN
 
@@ -66,20 +49,46 @@ describe('TaskService', function() {
       $provide.value('UserSessionService', MockUserSessionService);
     });
 
-    inject(function (_$httpBackend_, _TasksService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_) {
+    inject(function (_$httpBackend_, _TasksService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_, _ListsService_) {
       $httpBackend = _$httpBackend_;
       TasksService = _TasksService_;
       BackendClientService = _BackendClientService_;
       HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       HttpClientService = _HttpClientService_;
-      TasksService.setTasks(testTaskData);
+      ListsService = _ListsService_;
+      TasksService.setTasks(
+        [{
+          'uuid': '7a612ca2-7de0-45ad-a758-d949df37f51e',
+          'modified': 1391278509745,
+          'title': 'write essay body',
+          'due': '2014-03-09',
+          'relationships': {
+            'parent': '0a9a7ba1-3f1c-4541-842d-cff4d226628e'
+          }
+        }, {
+          'uuid': '7b53d509-853a-47de-992c-c572a6952629',
+          'modified': 1391278509698,
+          'title': 'clean closet'
+        }, {
+          'uuid': '9a1ce3aa-f476-43c4-845e-af59a9a33760',
+          'modified': 1391278509717,
+          'title': 'print tickets',
+          'link': 'http://www.finnair.fi',
+          'due': '2014-01-02',
+          'reminder': '10:00',
+          'relationships': {
+            'parent': 'dbff4507-927d-4f99-940a-ee0cfcf6e84c',
+            'tags': ['8bd8376c-6257-4623-9c8f-7ca8641d2cf5']
+          }
+        }]);
     });
   });
 
   afterEach(function() {
-     $httpBackend.verifyNoOutstandingExpectation();
-     $httpBackend.verifyNoOutstandingRequest();
-   });
+    MockUserSessionService.setLatestModified(undefined);
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest();
+  });
 
   // TESTS
 
@@ -174,16 +183,23 @@ describe('TaskService', function() {
   it('should complete and uncomplete task', function () {
     // Complete
     var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629');
+    expect(TasksService.getCompletedTasks().length)
+      .toBe(0);
+    
     $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + cleanCloset.uuid + '/complete')
        .respond(200, completeTaskResponse);
     TasksService.completeTask(cleanCloset);
     $httpBackend.flush();
-
-    // The task should not be there anymore
-    expect(TasksService.getTaskByUUID(cleanCloset.uuid))
-      .toBeUndefined();
+    
+    // The task should still be active and in its old place, but with the complete flag set
+    expect(TasksService.getTaskByUUID(cleanCloset.uuid).completed)
+      .toBeDefined();
+    expect(TasksService.getTasks()[0].uuid)
+      .toBe(cleanCloset.uuid);
     expect(TasksService.getTasks().length)
-      .toBe(2);
+      .toBe(3);
+    expect(TasksService.getCompletedTasks().length)
+      .toBe(1);
 
     // Uncomplete
     $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + cleanCloset.uuid + '/uncomplete')
@@ -197,11 +213,31 @@ describe('TaskService', function() {
     var tasks = TasksService.getTasks();
     expect(tasks.length)
       .toBe(3);
+    expect(TasksService.getCompletedTasks().length)
+      .toBe(0);
     expect(tasks[2].uuid)
       .toBe(cleanCloset.uuid);
     expect(tasks[2].modified)
       .toBe(uncompleteTaskResponse.modified);
-
   });
 
+  it('should convert task to list', function () {
+    var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629');
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + cleanCloset.uuid)
+       .respond(200, putExistingTaskResponse);
+    TasksService.taskToList(cleanCloset);
+    $httpBackend.flush();
+    expect(TasksService.getTaskByUUID(cleanCloset.uuid))
+      .toBeUndefined();
+
+    // There should be just two left
+    expect(TasksService.getTasks().length)
+      .toBe(2);
+
+    // Lists should have the new item
+    expect(ListsService.getListByUUID(cleanCloset.uuid))
+      .toBeDefined();
+    expect(ListsService.getLists().length)
+      .toBe(1);
+  });
 });

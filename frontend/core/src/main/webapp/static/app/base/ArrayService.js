@@ -28,23 +28,46 @@ function ArrayService(){
     }
   }
 
+  function getFirstMatchingArrayInfoByProperty(item, otherArrays){
+    if (otherArrays){
+      for (var i=0, len=otherArrays.length; i<len; i++) {
+        if (item[otherArrays[i].id]){
+          return otherArrays[i];
+        };
+      }
+    }
+  }
+
+  function getFirstMatchingArrayInfoByUUID(item, otherArrays){
+    if (otherArrays){
+      for (var i=0, len=otherArrays.length; i<len; i++) {
+        var itemInOtherArray = otherArrays[i].array.findFirstObjectByKeyValue('uuid', item.uuid);
+        if (itemInOtherArray){
+          return otherArrays[i];
+        };
+      }
+    }
+  }
+
   return {
     // Based on given backend response, sets active array, deleted array
-    // and optionally extra array, which is identified with extraArrayIdField.
+    // and optionally other arrays, which are objects of type {array: [], id: ''}.
     // Returns the latest (biggest) modified value.
-    setArrays: function(response, activeArray, deletedArray, extraArray, extraArrayIdField){
+    setArrays: function(response, activeArray, deletedArray, otherArrays){
       // First clear existing arrays..
       activeArray.length = 0;
       deletedArray.length = 0;
-      if (extraArray){
-        extraArray.length = 0;
+      if (otherArrays){
+        for (var i=0, len=otherArrays.length; i<len; i++) {
+          otherArrays[i].array.length = 0;
+        }
       }
       // ..then loop through response
       if (response) {
         var i = 0;
         var latestModified;
         while (response[i]) {
-          var modified = this.setItem(response[i], activeArray, deletedArray, extraArray, extraArrayIdField);
+          var modified = this.setItem(response[i], activeArray, deletedArray, otherArrays);
           if (!latestModified || latestModified < modified){
             latestModified = modified;
           }
@@ -55,12 +78,12 @@ function ArrayService(){
     },
     // Based on given backend response, updates all given arrays and returns the 
     // latest (biggest) modified value.
-    updateArrays: function(response, activeArray, deletedArray, extraArray, extraArrayIdField) {
+    updateArrays: function(response, activeArray, deletedArray, otherArrays) {
       if (response) {
         var i = 0;
         var latestModified;
         while (response[i]) {
-          var modified = this.updateItem(response[i], activeArray, deletedArray, extraArray, extraArrayIdField);
+          var modified = this.updateItem(response[i], activeArray, deletedArray, otherArrays);
           if (!latestModified || latestModified < response[i].modified){
             latestModified = modified;
           }
@@ -70,25 +93,28 @@ function ArrayService(){
       }
     },
     // item and activeArray are mandatory, rest are optional
-    setItem: function(item, activeArray, deletedArray, extraArray, extraArrayIdField) {
+    setItem: function(item, activeArray, deletedArray, otherArrays) {
+      var otherArrayInfo = getFirstMatchingArrayInfoByProperty(item, otherArrays);
       if (deletedArray && item.deleted){
         insertItemToArray(item, deletedArray, 'deleted');
-      }else if (extraArrayIdField && item.extraArrayIdField) {
-        insertItemToArray(item, extraArray, extraArrayIdField);
+      }else if (otherArrayInfo) {
+        insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
       }else{
         insertItemToArray(item, activeArray, 'modified');
       }
       return item.modified;
     },
     // item and activeArray are mandatory, rest are optional    
-    updateItem: function(item, activeArray, deletedArray, extraArray, extraArrayIdField) {
-      var activeItemId, deletedItemId, extraArrayItemId;
+    updateItem: function(item, activeArray, deletedArray, otherArrays) {
+      var activeItemId, deletedItemId, otherArrayItemId;
+      var otherArrayInfo = getFirstMatchingArrayInfoByProperty(item, otherArrays);
+      var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(item, otherArrays);
 
       activeItemId = activeArray.findFirstIndexByKeyValue('uuid', item.uuid);
       if (activeItemId === undefined && deletedArray) {
         deletedItemId = deletedArray.findFirstIndexByKeyValue('uuid', item.uuid);
-        if (extraArray && deletedItemId === undefined){
-          extraArrayItemId = extraArray.findFirstIndexByKeyValue('uuid', item.uuid);
+        if (otherArrayWithItemInfo && deletedItemId === undefined){
+          otherArrayItemId = otherArrayWithItemInfo.array.findFirstIndexByKeyValue('uuid', item.uuid);
         }
       }
 
@@ -96,33 +122,40 @@ function ArrayService(){
         activeArray.splice(activeItemId, 1);
         if (item.deleted){
           insertItemToArray(item, deletedArray, 'deleted');
-        }else if (extraArrayIdField && item[extraArrayIdField]){
-          insertItemToArray(item, extraArray, extraArrayIdField);
+        }else if (otherArrayInfo && item[otherArrayInfo.id]){
+          insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
         }else{
           insertItemToArray(item, activeArray, 'modified');
         }
       }else if (deletedItemId !== undefined) {
         deletedArray.splice(deletedItemId, 1);        
         if (!item.deleted){
-          if (extraArrayIdField && item[extraArrayIdField]){
-            insertItemToArray(item, extraArray, extraArrayIdField);
+          if (otherArrayInfo && item[otherArrayInfo.id]){
+            insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
           }else {
             insertItemToArray(item, activeArray, 'modified');
           }
         }else{
           insertItemToArray(item, deletedArray, 'deleted');
         }
-      }else if (extraArrayItemId !== undefined) {
-        extraArray.splice(extraArrayItemId, 1);
+      }else if (otherArrayItemId !== undefined) {
+        otherArrayWithItemInfo.array.splice(otherArrayItemId, 1);
         if (item.deleted){
           insertItemToArray(item, deletedArray, 'deleted');
-        }else if (!item.extraArrayIdField){
+        }else if (!otherArrayInfo && 
+                 (!otherArrayWithItemInfo || !item[otherArrayWithItemInfo.id])){
+          // Item does not belong to a new other array, nor anymore to the other array
+          // it used to belong to => it is active again. 
           insertItemToArray(item, activeArray, 'modified');
+        }else if (otherArrayInfo && (otherArrayInfo.id !== otherArrayWithItemInfo.id)) {
+          // Should be placed in another other array
+          insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);          
         }else{
-          insertItemToArray(item, extraArray, extraArrayIdField);
+          // Just updating modified in current other array
+          insertItemToArray(item, otherArrayWithItemInfo.array, otherArrayWithItemInfo.id);          
         }
       }else {
-        this.setItem(item, activeArray, deletedArray, extraArray, extraArrayIdField);
+        this.setItem(item, activeArray, deletedArray, otherArrays);
       }
       
       return item.modified;

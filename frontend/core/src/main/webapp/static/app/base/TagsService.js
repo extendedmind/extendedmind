@@ -9,15 +9,10 @@ function TagsService(BackendClientService, UserSessionService, ArrayService){
 
   return {
     setTags : function(tagsResponse) {
-      ArrayService.setArrays(tagsResponse, tags, deletedTags);
-    },
-    // Special method used by ListsService to insert a generated
-    // history tag to the tags array
-    setGeneratedTag : function(tag) {
-      ArrayService.setItem(tag, tags, deletedTags);
+      return ArrayService.setArrays(tagsResponse, tags, deletedTags);
     },
     updateTags: function(tagsResponse) {
-      ArrayService.updateArrays(tagsResponse, tags, deletedTags);
+      return ArrayService.updateArrays(tagsResponse, tags, deletedTags);
     },
     getTags : function() {
       return tags;
@@ -33,6 +28,7 @@ function TagsService(BackendClientService, UserSessionService, ArrayService){
           if (result.data){
             tag.modified = result.data.modified;
             ArrayService.updateItem(tag, tags, deletedTags);
+            UserSessionService.setLatestModified(tag.modified);
           }
         });
       }else{
@@ -43,6 +39,7 @@ function TagsService(BackendClientService, UserSessionService, ArrayService){
             tag.uuid = result.data.uuid;
             tag.modified = result.data.modified;
             ArrayService.setItem(tag, tags, deletedTags);
+            UserSessionService.setLatestModified(tag.modified);
           }
         });
       }
@@ -54,6 +51,7 @@ function TagsService(BackendClientService, UserSessionService, ArrayService){
           tag.deleted = result.data.deleted;
           tag.modified = result.data.result.modified;
           ArrayService.updateItem(tag, tags, deletedTags);
+          UserSessionService.setLatestModified(tag.modified);
         }
       });
     },
@@ -64,6 +62,7 @@ function TagsService(BackendClientService, UserSessionService, ArrayService){
           delete tag.deleted;
           tag.modified = result.data.modified;
           ArrayService.updateItem(tag, tags, deletedTags);
+          UserSessionService.setLatestModified(tag.modified);
         }
       });
     },
@@ -88,6 +87,11 @@ function TagsService(BackendClientService, UserSessionService, ArrayService){
                    tagSlashRegex.source +
                    BackendClientService.uuidRegex.source  +
                    BackendClientService.undeleteRegex.source),
+    // Special method used by ListsService to insert a generated
+    // history tag to the tags array
+    setGeneratedTag : function(tag) {
+      return ArrayService.setItem(tag, tags, deletedTags);
+    }        
   };
 }
   

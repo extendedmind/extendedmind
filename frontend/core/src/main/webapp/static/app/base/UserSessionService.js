@@ -81,6 +81,9 @@ function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalSto
     setEncodedCredentialsFromLocalStorage: function() {
       this.setEncodedCredentials(LocalStorageService.getHttpAuthorizationHeader());
     },
+    setLatestModified: function(latestModified) {
+      SessionStorageService.setLatestModified(latestModified);
+    },
 
     // getters
     getAuth: function() {
@@ -99,6 +102,9 @@ function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalSto
     },
     getUserUUID: function() {
       return SessionStorageService.getUserUUID();
+    },
+    getLatestModified: function() {
+      return SessionStorageService.getLatestModified();
     }
   };
 }

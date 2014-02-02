@@ -8,9 +8,9 @@ describe('TagService', function() {
   var $httpBackend;
   var TagsService, BackendClientService, HttpBasicAuthenticationService, HttpClientService;
 
-  // TEST DATA
+  // MOCKS
 
-  var now = new Date;
+  var now = new Date();
   var putNewTagResponse = getJSONFixture('putTagResponse.json');
   putNewTagResponse.modified = now.getTime();
   var putExistingTagResponse = getJSONFixture('putExistingTagResponse.json');
@@ -21,30 +21,20 @@ describe('TagService', function() {
   undeleteTagResponse.modified = now.getTime();
 
   var MockUserSessionService = {
+      latestModified: undefined,
       getCredentials: function () {
         return '123456789';
       },
       getActiveUUID: function () {
         return '6be16f46-7b35-4b2d-b875-e13d19681e77';
+      },
+      getLatestModified: function () {
+        return this.latestModified;
+      },
+      setLatestModified: function (modified) {
+        this.latestModified = modified;
       }
     };
-  var testTagData = [{
-      'uuid': '1208d45b-3b8c-463e-88f3-f7ef19ce87cd',
-      'modified': 1391066914167,
-      'title': 'home',
-      'tagType': 'context'
-    }, {
-      'uuid': '81daf688-d34d-4551-9a24-564a5861ace9',
-      'modified': 1391066914032,
-      'title': 'email',
-      'tagType': 'context',
-      'parent': 'e1bc540a-97fe-4c9f-9a44-ffcd7a8563e8'
-    }, {
-      'uuid': 'c933e120-90e7-488b-9f15-ea2ee2887e67',
-      'modified': 1391066914132,
-      'title': 'secret',
-      'tagType': 'keyword'
-    }];
 
   // SETUP / TEARDOWN
 
@@ -61,15 +51,33 @@ describe('TagService', function() {
       BackendClientService = _BackendClientService_;
       HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       HttpClientService = _HttpClientService_;
-      TagsService.setTags(testTagData);
+      TagsService.setTags(
+        [{
+            'uuid': '1208d45b-3b8c-463e-88f3-f7ef19ce87cd',
+            'modified': 1391066914167,
+            'title': 'home',
+            'tagType': 'context'
+          }, {
+            'uuid': '81daf688-d34d-4551-9a24-564a5861ace9',
+            'modified': 1391066914032,
+            'title': 'email',
+            'tagType': 'context',
+            'parent': 'e1bc540a-97fe-4c9f-9a44-ffcd7a8563e8'
+          }, {
+            'uuid': 'c933e120-90e7-488b-9f15-ea2ee2887e67',
+            'modified': 1391066914132,
+            'title': 'secret',
+            'tagType': 'keyword'
+        }]);
     });
   });
 
 
   afterEach(function() {
-     $httpBackend.verifyNoOutstandingExpectation();
-     $httpBackend.verifyNoOutstandingRequest();
-   });
+    MockUserSessionService.setLatestModified(undefined);
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest();
+  });
 
   // TESTS
 

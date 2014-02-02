@@ -4,7 +4,8 @@
 function ListsService(BackendClientService, UserSessionService, ArrayService, TagsService){
   var lists = [];
   var deletedLists = [];
-  var arhivedLists = [];
+  var archivedLists = [];
+  var otherArrays = [{array: archivedLists, id: 'archived'}];
 
   var listRegex = /\/list/;
   var listSlashRegex = /\/list\//;
@@ -13,26 +14,30 @@ function ListsService(BackendClientService, UserSessionService, ArrayService, Ta
   var itemArchiveCallbacks = {};
 
   return {
-    setLists : function(listsResponse) {
-      ArrayService.setArrays(listsResponse, lists, deletedLists, arhivedLists, 'archived');
+    setLists: function(listsResponse) {
+      return ArrayService.setArrays(listsResponse, lists, deletedLists, otherArrays);
     },
     updateLists: function(listsResponse) {
-      ArrayService.updateArrays(listsResponse, lists, deletedLists, arhivedLists, 'archived');
+      return ArrayService.updateArrays(listsResponse, lists, deletedLists, otherArrays);
     },
-    getLists : function() {
+    getLists: function() {
       return lists;
     },
-    getListByUUID : function(uuid) {
+    getArchivedLists: function() {
+      return archivedLists;
+    },
+    getListByUUID: function(uuid) {
       return lists.findFirstObjectByKeyValue('uuid', uuid);
     },
-    saveList : function(list) {
+    saveList: function(list) {
       if (list.uuid){
         // Existing list
         BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid,
                  this.putExistingListRegex, list).then(function(result) {
           if (result.data){
             list.modified = result.data.modified;
-            ArrayService.updateItem(list, lists, deletedLists, arhivedLists, 'archived');
+            ArrayService.updateItem(list, lists, deletedLists, otherArrays);
+            UserSessionService.setLatestModified(list.modified);
           }
         });
       }else{
@@ -42,46 +47,54 @@ function ListsService(BackendClientService, UserSessionService, ArrayService, Ta
           if (result.data){
             list.uuid = result.data.uuid;
             list.modified = result.data.modified;
-            ArrayService.setItem(list, lists, deletedLists, arhivedLists, 'archived');
+            ArrayService.setItem(list, lists, deletedLists, otherArrays);
+            UserSessionService.setLatestModified(list.modified);
           }
         });
       }
     },
-    deleteList : function(list) {
+    deleteList: function(list) {
       BackendClientService.delete('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid,
                this.deleteListRegex).then(function(result) {
         if (result.data){
           list.deleted = result.data.deleted;
           list.modified = result.data.result.modified;
-          ArrayService.updateItem(list, lists, deletedLists, arhivedLists, 'archived');
+          ArrayService.updateItem(list, lists, deletedLists, otherArrays);
+          UserSessionService.setLatestModified(list.modified);
         }
       });
     },
-    undeleteList : function(list) {
+    undeleteList: function(list) {
       BackendClientService.post('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid + '/undelete',
                this.deleteListRegex).then(function(result) {
         if (result.data){
           delete list.deleted;
           list.modified = result.data.modified;
-          ArrayService.updateItem(list, lists, deletedLists, arhivedLists, 'archived');
+          ArrayService.updateItem(list, lists, deletedLists, otherArrays);
+          UserSessionService.setLatestModified(list.modified);
         }
       });
     },
-    archiveList : function(list) {
+    archiveList: function(list) {
       BackendClientService.post('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid + '/archive',
                this.deleteListRegex).then(function(result) {
         if (result.data){
           list.archived = result.data.archived;
-          list.modified = result.data.modified;
-          ArrayService.updateItem(list, lists, deletedLists, arhivedLists, 'archived');
+          list.modified = result.data.result.modified;
+          ArrayService.updateItem(list, lists, deletedLists, otherArrays);
+          var latestModified = list.modified;
+
           // Add generated tag to the tag array
-          TagsService.setGeneratedTag(result.data.history);
+          var tagModified = TagsService.setGeneratedTag(result.data.history);
+          if (tagModified > latestModified) latestModified = tagModified;
           // Call child callbacks
           if (result.data.children){
             for (var id in itemArchiveCallbacks) {
-              itemArchiveCallbacks[id](result.data.children, result.data.archived);
+              var itemModified = itemArchiveCallbacks[id](result.data.children, result.data.archived);
+              if (itemModified && itemModified > latestModified) latestModified = itemModified;
             }
           }
+          UserSessionService.setLatestModified(latestModified);
         }
       });
     },
@@ -112,7 +125,10 @@ function ListsService(BackendClientService, UserSessionService, ArrayService, Ta
                    listSlashRegex.source +
                    BackendClientService.uuidRegex.source  +
                    archiveRegex.source),
-    registerItemArchiveCallback : function (itemArchiveCallback, id){
+    // Register callbacks that are fired for implicit archiving of
+    // elements. Callback must return the latest modified value it
+    // stores to its arrays.
+    registerItemArchiveCallback: function (itemArchiveCallback, id){
       itemArchiveCallbacks[id] = itemArchiveCallback;
     }
   };

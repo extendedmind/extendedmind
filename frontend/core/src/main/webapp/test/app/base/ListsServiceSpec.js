@@ -13,9 +13,9 @@ describe('ListService', function() {
       HttpBasicAuthenticationService,
       HttpClientService;
 
-  // TEST DATA
+  // MOCKS
 
-  var now = new Date;
+  var now = new Date();
   var putNewListResponse = getJSONFixture('putListResponse.json');
   putNewListResponse.modified = now.getTime();
   var putExistingListResponse = getJSONFixture('putExistingListResponse.json');
@@ -29,30 +29,20 @@ describe('ListService', function() {
 
 
   var MockUserSessionService = {
+      latestModified: undefined,
       getCredentials: function () {
         return '123456789';
       },
       getActiveUUID: function () {
         return '6be16f46-7b35-4b2d-b875-e13d19681e77';
+      },
+      getLatestModified: function () {
+        return this.latestModified;
+      },
+      setLatestModified: function (modified) {
+        this.latestModified = modified;
       }
     };
-  var testListData = [{
-      'uuid': '0da0bff6-3bd7-4884-adba-f47fab9f270d',
-      'modified': 1390912600957,
-      'title': 'extended mind technologies',
-      'link': 'http://ext.md'
-    }, {
-      'uuid': 'bf726d03-8fee-4614-8b68-f9f885938a51',
-      'modified': 1390912600947,
-      'title': 'trip to Dublin',
-      'completable': true,
-      'due': '2013-10-31'
-    }, {
-      'uuid': '07bc96d1-e8b2-49a9-9d35-1eece6263f98',
-      'modified': 1390912600983,
-      'title': 'write essay on cognitive biases',
-      'completable': true
-  }];
 
   // SETUP / TEARDOWN
 
@@ -71,15 +61,33 @@ describe('ListService', function() {
       BackendClientService = _BackendClientService_;
       HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       HttpClientService = _HttpClientService_;
-      ListsService.setLists(testListData);
+      ListsService.setLists(
+        [{
+            'uuid': '0da0bff6-3bd7-4884-adba-f47fab9f270d',
+            'modified': 1390912600957,
+            'title': 'extended mind technologies',
+            'link': 'http://ext.md'
+          }, {
+            'uuid': 'bf726d03-8fee-4614-8b68-f9f885938a51',
+            'modified': 1390912600947,
+            'title': 'trip to Dublin',
+            'completable': true,
+            'due': '2013-10-31'
+          }, {
+            'uuid': '07bc96d1-e8b2-49a9-9d35-1eece6263f98',
+            'modified': 1390912600983,
+            'title': 'write essay on cognitive biases',
+            'completable': true
+        }]);
     });
   });
 
 
   afterEach(function() {
-     $httpBackend.verifyNoOutstandingExpectation();
-     $httpBackend.verifyNoOutstandingRequest();
-   });
+    MockUserSessionService.setLatestModified(undefined);
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest();
+  });
 
   // TESTS
 
@@ -131,6 +139,9 @@ describe('ListService', function() {
 
     expect(ListsService.getListByUUID(tripToDublin.uuid).modified)
       .toBe(putExistingListResponse.modified);
+    expect(MockUserSessionService.getLatestModified())
+      .toBe(putExistingListResponse.modified);
+
     // Should move to the end of the array
     var lists = ListsService.getLists();
     expect(lists.length)
@@ -147,6 +158,8 @@ describe('ListService', function() {
     $httpBackend.flush();
     expect(ListsService.getListByUUID(tripToDublin.uuid))
       .toBeUndefined();
+    expect(MockUserSessionService.getLatestModified())
+      .toBe(deleteListResponse.result.modified);
 
     // There should be just two left
     var lists = ListsService.getLists();
@@ -159,6 +172,8 @@ describe('ListService', function() {
     ListsService.undeleteList(tripToDublin);
     $httpBackend.flush();
     expect(ListsService.getListByUUID(tripToDublin.uuid).modified)
+      .toBe(undeleteListResponse.modified);
+    expect(MockUserSessionService.getLatestModified())
       .toBe(undeleteListResponse.modified);
 
     // There should be three left with trip to dublin the last
@@ -185,20 +200,24 @@ describe('ListService', function() {
     ListsService.archiveList(tripToDublin);
     $httpBackend.flush();
 
+    expect(MockUserSessionService.getLatestModified())
+      .toBeDefined();
+    
     // Validate that callback was called
     expect(childItems.length)
-      .toBe(archiveListResponse.children.length);
-
+      .toBe(archiveListResponse.children.length); 
     expect(archivedTimestamp)
       .toBe(archiveListResponse.archived);
 
-    // The list should not be there anymore
+    // The list should not be active anymore
     expect(ListsService.getListByUUID(tripToDublin.uuid))
       .toBeUndefined();
     expect(ListsService.getLists().length)
       .toBe(2);
+    expect(ListsService.getArchivedLists().length)
+      .toBe(1);
 
-    // Lists service should have the tag
+    // TagsService should have the new generated tag
     expect(TagsService.getTagByUUID(archiveListResponse.history.uuid))
       .toBeDefined();
   });

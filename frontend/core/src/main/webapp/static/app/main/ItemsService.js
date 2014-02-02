@@ -1,26 +1,57 @@
 /*global angular */
 'use strict';
 
-function ItemsService(BackendClientService, UserSessionService, ArrayService){
+function ItemsService(BackendClientService, UserSessionService, ArrayService, TagsService, ListsService, TasksService){
   var items = [];
-  var itemRegex = /\/item/;
-  var itemSlashRegex = /\/item\//;
   var deletedItems = [];
 
+  var itemRegex = /\/item/;
+  var itemSlashRegex = /\/item\//;
+  var itemsRegex = /\/items/;
+
   return {
-    setItems : function(itemsResponse) {
-      ArrayService.setArrays(itemsResponse, items, deletedItems);
+    // Main method to synchronize all arrays with backend.
+    synchronize: function() {
+      var latestModified = UserSessionService.getLatestModified();
+      var url = '/api/' + UserSessionService.getActiveUUID() + '/items';
+      if (latestModified){
+        url += '?modified=' + latestModified;
+      }
+      BackendClientService.get(url, this.getItemsRegex).then(function(result) {
+        if (result.data){
+          var latestTags, latestLists, latestTasks, latestItems;
+          if (latestModified){
+            // Only update modified
+            latestTags = TagsService.updateTags(result.data.tags);
+            latestLists = ListsService.updateLists(result.data.lists);
+            latestTasks = TasksService.updateTasks(result.data.tasks);
+            latestItems = ArrayService.updateArrays(result.data.items, items, deletedItems);
+          }else{
+            // Reset all arrays
+            latestTags = TagsService.setTags(result.data.tags);
+            latestLists = ListsService.setLists(result.data.lists);
+            latestTasks = TasksService.setTasks(result.data.tasks);
+            latestItems = ArrayService.setArrays(result.data.items, items, deletedItems);
+          }
+          if (latestTags || latestLists || latestTasks || latestItems){
+            // Set latest modified
+            latestModified = Math.max(
+              isNaN(latestTags) ? -Infinity : latestTags,
+              isNaN(latestLists) ? -Infinity : latestLists,
+              isNaN(latestTasks) ? -Infinity : latestTasks,
+              isNaN(latestItems) ? -Infinity : latestItems);
+            UserSessionService.setLatestModified(latestModified);
+          }
+        }
+      });
     },
-    updateItems: function(itemsResponse) {
-      ArrayService.updateArrays(itemsResponse, items, deletedItems);
-    },
-    getItems : function() {
+    getItems: function() {
       return items;
     },
-    getItemByUUID : function(uuid) {
+    getItemByUUID: function(uuid) {
       return items.findFirstObjectByKeyValue('uuid', uuid);
     },
-    saveItem : function(item) {
+    saveItem: function(item) {
       if (item.uuid){
         // Existing item
         BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid,
@@ -28,6 +59,7 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService){
           if (result.data){
             item.modified = result.data.modified;
             ArrayService.updateItem(item, items, deletedItems);
+            UserSessionService.setLatestModified(item.modified);
           }
         });
       }else{
@@ -38,32 +70,47 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService){
             item.uuid = result.data.uuid;
             item.modified = result.data.modified;
             ArrayService.setItem(item, items, deletedItems);
+            UserSessionService.setLatestModified(item.modified);
           }
         });
       }
     },
-    deleteItem : function(item) {
+    deleteItem: function(item) {
       BackendClientService.delete('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid,
                this.deleteItemRegex).then(function(result) {
         if (result.data){
           item.deleted = result.data.deleted;
           item.modified = result.data.result.modified;
           ArrayService.updateItem(item, items, deletedItems);
+          UserSessionService.setLatestModified(item.modified);
         }
       });
     },
-    undeleteItem : function(item) {
+    undeleteItem: function(item) {
       BackendClientService.post('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid + '/undelete',
                this.deleteItemRegex).then(function(result) {
         if (result.data){
           delete item.deleted;
           item.modified = result.data.modified;
           ArrayService.updateItem(item, items, deletedItems);
+          UserSessionService.setLatestModified(item.modified);
         }
       });
     },
+    itemToTask: function(item) {
+      var index = items.findFirstIndexByKeyValue('uuid', item.uuid);
+      if (index !== undefined) {
+        // Save as task and remove from items array
+        TasksService.saveTask(item);
+        items.splice(index, 1);
+      }
+    },
     // Regular expressions for item requests
-    putNewItemRegex :
+    getItemsRegex:
+        new RegExp(BackendClientService.apiPrefixRegex.source +
+                   BackendClientService.uuidRegex.source +
+                   itemsRegex.source),
+    putNewItemRegex:
         new RegExp(BackendClientService.apiPrefixRegex.source +
                    BackendClientService.uuidRegex.source +
                    itemRegex.source),
@@ -86,5 +133,5 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService){
   };
 }
   
-ItemsService.$inject = ['BackendClientService', 'UserSessionService', 'ArrayService'];
+ItemsService.$inject = ['BackendClientService', 'UserSessionService', 'ArrayService', 'TagsService', 'ListsService', 'TasksService'];
 angular.module('em.services').factory('ItemsService', ItemsService);
