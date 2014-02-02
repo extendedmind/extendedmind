@@ -76,7 +76,7 @@ function TasksController($location, $scope, $routeParams, OwnerService, TasksSer
       };
     }
 
-    TasksService.putTask(subtask);
+    TasksService.saveTask(subtask);
   };
 
   $scope.getSubtaskButtonClass = function(task) {
