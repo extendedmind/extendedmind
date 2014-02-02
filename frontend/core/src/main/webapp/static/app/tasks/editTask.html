@@ -1,5 +1,5 @@
-<div class="no-slides-container" ng-controller="TasksController">
-  <section id="edit-task" class="one-column-grid page">
+<div class="no-slides-container" ng-controller="MainController">
+  <section id="edit-task" class="one-column-grid page" ng-controller="TasksController">
     <div class="column">
       <header class="heading-header">
         <h3 ng-if="task.uuid">edit task</h3>
@@ -19,7 +19,7 @@
               <span class="simple-input inactive-text" ng-click="focusDate()">select date...</span>
             </div>
 
-            <div ng-switch-when="date">
+            <div ng-switch-when="true">
               <div class="form-group">
                 <label for="taskDue" class="sr-only">select date...</label>
                 <input type="date" id="taskDue" class="simple-input" ng-model="task.due" date>

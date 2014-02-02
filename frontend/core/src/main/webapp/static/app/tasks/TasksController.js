@@ -6,6 +6,7 @@ function TasksController($location, $scope, $routeParams, OwnerService, TasksSer
   if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
     if ($routeParams.uuid) {
       $scope.task = TasksService.getTaskByUUID($routeParams.uuid);
+      if ($scope.task.due) $scope.showDate = true;
     }else {
       $scope.task = {
         relationships: {
@@ -17,6 +18,10 @@ function TasksController($location, $scope, $routeParams, OwnerService, TasksSer
       }
     }
   }
+
+  $scope.focusDate = function() {
+    $scope.showDate = true;
+  };
 
   $scope.saveTask = function(task) {
     TasksService.saveTask(task);
@@ -93,16 +98,6 @@ function TasksController($location, $scope, $routeParams, OwnerService, TasksSer
     }
   };
 
-  $scope.showDate = function(task) {
-    if (task && task.due || $scope.focusDateInput) {
-      return true;
-    }
-    return false;
-  };
-
-  $scope.focusDate = function() {
-    $scope.focusDateInput = true;
-  };
 
   $scope.goToList = function(uuid) {
     SwiperService.swipeTo(TasksSlidesService.LISTS + '/' + uuid);
