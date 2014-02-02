@@ -8,4 +8,5 @@ app/platforms/ios/build
 app/platforms/ios/www
 
 # android
-app/platforms/android/assets
+app/platforms/android/assets/static/
+*.keystore

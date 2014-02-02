@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('em.app', ['ngRoute', 'ngAnimate', 'ngTouch', 'common', 'em.directives', 'em.filters', 'em.services']);
+angular.module('em.app', ['ngRoute', 'common', 'em.directives', 'em.filters', 'em.services']);
 angular.module('em.directives', ['common']);
 angular.module('em.filters', ['common']);
 angular.module('em.services', ['common', 'em.base64']);

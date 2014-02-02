@@ -21,7 +21,7 @@
 // HORIZONTAL LAYOUT
 
 .left-of-two {
-  float:left;
+  float: left;
   width: 50%;
   .small-border-right:after{
     margin-left: 22%;
@@ -31,13 +31,13 @@
   }
 }
 .right-of-two {
-  float:right;
+  float: right;
   width: 50%;
   text-align: right;
 }
 
 .left-of-three {
-  float:left;
+  float: left;
   width: 33.33%;
   .small-border-right:after{
     margin-left: 12%;
@@ -47,7 +47,7 @@
   }
 }
 .right-of-three {
-  float:right;
+  float: right;
   width: 33.33%;
   text-align: right;
 }
@@ -80,18 +80,18 @@
 // ANIMATIONS
 
 .animate-hide {
-  -webkit-transition:all linear 0.2s;
-  transition:all linear 0.2s;
-  opacity:1;
+  -webkit-transition: all linear 0.2s;
+  transition: all linear 0.2s;
+  opacity: 1;
 }
 
 .animate-hide.ng-hide-add,
 .animate-hide.ng-hide-remove {
-  display:block!important;
+  display: block!important;
 }
 
 .animate-hide.ng-hide {
-  opacity:0;
+  opacity: 0;
 }
 
 .fade-color(@fade-time) {
@@ -107,8 +107,8 @@
 
 .simple-input {
   outline: none;
-  border:none !important;
-  box-shadow:none !important;
+  border: none !important;
+  box-shadow: none !important;
   padding: 0;
   background-image: none;
 }
@@ -119,12 +119,12 @@
   vertical-align: middle;
   span.link-title {
     width: 100%;
-    display:table-cell;
+    display: table-cell;
   }
   span.slide-indicator { 
-    display:table-cell;
+    display: table-cell;
     width: @slide-indicator-width;
-    color:@inactive-text;
+    color: @inactive-text;
   }
 }
 
@@ -134,11 +134,11 @@
 .table-wrapper {
   display: table;
   .center-horizontally;
-  width:100%;
+  width: 100%;
 }
 
 .left-input-wrapper,.right-button-wrapper, .center-input-wrapper, .left-checkbox-wrapper{
-  display:table-cell;
+  display: table-cell;
   vertical-align: middle;
 }
 
@@ -186,7 +186,7 @@
 }
 
 .button-row{
-  width:100%;
+  width: 100%;
   height: @vertical-grid;
   vertical-align: middle;
   .button-container{
@@ -197,12 +197,12 @@
     }
   }
   .small-border-right:after {
-    float:right;
-    height:25px;
-    background:white;
-    width:1px;
-    content:"";
-    position:absolute;
+    float: right;
+    height: 25px;
+    background: white;
+    width: 1px;
+    content: "";
+    position: absolute;
     text-align: right;
   }
 }
@@ -257,7 +257,7 @@ label {
 
  // Never show default checkbox
  input[type=checkbox] {
-  display:none;
+  display: none;
 }
 
 input[type='checkbox'] + label:before {
@@ -286,7 +286,7 @@ select {
   &.simple-input {
     color: @inactive-text;
     background: none;
-    padding:0;
+    padding: 0;
   }
   option {
     color: black;
@@ -341,7 +341,7 @@ select {
   span.icon-arrow-right {
     // Add small margin to prevent arrow from touching scrollbar
     // on desktop
-    margin-right:5px;
+    margin-right: 5px;
   }
 }
 
@@ -350,7 +350,7 @@ select {
 .form-group, .input-group {
   width: 100%;
   select, input {
-    width:inherit;
+    width: inherit;
   }
 }
 
@@ -374,14 +374,48 @@ span.icon-i:active, span.icon-plus:active {
 }
 
 /*
-          [class^="icon-"], [class*=" icon-"] button {
-            color: @highlighted; // plus button always highlighted
-            padding-top: 8px; // quick fix to center the plus button
-          }
+[class^="icon-"], [class*=" icon-"] button {
+  color: @highlighted; // plus button always highlighted
+  padding-top: 8px; // quick fix to center the plus button
+}
 */
 
 .disabled {
   span {
-    color: @inactive-link !important; 
+    color: @inactive-link !important;
   }
+}
+
+.arrow-box {
+  margin-top: 40px;
+  position: relative;
+  border: 1px solid @separator;
+  border-radius: 15px;
+  padding: 20px 10px;
+  text-align: center;
+  line-height: normal;
+  color: @inactive-text;
+}
+.arrow-box:after, .arrow-box:before {
+  bottom: 100%;
+  left: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.arrow-box:after {
+  border-color: rgba(255, 255, 255, 0);
+  border-bottom-color: white;
+  border-width: 15px;
+  margin-left: -15px;
+}
+.arrow-box:before {
+  border-color: rgba(255, 255, 255, 0);
+  border-bottom-color: @separator;
+  border-width: 16px;
+  margin-left: -16px;
 }

@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 // Controller for all main slides
@@ -15,31 +14,31 @@ function MainController($scope, DateService, itemsArray, TagsService, tasksArray
   $scope.date = DateService.today();
 
   $scope.gotoInbox = function() {
-    if ($scope.feature === "tasks"){
+    if ($scope.feature === 'tasks') {
       SwiperService.swipeTo(TasksSlidesService.INBOX);
     }
   };
 
   $scope.gotoHome = function() {
-    if ($scope.feature === "tasks"){
+    if ($scope.feature === 'tasks') {
       SwiperService.swipeTo(TasksSlidesService.HOME);
     }
   };
 
   $scope.gotoTasks = function() {
-    if ($scope.feature === "tasks"){
+    if ($scope.feature === 'tasks') {
       SwiperService.swipeTo(TasksSlidesService.DATES);
     }
   };
 
   $scope.gotoProjects = function() {
-    if ($scope.feature === "tasks"){
+    if ($scope.feature === 'tasks') {
       SwiperService.swipeTo(TasksSlidesService.PROJECTS);
     }
   };
 
   $scope.gotoContexts = function() {
-    if ($scope.feature === "tasks"){
+    if ($scope.feature === 'tasks') {
       SwiperService.swipeTo(TasksSlidesService.CONTEXTS);
     }
   };

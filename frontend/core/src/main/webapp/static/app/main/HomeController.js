@@ -1,7 +1,6 @@
-/*global angular */
 'use strict';
 
-function HomeController($scope, $location, itemsRequest, UserSessionService, AuthenticationService, TasksSlidesService) {
+function HomeController($scope, $location, itemsRequest, UserSessionService, AuthenticationService) {
 
   $scope.omniBarActive = false;
   $scope.menuActive = false;
@@ -59,4 +58,4 @@ function HomeController($scope, $location, itemsRequest, UserSessionService, Aut
 }
 
 angular.module('em.app').controller('HomeController', HomeController);
-HomeController.$inject = ['$scope','$location','itemsRequest', 'UserSessionService', 'AuthenticationService', 'TasksSlidesService'];
+HomeController.$inject = ['$scope', '$location','itemsRequest', 'UserSessionService', 'AuthenticationService'];
