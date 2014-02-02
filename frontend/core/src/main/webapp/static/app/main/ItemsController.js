@@ -6,7 +6,6 @@ function ItemsController($scope, $location, $routeParams, ItemsService) {
   if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
     if ($routeParams.uuid) {
       $scope.item = ItemsService.getItemByUUID($routeParams.uuid);
-      console.log($scope.item);
     }else{
       $scope.item = {};
     }

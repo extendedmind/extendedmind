@@ -7,7 +7,7 @@
 
   <div class="item-actions">
     <ul class="button-row">
-      <li ng-if="!task.relationships.parentTask" class="button-container" ng-class="getSubtaskButtonClass(task)">
+      <li ng-if="!task.relationships.parent" class="button-container" ng-class="getSubtaskButtonClass(task)">
         <button type="button" class="enabled-button" ng-click="taskToList(task)">
           make list
         </button>
