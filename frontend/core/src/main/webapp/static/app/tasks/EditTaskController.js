@@ -1,31 +1,24 @@
 /*global angular */
 'use strict';
 
-function EditTaskController($timeout,$routeParams, $scope, ErrorHandlerService, FilterService, TagsService, tasksArray, tasksRequest, tasksResponse, OwnerService) {
-
-  $scope.errorHandler = ErrorHandlerService;
-  $scope.prefix = OwnerService.getPrefix();
-  $scope.filterService = FilterService;
-
-  $scope.contexts = TagsService.getTags();
-  $scope.tasks = tasksArray.getTasks();
+function EditTaskController($timeout, $routeParams, $scope, TasksService) {
 
   if ($routeParams.uuid) {
-    if (tasksArray.getTaskByUUID($routeParams.uuid)) {
-      $scope.task = tasksArray.getTaskByUUID($routeParams.uuid);
-    } else if (tasksArray.getProjectByUUID($routeParams.uuid)) {
-      $scope.task = tasksArray.getProjectByUUID($routeParams.uuid);
+    $scope.task = TasksService.getTaskByUUID($routeParams.uuid);
+  }else {
+    $scope.task = {
+      relationships: {
+        tags: []
+      }
+    };
+    if ($routeParams.parentUUID){
+      $scope.task.relationships.parent = $routeParams.parentUUID;
     }
   }
 
   $scope.editTask = function() {
-    tasksResponse.checkDate($scope.task);
-    tasksResponse.checkParentTask($scope.task);
-    tasksResponse.checkContexts($scope.task);
-
-    tasksRequest.putExistingTask($scope.task).then(function() {
-      $scope.task = {};
-    });
+    TasksService.saveTask($scope.task);
+    $scope.task = {};
     window.history.back();
   };
 
@@ -34,5 +27,5 @@ function EditTaskController($timeout,$routeParams, $scope, ErrorHandlerService, 
   };
 }
 
-EditTaskController.$inject = ['$timeout','$routeParams', '$scope', 'ErrorHandlerService','FilterService', 'TagsService', 'tasksArray', 'tasksRequest', 'tasksResponse', 'OwnerService'];
+EditTaskController.$inject = ['$timeout','$routeParams', '$scope', 'TasksService'];
 angular.module('em.app').controller('EditTaskController', EditTaskController);

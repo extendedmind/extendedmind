@@ -1,16 +1,16 @@
 <div class="inner-slide-content-container">
-  <section class="project">
-    <h3 ng-click="toggleProjectContent()">{{project.title}}</h3>
-    <div ng-if="showProjectContent">
+  <section class="list">
+    <h3 ng-click="toggleListContent()">{{list.title}}</h3>
+    <div ng-if="showListContent">
       <ul class="button-row">
         <li class="button-container left-of-two border-right" ng-hide="mainlinksFilter">
-          <button class="enabled-button" type="button" ng-hide="task.relationships.parentTask" ng-click="editProject()">
+          <button class="enabled-button" type="button" ng-click="editProject()">
             more
           </button>
         </li>
         <li class="button-container right-of-two">
-          <button class="enabled-button" type="button" ng-click="completeProject()">
-            complete
+          <button class="enabled-button" type="button" ng-click="archiveList()">
+            archive
           </button>
         </li>
       </ul>

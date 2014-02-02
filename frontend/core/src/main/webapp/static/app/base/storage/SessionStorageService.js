@@ -22,13 +22,6 @@ function SessionStorageService() {
     setUserUUID: function(userUUID) {
       sessionStorage.setItem('userUUID', userUUID);
     },
-    setLatestModified: function(latestModified) {
-      // Only set if given value is larger than set value
-      var modified = this.getLatestModified();
-      if (!modified || modified < latestModified){
-        sessionStorage.setItem('modified', latestModified);
-      }
-    },
 
     // getters
     getActiveUUID: function() {
@@ -48,9 +41,6 @@ function SessionStorageService() {
     },
     getUserUUID: function() {
       return sessionStorage.getItem('userUUID');
-    },
-    getLatestModified: function(latestModified) {
-      sessionStorage.getItem('modified');
     },
     clearUser: function() {
       sessionStorage.removeItem('activeUUID');

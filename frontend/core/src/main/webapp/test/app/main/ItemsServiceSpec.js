@@ -298,18 +298,25 @@ describe('ItemService', function() {
        .respond(200, putExistingTaskResponse);
     ItemsService.itemToTask(rememberTheMilk);
     $httpBackend.flush();
-    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid))
-      .toBeUndefined();
 
-    // There should be just two left
+    // There should be still three left, as it will stay there until completing
+    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid))
+      .toBeDefined();
     expect(ItemsService.getItems().length)
-      .toBe(2);
+      .toBe(3);
 
     // Tasks should have the new item
     expect(TasksService.getTaskByUUID(rememberTheMilk.uuid))
       .toBeDefined();
     expect(TasksService.getTasks().length)
       .toBe(4);
+
+    // Complete task upgrade
+    ItemsService.completeItemToTask(rememberTheMilk);
+
+    // Now there should be only two left
+    expect(ItemsService.getItems().length)
+      .toBe(2);
   });
 
 

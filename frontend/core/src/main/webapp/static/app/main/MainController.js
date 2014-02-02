@@ -4,9 +4,10 @@
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection. 
-function MainController($scope, DateService, itemsArray, TagsService, tasksArray, OwnerService, FilterService, SwiperService, TasksSlidesService) {
-  $scope.items = itemsArray.getItems();
-  $scope.tasks = tasksArray.getTasks();
+function MainController($scope, DateService, ItemsService, ListsService, TagsService, TasksService, OwnerService, FilterService, SwiperService, TasksSlidesService) {
+  $scope.items = ItemsService.getItems();
+  $scope.tasks = TasksService.getTasks();
+  $scope.lists = ListsService.getLists();
   $scope.contexts = TagsService.getTags();
   $scope.prefix = OwnerService.getPrefix();
   $scope.filterService = FilterService;
@@ -31,9 +32,9 @@ function MainController($scope, DateService, itemsArray, TagsService, tasksArray
     }
   };
 
-  $scope.gotoProjects = function() {
+  $scope.gotoLists = function() {
     if ($scope.feature === 'tasks') {
-      SwiperService.swipeTo(TasksSlidesService.PROJECTS);
+      SwiperService.swipeTo(TasksSlidesService.LISTS);
     }
   };
 
@@ -44,5 +45,5 @@ function MainController($scope, DateService, itemsArray, TagsService, tasksArray
   };
 }
 
-MainController.$inject = ['$scope', 'DateService', 'itemsArray', 'TagsService', 'tasksArray', 'OwnerService', 'FilterService', 'SwiperService', 'TasksSlidesService'];
+MainController.$inject = ['$scope', 'DateService', 'ItemsService', 'ListsService', 'TagsService', 'TasksService', 'OwnerService', 'FilterService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('MainController', MainController);

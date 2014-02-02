@@ -1,14 +1,14 @@
 /*global angular */
 'use strict';
 
-function SignupController($location, $scope, $routeParams, AuthenticationService, ErrorHandlerService, BackendClientService) {
+function SignupController($location, $scope, $routeParams, AuthenticationService, ErrorHandlerService) {
 
   $scope.user = {};
   var inviteResponseCode = $routeParams.hex_code;
 
   $scope.errorHandler = ErrorHandlerService;
 
-  BackendClientService.get('/api/invite/' + inviteResponseCode + '?email=' + $routeParams.email).then(function(inviteResponse) {
+  AuthenticationService.getInvite(inviteResponseCode, $routeParams.email).then(function(inviteResponse) {
     if (inviteResponse.data.accepted) {
       $location.path('/login');
     } else {
@@ -17,7 +17,6 @@ function SignupController($location, $scope, $routeParams, AuthenticationService
   });
 
   function userLogin() {
-
     AuthenticationService.login($scope.user).then(function() {
       $location.path('/my');
     }, function(authenticateResponse) {
@@ -26,11 +25,11 @@ function SignupController($location, $scope, $routeParams, AuthenticationService
   }
 
   $scope.signUp = function() {
-    BackendClientService.post('/api/invite/' + inviteResponseCode + '/accept', {email: $scope.user.email, password: $scope.user.password}).then(function() {
+    AuthenticationService.signup(inviteResponseCode, {email: $scope.user.email, password: $scope.user.password}).then(function() {
       userLogin();
     });
   };
 }
 
-SignupController.$inject = ['$location', '$scope', '$routeParams', 'AuthenticationService', 'ErrorHandlerService', 'BackendClientService'];
+SignupController.$inject = ['$location', '$scope', '$routeParams', 'AuthenticationService', 'ErrorHandlerService'];
 angular.module('em.app').controller('SignupController', SignupController);

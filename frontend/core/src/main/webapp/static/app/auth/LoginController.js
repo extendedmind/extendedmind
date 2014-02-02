@@ -5,7 +5,7 @@ function LoginController($location, $scope, AuthenticationService, ErrorHandlerS
   $scope.errorHandler = ErrorHandlerService;
 
   $scope.userLogin = function() {
-
+    console.log("userLogin");
     AuthenticationService.login($scope.user).then(function() {
       $location.path('/my/tasks');
     }, function(authenticateResponse) {

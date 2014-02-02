@@ -1,27 +1,27 @@
 'use strict';
 
-function projectSlide() {
+function listSlide() {
   return {
     restrict: 'A',
-    templateUrl: 'static/app/tasks/projectSlide.html',
+    templateUrl: 'static/app/tasks/listSlide.html',
     link: function(scope) {
       scope.filter = {};
-      scope.filter.name = 'byProjectUUID';
-      scope.filter.filterBy = scope.project.uuid;
+      scope.filter.name = 'byListUUID';
+      scope.filter.filterBy = scope.list.uuid;
 
       scope.subtask = {};
       scope.subtask.relationships = {};
-      scope.subtask.relationships.parentTask = scope.project.uuid;
+      scope.subtask.relationships.parent = scope.list.uuid;
 
       scope.showProjectContent = false;
 
-      scope.toggleProjectContent = function toggleProjectContent() {
-        scope.showProjectContent = !scope.showProjectContent;
+      scope.toggleListContent = function() {
+        scope.showListContent = !scope.showListContent;
       };
     }
   };
 }
-angular.module('em.directives').directive('projectSlide', projectSlide);
+angular.module('em.directives').directive('listSlide', listSlide);
 
 function dateSlide() {
   return {

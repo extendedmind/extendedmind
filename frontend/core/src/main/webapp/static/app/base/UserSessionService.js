@@ -1,7 +1,9 @@
+/* global angular */
 'use strict';
 
 function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalStorageService, SessionStorageService) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
+  var latestModified;
 
   return {
     isAuthenticated: function() {
@@ -76,15 +78,17 @@ function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalSto
       this.setEncodedCredentials(base64.encode(username + ':' + password));
     },
     setEncodedCredentials: function(userpass) {
-      HttpBasicAuthenticationService.setEncodedCredentials(userpass);
+      HttpBasicAuthenticationService.setCredentials(userpass);
     },
     setEncodedCredentialsFromLocalStorage: function() {
       this.setEncodedCredentials(LocalStorageService.getHttpAuthorizationHeader());
     },
-    setLatestModified: function(latestModified) {
-      SessionStorageService.setLatestModified(latestModified);
+    setLatestModified: function(modified) {
+      // Only set if given value is larger than set value
+      if (!latestModified || latestModified < modified){
+        latestModified = modified;
+      }
     },
-
     // getters
     getAuth: function() {
       if (localStorage.getItem('expires') && sessionStorage.getItem('expires') !== localStorage.getItem('expires')) {
@@ -104,7 +108,7 @@ function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalSto
       return SessionStorageService.getUserUUID();
     },
     getLatestModified: function() {
-      return SessionStorageService.getLatestModified();
+      return latestModified;
     }
   };
 }

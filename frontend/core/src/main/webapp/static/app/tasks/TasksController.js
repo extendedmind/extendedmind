@@ -1,6 +1,32 @@
+/* global angular */
 'use strict';
 
-function TasksController($location, $scope, OwnerService, activeItem, tasksRequest, tasksResponse, tasksArray, SwiperService, TasksSlidesService) {
+function TasksController($location, $scope, $routeParams, OwnerService, TasksService, SwiperService, TasksSlidesService) {
+
+  if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
+    if ($routeParams.uuid) {
+      $scope.task = TasksService.getTaskByUUID($routeParams.uuid);
+    }else {
+      $scope.task = {
+        relationships: {
+          tags: []
+        }
+      };
+      if ($routeParams.parentUUID){
+        $scope.task.relationships.parent = $routeParams.parentUUID;
+      }
+    }
+  }
+
+  $scope.saveTask = function(task) {
+    TasksService.saveTask(task);
+    window.history.back();
+  };
+
+  $scope.cancelEdit = function() {
+    window.history.back();
+  };
+
 
   $scope.addNew = function() {
     $location.path($scope.prefix + '/tasks/new');
@@ -11,7 +37,7 @@ function TasksController($location, $scope, OwnerService, activeItem, tasksReque
   };
 
   $scope.editTaskTitle = function(task) {
-    tasksRequest.putExistingTask(task);
+    TasksService.saveTask(task);
   };
 
   $scope.editTask = function(task) {
@@ -20,65 +46,50 @@ function TasksController($location, $scope, OwnerService, activeItem, tasksReque
 
   $scope.taskChecked = function(task) {
     if (task.completed) {
-      tasksArray.deleteTaskProperty(task, 'completed');
-      tasksRequest.uncompleteTask(task).then(function(uncompleteTaskResponse) {
-        tasksResponse.putTaskContent(task, uncompleteTaskResponse);
-      });
+      TasksService.uncompleteTask(task);
     } else {
-      tasksRequest.completeTask(task).then(function(completeTaskResponse) {
-        tasksResponse.putTaskContent(task, completeTaskResponse);
-      });
+      TasksService.completeTask(task);
     }
   };
 
-  $scope.taskToProject = function(task) {
-    $location.path(OwnerService.getPrefix() + '/tasks/new');
-    activeItem.setItem(task);
-    task.project = true;
-    tasksRequest.putExistingTask(task);
+  $scope.taskToList = function(task) {
+    TasksService.taskToList(task);
+    $location.path(OwnerService.getPrefix() + '/tasks/new/' + task.uuid);
   };
 
   $scope.deleteTask = function(task) {
-    tasksArray.removeTask(task);
-    tasksRequest.deleteTask(task).then(function(deleteTaskResponse) {
-      tasksResponse.putTaskContent(task, deleteTaskResponse);
-    });
+    TasksService.deleteTask(task);
   };
 
   $scope.addSubtask = function(subtask) {
     $scope.subtask = {};
 
-    // Quick hack to save the possible due date and project to prevent 
+    // Quick hack to save the possible due date and list to prevent 
     // bug with adding a second subtask in view
     // TODO: Refactor task lists handling.
     if (subtask.due){
       $scope.subtask.due = subtask.due;
     }
-    if (subtask.relationships && subtask.relationships.parentTask){
+    if (subtask.relationships && subtask.relationships.parent){
       $scope.subtask.relationships = {
-        parentTask: subtask.relationships.parentTask
+        parent: subtask.relationships.parent
       };
     }
 
-    tasksRequest.putTask(subtask).then(function(putTaskResponse) {
-      tasksResponse.putTaskContent(subtask, putTaskResponse);
-      tasksArray.putNewTask(subtask);
-    });
+    TasksService.putTask(subtask);
   };
 
   $scope.getSubtaskButtonClass = function(task) {
-    if (!task.project && !(task.relationships && task.relationships.parentTask)){
+    if (!(task.relationships && task.relationships.parent)){
       return 'left-of-two';
     }
   };
 
   $scope.getDeleteButtonClass = function(task) {
-    if (!task.project){
-      if (!(task.relationships && task.relationships.parentTask)){
-        return 'right-of-two';
-      }else{
-        return 'wide-button';
-      }
+    if (!(task.relationships && task.relationships.parent)){
+      return 'right-of-two';
+    }else{
+      return 'wide-button';
     }
   };
 
@@ -93,10 +104,10 @@ function TasksController($location, $scope, OwnerService, activeItem, tasksReque
     $scope.focusDateInput = true;
   };
 
-  $scope.goToProject = function(uuid) {
-    SwiperService.swipeTo(TasksSlidesService.PROJECTS + '/' + uuid);
+  $scope.goToList = function(uuid) {
+    SwiperService.swipeTo(TasksSlidesService.LISTS + '/' + uuid);
   };
 }
 
-TasksController.$inject = ['$location', '$scope', 'OwnerService', 'activeItem', 'tasksRequest', 'tasksResponse', 'tasksArray', 'SwiperService', 'TasksSlidesService'];
+TasksController.$inject = ['$location', '$scope', '$routeParams', 'OwnerService', 'TasksService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('TasksController', TasksController);

@@ -4,7 +4,7 @@ function AccountController($location, $scope, AccountService, ErrorHandlerServic
 
   $scope.errorHandler = ErrorHandlerService;
 
-  AccountService.account().then(function(authenticateResponse) {
+  AccountService.getAccount().then(function(authenticateResponse) {
     $scope.email = authenticateResponse.email;
   });
 }

@@ -1,4 +1,4 @@
-<div class="no-slides-container" ng-controller="EditItemController">
+<div class="no-slides-container" ng-controller="ItemsController">
   <section id="edit-item" class="one-column-grid page">
     <div class="column">
       <header class="heading-header">
@@ -21,7 +21,7 @@
             <input type="text" class="simple-input" id="itemLink" ng-model="item.link" placeholder="url...">
           </div>
           <div class="form-group vertical-buttons">
-            <button type="submit" class="wide-button normal-button" ng-disabled="!itemEdit.$valid" ng-click="editItem()">
+            <button type="submit" class="wide-button normal-button" ng-disabled="!itemEdit.$valid" ng-click="saveItem(item)">
               save
             </button>
             <button type="button" class="wide-button cancel-button" ng-click="cancelEdit()">cancel</button>

@@ -1,6 +1,6 @@
 'use strict';
 
-function HomeController($scope, $location, itemsRequest, UserSessionService, AuthenticationService) {
+function HomeController($scope, $location, ItemsService, UserSessionService, AuthenticationService) {
 
   $scope.omniBarActive = false;
   $scope.menuActive = false;
@@ -40,7 +40,7 @@ function HomeController($scope, $location, itemsRequest, UserSessionService, Aut
       // $('#omniItem').focus();
       $scope.omnibarText = {};
       $scope.focusOmnibar = true;
-      itemsRequest.putItem(omnibarText);
+      ItemsService.saveItem(omnibarText);
     }else{
       $location.path($scope.prefix + '/items/new');
     }
@@ -58,4 +58,4 @@ function HomeController($scope, $location, itemsRequest, UserSessionService, Aut
 }
 
 angular.module('em.app').controller('HomeController', HomeController);
-HomeController.$inject = ['$scope', '$location','itemsRequest', 'UserSessionService', 'AuthenticationService'];
+HomeController.$inject = ['$scope', '$location','ItemsService', 'UserSessionService', 'AuthenticationService'];

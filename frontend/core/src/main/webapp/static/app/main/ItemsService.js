@@ -4,14 +4,27 @@
 function ItemsService(BackendClientService, UserSessionService, ArrayService, TagsService, ListsService, TasksService){
   var items = [];
   var deletedItems = [];
+  var recentlyUpgradedItems = [];
 
   var itemRegex = /\/item/;
   var itemSlashRegex = /\/item\//;
   var itemsRegex = /\/items/;
 
+  function cleanRecentlyUpgradedItems(){
+    // Loop through recently upgraded items and delete them from the items array
+    for (var i=0, len=recentlyUpgradedItems.length; i<len; i++) {
+      var recentlyUpgradedItemIndex = items.findFirstIndexByKeyValue('uuid', recentlyUpgradedItems[i].uuid);
+      if (recentlyUpgradedItemIndex !== undefined){
+        items.splice(recentlyUpgradedItemIndex, 1);
+      }
+    }
+    recentlyUpgradedItems.length = 0;
+  }
+
   return {
     // Main method to synchronize all arrays with backend.
     synchronize: function() {
+      cleanRecentlyUpgradedItems();
       var latestModified = UserSessionService.getLatestModified();
       var url = '/api/' + UserSessionService.getActiveUUID() + '/items';
       if (latestModified){
@@ -52,6 +65,7 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
       return items.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveItem: function(item) {
+      cleanRecentlyUpgradedItems();
       if (item.uuid){
         // Existing item
         BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid,
@@ -76,6 +90,7 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
       }
     },
     deleteItem: function(item) {
+      cleanRecentlyUpgradedItems();
       BackendClientService.delete('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid,
                this.deleteItemRegex).then(function(result) {
         if (result.data){
@@ -87,6 +102,7 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
       });
     },
     undeleteItem: function(item) {
+      cleanRecentlyUpgradedItems();
       BackendClientService.post('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid + '/undelete',
                this.deleteItemRegex).then(function(result) {
         if (result.data){
@@ -98,12 +114,16 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
       });
     },
     itemToTask: function(item) {
+      cleanRecentlyUpgradedItems();
       var index = items.findFirstIndexByKeyValue('uuid', item.uuid);
       if (index !== undefined) {
-        // Save as task and remove from items array
+        // Save as task and add it to the recently upgraded items array
         TasksService.saveTask(item);
-        items.splice(index, 1);
+        recentlyUpgradedItems.push(item);
       }
+    },
+    completeItemToTask: function(item) {
+      cleanRecentlyUpgradedItems();
     },
     // Regular expressions for item requests
     getItemsRegex:

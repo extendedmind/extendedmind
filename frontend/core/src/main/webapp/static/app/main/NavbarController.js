@@ -4,7 +4,7 @@
 function NavbarController($location, $scope, $window, AuthenticationService, SwiperService, OwnerService, UserSessionService) {
 
   // TODO: Use these to build * * * * * subnavigation on top of tasks icon
-  var tasksSubNavigationPaths = ['tasks/dates', 'tasks/lists', 'tasks/projects', 'tasks/single'];
+  var tasksSubNavigationPaths = ['tasks/dates', 'tasks/menu', 'tasks/lists', 'tasks/single'];
 
   $scope.user = UserSessionService.getUserUUID();
   $scope.collectives = UserSessionService.getCollectives();

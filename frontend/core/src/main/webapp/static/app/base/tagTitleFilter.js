@@ -1,8 +1,8 @@
 /*global angular */
 'use strict';
 
-angular.module('em.filters').filter('tagTitle', ['itemsArray', 'TagsService',
-  function(itemsArray, TagsService) {
+angular.module('em.filters').filter('tagTitle', ['TagsService',
+  function(TagsService) {
     var userItemsFilter = function(itemTags) {
       var filteredValues, i, tag, tags;
       filteredValues = [];
@@ -12,7 +12,7 @@ angular.module('em.filters').filter('tagTitle', ['itemsArray', 'TagsService',
         tags = TagsService.getTags();
 
         while (itemTags[i]) {
-          tag = itemsArray.getItemByUUID(tags, itemTags[i]);
+          tag = tags.findFirstObjectByKeyValue('uuid', itemTags[i]);
           filteredValues.push(tag);
           i++;
         }

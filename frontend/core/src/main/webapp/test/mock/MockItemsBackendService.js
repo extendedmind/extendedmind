@@ -1,0 +1,68 @@
+/*global angular, getJSONFixture */
+'use strict';
+
+function MockItemsBackendService($httpBackend, ItemsService, UUIDService) {
+
+  function mockGetItems(expectResponse){
+    $httpBackend.whenGET(ItemsService.getItemsRegex)
+      .respond(function(method, url, data, headers) {
+        var itemsResponse = getJSONFixture('itemsResponse.json');
+        if (url.indexOf('?modified=') != -1){
+          return expectResponse(method, url, data, headers, {});
+        }else{
+          return expectResponse(method, url, data, headers, itemsResponse);
+        }
+      });
+  }
+
+  function mockPutNewItem(expectResponse){
+    $httpBackend.whenPUT(ItemsService.putNewItemRegex)
+      .respond(function(method, url, data, headers) {
+        var putNewItemResponse = getJSONFixture('putItemResponse.json');
+        putNewItemResponse.modified = (new Date()).getTime();
+        putNewItemResponse.uuid = UUIDService.randomUUID();
+        return expectResponse(method, url, data, headers, putNewItemResponse);
+      });
+  }
+  
+  function mockPutExistingItem(expectResponse){
+    $httpBackend.whenPUT(ItemsService.putExistingItemRegex)
+      .respond(function(method, url, data, headers) {
+        var putExistingItemResponse = getJSONFixture('putExistingItemResponse.json');
+        putExistingItemResponse.modified = (new Date()).getTime();
+        return expectResponse(method, url, data, headers, putExistingItemResponse);
+      });
+  }
+
+  function mockDeleteItem(expectResponse){
+    $httpBackend.whenDELETE(ItemsService.deleteItemRegex)
+      .respond(function(method, url, data, headers) {
+        var deleteItemResponse = getJSONFixture('deleteItemResponse.json');
+        deleteItemResponse.result.modified = (new Date()).getTime();
+        return expectResponse(method, url, data, headers, deleteItemResponse);
+      });
+  }
+
+  function mockUndeleteItem(expectResponse){
+    $httpBackend.whenPOST(ItemsService.undeleteItemRegex)
+      .respond(function(method, url, data, headers) {
+        var undeleteItemResponse = getJSONFixture('undeleteItemResponse.json');
+        undeleteItemResponse.modified = (new Date()).getTime();
+        return expectResponse(method, url, data, headers, undeleteItemResponse);
+      });
+  }
+
+
+  return {
+    mockItemsBackend: function(expectResponse) {
+      mockGetItems(expectResponse);
+      mockPutNewItem(expectResponse);
+      mockPutExistingItem(expectResponse);
+      mockDeleteItem(expectResponse);
+      mockUndeleteItem(expectResponse);
+    }
+  };
+}
+
+MockItemsBackendService.$inject = ['$httpBackend', 'ItemsService', 'UUIDService'];
+angular.module('em.appTest').factory('MockItemsBackendService', MockItemsBackendService);

@@ -89,40 +89,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
-    $routeProvider.when('/my/tasks/context/:uuid', {
-      controller: 'ContextController',
-      templateUrl: 'static/app/tasks/context.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.checkAuthentication();
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks/context/:uuid', {
-      controller: 'ContextController',
-      templateUrl: 'static/app/tasks/context.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.checkAuthentication();
-        }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
-        }]
-
-      }
-    });
-
     $routeProvider.when('/my/tasks/edit/:uuid', {
-      controller: 'EditTaskController',
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -138,7 +105,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/edit/:uuid', {
-      controller: 'EditTaskController',
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
         auth: ['AuthenticationService',
@@ -154,8 +120,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/tasks/new', {
-      controller: 'NewTaskController',
-      templateUrl: 'static/app/tasks/newTask.html',
+      templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
@@ -170,8 +135,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks/new', {
-      controller: 'NewTaskController',
-      templateUrl: 'static/app/tasks/newTask.html',
+      templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
@@ -181,7 +145,34 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(OwnerService) {
           OwnerService.setCollectivePrefix();
         }]
+      }
+    });
 
+    $routeProvider.when('/my/tasks/new/:parentUUID', {
+      templateUrl: 'static/app/tasks/editTask.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/tasks/new/:parentUUID', {
+      templateUrl: 'static/app/tasks/editTask.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
+        }]
       }
     });
 
