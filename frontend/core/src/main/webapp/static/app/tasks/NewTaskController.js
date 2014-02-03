@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function NewTaskController($routeParams, $scope, activeItem, ErrorHandlerService, FilterService, TagsService, tasksArray, tasksRequest, tasksResponse, OwnerService) {
@@ -56,7 +55,7 @@ function NewTaskController($routeParams, $scope, activeItem, ErrorHandlerService
       task.relationships.tags = [task.relationships.context];
       delete task.relationships.context;
     }
-  }
+  };
 }
 
 NewTaskController.$inject = ['$routeParams', '$scope', 'activeItem', 'ErrorHandlerService','FilterService', 'TagsService', 'tasksArray', 'tasksRequest', 'tasksResponse', 'OwnerService'];
