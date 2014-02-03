@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function EditItemController($scope, $routeParams, ErrorHandlerService, itemsArray, itemsRequest, OwnerService) {
