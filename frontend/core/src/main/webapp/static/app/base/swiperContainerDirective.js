@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function swiperContainerDirective(SwiperService) {
@@ -11,7 +10,7 @@ function swiperContainerDirective(SwiperService) {
       expectedSlides: '=?expectedSlides'
     },
     controller: function($scope, $element) {
-      var swiperSlidePaths = [];
+      var swiperSlideInfos = [];
       var initializeSwiperCalled = false;
 
       this.setExpectedSlides = function(expectedSlides){
@@ -20,9 +19,14 @@ function swiperContainerDirective(SwiperService) {
 
       // Registers the path of the slide to the swiper
       // and sets up listeners for element, if needed
-      this.registerSlide = function(path, element) {
-        swiperSlidePaths.push(path);
-
+      this.registerSlide = function(path, element, index) {
+        // Slides from DOM (AngularJS directive) are not necessarily registered in desired order.
+        // Slide array of objects is sorted later, during swiper initialization.
+        if (index || index === 0) {
+          swiperSlideInfos.push({slidePath: path, slideIndex: index});
+        } else {
+          swiperSlideInfos.push(path);
+        }
         // For vertical page swiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal
         // swiper or not.
@@ -31,6 +35,12 @@ function swiperContainerDirective(SwiperService) {
           element[0].firstElementChild.firstElementChild.addEventListener('touchstart', slideTouchStart, false);
           element[0].firstElementChild.firstElementChild.addEventListener('touchmove', slideTouchMove, false);
         }
+
+        // if ($scope.swiperType === 'main') {
+          // element[0].addEventListener('touchstart', mainSlideTouchStart, false);
+          // element[0].addEventListener('touchmove', mainSlideTouchMove, false);
+          // element[0].addEventListener('touchend', mainSlideTouchEnd, false);
+        // }
         
         // (Re)inializes the swiper after the digest to make sure the whole
         // DOM is ready before this is done. Otherwise Swiper does not register
@@ -44,14 +54,28 @@ function swiperContainerDirective(SwiperService) {
         // https://groups.google.com/forum/#!topic/angular/SCc45uVhTt9
         // http://stackoverflow.com/a/17303759/2659424
         if (!initializeSwiperCalled){
-          if ($scope.expectedSlides == swiperSlidePaths.length){
+          if ($scope.expectedSlides === swiperSlideInfos.length){
+            sortAndFlattenSlideInfos();
+
             SwiperService.initializeSwiper(
               $element[0],
               $scope.swiperPath,
               $scope.swiperType,
-              swiperSlidePaths,
+              swiperSlideInfos,
               onSlideChangeEndCallback);
             initializeSwiperCalled = true;
+          }
+        }
+        function sortAndFlattenSlideInfos() {
+          // does array contain slide objects
+          if (swiperSlideInfos[0].slidePath) {
+            swiperSlideInfos.sort(function(a, b) {
+              return a.slideIndex - b.slideIndex;
+            });
+            // flatten
+            for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
+              swiperSlideInfos[i] = swiperSlideInfos[i].slidePath;
+            }
           }
         }
       };
@@ -65,6 +89,35 @@ function swiperContainerDirective(SwiperService) {
       var up = false;
       var down = false;
       var startX, startY, distX, distY;
+
+      // var touchStartTime, touchEndTime, touchTime, touchStartPosition, touchEndPosition;
+
+      // function mainSlideTouchStart(event) {
+      //   touchStartTime = Date.now();
+      //   touchStartPosition = event.changedTouches[0].pageX;
+      // }
+
+      // function mainSlideTouchMove(event) {
+      //   var currentTouchPosition = event.changedTouches[0].pageX;
+      //   var touchDelta = currentTouchPosition - touchStartPosition;
+      //   // this.style.webkitTransform = 'translate3d(' + touchDelta + 'px, 0, 0)';
+      // }
+
+      // function mainSlideTouchEnd(event) {
+
+      //   touchEndTime = Date.now();
+      //   touchEndPosition = event.changedTouches[0].pageX;
+
+      //   touchTime = touchEndTime - touchStartTime;
+      //   var touchDistance = touchStartPosition - touchEndPosition;
+      //   var velocity = touchDistance / touchTime;
+      //   var acceleration = velocity < 0 ? 0.0005 : -0.0005;
+      //   var displacement = (velocity * velocity) / (2 * acceleration);
+      //   var time = - velocity / acceleration;
+
+      //   this.style.webkitTransition = '-webkit-transform ' + time + 'ms cubic-bezier(0.33, 0.66, 0.66, 1)';
+      //   this.style.webkitTransform = 'translate3d(' + displacement + 'px, 0, 0)';
+      // }
 
       function slideTouchStart() {
         var touchobj = event.changedTouches[0];

@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function swiperSlideDirective() {
@@ -10,10 +9,11 @@ function swiperSlideDirective() {
     require: '^swiperContainer',
     scope: {
       slidePath: '@swiperSlide',
+      slideIndex: '=?',
       expectedSlides: '=?expectedSlides'
     },
     link: function link(scope, element, attrs, swiperContainerDirectiveController) {
-      swiperContainerDirectiveController.registerSlide(scope.slidePath, element);
+      swiperContainerDirectiveController.registerSlide(scope.slidePath, element, scope.slideIndex);
       if (scope.expectedSlides){
         swiperContainerDirectiveController.setExpectedSlides(scope.expectedSlides);
       }
