@@ -207,18 +207,22 @@ describe('TaskService', function() {
     TasksService.uncompleteTask(cleanCloset);
     $httpBackend.flush();
 
-    // The task should be back as last element
+    // The task should be back in its old place as modified
+    // is not changed to make task stay in the same place
+    // when clicking on/off.
     expect(TasksService.getTaskByUUID(cleanCloset.uuid))
       .toBeDefined();
     var tasks = TasksService.getTasks();
     expect(tasks.length)
       .toBe(3);
+
     expect(TasksService.getCompletedTasks().length)
       .toBe(0);
-    expect(tasks[2].uuid)
+
+    expect(tasks[0].uuid)
       .toBe(cleanCloset.uuid);
-    expect(tasks[2].modified)
-      .toBe(uncompleteTaskResponse.modified);
+    expect(tasks[0].modified)
+      .toBe(cleanCloset.modified);
   });
 
   it('should convert task to list', function () {

@@ -133,7 +133,9 @@ function TasksService(BackendClientService, UserSessionService, ArrayService, Li
                this.completeTaskRegex).then(function(result) {
         if (result.data){
           task.completed = result.data.completed;
-          task.modified = result.data.result.modified;
+          // Don't change modified on complete to prevent
+          // task from moving down in the list on uncomplete.
+          //task.modified = result.data.result.modified;
           var taskIndex = tasks.findFirstIndexByKeyValue('uuid', task.uuid);
           ArrayService.updateItem(task, tasks, deletedTasks, otherArrays);
           // Put the completed task back to the active tasks array
@@ -149,7 +151,9 @@ function TasksService(BackendClientService, UserSessionService, ArrayService, Li
                this.deleteTaskRegex).then(function(result) {
         if (result.data){
           delete task.completed;
-          task.modified = result.data.modified;
+          // Don't change modified on uncomplete to prevent
+          // task from moving down in the list when clicking on/off.
+          //task.modified = result.data.modified;
           cleanRecentlyCompletedTasks();
           ArrayService.updateItem(task, tasks, deletedTasks, otherArrays);
         }
