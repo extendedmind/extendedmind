@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function itemsRequest(BackendClientService, itemsArray, itemsResponse, TagsService, tasksArray, UserSessionService) {
