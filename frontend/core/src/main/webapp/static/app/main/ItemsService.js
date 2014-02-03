@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function ItemsService(BackendClientService, UserSessionService, ArrayService, TagsService, ListsService, TasksService){
+function ItemsService($q, BackendClientService, UserSessionService, ArrayService, TagsService, ListsService, TasksService){
   var items = [];
   var deletedItems = [];
   var recentlyUpgradedItems = [];
@@ -65,6 +65,7 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
       return items.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveItem: function(item) {
+      var deferred = $q.defer();
       cleanRecentlyUpgradedItems();
       if (item.uuid){
         // Existing item
@@ -73,6 +74,7 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
           if (result.data){
             item.modified = result.data.modified;
             ArrayService.updateItem(item, items, deletedItems);
+            deferred.resolve(item);
           }
         });
       }else{
@@ -83,9 +85,11 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
             item.uuid = result.data.uuid;
             item.modified = result.data.modified;
             ArrayService.setItem(item, items, deletedItems);
+            deferred.resolve(item);
           }
         });
       }
+      return deferred.promise;
     },
     deleteItem: function(item) {
       cleanRecentlyUpgradedItems();
@@ -150,5 +154,5 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
   };
 }
   
-ItemsService.$inject = ['BackendClientService', 'UserSessionService', 'ArrayService', 'TagsService', 'ListsService', 'TasksService'];
+ItemsService.$inject = ['$q', 'BackendClientService', 'UserSessionService', 'ArrayService', 'TagsService', 'ListsService', 'TasksService'];
 angular.module('em.services').factory('ItemsService', ItemsService);
