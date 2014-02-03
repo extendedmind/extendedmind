@@ -1,4 +1,3 @@
-/*global angular, Swiper */
 'use strict';
 
 // iDangero.us Swiper Service       

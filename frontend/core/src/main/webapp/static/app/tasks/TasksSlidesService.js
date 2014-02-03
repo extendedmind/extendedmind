@@ -1,7 +1,6 @@
-/*global angular */
 'use strict';
 
-function TasksSlidesService(LocationService, OwnerService) {
+function TasksSlidesService() {
 
   return {
     // Enumeration values
@@ -24,5 +23,4 @@ function TasksSlidesService(LocationService, OwnerService) {
     }
   };
 }
-TasksSlidesService.$inject = ['LocationService', 'OwnerService'];
 angular.module('em.services').factory('TasksSlidesService', TasksSlidesService);

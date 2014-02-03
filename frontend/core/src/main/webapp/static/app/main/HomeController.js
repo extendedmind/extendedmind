@@ -37,7 +37,7 @@ function HomeController($scope, $location, ItemsService, UserSessionService, Aut
   $scope.addNewItem = function(omnibarText) {
     if ($scope.omnibarText && $scope.omnibarText.title) {
       $scope.focusOmnibar = true;
-      ItemsService.saveItem(omnibarText).then(function(item) {
+      ItemsService.saveItem(omnibarText).then(function(/*item*/) {
         // TODO: Highlight new item
         $scope.omnibarText = {};
       });
