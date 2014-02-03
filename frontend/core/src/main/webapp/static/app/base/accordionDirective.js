@@ -1,3 +1,4 @@
+/* global angular, $ */
 'use strict';
 
 // From:
@@ -8,22 +9,23 @@
 function accordionDirective($document) {
   return {
     restrict: 'A',
+    scope: true,
     controller: function($scope) {
 
-      // This array keeps track of the accordion items
-      this.items = [];
-
+      // This array keeps track of the accordion title scopes
+      this.titleScopes = [];
       // Ensure that all the items in this accordion are closed
       $scope.closedOtherItems = false;
-      this.closeOthers = function(openItem) {
+      this.closeOthers = function(activeScope) {
         $scope.closedOtherItems = false;
-        angular.forEach(this.items, function (item) {
-          if ( item !== openItem ) {
-            if (item.closeItem()){
+        angular.forEach(this.titleScopes, function (titleScope) {
+          if ( titleScope !== activeScope ) {
+            if (titleScope.closeItem()){
               $scope.closedOtherItems = true;
             }
           }
         });
+        $scope.openItem = activeScope.item;
 
         // This is called when accordion title is opened
         // so it's a good place to bind to start listening
@@ -32,22 +34,30 @@ function accordionDirective($document) {
           $scope.bindElsewhereEvents();
         }
       };
-      
+
+      $scope.isOpen = function(item) {
+        if ($scope.openItem){
+          if ($scope.openItem.uuid === item.uuid){
+            return true;
+          }
+        }
+      };
+
       // This is called from the accordion-title directive to add itself to the accordion
       this.addItem = function(itemScope) {
         var that = this;
-        this.items.push(itemScope);
+        this.titleScopes.push(itemScope);
 
         itemScope.$on('$destroy', function() {
           that.removeItem(itemScope);
         });
       };
 
-      // This is called from the accordion-item directive when to remove itself
-      this.removeItem = function(item) {
-        var index = this.items.indexOf(item);
+      // This is called from the accordion-title directive when to remove itself
+      this.removeItem = function(titleScope) {
+        var index = this.titleScopes.indexOf(titleScope);
         if ( index !== -1 ) {
-          this.items.splice(this.items.indexOf(item), 1);
+          this.titleScopes.splice(this.titleScopes.indexOf(titleScope), 1);
         }
       };
 
@@ -79,12 +89,13 @@ function accordionDirective($document) {
           // NOTE: Class item-actions is needed to get clicking on buttons inside the 
           //       accordion to work!
           if (($scope.closedOtherItems && event.target.id === 'accordionTitleLink') ||
-            (!$(event.target).parents('.accordion-title-open').length &&
+            (!$(event.target).parents('.accordion-item-active').length &&
               !$(event.target).parents('.item-actions').length)) {
             $scope.$apply(function() {
-              angular.forEach($scope.thisController.items, function (item) {
-                item.closeItem();
+              angular.forEach($scope.thisController.titleScopes, function (titleScope) {
+                titleScope.closeItem();
               });
+              $scope.openItem = undefined;
               $scope.unbindElsewhereEvents();
             });
           }

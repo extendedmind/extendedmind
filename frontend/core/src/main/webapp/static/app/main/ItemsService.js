@@ -89,6 +89,7 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
     },
     deleteItem: function(item) {
       cleanRecentlyUpgradedItems();
+      console.log(item);
       BackendClientService.delete('/api/' + UserSessionService.getActiveUUID() + '/item/' + item.uuid,
                this.deleteItemRegex).then(function(result) {
         if (result.data){

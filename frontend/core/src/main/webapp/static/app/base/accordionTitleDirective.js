@@ -9,7 +9,6 @@ function accordionTitleDirective($document){
   return {
     require:'^accordion',         // We need this directive to be inside an accordion
     restrict:'A',                 // It will be an attribute
-    transclude:true,              // It transcludes the contents of the directive into the template
     replace: true,                // The element containing the directive will be replaced with the template
     templateUrl:'static/app/base/accordionTitle.html',
     scope:{ 
@@ -27,7 +26,7 @@ function accordionTitleDirective($document){
       scope.toggleOpen = function() {
         if (!scope.isOpen){
           scope.isOpen = true;
-          element.addClass("accordion-title-active");
+          element.parent().addClass("accordion-item-active");
         }else{
           scope.closeItem();          
         }
@@ -37,7 +36,7 @@ function accordionTitleDirective($document){
       scope.closeItem = function() {
         if (scope.isOpen){
           scope.endTitleEdit();
-          element.removeClass("accordion-title-active");
+          element.parent().removeClass("accordion-item-active");
           scope.isOpen = false;
           return true;
         }

@@ -3,18 +3,20 @@
 
 function TasksController($location, $scope, $routeParams, OwnerService, TasksService, SwiperService, TasksSlidesService) {
 
-  if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
-    if ($routeParams.uuid) {
-      $scope.task = TasksService.getTaskByUUID($routeParams.uuid);
-      if ($scope.task.due) $scope.showDate = true;
-    }else {
-      $scope.task = {
-        relationships: {
-          tags: []
+  if (!$scope.task){
+    if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
+      if ($routeParams.uuid) {
+        $scope.task = TasksService.getTaskByUUID($routeParams.uuid);
+        if ($scope.task.due) $scope.showDate = true;
+      }else {
+        $scope.task = {
+          relationships: {
+            tags: []
+          }
+        };
+        if ($routeParams.parentUUID){
+          $scope.task.relationships.parent = $routeParams.parentUUID;
         }
-      };
-      if ($routeParams.parentUUID){
-        $scope.task.relationships.parent = $routeParams.parentUUID;
       }
     }
   }
