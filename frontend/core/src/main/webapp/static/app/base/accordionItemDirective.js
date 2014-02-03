@@ -11,7 +11,7 @@ function accordionItemDirective($document){
     restrict:'A',                 // It will be an attribute
     transclude:true,              // It transcludes the contents of the directive into the template
     replace: true,                // The element containing the directive will be replaced with the template
-    templateUrl:'static/common/accordionItem.html',
+    templateUrl:'static/app/base/accordionItem.html',
     scope:{ 
       item:'=accordionItem',
       editItemTitle:'&',
