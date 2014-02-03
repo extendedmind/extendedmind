@@ -59,7 +59,7 @@
           <div class="filtered-items" ng-show="filteredItems.length" ng-controller="ItemsController">
             <h3><a href ng-click="gotoInbox()">inbox</a></h3>
             <div class="inner-page-content-container" accordion>
-              <div ng-repeat="item in filteredItems = (items | filter:{title:omnibarText.title})" accordion-item="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" toggle-complete="false">
+              <div ng-repeat="item in filteredItems = (items | filter:{title:omnibarText.title})" accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" toggle-complete="false">
                 <div ng-include="'static/app/main/itemActions.html'"></div>
               </div>
             </div>
@@ -67,7 +67,7 @@
           <div class="filtered-items" ng-show="filteredTasks.length" ng-controller="TasksController">
             <h3><a href ng-click="gotoTasks()">tasks</a></h3>
             <div class="inner-page-content-container" accordion>
-              <div ng-repeat="task in filteredTasks = (tasks | filter:{title:omnibarText.title})" accordion-item="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)">
+              <div ng-repeat="task in filteredTasks = (tasks | filter:{title:omnibarText.title})" accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)">
                 <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
               </div>
             </div>

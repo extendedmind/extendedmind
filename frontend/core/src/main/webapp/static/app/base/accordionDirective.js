@@ -25,7 +25,7 @@ function accordionDirective($document) {
           }
         });
 
-        // This is called when accordion item is opened
+        // This is called when accordion title is opened
         // so it's a good place to bind to start listening
         // on clicking elsewhere
         if (!$scope.eventsBound){
@@ -33,7 +33,7 @@ function accordionDirective($document) {
         }
       };
       
-      // This is called from the accordion-item directive to add itself to the accordion
+      // This is called from the accordion-title directive to add itself to the accordion
       this.addItem = function(itemScope) {
         var that = this;
         this.items.push(itemScope);
@@ -75,11 +75,11 @@ function accordionDirective($document) {
         // First rule out clicking on link with a closed accordion
         if (!(!$scope.closedOtherItems && event.target.id === 'accordionTitleLink')) {
           // If clicking elswehere than on the input or on an element that has as parent
-          // the accordion-item, close accordion and unbind events.
+          // the accordion-title, close accordion and unbind events.
           // NOTE: Class item-actions is needed to get clicking on buttons inside the 
           //       accordion to work!
           if (($scope.closedOtherItems && event.target.id === 'accordionTitleLink') ||
-            (!$(event.target).parents('.accordion-item-open').length &&
+            (!$(event.target).parents('.accordion-title-open').length &&
               !$(event.target).parents('.item-actions').length)) {
             $scope.$apply(function() {
               angular.forEach($scope.thisController.items, function (item) {

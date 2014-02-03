@@ -4,16 +4,16 @@
 // From:
 // https://github.com/angular-app/Samples/tree/master/1820EN_10_Code/03_basic_accordion_directive
 
-// The accordion-item directive indicates a block of html that will expand and collapse in an accordion
-function accordionItemDirective($document){
+// The accordion-title directive indicates the title of a block of html that will expand and collapse in an accordion
+function accordionTitleDirective($document){
   return {
     require:'^accordion',         // We need this directive to be inside an accordion
     restrict:'A',                 // It will be an attribute
     transclude:true,              // It transcludes the contents of the directive into the template
     replace: true,                // The element containing the directive will be replaced with the template
-    templateUrl:'static/app/base/accordionItem.html',
+    templateUrl:'static/app/base/accordionTitle.html',
     scope:{ 
-      item:'=accordionItem',
+      item:'=accordionTitle',
       editItemTitle:'&',
       editItem:'&',
       hasComplete:'=',
@@ -27,7 +27,7 @@ function accordionItemDirective($document){
       scope.toggleOpen = function() {
         if (!scope.isOpen){
           scope.isOpen = true;
-          element.addClass("accordion-item-active");
+          element.addClass("accordion-title-active");
         }else{
           scope.closeItem();          
         }
@@ -37,7 +37,7 @@ function accordionItemDirective($document){
       scope.closeItem = function() {
         if (scope.isOpen){
           scope.endTitleEdit();
-          element.removeClass("accordion-item-active");
+          element.removeClass("accordion-title-active");
           scope.isOpen = false;
           return true;
         }
@@ -97,4 +97,4 @@ function accordionItemDirective($document){
     }
   };
 };
-angular.module('common').directive('accordionItem', ['$document', accordionItemDirective]);
+angular.module('common').directive('accordionTitle', ['$document', accordionTitleDirective]);
