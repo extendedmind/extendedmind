@@ -35,15 +35,12 @@ function HomeController($scope, $location, ItemsService, UserSessionService, Aut
   };
 
   $scope.addNewItem = function(omnibarText) {
-    if ($scope.omnibarText && $scope.omnibarText.title) {
+    if (omnibarText){
+      // FIXME: refactor jQuery into directive!
+      // $('#omniItem').focus();
+      $scope.omnibarText = {};
       $scope.focusOmnibar = true;
-<<<<<<< HEAD
       ItemsService.saveItem(omnibarText);
-=======
-      itemsRequest.putItem(omnibarText).then(function() {
-        $scope.omnibarText = {};
-      });
->>>>>>> team/master
     }else{
       $location.path($scope.prefix + '/items/new');
     }

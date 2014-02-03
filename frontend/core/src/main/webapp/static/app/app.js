@@ -243,10 +243,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 angular.module('em.app').run(['$rootScope', 'ErrorHandlerService',
   function($rootScope, ErrorHandlerService) {
 
-    // http://stackoverflow.com/a/21113518
-    // http://www.youtube.com/watch?v=xOAG7Ab_Oz0#t=2314
-    FastClick.attach(document.body);
-
     $rootScope.$on('$routeChangeSuccess', function() {
       ErrorHandlerService.clear();
     });

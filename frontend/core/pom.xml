@@ -162,7 +162,6 @@
             <include>lib/angularjs/angular-mocks.js</include>
             <include>lib/base64.js</include>
             <include>lib/idangerous/idangerous.swiper-2.4.js</include>
-            <include>lib/fastclick.js</include>
             <include>lib/expanding.js</include>
             <include>app/*.js</include>
             <include>common/common.js</include>
