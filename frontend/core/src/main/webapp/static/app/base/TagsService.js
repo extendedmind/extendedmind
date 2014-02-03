@@ -28,7 +28,6 @@ function TagsService(BackendClientService, UserSessionService, ArrayService){
           if (result.data){
             tag.modified = result.data.modified;
             ArrayService.updateItem(tag, tags, deletedTags);
-            UserSessionService.setLatestModified(tag.modified);
           }
         });
       }else{
@@ -39,7 +38,6 @@ function TagsService(BackendClientService, UserSessionService, ArrayService){
             tag.uuid = result.data.uuid;
             tag.modified = result.data.modified;
             ArrayService.setItem(tag, tags, deletedTags);
-            UserSessionService.setLatestModified(tag.modified);
           }
         });
       }
@@ -51,7 +49,6 @@ function TagsService(BackendClientService, UserSessionService, ArrayService){
           tag.deleted = result.data.deleted;
           tag.modified = result.data.result.modified;
           ArrayService.updateItem(tag, tags, deletedTags);
-          UserSessionService.setLatestModified(tag.modified);
         }
       });
     },
@@ -62,7 +59,6 @@ function TagsService(BackendClientService, UserSessionService, ArrayService){
           delete tag.deleted;
           tag.modified = result.data.modified;
           ArrayService.updateItem(tag, tags, deletedTags);
-          UserSessionService.setLatestModified(tag.modified);
         }
       });
     },

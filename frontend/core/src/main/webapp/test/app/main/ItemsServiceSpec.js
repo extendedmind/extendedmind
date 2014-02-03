@@ -169,7 +169,8 @@ describe('ItemService', function() {
     };
     
     $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() +
-                           '/items?modified=' + MockUserSessionService.getLatestModified())
+                           '/items?modified=' + MockUserSessionService.getLatestModified() +
+                           '&deleted=true&archived=true&completed=true')
      .respond(200, modifiedGetItemsResponse);
     ItemsService.synchronize();
     $httpBackend.flush();
@@ -321,7 +322,7 @@ describe('ItemService', function() {
 
 
   it('should archive tasks alongside list', function () {
-    var modified = now.getTime();    
+    var modified = now.getTime();
     var archiveTripToDublinResponse = {
       'archived': modified,
       'children': [{
@@ -340,7 +341,7 @@ describe('ItemService', function() {
       'result': {
         'modified': modified
       }
-    }
+    };
     var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51');
     $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + tripToDublin.uuid + '/archive')
        .respond(200, archiveTripToDublinResponse);

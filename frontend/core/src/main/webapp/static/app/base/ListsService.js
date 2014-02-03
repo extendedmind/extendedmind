@@ -37,7 +37,6 @@ function ListsService(BackendClientService, UserSessionService, ArrayService, Ta
           if (result.data){
             list.modified = result.data.modified;
             ArrayService.updateItem(list, lists, deletedLists, otherArrays);
-            UserSessionService.setLatestModified(list.modified);
           }
         });
       }else{
@@ -48,7 +47,6 @@ function ListsService(BackendClientService, UserSessionService, ArrayService, Ta
             list.uuid = result.data.uuid;
             list.modified = result.data.modified;
             ArrayService.setItem(list, lists, deletedLists, otherArrays);
-            UserSessionService.setLatestModified(list.modified);
           }
         });
       }
@@ -60,7 +58,6 @@ function ListsService(BackendClientService, UserSessionService, ArrayService, Ta
           list.deleted = result.data.deleted;
           list.modified = result.data.result.modified;
           ArrayService.updateItem(list, lists, deletedLists, otherArrays);
-          UserSessionService.setLatestModified(list.modified);
         }
       });
     },
@@ -71,7 +68,6 @@ function ListsService(BackendClientService, UserSessionService, ArrayService, Ta
           delete list.deleted;
           list.modified = result.data.modified;
           ArrayService.updateItem(list, lists, deletedLists, otherArrays);
-          UserSessionService.setLatestModified(list.modified);
         }
       });
     },
@@ -94,7 +90,6 @@ function ListsService(BackendClientService, UserSessionService, ArrayService, Ta
               if (itemModified && itemModified > latestModified) latestModified = itemModified;
             }
           }
-          UserSessionService.setLatestModified(latestModified);
         }
       });
     },

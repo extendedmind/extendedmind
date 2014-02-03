@@ -28,7 +28,7 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
       var latestModified = UserSessionService.getLatestModified();
       var url = '/api/' + UserSessionService.getActiveUUID() + '/items';
       if (latestModified){
-        url += '?modified=' + latestModified;
+        url += '?modified=' + latestModified + '&deleted=true&archived=true&completed=true';
       }
       BackendClientService.get(url, this.getItemsRegex).then(function(result) {
         if (result.data){
@@ -73,7 +73,6 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
           if (result.data){
             item.modified = result.data.modified;
             ArrayService.updateItem(item, items, deletedItems);
-            UserSessionService.setLatestModified(item.modified);
           }
         });
       }else{
@@ -84,7 +83,6 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
             item.uuid = result.data.uuid;
             item.modified = result.data.modified;
             ArrayService.setItem(item, items, deletedItems);
-            UserSessionService.setLatestModified(item.modified);
           }
         });
       }
@@ -97,7 +95,6 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
           item.deleted = result.data.deleted;
           item.modified = result.data.result.modified;
           ArrayService.updateItem(item, items, deletedItems);
-          UserSessionService.setLatestModified(item.modified);
         }
       });
     },
@@ -109,7 +106,6 @@ function ItemsService(BackendClientService, UserSessionService, ArrayService, Ta
           delete item.deleted;
           item.modified = result.data.modified;
           ArrayService.updateItem(item, items, deletedItems);
-          UserSessionService.setLatestModified(item.modified);
         }
       });
     },

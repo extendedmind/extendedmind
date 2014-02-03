@@ -91,7 +91,6 @@ function TasksService(BackendClientService, UserSessionService, ArrayService, Li
           if (result.data){
             task.modified = result.data.modified;
             ArrayService.updateItem(task, tasks, deletedTasks, otherArrays);
-            UserSessionService.setLatestModified(task.modified);
           }
         });
       }else{
@@ -102,7 +101,6 @@ function TasksService(BackendClientService, UserSessionService, ArrayService, Li
             task.uuid = result.data.uuid;
             task.modified = result.data.modified;
             ArrayService.setItem(task, tasks, deletedTasks, otherArrays);
-            UserSessionService.setLatestModified(task.modified);
           }
         });
       }
@@ -115,7 +113,6 @@ function TasksService(BackendClientService, UserSessionService, ArrayService, Li
           task.deleted = result.data.deleted;
           task.modified = result.data.result.modified;
           ArrayService.updateItem(task, tasks, deletedTasks, otherArrays);
-          UserSessionService.setLatestModified(task.modified);
         }
       });
     },
@@ -127,7 +124,6 @@ function TasksService(BackendClientService, UserSessionService, ArrayService, Li
           delete task.deleted;
           task.modified = result.data.modified;
           ArrayService.updateItem(task, tasks, deletedTasks, otherArrays);
-          UserSessionService.setLatestModified(task.modified);
         }
       });
     },
@@ -145,7 +141,6 @@ function TasksService(BackendClientService, UserSessionService, ArrayService, Li
           // task from disappearing immediately.
           tasks.splice(taskIndex, 0, task);
           recentlyCompletedTasks.push(task);
-          UserSessionService.setLatestModified(task.modified);
         }
       });
     },
@@ -157,7 +152,6 @@ function TasksService(BackendClientService, UserSessionService, ArrayService, Li
           task.modified = result.data.modified;
           cleanRecentlyCompletedTasks();
           ArrayService.updateItem(task, tasks, deletedTasks, otherArrays);
-          UserSessionService.setLatestModified(task.modified);
         }
       });
     },

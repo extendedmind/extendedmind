@@ -139,8 +139,6 @@ describe('ListService', function() {
 
     expect(ListsService.getListByUUID(tripToDublin.uuid).modified)
       .toBe(putExistingListResponse.modified);
-    expect(MockUserSessionService.getLatestModified())
-      .toBe(putExistingListResponse.modified);
 
     // Should move to the end of the array
     var lists = ListsService.getLists();
@@ -158,8 +156,6 @@ describe('ListService', function() {
     $httpBackend.flush();
     expect(ListsService.getListByUUID(tripToDublin.uuid))
       .toBeUndefined();
-    expect(MockUserSessionService.getLatestModified())
-      .toBe(deleteListResponse.result.modified);
 
     // There should be just two left
     var lists = ListsService.getLists();
@@ -172,8 +168,6 @@ describe('ListService', function() {
     ListsService.undeleteList(tripToDublin);
     $httpBackend.flush();
     expect(ListsService.getListByUUID(tripToDublin.uuid).modified)
-      .toBe(undeleteListResponse.modified);
-    expect(MockUserSessionService.getLatestModified())
       .toBe(undeleteListResponse.modified);
 
     // There should be three left with trip to dublin the last
@@ -200,9 +194,6 @@ describe('ListService', function() {
     ListsService.archiveList(tripToDublin);
     $httpBackend.flush();
 
-    expect(MockUserSessionService.getLatestModified())
-      .toBeDefined();
-    
     // Validate that callback was called
     expect(childItems.length)
       .toBe(archiveListResponse.children.length); 
