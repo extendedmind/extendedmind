@@ -9,7 +9,6 @@
 function accordionDirective($document) {
   return {
     restrict: 'A',
-    scope: true,
     controller: function($scope) {
 
       // This array keeps track of the accordion title scopes
