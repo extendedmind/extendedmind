@@ -44,6 +44,13 @@ angular.module('common').factory('DateService', [
     return yyyy +'-'+ (mm[1]?mm:'0'+mm[0]) +'-'+ (dd[1]?dd:'0'+dd[0]); // padding
   }
 
+  // http://stackoverflow.com/a/4156516
+  function getFirstDayOfTheWeek(date) {
+    var currentDay = date.getDay();
+    var diff = date.getDate() - currentDay + (currentDay === 0 ? -6 : 1); // adjust when day is sunday
+    return new Date(date.setDate(diff));
+  }
+
   return {
     today: function() {
       return today;
@@ -53,6 +60,8 @@ angular.module('common').factory('DateService', [
       date = new Date();
       week = [];
       i = 0;
+
+      var firstDayOfWeek = getFirstDayOfTheWeek(date);
 
       for (i = 0; i < numberOfDays; i++) {
         day = {};
@@ -67,7 +76,6 @@ angular.module('common').factory('DateService', [
 
           day.year = date.getFullYear();
           day.yyyymmdd = yyyymmdd(date);
-          week.push(day);
 
           if (i === 0) {
             day.displayDate = 'today';
@@ -76,6 +84,8 @@ angular.module('common').factory('DateService', [
             day.displayDate = day.month.name + ' ' + day.date;
           }
           day.displayDateShort = day.date;
+          
+          week.push(day);
 
           date = nextDate(date);
         }
