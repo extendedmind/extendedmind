@@ -1,7 +1,36 @@
-<table>
+<!-- <table>
   <tbody>
     <tr>
-      <td ng-repeat="date in dates"><a id="datebar" class="text-muted" href ng-click="dateClicked(date.yyyymmdd)">{{date.displayDateShort}}</a></td>
+      <td ng-repeat="date in dates">
+        <a id="datebar" class="text-muted" href ng-click="dateClicked(date.yyyymmdd)">{{date.displayDateShort}}</a>
+      </td>
     </tr>
   </tbody>
-</table>
+</table> -->
+
+<nav role="navigation" id="datepicker">
+  <ul class="horizontally-justified">
+    <li class="justified-element datepicker-date">
+      <a href>
+        <span>{{dates[0].weekday}}</span>
+        <span>{{dates[0].date}}</span>
+      </a>
+    </li>
+    
+    <li class="justified-element datepicker-date">
+      <a href>
+        <span>{{dates[1].weekday}}</span>
+        <span>{{dates[1].date}}</span>
+      </a>
+    </li>
+
+    <li class="justified-element datepicker-date">
+      <a href>
+        <span>{{dates[2].weekday}}</span>
+        <span>{{dates[2].date}}</span>
+      </a>
+    </li>
+    
+    <li id="stretch"></li>
+  </ul>
+</nav>
