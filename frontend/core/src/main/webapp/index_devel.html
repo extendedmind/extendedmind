@@ -3,9 +3,9 @@
 <head>
     <base href="/" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title ng-bind="pageTitle.getTitle()"></title>
     <link rel="stylesheet/less" href="static/less/em.less"/>
     <script src="static/lib/less/less-min.js"></script>
@@ -84,12 +84,6 @@
 
     <script src="static/lib/idangerous/idangerous.swiper-2.4.js"></script>
     <script src="static/lib/fastclick.js"></script>
-    
-    <script>
-        window.addEventListener('load', function() {
-            FastClick.attach(document.body);
-        }, false);
-    </script>
 
     <script src="test/AppTest.js"></script>
     <script src="test/mock/MockBackendService.js"></script>
@@ -107,6 +101,5 @@
         MockController.$inject = ['MockBackendService'];
         angular.module('em.appTest').factory('MockController', MockController);
     </script>
-
 </body>
 </html>
