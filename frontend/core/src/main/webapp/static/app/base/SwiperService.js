@@ -72,8 +72,6 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
   var setPathsToSlides = function(swiperInfo, swiperSlidesPaths) {
     for (var i = 0; i < swiperInfo.swiper.slides.length; i++) {
       swiperInfo.swiper.slides[i].setData('path', swiperSlidesPaths[i]);
-      console.log("setting " + swiperSlidesPaths[i]);
-
     }
   };
 
@@ -106,8 +104,6 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
     },
     refreshSwiper: function(swiperPath) {
-      console.log(swipers[swiperPath].slidesPaths);
-
       if (swipers[swiperPath]){
         delete swipers[swiperPath].swiper;
         var params = getSwiperParameters(
