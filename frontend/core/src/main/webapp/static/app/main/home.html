@@ -42,10 +42,10 @@
             <div class="form-group">
               <div class="left-input-wrapper">
                 <label class="sr-only" for="omniItem">omniItem</label>
-                <input type="search" class="simple-input form-control" id="omniItem" ng-model="omnibarText.title" ng-focus="omniBarFocus(true)" ng-blur="omniBarFocus(false)" placeholder="store / recall" required>
+                <input type="search" class="simple-input form-control" id="omniItem" ng-model="omnibarText.title" ng-click="omniBarFocus(true)" placeholder="store / recall" required>
               </div>
               <div class="right-button-wrapper">
-                <button class="button" type="button" ng-click="addNewItem(omnibarText)"><span class="icon-plus"></span>
+                <button id="omnibarPlus" class="button" type="button" ng-click="addNewItem(omnibarText)"><span class="icon-plus"></span>
                 </button>
               </div>
             </div>
