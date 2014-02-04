@@ -1,12 +1,13 @@
-/*global angular */
 'use strict';
 
 angular.module('common').factory('DateService', [
   function() {
     var today = {};
-    var monthNames = ['jan', 'feb', 'mar', 'apr', 
-                  'may', 'jun', 'jul', 'aug',
-                  'sep', 'oct', 'nov', 'dec'];
+    var monthNames = [
+    'jan', 'feb', 'mar', 'apr',
+    'may', 'jun', 'jul', 'aug',
+    'sep', 'oct', 'nov', 'dec'
+    ];
 
     return{
       yyyymmdd: function(d) {
