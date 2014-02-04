@@ -42,7 +42,7 @@
             <div class="form-group">
               <div class="left-input-wrapper">
                 <label class="sr-only" for="omniItem">omniItem</label>
-                <input type="search" class="simple-input form-control" id="omniItem" ng-model="omnibarText.title" ng-focus="omniBarFocus(true)" ng-blur="omniBarFocus(false)" placeholder="store / recall" required>
+                <input type="search" class="simple-input form-control" id="omniItem" ng-model="omnibarText.title" ng-focus="omniBarFocus(true)" ng-blur="omniBarFocus(false)" placeholder="store or recall" required>
               </div>
               <div class="right-button-wrapper">
                 <button class="button" type="button" ng-click="addNewItem(omnibarText)"><span class="icon-plus"></span>
@@ -51,9 +51,11 @@
             </div>
           </form>                
         </div>
-        <div click-elsewhere class="arrow-box" ng-show="!clickedElsewhere && items.length === 0 && tasks.length === 0">
-          type here what you<br>want to remember<br><br>
-          we'll take care of the rest
+        <div ng-if="items.length === 0 && tasks.length === 0">
+          <div class="arrow-box">
+            type here what you<br>want to remember<br><br>
+            we'll take care of the rest
+          </div>
         </div>
         <div ng-if="omnibarText.title" id="filtered-items-container">          
           <div class="filtered-items" ng-show="filteredItems.length" ng-controller="ItemsController">
