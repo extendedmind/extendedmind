@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function ListsService(BackendClientService, UserSessionService, ArrayService, TagsService){
+function ListsService($q, BackendClientService, UserSessionService, ArrayService, TagsService){
   var lists = [];
   var deletedLists = [];
   var archivedLists = [];
@@ -30,6 +30,7 @@ function ListsService(BackendClientService, UserSessionService, ArrayService, Ta
       return lists.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveList: function(list) {
+      var deferred = $q.defer();      
       if (list.uuid){
         // Existing list
         BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid,
@@ -37,6 +38,7 @@ function ListsService(BackendClientService, UserSessionService, ArrayService, Ta
           if (result.data){
             list.modified = result.data.modified;
             ArrayService.updateItem(list, lists, deletedLists, otherArrays);
+            deferred.resolve(list);
           }
         });
       }else{
@@ -47,9 +49,11 @@ function ListsService(BackendClientService, UserSessionService, ArrayService, Ta
             list.uuid = result.data.uuid;
             list.modified = result.data.modified;
             ArrayService.setItem(list, lists, deletedLists, otherArrays);
+            deferred.resolve(list);
           }
         });
       }
+      return deferred.promise;      
     },
     deleteList: function(list) {
       BackendClientService.delete('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid,
@@ -129,5 +133,5 @@ function ListsService(BackendClientService, UserSessionService, ArrayService, Ta
   };
 }
   
-ListsService.$inject = ['BackendClientService', 'UserSessionService', 'ArrayService', 'TagsService'];
+ListsService.$inject = ['$q', 'BackendClientService', 'UserSessionService', 'ArrayService', 'TagsService'];
 angular.module('em.services').factory('ListsService', ListsService);

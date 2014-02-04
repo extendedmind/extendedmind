@@ -1,4 +1,4 @@
-<section id="tasks-lists" class="two-column-grid page" ng-controller="TasksController">
+<section id="tasks-lists" class="two-column-grid page" ng-init="newList={title:undefined}" ng-controller="TasksController">
   <div class="column">
     <header id="tasks-lists-header" class="page-header" ng-init="heading='menu'" ng-include="'static/app/base/pageHeader.html'"></header>
     <div id="tasks-lists-page-content-container" class="content-container page-content-container">
@@ -12,6 +12,14 @@
                 <span class="icon-arrow-right"></span>
               </a>
             </li>
+            <li>
+              <form class="swiper-no-swiping" role="form" name="addListForm" ng-submit="addList(newList)">
+                <div class="form-group">
+                  <label class="sr-only" for="listTitle">title</label>
+                  <input type="text" class="simple-input" id="listTitle" ng-model="newList.title" placeholder="add list..."></input>
+                </div>
+              </form>
+            </li> 
           </ul>
         </section>
 

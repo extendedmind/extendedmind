@@ -1,7 +1,7 @@
 /* global angular */
 'use strict';
 
-function TasksController($location, $scope, $routeParams, OwnerService, TasksService, SwiperService, TasksSlidesService) {
+function TasksController($location, $scope, $timeout, $routeParams, OwnerService, TasksService, ListsService, SwiperService, TasksSlidesService) {
 
   if (!$scope.task){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -100,11 +100,23 @@ function TasksController($location, $scope, $routeParams, OwnerService, TasksSer
     }
   };
 
-
   $scope.goToList = function(uuid) {
     SwiperService.swipeTo(TasksSlidesService.LISTS + '/' + uuid);
   };
+
+  $scope.newList = {title:undefined};
+  $scope.addList = function(newList) {
+    ListsService.saveList(newList).then(function(list) {
+      // Using timeout 0 to make sure that DOM is ready before refreshing
+      // swiper.
+      $timeout(function() {
+        SwiperService.refreshSwiper(TasksSlidesService.LISTS);
+      },0);
+    });
+    $scope.newList = {title:undefined};
+  };
+
 }
 
-TasksController.$inject = ['$location', '$scope', '$routeParams', 'OwnerService', 'TasksService', 'SwiperService', 'TasksSlidesService'];
+TasksController.$inject = ['$location', '$scope', '$timeout', '$routeParams', 'OwnerService', 'TasksService', 'ListsService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('TasksController', TasksController);

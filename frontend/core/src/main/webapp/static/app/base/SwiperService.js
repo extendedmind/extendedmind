@@ -72,6 +72,8 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
   var setPathsToSlides = function(swiperInfo, swiperSlidesPaths) {
     for (var i = 0; i < swiperInfo.swiper.slides.length; i++) {
       swiperInfo.swiper.slides[i].setData('path', swiperSlidesPaths[i]);
+      console.log("setting " + swiperSlidesPaths[i]);
+
     }
   };
 
@@ -97,9 +99,24 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       swipers[swiperPath] = {
         swiper: swiper,
         swiperType: swiperType,
-        slidesPaths: swiperSlidesPaths
+        slidesPaths: swiperSlidesPaths,
+        container: containerElement,
+        callback: onSlideChangeEndCallback
       };
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
+    },
+    refreshSwiper: function(swiperPath) {
+      console.log(swipers[swiperPath].slidesPaths);
+
+      if (swipers[swiperPath]){
+        delete swipers[swiperPath].swiper;
+        var params = getSwiperParameters(
+          swipers[swiperPath].swiperType,
+          swipers[swiperPath].slidesPaths,
+          swipers[swiperPath].callback);
+        swipers[swiperPath].swiper = new Swiper(swipers[swiperPath].container, params);
+        setPathsToSlides(swipers[swiperPath], swipers[swiperPath].slidesPaths);
+      }
     },
     onSlideChangeEnd: function(scope, swiperPath) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
