@@ -19,7 +19,7 @@ div[role=main] {
   line-height: @vertical-grid;
   max-height: @maximum-height;
   .center-horizontally;
-  position:relative;
+  position: relative;
 
   .one-column-grid, .two-column-grid, .column{
     min-height: inherit;
@@ -27,7 +27,7 @@ div[role=main] {
   }
   .column {
     position: relative;
-    width:100%;
+    width: 100%;
   }
 }
 
@@ -42,7 +42,7 @@ div[role=main] {
   .center-horizontally;
   padding-left: @horizontal-grid;
   aside.column, div.column {
-    width:auto;
+    width: auto;
     padding-right: @horizontal-grid;
   }
   aside.column {
@@ -56,18 +56,18 @@ div[role=main] {
 // HEADER
 
 header {
-  position:absolute;
-  top:0px; 
-  left:0px;
-  overflow:hidden;
-  width:100%;
+  position: absolute;
+  top: 0px; 
+  left: 0px;
+  overflow: hidden;
+  width: 100%;
   padding-left: inherit;
-  display:table;
+  display: table;
   * {
     vertical-align: middle;
   }
   nav {
-    display:table-cell;
+    display: table-cell;
   }
 }
 
@@ -91,14 +91,14 @@ header {
 // CONTENT
 
 .page-content-container {
-  height:inherit;
+  height: inherit;
   padding-top: @page-header-height;
   padding-bottom: @footer-height;
   .inner-page-content-container {
-    height:inherit;
-    position:relative;
+    height: inherit;
+    position: relative;
     overflow-y: auto;
-    display:block;
+    display: block;
   }
   .inner-slide-content-container{
     height: inherit;
@@ -122,7 +122,7 @@ header {
 // FOOTER
 
 footer {
-  position:relative;
+  position: relative;
   height: @footer-height;
   text-align: justify;
   -ms-text-justify: distribute-all-lines;
@@ -167,10 +167,10 @@ footer {
       }
     }
     div[role=main] > div.slides-container {
-      position:inherit;
-      top:50%;
-      height:@maximum-landscape-height;
-      margin-top:-@maximum-landscape-height / 2;
+      position: inherit;
+      top: 50%;
+      height: @maximum-landscape-height;
+      margin-top: -@maximum-landscape-height / 2;
     }
   }
 }
@@ -191,6 +191,6 @@ footer {
     max-width: @one-column-grid-width;
   }
   aside {
-    display:none;
+    display: none;
   }
 //}
