@@ -18,22 +18,27 @@
     under the License.
 -->
 <html ng-app="em.app">
-<head>
-    <meta charset="utf-8" />
-    <meta name="fragment" content="!" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
-    <title ng-bind="page.getTitle()"></title>
-    <link rel="stylesheet" href="static/css/em.css"/>
-    <script>
-      var urlPrefix = 'https://ext.md';
-      var html5Mode = false;
-  </script>
-</head>
-<body>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="fragment" content="!" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <title ng-bind="page.getTitle()"></title>
+        <link rel="stylesheet" href="static/css/em.css"/>
+        <script>
+          var urlPrefix = 'https://ext.md';
+          var html5Mode = false;
+        </script>
+    </head>
+    <body>
     
-    <div role="main" ng-view/>
-    
-    <script src="static/em.min.js"></script>
-</body>
+        <div role="main" ng-view/>
+        
+        <script src="static/em.min.js"></script>
+        <script type="application/javascript">
+          window.addEventListener('load', function() {
+            FastClick.attach(document.body);
+          }, false);
+        </script>
+    </body>
 </html>
