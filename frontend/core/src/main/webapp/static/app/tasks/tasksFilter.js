@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 angular.module('em.filters').filter('tasksFilter', ['DateService',

@@ -1,4 +1,4 @@
-/* global angular */
+/*jshint sub:true*/
 'use strict';
 
 function TasksController($location, $scope, $timeout, $routeParams, UserSessionService, OwnerService, TasksService, ListsService, SwiperService, TasksSlidesService) {
@@ -114,8 +114,7 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
     });
     $scope.newList = {title:undefined};
   };
-
 }
 
-TasksController.$inject = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService', 'OwnerService', 'TasksService', 'ListsService', 'SwiperService', 'TasksSlidesService'];
+TasksController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService', 'OwnerService', 'TasksService', 'ListsService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('TasksController', TasksController);

@@ -1,3 +1,4 @@
+/*jshint sub:true*/
 'use strict';
 
 // Controller for all main slides
@@ -45,5 +46,5 @@ function MainController($scope, DateService, UserSessionService, ItemsService, L
   };
 }
 
-MainController.$inject = ['$scope', 'DateService', 'UserSessionService', 'ItemsService', 'ListsService', 'TagsService', 'TasksService', 'OwnerService', 'FilterService', 'SwiperService', 'TasksSlidesService'];
+MainController['$inject'] = ['$scope', 'DateService', 'UserSessionService', 'ItemsService', 'ListsService', 'TagsService', 'TasksService', 'OwnerService', 'FilterService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('MainController', MainController);
