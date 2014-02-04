@@ -17,7 +17,7 @@ fi
 # phonegap platform update android
 
 # run phonegap command locally
-phonegap local build android | grep -A 5 error
+cordova build android | grep -A 5 error
 
 # make new build using ant release configuration
 ant release

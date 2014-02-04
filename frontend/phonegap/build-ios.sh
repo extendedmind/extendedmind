@@ -23,7 +23,7 @@ cd app
 # phonegap platform update ios
 
 # make phonegap build? (maybe not needed)
-phonegap build ios
+cordova build ios
 
 ## change dir:
 cd platforms/ios
