@@ -1,3 +1,4 @@
+/*jshint sub:true*/
 'use strict';
 
 function HomeController($scope, $location, ItemsService, UserSessionService, AuthenticationService) {
@@ -58,4 +59,4 @@ function HomeController($scope, $location, ItemsService, UserSessionService, Aut
 }
 
 angular.module('em.app').controller('HomeController', HomeController);
-HomeController.$inject = ['$scope', '$location','ItemsService', 'UserSessionService', 'AuthenticationService'];
+HomeController['$inject'] = ['$scope', '$location','ItemsService', 'UserSessionService', 'AuthenticationService'];
