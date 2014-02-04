@@ -70,7 +70,7 @@
     width: 100%;
     display: inline-block;
     font-size: 0;
-    line-height: 0
+    line-height: 0;
   }
 }
 
@@ -244,6 +244,13 @@ button.delete-button {
   }
   &:active {
     background-color: @delete-button-pressed;
+  }
+}
+
+button.enabled-button{
+  color: white;
+  & {
+    background-color: @enabled-button;
   }
 }
 
