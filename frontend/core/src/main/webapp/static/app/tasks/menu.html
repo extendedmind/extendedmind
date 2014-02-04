@@ -16,7 +16,7 @@
         </section>
 
         <section ng-if="contexts && contexts.length">
-          <h3><a href ng-click="gotoContexts()">contexts</a></h3>
+          <h3><a href ng-click="gotoContexts()" class="page-header">contexts</a></h3>
           <ul class="indent list-arrow-right">
             <li ng-repeat="context in contexts">
               <a class="click-to-slide" href="#/{{prefix}}/tasks/context/{{context.uuid}}">
