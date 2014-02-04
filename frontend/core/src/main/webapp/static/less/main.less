@@ -35,7 +35,7 @@ h1, h2, h3, h4, h5, h6 {
 
 a {
   text-decoration: none;
-  color: @active-link;
+  color: @inactive-element;
 }
 a:active {
   color: @pressed-link;
@@ -73,14 +73,14 @@ textarea {
 // PLACEHOLDER TWEAK 
 
 ::-webkit-input-placeholder { /* WebKit browsers */
-    color:    @inactive-text;
+    color:    @inactive-element;
 }
 :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-    color:    @inactive-text;
+    color:    @inactive-element;
 }
 ::-moz-placeholder { /* Mozilla Firefox 19+ */
-    color:    @inactive-text;
+    color:    @inactive-element;
 }
 :-ms-input-placeholder { /* Internet Explorer 10+ */
-    color:    @inactive-text;
+    color:    @inactive-element;
 }

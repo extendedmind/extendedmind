@@ -45,11 +45,11 @@ section#home {
       padding-top: 10px;
       .top-bottom-borders;
       a {
-        color: @active-link;
+        color: @inactive-element;
       }
       a.collective{
         // FIXME: This color is strange
-        color: @inactive-text;
+        color: @inactive-element;
       }
       a.collective:active{
         color: @pressed-link;
@@ -160,7 +160,7 @@ button.enabled-button{
 }
 
 input[type="checkbox"]:checked ~ a#accordionTitleLink {
-  color:@inactive-text;
+  color:@inactive-element;
   .fade-color(@fade-time);
 }
 
@@ -169,6 +169,6 @@ div#accordionTitleHeightFix {
 }
 
 a#accordionTitleLink {
-  color: @active-link;
+  color: @inactive-element;
   line-height: 19px;
 }

@@ -124,7 +124,7 @@
   span.slide-indicator { 
     display: table-cell;
     width: @slide-indicator-width;
-    color: @inactive-text;
+    color: @inactive-element;
   }
 }
 
@@ -285,7 +285,7 @@ input[type="checkbox"]:checked + label:before {
 
 select {
   &.simple-input {
-    color: @inactive-text;
+    color: @inactive-element;
     background: none;
     padding: 0;
   }
@@ -293,15 +293,15 @@ select {
     color: black;
   }
   option:first-child{
-    color: @inactive-text;
+    color: @inactive-element;
   }
 }
 
 // BORDERS
 
 .top-bottom-borders{
-  border-top: solid 2px @inactive-text;
-  border-bottom: solid 2px @inactive-text;
+  border-top: solid 2px @inactive-element;
+  border-bottom: solid 2px @inactive-element;
   border-color: @separator;
 }
 
@@ -332,8 +332,8 @@ select {
 }
 
 // Temporary classes (to be refactored)
-.inactive-text {
-  color: @inactive-text;
+.inactive-element {
+  color: @inactive-element;
 }
 
 // LISTS
@@ -364,7 +364,7 @@ a[class^='active-slide'],a[class*=' active-slide']{
 }
 
 a.click-to-slide {
-  color: @active-link;
+  color: @inactive-element;
 }
 
 span.icon-i, span.icon-plus {
@@ -389,7 +389,7 @@ span.icon-i:active, span.icon-plus:active {
   padding: 20px 10px;
   text-align: center;
   line-height: normal;
-  color: @inactive-text;
+  color: @inactive-element;
 }
 .arrow-box:after, .arrow-box:before {
   bottom: 100%;
