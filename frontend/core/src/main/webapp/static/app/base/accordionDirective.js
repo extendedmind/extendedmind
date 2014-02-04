@@ -1,4 +1,3 @@
-/* global angular, $ */
 'use strict';
 
 // From:
@@ -6,10 +5,11 @@
 
 // The accordion directive simply sets up the directive controller
 // and adds an accordion CSS class to itself element.
-function accordionDirective($document) {
-  return {
-    restrict: 'A',
-    controller: function($scope) {
+angular.module('common').directive('accordion', ['$document',
+  function($document) {
+    return {
+      restrict: 'A',
+      controller: function($scope) {
 
       // This array keeps track of the accordion title scopes
       this.titleScopes = [];
@@ -105,6 +105,4 @@ function accordionDirective($document) {
       element.addClass('accordion');
     }
   };
-}
-angular.module('common').directive('accordion', accordionDirective);
-accordionDirective.$inject = ['$document'];
+}]);

@@ -1,22 +1,22 @@
-/*global angular */
 'use strict';
 
 // From:
 // https://github.com/angular-app/Samples/tree/master/1820EN_10_Code/03_basic_accordion_directive
 
 // The accordion-title directive indicates the title of a block of html that will expand and collapse in an accordion
-function accordionTitleDirective($document){
-  return {
-    require:'^accordion',         // We need this directive to be inside an accordion
-    restrict:'A',                 // It will be an attribute
+angular.module('common').directive('accordionTitle', [
+  function () {
+    return {
+    require: '^accordion',         // We need this directive to be inside an accordion
+    restrict: 'A',                 // It will be an attribute
     replace: true,                // The element containing the directive will be replaced with the template
-    templateUrl:'static/app/base/accordionTitle.html',
-    scope:{ 
-      item:'=accordionTitle',
-      editItemTitle:'&',
-      editItem:'&',
-      hasComplete:'=',
-      toggleComplete:'&'
+    templateUrl: 'static/app/base/accordionTitle.html',
+    scope: {
+      item: '=accordionTitle',
+      editItemTitle: '&',
+      editItem: '&',
+      hasComplete: '=',
+      toggleComplete: '&'
     },  // Create an isolated scope
     link: function($scope, $element, $attrs, accordionCtrl) {
       accordionCtrl.addItem($scope);
@@ -26,22 +26,22 @@ function accordionTitleDirective($document){
       $scope.toggleOpen = function() {
         if (!$scope.isOpen){
           $scope.isOpen = true;
-          $element.parent().addClass("accordion-item-active");
+          $element.parent().addClass('accordion-item-active');
         }else{
-          $scope.closeItem();          
+          $scope.closeItem();
         }
         return $scope.isOpen;
-      }
+      };
 
       $scope.closeItem = function() {
         if ($scope.isOpen){
           $scope.endTitleEdit();
-          $element.parent().removeClass("accordion-item-active");
+          $element.parent().removeClass('accordion-item-active');
           $scope.isOpen = false;
           return true;
         }
         return false;
-      }
+      };
 
       $scope.clickTitle = function() {
         if ($scope.isOpen){
@@ -69,11 +69,11 @@ function accordionTitleDirective($document){
         $scope.editItem({item: $scope.item});
       };
 
-      $scope.startTitleEdit = function($event) {  
-        $event.stopPropagation();
+      $scope.startTitleEdit = function(event) {
+        event.stopPropagation();
       };
 
-      $scope.evaluateKeyPress = function($event) {
+      $scope.evaluateKeyPress = function(event) {
         // Enter key
         if(event.which === 13) {
           $scope.endTitleEdit();
@@ -86,7 +86,7 @@ function accordionTitleDirective($document){
           return 'center-input-wrapper';
         }
         return 'left-input-wrapper';
-      }
+      };
 
       $scope.itemChecked = function() {
         if ($scope.toggleComplete){
@@ -95,5 +95,4 @@ function accordionTitleDirective($document){
       };
     }
   };
-};
-angular.module('common').directive('accordionTitle', ['$document', accordionTitleDirective]);
+}]);
