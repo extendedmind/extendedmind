@@ -14,10 +14,10 @@ if [ -d ${RELEASE_BUILDDIR} ]; then
 fi
 
 # make sure cordova assets are updated
-phonegap platform update android
+# phonegap platform update android
 
 # run phonegap command locally
-phonegap local build android
+cordova build android | grep -A 5 error
 
 # make new build using ant release configuration
 ant release

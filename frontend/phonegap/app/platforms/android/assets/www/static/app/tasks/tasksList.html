@@ -1,7 +1,0 @@
-
-<div class="inner-page-content-container" accordion>
-  <div ng-repeat="task in tasks | tasksFilter:tasksFilter" accordion-item="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)">
-    <div ng-include="'static/app/tasks/taskActions.html'"></div>
-  </div>
-  <div sub-task add="addSubtask(subtask)" subtask="subtask"></div>
-</div>

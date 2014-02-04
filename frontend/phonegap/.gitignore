@@ -6,7 +6,14 @@ app/www/static
 # ios
 app/platforms/ios/build
 app/platforms/ios/www
+app/platforms/ios/em/config.xml
 
 # android
-app/platforms/android/assets/static/
+app/platforms/android/assets/static
+app/platforms/android/ant.properties
+app/platforms/android/assets/www/static
+app/platforms/android/res/xml/config.xml
+app/platforms/ios/cordova/defaults.xml
 *.keystore
+
+

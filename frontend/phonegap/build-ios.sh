@@ -20,16 +20,16 @@ echo "running .. phonegap build iOS"
 cd app
 
 # make sure cordova assets are updated
-cordova platform update ios
+# phonegap platform update ios
 
 # make phonegap build? (maybe not needed)
-phonegap build ios
+cordova build ios
 
 ## change dir:
 cd platforms/ios
 
 # build xcode
-xcodebuild -scheme em -configuration "${CONFIGURATION_NAME}" clean build archive -archivePath "build/archive" CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" PROVISIONING_PROFILE=${PROVISIONING_UUID}
+xcodebuild -scheme em -configuration "${CONFIGURATION_NAME}" clean build archive -archivePath "build/archive" CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" PROVISIONING_PROFILE=${PROVISIONING_UUID} | grep -A 5 error
 
 # makedir
 rm -f build/package/release.ipa
