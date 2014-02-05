@@ -3,11 +3,10 @@ package org.extendedmind.domain
 import java.util.UUID
 import Validators._
 
-case class Note(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long], 
+case class Note(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
                 title: String, description: Option[String], 
-                content: Option[String],
                 link: Option[String],
-                area: Option[Boolean],
+                content: Option[String],
                 visibility: Option[SharedItemVisibility],
                 relationships: Option[ExtendedItemRelationships])
            extends ExtendedItem{
@@ -19,9 +18,9 @@ case class Note(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long
 
 object Note{
   def apply(title: String, description: Option[String], 
-            content: Option[String],
             link: Option[String],
+            content: Option[String],
             relationships: Option[ExtendedItemRelationships]) 
-        = new Note(None, None, None, title, description, content, 
-                   link, None, None, relationships)
+        = new Note(None, None, None, None, title, description, link, content, 
+                   None, relationships)
 }

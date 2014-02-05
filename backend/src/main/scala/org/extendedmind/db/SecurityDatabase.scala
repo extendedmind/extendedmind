@@ -18,6 +18,7 @@ import org.neo4j.graphdb.traversal.Evaluation
 import scala.collection.mutable.HashMap
 import org.neo4j.graphdb.Relationship
 import spray.util.LoggingContext
+import org.extendedmind.domain.SignUp
 
 trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   
@@ -26,6 +27,9 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   // If rememberMe is set, the token can be replaced for 7 days
   val TOKEN_REPLACEABLE: Long = 7 * 24 * 60 * 60 * 1000
 
+  // Password reset is valid for one hour
+  val PASSWORD_RESET_DURATION: Long = 1 * 60 * 60 * 1000
+  
   // PUBLIC
 
   def generateToken(email: String, attemptedPassword: String, payload: Option[AuthenticatePayload]): Response[SecurityContext] = {
@@ -154,7 +158,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       result <- Right(getSetResult(userNode, false)).right
     } yield result
   }
-  
+
   def destroyAllTokens: Response[CountResult] = {
     withTx {
       implicit neo4j =>
@@ -167,6 +171,34 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         Right(CountResult(count))
     }
   }
+      
+  def savePasswordResetInformation(userUUID: UUID, resetCode: Long, resetCodeValid: Long, emailId: String): Response[Unit] = {
+    withTx {
+      implicit neo4j =>
+	    for {
+	      userNode <- getNode(userUUID, OwnerLabel.USER).right
+	      result <- Right(savePasswordResetInformation(userNode, resetCode, resetCodeValid, emailId)).right
+	    } yield result
+    }
+  }
+    
+  def getPasswordResetExpires(code: Long, email: String): Response[Long] = {
+    withTx {
+      implicit neo4j =>
+	    for {
+	      userNode <- getUserNode(email).right
+	      result <- getPasswordResetExpires(code, userNode).right
+	    } yield result
+    }
+  }
+  
+  def resetPassword(code: Long, signUp: SignUp): Response[SetResult] = {
+    for {
+      userNode <- resetPasswordNode(code, signUp).right
+      result <- Right(getSetResult(userNode, true)).right
+    } yield result
+  }
+
   
   // PRIVATE
   
@@ -443,5 +475,40 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     else if (userNode.hasLabel(UserLabel.BETA))
       userNode.removeLabel(UserLabel.BETA)
   }
-
+  
+  private def savePasswordResetInformation(userNode: Node, resetCode: Long, resetCodeExpires: Long, emailId: String)(implicit neo4j: DatabaseService){
+    userNode.setProperty("passwordResetCode", resetCode)
+    userNode.setProperty("passwordResetCodeExpires", resetCodeExpires)
+    userNode.setProperty("passwordResetEmailId", emailId)
+  }
+  
+  private def getPasswordResetExpires(code: Long,userNode: Node)(implicit neo4j: DatabaseService): Response[Long] = {
+    if (userNode.hasProperty("passwordResetCode") && userNode.getProperty("passwordResetCode").asInstanceOf[Long] == code){
+      val currentTime = System.currentTimeMillis
+      if (userNode.hasProperty("passwordResetCodeExpires") && userNode.getProperty("passwordResetCodeExpires").asInstanceOf[Long] > currentTime){
+        Right(userNode.getProperty("passwordResetCodeExpires").asInstanceOf[Long])
+      }else{
+        fail(INVALID_PARAMETER, "Password not resetable anymore")       
+      }
+    }else{
+      fail(INVALID_PARAMETER, "Password not resetable")
+    }
+  }
+  
+  private def resetPasswordNode(code: Long, signUp: SignUp): Response[Node] = {
+    withTx {
+      implicit neo =>
+        for {
+          userNode <- getUserNode(signUp.email).right
+          expires <- getPasswordResetExpires(code, userNode).right
+          result <- Right(setUserPassword(userNode, signUp.password)).right
+          result <- Right(clearPasswordResetExpires(userNode)).right
+        } yield userNode
+    }
+  }
+  
+  private def clearPasswordResetExpires(userNode: Node)(implicit neo4j: DatabaseService){
+    if (userNode.hasProperty("passwordResetCodeExpires")) userNode.removeProperty("passwordResetCodeExpires")
+  }
+  
 }

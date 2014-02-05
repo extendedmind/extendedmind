@@ -8,14 +8,11 @@ angular.module('em.services').factory('FilterService',[
         tasksByDate:{
           name:'tasksByDate'
         },
-        project:{
-          name:'projects'
-        },
         unsorted:{
           name:'unsorted'
         },
-        tasksByProjectUUID:{
-          name:'byProjectUUID'
+        tasksByListUUID:{
+          name:'byListUUID'
         }
       }
     };

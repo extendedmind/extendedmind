@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 angular.module('em.filters').filter('tasksFilter', ['DateService',
@@ -7,15 +6,15 @@ angular.module('em.filters').filter('tasksFilter', ['DateService',
     var filter = function(tasks, filterValue) {
       var tasksFilter = {};
 
-      tasksFilter.byProjectUUID = function(tasks, uuid) {
+      tasksFilter.byListUUID = function(tasks, uuid) {
         var filteredValues, i;
         filteredValues = [];
         i = 0;
 
         while (tasks[i]) {
           if (tasks[i].relationships) {
-            if (tasks[i].relationships.parentTask) {
-              if (tasks[i].relationships.parentTask === uuid) {
+            if (tasks[i].relationships.parent) {
+              if (tasks[i].relationships.parent === uuid) {
                 filteredValues.push(tasks[i]);
               }
             }
@@ -29,30 +28,15 @@ angular.module('em.filters').filter('tasksFilter', ['DateService',
         var filteredValues, i;
         filteredValues = [];
         i = 0;
+        
         while (tasks[i]) {
-          if (!tasks[i].project) {
-            if (tasks[i].due) {
-              if (tasks[i].due === listDate) {
-                filteredValues.push(tasks[i]);
-              } else if (listDate === DateService.today().yyyymmdd && DateService.today().yyyymmdd > tasks[i].due) { // if task date < today
-                filteredValues.push(tasks[i]);
-              }
+          if (tasks[i].due) {
+            if (tasks[i].due === listDate.yyyymmdd) {
+              filteredValues.push(tasks[i]);
+            } else if (listDate.yyyymmdd === DateService.yyyymmdd(DateService.today()) 
+                  && (DateService.today() > DateService.toDate(tasks[i].due))) { // if task date < today
+              filteredValues.push(tasks[i]);
             }
-          }
-          i++;
-        }
-        return filteredValues;
-      };
-
-      tasksFilter.projects = function(tasks) {
-
-        var filteredValues, i;
-        filteredValues = [];
-        i = 0;
-
-        while (tasks[i]) {
-          if (tasks[i].project) {
-            filteredValues.push(tasks[i]);
           }
           i++;
         }
@@ -69,12 +53,9 @@ angular.module('em.filters').filter('tasksFilter', ['DateService',
           sortedTask = false;
 
           if (tasks[i].relationships) {
-            if (tasks[i].relationships.parentTask) {
+            if (tasks[i].relationships.parent) {
               sortedTask = true;
             }
-          }
-          if (tasks[i].project) {
-            sortedTask = true;
           }
           if (!sortedTask) {
             filteredValues.push(tasks[i]);

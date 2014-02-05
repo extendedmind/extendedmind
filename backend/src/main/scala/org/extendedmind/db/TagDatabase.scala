@@ -50,17 +50,24 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
   
+  def deleteTag(owner: Owner, tagUUID: UUID): Response[DeleteItemResult] = {
+    for {
+      deletedTagNode <- deleteTagNode(owner, tagUUID).right
+      result <- Right(getDeleteItemResult(deletedTagNode._1, deletedTagNode._2)).right
+      unit <- Right(updateItemsIndex(deletedTagNode._1, result.result)).right
+    } yield result
+  }
+  
   // PRIVATE
 
   protected def putExistingTagNode(owner: Owner, tagUUID: UUID, tag: Tag): 
         Response[Node] = {
+    val subLabel = if (tag.tagType == CONTEXT) Some(TagLabel.CONTEXT) else Some(TagLabel.KEYWORD)
+    val subLabelAlternative = if (tag.tagType == CONTEXT) Some(scala.List(TagLabel.KEYWORD)) else Some(scala.List(TagLabel.CONTEXT))
     withTx {
       implicit neo4j =>
         for {
-          tagNode <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), 
-              (if (tag.tagType == CONTEXT) Some((TagLabel.CONTEXT, TagLabel.KEYWORD)) 
-                 else Some((TagLabel.KEYWORD, TagLabel.CONTEXT)))
-              ).right
+          tagNode <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), subLabel, subLabelAlternative).right
           parentNode <- setTagParentNodes(tagNode, owner, tag).right
         } yield tagNode
     }
@@ -72,7 +79,9 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo4j =>
         for {
           tagNode <- createItem(owner, tag, Some(ItemLabel.TAG),
-                         (if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT) else Some(TagLabel.KEYWORD))              
+                         (if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT) 
+                          else if (tag.tagType.get == KEYWORD) Some(TagLabel.KEYWORD)
+                          else Some(TagLabel.HISTORY))
                          ).right
           parentNodes <- setTagParentNodes(tagNode, owner, tag).right
         } yield tagNode
@@ -82,13 +91,12 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def setTagParentNodes(tagNode: Node,  owner: Owner, tag: Tag)(implicit neo4j: DatabaseService): 
           Response[Option[Relationship]] = {
     for {
-      oldParentRelationships <- getParentRelationships(tagNode, owner).right
+      oldParentRelationship <- getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG).right
       newParentRelationship <- setParentRelationship(tagNode, owner, tag.parent, 
-          oldParentRelationships._3, ItemLabel.TAG).right
+          oldParentRelationship, ItemLabel.TAG).right
       parentRelationship <- Right(newParentRelationship).right
     }yield parentRelationship
   }
-  
   
   override def toTag(tagNode: Node, owner: Owner)
             (implicit neo4j: DatabaseService): Response[Tag] = {
@@ -101,11 +109,24 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def addTransientTagProperties(tagNode: Node, owner: Owner, tag: Tag)
             (implicit neo4j: DatabaseService): Response[Tag] = {
     for {
-      parents <- getParentRelationships(tagNode, owner).right
+      parent <- getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG).right
       completeTag <- Right(tag.copy(
-        tagType = (if (tagNode.hasLabel(TagLabel.CONTEXT)) Some(CONTEXT) else Some(KEYWORD)),
-        parent = (if (parents._3.isEmpty) None else (Some(getUUID(parents._3.get.getEndNode())))))).right
+        tagType = (if (tagNode.hasLabel(TagLabel.CONTEXT)) Some(CONTEXT) 
+                   else if (tagNode.hasLabel(TagLabel.CONTEXT)) Some(KEYWORD)
+                   else Some(HISTORY)),
+        parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))))).right
     } yield completeTag
   }
  
+  protected def deleteTagNode(owner: Owner, tagUUID: UUID): Response[Tuple2[Node, Long]] = {
+    withTx {
+      implicit neo =>
+        for {
+          tagNode <- getItemNode(owner, tagUUID, Some(ItemLabel.TAG)).right
+          deleted <- Right(deleteItem(tagNode)).right
+        } yield (tagNode, deleted)
+    }
+  }
+
+  
 }

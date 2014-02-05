@@ -42,7 +42,6 @@ function SessionStorageService() {
     getUserUUID: function() {
       return sessionStorage.getItem('userUUID');
     },
-
     clearUser: function() {
       sessionStorage.removeItem('activeUUID');
       sessionStorage.removeItem('collectives');

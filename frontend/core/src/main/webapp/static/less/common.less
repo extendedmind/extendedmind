@@ -63,8 +63,6 @@
     display: inline;
   }
   .justified-element {
-    height: @footer-height;
-    vertical-align: top;
     display: inline-block;
     *display: inline;
   }
@@ -72,7 +70,7 @@
     width: 100%;
     display: inline-block;
     font-size: 0;
-    line-height: 0
+    line-height: 0;
   }
 }
 
@@ -120,11 +118,13 @@
   span.link-title {
     width: 100%;
     display: table-cell;
+    line-height: normal;
+    color: @content;
   }
   span.slide-indicator { 
     display: table-cell;
     width: @slide-indicator-width;
-    color: @inactive-text;
+    color: @default-element;
   }
 }
 
@@ -217,13 +217,13 @@
 button.normal-button {
   color: white;
   & {
-    background-color: @active-button;
+    background-color: @highlighted-button;
   }
   &:active {
-    background-color: @pressed-button;
+    background-color: @default-button-pressed;
   }
   &[disabled] {
-    background-color: @inactive-button;
+    background-color: @default-button-disabled;
   }
 }
 
@@ -233,7 +233,7 @@ button.cancel-button {
     background-color: @cancel-button;
   }
   &:active {
-    background-color: @pressed-cancel-button;
+    background-color: @cancel-button-pressed;
   }
 }
 
@@ -244,7 +244,14 @@ button.delete-button {
     background-color: @delete-button;
   }
   &:active {
-    background-color: @pressed-delete-button;
+    background-color: @delete-button-pressed;
+  }
+}
+
+button.enabled-button{
+  color: white;
+  & {
+    background-color: white;
   }
 }
 
@@ -265,7 +272,7 @@ input[type='checkbox'] + label:before {
   font-size: @icon-size;
   padding-right: 10px;
   vertical-align: middle;
-  color: @enabled-button;
+  color: @default-button;
 }
 
 input[type="checkbox"] + label:before {
@@ -278,13 +285,14 @@ input[type="checkbox"] + label.overdue:before {
 
 input[type="checkbox"]:checked + label:before {
   .icon-selection-checked;
+  color: @highlighted-element;
 }
 
 // SELECTIONS
 
 select {
   &.simple-input {
-    color: @inactive-text;
+    color: @default-element;
     background: none;
     padding: 0;
   }
@@ -292,15 +300,15 @@ select {
     color: black;
   }
   option:first-child{
-    color: @inactive-text;
+    color: @default-element;
   }
 }
 
 // BORDERS
 
 .top-bottom-borders{
-  border-top: solid 2px @inactive-text;
-  border-bottom: solid 2px @inactive-text;
+  border-top: solid 1px @default-element;
+  border-bottom: solid 1px @default-element;
   border-color: @separator;
 }
 
@@ -324,15 +332,15 @@ select {
   background: white;
 }
 ::-webkit-scrollbar-thumb {
-  background: @enabled-button;
+  background: @default-button;
 }
 ::-webkit-scrollbar-corner {
   background: white;
 }
 
 // Temporary classes (to be refactored)
-.inactive-text {
-  color: @inactive-text;
+.default-element {
+  color: @default-element;
 }
 
 // LISTS
@@ -345,46 +353,47 @@ select {
   }
 }
 
+// Multirow item indent fixed
+.single-lineheight {
+  table {
+    max-width: 100%;
+    td {
+      padding-right: 0.5em;
+    }
+  }
+}
+
 // FORMS
 
 .form-group, .input-group {
   width: 100%;
-  select, input {
-    width: inherit;
-  }
 }
 
 // FOOTER
 
 a[class^='active-slide'],a[class*=' active-slide']{
   span {
-    color: @active-link;
+    color: @highlighted-element;
   }
 }
 
 a.click-to-slide {
-  color: @active-link;
+  color: @default-element;
 }
 
 span.icon-i, span.icon-plus {
-  color: @highlighted;
+  color: @highlighted-element;
 }
 span.icon-i:active, span.icon-plus:active {
-  color: @highlighted-pressed;
+  color: @highlighted-element-pressed;
 }
 
 /*
 [class^="icon-"], [class*=" icon-"] button {
-  color: @highlighted; // plus button always highlighted
+  color: @highlighted-element; // plus button always highlighted-element
   padding-top: 8px; // quick fix to center the plus button
 }
 */
-
-.disabled {
-  span {
-    color: @inactive-link !important;
-  }
-}
 
 .arrow-box {
   margin-top: 40px;
@@ -394,7 +403,7 @@ span.icon-i:active, span.icon-plus:active {
   padding: 20px 10px;
   text-align: center;
   line-height: normal;
-  color: @inactive-text;
+  color: @default-element;
 }
 .arrow-box:after, .arrow-box:before {
   bottom: 100%;
@@ -418,4 +427,11 @@ span.icon-i:active, span.icon-plus:active {
   border-bottom-color: @separator;
   border-width: 16px;
   margin-left: -16px;
+}
+
+.danger {
+  .wide-button;
+  background-color: @danger-background;
+  color: @danger-text;
+  text-align: center;
 }

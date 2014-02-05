@@ -55,9 +55,45 @@ trait SecurityService extends ServiceBase {
             complete {
               Future[CountResult] {
                 securityActions.changePassword(securityContext.userUUID, newPassword.password) match {
-                  case Right(deleteCount) => deleteCount
+                  case Right(count) => count
                   case Left(e) => processErrors(e)
                 }
+              }
+            }
+          }
+        }
+      } ~
+      postForgotPassword { url =>
+        entity(as[UserEmail]) { userEmail =>
+          complete {
+            Future[ForgotPasswordResult] {
+              securityActions.forgotPassword(userEmail) match {
+                case Right(result) => result
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      } ~
+      getPasswordResetExpires { code =>
+        parameters("email") { email =>
+          complete {
+            Future[ForgotPasswordResult] {
+              securityActions.getPasswordResetExpires(code, email) match {
+                case Right(result) => result
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      } ~
+      postResetPassword { code =>
+        entity(as[SignUp]) { signUp =>
+          complete {
+            Future[SetResult] {
+              securityActions.resetPassword(code, signUp) match {
+                case Right(sr) => sr
+                case Left(e) => processErrors(e)
               }
             }
           }

@@ -1,14 +1,14 @@
-/*global angular, Swiper */
+/*jshint sub:true*/
 'use strict';
 
 // iDangero.us Swiper Service       
 // http://www.idangero.us/sliders/swiper/api.php
-function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerService) {
+function SwiperService(OwnerService) {
 
   // Holds reference to all the swipers and their respective paths
   var swipers = {};
 
-  var slideChangeCallbacks = [];
+  var slideChangeCallbacks = {};
 
   // Initial slides, these must be set by the route provider
   var initialMainSlidePath;
@@ -98,9 +98,16 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       swipers[swiperPath] = {
         swiper: swiper,
         swiperType: swiperType,
-        slidesPaths: swiperSlidesPaths
+        slidesPaths: swiperSlidesPaths,
+        container: containerElement,
+        callback: onSlideChangeEndCallback
       };
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
+    },
+    refreshSwiper: function(swiperPath) {
+      if (swipers[swiperPath]) {
+        swipers[swiperPath].swiper.reInit();
+      }
     },
     onSlideChangeEnd: function(scope, swiperPath) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
@@ -133,14 +140,23 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       var swiperInfos = getSwiperInfosBySlidePath(slidePath);
 
       // First, swipe in the main swiper to the right index 
+      // Second, swipe (vertically) with the page swiper
+      this.swipeMainSlide(slidePath, swiperInfos);
+      this.swipePageSlide(slidePath, swiperInfos);
+    },
+    swipeMainSlide: function(slidePath, swiperInfos) {
+      swiperInfos = swiperInfos || getSwiperInfosBySlidePath(slidePath);
+
       if (swiperInfos.main){
         var mainSwiperIndex = getSlideIndexBySlidePath(slidePath, swiperInfos.main.slidesPaths);
         if (mainSwiperIndex !== undefined){
           swiperInfos.main.swiper.swipeTo(mainSwiperIndex);
         }
       }
+    },
+    swipePageSlide: function(slidePath, swiperInfos) {
+      swiperInfos = swiperInfos || getSwiperInfosBySlidePath(slidePath);
 
-      // Second, swipe (vertically) with the page swiper
       if (swiperInfos.page) {
         var pageSwiperIndex = swiperInfos.page.slidesPaths.indexOf(slidePath);
         if (pageSwiperIndex !== undefined){
@@ -174,5 +190,5 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
     }
   };
 }
+SwiperService['$inject'] = ['OwnerService'];
 angular.module('em.services').factory('SwiperService', SwiperService);
-SwiperService.$inject = ['$rootScope', 'LocationService', 'TasksSlidesService', 'OwnerService'];

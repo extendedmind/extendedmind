@@ -78,6 +78,8 @@ class Settings(config: Config) extends Extension {
   val requestInviteOrderNumberURI = config.getString("extendedmind.email.templates.requestInviteOrderNumberURI")
   val acceptInviteRequestTitle = config.getString("extendedmind.email.templates.acceptInviteRequestTitle")
   val acceptInviteURI = config.getString("extendedmind.email.templates.acceptInviteURI")
+  val resetPasswordTitle = config.getString("extendedmind.email.templates.resetPasswordTitle")
+  val resetPasswordURI = config.getString("extendedmind.email.templates.resetPasswordURI")
 }
 
 object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{
@@ -99,6 +101,7 @@ class Configuration(settings: Settings, actorRefFactory: ActorRefFactory) extend
   bind [ItemActions] to new ItemActionsImpl
   bind [TaskActions] to new TaskActionsImpl
   bind [NoteActions] to new NoteActionsImpl
+  bind [ListActions] to new ListActionsImpl
   bind [TagActions] to new TagActionsImpl
   bind [AdminActions] to new AdminActionsImpl
 }

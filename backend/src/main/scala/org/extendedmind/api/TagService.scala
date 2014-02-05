@@ -73,6 +73,34 @@ trait TagService extends ServiceBase {
             }
           }
         }
+      } ~
+      deleteTag { (ownerUUID, tagUUID) =>
+        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+          authorize(writeAccess(ownerUUID, securityContext)) {
+            complete {
+              Future[DeleteItemResult] {
+                tagActions.deleteTag(getOwner(ownerUUID, securityContext), tagUUID) match {
+                  case Right(dir) => dir
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
+      undeleteTag { (ownerUUID, tagUUID) =>
+        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+          authorize(writeAccess(ownerUUID, securityContext)) {
+            complete {
+              Future[SetResult] {
+                tagActions.undeleteTag(getOwner(ownerUUID, securityContext), tagUUID) match {
+                  case Right(sr) => sr
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
       }
   }
 }

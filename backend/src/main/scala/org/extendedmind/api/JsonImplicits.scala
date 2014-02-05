@@ -23,14 +23,16 @@ object JsonImplicits extends DefaultJsonProtocol {
         x match {
           case CONTEXT => "context"
           case KEYWORD => "keyword"
+          case HISTORY => "history"
         })
     def read(value: JsValue) = value match {
       case JsString(x) => {
         if (x == "keyword") KEYWORD
         else if (x == "context") CONTEXT 
-        else deserializationError("Expected 'context' or 'keyword' but got " + x)
+        else if (x == "history") HISTORY 
+        else deserializationError("Expected 'context', 'keyword' or 'history' but got " + x)
       }
-      case x => deserializationError("Expected UUID as JsString, but got " + x)
+      case x => deserializationError("Expected TagType as JsString, but got " + x)
     }
   }
 
@@ -49,16 +51,21 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implInvites = jsonFormat1(Invites.apply)
   implicit val implUserAccessRight = jsonFormat1(UserAccessRight.apply)
   implicit val implPublicUser = jsonFormat1(PublicUser.apply)
+  implicit val implForgotPasswordResult = jsonFormat1(ForgotPasswordResult.apply)
+  implicit val implUserEmail = jsonFormat1(UserEmail.apply)
   implicit val implVisibility = jsonFormat2(SharedItemVisibility.apply)
   implicit val implRelationships = jsonFormat3(ExtendedItemRelationships.apply)
-  implicit val implItem = jsonFormat5(Item.apply)
-  implicit val implTask = jsonFormat14(Task.apply)
+  implicit val implItem = jsonFormat6(Item.apply)
+  implicit val implTask = jsonFormat15(Task.apply)
   implicit val implNote = jsonFormat10(Note.apply)
+  implicit val implList = jsonFormat13(List.apply)  
   implicit val implTag = jsonFormat9(Tag.apply)  
-  implicit val implItems = jsonFormat4(Items.apply)
+  implicit val implItems = jsonFormat5(Items.apply)
   implicit val implCollective = jsonFormat7(Collective.apply)
   implicit val implUser = jsonFormat5(User.apply)
   implicit val implSecurityContext = jsonFormat7(SecurityContext.apply)
   implicit val implAuthenticatePayload = jsonFormat1(AuthenticatePayload.apply)
-  implicit val implCompleteTaskResult = jsonFormat2(CompleteTaskResult.apply)
+  implicit val implCompleteTaskResult = jsonFormat3(CompleteTaskResult.apply)
+  implicit val implArchiveListResult = jsonFormat4(ArchiveListResult.apply)
+
 }

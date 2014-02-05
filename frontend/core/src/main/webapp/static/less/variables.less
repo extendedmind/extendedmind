@@ -1,6 +1,7 @@
 // Baseline
 @horizontal-grid: 30px;
 @vertical-grid: 44px;
+@vertical-grid-half: 19px;
 
 // icons
 @icon-size: 28px;
@@ -29,29 +30,31 @@
 @heading-header-height: 60px;
 
 // Footer
-@footer-height: 50px;
+@footer-height: 60px;
+
+// Date picker
+@datepicker-height: 60px;
 
 // Colors
+@content: black;
 @logo: #3b3b3b;
 @separator: #dadada;
-@inactive-text: #919191;
+@instruction: #37c331;
 
-@active-link: black;
-@enabled-link: #919191;
-@pressed-link: darken(@enabled-link, 20%);
-@inactive-link: lighten(@enabled-link, 20%);
+@default-element: #919191;
+@default-element-pressed: darken(@default-element, 20%);
+@highlighted-element: #0f82fe;
+@highlighted-element-pressed: darken(@highlighted-element, 20%);
 
-@highlighted: #0f82fe;
-@highlighted-pressed: #00baff;
+@default-button: #b0b0b6;
+@default-button-pressed: #00baff;
+@default-button-disabled: lighten(@default-button, 20%);
 
-@enabled-button: #b0b0b6;
-@inactive-button: lighten(@enabled-button, 20%);
-@active-button: #0f82fe;
-@pressed-button: #00baff;
+@highlighted-button: #0f82fe;
 @cancel-button: #7e7e7e;
-@pressed-cancel-button: lighten(@cancel-button, 20%);
+@cancel-button-pressed: lighten(@cancel-button, 20%);
 @delete-button: #e22c09;
-@pressed-delete-button: lighten(@delete-button, 20%);
+@delete-button-pressed: lighten(@delete-button, 20%);
 @overdue-task: @delete-button;
 
 // Components
@@ -59,16 +62,5 @@
 @fade-time: 0.2s;
 @icon-button-width: @plus-button-width;
 
-/* MIKÄ TÄÄ ON?
-@page-padding: 15px;
-@active-color: #428bca;
-@inactive-color: #c6dcef; 
-@em-lightblue: #7aadd9;
-@blue-disabled: #c6dcef;
-@completed: #AFAFAF;
-@gray: #8E8E93;
-@darkgray: #B6BBBA;
-@red: #E22C09;
-@green: #4ECE3A;
-@black: #333;
-*/
+@danger-background: @delete-button;
+@danger-text: white;

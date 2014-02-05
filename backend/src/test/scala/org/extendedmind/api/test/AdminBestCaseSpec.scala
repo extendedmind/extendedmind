@@ -146,7 +146,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         itemsResponse.tasks.get.length should equal(1)
         itemsResponse.notes should not be None
       }
-      val newTask = Task("change border colour to lighter gray", None, None, None, None, None)
+      val newTask = Task("change border colour to lighter gray", None, None, None, None, None, None)
       val putTaskResponse = putNewTask(newTask, authenticateResponse, Some(emtUUID))
       val putExistingTaskResponse = putExistingTask(newTask.copy(description = Some("e.g. #EDEDED")),
         putTaskResponse.uuid.get, authenticateResponse, Some(emtUUID))

@@ -51,7 +51,8 @@ trait MailgunClient {
 
   val requestInviteConfirmationHtmlTemplate = getTemplate("requestInviteConfirmation.html", settings.emailTemplateDir)
   val acceptInviteRequestHtmlTemplate = getTemplate("acceptInviteRequest.html", settings.emailTemplateDir)
-
+  val resetPasswordHtmlTemplate = getTemplate("resetPassword.html", settings.emailTemplateDir)
+  
   // Prepare pipeline
   implicit val implicitActorRefFactory = actorRefFactory
   implicit val implicitContext = actorRefFactory.dispatcher
@@ -81,6 +82,20 @@ trait MailgunClient {
             + settings.acceptInviteURI
             .replaceAll("inviteValue", invite.code.toHexString)
             .replaceAll("emailValue", invite.email))
+        .replaceAll("logoLink", settings.emailUrlPrefix + "logoname.png"))
+    sendEmail(sendEmailRequest)
+  }
+  
+  def sendPasswordResetLink(email: String, resetCode: Long): Future[SendEmailResponse] = {
+    val sendEmailRequest = SendEmailRequest(settings.emailFrom, email,
+      settings.resetPasswordTitle,
+      resetPasswordHtmlTemplate
+        .replaceAll(
+          "resetPasswordLink",
+          settings.emailSecureUrlPrefix
+            + settings.resetPasswordURI
+            .replaceAll("resetCodeValue", resetCode.toHexString)
+            .replaceAll("emailValue", email))
         .replaceAll("logoLink", settings.emailUrlPrefix + "logoname.png"))
     sendEmail(sendEmailRequest)
   }

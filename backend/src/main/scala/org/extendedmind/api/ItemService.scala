@@ -29,13 +29,15 @@ trait ItemService extends ServiceBase {
   
   def itemRoutes = {
       getItems { ownerUUID =>
-        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
-          authorize(readAccess(ownerUUID, securityContext)) {
-            complete {
-              Future[Items] {
-                itemActions.getItems(getOwner(ownerUUID, securityContext)) match {
-                  case Right(items) => items
-                  case Left(e) => processErrors(e)
+        parameters('modified.as[Long].?, 'active ? true, 'deleted ? false, 'archived ? false, 'completed ? false) { (modified, active, deleted, archived, completed) =>
+      	  authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+            authorize(readAccess(ownerUUID, securityContext)) {
+              complete {
+                Future[Items] {
+                  itemActions.getItems(getOwner(ownerUUID, securityContext), modified, active, deleted, archived, completed) match {
+                    case Right(items) => items
+                    case Left(e) => processErrors(e)
+                  }
                 }
               }
             }

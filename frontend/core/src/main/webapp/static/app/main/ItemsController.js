@@ -1,37 +1,42 @@
 /*global angular */
 'use strict';
 
-function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, tasksRequest, TagsService, tasksArray, OwnerService, FilterService) {
+function ItemsController($scope, $location, $routeParams, UserSessionService, ItemsService) {
   
-  $scope.items = itemsArray.getItems();
-  $scope.tasks = tasksArray.getTasks();
-  $scope.contexts = TagsService.getTags();
-  $scope.prefix = OwnerService.getPrefix();
-  $scope.filterService = FilterService;
+  if (!$scope.item){
+    if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
+      if ($routeParams.uuid) {
+        $scope.item = ItemsService.getItemByUUID($routeParams.uuid, UserSessionService.getActiveUUID());
+      }else{
+        $scope.item = {};
+      }
+    }
+  }
+
+  $scope.saveItem = function(item) {
+    ItemsService.saveItem(item, UserSessionService.getActiveUUID());
+    window.history.back();
+  };
+
+  $scope.cancelEdit = function() {
+    window.history.back();
+  };
 
   $scope.editItemTitle = function(item) {
-    itemsRequest.putExistingItem(item);
-  }
+    ItemsService.saveItem(item, UserSessionService.getActiveUUID());
+  };
 
   $scope.editItem  = function(item) {
     $location.path($scope.prefix + '/items/edit/' + item.uuid);
-  }
-
-  function clearCompletedText() {
-    $timeout(function() {
-      $scope.completed = '';
-    }, 2000);
-  }
+  };
 
   $scope.deleteItem = function(item) {
-    itemsRequest.deleteItem(item);
+    ItemsService.deleteItem(item, UserSessionService.getActiveUUID());
   };
 
   $scope.itemToTask = function(item) {
     $scope.itemType = 'task';
-    tasksRequest.itemToTask(item).then(function() {
-      $scope.task = item;
-    });
+    $scope.task = item;
   };
 
   $scope.taskEditMore = function(task) {
@@ -40,7 +45,8 @@ function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, 
 
   $scope.taskEditDone = function(task) {
     cleanContext(task);
-    tasksRequest.itemToTaskDone(task);
+    ItemsService.itemToTask(task, UserSessionService.getActiveUUID());    
+    ItemsService.completeItemToTask(task, UserSessionService.getActiveUUID());
   };
 
   var cleanContext = function(task) {
@@ -48,7 +54,7 @@ function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, 
       task.relationships.tags = [task.relationships.context];
       delete task.relationships.context;
     }
-  }
+  };
 
   $scope.addNew = function() {
     $location.path($scope.prefix + '/items/new');
@@ -56,5 +62,5 @@ function ItemsController($location, $scope, $timeout, itemsArray, itemsRequest, 
 
 }
 
-ItemsController.$inject = ['$location', '$scope', '$timeout', 'itemsArray', 'itemsRequest', 'tasksRequest', 'TagsService', 'tasksArray', 'OwnerService', 'FilterService'];
+ItemsController.$inject = ['$scope', '$location', '$routeParams', 'UserSessionService', 'ItemsService'];
 angular.module('em.app').controller('ItemsController', ItemsController);

@@ -1,4 +1,4 @@
-/*global angular */
+/*jshint sub:true*/
 'use strict';
 
 function swiperContainerDirective(SwiperService) {
@@ -11,7 +11,7 @@ function swiperContainerDirective(SwiperService) {
       expectedSlides: '=?expectedSlides'
     },
     controller: function($scope, $element) {
-      var swiperSlidePaths = [];
+      var swiperSlideInfos = [];
       var initializeSwiperCalled = false;
 
       this.setExpectedSlides = function(expectedSlides){
@@ -20,9 +20,18 @@ function swiperContainerDirective(SwiperService) {
 
       // Registers the path of the slide to the swiper
       // and sets up listeners for element, if needed
-      this.registerSlide = function(path, element) {
-        swiperSlidePaths.push(path);
-
+      this.registerSlide = function(path, element, index) {
+        // Slides from DOM (AngularJS directive) are not necessarily registered in desired order.
+        // Slide array of objects is sorted later, during swiper initialization.
+        if (index || index === 0) {
+          swiperSlideInfos.push({slidePath: path, slideIndex: index});
+        } else {
+          // Re-init slide info array for new slide set, eg. date slides.
+          if (swiperSlideInfos.length >= $scope.expectedSlides) {
+            swiperSlideInfos.length = 0;
+          }
+          swiperSlideInfos.push(path);
+        }
         // For vertical page swiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal
         // swiper or not.
@@ -44,14 +53,28 @@ function swiperContainerDirective(SwiperService) {
         // https://groups.google.com/forum/#!topic/angular/SCc45uVhTt9
         // http://stackoverflow.com/a/17303759/2659424
         if (!initializeSwiperCalled){
-          if ($scope.expectedSlides == swiperSlidePaths.length){
+          if ($scope.expectedSlides === swiperSlideInfos.length){
+            sortAndFlattenSlideInfos();
+
             SwiperService.initializeSwiper(
               $element[0],
               $scope.swiperPath,
               $scope.swiperType,
-              swiperSlidePaths,
+              swiperSlideInfos,
               onSlideChangeEndCallback);
             initializeSwiperCalled = true;
+          }
+        }
+        function sortAndFlattenSlideInfos() {
+          // does array contain slide objects
+          if (swiperSlideInfos[0].slidePath) {
+            swiperSlideInfos.sort(function(a, b) {
+              return a.slideIndex - b.slideIndex;
+            });
+            // flatten
+            for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
+              swiperSlideInfos[i] = swiperSlideInfos[i].slidePath;
+            }
           }
         }
       };
@@ -103,5 +126,5 @@ function swiperContainerDirective(SwiperService) {
     }
   };
 }
+swiperContainerDirective['$inject'] = ['SwiperService'];
 angular.module('em.directives').directive('swiperContainer', swiperContainerDirective);
-swiperContainerDirective.$inject = ['SwiperService'];

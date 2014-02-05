@@ -1,0 +1,25 @@
+<div id="taskCoreFields">
+  <div ng-switch="showDate">
+    <div ng-switch-default class="item-actions">
+      <span class="simple-input default-element" ng-click="focusDate()">select date...</span>
+    </div>
+    <div ng-switch-when="true">
+      <div class="form-group">
+        <label for="taskDue" class="sr-only">select date...</label>
+        <input type="date" id="taskDue" class="simple-input swiper-no-swiping" ng-model="task.due" date-today>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="sr-only" for="taskParent">parent</label>
+    <select class="simple-input swiper-no-swiping" id="taskParent" ng-model="task.relationships.parent" ng-options="list.uuid as list.title for list in lists">
+      <option value="">select list...</option>
+    </select>
+  </div>
+  <div class="form-group" ng-show="contexts.length">
+    <label class="sr-only" for="taskContext">context</label>
+    <select class="simple-input swiper-no-swiping" id="taskContext" ng-model="task.relationships.context" ng-options="context.uuid as context.title for context in contexts = (tags | filter:{tagType:'context'})">
+      <option value="">select context...</option>
+    </select>
+  </div>
+</div>

@@ -1,17 +1,17 @@
+/*jshint sub:true*/
 'use strict';
 
 // Controller for all main slides
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection. 
-function MainController($scope, DateService, itemsArray, TagsService, tasksArray, OwnerService, FilterService, SwiperService, TasksSlidesService) {
-  $scope.items = itemsArray.getItems();
-  $scope.tasks = tasksArray.getTasks();
-  $scope.contexts = TagsService.getTags();
+function MainController($scope, UserSessionService, ItemsService, ListsService, TagsService, TasksService, OwnerService, FilterService, SwiperService, TasksSlidesService) {
+  $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
+  $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
+  $scope.lists = ListsService.getLists(UserSessionService.getActiveUUID());
+  $scope.tags = TagsService.getTags(UserSessionService.getActiveUUID());
   $scope.prefix = OwnerService.getPrefix();
   $scope.filterService = FilterService;
-  $scope.dates = DateService.week();
-  $scope.date = DateService.today();
 
   $scope.gotoInbox = function() {
     if ($scope.feature === 'tasks') {
@@ -31,9 +31,9 @@ function MainController($scope, DateService, itemsArray, TagsService, tasksArray
     }
   };
 
-  $scope.gotoProjects = function() {
+  $scope.gotoLists = function() {
     if ($scope.feature === 'tasks') {
-      SwiperService.swipeTo(TasksSlidesService.PROJECTS);
+      SwiperService.swipeTo(TasksSlidesService.LISTS);
     }
   };
 
@@ -44,5 +44,5 @@ function MainController($scope, DateService, itemsArray, TagsService, tasksArray
   };
 }
 
-MainController.$inject = ['$scope', 'DateService', 'itemsArray', 'TagsService', 'tasksArray', 'OwnerService', 'FilterService', 'SwiperService', 'TasksSlidesService'];
+MainController['$inject'] = ['$scope', 'UserSessionService', 'ItemsService', 'ListsService', 'TagsService', 'TasksService', 'OwnerService', 'FilterService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('MainController', MainController);

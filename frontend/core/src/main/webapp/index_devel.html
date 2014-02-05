@@ -1,9 +1,9 @@
 <!doctype html>
-<html ng-app="em.devApp">
+<html ng-app="em.appTest">
 <head>
     <base href="/" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title ng-bind="pageTitle.getTitle()"></title>
@@ -13,7 +13,7 @@
 </head>
 <body>
 
-    <div main-view></div>
+    <div main-view ng-controller="MockController"></div>
 
     <script src="static/lib/jquery/jquery.js"></script>
     <script src="static/lib/jasmine/jasmine.js"></script>
@@ -30,34 +30,34 @@
     <script src="static/lib/base64.js"></script>
     <script src="static/lib/expanding.js"></script>
 
-    <script src="static/app/app.js"></script>
-
-    <script src="test/e2e/devApp.js"></script>
-    <script src="test/mockHelpers.js"></script>
-
     <script src="static/common/common.js"></script>
-    <script src="static/common/accordionDirective.js"></script>
-    <script src="static/common/accordionItemDirective.js"></script>
     <script src="static/common/DateService.js"></script>
     <script src="static/common/LocationService.js"></script>
-    <script src="static/common/modalDirective.js"></script>
+    <script src="static/common/UUIDService.js"></script>
+    <script src="static/common/clickElsewhereDirective.js"></script>
+    <script src="static/common/dateTodayDirective.js"></script>
+
+    <script src="static/app/app.js"></script>
 
     <script src="static/app/base/http/HttpInterceptorService.js"></script>
+    <script src="static/app/base/http/HttpClientService.js"></script>
     <script src="static/app/base/http/HttpBasicAuthenticationService.js"></script>
     <script src="static/app/base/storage/LocalStorageService.js"></script>
     <script src="static/app/base/storage/SessionStorageService.js"></script>
+    <script src="static/app/base/ArrayService.js"></script>
     <script src="static/app/base/BackendClientService.js"></script>
     <script src="static/app/base/ErrorHandlerService.js"></script>
     <script src="static/app/base/FilterService.js"></script>
+    <script src="static/app/base/ListsService.js"></script>
     <script src="static/app/base/OwnerService.js"></script>
     <script src="static/app/base/SwiperService.js"></script>
     <script src="static/app/base/TagsService.js"></script>
     <script src="static/app/base/UserSessionService.js"></script>
+    <script src="static/app/base/accordionDirective.js"></script>
+    <script src="static/app/base/accordionTitleDirective.js"></script>    
     <script src="static/app/base/expandingTextareaDirective.js"></script>   
-    <script src="static/app/base/itemsServices.js"></script>
     <script src="static/app/base/swiperContainerDirective.js"></script>
     <script src="static/app/base/swiperSlideDirective.js"></script>
-    <script src="static/app/base/tagTitleFilter.js"></script>
 
     <script src="static/app/auth/AuthenticationService.js"></script>
     <script src="static/app/auth/LoginController.js"></script>
@@ -67,20 +67,16 @@
     <script src="static/app/account/AccountController.js"></script>
     <script src="static/app/account/AccountService.js"></script>
 
-    <script src="static/app/tasks/tasksDirectives.js"></script>
-    <script src="static/app/tasks/ContextController.js"></script>
-    <script src="static/app/tasks/EditTaskController.js"></script>
     <script src="static/app/tasks/TasksController.js"></script>
-    <script src="static/app/tasks/NewTaskController.js"></script>
-    <script src="static/app/tasks/ProjectController.js"></script>
+    <script src="static/app/tasks/DatesController.js"></script>
+    <script src="static/app/tasks/TasksService.js"></script>
     <script src="static/app/tasks/TasksSlidesService.js"></script>
     <script src="static/app/tasks/tasksFilter.js"></script>
-    <script src="static/app/tasks/tasksServices.js"></script>
     <script src="static/app/tasks/visibleTaskContentFilter.js"></script>
 
     <script src="static/app/main/HomeController.js"></script>
     <script src="static/app/main/ItemsController.js"></script>
-    <script src="static/app/main/EditItemController.js"></script>
+    <script src="static/app/main/ItemsService.js"></script>
     <script src="static/app/main/MainController.js"></script>
     <script src="static/app/main/NavbarController.js"></script>
     <script src="static/app/main/mainDirectives.js"></script>
@@ -88,6 +84,22 @@
 
     <script src="static/lib/idangerous/idangerous.swiper-2.4.js"></script>
     <script src="static/lib/fastclick.js"></script>
-    
+
+    <script src="test/AppTest.js"></script>
+    <script src="test/mock/MockBackendService.js"></script>
+    <script src="test/mock/MockAccountBackendService.js"></script>
+    <script src="test/mock/MockAuthBackendService.js"></script>
+    <script src="test/mock/MockItemsBackendService.js"></script>
+    <script src="test/mock/MockListsBackendService.js"></script>
+    <script src="test/mock/MockTagsBackendService.js"></script>
+    <script src="test/mock/MockTasksBackendService.js"></script>
+    <script>
+        function MockController(MockBackendService) {
+          MockBackendService.mockBackend();
+        }
+
+        MockController.$inject = ['MockBackendService'];
+        angular.module('em.appTest').factory('MockController', MockController);
+    </script>
 </body>
 </html>

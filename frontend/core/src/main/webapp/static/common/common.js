@@ -15,6 +15,30 @@ angular.module('common', []).config(
       };
     }
 
+    if (typeof Array.prototype.findFirstObjectByKeyValue != 'function') {
+      Array.prototype.findFirstObjectByKeyValue = function (key, value){
+        for (var i=0, len=this.length; i<len; i++) {
+          if (this[i][key] === value) return this[i];
+        }
+      };
+    }
+    if (typeof Array.prototype.findFirstIndexByKeyValue != 'function') {
+      Array.prototype.findFirstIndexByKeyValue = function (key, value){
+        for (var i=0, len=this.length; i<len; i++) {
+          if (this[i][key] === value) return i;
+        }
+      };
+    }
+
+function getByValue(arr, value) {
+
+  for (var i=0, iLen=arr.length; i<iLen; i++) {
+
+    if (arr[i].b == 6) return arr[i];
+  }
+}
+
+
     http://stackoverflow.com/a/14853974/2659424
     if (typeof Array.prototype.compare != 'function') {
       // attach the .compare method to Array's prototype to call it on any array

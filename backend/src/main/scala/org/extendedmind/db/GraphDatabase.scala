@@ -8,4 +8,5 @@ with CollectiveDatabase
 with ItemDatabase
 with TaskDatabase
 with NoteDatabase
+with ListDatabase
 with TagDatabase

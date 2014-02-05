@@ -13,14 +13,16 @@ import org.neo4j.graphdb.traversal.TraversalDescription
 import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
+import org.neo4j.graphdb.Relationship
 
 trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PUBLIC
 
-  def putNewTask(owner: Owner, task: Task): Response[SetResult] = {
+  def putNewTask(owner: Owner, task: Task, originTaskNode: Option[Node] = None): Response[SetResult] = {
     for {
       taskNode <- putNewExtendedItem(owner, task, ItemLabel.TASK).right
+      relationship <- setTaskOriginRelationship(taskNode, originTaskNode).right
       result <- Right(getSetResult(taskNode, true)).right
       unit <- Right(addToItemsIndex(owner, taskNode, result)).right
     } yield result
@@ -55,9 +57,9 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   
   def completeTask(owner: Owner, taskUUID: UUID): Response[CompleteTaskResult] = {
     for {
-      taskNode <- completeTaskNode(owner, taskUUID).right
-      result <- Right(getCompleteTaskResult(taskNode)).right
-      unit <- Right(updateItemsIndex(taskNode, result.result)).right
+      completeInfo <- completeTaskNode(owner, taskUUID).right
+      result <- Right(getCompleteTaskResult(completeInfo)).right
+      unit <- Right(updateItemsIndex(completeInfo._1, result.result)).right
     } yield result
   }
   
@@ -80,42 +82,122 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   protected def addTransientTaskProperties(taskNode: Node, owner: Owner, task: Task)(implicit neo4j: DatabaseService): Response[Task] = {
     for {
-      parents <- getParentRelationships(taskNode, owner).right
+      parent <- getItemRelationship(taskNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST).right
+      origin <- getItemRelationship(taskNode, owner, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK).right
       tags <- getTagRelationships(taskNode, owner).right
       task <- Right(task.copy(
         relationships = 
-          (if (parents._1.isDefined || parents._2.isDefined || tags.isDefined)            
-            Some(ExtendedItemRelationships(  
-              parentTask = (if (parents._1.isEmpty) None else (Some(getUUID(parents._1.get.getEndNode())))),
-              parentNote = (if (parents._2.isEmpty) None else (Some(getUUID(parents._2.get.getEndNode())))),
+          (if (parent.isDefined || origin.isDefined || tags.isDefined )            
+            Some(ExtendedItemRelationships(
+              parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
+              origin = (if (origin.isEmpty) None else (Some(getUUID(origin.get.getEndNode())))),
               tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
            else None
-          ),
-        project = (if (taskNode.hasLabel(ItemParentLabel.PROJECT)) Some(true) else None))).right
+          ))).right
     } yield task
   }
 
-  protected def completeTaskNode(owner: Owner, taskUUID: UUID): Response[Node] = {
+  protected def completeTaskNode(owner: Owner, taskUUID: UUID): Response[(Node, Long, Option[Task])] = {
+    for {
+      completeInfo <- markTaskNodeComplete(owner, taskUUID).right
+      generatedTask <- evaluateRepeating(owner, completeInfo._1).right
+      fullGeneratedTask <- putGeneratedTask(owner, generatedTask, completeInfo._1).right
+    } yield (completeInfo._1, completeInfo._2, fullGeneratedTask)
+  }
+  
+  protected def markTaskNodeComplete(owner: Owner, taskUUID: UUID): Response[(Node, Long)] = {
     withTx {
       implicit neo =>
         for {
           taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
-          result <- Right(completeTaskNode(taskNode)).right
-        } yield taskNode
+          completed <- markTaskNodeComplete(owner, taskNode).right
+        } yield (taskNode, completed)
     }
-  }
-
-  protected def completeTaskNode(taskNode: Node)(implicit neo4j: DatabaseService): Unit = {
-    val currentTime = System.currentTimeMillis()
-    taskNode.setProperty("completed", currentTime)
-  }
-
-  protected def getCompleteTaskResult(task: Node): CompleteTaskResult = {
+  }    
+  
+  protected def markTaskNodeComplete(owner: Owner, taskNode: Node)(implicit neo4j: DatabaseService): Response[Long] = {
     withTx {
       implicit neo =>
-        CompleteTaskResult(task.getProperty("completed").asInstanceOf[Long],
-          getSetResult(task, false))
+	    val currentTime = System.currentTimeMillis()
+	    taskNode.setProperty("completed", currentTime)
+	    Right(currentTime)
     }
+  }
+
+  protected def evaluateRepeating(owner: Owner, taskNode: Node): Response[Option[Task]] = {
+    withTx {
+      implicit neo =>
+        if (taskNode.hasProperty("repeating")) {
+          // Generate new task on complete if a new task has not already been created
+          val originRelationshipResponse = getItemRelationship(taskNode, owner, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK, Direction.INCOMING)
+          if (originRelationshipResponse.isLeft) Left(originRelationshipResponse.left.get)
+          else if (originRelationshipResponse.right.get.isEmpty){
+	          // First, get new due string
+	          val repeatingType = RepeatingType.withName(taskNode.getProperty("repeating").asInstanceOf[String])
+	          val oldDue: java.util.Calendar = java.util.Calendar.getInstance();
+	          oldDue.setTime(Validators.dateFormat.parse(taskNode.getProperty("due").asInstanceOf[String]))
+	          val newDue = repeatingType match {
+	            case RepeatingType.DAILY => oldDue.add(java.util.Calendar.DATE, 1)
+	            case RepeatingType.WEEKLY => oldDue.add(java.util.Calendar.DATE, 7)
+	            case RepeatingType.BIWEEKLY => oldDue.add(java.util.Calendar.DATE, 14)
+	            case RepeatingType.MONTHLY => oldDue.add(java.util.Calendar.MONTH, 1)
+	            case RepeatingType.BIMONTHLY => oldDue.add(java.util.Calendar.MONTH, 2)
+	            case RepeatingType.YEARLY => oldDue.add(java.util.Calendar.YEAR, 1)
+	          }
+	          val newDueString = Validators.dateFormat.format(oldDue.getTime())
+	
+	          // Second, duplicate old task
+	          val oldTask = for {
+	            task <- toCaseClass[Task](taskNode).right
+	            completeTask <- addTransientTaskProperties(taskNode, owner, task).right
+	          } yield completeTask
+	          if (oldTask.isLeft) Left(oldTask.left.get)
+	          else {
+	            Right(Some(oldTask.right.get.copy(uuid = None, modified = None, due = Some(newDueString))))
+	          }
+          }
+          else{
+            // A new task has already been created
+            Right(None)
+          }
+        } else {
+          // Not a repeating task
+          Right(None)
+        }
+    }
+  }
+  
+  protected def putGeneratedTask(owner: Owner, task: Option[Task], originTaskNode: Node): Response[Option[Task]] = {
+    if (task.isDefined){
+      val putTaskResponse = putNewTask(owner, task.get, Some(originTaskNode))
+      if (putTaskResponse.isLeft) Left(putTaskResponse.left.get)
+      else {
+        val getTaskResponse = getTask(owner, putTaskResponse.right.get.uuid.get)
+        if (getTaskResponse.isLeft) Left(getTaskResponse.left.get)
+        else Right(Some(getTaskResponse.right.get))
+      }
+    }
+    else{
+      Right(None)
+    }
+  }
+  
+  protected def setTaskOriginRelationship(taskNode: Node, originTaskNode: Option[Node]): Response[Option[Relationship]] = {
+    if (originTaskNode.isDefined){
+      withTx {
+        implicit neo =>
+          val relationship = taskNode --> ItemRelationship.HAS_ORIGIN --> originTaskNode.get <;
+          Right(Some(relationship))
+      }
+    }else{
+      Right(None)
+    }    
+  }
+
+  protected def getCompleteTaskResult(completeInfo: (Node, Long, Option[Task])): CompleteTaskResult = {
+    CompleteTaskResult(completeInfo._2,
+      getSetResult(completeInfo._1, false),
+      completeInfo._3)
   }
   
   protected def uncompleteTaskNode(owner: Owner, taskUUID: UUID): Response[Node] = {
@@ -137,16 +219,9 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo =>
         for {
           itemNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
-          deletable <- validateTaskDeletable(itemNode).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)
     }
   }
 
-  protected def validateTaskDeletable(taskNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
-    if (taskNode.hasLabel(ItemParentLabel.PROJECT))
-      fail(INVALID_PARAMETER, "can not delete project, only tasks")
-    else
-      Right(true)
-  }  
 }

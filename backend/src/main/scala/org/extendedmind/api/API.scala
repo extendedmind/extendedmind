@@ -35,6 +35,9 @@ trait API extends HttpService {
   val getAccount = get & path("account".r)
   val putAccount = put & path("account".r)
   val postChangeUserType = post & path("user" / JavaUUID / "type" / IntNumber)
+  val postForgotPassword = post & path("password" / "forgot".r)
+  val getPasswordResetExpires = get & path("password" / HexLongNumber)
+  val postResetPassword = post & path("password" / HexLongNumber / "reset")
   
   // Collectives
   val putNewCollective = put & path("collective".r)
@@ -67,15 +70,28 @@ trait API extends HttpService {
   val deleteNote = delete & path(JavaUUID / "note" / JavaUUID)
   val undeleteNote = post & path(JavaUUID / "note" / JavaUUID / "undelete")
   
+  // Lists
+  val getList = get & path(JavaUUID / "list" / JavaUUID)
+  val putNewList = put & path(JavaUUID / "list")
+  val putExistingList = put & path(JavaUUID / "list" / JavaUUID)
+  val deleteList = delete & path(JavaUUID / "list" / JavaUUID)
+  val undeleteList = post & path(JavaUUID / "list" / JavaUUID / "undelete")
+  val archiveList = post & path(JavaUUID / "list" / JavaUUID / "archive")
+  // TODO:
+  val unarchiveList = post & path(JavaUUID / "list" / JavaUUID / "unarchive")
+  
   // Tags
   val getTag = get & path(JavaUUID / "tag" / JavaUUID)
   val putNewTag = put & path(JavaUUID / "tag")
   val putExistingTag = put & path(JavaUUID / "tag" / JavaUUID)
-
+  val deleteTag = delete & path(JavaUUID / "tag" / JavaUUID)
+  val undeleteTag = post & path(JavaUUID / "tag" / JavaUUID / "undelete")
+  
   // Admin
   val resetTokens = post & path("tokens" / "reset".r)
   val rebuildItemsIndex = post & path(JavaUUID / "items" / "rebuild")
   val rebuildUserIndexes = post & path("users"/ "rebuild".r)
+  val migrateToLists = post & path(JavaUUID / "migrate"/ "lists")
   val shutdown = post & path("shutdown".r)
 
 }

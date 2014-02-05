@@ -58,7 +58,7 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         writeJsonOutput("itemsResponse", entityAs[String])
         itemsResponse.items should not be None
         itemsResponse.tasks should not be None
-        itemsResponse.tasks.get.length should equal(8)
+        itemsResponse.tasks.get.length should equal(6)
         itemsResponse.notes should not be None
       }
     }
@@ -68,7 +68,7 @@ class ItemBestCaseSpec extends ServiceSpecBase {
       + "and delete it with DELETE to /[userUUID]/item/[itemUUID] "
       + "and undelete it with POST to /[userUUID]/item/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newItem = Item(None, None, None, "learn how to fly", None)
+      val newItem = Item(None, None, None, "learn how to fly", None, None)
       Put("/" + authenticateResponse.userUUID + "/item",
         marshal(newItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putItemResponse = entityAs[SetResult]
@@ -76,7 +76,7 @@ class ItemBestCaseSpec extends ServiceSpecBase {
           putItemResponse.modified should not be None
           putItemResponse.uuid should not be None
 
-          val updatedItem = Item(None, None, None, "learn how to fly", Some("not kidding"))
+          val updatedItem = Item(None, None, None, "learn how to fly", Some("not kidding"), None)
           Put("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get,
             marshal(updatedItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               val putExistingItemResponse = entityAs[String]
@@ -117,7 +117,7 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         writeJsonOutput("itemsResponse", entityAs[String])
         itemsResponse.items should not be None
         itemsResponse.tasks should not be None
-        itemsResponse.tasks.get.length should equal(8)
+        itemsResponse.tasks.get.length should equal(6)
         itemsResponse.notes should not be None
 
         val numberOfItems = itemsResponse.items.get.length
@@ -144,5 +144,60 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
+    it("should generate filter responses using get parameters for /[userUUID]/items") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      // When active is set to false, should return empty list
+      Get("/" + authenticateResponse.userUUID + "/items" + "?active=false") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = entityAs[Items]
+        isEmptyItems(itemsResponse) should be (true)
+      }
+      // When active is set to false and completed to true, should return list of one
+      Get("/" + authenticateResponse.userUUID + "/items" + "?active=false&completed=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = entityAs[Items]
+        itemsResponse.items should be (None)
+        itemsResponse.tasks.get.length should be (1)
+        itemsResponse.notes should be (None)
+        itemsResponse.lists should be (None)
+        itemsResponse.tags should be (None)
+      }
+      // When searching for items that have been modified after now, should return empty list
+      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + System.currentTimeMillis) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = entityAs[Items]
+        isEmptyItems(itemsResponse) should be (true)
+      }
+      // When searching for items that have been modified after the epoch, should return equal list as normal query
+      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=0") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = entityAs[Items]
+        Get("/" + authenticateResponse.userUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val equalItemsResponse = entityAs[Items]
+          equalItemsResponse.items.get.length should be (itemsResponse.items.get.length)
+          equalItemsResponse.tasks.get.length should be (itemsResponse.tasks.get.length)
+          equalItemsResponse.notes.get.length should be (itemsResponse.notes.get.length)
+          equalItemsResponse.lists.get.length should be (itemsResponse.lists.get.length)
+          equalItemsResponse.tags.get.length should be (itemsResponse.tags.get.length)
+        }
+      }
+      // Put a couple of new items
+      val testResponse = putNewItem(Item("test", None, None), authenticateResponse)
+      val test2Response = putNewItem(Item("test2", None, None), authenticateResponse)
+      
+      // Check that getting with the modified value of first we get only the second
+      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + testResponse.modified) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = entityAs[Items]
+        itemsResponse.items.get.length should be (1)
+        itemsResponse.tasks should be (None)
+        itemsResponse.notes should be (None)
+        itemsResponse.lists should be (None)
+        itemsResponse.tags should be (None)
+      }      
+      // Check that getting with the modified value of second we get an empty list
+      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + test2Response.modified) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = entityAs[Items]
+        isEmptyItems(itemsResponse) should be (true)
+      }      
+    }
+  }
+  private def isEmptyItems(items: Items): Boolean = {
+    return items.items.isEmpty && items.tasks.isEmpty && items.notes.isEmpty && items.lists.isEmpty && items.tags.isEmpty
   }
 }

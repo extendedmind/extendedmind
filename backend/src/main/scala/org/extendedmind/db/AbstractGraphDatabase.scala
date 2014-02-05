@@ -39,13 +39,13 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   implicit val implSettings = settings
 
   // Implicit Neo4j Scala wrapper serialization exclusions
-  implicit val serializeExclusions: Option[List[String]] = Some(
+  implicit val serializeExclusions: Option[scala.List[String]] = Some(
     // Always exclude the direct setting of the following:
-    List("uuid", "modified", "deleted", // Container
+    scala.List("uuid", "modified", "deleted", // Container
         "visibility", // ShareableItem
         "relationships", // ExtendedItem
-        "completed", "project", // Task
-        "area", // Note
+        "completed", "assignee", "assigner", // Task
+        "archived", // List
         "parent", "tagType" // Tag
         ))
   // Implicit Neo4j Scala wrapper converters
@@ -146,13 +146,13 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
   }
   
-  protected def getEndNodeUUIDList(relationships: List[Relationship]): List[UUID] = {
+  protected def getEndNodeUUIDList(relationships: scala.List[Relationship]): scala.List[UUID] = {
     relationships map (relationship => getUUID(relationship.getEndNode()))
   }
 
   // GENERAL
 
-  protected def getNodes(nodeUUIDList: List[UUID], label: Label, acceptDeleted: Boolean = false): Response[List[Node]] = {
+  protected def getNodes(nodeUUIDList: scala.List[UUID], label: Label, acceptDeleted: Boolean = false): Response[scala.List[Node]] = {
     Right(nodeUUIDList map (uuid => {
       val nodeResponse = getNode(uuid, label)
       if (nodeResponse.isLeft) return Left(nodeResponse.left.get)

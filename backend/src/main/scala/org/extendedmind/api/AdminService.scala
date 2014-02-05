@@ -245,6 +245,20 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
+      migrateToLists { ownerUUID =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[CountResult] {
+                adminActions.migrateToLists(ownerUUID) match {
+                  case Right(result) => result
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }        
+      } ~
       shutdown { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {

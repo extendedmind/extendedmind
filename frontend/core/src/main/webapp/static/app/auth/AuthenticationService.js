@@ -1,6 +1,7 @@
+/*global angular */
 'use strict';
 
-function AuthenticationService($location, $q, BackendClientService, itemsRequest, UserSessionService) {
+function AuthenticationService($location, $q, BackendClientService, ItemsService, UserSessionService) {
 
   function checkAuthentication() {
     function validateAuthenticationAndRefreshItems() {
@@ -25,11 +26,12 @@ function AuthenticationService($location, $q, BackendClientService, itemsRequest
     deferredAuthentication.promise.then(null, function() {
       $location.path('/login');
     });
+
     return deferredAuthentication.promise;
   }
 
   function refreshItems() {
-    itemsRequest.getItems();
+    ItemsService.synchronize(UserSessionService.getActiveUUID());
   }
 
   function swapToken() {
@@ -40,12 +42,14 @@ function AuthenticationService($location, $q, BackendClientService, itemsRequest
   }
 
   function requestLogin(remember) {
-    return BackendClientService.post('/api/authenticate', {
+    return BackendClientService.post('/api/authenticate', authenticateRegexp, {
       rememberMe: remember
-    }).then(function(authenticateResponse) {
-      UserSessionService.setAuthenticateInformation(authenticateResponse.data);
-    });
+      }).then(function(authenticateResponse) {
+        UserSessionService.setAuthenticateInformation(authenticateResponse.data);
+      });
   }
+
+  var authenticateRegexp = /api\/authenticate/;
 
   return {
     checkAuthentication: checkAuthentication,
@@ -56,16 +60,30 @@ function AuthenticationService($location, $q, BackendClientService, itemsRequest
       return requestLogin(remember).then(refreshItems);
     },
     logout: function() {
-      return BackendClientService.post('/api/logout').then(function(logoutResponse) {
+      return BackendClientService.post('/api/logout', this.logoutRegex).then(function(logoutResponse) {
         UserSessionService.clearUser();
         return logoutResponse.data;
       });
     },
+    getInvite: function(inviteResponseCode, email) {
+      return BackendClientService.get('/api/invite/' + inviteResponseCode + '?email=' + email,
+                  this.getInviteRegex);
+    },
+    signUp: function(inviteResponseCode, data) {
+      return BackendClientService.post('/api/invite/' + inviteResponseCode + '/accept',
+                  this.acceptInviteRegex, data);
+    },
     switchActiveUUID: function(uuid) {
       UserSessionService.setActiveUUID(uuid);
-      refreshItems();
-    }
+    },
+    // Regular expressions for account requests
+    authenticateRegex: authenticateRegexp,
+    logoutRegex: /api\/logout/,
+    // TODO: Make regex!
+    getInviteRegex: /api\/invite\/.*/,
+    acceptInviteRegex: /api\/invite\/.*/,
+
   };
 }
-AuthenticationService.$inject = ['$location', '$q', 'BackendClientService', 'itemsRequest', 'UserSessionService'];
+AuthenticationService.$inject = ['$location', '$q', 'BackendClientService', 'ItemsService', 'UserSessionService'];
 angular.module('em.services').factory('AuthenticationService', AuthenticationService);
