@@ -25,6 +25,10 @@ function swiperContainerDirective(SwiperService) {
         if (index || index === 0) {
           swiperSlideInfos.push({slidePath: path, slideIndex: index});
         } else {
+          // Re-init slide info array for new slide set, eg. date slides.
+          if (swiperSlideInfos.length >= $scope.expectedSlides) {
+            swiperSlideInfos.length = 0;
+          }
           swiperSlideInfos.push(path);
         }
         // For vertical page swiping, we need to the register touch elements
@@ -64,6 +68,10 @@ function swiperContainerDirective(SwiperService) {
               swiperSlideInfos,
               onSlideChangeEndCallback);
             initializeSwiperCalled = true;
+          }
+        } else {
+          if ($scope.expectedSlides === swiperSlideInfos.length){
+            SwiperService.reInit($scope.swiperPath);
           }
         }
         function sortAndFlattenSlideInfos() {
