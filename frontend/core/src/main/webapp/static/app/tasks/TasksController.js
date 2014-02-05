@@ -79,7 +79,7 @@ function TasksController($location, $scope, $timeout, $routeParams, $filter, Use
     }
     delete subtask.title;
 
-    TasksService.saveTask(subtaskToSave, UserSessionService.getActiveUUID()).then(function(subtaskToSave){
+    TasksService.saveTask(subtaskToSave, UserSessionService.getActiveUUID()).then(function(/*subtaskToSave*/){
       // TODO: Something with task
     });
   };
@@ -100,7 +100,7 @@ function TasksController($location, $scope, $timeout, $routeParams, $filter, Use
 
   $scope.getTasksForDate = function(date) {
     return $filter('tasksFilter')($scope.tasks, {name:'tasksByDate', filterBy:date});
-  }
+  };
 
   $scope.showListContent = false;
   $scope.toggleListContent = function() {
@@ -111,16 +111,15 @@ function TasksController($location, $scope, $timeout, $routeParams, $filter, Use
     SwiperService.swipeTo(TasksSlidesService.LISTS + '/' + uuid);
   };
 
-  $scope.newList = {title:undefined};
+  $scope.newList = {title: undefined};
   $scope.addList = function(newList) {
-    ListsService.saveList(newList, UserSessionService.getActiveUUID()).then(function(list) {
-      // Using timeout 0 to make sure that DOM is ready before refreshing
-      // swiper.
+    ListsService.saveList(newList, UserSessionService.getActiveUUID()).then(function(/*list*/) {
+      // Using timeout 0 to make sure that DOM is ready before refreshing swiper.
       $timeout(function() {
         SwiperService.refreshSwiper(TasksSlidesService.LISTS);
-      },0);
+      });
     });
-    $scope.newList = {title:undefined};
+    $scope.newList = {title: undefined};
   };
 
 }

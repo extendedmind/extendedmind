@@ -92,8 +92,7 @@ function HomeController($scope, $location, $document, $element, ItemsService, Us
       });
     }
   };
-
 }
 
-angular.module('em.app').controller('HomeController', HomeController);
 HomeController['$inject'] = ['$scope', '$location', '$document', '$element', 'ItemsService', 'UserSessionService', 'AuthenticationService'];
+angular.module('em.app').controller('HomeController', HomeController);
