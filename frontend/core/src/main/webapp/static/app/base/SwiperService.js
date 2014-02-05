@@ -114,6 +114,9 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
         setPathsToSlides(swipers[swiperPath], swipers[swiperPath].slidesPaths);
       }
     },
+    reInit: function(swiperPath) {
+      swipers[swiperPath].swiper.reInit();
+    },
     onSlideChangeEnd: function(scope, swiperPath) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
       var path = OwnerService.getPrefix() + '/' + activeSlide.getData('path');
