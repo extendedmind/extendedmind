@@ -1,7 +1,7 @@
 /*jshint sub:true*/
 'use strict';
 
-function TasksController($location, $scope, $timeout, $routeParams, UserSessionService, OwnerService, TasksService, ListsService, SwiperService, TasksSlidesService) {
+function TasksController($location, $scope, $timeout, $routeParams, $filter, UserSessionService, OwnerService, TasksService, ListsService, SwiperService, TasksSlidesService) {
 
   if (!$scope.task){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -68,21 +68,20 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.addSubtask = function(subtask) {
-    $scope.subtask = {};
-
-    // Quick hack to save the possible due date and list to prevent 
-    // bug with adding a second subtask in view
-    // TODO: Refactor task lists handling.
+    var subtaskToSave = {title: subtask.title};
     if (subtask.due){
-      $scope.subtask.due = subtask.due;
+      subtaskToSave.due = subtask.due;
     }
     if (subtask.relationships && subtask.relationships.parent){
-      $scope.subtask.relationships = {
+      subtaskToSave.relationships = {
         parent: subtask.relationships.parent
       };
     }
+    delete subtask.title;
 
-    TasksService.saveTask(subtask, UserSessionService.getActiveUUID());
+    TasksService.saveTask(subtaskToSave, UserSessionService.getActiveUUID()).then(function(subtaskToSave){
+      // TODO: Something with task
+    });
   };
 
   $scope.getSubtaskButtonClass = function(task) {
@@ -97,6 +96,15 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
     }else{
       return 'wide-button';
     }
+  };
+
+  $scope.getTasksForDate = function(date) {
+    return $filter('tasksFilter')($scope.tasks, {name:'tasksByDate', filterBy:date});
+  }
+
+  $scope.showListContent = false;
+  $scope.toggleListContent = function() {
+    $scope.showListContent = !$scope.showListContent;
   };
 
   $scope.goToList = function(uuid) {
@@ -114,7 +122,8 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
     });
     $scope.newList = {title:undefined};
   };
+
 }
 
-TasksController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService', 'OwnerService', 'TasksService', 'ListsService', 'SwiperService', 'TasksSlidesService'];
+TasksController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', '$filter', 'UserSessionService', 'OwnerService', 'TasksService', 'ListsService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('TasksController', TasksController);

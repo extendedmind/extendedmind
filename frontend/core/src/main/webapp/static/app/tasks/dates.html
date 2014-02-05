@@ -2,11 +2,94 @@
   <div class="column">
     <header id="tasks-dates-header" class="page-header" ng-init="heading='dates'" ng-include="'static/app/base/pageHeader.html'"></header>
     <div id="tasks-dates-page-content-container" class="content-container page-content-container">
-      <div class="swiper-no-swiping" id="date-picker" ng-include="'static/app/tasks/datebar.html'"></div>
-      <!-- move datebar.html here! -->
+      <div class="swiper-no-swiping" id="date-picker">
+        <nav role="navigation" id="datepicker">
+          <ul class="horizontally-justified">
+
+            <li class="justified-element datepicker-date">
+              <a href ng-click="previousWeek()">
+                <span class="icon-arrow-left"></span>
+              </a>
+            </li>
+
+            <li class="justified-element datepicker-date">
+              <a href ng-click="dateClicked(dates[0].yyyymmdd)">
+                <span>{{dates[0].weekday}}</span>
+                <span>{{dates[0].date}}</span>
+              </a>
+            </li>
+
+            <li class="justified-element datepicker-date">
+              <a href ng-click="dateClicked(dates[1].yyyymmdd)">
+                <span>{{dates[1].weekday}}</span>
+                <span>{{dates[1].date}}</span>
+              </a>
+            </li>
+
+            <li class="justified-element datepicker-date">
+              <a href ng-click="dateClicked(dates[2].yyyymmdd)">
+                <span>{{dates[2].weekday}}</span>
+                <span>{{dates[2].date}}</span>
+              </a>
+            </li>
+
+            <li class="justified-element datepicker-date">
+              <a href ng-click="dateClicked(dates[3].yyyymmdd)">
+                <span>{{dates[3].weekday}}</span>
+                <span>{{dates[3].date}}</span>
+              </a>
+            </li>
+
+            <li class="justified-element datepicker-date">
+              <a href ng-click="dateClicked(dates[4].yyyymmdd)">
+                <span>{{dates[4].weekday}}</span>
+                <span>{{dates[4].date}}</span>
+              </a>
+            </li>
+
+            <li class="justified-element datepicker-date">
+              <a href ng-click="dateClicked(dates[5].yyyymmdd)">
+                <span>{{dates[5].weekday}}</span>
+                <span>{{dates[5].date}}</span>
+              </a>
+            </li>
+
+            <li class="justified-element datepicker-date">
+              <a href ng-click="dateClicked(dates[6].yyyymmdd)">
+                <span>{{dates[6].weekday}}</span>
+                <span>{{dates[6].date}}</span>
+              </a>
+            </li>
+
+            <li class="justified-element datepicker-date">
+              <a href ng-click="nextWeek()">
+                <span class="icon-arrow-right"></span>
+              </a>
+            </li>
+            
+            <li id="stretch"></li>
+          </ul>
+        </nav>
+      </div>
       <div class="swiper-container vertical-slides" swiper-container="tasks/dates" swiper-type="page">
         <div class="swiper-wrapper">
-          <div class="swiper-slide" ng-repeat="date in dates" date-slide swiper-slide="tasks/dates/{{date.yyyymmdd}}" expected-slides="dates.length">
+          <div class="swiper-slide" ng-repeat="date in dates" swiper-slide="tasks/dates/{{date.yyyymmdd}}" expected-slides="dates.length" ng-init="subtask = {due: date.yyyymmdd}">
+            <div class="inner-slide-content-container">
+              <section id="date" class="date">
+                <h3>{{date.displayDate}}</h3>
+                <div>
+                  <div class="inner-page-content-container" accordion>
+                    <div ng-repeat="task in tasks | tasksFilter:{name:'tasksByDate', filterBy: date}">
+                      <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+                      <div class="accordion-body" ng-if="isOpen(task)">
+                        <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
+                      </div>
+                    </div>
+                    <div ng-include="'static/app/tasks/subTask.html'"></div>
+                  </div>
+                </div>
+              </section>
+            </div>
           </div>
         </div>
       </div>

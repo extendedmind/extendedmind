@@ -94,6 +94,7 @@ angular.module('common').directive('accordion', ['$document',
               angular.forEach($scope.thisController.titleScopes, function (titleScope) {
                 titleScope.closeItem();
               });
+
               $scope.openItem = undefined;
               $scope.unbindElsewhereEvents();
             });

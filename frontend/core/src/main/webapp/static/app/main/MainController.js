@@ -9,7 +9,7 @@ function MainController($scope, DateService, UserSessionService, ItemsService, L
   $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
   $scope.lists = ListsService.getLists(UserSessionService.getActiveUUID());
-  $scope.contexts = TagsService.getTags(UserSessionService.getActiveUUID());
+  $scope.tags = TagsService.getTags(UserSessionService.getActiveUUID());
   $scope.prefix = OwnerService.getPrefix();
   $scope.filterService = FilterService;
   $scope.dates = DateService.activeWeek();
@@ -21,6 +21,16 @@ function MainController($scope, DateService, UserSessionService, ItemsService, L
   $scope.nextWeek = function() {
     $scope.dates = DateService.nextWeek();
   };
+
+  $scope.getContexts = function() {
+    var contexts = [];
+    for (var i=0, len=$scope.tags.length; i<len; i++) {
+      if (tags[i].tagType === "context") {
+        contexts.push(tags[i]);
+      }
+    }
+    return contexts;
+  }
 
   $scope.gotoInbox = function() {
     if ($scope.feature === 'tasks') {

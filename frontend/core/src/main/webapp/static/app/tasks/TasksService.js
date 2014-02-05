@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function TasksService(BackendClientService, ArrayService, ListsService){
+function TasksService($q, BackendClientService, ArrayService, ListsService){
   var tasks = {};
 
   var taskRegex = /\/task/;
@@ -122,6 +122,7 @@ function TasksService(BackendClientService, ArrayService, ListsService){
       return tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveTask: function(task, ownerUUID) {
+      var deferred = $q.defer();
       cleanRecentlyCompletedTasks(ownerUUID);
       if (task.uuid){
         // Existing task
@@ -133,6 +134,7 @@ function TasksService(BackendClientService, ArrayService, ListsService){
               tasks[ownerUUID].activeTasks,
               tasks[ownerUUID].deletedTasks,
               getOtherArrays(ownerUUID));
+            deferred.resolve(task);
           }
         });
       }else{
@@ -147,9 +149,11 @@ function TasksService(BackendClientService, ArrayService, ListsService){
               tasks[ownerUUID].activeTasks,
               tasks[ownerUUID].deletedTasks,
               getOtherArrays(ownerUUID));
+            deferred.resolve(task);
           }
         });
       }
+      return deferred.promise;
     },
     deleteTask: function(task, ownerUUID) {
       cleanRecentlyCompletedTasks(ownerUUID);
@@ -260,5 +264,5 @@ function TasksService(BackendClientService, ArrayService, ListsService){
   };
 }
   
-TasksService.$inject = ['BackendClientService', 'ArrayService', 'ListsService'];
+TasksService.$inject = ['$q', 'BackendClientService', 'ArrayService', 'ListsService'];
 angular.module('em.services').factory('TasksService', TasksService);

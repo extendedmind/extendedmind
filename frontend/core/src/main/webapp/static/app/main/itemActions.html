@@ -20,19 +20,7 @@
   </div>
 
   <div ng-switch-when="task" ng-controller="TasksController">
-    <div class="form-group">
-      <label class="sr-only" for="taskParent">parent</label>
-      <select class="simple-input swiper-no-swiping" id="taskParent" ng-model="task.relationships.parent" ng-options="list.uuid as list.title for list in lists">
-        <option value="">select list...</option>
-      </select>
-    </div>
-    <div class="form-group" ng-if="contexts.length">
-      <label class="sr-only" for="taskContext">context</label>
-      <select class="simple-input swiper-no-swiping" id="taskContext" ng-model="task.relationships.context" ng-options="context.uuid as context.title for context in contexts">
-        <option value="">select context...</option>
-      </select>
-    </div>
-
+    <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
     <div class="item-actions">
       <button class="wide-button normal-button" type="button" ng-click="taskEditDone(task)">
         <span class="button-text">done</span>

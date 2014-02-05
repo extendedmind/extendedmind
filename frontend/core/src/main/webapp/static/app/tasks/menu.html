@@ -3,10 +3,10 @@
     <header id="tasks-lists-header" class="page-header" ng-init="heading='menu'" ng-include="'static/app/base/pageHeader.html'"></header>
     <div id="tasks-lists-page-content-container" class="content-container page-content-container">
       <div class="inner-page-content-container">
-        <section ng-if="lists.length">
+        <section>
           <h3><a href ng-click="gotoLists()">lists</a></h3>
           <ul class="indent list-arrow-right">
-            <li ng-class="selected" ng-repeat="list in lists">
+            <li ng-if="lists && lists.length" ng-class="selected" ng-repeat="list in lists">
               <a class="text-muted click-to-slide" href ng-click="goToList(list.uuid)">
                 <span class="link-title">{{list.title}}</span>
                 <span class="icon-arrow-right"></span>
@@ -23,10 +23,10 @@
           </ul>
         </section>
 
-        <section ng-if="contexts && contexts.length">
+        <section>
           <h3><a href ng-click="gotoContexts()" class="page-header">contexts</a></h3>
           <ul class="indent list-arrow-right">
-            <li ng-repeat="context in contexts">
+            <li ng-show="contexts.length" ng-repeat="context in contexts = (tags | filter:{tagType:'context'})">
               <a class="click-to-slide" href="#/{{prefix}}/tasks/context/{{context.uuid}}">
                 <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right"></span>
               </a>

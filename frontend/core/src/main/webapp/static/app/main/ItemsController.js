@@ -36,7 +36,6 @@ function ItemsController($scope, $location, $routeParams, UserSessionService, It
 
   $scope.itemToTask = function(item) {
     $scope.itemType = 'task';
-    ItemsService.itemToTask(item, UserSessionService.getActiveUUID());
     $scope.task = item;
   };
 
@@ -46,6 +45,7 @@ function ItemsController($scope, $location, $routeParams, UserSessionService, It
 
   $scope.taskEditDone = function(task) {
     cleanContext(task);
+    ItemsService.itemToTask(task, UserSessionService.getActiveUUID());    
     ItemsService.completeItemToTask(task, UserSessionService.getActiveUUID());
   };
 

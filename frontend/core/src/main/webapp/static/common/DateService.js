@@ -26,6 +26,13 @@ angular.module('common').factory('DateService', [
       return yyyy + '-' + (mm[1] ? mm : '0' + mm[0]) + '-' + (dd[1] ? dd : '0' + dd[0]); // padding
     }
 
+    function toDate(yyyymmdd) {
+      var year = yyyymmdd.substring(0,4);
+      var month = yyyymmdd.substring(5,7);
+      var day = yyyymmdd.substring(8,9);
+      return new Date(year, month-1, day);
+    }
+
     // http://stackoverflow.com/a/4156516
     function getFirstDayOfTheWeek(date) {
       var currentDay = date.getDay();
@@ -68,6 +75,12 @@ angular.module('common').factory('DateService', [
     }
 
     return {
+      toDate: function(yyyymmdd) {
+        return toDate(yyyymmdd);
+      },
+      yyyymmdd: function(date) {
+        return yyyymmdd(date);
+      },
       today: function() {
         return today;
       },
