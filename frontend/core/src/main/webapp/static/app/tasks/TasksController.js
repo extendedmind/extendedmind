@@ -1,12 +1,12 @@
 /* global angular */
 'use strict';
 
-function TasksController($location, $scope, $timeout, $routeParams, OwnerService, TasksService, ListsService, SwiperService, TasksSlidesService) {
+function TasksController($location, $scope, $timeout, $routeParams, UserSessionService, OwnerService, TasksService, ListsService, SwiperService, TasksSlidesService) {
 
   if (!$scope.task){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
       if ($routeParams.uuid) {
-        $scope.task = TasksService.getTaskByUUID($routeParams.uuid);
+        $scope.task = TasksService.getTaskByUUID($routeParams.uuid, UserSessionService.getActiveUUID());
         if ($scope.task.due) $scope.showDate = true;
       }else {
         $scope.task = {
@@ -26,14 +26,13 @@ function TasksController($location, $scope, $timeout, $routeParams, OwnerService
   };
 
   $scope.saveTask = function(task) {
-    TasksService.saveTask(task);
+    TasksService.saveTask(task, UserSessionService.getActiveUUID());
     window.history.back();
   };
 
   $scope.cancelEdit = function() {
     window.history.back();
   };
-
 
   $scope.addNew = function() {
     $location.path($scope.prefix + '/tasks/new');
@@ -44,7 +43,7 @@ function TasksController($location, $scope, $timeout, $routeParams, OwnerService
   };
 
   $scope.editTaskTitle = function(task) {
-    TasksService.saveTask(task);
+    TasksService.saveTask(task, UserSessionService.getActiveUUID());
   };
 
   $scope.editTask = function(task) {
@@ -53,19 +52,19 @@ function TasksController($location, $scope, $timeout, $routeParams, OwnerService
 
   $scope.taskChecked = function(task) {
     if (task.completed) {
-      TasksService.uncompleteTask(task);
+      TasksService.uncompleteTask(task, UserSessionService.getActiveUUID());
     } else {
-      TasksService.completeTask(task);
+      TasksService.completeTask(task, UserSessionService.getActiveUUID());
     }
   };
 
   $scope.taskToList = function(task) {
-    TasksService.taskToList(task);
+    TasksService.taskToList(task, UserSessionService.getActiveUUID());
     $location.path(OwnerService.getPrefix() + '/tasks/new/' + task.uuid);
   };
 
   $scope.deleteTask = function(task) {
-    TasksService.deleteTask(task);
+    TasksService.deleteTask(task, UserSessionService.getActiveUUID());
   };
 
   $scope.addSubtask = function(subtask) {
@@ -83,7 +82,7 @@ function TasksController($location, $scope, $timeout, $routeParams, OwnerService
       };
     }
 
-    TasksService.saveTask(subtask);
+    TasksService.saveTask(subtask, UserSessionService.getActiveUUID());
   };
 
   $scope.getSubtaskButtonClass = function(task) {
@@ -106,7 +105,7 @@ function TasksController($location, $scope, $timeout, $routeParams, OwnerService
 
   $scope.newList = {title:undefined};
   $scope.addList = function(newList) {
-    ListsService.saveList(newList).then(function(list) {
+    ListsService.saveList(newList, UserSessionService.getActiveUUID()).then(function(list) {
       // Using timeout 0 to make sure that DOM is ready before refreshing
       // swiper.
       $timeout(function() {
@@ -118,5 +117,5 @@ function TasksController($location, $scope, $timeout, $routeParams, OwnerService
 
 }
 
-TasksController.$inject = ['$location', '$scope', '$timeout', '$routeParams', 'OwnerService', 'TasksService', 'ListsService', 'SwiperService', 'TasksSlidesService'];
+TasksController.$inject = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService', 'OwnerService', 'TasksService', 'ListsService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('TasksController', TasksController);

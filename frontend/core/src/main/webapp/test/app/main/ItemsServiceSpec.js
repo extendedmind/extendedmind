@@ -23,13 +23,15 @@ describe('ItemService', function() {
   var putExistingTaskResponse = getJSONFixture('putExistingTaskResponse.json');
   putExistingTaskResponse.modified = now.getTime();
 
+  var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
+
   var MockUserSessionService = {
       latestModified: undefined,
       getCredentials: function () {
         return '123456789';
       },
       getActiveUUID: function () {
-        return '6be16f46-7b35-4b2d-b875-e13d19681e77';
+        return testOwnerUUID;
       },
       getLatestModified: function () {
         return this.latestModified;
@@ -144,7 +146,7 @@ describe('ItemService', function() {
       // Syncronize with test data
       $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items')
        .respond(200, testItemData);
-      ItemsService.synchronize();
+      ItemsService.synchronize(testOwnerUUID);
       $httpBackend.flush();
     });
   });
@@ -172,18 +174,18 @@ describe('ItemService', function() {
                            '/items?modified=' + MockUserSessionService.getLatestModified() +
                            '&deleted=true&archived=true&completed=true')
      .respond(200, modifiedGetItemsResponse);
-    ItemsService.synchronize();
+    ItemsService.synchronize(testOwnerUUID);
     $httpBackend.flush();
 
-    expect(ItemsService.getItems().length)
+    expect(ItemsService.getItems(testOwnerUUID).length)
       .toBe(4);
-    expect(TagsService.getTags().length)
+    expect(TagsService.getTags(testOwnerUUID).length)
       .toBe(3);
-    expect(ListsService.getLists().length)
+    expect(ListsService.getLists(testOwnerUUID).length)
       .toBe(3);
-    expect(TasksService.getTasks().length)
+    expect(TasksService.getTasks(testOwnerUUID).length)
       .toBe(3);
-    expect(TasksService.getCompletedTasks().length)
+    expect(TasksService.getCompletedTasks(testOwnerUUID).length)
       .toBe(1);
     expect(MockUserSessionService.getLatestModified())
       .toBe(newLatestModified);
@@ -193,21 +195,21 @@ describe('ItemService', function() {
     MockUserSessionService.setLatestModified(undefined);
     $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items')
      .respond(200, '{}');
-    ItemsService.synchronize();
+    ItemsService.synchronize(testOwnerUUID);
     $httpBackend.flush();
 
-    expect(ItemsService.getItems().length)
+    expect(ItemsService.getItems(testOwnerUUID).length)
       .toBe(0);
-    expect(TagsService.getTags().length)
+    expect(TagsService.getTags(testOwnerUUID).length)
       .toBe(0);
-    expect(ListsService.getLists().length)
+    expect(ListsService.getLists(testOwnerUUID).length)
       .toBe(0);
-    expect(TasksService.getTasks().length)
+    expect(TasksService.getTasks(testOwnerUUID).length)
       .toBe(0);
   });
 
   it('should get items', function () {
-    var items = ItemsService.getItems();
+    var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(3);
     // Items should be in modified order
@@ -217,12 +219,12 @@ describe('ItemService', function() {
   });
 
   it('should find item by uuid', function () {
-    expect(ItemsService.getItemByUUID('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9'))
+    expect(ItemsService.getItemByUUID('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID))
       .toBeDefined();
   });
 
   it('should not find item by unknown uuid', function () {
-    expect(ItemsService.getItemByUUID('bf726d03-8fee-4614-8b68-f9f885938a50'))
+    expect(ItemsService.getItemByUUID('bf726d03-8fee-4614-8b68-f9f885938a50', testOwnerUUID))
       .toBeUndefined();
   });
 
@@ -232,13 +234,13 @@ describe('ItemService', function() {
     };
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
        .respond(200, putNewItemResponse);
-    ItemsService.saveItem(testItem);
+    ItemsService.saveItem(testItem, testOwnerUUID);
     $httpBackend.flush();
-    expect(ItemsService.getItemByUUID(putNewItemResponse.uuid))
+    expect(ItemsService.getItemByUUID(putNewItemResponse.uuid, testOwnerUUID))
       .toBeDefined();
 
     // Should go to the end of the array
-    var items = ItemsService.getItems();
+    var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(4);
     expect(items[3].uuid)
@@ -246,17 +248,17 @@ describe('ItemService', function() {
   });
 
   it('should update existing item', function () {
-    var rememberTheMilk = ItemsService.getItemByUUID('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9');
+    var rememberTheMilk = ItemsService.getItemByUUID('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID);
     rememberTheMilk.title = 'remember the milk!';
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + rememberTheMilk.uuid, rememberTheMilk)
        .respond(200, putExistingItemResponse);
-    ItemsService.saveItem(rememberTheMilk);
+    ItemsService.saveItem(rememberTheMilk, testOwnerUUID);
     $httpBackend.flush();
-    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid).modified)
+    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid, testOwnerUUID).modified)
       .toBe(putExistingItemResponse.modified);
 
     // Should move to the end of the array
-    var items = ItemsService.getItems();
+    var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(3);
     expect(items[2].uuid)
@@ -264,29 +266,29 @@ describe('ItemService', function() {
   });
 
   it('should delete and undelete item', function () {
-    var rememberTheMilk = ItemsService.getItemByUUID('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9');
+    var rememberTheMilk = ItemsService.getItemByUUID('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID);
     $httpBackend.expectDELETE('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + rememberTheMilk.uuid)
        .respond(200, deleteItemResponse);
-    ItemsService.deleteItem(rememberTheMilk);
+    ItemsService.deleteItem(rememberTheMilk, testOwnerUUID);
     $httpBackend.flush();
-    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid))
+    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid, testOwnerUUID))
       .toBeUndefined();
 
     // There should be just two left
-    var items = ItemsService.getItems();
+    var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(2);
 
     // Undelete the item
     $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + rememberTheMilk.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
-    ItemsService.undeleteItem(rememberTheMilk);
+    ItemsService.undeleteItem(rememberTheMilk, testOwnerUUID);
     $httpBackend.flush();
-    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid).modified)
+    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid, testOwnerUUID).modified)
       .toBe(undeleteItemResponse.modified);
 
     // There should be three left with the undeleted rememberTheMilk the last
-    items = ItemsService.getItems();
+    items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(3);
     expect(items[2].uuid)
@@ -294,29 +296,29 @@ describe('ItemService', function() {
   });
 
   it('should convert item to task', function () {
-    var rememberTheMilk = ItemsService.getItemByUUID('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9');
+    var rememberTheMilk = ItemsService.getItemByUUID('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID);
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + rememberTheMilk.uuid)
        .respond(200, putExistingTaskResponse);
-    ItemsService.itemToTask(rememberTheMilk);
+    ItemsService.itemToTask(rememberTheMilk, testOwnerUUID);
     $httpBackend.flush();
 
     // There should be still three left, as it will stay there until completing
-    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid))
+    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid, testOwnerUUID))
       .toBeDefined();
-    expect(ItemsService.getItems().length)
+    expect(ItemsService.getItems(testOwnerUUID).length)
       .toBe(3);
 
     // Tasks should have the new item
-    expect(TasksService.getTaskByUUID(rememberTheMilk.uuid))
+    expect(TasksService.getTaskByUUID(rememberTheMilk.uuid, testOwnerUUID))
       .toBeDefined();
-    expect(TasksService.getTasks().length)
+    expect(TasksService.getTasks(testOwnerUUID).length)
       .toBe(4);
 
     // Complete task upgrade
-    ItemsService.completeItemToTask(rememberTheMilk);
+    ItemsService.completeItemToTask(rememberTheMilk, testOwnerUUID);
 
     // Now there should be only two left
-    expect(ItemsService.getItems().length)
+    expect(ItemsService.getItems(testOwnerUUID).length)
       .toBe(2);
   });
 
@@ -342,30 +344,30 @@ describe('ItemService', function() {
         'modified': modified
       }
     };
-    var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51');
+    var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID);
     $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + tripToDublin.uuid + '/archive')
        .respond(200, archiveTripToDublinResponse);
-    ListsService.archiveList(tripToDublin);
+    ListsService.archiveList(tripToDublin, testOwnerUUID);
     $httpBackend.flush();
     
     // The list should not be active anymore
-    expect(ListsService.getListByUUID(tripToDublin.uuid))
+    expect(ListsService.getListByUUID(tripToDublin.uuid, testOwnerUUID))
       .toBeUndefined();
-    expect(ListsService.getLists().length)
+    expect(ListsService.getLists(testOwnerUUID).length)
       .toBe(2);
-    expect(ListsService.getArchivedLists().length)
+    expect(ListsService.getArchivedLists(testOwnerUUID).length)
       .toBe(1);
 
     // TagsService should have the new generated tag
-    expect(TagsService.getTagByUUID(archiveTripToDublinResponse.history.uuid))
+    expect(TagsService.getTagByUUID(archiveTripToDublinResponse.history.uuid, testOwnerUUID))
       .toBeDefined();
 
     // There should be a new archived task
-    expect(TasksService.getArchivedTasks().length)
+    expect(TasksService.getArchivedTasks(testOwnerUUID).length)
       .toBe(2);
-    expect(TasksService.getTasks().length)
+    expect(TasksService.getTasks(testOwnerUUID).length)
       .toBe(2);
-    expect(TasksService.getCompletedTasks().length)
+    expect(TasksService.getCompletedTasks(testOwnerUUID).length)
       .toBe(0);
   });
 });

@@ -1,64 +1,96 @@
 /*global angular */
 'use strict';
 
-function TagsService(BackendClientService, UserSessionService, ArrayService){
-  var tags = [];
+function TagsService(BackendClientService, ArrayService){
+
+  // An object containing tags for every owner
+  var tags = {};
   var tagRegex = /\/tag/;
   var tagSlashRegex = /\/tag\//;
-  var deletedTags = [];
+ 
+  function initializeArrays(ownerUUID){
+    if (!tags[ownerUUID]){
+      tags[ownerUUID] = {
+        activeTags: [],
+        deletedTags: []
+      };
+    }    
+  }
 
   return {
-    setTags : function(tagsResponse) {
-      return ArrayService.setArrays(tagsResponse, tags, deletedTags);
+    setTags : function(tagsResponse, ownerUUID) {
+      initializeArrays(ownerUUID);
+      return ArrayService.setArrays(
+        tagsResponse,
+        tags[ownerUUID].activeTags,
+        tags[ownerUUID].deletedTags);
     },
-    updateTags: function(tagsResponse) {
-      return ArrayService.updateArrays(tagsResponse, tags, deletedTags);
+    updateTags: function(tagsResponse, ownerUUID) {
+      initializeArrays(ownerUUID);
+      return ArrayService.updateArrays(
+        tagsResponse,
+        tags[ownerUUID].activeTags,
+        tags[ownerUUID].deletedTags);
     },
-    getTags : function() {
-      return tags;
+    getTags : function(ownerUUID) {
+      initializeArrays(ownerUUID);
+      return tags[ownerUUID].activeTags;
     },
-    getTagByUUID : function(uuid) {
-      return tags.findFirstObjectByKeyValue('uuid', uuid);
+    getTagByUUID : function(uuid, ownerUUID) {
+      return tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid);
     },
-    saveTag : function(tag) {
+    saveTag : function(tag, ownerUUID) {
       if (tag.uuid){
         // Existing tag
-        BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/tag/' + tag.uuid,
+        BackendClientService.put('/api/' + ownerUUID + '/tag/' + tag.uuid,
                  this.putExistingTagRegex, tag).then(function(result) {
           if (result.data){
             tag.modified = result.data.modified;
-            ArrayService.updateItem(tag, tags, deletedTags);
+            ArrayService.updateItem(
+              tag,
+              tags[ownerUUID].activeTags,
+              tags[ownerUUID].deletedTags);
           }
         });
       }else{
         // New tag
-        BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/tag',
+        BackendClientService.put('/api/' + ownerUUID + '/tag',
                  this.putNewTagRegex, tag).then(function(result) {
           if (result.data){
             tag.uuid = result.data.uuid;
             tag.modified = result.data.modified;
-            ArrayService.setItem(tag, tags, deletedTags);
+            initializeArrays(ownerUUID);
+            ArrayService.setItem(
+              tag,
+              tags[ownerUUID].activeTags,
+              tags[ownerUUID].deletedTags);
           }
         });
       }
     },
-    deleteTag : function(tag) {
-      BackendClientService.delete('/api/' + UserSessionService.getActiveUUID() + '/tag/' + tag.uuid,
+    deleteTag : function(tag, ownerUUID) {
+      BackendClientService.delete('/api/' + ownerUUID + '/tag/' + tag.uuid,
                this.deleteTagRegex).then(function(result) {
         if (result.data){
           tag.deleted = result.data.deleted;
           tag.modified = result.data.result.modified;
-          ArrayService.updateItem(tag, tags, deletedTags);
+          ArrayService.updateItem(
+              tag,
+              tags[ownerUUID].activeTags,
+              tags[ownerUUID].deletedTags);
         }
       });
     },
-    undeleteTag : function(tag) {
-      BackendClientService.post('/api/' + UserSessionService.getActiveUUID() + '/tag/' + tag.uuid + '/undelete',
+    undeleteTag : function(tag, ownerUUID) {
+      BackendClientService.post('/api/' + ownerUUID + '/tag/' + tag.uuid + '/undelete',
                this.deleteTagRegex).then(function(result) {
         if (result.data){
           delete tag.deleted;
           tag.modified = result.data.modified;
-          ArrayService.updateItem(tag, tags, deletedTags);
+          ArrayService.updateItem(
+              tag,
+              tags[ownerUUID].activeTags,
+              tags[ownerUUID].deletedTags);
         }
       });
     },
@@ -85,11 +117,15 @@ function TagsService(BackendClientService, UserSessionService, ArrayService){
                    BackendClientService.undeleteRegex.source),
     // Special method used by ListsService to insert a generated
     // history tag to the tags array
-    setGeneratedTag : function(tag) {
-      return ArrayService.setItem(tag, tags, deletedTags);
-    }        
+    setGeneratedTag : function(tag, ownerUUID) {
+      initializeArrays(ownerUUID);
+      return ArrayService.setItem(
+              tag,
+              tags[ownerUUID].activeTags,
+              tags[ownerUUID].deletedTags);
+    }
   };
 }
   
-TagsService.$inject = ['BackendClientService', 'UserSessionService', 'ArrayService'];
+TagsService.$inject = ['BackendClientService', 'ArrayService'];
 angular.module('em.services').factory('TagsService', TagsService);

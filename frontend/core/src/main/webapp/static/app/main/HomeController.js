@@ -37,10 +37,9 @@ function HomeController($scope, $location, $document, $element, ItemsService, Us
 
   $scope.addNewItem = function(omnibarText) {
     if ($scope.omnibarText && $scope.omnibarText.title) {
-      ItemsService.saveItem(omnibarText).then(function(/*item*/) {
+      ItemsService.saveItem(omnibarText, UserSessionService.getActiveUUID()).then(function(/*item*/) {
         // TODO: Highlight new item instead of closing omnibar
         $scope.omnibarText = {};
-        $element.find('input#omniItem')[0].focus();
         $scope.bindElsewhereEvents();
       });
 

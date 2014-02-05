@@ -6,10 +6,19 @@ function MockItemsBackendService($httpBackend, ItemsService, UUIDService) {
   function mockGetItems(expectResponse){
     $httpBackend.whenGET(ItemsService.getItemsRegex)
       .respond(function(method, url, data, headers) {
-        var itemsResponse = getJSONFixture('itemsResponse.json');
         if (url.indexOf('?modified=') != -1){
           return expectResponse(method, url, data, headers, {});
         }else{
+          var authenticateResponse = getJSONFixture('authenticateResponse.json');
+          for (var collectiveUUID in authenticateResponse.collectives) {
+            if (authenticateResponse.collectives.hasOwnProperty(collectiveUUID)) {
+              if (url.indexOf(collectiveUUID) != -1){
+                var collectiveItemsResponse = getJSONFixture('collectiveItemsResponse.json');
+                return expectResponse(method, url, data, headers, collectiveItemsResponse);
+              }
+            }
+          }
+          var itemsResponse = getJSONFixture('itemsResponse.json');
           return expectResponse(method, url, data, headers, itemsResponse);
         }
       });

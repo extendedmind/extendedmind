@@ -1,12 +1,12 @@
 /*global angular */
 'use strict';
 
-function ItemsController($scope, $location, $routeParams, ItemsService) {
+function ItemsController($scope, $location, $routeParams, UserSessionService, ItemsService) {
   
   if (!$scope.item){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
       if ($routeParams.uuid) {
-        $scope.item = ItemsService.getItemByUUID($routeParams.uuid);
+        $scope.item = ItemsService.getItemByUUID($routeParams.uuid, UserSessionService.getActiveUUID());
       }else{
         $scope.item = {};
       }
@@ -14,7 +14,7 @@ function ItemsController($scope, $location, $routeParams, ItemsService) {
   }
 
   $scope.saveItem = function(item) {
-    ItemsService.saveItem(item);
+    ItemsService.saveItem(item, UserSessionService.getActiveUUID());
     window.history.back();
   };
 
@@ -23,26 +23,20 @@ function ItemsController($scope, $location, $routeParams, ItemsService) {
   };
 
   $scope.editItemTitle = function(item) {
-    ItemsService.saveItem(item);
-  }
+    ItemsService.saveItem(item, UserSessionService.getActiveUUID());
+  };
 
   $scope.editItem  = function(item) {
     $location.path($scope.prefix + '/items/edit/' + item.uuid);
-  }
-
-  function clearCompletedText() {
-    $timeout(function() {
-      $scope.completed = '';
-    }, 2000);
-  }
+  };
 
   $scope.deleteItem = function(item) {
-    ItemsService.deleteItem(item);
+    ItemsService.deleteItem(item, UserSessionService.getActiveUUID());
   };
 
   $scope.itemToTask = function(item) {
     $scope.itemType = 'task';
-    ItemsService.itemToTask(item);
+    ItemsService.itemToTask(item, UserSessionService.getActiveUUID());
     $scope.task = item;
   };
 
@@ -52,7 +46,7 @@ function ItemsController($scope, $location, $routeParams, ItemsService) {
 
   $scope.taskEditDone = function(task) {
     cleanContext(task);
-    ItemsService.completeItemToTask(task);
+    ItemsService.completeItemToTask(task, UserSessionService.getActiveUUID());
   };
 
   var cleanContext = function(task) {
@@ -68,5 +62,5 @@ function ItemsController($scope, $location, $routeParams, ItemsService) {
 
 }
 
-ItemsController.$inject = ['$scope', '$location', '$routeParams', 'ItemsService'];
+ItemsController.$inject = ['$scope', '$location', '$routeParams', 'UserSessionService', 'ItemsService'];
 angular.module('em.app').controller('ItemsController', ItemsController);

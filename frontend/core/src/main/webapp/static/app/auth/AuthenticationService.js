@@ -31,7 +31,7 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
   }
 
   function refreshItems() {
-    ItemsService.synchronize();
+    ItemsService.synchronize(UserSessionService.getActiveUUID());
   }
 
   function swapToken() {
@@ -75,7 +75,6 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
     },
     switchActiveUUID: function(uuid) {
       UserSessionService.setActiveUUID(uuid);
-      refreshItems();
     },
     // Regular expressions for account requests
     authenticateRegex: authenticateRegexp,

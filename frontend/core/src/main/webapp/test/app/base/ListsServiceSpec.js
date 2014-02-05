@@ -27,31 +27,12 @@ describe('ListService', function() {
   var archiveListResponse = getJSONFixture('archiveListResponse.json');
   archiveListResponse.result.modified = now.getTime();
 
-
-  var MockUserSessionService = {
-      latestModified: undefined,
-      getCredentials: function () {
-        return '123456789';
-      },
-      getActiveUUID: function () {
-        return '6be16f46-7b35-4b2d-b875-e13d19681e77';
-      },
-      getLatestModified: function () {
-        return this.latestModified;
-      },
-      setLatestModified: function (modified) {
-        this.latestModified = modified;
-      }
-    };
+  var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
   // SETUP / TEARDOWN
 
   beforeEach(function() {
     module('em.appTest');
-
-    module('em.services', function ($provide){
-      $provide.value('UserSessionService', MockUserSessionService);
-    });
 
     inject(function (_$httpBackend_, _ListsService_, _ArrayService_, _TagsService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_) {
       $httpBackend = _$httpBackend_;
@@ -78,13 +59,12 @@ describe('ListService', function() {
             'modified': 1390912600983,
             'title': 'write essay on cognitive biases',
             'completable': true
-        }]);
+        }], testOwnerUUID);
     });
   });
 
 
   afterEach(function() {
-    MockUserSessionService.setLatestModified(undefined);
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest();
   });
@@ -92,7 +72,7 @@ describe('ListService', function() {
   // TESTS
 
   it('should get lists', function () {
-    var lists = ListsService.getLists();
+    var lists = ListsService.getLists(testOwnerUUID);
     expect(lists.length)
       .toBe(3);
     // Lists should be in modified order
@@ -102,12 +82,12 @@ describe('ListService', function() {
   });
 
   it('should find list by uuid', function () {
-    expect(ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51'))
+    expect(ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID))
       .toBeDefined();
   });
 
   it('should not find list by unknown uuid', function () {
-    expect(ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a50'))
+    expect(ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a50', testOwnerUUID))
       .toBeUndefined();
   });
 
@@ -115,14 +95,14 @@ describe('ListService', function() {
     var testList = {
       'title': 'test list'
     };
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/list', testList)
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list', testList)
        .respond(200, putNewListResponse);
-    ListsService.saveList(testList);
+    ListsService.saveList(testList, testOwnerUUID);
     $httpBackend.flush();
-    expect(ListsService.getListByUUID(putNewListResponse.uuid))
+    expect(ListsService.getListByUUID(putNewListResponse.uuid, testOwnerUUID))
       .toBeDefined();
     // Should go to the end of the array
-    var lists = ListsService.getLists();
+    var lists = ListsService.getLists(testOwnerUUID);
     expect(lists.length)
       .toBe(4);
     expect(lists[3].uuid)
@@ -130,18 +110,18 @@ describe('ListService', function() {
   });
 
   it('should update existing list', function () {
-    var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51');
+    var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID);
     tripToDublin.title = 'another trip to Dublin';
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + tripToDublin.uuid, tripToDublin)
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid, tripToDublin)
        .respond(200, putExistingListResponse);
-    ListsService.saveList(tripToDublin);
+    ListsService.saveList(tripToDublin, testOwnerUUID);
     $httpBackend.flush();
 
-    expect(ListsService.getListByUUID(tripToDublin.uuid).modified)
+    expect(ListsService.getListByUUID(tripToDublin.uuid, testOwnerUUID).modified)
       .toBe(putExistingListResponse.modified);
 
     // Should move to the end of the array
-    var lists = ListsService.getLists();
+    var lists = ListsService.getLists(testOwnerUUID, testOwnerUUID);
     expect(lists.length)
       .toBe(3);
     expect(lists[2].uuid)
@@ -149,29 +129,29 @@ describe('ListService', function() {
   });
 
   it('should delete and undelete list', function () {
-    var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51');
-    $httpBackend.expectDELETE('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + tripToDublin.uuid)
+    var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID);
+    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid)
        .respond(200, deleteListResponse);
-    ListsService.deleteList(tripToDublin);
+    ListsService.deleteList(tripToDublin, testOwnerUUID);
     $httpBackend.flush();
-    expect(ListsService.getListByUUID(tripToDublin.uuid))
+    expect(ListsService.getListByUUID(tripToDublin.uuid, testOwnerUUID))
       .toBeUndefined();
 
     // There should be just two left
-    var lists = ListsService.getLists();
+    var lists = ListsService.getLists(testOwnerUUID);
     expect(lists.length)
       .toBe(2);
 
     // Undelete the list
-    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + tripToDublin.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/undelete')
        .respond(200, undeleteListResponse);
-    ListsService.undeleteList(tripToDublin);
+    ListsService.undeleteList(tripToDublin, testOwnerUUID);
     $httpBackend.flush();
-    expect(ListsService.getListByUUID(tripToDublin.uuid).modified)
+    expect(ListsService.getListByUUID(tripToDublin.uuid, testOwnerUUID).modified)
       .toBe(undeleteListResponse.modified);
 
     // There should be three left with trip to dublin the last
-    lists = ListsService.getLists();
+    lists = ListsService.getLists(testOwnerUUID);
     expect(lists.length)
       .toBe(3);
     expect(lists[2].uuid)
@@ -180,36 +160,39 @@ describe('ListService', function() {
 
   it('should archive list', function () {
     // First register callback to list service
-    var childItems, archivedTimestamp;
-    var testArchiveItemCallback = function(children, archived){
+    var childItems, archivedTimestamp, callBackUUID;
+    var testArchiveItemCallback = function(children, archived, uuid){
       childItems = children;
       archivedTimestamp = archived;
+      callBackUUID = uuid;
     };
     ListsService.registerItemArchiveCallback(testArchiveItemCallback, 'test');
 
     // Make call
-    var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51');
-    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + tripToDublin.uuid + '/archive')
+    var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID);
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/archive')
        .respond(200, archiveListResponse);
-    ListsService.archiveList(tripToDublin);
+    ListsService.archiveList(tripToDublin, testOwnerUUID);
     $httpBackend.flush();
 
     // Validate that callback was called
     expect(childItems.length)
-      .toBe(archiveListResponse.children.length); 
+      .toBe(archiveListResponse.children.length);
     expect(archivedTimestamp)
       .toBe(archiveListResponse.archived);
+    expect(callBackUUID)
+      .toBe(testOwnerUUID);
 
     // The list should not be active anymore
-    expect(ListsService.getListByUUID(tripToDublin.uuid))
+    expect(ListsService.getListByUUID(tripToDublin.uuid,testOwnerUUID))
       .toBeUndefined();
-    expect(ListsService.getLists().length)
+    expect(ListsService.getLists(testOwnerUUID).length)
       .toBe(2);
-    expect(ListsService.getArchivedLists().length)
+    expect(ListsService.getArchivedLists(testOwnerUUID).length)
       .toBe(1);
 
     // TagsService should have the new generated tag
-    expect(TagsService.getTagByUUID(archiveListResponse.history.uuid))
+    expect(TagsService.getTagByUUID(archiveListResponse.history.uuid, testOwnerUUID))
       .toBeDefined();
   });
 

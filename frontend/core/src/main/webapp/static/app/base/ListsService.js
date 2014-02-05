@@ -1,11 +1,10 @@
 /*global angular */
 'use strict';
 
-function ListsService($q, BackendClientService, UserSessionService, ArrayService, TagsService){
-  var lists = [];
-  var deletedLists = [];
-  var archivedLists = [];
-  var otherArrays = [{array: archivedLists, id: 'archived'}];
+function ListsService($q, BackendClientService, ArrayService, TagsService){
+
+  // An object containing lists for every owner
+  var lists = {};
 
   var listRegex = /\/list/;
   var listSlashRegex = /\/list\//;
@@ -13,84 +12,132 @@ function ListsService($q, BackendClientService, UserSessionService, ArrayService
 
   var itemArchiveCallbacks = {};
 
+  function initializeArrays(ownerUUID){
+    if (!lists[ownerUUID]){
+      lists[ownerUUID] = {
+        activeLists: [],
+        deletedLists: [],
+        archivedLists: []
+      };
+    }
+  }
+
+  function getOtherArrays(ownerUUID){
+    return [{array: lists[ownerUUID].archivedLists, id: 'archived'}];
+  }
+
   return {
-    setLists: function(listsResponse) {
-      return ArrayService.setArrays(listsResponse, lists, deletedLists, otherArrays);
+    setLists: function(listsResponse, ownerUUID) {
+      initializeArrays(ownerUUID);
+      return ArrayService.setArrays(
+        listsResponse,
+        lists[ownerUUID].activeLists,
+        lists[ownerUUID].deletedLists,
+        getOtherArrays(ownerUUID));
     },
-    updateLists: function(listsResponse) {
-      return ArrayService.updateArrays(listsResponse, lists, deletedLists, otherArrays);
+    updateLists: function(listsResponse, ownerUUID) {
+      initializeArrays(ownerUUID);
+      return ArrayService.updateArrays(
+        listsResponse,
+        lists[ownerUUID].activeLists,
+        lists[ownerUUID].deletedLists,
+        getOtherArrays(ownerUUID));
     },
-    getLists: function() {
-      return lists;
+    getLists: function(ownerUUID) {
+      initializeArrays(ownerUUID);
+      return lists[ownerUUID].activeLists;
     },
-    getArchivedLists: function() {
-      return archivedLists;
+    getArchivedLists: function(ownerUUID) {
+      initializeArrays(ownerUUID);      
+      return lists[ownerUUID].archivedLists;
     },
-    getListByUUID: function(uuid) {
-      return lists.findFirstObjectByKeyValue('uuid', uuid);
+    getListByUUID: function(uuid, ownerUUID) {
+      return lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', uuid);
     },
-    saveList: function(list) {
-      var deferred = $q.defer();      
+    saveList: function(list, ownerUUID) {
+      var deferred = $q.defer();
       if (list.uuid){
         // Existing list
-        BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid,
+        BackendClientService.put('/api/' + ownerUUID + '/list/' + list.uuid,
                  this.putExistingListRegex, list).then(function(result) {
           if (result.data){
             list.modified = result.data.modified;
-            ArrayService.updateItem(list, lists, deletedLists, otherArrays);
+            initializeArrays(ownerUUID);
+            ArrayService.updateItem(
+              list,
+              lists[ownerUUID].activeLists,
+              lists[ownerUUID].deletedLists,
+              getOtherArrays(ownerUUID));
             deferred.resolve(list);
           }
         });
       }else{
         // New list
-        BackendClientService.put('/api/' + UserSessionService.getActiveUUID() + '/list',
+        BackendClientService.put('/api/' + ownerUUID + '/list',
                  this.putNewListRegex, list).then(function(result) {
           if (result.data){
             list.uuid = result.data.uuid;
             list.modified = result.data.modified;
-            ArrayService.setItem(list, lists, deletedLists, otherArrays);
+            initializeArrays(ownerUUID);
+            ArrayService.setItem(
+              list,
+              lists[ownerUUID].activeLists,
+              lists[ownerUUID].deletedLists,
+              getOtherArrays(ownerUUID));
             deferred.resolve(list);
           }
         });
       }
-      return deferred.promise;      
+      return deferred.promise;
     },
-    deleteList: function(list) {
-      BackendClientService.delete('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid,
+    deleteList: function(list, ownerUUID) {
+      BackendClientService.delete('/api/' + ownerUUID + '/list/' + list.uuid,
                this.deleteListRegex).then(function(result) {
         if (result.data){
           list.deleted = result.data.deleted;
           list.modified = result.data.result.modified;
-          ArrayService.updateItem(list, lists, deletedLists, otherArrays);
+          ArrayService.updateItem(
+            list,
+            lists[ownerUUID].activeLists,
+            lists[ownerUUID].deletedLists,
+            getOtherArrays(ownerUUID));
         }
       });
     },
-    undeleteList: function(list) {
-      BackendClientService.post('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid + '/undelete',
+    undeleteList: function(list, ownerUUID) {
+      BackendClientService.post('/api/' + ownerUUID + '/list/' + list.uuid + '/undelete',
                this.deleteListRegex).then(function(result) {
         if (result.data){
           delete list.deleted;
           list.modified = result.data.modified;
-          ArrayService.updateItem(list, lists, deletedLists, otherArrays);
+          ArrayService.updateItem(
+            list,
+            lists[ownerUUID].activeLists,
+            lists[ownerUUID].deletedLists,
+            getOtherArrays(ownerUUID));
         }
       });
     },
-    archiveList: function(list) {
-      BackendClientService.post('/api/' + UserSessionService.getActiveUUID() + '/list/' + list.uuid + '/archive',
+    archiveList: function(list, ownerUUID) {
+      BackendClientService.post('/api/' + ownerUUID + '/list/' + list.uuid + '/archive',
                this.deleteListRegex).then(function(result) {
         if (result.data){
           list.archived = result.data.archived;
           list.modified = result.data.result.modified;
-          ArrayService.updateItem(list, lists, deletedLists, otherArrays);
+          ArrayService.updateItem(
+            list,
+            lists[ownerUUID].activeLists,
+            lists[ownerUUID].deletedLists,
+            getOtherArrays(ownerUUID));
           var latestModified = list.modified;
 
           // Add generated tag to the tag array
-          var tagModified = TagsService.setGeneratedTag(result.data.history);
+          var tagModified = TagsService.setGeneratedTag(result.data.history, ownerUUID);
           if (tagModified > latestModified) latestModified = tagModified;
           // Call child callbacks
           if (result.data.children){
             for (var id in itemArchiveCallbacks) {
-              var itemModified = itemArchiveCallbacks[id](result.data.children, result.data.archived);
+              var itemModified = itemArchiveCallbacks[id](result.data.children, result.data.archived, ownerUUID);
               if (itemModified && itemModified > latestModified) latestModified = itemModified;
             }
           }
@@ -127,11 +174,11 @@ function ListsService($q, BackendClientService, UserSessionService, ArrayService
     // Register callbacks that are fired for implicit archiving of
     // elements. Callback must return the latest modified value it
     // stores to its arrays.
-    registerItemArchiveCallback: function (itemArchiveCallback, id){
+    registerItemArchiveCallback: function (itemArchiveCallback, id) {
       itemArchiveCallbacks[id] = itemArchiveCallback;
     }
   };
 }
   
-ListsService.$inject = ['$q', 'BackendClientService', 'UserSessionService', 'ArrayService', 'TagsService'];
+ListsService.$inject = ['$q', 'BackendClientService', 'ArrayService', 'TagsService'];
 angular.module('em.services').factory('ListsService', ListsService);

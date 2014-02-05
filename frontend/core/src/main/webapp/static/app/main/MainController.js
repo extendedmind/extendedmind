@@ -4,11 +4,11 @@
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection. 
-function MainController($scope, DateService, ItemsService, ListsService, TagsService, TasksService, OwnerService, FilterService, SwiperService, TasksSlidesService) {
-  $scope.items = ItemsService.getItems();
-  $scope.tasks = TasksService.getTasks();
-  $scope.lists = ListsService.getLists();
-  $scope.contexts = TagsService.getTags();
+function MainController($scope, DateService, UserSessionService, ItemsService, ListsService, TagsService, TasksService, OwnerService, FilterService, SwiperService, TasksSlidesService) {
+  $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
+  $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
+  $scope.lists = ListsService.getLists(UserSessionService.getActiveUUID());
+  $scope.contexts = TagsService.getTags(UserSessionService.getActiveUUID());
   $scope.prefix = OwnerService.getPrefix();
   $scope.filterService = FilterService;
   $scope.dates = DateService.week();
@@ -45,5 +45,5 @@ function MainController($scope, DateService, ItemsService, ListsService, TagsSer
   };
 }
 
-MainController.$inject = ['$scope', 'DateService', 'ItemsService', 'ListsService', 'TagsService', 'TasksService', 'OwnerService', 'FilterService', 'SwiperService', 'TasksSlidesService'];
+MainController.$inject = ['$scope', 'DateService', 'UserSessionService', 'ItemsService', 'ListsService', 'TagsService', 'TasksService', 'OwnerService', 'FilterService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('MainController', MainController);
