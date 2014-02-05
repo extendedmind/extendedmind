@@ -2,94 +2,87 @@
 
 angular.module('common').factory('DateService', [
   function() {
-    var today = {};
+    var today = new Date();
+
     var monthNames = [
     'jan', 'feb', 'mar', 'apr',
     'may', 'jun', 'jul', 'aug',
     'sep', 'oct', 'nov', 'dec'
     ];
     var weekdays = ['s', 'm', 't', 'w', 't', 'f', 's'];
-    var numberOfDays = 7;
 
-    // date object with shared data (prototype/this)
+    var activeWeek;
+    var daysFromActiveWeekToNext = 7;
+    var daysFromActiveWeekToPrevious = -daysFromActiveWeekToNext;
 
-    function nextDate(date) {
-      // compare current date with number of days in month
-      // http://stackoverflow.com/a/315767
-      if (date.getDate() < new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()) {
-        date.setDate(date.getDate() + 1);
-      } else {
-        // reset date
-        date.setDate(1);
-        // compare current month with number of months in year
-        if (date.getMonth() < 11) { //getMonth() is zero-based
-          date.setMonth(date.getMonth() + 1);
-        } else {
-        // reset month and year
-        date.setMonth(0);
-        date.setYear(date.getYear() + 1);
-      }
+    // http://stackoverflow.com/a/3067896
+    function yyyymmdd(date) {
+      var yyyy, mm, dd;
+
+      yyyy = date.getFullYear().toString();
+      mm = (date.getMonth() + 1).toString(); // getMonth() is zero-based
+      dd  = date.getDate().toString();
+
+      return yyyy + '-' + (mm[1] ? mm : '0' + mm[0]) + '-' + (dd[1] ? dd : '0' + dd[0]); // padding
     }
-    return date;
-  }
 
-  // http://stackoverflow.com/a/3067896
-  function yyyymmdd(date) {
-    var yyyy, mm, dd;
+    // http://stackoverflow.com/a/4156516
+    function getFirstDayOfTheWeek(date) {
+      var currentDay = date.getDay();
+      var diff = date.getDate() - currentDay + (currentDay === 0 ? -6 : 1); // adjust when day is sunday
+      date.setDate(diff);
+      
+      return date;
+    }
 
-    yyyy = date.getFullYear().toString();
-    mm = (date.getMonth() + 1).toString(); // getMonth() is zero-based
-    dd  = date.getDate().toString();
+    function weekDaysStartingFrom(date) {
+      var day;
+      activeWeek = [];
 
-    return yyyy +'-'+ (mm[1]?mm:'0'+mm[0]) +'-'+ (dd[1]?dd:'0'+dd[0]); // padding
-  }
-
-  // http://stackoverflow.com/a/4156516
-  function getFirstDayOfTheWeek(date) {
-    var currentDay = date.getDay();
-    var diff = date.getDate() - currentDay + (currentDay === 0 ? -6 : 1); // adjust when day is sunday
-    return new Date(date.setDate(diff));
-  }
-
-  return {
-    today: function() {
-      return today;
-    },
-    week: function() {
-      var date, day, week, i;
-      date = new Date();
-      week = [];
-      i = 0;
-
-      var firstDayOfWeek = getFirstDayOfTheWeek(date);
-
-      for (i = 0; i < numberOfDays; i++) {
+      for (var i = 0, len = weekdays.length; i < len; i++) {
         day = {};
         day.date = date.getDate();
         day.weekday = weekdays[date.getDay()];
-
         day.month = {};
         day.month.name = monthNames[date.getMonth()];
+        day.year = date.getFullYear();
+        day.yyyymmdd = yyyymmdd(date);
 
-          // is this needed?
-          day.month.number = date.getMonth() + 1;
+        // show today or month + date
+        // http://stackoverflow.com/a/9300653
+        day.displayDate = (date.toDateString() === today.toDateString() ? 'today' : day.month.name + ' ' + day.date);
+        day.displayDateShort = day.date;
 
-          day.year = date.getFullYear();
-          day.yyyymmdd = yyyymmdd(date);
+        activeWeek.push(day);
+        date.setDate(date.getDate() + 1);
+      }
+      
+      return activeWeek;
+    }
 
-          if (i === 0) {
-            day.displayDate = 'today';
-            today = day;
-          } else {
-            day.displayDate = day.month.name + ' ' + day.date;
-          }
-          day.displayDateShort = day.date;
-          
-          week.push(day);
+    function getWeekWithOffset(offsetDays) {
+      var activeMonday = new Date(activeWeek[0].yyyymmdd);
+      activeMonday.setDate(activeMonday.getDate() + offsetDays);
 
-          date = nextDate(date);
-        }
-        return week;
+      return weekDaysStartingFrom(activeMonday);
+    }
+
+    return {
+      today: function() {
+        return today;
+      },
+      activeWeek: function() {
+        return activeWeek || (function() {
+          var date = getFirstDayOfTheWeek(new Date());
+
+          return weekDaysStartingFrom(date);
+        })();
+      },
+      nextWeek: function() {
+        return getWeekWithOffset(daysFromActiveWeekToNext);
+      },
+      previousWeek: function() {
+        return getWeekWithOffset(daysFromActiveWeekToPrevious);
       }
     };
   }]);

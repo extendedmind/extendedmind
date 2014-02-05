@@ -32,6 +32,7 @@ angular.module('em.filters').filter('tasksFilter', ['DateService',
           if (tasks[i].due) {
             if (tasks[i].due === listDate) {
               filteredValues.push(tasks[i]);
+              // This is legacy. App has past dates also.
             } else if (listDate === DateService.today().yyyymmdd && DateService.today().yyyymmdd > tasks[i].due) { // if task date < today
               filteredValues.push(tasks[i]);
             }

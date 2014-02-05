@@ -12,8 +12,15 @@ function MainController($scope, DateService, UserSessionService, ItemsService, L
   $scope.contexts = TagsService.getTags(UserSessionService.getActiveUUID());
   $scope.prefix = OwnerService.getPrefix();
   $scope.filterService = FilterService;
-  $scope.dates = DateService.week();
-  $scope.date = DateService.today();
+  $scope.dates = DateService.activeWeek();
+
+  $scope.previousWeek = function() {
+    $scope.dates = DateService.previousWeek();
+  };
+
+  $scope.nextWeek = function() {
+    $scope.dates = DateService.nextWeek();
+  };
 
   $scope.gotoInbox = function() {
     if ($scope.feature === 'tasks') {
