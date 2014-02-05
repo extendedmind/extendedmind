@@ -625,27 +625,21 @@ trait ItemDatabase extends AbstractGraphDatabase {
           .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.OUTGOING)
           .evaluator(Evaluators.excludeStartPosition())
           .evaluator(LabelEvaluator(scala.List(ItemLabel.TAG)))
-          //.evaluator(Evaluators.endNodeIs(Evaluation.INCLUDE_AND_PRUNE, Evaluation.EXCLUDE_AND_PRUNE, 
-          //                                tagNodes:_*))
           .evaluator(Evaluators.toDepth(1))
 
     val traverser = tagNodesFromItem.traverse(itemNode)
-    val relationshipList = traverser.relationships().toList
+    val relationships = traverser.relationships().toList
 
     // See that every node is found in the list
-    tagNodes.foreach(tagNode => {
-      var found = false;
-      relationshipList.foreach(relationship => {
-    	if (relationship.getEndNode() == tagNode){
-    	  found = true;
-    	}
-      })
-      if (!found){
-        return fail(INVALID_PARAMETER, "Tag node " + getUUID(tagNode) + " is not attached to the item " + getUUID(itemNode))
-      }
-      
+    val relationshipList = relationships.filter(relationship => {
+      tagNodes.contains(relationship.getEndNode())
     })
-    Right(Some(relationshipList))
+    
+    if (relationshipList.size != tagNodes.size){
+      fail(INVALID_PARAMETER, "Every given tag UUID is not attached to the item " + getUUID(itemNode))
+    }else{
+      Right(Some(relationshipList))
+    }
   }
   
   protected def deleteItemNode(owner: Owner, itemUUID: UUID): Response[Tuple2[Node, Long]] = {

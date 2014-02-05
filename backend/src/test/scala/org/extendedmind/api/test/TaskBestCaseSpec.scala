@@ -199,6 +199,10 @@ class TaskBestCaseSpec extends ServiceSpecBase {
 
         // Revert to one tag and update task
         putExistingTask(newTask, putTaskResponse.uuid.get, authenticateResponse)
+        
+        val endTask = getTask(putTaskResponse.uuid.get, authenticateResponse)
+        endTask.relationships.get.tags.get.size should be (1)
+        endTask.relationships.get.tags.get(0) should be (itemsResponse.tags.get(0).uuid.get)
       }
     }
   }
