@@ -4,7 +4,7 @@
     <div id="tasks-lists-page-content-container" class="content-container page-content-container">
       <div class="inner-page-content-container">
         <section>
-          <h3><a href ng-click="gotoLists()">lists</a></h3>
+          <h3><a href class="page-header" ng-click="gotoLists()">lists</a></h3>
           <ul class="indent list-arrow-right">
             <li ng-if="lists && lists.length" ng-class="selected" ng-repeat="list in lists">
               <a class="text-muted click-to-slide" href ng-click="goToList(list.uuid)">
