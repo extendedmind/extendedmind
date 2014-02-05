@@ -96,6 +96,9 @@ angular.module('common').factory('DateService', [
       },
       previousWeek: function() {
         return getWeekWithOffset(daysFromActiveWeekToPrevious);
+      },
+      getMondayDateString: function() {
+        return activeWeek[0].yyyymmdd;
       }
     };
   }]);

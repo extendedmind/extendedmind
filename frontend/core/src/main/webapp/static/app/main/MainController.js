@@ -5,7 +5,7 @@
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection. 
-function MainController($scope, DateService, UserSessionService, ItemsService, ListsService, TagsService, TasksService, OwnerService, FilterService, SwiperService, TasksSlidesService) {
+function MainController($scope, $timeout, DateService, UserSessionService, ItemsService, ListsService, TagsService, TasksService, OwnerService, FilterService, SwiperService, TasksSlidesService) {
   $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
   $scope.lists = ListsService.getLists(UserSessionService.getActiveUUID());
@@ -16,6 +16,11 @@ function MainController($scope, DateService, UserSessionService, ItemsService, L
 
   $scope.previousWeek = function() {
     $scope.dates = DateService.previousWeek();
+    $timeout(function() {
+    // $scope.$apply(function() {
+    SwiperService.swipeTo(TasksSlidesService.getDateSlidePath($scope.dates[0].yyyymmdd));
+  // });
+  });
   };
 
   $scope.nextWeek = function() {
@@ -63,5 +68,5 @@ function MainController($scope, DateService, UserSessionService, ItemsService, L
   };
 }
 
-MainController['$inject'] = ['$scope', 'DateService', 'UserSessionService', 'ItemsService', 'ListsService', 'TagsService', 'TasksService', 'OwnerService', 'FilterService', 'SwiperService', 'TasksSlidesService'];
+MainController['$inject'] = ['$scope', '$timeout', 'DateService', 'UserSessionService', 'ItemsService', 'ListsService', 'TagsService', 'TasksService', 'OwnerService', 'FilterService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('MainController', MainController);
