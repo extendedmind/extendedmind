@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function TasksService($q, BackendClientService, ArrayService, ListsService){
+function TasksService($q, BackendClientService, ArrayService, ListsService, TagsService){
   var tasks = {};
 
   var taskRegex = /\/task/;
@@ -87,10 +87,60 @@ function TasksService($q, BackendClientService, ArrayService, ListsService){
     }
   }
 
+  function addContextToTasks(tasksResponse, ownerUUID){
+    if (tasksResponse){
+      for (var i=0, len=tasksResponse.length; i<len; i++) {
+        if (tasksResponse[i].relationships && tasksResponse[i].relationships.tags){
+          for (var j=0, jlen=tasksResponse[i].relationships.tags.length; j<jlen; j++) {
+            var tag = TagsService.getTagByUUID(tasksResponse[i].relationships.tags[j], ownerUUID);
+            if (tag && tag.tagType === 'context'){
+              console.log("adding context " + tag.title + " to " + tasksResponse[i].title);
+              tasksResponse[i].relationships.context = tag.uuid;
+              return;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  function moveContextToTags(task, ownerUUID){
+    if (task.relationships && task.relationships.context){
+      var context = task.relationships.context;
+      if (task.relationships.tags){
+        var foundCurrent = false;
+        var previousContextIndex;
+        for (var i=0, len=task.relationships.tags.length; i<len; i++) {
+          var tag = TagsService.getTagByUUID(task.relationships.tags[i], ownerUUID);
+          if (tag && tag.tagType === 'context'){
+            if (tag.uuid === context){
+              foundCurrent = true;
+            }else{
+              previousContextIndex = i;
+            }
+          }
+        }
+        if (previousContextIndex !== undefined){
+          // Remove old
+          task.relationships.tags.splice(previousContextIndex, 1);
+        }
+        if (!foundCurrent){
+          // Add new
+          task.relationships.tags.push(context);
+        }
+      }else{
+        task.relationships.tags = [context];
+      }
+      delete task.relationships.context;
+      return context;
+    }
+  }
+
   return {
     setTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       cleanRecentlyCompletedTasks(ownerUUID);
+      addContextToTasks(tasksResponse, ownerUUID);
       return ArrayService.setArrays(
           tasksResponse,
           tasks[ownerUUID].activeTasks,
@@ -124,12 +174,16 @@ function TasksService($q, BackendClientService, ArrayService, ListsService){
     saveTask: function(task, ownerUUID) {
       var deferred = $q.defer();
       cleanRecentlyCompletedTasks(ownerUUID);
+      var context = moveContextToTags(task, ownerUUID);
       if (task.uuid){
         // Existing task
         BackendClientService.put('/api/' + ownerUUID + '/task/' + task.uuid,
                  this.putExistingTaskRegex, task).then(function(result) {
           if (result.data){
             task.modified = result.data.modified;
+            if (context){
+              task.relationships.context = context;
+            }
             ArrayService.updateItem(task,
               tasks[ownerUUID].activeTasks,
               tasks[ownerUUID].deletedTasks,
@@ -144,6 +198,9 @@ function TasksService($q, BackendClientService, ArrayService, ListsService){
           if (result.data){
             task.uuid = result.data.uuid;
             task.modified = result.data.modified;
+            if (context){
+              task.relationships.context = context;
+            }
             initializeArrays(ownerUUID);
             ArrayService.setItem(task,
               tasks[ownerUUID].activeTasks,
@@ -264,5 +321,5 @@ function TasksService($q, BackendClientService, ArrayService, ListsService){
   };
 }
   
-TasksService.$inject = ['$q', 'BackendClientService', 'ArrayService', 'ListsService'];
+TasksService.$inject = ['$q', 'BackendClientService', 'ArrayService', 'ListsService', 'TagsService'];
 angular.module('em.services').factory('TasksService', TasksService);

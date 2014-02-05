@@ -175,5 +175,31 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
+    
+    it("should successfully put new task with tags to /[userUUID]/task, "
+      + "and update tags with PUT to /[userUUID]/task/[taskUUID]") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Get("/" + authenticateResponse.userUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = entityAs[Items]
+        val newTask = Task("review inbox", None, None, None, None, None, Some(
+            ExtendedItemRelationships(None, None, Some(scala.List(itemsResponse.tags.get(0).uuid.get)))))
+        val putTaskResponse = putNewTask(newTask, authenticateResponse)
+        
+        // Add new tag to tags and update task
+        val taskWithAddedTag = newTask.copy(relationships = Some(
+            ExtendedItemRelationships(None, None, Some(
+                scala.List(itemsResponse.tags.get(0).uuid.get, itemsResponse.tags.get(1).uuid.get)))));
+        putExistingTask(taskWithAddedTag, putTaskResponse.uuid.get, authenticateResponse)
+        
+        // Change one tag and update task
+        val taskWithChangedTag = taskWithAddedTag.copy(relationships = Some(
+            ExtendedItemRelationships(None, None, Some(
+                scala.List(itemsResponse.tags.get(0).uuid.get, itemsResponse.tags.get(2).uuid.get)))));
+        putExistingTask(taskWithChangedTag, putTaskResponse.uuid.get, authenticateResponse)
+
+        // Revert to one tag and update task
+        putExistingTask(newTask, putTaskResponse.uuid.get, authenticateResponse)
+      }
+    }
   }
 }

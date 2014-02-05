@@ -37,6 +37,7 @@ function TagsService(BackendClientService, ArrayService){
       return tags[ownerUUID].activeTags;
     },
     getTagByUUID : function(uuid, ownerUUID) {
+      initializeArrays(ownerUUID);      
       return tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveTag : function(tag, ownerUUID) {
