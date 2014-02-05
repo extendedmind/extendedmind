@@ -12,10 +12,9 @@ CONFIGURATION_NAME="Release"
 CODE_SIGN_IDENTITY="iPhone Distribution"
 PROVISIONING_UUID="A6105942-B272-4FB0-BCB3-4999C39A7F70"
 
-echo "unlocking security keychain"
+echo "unlocking keychain"
 security unlock-keychain -p ${KEYCHAIN_PASSWORD} /Users/Xcloud/Library/Keychains/Jenkins.keychain
 
-echo "running .. phonegap build iOS"
 # make new iOS project from sources
 cd app
 

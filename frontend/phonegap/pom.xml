@@ -133,7 +133,7 @@
                         <configuration>
                             <skip>${skipIos}</skip>
                             <executable>sh</executable>
-                            <commandlineArgs>build-ios.sh ${settings.servers.ios-developer-certificate.username} ${settings.servers.ios-developer-certificate.password}</commandlineArgs>
+                            <commandlineArgs>build-ios.sh ${settings.servers.ios-developer-certificate.username} ${settings.servers.ios-developer-certificate.passphrase}</commandlineArgs>
                             <background>false</background>
                         </configuration>                            
                     </execution>
