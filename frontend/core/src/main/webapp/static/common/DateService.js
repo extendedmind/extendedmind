@@ -99,6 +99,13 @@ angular.module('common').factory('DateService', [
       },
       getMondayDateString: function() {
         return activeWeek[0].yyyymmdd;
+      },
+      getTodayDateString: function() {
+        for (var i = 0, len = activeWeek.length; i < len; i++) {
+          if (activeWeek[i].yyyymmdd === yyyymmdd(today)) {
+            return activeWeek[i].yyyymmdd;
+          }
+        }
       }
     };
   }]);

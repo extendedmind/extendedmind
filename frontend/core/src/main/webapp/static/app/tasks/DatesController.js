@@ -5,10 +5,21 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
 
   $scope.dates = DateService.activeWeek();
 
+  (function swipeToToday() {
+    var todayDateString = DateService.getTodayDateString();
+
+    if (todayDateString) {
+      $timeout(function() {
+        SwiperService.swipePageSlide(TasksSlidesService.getDateSlidePath(todayDateString));
+      });
+    }
+  })();
+
   function swipeToMonday() {
     var activeMondayDateString = DateService.getMondayDateString();
 
     $timeout(function() {
+      SwiperService.refreshSwiper(TasksSlidesService.DATES);
       SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(activeMondayDateString));
     });
   }
