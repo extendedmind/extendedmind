@@ -1,8 +1,9 @@
+/*jshint sub:true*/
 'use strict';
 
 // iDangero.us Swiper Service       
 // http://www.idangero.us/sliders/swiper/api.php
-function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerService) {
+function SwiperService(OwnerService) {
 
   // Holds reference to all the swipers and their respective paths
   var swipers = {};
@@ -104,18 +105,9 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
     },
     refreshSwiper: function(swiperPath) {
-      if (swipers[swiperPath]){
-        delete swipers[swiperPath].swiper;
-        var params = getSwiperParameters(
-          swipers[swiperPath].swiperType,
-          swipers[swiperPath].slidesPaths,
-          swipers[swiperPath].callback);
-        swipers[swiperPath].swiper = new Swiper(swipers[swiperPath].container, params);
-        setPathsToSlides(swipers[swiperPath], swipers[swiperPath].slidesPaths);
+      if (swipers[swiperPath]) {
+        swipers[swiperPath].swiper.reInit();
       }
-    },
-    reInit: function(swiperPath) {
-      swipers[swiperPath].swiper.reInit();
     },
     onSlideChangeEnd: function(scope, swiperPath) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
@@ -148,14 +140,23 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
       var swiperInfos = getSwiperInfosBySlidePath(slidePath);
 
       // First, swipe in the main swiper to the right index 
+      // Second, swipe (vertically) with the page swiper
+      this.swipeMainSlide(slidePath, swiperInfos);
+      this.swipePageSlide(slidePath, swiperInfos);
+    },
+    swipeMainSlide: function(slidePath, swiperInfos) {
+      swiperInfos = swiperInfos || getSwiperInfosBySlidePath(slidePath);
+
       if (swiperInfos.main){
         var mainSwiperIndex = getSlideIndexBySlidePath(slidePath, swiperInfos.main.slidesPaths);
         if (mainSwiperIndex !== undefined){
           swiperInfos.main.swiper.swipeTo(mainSwiperIndex);
         }
       }
+    },
+    swipePageSlide: function(slidePath, swiperInfos) {
+      swiperInfos = swiperInfos || getSwiperInfosBySlidePath(slidePath);
 
-      // Second, swipe (vertically) with the page swiper
       if (swiperInfos.page) {
         var pageSwiperIndex = swiperInfos.page.slidesPaths.indexOf(slidePath);
         if (pageSwiperIndex !== undefined){
@@ -189,5 +190,5 @@ function SwiperService($rootScope, LocationService, TasksSlidesService, OwnerSer
     }
   };
 }
+SwiperService['$inject'] = ['OwnerService'];
 angular.module('em.services').factory('SwiperService', SwiperService);
-SwiperService.$inject = ['$rootScope', 'LocationService', 'TasksSlidesService', 'OwnerService'];
