@@ -122,7 +122,7 @@
   span.slide-indicator { 
     display: table-cell;
     width: @slide-indicator-width;
-    color: @inactive-element;
+    color: @default-element;
   }
 }
 
@@ -215,10 +215,10 @@
 button.normal-button {
   color: white;
   & {
-    background-color: @active-button;
+    background-color: @highlighted-button;
   }
   &:active {
-    background-color: @pressed-button;
+    background-color: @default-button-pressed;
   }
   &[disabled] {
     background-color: @inactive-button;
@@ -231,7 +231,7 @@ button.cancel-button {
     background-color: @cancel-button;
   }
   &:active {
-    background-color: @pressed-cancel-button;
+    background-color: @cancel-button-pressed;
   }
 }
 
@@ -263,7 +263,7 @@ input[type='checkbox'] + label:before {
   font-size: @icon-size;
   padding-right: 10px;
   vertical-align: middle;
-  color: @enabled-button;
+  color: @default-button;
 }
 
 input[type="checkbox"] + label:before {
@@ -276,14 +276,14 @@ input[type="checkbox"] + label.overdue:before {
 
 input[type="checkbox"]:checked + label:before {
   .icon-selection-checked;
-  color: @highlighted;
+  color: @highlighted-element;
 }
 
 // SELECTIONS
 
 select {
   &.simple-input {
-    color: @inactive-element;
+    color: @default-element;
     background: none;
     padding: 0;
   }
@@ -291,15 +291,15 @@ select {
     color: black;
   }
   option:first-child{
-    color: @inactive-element;
+    color: @default-element;
   }
 }
 
 // BORDERS
 
 .top-bottom-borders{
-  border-top: solid 2px @inactive-element;
-  border-bottom: solid 2px @inactive-element;
+  border-top: solid 2px @default-element;
+  border-bottom: solid 2px @default-element;
   border-color: @separator;
 }
 
@@ -323,15 +323,15 @@ select {
   background: white;
 }
 ::-webkit-scrollbar-thumb {
-  background: @enabled-button;
+  background: @default-button;
 }
 ::-webkit-scrollbar-corner {
   background: white;
 }
 
 // Temporary classes (to be refactored)
-.inactive-element {
-  color: @inactive-element;
+.default-element {
+  color: @default-element;
 }
 
 // LISTS
@@ -354,24 +354,24 @@ select {
 
 a[class^='active-slide'],a[class*=' active-slide']{
   span {
-    color: @highlighted;
+    color: @highlighted-element;
   }
 }
 
 a.click-to-slide {
-  color: @inactive-element;
+  color: @default-element;
 }
 
 span.icon-i, span.icon-plus {
-  color: @highlighted;
+  color: @highlighted-element;
 }
 span.icon-i:active, span.icon-plus:active {
-  color: @highlighted-pressed;
+  color: @highlighted-element-pressed;
 }
 
 /*
 [class^="icon-"], [class*=" icon-"] button {
-  color: @highlighted; // plus button always highlighted
+  color: @highlighted-element; // plus button always highlighted-element
   padding-top: 8px; // quick fix to center the plus button
 }
 */
@@ -384,7 +384,7 @@ span.icon-i:active, span.icon-plus:active {
   padding: 20px 10px;
   text-align: center;
   line-height: normal;
-  color: @inactive-element;
+  color: @default-element;
 }
 .arrow-box:after, .arrow-box:before {
   bottom: 100%;

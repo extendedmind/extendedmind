@@ -45,14 +45,14 @@ section#home {
       padding-top: 10px;
       .top-bottom-borders;
       a {
-        color: @inactive-element;
+        color: @default-element;
       }
       a.collective{
         // FIXME: This color is strange
-        color: @inactive-element;
+        color: @default-element;
       }
       a.collective:active{
-        color: @active-element;
+        color: @default-element-pressed;
       }
     }
     nav {
@@ -125,17 +125,17 @@ section#tasks-dates {
     padding-bottom: @footer-height;
   }
   #datebar {
-    color: @highlighted;
+    color: @highlighted-element;
   }
 
 }
 
 // TODO: Move these to the right place!
 
-button.enabled-button{
+button.default-button{
   color: white;
   & {
-    background-color: @enabled-button;
+    background-color: @default-button;
   }
 }
 
@@ -160,7 +160,7 @@ button.enabled-button{
 }
 
 input[type="checkbox"]:checked ~ a#accordionTitleLink {
-  color:@inactive-element;
+  color:@default-element;
   .fade-color(@fade-time);
 }
 
@@ -169,6 +169,6 @@ div#accordionTitleHeightFix {
 }
 
 a#accordionTitleLink {
-  color: @inactive-element;
+  color: @default-element;
   line-height: 19px;
 }

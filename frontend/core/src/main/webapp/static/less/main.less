@@ -35,10 +35,10 @@ h1, h2, h3, h4, h5, h6 {
 
 a {
   text-decoration: none;
-  color: @inactive-element;
+  color: @default-element;
 }
 a:active {
-  color: @active-element;
+  color: @default-element-pressed;
 }
 
 // LISTS
@@ -63,20 +63,20 @@ button {
 // FONTS
 
 .page-header {
-  color: @highlighted;
+  color: @highlighted-element;
 }
 
 // PLACEHOLDER TWEAK 
 
 ::-webkit-input-placeholder { /* WebKit browsers */
-    color:    @inactive-element;
+    color:    @default-element;
 }
 :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-    color:    @inactive-element;
+    color:    @default-element;
 }
 ::-moz-placeholder { /* Mozilla Firefox 19+ */
-    color:    @inactive-element;
+    color:    @default-element;
 }
 :-ms-input-placeholder { /* Internet Explorer 10+ */
-    color:    @inactive-element;
+    color:    @default-element;
 }
