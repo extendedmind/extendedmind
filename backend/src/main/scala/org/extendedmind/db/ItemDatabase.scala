@@ -155,7 +155,10 @@ trait ItemDatabase extends AbstractGraphDatabase {
       else {
         val item = toCaseClass[Item](itemNode)
         if (item.isLeft) {
-          return fail(INTERNAL_SERVER_ERROR, "Could not convert item: " + item.left.get)
+          val labels = itemNode.getLabels().toList.foldLeft("") {((acc, n) =>
+          			acc + ", " + n.name() )}
+          return fail(INTERNAL_SERVER_ERROR, "Could not convert item with labels: " 
+        		  		+ labels + " with error: " + item.left.get)
         }
         itemBuffer.append(item.right.get)
       })
@@ -754,27 +757,25 @@ trait ItemDatabase extends AbstractGraphDatabase {
   }
   
   protected def migrateToLists(ownerNode: Node)(implicit neo4j: DatabaseService): CountResult = {
-    val projectsFromOwner: TraversalDescription =
+    val areasFromOwner: TraversalDescription =
        Traversal.description()
         .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
           Direction.OUTGOING)
         .depthFirst()
         .evaluator(Evaluators.excludeStartPosition())
-        .evaluator(LabelEvaluator(scala.List(ItemParentLabel.PROJECT)))
+        .evaluator(LabelEvaluator(scala.List(ItemParentLabel.AREA)))
 
-    val traverser = projectsFromOwner.traverse(ownerNode)
-    var projectCount = 0
-    traverser.nodes.foreach(projectNode => {
-      projectNode.removeLabel(ItemParentLabel.PROJECT)
-      projectNode.addLabel(ItemLabel.LIST)
-      projectNode.setProperty("completable", true)
-      if (projectNode.hasProperty("completed")){
-        projectNode.setProperty("archived", projectNode.getProperty("completed"))
-        projectNode.removeProperty("completed")
+    val traverser = areasFromOwner.traverse(ownerNode)
+    var areaCount = 0
+    traverser.nodes.foreach(areaNode => {
+      areaNode.removeLabel(ItemParentLabel.AREA)
+      areaNode.addLabel(ItemLabel.LIST)
+      if (areaNode.hasProperty("content")){
+        areaNode.removeProperty("content")
       }
-      projectCount += 1
+      areaCount += 1
     })
-    CountResult(projectCount)
+    CountResult(areaCount)
   }
 
 }
