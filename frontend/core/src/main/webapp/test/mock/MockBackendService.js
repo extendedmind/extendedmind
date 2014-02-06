@@ -1,7 +1,7 @@
 /*global angular, getJSONFixture, sessionStorage */
 'use strict';
 
-function MockBackendService(MockListsBackendService, MockTagsBackendService, MockTasksBackendService, 
+function MockBackendService(MockListsBackendService, MockTagsBackendService, MockTasksBackendService, MockNotesBackendService,
                             MockItemsBackendService, MockAccountBackendService, MockAuthBackendService, base64) {
   var skipAuthenticationCheck;
 
@@ -40,6 +40,7 @@ function MockBackendService(MockListsBackendService, MockTagsBackendService, Moc
       this.mockListsBackend();
       this.mockTagsBackend();
       this.mockTasksBackend();
+      this.mockNotesBackend();
       this.mockItemsBackend();
       this.mockAccountBackend();
       this.mockAuthBackend();
@@ -53,6 +54,9 @@ function MockBackendService(MockListsBackendService, MockTagsBackendService, Moc
     mockTasksBackend: function() {
       MockTasksBackendService.mockTasksBackend(this.expectResponse);
     },
+    mockNotesBackend: function() {
+      MockNotesBackendService.mockNotesBackend(this.expectResponse);
+    },
     mockItemsBackend: function() {
       MockItemsBackendService.mockItemsBackend(this.expectResponse);
     },
@@ -65,6 +69,6 @@ function MockBackendService(MockListsBackendService, MockTagsBackendService, Moc
   };
 };
 
-MockBackendService.$inject = ['MockListsBackendService', 'MockTagsBackendService', 'MockTasksBackendService',
+MockBackendService.$inject = ['MockListsBackendService', 'MockTagsBackendService', 'MockTasksBackendService', 'MockNotesBackendService',
                               'MockItemsBackendService', 'MockAccountBackendService', 'MockAuthBackendService', 'base64'];
 angular.module('em.appTest').factory('MockBackendService', MockBackendService);

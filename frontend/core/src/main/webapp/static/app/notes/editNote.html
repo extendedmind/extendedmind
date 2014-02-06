@@ -1,0 +1,29 @@
+<div class="no-slides-container" ng-controller="MainController">
+  <section id="edit-note" class="one-column-grid page" ng-controller="NotesController">
+    <div class="column">
+      <header class="heading-header">
+        <h3 ng-if="note.uuid">edit note</h3>
+        <h3 ng-if="!note.uuid">new note</h3>
+      </header>
+      <div class="content-container simple-content-container">
+        <form role="form" name="noteEdit">
+
+          <div class="form-group">
+            <label class="sr-only" for="noteTitle">title</label>
+            <input type="text" class="simple-input" id="noteTitle" ng-model="note.title" placeholder="title..." required>
+          </div>
+          <div class="form-group">
+            <label class="sr-only" for="noteDescription">content</label>
+            <textarea class="simple-input" id="noteDescription" ng-model="note.content" placeholder="content..." expanding-textarea></textarea>
+          </div>
+          <div class="form-group vertical-buttons">
+            <button type="submit" class="wide-button normal-button" ng-disabled="!noteEdit.$valid" ng-click="saveNote(note)">
+              save
+            </button>
+            <button type="button" class="wide-button cancel-button" ng-click="cancelEdit()">cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>

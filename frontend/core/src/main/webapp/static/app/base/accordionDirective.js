@@ -5,7 +5,7 @@
 
 // The accordion directive simply sets up the directive controller
 // and adds an accordion CSS class to itself element.
-angular.module('common').directive('accordion', ['$document',
+angular.module('em.directives').directive('accordion', ['$document',
   function($document) {
     return {
       restrict: 'A',

@@ -7,7 +7,7 @@ describe('ItemsService', function() {
 
   var $httpBackend;
   var ItemsService, BackendClientService, HttpBasicAuthenticationService, HttpClientService,
-      ListsService, TagsService, TasksService;
+      ListsService, TagsService, TasksService, NotesService;
 
   // MOCKS
   
@@ -51,7 +51,7 @@ describe('ItemsService', function() {
     });
 
     inject(function (_$httpBackend_, _ItemsService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_,
-                    _ListsService_, _TagsService_, _TasksService_) {
+                    _ListsService_, _TagsService_, _TasksService_, _NotesService_) {
       $httpBackend = _$httpBackend_;
       ItemsService = _ItemsService_;
       BackendClientService = _BackendClientService_;
@@ -60,6 +60,7 @@ describe('ItemsService', function() {
       ListsService = _ListsService_;
       TagsService = _TagsService_;
       TasksService = _TasksService_;
+      NotesService = _NotesService_;
 
       var testItemData = {
           'items': [{
@@ -107,6 +108,38 @@ describe('ItemsService', function() {
                 'parent': 'bf726d03-8fee-4614-8b68-f9f885938a51'
               }
             }],
+          'notes': [{
+              'uuid': 'a1cd149a-a287-40a0-86d9-0a14462f22d6',
+              'modified': 1391627811070,
+              'title': 'contexts could be used to prevent access to data'
+            },{
+              'uuid': 'c2cd149a-a287-40a0-86d9-0a14462f22d6',
+              'modified': 1391627811050,
+              'title': 'office door code',
+              'content': '4321',
+              'relationships': {
+                'tags': ['c933e120-90e7-488b-9f15-ea2ee2887e67']
+              }
+            }, {
+              'uuid': '848cda60-d725-40cc-b756-0b1e9fa5b7d8',
+              'modified': 1391627811059,
+              'title': 'notes on productivity',
+              'content': '##what I\'ve learned about productivity \n ' +
+                         '#focus \n' +
+                         'to get things done, you need to have uninterrupted time \n' +
+                         '#rhythm \n' +
+                         'work in high intensity sprints of 90 minutes, then break for 15 minutes \n' +
+                         '#rest \n' +
+                         'without ample rest and sleep, your productivity will decline rapidly' +
+                         '#tools \n' +
+                         'use the best possible tools for your work \n' +
+                         '#process \n' +
+                         'increasing your productivity doesn\'t happen overnight',
+              'relationships': {
+                'parent': '0da0bff6-3bd7-4884-adba-f47fab9f270d',
+                'tags': ['6350affa-1acf-4969-851a-9bf2b17806d6']
+              }
+            }],  
           'lists': [{
               'uuid': '0da0bff6-3bd7-4884-adba-f47fab9f270d',
               'modified': 1390912600957,
@@ -187,10 +220,14 @@ describe('ItemsService', function() {
       .toBe(3);
     expect(TasksService.getCompletedTasks(testOwnerUUID).length)
       .toBe(1);
+    expect(NotesService.getNotes(testOwnerUUID).length)
+      .toBe(3);
+
     expect(MockUserSessionService.getLatestModified())
       .toBe(newLatestModified);
 
     // Check that task got the right context
+
     expect(TasksService.getTaskByUUID('9a1ce3aa-f476-43c4-845e-af59a9a33760',testOwnerUUID)
             .relationships.context).toBe('1208d45b-3b8c-463e-88f3-f7ef19ce87cd');
   });
@@ -306,24 +343,37 @@ describe('ItemsService', function() {
     ItemsService.itemToTask(rememberTheMilk, testOwnerUUID);
     $httpBackend.flush();
 
-    // There should be still three left, as it will stay there until completing
+    // There should be two left
     expect(ItemsService.getItemByUUID(rememberTheMilk.uuid, testOwnerUUID))
-      .toBeDefined();
+      .toBeUndefined();
     expect(ItemsService.getItems(testOwnerUUID).length)
-      .toBe(3);
+      .toBe(2);
 
     // Tasks should have the new item
     expect(TasksService.getTaskByUUID(rememberTheMilk.uuid, testOwnerUUID))
       .toBeDefined();
     expect(TasksService.getTasks(testOwnerUUID).length)
       .toBe(4);
+  });
 
-    // Complete task upgrade
-    ItemsService.completeItemToTask(rememberTheMilk, testOwnerUUID);
+  it('should convert item to note', function () {
+    var yoga = ItemsService.getItemByUUID('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/note/' + yoga.uuid)
+       .respond(200, putExistingTaskResponse);
+    ItemsService.itemToNote(yoga, testOwnerUUID);
+    $httpBackend.flush();
 
-    // Now there should be only two left
+    // There should be two left
+    expect(ItemsService.getItemByUUID(yoga.uuid, testOwnerUUID))
+      .toBeUndefined();
     expect(ItemsService.getItems(testOwnerUUID).length)
       .toBe(2);
+
+    // Notes should have the new item
+    expect(NotesService.getNoteByUUID(yoga.uuid, testOwnerUUID))
+      .toBeDefined();
+    expect(NotesService.getNotes(testOwnerUUID).length)
+      .toBe(4);
   });
 
 

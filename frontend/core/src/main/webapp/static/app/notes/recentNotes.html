@@ -1,0 +1,28 @@
+<section id="notes-recent" class="two-column-grid page" ng-controller="NotesController">
+  <div class="column">
+    <header id="notes-lists-header" class="page-header" ng-init="heading='recent notes'" ng-include="'static/app/base/pageHeader.html'"></header>
+    <div id="notes-recent-page-content-container" class="content-container page-content-container">
+      <div class="inner-page-content-container">
+        <div>
+          <div class="inner-page-content-container" accordion>
+            <div ng-repeat="note in notes" ng-init="newNote = {}">
+              <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
+                <div class="teaser" ng-if="note.content">
+                  <a href ng-click="editNote(note)" id="note-teaser" ng-bind="getNoteContentTeaser(note)"></a>
+                </div>
+              </div>
+              <div class="accordion-body" ng-if="isOpen(note)">
+                <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+              </div>
+              <div class="teaser-empty" ng-if="!note.content"></div>
+            </div>
+            <div ng-include="'static/app/notes/addNote.html'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="column">
+    TODO
+  </aside>
+</section>

@@ -176,6 +176,133 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    // NOTES
+
+    $routeProvider.when('/my/notes', {
+      templateUrl: 'static/app/main/notesSlides.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        slide: ['NotesSlidesService', 'SwiperService',
+        function(NotesSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(NotesSlidesService.HOME);
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/notes', {
+      templateUrl: 'static/app/main/notesSlides.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        slide: ['NotesSlidesService', 'SwiperService',
+        function(NotesSlidesService, SwiperService) {
+          SwiperService.setInitialSlidePath(NotesSlidesService.HOME);
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/my/notes/edit/:uuid', {
+      templateUrl: 'static/app/notes/editNote.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/notes/edit/:uuid', {
+      templateUrl: 'static/app/notes/editNote.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/my/notes/new', {
+      templateUrl: 'static/app/notes/editNote.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/notes/new', {
+      templateUrl: 'static/app/notes/editNote.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/my/notes/new/:parentUUID', {
+      templateUrl: 'static/app/notes/editNote.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/notes/new/:parentUUID', {
+      templateUrl: 'static/app/notes/editNote.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
+        }]
+      }
+    });
+
+    // ITEMS
+
     $routeProvider.when('/my/items/new', {
       templateUrl: 'static/app/main/editItem.html',
       resolve: {
@@ -192,7 +319,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/items/new', {
-      templateUrl: 'static/app/tasks/editItem.html',
+      templateUrl: 'static/app/main/editItem.html',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
@@ -221,7 +348,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/items/edit/:uuid', {
-      templateUrl: 'static/app/tasks/editItem.html',
+      templateUrl: 'static/app/main/editItem.html',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
@@ -233,6 +360,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }]
       }
     });
+
+
+    // ERROR PAGE
 
     $routeProvider.otherwise({
       controller: 'PageNotFoundController',

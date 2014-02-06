@@ -94,7 +94,6 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
           for (var j=0, jlen=tasksResponse[i].relationships.tags.length; j<jlen; j++) {
             var tag = TagsService.getTagByUUID(tasksResponse[i].relationships.tags[j], ownerUUID);
             if (tag && tag.tagType === 'context'){
-              console.log("adding context " + tag.title + " to " + tasksResponse[i].title);
               tasksResponse[i].relationships.context = tag.uuid;
               return;
             }

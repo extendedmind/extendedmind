@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function ItemsService($q, BackendClientService, UserSessionService, ArrayService, TagsService, ListsService, TasksService){
+function ItemsService($q, BackendClientService, UserSessionService, ArrayService, TagsService, ListsService, TasksService, NotesService){
   var items = {};
 
   var itemRegex = /\/item/;
@@ -12,31 +12,14 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
     if (!items[ownerUUID]){
       items[ownerUUID] = {
         activeItems: [],
-        deletedItems: [],
-        recentlyUpgradedItems: []
+        deletedItems: []
       };
-    }
-  }
-
-  function cleanRecentlyUpgradedItems(ownerUUID){
-    if (items[ownerUUID]){
-      // Loop through recently upgraded items and delete them from the items array
-      for (var i=0, len=items[ownerUUID].recentlyUpgradedItems.length; i<len; i++) {
-        var recentlyUpgradedItemIndex =
-          items[ownerUUID].activeItems.findFirstIndexByKeyValue(
-            'uuid', items[ownerUUID].recentlyUpgradedItems[i].uuid);
-        if (recentlyUpgradedItemIndex !== undefined){
-          items[ownerUUID].activeItems.splice(recentlyUpgradedItemIndex, 1);
-        }
-      }
-      items[ownerUUID].recentlyUpgradedItems.length = 0;
     }
   }
 
   return {
     // Main method to synchronize all arrays with backend.
     synchronize: function(ownerUUID) {
-      cleanRecentlyUpgradedItems(ownerUUID);
       var latestModified = UserSessionService.getLatestModified(ownerUUID);
       var url = '/api/' + ownerUUID + '/items';
       if (latestModified){
@@ -44,32 +27,35 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
       }
       BackendClientService.get(url, this.getItemsRegex).then(function(result) {
         if (result.data){
-          var latestTags, latestLists, latestTasks, latestItems;
+          var latestTag, latestList, latestTask, latestItem, latestNote;
           initializeArrays(ownerUUID);
           if (latestModified){
             // Only update modified
-            latestTags = TagsService.updateTags(result.data.tags, ownerUUID);
-            latestLists = ListsService.updateLists(result.data.lists, ownerUUID);
-            latestTasks = TasksService.updateTasks(result.data.tasks, ownerUUID);
-            latestItems = ArrayService.updateArrays(result.data.items,
+            latestTag = TagsService.updateTags(result.data.tags, ownerUUID);
+            latestList = ListsService.updateLists(result.data.lists, ownerUUID);
+            latestTask = TasksService.updateTasks(result.data.tasks, ownerUUID);
+            latestNote = NotesService.updateNotes(result.data.notes, ownerUUID);
+            latestItem = ArrayService.updateArrays(result.data.items,
               items[ownerUUID].activeItems,
               items[ownerUUID].deletedItems);
           }else{
             // Reset all arrays
-            latestTags = TagsService.setTags(result.data.tags, ownerUUID);
-            latestLists = ListsService.setLists(result.data.lists, ownerUUID);
-            latestTasks = TasksService.setTasks(result.data.tasks, ownerUUID);
-            latestItems = ArrayService.setArrays(result.data.items,
+            latestTag = TagsService.setTags(result.data.tags, ownerUUID);
+            latestList = ListsService.setLists(result.data.lists, ownerUUID);
+            latestTask = TasksService.setTasks(result.data.tasks, ownerUUID);
+            latestNote = NotesService.setNotes(result.data.notes, ownerUUID);
+            latestItem = ArrayService.setArrays(result.data.items,
               items[ownerUUID].activeItems,
               items[ownerUUID].deletedItems);
           }
-          if (latestTags || latestLists || latestTasks || latestItems){
+          if (latestTag || latestList || latestTask || latestNote || latestItem){
             // Set latest modified
             latestModified = Math.max(
-              isNaN(latestTags) ? -Infinity : latestTags,
-              isNaN(latestLists) ? -Infinity : latestLists,
-              isNaN(latestTasks) ? -Infinity : latestTasks,
-              isNaN(latestItems) ? -Infinity : latestItems);
+              isNaN(latestTag) ? -Infinity : latestTag,
+              isNaN(latestList) ? -Infinity : latestList,
+              isNaN(latestTask) ? -Infinity : latestTask,
+              isNaN(latestNote) ? -Infinity : latestNote,
+              isNaN(latestItem) ? -Infinity : latestItem);
             UserSessionService.setLatestModified(latestModified, ownerUUID);
           }
         }
@@ -84,7 +70,6 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
     },
     saveItem: function(item, ownerUUID) {
       var deferred = $q.defer();
-      cleanRecentlyUpgradedItems(ownerUUID);
       if (item.uuid){
         // Existing item
         BackendClientService.put('/api/' + ownerUUID + '/item/' + item.uuid,
@@ -115,7 +100,6 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
       return deferred.promise;
     },
     deleteItem: function(item, ownerUUID) {
-      cleanRecentlyUpgradedItems(ownerUUID);
       BackendClientService.delete('/api/' + ownerUUID + '/item/' + item.uuid,
                this.deleteItemRegex).then(function(result) {
         if (result.data){
@@ -128,7 +112,6 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
       });
     },
     undeleteItem: function(item, ownerUUID) {
-      cleanRecentlyUpgradedItems(ownerUUID);
       BackendClientService.post('/api/' + ownerUUID + '/item/' + item.uuid + '/undelete',
                this.deleteItemRegex).then(function(result) {
         if (result.data){
@@ -141,16 +124,18 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
       });
     },
     itemToTask: function(item, ownerUUID) {
-      cleanRecentlyUpgradedItems(ownerUUID);
       var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.uuid);
       if (index !== undefined) {
-        // Save as task and add it to the recently upgraded items array
         TasksService.saveTask(item, ownerUUID);
-        items[ownerUUID].recentlyUpgradedItems.push(item);
+        items[ownerUUID].activeItems.splice(index, 1);
       }
     },
-    completeItemToTask: function(item, ownerUUID) {
-      cleanRecentlyUpgradedItems(ownerUUID);
+    itemToNote: function(item, ownerUUID) {
+      var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.uuid);
+      if (index !== undefined) {
+        NotesService.saveNote(item, ownerUUID);
+        items[ownerUUID].activeItems.splice(index, 1);
+      }
     },
     // Regular expressions for item requests
     getItemsRegex:
@@ -180,5 +165,5 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
   };
 }
   
-ItemsService.$inject = ['$q', 'BackendClientService', 'UserSessionService', 'ArrayService', 'TagsService', 'ListsService', 'TasksService'];
+ItemsService.$inject = ['$q', 'BackendClientService', 'UserSessionService', 'ArrayService', 'TagsService', 'ListsService', 'TasksService', 'NotesService'];
 angular.module('em.services').factory('ItemsService', ItemsService);

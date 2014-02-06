@@ -2,7 +2,7 @@
   <div class="item-actions" ng-switch-default>
     <ul class="button-row">
       <li class="button-container left-of-three border-right">
-        <button class="normal-button default-button-disabled" type="button" ng-disabled="true">
+        <button class="default-button" type="button" ng-click="itemToNote(item)">
           <span class="button-text">note</span>
         </button>
       </li>
@@ -23,6 +23,15 @@
     <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
     <div class="item-actions">
       <button class="wide-button normal-button" type="button" ng-click="taskEditDone(task)">
+        <span class="button-text">done</span>
+      </button>
+    </div>
+  </div>
+
+  <div ng-switch-when="note" ng-controller="NotesController">
+    <div ng-include="'static/app/notes/noteCoreFields.html'"></div>
+    <div class="item-actions">
+      <button class="wide-button normal-button" type="button" ng-click="noteEditDone(note)">
         <span class="button-text">done</span>
       </button>
     </div>

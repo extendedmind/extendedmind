@@ -44,16 +44,20 @@ function ItemsController($scope, $location, $routeParams, UserSessionService, It
   };
 
   $scope.taskEditDone = function(task) {
-    cleanContext(task);
     ItemsService.itemToTask(task, UserSessionService.getActiveUUID());    
-    ItemsService.completeItemToTask(task, UserSessionService.getActiveUUID());
   };
 
-  var cleanContext = function(task) {
-    if (task.relationships && task.relationships.context){
-      task.relationships.tags = [task.relationships.context];
-      delete task.relationships.context;
-    }
+  $scope.itemToNote = function(item) {
+    $scope.itemType = 'note';
+    $scope.note = item;
+  };
+
+  $scope.itemToNoteMore = function(note) {
+    $location.path($scope.prefix + '/notes/edit/' + note.uuid);
+  };
+
+  $scope.noteEditDone = function(note) {
+    ItemsService.itemToNote(note, UserSessionService.getActiveUUID());    
   };
 
   $scope.addNew = function() {

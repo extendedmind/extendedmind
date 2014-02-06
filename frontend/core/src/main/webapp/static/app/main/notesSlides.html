@@ -1,0 +1,12 @@
+<div class="slides-container" ng-init="feature='notes'" ng-controller="MainController">
+  <!-- TODO: use ng-if with expected-slides="notes.length > 0 && 6 || 2" -->
+  <div class="swiper-container main-slides" swiper-container="notes" swiper-type="main"
+  expected-slides="3">
+  <div class="swiper-wrapper">
+    <div class="swiper-slide" swiper-slide="notes/inbox" slide-index=0 ng-include="'static/app/main/inbox.html'"></div>
+    <div class="swiper-slide priority-slide" swiper-slide="notes/home" slide-index=1 ng-include="'static/app/main/home.html'"></div>
+    <div class="swiper-slide" swiper-slide="notes/recent" slide-index=2 ng-include="'static/app/notes/recentNotes.html'"></div>
+  </div>
+</div>
+<footer ng-hide="mainlinksFilter" ng-include="'static/app/main/footer.html'"></footer>
+</div>

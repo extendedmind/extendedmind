@@ -3,8 +3,10 @@
 
 function NavbarController($location, $scope, $window, AuthenticationService, SwiperService, OwnerService, UserSessionService) {
 
-  // TODO: Use these to build * * * * * subnavigation on top of tasks icon
+  // TODO: Use these to build * * * * * subnavigation on top of iconś
   var tasksSubNavigationPaths = ['tasks/dates', 'tasks/menu', 'tasks/lists', 'tasks/single'];
+  var notesSubNavigationPaths = ['notes/recent', 'notes/menu', 'notes/lists'];
+
 
   $scope.user = UserSessionService.getUserUUID();
   $scope.collectives = UserSessionService.getCollectives();
@@ -12,14 +14,15 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
 
   // Register a callback to swiper service
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks', 'NavbarController');
+  SwiperService.registerSlideChangeCallback(slideChangeCallback, 'notes', 'NavbarController');
   function slideChangeCallback(activeSlidePath){
     // Run digest to change only navbar when swiping to new location
     $scope.$digest();
   }
 
   $scope.isActiveSlide = function(pathFragment) {
-    if ($location.path().indexOf("tasks" != -1)){
-      var activeSlide = SwiperService.getActiveSlidePath("tasks");
+    if ($location.path().indexOf($scope.feature != -1)){
+      var activeSlide = SwiperService.getActiveSlidePath($scope.feature);
       if (activeSlide && (activeSlide.indexOf(pathFragment) != -1)){
         return true;
       }
@@ -27,19 +30,28 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
   };
 
   $scope.getFeatureClasses = function(feature) {
-    var classes = "";
-    var activeSlide = SwiperService.getActiveSlidePath("tasks");
-    if (activeSlide){
-      classes += "active-feature";
-      for (var i = 0; i < tasksSubNavigationPaths.length; i++) {
-        if (tasksSubNavigationPaths[i] === activeSlide){
-          classes += " active-slide-parent";
-          break;
+    var classes = '', i;
+    var activeSlide = SwiperService.getActiveSlidePath($scope.feature);
+    if (activeSlide && feature === $scope.feature){
+      classes += 'active-feature';
+      if ($scope.feature === 'tasks'){
+        for (i = 0; i < tasksSubNavigationPaths.length; i++) {
+          if (tasksSubNavigationPaths[i] === activeSlide){
+            classes += ' active-slide-parent';
+            break;
+          }
+        }
+      }else if ($scope.feature === 'notes'){
+        for (i = 0; i < notesSubNavigationPaths.length; i++) {
+          if (notesSubNavigationPaths[i] === activeSlide){
+            classes += ' active-slide-parent';
+            break;
+          }
         }
       }
     }
     return classes;
-  }
+  };
 }
 
 NavbarController.$inject = ['$location', '$scope', '$window', 'AuthenticationService', 'SwiperService','OwnerService', 'UserSessionService'];
