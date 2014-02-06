@@ -1,7 +1,7 @@
 /*global beforeEach, getJSONFixture, module, inject, describe, afterEach, it, expect */
 'use strict';
 
-describe('ItemService', function() {
+describe('ItemsService', function() {
 
   // INJECTS 
 

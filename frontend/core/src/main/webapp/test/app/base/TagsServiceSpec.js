@@ -1,7 +1,7 @@
 /*global beforeEach, getJSONFixture, module, inject, describe, afterEach, it, expect */
 'use strict';
 
-describe('TagService', function() {
+describe('TagsService', function() {
 
   // INJECTS 
 
