@@ -5,6 +5,7 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
 
   $scope.dates = DateService.activeWeek();
 
+  // invoke anonymous function during compile and $scope.$apply();
   (function swipeToToday() {
     var todayDateString = DateService.getTodayDateString();
 
