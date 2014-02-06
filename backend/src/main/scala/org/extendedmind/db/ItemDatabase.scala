@@ -754,25 +754,22 @@ trait ItemDatabase extends AbstractGraphDatabase {
   }
 
   protected def migrateToLists(ownerNode: Node)(implicit neo4j: DatabaseService): CountResult = {
-    val areasFromOwner: TraversalDescription =
+    val taskListsFromOwner: TraversalDescription =
       Traversal.description()
         .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
           Direction.OUTGOING)
         .depthFirst()
         .evaluator(Evaluators.excludeStartPosition())
-        .evaluator(LabelEvaluator(scala.List(ItemParentLabel.AREA)))
+        .evaluator(LabelEvaluator(scala.List(ItemLabel.TASK, ItemLabel.LIST)))
 
-    val traverser = areasFromOwner.traverse(ownerNode)
-    var areaCount = 0
-    traverser.nodes.foreach(areaNode => {
-      areaNode.removeLabel(ItemParentLabel.AREA)
-      areaNode.addLabel(ItemLabel.LIST)
-      if (areaNode.hasProperty("content")) {
-        areaNode.removeProperty("content")
-      }
-      areaCount += 1
+    val traverser = taskListsFromOwner.traverse(ownerNode)
+    var listCount = 0
+    traverser.nodes.foreach(taskListNode => {
+      // Remove forgotten TASK label
+      taskListNode.removeLabel(ItemLabel.TASK)
+      listCount += 1
     })
-    CountResult(areaCount)
+    CountResult(listCount)
   }
 
 }
