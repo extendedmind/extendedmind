@@ -1,7 +1,7 @@
 /*jshint sub:true*/
 'use strict';
 
-function TasksController($location, $scope, $timeout, $routeParams, $filter, UserSessionService, OwnerService, TasksService, ListsService, TagsService, SwiperService, TasksSlidesService) {
+function TasksController($location, $scope, $timeout, $routeParams, UserSessionService, OwnerService, TasksService, ListsService, TagsService, SwiperService, TasksSlidesService) {
 
   if (!$scope.task){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -99,7 +99,7 @@ function TasksController($location, $scope, $timeout, $routeParams, $filter, Use
     }else{
       return 'left-of-two';
     }
-  }
+  };
 
   $scope.getSubtaskButtonClass = function(task) {
     if (!(task.relationships && task.relationships.list)){
@@ -115,31 +115,10 @@ function TasksController($location, $scope, $timeout, $routeParams, $filter, Use
     }
   };
 
-  $scope.getTasksForDate = function(date) {
-    return $filter('tasksFilter')($scope.tasks, {name:'tasksByDate', filterBy:date});
-  };
-
-  $scope.showListContent = false;
-  $scope.toggleListContent = function() {
-    $scope.showListContent = !$scope.showListContent;
-  };
-
-  $scope.goToList = function(uuid) {
-    SwiperService.swipeTo(TasksSlidesService.LISTS + '/' + uuid);
-  };
+  // CONTEXTS
 
   $scope.goToContext = function(uuid) {
     SwiperService.swipeTo(TasksSlidesService.CONTEXTS + '/' + uuid);
-  };
-
-  $scope.addList = function(newList) {
-    ListsService.saveList(newList, UserSessionService.getActiveUUID()).then(function(/*list*/) {
-      // Using timeout 0 to make sure that DOM is ready before refreshing swiper.
-      $timeout(function() {
-        SwiperService.refreshSwiper(TasksSlidesService.LISTS);
-      });
-    });
-    $scope.newList = {title: undefined};
   };
 
   $scope.addContext = function(newContext) {
@@ -153,5 +132,5 @@ function TasksController($location, $scope, $timeout, $routeParams, $filter, Use
   };
 }
 
-TasksController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', '$filter', 'UserSessionService', 'OwnerService', 'TasksService', 'ListsService', 'TagsService', 'SwiperService', 'TasksSlidesService'];
+TasksController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService', 'OwnerService', 'TasksService', 'ListsService', 'TagsService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('TasksController', TasksController);

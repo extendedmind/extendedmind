@@ -41,7 +41,7 @@ function MockListsBackendService($httpBackend, ListsService, UUIDService) {
   };
 
   function mockArchiveList(expectResponse){
-    $httpBackend.whenPOST(ListsService.undeleteListRegex)
+    $httpBackend.whenPOST(ListsService.archiveListRegex)
       .respond(function(method, url, data, headers) {
         var archiveListResponse = getJSONFixture('archiveListResponse.json');
         archiveListResponse.result.modified = (new Date()).getTime();

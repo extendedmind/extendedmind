@@ -361,6 +361,37 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    // LISTS
+
+    $routeProvider.when('/my/lists/edit/:uuid', {
+      templateUrl: 'static/app/base/editList.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/lists/edit/:uuid', {
+      templateUrl: 'static/app/main/editList.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
+        }]
+      }
+    });
+
 
     // ERROR PAGE
 

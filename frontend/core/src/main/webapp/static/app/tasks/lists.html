@@ -6,8 +6,22 @@
         <div class="swiper-wrapper">
           <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="tasks/lists/{{list.uuid}}" expected-slides="lists.length" ng-init="subtask = {relationships: {parent: list.uuid}}">
             <div class="inner-slide-content-container">
-              <section class="list">
-                <h3>{{list.title}}</h3>
+              <section class="list" ng-controller="ListsController">
+                <h3><a class="content" href ng-click="toggleListContent()">{{list.title}}</a></h3>
+                <div ng-if="showListContent">
+                  <ul class="button-row">
+                    <li class="button-container left-of-two border-right" ng-hide="mainlinksFilter">
+                      <button class="default-button" type="button" ng-click="editList(list)">
+                        more
+                      </button>
+                    </li>
+                    <li class="button-container right-of-two">
+                      <button class="default-button" type="button" ng-click="archiveList(list)">
+                        archive
+                      </button>
+                    </li>
+                  </ul>
+                </div>
                 <div>
                   <div class="inner-page-content-container" accordion>
                     <div ng-repeat="task in tasks | tasksFilter:{name:'byListUUID', filterBy: list.uuid}">
