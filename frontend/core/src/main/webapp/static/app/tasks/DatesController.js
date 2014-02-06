@@ -4,7 +4,16 @@
 function DatesController($scope, $timeout, DateService, TasksSlidesService, SwiperService) {
 
   $scope.dates = DateService.activeWeek();
+  $scope.subtasks = [];
 
+  $scope.$watch('dates', function(newWeek) {
+    for (var i = 0, len = newWeek.length; i < len; i++) {
+      $scope.subtasks[i] = {};
+      $scope.subtasks[i].due = newWeek[i].yyyymmdd;
+    }
+  });
+
+  // invoke anonymous function during compile and $scope.$apply();
   (function swipeToToday() {
     var todayDateString = DateService.getTodayDateString();
 
