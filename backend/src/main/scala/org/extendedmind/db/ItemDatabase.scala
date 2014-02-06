@@ -767,6 +767,8 @@ trait ItemDatabase extends AbstractGraphDatabase {
     traverser.nodes.foreach(taskListNode => {
       // Remove forgotten TASK label
       taskListNode.removeLabel(ItemLabel.TASK)
+      if (taskListNode.hasProperty("completed"))
+        taskListNode.removeProperty("completed")
       listCount += 1
     })
     CountResult(listCount)
