@@ -33,7 +33,7 @@ trait ItemActions {
     log.info("getItems: owner {}", owner)
     val items = db.getItems(owner, modified, active, deleted, archived, completed)
     
-    // Destroy deleted items
+    // Destroy old deleted items
     if (items.isRight){
       val futureDestroyResponse = Future[Response[CountResult]] {
         db.destroyDeletedItems(owner)
