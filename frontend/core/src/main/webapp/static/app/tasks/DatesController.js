@@ -2,25 +2,32 @@
 'use strict';
 
 function DatesController($scope, $timeout, DateService, TasksSlidesService, SwiperService) {
-
+  var activeDay, activeDaySlidePath;
   $scope.dates = DateService.activeWeek();
-  $scope.activeDay = '';
+
+  // Register a callback to swiper service
+  SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks/dates', 'DatesController');
+  function slideChangeCallback(activeSlidePath) {
+    activeDaySlidePath = activeSlidePath;
+    // Run digest to change only date picker when swiping to new location
+    $scope.$digest();
+  }
 
   // invoke function during compile and $scope.$apply();
   (function swipeToStartingDay() {
-    $scope.activeDay = DateService.getTodayDateString() || DateService.getMondayDateString();
+    activeDay = DateService.getTodayDateString() || DateService.getMondayDateString();
 
     $timeout(function() {
-      SwiperService.swipePageSlide(TasksSlidesService.getDateSlidePath($scope.activeDay));
+      SwiperService.swipePageSlide(TasksSlidesService.getDateSlidePath(activeDay));
     });
   })();
 
   function swipeToMonday() {
-    $scope.activeDay = DateService.getMondayDateString();
+    activeDay = DateService.getMondayDateString();
 
     $timeout(function() {
       SwiperService.refreshSwiper(TasksSlidesService.DATES);
-      SwiperService.swipeTo(TasksSlidesService.getDateSlidePath($scope.activeDay));
+      SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(activeDay));
     });
   }
 
@@ -35,13 +42,16 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
   };
 
   $scope.dateClicked = function(dateString) {
-    $scope.activeDay = dateString;
+    activeDay = dateString;
     SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(dateString));
   };
 
   // http://coder1.com/articles/angularjs-managing-active-nav-elements
   $scope.isDayActive = function(dateString) {
-    return $scope.activeDay === dateString;
+    if (activeDaySlidePath && (activeDaySlidePath.indexOf(dateString) !== -1)) {
+      activeDay = dateString;
+    }
+    return activeDay === dateString;
   };
 }
 
