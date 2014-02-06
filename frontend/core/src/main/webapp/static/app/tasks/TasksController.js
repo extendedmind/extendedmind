@@ -38,10 +38,6 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
     $location.path($scope.prefix + '/tasks/new');
   };
 
-  $scope.dateClicked = function(dateString) {
-    SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(dateString));
-  };
-
   $scope.editTaskTitle = function(task) {
     TasksService.saveTask(task, UserSessionService.getActiveUUID());
   };
