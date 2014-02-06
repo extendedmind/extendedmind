@@ -29,8 +29,8 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
   function mockGetInvite(expectResponse){
     $httpBackend.whenGET(AuthenticationService.getInviteRegex)
       .respond(function(method, url, data, headers) {
-        var inviteinviteResponseRegex = getJSONFixture('inviteResponse.json');
-        return expectResponse(method, url, data, headers, inviteResponse);
+        var inviteResponse = getJSONFixture('inviteResponse.json');
+        return [200, inviteResponse];
       });
   }
 
@@ -38,7 +38,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
     $httpBackend.whenPOST(AuthenticationService.acceptInviteRegex)
       .respond(function(method, url, data, headers) {
         var acceptInviteResponse = getJSONFixture('acceptInviteResponse.json');
-        return expectResponse(method, url, data, headers, acceptInviteResponse);
+        return [200, acceptInviteResponse];
       });
   }
   

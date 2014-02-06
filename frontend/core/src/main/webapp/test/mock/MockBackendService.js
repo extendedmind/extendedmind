@@ -18,7 +18,6 @@ function MockBackendService(MockListsBackendService, MockTagsBackendService, Moc
       userName = parsedUserNamePass[0];
 
       if (!skipAuthenticationCheck) {
-
         if (userNamePass === 'timo@ext.md:timopwd') {
           response = [200, responseData];
         } else if (userNamePass === 'jp@ext.md:jppwd') {
