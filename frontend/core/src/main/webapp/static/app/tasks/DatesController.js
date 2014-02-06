@@ -4,24 +4,23 @@
 function DatesController($scope, $timeout, DateService, TasksSlidesService, SwiperService) {
 
   $scope.dates = DateService.activeWeek();
+  $scope.activeDay = '';
 
-  // invoke anonymous function during compile and $scope.$apply();
-  (function swipeToToday() {
-    var todayDateString = DateService.getTodayDateString();
+  // invoke function during compile and $scope.$apply();
+  (function swipeToStartingDay() {
+    $scope.activeDay = DateService.getTodayDateString() || DateService.getMondayDateString();
 
-    if (todayDateString) {
-      $timeout(function() {
-        SwiperService.swipePageSlide(TasksSlidesService.getDateSlidePath(todayDateString));
-      });
-    }
+    $timeout(function() {
+      SwiperService.swipePageSlide(TasksSlidesService.getDateSlidePath($scope.activeDay));
+    });
   })();
 
   function swipeToMonday() {
-    var activeMondayDateString = DateService.getMondayDateString();
+    $scope.activeDay = DateService.getMondayDateString();
 
     $timeout(function() {
       SwiperService.refreshSwiper(TasksSlidesService.DATES);
-      SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(activeMondayDateString));
+      SwiperService.swipeTo(TasksSlidesService.getDateSlidePath($scope.activeDay));
     });
   }
 
@@ -36,6 +35,7 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
   };
 
   $scope.dateClicked = function(dateString) {
+    $scope.activeDay = dateString;
     SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(dateString));
   };
 }
