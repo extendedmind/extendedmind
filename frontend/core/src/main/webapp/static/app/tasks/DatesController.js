@@ -38,6 +38,11 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
     $scope.activeDay = dateString;
     SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(dateString));
   };
+
+  // http://coder1.com/articles/angularjs-managing-active-nav-elements
+  $scope.isDayActive = function(dateString) {
+    return $scope.activeDay === dateString;
+  };
 }
 
 DatesController['$inject'] = ['$scope', '$timeout', 'DateService', 'TasksSlidesService', 'SwiperService'];
