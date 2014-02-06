@@ -25,6 +25,11 @@ function NotesController($location, $scope, $timeout, $routeParams, $filter, Use
     window.history.back();
   };
 
+  $scope.noteQuickEditDone = function(note) {
+    NotesService.saveNote(note, UserSessionService.getActiveUUID());
+    $scope.close(note);
+  };
+
   $scope.cancelEdit = function() {
     window.history.back();
   };

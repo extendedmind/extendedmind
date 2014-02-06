@@ -2,8 +2,13 @@
   <div ng-include="'static/app/notes/noteCoreFields.html'"></div>
   <div class="item-actions">
     <ul class="button-row">
-      <li class="button-container" ng-class="wide-button">
-        <button type="button" class="delete-button" ng-click="deleteNote(task)">
+      <li class="button-container left-of-two">
+        <button type="button" class="normal-button" ng-click="noteQuickEditDone(note)">
+          done
+        </button>
+      </li>    
+      <li class="button-container right-of-two">
+        <button type="button" class="delete-button" ng-click="deleteNote(note)">
           delete
         </button>
       </li>
