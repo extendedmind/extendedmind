@@ -16,7 +16,7 @@ function NotesController($location, $scope, $timeout, $routeParams, $filter, Use
         if ($routeParams.parentUUID){
           $scope.note.relationships.list = $routeParams.parentUUID;
         }
-      }F
+      }
     }
   }
 
@@ -80,10 +80,10 @@ function NotesController($location, $scope, $timeout, $routeParams, $filter, Use
       if (note.content.length <= maximumTeaserLength){
         return note.content;
       } else{
-        return note.content.substring(0, maximumTeaserLength) + "...";
+        return note.content.substring(0, maximumTeaserLength) + '...';
       }
     }
-  }
+  };
 }
 
 NotesController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', '$filter',
