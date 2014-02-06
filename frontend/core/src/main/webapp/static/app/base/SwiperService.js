@@ -105,8 +105,14 @@ function SwiperService(OwnerService) {
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
     },
     refreshSwiper: function(swiperPath) {
-      if (swipers[swiperPath]) {
-        swipers[swiperPath].swiper.reInit();
+      if (swipers[swiperPath]){
+        delete swipers[swiperPath].swiper;
+        var params = getSwiperParameters(
+          swipers[swiperPath].swiperType,
+          swipers[swiperPath].slidesPaths,
+          swipers[swiperPath].callback);
+        swipers[swiperPath].swiper = new Swiper(swipers[swiperPath].container, params);
+        setPathsToSlides(swipers[swiperPath], swipers[swiperPath].slidesPaths);
       }
     },
     onSlideChangeEnd: function(scope, swiperPath) {
