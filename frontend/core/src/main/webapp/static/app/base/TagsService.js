@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function TagsService(BackendClientService, ArrayService){
+function TagsService($q, BackendClientService, ArrayService){
 
   // An object containing tags for every owner
   var tags = {};
@@ -41,6 +41,7 @@ function TagsService(BackendClientService, ArrayService){
       return tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveTag : function(tag, ownerUUID) {
+      var deferred = $q.defer();      
       if (tag.uuid){
         // Existing tag
         BackendClientService.put('/api/' + ownerUUID + '/tag/' + tag.uuid,
@@ -51,6 +52,7 @@ function TagsService(BackendClientService, ArrayService){
               tag,
               tags[ownerUUID].activeTags,
               tags[ownerUUID].deletedTags);
+            deferred.resolve(tag);            
           }
         });
       }else{
@@ -65,9 +67,11 @@ function TagsService(BackendClientService, ArrayService){
               tag,
               tags[ownerUUID].activeTags,
               tags[ownerUUID].deletedTags);
+            deferred.resolve(tag);            
           }
         });
       }
+      return deferred.promise;      
     },
     deleteTag : function(tag, ownerUUID) {
       BackendClientService.delete('/api/' + ownerUUID + '/tag/' + tag.uuid,
@@ -128,5 +132,5 @@ function TagsService(BackendClientService, ArrayService){
   };
 }
   
-TagsService.$inject = ['BackendClientService', 'ArrayService'];
+TagsService.$inject = ['$q', 'BackendClientService', 'ArrayService'];
 angular.module('em.services').factory('TagsService', TagsService);

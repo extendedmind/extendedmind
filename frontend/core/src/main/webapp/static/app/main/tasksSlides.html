@@ -1,16 +1,15 @@
 <div class="slides-container" ng-init="feature='tasks'" ng-controller="MainController">
   <!-- TODO: use ng-if with expected-slides="tasks.length > 0 && 6 || 2" -->
   <div class="swiper-container main-slides" swiper-container="tasks" swiper-type="main"
-  expected-slides="6">
+  expected-slides="7">
   <div class="swiper-wrapper">
     <div class="swiper-slide" swiper-slide="tasks/inbox" slide-index=0 ng-include="'static/app/main/inbox.html'"></div>
     <div class="swiper-slide priority-slide" swiper-slide="tasks/home" slide-index=1 ng-include="'static/app/main/home.html'"></div>
     <div class="swiper-slide" swiper-slide="tasks/dates" slide-index=2 ng-include="'static/app/tasks/dates.html'"></div>
     <div class="swiper-slide" swiper-slide="tasks/menu" slide-index=3 ng-include="'static/app/tasks/menu.html'"></div>
     <div class="swiper-slide" swiper-slide="tasks/lists" slide-index=4 ng-include="'static/app/tasks/lists.html'"></div>
-    <!-- areas -->
-    <!-- contexts -->
-    <div class="swiper-slide" swiper-slide="tasks/single" slide-index=5 ng-include="'static/app/tasks/singleTasks.html'"></div>
+    <div class="swiper-slide" swiper-slide="tasks/contexts" slide-index=5 ng-include="'static/app/tasks/contexts.html'"></div>
+    <div class="swiper-slide" swiper-slide="tasks/single" slide-index=6 ng-include="'static/app/tasks/singleTasks.html'"></div>
   </div>
 </div>
 <footer ng-hide="mainlinksFilter" ng-include="'static/app/main/footer.html'"></footer>

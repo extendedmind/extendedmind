@@ -1,0 +1,32 @@
+<section id="tasks-contexts" class="two-column-grid page" ng-controller="TasksController">
+  <div class="column">
+    <header id="tasks-contexts-header" class="page-header" ng-init="heading='contexts'" ng-include="'static/app/base/pageHeader.html'"></header>
+    <div id="tasks-contexts-page-content-container" class="content-container page-content-container">
+      <div class="swiper-container vertical-slides" swiper-container="tasks/contexts" swiper-type="page">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" ng-repeat="context in contexts = (tags | filter:{tagType:'context'})" swiper-slide="tasks/contexts/{{context.uuid}}" expected-slides="contexts.length" ng-init="subtask = {relationships: {context: context.uuid}}">
+            <div class="inner-slide-content-container">
+              <section class="context">
+                <h3>@{{context.title}}</h3>
+                <div>
+                  <div class="inner-page-content-container" accordion>
+                    <div ng-repeat="task in tasks | tasksFilter:{name:'byContextUUID', filterBy: context.uuid}">
+                      <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+                      <div class="accordion-body" ng-if="isOpen(task)">
+                        <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
+                      </div>
+                    </div>
+                    <div ng-include="'static/app/tasks/subTask.html'"></div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="column">
+    TODO
+  </aside>
+</section>

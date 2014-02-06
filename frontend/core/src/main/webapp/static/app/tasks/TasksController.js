@@ -1,7 +1,7 @@
 /*jshint sub:true*/
 'use strict';
 
-function TasksController($location, $scope, $timeout, $routeParams, $filter, UserSessionService, OwnerService, TasksService, ListsService, SwiperService, TasksSlidesService) {
+function TasksController($location, $scope, $timeout, $routeParams, $filter, UserSessionService, OwnerService, TasksService, ListsService, TagsService, SwiperService, TasksSlidesService) {
 
   if (!$scope.task){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -72,10 +72,14 @@ function TasksController($location, $scope, $timeout, $routeParams, $filter, Use
     if (subtask.due){
       subtaskToSave.due = subtask.due;
     }
-    if (subtask.relationships && subtask.relationships.parent){
-      subtaskToSave.relationships = {
-        parent: subtask.relationships.parent
-      };
+    if (subtask.relationships){
+      subtaskToSave.relationships = {};
+      if(subtask.relationships.parent){
+        subtaskToSave.relationships.parent = subtask.relationships.parent;
+      }
+      if(subtask.relationships.context){
+        subtaskToSave.relationships.context = subtask.relationships.context;
+      }
     }
     delete subtask.title;
 
@@ -111,7 +115,10 @@ function TasksController($location, $scope, $timeout, $routeParams, $filter, Use
     SwiperService.swipeTo(TasksSlidesService.LISTS + '/' + uuid);
   };
 
-  $scope.newList = {title: undefined};
+  $scope.goToContext = function(uuid) {
+    SwiperService.swipeTo(TasksSlidesService.CONTEXTS + '/' + uuid);
+  };
+
   $scope.addList = function(newList) {
     ListsService.saveList(newList, UserSessionService.getActiveUUID()).then(function(/*list*/) {
       // Using timeout 0 to make sure that DOM is ready before refreshing swiper.
@@ -122,7 +129,16 @@ function TasksController($location, $scope, $timeout, $routeParams, $filter, Use
     $scope.newList = {title: undefined};
   };
 
+  $scope.addContext = function(newContext) {
+    TagsService.saveTag(newContext, UserSessionService.getActiveUUID()).then(function(/*tag*/) {
+      // Using timeout 0 to make sure that DOM is ready before refreshing swiper.
+      $timeout(function() {
+        SwiperService.refreshSwiper(TasksSlidesService.CONTEXTS);
+      });
+    });
+    $scope.newContext = {title: undefined, tagType: 'context'};
+  };
 }
 
-TasksController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', '$filter', 'UserSessionService', 'OwnerService', 'TasksService', 'ListsService', 'SwiperService', 'TasksSlidesService'];
+TasksController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', '$filter', 'UserSessionService', 'OwnerService', 'TasksService', 'ListsService', 'TagsService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('TasksController', TasksController);

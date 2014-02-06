@@ -23,6 +23,23 @@ angular.module('em.filters').filter('tasksFilter', ['DateService',
         }
         return filteredValues;
       };
+      tasksFilter.byContextUUID = function(tasks, uuid) {
+        var filteredValues, i;
+        filteredValues = [];
+        i = 0;
+
+        while (tasks[i]) {
+          if (tasks[i].relationships && tasks[i].relationships.tags) {
+            for (var j=0, len=tasks[i].relationships.tags.length; j<len; j++) {
+              if (tasks[i].relationships.tags[j] === uuid){
+                filteredValues.push(tasks[i]);
+              }
+            }
+          }
+          i++;
+        }
+        return filteredValues;
+      };
 
       tasksFilter.tasksByDate = function(tasks, listDate) {
         var filteredValues, i;
@@ -34,7 +51,7 @@ angular.module('em.filters').filter('tasksFilter', ['DateService',
             if (tasks[i].due === listDate.yyyymmdd) {
               filteredValues.push(tasks[i]);
             } else if (listDate.yyyymmdd === DateService.yyyymmdd(DateService.today()) &&
-            (DateService.today() > DateService.toDate(tasks[i].due))) { // if task date < today
+                      (DateService.today() > DateService.toDate(tasks[i].due))) { // if task date < today
               filteredValues.push(tasks[i]);
             }
           }
