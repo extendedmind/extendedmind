@@ -162,14 +162,30 @@ trait TestGraphDatabase extends GraphDatabase {
     
     // Store notes for user
     putNewNote(Owner(timoUUID, None), 
+        Note("contexts could be used to prevent access to data", None, None, None, None)
+    ).right.get    
+    putNewNote(Owner(timoUUID, None), 
         Note("office door code", None, None, Some("4321"), 
             Some(ExtendedItemRelationships(None, None, Some(scala.List(secretTag.right.get.uuid.get)))
     ))).right.get
     putNewNote(Owner(timoUUID, None), 
-        Note("notes on productivity", None, None, Some("##what I've learned about productivity"), 
-            Some(ExtendedItemRelationships(None, None, Some(scala.List(productivityTag.right.get.uuid.get)))
+        Note("notes on productivity", None, None, Some(
+            "##what I've learned about productivity \n" +
+            "#focus \n" +
+            "to get things done, you need to have uninterrupted time \n" +
+            "#rhythm \n" +
+            "work in high intensity sprints of 90 minutes, then break for 15 minutes \n" +
+            "#rest \n" +
+            "without ample rest and sleep, your productivity will decline rapidly" +
+            "#tools \n" +
+            "use the best possible tools for your work \n" +
+            "#process \n" +
+            "increasing your productivity doesn't happen overnight"), 
+            Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, 
+                 Some(scala.List(productivityTag.right.get.uuid.get)))
     ))).right.get
-
+    
+    
     // Extended Mind Technologies
     
     // Store items for EMT
