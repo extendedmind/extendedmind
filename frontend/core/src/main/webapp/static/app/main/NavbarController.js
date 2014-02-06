@@ -1,4 +1,4 @@
-/*global angular */
+/*jshint sub:true*/
 'use strict';
 
 function NavbarController($location, $scope, $window, AuthenticationService, SwiperService, OwnerService, UserSessionService) {
@@ -54,5 +54,5 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
   };
 }
 
-NavbarController.$inject = ['$location', '$scope', '$window', 'AuthenticationService', 'SwiperService','OwnerService', 'UserSessionService'];
+NavbarController['$inject'] = ['$location', '$scope', '$window', 'AuthenticationService', 'SwiperService','OwnerService', 'UserSessionService'];
 angular.module('em.app').controller('NavbarController', NavbarController);

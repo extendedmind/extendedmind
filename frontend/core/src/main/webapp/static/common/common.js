@@ -1,4 +1,3 @@
-/*global angular, html5Mode */
 'use strict';
 
 angular.module('common', []).config(
@@ -30,41 +29,37 @@ angular.module('common', []).config(
       };
     }
 
-function getByValue(arr, value) {
+    function getByValue(arr, value) {
+      for (var i=0, iLen=arr.length; i<iLen; i++) {
+        if (arr[i].b == 6) return arr[i];
+      }
+    }
 
-  for (var i=0, iLen=arr.length; i<iLen; i++) {
-
-    if (arr[i].b == 6) return arr[i];
-  }
-}
-
-
-    http://stackoverflow.com/a/14853974/2659424
+    // http://stackoverflow.com/a/14853974/2659424
     if (typeof Array.prototype.compare != 'function') {
       // attach the .compare method to Array's prototype to call it on any array
       Array.prototype.compare = function (array) {
         // if the other array is a falsy value, return
         if (!array)
-            return false;
+          return false;
 
         // compare lengths - can save a lot of time
         if (this.length != array.length)
-            return false;
+          return false;
 
         for (var i = 0, l=this.length; i < l; i++) {
-            // Check if we have nested arrays
-            if (this[i] instanceof Array && array[i] instanceof Array) {
-                // recurse into the nested arrays
-                if (!this[i].compare(array[i]))
-                    return false;
-            }
-            else if (this[i] != array[i]) {
-                // Warning - two different object instances will never be equal: {x:20} != {x:20}
+          // Check if we have nested arrays
+          if (this[i] instanceof Array && array[i] instanceof Array) {
+              // recurse into the nested arrays
+              if (!this[i].compare(array[i]))
                 return false;
             }
-        }
-        return true;
+            else if (this[i] != array[i]) {
+              // Warning - two different object instances will never be equal: {x:20} != {x:20}
+              return false;
+            }
+          }
+          return true;
+        };
       }
-    }
-  }
-);
+    });
