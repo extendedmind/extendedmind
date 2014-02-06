@@ -14,9 +14,9 @@ function NotesController($location, $scope, $timeout, $routeParams, $filter, Use
           }
         };
         if ($routeParams.parentUUID){
-          $scope.note.relationships.parent = $routeParams.parentUUID;
+          $scope.note.relationships.list = $routeParams.parentUUID;
         }
-      }
+      }F
     }
   }
 
@@ -47,9 +47,9 @@ function NotesController($location, $scope, $timeout, $routeParams, $filter, Use
 
   $scope.addNote = function(newNote) {
     var newNoteToSave = {title: newNote.title};
-    if (newNote.relationships && newNote.relationships.parent){
+    if (newNote.relationships && newNote.relationships.list){
       newNoteToSave.relationships = {
-        parent: newNote.relationships.parent
+        parent: newNote.relationships.list
       };
     }
     delete newNote.title;

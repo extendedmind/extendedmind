@@ -1,7 +1,7 @@
 <div id="noteCoreFields">
   <div class="form-group">
     <label class="sr-only" for="noteParent">parent</label>
-    <select class="simple-input swiper-no-swiping" id="noteParent" ng-model="note.relationships.parent" ng-options="list.uuid as list.title for list in lists">
+    <select class="simple-input swiper-no-swiping" id="noteParent" ng-model="note.relationships.list" ng-options="list.uuid as list.title for list in lists">
       <option value="">select list...</option>
     </select>
   </div>

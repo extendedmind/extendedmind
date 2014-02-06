@@ -15,7 +15,7 @@ function TasksController($location, $scope, $timeout, $routeParams, $filter, Use
           }
         };
         if ($routeParams.parentUUID){
-          $scope.task.relationships.parent = $routeParams.parentUUID;
+          $scope.task.relationships.list = $routeParams.parentUUID;
         }
       }
     }
@@ -74,8 +74,8 @@ function TasksController($location, $scope, $timeout, $routeParams, $filter, Use
     }
     if (subtask.relationships){
       subtaskToSave.relationships = {};
-      if(subtask.relationships.parent){
-        subtaskToSave.relationships.parent = subtask.relationships.parent;
+      if(subtask.relationships.list){
+        subtaskToSave.relationships.list = subtask.relationships.list;
       }
       if(subtask.relationships.context){
         subtaskToSave.relationships.context = subtask.relationships.context;
@@ -88,17 +88,30 @@ function TasksController($location, $scope, $timeout, $routeParams, $filter, Use
     });
   };
 
-  $scope.getSubtaskButtonClass = function(task) {
-    if (!(task.relationships && task.relationships.parent)){
+  $scope.taskQuickEditDone = function(task) {
+    TasksService.saveTask(task, UserSessionService.getActiveUUID());
+    $scope.close(task);
+  };
+
+  $scope.getDoneButtonClass = function(task) {
+    if (!(task.relationships && task.relationships.list)){
+      return 'left-of-three';
+    }else{
       return 'left-of-two';
+    }
+  }
+
+  $scope.getSubtaskButtonClass = function(task) {
+    if (!(task.relationships && task.relationships.list)){
+      return 'center-of-three';
     }
   };
 
   $scope.getDeleteButtonClass = function(task) {
-    if (!(task.relationships && task.relationships.parent)){
-      return 'right-of-two';
+    if (!(task.relationships && task.relationships.list)){
+      return 'right-of-three';
     }else{
-      return 'wide-button';
+      return 'right-of-two';
     }
   };
 

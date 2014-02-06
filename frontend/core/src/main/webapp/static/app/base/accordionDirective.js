@@ -42,6 +42,16 @@ angular.module('em.directives').directive('accordion', ['$document',
         }
       };
 
+      $scope.close = function(item) {
+        angular.forEach($scope.thisController.titleScopes, function (titleScope) {
+          if (titleScope.item === item){
+            titleScope.closeItem();
+            $scope.openItem = undefined;
+            return;
+          }
+        });
+      };
+
       // This is called from the accordion-title directive to add itself to the accordion
       this.addItem = function(itemScope) {
         var that = this;

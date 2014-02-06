@@ -103,6 +103,16 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
     }
   }
 
+  function addListToTasks(tasksResponse, ownerUUID){
+    if (tasksResponse){
+      for (var i=0, len=tasksResponse.length; i<len; i++) {
+        if (tasksResponse[i].relationships && tasksResponse[i].relationships.parent){
+          tasksResponse[i].relationships.list = tasksResponse[i].relationships.parent;
+        }
+      }
+    }
+  }
+
   function moveContextToTags(task, ownerUUID){
     if (task.relationships && task.relationships.context){
       var context = task.relationships.context;
@@ -135,11 +145,21 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
     }
   }
 
+  function moveListToParent(task, ownerUUID){
+    if (task.relationships && task.relationships.list){
+      var list = task.relationships.list;
+      task.relationships.parent = list;
+      delete task.relationships.list;
+      return list;
+    }
+  }
+
   return {
     setTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       cleanRecentlyCompletedTasks(ownerUUID);
       addContextToTasks(tasksResponse, ownerUUID);
+      addListToTasks(tasksResponse, ownerUUID);
       return ArrayService.setArrays(
           tasksResponse,
           tasks[ownerUUID].activeTasks,
@@ -174,6 +194,7 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
       var deferred = $q.defer();
       cleanRecentlyCompletedTasks(ownerUUID);
       var context = moveContextToTags(task, ownerUUID);
+      var list = moveListToParent(task, ownerUUID);
       if (task.uuid){
         // Existing task
         BackendClientService.put('/api/' + ownerUUID + '/task/' + task.uuid,
@@ -182,6 +203,9 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
             task.modified = result.data.modified;
             if (context){
               task.relationships.context = context;
+            }
+            if (list){
+              task.relationships.list = list;
             }
             ArrayService.updateItem(task,
               tasks[ownerUUID].activeTasks,
@@ -199,6 +223,9 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
             task.modified = result.data.modified;
             if (context){
               task.relationships.context = context;
+            }
+            if (list){
+              task.relationships.list = list;
             }
             initializeArrays(ownerUUID);
             ArrayService.setItem(task,

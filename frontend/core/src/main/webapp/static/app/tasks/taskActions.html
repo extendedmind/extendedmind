@@ -2,7 +2,12 @@
   <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
   <div class="item-actions">
     <ul class="button-row">
-      <li ng-if="!task.relationships.parent" class="button-container" ng-class="getSubtaskButtonClass(task)">
+    <li class="button-container" ng-class="getDoneButtonClass(task)">
+        <button type="button" class="normal-button" ng-click="taskQuickEditDone(task)">
+          done
+        </button>
+      </li>
+      <li ng-if="!task.relationships.list" class="button-container" ng-class="getSubtaskButtonClass(task)">
         <button type="button" class="default-button" ng-click="taskToList(task)">
           make list
         </button>

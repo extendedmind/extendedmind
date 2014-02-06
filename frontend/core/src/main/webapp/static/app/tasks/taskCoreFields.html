@@ -11,8 +11,8 @@
     </div>
   </div>
   <div class="form-group">
-    <label class="sr-only" for="taskParent">parent</label>
-    <select class="simple-input swiper-no-swiping" id="taskParent" ng-model="task.relationships.parent" ng-options="list.uuid as list.title for list in lists">
+    <label class="sr-only" for="taskList">list</label>
+    <select class="simple-input swiper-no-swiping" id="taskList" ng-model="task.relationships.list" ng-options="list.uuid as list.title for list in lists">
       <option value="">select list...</option>
     </select>
   </div>

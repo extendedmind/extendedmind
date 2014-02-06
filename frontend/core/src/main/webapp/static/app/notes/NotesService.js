@@ -60,9 +60,30 @@ function NotesService(BackendClientService, ArrayService, ListsService){
   };
   ListsService.registerItemArchiveCallback(itemArchiveCallback, 'NotesService');
 
+
+  function addListToTasks(notesResponse, ownerUUID){
+    if (notesResponse){
+      for (var i=0, len=notesResponse.length; i<len; i++) {
+        if (notesResponse[i].relationships && notesResponse[i].relationships.parent){
+          notesResponse[i].relationships.list = notesResponse[i].relationships.parent;
+        }
+      }
+    }
+  }
+
+  function moveListToParent(note, ownerUUID){
+    if (note.relationships && note.relationships.list){
+      var list = note.relationships.list;
+      note.relationships.parent = list;
+      delete note.relationships.list;
+      return list;
+    }
+  }
+
   return {
     setNotes : function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
+      addListToTasks(notesResponse, ownerUUID);
       return ArrayService.setArrays(
         notesResponse,
         notes[ownerUUID].activeNotes,
@@ -88,12 +109,16 @@ function NotesService(BackendClientService, ArrayService, ListsService){
       return notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveNote : function(note, ownerUUID) {
+      var list = moveListToParent(note, ownerUUID);
       if (note.uuid){
         // Existing note
         BackendClientService.put('/api/' + ownerUUID + '/note/' + note.uuid,
                  this.putExistingNoteRegex, note).then(function(result) {
           if (result.data){
             note.modified = result.data.modified;
+            if (list){
+              note.relationships.list = list;
+            }
             ArrayService.updateItem(
               note,
               notes[ownerUUID].activeNotes,
@@ -107,6 +132,9 @@ function NotesService(BackendClientService, ArrayService, ListsService){
           if (result.data){
             note.uuid = result.data.uuid;
             note.modified = result.data.modified;
+            if (list){
+              note.relationships.list = list;
+            }
             initializeArrays(ownerUUID);
             ArrayService.setItem(
               note,
