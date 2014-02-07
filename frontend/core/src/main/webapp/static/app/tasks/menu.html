@@ -23,7 +23,7 @@
           </ul>
         </section>
 
-        <section ng-init="newContext={title:undefined, tagType:'context'}">
+        <section ng-init="newContext={title:undefined, tagType:'context'}" ng-controller="ContextsController">
           <h3><a href ng-click="gotoContexts()" class="page-header">contexts</a></h3>
           <ul class="indent list-arrow-right">
             <li ng-show="contexts.length" ng-repeat="context in contexts = (tags | filter:{tagType:'context'})">

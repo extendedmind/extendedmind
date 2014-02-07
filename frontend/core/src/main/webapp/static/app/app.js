@@ -392,6 +392,37 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    // TAGS
+
+    $routeProvider.when('/my/contexts/edit/:uuid', {
+      templateUrl: 'static/app/base/editContext.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setMyPrefix();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/contexts/edit/:uuid', {
+      templateUrl: 'static/app/main/editContext.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.checkAuthentication();
+        }],
+        prefix: ['OwnerService',
+        function(OwnerService) {
+          OwnerService.setCollectivePrefix();
+        }]
+      }
+    });
+
 
     // ERROR PAGE
 

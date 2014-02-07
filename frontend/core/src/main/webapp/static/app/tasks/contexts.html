@@ -6,8 +6,17 @@
         <div class="swiper-wrapper">
           <div class="swiper-slide" ng-repeat="context in contexts = (tags | filter:{tagType:'context'})" swiper-slide="tasks/contexts/{{context.uuid}}" expected-slides="contexts.length" ng-init="subtask = {relationships: {context: context.uuid}}">
             <div class="inner-slide-content-container">
-              <section class="context">
-                <h3>@{{context.title}}</h3>
+              <section class="context" ng-controller="ContextsController">
+                <h3><a class="content" href ng-click="toggleContextContent()">@{{context.title}}</a></h3>
+                <div ng-if="showContextContent">
+                  <ul class="button-row">
+                    <li class="button-container" ng-hide="mainlinksFilter">
+                      <button class="wide-button default-button" type="button" ng-click="editContext(context)">
+                        more
+                      </button>
+                    </li>
+                  </ul>
+                </div>                
                 <div>
                   <div class="inner-page-content-container" accordion>
                     <div ng-repeat="task in tasks | tasksFilter:{name:'byContextUUID', filterBy: context.uuid}">

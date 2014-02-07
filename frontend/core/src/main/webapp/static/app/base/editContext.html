@@ -1,0 +1,32 @@
+<div class="no-slides-container" ng-controller="MainController">
+  <section id="edit-context" class="one-column-grid page" ng-controller="ContextsController">
+    <div class="column">
+      <header class="heading-header">
+        <h3 ng-if="context.uuid">edit context</h3>
+        <h3 ng-if="!context.uuid">new context</h3>
+      </header>
+      <div class="content-container simple-content-container">
+        <form role="form" name="contextEdit">
+          <div class="form-group">
+            <label class="sr-only" for="contextTitle">title</label>
+            <input type="text" class="simple-input" id="contextTitle" ng-model="context.title" placeholder="title..." required>
+          </div>
+          <div class="form-group">
+            <label class="sr-only" for="contextDescription">description</label>
+            <textarea class="simple-input" id="contextDescription" ng-model="context.description" placeholder="description..." expanding-textarea></textarea>
+          </div>
+          <div class="form-group">
+            <label class="sr-only" for="contextLink">url</label>
+            <input type="text" class="simple-input" id="contextLink" ng-model="context.link" placeholder="url...">
+          </div>
+          <div class="form-group vertical-buttons">
+            <button type="submit" class="wide-button normal-button" ng-disabled="!contextEdit.$valid" ng-click="saveContext(context)">
+              save
+            </button>
+            <button type="button" class="wide-button cancel-button" ng-click="cancelEdit()">cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>

@@ -110,22 +110,6 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
       return 'right-of-two';
     }
   };
-
-  // CONTEXTS
-
-  $scope.goToContext = function(uuid) {
-    SwiperService.swipeTo(TasksSlidesService.CONTEXTS + '/' + uuid);
-  };
-
-  $scope.addContext = function(newContext) {
-    TagsService.saveTag(newContext, UserSessionService.getActiveUUID()).then(function(/*tag*/) {
-      // Using timeout 0 to make sure that DOM is ready before refreshing swiper.
-      $timeout(function() {
-        SwiperService.refreshSwiper(TasksSlidesService.CONTEXTS);
-      });
-    });
-    $scope.newContext = {title: undefined, tagType: 'context'};
-  };
 }
 
 TasksController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService', 'OwnerService', 'TasksService', 'ListsService', 'TagsService', 'SwiperService', 'TasksSlidesService'];
