@@ -742,12 +742,17 @@ trait ItemDatabase extends AbstractGraphDatabase {
   }
 
   protected def rebuildItemsIndex(ownerNode: Node)(implicit neo4j: DatabaseService): Response[CountResult] = {
-    val itemsFromOwner: TraversalDescription = itemsTraversal
-    val traverser = itemsFromOwner.traverse(ownerNode)
     val itemsIndex = neo4j.gds.index().forNodes("items")
     val ownerUUID = getUUID(ownerNode)
-    traverser.nodes.foreach(itemNode => {
+    val oldItemsInIndex = itemsIndex.query( "owner:\"" + UUIDUtils.getTrimmedBase64UUID(ownerUUID) + "\"").toList    
+    oldItemsInIndex.foreach(itemNode => {
       itemsIndex.remove(itemNode)
+    })
+    
+    // Add all back to index
+    val itemsFromOwner: TraversalDescription = itemsTraversal
+    val traverser = itemsFromOwner.traverse(ownerNode)    
+    traverser.nodes.foreach(itemNode => {
       addToItemsIndex(ownerUUID, itemNode, itemNode.getProperty("modified").asInstanceOf[Long])
     })
     Right(CountResult(traverser.nodes.size))
