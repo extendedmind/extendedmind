@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function AuthenticationService($location, $q, BackendClientService, ItemsService, UserSessionService) {
@@ -44,9 +43,9 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
   function requestLogin(remember) {
     return BackendClientService.post('/api/authenticate', authenticateRegexp, {
       rememberMe: remember
-      }).then(function(authenticateResponse) {
-        UserSessionService.setAuthenticateInformation(authenticateResponse.data);
-      });
+    }).then(function(authenticateResponse) {
+      UserSessionService.setAuthenticateInformation(authenticateResponse.data);
+    });
   }
 
   var authenticateRegexp = /api\/authenticate/;
@@ -67,11 +66,11 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
     },
     getInvite: function(inviteResponseCode, email) {
       return BackendClientService.get('/api/invite/' + inviteResponseCode + '?email=' + email,
-                  this.getInviteRegex);
+        this.getInviteRegex);
     },
     signUp: function(inviteResponseCode, data) {
       return BackendClientService.post('/api/invite/' + inviteResponseCode + '/accept',
-                  this.acceptInviteRegex, data);
+        this.acceptInviteRegex, data);
     },
     switchActiveUUID: function(uuid) {
       UserSessionService.setActiveUUID(uuid);
@@ -85,5 +84,5 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
 
   };
 }
-AuthenticationService.$inject = ['$location', '$q', 'BackendClientService', 'ItemsService', 'UserSessionService'];
+AuthenticationService['$inject'] = ['$location', '$q', 'BackendClientService', 'ItemsService', 'UserSessionService'];
 angular.module('em.services').factory('AuthenticationService', AuthenticationService);

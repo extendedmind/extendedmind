@@ -1,4 +1,3 @@
-/* global angular */
 'use strict';
 
 function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalStorageService, SessionStorageService) {
@@ -15,6 +14,8 @@ function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalSto
       authenticateValidTime = SessionStorageService.getExpires() || LocalStorageService.getExpires();
       authenticateExpiresTime = Date.now() - swapTokenBufferTime;
 
+      // If authentication valid, refresh session storage and encoded credentials for
+      // HTTP Authorization header.
       if (authenticateValidTime > authenticateExpiresTime) {
         if (!SessionStorageService.getUserUUID()) {
           this.setUserSessionStorageData();
@@ -112,5 +113,5 @@ function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalSto
     }
   };
 }
-UserSessionService.$inject = ['$q', 'base64', 'HttpBasicAuthenticationService', 'LocalStorageService', 'SessionStorageService'];
+UserSessionService['$inject'] = ['$q', 'base64', 'HttpBasicAuthenticationService', 'LocalStorageService', 'SessionStorageService'];
 angular.module('em.services').factory('UserSessionService', UserSessionService);

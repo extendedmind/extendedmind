@@ -1,4 +1,3 @@
-/*global angular, urlPrefix */
 'use strict';
 
 function BackendClientService($http, HttpClientService, HttpBasicAuthenticationService, UserSessionService, ErrorHandlerService) {
@@ -27,7 +26,7 @@ function BackendClientService($http, HttpClientService, HttpBasicAuthenticationS
     if (regex.test(url)){
       return HttpClientService.get(getUrlPrefix() + url);
     }else {
-      ErrorHandlerService.setError("GET to URL " + url + " did not match pattern " + regex);
+      ErrorHandlerService.setError('GET to URL ' + url + ' did not match pattern ' + regex);
     }
   };
 
@@ -36,30 +35,30 @@ function BackendClientService($http, HttpClientService, HttpBasicAuthenticationS
     if (regex.test(url)){
       return HttpClientService.delete(getUrlPrefix() + url);
     }else {
-      ErrorHandlerService.setError("DELETE to URL " + url + " did not match pattern " + regex);
+      ErrorHandlerService.setError('DELETE to URL ' + url + ' did not match pattern ' + regex);
     }
   };
 
   methods.put = function(url, regex, data) {
     refreshCredentials();
     if (regex.test(url)){
-      return HttpClientService.put(getUrlPrefix() + url, data)
+      return HttpClientService.put(getUrlPrefix() + url, data);
     }else {
-      ErrorHandlerService.setError("PUT to URL " + url + " did not match pattern " + regex);
+      ErrorHandlerService.setError('PUT to URL ' + url + ' did not match pattern ' + regex);
     }
   };
 
   methods.post = function(url, regex, data) {
     refreshCredentials();
     if (regex.test(url)){
-    return HttpClientService.post(getUrlPrefix() + url, data)
+      return HttpClientService.post(getUrlPrefix() + url, data);
     }else {
-      ErrorHandlerService.setError("POST to URL " + url + " did not match pattern " + regex);
+      ErrorHandlerService.setError('POST to URL ' + url + ' did not match pattern ' + regex);
     }
   };
 
   return methods;
-};
+}
 
-BackendClientService.$inject = ['$http', 'HttpClientService', 'HttpBasicAuthenticationService', 'UserSessionService', 'ErrorHandlerService'];
+BackendClientService['$inject'] = ['$http', 'HttpClientService', 'HttpBasicAuthenticationService', 'UserSessionService', 'ErrorHandlerService'];
 angular.module('em.services').factory('BackendClientService', BackendClientService);

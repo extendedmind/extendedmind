@@ -1,4 +1,3 @@
-/*global angular, urlPrefix */
 'use strict';
 
 function HttpClientService($http) {
@@ -35,5 +34,5 @@ function HttpClientService($http) {
   return methods;
 }
 
-HttpClientService.$inject = ['$http'];
+HttpClientService['$inject'] = ['$http'];
 angular.module('em.services').factory('HttpClientService', HttpClientService);

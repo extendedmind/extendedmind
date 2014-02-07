@@ -1,4 +1,3 @@
-/*jshint sub:true*/
 'use strict';
 
 function HomeController($scope, $location, $document, $element, ItemsService, UserSessionService, AuthenticationService) {
