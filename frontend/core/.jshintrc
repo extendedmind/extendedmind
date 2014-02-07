@@ -11,11 +11,13 @@
     "angular": false,
     "FastClick": false,
     "html5Mode": false,
-    "Swiper": false
+    "Swiper": false,
+    "urlPrefix": false
   },
   "globalstrict": true,
   "quotmark": true,
   "smarttabs": true,
+  "sub": true,
   "trailing": true,
   "undef": true,
   "unused": true
