@@ -50,8 +50,7 @@ angular.module('em.filters').filter('tasksFilter', ['DateService',
           if (tasks[i].due) {
             if (tasks[i].due === listDate.yyyymmdd) {
               filteredValues.push(tasks[i]);
-            } else if (listDate.yyyymmdd === DateService.yyyymmdd(DateService.today()) &&
-                      (DateService.today() > DateService.toDate(tasks[i].due))) { // if task date < today
+            } else if (listDate.yyyymmdd === DateService.yyyymmdd(DateService.today()) && (DateService.yyyymmdd(DateService.today()) > tasks[i].due)) { // if task date < today
               filteredValues.push(tasks[i]);
             }
           }
