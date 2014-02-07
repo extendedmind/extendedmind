@@ -133,12 +133,16 @@ footer {
   background-color: white;
   nav {
     padding-top: 5px;
-  }
-  li {
-    text-align: center;
-  }
-  .justified-element {
-    width: 30px;
+    ul {
+      li {
+        min-width: 50px;
+        text-align: center;
+        a {
+          width: 100%;
+          display: inline-block !important;
+        }
+      }
+    }
   }
 }
 
