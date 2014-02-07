@@ -9,13 +9,9 @@
               <section class="context" ng-controller="ContextsController">
                 <h3><a class="content" href ng-click="toggleContextContent()">@{{context.title}}</a></h3>
                 <div ng-if="showContextContent">
-                  <ul class="button-row">
-                    <li class="button-container" ng-hide="mainlinksFilter">
-                      <button class="wide-button default-button" type="button" ng-click="editContext(context)">
-                        more
-                      </button>
-                    </li>
-                  </ul>
+                  <button class="wide-button default-button" type="button" ng-click="editContext(context)">
+                    more
+                  </button>
                 </div>                
                 <div>
                   <div class="inner-page-content-container" accordion>

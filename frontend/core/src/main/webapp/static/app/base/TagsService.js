@@ -48,6 +48,7 @@ function TagsService($q, BackendClientService, ArrayService){
                  this.putExistingTagRegex, tag).then(function(result) {
           if (result.data){
             tag.modified = result.data.modified;
+            initializeArrays(ownerUUID);            
             ArrayService.updateItem(
               tag,
               tags[ownerUUID].activeTags,

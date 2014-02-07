@@ -62,8 +62,17 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   protected def putExistingTagNode(owner: Owner, tagUUID: UUID, tag: Tag): 
         Response[Node] = {
-    val subLabel = if (tag.tagType == CONTEXT) Some(TagLabel.CONTEXT) else Some(TagLabel.KEYWORD)
-    val subLabelAlternative = if (tag.tagType == CONTEXT) Some(scala.List(TagLabel.KEYWORD)) else Some(scala.List(TagLabel.CONTEXT))
+    val subLabel = if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT)
+                   else if (tag.tagType.get == KEYWORD) Some(TagLabel.KEYWORD)
+                   else Some(TagLabel.HISTORY)
+    val subLabelAlternative = 
+      if (tag.tagType.get == CONTEXT)
+        Some(scala.List(TagLabel.KEYWORD, TagLabel.HISTORY)) 
+      else if (tag.tagType.get == KEYWORD) 
+        Some(scala.List(TagLabel.CONTEXT, TagLabel.HISTORY))
+      else // history
+        Some(scala.List(TagLabel.CONTEXT, TagLabel.KEYWORD))
+        
     withTx {
       implicit neo4j =>
         for {
@@ -79,7 +88,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo4j =>
         for {
           tagNode <- createItem(owner, tag, Some(ItemLabel.TAG),
-                         (if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT) 
+                         (if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT)
                           else if (tag.tagType.get == KEYWORD) Some(TagLabel.KEYWORD)
                           else Some(TagLabel.HISTORY))
                          ).right
