@@ -13,13 +13,23 @@ angular.module('common').factory('DateService', [
     var activeWeek;
     var daysFromActiveWeekToNext = 7;
     var daysFromActiveWeekToPrevious = -daysFromActiveWeekToNext;
-
-    var today = new Today();
     
     function Today() {
       this.date = new Date();
       this.yyyymmdd = yyyymmdd(this.date);
+      setNewDayTimer(this.date);
     }
+    // http://stackoverflow.com/a/5294766
+    function setNewDayTimer(today) {
+      if (window.newDayTimer) {
+        clearTimeout(newDayTimer);
+      }
+      var tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+      window.newDayTimer = setTimeout(function() {
+        today = new Today();
+      }, tomorrow - today);
+    }
+    var today = new Today();
 
     // http://stackoverflow.com/a/3067896
     function yyyymmdd(date) {
