@@ -45,6 +45,7 @@ function SwiperService(OwnerService) {
       queueStartCallbacks: true,
       queueEndCallbacks: true,
       simulateTouch: true,
+      keyboardControl: true,
       onSlideChangeEnd: onSlideChangeEndCallback
     };
     
