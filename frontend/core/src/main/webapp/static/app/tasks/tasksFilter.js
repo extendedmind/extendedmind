@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('em.filters').filter('tasksFilter', ['DateService',
-  function(DateService) {
+angular.module('em.filters').filter('tasksFilter', [
+  function() {
 
     var filter = function(tasks, filterValue) {
       var tasksFilter = {};
@@ -41,24 +41,6 @@ angular.module('em.filters').filter('tasksFilter', ['DateService',
         return filteredValues;
       };
 
-      tasksFilter.tasksByDate = function(tasks, listDate) {
-        var filteredValues, i;
-        filteredValues = [];
-        i = 0;
-        
-        while (tasks[i]) {
-          if (tasks[i].due) {
-            if (tasks[i].due === listDate.yyyymmdd) {
-              filteredValues.push(tasks[i]);
-            } else if (listDate.yyyymmdd === DateService.yyyymmdd(DateService.today()) && (DateService.yyyymmdd(DateService.today()) > tasks[i].due)) { // if task date < today
-              filteredValues.push(tasks[i]);
-            }
-          }
-          i++;
-        }
-        return filteredValues;
-      };
-
       tasksFilter.unsorted = function(tasks) {
 
         var filteredValues, i, sortedTask;
@@ -88,4 +70,24 @@ angular.module('em.filters').filter('tasksFilter', ['DateService',
     };
 
     return filter;
+  }]);
+
+angular.module('em.filters').filter('tasksByDate', ['DateService',
+  function(DateService) {
+    return function(tasks, date) {
+      function isDueDate(task) {
+        return task.due === date;
+      }
+      function isToday() {
+        return DateService.getTodayYYYYMMDD() === date;
+      }
+      function isOverdue(task) {
+        return DateService.getTodayYYYYMMDD() > task.due;
+      }
+      return tasks.filter(function(task) {
+        if (task.due) {
+          return isDueDate(task) || (isToday() && isOverdue(task));
+        }
+      });
+    };
   }]);
