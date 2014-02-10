@@ -52,6 +52,10 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
     }
     return activeDay === dateString;
   };
+
+  $scope.visibleDateFormat = function(date) {
+    return (date.yyyymmdd === activeDay) ? date.month.name : date.weekday;
+  };
 }
 
 DatesController['$inject'] = ['$scope', '$timeout', 'DateService', 'TasksSlidesService', 'SwiperService'];
