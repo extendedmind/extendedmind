@@ -1,7 +1,6 @@
-/*jshint sub:true*/
 'use strict';
 
-function TasksController($location, $scope, $timeout, $routeParams, UserSessionService, OwnerService, TasksService, ListsService, TagsService, SwiperService, TasksSlidesService) {
+function TasksController($location, $scope, $timeout, $routeParams, UserSessionService, OwnerService, TasksService) {
 
   if (!$scope.task){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -112,5 +111,5 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 }
 
-TasksController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService', 'OwnerService', 'TasksService', 'ListsService', 'TagsService', 'SwiperService', 'TasksSlidesService'];
+TasksController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService', 'OwnerService', 'TasksService'];
 angular.module('em.app').controller('TasksController', TasksController);

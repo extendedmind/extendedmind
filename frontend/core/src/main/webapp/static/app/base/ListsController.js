@@ -1,4 +1,3 @@
-/*jshint sub:true*/
 'use strict';
 
 function ListsController($location, $scope, $timeout, $routeParams, UserSessionService, OwnerService, ListsService, SwiperService, TasksSlidesService) {
@@ -47,8 +46,7 @@ function ListsController($location, $scope, $timeout, $routeParams, UserSessionS
 
   $scope.archiveList = function(list) {
     ListsService.archiveList(list, UserSessionService.getActiveUUID());
-  }
-
+  };
 }
 
 ListsController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams',

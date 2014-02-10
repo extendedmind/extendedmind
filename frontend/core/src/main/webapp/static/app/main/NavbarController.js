@@ -1,4 +1,3 @@
-/*jshint sub:true*/
 'use strict';
 
 function NavbarController($location, $scope, $window, AuthenticationService, SwiperService, OwnerService, UserSessionService) {

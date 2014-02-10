@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function ItemsService($q, BackendClientService, UserSessionService, ArrayService, TagsService, ListsService, TasksService, NotesService){
@@ -165,5 +164,5 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
   };
 }
   
-ItemsService.$inject = ['$q', 'BackendClientService', 'UserSessionService', 'ArrayService', 'TagsService', 'ListsService', 'TasksService', 'NotesService'];
+ItemsService['$inject'] = ['$q', 'BackendClientService', 'UserSessionService', 'ArrayService', 'TagsService', 'ListsService', 'TasksService', 'NotesService'];
 angular.module('em.services').factory('ItemsService', ItemsService);

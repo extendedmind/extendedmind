@@ -1,4 +1,3 @@
-/*jshint sub:true*/
 'use strict';
 
 // Controller for all main slides

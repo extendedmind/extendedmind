@@ -1,4 +1,3 @@
-/*jshint sub:true*/
 'use strict';
 
 // iDangero.us Swiper Service       

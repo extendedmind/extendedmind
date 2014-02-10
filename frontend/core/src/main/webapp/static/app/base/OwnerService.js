@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function OwnerService(SessionStorageService) {
@@ -19,5 +18,5 @@ function OwnerService(SessionStorageService) {
     }
   };
 }
-OwnerService.$inject = ['SessionStorageService'];
+OwnerService['$inject'] = ['SessionStorageService'];
 angular.module('em.services').factory('OwnerService', OwnerService);
