@@ -20,14 +20,14 @@ angular.module('common').factory('DateService', [
       setNewDayTimer(this.date);
     }
     // http://stackoverflow.com/a/5294766
-    function setNewDayTimer(today) {
+    function setNewDayTimer(date) {
       if (window.newDayTimer) {
         clearTimeout(newDayTimer);
       }
-      var tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+      var tomorrow = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
       window.newDayTimer = setTimeout(function() {
         today = new Today();
-      }, tomorrow - today);
+      }, tomorrow - date);
     }
     var today = new Today();
 
