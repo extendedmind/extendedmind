@@ -1,4 +1,3 @@
-/*jshint sub:true*/
 'use strict';
 
 function DatesController($scope, $timeout, DateService, TasksSlidesService, SwiperService) {

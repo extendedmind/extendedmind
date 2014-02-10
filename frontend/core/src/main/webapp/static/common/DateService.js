@@ -2,7 +2,6 @@
 
 angular.module('common').factory('DateService', [
   function() {
-    var today = new Date();
 
     var monthNames = [
     'jan', 'feb', 'mar', 'apr',
@@ -15,6 +14,13 @@ angular.module('common').factory('DateService', [
     var daysFromActiveWeekToNext = 7;
     var daysFromActiveWeekToPrevious = -daysFromActiveWeekToNext;
 
+    var today = new Today();
+    
+    function Today() {
+      this.date = new Date();
+      this.yyyymmdd = yyyymmdd(this.date);
+    }
+
     // http://stackoverflow.com/a/3067896
     function yyyymmdd(date) {
       var yyyy, mm, dd;
@@ -24,13 +30,6 @@ angular.module('common').factory('DateService', [
       dd  = date.getDate().toString();
 
       return yyyy + '-' + (mm[1] ? mm : '0' + mm[0]) + '-' + (dd[1] ? dd : '0' + dd[0]); // padding
-    }
-
-    function toDate(yyyymmdd) {
-      var year = yyyymmdd.substring(0,4);
-      var month = yyyymmdd.substring(5,7);
-      var day = yyyymmdd.substring(8,9);
-      return new Date(year, month-1, day);
     }
 
     // http://stackoverflow.com/a/4156516
@@ -57,7 +56,7 @@ angular.module('common').factory('DateService', [
 
         // show today or month + date
         // http://stackoverflow.com/a/9300653
-        day.displayDate = (date.toDateString() === today.toDateString() ? 'today' : day.month.name + ' ' + day.date);
+        day.displayDate = (date.toDateString() === today.date.toDateString() ? 'today' : day.month.name + ' ' + day.date);
         day.displayDateShort = day.date;
 
         activeWeek.push(day);
@@ -75,15 +74,6 @@ angular.module('common').factory('DateService', [
     }
 
     return {
-      toDate: function(yyyymmdd) {
-        return toDate(yyyymmdd);
-      },
-      yyyymmdd: function(date) {
-        return yyyymmdd(date);
-      },
-      today: function() {
-        return today;
-      },
       activeWeek: function() {
         return activeWeek || (function() {
           var date = getFirstDayOfTheWeek(new Date());
@@ -102,10 +92,13 @@ angular.module('common').factory('DateService', [
       },
       getTodayDateString: function() {
         for (var i = 0, len = activeWeek.length; i < len; i++) {
-          if (activeWeek[i].yyyymmdd === yyyymmdd(today)) {
+          if (activeWeek[i].yyyymmdd === today.yyyymmdd) {
             return activeWeek[i].yyyymmdd;
           }
         }
+      },
+      getTodayYYYYMMDD: function() {
+        return today.yyyymmdd;
       }
     };
   }]);
