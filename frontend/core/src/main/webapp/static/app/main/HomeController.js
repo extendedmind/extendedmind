@@ -43,7 +43,7 @@ function HomeController($scope, $location, $document, $element, ItemsService, Us
       });
 
     }else{
-      $location.path($scope.prefix + '/items/new');
+      $location.path($scope.ownerPrefix + '/items/new');
     }
   };
 
@@ -93,5 +93,6 @@ function HomeController($scope, $location, $document, $element, ItemsService, Us
   };
 }
 
-HomeController['$inject'] = ['$scope', '$location', '$document', '$element', 'ItemsService', 'UserSessionService', 'AuthenticationService'];
+HomeController['$inject'] = ['$scope', '$location', '$document', '$element',
+                             'ItemsService', 'UserSessionService', 'AuthenticationService'];
 angular.module('em.app').controller('HomeController', HomeController);

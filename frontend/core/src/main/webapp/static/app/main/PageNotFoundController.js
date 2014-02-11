@@ -2,7 +2,7 @@
 
 function PageNotFoundController($scope, ErrorHandlerService, UserSessionService) {
 	$scope.errorHandler = ErrorHandlerService;
-	$scope.prefix = UserSessionService.getOwnerPrefix();
+	$scope.ownerPrefix = UserSessionService.getOwnerPrefix();
 }
 
 PageNotFoundController['$inject'] = ['$scope', 'ErrorHandlerService', 'UserSessionService'];

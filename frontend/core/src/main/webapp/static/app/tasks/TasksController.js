@@ -34,7 +34,7 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.addNew = function() {
-    $location.path($scope.prefix + '/tasks/new');
+    $location.path($scope.ownerPrefix + '/tasks/new');
   };
 
   $scope.editTaskTitle = function(task) {

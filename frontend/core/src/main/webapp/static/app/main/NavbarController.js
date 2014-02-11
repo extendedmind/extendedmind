@@ -9,7 +9,7 @@ function NavbarController($location, $scope, AuthenticationService, SwiperServic
 
   $scope.user = UserSessionService.getUserUUID();
   $scope.collectives = UserSessionService.getCollectives();
-  $scope.prefix = UserSessionService.getOwnerPrefix();
+  $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
 
   // Register a callback to swiper service
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks', 'NavbarController');

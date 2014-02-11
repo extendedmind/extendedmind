@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function ItemsController($scope, $location, $routeParams, UserSessionService, ItemsService) {
@@ -27,7 +26,7 @@ function ItemsController($scope, $location, $routeParams, UserSessionService, It
   };
 
   $scope.editItem  = function(item) {
-    $location.path($scope.prefix + '/items/edit/' + item.uuid);
+    $location.path($scope.ownerPrefix + '/items/edit/' + item.uuid);
   };
 
   $scope.deleteItem = function(item) {
@@ -40,11 +39,11 @@ function ItemsController($scope, $location, $routeParams, UserSessionService, It
   };
 
   $scope.taskEditMore = function(task) {
-    $location.path($scope.prefix + '/tasks/edit/' + task.uuid);
+    $location.path($scope.ownerPrefix + '/tasks/edit/' + task.uuid);
   };
 
   $scope.taskEditDone = function(task) {
-    ItemsService.itemToTask(task, UserSessionService.getActiveUUID());    
+    ItemsService.itemToTask(task, UserSessionService.getActiveUUID());
   };
 
   $scope.itemToNote = function(item) {
@@ -53,17 +52,16 @@ function ItemsController($scope, $location, $routeParams, UserSessionService, It
   };
 
   $scope.itemToNoteMore = function(note) {
-    $location.path($scope.prefix + '/notes/edit/' + note.uuid);
+    $location.path($scope.ownerPrefix + '/notes/edit/' + note.uuid);
   };
 
   $scope.noteEditDone = function(note) {
-    ItemsService.itemToNote(note, UserSessionService.getActiveUUID());    
+    ItemsService.itemToNote(note, UserSessionService.getActiveUUID());
   };
 
   $scope.addNew = function() {
-    $location.path($scope.prefix + '/items/new');
+    $location.path($scope.ownerPrefix + '/items/new');
   };
-
 }
 
 ItemsController.$inject = ['$scope', '$location', '$routeParams', 'UserSessionService', 'ItemsService'];

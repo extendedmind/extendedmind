@@ -34,7 +34,7 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.addNew = function() {
-    $location.path($scope.prefix + '/notes/new');
+    $location.path($scope.ownerPrefix + '/notes/new');
   };
 
   $scope.editNoteTitle = function(note) {

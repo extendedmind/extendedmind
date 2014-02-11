@@ -10,7 +10,7 @@ function MainController($scope, $location, UserSessionService, ItemsService, Lis
   $scope.notes = NotesService.getNotes(UserSessionService.getActiveUUID());
   $scope.lists = ListsService.getLists(UserSessionService.getActiveUUID());
   $scope.tags = TagsService.getTags(UserSessionService.getActiveUUID());
-  $scope.prefix = UserSessionService.getOwnerPrefix();
+  $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
 
   $scope.gotoInbox = function() {
@@ -33,13 +33,13 @@ function MainController($scope, $location, UserSessionService, ItemsService, Lis
     if ($scope.feature === 'tasks') {
       SwiperService.swipeTo(TasksSlidesService.DATES);
     }else if ($scope.feature === 'notes'){
-      $location.path($scope.prefix + '/tasks');
+      $location.path($scope.ownerPrefix + '/tasks');
     }
   };
 
   $scope.gotoNotes = function() {
     if ($scope.feature === 'tasks') {
-      $location.path($scope.prefix + '/notes');
+      $location.path($scope.ownerPrefix + '/notes');
     } else if ($scope.feature === 'notes'){
       SwiperService.swipeTo(NotesSlidesService.RECENT);
     }
