@@ -2,7 +2,7 @@
 
 function AuthenticationService($location, $q, BackendClientService, ItemsService, UserSessionService) {
 
-  function checkAuthentication() {
+  function verifyAndUpdateAuthentication() {
     function validateAuthenticationAndRefreshItems() {
       deferredAuthentication.resolve();
       refreshItems();
@@ -51,7 +51,7 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
   var authenticateRegexp = /api\/authenticate/;
 
   return {
-    checkAuthentication: checkAuthentication,
+    verifyAndUpdateAuthentication: verifyAndUpdateAuthentication,
     login: function(user) {
       var remember = user.remember || false;
       UserSessionService.setCredentials(user.username, user.password);

@@ -41,7 +41,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -57,7 +57,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         slide: ['TasksSlidesService', 'SwiperService',
         function(TasksSlidesService, SwiperService) {
@@ -75,7 +75,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         slide: ['TasksSlidesService', 'SwiperService',
         function(TasksSlidesService, SwiperService) {
@@ -94,7 +94,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -109,7 +109,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -124,7 +124,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -139,7 +139,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -153,7 +153,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -167,7 +167,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -183,7 +183,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         slide: ['NotesSlidesService', 'SwiperService',
         function(NotesSlidesService, SwiperService) {
@@ -201,7 +201,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         slide: ['NotesSlidesService', 'SwiperService',
         function(NotesSlidesService, SwiperService) {
@@ -219,7 +219,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -234,7 +234,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -249,7 +249,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -264,7 +264,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -278,7 +278,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -292,7 +292,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -308,7 +308,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -323,7 +323,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -337,7 +337,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -352,7 +352,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -368,7 +368,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -383,7 +383,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -399,7 +399,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
@@ -414,7 +414,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         prefix: ['OwnerService',
         function(OwnerService) {
