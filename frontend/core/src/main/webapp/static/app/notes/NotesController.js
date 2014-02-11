@@ -1,6 +1,6 @@
 'use strict';
 
-function NotesController($location, $scope, $timeout, $routeParams, UserSessionService, OwnerService, NotesService, ListsService, SwiperService, NotesSlidesService) {
+function NotesController($location, $scope, $timeout, $routeParams, UserSessionService, NotesService, ListsService, SwiperService, NotesSlidesService) {
 
   if (!$scope.note){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -42,7 +42,7 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.editNote = function(note) {
-    $location.path(OwnerService.getOwnerPrefix() + '/notes/edit/' + note.uuid);
+    $location.path(UserSessionService.getOwnerPrefix() + '/notes/edit/' + note.uuid);
   };
 
   $scope.deleteNote = function(note) {
@@ -90,6 +90,7 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 }
 
-NotesController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService', 'OwnerService',
-                              'NotesService', 'ListsService', 'SwiperService', 'NotesSlidesService'];
+NotesController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams',
+                              'UserSessionService', 'NotesService', 'ListsService',
+                              'SwiperService', 'NotesSlidesService'];
 angular.module('em.app').controller('NotesController', NotesController);

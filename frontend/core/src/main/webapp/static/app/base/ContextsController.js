@@ -1,6 +1,6 @@
 'use strict';
 
-function ContextsController($location, $scope, $timeout, $routeParams, UserSessionService, OwnerService, TagsService, SwiperService, TasksSlidesService) {
+function ContextsController($location, $scope, $timeout, $routeParams, UserSessionService, TagsService, SwiperService, TasksSlidesService) {
 
   if (!$scope.context){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -18,7 +18,7 @@ function ContextsController($location, $scope, $timeout, $routeParams, UserSessi
   };
 
   $scope.editContext = function(context) {
-    $location.path(OwnerService.getOwnerPrefix() + '/contexts/edit/' + context.uuid);
+    $location.path(UserSessionService.getOwnerPrefix() + '/contexts/edit/' + context.uuid);
   };
 
   $scope.cancelEdit = function() {
@@ -45,7 +45,6 @@ function ContextsController($location, $scope, $timeout, $routeParams, UserSessi
   };
 }
 
-ContextsController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams',
-                              'UserSessionService', 'OwnerService', 'TagsService',
-                              'SwiperService', 'TasksSlidesService'];
+ContextsController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService',
+                                 'TagsService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('ContextsController', ContextsController);

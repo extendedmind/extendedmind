@@ -2,7 +2,7 @@
 
 // iDangero.us Swiper Service       
 // http://www.idangero.us/sliders/swiper/api.php
-function SwiperService(OwnerService) {
+function SwiperService(UserSessionService) {
 
   // Holds reference to all the swipers and their respective paths
   var swipers = {};
@@ -117,7 +117,7 @@ function SwiperService(OwnerService) {
     },
     onSlideChangeEnd: function(scope, swiperPath) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
-      var path = OwnerService.getOwnerPrefix() + '/' + activeSlide.getData('path');
+      var path = UserSessionService.getOwnerPrefix() + '/' + activeSlide.getData('path');
 
       /* TODO: Concider using something like this
       // Use global html5Mode declaration to check how to handle route changes
@@ -196,5 +196,5 @@ function SwiperService(OwnerService) {
     }
   };
 }
-SwiperService['$inject'] = ['OwnerService'];
+SwiperService['$inject'] = ['UserSessionService'];
 angular.module('em.services').factory('SwiperService', SwiperService);

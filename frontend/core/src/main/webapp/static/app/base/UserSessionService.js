@@ -3,6 +3,11 @@
 function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorageService, SessionStorageService) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   var latestModified = {};
+  var ownerPrefix = 'my'; // default owner
+
+  function setOwnerPrefix(owner) {
+    ownerPrefix = owner;
+  }
 
   return {
     isAuthenticated: function() {
@@ -41,7 +46,18 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
       LocalStorageService.clearUser();
     },
 
-    // setters
+    // owner
+    setCollectivePrefix: function() {
+      setOwnerPrefix('collective' + '/' + SessionStorageService.getActiveUUID());
+    },
+    setMyPrefix: function() {
+      setOwnerPrefix('my');
+    },
+    getOwnerPrefix: function() {
+      return ownerPrefix;
+    },
+
+    // Web storage setters
     setAuthenticateInformation: function(authenticateResponse) {
       var authExpiresDelta = authenticateResponse.expires - (Date.now() - authenticateResponse.authenticated);
       this.setCredentials('token', authenticateResponse.token);
@@ -90,7 +106,8 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
         latestModified[ownerUUID] = modified;
       }
     },
-    // getters
+
+    // Web storage getters
     getAuth: function() {
       if (localStorage.getItem('expires') && sessionStorage.getItem('expires') !== localStorage.getItem('expires')) {
         this.setUserSessionStorageData();
