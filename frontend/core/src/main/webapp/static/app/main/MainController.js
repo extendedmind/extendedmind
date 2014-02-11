@@ -13,12 +13,18 @@ function MainController($scope, $location, $window, UserSessionService, ItemsSer
   $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
 
-  function synchronizeItems() {
-    // compare synchronized timestamp from ItemsService.synchronize() with Date.now()
-    // threshold is 10 seconds
-  }
-
+  var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
+  // var itemsSynchronizing;
+  synchronizeItems();
   angular.element($window).bind('focus', synchronizeItems);
+
+  // synchronize items if not already synchronizing and interval reached
+  function synchronizeItems() {
+    var itemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(UserSessionService.getActiveUUID());
+    if (isNaN(itemsSynchronized) || itemsSynchronized > itemsSynchronizedThreshold) {
+      ItemsService.synchronize(UserSessionService.getActiveUUID());
+    }
+  }
 
   $scope.gotoInbox = function() {
     if ($scope.feature === 'tasks') {
@@ -68,6 +74,6 @@ function MainController($scope, $location, $window, UserSessionService, ItemsSer
 }
 
 MainController['$inject'] = ['$scope', '$location', '$window', 'UserSessionService', 'ItemsService',
-'ListsService', 'TagsService', 'TasksService', 'NotesService',
-'FilterService', 'SwiperService', 'TasksSlidesService', 'NotesSlidesService'];
+                             'ListsService', 'TagsService', 'TasksService', 'NotesService',
+                             'FilterService', 'SwiperService', 'TasksSlidesService', 'NotesSlidesService'];
 angular.module('em.app').controller('MainController', MainController);
