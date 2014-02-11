@@ -1,6 +1,6 @@
 'use strict';
 
-function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalStorageService, SessionStorageService) {
+function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorageService, SessionStorageService) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   var latestModified = {};
 
@@ -113,5 +113,5 @@ function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalSto
     }
   };
 }
-UserSessionService['$inject'] = ['$q', 'base64', 'HttpBasicAuthenticationService', 'LocalStorageService', 'SessionStorageService'];
+UserSessionService['$inject'] = ['base64', 'HttpBasicAuthenticationService', 'LocalStorageService', 'SessionStorageService'];
 angular.module('em.services').factory('UserSessionService', UserSessionService);
