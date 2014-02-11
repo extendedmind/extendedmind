@@ -1,20 +1,16 @@
 'use strict';
 
-function AuthenticationService($location, $q, BackendClientService, ItemsService, UserSessionService) {
+function AuthenticationService($location, $q, BackendClientService, UserSessionService) {
 
   function verifyAndUpdateAuthentication() {
-    function validateAuthenticationAndRefreshItems() {
-      deferredAuthentication.resolve();
-      refreshItems();
-    }
     var deferredAuthentication = $q.defer();
 
     if (UserSessionService.isAuthenticated()) {
       if (UserSessionService.isAuthenticateValid()) {
-        validateAuthenticationAndRefreshItems();
+        validateAuthentication();
       } else {
         if (UserSessionService.isAuthenticateReplaceable()) {
-          swapToken().then(validateAuthenticationAndRefreshItems);
+          swapToken().then(validateAuthentication);
         } else {
           deferredAuthentication.reject();
         }
@@ -22,15 +18,13 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
     } else {
       deferredAuthentication.reject();
     }
+    function validateAuthentication() {
+      deferredAuthentication.resolve();
+    }
     deferredAuthentication.promise.then(null, function() {
       $location.path('/login');
     });
-
     return deferredAuthentication.promise;
-  }
-
-  function refreshItems() {
-    ItemsService.synchronize(UserSessionService.getActiveUUID());
   }
 
   function swapToken() {
@@ -56,7 +50,7 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
       var remember = user.remember || false;
       UserSessionService.setCredentials(user.username, user.password);
 
-      return requestLogin(remember).then(refreshItems);
+      return requestLogin(remember);
     },
     logout: function() {
       return BackendClientService.post('/api/logout', this.logoutRegex).then(function(logoutResponse) {
@@ -84,5 +78,5 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
 
   };
 }
-AuthenticationService['$inject'] = ['$location', '$q', 'BackendClientService', 'ItemsService', 'UserSessionService'];
+AuthenticationService['$inject'] = ['$location', '$q', 'BackendClientService', 'UserSessionService'];
 angular.module('em.services').factory('AuthenticationService', AuthenticationService);
