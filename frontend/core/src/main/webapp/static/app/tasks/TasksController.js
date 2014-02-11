@@ -1,6 +1,6 @@
 'use strict';
 
-function TasksController($location, $scope, $timeout, $routeParams, UserSessionService, TasksService) {
+function TasksController($location, $scope, $routeParams, UserSessionService, TasksService) {
 
   if (!$scope.task){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
