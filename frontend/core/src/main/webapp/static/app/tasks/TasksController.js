@@ -42,7 +42,7 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.editTask = function(task) {
-    $location.path(OwnerService.getPrefix() + '/tasks/edit/' + task.uuid);
+    $location.path(OwnerService.getOwnerPrefix() + '/tasks/edit/' + task.uuid);
   };
 
   $scope.taskChecked = function(task) {
@@ -55,7 +55,7 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
 
   $scope.taskToList = function(task) {
     TasksService.taskToList(task, UserSessionService.getActiveUUID());
-    $location.path(OwnerService.getPrefix() + '/tasks/new/' + task.uuid);
+    $location.path(OwnerService.getOwnerPrefix() + '/tasks/new/' + task.uuid);
   };
 
   $scope.deleteTask = function(task) {
@@ -111,5 +111,5 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 }
 
-TasksController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService', 'OwnerService', 'TasksService'];
+TasksController['$inject'] = ['$location', '$scope', '$routeParams', 'UserSessionService', 'OwnerService', 'TasksService'];
 angular.module('em.app').controller('TasksController', TasksController);

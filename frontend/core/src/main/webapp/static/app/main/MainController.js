@@ -10,7 +10,7 @@ function MainController($scope, $location, UserSessionService, ItemsService, Lis
   $scope.notes = NotesService.getNotes(UserSessionService.getActiveUUID());
   $scope.lists = ListsService.getLists(UserSessionService.getActiveUUID());
   $scope.tags = TagsService.getTags(UserSessionService.getActiveUUID());
-  $scope.prefix = OwnerService.getPrefix();
+  $scope.prefix = OwnerService.getOwnerPrefix();
   $scope.filterService = FilterService;
 
   $scope.gotoInbox = function() {

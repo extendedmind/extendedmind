@@ -18,7 +18,7 @@ function ListsController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.editList = function(list) {
-    $location.path(OwnerService.getPrefix() + '/lists/edit/' + list.uuid);
+    $location.path(OwnerService.getOwnerPrefix() + '/lists/edit/' + list.uuid);
   };
 
   $scope.cancelEdit = function() {

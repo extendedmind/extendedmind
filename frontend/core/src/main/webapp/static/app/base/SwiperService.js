@@ -117,7 +117,7 @@ function SwiperService(OwnerService) {
     },
     onSlideChangeEnd: function(scope, swiperPath) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
-      var path = OwnerService.getPrefix() + '/' + activeSlide.getData('path');
+      var path = OwnerService.getOwnerPrefix() + '/' + activeSlide.getData('path');
 
       /* TODO: Concider using something like this
       // Use global html5Mode declaration to check how to handle route changes

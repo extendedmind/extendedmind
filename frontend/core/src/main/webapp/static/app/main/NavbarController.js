@@ -1,6 +1,6 @@
 'use strict';
 
-function NavbarController($location, $scope, $window, AuthenticationService, SwiperService, OwnerService, UserSessionService) {
+function NavbarController($location, $scope, AuthenticationService, SwiperService, OwnerService, UserSessionService) {
 
   // TODO: Use these to build * * * * * subnavigation on top of iconś
   var tasksSubNavigationPaths = ['tasks/dates', 'tasks/menu', 'tasks/lists', 'tasks/single'];
@@ -9,7 +9,7 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
 
   $scope.user = UserSessionService.getUserUUID();
   $scope.collectives = UserSessionService.getCollectives();
-  $scope.prefix = OwnerService.getPrefix();
+  $scope.prefix = OwnerService.getOwnerPrefix();
 
   // Register a callback to swiper service
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks', 'NavbarController');
@@ -53,5 +53,5 @@ function NavbarController($location, $scope, $window, AuthenticationService, Swi
   };
 }
 
-NavbarController['$inject'] = ['$location', '$scope', '$window', 'AuthenticationService', 'SwiperService','OwnerService', 'UserSessionService'];
+NavbarController['$inject'] = ['$location', '$scope', 'AuthenticationService', 'SwiperService','OwnerService', 'UserSessionService'];
 angular.module('em.app').controller('NavbarController', NavbarController);

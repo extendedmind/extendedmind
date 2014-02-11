@@ -1,4 +1,3 @@
-/*jshint sub:true*/
 'use strict';
 
 function ContextsController($location, $scope, $timeout, $routeParams, UserSessionService, OwnerService, TagsService, SwiperService, TasksSlidesService) {
@@ -19,7 +18,7 @@ function ContextsController($location, $scope, $timeout, $routeParams, UserSessi
   };
 
   $scope.editContext = function(context) {
-    $location.path(OwnerService.getPrefix() + '/contexts/edit/' + context.uuid);
+    $location.path(OwnerService.getOwnerPrefix() + '/contexts/edit/' + context.uuid);
   };
 
   $scope.cancelEdit = function() {

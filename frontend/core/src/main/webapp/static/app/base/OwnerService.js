@@ -1,20 +1,21 @@
 'use strict';
 
 function OwnerService(SessionStorageService) {
-  var prefix = 'my';
+  var ownerPrefix = 'my';
+
+  function setOwnerPrefix(owner) {
+    ownerPrefix = owner;
+  }
 
   return {
     setCollectivePrefix: function() {
-      this.setPrefix('collective' + '/' + SessionStorageService.getActiveUUID());
+      setOwnerPrefix('collective' + '/' + SessionStorageService.getActiveUUID());
     },
     setMyPrefix: function() {
-      this.setPrefix('my');
+      setOwnerPrefix('my');
     },
-    setPrefix: function(name) {
-      prefix = name;
-    },
-    getPrefix: function() {
-      return prefix;
+    getOwnerPrefix: function() {
+      return ownerPrefix;
     }
   };
 }
