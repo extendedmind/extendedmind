@@ -4,7 +4,7 @@
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection. 
-function MainController($scope, $location, UserSessionService, ItemsService, ListsService, TagsService, TasksService, NotesService, FilterService, SwiperService, TasksSlidesService, NotesSlidesService) {
+function MainController($scope, $location, $window, UserSessionService, ItemsService, ListsService, TagsService, TasksService, NotesService, FilterService, SwiperService, TasksSlidesService, NotesSlidesService) {
   $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
   $scope.notes = NotesService.getNotes(UserSessionService.getActiveUUID());
@@ -12,6 +12,13 @@ function MainController($scope, $location, UserSessionService, ItemsService, Lis
   $scope.tags = TagsService.getTags(UserSessionService.getActiveUUID());
   $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
+
+  function synchronizeItems() {
+    // compare synchronized timestamp from ItemsService.synchronize() with Date.now()
+    // threshold is 10 seconds
+  }
+
+  angular.element($window).bind('focus', synchronizeItems);
 
   $scope.gotoInbox = function() {
     if ($scope.feature === 'tasks') {
@@ -60,7 +67,7 @@ function MainController($scope, $location, UserSessionService, ItemsService, Lis
   };
 }
 
-MainController['$inject'] = ['$scope', '$location', 'UserSessionService', 'ItemsService',
-                             'ListsService', 'TagsService', 'TasksService', 'NotesService',
-                             'FilterService', 'SwiperService', 'TasksSlidesService', 'NotesSlidesService'];
+MainController['$inject'] = ['$scope', '$location', '$window', 'UserSessionService', 'ItemsService',
+'ListsService', 'TagsService', 'TasksService', 'NotesService',
+'FilterService', 'SwiperService', 'TasksSlidesService', 'NotesSlidesService'];
 angular.module('em.app').controller('MainController', MainController);

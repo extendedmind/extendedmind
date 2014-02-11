@@ -1,25 +1,23 @@
 'use strict';
 
-function BackendClientService($http, HttpClientService, HttpBasicAuthenticationService, UserSessionService, ErrorHandlerService) {
+function BackendClientService(HttpClientService, HttpBasicAuthenticationService, UserSessionService, ErrorHandlerService) {
   var methods = {};
 
   function getUrlPrefix() {
-    if (typeof urlPrefix !== 'undefined') {
-      return urlPrefix;
-    }
-    return '';
+    // http://stackoverflow.com/a/3390426
+    return (typeof urlPrefix !== 'undefined') ? urlPrefix : '';
   }
 
   methods.uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
   methods.apiPrefixRegex = /\/api\//;
   methods.undeleteRegex = /\/undelete/;
 
-  var refreshCredentials = function() {
+  function refreshCredentials() {
     var credentials = UserSessionService.getCredentials();
     if (HttpBasicAuthenticationService.getCredentials() !== credentials){
       HttpBasicAuthenticationService.setCredentials(credentials);
     }
-  };
+  }
 
   methods.get = function(url, regex) {
     refreshCredentials();
@@ -60,5 +58,5 @@ function BackendClientService($http, HttpClientService, HttpBasicAuthenticationS
   return methods;
 }
 
-BackendClientService['$inject'] = ['$http', 'HttpClientService', 'HttpBasicAuthenticationService', 'UserSessionService', 'ErrorHandlerService'];
+BackendClientService['$inject'] = ['HttpClientService', 'HttpBasicAuthenticationService', 'UserSessionService', 'ErrorHandlerService'];
 angular.module('em.services').factory('BackendClientService', BackendClientService);
