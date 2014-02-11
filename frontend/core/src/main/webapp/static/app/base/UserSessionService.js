@@ -3,6 +3,7 @@
 function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorageService, SessionStorageService) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   var latestModified = {};
+  var itemsSynchronized = {};
   var ownerPrefix = 'my'; // default owner
 
   function setOwnerPrefix(owner) {
@@ -106,6 +107,9 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
         latestModified[ownerUUID] = modified;
       }
     },
+    setItemsSynchronized: function(ownerUUID) {
+      itemsSynchronized[ownerUUID] = Date.now();
+    },
 
     // Web storage getters
     getAuth: function() {
@@ -127,6 +131,9 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
     },
     getLatestModified: function(ownerUUID) {
       return latestModified[ownerUUID];
+    },
+    getItemsSynchronized: function(ownerUUID) {
+      return itemsSynchronized[ownerUUID];
     }
   };
 }
