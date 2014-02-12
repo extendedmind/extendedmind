@@ -1,4 +1,3 @@
-/* global angular */
 'use strict';
 
 // NOTE: This file starts with an uppercase A to make sure it is loaded first by
