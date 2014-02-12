@@ -19,6 +19,7 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
   return {
     // Main method to synchronize all arrays with backend.
     synchronize: function(ownerUUID) {
+      var deferred = $q.defer();
       var latestModified = UserSessionService.getLatestModified(ownerUUID);
       var url = '/api/' + ownerUUID + '/items';
       if (latestModified){
@@ -58,7 +59,11 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
             UserSessionService.setLatestModified(latestModified, ownerUUID);
           }
         }
+        deferred.resolve();
+      }, function() {
+        deferred.reject();
       });
+      return deferred.promise;
     },
     getItems: function(ownerUUID) {
       initializeArrays(ownerUUID);
@@ -164,5 +169,6 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
   };
 }
   
-ItemsService['$inject'] = ['$q', 'BackendClientService', 'UserSessionService', 'ArrayService', 'TagsService', 'ListsService', 'TasksService', 'NotesService'];
+ItemsService['$inject'] = ['$q', 'BackendClientService', 'UserSessionService', 'ArrayService',
+                           'TagsService', 'ListsService', 'TasksService', 'NotesService'];
 angular.module('em.services').factory('ItemsService', ItemsService);
