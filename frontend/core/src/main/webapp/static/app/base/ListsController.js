@@ -1,7 +1,6 @@
-/*jshint sub:true*/
 'use strict';
 
-function ListsController($location, $scope, $timeout, $routeParams, UserSessionService, OwnerService, ListsService, SwiperService, TasksSlidesService) {
+function ListsController($location, $scope, $timeout, $routeParams, UserSessionService, ListsService, SwiperService, TasksSlidesService) {
 
   if (!$scope.list){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -19,7 +18,7 @@ function ListsController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.editList = function(list) {
-    $location.path(OwnerService.getPrefix() + '/lists/edit/' + list.uuid);
+    $location.path(UserSessionService.getOwnerPrefix() + '/lists/edit/' + list.uuid);
   };
 
   $scope.cancelEdit = function() {
@@ -47,11 +46,9 @@ function ListsController($location, $scope, $timeout, $routeParams, UserSessionS
 
   $scope.archiveList = function(list) {
     ListsService.archiveList(list, UserSessionService.getActiveUUID());
-  }
-
+  };
 }
 
-ListsController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams',
-                              'UserSessionService', 'OwnerService', 'ListsService',
-                              'SwiperService', 'TasksSlidesService'];
+ListsController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService',
+                              'ListsService', 'SwiperService', 'TasksSlidesService'];
 angular.module('em.app').controller('ListsController', ListsController);

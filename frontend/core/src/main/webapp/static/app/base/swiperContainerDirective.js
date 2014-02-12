@@ -1,4 +1,3 @@
-/*jshint sub:true*/
 'use strict';
 
 function swiperContainerDirective(SwiperService) {

@@ -1,4 +1,3 @@
-/*global angular, urlPrefix */
 'use strict';
 
 angular.module('em.services').config(['$httpProvider',
@@ -23,5 +22,5 @@ function HttpInterceptorService($q, ErrorHandlerService) {
     }
   };
 }
-HttpInterceptorService.$inject = ['$q', 'ErrorHandlerService'];
+HttpInterceptorService['$inject'] = ['$q', 'ErrorHandlerService'];
 angular.module('em.services').factory('HttpInterceptorService', HttpInterceptorService);

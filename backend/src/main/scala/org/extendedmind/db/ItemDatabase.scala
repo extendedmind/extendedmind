@@ -759,24 +759,27 @@ trait ItemDatabase extends AbstractGraphDatabase {
   }
 
   protected def migrateToLists(ownerNode: Node)(implicit neo4j: DatabaseService): CountResult = {
-    val taskListsFromOwner: TraversalDescription =
+    val projectsFromOwner: TraversalDescription =
       Traversal.description()
         .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
           Direction.OUTGOING)
         .depthFirst()
         .evaluator(Evaluators.excludeStartPosition())
-        .evaluator(LabelEvaluator(scala.List(ItemLabel.TASK, ItemLabel.LIST)))
+        .evaluator(LabelEvaluator(scala.List(ItemParentLabel.PROJECT)))
 
-    val traverser = taskListsFromOwner.traverse(ownerNode)
-    var listCount = 0
-    traverser.nodes.foreach(taskListNode => {
-      // Remove forgotten TASK label
-      taskListNode.removeLabel(ItemLabel.TASK)
-      if (taskListNode.hasProperty("completed"))
-        taskListNode.removeProperty("completed")
-      listCount += 1
+    val traverser = projectsFromOwner.traverse(ownerNode)
+    var projectCount = 0
+    traverser.nodes.foreach(projectNode => {
+      projectNode.removeLabel(ItemParentLabel.PROJECT)
+      projectNode.removeLabel(ItemLabel.TASK)
+      projectNode.addLabel(ItemLabel.LIST)
+      if (projectNode.hasProperty("completed")){
+        projectNode.setProperty("archived", projectNode.getProperty("completed").asInstanceOf[Long])
+        projectNode.removeProperty("completed")
+      }
+      projectCount += 1
     })
-    CountResult(listCount)
+    CountResult(projectCount)
   }
 
 }

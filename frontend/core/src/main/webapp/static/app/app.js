@@ -41,11 +41,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
 
       }
@@ -57,15 +57,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         slide: ['TasksSlidesService', 'SwiperService',
         function(TasksSlidesService, SwiperService) {
           SwiperService.setInitialSlidePath(TasksSlidesService.HOME);
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
       }
     });
@@ -75,15 +75,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         slide: ['TasksSlidesService', 'SwiperService',
         function(TasksSlidesService, SwiperService) {
           SwiperService.setInitialSlidePath(TasksSlidesService.HOME);
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setCollectivePrefix();
         }]
 
       }
@@ -94,11 +94,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
 
       }
@@ -109,11 +109,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setCollectivePrefix();
         }]
 
       }
@@ -124,11 +124,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
 
       }
@@ -139,11 +139,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setCollectivePrefix();
         }]
       }
     });
@@ -153,11 +153,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
       }
     });
@@ -167,11 +167,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setCollectivePrefix();
         }]
       }
     });
@@ -183,15 +183,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         slide: ['NotesSlidesService', 'SwiperService',
         function(NotesSlidesService, SwiperService) {
           SwiperService.setInitialSlidePath(NotesSlidesService.HOME);
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
       }
     });
@@ -201,15 +201,15 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
         slide: ['NotesSlidesService', 'SwiperService',
         function(NotesSlidesService, SwiperService) {
           SwiperService.setInitialSlidePath(NotesSlidesService.HOME);
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setCollectivePrefix();
         }]
       }
     });
@@ -219,11 +219,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
 
       }
@@ -234,11 +234,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setCollectivePrefix();
         }]
 
       }
@@ -249,11 +249,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
 
       }
@@ -264,11 +264,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setCollectivePrefix();
         }]
       }
     });
@@ -278,11 +278,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
       }
     });
@@ -292,11 +292,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setCollectivePrefix();
         }]
       }
     });
@@ -308,11 +308,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
 
       }
@@ -323,11 +323,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setCollectivePrefix();
         }]
       }
     });
@@ -337,11 +337,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
 
       }
@@ -352,11 +352,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setCollectivePrefix();
         }]
       }
     });
@@ -368,11 +368,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
 
       }
@@ -383,11 +383,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setCollectivePrefix();
         }]
       }
     });
@@ -399,11 +399,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setMyPrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
         }]
 
       }
@@ -414,11 +414,11 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
-          return auth.checkAuthentication();
+          return auth.verifyAndUpdateAuthentication();
         }],
-        prefix: ['OwnerService',
-        function(OwnerService) {
-          OwnerService.setCollectivePrefix();
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setCollectivePrefix();
         }]
       }
     });

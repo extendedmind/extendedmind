@@ -1,7 +1,6 @@
-/*jshint sub:true*/
 'use strict';
 
-function TasksController($location, $scope, $timeout, $routeParams, UserSessionService, OwnerService, TasksService, ListsService, TagsService, SwiperService, TasksSlidesService) {
+function TasksController($location, $scope, $routeParams, UserSessionService, TasksService) {
 
   if (!$scope.task){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -35,7 +34,7 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.addNew = function() {
-    $location.path($scope.prefix + '/tasks/new');
+    $location.path($scope.ownerPrefix + '/tasks/new');
   };
 
   $scope.editTaskTitle = function(task) {
@@ -43,7 +42,7 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.editTask = function(task) {
-    $location.path(OwnerService.getPrefix() + '/tasks/edit/' + task.uuid);
+    $location.path(UserSessionService.getOwnerPrefix() + '/tasks/edit/' + task.uuid);
   };
 
   $scope.taskChecked = function(task) {
@@ -56,7 +55,7 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
 
   $scope.taskToList = function(task) {
     TasksService.taskToList(task, UserSessionService.getActiveUUID());
-    $location.path(OwnerService.getPrefix() + '/tasks/new/' + task.uuid);
+    $location.path(UserSessionService.getOwnerPrefix() + '/tasks/new/' + task.uuid);
   };
 
   $scope.deleteTask = function(task) {
@@ -112,5 +111,5 @@ function TasksController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 }
 
-TasksController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService', 'OwnerService', 'TasksService', 'ListsService', 'TagsService', 'SwiperService', 'TasksSlidesService'];
+TasksController['$inject'] = ['$location', '$scope', '$routeParams', 'UserSessionService', 'TasksService'];
 angular.module('em.app').controller('TasksController', TasksController);

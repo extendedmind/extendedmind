@@ -1,21 +1,16 @@
-/*global angular */
 'use strict';
 
-function AuthenticationService($location, $q, BackendClientService, ItemsService, UserSessionService) {
+function AuthenticationService($location, $q, BackendClientService, UserSessionService) {
 
-  function checkAuthentication() {
-    function validateAuthenticationAndRefreshItems() {
-      deferredAuthentication.resolve();
-      refreshItems();
-    }
+  function verifyAndUpdateAuthentication() {
     var deferredAuthentication = $q.defer();
 
     if (UserSessionService.isAuthenticated()) {
       if (UserSessionService.isAuthenticateValid()) {
-        validateAuthenticationAndRefreshItems();
+        validateAuthentication();
       } else {
         if (UserSessionService.isAuthenticateReplaceable()) {
-          swapToken().then(validateAuthenticationAndRefreshItems);
+          swapToken().then(validateAuthentication);
         } else {
           deferredAuthentication.reject();
         }
@@ -23,15 +18,13 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
     } else {
       deferredAuthentication.reject();
     }
+    function validateAuthentication() {
+      deferredAuthentication.resolve();
+    }
     deferredAuthentication.promise.then(null, function() {
       $location.path('/login');
     });
-
     return deferredAuthentication.promise;
-  }
-
-  function refreshItems() {
-    ItemsService.synchronize(UserSessionService.getActiveUUID());
   }
 
   function swapToken() {
@@ -44,20 +37,20 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
   function requestLogin(remember) {
     return BackendClientService.post('/api/authenticate', authenticateRegexp, {
       rememberMe: remember
-      }).then(function(authenticateResponse) {
-        UserSessionService.setAuthenticateInformation(authenticateResponse.data);
-      });
+    }).then(function(authenticateResponse) {
+      UserSessionService.setAuthenticateInformation(authenticateResponse.data);
+    });
   }
 
   var authenticateRegexp = /api\/authenticate/;
 
   return {
-    checkAuthentication: checkAuthentication,
+    verifyAndUpdateAuthentication: verifyAndUpdateAuthentication,
     login: function(user) {
       var remember = user.remember || false;
       UserSessionService.setCredentials(user.username, user.password);
 
-      return requestLogin(remember).then(refreshItems);
+      return requestLogin(remember);
     },
     logout: function() {
       return BackendClientService.post('/api/logout', this.logoutRegex).then(function(logoutResponse) {
@@ -67,11 +60,11 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
     },
     getInvite: function(inviteResponseCode, email) {
       return BackendClientService.get('/api/invite/' + inviteResponseCode + '?email=' + email,
-                  this.getInviteRegex);
+        this.getInviteRegex);
     },
     signUp: function(inviteResponseCode, data) {
       return BackendClientService.post('/api/invite/' + inviteResponseCode + '/accept',
-                  this.acceptInviteRegex, data);
+        this.acceptInviteRegex, data);
     },
     switchActiveUUID: function(uuid) {
       UserSessionService.setActiveUUID(uuid);
@@ -85,5 +78,5 @@ function AuthenticationService($location, $q, BackendClientService, ItemsService
 
   };
 }
-AuthenticationService.$inject = ['$location', '$q', 'BackendClientService', 'ItemsService', 'UserSessionService'];
+AuthenticationService['$inject'] = ['$location', '$q', 'BackendClientService', 'UserSessionService'];
 angular.module('em.services').factory('AuthenticationService', AuthenticationService);

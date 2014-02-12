@@ -1,9 +1,14 @@
-/* global angular */
 'use strict';
 
-function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalStorageService, SessionStorageService) {
+function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorageService, SessionStorageService) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   var latestModified = {};
+  var itemsSynchronize = {};
+  var ownerPrefix = 'my'; // default owner
+
+  function setOwnerPrefix(owner) {
+    ownerPrefix = owner;
+  }
 
   return {
     isAuthenticated: function() {
@@ -15,6 +20,8 @@ function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalSto
       authenticateValidTime = SessionStorageService.getExpires() || LocalStorageService.getExpires();
       authenticateExpiresTime = Date.now() - swapTokenBufferTime;
 
+      // If authentication valid, refresh session storage and encoded credentials for
+      // HTTP Authorization header.
       if (authenticateValidTime > authenticateExpiresTime) {
         if (!SessionStorageService.getUserUUID()) {
           this.setUserSessionStorageData();
@@ -40,7 +47,18 @@ function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalSto
       LocalStorageService.clearUser();
     },
 
-    // setters
+    // owner
+    setCollectivePrefix: function() {
+      setOwnerPrefix('collective' + '/' + SessionStorageService.getActiveUUID());
+    },
+    setMyPrefix: function() {
+      setOwnerPrefix('my');
+    },
+    getOwnerPrefix: function() {
+      return ownerPrefix;
+    },
+
+    // Web storage setters
     setAuthenticateInformation: function(authenticateResponse) {
       var authExpiresDelta = authenticateResponse.expires - (Date.now() - authenticateResponse.authenticated);
       this.setCredentials('token', authenticateResponse.token);
@@ -89,7 +107,21 @@ function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalSto
         latestModified[ownerUUID] = modified;
       }
     },
-    // getters
+    setItemsSynchronizing: function(ownerUUID) {
+      if (!itemsSynchronize[ownerUUID]) {
+        itemsSynchronize[ownerUUID] = {};
+      }
+      itemsSynchronize[ownerUUID].itemsSynchronizing = true;
+    },
+    setItemsSynchronized: function(ownerUUID) {
+      if (!itemsSynchronize[ownerUUID]) {
+        itemsSynchronize[ownerUUID] = {};
+      }
+      itemsSynchronize[ownerUUID].itemsSynchronizing = false;
+      itemsSynchronize[ownerUUID].itemsSynchronized = Date.now();
+    },
+
+    // Web storage getters
     getAuth: function() {
       if (localStorage.getItem('expires') && sessionStorage.getItem('expires') !== localStorage.getItem('expires')) {
         this.setUserSessionStorageData();
@@ -109,8 +141,16 @@ function UserSessionService($q, base64, HttpBasicAuthenticationService, LocalSto
     },
     getLatestModified: function(ownerUUID) {
       return latestModified[ownerUUID];
+    },
+    isItemsSynchronizing: function(ownerUUID) {
+      if (itemsSynchronize[ownerUUID]) {
+        return itemsSynchronize[ownerUUID].itemsSynchronizing;
+      }
+    },
+    getItemsSynchronized: function(ownerUUID) {
+      return (itemsSynchronize[ownerUUID]) ? itemsSynchronize[ownerUUID].itemsSynchronized : undefined;
     }
   };
 }
-UserSessionService.$inject = ['$q', 'base64', 'HttpBasicAuthenticationService', 'LocalStorageService', 'SessionStorageService'];
+UserSessionService['$inject'] = ['base64', 'HttpBasicAuthenticationService', 'LocalStorageService', 'SessionStorageService'];
 angular.module('em.services').factory('UserSessionService', UserSessionService);

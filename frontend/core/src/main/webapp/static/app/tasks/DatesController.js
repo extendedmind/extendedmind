@@ -1,4 +1,3 @@
-/*jshint sub:true*/
 'use strict';
 
 function DatesController($scope, $timeout, DateService, TasksSlidesService, SwiperService) {
@@ -52,6 +51,10 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
       activeDay = dateString;
     }
     return activeDay === dateString;
+  };
+
+  $scope.visibleDateFormat = function(date) {
+    return (date.yyyymmdd === activeDay) ? date.month.name : date.weekday;
   };
 }
 
