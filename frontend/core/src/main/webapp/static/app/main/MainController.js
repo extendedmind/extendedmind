@@ -13,21 +13,21 @@ function MainController($scope, $location, $timeout, $window, UserSessionService
   $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
 
-  var itemsSynchronizeTimer;
+  var synchronizeItemsTimer;
   var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
-  itemsSynchronize();
-  angular.element($window).bind('focus', itemsSynchronize);
+  synchronizeItems();
+  angular.element($window).bind('focus', synchronizeItems);
 
   // https://developer.mozilla.org/en/docs/Web/API/window.setInterval
-  (function itemsSynchronizeLoop() {
-    itemsSynchronizeTimer = $timeout(function() {
-      itemsSynchronize();
-      itemsSynchronizeLoop();
+  (function synchronizeItemsLoop() {
+    synchronizeItemsTimer = $timeout(function() {
+      synchronizeItems();
+      synchronizeItemsLoop();
     }, itemsSynchronizedThreshold);
   })();
 
   // Synchronize items if not already synchronizing and interval reached
-  function itemsSynchronize() {
+  function synchronizeItems() {
     if (!UserSessionService.isItemsSynchronizing(UserSessionService.getActiveUUID())) {
       var itemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(UserSessionService.getActiveUUID());
       
@@ -38,16 +38,16 @@ function MainController($scope, $location, $timeout, $window, UserSessionService
           UserSessionService.setItemsSynchronized(UserSessionService.getActiveUUID());
         }, function() {
           // TODO Don't start timer and don't bind again.
-          angular.element($window).unbind('focus', itemsSynchronize);
-          $timeout.cancel(itemsSynchronizeTimer);
+          angular.element($window).unbind('focus', synchronizeItems);
+          $timeout.cancel(synchronizeItemsTimer);
         });
       }
     }
   }
   $scope.$on('$destroy', function() {
-    angular.element($window).unbind('focus', itemsSynchronize);
+    angular.element($window).unbind('focus', synchronizeItems);
     // http://www.bennadel.com/blog/2548-Don-t-Forget-To-Cancel-timeout-Timers-In-Your-destroy-Events-In-AngularJS.htm
-    $timeout.cancel(itemsSynchronizeTimer);
+    $timeout.cancel(synchronizeItemsTimer);
   });
 
   $scope.gotoInbox = function() {
