@@ -4,7 +4,7 @@
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection. 
-function MainController($scope, $location, $window, UserSessionService, ItemsService, ListsService, TagsService, TasksService, NotesService, FilterService, SwiperService, TasksSlidesService, NotesSlidesService) {
+function MainController($scope, $location, $timeout, $window, UserSessionService, ItemsService, ListsService, TagsService, TasksService, NotesService, FilterService, SwiperService, TasksSlidesService, NotesSlidesService) {
   $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
   $scope.notes = NotesService.getNotes(UserSessionService.getActiveUUID());
@@ -13,18 +13,41 @@ function MainController($scope, $location, $window, UserSessionService, ItemsSer
   $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
 
+  var itemsSynchronizeTimer;
   var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
-  // var itemsSynchronizing;
-  synchronizeItems();
-  angular.element($window).bind('focus', synchronizeItems);
+  itemsSynchronize();
+  angular.element($window).bind('focus', itemsSynchronize);
 
-  // synchronize items if not already synchronizing and interval reached
-  function synchronizeItems() {
-    var itemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(UserSessionService.getActiveUUID());
-    if (isNaN(itemsSynchronized) || itemsSynchronized > itemsSynchronizedThreshold) {
-      ItemsService.synchronize(UserSessionService.getActiveUUID());
+  // https://developer.mozilla.org/en/docs/Web/API/window.setInterval
+  (function itemsSynchronizeLoop() {
+    itemsSynchronizeTimer = $timeout(function() {
+      itemsSynchronize();
+      itemsSynchronizeLoop();
+    }, itemsSynchronizedThreshold);
+  })();
+
+  // Synchronize items if not already synchronizing and interval reached
+  function itemsSynchronize() {
+    if (!UserSessionService.isItemsSynchronizing(UserSessionService.getActiveUUID())) {
+      var itemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(UserSessionService.getActiveUUID());
+      
+      if (isNaN(itemsSynchronized) || itemsSynchronized > itemsSynchronizedThreshold) {
+        UserSessionService.setItemsSynchronizing(UserSessionService.getActiveUUID());
+
+        ItemsService.synchronize(UserSessionService.getActiveUUID()).then(function() {
+          UserSessionService.setItemsSynchronized(UserSessionService.getActiveUUID());
+        }, function() {
+          // TODO Don't start timer and don't bind again.
+          angular.element($window).unbind('focus', itemsSynchronize);
+          $timeout.cancel(itemsSynchronizeTimer);
+        });
+      }
     }
   }
+  $scope.$on('$destroy', function() {
+    // http://www.bennadel.com/blog/2548-Don-t-Forget-To-Cancel-timeout-Timers-In-Your-destroy-Events-In-AngularJS.htm
+    $timeout.cancel(itemsSynchronizeTimer);
+  });
 
   $scope.gotoInbox = function() {
     if ($scope.feature === 'tasks') {
@@ -73,7 +96,9 @@ function MainController($scope, $location, $window, UserSessionService, ItemsSer
   };
 }
 
-MainController['$inject'] = ['$scope', '$location', '$window', 'UserSessionService', 'ItemsService',
-                             'ListsService', 'TagsService', 'TasksService', 'NotesService',
-                             'FilterService', 'SwiperService', 'TasksSlidesService', 'NotesSlidesService'];
+MainController['$inject'] = ['$scope', '$location', '$timeout', '$window',
+                             'UserSessionService', 'ItemsService', 'ListsService',
+                             'TagsService', 'TasksService', 'NotesService',
+                             'FilterService', 'SwiperService', 'TasksSlidesService', 'NotesSlidesService'
+                            ];
 angular.module('em.app').controller('MainController', MainController);

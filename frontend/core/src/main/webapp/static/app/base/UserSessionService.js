@@ -3,7 +3,7 @@
 function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorageService, SessionStorageService) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   var latestModified = {};
-  var itemsSynchronized = {};
+  var itemsSynchronize = {};
   var ownerPrefix = 'my'; // default owner
 
   function setOwnerPrefix(owner) {
@@ -107,8 +107,18 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
         latestModified[ownerUUID] = modified;
       }
     },
+    setItemsSynchronizing: function(ownerUUID) {
+      if (!itemsSynchronize[ownerUUID]) {
+        itemsSynchronize[ownerUUID] = {};
+      }
+      itemsSynchronize[ownerUUID].itemsSynchronizing = true;
+    },
     setItemsSynchronized: function(ownerUUID) {
-      itemsSynchronized[ownerUUID] = Date.now();
+      if (!itemsSynchronize[ownerUUID]) {
+        itemsSynchronize[ownerUUID] = {};
+      }
+      itemsSynchronize[ownerUUID].itemsSynchronizing = false;
+      itemsSynchronize[ownerUUID].itemsSynchronized = Date.now();
     },
 
     // Web storage getters
@@ -132,8 +142,13 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
     getLatestModified: function(ownerUUID) {
       return latestModified[ownerUUID];
     },
+    isItemsSynchronizing: function(ownerUUID) {
+      if (itemsSynchronize[ownerUUID]) {
+        return itemsSynchronize[ownerUUID].itemsSynchronizing;
+      }
+    },
     getItemsSynchronized: function(ownerUUID) {
-      return itemsSynchronized[ownerUUID];
+      return (itemsSynchronize[ownerUUID]) ? itemsSynchronize[ownerUUID].itemsSynchronized : undefined;
     }
   };
 }
