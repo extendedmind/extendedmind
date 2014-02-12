@@ -45,6 +45,7 @@ function MainController($scope, $location, $timeout, $window, UserSessionService
     }
   }
   $scope.$on('$destroy', function() {
+    angular.element($window).unbind('focus', itemsSynchronize);
     // http://www.bennadel.com/blog/2548-Don-t-Forget-To-Cancel-timeout-Timers-In-Your-destroy-Events-In-AngularJS.htm
     $timeout.cancel(itemsSynchronizeTimer);
   });
