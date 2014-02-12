@@ -28,7 +28,13 @@ cordova build ios
 cd platforms/ios
 
 # build xcode
-xcodebuild -scheme em -configuration "${CONFIGURATION_NAME}" clean build archive -archivePath "build/archive" CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" PROVISIONING_PROFILE="${PROVISIONING_UUID}" | grep -A 5 error
+xcodebuild -scheme em -configuration "${CONFIGURATION_NAME}" clean build archive -archivePath "build/archive" PROVISIONING_PROFILE="${PROVISIONING_UUID}" | grep -A 5 error
+
+# list all available identities
+/usr/bin/security find-identity -v -p codesigning
+
+# make signing again
+codesign -f --sign "iPhone Distribution: Extended Mind Technologies Oy (Z9X5PYT4CA)" "build/archive.xcarchive"
 
 # makedir
 rm -f build/package/release.ipa
