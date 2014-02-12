@@ -122,11 +122,6 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
     },
 
     // Web storage getters
-    getAuth: function() {
-      if (localStorage.getItem('expires') && sessionStorage.getItem('expires') !== localStorage.getItem('expires')) {
-        this.setUserSessionStorageData();
-      }
-    },
     getActiveUUID: function() {
       return SessionStorageService.getActiveUUID();
     },
