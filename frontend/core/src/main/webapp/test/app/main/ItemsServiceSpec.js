@@ -139,7 +139,7 @@ describe('ItemsService', function() {
                 'parent': '0da0bff6-3bd7-4884-adba-f47fab9f270d',
                 'tags': ['6350affa-1acf-4969-851a-9bf2b17806d6']
               }
-            }],  
+            }],
           'lists': [{
               'uuid': '0da0bff6-3bd7-4884-adba-f47fab9f270d',
               'modified': 1390912600957,
