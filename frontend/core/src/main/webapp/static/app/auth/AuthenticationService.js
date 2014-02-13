@@ -2,31 +2,6 @@
 
 function AuthenticationService($location, $q, BackendClientService, UserSessionService) {
 
-  function verifyAndUpdateAuthentication() {
-    var deferredAuthentication = $q.defer();
-
-    if (UserSessionService.isAuthenticated()) {
-      if (UserSessionService.isAuthenticateValid()) {
-        validateAuthentication();
-      } else {
-        if (UserSessionService.isAuthenticateReplaceable()) {
-          swapToken().then(validateAuthentication);
-        } else {
-          deferredAuthentication.reject();
-        }
-      }
-    } else {
-      deferredAuthentication.reject();
-    }
-    function validateAuthentication() {
-      deferredAuthentication.resolve();
-    }
-    deferredAuthentication.promise.then(null, function() {
-      $location.path('/login');
-    });
-    return deferredAuthentication.promise;
-  }
-
   function swapToken() {
     var remember = true;
     UserSessionService.setEncodedCredentialsFromLocalStorage();
@@ -45,7 +20,30 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
   var authenticateRegexp = /api\/authenticate/;
 
   return {
-    verifyAndUpdateAuthentication: verifyAndUpdateAuthentication,
+    verifyAndUpdateAuthentication: function() {
+      var deferredAuthentication = $q.defer();
+
+      if (UserSessionService.isAuthenticated()) {
+        if (UserSessionService.isAuthenticateValid()) {
+          validateAuthentication();
+        } else {
+          if (UserSessionService.isAuthenticateReplaceable()) {
+            swapToken().then(validateAuthentication);
+          } else {
+            deferredAuthentication.reject();
+          }
+        }
+      } else {
+        deferredAuthentication.reject();
+      }
+      function validateAuthentication() {
+        deferredAuthentication.resolve();
+      }
+      deferredAuthentication.promise.then(null, function() {
+        $location.path('/login');
+      });
+      return deferredAuthentication.promise;
+    },
     login: function(user) {
       var remember = user.remember || false;
       UserSessionService.setCredentials(user.username, user.password);
