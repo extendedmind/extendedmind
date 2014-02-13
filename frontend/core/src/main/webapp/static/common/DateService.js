@@ -37,7 +37,7 @@ angular.module('common').factory('DateService', [
 
       yyyy = date.getFullYear().toString();
       mm = (date.getMonth() + 1).toString(); // getMonth() is zero-based
-      dd  = date.getDate().toString();
+      dd = date.getDate().toString();
 
       return yyyy + '-' + (mm[1] ? mm : '0' + mm[0]) + '-' + (dd[1] ? dd : '0' + dd[0]); // padding
     }
@@ -77,7 +77,7 @@ angular.module('common').factory('DateService', [
     }
 
     function getWeekWithOffset(offsetDays) {
-      var activeMonday = new Date(activeWeek[0].yyyymmdd);
+      var activeMonday = (activeWeek) ? new Date(activeWeek[0].yyyymmdd) : getFirstDayOfTheWeek(new Date());
       activeMonday.setDate(activeMonday.getDate() + offsetDays);
 
       return weekDaysStartingFrom(activeMonday);
@@ -98,12 +98,14 @@ angular.module('common').factory('DateService', [
         return getWeekWithOffset(daysFromActiveWeekToPrevious);
       },
       getMondayDateString: function() {
-        return activeWeek[0].yyyymmdd;
+        return (activeWeek) ? activeWeek[0].yyyymmdd : yyyymmdd(getFirstDayOfTheWeek(new Date()));
       },
       getTodayDateString: function() {
-        for (var i = 0, len = activeWeek.length; i < len; i++) {
-          if (activeWeek[i].yyyymmdd === today.yyyymmdd) {
-            return activeWeek[i].yyyymmdd;
+        if (activeWeek) {
+          for (var i = 0, len = activeWeek.length; i < len; i++) {
+            if (activeWeek[i].yyyymmdd === today.yyyymmdd) {
+              return activeWeek[i].yyyymmdd;
+            }
           }
         }
       },
