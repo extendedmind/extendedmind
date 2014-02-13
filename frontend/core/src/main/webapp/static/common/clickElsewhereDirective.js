@@ -22,5 +22,5 @@ function clickElsewhereDirective($document) {
     }
   };
 }
+clickElsewhereDirective['$inject'] = ['$document'];
 angular.module('common').directive('clickElsewhere', clickElsewhereDirective);
-clickElsewhereDirective.$inject = ['$document'];

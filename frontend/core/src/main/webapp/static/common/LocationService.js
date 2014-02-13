@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function LocationService($location, $rootScope, $route) {
@@ -15,5 +14,5 @@ function LocationService($location, $rootScope, $route) {
   };
   return $location;
 }
+LocationService['$inject'] = ['$location', '$rootScope', '$route'];
 angular.module('common').factory('LocationService', LocationService);
-LocationService.$inject = ['$location', '$rootScope', '$route'];
