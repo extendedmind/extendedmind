@@ -9,5 +9,5 @@ function AccountController($location, $scope, AccountService, ErrorHandlerServic
   });
 }
 
-AccountController.$inject = ['$location', '$scope', 'AccountService', 'ErrorHandlerService'];
+AccountController['$inject'] = ['$location', '$scope', 'AccountService', 'ErrorHandlerService'];
 angular.module('em.app').controller('AccountController', AccountController);
