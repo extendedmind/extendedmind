@@ -25,7 +25,9 @@ function LocalStorageService() {
 
     // getters
     getCollectives: function() {
-      return JSON.parse(localStorage.getItem('collectives'));
+      if (localStorage.getItem('collectives')) {
+        return JSON.parse(localStorage.getItem('collectives'));
+      }
     },
     getExpires: function() {
       return localStorage.getItem('expires');
