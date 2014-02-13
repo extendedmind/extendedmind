@@ -2,18 +2,23 @@
 
 function AuthenticationService($location, $q, BackendClientService, UserSessionService) {
 
-  function swapToken() {
+  function swapTokenAndAuthenticate() {
+    var deferred = $q.defer();
     var remember = true;
     UserSessionService.setEncodedCredentialsFromLocalStorage();
 
-    return requestLogin(remember);
+    authenticate(remember).then(function(authenticateResponse) {
+      UserSessionService.setAuthenticateInformation(authenticateResponse);
+      deferred.resolve();
+    });
+    return deferred.promise;
   }
 
-  function requestLogin(remember) {
+  function authenticate(remember) {
     return BackendClientService.post('/api/authenticate', authenticateRegexp, {
       rememberMe: remember
     }).then(function(authenticateResponse) {
-      UserSessionService.setAuthenticateInformation(authenticateResponse.data);
+      return authenticateResponse.data;
     });
   }
 
@@ -28,7 +33,7 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
           validateAuthentication();
         } else {
           if (UserSessionService.isAuthenticateReplaceable()) {
-            swapToken().then(validateAuthentication);
+            swapTokenAndAuthenticate().then(validateAuthentication);
           } else {
             deferredAuthentication.reject();
           }
@@ -48,7 +53,9 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
       var remember = user.remember || false;
       UserSessionService.setCredentials(user.username, user.password);
 
-      return requestLogin(remember);
+      return authenticate(remember).then(function(authenticateResponse) {
+        UserSessionService.setAuthenticateInformation(authenticateResponse);
+      });
     },
     logout: function() {
       return BackendClientService.post('/api/logout', this.logoutRegex).then(function(logoutResponse) {
