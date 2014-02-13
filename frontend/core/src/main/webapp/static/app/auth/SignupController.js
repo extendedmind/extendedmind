@@ -1,4 +1,3 @@
-/*global angular */
 'use strict';
 
 function SignupController($location, $scope, $routeParams, AuthenticationService, ErrorHandlerService) {
@@ -33,5 +32,5 @@ function SignupController($location, $scope, $routeParams, AuthenticationService
   }
 }
 
-SignupController.$inject = ['$location', '$scope', '$routeParams', 'AuthenticationService', 'ErrorHandlerService'];
+SignupController['$inject'] = ['$location', '$scope', '$routeParams', 'AuthenticationService', 'ErrorHandlerService'];
 angular.module('em.app').controller('SignupController', SignupController);
