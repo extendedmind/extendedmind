@@ -1,4 +1,3 @@
-/*global beforeEach, getJSONFixture, module, inject, describe, afterEach, it, expect */
 'use strict';
 
 describe('AccountService', function() {
@@ -36,8 +35,7 @@ describe('AccountService', function() {
 
   it('should get account', function () {
     var email;
-    $httpBackend.expectGET('/api/account')
-       .respond(200, accountResponse);
+    $httpBackend.expectGET('/api/account').respond(200, accountResponse);
     AccountService.getAccount().then(function(authenticateResponse) {
       email = authenticateResponse.email;
     });
