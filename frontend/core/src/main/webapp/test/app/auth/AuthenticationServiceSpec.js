@@ -4,7 +4,7 @@ describe('AuthenticationService', function() {
 
   // INJECTS 
 
-  var $httpBackend, $q;
+  var $httpBackend, $location, $q;
   var AuthenticationService, BackendClientService, HttpBasicAuthenticationService, HttpClientService;
 
   // MOCKS
@@ -72,8 +72,9 @@ describe('AuthenticationService', function() {
       $provide.value('ItemsService', MockItemsService);
     });
 
-    inject(function (_$httpBackend_, _$q_, _AuthenticationService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_) {
+    inject(function (_$httpBackend_, _$location_, _$q_, _AuthenticationService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_) {
       $httpBackend = _$httpBackend_;
+      $location = _$location_;
       $q = _$q_;
       AuthenticationService = _AuthenticationService_;
       BackendClientService = _BackendClientService_;
@@ -176,8 +177,10 @@ describe('AuthenticationService', function() {
     MockUserSessionService.setIsAuthenticateValid(false);
     MockUserSessionService.setIsAuthenticateReplaceable(false);
 
+    expect($location.path()).toEqual('/');
     verifyAndUpdateAuthenticationPromise().then(function(promise) {
       expect(promise).toEqual(false);
+      expect($location.path()).toEqual('/login');
     });
   });
 
@@ -186,8 +189,10 @@ describe('AuthenticationService', function() {
     MockUserSessionService.setIsAuthenticateValid(false);
     MockUserSessionService.setIsAuthenticateReplaceable(false);
 
+    expect($location.path()).toEqual('/');
     verifyAndUpdateAuthenticationPromise().then(function(promise) {
       expect(promise).toEqual(false);
+      expect($location.path()).toEqual('/login');
     });
   });
 });
