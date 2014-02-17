@@ -8,8 +8,8 @@ describe('DatesController', function() {
     module('em.appTest');
     module('common');
 
-    inject(function($controller, _$rootScope_, _DateService_) {
-      $scope = _$rootScope_.$new();
+    inject(function($controller, $rootScope, _DateService_) {
+      $scope = $rootScope.$new();
       DatesController = $controller('DatesController', {
         $scope: $scope
       });

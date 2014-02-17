@@ -6,8 +6,8 @@ describe('MainController', function() {
 	beforeEach(function() {
 		module('em.appTest');
 
-		inject(function($controller, _$rootScope_) {
-			$scope = _$rootScope_.new();
+		inject(function($controller, $rootScope) {
+			$scope = $rootScope.$new();
 			MainController = $controller('MainController', {
 				$scope: $scope
 			});
