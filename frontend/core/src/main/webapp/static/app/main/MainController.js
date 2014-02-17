@@ -14,38 +14,57 @@ function MainController($scope, $location, $timeout, $window, UserSessionService
   $scope.filterService = FilterService;
 
   var synchronizeItemsTimer;
-  var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
-  synchronizeItems();
-  angular.element($window).bind('focus', synchronizeItems);
+  var synchronizeItemsDelay = 1000 * 1000;
+  var itemsSynchronizedThreshold = 1 * 1000; // 10 seconds in milliseconds
+  var bindToFocus = (typeof bindToFocusEvent !== 'undefined') ? bindToFocusEvent: true;
+  synchronizeItemsAndSynchronizeItemsDelayed();
+
+  // Use bindToFocus to check is the app running in browser (true) or in PhoneGap (false).
+  // Attach synchronize handler to focus and start synchronize interval or just start synchronize interval. 
+  if (bindToFocus) {
+    angular.element($window).bind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
+    angular.element($window).bind('blur', cancelSynchronizeItemsDelayed);
+  } else {
+    synchronizeItemsDelayed();
+  }
+
+  function synchronizeItemsAndSynchronizeItemsDelayed() {
+    synchronizeItems();
+    synchronizeItemsDelayed();
+  }
+  function cancelSynchronizeItemsDelayed() {
+    $timeout.cancel(synchronizeItemsTimer);
+  }
 
   // https://developer.mozilla.org/en/docs/Web/API/window.setInterval
-  (function synchronizeItemsLoop() {
+  function synchronizeItemsDelayed() {
     synchronizeItemsTimer = $timeout(function() {
       synchronizeItems();
-      synchronizeItemsLoop();
-    }, itemsSynchronizedThreshold);
-  })();
+      synchronizeItemsDelayed();
+    }, synchronizeItemsDelay);
+  }
 
-  // Synchronize items if not already synchronizing and interval reached
+  // Synchronize items if not already synchronizing and interval reached.
   function synchronizeItems() {
-    if (!UserSessionService.isItemsSynchronizing(UserSessionService.getActiveUUID())) {
-      var itemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(UserSessionService.getActiveUUID());
+    var activeUUID = UserSessionService.getActiveUUID();
+    if (!UserSessionService.isItemsSynchronizing(activeUUID)) {
+      var itemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
       
       if (isNaN(itemsSynchronized) || itemsSynchronized > itemsSynchronizedThreshold) {
-        UserSessionService.setItemsSynchronizing(UserSessionService.getActiveUUID());
-
-        ItemsService.synchronize(UserSessionService.getActiveUUID()).then(function() {
-          UserSessionService.setItemsSynchronized(UserSessionService.getActiveUUID());
-        }, function() {
-          // TODO Don't start timer and don't bind again.
-          angular.element($window).unbind('focus', synchronizeItems);
-          $timeout.cancel(synchronizeItemsTimer);
+        UserSessionService.setItemsSynchronizing(activeUUID);
+        ItemsService.synchronize(activeUUID).then(function() {
+          UserSessionService.setItemsSynchronized(activeUUID);
         });
       }
     }
   }
+
+  // Unbind window focus/blur events and stop timer and remove synchronize handler functions.
   $scope.$on('$destroy', function() {
-    angular.element($window).unbind('focus', synchronizeItems);
+    if (bindToFocus) {
+      angular.element($window).unbind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
+      angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
+    }
     // http://www.bennadel.com/blog/2548-Don-t-Forget-To-Cancel-timeout-Timers-In-Your-destroy-Events-In-AngularJS.htm
     $timeout.cancel(synchronizeItemsTimer);
   });
@@ -98,8 +117,8 @@ function MainController($scope, $location, $timeout, $window, UserSessionService
 }
 
 MainController['$inject'] = ['$scope', '$location', '$timeout', '$window',
-                             'UserSessionService', 'ItemsService', 'ListsService',
-                             'TagsService', 'TasksService', 'NotesService',
-                             'FilterService', 'SwiperService', 'TasksSlidesService', 'NotesSlidesService'
-                            ];
+'UserSessionService', 'ItemsService', 'ListsService',
+'TagsService', 'TasksService', 'NotesService',
+'FilterService', 'SwiperService', 'TasksSlidesService', 'NotesSlidesService'
+];
 angular.module('em.app').controller('MainController', MainController);
