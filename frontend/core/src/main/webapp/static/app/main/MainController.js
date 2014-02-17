@@ -14,8 +14,8 @@ function MainController($scope, $location, $timeout, $window, UserSessionService
   $scope.filterService = FilterService;
 
   var synchronizeItemsTimer;
-  var synchronizeItemsDelay = 1000 * 1000;
-  var itemsSynchronizedThreshold = 1 * 1000; // 10 seconds in milliseconds
+  var synchronizeItemsDelay = 12 * 1000;
+  var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
   var bindToFocus = (typeof bindToFocusEvent !== 'undefined') ? bindToFocusEvent: true;
   synchronizeItemsAndSynchronizeItemsDelayed();
 
