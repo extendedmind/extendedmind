@@ -160,13 +160,15 @@ describe('AuthenticationService', function() {
     MockUserSessionService.setIsAuthenticateValid(false);
     MockUserSessionService.setIsAuthenticateReplaceable(true);
 
+    spyOn(MockUserSessionService, 'setAuthenticateInformation');
+
+    $httpBackend.expectPOST('/api/authenticate').respond(200, authenticateResponse);
     verifyAndUpdateAuthenticationPromise().then(function(promise) {
       expect(promise).toEqual(true);
     });
-    // Luckily this passes.
-
-    $httpBackend.expectPOST('/api/authenticate').respond(200, authenticateResponse);
     $httpBackend.flush();
+
+    expect(MockUserSessionService.setAuthenticateInformation).toHaveBeenCalledWith(authenticateResponse);
   });
 
   it('should not verify and update authentication with not valid authentication', function() {
