@@ -24,8 +24,6 @@ function MainController($scope, $location, $timeout, $window, UserSessionService
   if (bindToFocus) {
     angular.element($window).bind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
     angular.element($window).bind('blur', cancelSynchronizeItemsDelayed);
-  } else {
-    synchronizeItemsDelayed();
   }
 
   function synchronizeItemsAndSynchronizeItemsDelayed() {
@@ -61,12 +59,13 @@ function MainController($scope, $location, $timeout, $window, UserSessionService
 
   // Unbind window focus/blur events and stop timer and remove synchronize handler functions.
   $scope.$on('$destroy', function() {
+    // http://www.bennadel.com/blog/2548-Don-t-Forget-To-Cancel-timeout-Timers-In-Your-destroy-Events-In-AngularJS.htm
+    $timeout.cancel(synchronizeItemsTimer);
+
     if (bindToFocus) {
       angular.element($window).unbind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
       angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
     }
-    // http://www.bennadel.com/blog/2548-Don-t-Forget-To-Cancel-timeout-Timers-In-Your-destroy-Events-In-AngularJS.htm
-    $timeout.cancel(synchronizeItemsTimer);
   });
 
   $scope.gotoInbox = function() {
@@ -117,8 +116,8 @@ function MainController($scope, $location, $timeout, $window, UserSessionService
 }
 
 MainController['$inject'] = ['$scope', '$location', '$timeout', '$window',
-'UserSessionService', 'ItemsService', 'ListsService',
-'TagsService', 'TasksService', 'NotesService',
-'FilterService', 'SwiperService', 'TasksSlidesService', 'NotesSlidesService'
+                             'UserSessionService', 'ItemsService', 'ListsService',
+                             'TagsService', 'TasksService', 'NotesService',
+                             'FilterService', 'SwiperService', 'TasksSlidesService', 'NotesSlidesService'
 ];
 angular.module('em.app').controller('MainController', MainController);
