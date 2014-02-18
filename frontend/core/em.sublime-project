@@ -5,6 +5,10 @@
             "path": "./",
             "folder_exclude_patterns": ["target", ".*"],
             "file_exclude_patterns": [".*"]
+        },
+        {
+            "path": "../phonegap",
+            "file_exclude_patterns": [".*"]
         }
     ],
     "settings":
