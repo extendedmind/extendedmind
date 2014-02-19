@@ -22,7 +22,7 @@ object TestGraphDatabase {
   val LAURI_EMAIL: String = "lauri@ext.md"
   val LAURI_PASSWORD: String = "lauripwd"
   val JP_EMAIL: String = "jp@ext.md"
-  val JP_PASSWORD: String = "jppwd"
+  val JP_PASSWORD: String = "jiipeepwd"
   val INFO_EMAIL: String = "info@ext.md"
   val INFO_PASSWORD: String = "infopwd"
 }
