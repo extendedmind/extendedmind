@@ -1,16 +1,21 @@
 'use strict';
 
-function mainView() {
+function mainViewDirective($rootScope) {
   return {
     restrict: 'A',
     replace: 'true',
     templateUrl: 'static/app/auth/main.html',
-    link: function($scope) {
-      $scope.showFailureModal = false;
-      $scope.showTipModal = false;
+    controller: function($scope) {
+      // Listen to exceptions emitted to rootscope
+      var unbindEmException = $rootScope.$on('emException', function(exception) {
+        // TODO: Use modals here
+        console.log(exception);
+      });
 
-      // TODO: Add functions to change scope values 
+      // Clean up listening by executing the variable
+      $scope.$on('$destroy', unbindEmException);
     }
   };
 }
-angular.module('em.directives').directive('mainView', mainView);
+mainViewDirective['$inject'] = ['$rootScope'];
+angular.module('em.directives').directive('mainView', mainViewDirective);

@@ -5,24 +5,28 @@
         <span class="icon-logo_with_text"></span>
       </div>
       <div class="content">
-        <div error-alert-bar alertmessage="errorHandler.errorMessage"></div>
         <form role="form" id="signupForm" name="signupForm">
           <div id="email" class="form-group">
-            <label for="input-email" class="sr-only">email</label>
-            <input type="email" class="simple-input" id="input-email" ng-model="user.username" readonly placeholder="enter email..." required />
+            <label for="email" class="sr-only">email</label>
+            <input type="email" name="email" class="simple-input" id="input-email" ng-model="user.username" readonly placeholder="enter email..." ng-blur="emailAttempted=true" required />
+            <p ng-show="signupForm.email.$invalid && !signupForm.email.$pristine && emailAttempted" class="validation-error">Not a valid email address</p>            
           </div>
           <div id="password" class="form-group">
-            <label for="input-password" class="sr-only">password</label>
-            <input type="password" class="form-control simple-input" id="input-password" ng-model="user.password" placeholder="enter password..." required ng-minlength="7" />
+            <label for="password" class="sr-only">password</label>
+            <input type="password" name="password" class="form-control simple-input" id="input-password" ng-model="user.password" placeholder="enter password..." ng-blur="passwordAttempted=true" required ng-minlength="7" />
+            <p ng-show="signupForm.password.$invalid && !signupForm.password.$pristine && passwordAttempted" class="validation-error">Password must be 7 characters or more</p>
           </div>
-          <div id="password" class="form-group">
-            <label for="input-password" class="sr-only">password</label>
-            <input type="password" class="form-control simple-input" id="input-password-again" ng-model="user.reEnteredPassword" placeholder="re-enter password..." password-match="user.password" required ng-minlength="7"/>
+          <div id="passwordReEnter" class="form-group">
+            <label for="passwordReEnter" class="sr-only">password again</label>
+            <input type="password" name="passwordReEnter" class="form-control simple-input" id="input-password-again" ng-model="user.reEnteredPassword" ng-blur="reEnterAttempted=true" placeholder="re-enter password..." password-match="user.password"  required ng-minlength="7"/>
+            <p ng-show="signupForm.passwordReEnter.$invalid && !signupForm.passwordReEnter.$pristine && reEnterAttempted" class="validation-error">Passwords don't match</p>
           </div>
           <div class="form-group button-container">
             <button type="submit" id="login-button" class="wide-button normal-button" ng-disabled="!signupForm.$valid" ng-click="signUp()">
               <span class="button-text">signup</span>
             </button>
+            <p ng-show="signupFailed" class="validation-error">Could not sign up, please try again later</p>
+            <p ng-show="loginFailed" class="validation-error">Could not login with new signup, please try to login later</p>
           </div>
         </form>
       </div>

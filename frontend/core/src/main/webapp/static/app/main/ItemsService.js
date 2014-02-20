@@ -16,6 +16,16 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
     }
   }
 
+  // Register callbacks to BackendClientService 
+  var synchronizeCallback = function(request, response) {
+    console.log("synchronizeCallback");
+  }
+  var defaultCallback = function(request, response) {
+    console.log("defaultCallback");
+  }
+  BackendClientService.registerSecondaryGetCallback(synchronizeCallback)
+  BackendClientService.registerDefaultCallback(defaultCallback);
+
   return {
     // Main method to synchronize all arrays with backend.
     synchronize: function(ownerUUID) {

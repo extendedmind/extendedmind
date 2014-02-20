@@ -1,9 +1,8 @@
 'use strict';
 
-function PageNotFoundController($scope, ErrorHandlerService, UserSessionService) {
-	$scope.errorHandler = ErrorHandlerService;
+function PageNotFoundController($scope, UserSessionService) {
 	$scope.ownerPrefix = UserSessionService.getOwnerPrefix();
 }
 
-PageNotFoundController['$inject'] = ['$scope', 'ErrorHandlerService', 'UserSessionService'];
+PageNotFoundController['$inject'] = ['$scope', 'UserSessionService'];
 angular.module('em.app').controller('PageNotFoundController', PageNotFoundController);

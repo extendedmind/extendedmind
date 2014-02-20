@@ -1,11 +1,9 @@
 'use strict';
 
-function SignupController($location, $scope, $routeParams, AuthenticationService, ErrorHandlerService) {
+function SignupController($location, $scope, $routeParams, AuthenticationService) {
 
   $scope.user = {};
   var inviteResponseCode = $routeParams.hex_code;
-
-  $scope.errorHandler = ErrorHandlerService;
 
   AuthenticationService.getInvite(inviteResponseCode, $routeParams.email).then(function(inviteResponse) {
     if (inviteResponse.data.accepted) {
@@ -16,9 +14,14 @@ function SignupController($location, $scope, $routeParams, AuthenticationService
   });
 
   $scope.signUp = function() {
-    AuthenticationService.signUp(inviteResponseCode, {email: $scope.user.username, password: $scope.user.password}).then(function() {
-      userLogin();
-    });
+    $scope.signupFailed = false;
+    $scope.loginFailed = false;
+    AuthenticationService.signUp(inviteResponseCode, {email: $scope.user.username, password: $scope.user.password}).
+      then(function() {
+        userLogin();
+      }, function(signupResponse) {
+        $scope.signupFailed = true;
+      });
   };
 
   function userLogin() {
@@ -27,10 +30,10 @@ function SignupController($location, $scope, $routeParams, AuthenticationService
       $location.url($location.path());
       $location.path('/my/tasks');
     }, function(authenticateResponse) {
-      $scope.errorHandler.errorMessage = authenticateResponse.data;
+      $scope.loginFailed = true;
     });
   }
 }
 
-SignupController['$inject'] = ['$location', '$scope', '$routeParams', 'AuthenticationService', 'ErrorHandlerService'];
+SignupController['$inject'] = ['$location', '$scope', '$routeParams', 'AuthenticationService'];
 angular.module('em.app').controller('SignupController', SignupController);

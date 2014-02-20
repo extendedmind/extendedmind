@@ -1,6 +1,6 @@
 'use strict';
 
-function BackendClientService(HttpClientService, HttpBasicAuthenticationService, UserSessionService, ErrorHandlerService) {
+function BackendClientService($rootScope, HttpClientService, HttpBasicAuthenticationService, UserSessionService) {
   var methods = {};
 
   function getUrlPrefix() {
@@ -19,12 +19,25 @@ function BackendClientService(HttpClientService, HttpBasicAuthenticationService,
     }
   }
 
+  function emitRegexException(regex, method, url){
+    $rootScope.$emit('emException', {type: 'regex', regex: regex, method: method, url: url});
+  }
+
   methods.get = function(url, regex) {
     refreshCredentials();
     if (regex.test(url)){
       return HttpClientService.get(getUrlPrefix() + url);
     }else {
-      ErrorHandlerService.setError('GET to URL ' + url + ' did not match pattern ' + regex);
+      emitRegexException(regex, 'get', url);
+    }
+  };
+
+  methods.getSecondary = function(url, regex) {
+    refreshCredentials();
+    if (regex.test(url)){
+      return HttpClientService.getSecondary(getUrlPrefix() + url);
+    }else {
+      emitRegexException(regex, 'get', url);
     }
   };
 
@@ -33,7 +46,7 @@ function BackendClientService(HttpClientService, HttpBasicAuthenticationService,
     if (regex.test(url)){
       return HttpClientService.delete(getUrlPrefix() + url);
     }else {
-      ErrorHandlerService.setError('DELETE to URL ' + url + ' did not match pattern ' + regex);
+      emitRegexException(regex, 'delete', url);
     }
   };
 
@@ -42,7 +55,25 @@ function BackendClientService(HttpClientService, HttpBasicAuthenticationService,
     if (regex.test(url)){
       return HttpClientService.put(getUrlPrefix() + url, data);
     }else {
-      ErrorHandlerService.setError('PUT to URL ' + url + ' did not match pattern ' + regex);
+      emitRegexException(regex, 'put', url);
+    }
+  };
+
+  methods.postPrimary = function(url, regex, data) {
+    refreshCredentials();
+    if (regex.test(url)){
+      return HttpClientService.postPrimary(getUrlPrefix() + url, data);
+    }else {
+      emitRegexException(regex, 'post', url);
+    }
+  };
+
+  methods.postOnline = function(url, regex, data) {
+    refreshCredentials();
+    if (regex.test(url)){
+      return HttpClientService.postOnline(getUrlPrefix() + url, data);
+    }else {
+      emitRegexException(regex, 'post', url);
     }
   };
 
@@ -51,12 +82,23 @@ function BackendClientService(HttpClientService, HttpBasicAuthenticationService,
     if (regex.test(url)){
       return HttpClientService.post(getUrlPrefix() + url, data);
     }else {
-      ErrorHandlerService.setError('POST to URL ' + url + ' did not match pattern ' + regex);
+      emitRegexException(regex, 'post', url);
     }
   };
+
+  // Callback registration
+  methods.registerPrimaryPostCallback = function(callback){
+    HttpClientService.registerCallback('primary', callback);
+  }
+  methods.registerSecondaryGetCallback = function(callback){
+    HttpClientService.registerCallback('secondary', callback);
+  }
+  methods.registerDefaultCallback = function(callback){
+    HttpClientService.registerCallback('default', callback);
+  }
 
   return methods;
 }
 
-BackendClientService['$inject'] = ['HttpClientService', 'HttpBasicAuthenticationService', 'UserSessionService', 'ErrorHandlerService'];
+BackendClientService['$inject'] = ['$rootScope', 'HttpClientService', 'HttpBasicAuthenticationService', 'UserSessionService'];
 angular.module('em.services').factory('BackendClientService', BackendClientService);

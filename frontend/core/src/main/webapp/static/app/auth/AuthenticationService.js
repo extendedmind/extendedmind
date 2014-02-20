@@ -1,23 +1,25 @@
 'use strict';
 
 function AuthenticationService($location, $q, BackendClientService, UserSessionService) {
+  
+  // Register swapTokenCallback to backend
+  var swapTokenCallback = function(request, authenticateResponse) {
+    UserSessionService.setAuthenticateInformation(authenticateResponse);
+  }
+  BackendClientService.registerPrimaryPostCallback(swapTokenCallback);
 
   function swapTokenAndAuthenticate() {
-    var deferred = $q.defer();
-    var remember = true;
     UserSessionService.setEncodedCredentialsFromLocalStorage();
-
-    authenticate(remember).then(function(authenticateResponse) {
-      UserSessionService.setAuthenticateInformation(authenticateResponse);
-      deferred.resolve();
+    BackendClientService.post('/api/authenticate', authenticateRegexp, {
+      rememberMe: true
     });
-    return deferred.promise;
   }
 
   function authenticate(remember) {
-    return BackendClientService.post('/api/authenticate', authenticateRegexp, {
+    var authenticateRequest = BackendClientService.postOnline('/api/authenticate', authenticateRegexp, {
       rememberMe: remember
-    }).then(function(authenticateResponse) {
+    });
+    return authenticateRequest.then(function(authenticateResponse) {
       return authenticateResponse.data;
     });
   }
@@ -33,7 +35,10 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
           validateAuthentication();
         } else {
           if (UserSessionService.isAuthenticateReplaceable()) {
-            swapTokenAndAuthenticate().then(validateAuthentication);
+            // Push token swap to be the first thing that is done
+            // when online connection is up
+            swapTokenAndAuthenticate();
+            deferredAuthentication.resolve();
           } else {
             deferredAuthentication.reject();
           }
@@ -41,9 +46,7 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
       } else {
         deferredAuthentication.reject();
       }
-      function validateAuthentication() {
-        deferredAuthentication.resolve();
-      }
+
       deferredAuthentication.promise.then(null, function() {
         $location.path('/login');
       });
@@ -52,13 +55,12 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
     login: function(user) {
       var remember = user.remember || false;
       UserSessionService.setCredentials(user.username, user.password);
-
       return authenticate(remember).then(function(authenticateResponse) {
         UserSessionService.setAuthenticateInformation(authenticateResponse);
       });
     },
     logout: function() {
-      return BackendClientService.post('/api/logout', this.logoutRegex).then(function(logoutResponse) {
+      return BackendClientService.postOnline('/api/logout', this.logoutRegex).then(function(logoutResponse) {
         UserSessionService.clearUser();
         return logoutResponse.data;
       });
@@ -68,7 +70,7 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
         this.getInviteRegex);
     },
     signUp: function(inviteResponseCode, data) {
-      return BackendClientService.post('/api/invite/' + inviteResponseCode + '/accept',
+      return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',
         this.acceptInviteRegex, data);
     },
     switchActiveUUID: function(uuid) {
