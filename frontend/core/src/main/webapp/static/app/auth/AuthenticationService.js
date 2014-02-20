@@ -1,3 +1,4 @@
+/* global angular */
 'use strict';
 
 function AuthenticationService($location, $q, BackendClientService, UserSessionService) {
@@ -5,14 +6,19 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
   // Register swapTokenCallback to backend
   var swapTokenCallback = function(request, authenticateResponse) {
     UserSessionService.setAuthenticateInformation(authenticateResponse);
-  }
+  };
   BackendClientService.registerPrimaryPostCallback(swapTokenCallback);
 
   function swapTokenAndAuthenticate() {
+    var deferred = $q.defer();
+    var remember = true;
     UserSessionService.setEncodedCredentialsFromLocalStorage();
-    BackendClientService.post('/api/authenticate', authenticateRegexp, {
-      rememberMe: true
+
+    authenticate(remember).then(function(authenticateResponse) {
+      UserSessionService.setAuthenticateInformation(authenticateResponse);
+      deferred.resolve();
     });
+    return deferred.promise;
   }
 
   function authenticate(remember) {
@@ -30,15 +36,27 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
     verifyAndUpdateAuthentication: function() {
       var deferredAuthentication = $q.defer();
 
+      function validateAuthentication() {
+        deferredAuthentication.resolve();
+      }
+
       if (UserSessionService.isAuthenticated()) {
         if (UserSessionService.isAuthenticateValid()) {
-          deferredAuthentication.resolve();
+          validateAuthentication();
         } else {
           if (UserSessionService.isAuthenticateReplaceable()) {
-            // Push token swap to be the first thing that is done
-            // when online connection is up
-            swapTokenAndAuthenticate();
-            deferredAuthentication.resolve();
+            if (UserSessionService.isOfflineEnabled()){
+              // Push token swap to be the first thing that is done
+              // when online connection is up
+              UserSessionService.setEncodedCredentialsFromLocalStorage();
+              BackendClientService.postPrimary('/api/authenticate', authenticateRegexp, {
+                rememberMe: true
+              });
+              validateAuthentication();
+            }else{
+              // Online
+              swapTokenAndAuthenticate().then(validateAuthentication);
+            }
           } else {
             deferredAuthentication.reject();
           }
@@ -85,5 +103,5 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
 
   };
 }
-AuthenticationService['$inject'] = ['$location', '$q', 'BackendClientService', 'UserSessionService'];
+AuthenticationService.$inject = ['$location', '$q', 'BackendClientService', 'UserSessionService'];
 angular.module('em.services').factory('AuthenticationService', AuthenticationService);

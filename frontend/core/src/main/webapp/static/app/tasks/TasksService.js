@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function TasksService($q, BackendClientService, ArrayService, ListsService, TagsService){
+function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendClientService, ArrayService, ListsService, TagsService){
   var tasks = {};
 
   var taskRegex = /\/task/;
@@ -103,7 +103,7 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
     }
   }
 
-  function addListToTasks(tasksResponse, ownerUUID){
+  function addListToTasks(tasksResponse){
     if (tasksResponse){
       for (var i=0, len=tasksResponse.length; i<len; i++) {
         if (tasksResponse[i].relationships && tasksResponse[i].relationships.parent){
@@ -145,7 +145,7 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
     }
   }
 
-  function moveListToParent(task, ownerUUID){
+  function moveListToParent(task){
     if (task.relationships && task.relationships.list){
       var list = task.relationships.list;
       task.relationships.parent = list;
@@ -159,7 +159,7 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
       initializeArrays(ownerUUID);
       cleanRecentlyCompletedTasks(ownerUUID);
       addContextToTasks(tasksResponse, ownerUUID);
-      addListToTasks(tasksResponse, ownerUUID);
+      addListToTasks(tasksResponse);
       return ArrayService.setArrays(
           tasksResponse,
           tasks[ownerUUID].activeTasks,
@@ -174,6 +174,21 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
           tasks[ownerUUID].activeTasks,
           tasks[ownerUUID].deletedTasks,
           getOtherArrays(ownerUUID));
+    },
+    updateTask: function(oldUuid, newUuid, newModified, ownerUUID) {
+      if (!ArrayService.updateItemUUIDAndModified(
+                oldUuid,
+                newUuid,
+                newModified,
+                tasks[ownerUUID].activeTasks,
+                tasks[ownerUUID].deletedTasks,
+                getOtherArrays(ownerUUID))){
+        $rootScope.$emit('emException',
+              {type: 'response',
+              response: {uuid: newUuid, modified: newModified},
+              description: 'Could not update task from with values from server'});
+        return;
+      }
     },
     getTasks: function(ownerUUID) {
       initializeArrays(ownerUUID);
@@ -194,10 +209,10 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
       var deferred = $q.defer();
       cleanRecentlyCompletedTasks(ownerUUID);
       var context = moveContextToTags(task, ownerUUID);
-      var list = moveListToParent(task, ownerUUID);
+      var list = moveListToParent(task);
       if (task.uuid){
         // Existing task
-        BackendClientService.put('/api/' + ownerUUID + '/task/' + task.uuid,
+        BackendClientService.putOnline('/api/' + ownerUUID + '/task/' + task.uuid,
                  this.putExistingTaskRegex, task).then(function(result) {
           if (result.data){
             task.modified = result.data.modified;
@@ -216,31 +231,50 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
         });
       }else{
         // New task
-        BackendClientService.put('/api/' + ownerUUID + '/task',
-                 this.putNewTaskRegex, task).then(function(result) {
-          if (result.data){
-            task.uuid = result.data.uuid;
-            task.modified = result.data.modified;
-            if (context){
-              task.relationships.context = context;
-            }
-            if (list){
-              task.relationships.list = list;
-            }
-            initializeArrays(ownerUUID);
-            ArrayService.setItem(task,
+        if (UserSessionService.isOfflineEnabled()){
+          // Push to offline queue with fake UUID
+          var fakeUUID = UUIDService.generateFakeUUID();
+          var params = {type: 'task', owner: ownerUUID, fakeUUID: fakeUUID};
+          BackendClientService.put('/api/' + params.owner + '/task',
+                   this.putNewTaskRegex, params, task);
+          task.uuid = fakeUUID;
+          // Use a fake modified that is far enough in the to make
+          // it to the end of the list
+          task.modified = (new Date()).getTime() + 1000000;
+          initializeArrays(ownerUUID);
+          ArrayService.setItem(task,
               tasks[ownerUUID].activeTasks,
               tasks[ownerUUID].deletedTasks,
               getOtherArrays(ownerUUID));
-            deferred.resolve(task);
-          }
-        });
+          deferred.resolve(task);
+        } else{
+          // Online
+          BackendClientService.putOnline('/api/' + ownerUUID + '/task',
+                 this.putNewTaskRegex, task).then(function(result) {
+            if (result.data){
+              task.uuid = result.data.uuid;
+              task.modified = result.data.modified;
+              if (context){
+                task.relationships.context = context;
+              }
+              if (list){
+                task.relationships.list = list;
+              }
+              initializeArrays(ownerUUID);
+              ArrayService.setItem(task,
+                tasks[ownerUUID].activeTasks,
+                tasks[ownerUUID].deletedTasks,
+                getOtherArrays(ownerUUID));
+              deferred.resolve(task);
+            }
+          });
+        }
       }
       return deferred.promise;
     },
     deleteTask: function(task, ownerUUID) {
       cleanRecentlyCompletedTasks(ownerUUID);
-      BackendClientService.delete('/api/' + ownerUUID + '/task/' + task.uuid,
+      BackendClientService.deleteOnline('/api/' + ownerUUID + '/task/' + task.uuid,
                this.deleteTaskRegex).then(function(result) {
         if (result.data){
           task.deleted = result.data.deleted;
@@ -253,7 +287,7 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
     },
     undeleteTask: function(task, ownerUUID) {
       cleanRecentlyCompletedTasks(ownerUUID);
-      BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
+      BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
                this.deleteTaskRegex).then(function(result) {
         if (result.data){
           delete task.deleted;
@@ -266,7 +300,7 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
     },
     completeTask: function(task, ownerUUID) {
       cleanRecentlyCompletedTasks(ownerUUID);
-      BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
+      BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
                this.completeTaskRegex).then(function(result) {
         if (result.data){
           task.completed = result.data.completed;
@@ -287,7 +321,7 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
       });
     },
     uncompleteTask: function(task, ownerUUID) {
-      BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
+      BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
                this.deleteTaskRegex).then(function(result) {
         if (result.data){
           delete task.completed;
@@ -347,5 +381,5 @@ function TasksService($q, BackendClientService, ArrayService, ListsService, Tags
   };
 }
   
-TasksService.$inject = ['$q', 'BackendClientService', 'ArrayService', 'ListsService', 'TagsService'];
+TasksService.$inject = ['$q', '$rootScope', 'UUIDService', 'UserSessionService', 'BackendClientService', 'ArrayService', 'ListsService', 'TagsService'];
 angular.module('em.services').factory('TasksService', TasksService);

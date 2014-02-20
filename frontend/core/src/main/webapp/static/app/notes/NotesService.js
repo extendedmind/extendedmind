@@ -112,7 +112,7 @@ function NotesService(BackendClientService, ArrayService, ListsService){
       var list = moveListToParent(note, ownerUUID);
       if (note.uuid){
         // Existing note
-        BackendClientService.put('/api/' + ownerUUID + '/note/' + note.uuid,
+        BackendClientService.putOnline('/api/' + ownerUUID + '/note/' + note.uuid,
                  this.putExistingNoteRegex, note).then(function(result) {
           if (result.data){
             note.modified = result.data.modified;
@@ -127,7 +127,7 @@ function NotesService(BackendClientService, ArrayService, ListsService){
         });
       }else{
         // New note
-        BackendClientService.put('/api/' + ownerUUID + '/note',
+        BackendClientService.putOnline('/api/' + ownerUUID + '/note',
                  this.putNewNoteRegex, note).then(function(result) {
           if (result.data){
             note.uuid = result.data.uuid;
@@ -145,7 +145,7 @@ function NotesService(BackendClientService, ArrayService, ListsService){
       }
     },
     deleteNote : function(note, ownerUUID) {
-      BackendClientService.delete('/api/' + ownerUUID + '/note/' + note.uuid,
+      BackendClientService.deleteOnline('/api/' + ownerUUID + '/note/' + note.uuid,
                this.deleteNoteRegex).then(function(result) {
         if (result.data){
           note.deleted = result.data.deleted;
@@ -158,7 +158,7 @@ function NotesService(BackendClientService, ArrayService, ListsService){
       });
     },
     undeleteNote : function(note, ownerUUID) {
-      BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/undelete',
+      BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.uuid + '/undelete',
                this.deleteNoteRegex).then(function(result) {
         if (result.data){
           delete note.deleted;

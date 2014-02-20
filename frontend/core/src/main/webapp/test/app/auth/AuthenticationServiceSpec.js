@@ -27,6 +27,9 @@ describe('AuthenticationService', function() {
     isAuthenticateReplaceable: function() {
       return this.authenticateReplaceable;
     },
+    isOfflineEnabled: function() {
+      return false;
+    },
     getCredentials: function () {
       return '123456789';
     },

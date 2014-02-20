@@ -37,6 +37,9 @@ describe('ItemsService', function() {
       },
       setLatestModified: function (modified) {
         this.latestModified = modified;
+      },
+      isOfflineEnabled: function () {
+        return false;
       }
     };
 

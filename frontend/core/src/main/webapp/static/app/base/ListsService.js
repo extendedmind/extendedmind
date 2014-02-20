@@ -58,7 +58,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       var deferred = $q.defer();
       if (list.uuid){
         // Existing list
-        BackendClientService.put('/api/' + ownerUUID + '/list/' + list.uuid,
+        BackendClientService.putOnline('/api/' + ownerUUID + '/list/' + list.uuid,
                  this.putExistingListRegex, list).then(function(result) {
           if (result.data){
             list.modified = result.data.modified;
@@ -73,7 +73,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
         });
       }else{
         // New list
-        BackendClientService.put('/api/' + ownerUUID + '/list',
+        BackendClientService.putOnline('/api/' + ownerUUID + '/list',
                  this.putNewListRegex, list).then(function(result) {
           if (result.data){
             list.uuid = result.data.uuid;
@@ -91,7 +91,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       return deferred.promise;
     },
     deleteList: function(list, ownerUUID) {
-      BackendClientService.delete('/api/' + ownerUUID + '/list/' + list.uuid,
+      BackendClientService.deleteOnline('/api/' + ownerUUID + '/list/' + list.uuid,
                this.deleteListRegex).then(function(result) {
         if (result.data){
           list.deleted = result.data.deleted;
@@ -105,7 +105,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       });
     },
     undeleteList: function(list, ownerUUID) {
-      BackendClientService.post('/api/' + ownerUUID + '/list/' + list.uuid + '/undelete',
+      BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/undelete',
                this.deleteListRegex).then(function(result) {
         if (result.data){
           delete list.deleted;
@@ -119,7 +119,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       });
     },
     archiveList: function(list, ownerUUID) {
-      BackendClientService.post('/api/' + ownerUUID + '/list/' + list.uuid + '/archive',
+      BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/archive',
                this.deleteListRegex).then(function(result) {
         if (result.data){
           list.archived = result.data.archived;

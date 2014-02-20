@@ -42,6 +42,11 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
         }
       }
     },
+    isOfflineEnabled: function() {
+      if (LocalStorageService.getReplaceable()) {
+        return true;
+      }
+    },
     clearUser: function() {
       SessionStorageService.clearUser();
       LocalStorageService.clearUser();

@@ -1,3 +1,4 @@
+/* global angular, urlPrefix */
 'use strict';
 
 function BackendClientService($rootScope, HttpClientService, HttpBasicAuthenticationService, UserSessionService) {
@@ -50,12 +51,30 @@ function BackendClientService($rootScope, HttpClientService, HttpBasicAuthentica
     }
   };
 
+  methods.deleteOnline = function(url, regex) {
+    refreshCredentials();
+    if (regex.test(url)){
+      return HttpClientService.deleteOnline(getUrlPrefix() + url);
+    }else {
+      emitRegexException(regex, 'delete', url);
+    }
+  };
+
   methods.put = function(url, regex, params, data) {
     refreshCredentials();
     if (regex.test(url)){
       return HttpClientService.put(getUrlPrefix() + url, params, data);
     }else {
       emitRegexException(regex, 'put', url);
+    }
+  };
+
+  methods.putOnline = function(url, regex, data) {
+    refreshCredentials();
+    if (regex.test(url)){
+      return HttpClientService.putOnline(getUrlPrefix() + url, data);
+    }else {
+      emitRegexException(regex, 'post', url);
     }
   };
 
@@ -89,19 +108,19 @@ function BackendClientService($rootScope, HttpClientService, HttpBasicAuthentica
   // Callback registration
   methods.registerPrimaryPostCallback = function(callback){
     HttpClientService.registerCallback('primary', callback);
-  }
+  };
   methods.registerSecondaryGetCallback = function(callback){
     HttpClientService.registerCallback('secondary', callback);
-  }
+  };
   methods.registerDefaultCallback = function(callback){
     HttpClientService.registerCallback('default', callback);
-  }
+  };
   methods.registerOnlineStatusCallback = function(callback){
     HttpClientService.registerCallback('online', callback);
-  }
+  };
 
   return methods;
 }
 
-BackendClientService['$inject'] = ['$rootScope', 'HttpClientService', 'HttpBasicAuthenticationService', 'UserSessionService'];
+BackendClientService.$inject = ['$rootScope', 'HttpClientService', 'HttpBasicAuthenticationService', 'UserSessionService'];
 angular.module('em.services').factory('BackendClientService', BackendClientService);

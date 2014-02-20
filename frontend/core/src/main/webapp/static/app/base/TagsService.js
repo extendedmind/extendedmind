@@ -44,7 +44,7 @@ function TagsService($q, BackendClientService, ArrayService){
       var deferred = $q.defer();      
       if (tag.uuid){
         // Existing tag
-        BackendClientService.put('/api/' + ownerUUID + '/tag/' + tag.uuid,
+        BackendClientService.putOnline('/api/' + ownerUUID + '/tag/' + tag.uuid,
                  this.putExistingTagRegex, tag).then(function(result) {
           if (result.data){
             tag.modified = result.data.modified;
@@ -58,7 +58,7 @@ function TagsService($q, BackendClientService, ArrayService){
         });
       }else{
         // New tag
-        BackendClientService.put('/api/' + ownerUUID + '/tag',
+        BackendClientService.putOnline('/api/' + ownerUUID + '/tag',
                  this.putNewTagRegex, tag).then(function(result) {
           if (result.data){
             tag.uuid = result.data.uuid;
@@ -75,7 +75,7 @@ function TagsService($q, BackendClientService, ArrayService){
       return deferred.promise;      
     },
     deleteTag : function(tag, ownerUUID) {
-      BackendClientService.delete('/api/' + ownerUUID + '/tag/' + tag.uuid,
+      BackendClientService.deleteOnline('/api/' + ownerUUID + '/tag/' + tag.uuid,
                this.deleteTagRegex).then(function(result) {
         if (result.data){
           tag.deleted = result.data.deleted;
@@ -88,7 +88,7 @@ function TagsService($q, BackendClientService, ArrayService){
       });
     },
     undeleteTag : function(tag, ownerUUID) {
-      BackendClientService.post('/api/' + ownerUUID + '/tag/' + tag.uuid + '/undelete',
+      BackendClientService.postOnline('/api/' + ownerUUID + '/tag/' + tag.uuid + '/undelete',
                this.deleteTagRegex).then(function(result) {
         if (result.data){
           delete tag.deleted;
