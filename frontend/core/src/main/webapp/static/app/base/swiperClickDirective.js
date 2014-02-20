@@ -24,11 +24,10 @@ function swiperClickDirective($parse, $rootScope) {
       var fn = $parse(attr.swiperClick);
       return function(scope, element) {
         element.on('click', function(event) {
-          if (!$rootScope.swiping) {
+          if (!$rootScope.outerSwiping && !$rootScope.innerSwiping && !$rootScope.scrolling) {
             scope.$apply(function() {
               fn(scope, {$event: event});
             });
-            $rootScope.swiping = false;
           }
         });
       };
