@@ -118,6 +118,7 @@ function MainController($scope, $location, $timeout, $window, UserSessionService
 MainController['$inject'] = ['$scope', '$location', '$timeout', '$window',
                              'UserSessionService', 'ItemsService', 'ListsService',
                              'TagsService', 'TasksService', 'NotesService',
-                             'FilterService', 'SwiperService', 'TasksSlidesService', 'NotesSlidesService'
-];
+                             'FilterService', 'SwiperService', 'TasksSlidesService',
+                             'NotesSlidesService'
+                            ];
 angular.module('em.app').controller('MainController', MainController);
