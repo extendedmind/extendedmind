@@ -32,7 +32,7 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
 
       if (UserSessionService.isAuthenticated()) {
         if (UserSessionService.isAuthenticateValid()) {
-          validateAuthentication();
+          deferredAuthentication.resolve();
         } else {
           if (UserSessionService.isAuthenticateReplaceable()) {
             // Push token swap to be the first thing that is done

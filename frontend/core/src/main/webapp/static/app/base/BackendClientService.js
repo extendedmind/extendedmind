@@ -41,19 +41,19 @@ function BackendClientService($rootScope, HttpClientService, HttpBasicAuthentica
     }
   };
 
-  methods.delete = function(url, regex) {
+  methods.delete = function(url, regex, params) {
     refreshCredentials();
     if (regex.test(url)){
-      return HttpClientService.delete(getUrlPrefix() + url);
+      return HttpClientService.delete(getUrlPrefix() + url, params);
     }else {
       emitRegexException(regex, 'delete', url);
     }
   };
 
-  methods.put = function(url, regex, data) {
+  methods.put = function(url, regex, params, data) {
     refreshCredentials();
     if (regex.test(url)){
-      return HttpClientService.put(getUrlPrefix() + url, data);
+      return HttpClientService.put(getUrlPrefix() + url, params, data);
     }else {
       emitRegexException(regex, 'put', url);
     }
@@ -77,10 +77,10 @@ function BackendClientService($rootScope, HttpClientService, HttpBasicAuthentica
     }
   };
 
-  methods.post = function(url, regex, data) {
+  methods.post = function(url, regex, params, data) {
     refreshCredentials();
     if (regex.test(url)){
-      return HttpClientService.post(getUrlPrefix() + url, data);
+      return HttpClientService.post(getUrlPrefix() + url, params, data);
     }else {
       emitRegexException(regex, 'post', url);
     }
@@ -95,6 +95,9 @@ function BackendClientService($rootScope, HttpClientService, HttpBasicAuthentica
   }
   methods.registerDefaultCallback = function(callback){
     HttpClientService.registerCallback('default', callback);
+  }
+  methods.registerOnlineStatusCallback = function(callback){
+    HttpClientService.registerCallback('online', callback);
   }
 
   return methods;

@@ -1,10 +1,15 @@
+/* global angular, bindToFocusEvent */
 'use strict';
 
 // Controller for all main slides
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection. 
-function MainController($scope, $location, $timeout, $window, UserSessionService, ItemsService, ListsService, TagsService, TasksService, NotesService, FilterService, SwiperService, TasksSlidesService, NotesSlidesService) {
+function MainController($scope, $location, $timeout, $window,
+                        UserSessionService, BackendClientService, ItemsService, ListsService,
+                        TagsService, TasksService, NotesService, FilterService, SwiperService,
+                        TasksSlidesService, NotesSlidesService) {
+  // Data arrays 
   $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
   $scope.notes = NotesService.getNotes(UserSessionService.getActiveUUID());
@@ -13,14 +18,26 @@ function MainController($scope, $location, $timeout, $window, UserSessionService
   $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
 
+  // Online/offline status, optimistic default
+  $scope.online = true;
+  var onlineStatusCallback = function(online){
+    $scope.online = online;
+  };
+  BackendClientService.registerOnlineStatusCallback(onlineStatusCallback);
+
+  // Backend polling
+
   var synchronizeItemsTimer;
   var synchronizeItemsDelay = 12 * 1000;
   var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
-  var bindToFocus = (typeof bindToFocusEvent !== 'undefined') ? bindToFocusEvent: true;
+
+  // Start synchronize interval or just start synchronize interval. 
   synchronizeItemsAndSynchronizeItemsDelayed();
 
-  // Use bindToFocus to check is the app running in browser (true) or in PhoneGap (false).
-  // Attach synchronize handler to focus and start synchronize interval or just start synchronize interval. 
+  // Global variable bindToFocusEvent specifies if focus event should be wathed. Variable is true by default
+  // for browsers, where hidden tab should not poll continuously, false in PhoneGap, because javascript
+  // execution is paused anyway when app is not in focus.
+  var bindToFocus = (typeof bindToFocusEvent !== 'undefined') ? bindToFocusEvent: true;
   if (bindToFocus) {
     angular.element($window).bind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
     angular.element($window).bind('blur', cancelSynchronizeItemsDelayed);
@@ -115,8 +132,8 @@ function MainController($scope, $location, $timeout, $window, UserSessionService
   };
 }
 
-MainController['$inject'] = ['$scope', '$location', '$timeout', '$window',
-                             'UserSessionService', 'ItemsService', 'ListsService',
+MainController.$inject = ['$scope', '$location', '$timeout', '$window',
+                             'UserSessionService', 'BackendClientService', 'ItemsService', 'ListsService',
                              'TagsService', 'TasksService', 'NotesService',
                              'FilterService', 'SwiperService', 'TasksSlidesService',
                              'NotesSlidesService'

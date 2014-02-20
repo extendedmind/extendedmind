@@ -1,6 +1,6 @@
 'use strict';
 
-function ItemsService($q, BackendClientService, UserSessionService, ArrayService, TagsService, ListsService, TasksService, NotesService){
+function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSessionService, ArrayService, TagsService, ListsService, TasksService, NotesService){
   var items = {};
 
   var itemRegex = /\/item/;
@@ -16,12 +16,93 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
     }
   }
 
-  // Register callbacks to BackendClientService 
-  var synchronizeCallback = function(request, response) {
-    console.log("synchronizeCallback");
+  function getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem){
+    return Math.max(
+      isNaN(latestTag) ? -Infinity : latestTag,
+      isNaN(latestList) ? -Infinity : latestList,
+      isNaN(latestTask) ? -Infinity : latestTask,
+      isNaN(latestNote) ? -Infinity : latestNote,
+      isNaN(latestItem) ? -Infinity : latestItem);
   }
-  var defaultCallback = function(request, response) {
-    console.log("defaultCallback");
+
+  // Register callbacks to BackendClientService 
+  var synchronizeCallback = function(request, response, queue) {
+    if (!jQuery.isEmptyObject(response)){
+      // TODO: The entire offline queue should be evaluated to see, if
+      //       something will fail. I.e. delete task on desktop, and try to
+      //       complete it on offline mobile.
+      var ownerUUID = request.params.owner;
+      var latestTag = TagsService.updateTags(response.tags, ownerUUID);
+      var latestList = ListsService.updateLists(response.lists, ownerUUID);
+      var latestTask = TasksService.updateTasks(response.tasks, ownerUUID);
+      var latestNote = NotesService.updateNotes(response.notes, ownerUUID);
+      var latestItem = ArrayService.updateArrays(response.items,
+        items[ownerUUID].activeItems,
+        items[ownerUUID].deletedItems);
+      if (latestTag || latestList || latestTask || latestNote || latestItem){
+        // Set latest modified
+        var latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
+        UserSessionService.setLatestModified(latestModified, ownerUUID);
+      }
+    }
+  }
+  var defaultCallback = function(request, response, queue) {
+    // TODO: Make this better by not replacing the UUID and modified values 
+    //       right away but instead creating a realUuid and realModified values
+    //       that can be traded for the real ones on synchronize callback. That
+    //       would ensure that when going online, the items don't change places
+    //       and also (if using "track by" with uuid+modified key in lists) no 
+    //       unnecessary rendering would take place after online => faster UX.
+
+    // Get the necessary information from the request
+    if (request.method === "post"){
+      console.log("defaultCallback post");
+
+    }else if (request.method === "put"){
+      var uuid, oldUuid;
+      if (request.params.uuid){
+        // Put existing
+        oldUuid = request.params.uuid;
+        uuid = oldUuid;
+      }else{
+        // New, there should be an uuid in the response and a fake one in the request
+        if (!response.uuid){
+          $rootScope.$emit('emException', {type: 'response', response: response, description: "No uuid from server"});
+          return;
+        }else{
+          oldUuid = request.params.fakeUUID;
+          uuid = response.uuid;
+        }
+      }
+
+      if (request.params.type === "item"){
+        if (!ArrayService.updateItemUUIDAndModified(
+                  oldUuid,
+                  uuid,
+                  response.modified,
+                  items[request.params.owner].activeItems,
+                  items[request.params.owner].deletedItems)){
+          $rootScope.$emit('emException', {type: 'response', response: response, description: "Could not update item from with values from server"});
+          return;          
+        }
+        $rootScope.$emit('emException', {type: 'response', response: response, description: "Could not update item from with values from server"});
+
+
+
+      }else if (request.params.type === "task"){
+
+      }else if (request.params.type === "note"){
+        
+      }else if (request.params.type === "tag"){
+        
+      }else if (request.params.type === "list"){
+        
+      }
+
+    }else if (request.method === "delete"){
+      console.log("defaultCallback delete");
+      
+    }
   }
   BackendClientService.registerSecondaryGetCallback(synchronizeCallback)
   BackendClientService.registerDefaultCallback(defaultCallback);
@@ -34,21 +115,14 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
       var url = '/api/' + ownerUUID + '/items';
       if (latestModified){
         url += '?modified=' + latestModified + '&deleted=true&archived=true&completed=true';
-      }
-      BackendClientService.get(url, this.getItemsRegex).then(function(result) {
-        if (result.data){
-          var latestTag, latestList, latestTask, latestItem, latestNote;
-          initializeArrays(ownerUUID);
-          if (latestModified){
-            // Only update modified
-            latestTag = TagsService.updateTags(result.data.tags, ownerUUID);
-            latestList = ListsService.updateLists(result.data.lists, ownerUUID);
-            latestTask = TasksService.updateTasks(result.data.tasks, ownerUUID);
-            latestNote = NotesService.updateNotes(result.data.notes, ownerUUID);
-            latestItem = ArrayService.updateArrays(result.data.items,
-              items[ownerUUID].activeItems,
-              items[ownerUUID].deletedItems);
-          }else{
+        // Push request to offline buffer
+        BackendClientService.getSecondary(url, this.getItemsRegex);
+        deferred.resolve();
+      }else {
+        BackendClientService.get(url, this.getItemsRegex).then(function(result) {
+          if (result.data){
+            var latestTag, latestList, latestTask, latestItem, latestNote;
+            initializeArrays(ownerUUID);
             // Reset all arrays
             latestTag = TagsService.setTags(result.data.tags, ownerUUID);
             latestList = ListsService.setLists(result.data.lists, ownerUUID);
@@ -57,22 +131,17 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
             latestItem = ArrayService.setArrays(result.data.items,
               items[ownerUUID].activeItems,
               items[ownerUUID].deletedItems);
+            if (latestTag || latestList || latestTask || latestNote || latestItem){
+              // Set latest modified
+              latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
+              UserSessionService.setLatestModified(latestModified, ownerUUID);
+            }
           }
-          if (latestTag || latestList || latestTask || latestNote || latestItem){
-            // Set latest modified
-            latestModified = Math.max(
-              isNaN(latestTag) ? -Infinity : latestTag,
-              isNaN(latestList) ? -Infinity : latestList,
-              isNaN(latestTask) ? -Infinity : latestTask,
-              isNaN(latestNote) ? -Infinity : latestNote,
-              isNaN(latestItem) ? -Infinity : latestItem);
-            UserSessionService.setLatestModified(latestModified, ownerUUID);
-          }
-        }
-        deferred.resolve();
-      }, function() {
-        deferred.reject();
-      });
+          deferred.resolve();
+        }, function() {
+          deferred.reject();
+        })
+      };
       return deferred.promise;
     },
     getItems: function(ownerUUID) {
@@ -97,19 +166,20 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
           }
         });
       }else{
-        // New item
-        BackendClientService.put('/api/' + ownerUUID + '/item',
-                 this.putNewItemRegex, item).then(function(result) {
-          if (result.data){
-            item.uuid = result.data.uuid;
-            item.modified = result.data.modified;
-            initializeArrays(ownerUUID);
-            ArrayService.setItem(item,
-              items[ownerUUID].activeItems,
-              items[ownerUUID].deletedItems);
-            deferred.resolve(item);
-          }
-        });
+        // New item, push to offline queue
+        var fakeUUID = UUIDService.generateFakeUUID();
+        var params = {type: 'item', owner: ownerUUID, fakeUUID: fakeUUID};
+        BackendClientService.put('/api/' + params.owner + '/item',
+                 this.putNewItemRegex, params, item);
+        // Use the fake uuid and a fake modified that is far enough in the to make
+        // it to the end of the list
+        item.uuid = fakeUUID;
+        item.modified = (new Date()).getTime() + 1000000;
+        initializeArrays(ownerUUID);
+        ArrayService.setItem(item,
+          items[ownerUUID].activeItems,
+          items[ownerUUID].deletedItems);
+        deferred.resolve(item);
       }
       return deferred.promise;
     },
@@ -179,6 +249,6 @@ function ItemsService($q, BackendClientService, UserSessionService, ArrayService
   };
 }
   
-ItemsService['$inject'] = ['$q', 'BackendClientService', 'UserSessionService', 'ArrayService',
+ItemsService['$inject'] = ['$q', '$rootScope', 'UUIDService', 'BackendClientService', 'UserSessionService', 'ArrayService',
                            'TagsService', 'ListsService', 'TasksService', 'NotesService'];
 angular.module('em.services').factory('ItemsService', ItemsService);

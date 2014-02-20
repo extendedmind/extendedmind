@@ -33,18 +33,18 @@ function ArrayService(){
       for (var i=0, len=otherArrays.length; i<len; i++) {
         if (item[otherArrays[i].id]){
           return otherArrays[i];
-        };
+        }
       }
     }
   }
 
-  function getFirstMatchingArrayInfoByUUID(item, otherArrays){
+  function getFirstMatchingArrayInfoByUUID(uuid, otherArrays){
     if (otherArrays){
       for (var i=0, len=otherArrays.length; i<len; i++) {
-        var itemInOtherArray = otherArrays[i].array.findFirstObjectByKeyValue('uuid', item.uuid);
+        var itemInOtherArray = otherArrays[i].array.findFirstObjectByKeyValue('uuid', uuid);
         if (itemInOtherArray){
           return otherArrays[i];
-        };
+        }
       }
     }
   }
@@ -64,14 +64,14 @@ function ArrayService(){
       }
       // ..then loop through response
       if (response) {
-        var i = 0;
+        var index = 0;
         var latestModified;
-        while (response[i]) {
-          var modified = this.setItem(response[i], activeArray, deletedArray, otherArrays);
+        while (response[index]) {
+          var modified = this.setItem(response[index], activeArray, deletedArray, otherArrays);
           if (!latestModified || latestModified < modified){
             latestModified = modified;
           }
-          i++;
+          index++;
         }
         return latestModified;
       }
@@ -108,7 +108,7 @@ function ArrayService(){
     updateItem: function(item, activeArray, deletedArray, otherArrays) {
       var activeItemId, deletedItemId, otherArrayItemId;
       var otherArrayInfo = getFirstMatchingArrayInfoByProperty(item, otherArrays);
-      var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(item, otherArrays);
+      var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(item.uuid, otherArrays);
 
       activeItemId = activeArray.findFirstIndexByKeyValue('uuid', item.uuid);
       if (activeItemId === undefined && deletedArray) {
@@ -128,7 +128,7 @@ function ArrayService(){
           insertItemToArray(item, activeArray, 'modified');
         }
       }else if (deletedItemId !== undefined) {
-        deletedArray.splice(deletedItemId, 1);        
+        deletedArray.splice(deletedItemId, 1);
         if (!item.deleted){
           if (otherArrayInfo && item[otherArrayInfo.id]){
             insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
@@ -142,23 +142,50 @@ function ArrayService(){
         otherArrayWithItemInfo.array.splice(otherArrayItemId, 1);
         if (item.deleted){
           insertItemToArray(item, deletedArray, 'deleted');
-        }else if (!otherArrayInfo && 
+        }else if (!otherArrayInfo &&
                  (!otherArrayWithItemInfo || !item[otherArrayWithItemInfo.id])){
           // Item does not belong to a new other array, nor anymore to the other array
           // it used to belong to => it is active again. 
           insertItemToArray(item, activeArray, 'modified');
         }else if (otherArrayInfo && (otherArrayInfo.id !== otherArrayWithItemInfo.id)) {
           // Should be placed in another other array
-          insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);          
+          insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
         }else{
           // Just updating modified in current other array
-          insertItemToArray(item, otherArrayWithItemInfo.array, otherArrayWithItemInfo.id);          
+          insertItemToArray(item, otherArrayWithItemInfo.array, otherArrayWithItemInfo.id);
         }
       }else {
         this.setItem(item, activeArray, deletedArray, otherArrays);
       }
       
       return item.modified;
+    },
+    // oldUuid, newUuid, newModified and activeArray are mandatory, rest are optional    
+    updateItemUUIDAndModified: function(oldUuid, newUuid, newModified, activeArray, deletedArray, otherArrays) {
+      var activeItemId = activeArray.findFirstIndexByKeyValue('uuid', oldUuid);
+      if (activeItemId !== undefined){
+        activeArray[activeItemId].uuid = newUuid;
+        activeArray[activeItemId].modified = newModified;
+      }else if (deletedArray) {
+        var deletedItemId = deletedArray.findFirstIndexByKeyValue('uuid', oldUuid);
+        if (deletedItemId !== undefined){
+          deletedArray[deletedItemId].uuid = newUuid;
+          deletedArray[deletedItemId].modified = newModified;
+        }else{
+          // Try other arrays
+          var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(oldUuid, otherArrays);
+          if (otherArrayWithItemInfo){
+            var otherArrayItemId = otherArrayWithItemInfo.array.findFirstIndexByKeyValue('uuid', oldUuid);
+            if (otherArrayItemId !== undefined){
+              otherArrayWithItemInfo.array[otherArrayItemId].uuid = newUuid;
+              otherArrayWithItemInfo.array[otherArrayItemId].modified = newModified;
+            }else{
+              return false;
+            }
+          }
+        }
+      }
+      return true;
     }
  };
 }

@@ -17,9 +17,15 @@ function HttpRequestQueueService() {
 
   // Initialize variables from local storage when service 
   // is created
-  if (localStorage.getItem('primaryRequest')) primary = JSON.parse(localStorage.getItem('primaryRequest'));
-  if (localStorage.getItem('secondaryRequest')) secondary = JSON.parse(localStorage.getItem('secondaryRequest'));
-  if (localStorage.getItem('requestQueue')) queue = JSON.parse(localStorage.getItem('requestQueue'));
+  if (localStorage.getItem('primaryRequest')){
+    primary = JSON.parse(localStorage.getItem('primaryRequest'));
+  }
+  if (localStorage.getItem('secondaryRequest')){
+    secondary = JSON.parse(localStorage.getItem('secondaryRequest')); 
+  }
+  if (localStorage.getItem('requestQueue')){
+    queue = JSON.parse(localStorage.getItem('requestQueue'));
+  } 
 
   // Find index of a reversible item in queue
   function findReverseRequestIndex(request) {
@@ -37,7 +43,7 @@ function HttpRequestQueueService() {
   // Find index of request with same uuid as given request
   function findRequestIndex(request) {
     for (var i=0, len=queue.length; i<len; i++) {
-      if (request.uuid === queue[i].uuid){
+      if (request === queue[i]){
         return i;
       }
     }
@@ -56,18 +62,18 @@ function HttpRequestQueueService() {
   var service = {
     push: function(request) {
       if (request.primary){
-        if (!primary){
+        if (!primary || primary.offline){
           primary = request;
           localStorage.setItem('primaryRequest', JSON.stringify(primary));
         }
       }else if (request.secondary){
-        if (!secondary){
+        if (!secondary || secondary.offline){
           secondary = request;
           localStorage.setItem('secondaryRequest', JSON.stringify(secondary));
         }
       }else{
         var reverseRequestIndex = findReverseRequestIndex(request);
-        if (reverseRequestIndex !== undefined && reverseRequestIndex.offline){
+        if (reverseRequestIndex !== undefined && queue[reverseRequestIndex].offline){
           removeFromQueue(reverseRequestIndex);
         }else {
           pushToQueue(request);
@@ -75,14 +81,14 @@ function HttpRequestQueueService() {
       }
     },
     remove: function(request) {
-      if (primary && primary.uuid === request.uuid){
+      if (request.primary){
         primary = undefined;
-        localStorage.setItem('primaryRequest', undefined);
-      }else if (secondary && secondary.uuid === request.uuid){
+        localStorage.removeItem('primaryRequest');
+      }else if (request.secondary){
         secondary = undefined;
-        localStorage.setItem('secondaryRequest', undefined);
+        localStorage.removeItem('secondaryRequest');
       }else{
-        var requestIndex = findRequestIndex(request.uuid);
+        var requestIndex = findRequestIndex(request);
         if (requestIndex !== undefined){
           removeFromQueue(requestIndex);
         }
@@ -91,14 +97,14 @@ function HttpRequestQueueService() {
       processing = false;
     },
     setOffline: function (request) {
-      if (primary && primary.uuid === request.uuid){
+      if (request.primary){
         primary.offline = true;
         localStorage.setItem('primaryRequest', JSON.stringify(primary));
-      }else if (secondary && secondary.uuid === request.uuid){
+      }else if (request.secondary){
         secondary.offline = true;
         localStorage.setItem('secondaryRequest', JSON.stringify(secondary));
       }else{
-        var requestIndex = findRequestIndex(request.uuid);
+        var requestIndex = findRequestIndex(request);
         if (requestIndex !== undefined){
           queue[requestIndex].offline = true;
           localStorage.setItem('requestQueue', JSON.stringify(queue));
@@ -111,18 +117,22 @@ function HttpRequestQueueService() {
       // Release lock
       processing = false;
     },
-    head: function () {
-      if (processing){
-        // Lock processing
-        processing = true;
+    getHead: function () {
+      if (!processing){
         if (primary){
+          processing = true;
           return primary;
         }else if (secondary){
+          processing = true;
           return secondary;
         }else if (queue && queue.length > 0){
+          processing = true;
           return queue[0];
         }
       }
+    },
+    getQueue: function(){
+      return queue;
     }
   };
   return service;

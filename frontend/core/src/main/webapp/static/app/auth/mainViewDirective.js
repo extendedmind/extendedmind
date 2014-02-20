@@ -7,7 +7,7 @@ function mainViewDirective($rootScope) {
     templateUrl: 'static/app/auth/main.html',
     controller: function($scope) {
       // Listen to exceptions emitted to rootscope
-      var unbindEmException = $rootScope.$on('emException', function(exception) {
+      var unbindEmException = $rootScope.$on('emException', function(name, exception) {
         // TODO: Use modals here
         console.log(exception);
       });

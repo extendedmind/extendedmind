@@ -1,15 +1,16 @@
+/* global angular */
 'use strict';
 
 function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDService) {
 
   var methods = {};
 
-  function getRequest(method, url, data){
+  function getRequest(method, url, params, data){
     var request = {
-      uuid: UUIDService.randomUUID(),
       method: method,
-      url: url
-    }
+      url: url,
+      params: params
+    };
     if (data){
       request.data = data;
     }
@@ -17,35 +18,45 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
   }
 
   // Callbacks
-  var primaryCallback, secondaryCallback, defaultCallback;
+  var primaryCallback, secondaryCallback, defaultCallback, onlineCallback;
   
-  // Recursive method to emtpy queue
-  function executeHeadRequest() {
-    var headRequest = HttpRequestQueueService.head;
+  // Recursive method to empty the queue
+  function executeRequests() {
+    var headRequest = HttpRequestQueueService.getHead();
     if (headRequest){
       $http(headRequest).
-        success(function(data, status, headers, config) {
+        success(function(data /*, status, headers, config*/) {
           // First, execute callback
           if (headRequest.primary && primaryCallback){
             primaryCallback(headRequest, data);
-          }else if (headRequest.secondary && secondaryCallback){            
-            secondaryCallback(headRequest, data);
+          }else if (headRequest.secondary && secondaryCallback){
+            secondaryCallback(headRequest, data, HttpRequestQueueService.getQueue());
           }else if (defaultCallback){
-            defaultCallback(headRequest, data);
+            defaultCallback(headRequest, data, HttpRequestQueueService.getQueue());
           }
           // Then remove the request from queue and release lock
           HttpRequestQueueService.remove(headRequest);
+
+          // Execute online callback
+          if (onlineCallback) {
+            onlineCallback(true);
+          }
+
           // Try to execute the next request in the queue
-          executeHeadRequest();
+          executeRequests();
         }).
-        error(function(data, status, headers, config) {
+        error(function(data, status/*, headers, config*/) {
           if (status === 404){
             // Seems to be offline, stop processing
             HttpRequestQueueService.setOffline(headRequest);
+            // Execute callback
+            if (onlineCallback) {
+              onlineCallback(false);
+            }
           }else {
             // Emit unsuspected error to root scope, so that
             // it can be listened on at by the application
-            $rootScope.$emit('emException', {type: 'http', status: status, data: data})
+            $rootScope.$emit('emException', {type: 'http', status: status, data: data});
           }
         });
     }
@@ -60,49 +71,49 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
     };
   });
 
+  methods.postOnline = function(url, data) {
+    return $http({method: 'post', url: url, data: data}).then(function(success) {
+      return success;
+    });
+  };
+
   // Custom method for a primary POST, i.e. authentication
   methods.postPrimary = function (url, data) {
     var request = getRequest('post', url, data);
     request.primary = true;
     HttpRequestQueueService.push(request);
-    executeHeadRequest();
-  }
+    executeRequests();
+  };
   
   // Custom method for secondary GET, i.e. delta getter
   methods.getSecondary = function(url) {
     var request = getRequest('get', url);
     request.secondary = true;
     HttpRequestQueueService.push(request);
-    executeHeadRequest();
-  }
+    executeRequests();
+  };
 
   // DELETE, POST and PUT are methods which utilize
   // the offline request queue
 
-  methods.delete = function(url) {
-    var request = getRequest('delete', url);
+  methods.delete = function(url, params) {
+    var request = getRequest('delete', url, params);
     HttpRequestQueueService.push(request);
-    executeHeadRequest();
-  }
+    executeRequests();
+  };
 
-  methods.post = function(url, data, reverse) {
-    var request = getRequest('post', url);
-    request.reverse = reverse;
+  methods.post = function(url, params, data, reverse) {
+    var request = getRequest('post', url, params, data);
+    if (reverse) request.reverse = reverse;
     HttpRequestQueueService.push(request);
-    executeHeadRequest();
-  }
+    executeRequests();
+  };
 
-  methods.postOnline = function(url, data) {
-    return $http({method: 'post', url: url, data: data}).then(function(success) {
-      return success;
-    });
-  }
-
-  methods.put = function(url, data) {
-    var request = getRequest('post', url);
+  methods.put = function(url, params, data) {
+    var request = getRequest('put', url, params, data);
     HttpRequestQueueService.push(request);
-    executeHeadRequest();
-  }
+    executeRequests();
+  };
 
   // Methods to register callbacks when 
   methods.registerCallback = function(type, callback){
@@ -112,11 +123,13 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
       secondaryCallback = callback;
     }else if (type === 'default'){
       defaultCallback = callback;
+    }else if (type === 'online'){
+      onlineCallback = callback;
     }
-  }
+  };
 
   return methods;
 }
 
-HttpClientService['$inject'] = ['$http', '$rootScope', 'HttpRequestQueueService', 'UUIDService'];
+HttpClientService.$inject = ['$http', '$rootScope', 'HttpRequestQueueService', 'UUIDService'];
 angular.module('em.services').factory('HttpClientService', HttpClientService);
