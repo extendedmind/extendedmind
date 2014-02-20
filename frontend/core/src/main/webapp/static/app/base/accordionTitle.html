@@ -3,7 +3,7 @@
     <div ng-if="hasComplete" class="table-wrapper">
       <input type="checkbox" class="left-checkbox-wrapper" id="{{item.uuid}}" name="checkbox" class="input-checkbox" ng-checked="item.completed" ng-click="itemChecked()" />
       <label class="checkbox swiper-no-swiping" for="{{item.uuid}}"></label>
-      <a id="accordionTitleLink" ng-class="getTitleInputClass()" class="accordion-toggle" href ng-click="clickTitle()">{{item.title}}</a>
+      <a id="accordionTitleLink" ng-class="getTitleInputClass()" class="accordion-toggle" href swiper-click="clickTitle()">{{item.title}}</a>
     </div>
     <div ng-if="!hasComplete" id="soloAccordionTitleLinkWrapper" class="table-wrapper">
       <div id="accordionTitleHeightFix"><br/></div>
