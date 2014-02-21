@@ -63,6 +63,7 @@ function TasksController($location, $scope, $routeParams, UserSessionService, Ta
   };
 
   $scope.addSubtask = function(subtask) {
+    if (!subtask.title  || subtask.title.length === 0) return false;
     var subtaskToSave = {title: subtask.title};
     if (subtask.due){
       subtaskToSave.due = subtask.due;

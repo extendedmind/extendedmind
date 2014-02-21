@@ -33,10 +33,10 @@ function BackendClientService($rootScope, HttpClientService, HttpBasicAuthentica
     }
   };
 
-  methods.getSecondary = function(url, regex) {
+  methods.getSecondary = function(url, regex, params) {
     refreshCredentials();
     if (regex.test(url)){
-      return HttpClientService.getSecondary(getUrlPrefix() + url);
+      return HttpClientService.getSecondary(getUrlPrefix() + url, params);
     }else {
       emitRegexException(regex, 'get', url);
     }

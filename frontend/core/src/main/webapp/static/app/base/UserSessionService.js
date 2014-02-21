@@ -50,6 +50,8 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
     clearUser: function() {
       SessionStorageService.clearUser();
       LocalStorageService.clearUser();
+      latestModified = {};
+      itemsSynchronize = {};
     },
 
     // owner

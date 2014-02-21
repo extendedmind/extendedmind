@@ -56,7 +56,11 @@ function HttpRequestQueueService() {
 
   function removeFromQueue(index) {
     queue.splice(index, 1);
-    localStorage.setItem('requestQueue', JSON.stringify(queue));
+    if (queue.length === 0){
+      localStorage.removeItem('requestQueue');  
+    }else{
+      localStorage.setItem('requestQueue', JSON.stringify(queue));
+    }
   }
 
   var service = {

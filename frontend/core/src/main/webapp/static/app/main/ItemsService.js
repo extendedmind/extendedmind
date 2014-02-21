@@ -47,7 +47,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       // TODO: The entire offline queue should be evaluated to see, if
       //       something will fail. I.e. delete task on desktop, and try to
       //       complete it on offline mobile.
-      var ownerUUID = request.customParams.owner;
+      var ownerUUID = request.params.owner;
       processSynchronizeUpdateResult(ownerUUID, response);
     }
   };
@@ -60,12 +60,12 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
     //       unnecessary rendering would take place after online => faster UX.
 
     // Get the necessary information from the request
-    if (request.method === 'post'){
-    }else if (request.method === 'put'){
+    if (request.content.method === 'post'){
+    }else if (request.content.method === 'put'){
       var uuid, oldUuid;
-      if (request.customParams.uuid){
+      if (request.params.uuid){
         // Put existing
-        oldUuid = request.customParams.uuid;
+        oldUuid = request.params.uuid;
         uuid = oldUuid;
       }else{
         // New, there should be an uuid in the response and a fake one in the request
@@ -73,32 +73,32 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
           $rootScope.$emit('emException', {type: 'response', response: response, description: 'No uuid from server'});
           return;
         }else{
-          oldUuid = request.customParams.fakeUUID;
+          oldUuid = request.params.fakeUUID;
           uuid = response.uuid;
         }
       }
 
-      if (request.customParams.type === 'item'){
+      if (request.params.type === 'item'){
         if (!ArrayService.updateItemUUIDAndModified(
                   oldUuid,
                   uuid,
                   response.modified,
-                  items[request.customParams.owner].activeItems,
-                  items[request.customParams.owner].deletedItems)){
+                  items[request.params.owner].activeItems,
+                  items[request.params.owner].deletedItems)){
           $rootScope.$emit('emException', {type: 'response', response: response, description: 'Could not update item from with values from server'});
           return;
         }
-      }else if (request.customParams.type === 'task'){
-        TasksService.updateTask(oldUuid, uuid, response.modified, request.customParams.owner);
-      }else if (request.customParams.type === 'note'){
+      }else if (request.params.type === 'task'){
+        TasksService.updateTask(oldUuid, uuid, response.modified, request.params.owner);
+      }else if (request.params.type === 'note'){
         
-      }else if (request.customParams.type === 'tag'){
+      }else if (request.params.type === 'tag'){
         
-      }else if (request.customParams.type === 'list'){
+      }else if (request.params.type === 'list'){
         
       }
 
-    }else if (request.method === 'delete'){
+    }else if (request.content.method === 'delete'){
       
     }
   };
@@ -177,9 +177,9 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
         if (UserSessionService.isOfflineEnabled()){
           // Push to offline queue with fake UUID
           var fakeUUID = UUIDService.generateFakeUUID();
-          var customParams = {type: 'item', owner: ownerUUID, fakeUUID: fakeUUID};
-          BackendClientService.put('/api/' + customParams.owner + '/item',
-                   this.putNewItemRegex, customParams, item);
+          var params = {type: 'item', owner: ownerUUID, fakeUUID: fakeUUID};
+          BackendClientService.put('/api/' + params.owner + '/item',
+                   this.putNewItemRegex, params, item);
           // Use the fake uuid and a fake modified that is far enough in the to make
           // it to the end of the list
           item.uuid = fakeUUID;

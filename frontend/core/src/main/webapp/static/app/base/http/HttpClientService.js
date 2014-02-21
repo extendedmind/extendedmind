@@ -5,14 +5,16 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
 
   var methods = {};
 
-  function getRequest(method, url, customParams, data){
+  function getRequest(method, url, params, data){
     var request = {
-      method: method,
-      url: url,
-      customParams: customParams
+      content: {
+        method: method,
+        url: url
+      },
+      params: params
     };
     if (data){
-      request.data = data;
+      request.content.data = data;
     }
     return request;
   }
@@ -24,7 +26,8 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
   function executeRequests() {
     var headRequest = HttpRequestQueueService.getHead();
     if (headRequest){
-      $http(headRequest).
+      console.log(headRequest);
+      $http(headRequest.content).
         success(function(data /*, status, headers, config*/) {
           // First, execute callback
           if (headRequest.primary && primaryCallback){
@@ -47,7 +50,7 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
         }).
         error(function(data, status/*, headers, config*/) {
           console.log("GOT ERROR: " + status);
-          if (status === 404){
+          if (status === 404 || status === 502){
             // Seems to be offline, stop processing
             HttpRequestQueueService.setOffline(headRequest);
             // Execute callback
@@ -100,8 +103,8 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
   };
   
   // Custom method for secondary GET, i.e. delta getter
-  methods.getSecondary = function(url, customParams) {
-    var request = getRequest('get', url, customParams);
+  methods.getSecondary = function(url, params) {
+    var request = getRequest('get', url, params);
     request.secondary = true;
     HttpRequestQueueService.push(request);
     executeRequests();
@@ -110,21 +113,21 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
   // DELETE, POST and PUT are methods which utilize
   // the offline request queue
 
-  methods.delete = function(url, customParams) {
-    var request = getRequest('delete', url, customParams);
+  methods.delete = function(url, params) {
+    var request = getRequest('delete', url, params);
     HttpRequestQueueService.push(request);
     executeRequests();
   };
 
-  methods.post = function(url, customParams, data, reverse) {
-    var request = getRequest('post', url, customParams, data);
+  methods.post = function(url, params, data, reverse) {
+    var request = getRequest('post', url, params, data);
     if (reverse) request.reverse = reverse;
     HttpRequestQueueService.push(request);
     executeRequests();
   };
 
-  methods.put = function(url, customParams, data) {
-    var request = getRequest('put', url, customParams, data);
+  methods.put = function(url, params, data) {
+    var request = getRequest('put', url, params, data);
     HttpRequestQueueService.push(request);
     executeRequests();
   };
