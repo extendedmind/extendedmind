@@ -58,9 +58,7 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
     }
     delete newNote.title;
 
-    NotesService.saveNote(newNoteToSave, UserSessionService.getActiveUUID()).then(function(/*newNotToSave*/){
-      // TODO: Something with note
-    });
+    NotesService.saveNote(newNoteToSave, UserSessionService.getActiveUUID());
   };
 
   $scope.goToList = function(uuid) {
