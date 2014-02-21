@@ -5,7 +5,7 @@
       <div class="inner-page-content-container">
         <div>
           <div class="inner-page-content-container" accordion>
-            <div ng-repeat="note in notes" ng-init="newNote = {}">
+            <div ng-repeat="note in notes | orderBy:'modified':true" ng-init="newNote = {}">
               <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
                 <div class="teaser" ng-if="note.content">
                   <a href ng-click="editNote(note)" id="note-teaser" ng-bind="getNoteContentTeaser(note)"></a>
