@@ -26,7 +26,6 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
   function executeRequests() {
     var headRequest = HttpRequestQueueService.getHead();
     if (headRequest){
-      console.log(headRequest);
       $http(headRequest.content).
         success(function(data /*, status, headers, config*/) {
           // First, execute callback
@@ -34,8 +33,10 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
             primaryCallback(headRequest, data);
           }else if (headRequest.secondary && secondaryCallback){
             secondaryCallback(headRequest, data, HttpRequestQueueService.getQueue());
+            HttpRequestQueueService.saveQueue();
           }else if (defaultCallback){
             defaultCallback(headRequest, data, HttpRequestQueueService.getQueue());
+            HttpRequestQueueService.saveQueue();
           }
           // Then remove the request from queue and release lock
           HttpRequestQueueService.remove(headRequest);
@@ -119,11 +120,11 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
     executeRequests();
   };
 
-  methods.post = function(url, params, data, reverse) {
+  methods.post = function(url, params, data) {
     var request = getRequest('post', url, params, data);
-    if (reverse) request.reverse = reverse;
-    HttpRequestQueueService.push(request);
+    var pushed = HttpRequestQueueService.push(request);
     executeRequests();
+    return pushed;
   };
 
   methods.put = function(url, params, data) {

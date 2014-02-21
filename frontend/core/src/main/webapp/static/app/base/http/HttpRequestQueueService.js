@@ -21,21 +21,20 @@ function HttpRequestQueueService() {
     primary = JSON.parse(localStorage.getItem('primaryRequest'));
   }
   if (localStorage.getItem('secondaryRequest')){
-    secondary = JSON.parse(localStorage.getItem('secondaryRequest')); 
+    secondary = JSON.parse(localStorage.getItem('secondaryRequest'));
   }
   if (localStorage.getItem('requestQueue')){
     queue = JSON.parse(localStorage.getItem('requestQueue'));
-  } 
+  }
 
   // Find index of a reversible item in queue
   function findReverseRequestIndex(request) {
-    if (request.reverse) {
-      for (var i=0, len=queue.length; i<len; i++) {
-        if (request.reverse.url === queue[i].url &&
-            request.reverse.method === queue[i].method){
-          // Found a reverse of the request in the queue
-          return i;
-        }
+    for (var i=0, len=queue.length; i<len; i++) {
+      if (queue[i].params.reverse &&
+          request.content.url === queue[i].params.reverse.url &&
+          request.content.method === queue[i].params.reverse.method){
+        // Found a reverse of the request in the queue
+        return i;
       }
     }
   }
@@ -51,15 +50,29 @@ function HttpRequestQueueService() {
 
   function pushToQueue(request) {
     queue.push(request);
-    localStorage.setItem('requestQueue', JSON.stringify(queue));
+    persistQueue();
   }
 
   function removeFromQueue(index) {
     queue.splice(index, 1);
+    persistQueue();
+  }
+
+  function persistQueue(){
     if (queue.length === 0){
-      localStorage.removeItem('requestQueue');  
+      localStorage.removeItem('requestQueue');
     }else{
       localStorage.setItem('requestQueue', JSON.stringify(queue));
+    }
+  }
+
+  function getHead() {
+    if (primary){
+      return primary;
+    }else if (secondary){
+      return secondary;
+    }else if (queue && queue.length > 0){
+      return queue[0];
     }
   }
 
@@ -77,12 +90,16 @@ function HttpRequestQueueService() {
         }
       }else{
         var reverseRequestIndex = findReverseRequestIndex(request);
-        if (reverseRequestIndex !== undefined && queue[reverseRequestIndex].offline){
+        if (reverseRequestIndex !== undefined &&
+            (getHead() !== queue[reverseRequestIndex] || queue[reverseRequestIndex].offline)){
+          // Found reverse method that is either not the head or is the head but has been set offline  
           removeFromQueue(reverseRequestIndex);
+          return false;
         }else {
           pushToQueue(request);
         }
       }
+      return true;
     },
     remove: function(request) {
       if (request.primary){
@@ -123,20 +140,15 @@ function HttpRequestQueueService() {
     },
     getHead: function () {
       if (!processing){
-        if (primary){
-          processing = true;
-          return primary;
-        }else if (secondary){
-          processing = true;
-          return secondary;
-        }else if (queue && queue.length > 0){
-          processing = true;
-          return queue[0];
-        }
+        processing = true;
+        return getHead();
       }
     },
     getQueue: function(){
       return queue;
+    },
+    saveQueue: function(){
+      persistQueue();
     }
   };
   return service;

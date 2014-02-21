@@ -1,3 +1,4 @@
+/* global module, describe, inject, beforeEach, afterEach, it, expect, spyOn, getJSONFixture */
 'use strict';
 
 describe('ItemsService', function() {
@@ -6,7 +7,7 @@ describe('ItemsService', function() {
 
   var $httpBackend;
   var ItemsService, BackendClientService, HttpBasicAuthenticationService, HttpClientService,
-      ListsService, TagsService, TasksService, NotesService;
+      ListsService, TagsService, TasksService, NotesService, UUIDService;
 
   // MOCKS
   
@@ -26,6 +27,7 @@ describe('ItemsService', function() {
 
   var MockUserSessionService = {
       latestModified: undefined,
+      offlineEnabled: false,
       getCredentials: function () {
         return '123456789';
       },
@@ -39,7 +41,7 @@ describe('ItemsService', function() {
         this.latestModified = modified;
       },
       isOfflineEnabled: function () {
-        return false;
+        return this.offlineEnabled;
       }
     };
 
@@ -53,7 +55,7 @@ describe('ItemsService', function() {
     });
 
     inject(function (_$httpBackend_, _ItemsService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_,
-                    _ListsService_, _TagsService_, _TasksService_, _NotesService_) {
+                    _ListsService_, _TagsService_, _TasksService_, _NotesService_, _UUIDService_) {
       $httpBackend = _$httpBackend_;
       ItemsService = _ItemsService_;
       BackendClientService = _BackendClientService_;
@@ -63,6 +65,7 @@ describe('ItemsService', function() {
       TagsService = _TagsService_;
       TasksService = _TasksService_;
       NotesService = _NotesService_;
+      UUIDService = _UUIDService_;
 
       var testItemData = {
           'items': [{
@@ -184,11 +187,28 @@ describe('ItemsService', function() {
       ItemsService.synchronize(testOwnerUUID);
       $httpBackend.flush();
     });
+
+    // http://stackoverflow.com/a/14381941
+    var localStore = {};
+
+    spyOn(localStorage, 'getItem').andCallFake(function(key) {
+      return localStore[key];
+    });
+    spyOn(localStorage, 'setItem').andCallFake(function(key, value) {
+      localStore[key] = value + '';
+    });
+    spyOn(localStorage, 'removeItem').andCallFake(function(key) {
+      delete localStore[key];
+    });
+    spyOn(localStorage, 'clear').andCallFake(function() {
+      localStore = {};
+    });
   });
 
 
   afterEach(function() {
     MockUserSessionService.setLatestModified(undefined);
+    MockUserSessionService.offlineEnabled = false;
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest();
   });
@@ -426,4 +446,85 @@ describe('ItemsService', function() {
     expect(TasksService.getCompletedTasks(testOwnerUUID).length)
       .toBe(0);
   });
+
+  it('should handle offline create, update, delete', function () {
+    MockUserSessionService.offlineEnabled = true;
+
+    // 1. save new item
+
+    var testItem = {
+      'title': 'test item'
+    };
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+       .respond(404);
+    ItemsService.saveItem(testItem, testOwnerUUID);
+    $httpBackend.flush();
+
+    // Should go to the end of the array with a fake UUID
+    var items = ItemsService.getItems(testOwnerUUID);
+    expect(items.length)
+      .toBe(4);
+    expect(UUIDService.isFakeUUID(items[3].uuid))
+      .toBeTruthy();
+    var firstModified = items[3].modified;
+
+    // 2. update item
+
+    var updatedTestItem = {
+      'uuid': testItem.uuid,
+      'title': testItem.title,
+      'description': 'test description'
+    };
+    // We're expecting to get another try at creating the item
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+       .respond(404);
+    ItemsService.saveItem(updatedTestItem, testOwnerUUID);
+    $httpBackend.flush();
+    expect(items.length)
+      .toBe(4);
+    expect(firstModified)
+      .toBeLessThan(items[3].modified);
+
+    // 3. delete item
+    // We're still expecting to get another try at creating the first
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+       .respond(404);
+    ItemsService.deleteItem(updatedTestItem, testOwnerUUID);
+    $httpBackend.flush();
+    expect(items.length)
+      .toBe(3);
+
+    // 4. undelete item
+    // We're again, still expecting to get another try at creating the first
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+       .respond(404);
+    ItemsService.undeleteItem(updatedTestItem, testOwnerUUID);
+    $httpBackend.flush();
+    expect(items.length)
+      .toBe(4);
+
+    // 5. synchronize items and get back online, we're expecting the delete and undelete to cancel each other
+
+    var latestModified = now.getTime();
+    MockUserSessionService.setLatestModified(latestModified);
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' + 
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, '{}');
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+        .respond(200, putNewItemResponse);
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + putNewItemResponse.uuid, 
+                           updatedTestItem)
+        .respond(200, putExistingItemResponse);
+    ItemsService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+
+    // Verify that everything is right with the created item
+    expect(items.length)
+      .toBe(4);
+    expect(UUIDService.isFakeUUID(items[3].uuid))
+      .toBeFalsy();
+    expect(items[3].description)
+      .toBeDefined();
+  });
+
 });

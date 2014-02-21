@@ -51,7 +51,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       processSynchronizeUpdateResult(ownerUUID, response);
     }
   };
-  var defaultCallback = function(request, response /*, queue */) {
+  var defaultCallback = function(request, response, queue) {
     // TODO: Make this better by not replacing the UUID and modified values 
     //       right away but instead creating a realUuid and realModified values
     //       that can be traded for the real ones on synchronize callback. That
@@ -61,6 +61,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
 
     // Get the necessary information from the request
     if (request.content.method === 'post'){
+      // TODO
     }else if (request.content.method === 'put'){
       var uuid, oldUuid;
       if (request.params.uuid){
@@ -75,6 +76,16 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
         }else{
           oldUuid = request.params.fakeUUID;
           uuid = response.uuid;
+
+          // Also update queue to replace all calls with the old fake uuid with the new one
+          if (queue && queue.length > 0){
+            for (var i=0, len=queue.length; i<len; i++) {
+              if (queue[i].params.uuid === oldUuid){
+                queue[i].params.uuid = uuid;
+                queue[i].content.url = queue[i].content.url.replace(oldUuid,uuid);
+              }
+            }
+          }
         }
       }
 
@@ -160,24 +171,38 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
     },
     saveItem: function(item, ownerUUID) {
       var deferred = $q.defer();
+      var params;
       if (item.uuid){
         // Existing item
-        BackendClientService.putOnline('/api/' + ownerUUID + '/item/' + item.uuid,
-                 this.putExistingItemRegex, item).then(function(result) {
-          if (result.data){
-            item.modified = result.data.modified;
-            ArrayService.updateItem(item,
-              items[ownerUUID].activeItems,
-              items[ownerUUID].deletedItems);
-            deferred.resolve(item);
-          }
-        });
+        if (UserSessionService.isOfflineEnabled()){
+          // Push to offline buffer
+          params = {type: 'item', owner: ownerUUID, uuid: item.uuid};
+          BackendClientService.put('/api/' + params.owner + '/item/' + item.uuid,
+                   this.putNewItemRegex, params, item);
+          item.modified = (new Date()).getTime() + 1000000;
+          ArrayService.updateItem(item,
+            items[ownerUUID].activeItems,
+            items[ownerUUID].deletedItems);
+          deferred.resolve(item);
+        } else{
+          // Online
+          BackendClientService.putOnline('/api/' + ownerUUID + '/item/' + item.uuid,
+                   this.putExistingItemRegex, item).then(function(result) {
+            if (result.data){
+              item.modified = result.data.modified;
+              ArrayService.updateItem(item,
+                items[ownerUUID].activeItems,
+                items[ownerUUID].deletedItems);
+              deferred.resolve(item);
+            }
+          });
+        }
       }else{
         // New item
         if (UserSessionService.isOfflineEnabled()){
           // Push to offline queue with fake UUID
           var fakeUUID = UUIDService.generateFakeUUID();
-          var params = {type: 'item', owner: ownerUUID, fakeUUID: fakeUUID};
+          params = {type: 'item', owner: ownerUUID, fakeUUID: fakeUUID};
           BackendClientService.put('/api/' + params.owner + '/item',
                    this.putNewItemRegex, params, item);
           // Use the fake uuid and a fake modified that is far enough in the to make
@@ -208,28 +233,58 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       return deferred.promise;
     },
     deleteItem: function(item, ownerUUID) {
-      BackendClientService.deleteOnline('/api/' + ownerUUID + '/item/' + item.uuid,
-               this.deleteItemRegex).then(function(result) {
-        if (result.data){
-          item.deleted = result.data.deleted;
-          item.modified = result.data.result.modified;
-          ArrayService.updateItem(item,
-            items[ownerUUID].activeItems,
-            items[ownerUUID].deletedItems);
-        }
-      });
+      if (UserSessionService.isOfflineEnabled()){
+        // Offline
+        var params = {type: 'item', owner: ownerUUID, uuid: item.uuid,
+                      reverse: {
+                        method: 'post',
+                        url: '/api/' + ownerUUID + '/item/' + item.uuid + '/undelete'
+                      }};
+        BackendClientService.delete('/api/' + ownerUUID + '/item/' + item.uuid,
+                 this.deleteItemRegex, params);
+        var fakeTimestamp = (new Date()).getTime() + 1000000;
+        item.deleted = fakeTimestamp;
+        item.modified = fakeTimestamp;
+        ArrayService.updateItem(item,
+          items[ownerUUID].activeItems,
+          items[ownerUUID].deletedItems);
+      }else {
+        // Online
+        BackendClientService.deleteOnline('/api/' + ownerUUID + '/item/' + item.uuid,
+                 this.deleteItemRegex).then(function(result) {
+          if (result.data){
+            item.deleted = result.data.deleted;
+            item.modified = result.data.result.modified;
+            ArrayService.updateItem(item,
+              items[ownerUUID].activeItems,
+              items[ownerUUID].deletedItems);
+          }
+        });
+      }
     },
     undeleteItem: function(item, ownerUUID) {
-      BackendClientService.postOnline('/api/' + ownerUUID + '/item/' + item.uuid + '/undelete',
-               this.deleteItemRegex).then(function(result) {
-        if (result.data){
-          delete item.deleted;
-          item.modified = result.data.modified;
-          ArrayService.updateItem(item,
-            items[ownerUUID].activeItems,
-            items[ownerUUID].deletedItems);
-        }
-      });
+      if (UserSessionService.isOfflineEnabled()){
+        // Offline
+        var params = {type: 'item', owner: ownerUUID, uuid: item.uuid};
+        BackendClientService.post('/api/' + ownerUUID + '/item/' + item.uuid + '/undelete',
+                 this.deleteItemRegex, params);
+        delete item.deleted;
+        ArrayService.updateItem(item,
+          items[ownerUUID].activeItems,
+          items[ownerUUID].deletedItems);
+      }else{
+        // Online
+        BackendClientService.postOnline('/api/' + ownerUUID + '/item/' + item.uuid + '/undelete',
+                 this.deleteItemRegex).then(function(result) {
+          if (result.data){
+            delete item.deleted;
+            item.modified = result.data.modified;
+            ArrayService.updateItem(item,
+              items[ownerUUID].activeItems,
+              items[ownerUUID].deletedItems);
+          }
+        });
+      }
     },
     itemToTask: function(item, ownerUUID) {
       var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.uuid);
