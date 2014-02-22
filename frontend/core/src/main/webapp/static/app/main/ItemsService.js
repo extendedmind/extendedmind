@@ -96,11 +96,22 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
                   response.modified,
                   items[request.params.owner].activeItems,
                   items[request.params.owner].deletedItems)){
-          $rootScope.$emit('emException', {type: 'response', response: response, description: 'Could not update item from with values from server'});
-          return;
+          // The item might have moved to either notes or tasks
+          if (!TasksService.updateTask(oldUuid, uuid, response.modified, request.params.owner)){
+            if (!NotesService.updateNote(oldUuid, uuid, response.modified, request.params.owner)){
+              $rootScope.$emit('emException', {type: 'response', response: response, description: 'Could not update item from with values from server'});
+              return;              
+            }
+          }
         }
       }else if (request.params.type === 'task'){
-        TasksService.updateTask(oldUuid, uuid, response.modified, request.params.owner);
+        if (!TasksService.updateTask(oldUuid, uuid, response.modified, request.params.owner)){
+          $rootScope.$emit('emException',
+                {type: 'response',
+                response: {uuid: newUuid, modified: newModified},
+                description: 'Could not update task from with values from server'});
+          return;
+        };
       }else if (request.params.type === 'note'){
         
       }else if (request.params.type === 'tag'){

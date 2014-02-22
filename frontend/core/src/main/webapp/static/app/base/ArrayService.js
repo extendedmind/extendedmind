@@ -182,6 +182,8 @@ function ArrayService(){
             }else{
               return false;
             }
+          }else {
+            return false;
           }
         }
       }
