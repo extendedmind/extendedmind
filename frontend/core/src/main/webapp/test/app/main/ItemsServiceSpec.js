@@ -22,6 +22,10 @@ describe('ItemsService', function() {
   undeleteItemResponse.modified = now.getTime();
   var putExistingTaskResponse = getJSONFixture('putExistingTaskResponse.json');
   putExistingTaskResponse.modified = now.getTime();
+  var completeTaskResponse = getJSONFixture('completeTaskResponse.json');
+  completeTaskResponse.result.modified = now.getTime();
+  var uncompleteTaskResponse = getJSONFixture('uncompleteTaskResponse.json');
+  uncompleteTaskResponse.modified = now.getTime();  
 
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
@@ -462,11 +466,11 @@ describe('ItemsService', function() {
 
     // Should go to the end of the array with a fake UUID
     var items = ItemsService.getItems(testOwnerUUID);
+    var firstModified = items[3].modified;
     expect(items.length)
       .toBe(4);
     expect(UUIDService.isFakeUUID(items[3].uuid))
       .toBeTruthy();
-    var firstModified = items[3].modified;
 
     // 2. update item
 
@@ -541,6 +545,7 @@ describe('ItemsService', function() {
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(4);
+    var firstModified = testItem.modified;
     
     // 2. make item into task
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
@@ -552,7 +557,6 @@ describe('ItemsService', function() {
     var tasks = TasksService.getTasks(testOwnerUUID);
     expect(tasks.length)
       .toBe(4);
-    var firstModified = testItem.modified;
 
     // 3. update task
     var updatedTestTask = {
@@ -613,5 +617,71 @@ describe('ItemsService', function() {
     expect(tasks[3].description)
       .toBeDefined();
   });
+
+  it('should handle task offline complete, uncomplete', function () {
+    MockUserSessionService.offlineEnabled = true;
+
+    // 1. save new task
+    var testTask = {
+      'title': 'test task'
+    };
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task', testTask)
+       .respond(404);
+    TasksService.saveTask(testTask, testOwnerUUID);
+    $httpBackend.flush();
+    var tasks = TasksService.getTasks(testOwnerUUID);
+    var completedTasks = TasksService.getCompletedTasks(testOwnerUUID);
+    expect(tasks.length)
+      .toBe(4);
+    expect(completedTasks.length)
+      .toBe(1);
+
+    // 2. complete it
+    
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task', testTask)
+       .respond(404);
+    TasksService.completeTask(testTask, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+    expect(completedTasks.length)
+      .toBe(2);
+
+    // 3. uncomplete it
+
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task', testTask)
+       .respond(404);
+    TasksService.uncompleteTask(testTask, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+    expect(completedTasks.length)
+      .toBe(1);
+
+    // 4. complete it again but go online, expect only one complete
+
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task', testTask)
+       .respond(200, putNewItemResponse);
+    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + putNewItemResponse.uuid + '/complete')
+       .respond(200, completeTaskResponse);       
+    TasksService.completeTask(testTask, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+    expect(completedTasks.length)
+      .toBe(2);
+
+    // 5. uncomplete online
+
+    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + putNewItemResponse.uuid + '/uncomplete')
+       .respond(200, uncompleteTaskResponse);       
+    TasksService.uncompleteTask(testTask, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+    expect(completedTasks.length)
+      .toBe(1);
+  });
+
 
 });

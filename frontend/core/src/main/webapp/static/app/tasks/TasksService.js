@@ -154,6 +154,22 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
     }
   }
 
+  function processCompletedTask(task, ownerUUID){
+    // Don't change modified on complete to prevent
+    // task from moving down in the list on uncomplete.
+    //task.modified = result.data.result.modified;
+    var taskIndex = tasks[ownerUUID].activeTasks.findFirstIndexByKeyValue('uuid', task.uuid);
+    ArrayService.updateItem(task,
+        tasks[ownerUUID].activeTasks,
+        tasks[ownerUUID].deletedTasks,
+        getOtherArrays(ownerUUID));
+    // Put the completed task back to the active tasks[ownerUUID].activeTasks array
+    // and also the completedTasks array, to prevent completed
+    // task from disappearing immediately.
+    tasks[ownerUUID].activeTasks.splice(taskIndex, 0, task);
+    tasks[ownerUUID].recentlyCompletedTasks.push(task);
+  }
+
   return {
     setTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
@@ -323,7 +339,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
         // Offline
         var params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
-                 this.deleteTaskRegex, params);
+                 this.undeleteTaskRegex, params);
         delete task.deleted;
         ArrayService.updateItem(task, tasks[ownerUUID].activeTasks,
                 tasks[ownerUUID].deletedTasks,
@@ -331,7 +347,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       }else{
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
-                 this.deleteTaskRegex).then(function(result) {
+                 this.undeleteTaskRegex).then(function(result) {
           if (result.data){
             delete task.deleted;
             task.modified = result.data.modified;
@@ -344,41 +360,61 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
     },
     completeTask: function(task, ownerUUID) {
       cleanRecentlyCompletedTasks(ownerUUID);
-      BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
-               this.completeTaskRegex).then(function(result) {
-        if (result.data){
-          task.completed = result.data.completed;
-          // Don't change modified on complete to prevent
-          // task from moving down in the list on uncomplete.
-          //task.modified = result.data.result.modified;
-          var taskIndex = tasks[ownerUUID].activeTasks.findFirstIndexByKeyValue('uuid', task.uuid);
-          ArrayService.updateItem(task,
-              tasks[ownerUUID].activeTasks,
-              tasks[ownerUUID].deletedTasks,
-              getOtherArrays(ownerUUID));
-          // Put the completed task back to the active tasks[ownerUUID].activeTasks array
-          // and also the completedTasks array, to prevent completed
-          // task from disappearing immediately.
-          tasks[ownerUUID].activeTasks.splice(taskIndex, 0, task);
-          tasks[ownerUUID].recentlyCompletedTasks.push(task);
-        }
-      });
+      if (UserSessionService.isOfflineEnabled()){
+        // Offline
+        var params = {type: 'task', owner: ownerUUID, uuid: task.uuid,
+                      reverse: {
+                        method: 'post',
+                        url: '/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete'
+                      }};
+        BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
+                 this.completeTaskRegex, params);
+        task.completed = (new Date()).getTime() + 1000000;
+        processCompletedTask(task, ownerUUID);
+      }else{
+        // Online
+        BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
+                 this.completeTaskRegex).then(function(result) {
+          if (result.data){
+            task.completed = result.data.completed;
+            processCompletedTask(task, ownerUUID);
+          }
+        });
+      }
     },
     uncompleteTask: function(task, ownerUUID) {
-      BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
-               this.deleteTaskRegex).then(function(result) {
-        if (result.data){
-          delete task.completed;
-          // Don't change modified on uncomplete to prevent
-          // task from moving down in the list when clicking on/off.
-          //task.modified = result.data.modified;
-          cleanRecentlyCompletedTasks(ownerUUID);
-          ArrayService.updateItem(task,
-              tasks[ownerUUID].activeTasks,
-              tasks[ownerUUID].deletedTasks,
-              getOtherArrays(ownerUUID));
-        }
-      });
+      if (UserSessionService.isOfflineEnabled()){
+        var params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
+        // Offline
+        BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
+                 this.uncompleteTaskRegex, params);
+        delete task.completed;
+        // Don't change modified on uncomplete to prevent
+        // task from moving down in the list when clicking on/off.
+        //task.modified = result.data.modified;
+        cleanRecentlyCompletedTasks(ownerUUID);
+        ArrayService.updateItem(task,
+            tasks[ownerUUID].activeTasks,
+            tasks[ownerUUID].deletedTasks,
+            getOtherArrays(ownerUUID));
+      }else{
+        // Online
+        BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
+                 this.uncompleteTaskRegex).then(function(result) {
+          if (result.data){
+            delete task.completed;
+            // Don't change modified on uncomplete to prevent
+            // task from moving down in the list when clicking on/off.
+            //task.modified = result.data.modified;
+            cleanRecentlyCompletedTasks(ownerUUID);
+            ArrayService.updateItem(task,
+                tasks[ownerUUID].activeTasks,
+                tasks[ownerUUID].deletedTasks,
+                getOtherArrays(ownerUUID));
+          }
+        });
+      }
+
     },
     taskToList: function(task, ownerUUID) {
       cleanRecentlyCompletedTasks(ownerUUID);

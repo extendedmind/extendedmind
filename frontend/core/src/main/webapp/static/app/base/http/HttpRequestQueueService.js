@@ -140,8 +140,11 @@ function HttpRequestQueueService() {
     },
     getHead: function () {
       if (!processing){
-        processing = true;
-        return getHead();
+        var headRequest = getHead();
+        if (headRequest){
+          processing = true;
+          return getHead();
+        }
       }
     },
     getQueue: function(){
