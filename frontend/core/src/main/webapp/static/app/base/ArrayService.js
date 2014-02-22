@@ -160,25 +160,29 @@ function ArrayService(){
       
       return item.modified;
     },
-    // oldUuid, newUuid, newModified and activeArray are mandatory, rest are optional    
-    updateItemUUIDAndModified: function(oldUuid, newUuid, newModified, activeArray, deletedArray, otherArrays) {
-      var activeItemId = activeArray.findFirstIndexByKeyValue('uuid', oldUuid);
+    // uuid, properties and activeArray are mandatory, rest are optional    
+    updateItemProperties: function(uuid, properties, activeArray, deletedArray, otherArrays) {
+      var activeItemId = activeArray.findFirstIndexByKeyValue('uuid', uuid);
+      function updateProperties(item, properties){
+        for (var property in properties) {
+          if(properties.hasOwnProperty(property)){
+            item[property] = properties[property];
+          }
+        }
+      }
       if (activeItemId !== undefined){
-        activeArray[activeItemId].uuid = newUuid;
-        activeArray[activeItemId].modified = newModified;
+        updateProperties(activeArray[activeItemId], properties);
       }else if (deletedArray) {
-        var deletedItemId = deletedArray.findFirstIndexByKeyValue('uuid', oldUuid);
+        var deletedItemId = deletedArray.findFirstIndexByKeyValue('uuid', uuid);
         if (deletedItemId !== undefined){
-          deletedArray[deletedItemId].uuid = newUuid;
-          deletedArray[deletedItemId].modified = newModified;
+          updateProperties(deletedArray[deletedItemId], properties);
         }else{
           // Try other arrays
-          var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(oldUuid, otherArrays);
+          var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(uuid, otherArrays);
           if (otherArrayWithItemInfo){
-            var otherArrayItemId = otherArrayWithItemInfo.array.findFirstIndexByKeyValue('uuid', oldUuid);
+            var otherArrayItemId = otherArrayWithItemInfo.array.findFirstIndexByKeyValue('uuid', uuid);
             if (otherArrayItemId !== undefined){
-              otherArrayWithItemInfo.array[otherArrayItemId].uuid = newUuid;
-              otherArrayWithItemInfo.array[otherArrayItemId].modified = newModified;
+              updateProperties(otherArrayWithItemInfo.array[otherArrayItemId], properties);
             }else{
               return false;
             }

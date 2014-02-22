@@ -26,6 +26,21 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
             {array: tasks[ownerUUID].completedTasks, id: 'completed'}];
   }
 
+  function updateTask(task, ownerUUID) {
+    return ArrayService.updateItem(task,
+              tasks[ownerUUID].activeTasks,
+              tasks[ownerUUID].deletedTasks,
+              getOtherArrays(ownerUUID));
+  }
+
+  function setTask(task, ownerUUID){
+    initializeArrays(ownerUUID);
+    ArrayService.setItem(task,
+      tasks[ownerUUID].activeTasks,
+      tasks[ownerUUID].deletedTasks,
+      getOtherArrays(ownerUUID));
+  }
+  
   // Setup callback to ListsService
   var itemArchiveCallback = function(children, archived, ownerUUID){
     if (tasks[ownerUUID] && children){
@@ -34,37 +49,25 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
         if (activeTask){
           activeTask.archived = archived;
           activeTask.modified = children[i].modified;
-          ArrayService.updateItem(activeTask,
-            tasks[ownerUUID].activeTasks,
-            tasks[ownerUUID].deletedTasks,
-            getOtherArrays(ownerUUID));
+          updateTask(activeTask, ownerUUID);
         }else{
           var deletedTask = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
           if (deletedTask){
             deletedTask.archived = archived;
             deletedTask.modified = children[i].modified;
-            ArrayService.updateItem(deletedTask,
-              tasks[ownerUUID].activeTasks,
-              tasks[ownerUUID].deletedTasks,
-              getOtherArrays(ownerUUID));
+            updateTask(deletedTask, ownerUUID);
           }else{
             var completedTask = tasks[ownerUUID].completedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
             if (completedTask){
               completedTask.archived = archived;
               completedTask.modified = children[i].modified;
-              ArrayService.updateItem(completedTask,
-                  tasks[ownerUUID].activeTasks,
-                  tasks[ownerUUID].deletedTasks,
-                  getOtherArrays(ownerUUID));
+              updateTask(completedTask, ownerUUID);
             }else{
               var archivedTask = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
               if (archivedTask){
                 archivedTask.archived = archived;
                 archivedTask.modified = children[i].modified;
-                ArrayService.updateItem(archivedTask,
-                  tasks[ownerUUID].activeTasks,
-                  tasks[ownerUUID].deletedTasks,
-                  getOtherArrays(ownerUUID));
+                updateTask(archivedTask, ownerUUID);
               }
             }
           }
@@ -159,10 +162,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
     // task from moving down in the list on uncomplete.
     //task.modified = result.data.result.modified;
     var taskIndex = tasks[ownerUUID].activeTasks.findFirstIndexByKeyValue('uuid', task.uuid);
-    ArrayService.updateItem(task,
-        tasks[ownerUUID].activeTasks,
-        tasks[ownerUUID].deletedTasks,
-        getOtherArrays(ownerUUID));
+    updateTask(task, ownerUUID);
     // Put the completed task back to the active tasks[ownerUUID].activeTasks array
     // and also the completedTasks array, to prevent completed
     // task from disappearing immediately.
@@ -191,11 +191,10 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
           tasks[ownerUUID].deletedTasks,
           getOtherArrays(ownerUUID));
     },
-    updateTask: function(oldUuid, newUuid, newModified, ownerUUID) {
-      return ArrayService.updateItemUUIDAndModified(
-                oldUuid,
-                newUuid,
-                newModified,
+    updateTaskProperties: function(uuid, properties, ownerUUID) {
+      return ArrayService.updateItemProperties(
+                uuid,
+                properties,
                 tasks[ownerUUID].activeTasks,
                 tasks[ownerUUID].deletedTasks,
                 getOtherArrays(ownerUUID));
@@ -234,10 +233,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
           if (list){
             task.relationships.list = list;
           }
-          ArrayService.updateItem(task,
-            tasks[ownerUUID].activeTasks,
-            tasks[ownerUUID].deletedTasks,
-            getOtherArrays(ownerUUID));
+          updateTask(task, ownerUUID);
           deferred.resolve(task);
         }else{
           // Online
@@ -251,10 +247,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
               if (list){
                 task.relationships.list = list;
               }
-              ArrayService.updateItem(task,
-                tasks[ownerUUID].activeTasks,
-                tasks[ownerUUID].deletedTasks,
-                getOtherArrays(ownerUUID));
+              updateTask(task, ownerUUID);
               deferred.resolve(task);
             }
           });
@@ -271,11 +264,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
           // Use a fake modified that is far enough in the to make
           // it to the end of the list
           task.modified = (new Date()).getTime() + 1000000;
-          initializeArrays(ownerUUID);
-          ArrayService.setItem(task,
-              tasks[ownerUUID].activeTasks,
-              tasks[ownerUUID].deletedTasks,
-              getOtherArrays(ownerUUID));
+          setTask(task, ownerUUID);
           deferred.resolve(task);
         } else{
           // Online
@@ -290,11 +279,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
               if (list){
                 task.relationships.list = list;
               }
-              initializeArrays(ownerUUID);
-              ArrayService.setItem(task,
-                tasks[ownerUUID].activeTasks,
-                tasks[ownerUUID].deletedTasks,
-                getOtherArrays(ownerUUID));
+              setTask(task, ownerUUID);
               deferred.resolve(task);
             }
           });
@@ -316,9 +301,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
         var fakeTimestamp = (new Date()).getTime() + 1000000;
         task.deleted = fakeTimestamp;
         task.modified = fakeTimestamp;
-        ArrayService.updateItem(task, tasks[ownerUUID].activeTasks,
-                tasks[ownerUUID].deletedTasks,
-                getOtherArrays(ownerUUID));
+        updateTask(task, ownerUUID);
       }else{
         // Online
         BackendClientService.deleteOnline('/api/' + ownerUUID + '/task/' + task.uuid,
@@ -326,9 +309,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
           if (result.data){
             task.deleted = result.data.deleted;
             task.modified = result.data.result.modified;
-            ArrayService.updateItem(task, tasks[ownerUUID].activeTasks,
-                tasks[ownerUUID].deletedTasks,
-                getOtherArrays(ownerUUID));
+            updateTask(task, ownerUUID);
           }
         });
       }
@@ -341,9 +322,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
                  this.undeleteTaskRegex, params);
         delete task.deleted;
-        ArrayService.updateItem(task, tasks[ownerUUID].activeTasks,
-                tasks[ownerUUID].deletedTasks,
-                getOtherArrays(ownerUUID));
+        updateTask(task, ownerUUID);
       }else{
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
@@ -351,10 +330,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
           if (result.data){
             delete task.deleted;
             task.modified = result.data.modified;
-            ArrayService.updateItem(task, tasks[ownerUUID].activeTasks,
-                tasks[ownerUUID].deletedTasks,
-                getOtherArrays(ownerUUID));
-          }
+            updateTask(task, ownerUUID);          }
         });
       }
     },
@@ -393,10 +369,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
         // task from moving down in the list when clicking on/off.
         //task.modified = result.data.modified;
         cleanRecentlyCompletedTasks(ownerUUID);
-        ArrayService.updateItem(task,
-            tasks[ownerUUID].activeTasks,
-            tasks[ownerUUID].deletedTasks,
-            getOtherArrays(ownerUUID));
+        updateTask(task, ownerUUID);
       }else{
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
@@ -407,10 +380,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
             // task from moving down in the list when clicking on/off.
             //task.modified = result.data.modified;
             cleanRecentlyCompletedTasks(ownerUUID);
-            ArrayService.updateItem(task,
-                tasks[ownerUUID].activeTasks,
-                tasks[ownerUUID].deletedTasks,
-                getOtherArrays(ownerUUID));
+            updateTask(task, ownerUUID);
           }
         });
       }

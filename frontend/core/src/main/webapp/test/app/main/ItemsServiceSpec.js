@@ -25,7 +25,7 @@ describe('ItemsService', function() {
   var completeTaskResponse = getJSONFixture('completeTaskResponse.json');
   completeTaskResponse.result.modified = now.getTime();
   var uncompleteTaskResponse = getJSONFixture('uncompleteTaskResponse.json');
-  uncompleteTaskResponse.modified = now.getTime();  
+  uncompleteTaskResponse.modified = now.getTime();
 
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
@@ -466,7 +466,6 @@ describe('ItemsService', function() {
 
     // Should go to the end of the array with a fake UUID
     var items = ItemsService.getItems(testOwnerUUID);
-    var firstModified = items[3].modified;
     expect(items.length)
       .toBe(4);
     expect(UUIDService.isFakeUUID(items[3].uuid))
@@ -486,8 +485,6 @@ describe('ItemsService', function() {
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
-    expect(firstModified)
-      .toBeLessThan(items[3].modified);
 
     // 3. delete item
     // We're still expecting to get another try at creating the first
@@ -529,6 +526,30 @@ describe('ItemsService', function() {
       .toBeFalsy();
     expect(items[3].description)
       .toBeDefined();
+
+    // 6. delete online
+    $httpBackend.expectDELETE('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + updatedTestItem.uuid)
+       .respond(200, deleteItemResponse);
+    ItemsService.deleteItem(updatedTestItem, testOwnerUUID);
+    $httpBackend.flush();
+    expect(items.length)
+      .toBe(3);
+    expect(updatedTestItem.deleted)
+      .toBe(deleteItemResponse.deleted);
+    expect(updatedTestItem.modified)
+      .toBe(deleteItemResponse.result.modified);
+
+    // 7. undelete online
+    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + updatedTestItem.uuid + '/undelete')
+       .respond(200, undeleteItemResponse);
+    ItemsService.undeleteItem(updatedTestItem, testOwnerUUID);
+    $httpBackend.flush();
+    expect(items.length)
+      .toBe(4);
+    expect(items[3].deleted)
+      .toBeUndefined();
+    expect(items[3].modified)
+      .toBe(undeleteItemResponse.modified);
   });
 
   it('should handle task offline create, update, delete', function () {
@@ -545,7 +566,6 @@ describe('ItemsService', function() {
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(4);
-    var firstModified = testItem.modified;
     
     // 2. make item into task
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
@@ -571,8 +591,6 @@ describe('ItemsService', function() {
 
     expect(tasks.length)
       .toBe(4);
-    expect(firstModified)
-      .toBeLessThan(tasks[3].modified);
 
     // 4. delete task
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
@@ -616,6 +634,30 @@ describe('ItemsService', function() {
       .toBeFalsy();
     expect(tasks[3].description)
       .toBeDefined();
+
+    // 7. delete online
+    $httpBackend.expectDELETE('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + updatedTestTask.uuid)
+       .respond(200, deleteItemResponse);
+    TasksService.deleteTask(updatedTestTask, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(3);
+    expect(updatedTestTask.deleted)
+      .toBe(deleteItemResponse.deleted);
+    expect(updatedTestTask.modified)
+      .toBe(deleteItemResponse.result.modified);
+
+    // 8. undelete online
+    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + updatedTestTask.uuid + '/undelete')
+       .respond(200, undeleteItemResponse);
+    TasksService.undeleteTask(updatedTestTask, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+    expect(tasks[3].deleted)
+      .toBeUndefined();
+    expect(tasks[3].modified)
+      .toBe(undeleteItemResponse.modified);
   });
 
   it('should handle task offline complete, uncomplete', function () {
@@ -663,24 +705,139 @@ describe('ItemsService', function() {
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task', testTask)
        .respond(200, putNewItemResponse);
     $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + putNewItemResponse.uuid + '/complete')
-       .respond(200, completeTaskResponse);       
+       .respond(200, completeTaskResponse);
     TasksService.completeTask(testTask, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(4);
     expect(completedTasks.length)
       .toBe(2);
+    expect(completedTasks[1].completed)
+      .toBe(completeTaskResponse.completed);
+    expect(completedTasks[1].modified)
+      .toBe(completeTaskResponse.result.modified);
 
     // 5. uncomplete online
 
     $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + putNewItemResponse.uuid + '/uncomplete')
-       .respond(200, uncompleteTaskResponse);       
+       .respond(200, uncompleteTaskResponse);
     TasksService.uncompleteTask(testTask, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(4);
     expect(completedTasks.length)
       .toBe(1);
+    expect(tasks[3].modified)
+      .toBe(uncompleteTaskResponse.modified);
+  });
+
+
+  it('should handle note offline create, update, delete', function () {
+    MockUserSessionService.offlineEnabled = true;
+
+    // 1. save new item
+    var testItem = {
+      'title': 'test note'
+    };
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+       .respond(404);
+    ItemsService.saveItem(testItem, testOwnerUUID);
+    $httpBackend.flush();
+    var items = ItemsService.getItems(testOwnerUUID);
+    expect(items.length)
+      .toBe(4);
+    
+    // 2. make item into note
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+       .respond(404);
+    ItemsService.itemToNote(testItem, testOwnerUUID);
+    $httpBackend.flush();
+    expect(items.length)
+      .toBe(3);
+    var notes = NotesService.getNotes(testOwnerUUID);
+    expect(notes.length)
+      .toBe(4);
+
+    // 3. update note
+    var updatedTestNote = {
+      'uuid': testItem.uuid,
+      'title': testItem.title,
+      'description': 'test description'
+    };
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+       .respond(404);
+    NotesService.saveNote(updatedTestNote, testOwnerUUID);
+    $httpBackend.flush();
+
+    expect(notes.length)
+      .toBe(4);
+
+    // 4. delete note
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+       .respond(404);
+    NotesService.deleteNote(updatedTestNote, testOwnerUUID);
+    $httpBackend.flush();
+    expect(notes.length)
+      .toBe(3);
+
+    // 5. undelete note
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+       .respond(404);
+    NotesService.undeleteNote(updatedTestNote, testOwnerUUID);
+    $httpBackend.flush();
+    expect(notes.length)
+      .toBe(4);
+
+    // 6. synchronize items and get back online, we're expecting the delete and undelete to cancel each other
+    var latestModified = now.getTime();
+    MockUserSessionService.setLatestModified(latestModified);
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, '{}');
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+        .respond(200, putNewItemResponse);
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/note/' + putNewItemResponse.uuid,
+                           testItem)
+        .respond(200, putExistingItemResponse);
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/note/' + putNewItemResponse.uuid,
+                           updatedTestNote)
+        .respond(200, putExistingItemResponse);
+    ItemsService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+
+    // Verify that everything is right with the created note
+    expect(items.length)
+      .toBe(3);
+    expect(notes.length)
+      .toBe(4);
+    expect(UUIDService.isFakeUUID(notes[3].uuid))
+      .toBeFalsy();
+    expect(notes[3].description)
+      .toBeDefined();
+
+    // 7. delete online
+    $httpBackend.expectDELETE('/api/' + MockUserSessionService.getActiveUUID() + '/note/' + updatedTestNote.uuid)
+       .respond(200, deleteItemResponse);
+    NotesService.deleteNote(updatedTestNote, testOwnerUUID);
+    $httpBackend.flush();
+    expect(notes.length)
+      .toBe(3);
+    expect(updatedTestNote.deleted)
+      .toBe(deleteItemResponse.deleted);
+    expect(updatedTestNote.modified)
+      .toBe(deleteItemResponse.result.modified);
+
+    // 8. undelete online
+    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/note/' + updatedTestNote.uuid + '/undelete')
+       .respond(200, undeleteItemResponse);
+    NotesService.undeleteNote(updatedTestNote, testOwnerUUID);
+    $httpBackend.flush();
+    expect(notes.length)
+      .toBe(4);
+    expect(notes[3].deleted)
+      .toBeUndefined();
+    expect(notes[3].modified)
+      .toBe(undeleteItemResponse.modified);
   });
 
 

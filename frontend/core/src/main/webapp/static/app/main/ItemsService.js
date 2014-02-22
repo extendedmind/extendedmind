@@ -51,18 +51,66 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       processSynchronizeUpdateResult(ownerUUID, response);
     }
   };
+  // Handles response from backend where offline buffer has been used
   var defaultCallback = function(request, response, queue) {
-    // TODO: Make this better by not replacing the UUID and modified values 
-    //       right away but instead creating a realUuid and realModified values
-    //       that can be traded for the real ones on synchronize callback. That
-    //       would ensure that when going online, the items don't change places
-    //       and also (if using 'track by' with uuid+modified key in lists) no 
-    //       unnecessary rendering would take place after online => faster UX.
-
+    var properties;
     // Get the necessary information from the request
+    // ****
+    // POST
+    // ****
     if (request.content.method === 'post'){
-      // TODO
+      if (request.params.type === 'item'){
+        if (request.content.url.endsWith('/undelete')){
+          // Undelete
+          properties = {modified: response.modified};
+          if (!ArrayService.updateItemProperties(
+                    request.params.uuid,
+                    properties,
+                    items[request.params.owner].activeItems,
+                    items[request.params.owner].deletedItems)){
+            // The item might have moved to either notes or tasks
+            if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)){
+              if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)){
+                $rootScope.$emit('emException', {type: 'response', response: response,
+                          description: 'Could not update undeleted item with values from server'});
+                return;
+              }
+            }
+          }
+        }
+      }else if (request.params.type === 'task'){
+        if (request.content.url.endsWith('/undelete') || request.content.url.endsWith('/uncomplete')){
+          // Undelete or uncomplete: only modified changes
+          properties = {modified: response.modified};
+        }else if (request.content.url.endsWith('/complete')){
+          // Complete
+          properties = {completed: response.completed, modified: response.result.modified};
+        }
+        if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)){
+          $rootScope.$emit('emException', {type: 'response', response: response,
+                    description: 'Could not update modified task with values from server'});
+          return;
+        }
+      }else if (request.params.type === 'note'){
+        if (request.content.url.endsWith('/undelete')){
+          properties = {modified: response.modified};
+          if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)){
+            $rootScope.$emit('emException', {type: 'response', response: response,
+                      description: 'Could not update undeleted note with values from server'});
+            return;
+          }
+        }
+      }
+    // ***
+    // PUT
+    // ***
     }else if (request.content.method === 'put'){
+      // TODO: Make this better by not replacing the UUID and modified values 
+      //       right away but instead creating a realUuid and realModified values
+      //       that can be traded for the real ones on synchronize callback. That
+      //       would ensure that when going online, the items don't change places
+      //       and also (if using 'track by' with uuid+modified key in lists) no 
+      //       unnecessary rendering would take place after online => faster UX.
       var uuid, oldUuid;
       if (request.params.uuid){
         // Put existing
@@ -89,44 +137,90 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
         }
       }
 
+      properties = {uuid: uuid, modified: response.modified};
       if (request.params.type === 'item'){
-        if (!ArrayService.updateItemUUIDAndModified(
+        if (!ArrayService.updateItemProperties(
                   oldUuid,
-                  uuid,
-                  response.modified,
+                  properties,
                   items[request.params.owner].activeItems,
                   items[request.params.owner].deletedItems)){
           // The item might have moved to either notes or tasks
-          if (!TasksService.updateTask(oldUuid, uuid, response.modified, request.params.owner)){
-            if (!NotesService.updateNote(oldUuid, uuid, response.modified, request.params.owner)){
-              $rootScope.$emit('emException', {type: 'response', response: response, description: 'Could not update item from with values from server'});
-              return;              
+          if (!TasksService.updateTaskProperties(oldUuid, properties, request.params.owner)){
+            if (!NotesService.updateNoteProperties(oldUuid, properties, request.params.owner)){
+              $rootScope.$emit('emException', {type: 'response', response: response,
+                              description: 'Could not update item with values from server'});
+              return;
             }
           }
         }
       }else if (request.params.type === 'task'){
-        if (!TasksService.updateTask(oldUuid, uuid, response.modified, request.params.owner)){
+        if (!TasksService.updateTaskProperties(oldUuid, properties, request.params.owner)){
           $rootScope.$emit('emException',
                 {type: 'response',
-                response: {uuid: newUuid, modified: newModified},
-                description: 'Could not update task from with values from server'});
+                response: response,
+                description: 'Could not update task with values from server'});
           return;
-        };
+        }
       }else if (request.params.type === 'note'){
-        
-      }else if (request.params.type === 'tag'){
-        
-      }else if (request.params.type === 'list'){
-        
+        if (!NotesService.updateNoteProperties(oldUuid, properties, request.params.owner)){
+          $rootScope.$emit('emException',
+                {type: 'response',
+                response: response,
+                description: 'Could not update note with values from server'});
+          return;
+        }
       }
-
+    // ******
+    // DELETE
+    // ******      
     }else if (request.content.method === 'delete'){
-      
+      properties = {deleted: response.deleted, modified: response.result.modified};
+      if (request.params.type === 'item'){
+        if (!ArrayService.updateItemProperties(
+                  request.params.uuid,
+                  properties,
+                  items[request.params.owner].activeItems,
+                  items[request.params.owner].deletedItems)){
+          // The item might have moved to either notes or tasks
+          if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)){
+            if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)){
+              $rootScope.$emit('emException', {type: 'response', response: response,
+                        description: 'Could not update deleted item with values from server'});
+              return;
+            }
+          }
+        }
+      }else if (request.params.type === 'task'){
+        if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)){
+          $rootScope.$emit('emException', {type: 'response', response: response,
+                    description: 'Could not update deleted task with values from server'});
+          return;
+        }
+      }else if (request.params.type === 'note'){
+        if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)){
+          $rootScope.$emit('emException', {type: 'response', response: response,
+                    description: 'Could not update deleted note with values from server'});
+          return;
+        }
+      }
     }
   };
   BackendClientService.registerSecondaryGetCallback(synchronizeCallback);
   BackendClientService.registerDefaultCallback(defaultCallback);
 
+  function updateItem(item, ownerUUID) {
+    return ArrayService.updateItem(item,
+            items[ownerUUID].activeItems,
+            items[ownerUUID].deletedItems);
+  }
+
+  function setItem(item, ownerUUID){
+    initializeArrays(ownerUUID);
+    return ArrayService.setItem(item,
+      items[ownerUUID].activeItems,
+      items[ownerUUID].deletedItems);
+  }
+  
   return {
     // Main method to synchronize all arrays with backend.
     synchronize: function(ownerUUID) {
@@ -191,9 +285,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
           BackendClientService.put('/api/' + params.owner + '/item/' + item.uuid,
                    this.putNewItemRegex, params, item);
           item.modified = (new Date()).getTime() + 1000000;
-          ArrayService.updateItem(item,
-            items[ownerUUID].activeItems,
-            items[ownerUUID].deletedItems);
+          updateItem(item, ownerUUID);
           deferred.resolve(item);
         } else{
           // Online
@@ -201,9 +293,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
                    this.putExistingItemRegex, item).then(function(result) {
             if (result.data){
               item.modified = result.data.modified;
-              ArrayService.updateItem(item,
-                items[ownerUUID].activeItems,
-                items[ownerUUID].deletedItems);
+              updateItem(item, ownerUUID);
               deferred.resolve(item);
             }
           });
@@ -220,10 +310,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
           // it to the end of the list
           item.uuid = fakeUUID;
           item.modified = (new Date()).getTime() + 1000000;
-          initializeArrays(ownerUUID);
-          ArrayService.setItem(item,
-            items[ownerUUID].activeItems,
-            items[ownerUUID].deletedItems);
+          setItem(item, ownerUUID);
           deferred.resolve(item);
         } else{
           // Online
@@ -232,10 +319,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
             if (result.data){
               item.uuid = result.data.uuid;
               item.modified = result.data.modified;
-              initializeArrays(ownerUUID);
-              ArrayService.setItem(item,
-                items[ownerUUID].activeItems,
-                items[ownerUUID].deletedItems);
+              setItem(item, ownerUUID);
               deferred.resolve(item);
             }
           });
@@ -256,9 +340,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
         var fakeTimestamp = (new Date()).getTime() + 1000000;
         item.deleted = fakeTimestamp;
         item.modified = fakeTimestamp;
-        ArrayService.updateItem(item,
-          items[ownerUUID].activeItems,
-          items[ownerUUID].deletedItems);
+        updateItem(item, ownerUUID);
       }else {
         // Online
         BackendClientService.deleteOnline('/api/' + ownerUUID + '/item/' + item.uuid,
@@ -266,9 +348,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
           if (result.data){
             item.deleted = result.data.deleted;
             item.modified = result.data.result.modified;
-            ArrayService.updateItem(item,
-              items[ownerUUID].activeItems,
-              items[ownerUUID].deletedItems);
+            updateItem(item, ownerUUID);
           }
         });
       }
@@ -280,9 +360,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
         BackendClientService.post('/api/' + ownerUUID + '/item/' + item.uuid + '/undelete',
                  this.deleteItemRegex, params);
         delete item.deleted;
-        ArrayService.updateItem(item,
-          items[ownerUUID].activeItems,
-          items[ownerUUID].deletedItems);
+        updateItem(item, ownerUUID);
       }else{
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/item/' + item.uuid + '/undelete',
@@ -290,9 +368,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
           if (result.data){
             delete item.deleted;
             item.modified = result.data.modified;
-            ArrayService.updateItem(item,
-              items[ownerUUID].activeItems,
-              items[ownerUUID].deletedItems);
+            updateItem(item, ownerUUID);
           }
         });
       }

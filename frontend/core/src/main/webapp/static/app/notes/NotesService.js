@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function NotesService(BackendClientService, ArrayService, ListsService){
+function NotesService(UUIDService, UserSessionService, BackendClientService, ArrayService, ListsService){
 
   // An object containing notes for every owner
   var notes = {};
@@ -22,6 +22,21 @@ function NotesService(BackendClientService, ArrayService, ListsService){
     return [{array: notes[ownerUUID].archivedNotes, id: 'archived'}];
   }
 
+  function updateNote(note, ownerUUID) {
+    return ArrayService.updateItem(note,
+              notes[ownerUUID].activeNotes,
+              notes[ownerUUID].deletedNotes,
+              getOtherArrays(ownerUUID));
+  }
+
+  function setNote(note, ownerUUID){
+    initializeArrays(ownerUUID);
+    ArrayService.setItem(note,
+      notes[ownerUUID].activeNotes,
+      notes[ownerUUID].deletedNotes,
+      getOtherArrays(ownerUUID));
+  }
+
   // Setup callback to ListsService
   var itemArchiveCallback = function(children, archived, ownerUUID){
     if (notes[ownerUUID] && children){
@@ -30,28 +45,19 @@ function NotesService(BackendClientService, ArrayService, ListsService){
         if (activeNote){
           activeNote.archived = archived;
           activeNote.modified = children[i].modified;
-          ArrayService.updateItem(activeNote,
-            notes[ownerUUID].activeNotes,
-            notes[ownerUUID].deletedNotes,
-            getOtherArrays(ownerUUID));
+          updateNote(activeNote, ownerUUID);
         }else{
           var deletedNote = notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', children[i].uuid);
           if (deletedNote){
             deletedNote.archived = archived;
             deletedNote.modified = children[i].modified;
-            ArrayService.updateItem(deletedNote,
-              notes[ownerUUID].activeNotes,
-              notes[ownerUUID].deletedNotes,
-              getOtherArrays(ownerUUID));
+            updateNote(deletedNote, ownerUUID);
           }else{
             var archivedNote = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue('uuid', children[i].uuid);
             if (archivedNote){
               archivedNote.archived = archived;
               archivedNote.modified = children[i].modified;
-              ArrayService.updateItem(archivedNote,
-                notes[ownerUUID].activeNotes,
-                notes[ownerUUID].deletedNotes,
-                getOtherArrays(ownerUUID));
+              updateNote(archivedNote, ownerUUID);
             }
           }
         }
@@ -61,7 +67,7 @@ function NotesService(BackendClientService, ArrayService, ListsService){
   ListsService.registerItemArchiveCallback(itemArchiveCallback, 'NotesService');
 
 
-  function addListToTasks(notesResponse, ownerUUID){
+  function addListToTasks(notesResponse){
     if (notesResponse){
       for (var i=0, len=notesResponse.length; i<len; i++) {
         if (notesResponse[i].relationships && notesResponse[i].relationships.parent){
@@ -71,7 +77,7 @@ function NotesService(BackendClientService, ArrayService, ListsService){
     }
   }
 
-  function moveListToParent(note, ownerUUID){
+  function moveListToParent(note){
     if (note.relationships && note.relationships.list){
       var list = note.relationships.list;
       note.relationships.parent = list;
@@ -83,7 +89,7 @@ function NotesService(BackendClientService, ArrayService, ListsService){
   return {
     setNotes : function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      addListToTasks(notesResponse, ownerUUID);
+      addListToTasks(notesResponse);
       return ArrayService.setArrays(
         notesResponse,
         notes[ownerUUID].activeNotes,
@@ -95,6 +101,14 @@ function NotesService(BackendClientService, ArrayService, ListsService){
         notesResponse,
         notes[ownerUUID].activeNotes,
         notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
+    },
+    updateNoteProperties: function(uuid, properties, ownerUUID) {
+      return ArrayService.updateItemProperties(
+                uuid,
+                properties,
+                notes[ownerUUID].activeNotes,
+                notes[ownerUUID].deletedNotes,
+                getOtherArrays(ownerUUID));
     },
     getNotes : function(ownerUUID) {
       initializeArrays(ownerUUID);
@@ -109,66 +123,108 @@ function NotesService(BackendClientService, ArrayService, ListsService){
       return notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveNote : function(note, ownerUUID) {
-      var list = moveListToParent(note, ownerUUID);
+      var params;
+      var list = moveListToParent(note);
       if (note.uuid){
         // Existing note
-        BackendClientService.putOnline('/api/' + ownerUUID + '/note/' + note.uuid,
-                 this.putExistingNoteRegex, note).then(function(result) {
-          if (result.data){
-            note.modified = result.data.modified;
-            if (list){
-              note.relationships.list = list;
-            }
-            ArrayService.updateItem(
-              note,
-              notes[ownerUUID].activeNotes,
-              notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
+        if (UserSessionService.isOfflineEnabled()){
+          // Push to offline buffer
+          params = {type: 'note', owner: ownerUUID, uuid: note.uuid};
+          BackendClientService.put('/api/' + ownerUUID + '/note/' + note.uuid,
+                   this.putExistingNoteRegex, params, note);
+          note.modified = (new Date()).getTime() + 1000000;
+          if (list){
+            note.relationships.list = list;
           }
-        });
+          updateNote(note, ownerUUID);
+
+        }else {
+          // Online
+          BackendClientService.putOnline('/api/' + ownerUUID + '/note/' + note.uuid,
+                   this.putExistingNoteRegex, note).then(function(result) {
+            if (result.data){
+              note.modified = result.data.modified;
+              if (list){
+                note.relationships.list = list;
+              }
+              updateNote(note, ownerUUID);
+            }
+          });
+        }
       }else{
         // New note
-        BackendClientService.putOnline('/api/' + ownerUUID + '/note',
-                 this.putNewNoteRegex, note).then(function(result) {
-          if (result.data){
-            note.uuid = result.data.uuid;
-            note.modified = result.data.modified;
-            if (list){
-              note.relationships.list = list;
+        if (UserSessionService.isOfflineEnabled()){
+          // Push to offline queue with fake UUID
+          var fakeUUID = UUIDService.generateFakeUUID();
+          params = {type: 'note', owner: ownerUUID, fakeUUID: fakeUUID};
+          BackendClientService.put('/api/' + ownerUUID + '/note',
+                   this.putNewNoteRegex, params, note);
+          note.uuid = fakeUUID;
+          note.modified = (new Date()).getTime() + 1000000;
+          if (list){
+            note.relationships.list = list;
+          }
+          setNote(note, ownerUUID);
+        }else {
+          // Online      
+          BackendClientService.putOnline('/api/' + ownerUUID + '/note',
+                   this.putNewNoteRegex, note).then(function(result) {
+            if (result.data){
+              note.uuid = result.data.uuid;
+              note.modified = result.data.modified;
+              if (list){
+                note.relationships.list = list;
+              }
+              setNote(note, ownerUUID);
             }
-            initializeArrays(ownerUUID);
-            ArrayService.setItem(
-              note,
-              notes[ownerUUID].activeNotes,
-              notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
+          });
+        }
+      }
+    },
+    deleteNote : function(note, ownerUUID) {
+      if (UserSessionService.isOfflineEnabled()){
+        // Offline
+        var params = {type: 'note', owner: ownerUUID, uuid: note.uuid,
+                      reverse: {
+                        method: 'post',
+                        url: '/api/' + ownerUUID + '/note/' + note.uuid + '/undelete'
+                      }};
+        BackendClientService.delete('/api/' + ownerUUID + '/note/' + note.uuid,
+                 this.deleteNoteRegex, params);
+        var fakeTimestamp = (new Date()).getTime() + 1000000;
+        note.deleted = fakeTimestamp;
+        note.modified = fakeTimestamp;
+        updateNote(note, ownerUUID);
+      }else {
+        BackendClientService.deleteOnline('/api/' + ownerUUID + '/note/' + note.uuid,
+                 this.deleteNoteRegex).then(function(result) {
+          if (result.data){
+            note.deleted = result.data.deleted;
+            note.modified = result.data.result.modified;
+            updateNote(note, ownerUUID);
           }
         });
       }
     },
-    deleteNote : function(note, ownerUUID) {
-      BackendClientService.deleteOnline('/api/' + ownerUUID + '/note/' + note.uuid,
-               this.deleteNoteRegex).then(function(result) {
-        if (result.data){
-          note.deleted = result.data.deleted;
-          note.modified = result.data.result.modified;
-          ArrayService.updateItem(
-              note,
-              notes[ownerUUID].activeNotes,
-              notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
-        }
-      });
-    },
     undeleteNote : function(note, ownerUUID) {
-      BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.uuid + '/undelete',
-               this.deleteNoteRegex).then(function(result) {
-        if (result.data){
-          delete note.deleted;
-          note.modified = result.data.modified;
-          ArrayService.updateItem(
-              note,
-              notes[ownerUUID].activeNotes,
-              notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
-        }
-      });
+      if (UserSessionService.isOfflineEnabled()){
+        // Offline
+        var params = {type: 'note', owner: ownerUUID, uuid: note.uuid};
+        BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/undelete',
+                 this.deleteNoteRegex, params);
+        delete note.deleted;
+        updateNote(note, ownerUUID);
+      }else {
+        // Online
+        BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.uuid + '/undelete',
+                 this.deleteNoteRegex).then(function(result) {
+          if (result.data){
+            delete note.deleted;
+            note.modified = result.data.modified;
+            updateNote(note, ownerUUID);
+          }
+        });
+      }
     },
     // Regular expressions for note requests
     putNewNoteRegex :
@@ -194,5 +250,5 @@ function NotesService(BackendClientService, ArrayService, ListsService){
   };
 }
   
-NotesService.$inject = ['BackendClientService', 'ArrayService', 'ListsService'];
+NotesService.$inject = ['UUIDService', 'UserSessionService', 'BackendClientService', 'ArrayService', 'ListsService'];
 angular.module('em.services').factory('NotesService', NotesService);
