@@ -379,7 +379,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/lists/edit/:uuid', {
-      templateUrl: 'static/app/main/editList.html',
+      templateUrl: 'static/app/base/editList.html',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
@@ -410,7 +410,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/contexts/edit/:uuid', {
-      templateUrl: 'static/app/main/editContext.html',
+      templateUrl: 'static/app/base/editContext.html',
       resolve: {
         auth: ['AuthenticationService',
         function(auth) {
