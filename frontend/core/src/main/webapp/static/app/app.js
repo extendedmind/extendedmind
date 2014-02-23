@@ -1,3 +1,4 @@
+/* global angular, html5Mode, FastClick */
 'use strict';
 
 angular.module('em.app', ['ngRoute', 'common', 'em.directives', 'em.filters', 'em.services']);
@@ -12,6 +13,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $locationProvider.html5Mode(h5m);
 
     $routeProvider.when('/', {
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
+      },
       redirectTo: 'my/tasks'
     });
 
@@ -43,6 +50,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(UserSessionService) {
           UserSessionService.setMyPrefix();
         }]
+
       }
       
     });
