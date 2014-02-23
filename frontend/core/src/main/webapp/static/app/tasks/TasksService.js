@@ -116,6 +116,16 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
     }
   }
 
+  function addDateToTasks(tasksResponse){
+    if (tasksResponse){
+      for (var i=0, len=tasksResponse.length; i<len; i++) {
+        if (tasksResponse[i].due){
+          tasksResponse[i].date = tasksResponse[i].due;
+        }
+      }
+    }
+  }
+
   function moveContextToTags(task, ownerUUID){
     if (task.relationships && task.relationships.context){
       var context = task.relationships.context;
@@ -157,6 +167,14 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
     }
   }
 
+  function moveDateToDue(task){
+    if (task.date){
+      task.due = task.date;
+      delete task.date;
+      return task.due;
+    } 
+  }
+
   function processCompletedTask(task, ownerUUID){
     // Don't change modified on complete to prevent
     // task from moving down in the list on uncomplete.
@@ -176,6 +194,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       cleanRecentlyCompletedTasks(ownerUUID);
       addContextToTasks(tasksResponse, ownerUUID);
       addListToTasks(tasksResponse);
+      addDateToTasks(tasksResponse);
       return ArrayService.setArrays(
           tasksResponse,
           tasks[ownerUUID].activeTasks,
@@ -215,10 +234,23 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       return tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveTask: function(task, ownerUUID) {
+      function updateTransientProperties(context, list, due){
+        if (context){
+          task.relationships.context = context;
+        }
+        if (list){
+          task.relationships.list = list;
+        }
+        if (due){
+          task.date = due;
+        }
+      }
+
       var deferred = $q.defer();
       cleanRecentlyCompletedTasks(ownerUUID);
       var context = moveContextToTags(task, ownerUUID);
       var list = moveListToParent(task);
+      var due = moveDateToDue(task);
       if (task.uuid){
         // Existing task
         if (UserSessionService.isOfflineEnabled()){
@@ -227,12 +259,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
           BackendClientService.put('/api/' + params.owner + '/task/' + task.uuid,
                    this.putExistingTaskRegex, params, task);
           task.modified = (new Date()).getTime() + 1000000;
-          if (context){
-            task.relationships.context = context;
-          }
-          if (list){
-            task.relationships.list = list;
-          }
+          updateTransientProperties(context, list, due);
           updateTask(task, ownerUUID);
           deferred.resolve(task);
         }else{
@@ -241,12 +268,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
                    this.putExistingTaskRegex, task).then(function(result) {
             if (result.data){
               task.modified = result.data.modified;
-              if (context){
-                task.relationships.context = context;
-              }
-              if (list){
-                task.relationships.list = list;
-              }
+              updateTransientProperties(context, list, due);
               updateTask(task, ownerUUID);
               deferred.resolve(task);
             }
@@ -264,6 +286,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
           // Use a fake modified that is far enough in the to make
           // it to the end of the list
           task.modified = (new Date()).getTime() + 1000000;
+          updateTransientProperties(context, list, due);
           setTask(task, ownerUUID);
           deferred.resolve(task);
         } else{
@@ -273,12 +296,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
             if (result.data){
               task.uuid = result.data.uuid;
               task.modified = result.data.modified;
-              if (context){
-                task.relationships.context = context;
-              }
-              if (list){
-                task.relationships.list = list;
-              }
+              updateTransientProperties(context, list, due);
               setTask(task, ownerUUID);
               deferred.resolve(task);
             }
