@@ -84,10 +84,6 @@ describe('AuthenticationService', function() {
       HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       HttpClientService = _HttpClientService_;
     });
-
-    // Remove refreshing
-    BackendClientService.registerRefreshCredentialsCallback(undefined);
-
   });
 
   afterEach(function() {
@@ -118,6 +114,10 @@ describe('AuthenticationService', function() {
   });
 
   it('should log out', function() {
+    MockUserSessionService.setIsAuthenticated(true);
+    MockUserSessionService.setIsAuthenticateValid(true);
+    MockUserSessionService.setIsAuthenticateReplaceable(false);
+    
     var loggedOut;
     $httpBackend.expectPOST('/api/logout').respond(200, logoutResponse);
     AuthenticationService.logout().then(function(response) {
@@ -153,10 +153,10 @@ describe('AuthenticationService', function() {
     expect(signUp).toBeDefined();
   });
 
-  it('should verify and update authentication with valid authentication', function() {
+  it('should verify and update authentication with valid, non-replaceable authentication', function() {
     MockUserSessionService.setIsAuthenticated(true);
-    MockUserSessionService.setIsAuthenticateValid(false);
     MockUserSessionService.setIsAuthenticateValid(true);
+    MockUserSessionService.setIsAuthenticateReplaceable(false);
 
     verifyAndUpdateAuthenticationPromise().then(function(promise) {
       expect(promise).toEqual(true);

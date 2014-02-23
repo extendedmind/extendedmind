@@ -91,11 +91,11 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
     },
     getInvite: function(inviteResponseCode, email) {
       return BackendClientService.get('/api/invite/' + inviteResponseCode + '?email=' + email,
-        this.getInviteRegex);
+        this.getInviteRegex, true);
     },
     signUp: function(inviteResponseCode, data) {
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',
-        this.acceptInviteRegex, data);
+        this.acceptInviteRegex, data, true);
     },
     switchActiveUUID: function(uuid) {
       UserSessionService.setActiveUUID(uuid);

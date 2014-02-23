@@ -38,14 +38,21 @@ function BackendClientService($q, $rootScope, HttpClientService, HttpBasicAuthen
     $rootScope.$emit('emException', {type: 'regex', regex: regex, method: method, url: url});
   }
 
-  methods.get = function(url, regex) {
-    return refreshCredentials().then(function(){
+  methods.get = function(url, regex, skipRefresh) {
+    function doGet(){
       if (regex.test(url)){
         return HttpClientService.get(getUrlPrefix() + url);
       }else {
         emitRegexException(regex, 'get', url);
       }
-    });
+    }
+    if (!skipRefresh){
+      return refreshCredentials().then(function(){
+        return doGet();
+      });
+    }else{
+      return doGet();
+    }
   };
 
   methods.getSecondary = function(url, regex, params) {
