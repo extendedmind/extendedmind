@@ -1,3 +1,4 @@
+/* global angular, useOfflineBuffer */
 'use strict';
 
 function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorageService, SessionStorageService) {
@@ -5,6 +6,7 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
   var latestModified = {};
   var itemsSynchronize = {};
   var ownerPrefix = 'my'; // default owner
+  var offlineBufferEnabled = (typeof useOfflineBuffer !== 'undefined') ? useOfflineBuffer: false;
 
   function setOwnerPrefix(owner) {
     ownerPrefix = owner;
@@ -43,9 +45,7 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
       }
     },
     isOfflineEnabled: function() {
-      if (LocalStorageService.getReplaceable()) {
-        return true;
-      }
+      return offlineBufferEnabled;
     },
     clearUser: function() {
       SessionStorageService.clearUser();
@@ -151,8 +151,11 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
     },
     getItemsSynchronized: function(ownerUUID) {
       return (itemsSynchronize[ownerUUID]) ? itemsSynchronize[ownerUUID].itemsSynchronized : undefined;
+    },
+    getRememberByDefault: function() {
+      return offlineBufferEnabled;
     }
   };
 }
-UserSessionService['$inject'] = ['base64', 'HttpBasicAuthenticationService', 'LocalStorageService', 'SessionStorageService'];
+UserSessionService.$inject = ['base64', 'HttpBasicAuthenticationService', 'LocalStorageService', 'SessionStorageService'];
 angular.module('em.services').factory('UserSessionService', UserSessionService);
