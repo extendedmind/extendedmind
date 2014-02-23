@@ -1,7 +1,7 @@
 /* global angular, urlPrefix */
 'use strict';
 
-function BackendClientService($rootScope, HttpClientService, HttpBasicAuthenticationService, UserSessionService) {
+function BackendClientService($q, $rootScope, HttpClientService, HttpBasicAuthenticationService, UserSessionService) {
   var methods = {};
 
   function getUrlPrefix() {
@@ -13,10 +13,24 @@ function BackendClientService($rootScope, HttpClientService, HttpBasicAuthentica
   methods.apiPrefixRegex = /\/api\//;
   methods.undeleteRegex = /\/undelete/;
 
+  var refreshCredentialsCallback;
+
   function refreshCredentials() {
-    var credentials = UserSessionService.getCredentials();
-    if (HttpBasicAuthenticationService.getCredentials() !== credentials){
-      HttpBasicAuthenticationService.setCredentials(credentials);
+    function doRefreshCredentials(){
+      var credentials = UserSessionService.getCredentials();
+      if (HttpBasicAuthenticationService.getCredentials() !== credentials){
+        HttpBasicAuthenticationService.setCredentials(credentials);
+      }
+    }
+    if (refreshCredentialsCallback){
+      return refreshCredentialsCallback().then(function(){
+        doRefreshCredentials();
+      });
+    }else{
+      var deferred = $q.defer();
+      doRefreshCredentials();
+      deferred.resolve();
+      return deferred.promise;
     }
   }
 
@@ -25,61 +39,67 @@ function BackendClientService($rootScope, HttpClientService, HttpBasicAuthentica
   }
 
   methods.get = function(url, regex) {
-    refreshCredentials();
-    if (regex.test(url)){
-      return HttpClientService.get(getUrlPrefix() + url);
-    }else {
-      emitRegexException(regex, 'get', url);
-    }
+    return refreshCredentials().then(function(){
+      if (regex.test(url)){
+        return HttpClientService.get(getUrlPrefix() + url);
+      }else {
+        emitRegexException(regex, 'get', url);
+      }
+    });
   };
 
   methods.getSecondary = function(url, regex, params) {
-    refreshCredentials();
-    if (regex.test(url)){
-      return HttpClientService.getSecondary(getUrlPrefix() + url, params);
-    }else {
-      emitRegexException(regex, 'get', url);
-    }
+    return refreshCredentials().then(function(){
+      if (regex.test(url)){
+        return HttpClientService.getSecondary(getUrlPrefix() + url, params);
+      }else {
+        emitRegexException(regex, 'get', url);
+      }
+    });
   };
 
   methods.delete = function(url, regex, params) {
-    refreshCredentials();
-    if (regex.test(url)){
-      return HttpClientService.delete(getUrlPrefix() + url, params);
-    }else {
-      emitRegexException(regex, 'delete', url);
-    }
+    return refreshCredentials().then(function(){
+      if (regex.test(url)){
+        return HttpClientService.delete(getUrlPrefix() + url, params);
+      }else {
+        emitRegexException(regex, 'delete', url);
+      }
+    });
+
   };
 
   methods.deleteOnline = function(url, regex) {
-    refreshCredentials();
-    if (regex.test(url)){
-      return HttpClientService.deleteOnline(getUrlPrefix() + url);
-    }else {
-      emitRegexException(regex, 'delete', url);
-    }
+    return refreshCredentials().then(function(){
+      if (regex.test(url)){
+        return HttpClientService.deleteOnline(getUrlPrefix() + url);
+      }else {
+        emitRegexException(regex, 'delete', url);
+      }
+    });
   };
 
   methods.put = function(url, regex, params, data) {
-    refreshCredentials();
-    if (regex.test(url)){
-      return HttpClientService.put(getUrlPrefix() + url, params, data);
-    }else {
-      emitRegexException(regex, 'put', url);
-    }
+    return refreshCredentials().then(function(){
+      if (regex.test(url)){
+        return HttpClientService.put(getUrlPrefix() + url, params, data);
+      }else {
+        emitRegexException(regex, 'put', url);
+      }
+    });
   };
 
   methods.putOnline = function(url, regex, data) {
-    refreshCredentials();
-    if (regex.test(url)){
-      return HttpClientService.putOnline(getUrlPrefix() + url, data);
-    }else {
-      emitRegexException(regex, 'post', url);
-    }
+    return refreshCredentials().then(function(){
+      if (regex.test(url)){
+        return HttpClientService.putOnline(getUrlPrefix() + url, data);
+      }else {
+        emitRegexException(regex, 'post', url);
+      }
+    });
   };
 
   methods.postPrimary = function(url, regex, data) {
-    refreshCredentials();
     if (regex.test(url)){
       return HttpClientService.postPrimary(getUrlPrefix() + url, data);
     }else {
@@ -87,25 +107,37 @@ function BackendClientService($rootScope, HttpClientService, HttpBasicAuthentica
     }
   };
 
-  methods.postOnline = function(url, regex, data) {
-    refreshCredentials();
-    if (regex.test(url)){
-      return HttpClientService.postOnline(getUrlPrefix() + url, data);
-    }else {
-      emitRegexException(regex, 'post', url);
+  methods.postOnline = function(url, regex, data, skipRefresh) {
+    function doPostOnline(url, regex, data){
+      if (regex.test(url)){
+        return HttpClientService.postOnline(getUrlPrefix() + url, data);
+      }else {
+        emitRegexException(regex, 'post', url);
+      }
+    }
+    if (!skipRefresh){
+      return refreshCredentials().then(function(){
+        return doPostOnline(url, regex, data);
+      });
+    }else{
+      return doPostOnline(url, regex, data);
     }
   };
 
   methods.post = function(url, regex, params, data) {
-    refreshCredentials();
-    if (regex.test(url)){
-      return HttpClientService.post(getUrlPrefix() + url, params, data);
-    }else {
-      emitRegexException(regex, 'post', url);
-    }
+    return refreshCredentials().then(function(){
+      if (regex.test(url)){
+        return HttpClientService.post(getUrlPrefix() + url, params, data);
+      }else {
+        emitRegexException(regex, 'post', url);
+      }
+    });
   };
 
   // Callback registration
+  methods.registerRefreshCredentialsCallback = function(callback){
+    refreshCredentialsCallback = callback;
+  };
   methods.registerPrimaryPostCallback = function(callback){
     HttpClientService.registerCallback('primary', callback);
   };
@@ -122,5 +154,5 @@ function BackendClientService($rootScope, HttpClientService, HttpBasicAuthentica
   return methods;
 }
 
-BackendClientService.$inject = ['$rootScope', 'HttpClientService', 'HttpBasicAuthenticationService', 'UserSessionService'];
+BackendClientService.$inject = ['$q', '$rootScope', 'HttpClientService', 'HttpBasicAuthenticationService', 'UserSessionService'];
 angular.module('em.services').factory('BackendClientService', BackendClientService);

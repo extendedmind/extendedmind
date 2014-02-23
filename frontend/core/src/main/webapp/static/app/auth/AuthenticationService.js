@@ -3,6 +3,9 @@
 
 function AuthenticationService($location, $q, BackendClientService, UserSessionService) {
   
+  // Register refresh credentials callback to backend
+  BackendClientService.registerRefreshCredentialsCallback(verifyAndUpdateAuthentication);
+
   // Register swapTokenCallback to backend
   var swapTokenCallback = function(request, authenticateResponse) {
     UserSessionService.setAuthenticateInformation(authenticateResponse);
@@ -24,7 +27,7 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
   function authenticate(remember) {
     var authenticateRequest = BackendClientService.postOnline('/api/authenticate', authenticateRegexp, {
       rememberMe: remember
-    });
+    }, true);
     return authenticateRequest.then(function(authenticateResponse) {
       return authenticateResponse.data;
     });
@@ -32,43 +35,46 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
 
   var authenticateRegexp = /api\/authenticate/;
 
+  function verifyAndUpdateAuthentication(){
+    var deferredAuthentication = $q.defer();
+    function validateAuthentication() {
+      deferredAuthentication.resolve();
+    }
+
+    if (UserSessionService.isAuthenticated()) {
+      if (UserSessionService.isAuthenticateValid()) {
+        validateAuthentication();
+      } else {
+        if (UserSessionService.isAuthenticateReplaceable()) {
+          if (UserSessionService.isOfflineEnabled()){
+            // Push token swap to be the first thing that is done
+            // when online connection is up
+            UserSessionService.setEncodedCredentialsFromLocalStorage();
+            BackendClientService.postPrimary('/api/authenticate', authenticateRegexp, {
+              rememberMe: true
+            });
+            validateAuthentication();
+          }else{
+            // Online
+            swapTokenAndAuthenticate().then(validateAuthentication);
+          }
+        } else {
+          deferredAuthentication.reject();
+        }
+      }
+    } else {
+      deferredAuthentication.reject();
+    }
+
+    deferredAuthentication.promise.then(null, function() {
+      $location.path('/login');
+    });
+    return deferredAuthentication.promise;
+  }
+
   return {
     verifyAndUpdateAuthentication: function() {
-      var deferredAuthentication = $q.defer();
-
-      function validateAuthentication() {
-        deferredAuthentication.resolve();
-      }
-
-      if (UserSessionService.isAuthenticated()) {
-        if (UserSessionService.isAuthenticateValid()) {
-          validateAuthentication();
-        } else {
-          if (UserSessionService.isAuthenticateReplaceable()) {
-            if (UserSessionService.isOfflineEnabled()){
-              // Push token swap to be the first thing that is done
-              // when online connection is up
-              UserSessionService.setEncodedCredentialsFromLocalStorage();
-              BackendClientService.postPrimary('/api/authenticate', authenticateRegexp, {
-                rememberMe: true
-              });
-              validateAuthentication();
-            }else{
-              // Online
-              swapTokenAndAuthenticate().then(validateAuthentication);
-            }
-          } else {
-            deferredAuthentication.reject();
-          }
-        }
-      } else {
-        deferredAuthentication.reject();
-      }
-
-      deferredAuthentication.promise.then(null, function() {
-        $location.path('/login');
-      });
-      return deferredAuthentication.promise;
+      return verifyAndUpdateAuthentication();
     },
     login: function(user) {
       var remember = user.remember || false;

@@ -84,6 +84,10 @@ describe('AuthenticationService', function() {
       HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       HttpClientService = _HttpClientService_;
     });
+
+    // Remove refreshing
+    BackendClientService.registerRefreshCredentialsCallback(undefined);
+
   });
 
   afterEach(function() {
