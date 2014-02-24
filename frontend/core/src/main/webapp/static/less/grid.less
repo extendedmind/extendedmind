@@ -176,7 +176,8 @@ footer {
     div[role=main] > div.slides-container {
       position: inherit;
       top: 50%;
-      height: @maximum-landscape-height;
+      min-height: @maximum-landscape-height;
+      max-height: @maximum-landscape-height;
       margin-top: -@maximum-landscape-height / 2;
     }
   }
