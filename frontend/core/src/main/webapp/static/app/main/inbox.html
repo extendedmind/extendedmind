@@ -2,13 +2,11 @@
   <div class="column">
     <header class="page-header" ng-init="heading='inbox'" ng-include="'static/app/base/pageHeader.html'"></header>
     <div id="inbox-page-content-container" class="content-container page-content-container">
-      <div class="accordion-wrapper">
-        <div class="inner-page-content-container" accordion>
-          <div ng-repeat="item in items | orderBy:'modified':true">
-            <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" has-complete="false" toggle-complete></div>
-            <div class="accordion-body" ng-if="isOpen(item)">
-              <div class="accordion-inner" ng-include="'static/app/main/itemActions.html'"></div>
-            </div>
+      <div class="inner-page-content-container" accordion>
+        <div ng-repeat="item in items | orderBy:'modified':true">
+          <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" has-complete="false" toggle-complete></div>
+          <div class="accordion-body" ng-if="isOpen(item)">
+            <div class="accordion-inner" ng-include="'static/app/main/itemActions.html'"></div>
           </div>
         </div>
       </div>
