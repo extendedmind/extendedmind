@@ -1,7 +1,7 @@
 /* global angular */
 'use strict';
 
-function HttpClientService($http, $rootScope, HttpRequestQueueService) {
+function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
 
   var methods = {};
 
@@ -76,11 +76,14 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService) {
   });
 
   // Online alternatives for POST, PUT and DELETE
-  methods.postOnline = function(url, data) {
+  methods.postOnline = function(url, data, skipLogStatus) {
     return $http({method: 'post', url: url, data: data}).then(function(success) {
       return success;
     }, function(error) {
-      $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
+      if(!(error.status === skipLogStatus)){
+        $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
+      }
+      return $q.reject(error);
     });
   };
 
@@ -89,6 +92,7 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService) {
       return success;
     }, function(error) {
       $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
+      return error;
     });
   };
 
@@ -97,6 +101,7 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService) {
       return success;
     }, function(error) {
       $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
+      return error;
     });
   };
 
@@ -154,5 +159,5 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService) {
   return methods;
 }
 
-HttpClientService.$inject = ['$http', '$rootScope', 'HttpRequestQueueService'];
+HttpClientService.$inject = ['$q', '$http', '$rootScope', 'HttpRequestQueueService'];
 angular.module('em.services').factory('HttpClientService', HttpClientService);

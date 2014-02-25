@@ -114,20 +114,20 @@ function BackendClientService($q, $rootScope, HttpClientService, HttpBasicAuthen
     }
   };
 
-  methods.postOnline = function(url, regex, data, skipRefresh) {
-    function doPostOnline(url, regex, data){
+  methods.postOnline = function(url, regex, data, skipRefresh, skipLogStatus) {
+    function doPostOnline(url, regex, data, skipLogStatus){
       if (regex.test(url)){
-        return HttpClientService.postOnline(getUrlPrefix() + url, data);
+        return HttpClientService.postOnline(getUrlPrefix() + url, data, skipLogStatus);
       }else {
         emitRegexException(regex, 'post', url);
       }
     }
     if (!skipRefresh){
       return refreshCredentials().then(function(){
-        return doPostOnline(url, regex, data);
+        return doPostOnline(url, regex, data, skipLogStatus);
       });
     }else{
-      return doPostOnline(url, regex, data);
+      return doPostOnline(url, regex, data, skipLogStatus);
     }
   };
 

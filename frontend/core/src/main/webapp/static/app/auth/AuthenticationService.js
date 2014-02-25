@@ -25,12 +25,12 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
   }
 
   function authenticate(remember) {
-    var authenticateRequest = BackendClientService.postOnline('/api/authenticate', authenticateRegexp, {
-      rememberMe: remember
-    }, true);
-    return authenticateRequest.then(function(authenticateResponse) {
-      return authenticateResponse.data;
-    });
+    return BackendClientService.postOnline('/api/authenticate', authenticateRegexp,
+                {rememberMe: remember},
+            true, 403).
+      then(function(authenticateResponse) {
+        return authenticateResponse.data;
+      });
   }
 
   var authenticateRegexp = /api\/authenticate/;
