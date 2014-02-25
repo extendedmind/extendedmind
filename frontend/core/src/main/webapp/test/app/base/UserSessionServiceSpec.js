@@ -56,29 +56,28 @@ it('should be authenticated with uuid in web storage', function() {
   });
 
 it('should return valid authentication with non expired authentication', function() {
+    var swapTokenBufferTimeAndThenSome = 11*60*1000;
     // Session Storage
     SessionStorageService.setUserUUID(testOwnerUUID);
-    SessionStorageService.setExpires(Date.now());
+    SessionStorageService.setExpires(Date.now() + swapTokenBufferTimeAndThenSome);
     expect(UserSessionService.isAuthenticateValid()).toBe(true);
 
     // Local Storage
     sessionStorage.clear();
     LocalStorageService.setUserUUID(testOwnerUUID);
-    LocalStorageService.setExpires(Date.now());
+    LocalStorageService.setExpires(Date.now() + swapTokenBufferTimeAndThenSome);
     expect(UserSessionService.isAuthenticateValid()).toBe(true);
   });
 
 it('should not return valid authentication with expired authentication', function() {
-  var swapTokenBufferTimeReached = 10*60*1000 + 1;
-
     // Session Storage
     SessionStorageService.setUserUUID(testOwnerUUID);
-    SessionStorageService.setExpires(Date.now() - swapTokenBufferTimeReached);
+    SessionStorageService.setExpires(Date.now() - 1);
     expect(UserSessionService.isAuthenticateValid()).toBeUndefined();
 
     // Local Storage
     LocalStorageService.setUserUUID(testOwnerUUID);
-    LocalStorageService.setExpires(Date.now() - swapTokenBufferTimeReached);
+    LocalStorageService.setExpires(Date.now() - 1);
     expect(UserSessionService.isAuthenticateValid()).toBeUndefined();
   });
 

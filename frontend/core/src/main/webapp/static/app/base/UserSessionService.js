@@ -17,14 +17,14 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
       return SessionStorageService.getUserUUID() || LocalStorageService.getUserUUID();
     },
     isAuthenticateValid: function() {
-      var authenticateExpiresTime, authenticateValidTime;
+      var authenticateCurrentReferenceTime, authenticateValidTime;
 
       authenticateValidTime = SessionStorageService.getExpires() || LocalStorageService.getExpires();
-      authenticateExpiresTime = Date.now() - swapTokenBufferTime;
+      authenticateCurrentReferenceTime = Date.now() + swapTokenBufferTime;
 
       // If authentication valid, refresh session storage and encoded credentials for
       // HTTP Authorization header.
-      if (authenticateValidTime > authenticateExpiresTime) {
+      if (authenticateValidTime > authenticateCurrentReferenceTime) {
         if (!SessionStorageService.getUserUUID()) {
           this.setUserSessionStorageData();
         } else if (!this.getCredentials()) {
@@ -34,12 +34,12 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
       }
     },
     isAuthenticateReplaceable: function() {
-      var authenticateExpiresTime, authenticateValidTime;
+      var authenticateCurrentReferenceTime, authenticateValidTime;
 
       if (LocalStorageService.getReplaceable()) {
         authenticateValidTime = LocalStorageService.getReplaceable();
-        authenticateExpiresTime = Date.now() - swapTokenBufferTime;
-        if (authenticateValidTime > authenticateExpiresTime) {
+        authenticateCurrentReferenceTime = Date.now() + swapTokenBufferTime;
+        if (authenticateValidTime > authenticateCurrentReferenceTime) {
           return true;
         }
       }
@@ -67,21 +67,21 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
 
     // Web storage setters
     setAuthenticateInformation: function(authenticateResponse) {
-      var authExpiresDelta = authenticateResponse.expires - (Date.now() - authenticateResponse.authenticated);
+      var authExpiresDelta = Date.now() - authenticateResponse.authenticated;
       this.setCredentials('token', authenticateResponse.token);
 
       SessionStorageService.setActiveUUID(authenticateResponse.userUUID);
       SessionStorageService.setCollectives(authenticateResponse.collectives);
-      SessionStorageService.setExpires(authExpiresDelta);
+      SessionStorageService.setExpires(authenticateResponse.expires - authExpiresDelta);
       SessionStorageService.setHttpAuthorizationHeader(this.getCredentials());
       SessionStorageService.setUserType(authenticateResponse.userType);
       SessionStorageService.setUserUUID(authenticateResponse.userUUID);
 
       if (authenticateResponse.replaceable) {
-        LocalStorageService.setExpires(authExpiresDelta);
+        LocalStorageService.setExpires(authenticateResponse.expires - authExpiresDelta);
         LocalStorageService.setCollectives(authenticateResponse.collectives);
         LocalStorageService.setHttpAuthorizationHeader(this.getCredentials());
-        LocalStorageService.setReplaceable(authenticateResponse.replaceable);
+        LocalStorageService.setReplaceable(authenticateResponse.replaceable - authExpiresDelta);
         LocalStorageService.setUserType(authenticateResponse.userType);
         LocalStorageService.setUserUUID(authenticateResponse.userUUID);
       }
