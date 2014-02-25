@@ -30,7 +30,8 @@ ant release
 # jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${KEYSTORE_FILE} ${RELEASE_BUILDDIR}/${RELEASE_UNSIGNED} extendedmind_beta
 
 # verify signing succeeded
-jarsigner -verify ${RELEASE_BUILDDIR}/${RELEASE_BUILD_APK}
+# TODO: enable again once the maven script is polished
+# jarsigner -verify ${RELEASE_BUILDDIR}/${RELEASE_BUILD_APK}
 
 # align the package (source, destination) (ant relase does this)
 # zipalign -v 4 ${RELEASE_BUILDDIR}/${RELEASE_UNSIGNED} ${RELEASE_BUILDDIR}/${RELEASE_BUILD_APK}
