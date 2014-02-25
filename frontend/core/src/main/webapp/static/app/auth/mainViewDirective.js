@@ -9,7 +9,7 @@ function mainViewDirective($rootScope) {
       // Listen to exceptions emitted to rootscope
       var unbindEmException = $rootScope.$on('emException', function(name, exception) {
         // TODO: Use modals here
-        console.log(exception);
+        alert('Oops, something went wrong. Sorry!\n\n' + JSON.stringify(exception, null, 4));
       });
 
       // Clean up listening by executing the variable

@@ -7,7 +7,7 @@ describe('ItemsService', function() {
 
   var $httpBackend;
   var ItemsService, BackendClientService, HttpBasicAuthenticationService, HttpClientService,
-      ListsService, TagsService, TasksService, NotesService, UUIDService;
+      ListsService, TagsService, TasksService, NotesService, UUIDService, AuthenticationService;
 
   // MOCKS
   
@@ -26,28 +26,56 @@ describe('ItemsService', function() {
   completeTaskResponse.result.modified = now.getTime();
   var uncompleteTaskResponse = getJSONFixture('uncompleteTaskResponse.json');
   uncompleteTaskResponse.modified = now.getTime();
+  var authenticateResponse = getJSONFixture('authenticateResponse.json');
+  authenticateResponse.authenticated = now.getTime();
+  authenticateResponse.expires = now.getTime() + 1000*60*60*12;
+  authenticateResponse.replaceable = now.getTime() + 1000*60*60*24*7;
 
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
   var MockUserSessionService = {
-      latestModified: undefined,
-      offlineEnabled: false,
-      getCredentials: function () {
-        return '123456789';
-      },
-      getActiveUUID: function () {
-        return testOwnerUUID;
-      },
-      getLatestModified: function () {
-        return this.latestModified;
-      },
-      setLatestModified: function (modified) {
-        this.latestModified = modified;
-      },
-      isOfflineEnabled: function () {
-        return this.offlineEnabled;
-      }
-    };
+    authenticated: true,
+    authenticateValid: true,
+    authenticateReplaceable: true,
+    latestModified: undefined,
+    offlineEnabled: false,
+    isAuthenticated: function() {
+      return this.authenticated;
+    },
+    isAuthenticateValid: function() {
+      return this.authenticateValid;
+    },
+    isAuthenticateReplaceable: function() {
+      return this.authenticateReplaceable;
+    },
+    getCredentials: function () {
+      return '123456789';
+    },
+    getActiveUUID: function () {
+      return '6be16f46-7b35-4b2d-b875-e13d19681e77';
+    },
+    setCredentials: function (/* user, pass */) {
+      return;
+    },
+    setAuthenticateInformation: function (/*authenticateResponse*/) {
+      return;
+    },
+    setEncodedCredentialsFromLocalStorage: function() {
+      return;
+    },
+    clearUser: function() {
+      return;
+    },
+    getLatestModified: function () {
+      return this.latestModified;
+    },
+    setLatestModified: function (modified) {
+      this.latestModified = modified;
+    },
+    isOfflineEnabled: function () {
+      return this.offlineEnabled;
+    }
+  };
 
   // SETUP / TEARDOWN
 
@@ -59,7 +87,7 @@ describe('ItemsService', function() {
     });
 
     inject(function (_$httpBackend_, _ItemsService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_,
-                    _ListsService_, _TagsService_, _TasksService_, _NotesService_, _UUIDService_) {
+                    _ListsService_, _TagsService_, _TasksService_, _NotesService_, _UUIDService_, _AuthenticationService_) {
       $httpBackend = _$httpBackend_;
       ItemsService = _ItemsService_;
       BackendClientService = _BackendClientService_;
@@ -70,6 +98,7 @@ describe('ItemsService', function() {
       TasksService = _TasksService_;
       NotesService = _NotesService_;
       UUIDService = _UUIDService_;
+      AuthenticationService = _AuthenticationService_;
 
       var testItemData = {
           'items': [{
@@ -211,8 +240,13 @@ describe('ItemsService', function() {
 
 
   afterEach(function() {
+    // User Session Mock
     MockUserSessionService.setLatestModified(undefined);
     MockUserSessionService.offlineEnabled = false;
+    MockUserSessionService.authenticated = true;
+    MockUserSessionService.authenticateValid = true;
+    MockUserSessionService.authenticateReplaceable = true;
+
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest();
   });
@@ -838,6 +872,26 @@ describe('ItemsService', function() {
       .toBeUndefined();
     expect(notes[3].modified)
       .toBe(undeleteItemResponse.modified);
+  });
+
+  it('should handle swap token when offline', function () {
+    MockUserSessionService.offlineEnabled = true;
+    MockUserSessionService.authenticated = true;
+    MockUserSessionService.authenticateValid = false;
+    MockUserSessionService.authenticateReplaceable = true;
+    // 1. save new item
+    var testItem = {
+      'title': 'test note'
+    };
+    $httpBackend.expectPOST('/api/authenticate', {rememberMe: true})
+       .respond(200, authenticateResponse);
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+        .respond(200, putNewItemResponse);
+    ItemsService.saveItem(testItem, testOwnerUUID);
+    $httpBackend.flush();
+    var items = ItemsService.getItems(testOwnerUUID);
+    expect(items.length)
+      .toBe(4);
   });
 
 

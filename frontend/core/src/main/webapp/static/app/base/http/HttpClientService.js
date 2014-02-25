@@ -1,7 +1,7 @@
 /* global angular */
 'use strict';
 
-function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDService) {
+function HttpClientService($http, $rootScope, HttpRequestQueueService) {
 
   var methods = {};
 
@@ -50,7 +50,6 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
           executeRequests();
         }).
         error(function(data, status/*, headers, config*/) {
-          console.log("GOT ERROR: " + status);
           if (status === 404 || status === 502){
             // Seems to be offline, stop processing
             HttpRequestQueueService.setOffline(headRequest);
@@ -80,24 +79,30 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
   methods.postOnline = function(url, data) {
     return $http({method: 'post', url: url, data: data}).then(function(success) {
       return success;
+    }, function(error) {
+      $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
     });
   };
 
   methods.putOnline = function(url, data) {
     return $http({method: 'put', url: url, data: data}).then(function(success) {
       return success;
+    }, function(error) {
+      $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
     });
   };
 
   methods.deleteOnline = function(url) {
     return $http({method: 'delete', url: url}).then(function(success) {
       return success;
+    }, function(error) {
+      $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
     });
   };
 
   // Custom method for a primary POST, i.e. authentication
   methods.postPrimary = function (url, data) {
-    var request = getRequest('post', url, data);
+    var request = getRequest('post', url, undefined, data);
     request.primary = true;
     HttpRequestQueueService.push(request);
     executeRequests();
@@ -149,5 +154,5 @@ function HttpClientService($http, $rootScope, HttpRequestQueueService, UUIDServi
   return methods;
 }
 
-HttpClientService.$inject = ['$http', '$rootScope', 'HttpRequestQueueService', 'UUIDService'];
+HttpClientService.$inject = ['$http', '$rootScope', 'HttpRequestQueueService'];
 angular.module('em.services').factory('HttpClientService', HttpClientService);
