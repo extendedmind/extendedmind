@@ -4,6 +4,7 @@ describe('UserSessionService', function() {
 
   var LocalStorageService, SessionStorageService, UserSessionService;
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
+  var swapTokenBufferTimeAndThenSome = 11*60*1000;
 
   beforeEach(function() {
     module('em.appTest');
@@ -56,7 +57,6 @@ it('should be authenticated with uuid in web storage', function() {
   });
 
 it('should return valid authentication with non expired authentication', function() {
-    var swapTokenBufferTimeAndThenSome = 11*60*1000;
     // Session Storage
     SessionStorageService.setUserUUID(testOwnerUUID);
     SessionStorageService.setExpires(Date.now() + swapTokenBufferTimeAndThenSome);
@@ -82,13 +82,12 @@ it('should not return valid authentication with expired authentication', functio
   });
 
 it('should return true with replaceable authentication', function() {
-  LocalStorageService.setReplaceable(Date.now());
+  LocalStorageService.setReplaceable(Date.now() + swapTokenBufferTimeAndThenSome);
   expect(UserSessionService.isAuthenticateReplaceable()).toBe(true);
 });
 
 it('should return undefined with unreplaceable authentication', function() {
-  var swapTokenBufferTimeReached = 10*60*1000 + 1;
-  LocalStorageService.setReplaceable(Date.now() - swapTokenBufferTimeReached);
+  LocalStorageService.setReplaceable(Date.now() - 1);
   expect(UserSessionService.isAuthenticateReplaceable()).toBeUndefined();
 });
 
