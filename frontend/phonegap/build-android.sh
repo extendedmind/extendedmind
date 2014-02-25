@@ -4,8 +4,12 @@ RELEASE_BUILDDIR="bin"
 RELEASE_UNSIGNED="em-release-unsigned.apk" # produced by "ant release" command
 RELEASE_BUILD_APK="em-release.apk"
 
+# check required environment variables are set
+: ${ANDROID_HOME:?"Need to set ANDROID_HOME non-empty"}
+
 # new dir
 cd ${ANDROID_ROOT}
+pwd
 
 # clean
 if [ -d ${RELEASE_BUILDDIR} ]; then

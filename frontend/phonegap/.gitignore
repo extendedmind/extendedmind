@@ -10,7 +10,7 @@ app/platforms/ios/em/config.xml
 app/platforms/ios/em/em-Info.plist
 
 # android
-app/platforms/android/ant.properties
+#app/platforms/android/ant.properties
 app/platforms/android/assets/static
 app/platforms/android/assets/www/static
 app/platforms/android/assets/www/index.html
