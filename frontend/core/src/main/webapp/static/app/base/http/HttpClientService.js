@@ -92,7 +92,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
       return success;
     }, function(error) {
       $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
-      return error;
+      return $q.reject(error);
     });
   };
 
@@ -101,7 +101,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
       return success;
     }, function(error) {
       $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
-      return error;
+      return $q.reject(error);
     });
   };
 
