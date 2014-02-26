@@ -1,0 +1,27 @@
+{
+  // Details: https://github.com/victorporof/Sublime-JSHint#using-your-own-jshintrc-options
+  // Example: https://github.com/jshint/jshint/blob/master/examples/.jshintrc
+  // Documentation: http://www.jshint.com/docs/
+  "browser" : true,
+  "eqnull"  : true,
+  "esnext"  : true,
+  "newcap"  : false,
+
+  "globals": {
+    "angular"           : false,
+    "bindToFocusEvent"  : false,
+    "FastClick"         : false,
+    "html5Mode"         : false,
+    "newDayTimer"       : false,
+    "Swiper"            : false,
+    "urlPrefix"         : false
+  },
+
+  "globalstrict"  : true,
+  "quotmark"      : true,
+  "smarttabs"     : true,
+  "sub"           : true,
+  "trailing"      : true,
+  "undef"         : true,
+  "unused"        : true
+}
