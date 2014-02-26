@@ -1,4 +1,3 @@
-/* global angular */
 'use strict';
 
 function LoginController($location, $scope, UserSessionService, AuthenticationService) {
@@ -19,5 +18,5 @@ function LoginController($location, $scope, UserSessionService, AuthenticationSe
   };
 }
 
-LoginController.$inject = ['$location', '$scope', 'UserSessionService', 'AuthenticationService'];
+LoginController['$inject'] = ['$location', '$scope', 'UserSessionService', 'AuthenticationService'];
 angular.module('em.app').controller('LoginController', LoginController);
