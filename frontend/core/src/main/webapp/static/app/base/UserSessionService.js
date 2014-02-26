@@ -12,6 +12,27 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
     ownerPrefix = owner;
   }
 
+  // Sync session storage with local storage.
+  function syncWebStorages() {
+    if (LocalStorageService.getExpires() && SessionStorageService.getExpires() !== LocalStorageService.getExpires()) {
+      setUserSessionStorageData();
+    }
+  }
+  
+  function setUserSessionStorageData() {
+    SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
+    SessionStorageService.setCollectives(LocalStorageService.getCollectives());
+    SessionStorageService.setExpires(LocalStorageService.getExpires());
+    SessionStorageService.setHttpAuthorizationHeader(LocalStorageService.getHttpAuthorizationHeader());
+    SessionStorageService.setUserType(LocalStorageService.getUserType());
+    SessionStorageService.setUserUUID(LocalStorageService.getUserUUID());
+
+    setEncodedCredentials(SessionStorageService.getHttpAuthorizationHeader());
+  }
+  function setEncodedCredentials(userpass) {
+    HttpBasicAuthenticationService.setCredentials(userpass);
+  }
+
   return {
     isAuthenticated: function() {
       return SessionStorageService.getUserUUID() || LocalStorageService.getUserUUID();
@@ -26,9 +47,9 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
       // HTTP Authorization header.
       if (authenticateValidTime > authenticateCurrentReferenceTime) {
         if (!SessionStorageService.getUserUUID()) {
-          this.setUserSessionStorageData();
+          setUserSessionStorageData();
         } else if (!this.getCredentials()) {
-          this.setEncodedCredentials(SessionStorageService.getHttpAuthorizationHeader());
+          setEncodedCredentials(SessionStorageService.getHttpAuthorizationHeader());
         }
         return true;
       }
@@ -86,27 +107,14 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
         LocalStorageService.setUserUUID(authenticateResponse.userUUID);
       }
     },
-    setUserSessionStorageData: function() {
-      SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
-      SessionStorageService.setCollectives(LocalStorageService.getCollectives());
-      SessionStorageService.setExpires(LocalStorageService.getExpires());
-      SessionStorageService.setHttpAuthorizationHeader(LocalStorageService.getHttpAuthorizationHeader());
-      SessionStorageService.setUserType(LocalStorageService.getUserType());
-      SessionStorageService.setUserUUID(LocalStorageService.getUserUUID());
-
-      this.setEncodedCredentials(SessionStorageService.getHttpAuthorizationHeader());
-    },
     setActiveUUID: function(uuid) {
       SessionStorageService.setActiveUUID(uuid);
     },
     setCredentials: function(username, password) {
-      this.setEncodedCredentials(base64.encode(username + ':' + password));
-    },
-    setEncodedCredentials: function(userpass) {
-      HttpBasicAuthenticationService.setCredentials(userpass);
+      setEncodedCredentials(base64.encode(username + ':' + password));
     },
     setEncodedCredentialsFromLocalStorage: function() {
-      this.setEncodedCredentials(LocalStorageService.getHttpAuthorizationHeader());
+      setEncodedCredentials(LocalStorageService.getHttpAuthorizationHeader());
     },
     setLatestModified: function(modified, ownerUUID) {
       // Only set if given value is larger than set value
@@ -130,15 +138,19 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
 
     // Web storage getters
     getActiveUUID: function() {
+      syncWebStorages();
       return SessionStorageService.getActiveUUID();
     },
     getCollectives: function() {
+      syncWebStorages();
       return SessionStorageService.getCollectives();
     },
     getCredentials: function() {
+      syncWebStorages();
       return HttpBasicAuthenticationService.getCredentials();
     },
     getUserUUID: function() {
+      syncWebStorages();
       return SessionStorageService.getUserUUID();
     },
     getLatestModified: function(ownerUUID) {
