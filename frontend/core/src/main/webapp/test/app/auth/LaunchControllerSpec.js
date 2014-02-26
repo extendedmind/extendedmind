@@ -27,10 +27,8 @@ describe('LaunchController', function() {
   it('should show queued user\'s queue', function() {
     // SETUP
     var inviteRequestResponse = {
-      inviteRequestUUID: true,
-      uuid: testOwnerUUID
+      inviteRequestUUID: testOwnerUUID
     };
-    var inviteRequestQueueNumberResponse = 155500;
     $scope.user = {};
     expect($scope.user.email).toBeUndefined();
     spyOn(LaunchController, 'redirectTo');
@@ -39,13 +37,11 @@ describe('LaunchController', function() {
     $scope.user.email = 'jp@extample.md';
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
-    $httpBackend.expectGET('/api/invite/request/' + testOwnerUUID)
-    .respond(200, inviteRequestQueueNumberResponse);
     
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
-    expect(LaunchController.redirectTo).toHaveBeenCalledWith('waiting');
+    expect(LaunchController.redirectTo).toHaveBeenCalledWith('waiting/' + testOwnerUUID);
   });
 
   it('should invite new user', function() {
@@ -62,7 +58,6 @@ describe('LaunchController', function() {
     $scope.launchUser();
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
-    $httpBackend.expectGET('/api/invite/' + testOwnerUUID).respond(200, getInviteResponse);
     $httpBackend.flush();
     expect(LaunchController.redirectTo).toHaveBeenCalledWith('waiting');
   });

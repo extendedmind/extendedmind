@@ -11,17 +11,6 @@ function LaunchController($location, $scope, AuthenticationService) {
       );
   }.bind(this);
 
-  this.getInviteRequestUUID = function getInviteRequestUUID(uuid) {
-    AuthenticationService.getInviteRequestQueueNumber(uuid).then(this.redirectTo('waiting'));
-  };
-  function showWaitingList(inviteRequestQueueNumberResponse) {
-    $scope.inviteRequestQueueNumber = inviteRequestQueueNumberResponse.data;
-  }
-
-  this.getInvite = function getInvite(uuid) {
-    AuthenticationService.getInviteWithUUID(uuid).then(this.redirectTo('waiting'));
-  };
-
   this.redirectTo = function redirectTo(page) {
     $location.path('/' + page);
   };
@@ -31,11 +20,11 @@ function LaunchController($location, $scope, AuthenticationService) {
 LaunchController.prototype.checkEmailStatus = function checkEmailStatus(emailStatusResponse) {
   // user in invite queue
   if (emailStatusResponse.data.inviteRequestUUID) {
-    this.getInviteRequestUUID(emailStatusResponse.data.uuid);
+    this.redirectTo('waiting/' + emailStatusResponse.data.inviteRequestUUID);
   }
   // user can sign up
   else if (emailStatusResponse.data.inviteUUID) {
-    this.getInvite(emailStatusResponse.data.inviteUUID);
+    this.redirectTo('waiting');
   }
   // User exists.
   // Redirect to front page which redirects to login page is not logged in.
