@@ -24,7 +24,7 @@ describe('LaunchController', function() {
     $httpBackend.verifyNoOutstandingRequest();
   });
 
-  it('should show queued user\'s queue', function() {
+  it('should redirect queued user to waiting page with uuid', function() {
     // SETUP
     var inviteRequestResponse = {
       inviteRequestUUID: testOwnerUUID
@@ -44,7 +44,7 @@ describe('LaunchController', function() {
     expect(LaunchController.redirectTo).toHaveBeenCalledWith('waiting/' + testOwnerUUID);
   });
 
-  it('should invite new user', function() {
+  it('should redirect invited user to waiting page', function() {
     var inviteRequestResponse = {
       inviteUUID: testOwnerUUID
     };
@@ -62,7 +62,7 @@ describe('LaunchController', function() {
     expect(LaunchController.redirectTo).toHaveBeenCalledWith('waiting');
   });
 
-  it('should redirect to login page with user', function() {
+  it('should redirect existing user to root page', function() {
     // SETUP
     var inviteRequestResponse = {
       user: true
