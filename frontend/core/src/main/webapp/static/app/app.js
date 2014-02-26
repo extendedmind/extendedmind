@@ -13,12 +13,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $locationProvider.html5Mode(h5m);
 
     $routeProvider.when('/', {
-      resolve: {
-        auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
-        }],
-      },
       redirectTo: 'my/tasks'
     });
 
@@ -44,17 +38,20 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/login', {
-      templateUrl: 'static/app/auth/login.html'
+      templateUrl: 'static/app/auth/login.html',
     });
 
     $routeProvider.when('/my/account', {
       templateUrl: 'static/app/account/account.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setMyPrefix();
         }]
-
       }
       
     });
@@ -62,6 +59,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/my/tasks', {
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         slide: ['TasksSlidesService', 'SwiperService',
         function(TasksSlidesService, SwiperService) {
           SwiperService.setInitialSlidePath(TasksSlidesService.HOME);
@@ -76,6 +77,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/tasks', {
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         slide: ['TasksSlidesService', 'SwiperService',
         function(TasksSlidesService, SwiperService) {
           SwiperService.setInitialSlidePath(TasksSlidesService.HOME);
@@ -91,6 +96,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/my/tasks/edit/:uuid', {
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setMyPrefix();
@@ -101,6 +110,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/tasks/edit/:uuid', {
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setCollectivePrefix();
@@ -112,6 +125,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/my/tasks/new', {
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setMyPrefix();
@@ -123,6 +140,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/tasks/new', {
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setCollectivePrefix();
@@ -133,6 +154,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/my/tasks/new/:parentUUID', {
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setMyPrefix();
@@ -143,6 +168,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/tasks/new/:parentUUID', {
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setCollectivePrefix();
@@ -155,6 +184,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/my/notes', {
       templateUrl: 'static/app/main/notesSlides.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         slide: ['NotesSlidesService', 'SwiperService',
         function(NotesSlidesService, SwiperService) {
           SwiperService.setInitialSlidePath(NotesSlidesService.HOME);
@@ -169,6 +202,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/notes', {
       templateUrl: 'static/app/main/notesSlides.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         slide: ['NotesSlidesService', 'SwiperService',
         function(NotesSlidesService, SwiperService) {
           SwiperService.setInitialSlidePath(NotesSlidesService.HOME);
@@ -183,6 +220,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/my/notes/edit/:uuid', {
       templateUrl: 'static/app/notes/editNote.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setMyPrefix();
@@ -194,6 +235,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/notes/edit/:uuid', {
       templateUrl: 'static/app/notes/editNote.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setCollectivePrefix();
@@ -205,6 +250,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/my/notes/new', {
       templateUrl: 'static/app/notes/editNote.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setMyPrefix();
@@ -216,6 +265,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/notes/new', {
       templateUrl: 'static/app/notes/editNote.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setCollectivePrefix();
@@ -226,6 +279,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/my/notes/new/:parentUUID', {
       templateUrl: 'static/app/notes/editNote.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setMyPrefix();
@@ -236,6 +293,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/notes/new/:parentUUID', {
       templateUrl: 'static/app/notes/editNote.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setCollectivePrefix();
@@ -248,6 +309,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/my/items/new', {
       templateUrl: 'static/app/main/editItem.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setMyPrefix();
@@ -259,6 +324,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/items/new', {
       templateUrl: 'static/app/main/editItem.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setCollectivePrefix();
@@ -269,6 +338,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/my/items/edit/:uuid', {
       templateUrl: 'static/app/main/editItem.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setMyPrefix();
@@ -280,6 +353,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/items/edit/:uuid', {
       templateUrl: 'static/app/main/editItem.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setCollectivePrefix();
@@ -292,6 +369,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/my/lists/edit/:uuid', {
       templateUrl: 'static/app/base/editList.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setMyPrefix();
@@ -303,6 +384,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/lists/edit/:uuid', {
       templateUrl: 'static/app/base/editList.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setCollectivePrefix();
@@ -315,6 +400,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/my/contexts/edit/:uuid', {
       templateUrl: 'static/app/base/editContext.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setMyPrefix();
@@ -326,13 +415,16 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $routeProvider.when('/collective/:collectiveUUID/contexts/edit/:uuid', {
       templateUrl: 'static/app/base/editContext.html',
       resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
         ownerPrefix: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setCollectivePrefix();
         }]
       }
     });
-
 
     // ERROR PAGE
 

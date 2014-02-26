@@ -4,6 +4,7 @@
 function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
 
   var methods = {};
+  var credentials;
 
   function getRequest(method, url, params, data){
     var request = {
@@ -65,6 +66,17 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
         });
     }
   }
+
+
+  // Methods for credentials
+  methods.setCredentials = function(encodedCredentials) {
+    credentials = encodedCredentials;
+    $http.defaults.headers.common.Authorization = 'Basic ' + credentials;
+  };
+
+  methods.getCredentials = function() {
+    return credentials;
+  };
 
   // GET, HEAD and JSONP return chained promises
   angular.forEach(['get', 'head', 'jsonp'], function(name) {
@@ -155,6 +167,8 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
       onlineCallback = callback;
     }
   };
+
+
 
   return methods;
 }

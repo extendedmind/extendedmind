@@ -1,7 +1,7 @@
 /* global angular, urlPrefix */
 'use strict';
 
-function BackendClientService($q, $rootScope, HttpClientService, HttpBasicAuthenticationService, UserSessionService) {
+function BackendClientService($q, $rootScope, base64, HttpClientService, UserSessionService) {
   var methods = {};
 
   function getUrlPrefix() {
@@ -17,9 +17,9 @@ function BackendClientService($q, $rootScope, HttpClientService, HttpBasicAuthen
 
   function refreshCredentials() {
     function doRefreshCredentials(){
-      var credentials = UserSessionService.getCredentials();
-      if (HttpBasicAuthenticationService.getCredentials() !== credentials){
-        HttpBasicAuthenticationService.setCredentials(credentials);
+      var credentials = UserSessionService.getEncodedCredentials();
+      if (HttpClientService.getCredentials() !== credentials){
+        HttpClientService.setCredentials(credentials);
       }
     }
     if (refreshCredentialsCallback){
@@ -37,6 +37,14 @@ function BackendClientService($q, $rootScope, HttpClientService, HttpBasicAuthen
   function emitRegexException(regex, method, url){
     $rootScope.$emit('emException', {type: 'regex', regex: regex, method: method, url: url});
   }
+
+  // Method for setting credentials to all subsequent http calls
+  methods.setEncodedCredentials = function(encodedCredentials) {
+    return HttpClientService.setCredentials(encodedCredentials);
+  };
+  methods.setUsernamePassword = function(username, password) {
+    return HttpClientService.setCredentials(base64.encode(username + ':' + password));
+  };
 
   methods.get = function(url, regex, skipRefresh) {
     function doGet(){
@@ -161,5 +169,5 @@ function BackendClientService($q, $rootScope, HttpClientService, HttpBasicAuthen
   return methods;
 }
 
-BackendClientService.$inject = ['$q', '$rootScope', 'HttpClientService', 'HttpBasicAuthenticationService', 'UserSessionService'];
+BackendClientService.$inject = ['$q', '$rootScope', 'base64', 'HttpClientService', 'UserSessionService'];
 angular.module('em.services').factory('BackendClientService', BackendClientService);

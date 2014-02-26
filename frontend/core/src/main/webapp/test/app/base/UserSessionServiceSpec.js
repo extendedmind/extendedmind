@@ -45,14 +45,14 @@ afterEach(function() {
   sessionStorage.clear();
 });
 
-it('should be authenticated with uuid in web storage', function() {
+it('should be authenticated with expires in web storage', function() {
     // Session Storage
-    SessionStorageService.setUserUUID(testOwnerUUID);
+    SessionStorageService.setExpires(12345);
     expect(UserSessionService.isAuthenticated()).toBeTruthy();
 
     // Local Storage
     sessionStorage.clear();
-    LocalStorageService.setUserUUID(testOwnerUUID);
+    LocalStorageService.setExpires(12345);
     expect(UserSessionService.isAuthenticated()).toBeTruthy();
   });
 

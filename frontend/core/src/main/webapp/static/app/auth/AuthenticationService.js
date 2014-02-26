@@ -9,16 +9,18 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
   // Register swapTokenCallback to backend
   var swapTokenCallback = function(request, authenticateResponse) {
     UserSessionService.setAuthenticateInformation(authenticateResponse);
+    // Update backend client with new token
+    BackendClientService.setEncodedCredentials(UserSessionService.getEncodedCredentials());    
   };
   BackendClientService.registerPrimaryPostCallback(swapTokenCallback);
 
   function swapTokenAndAuthenticate() {
     var deferred = $q.defer();
     var remember = true;
-    UserSessionService.setEncodedCredentialsFromLocalStorage();
-
     authenticate(remember).then(function(authenticateResponse) {
       UserSessionService.setAuthenticateInformation(authenticateResponse);
+      // Update backend client with new token
+      BackendClientService.setEncodedCredentials(UserSessionService.getEncodedCredentials());    
       deferred.resolve();
     });
     return deferred.promise;
@@ -26,11 +28,11 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
 
   function authenticate(remember) {
     return BackendClientService.postOnline('/api/authenticate', authenticateRegexp,
-      {rememberMe: remember},
-      true, 403).
-    then(function(authenticateResponse) {
-      return authenticateResponse.data;
-    });
+                {rememberMe: remember},
+            true, 400).
+      then(function(authenticateResponse) {
+        return authenticateResponse.data;
+      });
   }
 
   var authenticateRegexp = /api\/authenticate/;
@@ -46,10 +48,11 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
         validateAuthentication();
       } else {
         if (UserSessionService.isAuthenticateReplaceable()) {
+          // Make sure the latest credentials are in use
+          BackendClientService.setEncodedCredentials(UserSessionService.getEncodedCredentials());
           if (UserSessionService.isOfflineEnabled()){
             // Push token swap to be the first thing that is done
             // when online connection is up
-            UserSessionService.setEncodedCredentialsFromLocalStorage();
             BackendClientService.postPrimary('/api/authenticate', authenticateRegexp, {
               rememberMe: true
             });
@@ -78,9 +81,11 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
     },
     login: function(user) {
       var remember = user.remember || false;
-      UserSessionService.setCredentials(user.username, user.password);
+      BackendClientService.setUsernamePassword(user.username, user.password);
       return authenticate(remember).then(function(authenticateResponse) {
         UserSessionService.setAuthenticateInformation(authenticateResponse);
+        // Update backend client to use token authentication instead of username/password
+        BackendClientService.setEncodedCredentials(UserSessionService.getEncodedCredentials());
       });
     },
     logout: function() {

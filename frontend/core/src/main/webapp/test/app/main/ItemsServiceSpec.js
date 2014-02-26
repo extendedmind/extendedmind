@@ -6,7 +6,7 @@ describe('ItemsService', function() {
   // INJECTS 
 
   var $httpBackend;
-  var ItemsService, BackendClientService, HttpBasicAuthenticationService, HttpClientService,
+  var ItemsService, BackendClientService, HttpClientService,
       ListsService, TagsService, TasksService, NotesService, UUIDService, AuthenticationService;
 
   // MOCKS
@@ -48,19 +48,13 @@ describe('ItemsService', function() {
     isAuthenticateReplaceable: function() {
       return this.authenticateReplaceable;
     },
-    getCredentials: function () {
+    getEncodedCredentials: function () {
       return '123456789';
     },
     getActiveUUID: function () {
       return '6be16f46-7b35-4b2d-b875-e13d19681e77';
     },
-    setCredentials: function (/* user, pass */) {
-      return;
-    },
     setAuthenticateInformation: function (/*authenticateResponse*/) {
-      return;
-    },
-    setEncodedCredentialsFromLocalStorage: function() {
       return;
     },
     clearUser: function() {
@@ -86,12 +80,11 @@ describe('ItemsService', function() {
       $provide.value('UserSessionService', MockUserSessionService);
     });
 
-    inject(function (_$httpBackend_, _ItemsService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_,
+    inject(function (_$httpBackend_, _ItemsService_, _BackendClientService_, _HttpClientService_,
                     _ListsService_, _TagsService_, _TasksService_, _NotesService_, _UUIDService_, _AuthenticationService_) {
       $httpBackend = _$httpBackend_;
       ItemsService = _ItemsService_;
       BackendClientService = _BackendClientService_;
-      HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       HttpClientService = _HttpClientService_;
       ListsService = _ListsService_;
       TagsService = _TagsService_;

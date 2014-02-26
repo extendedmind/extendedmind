@@ -5,7 +5,7 @@ describe('TagsService', function() {
   // INJECTS 
 
   var $httpBackend;
-  var TagsService, BackendClientService, HttpBasicAuthenticationService, HttpClientService;
+  var TagsService, BackendClientService, HttpClientService;
 
   // MOCKS
 
@@ -26,11 +26,10 @@ describe('TagsService', function() {
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function (_$httpBackend_, _TagsService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_) {
+    inject(function (_$httpBackend_, _TagsService_, _BackendClientService_, _HttpClientService_) {
       $httpBackend = _$httpBackend_;
       TagsService = _TagsService_;
       BackendClientService = _BackendClientService_;
-      HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       HttpClientService = _HttpClientService_;
       TagsService.setTags(
         [{

@@ -5,7 +5,7 @@ describe('AccountService', function() {
   // INJECTS 
 
   var $httpBackend;
-  var AccountService, BackendClientService, HttpBasicAuthenticationService, HttpClientService;
+  var AccountService, BackendClientService, HttpClientService;
 
   // MOCKS
 
@@ -16,11 +16,10 @@ describe('AccountService', function() {
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function (_$httpBackend_, _AccountService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_) {
+    inject(function (_$httpBackend_, _AccountService_, _BackendClientService_, _HttpClientService_) {
       $httpBackend = _$httpBackend_;
       AccountService = _AccountService_;
       BackendClientService = _BackendClientService_;
-      HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       HttpClientService = _HttpClientService_;
     });
   });

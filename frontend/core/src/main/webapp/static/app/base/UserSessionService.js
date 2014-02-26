@@ -1,7 +1,7 @@
 /* global angular, useOfflineBuffer */
 'use strict';
 
-function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorageService, SessionStorageService) {
+function UserSessionService(base64, LocalStorageService, SessionStorageService) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   var latestModified = {};
   var itemsSynchronize = {};
@@ -26,16 +26,15 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
     SessionStorageService.setHttpAuthorizationHeader(LocalStorageService.getHttpAuthorizationHeader());
     SessionStorageService.setUserType(LocalStorageService.getUserType());
     SessionStorageService.setUserUUID(LocalStorageService.getUserUUID());
-
-    setEncodedCredentials(SessionStorageService.getHttpAuthorizationHeader());
   }
-  function setEncodedCredentials(userpass) {
-    HttpBasicAuthenticationService.setCredentials(userpass);
+
+  function encodeCredentials(username, password) {
+    return base64.encode(username + ':' + password);
   }
 
   return {
     isAuthenticated: function() {
-      return SessionStorageService.getUserUUID() || LocalStorageService.getUserUUID();
+      return SessionStorageService.getExpires() || LocalStorageService.getExpires();
     },
     isAuthenticateValid: function() {
       var authenticateCurrentReferenceTime, authenticateValidTime;
@@ -43,14 +42,7 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
       authenticateValidTime = SessionStorageService.getExpires() || LocalStorageService.getExpires();
       authenticateCurrentReferenceTime = Date.now() + swapTokenBufferTime;
 
-      // If authentication valid, refresh session storage and encoded credentials for
-      // HTTP Authorization header.
       if (authenticateValidTime > authenticateCurrentReferenceTime) {
-        if (!SessionStorageService.getUserUUID()) {
-          setUserSessionStorageData();
-        } else if (!this.getCredentials()) {
-          setEncodedCredentials(SessionStorageService.getHttpAuthorizationHeader());
-        }
         return true;
       }
     },
@@ -89,19 +81,19 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
     // Web storage setters
     setAuthenticateInformation: function(authenticateResponse) {
       var authExpiresDelta = Date.now() - authenticateResponse.authenticated;
-      this.setCredentials('token', authenticateResponse.token);
+      var encodedCredentials = encodeCredentials('token', authenticateResponse.token);
 
       SessionStorageService.setActiveUUID(authenticateResponse.userUUID);
       SessionStorageService.setCollectives(authenticateResponse.collectives);
       SessionStorageService.setExpires(authenticateResponse.expires - authExpiresDelta);
-      SessionStorageService.setHttpAuthorizationHeader(this.getCredentials());
+      SessionStorageService.setHttpAuthorizationHeader(encodedCredentials);
       SessionStorageService.setUserType(authenticateResponse.userType);
       SessionStorageService.setUserUUID(authenticateResponse.userUUID);
 
       if (authenticateResponse.replaceable) {
         LocalStorageService.setExpires(authenticateResponse.expires - authExpiresDelta);
         LocalStorageService.setCollectives(authenticateResponse.collectives);
-        LocalStorageService.setHttpAuthorizationHeader(this.getCredentials());
+        LocalStorageService.setHttpAuthorizationHeader(encodedCredentials);
         LocalStorageService.setReplaceable(authenticateResponse.replaceable - authExpiresDelta);
         LocalStorageService.setUserType(authenticateResponse.userType);
         LocalStorageService.setUserUUID(authenticateResponse.userUUID);
@@ -109,12 +101,6 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
     },
     setActiveUUID: function(uuid) {
       SessionStorageService.setActiveUUID(uuid);
-    },
-    setCredentials: function(username, password) {
-      setEncodedCredentials(base64.encode(username + ':' + password));
-    },
-    setEncodedCredentialsFromLocalStorage: function() {
-      setEncodedCredentials(LocalStorageService.getHttpAuthorizationHeader());
     },
     setLatestModified: function(modified, ownerUUID) {
       // Only set if given value is larger than set value
@@ -145,9 +131,9 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
       syncWebStorages();
       return SessionStorageService.getCollectives();
     },
-    getCredentials: function() {
+    getEncodedCredentials: function() {
       syncWebStorages();
-      return HttpBasicAuthenticationService.getCredentials();
+      return SessionStorageService.getHttpAuthorizationHeader();
     },
     getUserUUID: function() {
       syncWebStorages();
@@ -169,5 +155,5 @@ function UserSessionService(base64, HttpBasicAuthenticationService, LocalStorage
     }
   };
 }
-UserSessionService.$inject = ['base64', 'HttpBasicAuthenticationService', 'LocalStorageService', 'SessionStorageService'];
+UserSessionService.$inject = ['base64', 'LocalStorageService', 'SessionStorageService'];
 angular.module('em.services').factory('UserSessionService', UserSessionService);

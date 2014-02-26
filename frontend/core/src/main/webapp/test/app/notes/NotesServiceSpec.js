@@ -6,7 +6,7 @@ describe('NotesService', function() {
   // INJECTS 
 
   var $httpBackend;
-  var NotesService, BackendClientService, HttpBasicAuthenticationService, HttpClientService, ListsService;
+  var NotesService, BackendClientService, HttpClientService, ListsService;
 
   // MOCKS
 
@@ -27,11 +27,10 @@ describe('NotesService', function() {
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function (_$httpBackend_, _NotesService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_, _ListsService_) {
+    inject(function (_$httpBackend_, _NotesService_, _BackendClientService_, _HttpClientService_, _ListsService_) {
       $httpBackend = _$httpBackend_;
       NotesService = _NotesService_;
       BackendClientService = _BackendClientService_;
-      HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       HttpClientService = _HttpClientService_;
       ListsService = _ListsService_;
       NotesService.setNotes(

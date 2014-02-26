@@ -5,7 +5,7 @@ describe('AuthenticationService', function() {
   // INJECTS 
 
   var $httpBackend, $location, $q;
-  var AuthenticationService, BackendClientService, HttpBasicAuthenticationService, HttpClientService;
+  var AuthenticationService, BackendClientService, HttpClientService;
 
   // MOCKS
 
@@ -30,7 +30,7 @@ describe('AuthenticationService', function() {
     isOfflineEnabled: function() {
       return false;
     },
-    getCredentials: function () {
+    getEncodedCredentials: function () {
       return '123456789';
     },
     getActiveUUID: function () {
@@ -45,13 +45,7 @@ describe('AuthenticationService', function() {
     setIsAuthenticateReplaceable: function(authenticateReplaceable) {
       this.authenticateReplaceable = authenticateReplaceable;
     },
-    setCredentials: function (/* user, pass */) {
-      return;
-    },
     setAuthenticateInformation: function (/*authenticateResponse*/) {
-      return;
-    },
-    setEncodedCredentialsFromLocalStorage: function() {
       return;
     },
     clearUser: function() {
@@ -75,13 +69,12 @@ describe('AuthenticationService', function() {
       $provide.value('ItemsService', MockItemsService);
     });
 
-    inject(function (_$httpBackend_, _$location_, _$q_, _AuthenticationService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_) {
+    inject(function (_$httpBackend_, _$location_, _$q_, _AuthenticationService_, _BackendClientService_, _HttpClientService_) {
       $httpBackend = _$httpBackend_;
       $location = _$location_;
       $q = _$q_;
       AuthenticationService = _AuthenticationService_;
       BackendClientService = _BackendClientService_;
-      HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       HttpClientService = _HttpClientService_;
     });
   });

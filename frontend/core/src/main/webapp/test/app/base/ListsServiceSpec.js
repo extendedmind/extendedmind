@@ -10,7 +10,6 @@ describe('ListsService', function() {
       ArrayService,
       TagsService,
       BackendClientService,
-      HttpBasicAuthenticationService,
       HttpClientService;
 
   // MOCKS
@@ -34,13 +33,12 @@ describe('ListsService', function() {
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function (_$httpBackend_, _ListsService_, _ArrayService_, _TagsService_, _BackendClientService_, _HttpBasicAuthenticationService_, _HttpClientService_) {
+    inject(function (_$httpBackend_, _ListsService_, _ArrayService_, _TagsService_, _BackendClientService_, _HttpClientService_) {
       $httpBackend = _$httpBackend_;
       ListsService = _ListsService_;
       ArrayService = _ArrayService_;
       TagsService = _TagsService_;
       BackendClientService = _BackendClientService_;
-      HttpBasicAuthenticationService = _HttpBasicAuthenticationService_;
       HttpClientService = _HttpClientService_;
       ListsService.setLists(
         [{

@@ -1,6 +1,6 @@
 'use strict';
 
-function NavbarController($location, $scope, AuthenticationService, SwiperService, UserSessionService) {
+function NavbarController($location, $scope, SwiperService, UserSessionService) {
 
   // TODO: Use these to build * * * * * subnavigation on top of iconś
   var tasksSubNavigationPaths = ['tasks/dates', 'tasks/menu', 'tasks/lists', 'tasks/single'];
@@ -53,5 +53,5 @@ function NavbarController($location, $scope, AuthenticationService, SwiperServic
   };
 }
 
-NavbarController['$inject'] = ['$location', '$scope', 'AuthenticationService', 'SwiperService', 'UserSessionService'];
+NavbarController.$inject = ['$location', '$scope', 'SwiperService', 'UserSessionService'];
 angular.module('em.app').controller('NavbarController', NavbarController);
