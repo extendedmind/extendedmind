@@ -189,7 +189,7 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
                         method: 'post',
                         url: '/api/' + ownerUUID + '/note/' + note.uuid + '/undelete'
                       }};
-        BackendClientService.delete('/api/' + ownerUUID + '/note/' + note.uuid,
+        BackendClientService.deleteOffline('/api/' + ownerUUID + '/note/' + note.uuid,
                  this.deleteNoteRegex, params);
         var fakeTimestamp = (new Date()).getTime() + 1000000;
         note.deleted = fakeTimestamp;

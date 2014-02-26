@@ -335,7 +335,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
                         method: 'post',
                         url: '/api/' + ownerUUID + '/item/' + item.uuid + '/undelete'
                       }};
-        BackendClientService.delete('/api/' + ownerUUID + '/item/' + item.uuid,
+        BackendClientService.deleteOffline('/api/' + ownerUUID + '/item/' + item.uuid,
                  this.deleteItemRegex, params);
         var fakeTimestamp = (new Date()).getTime() + 1000000;
         item.deleted = fakeTimestamp;

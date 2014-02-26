@@ -30,7 +30,7 @@ function HttpRequestQueueService() {
   // Find index of a reversible item in queue
   function findReverseRequestIndex(request) {
     for (var i=0, len=queue.length; i<len; i++) {
-      if (queue[i].params.reverse &&
+      if (queue[i].params && queue[i].params.reverse &&
           request.content.url === queue[i].params.reverse.url &&
           request.content.method === queue[i].params.reverse.method){
         // Found a reverse of the request in the queue

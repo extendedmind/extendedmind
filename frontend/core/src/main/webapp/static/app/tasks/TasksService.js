@@ -314,7 +314,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
                         method: 'post',
                         url: '/api/' + ownerUUID + '/task/' + task.uuid + '/undelete'
                       }};
-        BackendClientService.delete('/api/' + ownerUUID + '/task/' + task.uuid,
+        BackendClientService.deleteOffline('/api/' + ownerUUID + '/task/' + task.uuid,
                  this.deleteTaskRegex, params);
         var fakeTimestamp = (new Date()).getTime() + 1000000;
         task.deleted = fakeTimestamp;

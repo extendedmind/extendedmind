@@ -65,10 +65,10 @@ function BackendClientService($q, $rootScope, HttpClientService, HttpBasicAuthen
     });
   };
 
-  methods.delete = function(url, regex, params) {
+  methods.deleteOffline = function(url, regex, params) {
     return refreshCredentials().then(function(){
       if (regex.test(url)){
-        return HttpClientService.delete(getUrlPrefix() + url, params);
+        return HttpClientService.deleteOffline(getUrlPrefix() + url, params);
       }else {
         emitRegexException(regex, 'delete', url);
       }

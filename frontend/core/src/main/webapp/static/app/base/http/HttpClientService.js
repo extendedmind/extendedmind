@@ -124,7 +124,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   // DELETE, POST and PUT are methods which utilize
   // the offline request queue
 
-  methods.delete = function(url, params) {
+  methods.deleteOffline = function(url, params) {
     var request = getRequest('delete', url, params);
     HttpRequestQueueService.push(request);
     executeRequests();
