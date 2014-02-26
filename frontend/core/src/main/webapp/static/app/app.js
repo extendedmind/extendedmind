@@ -22,6 +22,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       redirectTo: 'my/tasks'
     });
 
+    $routeProvider.when('/launch', {
+      templateUrl: 'static/app/auth/launch.html'
+    });
+
     $routeProvider.when('/accept/:hex_code', {
       templateUrl: 'static/app/auth/signup.html',
       resolve: {

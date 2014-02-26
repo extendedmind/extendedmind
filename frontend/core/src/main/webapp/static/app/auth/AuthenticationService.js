@@ -2,7 +2,7 @@
 'use strict';
 
 function AuthenticationService($location, $q, BackendClientService, UserSessionService) {
-  
+
   // Register refresh credentials callback to backend
   BackendClientService.registerRefreshCredentialsCallback(verifyAndUpdateAuthentication);
 
@@ -26,11 +26,11 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
 
   function authenticate(remember) {
     return BackendClientService.postOnline('/api/authenticate', authenticateRegexp,
-                {rememberMe: remember},
-            true, 403).
-      then(function(authenticateResponse) {
-        return authenticateResponse.data;
-      });
+      {rememberMe: remember},
+      true, 403).
+    then(function(authenticateResponse) {
+      return authenticateResponse.data;
+    });
   }
 
   var authenticateRegexp = /api\/authenticate/;
@@ -93,9 +93,24 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
       return BackendClientService.get('/api/invite/' + inviteResponseCode + '?email=' + email,
         this.getInviteRegex, true);
     },
+    getInviteWithUUID: function(uuid) {
+      return BackendClientService.get('/api/invite/' + uuid,
+        this.getInviteRegex, true);
+    },
     signUp: function(inviteResponseCode, data) {
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',
         this.acceptInviteRegex, data, true);
+    },
+    postInviteRequest: function(email) {
+      return BackendClientService.postOnline(
+        '/api/invite/request',
+        this.postInviteRequestRegex,
+        {email: email},
+        true);
+    },
+    getInviteRequestQueueNumber: function(uuid) {
+      return BackendClientService.get('/api/invite/request/' + uuid,
+        this.getInviteRequestQueueNumberRegex, true);
     },
     switchActiveUUID: function(uuid) {
       UserSessionService.setActiveUUID(uuid);
@@ -103,9 +118,11 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
     // Regular expressions for account requests
     authenticateRegex: authenticateRegexp,
     logoutRegex: /api\/logout/,
-    // TODO: Make regex!
+    // TODO: Make regex! Bump!
+    postInviteRequestRegex: /api\/invite\/request/,
     getInviteRegex: /api\/invite\/.*/,
     acceptInviteRegex: /api\/invite\/.*/,
+    getInviteRequestQueueNumberRegex: /api\/invite\/.*/,
 
   };
 }
