@@ -32,8 +32,6 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
             true, [400, 404, 502]);
   }
 
-  var authenticateRegexp = /api\/authenticate/;
-
   function verifyAndUpdateAuthentication(){
     var deferredAuthentication = $q.defer();
     function validateAuthentication() {
@@ -50,7 +48,7 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
           if (UserSessionService.isOfflineEnabled()){
             // Push token swap to be the first thing that is done
             // when online connection is up
-            BackendClientService.postPrimary('/api/authenticate', authenticateRegexp, {
+            BackendClientService.postPrimary('/api/authenticate', authenticateRegex, {
               rememberMe: true
             });
             validateAuthentication();
@@ -71,6 +69,20 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
     });
     return deferredAuthentication.promise;
   }
+
+  var acceptRegex = /\/accept/;
+  var authRegex = /authenticate/;
+  var authenticateRegex = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    authRegex.source +
+    /$/.source
+    );
+  var inviteRegex = /invite\//;
+  var logoutRegex = /logout/;
+  var requestRegex = /request/;
+  var requestSlashRegex = /request\//;
+  var emailRegex = /\?email=.+/;
 
   return {
     verifyAndUpdateAuthentication: function() {
@@ -96,10 +108,6 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
       return BackendClientService.get('/api/invite/' + inviteResponseCode + '?email=' + email,
         this.getInviteRegex, true);
     },
-    getInviteWithUUID: function(uuid) {
-      return BackendClientService.get('/api/invite/' + uuid,
-        this.getInviteRegex, true);
-    },
     signUp: function(inviteResponseCode, data) {
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',
         this.acceptInviteRegex, data, true, [400, 404, 502]);
@@ -119,14 +127,43 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
       UserSessionService.setActiveUUID(uuid);
     },
     // Regular expressions for account requests
-    authenticateRegex: authenticateRegexp,
-    logoutRegex: /api\/logout/,
-    // TODO: Make regex! Bump!
-    postInviteRequestRegex: /api\/invite\/request/,
-    getInviteRegex: /api\/invite\/.*/,
-    acceptInviteRegex: /api\/invite\/.*/,
-    getInviteRequestQueueNumberRegex: /api\/invite\/.*/,
-
+    logoutRegex: new RegExp(
+      /^/.source +
+      BackendClientService.apiPrefixRegex.source +
+      logoutRegex.source +
+      /$/.source
+      ),
+    postInviteRequestRegex: new RegExp(
+      /^/.source +
+      BackendClientService.apiPrefixRegex.source +
+      inviteRegex.source +
+      requestRegex.source +
+      /$/.source
+      ),
+    getInviteRegex: new RegExp(
+      /^/.source +
+      BackendClientService.apiPrefixRegex.source +
+      inviteRegex.source +
+      BackendClientService.hexCodeRegex.source +
+      emailRegex.source +
+      /$/.source
+      ),
+    acceptInviteRegex: new RegExp(
+      /^/.source +
+      BackendClientService.apiPrefixRegex.source +
+      inviteRegex.source +
+      BackendClientService.hexCodeRegex.source +
+      acceptRegex.source +
+      /$/.source
+      ),
+    getInviteRequestQueueNumberRegex: new RegExp(
+      /^/.source +
+      BackendClientService.apiPrefixRegex.source +
+      inviteRegex.source +
+      requestSlashRegex.source +
+      BackendClientService.uuidRegex.source +
+      /$/.source
+      ),
   };
 }
 AuthenticationService.$inject = ['$location', '$q', 'BackendClientService', 'UserSessionService'];
