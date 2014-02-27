@@ -126,10 +126,10 @@
     <script>
 		$(document).ready(function() {
 			$('#input').click(function() {
-				return postRequest('emailForm', 'result');
+				return postRequest('emailForm', 'result', 'email');
 			});
 			$('#inputLower').click(function() {
-				return postRequest('emailFormLower', 'resultLower');
+				return postRequest('emailFormLower', 'resultLower', 'emailLower');
 			});
 		});
     </script>

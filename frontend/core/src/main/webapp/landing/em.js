@@ -33,7 +33,7 @@ $.ajaxSetup({
   dataType : "json"
 });
 
-var postRequest = function(formId, resultId) {
+var postRequest = function(formId, resultId, emailId) {
   var send = $('form#' + formId).formToJSON();
   $.ajax({
     url : "/api/invite/request",
@@ -45,8 +45,19 @@ var postRequest = function(formId, resultId) {
       $('div#' + resultId).html('<div class="alert">' + errorMessage + '</div>');
     },
     success : function(data) {
-      _gaq.push(['_trackEvent', 'signup', 'beta', formId,, false]);
-      $('div#' + resultId).html('<div class="alert">thank you, you are now on the beta waiting list. we have sent you a confirmation email. if you have not received the email in 5 minutes, check your spam filter.</div>');
+      var responseText;
+      if (data.resultType === 'newInviteRequest'){
+        responseText = 'thank you, you are now on the beta waiting list. we have sent you a confirmation email. if you have not received the email in 5 minutes, check your spam filter.'
+        _gaq.push(['_trackEvent', 'signup', 'beta', formId,, false]);
+      }else if (data.resultType === 'inviteRequest'){
+        responseText = 'you are already on the beta waiting list';
+      }else if (data.resultType === 'invite'){
+        responseText = 'we have sent you an email to join extended mind';        
+      }else if (data.resultType === 'user'){
+        responseText = 'you are already an extended mind user';        
+      }
+      $('div#' + resultId).html('<div class="alert">' + responseText + '</div>');
+      $('input#' + emailId).val('');
     }
   });
   return false;

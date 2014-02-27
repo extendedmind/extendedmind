@@ -23,28 +23,36 @@ import spray.util.LoggingContext
 trait InviteDatabase extends UserDatabase {
 
   // PUBLICs
-  
+
+  def postInviteRequest(inviteRequest: InviteRequest): Response[InviteRequestResult] = {
+    for {
+      info <- createInviteRequestInformation(inviteRequest).right
+      setResult <- Right(getSetResult(info._2, true)).right
+      inviteRequestResult <- Right(InviteRequestResult(info._1, if (info._1 == USER_RESULT) None else Some(setResult), info._3)).right
+    } yield inviteRequestResult
+  }
+
   def putNewInviteRequest(inviteRequest: InviteRequest): Response[SetResult] = {
-    for{
+    for {
       ir <- createInviteRequest(inviteRequest).right
       createResponse <- Right(createInviteRequestModifiedIndex(ir)).right
       result <- Right(getSetResult(ir, true)).right
-    }yield result
+    } yield result
   }
-  
+
   def putExistingInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest): Response[Tuple3[SetResult, Node, Long]] = {
-    for{
+    for {
       updatedInviteRequest <- updateInviteRequest(inviteRequestUUID, inviteRequest).right
       result <- Right(getSetResult(updatedInviteRequest._1, false)).right
-    }yield (result, updatedInviteRequest._1, updatedInviteRequest._2)
+    } yield (result, updatedInviteRequest._1, updatedInviteRequest._2)
   }
-  
+
   def createInviteRequestModifiedIndex(inviteRequestNode: Node): Unit = {
     withTx {
       implicit neo =>
         val inviteRequests = neo.gds.index().forNodes("inviteRequests")
-        inviteRequests.add(inviteRequestNode, "modified", 
-            new ValueContext(inviteRequestNode.getProperty("modified").asInstanceOf[Long] ).indexNumeric())
+        inviteRequests.add(inviteRequestNode, "modified",
+          new ValueContext(inviteRequestNode.getProperty("modified").asInstanceOf[Long]).indexNumeric())
     }
   }
 
@@ -53,20 +61,20 @@ trait InviteDatabase extends UserDatabase {
       implicit neo =>
         val inviteRequests = neo.gds.index().forNodes("inviteRequests")
         inviteRequests.remove(inviteRequestNode, "modified", oldModified)
-        inviteRequests.add(inviteRequestNode, "modified", 
-            new ValueContext(inviteRequestNode.getProperty("modified").asInstanceOf[Long] ).indexNumeric())
+        inviteRequests.add(inviteRequestNode, "modified",
+          new ValueContext(inviteRequestNode.getProperty("modified").asInstanceOf[Long]).indexNumeric())
     }
   }
-  
+
   def getInviteRequests(): Response[InviteRequests] = {
-    withTx{
+    withTx {
       implicit neo =>
         val inviteRequests = neo.gds.index().forNodes("inviteRequests")
-        val inviteRequestNodeList = inviteRequests.query( "modified", 
-            QueryContext.numericRange("modified", 0, Long.MaxValue).sort("modified")).toList        
-        if (inviteRequestNodeList.isEmpty){
-          Right(InviteRequests(scala.List()))}
-        else {
+        val inviteRequestNodeList = inviteRequests.query("modified",
+          QueryContext.numericRange("modified", 0, Long.MaxValue).sort("modified")).toList
+        if (inviteRequestNodeList.isEmpty) {
+          Right(InviteRequests(scala.List()))
+        } else {
           Right(InviteRequests(inviteRequestNodeList map (inviteRequestNode => {
             val response = toCaseClass[InviteRequest](inviteRequestNode)
             if (response.isLeft) return Left(response.left.get)
@@ -75,44 +83,34 @@ trait InviteDatabase extends UserDatabase {
         }
     }
   }
-  
+
   def getInviteRequestQueueNumber(inviteRequestUUID: UUID): Response[InviteRequestQueueNumber] = {
-    withTx{
+    withTx {
       implicit neo =>
-        val inviteRequest = getNode(inviteRequestUUID, MainLabel.REQUEST)
-        if (inviteRequest.isLeft) Left(inviteRequest.left.get)
-        else{
-          val inviteRequests = neo.gds.index().forNodes("inviteRequests")
-          val inviteRequestNodeList = inviteRequests.query( "modified", 
-              QueryContext.numericRange("modified", 0, Long.MaxValue).sort("modified")).toList
-          val queueNumber = inviteRequestNodeList.indexOf(inviteRequest.right.get)
-          if (queueNumber < -1){
-            fail(INTERNAL_SERVER_ERROR, "Invite request could not be found from invite request index with UUID: " + inviteRequestUUID)
-          }else{
-            return Right(InviteRequestQueueNumber(queueNumber+1))
-          }
-        }
+	    for {
+	      inviteRequestNode <- getNode(inviteRequestUUID, MainLabel.REQUEST).right
+	      inviteRequestQueueNumber <- getInviteRequestQueueNumber(inviteRequestNode).right
+	    } yield inviteRequestQueueNumber
     }
   }
-  
-  def acceptInviteRequest(userUUID: UUID, inviteRequestUUID: UUID, message: Option[String]): 
-          Response[(SetResult, Invite)] = {
-    for{
+
+  def acceptInviteRequest(userUUID: UUID, inviteRequestUUID: UUID, message: Option[String]): Response[(SetResult, Invite)] = {
+    for {
       userNode <- getNode(userUUID, OwnerLabel.USER).right
       ir <- createInvite(userNode, inviteRequestUUID, message).right
       result <- Right(getSetResult(ir._1, true)).right
-    }yield (result, ir._2)
+    } yield (result, ir._2)
   }
-  
+
   def putExistingInvite(inviteUUID: UUID, invite: Invite): Response[SetResult] = {
-    for{
+    for {
       updatedInvite <- updateInvite(inviteUUID, invite).right
       result <- Right(getSetResult(updatedInvite, false)).right
-    }yield result
+    } yield result
   }
-  
+
   def getInvite(code: Long, email: String): Response[Invite] = {
-    withTx{
+    withTx {
       implicit neo =>
         for {
           inviteNode <- getInviteNode(code, email).right
@@ -120,14 +118,14 @@ trait InviteDatabase extends UserDatabase {
         } yield invite
     }
   }
-  
+
   def getInvites(): Response[Invites] = {
-    withTx{
+    withTx {
       implicit neo =>
         val inviteNodeList = findNodesByLabel(MainLabel.INVITE).toList
-        if (inviteNodeList.isEmpty){
-          Right(Invites(scala.List()))}
-        else {
+        if (inviteNodeList.isEmpty) {
+          Right(Invites(scala.List()))
+        } else {
           Right(Invites(inviteNodeList map (inviteNode => {
             val response = toCaseClass[Invite](inviteNode)
             if (response.isLeft) return Left(response.left.get)
@@ -145,14 +143,14 @@ trait InviteDatabase extends UserDatabase {
   }
 
   def destroyInviteRequest(inviteRequestUUID: UUID): Response[DestroyResult] = {
-    withTx{
+    withTx {
       implicit neo4j =>
         val inviteRequest = getNode(inviteRequestUUID, MainLabel.REQUEST)
         if (inviteRequest.isLeft) Left(inviteRequest.left.get)
-        else{
-          if (!inviteRequest.right.get.getRelationships().toList.isEmpty){
+        else {
+          if (!inviteRequest.right.get.getRelationships().toList.isEmpty) {
             fail(INVALID_PARAMETER, "Can't delete accepted invite request")
-          }else{
+          } else {
             // First delete it from the index
             val inviteRequests = neo4j.gds.index().forNodes("inviteRequests")
             inviteRequests.remove(inviteRequest.right.get)
@@ -163,18 +161,51 @@ trait InviteDatabase extends UserDatabase {
         }
     }
   }
-  
+
   // PRIVATE
-    
+
+  protected def createInviteRequestInformation(inviteRequest: InviteRequest): Response[(InviteRequestResultType, Node, Option[Int])] = {
+    withTx {
+      implicit neo =>
+        // First check if user
+        val userNodeList = findNodesByLabelAndProperty(OwnerLabel.USER, "email", inviteRequest.email).toList
+        if (!userNodeList.isEmpty) {
+          return Right(USER_RESULT, userNodeList(0), None)
+        }
+        val inviteNodeList = findNodesByLabelAndProperty(MainLabel.INVITE, "email", inviteRequest.email).toList
+        if (!inviteNodeList.isEmpty) {
+          return Right(INVITE_RESULT, inviteNodeList(0), None)
+        }
+        val requestNodeList = findNodesByLabelAndProperty(MainLabel.REQUEST, "email", inviteRequest.email).toList
+        if (!requestNodeList.isEmpty) {
+          val inviteRequestQueueNumberResponse = getInviteRequestQueueNumber(requestNodeList(0))
+          if (inviteRequestQueueNumberResponse.isLeft) Left(inviteRequestQueueNumberResponse.left.get)
+          return Right((INVITE_REQUEST_RESULT, requestNodeList(0),
+            Some(inviteRequestQueueNumberResponse.right.get.queueNumber)))
+        }
+
+        // Need to create a new invite request
+        val inviteRequestResponse = createInviteRequest(inviteRequest)
+        println("created")
+        if (inviteRequestResponse.isLeft) Left(inviteRequestResponse.left.get)
+        else {
+          val inviteRequestQueueNumberResponse = getInviteRequestQueueNumber(inviteRequestResponse.right.get)
+          if (inviteRequestQueueNumberResponse.isLeft) Left(inviteRequestQueueNumberResponse.left.get)
+          else Right((NEW_INVITE_REQUEST_RESULT,
+            inviteRequestResponse.right.get,
+            Some(inviteRequestQueueNumberResponse.right.get.queueNumber)))
+        }
+    }
+  }
+
   protected def createInviteRequest(inviteRequest: InviteRequest): Response[Node] = {
     withTx {
       implicit neo =>
         Right(createNode(inviteRequest, MainLabel.REQUEST))
     }
   }
-  
-  protected def updateInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest):
-        Response[(Node, Long)] = {
+
+  protected def updateInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest): Response[(Node, Long)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -183,7 +214,7 @@ trait InviteDatabase extends UserDatabase {
         } yield (updatedNode, updatedNode.getProperty("modified").asInstanceOf[Long])
     }
   }
-  
+
   protected def updateInvite(inviteUUID: UUID, invite: Invite): Response[Node] = {
     withTx {
       implicit neo4j =>
@@ -193,28 +224,39 @@ trait InviteDatabase extends UserDatabase {
         } yield updatedNode
     }
   }
-  
-  protected def createInvite(userNode: Node, inviteRequestUUID: UUID, message: Option[String]):
-        Response[(Node, Invite)] = {
-    withTx{
+
+  protected def createInvite(userNode: Node, inviteRequestUUID: UUID, message: Option[String]): Response[(Node, Invite)] = {
+    withTx {
       implicit neo =>
         val inviteRequestNode = getNode(inviteRequestUUID, MainLabel.REQUEST)
         if (inviteRequestNode.isLeft) Left(inviteRequestNode.left.get)
-        else{
+        else {
           // Create an invite from the invite request
           val email = inviteRequestNode.right.get.getProperty("email").asInstanceOf[String]
           val invite = Invite(email, Random.generateRandomUnsignedLong, None, message, None)
           val inviteNode = createNode(invite, MainLabel.INVITE)
           inviteRequestNode.right.get --> SecurityRelationship.IS_ORIGIN --> inviteNode
-          userNode --> SecurityRelationship.IS_ACCEPTER --> inviteNode 
+          userNode --> SecurityRelationship.IS_ACCEPTER --> inviteNode
           // Remove invite request from index
           val inviteRequests = neo.gds.index().forNodes("inviteRequests")
           inviteRequests.remove(inviteRequestNode.right.get)
-          Right(inviteNode,invite)
+          Right(inviteNode, invite)
         }
     }
   }
-  
+
+  protected def getInviteRequestQueueNumber(inviteRequestNode: Node)(implicit neo4j: DatabaseService): Response[InviteRequestQueueNumber] = {
+    val inviteRequests = neo4j.gds.index().forNodes("inviteRequests")
+    val inviteRequestNodeList = inviteRequests.query("modified",
+      QueryContext.numericRange("modified", 0, Long.MaxValue).sort("modified")).toList
+    val queueNumber = inviteRequestNodeList.indexOf(inviteRequestNode)
+    if (queueNumber < -1) {
+      fail(INTERNAL_SERVER_ERROR, "Invite request could not be found from invite request index with id: " + inviteRequestNode.getId())
+    } else {
+      return Right(InviteRequestQueueNumber(queueNumber + 1))
+    }
+  }
+
   protected def getInviteNode(code: Long, email: String): Response[Node] = {
     withTx {
       implicit neo =>
@@ -224,17 +266,17 @@ trait InviteDatabase extends UserDatabase {
           fail(INVALID_PARAMETER, invalidParameterDescription)
         } else if (nodeIter.toList.size > 1) {
           fail(INTERNAL_SERVER_ERROR, "Ḿore than one user found with given code " + code)
-        } else{
+        } else {
           val inviteNode = nodeIter.toList(0)
-          if (inviteNode.getProperty("email").asInstanceOf[String] != email){
+          if (inviteNode.getProperty("email").asInstanceOf[String] != email) {
             fail(INVALID_PARAMETER, invalidParameterDescription)
-          }else{
+          } else {
             Right(inviteNode)
           }
         }
     }
   }
-  
+
   protected def acceptInviteNode(signUp: SignUp, code: Long, signUpMode: SignUpMode): Response[Node] = {
     withTx {
       implicit neo =>
@@ -246,9 +288,8 @@ trait InviteDatabase extends UserDatabase {
         } yield userNode
     }
   }
-  
-  protected def linkInviteAndUser(inviteNode: Node, userNode: Node)
-                  (implicit neo4j: DatabaseService): Relationship = {
+
+  protected def linkInviteAndUser(inviteNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Relationship = {
     val currentTime = System.currentTimeMillis().asInstanceOf[java.lang.Long]
     inviteNode.setProperty("accepted", currentTime)
     // When the user accepts invite using a code sent to her email, 
@@ -256,5 +297,5 @@ trait InviteDatabase extends UserDatabase {
     userNode.setProperty("emailVerified", currentTime)
     inviteNode --> SecurityRelationship.IS_ORIGIN --> userNode <
   }
-  
+
 }

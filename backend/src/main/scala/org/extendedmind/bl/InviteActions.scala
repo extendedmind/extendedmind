@@ -26,19 +26,15 @@ trait InviteActions {
   implicit val implicitActorRefFactory = actorRefFactory
   implicit val implicitExecutionContext = actorRefFactory.dispatcher 
     
-  def requestInvite(inviteRequest: InviteRequest)(implicit log: LoggingContext): Response[SetResult] = {
+  def requestInvite(inviteRequest: InviteRequest)(implicit log: LoggingContext): Response[InviteRequestResult] = {
     log.info("requestInvite: email {}", inviteRequest.email)
-    val setResult = for {
-      isUnique <- db.validateEmailUniqueness(inviteRequest.email).right
-      setResult <- db.putNewInviteRequest(inviteRequest).right
-    } yield setResult
-    
-    if (setResult.isRight){
-      val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email, setResult.right.get.uuid.get)
+    val inviteRequestResult = db.postInviteRequest(inviteRequest)
+    if (inviteRequestResult.isRight && inviteRequestResult.right.get.resultType == NEW_INVITE_REQUEST_RESULT){
+      val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email, inviteRequestResult.right.get.result.get.uuid.get)
       futureMailResponse onSuccess {
         case SendEmailResponse(message, id) => {
           val saveResponse = for{
-            putExistingResponse <- db.putExistingInviteRequest(setResult.right.get.uuid.get, 
+            putExistingResponse <- db.putExistingInviteRequest(inviteRequestResult.right.get.result.get.uuid.get, 
                                                                inviteRequest.copy(emailId = Some(id))).right
             updateResponse <- Right(db.updateInviteRequestModifiedIndex(putExistingResponse._2, 
                                                                         putExistingResponse._3)).right
@@ -47,12 +43,12 @@ trait InviteActions {
             log.error("Error updating invite request for email {} with id {}, error: {}", 
                 inviteRequest.email, id, saveResponse.left.get.head)
           else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}", 
-                          inviteRequest.email, setResult.right.get.uuid.get, id)
+                          inviteRequest.email, inviteRequestResult.right.get.result.get.uuid.get, id)
         }case _ =>
           log.error("Could not send invite request confirmation email to {}", inviteRequest.email)
       }
     }
-    setResult
+    inviteRequestResult
   }
   
   def putNewInviteRequest(inviteRequest: InviteRequest)(implicit log: LoggingContext): Response[SetResult] = {

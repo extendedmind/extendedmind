@@ -75,21 +75,22 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       Post("/invite/request",
         marshal(testInviteRequest).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
           writeJsonOutput("inviteRequestResponse", entityAs[String])
-          val inviteRequestResponse = entityAs[SetResult]
-          inviteRequestResponse.uuid should not be None
-          inviteRequestResponse.modified should not be None
+          val inviteRequestResponse = entityAs[InviteRequestResult]
+          inviteRequestResponse.resultType should be (NEW_INVITE_REQUEST_RESULT)
+          inviteRequestResponse.result.get.uuid should not be None
+          inviteRequestResponse.result.get.modified should not be None
 
           Post("/invite/request",
             marshal(testInviteRequest2).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-              val inviteRequestResponse2 = entityAs[SetResult]
+              val inviteRequestResponse2 = entityAs[InviteRequestResult]
 
               Post("/invite/request",
                 marshal(testInviteRequest3).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-                  val inviteRequestResponse3 = entityAs[SetResult]
+                  val inviteRequestResponse3 = entityAs[InviteRequestResult]
 
-                  verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail, inviteRequestResponse.uuid.get)
-                  verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail2, inviteRequestResponse2.uuid.get)
-                  verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail3, inviteRequestResponse3.uuid.get)
+                  verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail, inviteRequestResponse.result.get.uuid.get)
+                  verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail2, inviteRequestResponse2.result.get.uuid.get)
+                  verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail3, inviteRequestResponse3.result.get.uuid.get)
                   // Get the request back
                   val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
                   Get("/invite/requests") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -99,28 +100,28 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                     inviteRequests.inviteRequests(1).email should be(testEmail2)
                     inviteRequests.inviteRequests(2).email should be(testEmail3)
                     // Get order number for invites
-                    Get("/invite/request/" + inviteRequestResponse.uuid.get) ~> route ~> check {
+                    Get("/invite/request/" + inviteRequestResponse.result.get.uuid.get) ~> route ~> check {
                       entityAs[InviteRequestQueueNumber].queueNumber should be(1)
                     }
-                    Get("/invite/request/" + inviteRequestResponse2.uuid.get) ~> route ~> check {
+                    Get("/invite/request/" + inviteRequestResponse2.result.get.uuid.get) ~> route ~> check {
                       entityAs[InviteRequestQueueNumber].queueNumber should be(2)
                     }
-                    Get("/invite/request/" + inviteRequestResponse3.uuid.get) ~> route ~> check {
+                    Get("/invite/request/" + inviteRequestResponse3.result.get.uuid.get) ~> route ~> check {
                       entityAs[InviteRequestQueueNumber].queueNumber should be(3)
                     }
 
                     // Delete the middle invite request
-                    Delete("/invite/request/" + inviteRequestResponse2.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    Delete("/invite/request/" + inviteRequestResponse2.result.get.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                       val deleteInviteRequestResponse = entityAs[DestroyResult]
                       writeJsonOutput("deleteInviteRequestResponse", entityAs[String])
                       deleteInviteRequestResponse.destroyed.size should be(1)
                     }
                     // Verify that the last one is now number 2 
-                    Get("/invite/request/" + inviteRequestResponse3.uuid.get) ~> route ~> check {
+                    Get("/invite/request/" + inviteRequestResponse3.result.get.uuid.get) ~> route ~> check {
                       entityAs[InviteRequestQueueNumber].queueNumber should be(2)
                     }
                     // Accept invite request  
-                    Post("/invite/request/" + inviteRequestResponse.uuid.get + "/accept") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    Post("/invite/request/" + inviteRequestResponse.result.get.uuid.get + "/accept") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                       val acceptInviteRequestResponse = entityAs[SetResult]
                       writeJsonOutput("acceptInviteRequestResponse", entityAs[String])
                       acceptInviteRequestResponse.uuid should not be None
@@ -128,7 +129,7 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                     verify(mockMailgunClient).sendInvite(anyObject())
 
                     // Verify that the last one is now number 1 
-                    Get("/invite/request/" + inviteRequestResponse3.uuid.get) ~> route ~> check {
+                    Get("/invite/request/" + inviteRequestResponse3.result.get.uuid.get) ~> route ~> check {
                       entityAs[InviteRequestQueueNumber].queueNumber should be(1)
                     }
 
@@ -173,7 +174,24 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                             acceptedInviteResponse.accepted should not be None
                           }
                         }
-                    }
+				    }
+                    // Try post accepted invite request again, and verify that user
+	                Post("/invite/request",
+				      marshal(testInviteRequest).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+				        val repostedInviteRequestResult = entityAs[InviteRequestResult]
+				        repostedInviteRequestResult.resultType should be (USER_RESULT)
+				        repostedInviteRequestResult.queueNumber should be (None)
+				        repostedInviteRequestResult.result should be (None)
+				    }
+				    // Try post existing invite request again, and verify that right queue number is received
+	                Post("/invite/request",
+				      marshal(testInviteRequest3).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+				        val repostedInviteRequestResult3 = entityAs[InviteRequestResult]
+				        repostedInviteRequestResult3.resultType should be (INVITE_REQUEST_RESULT)
+				        repostedInviteRequestResult3.queueNumber.get should be (1)
+				        repostedInviteRequestResult3.result.get.uuid should not be (None)
+				        repostedInviteRequestResult3.result.get.modified should not be (None)
+				    }
                   }
                 }
             }

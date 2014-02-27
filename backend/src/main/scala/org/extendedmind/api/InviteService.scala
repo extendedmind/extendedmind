@@ -32,9 +32,9 @@ trait InviteService extends ServiceBase {
         authorize(settings.signUpMethod != SIGNUP_OFF) {
           entity(as[InviteRequest]) { inviteRequest =>
             complete {
-              Future[SetResult] {
+              Future[InviteRequestResult] {
                 inviteActions.requestInvite(inviteRequest) match {
-                  case Right(sr) => sr
+                  case Right(inviteRequestResult) => inviteRequestResult
                   case Left(e) => processErrors(e)
                 }
               }
