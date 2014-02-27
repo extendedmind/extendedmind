@@ -3,7 +3,9 @@
 describe('LaunchController', function() {
   var $httpBackend, $location, $scope;
   var BackendClientService, LaunchController, AuthenticationService;
-  var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
+  var mockLocation;
+
+  var inviteRequestResponse = getJSONFixture('inviteRequestResponse.json');
 
   beforeEach(function() {
     module('em.appTest');
@@ -17,63 +19,75 @@ describe('LaunchController', function() {
       $location = _$location_;
       AuthenticationService = _AuthenticationService_;
       BackendClientService = _BackendClientService_;
+
+      spyOn($location, 'path').andCallFake(function(path) {
+        mockLocation = '/' + path;
+      });
     });
   });
 
   afterEach(function() {
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest();
+    $location.path('');
   });
 
-  it('should redirect queued user to waiting page with uuid', function() {
+  it('should redirect user with new invite request to waiting page', function() {
     // SETUP
-    var inviteRequestResponse = {
-      inviteRequestUUID: testOwnerUUID
+    $scope.user = {
+      email: 'example@example.md'
     };
-    $scope.user = {};
-    expect($scope.user.email).toBeUndefined();
-
-    // INIT
-    $scope.user.email = 'jp@extample.md';
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
     
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
-    expect($location.path()).toEqual('/waiting?uuid=' + testOwnerUUID);
+    expect(mockLocation).toEqual('/waiting?uuid=' + inviteRequestResponse.result.uuid);
+  });
+
+  it('should redirect user with existing invite request to waiting page', function() {
+    // SETUP
+    inviteRequestResponse.resultType = 'inviteRequest';
+    $scope.user = {
+      email: 'example@example.md'
+    };
+    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
+    .respond(200, inviteRequestResponse);
+
+    // EXECUTE
+    $scope.launchUser();
+    $httpBackend.flush();
+    expect(mockLocation).toBe('/waiting?uuid=e6b27586-996a-4571-ab48-c5a8cd472e65');
   });
 
   it('should redirect invited user to waiting page', function() {
-    var inviteRequestResponse = {
-      inviteUUID: testOwnerUUID
-    };
+    // SETUP
+    inviteRequestResponse.resultType = 'invite';
     $scope.user = {
-      email: 'jp@next.md'
+      email: 'example@example.md'
     };
-    $scope.launchUser();
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
+
+    // EXECUTE
+    $scope.launchUser();
     $httpBackend.flush();
-    expect($location.path()).toEqual('/waiting?email=' + $scope.user.email);
+    expect(mockLocation).toEqual('/waiting?email=' + $scope.user.email);
   });
 
   it('should redirect existing user to root page', function() {
     // SETUP
-    var inviteRequestResponse = {
-      user: true
+    inviteRequestResponse.resultType = 'user';
+    $scope.user = {
+      email: 'example@example.md'
     };
-    $scope.user = {};
-    expect($scope.user.email).toBeUndefined();
-    
-    // INIT
-    $scope.user.email = 'jp@ext.md';
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
 
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
-    expect($location.path()).toEqual('/');
+    expect(mockLocation).toEqual('/');
   });
 });

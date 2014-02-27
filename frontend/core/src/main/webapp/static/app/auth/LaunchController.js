@@ -12,18 +12,21 @@ function LaunchController($location, $scope, AuthenticationService) {
   };
 
   // https://google-styleguide.googlecode.com/svn/trunk/angularjs-google-style.html
-  function checkEmailStatus(emailStatusResponse) {
-    // user in invite queue
-    if (emailStatusResponse.data.inviteRequestUUID) {
-      $location.path('waiting?uuid=' + emailStatusResponse.data.inviteRequestUUID);
+  function checkEmailStatus(inviteRequestResponse) {
+    // Redirect user with new invite request to waiting page, then show queue.
+    if (inviteRequestResponse.data.resultType === 'newInviteRequest') {
+      $location.path('waiting?uuid=' + inviteRequestResponse.data.result.uuid);
     }
-    // user can sign up
-    else if (emailStatusResponse.data.inviteUUID) {
+    // Redirect user with existing invite request to waiting page, then show queue.
+    else if (inviteRequestResponse.data.resultType === 'inviteRequest') {
+      $location.path('waiting?uuid=' + inviteRequestResponse.data.result.uuid);
+    }
+    // Redirect invited user to waiting page, then show info text
+    else if (inviteRequestResponse.data.resultType === 'invite') {
       $location.path('waiting?email=' + $scope.user.email);
     }
-    // User exists.
-    // Redirect to front page which redirects to login page is not logged in.
-    else if (emailStatusResponse.data.user) {
+    // Redirect existing user to front page.
+    else if (inviteRequestResponse.data.user) {
       $location.path('');
     }
   }
