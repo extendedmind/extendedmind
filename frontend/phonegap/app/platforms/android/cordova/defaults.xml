@@ -1,21 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="org.extendedmind" version="0.5" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>Hello Cordova</name>
-    <description>
-        A sample Apache Cordova application that responds to the deviceready event.
-    </description>
-    <feature name="App">
-        <param name="android-package" value="org.apache.cordova.App" />
-    </feature>
-    <name>em</name>
-    <description>
-        Mobile application for Extended Mind.
-    </description>
-    <name>em</name>
-    <description>
-        Mobile application for Extended Mind.
-    </description>
-    <preference name="useBrowserHistory" value="true" />
     <name>em</name>
     <description>
         Mobile application for Extended Mind.
