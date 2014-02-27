@@ -48,7 +48,7 @@ describe('ItemsService', function() {
     isAuthenticateReplaceable: function() {
       return this.authenticateReplaceable;
     },
-    getEncodedCredentials: function () {
+    getCredentials: function () {
       return '123456789';
     },
     getActiveUUID: function () {

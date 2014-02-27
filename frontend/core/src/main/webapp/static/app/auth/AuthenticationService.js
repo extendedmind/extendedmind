@@ -8,9 +8,9 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
 
   // Register swapTokenCallback to backend
   var swapTokenCallback = function(request, authenticateResponse) {
-    UserSessionService.setAuthenticateInformation(authenticateResponse);
+    var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse);
     // Update backend client with new token
-    BackendClientService.setEncodedCredentials(UserSessionService.getEncodedCredentials());    
+    BackendClientService.setCredentials(encodedCredentials);    
   };
   BackendClientService.registerPrimaryPostCallback(swapTokenCallback);
 
@@ -18,9 +18,9 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
     var deferred = $q.defer();
     var remember = true;
     authenticate(remember).then(function(authenticateResponse) {
-      UserSessionService.setAuthenticateInformation(authenticateResponse);
+      var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse);
       // Update backend client with new token
-      BackendClientService.setEncodedCredentials(UserSessionService.getEncodedCredentials());    
+      BackendClientService.setCredentials(encodedCredentials);    
       deferred.resolve();
     });
     return deferred.promise;
@@ -49,7 +49,7 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
       } else {
         if (UserSessionService.isAuthenticateReplaceable()) {
           // Make sure the latest credentials are in use
-          BackendClientService.setEncodedCredentials(UserSessionService.getEncodedCredentials());
+          BackendClientService.setCredentials(UserSessionService.getCredentials());
           if (UserSessionService.isOfflineEnabled()){
             // Push token swap to be the first thing that is done
             // when online connection is up
@@ -83,9 +83,9 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
       var remember = user.remember || false;
       BackendClientService.setUsernamePassword(user.username, user.password);
       return authenticate(remember).then(function(authenticateResponse) {
-        UserSessionService.setAuthenticateInformation(authenticateResponse);
+        var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse);
         // Update backend client to use token authentication instead of username/password
-        BackendClientService.setEncodedCredentials(UserSessionService.getEncodedCredentials());
+        BackendClientService.setCredentials(encodedCredentials);
       });
     },
     logout: function() {

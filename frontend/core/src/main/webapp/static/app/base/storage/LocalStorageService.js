@@ -10,8 +10,8 @@ function LocalStorageService() {
     setExpires: function(expires) {
       localStorage.setItem('expires', parseInt(expires));
     },
-    setHttpAuthorizationHeader: function(authorizationHeader) {
-      localStorage.setItem('authorizationHeader', authorizationHeader);
+    setCredentials: function(credentials) {
+      localStorage.setItem('credentials', credentials);
     },
     setReplaceable: function(replaceable) {
       localStorage.setItem('replaceable', replaceable);
@@ -32,8 +32,8 @@ function LocalStorageService() {
     getExpires: function() {
       return localStorage.getItem('expires');
     },
-    getHttpAuthorizationHeader: function() {
-      return localStorage.getItem('authorizationHeader');
+    getCredentials: function() {
+      return localStorage.getItem('credentials');
     },
     getReplaceable: function() {
       return localStorage.getItem('replaceable');
@@ -48,7 +48,7 @@ function LocalStorageService() {
     clearUser: function() {
       localStorage.removeItem('collectives');
       localStorage.removeItem('expires');
-      localStorage.removeItem('authorizationHeader');
+      localStorage.removeItem('credentials');
       localStorage.removeItem('replaceable');
       localStorage.removeItem('userType');
       localStorage.removeItem('userUUID');

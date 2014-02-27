@@ -17,7 +17,7 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
 
   function refreshCredentials() {
     function doRefreshCredentials(){
-      var credentials = UserSessionService.getEncodedCredentials();
+      var credentials = UserSessionService.getCredentials();
       if (HttpClientService.getCredentials() !== credentials){
         HttpClientService.setCredentials(credentials);
       }
@@ -39,8 +39,8 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
   }
 
   // Method for setting credentials to all subsequent http calls
-  methods.setEncodedCredentials = function(encodedCredentials) {
-    return HttpClientService.setCredentials(encodedCredentials);
+  methods.setCredentials = function(credentials) {
+    return HttpClientService.setCredentials(credentials);
   };
   methods.setUsernamePassword = function(username, password) {
     return HttpClientService.setCredentials(base64.encode(username + ':' + password));

@@ -13,8 +13,8 @@ function SessionStorageService() {
     setExpires: function(expires) {
       sessionStorage.setItem('expires', expires);
     },
-    setHttpAuthorizationHeader: function(authorizationHeader) {
-      sessionStorage.setItem('authorizationHeader', authorizationHeader);
+    setCredentials: function(credentials) {
+      sessionStorage.setItem('credentials', credentials);
     },
     setUserType: function(userType) {
       sessionStorage.setItem('userType', userType);
@@ -33,8 +33,8 @@ function SessionStorageService() {
     getExpires: function() {
       return sessionStorage.getItem('expires');
     },
-    getHttpAuthorizationHeader: function() {
-      return sessionStorage.getItem('authorizationHeader');
+    getCredentials: function() {
+      return sessionStorage.getItem('credentials');
     },
     getUserType: function() {
       return sessionStorage.getItem('userType');
@@ -46,7 +46,7 @@ function SessionStorageService() {
       sessionStorage.removeItem('activeUUID');
       sessionStorage.removeItem('collectives');
       sessionStorage.removeItem('expires');
-      sessionStorage.removeItem('authorizationHeader');
+      sessionStorage.removeItem('credentials');
       sessionStorage.removeItem('userType');
       sessionStorage.removeItem('userUUID');
     }

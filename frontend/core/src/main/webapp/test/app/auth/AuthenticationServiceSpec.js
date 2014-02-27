@@ -30,7 +30,7 @@ describe('AuthenticationService', function() {
     isOfflineEnabled: function() {
       return false;
     },
-    getEncodedCredentials: function () {
+    getCredentials: function () {
       return '123456789';
     },
     getActiveUUID: function () {

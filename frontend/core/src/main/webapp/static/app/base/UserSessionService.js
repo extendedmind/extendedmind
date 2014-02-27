@@ -23,12 +23,12 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
     SessionStorageService.setCollectives(LocalStorageService.getCollectives());
     SessionStorageService.setExpires(LocalStorageService.getExpires());
-    SessionStorageService.setHttpAuthorizationHeader(LocalStorageService.getHttpAuthorizationHeader());
+    SessionStorageService.setCredentials(LocalStorageService.getCredentials());
     SessionStorageService.setUserType(LocalStorageService.getUserType());
     SessionStorageService.setUserUUID(LocalStorageService.getUserUUID());
   }
 
-  function encodeCredentials(username, password) {
+  function encodeUsernamePassword(username, password) {
     return base64.encode(username + ':' + password);
   }
 
@@ -81,23 +81,24 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     // Web storage setters
     setAuthenticateInformation: function(authenticateResponse) {
       var authExpiresDelta = Date.now() - authenticateResponse.authenticated;
-      var encodedCredentials = encodeCredentials('token', authenticateResponse.token);
+      var credentials = encodeUsernamePassword('token', authenticateResponse.token);
 
       SessionStorageService.setActiveUUID(authenticateResponse.userUUID);
       SessionStorageService.setCollectives(authenticateResponse.collectives);
       SessionStorageService.setExpires(authenticateResponse.expires - authExpiresDelta);
-      SessionStorageService.setHttpAuthorizationHeader(encodedCredentials);
+      SessionStorageService.setCredentials(credentials);
       SessionStorageService.setUserType(authenticateResponse.userType);
       SessionStorageService.setUserUUID(authenticateResponse.userUUID);
 
       if (authenticateResponse.replaceable) {
         LocalStorageService.setExpires(authenticateResponse.expires - authExpiresDelta);
         LocalStorageService.setCollectives(authenticateResponse.collectives);
-        LocalStorageService.setHttpAuthorizationHeader(encodedCredentials);
+        LocalStorageService.setCredentials(credentials);
         LocalStorageService.setReplaceable(authenticateResponse.replaceable - authExpiresDelta);
         LocalStorageService.setUserType(authenticateResponse.userType);
         LocalStorageService.setUserUUID(authenticateResponse.userUUID);
       }
+      return credentials;
     },
     setActiveUUID: function(uuid) {
       SessionStorageService.setActiveUUID(uuid);
@@ -131,9 +132,9 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       syncWebStorages();
       return SessionStorageService.getCollectives();
     },
-    getEncodedCredentials: function() {
+    getCredentials: function() {
       syncWebStorages();
-      return SessionStorageService.getHttpAuthorizationHeader();
+      return SessionStorageService.getCredentials();
     },
     getUserUUID: function() {
       syncWebStorages();
