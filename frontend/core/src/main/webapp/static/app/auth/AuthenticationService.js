@@ -18,9 +18,9 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
     var deferred = $q.defer();
     var remember = true;
     authenticate(remember).then(function(authenticateResponse) {
-      var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse);
+      var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse.data);
       // Update backend client with new token
-      BackendClientService.setCredentials(encodedCredentials);    
+      BackendClientService.setCredentials(encodedCredentials);
       deferred.resolve();
     });
     return deferred.promise;
