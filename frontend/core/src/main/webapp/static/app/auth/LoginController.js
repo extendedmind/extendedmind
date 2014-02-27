@@ -10,7 +10,11 @@ function LoginController($location, $scope, UserSessionService, AuthenticationSe
     AuthenticationService.login($scope.user).then(function() {
       $location.path('/my/tasks');
     }, function(authenticateResponse) {
-      $scope.loginFailed = true;
+      if (authenticateResponse.status === 404 || authenticateResponse.status === 502){
+        $scope.loginOffline = true;
+      }else if(authenticateResponse.status === 400){
+        $scope.loginFailed = true;
+      }
     });
   };
   $scope.rememberByDefault = function() {

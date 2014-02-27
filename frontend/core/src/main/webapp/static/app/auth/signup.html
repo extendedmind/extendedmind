@@ -26,6 +26,7 @@
               <span class="button-text">signup</span>
             </button>
             <p ng-show="signupFailed" class="validation-error">Could not sign up, please try again later</p>
+            <p ng-show="signupOffline" class="validation-error">Can't connect to the server. Are you sure you are online?</p>            
             <p ng-show="loginFailed" class="validation-error">Could not login with new signup, please try to login later</p>
           </div>
         </form>

@@ -88,11 +88,11 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   });
 
   // Online alternatives for POST, PUT and DELETE
-  methods.postOnline = function(url, data, skipLogStatus) {
+  methods.postOnline = function(url, data, skipLogStatuses) {
     return $http({method: 'post', url: url, data: data}).then(function(success) {
       return success;
     }, function(error) {
-      if(!(error.status === skipLogStatus)){
+      if(!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1){
         $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
       }
       return $q.reject(error);
