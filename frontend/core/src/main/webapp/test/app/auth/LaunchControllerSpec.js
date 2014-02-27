@@ -3,9 +3,7 @@
 describe('LaunchController', function() {
   var $httpBackend, $location, $scope;
   var BackendClientService, LaunchController, AuthenticationService;
-  var mockLocation;
-
-  var inviteRequestResponse = getJSONFixture('inviteRequestResponse.json');
+  var inviteRequestResponse;
 
   beforeEach(function() {
     module('em.appTest');
@@ -20,16 +18,15 @@ describe('LaunchController', function() {
       AuthenticationService = _AuthenticationService_;
       BackendClientService = _BackendClientService_;
 
-      spyOn($location, 'path').andCallFake(function(path) {
-        mockLocation = '/' + path;
-      });
+      spyOn($location, 'path');
+      spyOn($location, 'search');
     });
+    inviteRequestResponse = getJSONFixture('inviteRequestResponse.json');
   });
 
   afterEach(function() {
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest();
-    $location.path('');
   });
 
   it('should redirect user with new invite request to waiting page', function() {
@@ -37,18 +34,25 @@ describe('LaunchController', function() {
     $scope.user = {
       email: 'example@example.md'
     };
+    inviteRequestResponse.queueNumber = 155500;
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
     
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
-    expect(mockLocation).toEqual('/waiting?uuid=' + inviteRequestResponse.result.uuid);
+
+    expect($location.path).toHaveBeenCalledWith('/waiting');
+    expect($location.search).toHaveBeenCalledWith({
+      uuid: inviteRequestResponse.result.uuid,
+      queue_number: inviteRequestResponse.queueNumber
+    });
   });
 
   it('should redirect user with existing invite request to waiting page', function() {
     // SETUP
     inviteRequestResponse.resultType = 'inviteRequest';
+    inviteRequestResponse.queueNumber = 123;
     $scope.user = {
       email: 'example@example.md'
     };
@@ -58,7 +62,12 @@ describe('LaunchController', function() {
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
-    expect(mockLocation).toBe('/waiting?uuid=e6b27586-996a-4571-ab48-c5a8cd472e65');
+    
+    expect($location.path).toHaveBeenCalledWith('/waiting');
+    expect($location.search).toHaveBeenCalledWith({
+      uuid: inviteRequestResponse.result.uuid,
+      queue_number: inviteRequestResponse.queueNumber
+    });
   });
 
   it('should redirect invited user to waiting page', function() {
@@ -73,7 +82,11 @@ describe('LaunchController', function() {
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
-    expect(mockLocation).toEqual('/waiting?email=' + $scope.user.email);
+
+    expect($location.path).toHaveBeenCalledWith('/waiting');
+    expect($location.search).toHaveBeenCalledWith({
+      email: $scope.user.email
+    });
   });
 
   it('should redirect existing user to root page', function() {
@@ -88,6 +101,6 @@ describe('LaunchController', function() {
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
-    expect(mockLocation).toEqual('/');
+    expect($location.path).toHaveBeenCalledWith('/');
   });
 });

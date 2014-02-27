@@ -20,8 +20,16 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/auth/launch.html'
     });
 
-    $routeProvider.when('/waiting', {
-      templateUrl: 'static/app/auth/waiting.html'
+    $routeProvider.when('/waiting/', {
+      templateUrl: 'static/app/auth/waiting.html',
+      resolve: {
+        isEmailOrUUID: ['$location', '$route',
+        function($location, $route) {
+          if (!$route.current.params.email && !$route.current.params.uuid) {
+            $location.path('/login').search({});
+          }
+        }]
+      }
     });
 
     $routeProvider.when('/accept/:hex_code', {

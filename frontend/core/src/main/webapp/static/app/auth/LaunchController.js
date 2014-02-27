@@ -15,19 +15,30 @@ function LaunchController($location, $scope, AuthenticationService) {
   function checkEmailStatus(inviteRequestResponse) {
     // Redirect user with new invite request to waiting page, then show queue.
     if (inviteRequestResponse.data.resultType === 'newInviteRequest') {
-      $location.path('waiting?uuid=' + inviteRequestResponse.data.result.uuid);
+      redirectToWaitingPage();
     }
     // Redirect user with existing invite request to waiting page, then show queue.
     else if (inviteRequestResponse.data.resultType === 'inviteRequest') {
-      $location.path('waiting?uuid=' + inviteRequestResponse.data.result.uuid);
+      redirectToWaitingPage();
     }
     // Redirect invited user to waiting page, then show info text
     else if (inviteRequestResponse.data.resultType === 'invite') {
-      $location.path('waiting?email=' + $scope.user.email);
+      $location.path('/waiting');
+      $location.search({
+        email: $scope.user.email
+      });
     }
     // Redirect existing user to front page.
-    else if (inviteRequestResponse.data.user) {
-      $location.path('');
+    else if (inviteRequestResponse.data.resultType === 'user') {
+      $location.path('/');
+    }
+    // http://stackoverflow.com/a/724532
+    function redirectToWaitingPage() {
+      $location.path('/waiting');
+      $location.search({
+        uuid: inviteRequestResponse.data.result.uuid,
+        queue_number: inviteRequestResponse.data.queueNumber
+      });
     }
   }
 
