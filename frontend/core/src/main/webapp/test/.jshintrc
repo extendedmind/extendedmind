@@ -8,6 +8,7 @@
   "newcap"  : false,
 
   "globals": {
+  "angular":  false,
     
     // JASMINE
     "after"           : false,
