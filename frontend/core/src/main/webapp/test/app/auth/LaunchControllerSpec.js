@@ -1,19 +1,20 @@
 'use strict';
 
 describe('LaunchController', function() {
-/*  var $httpBackend, $scope;
+  var $httpBackend, $location, $scope;
   var BackendClientService, LaunchController, AuthenticationService;
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function($controller, _$httpBackend_, $rootScope, _AuthenticationService_, _BackendClientService_) {
+    inject(function($controller, _$httpBackend_, _$location_, $rootScope, _AuthenticationService_, _BackendClientService_) {
       $scope = $rootScope.$new();
       LaunchController = $controller('LaunchController', {
         $scope: $scope
       });
       $httpBackend = _$httpBackend_;
+      $location = _$location_;
       AuthenticationService = _AuthenticationService_;
       BackendClientService = _BackendClientService_;
     });
@@ -31,7 +32,6 @@ describe('LaunchController', function() {
     };
     $scope.user = {};
     expect($scope.user.email).toBeUndefined();
-    spyOn(LaunchController, 'redirectTo');
 
     // INIT
     $scope.user.email = 'jp@extample.md';
@@ -41,25 +41,21 @@ describe('LaunchController', function() {
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
-    expect(LaunchController.redirectTo).toHaveBeenCalledWith('waiting/' + testOwnerUUID);
+    expect($location.path()).toEqual('/waiting/' + testOwnerUUID);
   });
 
   it('should redirect invited user to waiting page', function() {
     var inviteRequestResponse = {
       inviteUUID: testOwnerUUID
     };
-    var getInviteResponse = {
-      uuid: testOwnerUUID
-    };
     $scope.user = {
       email: 'jp@next.md'
     };
-    spyOn(LaunchController, 'redirectTo');
     $scope.launchUser();
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
     $httpBackend.flush();
-    expect(LaunchController.redirectTo).toHaveBeenCalledWith('waiting');
+    expect($location.path()).toEqual('/waiting/' + $scope.user.email);
   });
 
   it('should redirect existing user to root page', function() {
@@ -69,7 +65,6 @@ describe('LaunchController', function() {
     };
     $scope.user = {};
     expect($scope.user.email).toBeUndefined();
-    spyOn(LaunchController, 'redirectTo');
     
     // INIT
     $scope.user.email = 'jp@ext.md';
@@ -79,7 +74,6 @@ describe('LaunchController', function() {
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
-    expect(LaunchController.redirectTo).toHaveBeenCalledWith('');
+    expect($location.path()).toEqual('/');
   });
-*/
 });
