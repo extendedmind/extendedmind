@@ -18,8 +18,8 @@ PROVISIONING_UUID="A6105942-B272-4FB0-BCB3-4999C39A7F70"
 # make new iOS project from sources
 cd app
 
-# make sure cordova assets are updated
-# phonegap platform update ios
+# make sure cordova assets are updated?
+cordova platform update ios
 
 # make phonegap build? (maybe not needed)
 cordova build ios
