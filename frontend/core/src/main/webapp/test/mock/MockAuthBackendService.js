@@ -25,25 +25,28 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
   }
 
   function mockPostInviteRequest() {
-    $httpBackend.whenPOST(AuthenticationService.postInviteRequestRegex)
-    .respond(function() {
+    $httpBackend.whenPOST(AuthenticationService.postInviteRequestRegex).respond(function() {
       return [200, 'response'];
     });
   }
   
   function mockGetInvite(){
-    $httpBackend.whenGET(AuthenticationService.getInviteRegex)
-    .respond(function() {
+    $httpBackend.whenGET(AuthenticationService.getInviteRegex).respond(function() {
       var inviteResponse = getJSONFixture('inviteResponse.json');
       return [200, inviteResponse];
     });
   }
 
   function mockAcceptInvite() {
-    $httpBackend.whenPOST(AuthenticationService.acceptInviteRegex)
-    .respond(function() {
+    $httpBackend.whenPOST(AuthenticationService.acceptInviteRegex).respond(function() {
       var acceptInviteResponse = getJSONFixture('acceptInviteResponse.json');
       return [200, acceptInviteResponse];
+    });
+  }
+
+  function mockGetInviteRequestQueueNumber() {
+    $httpBackend.whenGET(AuthenticationService.getInviteRequestQueueNumberRegex).respond(function() {
+      return [200, 155500];
     });
   }
   
@@ -54,6 +57,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
       mockPostInviteRequest();
       mockGetInvite();
       mockAcceptInvite();
+      mockGetInviteRequestQueueNumber();
     }
   };
 }
