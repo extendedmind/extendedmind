@@ -6,7 +6,7 @@ app/www/static
 # ios
 app/platforms/ios/build
 app/platforms/ios/www
-app/platforms/ios/em/config.xml
+# must exists app/platforms/ios/em/config.xml
 
 # android
 app/platforms/android/ant.properties
