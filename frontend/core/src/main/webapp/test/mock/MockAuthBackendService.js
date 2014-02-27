@@ -2,6 +2,13 @@
 
 function MockAuthBackendService($httpBackend, AuthenticationService) {
 
+  function mockAcceptInvite() {
+    $httpBackend.whenPOST(AuthenticationService.acceptInviteRegex).respond(function() {
+      var acceptInviteResponse = getJSONFixture('acceptInviteResponse.json');
+      return [200, acceptInviteResponse];
+    });
+  }
+
   function mockAuthenticate(expectResponse){
     $httpBackend.whenPOST(AuthenticationService.postAuthenticateRegex)
     .respond(function(method, url, data, headers) {
@@ -15,6 +22,13 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
       return expectResponse(method, url, data, headers, authenticateResponse);
     });
   }
+  
+  function mockGetInvite(){
+    $httpBackend.whenGET(AuthenticationService.getInviteRegex).respond(function() {
+      var inviteResponse = getJSONFixture('inviteResponse.json');
+      return [200, inviteResponse];
+    });
+  }
 
   function mockLogout(expectResponse){
     $httpBackend.whenPOST(AuthenticationService.postLogoutRegex)
@@ -26,38 +40,18 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
 
   function mockPostInviteRequest() {
     $httpBackend.whenPOST(AuthenticationService.postInviteRequestRegex).respond(function() {
-      return [200, 'response'];
-    });
-  }
-  
-  function mockGetInvite(){
-    $httpBackend.whenGET(AuthenticationService.getInviteRegex).respond(function() {
-      var inviteResponse = getJSONFixture('inviteResponse.json');
-      return [200, inviteResponse];
-    });
-  }
-
-  function mockAcceptInvite() {
-    $httpBackend.whenPOST(AuthenticationService.acceptInviteRegex).respond(function() {
-      var acceptInviteResponse = getJSONFixture('acceptInviteResponse.json');
-      return [200, acceptInviteResponse];
-    });
-  }
-
-  function mockGetInviteRequestQueueNumber() {
-    $httpBackend.whenGET(AuthenticationService.getInviteRequestQueueNumberRegex).respond(function() {
-      return [200, 155500];
+      var inviteRequestResponse = getJSONFixture('inviteRequestResponse.json');
+      return [200, inviteRequestResponse];
     });
   }
   
   return {
     mockAuthBackend: function(expectResponse) {
+      mockAcceptInvite();
       mockAuthenticate(expectResponse);
+      mockGetInvite();
       mockLogout(expectResponse);
       mockPostInviteRequest();
-      mockGetInvite();
-      mockAcceptInvite();
-      mockGetInviteRequestQueueNumber();
     }
   };
 }
