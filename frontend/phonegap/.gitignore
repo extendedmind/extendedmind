@@ -7,7 +7,6 @@ app/www/static
 app/platforms/ios/build
 app/platforms/ios/www
 app/platforms/ios/em/config.xml
-app/platforms/ios/em/em-Info.plist
 
 # android
 app/platforms/android/ant.properties
