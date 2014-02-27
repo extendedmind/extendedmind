@@ -15,6 +15,7 @@ function SignupController($location, $scope, $routeParams, AuthenticationService
 
   $scope.signUp = function() {
     $scope.signupFailed = false;
+    $scope.signupOffline = false;
     $scope.loginFailed = false;
     AuthenticationService.signUp(inviteResponseCode, {email: $scope.user.username, password: $scope.user.password}).
       then(function() {

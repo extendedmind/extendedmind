@@ -7,6 +7,7 @@ function LoginController($location, $scope, UserSessionService, AuthenticationSe
       $scope.user.remember = true;
     }
     $scope.loginFailed = false;
+    $scope.loginOffline = false;
     AuthenticationService.login($scope.user).then(function() {
       $location.path('/my/tasks');
     }, function(authenticateResponse) {
