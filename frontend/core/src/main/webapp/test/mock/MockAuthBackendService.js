@@ -3,7 +3,7 @@
 function MockAuthBackendService($httpBackend, AuthenticationService) {
 
   function mockAuthenticate(expectResponse){
-    $httpBackend.whenPOST(AuthenticationService.authenticateRegex)
+    $httpBackend.whenPOST(AuthenticationService.postAuthenticateRegex)
     .respond(function(method, url, data, headers) {
       var authenticateResponse = getJSONFixture('authenticateResponse.json');
       var now = new Date();
@@ -17,7 +17,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
   }
 
   function mockLogout(expectResponse){
-    $httpBackend.whenPOST(AuthenticationService.logoutRegex)
+    $httpBackend.whenPOST(AuthenticationService.postLogoutRegex)
     .respond(function(method, url, data, headers) {
       var logoutResponse = getJSONFixture('logoutResponse.json');
       return expectResponse(method, url, data, headers, logoutResponse);
