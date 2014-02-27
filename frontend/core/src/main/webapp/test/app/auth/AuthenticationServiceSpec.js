@@ -122,7 +122,7 @@ describe('AuthenticationService', function() {
   });
 
   it('should get invite', function() {
-    var inviteResponseCode = '123';
+    var inviteResponseCode = '6ee80fc23d4b0fee';
     var email = 'timo@ext.md';
     var invite;
     $httpBackend.expectGET('/api/invite/' + inviteResponseCode + '?email=' + email).respond(200, inviteResponse);
