@@ -24,10 +24,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/auth/waiting.html'
     });
 
-    $routeProvider.when('/waiting/:uuid', {
-      templateUrl: 'static/app/auth/waiting.html'
-    });
-
     $routeProvider.when('/accept/:hex_code', {
       templateUrl: 'static/app/auth/signup.html',
       resolve: {
@@ -46,7 +42,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/login', {
-      templateUrl: 'static/app/auth/login.html',
+      templateUrl: 'static/app/auth/login.html'
     });
 
     $routeProvider.when('/my/account', {
