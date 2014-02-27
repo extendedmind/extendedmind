@@ -15,11 +15,11 @@ function LaunchController($location, $scope, AuthenticationService) {
   function checkEmailStatus(emailStatusResponse) {
     // user in invite queue
     if (emailStatusResponse.data.inviteRequestUUID) {
-      $location.path('waiting/' + emailStatusResponse.data.inviteRequestUUID);
+      $location.path('waiting?uuid=' + emailStatusResponse.data.inviteRequestUUID);
     }
     // user can sign up
     else if (emailStatusResponse.data.inviteUUID) {
-      $location.path('waiting/' + $scope.user.email);
+      $location.path('waiting?email=' + $scope.user.email);
     }
     // User exists.
     // Redirect to front page which redirects to login page is not logged in.

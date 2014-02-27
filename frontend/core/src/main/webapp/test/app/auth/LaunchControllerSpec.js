@@ -41,7 +41,7 @@ describe('LaunchController', function() {
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
-    expect($location.path()).toEqual('/waiting/' + testOwnerUUID);
+    expect($location.path()).toEqual('/waiting?uuid=' + testOwnerUUID);
   });
 
   it('should redirect invited user to waiting page', function() {
@@ -55,7 +55,7 @@ describe('LaunchController', function() {
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
     $httpBackend.flush();
-    expect($location.path()).toEqual('/waiting/' + $scope.user.email);
+    expect($location.path()).toEqual('/waiting?email=' + $scope.user.email);
   });
 
   it('should redirect existing user to root page', function() {
