@@ -12,6 +12,7 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
   methods.uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
   methods.apiPrefixRegex = /\/api\//;
   methods.undeleteRegex = /\/undelete/;
+  methods.hexCodeRegex = /[0-9a-f]+/;
 
   var refreshCredentialsCallback;
 
