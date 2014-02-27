@@ -27,7 +27,7 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
   }
 
   function authenticate(remember) {
-    return BackendClientService.postOnline('/api/authenticate', authenticateRegexp,
+    return BackendClientService.postOnline('/api/authenticate', authenticateRegex,
                 {rememberMe: remember},
             true, [400, 404, 502]);
   }
