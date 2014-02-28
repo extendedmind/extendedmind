@@ -2,20 +2,19 @@
 
 describe('LaunchController', function() {
   var $httpBackend, $location, $scope;
-  var BackendClientService, LaunchController, AuthenticationService;
+  var BackendClientService, LaunchController;
   var inviteRequestResponse;
 
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function($controller, _$httpBackend_, _$location_, $rootScope, _AuthenticationService_, _BackendClientService_) {
+    inject(function($controller, _$httpBackend_, _$location_, $rootScope, _BackendClientService_) {
       $scope = $rootScope.$new();
       LaunchController = $controller('LaunchController', {
         $scope: $scope
       });
       $httpBackend = _$httpBackend_;
       $location = _$location_;
-      AuthenticationService = _AuthenticationService_;
       BackendClientService = _BackendClientService_;
 
       spyOn($location, 'path');
@@ -45,7 +44,7 @@ describe('LaunchController', function() {
     expect($location.path).toHaveBeenCalledWith('/waiting');
     expect($location.search).toHaveBeenCalledWith({
       uuid: inviteRequestResponse.result.uuid,
-      queue_number: inviteRequestResponse.queueNumber
+      queueNumber: inviteRequestResponse.queueNumber
     });
   });
 
@@ -66,7 +65,7 @@ describe('LaunchController', function() {
     expect($location.path).toHaveBeenCalledWith('/waiting');
     expect($location.search).toHaveBeenCalledWith({
       uuid: inviteRequestResponse.result.uuid,
-      queue_number: inviteRequestResponse.queueNumber
+      queueNumber: inviteRequestResponse.queueNumber
     });
   });
 

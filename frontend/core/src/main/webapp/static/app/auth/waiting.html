@@ -1,18 +1,27 @@
 <div class="no-slides-container" ng-controller="WaitingController">
-  <div ng-if="user.email">
-    <span>
-      we have sent you an email to join extended mind.</br>
-      please click on the link in the email to sign up to the service.</br>
-      if you have not received an email, click on the button below.
-    </span>
-    <button ng-click="resendInviteEmail()">resend email</button>
-  </div>
-  <div ng-if="user.uuid">
-    <span>
-    there are currently</br>
-    {{user.inviteQueueNumber}}</br>
-    people before you on the extendedmind waiting list
-    </span>
-    <button ng-click="visitBlog()">visit blog</button>
-  </div>
+  <section id="waiting" class="one-column-grid fixed-height page">
+    <div class="column">
+      <div class="banner">
+        <span class="icon-logo_with_text"></span>
+      </div>
+      <div class="content">
+        <div ng-if="user.email">
+          <span class="waiting-text">
+            we have sent you an email to join extended mind.</br>
+            please click on the link in the email to sign up to the service.
+          </span>
+        </div>
+        <div ng-if="user.uuid">
+          <span class="waiting-text">
+            there are currently</br>
+            <h1>{{user.inviteQueueNumber}}</h1>
+            people before you on the extendedmind waiting list
+          </span>
+        </div>
+        <button type="submit" id="waiting-button" class="wide-button normal-button" ng-click="openEMBlogInNewWindow()">
+          <span class="button-text">visit blog</span>
+        </button>
+      </div>
+    </div>
+  </section>
 </div>

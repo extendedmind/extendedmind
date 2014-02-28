@@ -1,23 +1,19 @@
 'use strict';
 
-function WaitingController($routeParams, $scope, AuthenticationService) {
+function WaitingController($routeParams, $scope, $window) {
   $scope.user = {};
+
   if ($routeParams.email) {
     $scope.user.email = $routeParams.email;
   } else if ($routeParams.uuid) {
-    // getInviteRequestQueueNumber();
     $scope.user.uuid = $routeParams.uuid;
   }
+  $scope.user.inviteQueueNumber = $routeParams.queueNumber;
 
-  // function getInviteRequestQueueNumber() {
-  //   AuthenticationService.getInviteRequestQueueNumber($routeParams.uuid).then(function(inviteRequestQueueNumberResponse) {
-  //     $scope.user.inviteQueueNumber = inviteRequestQueueNumberResponse.data;
-  //   });
-  // }
-
-  $scope.resendInviteEmail = function resendInviteEmail() {
+  $scope.openEMBlogInNewWindow = function openBlogInNewWindow() {
+    $window.open('http://extendedmind.org/');
   };
 }
 
-WaitingController['$inject'] = ['$routeParams', '$scope', 'AuthenticationService'];
+WaitingController['$inject'] = ['$routeParams', '$scope', '$window'];
 angular.module('em.app').controller('WaitingController', WaitingController);
