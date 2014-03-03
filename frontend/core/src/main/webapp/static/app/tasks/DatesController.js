@@ -4,8 +4,8 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
   var activeDay, activeDaySlidePath;
   $scope.dates = DateService.activeWeek();
 
-  DateService.registerDayChangeCallback(dayChangedCallback);
-  function dayChangedCallback() {
+  DateService.registerDayChangeCallback(dayChangeCallback);
+  function dayChangeCallback() {
     $scope.dates = DateService.activeWeek();
     activeDay = DateService.getTodayDateString() || DateService.getMondayDateString();
 
