@@ -12,57 +12,40 @@ function DateService($interval, $timeout) {
   var activeWeek;
   var daysFromActiveWeekToNext = 7;
   var daysFromActiveWeekToPrevious = -daysFromActiveWeekToNext;
-  var dayInMilliseconds = 24*60*60*1000;  // 86400000 milliseconds
 
   var dayChangeCallback;
 
   function Today() {
     this.date = new Date();
     this.yyyymmdd = yyyymmdd(this.date);
+    setNextDayTimer(this.date);
   }
-  var today = new Today();
 
   // Start timer timer for tomorrow.
   // http://stackoverflow.com/a/5294766
   var nextDayTimer;
-  function setNextDayTimer() {
+  function setNextDayTimer(date) {
     stopNextDayTimer();
-    var tomorrow = new Date(today.date.getFullYear(), today.date.getMonth(), today.date.getDate() + 1);
+    var tomorrow = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
 
     nextDayTimer = $timeout(function() {
-      setDailyInterval();
-      dayChanged(tomorrow);
-    }, tomorrow - today.date);
-  }
-  setNextDayTimer();
-
-  // Start daily interval
-  var countdownToNextDay;
-  function setDailyInterval() {
-    stopDailyInterval();
-    countdownToNextDay = $interval(function() {
       dayChanged();
-    }, dayInMilliseconds);
+    }, tomorrow - date);
   }
 
   // Update today. Change week if today is Monday.
+  // This function is executed after timeout or interval for next day has reached its delay.
   function dayChanged() {
     today = new Today();
     var firstDay = getFirstDayOfTheWeek(new Date());
     weekDaysStartingFrom(firstDay);
     dayChangeCallback();
   }
+  var today = new Today();
 
   function stopNextDayTimer() {
     if (angular.isDefined(nextDayTimer)) {
       $timeout.cancel(nextDayTimer);
-    }
-  }
-
-  function stopDailyInterval() {
-    // http://docs.angularjs.org/api/ng/service/$interval
-    if (angular.isDefined(countdownToNextDay)) {
-      $interval.cancel(countdownToNextDay);
     }
   }
 
