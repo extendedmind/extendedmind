@@ -4,6 +4,20 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
   var activeDay, activeDaySlidePath;
   $scope.dates = DateService.activeWeek();
 
+  DateService.registerDayChangeCallback(dayChangedCallback);
+  function dayChangedCallback() {
+    $scope.dates = DateService.activeWeek();
+    activeDay = DateService.getTodayDateString() || DateService.getMondayDateString();
+
+    $timeout(function() {
+      SwiperService.refreshSwiper(TasksSlidesService.DATES);
+      SwiperService.swipePageSlide(TasksSlidesService.getDateSlidePath(activeDay));
+    });
+  }
+  $scope.$on('destroy', function() {
+    DateService.removeDayChangeCallback();
+  });
+
   // Register a callback to swiper service
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks/dates', 'DatesController');
   function slideChangeCallback(activeSlidePath) {

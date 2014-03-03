@@ -1,116 +1,162 @@
 'use strict';
 
-angular.module('common').factory('DateService', [
-  function() {
+function DateService($interval, $timeout) {
 
-    var monthNames = [
-    'jan', 'feb', 'mar', 'apr',
-    'may', 'jun', 'jul', 'aug',
-    'sep', 'oct', 'nov', 'dec'
-    ];
-    var weekdays = ['s', 'm', 't', 'w', 't', 'f', 's'];
+  var monthNames = [
+  'jan', 'feb', 'mar', 'apr',
+  'may', 'jun', 'jul', 'aug',
+  'sep', 'oct', 'nov', 'dec'
+  ];
+  var weekdays = ['s', 'm', 't', 'w', 't', 'f', 's'];
 
-    var activeWeek;
-    var daysFromActiveWeekToNext = 7;
-    var daysFromActiveWeekToPrevious = -daysFromActiveWeekToNext;
-    
-    function Today() {
-      this.date = new Date();
-      this.yyyymmdd = yyyymmdd(this.date);
-      setNewDayTimer(this.date);
+  var activeWeek;
+  var daysFromActiveWeekToNext = 7;
+  var daysFromActiveWeekToPrevious = -daysFromActiveWeekToNext;
+  var dayInMilliseconds = 24*60*60*1000;  // 86400000 milliseconds
+
+  var dayChangeCallback;
+
+  function Today() {
+    this.date = new Date();
+    this.yyyymmdd = yyyymmdd(this.date);
+  }
+  var today = new Today();
+
+  // Start timer timer for tomorrow.
+  // http://stackoverflow.com/a/5294766
+  var nextDayTimer;
+  function setNextDayTimer() {
+    stopNextDayTimer();
+    var tomorrow = new Date(today.date.getFullYear(), today.date.getMonth(), today.date.getDate() + 1);
+
+    nextDayTimer = $timeout(function() {
+      setDailyInterval();
+      dayChanged(tomorrow);
+    }, tomorrow - today.date);
+  }
+  setNextDayTimer();
+
+  // Start daily interval
+  var countdownToNextDay;
+  function setDailyInterval() {
+    stopDailyInterval();
+    countdownToNextDay = $interval(function() {
+      dayChanged();
+    }, dayInMilliseconds);
+  }
+
+  // Update today. Change week if today is Monday.
+  function dayChanged() {
+    today = new Today();
+    var firstDay = getFirstDayOfTheWeek(new Date());
+    weekDaysStartingFrom(firstDay);
+    dayChangeCallback();
+  }
+
+  function stopNextDayTimer() {
+    if (angular.isDefined(nextDayTimer)) {
+      $timeout.cancel(nextDayTimer);
     }
-    // http://stackoverflow.com/a/5294766
-    function setNewDayTimer(date) {
-      if (window.newDayTimer) {
-        clearTimeout(newDayTimer);
-      }
-      var tomorrow = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-      window.newDayTimer = setTimeout(function() {
-        today = new Today();
-      }, tomorrow - date);
+  }
+
+  function stopDailyInterval() {
+    // http://docs.angularjs.org/api/ng/service/$interval
+    if (angular.isDefined(countdownToNextDay)) {
+      $interval.cancel(countdownToNextDay);
     }
-    var today = new Today();
+  }
 
-    // http://stackoverflow.com/a/3067896
-    function yyyymmdd(date) {
-      var yyyy, mm, dd;
+  // http://stackoverflow.com/a/3067896
+  function yyyymmdd(date) {
+    var yyyy, mm, dd;
 
-      yyyy = date.getFullYear().toString();
-      mm = (date.getMonth() + 1).toString(); // getMonth() is zero-based
-      dd = date.getDate().toString();
+    yyyy = date.getFullYear().toString();
+    mm = (date.getMonth() + 1).toString(); // getMonth() is zero-based
+    dd = date.getDate().toString();
 
-      return yyyy + '-' + (mm[1] ? mm : '0' + mm[0]) + '-' + (dd[1] ? dd : '0' + dd[0]); // padding
-    }
+    return yyyy + '-' + (mm[1] ? mm : '0' + mm[0]) + '-' + (dd[1] ? dd : '0' + dd[0]); // padding
+  }
 
-    // http://stackoverflow.com/a/4156516
-    function getFirstDayOfTheWeek(date) {
-      var currentDay = date.getDay();
-      var diff = date.getDate() - currentDay + (currentDay === 0 ? -6 : 1); // adjust when day is sunday
-      date.setDate(diff);
-      
-      return date;
-    }
+  // http://stackoverflow.com/a/4156516
+  function getFirstDayOfTheWeek(date) {
+    var currentDay = date.getDay();
+    var diff = date.getDate() - currentDay + (currentDay === 0 ? -6 : 1); // adjust when day is sunday
+    date.setDate(diff);
 
-    function weekDaysStartingFrom(date) {
-      var day;
-      activeWeek = [];
+    return date;
+  }
 
-      for (var i = 0, len = weekdays.length; i < len; i++) {
-        day = {};
-        day.date = date.getDate();
-        day.weekday = weekdays[date.getDay()];
-        day.month = {};
-        day.month.name = monthNames[date.getMonth()];
-        day.year = date.getFullYear();
-        day.yyyymmdd = yyyymmdd(date);
+  function weekDaysStartingFrom(date) {
+    var day;
+    activeWeek = [];
 
-        // show today or month + date
-        // http://stackoverflow.com/a/9300653
-        day.displayDate = (date.toDateString() === today.date.toDateString() ? 'today' : day.month.name + ' ' + day.date);
-        day.displayDateShort = day.date;
+    for (var i = 0, len = weekdays.length; i < len; i++) {
+      day = {};
+      day.date = date.getDate();
+      day.weekday = weekdays[date.getDay()];
+      day.month = {};
+      day.month.name = monthNames[date.getMonth()];
+      day.year = date.getFullYear();
+      day.yyyymmdd = yyyymmdd(date);
 
-        activeWeek.push(day);
-        date.setDate(date.getDate() + 1);
-      }
-      
-      return activeWeek;
+      // show today or month + date
+      // http://stackoverflow.com/a/9300653
+      day.displayDate = (date.toDateString() === today.date.toDateString() ? 'today' : day.month.name + ' ' + day.date);
+      day.displayDateShort = day.date;
+
+      activeWeek.push(day);
+      date.setDate(date.getDate() + 1);
     }
 
-    function getWeekWithOffset(offsetDays) {
-      var activeMonday = (activeWeek) ? new Date(activeWeek[0].yyyymmdd) : getFirstDayOfTheWeek(new Date());
-      activeMonday.setDate(activeMonday.getDate() + offsetDays);
+    return activeWeek;
+  }
 
-      return weekDaysStartingFrom(activeMonday);
-    }
+  function getWeekWithOffset(offsetDays) {
+    var activeMonday = (activeWeek) ? new Date(activeWeek[0].yyyymmdd) : getFirstDayOfTheWeek(new Date());
+    activeMonday.setDate(activeMonday.getDate() + offsetDays);
 
-    return {
-      activeWeek: function() {
-        return activeWeek || (function() {
-          var date = getFirstDayOfTheWeek(new Date());
+    return weekDaysStartingFrom(activeMonday);
+  }
 
-          return weekDaysStartingFrom(date);
-        })();
-      },
-      nextWeek: function() {
-        return getWeekWithOffset(daysFromActiveWeekToNext);
-      },
-      previousWeek: function() {
-        return getWeekWithOffset(daysFromActiveWeekToPrevious);
-      },
-      getMondayDateString: function() {
-        return (activeWeek) ? activeWeek[0].yyyymmdd : yyyymmdd(getFirstDayOfTheWeek(new Date()));
-      },
-      getTodayDateString: function() {
-        if (activeWeek) {
-          for (var i = 0, len = activeWeek.length; i < len; i++) {
-            if (activeWeek[i].yyyymmdd === today.yyyymmdd) {
-              return activeWeek[i].yyyymmdd;
-            }
+  return {
+    activeWeek: function() {
+      return activeWeek || (function() {
+        var date = getFirstDayOfTheWeek(new Date());
+
+        return weekDaysStartingFrom(date);
+      })();
+    },
+    nextWeek: function() {
+      return getWeekWithOffset(daysFromActiveWeekToNext);
+    },
+    previousWeek: function() {
+      return getWeekWithOffset(daysFromActiveWeekToPrevious);
+    },
+    registerDayChangeCallback: function(dayChangeCB) {
+      dayChangeCallback = dayChangeCB;
+    },
+    removeDayChangeCallback: function() {
+      dayChangeCallback = null;
+    },
+
+    // getters
+    getMondayDateString: function() {
+      return (activeWeek) ? activeWeek[0].yyyymmdd : yyyymmdd(getFirstDayOfTheWeek(new Date()));
+    },
+    getTodayDateString: function() {
+      if (activeWeek) {
+        for (var i = 0, len = activeWeek.length; i < len; i++) {
+          if (activeWeek[i].yyyymmdd === today.yyyymmdd) {
+            return activeWeek[i].yyyymmdd;
           }
         }
-      },
-      getTodayYYYYMMDD: function() {
-        return today.yyyymmdd;
       }
-    };
-  }]);
+    },
+    getTodayYYYYMMDD: function() {
+      return today.yyyymmdd;
+    }
+  };
+}
+
+DateService.$inject = ['$interval', '$timeout'];
+angular.module('common').factory('DateService', DateService);
