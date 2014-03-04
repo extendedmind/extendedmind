@@ -21,9 +21,9 @@ function SignupController($location, $scope, $routeParams, AuthenticationService
       then(function() {
         userLogin();
       }, function(signupResponse) {
-        if (signupResponse.status === 404 ||signupResponse.status === 502){
+        if (signupResponse && (signupResponse.status === 404 ||signupResponse.status === 502)){
           $scope.signupOffline = true;
-        }else if(signupResponse.status === 400){
+        }else if(signupResponse && (signupResponse.status === 400)){
           $scope.signupFailed = true;
         }
       });
@@ -35,9 +35,9 @@ function SignupController($location, $scope, $routeParams, AuthenticationService
       $location.url($location.path());
       $location.path('/my/tasks');
     }, function(authenticateResponse) {
-      if (authenticateResponse.status === 404 ||authenticateResponse.status === 502){
+      if (authenticateResponse && (authenticateResponse.status === 404 || authenticateResponse.status === 502)){
         $scope.signupOffline = true;
-      }else if(authenticateResponse.status === 400){
+      }else if(authenticateResponse && (authenticateResponse.status === 400)){
         $scope.loginFailed = true;
       }
     });

@@ -1,7 +1,7 @@
 /* global angular */
 'use strict';
 
-function AuthenticationService($location, $q, BackendClientService, UserSessionService) {
+function AuthenticationService($rootScope, $location, $q, BackendClientService, UserSessionService) {
 
   var acceptRegex = /\/accept/;
   var authenticateRegex = /authenticate/;
@@ -58,15 +58,18 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
   BackendClientService.registerPrimaryPostCallback(swapTokenCallback);
 
   function swapTokenAndAuthenticate() {
-    var deferred = $q.defer();
     var remember = true;
-    authenticate(remember).then(function(authenticateResponse) {
+    return authenticate(remember).then(function(authenticateResponse) {
       var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse.data);
       // Update backend client with new token
       BackendClientService.setCredentials(encodedCredentials);
-      deferred.resolve();
+      if (UserSessionService.isOfflineEnabled()){
+        // As offline is still enabled, we want to remove possible duplicate swap token
+        // calls from the backend client
+        BackendClientService.clearPrimary();
+      }
+      return authenticateResponse;
     });
-    return deferred.promise;
   }
 
   function authenticate(remember) {
@@ -75,7 +78,7 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
       true, [400, 404, 502]);
   }
 
-  function verifyAndUpdateAuthentication(){
+  function verifyAndUpdateAuthentication(online){
     var deferredAuthentication = $q.defer();
     function validateAuthentication() {
       deferredAuthentication.resolve();
@@ -88,7 +91,7 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
         if (UserSessionService.isAuthenticateReplaceable()) {
           // Make sure the latest credentials are in use
           BackendClientService.setCredentials(UserSessionService.getCredentials());
-          if (UserSessionService.isOfflineEnabled()){
+          if (UserSessionService.isOfflineEnabled() && !online){
             // Push token swap to be the first thing that is done
             // when online connection is up
             BackendClientService.postPrimary('/api/authenticate', postAuthenticateRegexp, {
@@ -97,7 +100,22 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
             validateAuthentication();
           }else{
             // Online
-            swapTokenAndAuthenticate().then(validateAuthentication);
+            swapTokenAndAuthenticate().then(function(){
+              validateAuthentication();
+            },function(error){
+              // Error branch, emit onlineRequired
+              if (error && (error.status === 404 || error.status === 502)){
+                // Emit online required exception
+                $rootScope.$emit('emException', {
+                  type: 'onlineRequired',
+                  status: error.status,
+                  data: error.data,
+                  retry: swapTokenAndAuthenticate,
+                  redirectUrl: '/',
+                  promise: deferredAuthentication
+                });
+              }
+            });
           }
         } else {
           deferredAuthentication.reject();
@@ -145,7 +163,12 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
 
   return {
     verifyAndUpdateAuthentication: function() {
-      return verifyAndUpdateAuthentication();
+      if (UserSessionService.getLatestModified() !== undefined){
+        return verifyAndUpdateAuthentication();
+      }else{
+        // When there is no data in-memory, this needs to be done online 
+        return verifyAndUpdateAuthentication(true);
+      }
     },
     checkAndRedirectUser: function() {
       // Existing user
@@ -208,5 +231,5 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
     postLogoutRegex: postLogoutRegexp,
   };
 }
-AuthenticationService.$inject = ['$location', '$q', 'BackendClientService', 'UserSessionService'];
+AuthenticationService.$inject = ['$rootScope', '$location', '$q', 'BackendClientService', 'UserSessionService'];
 angular.module('em.services').factory('AuthenticationService', AuthenticationService);

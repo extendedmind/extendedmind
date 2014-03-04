@@ -44,6 +44,9 @@ describe('AuthenticationService', function() {
     getUserUUID: function() {
       return;
     },
+    getLatestModified: function () {
+      return undefined;
+    },
     setIsAuthenticated: function(authenticated) {
       this.authenticated = authenticated;
     },

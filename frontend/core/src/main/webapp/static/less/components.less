@@ -49,5 +49,19 @@ li.datepicker-date {
 .offline-indicator {
   display:inline;
   vertical-align: top;
-  font-size: @smallest-font-size;
+  font-size: @small-font-size;
+}
+
+#errorMessage{
+  h3 {
+    text-align: center;
+    padding-bottom: @vertical-grid;
+  }
+}
+
+#modalFooter{
+  button[disabled].normal-button{
+    color:white;
+    background-color: @default-button-pressed;
+  }
 }

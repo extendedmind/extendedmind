@@ -416,11 +416,15 @@ span.icon-i:active, span.icon-plus:active {
 }
 */
 
+.rounded-corners {
+  border-radius: @rounded-corner-radius;
+}
+
 .onboarding-bubble {
   margin-top: 40px;
   position: relative;
   border: 1px solid @separator;
-  border-radius: 15px;
+  .rounded-corners;
   padding: 20px 10px;
   text-align: center;
   line-height: normal;
@@ -453,11 +457,8 @@ span.icon-i:active, span.icon-plus:active {
   margin-left: -16px;
 }
 
-.danger {
-  .wide-button;
-  background-color: @danger-background;
+.danger-heading {
   color: @danger-text;
-  text-align: center;
 }
 
 // CONTENT
@@ -467,4 +468,12 @@ span.icon-i:active, span.icon-plus:active {
 }
 a.content:active {
   color: @content-pressed;
+}
+
+// MODALS
+
+.small-modal {
+  .modal-dialog {
+    max-width: @max-modal-width;
+  }
 }

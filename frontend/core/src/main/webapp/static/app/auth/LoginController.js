@@ -11,9 +11,9 @@ function LoginController($location, $scope, UserSessionService, AuthenticationSe
     AuthenticationService.login($scope.user).then(function() {
       $location.path('/my/tasks');
     }, function(authenticateResponse) {
-      if (authenticateResponse.status === 404 || authenticateResponse.status === 502){
+      if (authenticateResponse && (authenticateResponse.status === 404 || authenticateResponse.status === 502)){
         $scope.loginOffline = true;
-      }else if(authenticateResponse.status === 400){
+      }else if(authenticateResponse && (authenticateResponse.status === 400)){
         $scope.loginFailed = true;
       }
     });

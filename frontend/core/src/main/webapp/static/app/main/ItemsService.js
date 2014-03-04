@@ -7,6 +7,9 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
   var itemRegex = /\/item/;
   var itemSlashRegex = /\/item\//;
   var itemsRegex = /\/items/;
+  var getItemsRegex = new RegExp(BackendClientService.apiPrefixRegex.source +
+                   BackendClientService.uuidRegex.source +
+                   itemsRegex.source);
 
   function initializeArrays(ownerUUID){
     if (!items[ownerUUID]){
@@ -34,11 +37,12 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
     var latestItem = ArrayService.updateArrays(response.items,
       items[ownerUUID].activeItems,
       items[ownerUUID].deletedItems);
+    var latestModified = null;
     if (latestTag || latestList || latestTask || latestNote || latestItem){
       // Set latest modified
-      var latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
-      UserSessionService.setLatestModified(latestModified, ownerUUID);
+      latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
     }
+    UserSessionService.setLatestModified(latestModified, ownerUUID);
   }
 
   // Register callbacks to BackendClientService 
@@ -220,52 +224,72 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       items[ownerUUID].activeItems,
       items[ownerUUID].deletedItems);
   }
+
+  var getAllItemsOnline = function getAllItemsOnline(ownerUUID) {
+    return BackendClientService.getSecondary('/api/' + ownerUUID + '/items', getItemsRegex, undefined, true).then(function(result) {
+      if (result.data){
+        var latestTag, latestList, latestTask, latestItem, latestNote;
+        initializeArrays(ownerUUID);
+        // Reset all arrays
+        latestTag = TagsService.setTags(result.data.tags, ownerUUID);
+        latestList = ListsService.setLists(result.data.lists, ownerUUID);
+        latestTask = TasksService.setTasks(result.data.tasks, ownerUUID);
+        latestNote = NotesService.setNotes(result.data.notes, ownerUUID);
+        latestItem = ArrayService.setArrays(result.data.items,
+          items[ownerUUID].activeItems,
+          items[ownerUUID].deletedItems);
+        var latestModified = null;
+        if (latestTag || latestList || latestTask || latestNote || latestItem){
+          // Set latest modified
+          latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
+        }
+        UserSessionService.setLatestModified(latestModified, ownerUUID);
+      }
+    });
+  };
+
+  var synchronize = function(ownerUUID) {
+    var deferred = $q.defer();
+    var latestModified = UserSessionService.getLatestModified(ownerUUID);
+    var url = '/api/' + ownerUUID + '/items';
+    if (latestModified !== undefined){
+      if (latestModified){
+        url += '?modified=' + latestModified + '&deleted=true&archived=true&completed=true';
+      }
+      if (UserSessionService.isOfflineEnabled()){
+        // Push request to offline buffer
+        BackendClientService.getSecondary(url, getItemsRegex, {owner: ownerUUID});
+        deferred.resolve();
+      }else{
+        BackendClientService.get(url, getItemsRegex).then(function(result) {
+          if (result.data){
+            processSynchronizeUpdateResult(ownerUUID, result.data);
+          }
+          deferred.resolve();
+        });
+      }
+    }else {
+      getAllItemsOnline(ownerUUID).then(undefined, function(error) {
+        if (error && (error.status === 404 || error.status === 502)){
+          // Emit online required exception
+          $rootScope.$emit('emException', {
+            type: 'onlineRequired',
+            status: error.status,
+            data: error.data,
+            retry: getAllItemsOnline,
+            retryParam: ownerUUID,
+            promise: deferred
+          });
+        }
+      });
+    }
+    return deferred.promise;
+  };
   
   return {
     // Main method to synchronize all arrays with backend.
     synchronize: function(ownerUUID) {
-      var deferred = $q.defer();
-      var latestModified = UserSessionService.getLatestModified(ownerUUID);
-      var url = '/api/' + ownerUUID + '/items';
-      if (latestModified){
-        url += '?modified=' + latestModified + '&deleted=true&archived=true&completed=true';
-        if (UserSessionService.isOfflineEnabled()){
-          // Push request to offline buffer
-          BackendClientService.getSecondary(url, this.getItemsRegex, {owner: ownerUUID});
-          deferred.resolve();
-        }else{
-          BackendClientService.get(url, this.getItemsRegex).then(function(result) {
-            if (result.data){
-              processSynchronizeUpdateResult(ownerUUID, result.data);
-            }
-            deferred.resolve();
-          });
-        }
-      }else {
-        BackendClientService.get(url, this.getItemsRegex).then(function(result) {
-          if (result.data){
-            var latestTag, latestList, latestTask, latestItem, latestNote;
-            initializeArrays(ownerUUID);
-            // Reset all arrays
-            latestTag = TagsService.setTags(result.data.tags, ownerUUID);
-            latestList = ListsService.setLists(result.data.lists, ownerUUID);
-            latestTask = TasksService.setTasks(result.data.tasks, ownerUUID);
-            latestNote = NotesService.setNotes(result.data.notes, ownerUUID);
-            latestItem = ArrayService.setArrays(result.data.items,
-              items[ownerUUID].activeItems,
-              items[ownerUUID].deletedItems);
-            if (latestTag || latestList || latestTask || latestNote || latestItem){
-              // Set latest modified
-              latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
-              UserSessionService.setLatestModified(latestModified, ownerUUID);
-            }
-          }
-          deferred.resolve();
-        }, function() {
-          deferred.reject();
-        });
-      }
-      return deferred.promise;
+      return synchronize(ownerUUID);
     },
     getItems: function(ownerUUID) {
       initializeArrays(ownerUUID);
@@ -388,10 +412,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       }
     },
     // Regular expressions for item requests
-    getItemsRegex:
-        new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   itemsRegex.source),
+    getItemsRegex: getItemsRegex,
     putNewItemRegex:
         new RegExp(BackendClientService.apiPrefixRegex.source +
                    BackendClientService.uuidRegex.source +

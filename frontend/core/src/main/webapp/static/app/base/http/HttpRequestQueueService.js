@@ -152,6 +152,12 @@ function HttpRequestQueueService() {
     },
     saveQueue: function(){
       persistQueue();
+    },
+    clearPrimary: function(){
+      if (!processing && primary){
+        primary = undefined;
+        localStorage.removeItem('primaryRequest');
+      }
     }
   };
   return service;

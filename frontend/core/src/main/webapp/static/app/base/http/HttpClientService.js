@@ -5,6 +5,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
 
   var methods = {};
   var credentials;
+  var online = true;
 
   function getRequest(method, url, params, data){
     var request = {
@@ -43,20 +44,22 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
           HttpRequestQueueService.remove(headRequest);
 
           // Execute online callback
+          online = true;
           if (onlineCallback) {
-            onlineCallback(true);
+            onlineCallback(online);
           }
 
           // Try to execute the next request in the queue
           executeRequests();
         }).
         error(function(data, status/*, headers, config*/) {
-          if (status === 404 || status === 502){
+          if (status && (status === 404 || status === 502)){
             // Seems to be offline, stop processing
             HttpRequestQueueService.setOffline(headRequest);
+            online = false;
             // Execute callback
             if (onlineCallback) {
-              onlineCallback(false);
+              onlineCallback(online);
             }
           }else {
             // Emit unsuspected error to root scope, so that
@@ -82,7 +85,19 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   angular.forEach(['get', 'head', 'jsonp'], function(name) {
     methods[name] = function(url) {
       return $http({method: name, url: url}).then(function(success) {
+        online = true;
+        if (onlineCallback) {
+          onlineCallback(online);
+        }
         return success;
+      }, function(error){
+        if (error && (error.status === 404 || error.status === 502)){
+          online = false;
+          if (onlineCallback) {
+            onlineCallback(online);
+          }
+        }
+        return $q.reject(error);
       });
     };
   });
@@ -90,8 +105,18 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   // Online alternatives for POST, PUT and DELETE
   methods.postOnline = function(url, data, skipLogStatuses) {
     return $http({method: 'post', url: url, data: data}).then(function(success) {
+      online = true;
+      if (onlineCallback) {
+        onlineCallback(online);
+      }
       return success;
     }, function(error) {
+      if (error && (error.status === 404 || error.status === 502)){
+        online = false;
+        if (onlineCallback) {
+          onlineCallback(online);
+        }
+      }
       if(!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1){
         $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
       }
@@ -123,6 +148,10 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     request.primary = true;
     HttpRequestQueueService.push(request);
     executeRequests();
+  };
+
+  methods.clearPrimary = function() {
+    HttpRequestQueueService.clearPrimary();
   };
   
   // Custom method for secondary GET, i.e. delta getter

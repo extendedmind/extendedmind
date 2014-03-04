@@ -16,7 +16,7 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
 
   var refreshCredentialsCallback;
 
-  function refreshCredentials() {
+  function refreshCredentials(online) {
     function doRefreshCredentials(){
       var credentials = UserSessionService.getCredentials();
       if (HttpClientService.getCredentials() !== credentials){
@@ -24,7 +24,7 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
       }
     }
     if (refreshCredentialsCallback){
-      return refreshCredentialsCallback().then(function(){
+      return refreshCredentialsCallback(online).then(function(){
         doRefreshCredentials();
       });
     }else{
@@ -56,7 +56,7 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
       }
     }
     if (!skipRefresh){
-      return refreshCredentials().then(function(){
+      return refreshCredentials(true).then(function(){
         return doGet();
       });
     }else{
@@ -64,10 +64,14 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
     }
   };
 
-  methods.getSecondary = function(url, regex, params) {
-    return refreshCredentials().then(function(){
+  methods.getSecondary = function(url, regex, params, online) {
+    return refreshCredentials(online).then(function(){
       if (regex.test(url)){
-        return HttpClientService.getSecondary(getUrlPrefix() + url, params);
+        if (online){
+          return HttpClientService.get(getUrlPrefix() + url);
+        }else{
+          return HttpClientService.getSecondary(getUrlPrefix() + url, params);
+        }
       }else {
         emitRegexException(regex, 'get', url);
       }
@@ -86,7 +90,7 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
   };
 
   methods.deleteOnline = function(url, regex) {
-    return refreshCredentials().then(function(){
+    return refreshCredentials(true).then(function(){
       if (regex.test(url)){
         return HttpClientService.deleteOnline(getUrlPrefix() + url);
       }else {
@@ -106,7 +110,7 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
   };
 
   methods.putOnline = function(url, regex, data) {
-    return refreshCredentials().then(function(){
+    return refreshCredentials(true).then(function(){
       if (regex.test(url)){
         return HttpClientService.putOnline(getUrlPrefix() + url, data);
       }else {
@@ -123,6 +127,10 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
     }
   };
 
+  methods.clearPrimary = function() {
+    HttpClientService.clearPrimary();
+  };
+
   methods.postOnline = function(url, regex, data, skipRefresh, skipLogStatuses) {
     function doPostOnline(url, regex, data, skipLogStatuses){
       if (regex.test(url)){
@@ -132,7 +140,7 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
       }
     }
     if (!skipRefresh){
-      return refreshCredentials().then(function(){
+      return refreshCredentials(true).then(function(){
         return doPostOnline(url, regex, data, skipLogStatuses);
       });
     }else{

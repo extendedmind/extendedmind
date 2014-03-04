@@ -18,13 +18,6 @@ function MainController($scope, $location, $timeout, $window,
   $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
 
-  // Online/offline status, optimistic default
-  $scope.online = true;
-  var onlineStatusCallback = function(online){
-    $scope.online = online;
-  };
-  BackendClientService.registerOnlineStatusCallback(onlineStatusCallback);
-
   // Backend polling
 
   var synchronizeItemsTimer;
