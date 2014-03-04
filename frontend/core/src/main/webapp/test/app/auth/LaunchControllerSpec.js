@@ -30,6 +30,7 @@ describe('LaunchController', function() {
 
   it('should redirect user with new invite request to waiting page', function() {
     // SETUP
+    inviteRequestResponse.resultType = 'newInviteRequest';
     $scope.user = {
       email: 'example@example.md'
     };
