@@ -4,7 +4,7 @@ function PasswordController($location, $routeParams, $scope, AccountService, Use
   var email = $routeParams.email ? $routeParams.email : UserSessionService.getEmail();
 
   $scope.gotoAccountPage = function gotoAccountPage() {
-    $location.path('/my/account');
+    $location.path('/my/account').search({});
   };
 }
 
