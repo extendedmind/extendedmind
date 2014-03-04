@@ -22,6 +22,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
   function setUserSessionStorageData() {
     SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
     SessionStorageService.setCollectives(LocalStorageService.getCollectives());
+    SessionStorageService.setEmail(LocalStorageService.getEmail());
     SessionStorageService.setExpires(LocalStorageService.getExpires());
     SessionStorageService.setCredentials(LocalStorageService.getCredentials());
     SessionStorageService.setUserType(LocalStorageService.getUserType());
@@ -144,6 +145,13 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     getCredentials: function() {
       syncWebStorages();
       return SessionStorageService.getCredentials();
+    },
+    getEmail: function() {
+      // Sync only email in Web Storages.
+      if (LocalStorageService.getEmail()) {
+        SessionStorageService.setEmail(LocalStorageService.getEmail());
+      }
+      return SessionStorageService.getEmail();
     },
     getUserUUID: function() {
       syncWebStorages();

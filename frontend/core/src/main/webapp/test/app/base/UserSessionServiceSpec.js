@@ -98,6 +98,12 @@ it('should set and get items synchronized timestamp', function() {
   expect(isNaN(itemsSynchronized)).toBe(false);
 });
 
+it('should sync email in Web Storages and return email from sessionStorage', function() {
+  LocalStorageService.setEmail('example@example.com');
+  UserSessionService.getEmail();
+  expect(UserSessionService.getEmail()).toEqual('example@example.com');
+});
+
 it('should set email to Web Storage when authenticate information is set', function() {
   var email = 'example@example.com';
   spyOn(UserSessionService, 'setEmail');

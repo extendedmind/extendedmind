@@ -113,9 +113,54 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
     return deferredAuthentication.promise;
   }
 
+  function checkEmailStatus(inviteRequestResponse) {
+    // Redirect user with new invite request to waiting page, then show queue.
+    if (inviteRequestResponse.data.resultType === 'newInviteRequest') {
+      redirectToWaitingPage();
+    }
+    // Redirect user with existing invite request to waiting page, then show queue.
+    else if (inviteRequestResponse.data.resultType === 'inviteRequest') {
+      redirectToWaitingPage();
+    }
+    // Redirect invited user to waiting page, then show info text
+    else if (inviteRequestResponse.data.resultType === 'invite') {
+      $location.path('/waiting');
+      $location.search({
+        email: UserSessionService.getEmail()
+      });
+    }
+    // Redirect existing user to front page.
+    else if (inviteRequestResponse.data.resultType === 'user') {
+      $location.path('/login');
+    }
+
+    function redirectToWaitingPage() {
+      $location.path('/waiting');
+      $location.search({
+        uuid: inviteRequestResponse.data.result.uuid,
+        queueNumber: inviteRequestResponse.data.queueNumber
+      });
+    }
+  }
+
   return {
     verifyAndUpdateAuthentication: function() {
       return verifyAndUpdateAuthentication();
+    },
+    checkAndRedirectUser: function() {
+      // Existing user
+      if (UserSessionService.getUserUUID()) {
+        $location.path('/my/tasks');
+      } else if (UserSessionService.getEmail() && !UserSessionService.getUserUUID()) {
+        BackendClientService.postOnline(
+          '/api/invite/request',
+          postInviteRequestRegexp,
+          {email: UserSessionService.getEmail()},
+          true)
+        .then(checkEmailStatus);
+      } else {
+        $location.path('/launch');
+      }
     },
     login: function(user) {
       var remember = user.remember || false;
@@ -142,10 +187,11 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
         '/api/invite/request',
         postInviteRequestRegexp,
         {email: email},
-        true).then(function(inviteRequestResponse) {
-          UserSessionService.setEmail(email);
-          return inviteRequestResponse;
-        });
+        true)
+      .then(function(inviteRequestResponse) {
+        UserSessionService.setEmail(email);
+        return inviteRequestResponse;
+      });
     },
     signUp: function(inviteResponseCode, data) {
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',

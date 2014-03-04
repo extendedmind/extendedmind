@@ -13,7 +13,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     $locationProvider.html5Mode(h5m);
 
     $routeProvider.when('/', {
-      redirectTo: 'my/tasks'
+      resolve: {
+        userStatus: ['AuthenticationService',
+        function(AuthenticationService) {
+          return AuthenticationService.checkAndRedirectUser();
+        }]
+      }
     });
 
     $routeProvider.when('/launch', {

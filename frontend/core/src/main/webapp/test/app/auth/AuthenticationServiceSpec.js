@@ -13,6 +13,8 @@ describe('AuthenticationService', function() {
   var logoutResponse = getJSONFixture('logoutResponse.json');
   var inviteResponse = getJSONFixture('inviteResponse.json');
   var signUpResponse = getJSONFixture('signUpResponse.json');
+  var inviteRequestResponse;
+  var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
   var MockUserSessionService = {
     authenticated: undefined,
@@ -30,11 +32,17 @@ describe('AuthenticationService', function() {
     isOfflineEnabled: function() {
       return false;
     },
-    getCredentials: function () {
+    getActiveUUID: function() {
+      return testOwnerUUID;
+    },
+    getCredentials: function() {
       return '123456789';
     },
-    getActiveUUID: function () {
-      return '6be16f46-7b35-4b2d-b875-e13d19681e77';
+    getEmail: function() {
+      return;
+    },
+    getUserUUID: function() {
+      return;
     },
     setIsAuthenticated: function(authenticated) {
       this.authenticated = authenticated;
@@ -45,7 +53,7 @@ describe('AuthenticationService', function() {
     setIsAuthenticateReplaceable: function(authenticateReplaceable) {
       this.authenticateReplaceable = authenticateReplaceable;
     },
-    setAuthenticateInformation: function (authenticateResponse, email) {
+    setAuthenticateInformation: function(authenticateResponse, email) {
       if (email) {
         this.setEmail(email);
       }
@@ -60,7 +68,7 @@ describe('AuthenticationService', function() {
   };
 
   var MockItemsService = {
-    synchronize: function () {
+    synchronize: function() {
       return;
     }
   };
@@ -82,7 +90,11 @@ describe('AuthenticationService', function() {
       AuthenticationService = _AuthenticationService_;
       BackendClientService = _BackendClientService_;
       HttpClientService = _HttpClientService_;
+
+      spyOn($location, 'path');
+      spyOn($location, 'search');
     });
+    inviteRequestResponse = getJSONFixture('inviteRequestResponse.json');
   });
 
   afterEach(function() {
@@ -134,6 +146,94 @@ describe('AuthenticationService', function() {
     });
     AuthenticationService.postInviteRequest();
     expect(BackendClientService.postOnline).toHaveBeenCalled();
+  });
+
+  it('should resolve authenticated user and redirect from \'/\' to \'/my/tasks\'', function() {
+    spyOn(MockUserSessionService, 'getUserUUID').andReturn(testOwnerUUID);
+    AuthenticationService.checkAndRedirectUser();
+    expect($location.path).toHaveBeenCalledWith('/my/tasks');
+  });
+
+  it('should resolve user with new invite request and redirect from \'/\' to \'/waiting\'', function() {
+    // SETUP
+    inviteRequestResponse.resultType = 'newInviteRequest';
+    spyOn(MockUserSessionService, 'getEmail').andReturn('example@example.com');
+    spyOn(MockUserSessionService, 'getUserUUID').andReturn();
+    var email = MockUserSessionService.getEmail();
+    $httpBackend.expectPOST('/api/invite/request', {email: email}).
+    respond(200, inviteRequestResponse);
+
+    // EXECUTE
+    AuthenticationService.checkAndRedirectUser();
+    $httpBackend.flush();
+
+    expect($location.path).toHaveBeenCalledWith('/waiting');
+    expect($location.search).toHaveBeenCalledWith({
+      uuid: inviteRequestResponse.result.uuid,
+      queueNumber: inviteRequestResponse.queueNumber
+    });
+  });
+
+  it('should resolve user with existing invite request and redirect from \'/\' to \'/waiting\'', function() {
+    // SETUP
+    inviteRequestResponse.resultType = 'inviteRequest';
+    spyOn(MockUserSessionService, 'getEmail').andReturn('example@example.com');
+    spyOn(MockUserSessionService, 'getUserUUID').andReturn();
+    var email = MockUserSessionService.getEmail();
+    $httpBackend.expectPOST('/api/invite/request', {email: email}).
+    respond(200, inviteRequestResponse);
+
+    // EXECUTE
+    AuthenticationService.checkAndRedirectUser();
+    $httpBackend.flush();
+
+    expect($location.path).toHaveBeenCalledWith('/waiting');
+    expect($location.search).toHaveBeenCalledWith({
+      uuid: inviteRequestResponse.result.uuid,
+      queueNumber: inviteRequestResponse.queueNumber
+    });
+  });
+
+  it('should resolve invited user and redirect from \'/\' to \'/waiting\'', function() {
+    // SETUP
+    inviteRequestResponse.resultType = 'invite';
+    spyOn(MockUserSessionService, 'getEmail').andReturn('example@example.com');
+    spyOn(MockUserSessionService, 'getUserUUID').andReturn();
+    var email = MockUserSessionService.getEmail();
+    $httpBackend.expectPOST('/api/invite/request', {email: email}).
+    respond(200, inviteRequestResponse);
+
+    // EXECUTE
+    AuthenticationService.checkAndRedirectUser();
+    $httpBackend.flush();
+
+    expect($location.path).toHaveBeenCalledWith('/waiting');
+    expect($location.search).toHaveBeenCalledWith({
+      email: email
+    });
+  });
+
+  it('should resolve existing not authenticated user and redirect from \'/\' to \'login\'', function() {
+    // SETUP
+    inviteRequestResponse.resultType = 'user';
+    spyOn(MockUserSessionService, 'getEmail').andReturn('example@example.com');
+    spyOn(MockUserSessionService, 'getUserUUID').andReturn();
+    var email = MockUserSessionService.getEmail();
+    $httpBackend.expectPOST('/api/invite/request', {email: email}).
+    respond(200, inviteRequestResponse);
+
+    // EXECUTE
+    AuthenticationService.checkAndRedirectUser();
+    $httpBackend.flush();
+
+    expect($location.path).toHaveBeenCalledWith('/login');
+  });
+
+  it('should resolve fresh session and redirect from \'/\' to \'launch\'', function() {
+    spyOn(MockUserSessionService, 'getEmail').andReturn();
+    spyOn(MockUserSessionService, 'getUserUUID').andReturn();
+    AuthenticationService.checkAndRedirectUser();
+    expect($location.path).toHaveBeenCalledWith('/launch');
   });
 
   it('should set email to Web Storage after invite request', function() {
@@ -216,10 +316,9 @@ describe('AuthenticationService', function() {
     MockUserSessionService.setIsAuthenticateValid(false);
     MockUserSessionService.setIsAuthenticateReplaceable(false);
 
-    expect($location.path()).toEqual('/');
     verifyAndUpdateAuthenticationPromise().then(function(promise) {
       expect(promise).toEqual(false);
-      expect($location.path()).toEqual('/login');
+      expect($location.path).toHaveBeenCalledWith('/login');
     });
   });
 
@@ -228,10 +327,9 @@ describe('AuthenticationService', function() {
     MockUserSessionService.setIsAuthenticateValid(false);
     MockUserSessionService.setIsAuthenticateReplaceable(false);
 
-    expect($location.path()).toEqual('/');
     verifyAndUpdateAuthenticationPromise().then(function(promise) {
       expect(promise).toEqual(false);
-      expect($location.path()).toEqual('/login');
+      expect($location.path).toHaveBeenCalledWith('/login');
     });
   });
 });
