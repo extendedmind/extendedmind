@@ -79,7 +79,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     },
 
     // Web storage setters
-    setAuthenticateInformation: function(authenticateResponse) {
+    setAuthenticateInformation: function(authenticateResponse, email) {
       var authExpiresDelta = Date.now() - authenticateResponse.authenticated;
       var credentials = encodeUsernamePassword('token', authenticateResponse.token);
 
@@ -97,6 +97,9 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
         LocalStorageService.setReplaceable(authenticateResponse.replaceable - authExpiresDelta);
         LocalStorageService.setUserType(authenticateResponse.userType);
         LocalStorageService.setUserUUID(authenticateResponse.userUUID);
+      }
+      if (email) {
+        this.setEmail(email);
       }
       return credentials;
     },

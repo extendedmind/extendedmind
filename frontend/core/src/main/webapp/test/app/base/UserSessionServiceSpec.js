@@ -5,6 +5,7 @@ describe('UserSessionService', function() {
   var LocalStorageService, SessionStorageService, UserSessionService;
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
   var swapTokenBufferTimeAndThenSome = 11*60*1000;
+  var authenticateResponse = getJSONFixture('authenticateResponse.json');
 
   beforeEach(function() {
     module('em.appTest');
@@ -95,6 +96,13 @@ it('should set and get items synchronized timestamp', function() {
   UserSessionService.setItemsSynchronized(testOwnerUUID);
   var itemsSynchronized = UserSessionService.getItemsSynchronized(testOwnerUUID);
   expect(isNaN(itemsSynchronized)).toBe(false);
+});
+
+it('should set email to Web Storage when authenticate information is set', function() {
+  var email = 'example@example.com';
+  spyOn(UserSessionService, 'setEmail');
+  UserSessionService.setAuthenticateInformation(authenticateResponse, email);
+  expect(UserSessionService.setEmail).toHaveBeenCalledWith(email);
 });
 
 it('should set email to sessionStorage if user is not remembered', function() {
