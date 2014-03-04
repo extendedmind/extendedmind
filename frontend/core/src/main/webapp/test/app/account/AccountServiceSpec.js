@@ -3,16 +3,13 @@
 describe('AccountService', function() {
 
   // INJECTS 
-
   var $httpBackend;
   var AccountService, BackendClientService, HttpClientService;
 
   // MOCKS
-
   var accountResponse = getJSONFixture('accountResponse.json');
 
   // SETUP / TEARDOWN
-
   beforeEach(function() {
     module('em.appTest');
 
@@ -24,14 +21,12 @@ describe('AccountService', function() {
     });
   });
 
-
   afterEach(function() {
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest();
   });
 
   // TESTS
-
   it('should get account', function () {
     var email;
     $httpBackend.expectGET('/api/account').respond(200, accountResponse);
@@ -42,5 +37,4 @@ describe('AccountService', function() {
 
     expect(email).toBeDefined();
   });
-
 });
