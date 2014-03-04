@@ -121,7 +121,7 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
       var remember = user.remember || false;
       BackendClientService.setUsernamePassword(user.username, user.password);
       return authenticate(remember).then(function(authenticateResponse) {
-        var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse.data);
+        var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse.data, user.username);
         // Update backend client to use token authentication instead of username/password
         BackendClientService.setCredentials(encodedCredentials);
         return authenticateResponse;
@@ -142,7 +142,10 @@ function AuthenticationService($location, $q, BackendClientService, UserSessionS
         '/api/invite/request',
         postInviteRequestRegexp,
         {email: email},
-        true);
+        true).then(function(inviteRequestResponse) {
+          UserSessionService.setEmail(email);
+          return inviteRequestResponse;
+        });
     },
     signUp: function(inviteResponseCode, data) {
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',

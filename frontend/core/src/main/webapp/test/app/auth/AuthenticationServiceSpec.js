@@ -45,7 +45,13 @@ describe('AuthenticationService', function() {
     setIsAuthenticateReplaceable: function(authenticateReplaceable) {
       this.authenticateReplaceable = authenticateReplaceable;
     },
-    setAuthenticateInformation: function (/*authenticateResponse*/) {
+    setAuthenticateInformation: function (authenticateResponse, email) {
+      if (email) {
+        this.setEmail(email);
+      }
+      return;
+    },
+    setEmail: function(/*email*/) {
       return;
     },
     clearUser: function() {
@@ -104,6 +110,39 @@ describe('AuthenticationService', function() {
     });
     $httpBackend.flush();
     expect(returned).toBe(true);
+  });
+
+  it('should set email to Web Storage after successful authentication', function() {
+    var user = {
+      username: 'example@example.com',
+      password: 'example'
+    };
+    spyOn(MockUserSessionService, 'setEmail');
+    $httpBackend.expectPOST('/api/authenticate').respond(200, authenticateResponse);
+    AuthenticationService.login(user);
+    $httpBackend.flush();
+    expect(MockUserSessionService.setEmail).toHaveBeenCalledWith(user.username);
+  });
+
+  it('should post invite request', function() {
+    spyOn(BackendClientService, 'postOnline').andCallFake(function() {
+      var deferred = $q.defer();
+      deferred.resolve();
+      return deferred.promise.then(function() {
+        return;
+      });
+    });
+    AuthenticationService.postInviteRequest();
+    expect(BackendClientService.postOnline).toHaveBeenCalled();
+  });
+
+  it('should set email to Web Storage after invite request', function() {
+    var email = 'example@example.com';
+    spyOn(MockUserSessionService, 'setEmail');
+    $httpBackend.expectPOST('/api/invite/request').respond(200);
+    AuthenticationService.postInviteRequest(email);
+    $httpBackend.flush();
+    expect(MockUserSessionService.setEmail).toHaveBeenCalledWith(email);
   });
 
   it('should log out', function() {
