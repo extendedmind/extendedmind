@@ -2,7 +2,7 @@
 'use strict';
 
 function UserSessionService(base64, LocalStorageService, SessionStorageService) {
-  var swapTokenBufferTime = 10;//*60*1000; // 10 minutes in milliseconds
+  var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   var latestModified = {};
   var itemsSynchronize = {};
   var ownerPrefix = 'my'; // default owner
@@ -92,10 +92,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       SessionStorageService.setUserUUID(authenticateResponse.userUUID);
 
       if (authenticateResponse.replaceable) {
-        
-
-LocalStorageService.setExpires(Date.now() + 15000);
-        //LocalStorageService.setExpires(authenticateResponse.expires - authExpiresDelta);
+        LocalStorageService.setExpires(Date.now() + 15000);
         LocalStorageService.setCollectives(authenticateResponse.collectives);
         LocalStorageService.setCredentials(credentials);
         LocalStorageService.setReplaceable(authenticateResponse.replaceable - authExpiresDelta);

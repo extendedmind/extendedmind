@@ -245,6 +245,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
         }
         UserSessionService.setLatestModified(latestModified, ownerUUID);
       }
+      return result;
     });
   };
 
@@ -269,19 +270,24 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
         });
       }
     }else {
-      getAllItemsOnline(ownerUUID).then(undefined, function(error) {
-        if (error && (error.status === 404 || error.status === 502)){
-          // Emit online required exception
-          $rootScope.$emit('emException', {
-            type: 'onlineRequired',
-            status: error.status,
-            data: error.data,
-            retry: getAllItemsOnline,
-            retryParam: ownerUUID,
-            promise: deferred
-          });
-        }
-      });
+      getAllItemsOnline(ownerUUID).then(
+        function(result){
+          deferred.resolve();
+          return result;
+        },
+        function(error) {
+          if (error && (error.status === 404 || error.status === 502)){
+            // Emit online required exception
+            $rootScope.$emit('emException', {
+              type: 'onlineRequired',
+              status: error.status,
+              data: error.data,
+              retry: getAllItemsOnline,
+              retryParam: ownerUUID,
+              promise: deferred
+            });
+          }
+        });
     }
     return deferred.promise;
   };
