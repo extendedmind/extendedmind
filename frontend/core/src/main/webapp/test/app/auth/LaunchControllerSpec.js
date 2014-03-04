@@ -16,10 +16,10 @@ describe('LaunchController', function() {
       $httpBackend = _$httpBackend_;
       $location = _$location_;
       BackendClientService = _BackendClientService_;
-
-      spyOn($location, 'path');
-      spyOn($location, 'search');
     });
+
+    spyOn($location, 'path');
+    spyOn($location, 'search');
     inviteRequestResponse = getJSONFixture('inviteRequestResponse.json');
   });
 

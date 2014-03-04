@@ -90,10 +90,10 @@ describe('AuthenticationService', function() {
       AuthenticationService = _AuthenticationService_;
       BackendClientService = _BackendClientService_;
       HttpClientService = _HttpClientService_;
-
-      spyOn($location, 'path');
-      spyOn($location, 'search');
     });
+
+    spyOn($location, 'path');
+    spyOn($location, 'search');
     inviteRequestResponse = getJSONFixture('inviteRequestResponse.json');
   });
 
