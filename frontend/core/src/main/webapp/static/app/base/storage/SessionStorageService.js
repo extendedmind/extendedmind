@@ -10,6 +10,9 @@ function SessionStorageService() {
     setCollectives: function(collectives) {
       sessionStorage.setItem('collectives', JSON.stringify(collectives));
     },
+    setEmail: function(email) {
+      sessionStorage.setItem('email', email);
+    },
     setExpires: function(expires) {
       sessionStorage.setItem('expires', expires);
     },
@@ -29,6 +32,9 @@ function SessionStorageService() {
     },
     getCollectives: function() {
       return JSON.parse(sessionStorage.getItem('collectives'));
+    },
+    getEmail: function() {
+      return sessionStorage.getItem('email');
     },
     getExpires: function() {
       return sessionStorage.getItem('expires');

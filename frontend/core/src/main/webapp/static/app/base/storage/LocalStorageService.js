@@ -7,6 +7,9 @@ function LocalStorageService() {
     setCollectives: function(collectives) {
       localStorage.setItem('collectives', JSON.stringify(collectives));
     },
+    setEmail: function(email) {
+      localStorage.setItem('email', email);
+    },
     setExpires: function(expires) {
       localStorage.setItem('expires', parseInt(expires));
     },
@@ -28,6 +31,9 @@ function LocalStorageService() {
       if (localStorage.getItem('collectives')) {
         return JSON.parse(localStorage.getItem('collectives'));
       }
+    },
+    getEmail: function() {
+      return localStorage.getItem('email');
     },
     getExpires: function() {
       return localStorage.getItem('expires');

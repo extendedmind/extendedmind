@@ -96,4 +96,26 @@ it('should set and get items synchronized timestamp', function() {
   var itemsSynchronized = UserSessionService.getItemsSynchronized(testOwnerUUID);
   expect(isNaN(itemsSynchronized)).toBe(false);
 });
+
+it('should set email to sessionStorage if user is not remembered', function() {
+  spyOn(UserSessionService, 'getRememberByDefault').andCallFake(function() {
+    return false;
+  });
+  spyOn(SessionStorageService, 'setEmail');
+  spyOn(LocalStorageService, 'setEmail');
+  UserSessionService.setEmail('example@example.com');
+  expect(LocalStorageService.setEmail).not.toHaveBeenCalled();
+  expect(SessionStorageService.setEmail).toHaveBeenCalledWith('example@example.com');
+});
+
+it('should set email to sessionStorage and localStorage if user is remembered', function() {
+  spyOn(UserSessionService, 'getRememberByDefault').andCallFake(function() {
+    return true;
+  });
+  spyOn(SessionStorageService, 'setEmail');
+  spyOn(LocalStorageService, 'setEmail');
+  UserSessionService.setEmail('example@example.com');
+  expect(SessionStorageService.setEmail).toHaveBeenCalledWith('example@example.com');
+  expect(LocalStorageService.setEmail).toHaveBeenCalledWith('example@example.com');
+});
 });

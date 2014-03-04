@@ -103,6 +103,12 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     setActiveUUID: function(uuid) {
       SessionStorageService.setActiveUUID(uuid);
     },
+    setEmail: function(email) {
+      SessionStorageService.setEmail(email);
+      if (this.getRememberByDefault()) {
+        LocalStorageService.setEmail(email);
+      }
+    },
     setLatestModified: function(modified, ownerUUID) {
       // Only set if given value is larger than set value
       if (!latestModified[ownerUUID] || latestModified[ownerUUID] < modified){
