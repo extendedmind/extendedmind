@@ -70,7 +70,20 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
           UserSessionService.setMyPrefix();
         }]
       }
-      
+    });
+
+    $routeProvider.when('/my/account/change_password', {
+      templateUrl: 'static/app/account/changePassword.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(auth) {
+          return auth.verifyAndUpdateAuthentication();
+        }],
+        ownerPrefix: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyPrefix();
+        }]
+      }
     });
 
     $routeProvider.when('/my/tasks', {
