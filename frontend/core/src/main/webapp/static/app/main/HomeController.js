@@ -11,15 +11,15 @@ function HomeController($scope, $location, $document, $element, ItemsService, Us
   };
 
   $scope.setCollectiveActive = function(uuid) {
-    AuthenticationService.switchActiveUUID(uuid);
-    $location.path('/collective/' + uuid + '/tasks');
     $scope.menuActive = false;
+    UserSessionService.setCollectiveActive(uuid);
+    $location.path('/collective/' + uuid + '/tasks');
   };
   
   $scope.setMyActive = function() {
-    AuthenticationService.switchActiveUUID(UserSessionService.getUserUUID());
-    $location.path('/my/tasks');
     $scope.menuActive = false;
+    UserSessionService.setMyActive();
+    $location.path('/my/tasks');
   };
 
   $scope.logout = function() {

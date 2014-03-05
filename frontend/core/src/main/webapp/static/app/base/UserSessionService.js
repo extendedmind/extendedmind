@@ -20,7 +20,9 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
   }
   
   function setUserSessionStorageData() {
-    SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
+    if (!SessionStorageService.getActiveUUID()) {
+      SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
+    }
     SessionStorageService.setCollectives(LocalStorageService.getCollectives());
     SessionStorageService.setEmail(LocalStorageService.getEmail());
     SessionStorageService.setExpires(LocalStorageService.getExpires());
@@ -75,17 +77,6 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       itemsSynchronize = {};
     },
 
-    // owner
-    setCollectivePrefix: function() {
-      setOwnerPrefix('collective' + '/' + SessionStorageService.getActiveUUID());
-    },
-    setMyPrefix: function() {
-      setOwnerPrefix('my');
-    },
-    getOwnerPrefix: function() {
-      return ownerPrefix;
-    },
-
     // Web storage setters
     setAuthenticateInformation: function(authenticateResponse, email) {
       var authExpiresDelta = Date.now() - authenticateResponse.authenticated;
@@ -111,8 +102,21 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       }
       return credentials;
     },
-    setActiveUUID: function(uuid) {
+
+    // owner
+    getOwnerPrefix: function() {
+      return ownerPrefix;
+    },
+
+    // Set active UUID and url prefix
+    setCollectiveActive: function(uuid) {
       SessionStorageService.setActiveUUID(uuid);
+      setOwnerPrefix('collective' + '/' + SessionStorageService.getActiveUUID());
+    },
+    setMyActive: function() {
+      SessionStorageService.setActiveUUID(this.getUserUUID());
+      setOwnerPrefix('my');
+
     },
     setEmail: function(email) {
       setEmail(email);
