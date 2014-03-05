@@ -19,10 +19,12 @@ describe('PasswordController', function() {
     });
 
     spyOn($location, 'path');
+    spyOn($location, 'search');
   });
 
   it('should go back to \'/my/account\'', function() {
     $scope.gotoAccountPage();
     expect($location.path).toHaveBeenCalledWith('/my/account');
+    expect($location.search).toHaveBeenCalledWith({});
   });
 });
