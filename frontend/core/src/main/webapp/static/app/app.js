@@ -68,7 +68,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
                   $location.path('/login');
                 }
               }
-            );
+              );
           }
         }]
       }
@@ -87,12 +87,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/account/account.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+        owner: ['UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setMyActive();
         }]
       }
     });
@@ -101,12 +101,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/account/changePassword.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          UserSessionService.setMyActive();
         }]
       }
     });
@@ -115,16 +115,16 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
         slide: ['TasksSlidesService', 'SwiperService',
         function(TasksSlidesService, SwiperService) {
           SwiperService.setInitialSlidePath(TasksSlidesService.HOME);
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          UserSessionService.setMyActive();
         }]
       }
     });
@@ -133,16 +133,16 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/main/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
         slide: ['TasksSlidesService', 'SwiperService',
         function(TasksSlidesService, SwiperService) {
           SwiperService.setInitialSlidePath(TasksSlidesService.HOME);
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setCollectivePrefix();
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
 
       }
@@ -152,12 +152,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          UserSessionService.setMyActive();
         }]
       }
     });
@@ -166,12 +166,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setCollectivePrefix();
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
 
       }
@@ -181,12 +181,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          UserSessionService.setMyActive();
         }]
 
       }
@@ -196,12 +196,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setCollectivePrefix();
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -210,12 +210,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          UserSessionService.setMyActive();
         }]
       }
     });
@@ -224,12 +224,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/tasks/editTask.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setCollectivePrefix();
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -240,16 +240,16 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/main/notesSlides.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
         slide: ['NotesSlidesService', 'SwiperService',
         function(NotesSlidesService, SwiperService) {
           SwiperService.setInitialSlidePath(NotesSlidesService.HOME);
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          return UserSessionService.setMyActive();
         }]
       }
     });
@@ -258,16 +258,16 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/main/notesSlides.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
         slide: ['NotesSlidesService', 'SwiperService',
         function(NotesSlidesService, SwiperService) {
           SwiperService.setInitialSlidePath(NotesSlidesService.HOME);
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setCollectivePrefix();
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -276,12 +276,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/notes/editNote.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          UserSessionService.setMyActive();
         }]
 
       }
@@ -291,12 +291,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/notes/editNote.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setCollectivePrefix();
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
 
       }
@@ -306,12 +306,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/notes/editNote.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          UserSessionService.setMyActive();
         }]
 
       }
@@ -321,12 +321,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/notes/editNote.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setCollectivePrefix();
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -335,12 +335,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/notes/editNote.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          UserSessionService.setMyActive();
         }]
       }
     });
@@ -349,12 +349,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/notes/editNote.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setCollectivePrefix();
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -365,12 +365,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/main/editItem.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          UserSessionService.setMyActive();
         }]
 
       }
@@ -380,12 +380,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/main/editItem.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setCollectivePrefix();
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -394,12 +394,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/main/editItem.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          UserSessionService.setMyActive();
         }]
 
       }
@@ -409,12 +409,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/main/editItem.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setCollectivePrefix();
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -425,12 +425,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/base/editList.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          UserSessionService.setMyActive();
         }]
 
       }
@@ -440,12 +440,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/base/editList.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setCollectivePrefix();
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -456,12 +456,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/base/editContext.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
+        owner: ['UserSessionService',
         function(UserSessionService) {
-          UserSessionService.setMyPrefix();
+          UserSessionService.setMyActive();
         }]
 
       }
@@ -471,12 +471,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/base/editContext.html',
       resolve: {
         auth: ['AuthenticationService',
-        function(auth) {
-          return auth.verifyAndUpdateAuthentication();
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        ownerPrefix: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setCollectivePrefix();
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
