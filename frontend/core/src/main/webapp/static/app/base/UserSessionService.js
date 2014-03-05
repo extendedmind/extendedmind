@@ -37,7 +37,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
 
   function setEmail(email) {
     SessionStorageService.setEmail(email);
-    if (offlineBufferEnabled || LocalStorageService.getReplaceable() !== undefined) {
+    if (offlineBufferEnabled || LocalStorageService.getReplaceable() !== null) {
       LocalStorageService.setEmail(email);
     }
   }
