@@ -2,13 +2,13 @@
 
 describe('LaunchController', function() {
   var $httpBackend, $location, $scope;
-  var BackendClientService, LaunchController;
+  var BackendClientService, LaunchController, UserSessionService;
   var inviteRequestResponse;
 
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function($controller, _$httpBackend_, _$location_, $rootScope, _BackendClientService_) {
+    inject(function($controller, _$httpBackend_, _$location_, $rootScope, _BackendClientService_, _UserSessionService_) {
       $scope = $rootScope.$new();
       LaunchController = $controller('LaunchController', {
         $scope: $scope
@@ -16,6 +16,7 @@ describe('LaunchController', function() {
       $httpBackend = _$httpBackend_;
       $location = _$location_;
       BackendClientService = _BackendClientService_;
+      UserSessionService = _UserSessionService_;
     });
 
     spyOn($location, 'path');
@@ -37,6 +38,7 @@ describe('LaunchController', function() {
     inviteRequestResponse.queueNumber = 155500;
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
+    spyOn(UserSessionService, 'setEmail');
     
     // EXECUTE
     $scope.launchUser();
@@ -47,6 +49,7 @@ describe('LaunchController', function() {
       uuid: inviteRequestResponse.result.uuid,
       queueNumber: inviteRequestResponse.queueNumber
     });
+    expect(UserSessionService.setEmail).toHaveBeenCalledWith($scope.user.email);
   });
 
   it('should redirect user with existing invite request to waiting page', function() {
@@ -58,6 +61,7 @@ describe('LaunchController', function() {
     };
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
+    spyOn(UserSessionService, 'setEmail');
 
     // EXECUTE
     $scope.launchUser();
@@ -68,6 +72,7 @@ describe('LaunchController', function() {
       uuid: inviteRequestResponse.result.uuid,
       queueNumber: inviteRequestResponse.queueNumber
     });
+    expect(UserSessionService.setEmail).toHaveBeenCalledWith($scope.user.email);
   });
 
   it('should redirect invited user to waiting page', function() {
@@ -78,6 +83,7 @@ describe('LaunchController', function() {
     };
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
+    spyOn(UserSessionService, 'setEmail');
 
     // EXECUTE
     $scope.launchUser();
@@ -87,6 +93,7 @@ describe('LaunchController', function() {
     expect($location.search).toHaveBeenCalledWith({
       email: $scope.user.email
     });
+    expect(UserSessionService.setEmail).toHaveBeenCalledWith($scope.user.email);
   });
 
   it('should redirect existing user to root page', function() {
@@ -97,10 +104,12 @@ describe('LaunchController', function() {
     };
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
+    spyOn(UserSessionService, 'setEmail');
 
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
     expect($location.path).toHaveBeenCalledWith('/');
+    expect(UserSessionService.setEmail).toHaveBeenCalledWith($scope.user.email);
   });
 });
