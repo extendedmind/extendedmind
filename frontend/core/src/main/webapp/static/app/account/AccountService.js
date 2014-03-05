@@ -5,8 +5,8 @@ function AccountService(BackendClientService) {
     getAccount: function() {
       return BackendClientService.get('/api/account',
         this.getAccountRegex)
-      .then(function(result) {
-        return result.data;
+      .then(function(accountResponse) {
+        return accountResponse.data;
       });
     },
     // Regular expressions for account requests
