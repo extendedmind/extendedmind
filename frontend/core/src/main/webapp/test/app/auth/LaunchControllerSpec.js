@@ -21,6 +21,7 @@ describe('LaunchController', function() {
 
     spyOn($location, 'path');
     spyOn($location, 'search');
+    spyOn(UserSessionService, 'setEmail');
     inviteRequestResponse = getJSONFixture('inviteRequestResponse.json');
   });
 
@@ -38,7 +39,6 @@ describe('LaunchController', function() {
     inviteRequestResponse.queueNumber = 155500;
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
-    spyOn(UserSessionService, 'setEmail');
     
     // EXECUTE
     $scope.launchUser();
@@ -61,7 +61,6 @@ describe('LaunchController', function() {
     };
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
-    spyOn(UserSessionService, 'setEmail');
 
     // EXECUTE
     $scope.launchUser();
@@ -83,7 +82,6 @@ describe('LaunchController', function() {
     };
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
-    spyOn(UserSessionService, 'setEmail');
 
     // EXECUTE
     $scope.launchUser();
@@ -104,7 +102,6 @@ describe('LaunchController', function() {
     };
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
-    spyOn(UserSessionService, 'setEmail');
 
     // EXECUTE
     $scope.launchUser();
