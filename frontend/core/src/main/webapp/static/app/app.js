@@ -25,7 +25,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/auth/launch.html'
     });
 
-    $routeProvider.when('/waiting/', {
+    $routeProvider.when('/waiting', {
       templateUrl: 'static/app/auth/waiting.html',
       resolve: {
         isEmailOrUUID: ['$location', '$route',
