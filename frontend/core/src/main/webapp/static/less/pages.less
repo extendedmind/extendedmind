@@ -35,18 +35,35 @@ section#login, section#signup, section#launch, section#waiting {
 }
 
 section#waiting {
-  .content {
-    .waiting-text {
-      color: @instruction;
-      display: block;
-      text-align: center;
-      line-height: 19px;
-      h1 {
-        line-height: 200%;
+  .column {
+    .banner {
+      margin-bottom: -@vertical-grid * 5.5;
+    }
+    .content {
+      .waiting-text {
+        color: @instruction;
+        display: block;
+        text-align: center;
+        line-height: 19px;
+        h1 {
+          line-height: 200%;
+        }
+        padding-bottom: @vertical-grid / 2;
       }
     }
   }
 }
+
+section#launch {
+  .column {
+    .content {
+      div#email {
+        padding-bottom: @vertical-grid;
+      }
+    }
+  }
+}
+
 
 // HOME
 
