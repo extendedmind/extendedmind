@@ -57,6 +57,6 @@ describe('WaitingController', function() {
 
     // EXECUTE
     $scope.openEMBlogInNewWindow();
-    expect($window.open).toHaveBeenCalledWith('http://extendedmind.org/');
+    expect($window.open).toHaveBeenCalledWith('http://extendedmind.org/', '_system');
   }));
 });
