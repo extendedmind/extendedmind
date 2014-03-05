@@ -56,9 +56,14 @@ trait SecurityActions {
     } yield ForgotPasswordResult(expires)
   }
   
-  def resetPassword(code: Long, signUp: SignUp)(implicit log: LoggingContext): Response[SetResult] = {
+  def resetPassword(code: Long, signUp: SignUp)(implicit log: LoggingContext): Response[CountResult] = {
     log.info("resetPassword: user {}", signUp.email)
-    db.resetPassword(code, signUp)
+    val result = db.resetPassword(code, signUp)
+    if (result.isRight){
+      db.destroyTokens(result.right.get.uuid.get)
+    }else{
+      Left(result.left.get)
+    }
   }  
   
   private def sendPasswordResetLink(user: User)(implicit log: LoggingContext): Response[ForgotPasswordResult] = {

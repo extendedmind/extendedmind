@@ -133,12 +133,12 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     });
   };
 
-  methods.putOnlineWithUsernamePassword = function(url, data, credentials) {
+  methods.putOnlineWithCredentials = function(url, data, overrideCredentials) {
     return $http({
       method: 'put',
       url: url,
       data: data,
-      headers: {'Authorization': 'Basic ' + credentials}
+      headers: {'Authorization': 'Basic ' + overrideCredentials}
     })
     .then(function(success) {
       return success;

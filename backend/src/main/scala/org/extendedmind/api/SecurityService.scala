@@ -90,9 +90,9 @@ trait SecurityService extends ServiceBase {
       postResetPassword { code =>
         entity(as[SignUp]) { signUp =>
           complete {
-            Future[SetResult] {
+            Future[CountResult] {
               securityActions.resetPassword(code, signUp) match {
-                case Right(sr) => sr
+                case Right(count) => count
                 case Left(e) => processErrors(e)
               }
             }

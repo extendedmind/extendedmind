@@ -7,10 +7,7 @@ function AccountController($location, $scope, AccountService) {
   });
 
   $scope.gotoChangePassword = function gotoChangePassword() {
-    $location.path('/my/account/change_password');
-    $location.search({
-      email: $scope.email
-    });
+    $location.path('/my/account/password');
   };
 
   $scope.gotoMainPage = function gotoMainPage() {

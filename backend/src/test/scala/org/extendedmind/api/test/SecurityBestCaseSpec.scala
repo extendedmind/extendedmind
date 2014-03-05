@@ -139,7 +139,7 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
         // Reset password
         val testPassword = "testPassword"
         Post("/password/" + resetCodeCaptor.getValue.toHexString + "/reset", marshal(SignUp(TIMO_EMAIL, testPassword)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-          val resetPasswordResponse = entityAs[SetResult]
+          val resetPasswordResponse = entityAs[CountResult]
           writeJsonOutput("resetPasswordResponse", entityAs[String])
           val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, testPassword)
           // Make sure that reset password again with the same code fails

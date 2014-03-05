@@ -89,26 +89,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         auth: ['AuthenticationService',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
         }]
       }
     });
 
-    $routeProvider.when('/my/account/change_password', {
-      templateUrl: 'static/app/account/changePassword.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(AuthenticationService) {
-          return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
-        }]
-      }
+    $routeProvider.when('/my/account/password', {
+      templateUrl: 'static/app/account/changePassword.html'
     });
 
     $routeProvider.when('/my/tasks', {

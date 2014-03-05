@@ -114,15 +114,15 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
       if (regex.test(url)){
         return HttpClientService.putOnline(getUrlPrefix() + url, data);
       }else {
-        emitRegexException(regex, 'post', url);
+        emitRegexException(regex, 'put', url);
       }
     });
   };
 
   methods.putOnlineWithUsernamePassword = function(url, regex, data, username, password) {
     if (regex.test(url)) {
-      var headers = base64.encode(username + ':' + password);
-      return HttpClientService.putOnlineWithUsernamePassword(getUrlPrefix() + url, data, headers);
+      var usernamePasswordCredentials = base64.encode(username + ':' + password);
+      return HttpClientService.putOnlineWithCredentials(getUrlPrefix() + url, data, usernamePasswordCredentials);
     } else {
       emitRegexException(regex, 'put', data);
     }

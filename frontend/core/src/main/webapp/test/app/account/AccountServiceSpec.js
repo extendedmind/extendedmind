@@ -8,6 +8,7 @@ describe('AccountService', function() {
 
   // MOCKS
   var accountResponse = getJSONFixture('accountResponse.json');
+  var changePasswordResponse = getJSONFixture('passwordResponse.json');
 
   // SETUP / TEARDOWN
   beforeEach(function() {
@@ -36,5 +37,16 @@ describe('AccountService', function() {
     $httpBackend.flush();
 
     expect(email).toBeDefined();
+  });
+
+  it('should change password', function() {
+    var email = 'example@example.com';
+    var currentPassword = 'currentPassword';
+    var newPassword = 'newPassword';
+    spyOn(BackendClientService, 'setUsernamePassword');
+
+    AccountService.putChangePassword(email, currentPassword, newPassword);
+    $httpBackend.expectPUT('/api/password', {password: newPassword}).respond(200, changePasswordResponse);
+    $httpBackend.flush();
   });
 });

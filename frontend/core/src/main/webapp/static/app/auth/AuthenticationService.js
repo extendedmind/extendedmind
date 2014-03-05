@@ -46,12 +46,6 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     logoutRegex.source +
     /$/.source
     ),
-  putChangePasswordRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    passwordRegex.source +
-    /$/.source
-    ),
   postForgotPasswordRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
@@ -271,21 +265,12 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         {email: email,
          password: password}, true);
     },
-    putChangePassword: function(email, currentPassword, newPassword) {
-      return BackendClientService.putOnlineWithUsernamePassword(
-        '/api/password',
-        putChangePasswordRegexp,
-        {password: newPassword},
-        email,
-        currentPassword);
-    },
     // Regular expressions for account requests
     acceptInviteRegex: acceptInviteRegexp,
     getInviteRegex: getInviteRegexp,
     postAuthenticateRegex: postAuthenticateRegexp,
     postInviteRequestRegex: postInviteRequestRegexp,
     postLogoutRegex: postLogoutRegexp,
-    putChangePasswordRegex: putChangePasswordRegexp,
     postForgotPasswordRegex: postForgotPasswordRegexp,
     getPasswordResetExpiresRegex: getPasswordResetExpiresRegexp,
     postResetPasswordRegex: postResetPasswordRegexp

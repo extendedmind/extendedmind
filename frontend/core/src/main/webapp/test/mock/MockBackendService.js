@@ -11,7 +11,6 @@ function MockBackendService(MockListsBackendService, MockTagsBackendService, Moc
         userNamePass = base64.decode(parsedAuthorizationHeader[1]);
         parsedUserNamePass = userNamePass.split(':');
         userName = parsedUserNamePass[0];
-
         if (userNamePass === 'timo@ext.md:timopwd') {
           response = [200, responseData];
         } else if (userNamePass === 'jp@ext.md:jiipeepwd') {

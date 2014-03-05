@@ -1,21 +1,26 @@
 'use strict';
 
-function PasswordController($location, $routeParams, $scope, AuthenticationService, UserSessionService) {
-  var email = $routeParams.email ? $routeParams.email : UserSessionService.getEmail();
+function PasswordController($location, $scope, AccountService, UserSessionService) {
+  var email = UserSessionService.getEmail();
 
   $scope.changePassword = function changePassword() {
-    AuthenticationService.putChangePassword(email, $scope.user.currentPassword, $scope.user.newPassword)
+    AccountService.putChangePassword(email, $scope.user.currentPassword, $scope.user.newPassword)
     .then(function(changePasswordResponse) {
-      $location.path('/my/account');
-      $location.search({});
+      // TODO: Move this controller to auth, and authenticate using the new password
+      $location.path('/login');
+    }, function(error){
+      if (error.status === 404 || error.status === 502){
+        $scope.changePasswordOffline = true;
+      }else {
+        $scope.changePasswordFailed = true;
+      }
     });
   };
 
   $scope.gotoAccountPage = function gotoAccountPage() {
     $location.path('/my/account');
-    $location.search({});
   };
 }
 
-PasswordController['$inject'] = ['$location', '$routeParams', '$scope', 'AuthenticationService', 'UserSessionService'];
+PasswordController['$inject'] = ['$location', '$scope', 'AccountService', 'UserSessionService'];
 angular.module('em.app').controller('PasswordController', PasswordController);

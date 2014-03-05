@@ -3,8 +3,24 @@
 describe('AccountController', function() {
   var $location, $scope, AccountController;
 
+  var MockUserSessionService = {
+    getEmail: function() {
+      return 'timo@ext.md';
+    },
+    setEmail: function(/*email*/) {
+      return;
+    },
+    getCredentials: function() {
+      return '';
+    }
+  };
+
   beforeEach(function() {
     module('em.appTest');
+
+    module('em.services', function ($provide){
+      $provide.value('UserSessionService', MockUserSessionService);
+    });
 
     inject(function($controller, _$location_, $rootScope) {
       $scope = $rootScope.$new();
@@ -15,15 +31,11 @@ describe('AccountController', function() {
     });
 
     spyOn($location, 'path');
-    spyOn($location, 'search');
   });
 
-  it('should redirect to \'/my/account/change_password\'', function() {
+  it('should redirect to \'/my/account/password\'', function() {
     $scope.gotoChangePassword();
-    expect($location.path).toHaveBeenCalledWith('/my/account/change_password');
-    expect($location.search).toHaveBeenCalledWith({
-      email: $scope.email
-    });
+    expect($location.path).toHaveBeenCalledWith('/my/account/password');
   });
 
   it('should go back to \'/my/tasks\'', function() {

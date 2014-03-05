@@ -10,10 +10,18 @@ function MockAccountBackendService($httpBackend, AccountService) {
       return expectResponse(method, url, data, headers, accountResponse);
     });
   }
+
+  function mockPutChangePassword(expectResponse) {
+    $httpBackend.whenPUT(AccountService.putChangePasswordRegex).respond(function(method, url, data, headers) {
+      var changePasswordResponse = getJSONFixture('passwordResponse.json');
+      return expectResponse(method, url, data, headers, changePasswordResponse);
+    });
+  }
   
   return {
     mockAccountBackend: function(expectResponse) {
       mockGetAccount(expectResponse);
+      mockPutChangePassword(expectResponse);
     }
   };
 }

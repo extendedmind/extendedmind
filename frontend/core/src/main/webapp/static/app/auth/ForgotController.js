@@ -48,7 +48,7 @@ function ForgotController($routeParams, $scope, $location, AuthenticationService
             $scope.resetOffline = true;
           }else if(resetPasswordResponse && (resetPasswordResponse.status !== 200)){
             $scope.resetFailed = true;
-          }else if (resetPasswordResponse.data && resetPasswordResponse.data.uuid){
+          }else if (resetPasswordResponse.data && resetPasswordResponse.data.count){
             // Authenticate using the new password
             UserSessionService.setEmail($scope.user.email);
             $location.path('/login');

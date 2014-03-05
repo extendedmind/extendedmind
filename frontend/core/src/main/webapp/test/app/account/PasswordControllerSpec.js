@@ -3,22 +3,22 @@
 describe('PasswordController', function() {
   var $httpBackend, $location, $routeParams, $scope;
   var PasswordController;
-  var AuthenticationService, UserSessionService;
+  var AccountService, UserSessionService;
 
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function(_$httpBackend_, _$location_, $rootScope, _$routeParams_, _AuthenticationService_, _UserSessionService_) {
+    inject(function(_$httpBackend_, _$location_, $rootScope, _$routeParams_, _AccountService_, _UserSessionService_) {
       $httpBackend = _$httpBackend_;
       $location = _$location_;
       $routeParams = _$routeParams_;
       $scope = $rootScope.$new();
-      AuthenticationService = _AuthenticationService_;
+      AccountService = _AccountService_;
       UserSessionService = _UserSessionService_;
     });
 
+    UserSessionService.setEmail('example@example.com');
     spyOn($location, 'path');
-    spyOn($location, 'search');
   });
 
   afterEach(function() {
@@ -36,7 +36,6 @@ describe('PasswordController', function() {
     $scope.gotoAccountPage();
 
     expect($location.path).toHaveBeenCalledWith('/my/account');
-    expect($location.search).toHaveBeenCalledWith({});
   });
 
   it('should change password', function() {
@@ -51,18 +50,17 @@ describe('PasswordController', function() {
       currentPassword: 'currentPassword',
       newPassword: 'newPassword'
     };
-    spyOn(AuthenticationService, 'putChangePassword').andCallThrough();
+    spyOn(AccountService, 'putChangePassword').andCallThrough();
     $httpBackend.expectPUT('/api/password').respond(200);
 
     $scope.changePassword();
     $httpBackend.flush();
 
-    expect(AuthenticationService.putChangePassword).toHaveBeenCalledWith(
+    expect(AccountService.putChangePassword).toHaveBeenCalledWith(
       email,
       $scope.user.currentPassword,
       $scope.user.newPassword
       );
-    expect($location.path).toHaveBeenCalledWith('/my/account');
-    expect($location.search).toHaveBeenCalledWith({});
+    expect($location.path).toHaveBeenCalledWith('/login');
   });
 });
