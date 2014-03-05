@@ -82,7 +82,6 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       var authExpiresDelta = Date.now() - authenticateResponse.authenticated;
       var credentials = encodeUsernamePassword('token', authenticateResponse.token);
 
-      SessionStorageService.setActiveUUID(authenticateResponse.userUUID);
       SessionStorageService.setCollectives(authenticateResponse.collectives);
       SessionStorageService.setExpires(authenticateResponse.expires - authExpiresDelta);
       SessionStorageService.setCredentials(credentials);
@@ -116,7 +115,6 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     setMyActive: function() {
       SessionStorageService.setActiveUUID(this.getUserUUID());
       setOwnerPrefix('my');
-
     },
     setEmail: function(email) {
       setEmail(email);
