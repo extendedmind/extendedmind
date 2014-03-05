@@ -33,6 +33,13 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     return base64.encode(username + ':' + password);
   }
 
+  function setEmail(email) {
+    SessionStorageService.setEmail(email);
+    if (offlineBufferEnabled || LocalStorageService.getReplaceable() !== undefined) {
+      LocalStorageService.setEmail(email);
+    }
+  }
+
   return {
     isAuthenticated: function() {
       return SessionStorageService.getExpires() || LocalStorageService.getExpires();
@@ -100,7 +107,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
         LocalStorageService.setUserUUID(authenticateResponse.userUUID);
       }
       if (email) {
-        this.setEmail(email);
+        setEmail(email);
       }
       return credentials;
     },
@@ -108,10 +115,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       SessionStorageService.setActiveUUID(uuid);
     },
     setEmail: function(email) {
-      SessionStorageService.setEmail(email);
-      if (this.getRememberByDefault()) {
-        LocalStorageService.setEmail(email);
-      }
+      setEmail(email);
     },
     setLatestModified: function(modified, ownerUUID) {
       // Only set if given value is larger than set value
