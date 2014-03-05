@@ -32,6 +32,7 @@ describe('UserSessionService', function() {
     });
 
     spyOn(localStorage, 'getItem').andCallFake(function(key) {
+      if (!localStore[key]) return null;
       return localStore[key];
     });
     spyOn(localStorage, 'setItem').andCallFake(function(key, value) {
@@ -134,6 +135,7 @@ describe('UserSessionService', function() {
     var email = 'example@example.com';
     spyOn(SessionStorageService, 'setEmail');
     spyOn(LocalStorageService, 'setEmail');
+    delete authenticateResponse.replaceable;
     UserSessionService.setAuthenticateInformation(authenticateResponse, email);
     expect(LocalStorageService.setEmail).not.toHaveBeenCalled();
     expect(SessionStorageService.setEmail).toHaveBeenCalledWith('example@example.com');
