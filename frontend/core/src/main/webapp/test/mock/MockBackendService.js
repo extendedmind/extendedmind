@@ -3,21 +3,15 @@
 
 function MockBackendService(MockListsBackendService, MockTagsBackendService, MockTasksBackendService, MockNotesBackendService,
                             MockItemsBackendService, MockAccountBackendService, MockAuthBackendService, base64) {
-  var skipAuthenticationCheck;
-
   return {
-    setSkipAuthenticationCheck: function() {
-      skipAuthenticationCheck = true;
-    },
-    expectResponse: function(method, url, data, headers, responseData) {
+    expectResponse: function(method, url, data, headers, responseData, skipAuthenticationCheck) {
       var parsedAuthorizationHeader, userNamePass, parsedUserNamePass, userName, response;
-
-      parsedAuthorizationHeader = headers.Authorization.split(' ');
-      userNamePass = base64.decode(parsedAuthorizationHeader[1]);
-      parsedUserNamePass = userNamePass.split(':');
-      userName = parsedUserNamePass[0];
-
       if (!skipAuthenticationCheck) {
+        parsedAuthorizationHeader = headers.Authorization.split(' ');
+        userNamePass = base64.decode(parsedAuthorizationHeader[1]);
+        parsedUserNamePass = userNamePass.split(':');
+        userName = parsedUserNamePass[0];
+
         if (userNamePass === 'timo@ext.md:timopwd') {
           response = [200, responseData];
         } else if (userNamePass === 'jp@ext.md:jiipeepwd') {
@@ -31,7 +25,6 @@ function MockBackendService(MockListsBackendService, MockTagsBackendService, Moc
         }
       } else {
         response = [200, responseData];
-        skipAuthenticationCheck = false;
       }
       return response;
     },

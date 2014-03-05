@@ -29,6 +29,11 @@ function LoginController($location, $scope, UserSessionService, AuthenticationSe
   $scope.rememberByDefault = function() {
     return UserSessionService.getRememberByDefault();
   };
+
+  $scope.gotoForgot = function() {
+    $location.path('/forgot');
+    $location.search({email: $scope.user.username});
+  };
 }
 
 LoginController['$inject'] = ['$location', '$scope', 'UserSessionService', 'AuthenticationService'];

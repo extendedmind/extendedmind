@@ -63,6 +63,31 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
       return [200, inviteRequestResponse];
     });
   }
+
+  function mockPostForgotPassword() {
+    $httpBackend.whenPOST(AuthenticationService.postForgotPasswordRegex).respond(function(method, url, data) {
+      var forgotPasswordResponse = getJSONFixture('forgotPasswordResponse.json');
+      var parsedData = JSON.parse(data);
+      if (parsedData.email !== 'jp@ext.md' && parsedData.email !== 'timo@ext.md') {
+        return [400, {}];
+      }
+      return [200, forgotPasswordResponse];
+    });
+  }
+
+  function mockGetPasswordResetExpires(expectResponse) {
+    $httpBackend.whenGET(AuthenticationService.getPasswordResetExpiresRegex).respond(function(method, url, data, headers) {
+      var passwordResetExpiresResponse = getJSONFixture('passwordResetExpiresResponse.json');
+      return expectResponse(method, url, data, headers, passwordResetExpiresResponse, true);
+    });
+  }
+
+  function mockPostResetPassword(expectResponse) {
+    $httpBackend.whenPOST(AuthenticationService.postResetPasswordRegex).respond(function(method, url, data, headers) {
+      var resetPasswordResponse = getJSONFixture('resetPasswordResponse.json');
+      return expectResponse(method, url, data, headers, resetPasswordResponse, true);
+    });
+  }
   
   return {
     mockAuthBackend: function(expectResponse) {
@@ -71,6 +96,9 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
       mockGetInvite();
       mockLogout(expectResponse);
       mockPostInviteRequest();
+      mockPostForgotPassword();
+      mockGetPasswordResetExpires(expectResponse);
+      mockPostResetPassword(expectResponse);
     }
   };
 }

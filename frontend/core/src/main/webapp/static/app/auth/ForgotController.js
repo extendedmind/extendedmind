@@ -1,0 +1,65 @@
+'use strict';
+
+function ForgotController($routeParams, $scope, $location, AuthenticationService, UserSessionService) {
+  var passwordResetCode = $routeParams.hex_code;
+  var email = $routeParams.email;
+  $scope.user = {
+    email: email
+  };
+  $scope.resetCodeExpires = undefined;
+
+  $scope.showResetInstructions = function(){
+    if (!passwordResetCode && !$scope.resetCodeExpires){
+      return true;
+    }
+  };
+
+  $scope.showResetForm = function(){
+    if (passwordResetCode){
+      return true;
+    }
+  };
+
+  $scope.gotoLogin = function(){
+    $location.path('/login');
+  };
+
+  $scope.sendInstructions = function(){
+    if ($scope.user.email){
+      AuthenticationService.postForgotPassword($scope.user.email).then(
+        function(forgotPasswordResponse){
+          if (forgotPasswordResponse && (forgotPasswordResponse.status === 404 || forgotPasswordResponse.status === 502)){
+            $scope.sendOffline = true;
+          }else if(forgotPasswordResponse && (forgotPasswordResponse.status !== 200)){
+            $scope.sendFailed = true;
+          }else if (forgotPasswordResponse.data){
+            $scope.resetCodeExpires = forgotPasswordResponse.data.resetCodeExpires;
+          }
+        }
+      );
+    }
+  };
+
+  $scope.resetPassword = function(){
+    if ($scope.user.password){
+      AuthenticationService.postResetPassword(passwordResetCode, $scope.user.email, $scope.user.password).then(
+        function(resetPasswordResponse){
+          if (resetPasswordResponse && (resetPasswordResponse.status === 404 || resetPasswordResponse.status === 502)){
+            $scope.resetOffline = true;
+          }else if(resetPasswordResponse && (resetPasswordResponse.status !== 200)){
+            $scope.resetFailed = true;
+          }else if (resetPasswordResponse.data && resetPasswordResponse.data.uuid){
+            // Authenticate using the new password
+            UserSessionService.setEmail($scope.user.email);
+            $location.path('/login');
+            $location.search({});
+          }
+        }
+      );
+    }
+  };
+
+}
+
+ForgotController['$inject'] = ['$routeParams', '$scope', '$location', 'AuthenticationService', 'UserSessionService'];
+angular.module('em.app').controller('ForgotController', ForgotController);

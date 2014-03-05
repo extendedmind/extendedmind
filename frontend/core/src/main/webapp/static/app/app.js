@@ -49,6 +49,31 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    $routeProvider.when('/forgot', {
+      templateUrl: 'static/app/auth/forgot.html'
+    });
+
+    $routeProvider.when('/reset/:hex_code', {
+      templateUrl: 'static/app/auth/forgot.html',
+      resolve: {
+        routes: ['$location', '$route', 'AuthenticationService',
+        function($location, $route, AuthenticationService) {
+          if (!$route.current.params.hex_code || !$route.current.params.email) {
+            $location.path('/login');
+          }else{
+            // make sure code is valid
+            AuthenticationService.getPasswordResetExpires($route.current.params.hex_code, $route.current.params.email).then(
+              function(passwordResetExpiresResponse){
+                if (!passwordResetExpiresResponse.data || !passwordResetExpiresResponse.data.resetCodeExpires){
+                  $location.path('/login');
+                }
+              }
+            );
+          }
+        }]
+      }
+    });
+
     $routeProvider.when('/404', {
       templateUrl: 'static/app/main/pageNotFound.html',
       controller: 'PageNotFoundController'

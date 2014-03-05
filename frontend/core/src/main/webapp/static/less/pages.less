@@ -3,7 +3,7 @@
 
 @login-content-height: @vertical-grid*5.1;
 
-section#login, section#signup, section#launch, section#waiting {
+section#login, section#signup, section#launch, section#waiting, section#forgot {
   .column {
     overflow-y: auto;
     .banner {
@@ -40,11 +40,7 @@ section#waiting {
       margin-bottom: -@vertical-grid * 5.5;
     }
     .content {
-      .waiting-text {
-        color: @instruction;
-        display: block;
-        text-align: center;
-        line-height: 19px;
+      .instruction-text {
         h1 {
           line-height: 200%;
         }
@@ -64,6 +60,26 @@ section#launch {
   }
 }
 
+section#forgot {
+  .column {
+    .banner {
+      margin-bottom: -@vertical-grid * 7.5;
+    }
+    .content {
+      .instruction-text {
+        p {
+          height: @vertical-grid / 2;
+          vertical-align: middle;
+        }
+      }
+    }
+    #instructions-sent {
+      .instruction-text {
+        padding-bottom: @vertical-grid;
+      }
+    }
+  }
+}
 
 // HOME
 

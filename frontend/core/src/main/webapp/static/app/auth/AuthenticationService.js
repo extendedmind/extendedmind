@@ -9,6 +9,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
   var inviteRegex = /invite\//;
   var logoutRegex = /logout/;
   var requestRegex = /request/;
+  var passwordRegex = /password/;
   
   var acceptInviteRegexp = new RegExp(
     /^/.source +
@@ -43,6 +44,31 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
     logoutRegex.source +
+    /$/.source
+    ),
+  postForgotPasswordRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    passwordRegex.source +
+    /\/forgot/.source +
+    /$/.source
+    ),
+  getPasswordResetExpiresRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    passwordRegex.source +
+    /\//.source +
+    BackendClientService.hexCodeRegex.source +
+    emailRegex.source +
+    /$/.source
+    ),
+  postResetPasswordRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    passwordRegex.source +
+    /\//.source +
+    BackendClientService.hexCodeRegex.source +
+    /\/reset/.source +
     /$/.source
     );
 
@@ -220,6 +246,25 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',
         acceptInviteRegexp, data, true, [400, 404, 502]);
     },
+    postForgotPassword: function(email) {
+      return BackendClientService.postOnline(
+        '/api/password/forgot',
+        postForgotPasswordRegexp,
+        {email: email}, true);
+    },
+    getPasswordResetExpires: function(resetCode, email) {
+      return BackendClientService.get(
+        '/api/password/' + resetCode + '?email=' + email,
+        getPasswordResetExpiresRegexp,
+        {email: email});
+    },
+    postResetPassword: function(resetCode, email, password) {
+      return BackendClientService.postOnline(
+        '/api/password/' + resetCode + '/reset',
+        postResetPasswordRegexp,
+        {email: email,
+         password: password}, true);
+    },
     switchActiveUUID: function(uuid) {
       UserSessionService.setActiveUUID(uuid);
     },
@@ -229,6 +274,9 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     postAuthenticateRegex: postAuthenticateRegexp,
     postInviteRequestRegex: postInviteRequestRegexp,
     postLogoutRegex: postLogoutRegexp,
+    postForgotPasswordRegex: postForgotPasswordRegexp,
+    getPasswordResetExpiresRegex: getPasswordResetExpiresRegexp,
+    postResetPasswordRegex: postResetPasswordRegexp
   };
 }
 AuthenticationService.$inject = ['$rootScope', '$location', '$q', 'BackendClientService', 'UserSessionService'];

@@ -112,8 +112,10 @@
     color: @warning;
     line-height: @vertical-grid-half;
     vertical-align: top;
+    a.text-link{
+      vertical-align: top;
+    }
   }
-  
 }
 
 // INPUTS
@@ -468,6 +470,13 @@ span.icon-i:active, span.icon-plus:active {
 }
 a.content:active {
   color: @content-pressed;
+}
+
+.instruction-text {
+  color: @instruction;
+  display: block;
+  text-align: center;
+  line-height: 19px;
 }
 
 // MODALS

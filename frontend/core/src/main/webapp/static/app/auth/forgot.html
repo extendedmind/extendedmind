@@ -1,0 +1,63 @@
+<div class="no-slides-container" ng-controller="ForgotController">
+  <section id="forgot" class="one-column-grid fixed-height page">
+    <div class="column">
+      <div class="banner">
+        <span class="icon-logo_with_text"></span>
+      </div>
+      <div ng-if="showResetInstructions()" class="content">
+        <span class="instruction-text">
+          press send button below and we will send you an email to <p class="content">{{user.email}}</p> with instructions on how to change your password
+        </span>
+        <form role="form" id="forgot-form" name="forgotForm" novalidate>
+          <div class="form-group button-container vertical-buttons">
+            <button type="submit" id="send-button" class="wide-button normal-button" ng-disabled="!forgotForm.$valid" ng-click="sendInstructions()">
+              <span class="button-text">send</span>
+            </button>
+            <p ng-show="sendFailed" class="validation-error">you are not an extended mind user</p>
+            <p ng-show="sendOffline" class="validation-error">can't connect to server. are you online?</p>
+            <button type="submit" id="cancel-button" class="wide-button cancel-button" ng-click="gotoLogin()">
+              <span class="button-text">cancel</span>
+            </button>
+          </div>
+        </form>
+      </div>
+      <div ng-if="resetCodeExpires" id="instructions-sent" class="content">
+        <span class="instruction-text">
+          instructions sent. when you have changed your password, press the button below to access your extended mind.
+        </span>
+        <div class="button-container">
+          <button type="submit" id="goto-login-button" class="wide-button normal-button" ng-click="gotoLogin()">
+            <span class="button-text">go to login</span>
+          </button>
+        </div>
+      </div>
+      <div ng-if="showResetForm()" class="content">
+        <span class="instruction-text">
+          to reset your password type it to the following fields and press change password 
+        </span>
+        <form role="form" id="reset-form" name="resetForm" novalidate>
+          <div class="form-group button-container vertical-buttons">
+            <div id="password" class="form-group">
+              <label for="password" class="sr-only">password</label>
+              <input type="password" name="password" class="form-control simple-input" id="input-password" ng-model="user.password" placeholder="enter password..." ng-blur="passwordAttempted=true" required ng-minlength="7" />
+              <p ng-show="resetForm.password.$invalid && !resetForm.password.$pristine && passwordAttempted" class="validation-error">password must be 7 characters or more</p>
+            </div>
+            <div id="passwordReEnter" class="form-group">
+              <label for="passwordReEnter" class="sr-only">password again</label>
+              <input type="password" name="passwordReEnter" class="form-control simple-input" id="input-password-again" ng-model="user.reEnteredPassword" ng-blur="reEnterAttempted=true" placeholder="re-enter password..." password-match="user.password"  required ng-minlength="7"/>
+              <p ng-show="resetForm.passwordReEnter.$invalid && !resetForm.passwordReEnter.$pristine && reEnterAttempted" class="validation-error">passwords don't match</p>
+            </div>
+            <button type="submit" id="send-button" class="wide-button normal-button" ng-disabled="!resetForm.$valid" ng-click="resetPassword()">
+              <span class="button-text">change password</span>
+            </button>
+            <p ng-show="resetFailed" class="validation-error">reseting password failed</p>
+            <p ng-show="resetOffline" class="validation-error">can't connect to server. are you online?</p>
+            <button type="submit" id="cancel-button" class="wide-button cancel-button" ng-click="gotoLogin()">
+              <span class="button-text">cancel</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>
