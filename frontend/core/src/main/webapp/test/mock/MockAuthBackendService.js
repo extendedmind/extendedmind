@@ -39,8 +39,27 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
   }
 
   function mockPostInviteRequest() {
-    $httpBackend.whenPOST(AuthenticationService.postInviteRequestRegex).respond(function() {
+    $httpBackend.whenPOST(AuthenticationService.postInviteRequestRegex).respond(function(method, url, data) {
       var inviteRequestResponse = getJSONFixture('inviteRequestResponse.json');
+      // Existing user
+      var parsedData = JSON.parse(data);
+      if (parsedData.email === 'jp@ext.md' || parsedData.email === 'timo@ext.md') {
+        inviteRequestResponse = {
+          resultType: 'user'
+        };
+      }
+      // Invited user
+      else if (parsedData.email === 'info@ext.md') {
+        inviteRequestResponse.resultType = 'invite';
+      }
+      // Invite request
+      else if (parsedData.email === 'example@example.com') {
+        inviteRequestResponse.resultType = 'inviteRequest';
+      }
+      // New invite
+      else {
+        inviteRequestResponse.resultType = 'newInviteRequest';
+      }
       return [200, inviteRequestResponse];
     });
   }

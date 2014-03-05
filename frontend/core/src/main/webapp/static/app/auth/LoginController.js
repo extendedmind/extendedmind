@@ -2,6 +2,14 @@
 
 function LoginController($location, $scope, UserSessionService, AuthenticationService) {
 
+  $scope.user = {};
+  $scope.isUserEmailReadOnly = false;
+
+  if (UserSessionService.getEmail()) {
+    $scope.isUserEmailEditable = true;
+    $scope.user.username = UserSessionService.getEmail();
+  }
+
   $scope.userLogin = function() {
     if ($scope.rememberByDefault()){
       $scope.user.remember = true;

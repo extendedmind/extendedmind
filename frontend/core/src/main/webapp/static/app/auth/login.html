@@ -8,7 +8,7 @@
         <form role="form" id="login-form" name="loginForm" novalidate>
           <div id="email" class="form-group">
             <label for="email" class="sr-only">email</label>
-            <input type="email" name="email" class="simple-input" id="input-email" ng-model="user.username" placeholder="enter email..." ng-blur="emailAttempted=true" required />
+            <input type="email" name="email" class="simple-input" id="input-email" ng-model="user.username" ng-readonly="isUserEmailEditable" placeholder="enter email..." ng-blur="emailAttempted=true" required />
             <p ng-show="loginForm.email.$invalid && !loginForm.email.$pristine && emailAttempted" class="validation-error">Not a valid email address</p>
           </div>
           <div id="password" class="form-group">
