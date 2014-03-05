@@ -11,7 +11,7 @@ function WaitingController($routeParams, $scope, $window) {
   $scope.user.inviteQueueNumber = $routeParams.queueNumber;
 
   $scope.openEMBlogInNewWindow = function openBlogInNewWindow() {
-    $window.open('http://extendedmind.org/');
+    $window.open('http://extendedmind.org/', '_system');
   };
 }
 
