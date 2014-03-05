@@ -91,7 +91,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
         owner: ['UserSessionService',
-        function($route, UserSessionService) {
+        function(UserSessionService) {
           UserSessionService.setMyActive();
         }]
       }

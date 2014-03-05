@@ -29,7 +29,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     var headRequest = HttpRequestQueueService.getHead();
     if (headRequest){
       $http(headRequest.content).
-        success(function(data /*, status, headers, config*/) {
+      success(function(data /*, status, headers, config*/) {
           // First, execute callback
           if (headRequest.primary && primaryCallback){
             primaryCallback(headRequest, data);
@@ -52,8 +52,8 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
           // Try to execute the next request in the queue
           executeRequests();
         }).
-        error(function(data, status/*, headers, config*/) {
-          if (status && (status === 404 || status === 502)){
+      error(function(data, status/*, headers, config*/) {
+        if (status && (status === 404 || status === 502)){
             // Seems to be offline, stop processing
             HttpRequestQueueService.setOffline(headRequest);
             online = false;
@@ -129,6 +129,20 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
       return success;
     }, function(error) {
       $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
+      return $q.reject(error);
+    });
+  };
+
+  methods.putOnlineWithUsernamePassword = function(url, data, credentials) {
+    return $http({
+      method: 'put',
+      url: url,
+      data: data,
+      headers: {'Authorization': 'Basic ' + credentials}
+    })
+    .then(function(success) {
+      return success;
+    }, function(error) {
       return $q.reject(error);
     });
   };
