@@ -265,9 +265,6 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         {email: email,
          password: password}, true);
     },
-    switchActiveUUID: function(uuid) {
-      UserSessionService.setActiveUUID(uuid);
-    },
     // Regular expressions for account requests
     acceptInviteRegex: acceptInviteRegexp,
     getInviteRegex: getInviteRegexp,
