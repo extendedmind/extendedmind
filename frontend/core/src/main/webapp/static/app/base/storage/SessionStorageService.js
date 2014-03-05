@@ -51,6 +51,7 @@ function SessionStorageService() {
     clearUser: function() {
       sessionStorage.removeItem('activeUUID');
       sessionStorage.removeItem('collectives');
+      sessionStorage.removeItem('email');
       sessionStorage.removeItem('expires');
       sessionStorage.removeItem('credentials');
       sessionStorage.removeItem('userType');

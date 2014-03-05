@@ -53,6 +53,7 @@ function LocalStorageService() {
 
     clearUser: function() {
       localStorage.removeItem('collectives');
+      localStorage.removeItem('email');
       localStorage.removeItem('expires');
       localStorage.removeItem('credentials');
       localStorage.removeItem('replaceable');
