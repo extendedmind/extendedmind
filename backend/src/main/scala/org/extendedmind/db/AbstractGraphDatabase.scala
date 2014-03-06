@@ -185,6 +185,14 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
         else if (nodeList.size > 1){
           // Check if nodeList contains the same node multiple times
           if (nodeList.distinct.size() > 1){
+            // Print debug information
+            if (nodeProperty == "uuid" && label.name == "REQUEST"){
+              nodeList.foreach(node => {
+                println("Invite request for " + node.getProperty("email").asInstanceOf[String] 
+                        + " has duplicate uuid " 
+                        + UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String]))
+              })
+            }
             fail(INTERNAL_SERVER_ERROR, "Ḿore than one " + label.labelName.toLowerCase() + " found with given " + nodeProperty + 
               (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
           }else{
