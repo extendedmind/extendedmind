@@ -1,6 +1,6 @@
 'use strict';
 
-function SignupController($location, $scope, $routeParams, AuthenticationService) {
+function SignupController($location, $scope, $routeParams, $window, AuthenticationService) {
 
   $scope.user = {};
   var inviteResponseCode = $routeParams.hex_code;
@@ -42,7 +42,16 @@ function SignupController($location, $scope, $routeParams, AuthenticationService
       }
     });
   }
+
+  $scope.gotoTermsOfService = function() {
+    $window.open('http://ext.md/terms.html', '_system');
+  }
+
+  $scope.gotoPrivacyPolicy = function() {
+    $window.open('http://ext.md/privacy.html', '_system');
+  }
+
 }
 
-SignupController['$inject'] = ['$location', '$scope', '$routeParams', 'AuthenticationService'];
+SignupController['$inject'] = ['$location', '$scope', '$routeParams', '$window', 'AuthenticationService'];
 angular.module('em.app').controller('SignupController', SignupController);
