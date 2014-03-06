@@ -87,8 +87,8 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
           // Shouldn't be able to swap it again because rememberMe was missing the last time
           Post("/authenticate") ~> addCredentials(BasicHttpCredentials("token", tokenReAuthenticateResponse.token.get)) ~> route ~> check {
         	val failure = responseAs[String]        
-        	status should be (BadRequest)
-            failure should startWith("Token not replaceable")
+        	status should be (Forbidden)
+            failure should startWith("Authentication failed")
           }
         }
       }
