@@ -83,16 +83,16 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       var credentials = encodeUsernamePassword('token', authenticateResponse.token);
 
       SessionStorageService.setCollectives(authenticateResponse.collectives);
-      SessionStorageService.setExpires(authenticateResponse.expires - authExpiresDelta);
+      SessionStorageService.setExpires(authenticateResponse.expires + authExpiresDelta);
       SessionStorageService.setCredentials(credentials);
       SessionStorageService.setUserType(authenticateResponse.userType);
       SessionStorageService.setUserUUID(authenticateResponse.userUUID);
 
       if (authenticateResponse.replaceable) {
-        LocalStorageService.setExpires(Date.now() + 15000);
+        LocalStorageService.setExpires(authenticateResponse.expires + authExpiresDelta);
         LocalStorageService.setCollectives(authenticateResponse.collectives);
         LocalStorageService.setCredentials(credentials);
-        LocalStorageService.setReplaceable(authenticateResponse.replaceable - authExpiresDelta);
+        LocalStorageService.setReplaceable(authenticateResponse.replaceable + authExpiresDelta);
         LocalStorageService.setUserType(authenticateResponse.userType);
         LocalStorageService.setUserUUID(authenticateResponse.userUUID);
       }
