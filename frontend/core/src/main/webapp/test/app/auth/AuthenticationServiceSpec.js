@@ -141,15 +141,23 @@ describe('AuthenticationService', function() {
   });
 
   it('should post invite request', function() {
-    spyOn(BackendClientService, 'postOnline').andCallFake(function() {
-      var deferred = $q.defer();
-      deferred.resolve();
-      return deferred.promise.then(function() {
-        return;
-      });
-    });
-    AuthenticationService.postInviteRequest();
-    expect(BackendClientService.postOnline).toHaveBeenCalled();
+    var email = 'example@example.com';
+    var skipLogStatuses = [400, 404, 502];
+    var postInviteRequestRegex = /^\/api\/invite\/request$/;
+    spyOn(BackendClientService, 'postOnline').andCallThrough();
+    spyOn(MockUserSessionService, 'setEmail');
+
+    $httpBackend.expectPOST('/api/invite/request').respond(200);
+    AuthenticationService.postInviteRequest(email);
+    $httpBackend.flush();
+
+    expect(BackendClientService.postOnline).toHaveBeenCalledWith(
+      '/api/invite/request',
+      postInviteRequestRegex,
+      {email: email},
+      true,
+      skipLogStatuses);
+    expect(MockUserSessionService.setEmail).toHaveBeenCalledWith(email);
   });
 
   it('should resolve authenticated user and redirect from \'/\' to \'/my/tasks\'', function() {
@@ -246,6 +254,7 @@ describe('AuthenticationService', function() {
     $httpBackend.expectPOST('/api/invite/request').respond(200);
     AuthenticationService.postInviteRequest(email);
     $httpBackend.flush();
+
     expect(MockUserSessionService.setEmail).toHaveBeenCalledWith(email);
   });
 
@@ -347,5 +356,4 @@ describe('AuthenticationService', function() {
     AuthenticationService.putChangePassword(email, currentPassword, newPassword);
     $httpBackend.flush();
   });
-
 });

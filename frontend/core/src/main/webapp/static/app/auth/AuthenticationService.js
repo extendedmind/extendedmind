@@ -239,7 +239,8 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         '/api/invite/request',
         postInviteRequestRegexp,
         {email: email},
-        true)
+        true,
+        [400, 404, 502])
       .then(function(inviteRequestResponse) {
         UserSessionService.setEmail(email);
         return inviteRequestResponse;
