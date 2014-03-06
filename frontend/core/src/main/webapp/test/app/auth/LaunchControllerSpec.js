@@ -17,6 +17,10 @@ describe('LaunchController', function() {
       $location = _$location_;
       BackendClientService = _BackendClientService_;
       UserSessionService = _UserSessionService_;
+
+      $scope.user = {
+        email: 'example@example.md'
+      };
     });
 
     spyOn($location, 'path');
@@ -33,10 +37,8 @@ describe('LaunchController', function() {
   it('should redirect user with new invite request to waiting page', function() {
     // SETUP
     inviteRequestResponse.resultType = 'newInviteRequest';
-    $scope.user = {
-      email: 'example@example.md'
-    };
     inviteRequestResponse.queueNumber = 155500;
+
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
     
@@ -56,9 +58,7 @@ describe('LaunchController', function() {
     // SETUP
     inviteRequestResponse.resultType = 'inviteRequest';
     inviteRequestResponse.queueNumber = 123;
-    $scope.user = {
-      email: 'example@example.md'
-    };
+
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
 
@@ -77,9 +77,7 @@ describe('LaunchController', function() {
   it('should redirect invited user to waiting page', function() {
     // SETUP
     inviteRequestResponse.resultType = 'invite';
-    $scope.user = {
-      email: 'example@example.md'
-    };
+
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
 
@@ -97,9 +95,7 @@ describe('LaunchController', function() {
   it('should redirect existing user to root page', function() {
     // SETUP
     inviteRequestResponse.resultType = 'user';
-    $scope.user = {
-      email: 'example@example.md'
-    };
+
     $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
     .respond(200, inviteRequestResponse);
 
@@ -108,5 +104,39 @@ describe('LaunchController', function() {
     $httpBackend.flush();
     expect($location.path).toHaveBeenCalledWith('/');
     expect(UserSessionService.setEmail).toHaveBeenCalledWith($scope.user.email);
+  });
+
+  it('should show an http error 404 not found message', function() {
+    inviteRequestResponse.status = 404;
+
+    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
+    .respond(404, inviteRequestResponse);
+
+    $scope.launchUser();
+    $httpBackend.flush();
+
+    expect($scope.launchOffline).toBe(true);
+  });
+
+  it('should show an http error 502 bad gateway message', function() {
+    inviteRequestResponse.status = 502;
+
+    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
+    .respond(502, inviteRequestResponse);
+
+    $scope.launchUser();
+    $httpBackend.flush();
+
+    expect($scope.launchOffline).toBe(true);
+  });
+
+  it('should show launch failed message', function() {
+    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
+    .respond(400, inviteRequestResponse);
+
+    $scope.launchUser();
+    $httpBackend.flush();
+
+    expect($scope.launchFailed).toBe(true);
   });
 });

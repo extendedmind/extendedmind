@@ -4,6 +4,8 @@ function LaunchController($location, $scope, AuthenticationService) {
   $scope.user = {};
 
   $scope.launchUser = function launchUser() {
+    $scope.launchFailed = false;
+    $scope.launchOffline = false;
     AuthenticationService.postInviteRequest($scope.user.email).then(
       checkEmailStatus,
       emailStatusFailure
@@ -39,7 +41,12 @@ function LaunchController($location, $scope, AuthenticationService) {
     }
   }
 
-  function emailStatusFailure() {
+  function emailStatusFailure(error) {
+    if (error.status === 404 || error.status === 502) {
+      $scope.launchOffline = true;
+    } else {
+      $scope.launchFailed = true;
+    }
   }
 }
 
