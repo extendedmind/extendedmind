@@ -267,6 +267,9 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
             processSynchronizeUpdateResult(ownerUUID, result.data);
           }
           deferred.resolve();
+        }, function(error){
+          // just resolve, because this command does not need to always succeed
+          deferred.resolve();
         });
       }
     }else {
