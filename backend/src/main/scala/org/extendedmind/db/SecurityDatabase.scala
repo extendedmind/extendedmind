@@ -203,12 +203,22 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   
   // PRIVATE
   
+  protected def getTokenNode(token: Token, acceptDeleted: Boolean = false)
+        (implicit log: LoggingContext): Response[Node] = {
+    val response = getNode("accessKey", token.accessKey: java.lang.Long, MainLabel.TOKEN, None, acceptDeleted)
+    if (response.isLeft && response.left.get(0).responseType == INVALID_PARAMETER){
+      fail(INVALID_AUTHENTICATION, response.left.get(0).description);
+    }else{
+      response
+    }
+  }
+  
   protected def validateToken(tokenNode: Node, currentTime: Long): Response[Unit] = {
     if (tokenNode.hasProperty("expires")) {
       val tokenValid = tokenNode.getProperty("expires").asInstanceOf[Long];
       if (currentTime < tokenValid) {
         Right(Unit)
-      } else fail(TOKEN_EXPIRED, "Token has expired")
+      } else fail(INVALID_AUTHENTICATION, "Token has expired")
     } else fail(INTERNAL_SERVER_ERROR, "Token " + tokenNode.getId() + " is missing expired property")
   }
   
@@ -217,10 +227,10 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       val replaceable = tokenNode.getProperty("replaceable").asInstanceOf[Long];
       if (currentTime < replaceable) {
         Right(Unit)
-      } else fail(TOKEN_EXPIRED, "Token no longer replaceable")
+      } else fail(INVALID_AUTHENTICATION, "Token no longer replaceable")
     } else fail(INVALID_PARAMETER, "Token not replaceable")
   }
-
+  
   protected def createNewAccessKey(tokenNode: Node, sc: SecurityContext, payload: Option[AuthenticatePayload])(implicit neo4j: DatabaseService): SecurityContext = {
     // Make new token and set properties to the token node
     val token = Token(sc.userUUID)

@@ -159,11 +159,6 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       else nodeResponse.right.get
     }))
   }
-  
-  protected def getTokenNode(token: Token, acceptDeleted: Boolean = false)
-        (implicit log: LoggingContext): Response[Node] = {
-    getNode("accessKey", token.accessKey: java.lang.Long, MainLabel.TOKEN, None, acceptDeleted)
-  }
 
   protected def getNodeOption(nodeUUID: Option[UUID], label: Label, acceptDeleted: Boolean = false): Response[Option[Node]] = {
     if (nodeUUID.isDefined){

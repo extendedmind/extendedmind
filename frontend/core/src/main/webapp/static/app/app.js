@@ -94,7 +94,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/my/account/password', {
-      templateUrl: 'static/app/account/changePassword.html'
+      templateUrl: 'static/app/auth/changePassword.html'
     });
 
     $routeProvider.when('/my/tasks', {

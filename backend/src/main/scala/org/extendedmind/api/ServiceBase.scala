@@ -33,7 +33,8 @@ trait ServiceBase extends API with Injectable {
   implicit val implModules = configurations
   implicit val implSettings = settings
   implicit val executor = actorRefFactory.dispatcher
-
+  implicit val log = LoggingContext.fromActorRefFactory(actorRefFactory)
+  
   def authenticateAuthenticator: ExtendedMindAuthenticateUserPassAuthenticator = {
     inject[ExtendedMindAuthenticateUserPassAuthenticator](by default new ExtendedMindAuthenticateUserPassAuthenticatorImpl)
   }

@@ -38,7 +38,7 @@ object Service {
 
   def exceptionHandler(implicit log: LoggingContext): ExceptionHandler = {
     ExceptionHandler {
-      case e: TokenExpiredException => ctx => {
+      case e: InvalidAuthenticationException => ctx => {
         val currentTime = System.currentTimeMillis()
         log.error("Status code: " + Forbidden + ": " + e.description + " @" + currentTime)
         ctx.complete(Forbidden, e.description)

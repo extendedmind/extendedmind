@@ -21,7 +21,7 @@ function LoginController($location, $scope, UserSessionService, AuthenticationSe
     }, function(authenticateResponse) {
       if (authenticateResponse && (authenticateResponse.status === 404 || authenticateResponse.status === 502)){
         $scope.loginOffline = true;
-      }else if(authenticateResponse && (authenticateResponse.status === 400)){
+      }else if(authenticateResponse && (authenticateResponse.status === 403)){
         $scope.loginFailed = true;
       }
     });

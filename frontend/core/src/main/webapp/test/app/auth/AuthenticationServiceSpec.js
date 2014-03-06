@@ -13,6 +13,7 @@ describe('AuthenticationService', function() {
   var logoutResponse = getJSONFixture('logoutResponse.json');
   var inviteResponse = getJSONFixture('inviteResponse.json');
   var signUpResponse = getJSONFixture('signUpResponse.json');
+  var changePasswordResponse = getJSONFixture('passwordResponse.json');
   var inviteRequestResponse;
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
@@ -334,6 +335,17 @@ describe('AuthenticationService', function() {
       expect(promise).toEqual(false);
       expect($location.path).toHaveBeenCalledWith('/login');
     });
+  });
+
+  it('should change password', function() {
+    var email = 'example@example.com';
+    var currentPassword = 'currentPassword';
+    var newPassword = 'newPassword';
+    spyOn(BackendClientService, 'setUsernamePassword');
+
+    $httpBackend.expectPUT('/api/password', {password: newPassword}).respond(200, changePasswordResponse);
+    AuthenticationService.putChangePassword(email, currentPassword, newPassword);
+    $httpBackend.flush();
   });
 
 });

@@ -23,9 +23,9 @@ import spray.json._
 import spray.routing._
 import DefaultJsonProtocol._
 import java.lang.RuntimeException
-
 import Authentication._
 import java.util.UUID
+import spray.util.LoggingContext
 
 case class UserPassRealm(user: String, pass: String, realm: String, ownerUUID: Option[UUID])
 case class UserPassRemember(user: String, pass: String, payload: Option[AuthenticatePayload])
@@ -37,10 +37,14 @@ object Authentication{
   type UserPassRealmAuthenticator[T] = Option[UserPassRealm] => Future[Option[T]]
   type UserPassRememberAuthenticator[T] = Option[UserPassRemember] => Future[Option[T]]
 
-  def securityContextResponseToOption(response: Response[SecurityContext]): Option[SecurityContext] = {
+  def securityContextResponseToOption(response: Response[SecurityContext])(implicit log: LoggingContext): Option[SecurityContext] = {
     response match {
       case Right(sc) => Some(sc)
-      case Left(e) => processErrors(e)
+      case Left(e) => {
+        // Don't expose the internals of what went wrong for security reasons
+        logErrors(e)
+        throw new InvalidAuthenticationException("Authentication failed")
+      }
     }
   }
 }
@@ -93,7 +97,7 @@ trait ExtendedMindUserPassAuthenticator extends UserPassRealmAuthenticator[Secur
     }).future
 }
 
-class ExtendedMindUserPassAuthenticatorImpl(implicit val settings: Settings, implicit val inj: Injector)
+class ExtendedMindUserPassAuthenticatorImpl(implicit val settings: Settings, implicit val inj: Injector, implicit val log: LoggingContext)
   extends ExtendedMindUserPassAuthenticator with Injectable {
   override def db = inject[GraphDatabase]
 }
@@ -146,7 +150,7 @@ trait ExtendedMindAuthenticateUserPassAuthenticator extends UserPassRememberAuth
     }).future
 }
 
-class ExtendedMindAuthenticateUserPassAuthenticatorImpl(implicit val settings: Settings, implicit val inj: Injector)
+class ExtendedMindAuthenticateUserPassAuthenticatorImpl(implicit val settings: Settings, implicit val inj: Injector, implicit val log: LoggingContext)
   extends ExtendedMindAuthenticateUserPassAuthenticator with Injectable {
   override def db = inject[GraphDatabase]
 }

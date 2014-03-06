@@ -3,17 +3,18 @@
 describe('PasswordController', function() {
   var $httpBackend, $location, $routeParams, $scope;
   var PasswordController;
-  var AccountService, UserSessionService;
+  var AuthenticationService, UserSessionService;
+  var authenticateResponse = getJSONFixture('authenticateResponse.json');
 
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function(_$httpBackend_, _$location_, $rootScope, _$routeParams_, _AccountService_, _UserSessionService_) {
+    inject(function(_$httpBackend_, _$location_, $rootScope, _$routeParams_, _AuthenticationService_, _UserSessionService_) {
       $httpBackend = _$httpBackend_;
       $location = _$location_;
       $routeParams = _$routeParams_;
       $scope = $rootScope.$new();
-      AccountService = _AccountService_;
+      AuthenticationService = _AuthenticationService_;
       UserSessionService = _UserSessionService_;
     });
 
@@ -50,17 +51,17 @@ describe('PasswordController', function() {
       currentPassword: 'currentPassword',
       newPassword: 'newPassword'
     };
-    spyOn(AccountService, 'putChangePassword').andCallThrough();
+    spyOn(AuthenticationService, 'putChangePassword').andCallThrough();
     $httpBackend.expectPUT('/api/password').respond(200);
-
+    $httpBackend.expectPOST('/api/authenticate').respond(200, authenticateResponse);
     $scope.changePassword();
     $httpBackend.flush();
 
-    expect(AccountService.putChangePassword).toHaveBeenCalledWith(
+    expect(AuthenticationService.putChangePassword).toHaveBeenCalledWith(
       email,
       $scope.user.currentPassword,
       $scope.user.newPassword
       );
-    expect($location.path).toHaveBeenCalledWith('/login');
+    expect($location.path).toHaveBeenCalledWith('/my/account');
   });
 });

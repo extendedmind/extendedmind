@@ -1,4 +1,3 @@
-/* global angular */
 'use strict';
 
 function AuthenticationService($rootScope, $location, $q, BackendClientService, UserSessionService) {
@@ -70,7 +69,11 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     BackendClientService.hexCodeRegex.source +
     /\/reset/.source +
     /$/.source
-    );
+    ),
+  putChangePasswordRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    /password$/.source);
 
   // Register refresh credentials callback to backend
   BackendClientService.registerRefreshCredentialsCallback(verifyAndUpdateAuthentication);
@@ -101,7 +104,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
   function authenticate(remember) {
     return BackendClientService.postOnline('/api/authenticate', postAuthenticateRegexp,
       {rememberMe: remember},
-      true, [400, 404, 502]);
+      true, [403, 404, 502]);
   }
 
   function verifyAndUpdateAuthentication(online){
@@ -265,6 +268,14 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         {email: email,
          password: password}, true);
     },
+    putChangePassword: function(email, currentPassword, newPassword) {
+      return BackendClientService.putOnlineWithUsernamePassword(
+        '/api/password',
+        this.putChangePasswordRegex,
+        {password: newPassword},
+        email,
+        currentPassword);
+    },
     // Regular expressions for account requests
     acceptInviteRegex: acceptInviteRegexp,
     getInviteRegex: getInviteRegexp,
@@ -273,7 +284,8 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     postLogoutRegex: postLogoutRegexp,
     postForgotPasswordRegex: postForgotPasswordRegexp,
     getPasswordResetExpiresRegex: getPasswordResetExpiresRegexp,
-    postResetPasswordRegex: postResetPasswordRegexp
+    postResetPasswordRegex: postResetPasswordRegexp,
+    putChangePasswordRegex: putChangePasswordRegexp
   };
 }
 AuthenticationService.$inject = ['$rootScope', '$location', '$q', 'BackendClientService', 'UserSessionService'];

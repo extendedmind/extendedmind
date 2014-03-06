@@ -11,13 +11,13 @@ abstract class ExtendedMindException(description: String, throwable: Option[Thro
   }
 }
 case class InvalidParameterException(description: String, throwable: Option[Throwable] = None) extends ExtendedMindException(description, throwable)
-case class TokenExpiredException(description: String) extends ExtendedMindException(description)
+case class InvalidAuthenticationException(description: String) extends ExtendedMindException(description)
 case class InternalServerErrorException(description: String, throwable: Option[Throwable] = None) extends ExtendedMindException(description, throwable)
 
 // List of ResponseTypes
 sealed abstract class ResponseType
 case object INVALID_PARAMETER extends ResponseType
-case object TOKEN_EXPIRED extends ResponseType
+case object INVALID_AUTHENTICATION extends ResponseType
 case object INTERNAL_SERVER_ERROR extends ResponseType
 
 // Generic response
@@ -31,8 +31,8 @@ object Response{
         case INTERNAL_SERVER_ERROR => {
           throw new InternalServerErrorException(description, throwable)
         }
-        case TOKEN_EXPIRED => {
-          throw new TokenExpiredException(description)
+        case INVALID_AUTHENTICATION => {
+          throw new InvalidAuthenticationException(description)
         }
       }
     }
@@ -47,10 +47,18 @@ object Response{
     Left(List(ResponseContent(responseType, description, Some(throwable))))
   }
   
+  def logErrors(errors: List[ResponseContent])(implicit log: LoggingContext) = {
+    errors foreach (e => {
+    	val errorString = e.responseType + ": " + e.description
+    	println(errorString)
+    	log.info(errorString, e.throwable)
+      }
+    )
+  }
+  
   def processErrors(errors: List[ResponseContent])(implicit log: LoggingContext) = {
     // First log all errors
-    errors foreach (e => log.error(e.responseType + ": " + e.description, e.throwable))
-    
+    logErrors(errors)
     if (!errors.isEmpty){
       // Reject based on the first exception
       errors(0).throwRejectionError

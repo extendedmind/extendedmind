@@ -24,10 +24,17 @@ function mainViewDirective($rootScope, ModalService, BackendClientService) {
           if (promise){
             promise.resolve();
           }
-        },function(){
+        },function(error){
           $scope.retrying = false;
-          modalScope.modalSuccessText = 'retry';
-          modalScope.modalSuccessDisabled = false;
+          if (error.status === 403){
+            modalClose();
+            if (promise){
+              promise.resolve();
+            }  
+          }else{          
+            modalScope.modalSuccessText = 'retry';
+            modalScope.modalSuccessDisabled = false;
+          }
         });
       };
 

@@ -12,14 +12,6 @@ function AccountService(BackendClientService, UserSessionService) {
         return accountResponse.data;
       });
     },
-    putChangePassword: function(email, currentPassword, newPassword) {
-      return BackendClientService.putOnlineWithUsernamePassword(
-        '/api/password',
-        this.putChangePasswordRegex,
-        {password: newPassword},
-        email,
-        currentPassword);
-    },
     // Regular expressions for account requests
     getAccountRegex: new RegExp(/api\/account/.source),
     putChangePasswordRegex: new RegExp(

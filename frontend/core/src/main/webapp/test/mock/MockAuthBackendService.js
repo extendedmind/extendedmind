@@ -88,6 +88,13 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
       return expectResponse(method, url, data, headers, resetPasswordResponse, true);
     });
   }
+
+  function mockPutChangePassword(expectResponse) {
+    $httpBackend.whenPUT(AuthenticationService.putChangePasswordRegex).respond(function(method, url, data, headers) {
+      var changePasswordResponse = getJSONFixture('passwordResponse.json');
+      return expectResponse(method, url, data, headers, changePasswordResponse);
+    });
+  }
   
   return {
     mockAuthBackend: function(expectResponse) {
@@ -99,6 +106,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
       mockPostForgotPassword();
       mockGetPasswordResetExpires(expectResponse);
       mockPostResetPassword(expectResponse);
+      mockPutChangePassword(expectResponse);      
     }
   };
 }

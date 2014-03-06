@@ -62,6 +62,9 @@ function MainController($scope, $location, $timeout, $window,
         UserSessionService.setItemsSynchronizing(activeUUID);
         ItemsService.synchronize(activeUUID).then(function() {
           UserSessionService.setItemsSynchronized(activeUUID);
+        }, function(){
+          // This can happen when using from a browser
+          UserSessionService.setItemsSynchronized(activeUUID);
         });
       }
     }

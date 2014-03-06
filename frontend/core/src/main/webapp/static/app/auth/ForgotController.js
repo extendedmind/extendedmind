@@ -25,6 +25,8 @@ function ForgotController($routeParams, $scope, $location, AuthenticationService
   };
 
   $scope.sendInstructions = function(){
+    $scope.sendFailed = false;
+    $scope.sendOffline = false;
     if ($scope.user.email){
       AuthenticationService.postForgotPassword($scope.user.email).then(
         function(forgotPasswordResponse){
@@ -41,6 +43,9 @@ function ForgotController($routeParams, $scope, $location, AuthenticationService
   };
 
   $scope.resetPassword = function(){
+    $scope.resetOffline = false;
+    $scope.resetFailed = false;
+    $scope.loginFailed = false;
     if ($scope.user.password){
       AuthenticationService.postResetPassword(passwordResetCode, $scope.user.email, $scope.user.password).then(
         function(resetPasswordResponse){
@@ -50,9 +55,18 @@ function ForgotController($routeParams, $scope, $location, AuthenticationService
             $scope.resetFailed = true;
           }else if (resetPasswordResponse.data && resetPasswordResponse.data.count){
             // Authenticate using the new password
-            UserSessionService.setEmail($scope.user.email);
-            $location.path('/login');
-            $location.search({});
+            AuthenticationService.login({username:$scope.user.email, password: $scope.user.password}).then(
+              function(authenticationResponse) {
+                $location.path('/');
+                $location.search({});
+              }, function(error){
+                if (error.status === 404 || error.status === 502){
+                  $scope.resetOffline = true;
+                }else {
+                  $scope.loginFailed = true;
+                }      
+              }
+            )
           }
         }
       );
