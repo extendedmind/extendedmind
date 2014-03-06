@@ -189,12 +189,35 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         itemsResponse.notes should be (None)
         itemsResponse.lists should be (None)
         itemsResponse.tags should be (None)
-      }      
+      }
+      // Check that it succeeds again
+      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + testResponse.modified) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = entityAs[Items]
+        itemsResponse.items.get.length should be (1)
+      }
       // Check that getting with the modified value of second we get an empty list
       Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + test2Response.modified) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = entityAs[Items]
         isEmptyItems(itemsResponse) should be (true)
-      }      
+      }
+      
+      // Check that deleting the second, we get it back with deleted query
+      Delete("/" + authenticateResponse.userUUID + "/item/" + test2Response.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+    	val deleteResponse = entityAs[DeleteItemResult]
+    	deleteResponse.deleted should not be None
+      }
+      // Check that getting with the modified value of second we get the deleted item
+      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + test2Response.modified + "&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = entityAs[Items]
+        itemsResponse.items.get.length should be (1)
+        itemsResponse.items.get(0).deleted should not be None
+      }
+      // Check that we can get it again with the same modified value
+      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + test2Response.modified + "&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = entityAs[Items]
+        itemsResponse.items.get.length should be (1)
+        itemsResponse.items.get(0).deleted should not be None
+      }
     }
   }
   private def isEmptyItems(items: Items): Boolean = {

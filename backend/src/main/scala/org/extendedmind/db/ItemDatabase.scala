@@ -33,7 +33,7 @@ import spray.util.LoggingContext
 trait ItemDatabase extends AbstractGraphDatabase {
 
   // Item stays deleted for 30 days before it is destroyed
-  val DESTROY_TRESHOLD: Long = 30 * 24 * 60 * 60 * 1000
+  val DESTROY_TRESHOLD: Long = 2592000000l
   
   // PUBLIC
 
@@ -692,10 +692,11 @@ trait ItemDatabase extends AbstractGraphDatabase {
         
     val traverser = deletedItemsFromOwner.traverse(getOwnerNode(ownerNodes))
     val deletedItemList = traverser.nodes().toList
-    val count = deletedItemList.size
+    var count = 0
     val currentTime = System.currentTimeMillis()
     deletedItemList.foreach(deletedItem => {
       if (deletedItem.getProperty("deleted").asInstanceOf[Long] + DESTROY_TRESHOLD < currentTime){
+        count += 1
         destroyItem(deletedItem)
       }
     })

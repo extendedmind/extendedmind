@@ -23,13 +23,13 @@ import org.extendedmind.domain.SignUp
 trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   
   // Token is valid for twelve hours
-  val TOKEN_DURATION: Long = 12 * 60 * 60 * 1000
+  val TOKEN_DURATION: Long = 43200000
   
   // If rememberMe is set, the token can be replaced for 7 days
-  val TOKEN_REPLACEABLE: Long = 7 * 24 * 60 * 60 * 1000
+  val TOKEN_REPLACEABLE: Long = 604800000
 
   // Password reset is valid for one hour
-  val PASSWORD_RESET_DURATION: Long = 1 * 60 * 60 * 1000
+  val PASSWORD_RESET_DURATION: Long = 3600000
   
   // PUBLIC
 
