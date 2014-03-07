@@ -1,7 +1,16 @@
 <div id="taskCoreFields">
   <div ng-switch="showDate">
     <div ng-switch-default class="item-actions">
-      <span class="simple-input default-element" ng-click="focusDate()">select date...</span>
+
+      <div ng-switch="taskHasDate(task)">
+        <div ng-switch-default>
+          <span class="simple-input default-element" ng-click="focusDate()">select date...</span>
+        </div>
+        <div ng-switch-when="true">
+          <span class="simple-input default-element" ng-model="task.date" ng-click="focusDate()">{{task.date | date:'MM/dd/yyyy'}}</span>
+        </div>
+      </div>
+
     </div>
     <div ng-switch-when="true">
       <div class="form-group">
@@ -10,6 +19,7 @@
       </div>
     </div>
   </div>
+
   <div class="form-group">
     <label class="sr-only" for="taskList">list</label>
     <select class="simple-input swiper-no-swiping" id="taskList" ng-model="task.relationships.list" ng-options="list.uuid as list.title for list in lists">

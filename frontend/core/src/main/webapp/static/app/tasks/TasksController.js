@@ -20,6 +20,13 @@ function TasksController($location, $scope, $routeParams, UserSessionService, Ta
     }
   }
 
+  $scope.taskHasDate = function(task) {
+    if (task.date) {
+      return true;
+    }
+    return false;
+  };
+
   $scope.focusDate = function() {
     $scope.showDate = true;
   };
