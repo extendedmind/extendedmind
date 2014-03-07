@@ -20,7 +20,7 @@ function MockBackendService(MockListsBackendService, MockTagsBackendService, Moc
         } else if (userNamePass === 'example@example.com:examplePass') {
           response = [200, responseData];
         } else {
-          response = [400, 'Bad Request'];
+          response = [403, 'Forbidden'];
         }
       } else {
         response = [200, responseData];

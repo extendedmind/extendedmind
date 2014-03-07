@@ -21,6 +21,7 @@ function ForgotController($routeParams, $scope, $location, AuthenticationService
   };
 
   $scope.gotoLogin = function(){
+    $location.url($location.path());
     $location.path('/login');
   };
 
