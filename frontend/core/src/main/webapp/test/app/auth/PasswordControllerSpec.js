@@ -1,7 +1,7 @@
 'use strict';
 
 describe('PasswordController', function() {
-  var $httpBackend, $location, $routeParams, $scope;
+  var $controller, $httpBackend, $location, $routeParams, $scope;
   var PasswordController;
   var AuthenticationService, UserSessionService;
   var authenticateResponse = getJSONFixture('authenticateResponse.json');
@@ -9,7 +9,8 @@ describe('PasswordController', function() {
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function(_$httpBackend_, _$location_, $rootScope, _$routeParams_, _AuthenticationService_, _UserSessionService_) {
+    inject(function(_$controller_, _$httpBackend_, _$location_, $rootScope, _$routeParams_, _AuthenticationService_, _UserSessionService_) {
+      $controller = _$controller_;
       $httpBackend = _$httpBackend_;
       $location = _$location_;
       $routeParams = _$routeParams_;
@@ -18,7 +19,6 @@ describe('PasswordController', function() {
       UserSessionService = _UserSessionService_;
     });
 
-    UserSessionService.setEmail('example@example.com');
     spyOn($location, 'path');
   });
 
@@ -28,10 +28,8 @@ describe('PasswordController', function() {
   });
 
   it('should go back to \'/my/account\'', function() {
-    inject(function($controller) {
-      PasswordController = $controller('PasswordController', {
-        $scope: $scope
-      });
+    PasswordController = $controller('PasswordController', {
+      $scope: $scope
     });
 
     $scope.gotoAccountPage();
@@ -42,10 +40,9 @@ describe('PasswordController', function() {
   it('should change password', function() {
     var email = 'example@example.com';
     spyOn(UserSessionService, 'getEmail').andReturn(email);
-    inject(function($controller) {
-      PasswordController = $controller('PasswordController', {
-        $scope: $scope
-      });
+    spyOn(UserSessionService, 'setAuthenticateInformation').andReturn();
+    PasswordController = $controller('PasswordController', {
+      $scope: $scope
     });
     $scope.user = {
       currentPassword: 'currentPassword',
@@ -53,7 +50,9 @@ describe('PasswordController', function() {
     };
     spyOn(AuthenticationService, 'putChangePassword').andCallThrough();
     $httpBackend.expectPUT('/api/password').respond(200);
+    spyOn(AuthenticationService, 'login').andCallThrough();
     $httpBackend.expectPOST('/api/authenticate').respond(200, authenticateResponse);
+
     $scope.changePassword();
     $httpBackend.flush();
 
@@ -62,6 +61,14 @@ describe('PasswordController', function() {
       $scope.user.currentPassword,
       $scope.user.newPassword
       );
+
+    expect(AuthenticationService.login).toHaveBeenCalledWith({
+      username: email,
+      password: $scope.user.newPassword
+    });
+
+    expect(UserSessionService.setAuthenticateInformation).toHaveBeenCalledWith(authenticateResponse, email);
+
     expect($location.path).toHaveBeenCalledWith('/my/account');
   });
 });
