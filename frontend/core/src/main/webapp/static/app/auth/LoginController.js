@@ -6,7 +6,7 @@ function LoginController($location, $scope, UserSessionService, AuthenticationSe
   $scope.isUserEmailReadOnly = false;
 
   if (UserSessionService.getEmail()) {
-    $scope.isUserEmailEditable = true;
+    $scope.isUserEmailReadOnly = true;
     $scope.user.username = UserSessionService.getEmail();
   }
 
