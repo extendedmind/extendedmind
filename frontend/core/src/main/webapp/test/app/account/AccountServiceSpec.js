@@ -4,7 +4,7 @@ describe('AccountService', function() {
 
   // INJECTS 
   var $httpBackend;
-  var AccountService, BackendClientService, HttpClientService;
+  var AccountService, UserSessionService;
 
   // MOCKS
   var accountResponse = getJSONFixture('accountResponse.json');
@@ -13,11 +13,10 @@ describe('AccountService', function() {
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function (_$httpBackend_, _AccountService_, _BackendClientService_, _HttpClientService_) {
+    inject(function (_$httpBackend_, _AccountService_, _UserSessionService_) {
       $httpBackend = _$httpBackend_;
       AccountService = _AccountService_;
-      BackendClientService = _BackendClientService_;
-      HttpClientService = _HttpClientService_;
+      UserSessionService = _UserSessionService_;
     });
   });
 
@@ -28,14 +27,11 @@ describe('AccountService', function() {
 
   // TESTS
   it('should get account', function () {
-    var email;
+    spyOn(UserSessionService, 'setEmail');
     $httpBackend.expectGET('/api/account').respond(200, accountResponse);
     AccountService.getAccount().then(function(authenticateResponse) {
-      email = authenticateResponse.email;
+      expect(UserSessionService.setEmail).toHaveBeenCalledWith(authenticateResponse.email);
     });
     $httpBackend.flush();
-
-    expect(email).toBeDefined();
   });
-
 });
