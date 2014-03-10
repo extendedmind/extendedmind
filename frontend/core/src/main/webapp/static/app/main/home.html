@@ -1,9 +1,13 @@
 <section id="home" class="one-column-grid page" ng-controller="HomeController">
-  <div class="column">
+  <div class="snap-drawer snap-drawer-left swiper-no-swiping">
+    <span>snap</span>
+    <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus</p>
+  </div>
+  <div class="column" snap-directive ng-class="isSnapVisible">
     <header ng-hide="omniBarActive" id="main-header">
       <nav class="swiper-no-swiping" role="navigation">
         <div id="menu-icon">
-          <button id="menu-button" type="button" ng-click="toggleMenu()" alt="menu">
+          <button id="menu-button" type="button" ng-click="toggleSnap()" alt="menu">
             <span class="icon-menu"></span>
           </button>
         </div>
