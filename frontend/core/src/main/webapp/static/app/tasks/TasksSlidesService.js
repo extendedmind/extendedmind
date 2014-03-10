@@ -10,8 +10,6 @@ function TasksSlidesService() {
     DATES: 'tasks/dates',
     MENU: 'tasks/menu',
     LISTS: 'tasks/lists',
-    CONTEXTS: 'tasks/contexts',
-    SINGLE_TASKS: 'tasks/single',
 
     // Functions
     getListSlidePath: function(uuid){

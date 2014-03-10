@@ -7,7 +7,7 @@ function swiperContainerDirective(SwiperService, $rootScope) {
     scope: {
       swiperPath: '@swiperContainer',
       swiperType: '@swiperType',
-      expectedSlides: '=?expectedSlides'
+      expectedSlides: '=expectedSlides'
     },
     controller: function($scope, $element) {
       var swiperSlideInfos = [];
@@ -35,7 +35,7 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         // to decide whether events should propagate to the underlying horizontal
         // swiper or not.
         if ($scope.swiperType === 'page'){
-          // We're expecting an slide, which has "inner-slide-content-container", which has section
+          // We're expecting a slide, which has "inner-slide-content-container", which has section
           element[0].firstElementChild.firstElementChild.addEventListener('touchstart', slideTouchStart, false);
           element[0].firstElementChild.firstElementChild.addEventListener('touchmove', slideTouchMove, false);
           element[0].firstElementChild.firstElementChild.addEventListener('touchend', slideTouchEnd, false);

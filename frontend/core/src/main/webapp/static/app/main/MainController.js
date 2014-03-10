@@ -111,16 +111,32 @@ function MainController($scope, $location, $timeout, $window,
   };
 
   $scope.gotoLists = function() {
-    if ($scope.feature === 'tasks') {
-      SwiperService.swipeTo(TasksSlidesService.LISTS);
-    }else if ($scope.feature === 'notes') {
-      SwiperService.swipeTo(NotesSlidesService.LISTS);
+    if ($scope.lists.length > 0){
+      if ($scope.feature === 'tasks') {
+        SwiperService.swipeTo(TasksSlidesService.LISTS + '/' + $scope.lists[0].uuid);
+      }else if ($scope.feature === 'notes') {
+        SwiperService.swipeTo(NotesSlidesService.LISTS + '/' + $scope.lists[0].uuid);
+      }
     }
   };
 
+  $scope.gotoUncategorized = function() {
+    if ($scope.feature === 'tasks') {
+      SwiperService.swipeTo(TasksSlidesService.LISTS + '/uncategorized');
+    }else if ($scope.feature === 'notes') {
+      SwiperService.swipeTo(NotesSlidesService.LISTS + '/uncategorized');
+    }
+  }
+
   $scope.gotoContexts = function() {
     if ($scope.feature === 'tasks') {
-      SwiperService.swipeTo(TasksSlidesService.CONTEXTS);
+      // Swipe to the first context
+      for (var i=0, len=$scope.tags.length; i<len; i++) {
+        if ($scope.tags[i].tagType === 'context'){
+          SwiperService.swipeTo(TasksSlidesService.LISTS + '/' + $scope.tags[i].uuid);
+          return;
+        }
+      }
     }
   };
 }

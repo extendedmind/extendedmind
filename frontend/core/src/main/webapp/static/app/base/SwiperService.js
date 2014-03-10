@@ -103,7 +103,7 @@ function SwiperService(UserSessionService) {
       };
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
     },
-    refreshSwiper: function(swiperPath) {
+    refreshSwiper: function(swiperPath, swiperType, swiperSlidesPaths) {
       if (swipers[swiperPath]){
         delete swipers[swiperPath].swiper;
         var params = getSwiperParameters(
@@ -117,24 +117,6 @@ function SwiperService(UserSessionService) {
     onSlideChangeEnd: function(scope, swiperPath) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
       var path = UserSessionService.getOwnerPrefix() + '/' + activeSlide.getData('path');
-
-      /* TODO: Concider using something like this
-      // Use global html5Mode declaration to check how to handle route changes
-      if ((typeof html5Mode === 'undefined') || (html5Mode)){
-        if (history.pushState) {
-          // Modern browser
-          history.pushState(null, '', path);
-          executeSlideChangeCallbacks(swiperPath, path);
-        } else{
-          // Legacy browser
-          LocationService.skipReload().path(path);
-          scope.$apply();
-        }
-      }else{
-        // Phonegap
-        executeSlideChangeCallbacks(swiperPath, path);
-      }*/
-      //LocationService.skipReload().path(path);
       executeSlideChangeCallbacks(swiperPath, path);
     },
     setInitialSlidePath: function(mainSlide, pageSlide) {

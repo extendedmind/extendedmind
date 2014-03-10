@@ -31,7 +31,7 @@ function ContextsController($location, $scope, $timeout, $routeParams, UserSessi
   };
 
   $scope.goToContext = function(uuid) {
-    SwiperService.swipeTo(TasksSlidesService.CONTEXTS + '/' + uuid);
+    SwiperService.swipeTo(TasksSlidesService.LISTS + '/' + uuid);
   };
 
   $scope.addContext = function(newContext) {
@@ -39,7 +39,7 @@ function ContextsController($location, $scope, $timeout, $routeParams, UserSessi
     TagsService.saveTag(newContext, UserSessionService.getActiveUUID()).then(function(/*context*/) {
       // Using timeout 0 to make sure that DOM is ready before refreshing swiper.
       $timeout(function() {
-        SwiperService.refreshSwiper(TasksSlidesService.CONTEXTS);
+        SwiperService.refreshSwiper(TasksSlidesService.LISTS);
       });
     });
     $scope.newContext = {title: undefined};
