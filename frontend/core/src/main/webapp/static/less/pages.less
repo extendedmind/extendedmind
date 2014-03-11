@@ -1,4 +1,10 @@
 
+// COMMON
+
+section.page {
+  background: white;
+}
+
 // LOGIN / SIGNUP / LAUNCH
 
 @login-content-height: @vertical-grid*5.1;
@@ -107,7 +113,6 @@ section#signup {
 
 section#home {
   .column {
-    background: white;
   }
   header#main-header {
     min-height: @main-header-height;
@@ -129,15 +134,17 @@ section#home {
     }
     nav {
       max-width: @one-column-grid-width;
-      text-align: right;
+      // text-align: right;
       margin-right: auto;
       margin-left: auto;
       width: inherit;
     }
     button#menu-button{
       .button;
-      padding: 16px 0 16px 20px; // increased clicking area
-      margin-right: -3px; // aligns menu button to the edge of the column
+      // padding: 16px 0 16px 20px; // increased clicking area
+      padding: 16px 20px 16px 0; // increased clicking area
+      // margin-right: -3px; // aligns menu button to the edge of the column
+      margin-left: -3px; // aligns menu button to the edge of the column
     }
     button#menu-button:active{
       background-position: 0 0;
