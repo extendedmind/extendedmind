@@ -1,7 +1,7 @@
 'use strict';
 
 describe('snapDirective', function() {
-  var $element, $scope;
+  var $element, $rootScope, $scope;
   var SnapService;
 
   beforeEach(function() {
@@ -23,6 +23,7 @@ describe('snapDirective', function() {
       $element = angular.element('<div snap-directive></div>');
       $scope = _$rootScope_.$new();
       _$compile_($element)(_$rootScope_);
+      $rootScope = _$rootScope_;
     });
   });
 
@@ -35,12 +36,14 @@ describe('snapDirective', function() {
   });
 
   it('should toggle closed snapper open and enable sliding', function() {
-    expect($scope.noSwiping).toBe('');
+    expect($rootScope.noSwiping).toBe('');
+    expect($rootScope.isSnapVisible).toBe(false);
     $scope.toggleSnap();
     expect(SnapService.toggle).toHaveBeenCalled();
     expect(SnapService.enableSliding).toHaveBeenCalled();
     $scope.$apply();
 
-    expect($scope.noSwiping).toBe('swiper-no-swiping');
+    expect($rootScope.noSwiping).toBe('swiper-no-swiping');
+    expect($rootScope.isSnapVisible).toBe(true);
   });
 });
