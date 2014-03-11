@@ -73,7 +73,11 @@ var getErrorMessage = function(responseText, status) {
 
 var setQueueNumber = function(uuid) {
   $.getJSON('/api/invite/request/' + uuid).done(function(json) {
-    $('#number').html('<h1>' + (parseInt(json.queueNumber) - 1) + '</h1>');
+    if (json.queueNumber === 0){
+      $('#number').html('<h1>no</h1>');
+    }else{
+      $('#number').html('<h1>' + (parseInt(json.queueNumber) - 1) + '</h1>');
+    }
   }).fail(function(xhr, textStatus, error) {
     $('#number').html('<div class="alert">' + getErrorMessage(xhr.responseText, xhr.status) + '</div>');
   });

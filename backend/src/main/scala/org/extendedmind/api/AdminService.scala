@@ -245,6 +245,20 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
+      rebuildInviteRequestsIndex { url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[CountResult] {
+                adminActions.rebuildInviteRequestsIndex match {
+                  case Right(result) => result
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~      
       migrateToLists { ownerUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {

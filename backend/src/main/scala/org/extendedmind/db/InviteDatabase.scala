@@ -87,10 +87,10 @@ trait InviteDatabase extends UserDatabase {
   def getInviteRequestQueueNumber(inviteRequestUUID: UUID): Response[InviteRequestQueueNumber] = {
     withTx {
       implicit neo =>
-	    for {
-	      inviteRequestNode <- getNode(inviteRequestUUID, MainLabel.REQUEST).right
-	      inviteRequestQueueNumber <- getInviteRequestQueueNumber(inviteRequestNode).right
-	    } yield inviteRequestQueueNumber
+        for {
+          inviteRequestNode <- getNode(inviteRequestUUID, MainLabel.REQUEST).right
+          inviteRequestQueueNumber <- getInviteRequestQueueNumber(inviteRequestNode).right
+        } yield inviteRequestQueueNumber
     }
   }
 
@@ -162,6 +162,28 @@ trait InviteDatabase extends UserDatabase {
     }
   }
 
+  def rebuildInviteRequestsIndex: Response[CountResult] = {
+    withTx {
+      implicit neo4j =>
+        val inviteRequests = neo4j.gds.index().forNodes("inviteRequests")
+        val oldInvitesInIndex = inviteRequests.query("*:*").toList
+        oldInvitesInIndex.foreach(inviteRequestNode => {
+          inviteRequests.remove(inviteRequestNode)
+        })
+
+        // Add all back to index
+        val inviteRequestNodes = findNodesByLabel(MainLabel.REQUEST)
+        var count = 0
+        inviteRequestNodes.foreach(inviteRequestNode => {
+          if (inviteRequestNode.getRelationships().toList.isEmpty) {
+            createInviteRequestModifiedIndex(inviteRequestNode)
+            count += 1
+          }
+        })
+        Right(CountResult(count))
+    }
+  }
+
   // PRIVATE
 
   protected def createInviteRequestInformation(inviteRequest: InviteRequest): Response[(InviteRequestResultType, Node, Option[Int])] = {
@@ -186,7 +208,6 @@ trait InviteDatabase extends UserDatabase {
 
         // Need to create a new invite request
         val inviteRequestResponse = createInviteRequest(inviteRequest)
-        println("created")
         if (inviteRequestResponse.isLeft) Left(inviteRequestResponse.left.get)
         else {
           val inviteRequestQueueNumberResponse = getInviteRequestQueueNumber(inviteRequestResponse.right.get)
@@ -201,6 +222,7 @@ trait InviteDatabase extends UserDatabase {
   protected def createInviteRequest(inviteRequest: InviteRequest): Response[Node] = {
     withTx {
       implicit neo =>
+
         Right(createNode(inviteRequest, MainLabel.REQUEST))
     }
   }

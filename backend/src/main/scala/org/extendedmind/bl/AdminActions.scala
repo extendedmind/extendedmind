@@ -19,6 +19,11 @@ trait AdminActions {
     db.rebuildUserIndexes
   }
   
+  def rebuildInviteRequestsIndex()(implicit log: LoggingContext): Response[CountResult] = {
+    log.info("rebuildInvitesIndex")
+    db.rebuildInviteRequestsIndex
+  }
+  
   def resetTokens()(implicit log: LoggingContext): Response[CountResult] = {
     log.info("resetTokens")
     db.destroyAllTokens
