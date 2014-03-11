@@ -13,6 +13,7 @@
     "FastClick"         : false,
     "html5Mode"         : false,
     "newDayTimer"       : false,
+    "Snap"              : false,
     "Swiper"            : false,
     "urlPrefix"         : false
   },
