@@ -1,11 +1,13 @@
 'use strict';
 
-function snapDirective(SnapService) {
+function snapDirective($rootScope, SnapService) {
   return {
     restrict: 'A',
     link: function($scope, $element) {
       SnapService.createSnapper($element[0]);
       SnapService.disableSliding();
+      $rootScope.noSwiping = '';
+      $rootScope.isSnapVisible = false;
 
       SnapService.registerOpenCallback(snapperOpened);
       SnapService.registerCloseCallback(snapperClosed);
@@ -13,16 +15,18 @@ function snapDirective(SnapService) {
 
       function snapperOpened() {
         SnapService.enableSliding().then(function() {
-          $scope.isSnapVisible = 'swiper-no-swiping';
+          $rootScope.isSnapVisible = true;
+          $rootScope.noSwiping = 'swiper-no-swiping';
         });
       }
       function snapperClosed() {
         SnapService.disableSliding().then(function() {
-          $scope.isSnapVisible = '';
+          $rootScope.noSwiping = '';
         });
       }
       function snapperAnimated(snap) {
         if(snap.state().state === 'closed') {
+          $rootScope.isSnapVisible = false;
           snapperClosed();
         }
       }
@@ -33,5 +37,5 @@ function snapDirective(SnapService) {
     }
   };
 }
-snapDirective.$inject = ['SnapService'];
+snapDirective.$inject = ['$rootScope', 'SnapService'];
 angular.module('em.directives').directive('snapDirective', snapDirective);

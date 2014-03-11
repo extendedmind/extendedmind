@@ -35,12 +35,12 @@ describe('snapDirective', function() {
   });
 
   it('should toggle closed snapper open and enable sliding', function() {
-    expect($scope.isSnapVisible).toBeUndefined();
+    expect($scope.noSwiping).toBe('');
     $scope.toggleSnap();
     expect(SnapService.toggle).toHaveBeenCalled();
     expect(SnapService.enableSliding).toHaveBeenCalled();
     $scope.$apply();
 
-    expect($scope.isSnapVisible).toBe('swiper-no-swiping');
+    expect($scope.noSwiping).toBe('swiper-no-swiping');
   });
 });
