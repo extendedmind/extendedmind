@@ -2,6 +2,7 @@
 
 function SnapService($q) {
   var snapper;
+
   return {
     createSnapper: function(element) {
       snapper = new Snap({
@@ -38,6 +39,5 @@ function SnapService($q) {
     }
   };
 }
-
 SnapService.$inject = ['$q'];
 angular.module('common').factory('SnapService', SnapService);
