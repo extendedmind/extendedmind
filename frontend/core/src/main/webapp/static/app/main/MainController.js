@@ -126,7 +126,7 @@ function MainController($scope, $location, $timeout, $window,
     }else if ($scope.feature === 'notes') {
       SwiperService.swipeTo(NotesSlidesService.LISTS + '/uncategorized');
     }
-  }
+  };
 
   $scope.gotoContexts = function() {
     if ($scope.feature === 'tasks') {
