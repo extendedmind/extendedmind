@@ -17,20 +17,22 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         $scope.expectedSlides = expectedSlides;
       };
 
+      // Listen touch events on slide and set outerSwiping flag on to prevent clickable elements' click event.
+      $element[0].addEventListener('touchstart', swipeTouchStart, false);
+      $element[0].addEventListener('touchmove', swipeTouchMove, false);
+      $element[0].addEventListener('touchend', swipeTouchEnd, false);
+
       // Registers the path of the slide to the swiper
       // and sets up listeners for element, if needed
       this.registerSlide = function(path, element, index) {
         // Slides from DOM (AngularJS directive) are not necessarily registered in desired order.
         // Slide array of objects is sorted later, during swiper initialization.
-        if (index || index === 0) {
-          swiperSlideInfos.push({slidePath: path, slideIndex: index});
-        } else {
-          // Re-init slide info array for new slide set, eg. date slides.
-          if (swiperSlideInfos.length >= $scope.expectedSlides) {
-            swiperSlideInfos.length = 0;
-          }
-          swiperSlideInfos.push(path);
+        if (slideInfosHasIndex(index)){
+          // Re-init slide info array, because this is a new call
+          swiperSlideInfos.length = 0;
         }
+        swiperSlideInfos.push({slidePath: path, slideIndex: index, slideElement: element});
+
         // For vertical page outerSwiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal
         // swiper or not.
@@ -42,11 +44,6 @@ function swiperContainerDirective(SwiperService, $rootScope) {
           element[0].firstElementChild.firstElementChild.addEventListener('scroll', slideScroll, false);
         }
 
-        // Listen touch events on slide and set outerSwiping flag on to prevent clickable elements' click event.
-        element[0].addEventListener('touchstart', swipeTouchStart, false);
-        element[0].addEventListener('touchmove', swipeTouchMove, false);
-        element[0].addEventListener('touchend', swipeTouchEnd, false);
-        
         // (Re)inializes the swiper after the digest to make sure the whole
         // DOM is ready before this is done. Otherwise Swiper does not register
         // the slides. It is in the registerSlide function to prevent the DOM 
@@ -60,13 +57,12 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         // http://stackoverflow.com/a/17303759/2659424
         if (!initializeSwiperCalled){
           if ($scope.expectedSlides === swiperSlideInfos.length){
-            sortAndFlattenSlideInfos();
-
+            var slides = sortAndFlattenSlideInfos();
             SwiperService.initializeSwiper(
               $element[0],
               $scope.swiperPath,
               $scope.swiperType,
-              swiperSlideInfos,
+              slides,
               onSlideChangeEndCallback);
             initializeSwiperCalled = true;
           }
@@ -77,9 +73,18 @@ function swiperContainerDirective(SwiperService, $rootScope) {
             swiperSlideInfos.sort(function(a, b) {
               return a.slideIndex - b.slideIndex;
             });
+            var slides = [];
             // flatten
             for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
-              swiperSlideInfos[i] = swiperSlideInfos[i].slidePath;
+              slides.push(swiperSlideInfos[i].slidePath);
+            }
+            return slides;
+          }
+        }
+        function slideInfosHasIndex(index) {
+          for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
+            if (swiperSlideInfos.slideIndex === index){
+              return true;
             }
           }
         }
@@ -213,6 +218,23 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         }, 100);
         return false;
       }
+
+      // Unbind all listeners
+      $scope.$on('$destroy', function() {
+        $element[0].removeEventListener('touchstart', swipeTouchStart, false);
+        $element[0].removeEventListener('touchmove', swipeTouchMove, false);
+        $element[0].removeEventListener('touchend', swipeTouchEnd, false);
+        
+        if ($scope.swiperType === 'page'){
+          for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
+            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchstart', slideTouchStart, false);
+            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchmove', slideTouchMove, false);
+            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchend', slideTouchEnd, false);
+            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('scroll', slideScroll, false);
+          }
+        }
+      });
+
     }
   };
 }
