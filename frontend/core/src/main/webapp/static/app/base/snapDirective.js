@@ -30,10 +30,6 @@ function snapDirective($rootScope, SnapService) {
           snapperClosed();
         }
       }
-
-      $scope.toggleSnap = function toggleSnap() {
-        SnapService.toggle();
-      };
     }
   };
 }
