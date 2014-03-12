@@ -26,7 +26,7 @@
         <section ng-init="newContext={title:undefined, tagType:'context'}" ng-controller="ContextsController">
           <h3><a href ng-click="gotoContexts()" class="page-header">contexts</a></h3>
           <ul class="indent list-arrow-right">
-            <li ng-show="contexts.length" ng-repeat="context in contexts = (tags | filter:{tagType:'context'})">
+            <li ng-show="contexts.length" ng-repeat="context in contexts">
               <a class="click-to-slide" href ng-click="goToContext(context.uuid)">
                 <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right"></span>
               </a>

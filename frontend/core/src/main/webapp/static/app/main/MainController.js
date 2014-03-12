@@ -5,7 +5,7 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection. 
 function MainController(
-  $scope, $location, $rootScope, $timeout, $window,
+  $scope, $location, $rootScope, $timeout, $window, $filter,
   UserSessionService, BackendClientService, ItemsService, ListsService,
   TagsService, TasksService, NotesService, FilterService, SwiperService,
   TasksSlidesService, NotesSlidesService) {
@@ -15,6 +15,11 @@ function MainController(
   $scope.notes = NotesService.getNotes(UserSessionService.getActiveUUID());
   $scope.lists = ListsService.getLists(UserSessionService.getActiveUUID());
   $scope.tags = TagsService.getTags(UserSessionService.getActiveUUID());
+
+  $scope.$watch('tags.length', function(newValue, oldValue) {
+    $scope.contexts = $filter('filter')($scope.tags, {tagType:'context'});
+  });
+
   $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
 
@@ -160,7 +165,7 @@ function MainController(
 }
 
 MainController.$inject = [
-'$scope', '$location', '$rootScope', '$timeout', '$window',
+'$scope', '$location', '$rootScope', '$timeout', '$window', '$filter',
 'UserSessionService', 'BackendClientService', 'ItemsService', 'ListsService',
 'TagsService', 'TasksService', 'NotesService', 'FilterService', 'SwiperService',
 'TasksSlidesService', 'NotesSlidesService'

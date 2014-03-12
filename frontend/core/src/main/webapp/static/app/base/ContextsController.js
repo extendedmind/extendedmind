@@ -39,7 +39,7 @@ function ContextsController($location, $scope, $timeout, $routeParams, UserSessi
     TagsService.saveTag(newContext, UserSessionService.getActiveUUID()).then(function(/*context*/) {
       // TODO something
     });
-    $scope.newContext = {title: undefined};
+    $scope.newContext = {title: undefined, tagType: 'context'};
   };
 }
 
