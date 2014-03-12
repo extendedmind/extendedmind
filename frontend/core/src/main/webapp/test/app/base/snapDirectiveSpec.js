@@ -34,16 +34,4 @@ describe('snapDirective', function() {
     expect(SnapService.registerCloseCallback).toHaveBeenCalledWith(jasmine.any(Function));
     expect(SnapService.registerAnimatedCallback).toHaveBeenCalledWith(jasmine.any(Function));
   });
-
-  it('should toggle closed snapper open and enable sliding', function() {
-    expect($rootScope.noSwiping).toBe('');
-    expect($rootScope.isSnapVisible).toBe(false);
-    $scope.toggleSnap();
-    expect(SnapService.toggle).toHaveBeenCalled();
-    expect(SnapService.enableSliding).toHaveBeenCalled();
-    $scope.$apply();
-
-    expect($rootScope.noSwiping).toBe('swiper-no-swiping');
-    expect($rootScope.isSnapVisible).toBe(true);
-  });
 });
