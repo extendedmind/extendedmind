@@ -1,14 +1,14 @@
-/* global angular, bindToFocusEvent */
 'use strict';
 
 // Controller for all main slides
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection. 
-function MainController($scope, $location, $timeout, $window,
-                        UserSessionService, BackendClientService, ItemsService, ListsService,
-                        TagsService, TasksService, NotesService, FilterService, SwiperService,
-                        TasksSlidesService, NotesSlidesService) {
+function MainController(
+  $scope, $location, $rootScope, $timeout, $window,
+  UserSessionService, BackendClientService, ItemsService, ListsService,
+  TagsService, TasksService, NotesService, FilterService, SwiperService,
+  TasksSlidesService, NotesSlidesService) {
   // Data arrays 
   $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
@@ -35,6 +35,23 @@ function MainController($scope, $location, $timeout, $window,
     angular.element($window).bind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
     angular.element($window).bind('blur', cancelSynchronizeItemsDelayed);
   }
+
+  function setMobileOrDesktop(width) {
+    if (width <= 480) {
+      $rootScope.isDesktop = false;
+      $rootScope.isMobile = true;
+    } else {
+      $rootScope.isMobile = false;
+      $rootScope.isDesktop = true;
+    }
+  }
+  setMobileOrDesktop($window.innerWidth);
+
+  function windowResized() {
+    setMobileOrDesktop($window.innerWidth);
+  }
+
+  angular.element($window).bind('resize', windowResized);
 
   function synchronizeItemsAndSynchronizeItemsDelayed() {
     synchronizeItems();
@@ -76,6 +93,7 @@ function MainController($scope, $location, $timeout, $window,
       angular.element($window).unbind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
       angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
     }
+    angular.element($window).unbind('resize', windowResized);
   });
 
   $scope.gotoInbox = function() {
@@ -141,10 +159,10 @@ function MainController($scope, $location, $timeout, $window,
   };
 }
 
-MainController.$inject = ['$scope', '$location', '$timeout', '$window',
-                             'UserSessionService', 'BackendClientService', 'ItemsService', 'ListsService',
-                             'TagsService', 'TasksService', 'NotesService',
-                             'FilterService', 'SwiperService', 'TasksSlidesService',
-                             'NotesSlidesService'
-                            ];
+MainController.$inject = [
+'$scope', '$location', '$rootScope', '$timeout', '$window',
+'UserSessionService', 'BackendClientService', 'ItemsService', 'ListsService',
+'TagsService', 'TasksService', 'NotesService', 'FilterService', 'SwiperService',
+'TasksSlidesService', 'NotesSlidesService'
+];
 angular.module('em.app').controller('MainController', MainController);
