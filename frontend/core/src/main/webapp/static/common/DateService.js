@@ -123,14 +123,14 @@ function DateService($interval, $timeout) {
     },
 
     // getters
-    getMondayDateString: function() {
-      return (activeWeek) ? activeWeek[0].yyyymmdd : yyyymmdd(getFirstDayOfTheWeek(new Date()));
+    getMondayDate: function() {
+      return (activeWeek) ? activeWeek[0] : getFirstDayOfTheWeek(new Date());
     },
-    getTodayDateString: function() {
+    getTodayDate: function() {
       if (activeWeek) {
         for (var i = 0, len = activeWeek.length; i < len; i++) {
           if (activeWeek[i].yyyymmdd === today.yyyymmdd) {
-            return activeWeek[i].yyyymmdd;
+            return activeWeek[i];
           }
         }
       }

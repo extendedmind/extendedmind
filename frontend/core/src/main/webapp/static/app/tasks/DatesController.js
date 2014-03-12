@@ -7,11 +7,7 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
   DateService.registerDayChangeCallback(dayChangeCallback);
   function dayChangeCallback() {
     $scope.dates = DateService.activeWeek();
-    activeDay = DateService.getTodayDateString() || DateService.getMondayDateString();
-
-    $timeout(function() {
-      SwiperService.swipePageSlide(TasksSlidesService.getDateSlidePath(activeDay));
-    });
+    swipeToStartingDay();
   }
   $scope.$on('destroy', function() {
     DateService.removeDayChangeCallback();
@@ -27,7 +23,7 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
 
   // invoke function during compile and $scope.$apply();
   function swipeToStartingDay() {
-    activeDay = DateService.getTodayDateString() || DateService.getMondayDateString();
+    activeDay = DateService.getTodayDate() || DateService.getMondayDate();
 
     $timeout(function() {
       SwiperService.swipePageSlide(TasksSlidesService.getDateSlidePath(activeDay));
@@ -51,11 +47,11 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
   };
 
   // http://coder1.com/articles/angularjs-managing-active-nav-elements
-  $scope.isDayActive = function(dateString) {
-    if (activeDaySlidePath && (activeDaySlidePath.indexOf(dateString) !== -1)) {
-      activeDay = dateString;
+  $scope.isDayActive = function(date) {
+    if (activeDaySlidePath && (activeDaySlidePath.indexOf(date.weekday) !== -1)) {
+      activeDay = date;
     }
-    return activeDay === dateString;
+    return activeDay === date;
   };
 
   $scope.visibleDateFormat = function(date) {

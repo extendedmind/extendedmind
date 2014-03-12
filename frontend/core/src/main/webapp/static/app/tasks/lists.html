@@ -2,7 +2,7 @@
   <div class="column">
     <header id="tasks-lists-header" class="page-header" ng-init="heading='lists'" ng-include="'static/app/base/pageHeader.html'"></header>
     <div id="tasks-lists-page-content-container" class="content-container page-content-container" ng-init="contexts = (tags | filter:{tagType:'context'})">
-      <div class="swiper-container vertical-slides" swiper-container="tasks/lists" swiper-type="page" expected-slides="lists.length + contexts.length + 1">
+      <div class="swiper-container vertical-slides" swiper-container="tasks/lists" swiper-type="page" expected-slides="count = lists.length + contexts.length + 1">
         <div class="swiper-wrapper">
           <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="tasks/lists/{{list.uuid}}" slide-index="$index" ng-init="subtask = {relationships: {list: list.uuid}}">
             <div class="inner-slide-content-container">

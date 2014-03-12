@@ -7,42 +7,45 @@ function swiperContainerDirective(SwiperService, $rootScope) {
     scope: {
       swiperPath: '@swiperContainer',
       swiperType: '@swiperType',
-      expectedSlides: '=expectedSlides'
+      expectedSlidesFn: '&expectedSlides'
     },
     controller: function($scope, $element) {
       var swiperSlideInfos = [];
       var initializeSwiperCalled = false;
 
-      this.setExpectedSlides = function(expectedSlides){
-        $scope.expectedSlides = expectedSlides;
-      };
+      $scope.expectedSlides = $scope.expectedSlidesFn();
 
       // Listen touch events on slide and set outerSwiping flag on to prevent clickable elements' click event.
       $element[0].addEventListener('touchstart', swipeTouchStart, false);
       $element[0].addEventListener('touchmove', swipeTouchMove, false);
       $element[0].addEventListener('touchend', swipeTouchEnd, false);
 
-      // Registers the path of the slide to the swiper
-      // and sets up listeners for element, if needed
-      this.registerSlide = function(path, element, index) {
-        // Slides from DOM (AngularJS directive) are not necessarily registered in desired order.
-        // Slide array of objects is sorted later, during swiper initialization.
-        if (slideInfosHasIndex(index)){
-          // Re-init slide info array, because this is a new call
-          swiperSlideInfos.length = 0;
+      function sortAndFlattenSlideInfos() {
+        // does array contain slide objects
+        if (swiperSlideInfos[0].slidePath) {
+          swiperSlideInfos.sort(function(a, b) {
+            return a.slideIndex - b.slideIndex;
+          });
+          var slides = [];
+          // flatten
+          for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
+            slides.push(swiperSlideInfos[i].slidePath);
+          }
+          return slides;
         }
-        swiperSlideInfos.push({slidePath: path, slideIndex: index, slideElement: element});
+      }
 
-        // For vertical page outerSwiping, we need to the register touch elements
-        // to decide whether events should propagate to the underlying horizontal
-        // swiper or not.
-        if ($scope.swiperType === 'page'){
-          // We're expecting a slide, which has "inner-slide-content-container", which has section
-          element[0].firstElementChild.firstElementChild.addEventListener('touchstart', slideTouchStart, false);
-          element[0].firstElementChild.firstElementChild.addEventListener('touchmove', slideTouchMove, false);
-          element[0].firstElementChild.firstElementChild.addEventListener('touchend', slideTouchEnd, false);
-          element[0].firstElementChild.firstElementChild.addEventListener('scroll', slideScroll, false);
+      function getSlideInfosIndex(path) {
+        for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
+          if (swiperSlideInfos[i].slidePath === path){
+            return i;
+          }
         }
+      }
+
+      function updateSwiper(){
+        // Re-evaluate expected slides, in case it is a function
+        $scope.expectedSlides = $scope.expectedSlidesFn();
 
         // (Re)inializes the swiper after the digest to make sure the whole
         // DOM is ready before this is done. Otherwise Swiper does not register
@@ -65,30 +68,46 @@ function swiperContainerDirective(SwiperService, $rootScope) {
               slides,
               onSlideChangeEndCallback);
             initializeSwiperCalled = true;
-          }else {
+          }else if (slidesUpdated) {
             SwiperService.refreshSwiper($scope.swiperPath, slides);
           }
         }
-        function sortAndFlattenSlideInfos() {
-          // does array contain slide objects
-          if (swiperSlideInfos[0].slidePath) {
-            swiperSlideInfos.sort(function(a, b) {
-              return a.slideIndex - b.slideIndex;
-            });
-            var slides = [];
-            // flatten
-            for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
-              slides.push(swiperSlideInfos[i].slidePath);
-            }
-            return slides;
-          }
+      }
+
+      // Registers the path of the slide to the swiper
+      // and sets up listeners for element, if needed
+      this.registerSlide = function(path, element, index) {
+        // For vertical page outerSwiping, we need to the register touch elements
+        // to decide whether events should propagate to the underlying horizontal
+        // swiper or not.
+        if ($scope.swiperType === 'page'){
+          // We're expecting a slide, which has "inner-slide-content-container", which has section
+          element[0].firstElementChild.firstElementChild.addEventListener('touchstart', slideTouchStart, false);
+          element[0].firstElementChild.firstElementChild.addEventListener('touchmove', slideTouchMove, false);
+          element[0].firstElementChild.firstElementChild.addEventListener('touchend', slideTouchEnd, false);
+          element[0].firstElementChild.firstElementChild.addEventListener('scroll', slideScroll, false);
         }
-        function slideInfosHasIndex(index) {
-          for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
-            if (swiperSlideInfos[i].slideIndex === index){
-              return true;
-            }
-          }
+
+        // Slides from DOM (AngularJS directive) are not necessarily registered in desired order.
+        // Slide array of objects is sorted later, during swiper initialization.
+        var slideInfo = {slidePath: path, slideIndex: index, slideElement: element};
+        var oldSlideInfosIndex = undefined;
+        if (initializeSwiperCalled) {
+          oldSlideInfosIndex = getSlideInfosIndex(path);
+        }
+        if (oldSlideInfosIndex === undefined){
+          swiperSlideInfos.push(slideInfo);
+        }else{
+          swiperSlideInfos[oldSlideInfosIndex] = slideInfo;
+        }
+        updateSwiper();
+      };
+
+      this.unregisterSlide = function(path) {
+        var slideInfosIndex = getSlideInfosIndex(path);
+        if (slideInfosIndex !== undefined){
+          swiperSlideInfos.splice(slideInfosIndex, 1);
+          updateSwiper();
         }
       };
 

@@ -13,6 +13,9 @@ function swiperSlideDirective() {
     },
     link: function(scope, element, attrs, swiperContainerDirectiveController) {
       swiperContainerDirectiveController.registerSlide(scope.slidePath, element, scope.slideIndex);
+      scope.$on('$destroy', function() {
+        swiperContainerDirectiveController.unregisterSlide(scope.slidePath);
+      });
     }
   };
 }

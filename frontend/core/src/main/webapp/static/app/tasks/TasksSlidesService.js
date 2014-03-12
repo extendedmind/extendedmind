@@ -16,8 +16,8 @@ function TasksSlidesService() {
       return this.LISTS + '/' + uuid;
     },
 
-    getDateSlidePath: function(dateString){
-      return this.DATES + '/' + dateString;
+    getDateSlidePath: function(activeDay){
+      return this.DATES + '/' + activeDay.weekday;
     }
   };
 }
