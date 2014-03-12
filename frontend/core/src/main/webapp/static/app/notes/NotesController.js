@@ -68,10 +68,7 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
   $scope.newList = {title: undefined};
   $scope.addList = function(newList) {
     ListsService.saveList(newList, UserSessionService.getActiveUUID()).then(function(/*list*/) {
-      // Using timeout 0 to make sure that DOM is ready before refreshing swiper.
-      $timeout(function() {
-        SwiperService.refreshSwiper(NotesSlidesService.LISTS);
-      });
+      // TODO
     });
     $scope.newList = {title: undefined};
   };

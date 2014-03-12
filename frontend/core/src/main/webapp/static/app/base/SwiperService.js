@@ -2,7 +2,7 @@
 
 // iDangero.us Swiper Service       
 // http://www.idangero.us/sliders/swiper/api.php
-function SwiperService(UserSessionService) {
+function SwiperService($q, UserSessionService) {
 
   // Holds reference to all the swipers and their respective paths
   var swipers = {};
@@ -39,6 +39,22 @@ function SwiperService(UserSessionService) {
     }
   };
 
+  var getInitialSlideIndex = function(swiperType, swiperSlidesPaths){
+    var initialSlideIndex = 0;
+    if (swiperType === 'main'){
+      var mainSlideIndex = getSlideIndexBySlidePath(initialMainSlidePath, swiperSlidesPaths);
+      if (mainSlideIndex !== undefined){
+        initialSlideIndex = mainSlideIndex;
+      }
+    }else if (swiperType === 'main'){
+      var pageSlideIndex = getSlideIndexBySlidePath(initialPageSlidePath, swiperSlidesPaths);
+      if (pageSlideIndex !== undefined){
+        initialSlideIndex = pageSlideIndex;
+      }
+    }
+    return initialSlideIndex;
+  };
+
   var getSwiperParameters = function(swiperType, swiperSlidesPaths, onSlideChangeEndCallback) {
     var swiperParams = {
       noSwiping: true,
@@ -48,23 +64,11 @@ function SwiperService(UserSessionService) {
       onSlideChangeEnd: onSlideChangeEndCallback
     };
     
+    swiperParams.initialSlide = getInitialSlideIndex(swiperType, swiperSlidesPaths);
     if (swiperType === 'main'){
       swiperParams.mode = 'horizontal';
-      var mainSlideIndex = getSlideIndexBySlidePath(initialMainSlidePath, swiperSlidesPaths);
-
-      if (mainSlideIndex !== undefined){
-        swiperParams.initialSlide = mainSlideIndex;
-      }else {
-        swiperParams.initialSlide = 1;
-      }
     } else if (swiperType === 'page'){
       swiperParams.mode = 'vertical';
-      var pageSlideIndex = getSlideIndexBySlidePath(initialPageSlidePath, swiperSlidesPaths);
-      if (pageSlideIndex !== undefined){
-        swiperParams.initialSlide = pageSlideIndex;
-      }else {
-        swiperParams.initialSlide = 0;
-      }
     }
     return swiperParams;
   };
@@ -103,15 +107,14 @@ function SwiperService(UserSessionService) {
       };
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
     },
-    refreshSwiper: function(swiperPath, swiperType, swiperSlidesPaths) {
+    refreshSwiper: function(swiperPath, swiperSlidesPaths) {
       if (swipers[swiperPath]){
-        delete swipers[swiperPath].swiper;
-        var params = getSwiperParameters(
-          swipers[swiperPath].swiperType,
-          swipers[swiperPath].slidesPaths,
-          swipers[swiperPath].callback);
-        swipers[swiperPath].swiper = new Swiper(swipers[swiperPath].container, params);
-        setPathsToSlides(swipers[swiperPath], swipers[swiperPath].slidesPaths);
+        // Set initial slide path
+        swipers[swiperPath].swiper.params.initialSlide = getInitialSlideIndex(swipers[swiperPath].swiperType, swiperSlidesPaths);
+        swipers[swiperPath].slidesPaths = swiperSlidesPaths;
+        $q.when(swipers[swiperPath].swiper.reInit()).then(function(){
+          setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
+        });
       }
     },
     onSlideChangeEnd: function(scope, swiperPath) {
@@ -146,7 +149,7 @@ function SwiperService(UserSessionService) {
 
       if (swiperInfos.page) {
         var pageSwiperIndex = swiperInfos.page.slidesPaths.indexOf(slidePath);
-        if (pageSwiperIndex !== undefined){
+        if (pageSwiperIndex !== -1){
           swiperInfos.page.swiper.swipeTo(pageSwiperIndex);
         }
       }
@@ -177,5 +180,5 @@ function SwiperService(UserSessionService) {
     }
   };
 }
-SwiperService['$inject'] = ['UserSessionService'];
+SwiperService['$inject'] = ['$q', 'UserSessionService'];
 angular.module('em.services').factory('SwiperService', SwiperService);

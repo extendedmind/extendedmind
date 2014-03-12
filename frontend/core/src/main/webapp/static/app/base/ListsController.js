@@ -37,10 +37,7 @@ function ListsController($location, $scope, $timeout, $routeParams, UserSessionS
   $scope.addList = function(newList) {
     if (!newList.title  || newList.title.length === 0) return false;
     ListsService.saveList(newList, UserSessionService.getActiveUUID()).then(function(/*list*/) {
-      // Using timeout 0 to make sure that DOM is ready before refreshing swiper.
-      $timeout(function() {
-        SwiperService.refreshSwiper(TasksSlidesService.LISTS);
-      });
+      // TODO
     });
     $scope.newList = {title: undefined};
   };

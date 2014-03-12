@@ -37,10 +37,7 @@ function ContextsController($location, $scope, $timeout, $routeParams, UserSessi
   $scope.addContext = function(newContext) {
     if (!newContext.title  || newContext.title.length === 0) return false;
     TagsService.saveTag(newContext, UserSessionService.getActiveUUID()).then(function(/*context*/) {
-      // Using timeout 0 to make sure that DOM is ready before refreshing swiper.
-      $timeout(function() {
-        SwiperService.refreshSwiper(TasksSlidesService.LISTS);
-      });
+      // TODO something
     });
     $scope.newContext = {title: undefined};
   };

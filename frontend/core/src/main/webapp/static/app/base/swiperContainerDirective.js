@@ -55,9 +55,9 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         // is fired. Using $timeout causes flickering and slows down everything.
         // https://groups.google.com/forum/#!topic/angular/SCc45uVhTt9
         // http://stackoverflow.com/a/17303759/2659424
-        if (!initializeSwiperCalled){
-          if ($scope.expectedSlides === swiperSlideInfos.length){
-            var slides = sortAndFlattenSlideInfos();
+        if ($scope.expectedSlides === swiperSlideInfos.length){
+          var slides = sortAndFlattenSlideInfos();
+          if (!initializeSwiperCalled){
             SwiperService.initializeSwiper(
               $element[0],
               $scope.swiperPath,
@@ -65,6 +65,8 @@ function swiperContainerDirective(SwiperService, $rootScope) {
               slides,
               onSlideChangeEndCallback);
             initializeSwiperCalled = true;
+          }else {
+            SwiperService.refreshSwiper($scope.swiperPath, slides);
           }
         }
         function sortAndFlattenSlideInfos() {
@@ -83,7 +85,7 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         }
         function slideInfosHasIndex(index) {
           for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
-            if (swiperSlideInfos.slideIndex === index){
+            if (swiperSlideInfos[i].slideIndex === index){
               return true;
             }
           }

@@ -10,7 +10,6 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
     activeDay = DateService.getTodayDateString() || DateService.getMondayDateString();
 
     $timeout(function() {
-      SwiperService.refreshSwiper(TasksSlidesService.DATES);
       SwiperService.swipePageSlide(TasksSlidesService.getDateSlidePath(activeDay));
     });
   }
@@ -27,31 +26,23 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
   }
 
   // invoke function during compile and $scope.$apply();
-  (function swipeToStartingDay() {
+  function swipeToStartingDay() {
     activeDay = DateService.getTodayDateString() || DateService.getMondayDateString();
 
     $timeout(function() {
       SwiperService.swipePageSlide(TasksSlidesService.getDateSlidePath(activeDay));
     });
-  })();
-
-  function swipeToMonday() {
-    activeDay = DateService.getMondayDateString();
-
-    $timeout(function() {
-      SwiperService.refreshSwiper(TasksSlidesService.DATES);
-      SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(activeDay));
-    });
-  }
+  };
+  swipeToStartingDay();
 
   $scope.previousWeek = function() {
     $scope.dates = DateService.previousWeek();
-    swipeToMonday();
+    swipeToStartingDay();
   };
 
   $scope.nextWeek = function() {
     $scope.dates = DateService.nextWeek();
-    swipeToMonday();
+    swipeToStartingDay();
   };
 
   $scope.dateClicked = function(dateString) {
