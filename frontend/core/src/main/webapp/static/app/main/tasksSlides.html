@@ -1,4 +1,4 @@
-<div ng-include="'static/app/main/drawer.html'"></div>
+<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" id="drawer" class="snap-drawer snap-drawer-left" ng-show="isSnapVisible"></div>
 <div class="slides-container" ng-init="feature='tasks'" ng-controller="MainController" snap-directive>
   <!-- TODO: use ng-if with expected-slides="tasks.length > 0 && 6 || 2" -->
   <div class="swiper-container main-slides" swiper-container="tasks" swiper-type="main" expected-slides="5">

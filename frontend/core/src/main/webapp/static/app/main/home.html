@@ -3,10 +3,11 @@
     <header ng-hide="omniBarActive" id="main-header">
       <nav class="swiper-no-swiping" role="navigation">
         <div id="menu-icon">
-          <button id="menu-button" type="button" ng-click="toggleSnap()" alt="menu">
+          <button id="menu-button" type="button" ng-click="toggleMenu()" alt="menu">
             <span class="icon-menu"></span>
           </button>
         </div>
+        <div ng-if="isDesktop && isMenuOpen" ng-include="'static/app/auth/menu.html'"></div>
       </nav>
     </header>
     <div id="main-content-container" class="content-container">
