@@ -7,7 +7,7 @@ function DateService($interval, $timeout) {
   'may', 'jun', 'jul', 'aug',
   'sep', 'oct', 'nov', 'dec'
   ];
-  var weekdays = ['s', 'm', 't', 'w', 't', 'f', 's'];
+  var weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
   var activeWeek;
   var daysFromActiveWeekToNext = 7;

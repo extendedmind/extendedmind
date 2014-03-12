@@ -9,9 +9,8 @@ function SwiperService($q, UserSessionService) {
 
   var slideChangeCallbacks = {};
 
-  // Initial slides, these must be set by the route provider
-  var initialMainSlidePath;
-  var initialPageSlidePath;
+  // Optional initial slide paths per swiper
+  var initialSlidePaths = {};
 
   // Gets all swipers that match the given slide path
   var getSwiperInfosBySlidePath = function(slidePath) {
@@ -39,23 +38,18 @@ function SwiperService($q, UserSessionService) {
     }
   };
 
-  var getInitialSlideIndex = function(swiperType, swiperSlidesPaths){
+  var getInitialSlideIndex = function(swiperPath, swiperSlidesPaths){
     var initialSlideIndex = 0;
-    if (swiperType === 'main'){
-      var mainSlideIndex = getSlideIndexBySlidePath(initialMainSlidePath, swiperSlidesPaths);
-      if (mainSlideIndex !== undefined){
-        initialSlideIndex = mainSlideIndex;
-      }
-    }else if (swiperType === 'main'){
-      var pageSlideIndex = getSlideIndexBySlidePath(initialPageSlidePath, swiperSlidesPaths);
-      if (pageSlideIndex !== undefined){
-        initialSlideIndex = pageSlideIndex;
+    if (initialSlidePaths[swiperPath]){
+      var slideIndex = getSlideIndexBySlidePath(initialSlidePaths[swiperPath], swiperSlidesPaths);
+      if (slideIndex !== undefined){
+        initialSlideIndex = slideIndex;
       }
     }
     return initialSlideIndex;
   };
 
-  var getSwiperParameters = function(swiperType, swiperSlidesPaths, onSlideChangeEndCallback) {
+  var getSwiperParameters = function(swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback) {
     var swiperParams = {
       noSwiping: true,
       queueStartCallbacks: true,
@@ -64,7 +58,7 @@ function SwiperService($q, UserSessionService) {
       onSlideChangeEnd: onSlideChangeEndCallback
     };
     
-    swiperParams.initialSlide = getInitialSlideIndex(swiperType, swiperSlidesPaths);
+    swiperParams.initialSlide = getInitialSlideIndex(swiperPath, swiperSlidesPaths);
     if (swiperType === 'main'){
       swiperParams.mode = 'horizontal';
     } else if (swiperType === 'page'){
@@ -89,10 +83,11 @@ function SwiperService($q, UserSessionService) {
 
   return {
     initializeSwiper: function(containerElement, swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback) {
-      if (swipers[swiperPath]){
+      if (swipers[swiperPath] && swipers[swiperPath].swiper){
         delete swipers[swiperPath].swiper;
       }
       var params = getSwiperParameters(
+        swiperPath,
         swiperType,
         swiperSlidesPaths,
         onSlideChangeEndCallback);
@@ -108,9 +103,9 @@ function SwiperService($q, UserSessionService) {
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
     },
     refreshSwiper: function(swiperPath, swiperSlidesPaths) {
-      if (swipers[swiperPath]){
+      if (swipers[swiperPath] && swipers[swiperPath].swiper){
         // Set initial slide path
-        swipers[swiperPath].swiper.params.initialSlide = getInitialSlideIndex(swipers[swiperPath].swiperType, swiperSlidesPaths);
+        swipers[swiperPath].swiper.params.initialSlide = getInitialSlideIndex(swiperPath, swiperSlidesPaths);
         swipers[swiperPath].slidesPaths = swiperSlidesPaths;
         $q.when(swipers[swiperPath].swiper.reInit()).then(function(){
           setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
@@ -122,9 +117,8 @@ function SwiperService($q, UserSessionService) {
       var path = UserSessionService.getOwnerPrefix() + '/' + activeSlide.getData('path');
       executeSlideChangeCallbacks(swiperPath, path);
     },
-    setInitialSlidePath: function(mainSlide, pageSlide) {
-      initialMainSlidePath = mainSlide;
-      initialPageSlidePath = pageSlide;
+    setInitialSlidePath: function(swiperPath, slidePath) {
+      initialSlidePaths[swiperPath] = slidePath;
     },
     swipeTo: function(slidePath) {
       var swiperInfos = getSwiperInfosBySlidePath(slidePath);
@@ -155,7 +149,7 @@ function SwiperService($q, UserSessionService) {
       }
     },
     getActiveSlidePath: function(swiperPath) {
-      if (swipers[swiperPath]){
+      if (swipers[swiperPath] && swipers[swiperPath].swiper){
         var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
         if (activeSlide) {
           return activeSlide.getData('path');

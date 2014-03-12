@@ -1,6 +1,6 @@
 'use strict';
 
-function DatesController($scope, $timeout, DateService, TasksSlidesService, SwiperService) {
+function DatesController($q, $scope, $timeout, DateService, TasksSlidesService, SwiperService) {
   var activeDay, activeDaySlidePath;
   $scope.dates = DateService.activeWeek();
 
@@ -24,10 +24,14 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
   // invoke function during compile and $scope.$apply();
   function swipeToStartingDay() {
     activeDay = DateService.getTodayDate() || DateService.getMondayDate();
-
-    $timeout(function() {
-      SwiperService.swipePageSlide(TasksSlidesService.getDateSlidePath(activeDay));
-    });
+    $q.when(
+      SwiperService.setInitialSlidePath(
+        TasksSlidesService.DATES,
+        TasksSlidesService.getDateSlidePath(activeDay))).then(
+      function(){
+        // Need additional swiping if setting initial slide path fails to work
+        SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(activeDay));
+      });
   };
   swipeToStartingDay();
 
@@ -41,23 +45,20 @@ function DatesController($scope, $timeout, DateService, TasksSlidesService, Swip
     swipeToStartingDay();
   };
 
-  $scope.dateClicked = function(dateString) {
-    activeDay = dateString;
-    SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(dateString));
+  $scope.dateClicked = function(date) {
+    activeDay = date;
+    SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(date));
   };
 
   // http://coder1.com/articles/angularjs-managing-active-nav-elements
   $scope.isDayActive = function(date) {
-    if (activeDaySlidePath && (activeDaySlidePath.indexOf(date.weekday) !== -1)) {
-      activeDay = date;
-    }
     return activeDay === date;
   };
 
   $scope.visibleDateFormat = function(date) {
-    return (date.yyyymmdd === activeDay) ? date.month.name : date.weekday;
+    return (date === activeDay) ? date.month.name : date.weekday.substring(0,1);
   };
 }
 
-DatesController['$inject'] = ['$scope', '$timeout', 'DateService', 'TasksSlidesService', 'SwiperService'];
+DatesController['$inject'] = ['$q', '$scope', '$timeout', 'DateService', 'TasksSlidesService', 'SwiperService'];
 angular.module('em.app').controller('DatesController', DatesController);

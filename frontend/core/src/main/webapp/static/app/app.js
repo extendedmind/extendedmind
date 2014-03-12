@@ -106,7 +106,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['TasksSlidesService', 'SwiperService',
         function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(TasksSlidesService.HOME);
+          SwiperService.setInitialSlidePath('tasks', TasksSlidesService.HOME);
         }],
         owner: ['UserSessionService',
         function(UserSessionService) {
@@ -124,7 +124,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['TasksSlidesService', 'SwiperService',
         function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(TasksSlidesService.HOME);
+          SwiperService.setInitialSlidePath('tasks', TasksSlidesService.HOME);
         }],
         owner: ['$route', 'UserSessionService',
         function($route, UserSessionService) {
@@ -231,7 +231,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['NotesSlidesService', 'SwiperService',
         function(NotesSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(NotesSlidesService.HOME);
+          SwiperService.setInitialSlidePath('notes', NotesSlidesService.HOME);
         }],
         owner: ['UserSessionService',
         function(UserSessionService) {
@@ -249,7 +249,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['NotesSlidesService', 'SwiperService',
         function(NotesSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath(NotesSlidesService.HOME);
+          SwiperService.setInitialSlidePath('notes', NotesSlidesService.HOME);
         }],
         owner: ['$route', 'UserSessionService',
         function($route, UserSessionService) {

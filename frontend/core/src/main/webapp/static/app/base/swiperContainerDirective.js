@@ -68,7 +68,7 @@ function swiperContainerDirective(SwiperService, $rootScope) {
               slides,
               onSlideChangeEndCallback);
             initializeSwiperCalled = true;
-          }else if (slidesUpdated) {
+          }else {
             SwiperService.refreshSwiper($scope.swiperPath, slides);
           }
         }
@@ -95,7 +95,18 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         if (initializeSwiperCalled) {
           oldSlideInfosIndex = getSlideInfosIndex(path);
         }
+
         if (oldSlideInfosIndex === undefined){
+          // If swiperSlideInfos is already full and the index is somewhere in the
+          // middle of the pack, we need to increase bigger indexes by one
+          if ($scope.expectedSlides === swiperSlideInfos.length
+              && index < swiperSlideInfos.length){
+            for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
+              if (swiperSlideInfos[i].slideIndex >= index){
+                swiperSlideInfos[i].slideIndex += 1;
+              }
+            }
+          }
           swiperSlideInfos.push(slideInfo);
         }else{
           swiperSlideInfos[oldSlideInfosIndex] = slideInfo;
@@ -106,7 +117,14 @@ function swiperContainerDirective(SwiperService, $rootScope) {
       this.unregisterSlide = function(path) {
         var slideInfosIndex = getSlideInfosIndex(path);
         if (slideInfosIndex !== undefined){
+          var oldSlideIndex = swiperSlideInfos[slideInfosIndex].slideIndex;
           swiperSlideInfos.splice(slideInfosIndex, 1);
+          // Move indexes one down
+          for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
+            if (swiperSlideInfos[i].slideIndex > oldSlideIndex){
+              swiperSlideInfos[i].slideIndex -= 1;
+            }
+          }
           updateSwiper();
         }
       };
