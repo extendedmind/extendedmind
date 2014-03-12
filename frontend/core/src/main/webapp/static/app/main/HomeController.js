@@ -1,38 +1,9 @@
 'use strict';
 
-function HomeController($scope, $location, $document, $element, ItemsService, UserSessionService, AuthenticationService) {
+function HomeController($scope, $location, $document, $element, $rootScope, ItemsService, SnapService, UserSessionService) {
 
   $scope.omniBarActive = false;
-  $scope.menuActive = false;
-  $scope.collectives = UserSessionService.getCollectives();
-
-  $scope.toggleMenu = function toggleMenu() {
-    $scope.menuActive = !$scope.menuActive;
-  };
-
-  $scope.setCollectiveActive = function(uuid) {
-    $scope.menuActive = false;
-    UserSessionService.setCollectiveActive(uuid);
-    $location.path('/collective/' + uuid + '/tasks');
-  };
-  
-  $scope.setMyActive = function() {
-    $scope.menuActive = false;
-    UserSessionService.setMyActive();
-    $location.path('/my/tasks');
-  };
-
-  $scope.logout = function() {
-    AuthenticationService.logout().then(function() {
-      $location.path('/login');
-    });
-  };
-
-  $scope.useCollectives = function () {
-    if ($scope.collectives && Object.keys($scope.collectives).length > 1) {
-      return true;
-    }
-  };
+  $scope.isMenuOpen = false;
 
   $scope.addNewItem = function(omnibarText) {
     if ($scope.omnibarText && $scope.omnibarText.title) {
@@ -44,6 +15,14 @@ function HomeController($scope, $location, $document, $element, ItemsService, Us
 
     }else{
       $location.path($scope.ownerPrefix + '/items/new');
+    }
+  };
+
+  $scope.toggleMenu = function toggleMenu() {
+    if ($rootScope.isMobile) {
+      SnapService.toggle();
+    } else if ($rootScope.isDesktop) {
+      $scope.isMenuOpen = !$scope.isMenuOpen;
     }
   };
 
@@ -93,6 +72,7 @@ function HomeController($scope, $location, $document, $element, ItemsService, Us
   };
 }
 
-HomeController['$inject'] = ['$scope', '$location', '$document', '$element',
-                             'ItemsService', 'UserSessionService', 'AuthenticationService'];
+HomeController['$inject'] = [
+'$scope', '$location', '$document', '$element', '$rootScope',
+'ItemsService', 'SnapService', 'UserSessionService'];
 angular.module('em.app').controller('HomeController', HomeController);
