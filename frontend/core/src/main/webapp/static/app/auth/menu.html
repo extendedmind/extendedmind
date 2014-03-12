@@ -1,0 +1,23 @@
+<div id="menu-content" class="swiper-no-swiping" ng-controller="MenuController">
+  <ul>
+    <li>
+      <a href ng-click="setMyActive()" class="active">home</a>
+    </li>
+    <li ng-show="useCollectives()">
+      <span>collectives</span>
+      <ul>
+        <li ng-repeat="(key, value) in collectives">
+          <div ng-if="value[2] === false">
+            <a class="collective" href ng-click="setCollectiveActive(key)">{{value[0]}}</a>
+          </div>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a href="#/my/account">account</a>
+    </li>
+    <li>
+      <a href ng-click="logout()">logout</a>
+    </li>
+  </ul>
+</div>
