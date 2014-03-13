@@ -3,7 +3,7 @@
   <!-- TODO: use ng-if with expected-slides="notes.length > 0 && 6 || 2" -->
   <div class="swiper-container main-slides" swiper-container="notes" swiper-type="main"
   expected-slides="1">
-  <div class="swiper-wrapper">
+  <div class="swiper-wrapper" ng-class="getNoSwipingClass()">
     <div class="swiper-slide" swiper-slide="notes/home" slide-index=0 ng-include="'static/app/notes/recent.html'"></div>
   </div>
 </div>

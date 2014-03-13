@@ -144,6 +144,10 @@ function MainController(
       SwiperService.swipeTo(NotesSlidesService.DETAILS + '/' + identifier);
     }
   };
+
+  $scope.getNoSwipingClass = function getNoSwipingClass() {
+    return ($rootScope.noSwiping) ? 'swiper-no-swiping' : '';
+  };
 }
 
 MainController.$inject = [

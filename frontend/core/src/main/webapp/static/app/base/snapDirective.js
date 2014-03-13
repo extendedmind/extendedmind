@@ -6,7 +6,7 @@ function snapDirective($rootScope, SnapService) {
     link: function($scope, $element) {
       SnapService.createSnapper($element[0]);
       SnapService.disableSliding();
-      $rootScope.noSwiping = '';
+      $rootScope.noSwiping = false;
       $rootScope.isSnapVisible = false;
 
       SnapService.registerOpenCallback(snapperOpened);
@@ -16,12 +16,12 @@ function snapDirective($rootScope, SnapService) {
       function snapperOpened() {
         SnapService.enableSliding().then(function() {
           $rootScope.isSnapVisible = true;
-          $rootScope.noSwiping = 'swiper-no-swiping';
+          $rootScope.noSwiping = true;
         });
       }
       function snapperClosed() {
         SnapService.disableSliding().then(function() {
-          $rootScope.noSwiping = '';
+          $rootScope.noSwiping = false;
         });
       }
       function snapperAnimated(snap) {
