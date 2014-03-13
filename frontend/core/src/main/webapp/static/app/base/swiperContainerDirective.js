@@ -95,7 +95,6 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         if (initializeSwiperCalled) {
           oldSlideInfosIndex = getSlideInfosIndex(path);
         }
-
         if (oldSlideInfosIndex === undefined){
           // If swiperSlideInfos is already full and the index is somewhere in the
           // middle of the pack, we need to increase bigger indexes by one

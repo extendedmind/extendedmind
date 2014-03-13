@@ -2,7 +2,7 @@
 
 // iDangero.us Swiper Service       
 // http://www.idangero.us/sliders/swiper/api.php
-function SwiperService($q, UserSessionService) {
+function SwiperService($q) {
 
   // Holds reference to all the swipers and their respective paths
   var swipers = {};
@@ -114,7 +114,7 @@ function SwiperService($q, UserSessionService) {
     },
     onSlideChangeEnd: function(scope, swiperPath) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
-      var path = UserSessionService.getOwnerPrefix() + '/' + activeSlide.getData('path');
+      var path = activeSlide.getData('path');
       executeSlideChangeCallbacks(swiperPath, path);
     },
     setInitialSlidePath: function(swiperPath, slidePath) {
@@ -174,5 +174,5 @@ function SwiperService($q, UserSessionService) {
     }
   };
 }
-SwiperService['$inject'] = ['$q', 'UserSessionService'];
+SwiperService['$inject'] = ['$q'];
 angular.module('em.services').factory('SwiperService', SwiperService);

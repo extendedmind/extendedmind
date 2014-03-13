@@ -1,7 +1,7 @@
 'use strict';
 
 function DatesController($q, $scope, $timeout, DateService, TasksSlidesService, SwiperService) {
-  var activeDay, activeDaySlidePath;
+  var activeDay;
   $scope.dates = DateService.activeWeek();
 
   DateService.registerDayChangeCallback(dayChangeCallback);
@@ -14,11 +14,17 @@ function DatesController($q, $scope, $timeout, DateService, TasksSlidesService, 
   });
 
   // Register a callback to swiper service
-  SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks/dates', 'DatesController');
+  SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks/home', 'DatesController');
   function slideChangeCallback(activeSlidePath) {
-    activeDaySlidePath = activeSlidePath;
-    // Run digest to change only date picker when swiping to new location
-    $scope.$digest();
+    if (!activeSlidePath.endsWith(activeDay.weekday)){
+      for (var i = 0, len = $scope.dates.length; i < len; i++) {
+        if (activeSlidePath.endsWith($scope.dates[i].weekday)){
+          activeDay = $scope.dates[i];
+          // Run digest to change only date picker when swiping to new location
+          $scope.$digest();
+        }
+      }
+    }
   }
 
   // invoke function during compile and $scope.$apply();
