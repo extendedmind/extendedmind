@@ -36,6 +36,12 @@ function SnapService($q) {
       function snapAnimated() {
         callback(snapper);
       }
+    },
+    unRegisterOpenCallback: function(callback) {
+      snapper.off('open', callback);
+    },
+    unRegisterCloseCallback: function(callback) {
+      snapper.off('close', callback);
     }
   };
 }

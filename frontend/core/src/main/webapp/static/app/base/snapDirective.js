@@ -30,6 +30,10 @@ function snapDirective($rootScope, SnapService) {
           snapperClosed();
         }
       }
+      $scope.$on('$destroy', function() {
+        SnapService.unRegisterOpenCallback(snapperOpened);
+        SnapService.unRegisterCloseCallback(snapperClosed);
+      });
     }
   };
 }
