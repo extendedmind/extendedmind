@@ -62,7 +62,6 @@ function HeaderController($scope, $location, $document, $element, $rootScope, Sn
   };
 
   $scope.elsewhereCallback = function(event) {
-    console.log(event.target)
     // Rule out clicking on omnibar text itself,
     // or any of the search results 
     if (event.target.id !== 'omniItem' && event.target.id !== 'omnibarPlus' &&
