@@ -1,6 +1,7 @@
+/* global $ */
 'use strict';
 
-function HeaderController($scope, $location, $document, $element, $rootScope, SnapService, UserSessionService) {
+function HeaderController($scope, $location, $document, $element, $rootScope, SnapService) {
 
   $scope.omnibarText = {};
   $scope.omniBarVisible = false;
@@ -17,12 +18,12 @@ function HeaderController($scope, $location, $document, $element, $rootScope, Sn
 
   $scope.showOmnibar = function() {
     $scope.omniBarVisible = true;
-  }
+  };
 
   $scope.saveOmnibarText = function(omnibarText) {
     if (omnibarText.title && omnibarText.title.length > 0){
-      $scope.addNewItem(omnibarText.title).then(function(item){
-        $scope.omnibarText.title = "";
+      $scope.addNewItem(omnibarText.title).then(function(/*item*/){
+        $scope.omnibarText.title = '';
       });
     }
   };
@@ -61,18 +62,26 @@ function HeaderController($scope, $location, $document, $element, $rootScope, Sn
   };
 
   $scope.elsewhereCallback = function(event) {
-    // First rule out clicking on omnibar text itself
-    if (event.target.id !== 'omniItem' && event.target.id !== 'omnibarPlus') {
+    console.log(event.target)
+    // Rule out clicking on omnibar text itself,
+    // or any of the search results 
+    if (event.target.id !== 'omniItem' && event.target.id !== 'omnibarPlus' &&
+        event.target.id !== 'accordionTitleLink' &&
+        !$(event.target).is('input') &&
+        !$(event.target).is('label') &&
+        !$(event.target).hasClass('page-header') &&
+        !$(event.target).parents('.accordion-item-active').length &&
+        !$(event.target).parents('.item-actions').length) {
       $scope.$apply(function() {
         $scope.unbindElsewhereEvents();
         $scope.omniBarFocus(false);
-        // Programmatically blur the omnibar
-        $element.find('input#omniItem')[0].blur();
+        $scope.omnibarText.title = '';
+        $scope.omniBarVisible = false;
       });
     }
   };
 }
 
 HeaderController['$inject'] = [
-'$scope', '$location', '$document', '$element', '$rootScope', 'SnapService', 'UserSessionService'];
+'$scope', '$location', '$document', '$element', '$rootScope', 'SnapService'];
 angular.module('em.app').controller('HeaderController', HeaderController);

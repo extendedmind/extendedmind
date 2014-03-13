@@ -27,6 +27,41 @@
           </button>
         </div>
       </div>
-    </form> 
+    </form>
+  </div>
+  <div id="omnibar-search-results" ng-if="omniBarVisible && omnibarText.title.length > 0" id="filtered-items-container"> 
+    <div class="filtered-items" ng-show="filteredItems.length" ng-controller="ItemsController">
+      <h3 ><a href ng-click="gotoInbox()" class="page-header">inbox</a></h3>
+      <div class="inner-page-content-container" accordion>
+        <div ng-repeat="item in filteredItems = (items | filter:{title:omnibarText.title})">
+          <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" toggle-complete="false"></div>
+          <div class="accordion-body" ng-if="isOpen(item)">
+            <div ng-include="'static/app/main/itemActions.html'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="filtered-items" ng-show="filteredTasks.length" ng-controller="TasksController">
+      <h3><a href ng-click="gotoTasks()" class="page-header">tasks</a></h3>
+      <div class="inner-page-content-container" accordion>
+        <div ng-repeat="task in filteredTasks = (tasks | filter:{title:omnibarText.title})">
+          <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+          <div class="accordion-body" ng-if="isOpen(task)">
+            <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="filtered-items" ng-show="filteredNotes.length" ng-controller="NotesController">
+      <h3><a href ng-click="gotoNotes()" class="page-header">notes</a></h3>
+      <div class="inner-page-content-container" accordion>
+        <div ng-repeat="note in filteredNotes = (notes | filter:{title:omnibarText.title})">
+          <div accordion-title="note" edit-item="editNote(task)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete></div>
+          <div class="accordion-body" ng-if="isOpen(note)">
+            <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </nav>
