@@ -18,10 +18,6 @@ function HeaderController($timeout, $scope, $location, $document, $element, $roo
 
   $scope.showOmnibar = function() {
     $scope.omniBarVisible = true;
-    $timeout(function(){
-      // Programmatically focus on the omnibar
-      $element.find('input#omniItem')[0].focus();
-    });
   };
 
   $scope.saveOmnibarText = function(omnibarText) {
