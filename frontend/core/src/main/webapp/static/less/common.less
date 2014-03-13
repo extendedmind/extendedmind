@@ -469,13 +469,19 @@ span.icon-i:active, span.icon-plus:active {
   height: inherit;
   background: #52575F;
   color: #FEFFFF;
-  padding-right:30px;
-  padding-left: 30px;
   margin-right: 30px;
 }
 
 #menu-content {
   padding-bottom: @footer-height*1.5;
+  a, span {
+    padding-right:30px;
+    padding-left: 30px;
+  }
+  a {
+    // http://getbootstrap.com/components/#dropdowns
+    display: block;
+  }
 }
 
 // CONTENT
