@@ -5,17 +5,11 @@ function TasksSlidesService() {
   return {
     // Enumeration values
 
-    INBOX: 'tasks/inbox',
-    HOME: 'tasks/home',
-    DATES: 'tasks/dates',
-    MENU: 'tasks/menu',
-    LISTS: 'tasks/lists',
+    DATES: 'tasks/home',
+    OVERVIEW: 'tasks/overview',
+    DETAILS: 'tasks/details',
 
     // Functions
-    getListSlidePath: function(uuid){
-      return this.LISTS + '/' + uuid;
-    },
-
     getDateSlidePath: function(activeDay){
       return this.DATES + '/' + activeDay.weekday;
     }

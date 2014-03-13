@@ -16,7 +16,7 @@ function MainController(
   $scope.lists = ListsService.getLists(UserSessionService.getActiveUUID());
   $scope.tags = TagsService.getTags(UserSessionService.getActiveUUID());
 
-  $scope.$watch('tags.length', function(newValue, oldValue) {
+  $scope.$watch('tags.length', function(/*newValue, oldValue*/) {
     $scope.contexts = $filter('filter')($scope.tags, {tagType:'context'});
   });
 
@@ -101,65 +101,47 @@ function MainController(
     angular.element($window).unbind('resize', windowResized);
   });
 
-  $scope.gotoInbox = function() {
-    if ($scope.feature === 'tasks') {
-      SwiperService.swipeTo(TasksSlidesService.INBOX);
-    }else if ($scope.feature === 'notes'){
-      SwiperService.swipeTo(NotesSlidesService.INBOX);
-    }
+  $scope.addNewItem = function(itemTitle) {
+    return ItemsService.saveItem({title: itemTitle}, UserSessionService.getActiveUUID());
   };
 
   $scope.gotoHome = function() {
     if ($scope.feature === 'tasks') {
-      SwiperService.swipeTo(TasksSlidesService.HOME);
-    }else if ($scope.feature === 'notes'){
-      SwiperService.swipeTo(NotesSlidesService.HOME);
-    }
-  };
-
-  $scope.gotoTasks = function() {
-    if ($scope.feature === 'tasks') {
       SwiperService.swipeTo(TasksSlidesService.DATES);
     }else if ($scope.feature === 'notes'){
-      $location.path($scope.ownerPrefix + '/tasks');
-    }
-  };
-
-  $scope.gotoNotes = function() {
-    if ($scope.feature === 'tasks') {
-      $location.path($scope.ownerPrefix + '/notes');
-    } else if ($scope.feature === 'notes'){
       SwiperService.swipeTo(NotesSlidesService.RECENT);
     }
   };
 
-  $scope.gotoLists = function() {
-    if ($scope.lists.length > 0){
-      if ($scope.feature === 'tasks') {
-        SwiperService.swipeTo(TasksSlidesService.LISTS + '/' + $scope.lists[0].uuid);
-      }else if ($scope.feature === 'notes') {
-        SwiperService.swipeTo(NotesSlidesService.LISTS + '/' + $scope.lists[0].uuid);
-      }
+  $scope.gotoOverview = function() {
+    if ($scope.feature === 'tasks') {
+      SwiperService.swipeTo(TasksSlidesService.OVERVIEW);
+    }else if ($scope.feature === 'notes'){
+      SwiperService.swipeTo(NotesSlidesService.OVERVIEW);
     }
   };
 
-  $scope.gotoUncategorized = function() {
-    if ($scope.feature === 'tasks') {
-      SwiperService.swipeTo(TasksSlidesService.LISTS + '/uncategorized');
-    }else if ($scope.feature === 'notes') {
-      SwiperService.swipeTo(NotesSlidesService.LISTS + '/uncategorized');
+  $scope.gotoDetails = function() {
+    $scope.gotoLists();
+  };
+
+  $scope.gotoLists = function() {
+    if ($scope.lists.length > 0){
+      $scope.gotoDetails($scope.lists[0].uuid);
     }
   };
 
   $scope.gotoContexts = function() {
+    if ($scope.contexts.length > 0){
+      $scope.gotoDetails($scope.contexts[0].uuid);
+    }
+  };
+
+  $scope.gotoDetails = function(identifier) {
     if ($scope.feature === 'tasks') {
-      // Swipe to the first context
-      for (var i=0, len=$scope.tags.length; i<len; i++) {
-        if ($scope.tags[i].tagType === 'context'){
-          SwiperService.swipeTo(TasksSlidesService.LISTS + '/' + $scope.tags[i].uuid);
-          return;
-        }
-      }
+      SwiperService.swipeTo(TasksSlidesService.DETAILS + '/' + identifier);
+    }else if ($scope.feature === 'notes') {
+      SwiperService.swipeTo(NotesSlidesService.DETAILS + '/' + identifier);
     }
   };
 }

@@ -1,27 +1,14 @@
-<section id="tasks-lists" class="two-column-grid page" ng-controller="TasksController">
+<section id="tasks-details" class="two-column-grid page" ng-controller="TasksController">
   <div class="column">
-    <header id="tasks-lists-header" class="page-header" ng-init="heading='lists'" ng-include="'static/app/base/pageHeader.html'"></header>
-    <div id="tasks-lists-page-content-container" class="content-container page-content-container">
-      <div class="swiper-container vertical-slides" swiper-container="tasks/lists" swiper-type="page" expected-slides="count = lists.length + contexts.length + 1">
+    <header class="page-header" ng-init="heading='details'" ng-include="'static/app/base/pageHeader.html'"></header>
+    <div class="content-container page-content-container">
+      <div class="swiper-container vertical-slides" swiper-container="tasks/details" swiper-type="page" expected-slides="count = lists.length + contexts.length + 1">
         <div class="swiper-wrapper">
-          <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="tasks/lists/{{list.uuid}}" slide-index="$index" ng-init="subtask = {relationships: {list: list.uuid}}">
+          <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="tasks/details/{{list.uuid}}" slide-index="$index" ng-init="subtask = {relationships: {list: list.uuid}}">
             <div class="inner-slide-content-container">
               <section class="list" ng-controller="ListsController">
                 <h3><a class="content" href ng-click="toggleListContent()">{{list.title}}</a></h3>
-                <div ng-if="showListContent">
-                  <ul class="button-row">
-                    <li class="button-container left-of-two border-right">
-                      <button class="default-button" type="button" ng-click="editList(list)">
-                        more
-                      </button>
-                    </li>
-                    <li class="button-container right-of-two">
-                      <button class="default-button" type="button" ng-click="archiveList(list)">
-                        archive
-                      </button>
-                    </li>
-                  </ul>
-                </div>
+                <div ng-if="showListContent" ng-include="'static/app/base/listActions.html'"></div>
                 <div>
                   <div class="inner-page-content-container" accordion>
                     <div ng-repeat="task in tasks | tasksFilter:{name:'byListUUID', filterBy: list.uuid}">
@@ -30,13 +17,13 @@
                         <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>
                     </div>
-                    <div ng-include="'static/app/tasks/subTask.html'"></div>
+                    <div ng-include="'static/app/tasks/addTask.html'"></div>
                   </div>                  
                 </div>
               </section>
             </div>
           </div>
-          <div class="swiper-slide" ng-repeat="context in contexts" swiper-slide="tasks/lists/{{context.uuid}}" slide-index="lists.length + $index" ng-init="subtask = {relationships: {context: context.uuid}}">
+          <div class="swiper-slide" ng-repeat="context in contexts" swiper-slide="tasks/details/{{context.uuid}}" slide-index="lists.length + $index" ng-init="subtask = {relationships: {context: context.uuid}}">
             <div class="inner-slide-content-container">
               <section class="context" ng-controller="ContextsController">
                 <h3><a class="content" href ng-click="toggleContextContent()">@{{context.title}}</a></h3>
@@ -53,13 +40,13 @@
                         <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>
                     </div>
-                    <div ng-include="'static/app/tasks/subTask.html'"></div>
+                    <div ng-include="'static/app/tasks/addTask.html'"></div>
                   </div>
                 </div>
               </section>
             </div>
           </div>
-          <div class="swiper-slide" swiper-slide="tasks/lists/uncategorized" slide-index="lists.length + contexts.length" ng-init="subtask = {}">
+          <div class="swiper-slide" swiper-slide="tasks/details/uncategorized" slide-index="lists.length + contexts.length" ng-init="subtask = {}">
             <div class="inner-page-content-container">
               <section>
                 <h3>uncategorized</h3>              
@@ -70,7 +57,7 @@
                       <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
                     </div>
                   </div>
-                  <div ng-include="'static/app/tasks/subTask.html'"></div>
+                  <div ng-include="'static/app/tasks/addTask.html'"></div>
                 </div>
               </section>
             </div>

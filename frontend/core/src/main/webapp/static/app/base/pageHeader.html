@@ -1,9 +1,32 @@
-<nav class="swiper-no-swiping" id="page-header" role="navigation">
-  <div class="left-of-three" id="collective">&nbsp;</div>
-  <div class="center-of-three" id="page-heading"><h3>{{heading}}<span class="offline-indicator" ng-if="!online">*</span></h3></div>
-  <div class="right-of-three" id="add-new-button">
-    <button type="button" class="button" ng-click="addNew()">
-      <span class="icon-plus"></span>
-    </button>
+<nav class="swiper-no-swiping" id="page-header" role="navigation" ng-controller="HeaderController" ng-switch="omniBarVisible">
+  <div ng-switch-when="false">
+    <div class="left-of-three" id="menu">
+      <div id="menu-icon">
+        <button id="menu-button" type="button" ng-click="toggleMenu()" alt="menu">
+          <span class="icon-menu"></span>
+        </button>
+      </div>
+      <div ng-if="isDesktop && isMenuOpen" ng-include="'static/app/auth/menu.html'"></div>
+    </div>
+    <div class="center-of-three" id="page-heading" ng-click="showOmnibar()"><h3>{{heading}}<span class="offline-indicator" ng-if="!online">*</span></h3></div>
+    <div class="right-of-three" id="add-new-button">
+      <button type="button" class="button" ng-click="addNew()">
+        <span class="icon-plus"></span>
+      </button>
+    </div>
+  </div>
+  <div ng-switch-when="true" class="swiper-no-swiping">
+    <form id="omnibar" role="form" name="addOmniItem" ng-submit="saveOmnibarText(omnibarText)">
+      <div class="form-group">
+        <div class="left-input-wrapper">
+          <label class="sr-only" for="omniItem">omniItem</label>
+          <input type="text" ng-focus="omniBarFocus(true)" class="simple-input form-control" id="omniItem" ng-model="omnibarText.title" placeholder="store / recall..." required>
+        </div>
+        <div class="right-button-wrapper">
+          <button id="omnibarPlus" class="button" type="button" ng-click="saveOmnibarText(omnibarText)"><span class="icon-plus"></span>
+          </button>
+        </div>
+      </div>
+    </form> 
   </div>
 </nav>

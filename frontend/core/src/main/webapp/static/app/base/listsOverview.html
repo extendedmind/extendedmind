@@ -1,0 +1,19 @@
+<section ng-init="newList={title:undefined}" ng-controller="ListsController">
+  <h3><a href class="page-header" swiper-click="gotoLists()">lists</a></h3>
+  <ul class="indent list-arrow-right">
+    <li ng-if="lists && lists.length" ng-class="selected" ng-repeat="list in lists">
+      <a class="text-muted click-to-slide" href swiper-click="gotoDetails(list.uuid)">
+        <span class="link-title">{{list.title}}</span>
+        <span class="icon-arrow-right"></span>
+      </a>
+    </li>
+    <li>
+      <form class="swiper-no-swiping" role="form" name="addListForm" ng-submit="addList(newList)">
+        <div class="form-group">
+          <label class="sr-only" for="listTitle">title</label>
+          <input type="text" class="simple-input" id="listTitle" ng-model="newList.title" placeholder="add list..."></input>
+        </div>
+      </form>
+    </li>
+  </ul>
+</section>

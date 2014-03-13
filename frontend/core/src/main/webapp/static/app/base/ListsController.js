@@ -1,6 +1,6 @@
 'use strict';
 
-function ListsController($location, $scope, $timeout, $routeParams, UserSessionService, ListsService, SwiperService, TasksSlidesService) {
+function ListsController($location, $scope, $timeout, $routeParams, UserSessionService, ListsService, SwiperService) {
 
   if (!$scope.list){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -30,10 +30,6 @@ function ListsController($location, $scope, $timeout, $routeParams, UserSessionS
     $scope.showListContent = !$scope.showListContent;
   };
 
-  $scope.goToList = function(uuid) {
-    SwiperService.swipeTo(TasksSlidesService.LISTS + '/' + uuid);
-  };
-
   $scope.addList = function(newList) {
     if (!newList.title  || newList.title.length === 0) return false;
     ListsService.saveList(newList, UserSessionService.getActiveUUID()).then(function(/*list*/) {
@@ -48,5 +44,5 @@ function ListsController($location, $scope, $timeout, $routeParams, UserSessionS
 }
 
 ListsController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService',
-                              'ListsService', 'SwiperService', 'TasksSlidesService'];
+                              'ListsService', 'SwiperService'];
 angular.module('em.app').controller('ListsController', ListsController);

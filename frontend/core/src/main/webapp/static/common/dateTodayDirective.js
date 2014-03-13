@@ -1,6 +1,6 @@
 'use strict';
 
-function dateToday() {
+function dateTodayDirective() {
   return {
     restrict: 'A',
     link: function(scope, element) {
@@ -11,4 +11,4 @@ function dateToday() {
     }
   };
 }
-angular.module('common').directive('dateToday', dateToday);
+angular.module('common').directive('dateToday', dateTodayDirective);

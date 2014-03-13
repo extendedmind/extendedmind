@@ -65,3 +65,43 @@ li.datepicker-date {
     background-color: @default-button-pressed;
   }
 }
+
+// HOME
+
+nav#page-header {
+  color: @highlighted-element;  
+  min-height: @main-header-height;
+  #menu-content {
+    background-color: white;
+    width: auto;
+    padding-top: 10px;
+    .top-bottom-borders;
+    a {
+      color: @default-element;
+    }
+    a.collective{
+      // FIXME: This color is strange
+      color: @default-element;
+    }
+    a.collective:active{
+      color: @default-element-pressed;
+    }
+  }
+  nav {
+    max-width: @one-column-grid-width;
+    // text-align: right;
+    margin-right: auto;
+    margin-left: auto;
+    width: inherit;
+  }
+  button#menu-button{
+    .button;
+    // padding: 16px 0 16px 20px; // increased clicking area
+    padding: 16px 20px 16px 0; // increased clicking area
+    // margin-right: -3px; // aligns menu button to the edge of the column
+    margin-left: -3px; // aligns menu button to the edge of the column
+  }
+  button#menu-button:active{
+    background-position: 0 0;
+  }
+}

@@ -61,10 +61,6 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
     NotesService.saveNote(newNoteToSave, UserSessionService.getActiveUUID());
   };
 
-  $scope.goToList = function(uuid) {
-    SwiperService.swipeTo(NotesSlidesService.LISTS + '/' + uuid);
-  };
-
   $scope.newList = {title: undefined};
   $scope.addList = function(newList) {
     ListsService.saveList(newList, UserSessionService.getActiveUUID()).then(function(/*list*/) {

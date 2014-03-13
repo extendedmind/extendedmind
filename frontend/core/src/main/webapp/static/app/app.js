@@ -97,8 +97,101 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/auth/changePassword.html'
     });
 
+
+    // INBOX
+
+    $routeProvider.when('/my/inbox', {
+      templateUrl: 'static/app/main/inbox.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
+        }],
+        owner: ['UserSessionService',
+        function(UserSessionService) {
+          return UserSessionService.setMyActive();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/inbox', {
+      templateUrl: 'static/app/main/inbox.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
+        }],
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        }]
+      }
+    });
+
+    // ITEMS
+
+    $routeProvider.when('/my/items/new', {
+      templateUrl: 'static/app/main/editItem.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
+        }],
+        owner: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyActive();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/items/new', {
+      templateUrl: 'static/app/main/editItem.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
+        }],
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        }]
+      }
+    });
+
+    $routeProvider.when('/my/items/edit/:uuid', {
+      templateUrl: 'static/app/main/editItem.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
+        }],
+        owner: ['UserSessionService',
+        function(UserSessionService) {
+          UserSessionService.setMyActive();
+        }]
+
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/items/edit/:uuid', {
+      templateUrl: 'static/app/main/editItem.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
+        }],
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        }]
+      }
+    });
+
+    // TASKS
+
     $routeProvider.when('/my/tasks', {
-      templateUrl: 'static/app/main/tasksSlides.html',
+      templateUrl: 'static/app/tasks/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
         function(AuthenticationService) {
@@ -116,7 +209,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/tasks', {
-      templateUrl: 'static/app/main/tasksSlides.html',
+      templateUrl: 'static/app/tasks/tasksSlides.html',
       resolve: {
         auth: ['AuthenticationService',
         function(AuthenticationService) {
@@ -223,7 +316,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     // NOTES
 
     $routeProvider.when('/my/notes', {
-      templateUrl: 'static/app/main/notesSlides.html',
+      templateUrl: 'static/app/notes/notesSlides.html',
       resolve: {
         auth: ['AuthenticationService',
         function(AuthenticationService) {
@@ -231,7 +324,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['NotesSlidesService', 'SwiperService',
         function(NotesSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath('notes', NotesSlidesService.HOME);
+          SwiperService.setInitialSlidePath('notes', NotesSlidesService.RECENT);
         }],
         owner: ['UserSessionService',
         function(UserSessionService) {
@@ -241,7 +334,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     $routeProvider.when('/collective/:collectiveUUID/notes', {
-      templateUrl: 'static/app/main/notesSlides.html',
+      templateUrl: 'static/app/notes/notesSlides.html',
       resolve: {
         auth: ['AuthenticationService',
         function(AuthenticationService) {
@@ -249,7 +342,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         }],
         slide: ['NotesSlidesService', 'SwiperService',
         function(NotesSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath('notes', NotesSlidesService.HOME);
+          SwiperService.setInitialSlidePath('notes', NotesSlidesService.RECENT);
         }],
         owner: ['$route', 'UserSessionService',
         function($route, UserSessionService) {
@@ -333,66 +426,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
 
     $routeProvider.when('/collective/:collectiveUUID/notes/new/:parentUUID', {
       templateUrl: 'static/app/notes/editNote.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(AuthenticationService) {
-          return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
-        }]
-      }
-    });
-
-    // ITEMS
-
-    $routeProvider.when('/my/items/new', {
-      templateUrl: 'static/app/main/editItem.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(AuthenticationService) {
-          return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/items/new', {
-      templateUrl: 'static/app/main/editItem.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(AuthenticationService) {
-          return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
-        }]
-      }
-    });
-
-    $routeProvider.when('/my/items/edit/:uuid', {
-      templateUrl: 'static/app/main/editItem.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(AuthenticationService) {
-          return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
-        }]
-
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/items/edit/:uuid', {
-      templateUrl: 'static/app/main/editItem.html',
       resolve: {
         auth: ['AuthenticationService',
         function(AuthenticationService) {

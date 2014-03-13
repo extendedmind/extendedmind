@@ -1,28 +1,29 @@
 'use strict';
 
-function HomeController($scope, $location, $document, $element, $rootScope, ItemsService, SnapService, UserSessionService) {
+function HeaderController($scope, $location, $document, $element, $rootScope, SnapService, UserSessionService) {
 
+  $scope.omnibarText = {};
+  $scope.omniBarVisible = false;
   $scope.omniBarActive = false;
   $scope.isMenuOpen = false;
-
-  $scope.addNewItem = function(omnibarText) {
-    if ($scope.omnibarText && $scope.omnibarText.title) {
-      ItemsService.saveItem(omnibarText, UserSessionService.getActiveUUID()).then(function(/*item*/) {
-        // TODO: Highlight new item instead of closing omnibar
-        $scope.omnibarText = {};
-        $scope.bindElsewhereEvents();
-      });
-
-    }else{
-      $location.path($scope.ownerPrefix + '/items/new');
-    }
-  };
 
   $scope.toggleMenu = function toggleMenu() {
     if ($rootScope.isMobile) {
       SnapService.toggle();
     } else if ($rootScope.isDesktop) {
       $scope.isMenuOpen = !$scope.isMenuOpen;
+    }
+  };
+
+  $scope.showOmnibar = function() {
+    $scope.omniBarVisible = true;
+  }
+
+  $scope.saveOmnibarText = function(omnibarText) {
+    if (omnibarText.title && omnibarText.title.length > 0){
+      $scope.addNewItem(omnibarText.title).then(function(item){
+        $scope.omnibarText.title = "";
+      });
     }
   };
 
@@ -72,7 +73,6 @@ function HomeController($scope, $location, $document, $element, $rootScope, Item
   };
 }
 
-HomeController['$inject'] = [
-'$scope', '$location', '$document', '$element', '$rootScope',
-'ItemsService', 'SnapService', 'UserSessionService'];
-angular.module('em.app').controller('HomeController', HomeController);
+HeaderController['$inject'] = [
+'$scope', '$location', '$document', '$element', '$rootScope', 'SnapService', 'UserSessionService'];
+angular.module('em.app').controller('HeaderController', HeaderController);

@@ -1,26 +1,20 @@
 <nav class="{{feature}}-footer swiper-no-swiping" role="navigation" ng-controller="NavbarController">
   <ul class="horizontally-justified">
-    <li id="inbox-link" class="justified-element">
-      <a href ng-click="gotoInbox()" ng-class="isActiveSlide('inbox') && 'active-slide'">
-        <span class="icon-inbox"></span>
-      </a>
-    </li>
-    
     <li id="home-link" class="justified-element">
       <a href ng-click="gotoHome()" ng-class="isActiveSlide('home') && 'active-slide'">
-        <span class="icon-home"></span>
+        <span ng-bind="feature"></span>
       </a>
     </li>
     
-    <li id="tasks-link" class="justified-element">
-      <a href ng-click="gotoTasks()" ng-class="getFeatureClasses('tasks')">
-        <span class="icon-tasks"></span>
+    <li id="menu-link" class="justified-element">
+      <a href ng-click="gotoOverview()" ng-class="isActiveSlide('overview') && 'active-slide'">
+        <span>overview</span>
       </a>
     </li>
     
-    <li id="notes-link" class="justified-element">
-      <a href ng-click="gotoNotes()" ng-class="getFeatureClasses('notes')">
-        <span class="icon-notes"></span>
+    <li id="lists-link" class="justified-element">
+      <a href ng-click="gotoDetails()" ng-class="isActiveSlide('details') && 'active-slide'">
+        <span>details</span>
       </a>
     </li>
     <li id="stretch"></li>

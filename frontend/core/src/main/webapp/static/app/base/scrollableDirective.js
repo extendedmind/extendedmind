@@ -18,4 +18,4 @@ function scrollableDirective() {
   };
 }
 scrollableDirective.$inject = [];
-angular.module('em.directives').directive('scrollableDirective', scrollableDirective);
+angular.module('em.directives').directive('scrollable', scrollableDirective);

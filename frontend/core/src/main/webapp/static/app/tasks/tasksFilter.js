@@ -51,7 +51,7 @@ angular.module('em.filters').filter('tasksFilter', [
           sortedTask = false;
 
           if (tasks[i].relationships) {
-            if (tasks[i].relationships.parent) {
+            if (tasks[i].relationships.parent || tasks[i].relationships.tags) {
               sortedTask = true;
             }
           }
