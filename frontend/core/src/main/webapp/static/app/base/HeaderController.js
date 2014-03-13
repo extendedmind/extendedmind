@@ -1,7 +1,7 @@
 /* global $ */
 'use strict';
 
-function HeaderController($scope, $location, $document, $element, $rootScope, SnapService) {
+function HeaderController($timeout, $scope, $location, $document, $element, $rootScope, SnapService) {
 
   $scope.omnibarText = {};
   $scope.omniBarVisible = false;
@@ -18,6 +18,10 @@ function HeaderController($scope, $location, $document, $element, $rootScope, Sn
 
   $scope.showOmnibar = function() {
     $scope.omniBarVisible = true;
+    $timeout(function(){
+      // Programmatically focus on the omnibar
+      $element.find('input#omniItem')[0].focus();
+    });
   };
 
   $scope.saveOmnibarText = function(omnibarText) {
@@ -82,5 +86,5 @@ function HeaderController($scope, $location, $document, $element, $rootScope, Sn
 }
 
 HeaderController['$inject'] = [
-'$scope', '$location', '$document', '$element', '$rootScope', 'SnapService'];
+'$timeout', '$scope', '$location', '$document', '$element', '$rootScope', 'SnapService'];
 angular.module('em.app').controller('HeaderController', HeaderController);
