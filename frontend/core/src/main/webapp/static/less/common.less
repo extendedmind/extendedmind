@@ -1,3 +1,7 @@
+.page-header {
+  color: @highlighted-element;
+}
+
 // ABSOLUTE CENTER
 
 .center-container {
@@ -293,7 +297,7 @@ input[type='checkbox'] + label:before {
 }
 
 input[type="checkbox"] + label:before {
-  .icon-selection-empty;
+  .icon-selection_empty;
 }
 
 input[type="checkbox"] + label.overdue:before {
@@ -301,7 +305,7 @@ input[type="checkbox"] + label.overdue:before {
 }
 
 input[type="checkbox"]:checked + label:before {
-  .icon-selection-checked;
+  .icon-selection_checked;
   color: @highlighted-element;
 }
 
@@ -411,13 +415,6 @@ span.icon-i:active, span.icon-plus:active {
   color: @highlighted-element-pressed;
 }
 
-/*
-[class^="icon-"], [class*=" icon-"] button {
-  color: @highlighted-element; // plus button always highlighted-element
-  padding-top: 8px; // quick fix to center the plus button
-}
-*/
-
 .rounded-corners {
   border-radius: @rounded-corner-radius;
 }
@@ -505,4 +502,27 @@ a.content:active {
   .modal-dialog {
     max-width: @max-modal-width;
   }
+}
+
+// ICOMOON TWEAKS
+[class^="icon-"], [class*=" icon-"] {
+  font-size: @icon-size;
+  color: @icon;
+}
+
+.icon-arrow-right {
+  font-size: @slide-indicator-width;
+}
+
+.icon-logo_with_text {
+  color: @logo;
+  font-size: @banner-logo-size;
+}
+
+.icon-logo_only {
+  color: @logo;
+}
+
+.icon-arrow-left {
+  font-size: @slide-indicator-width;
 }

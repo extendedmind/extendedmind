@@ -1,10 +1,10 @@
 @font-face {
 	font-family: 'icomoon';
-	src:url('../fonts/icomoon.eot');
-	src:url('../fonts/icomoon.eot?#iefix') format('embedded-opentype'),
-		url('../fonts/icomoon.ttf') format('truetype'),
-		url('../fonts/icomoon.woff') format('woff'),
-		url('../fonts/icomoon.svg#icomoon') format('svg');
+	src:url('../fonts/icomoon.eot?-2739zg');
+	src:url('../fonts/icomoon.eot?#iefix-2739zg') format('embedded-opentype'),
+		url('../fonts/icomoon.woff?-2739zg') format('woff'),
+		url('../fonts/icomoon.ttf?-2739zg') format('truetype'),
+		url('../fonts/icomoon.svg?-2739zg#icomoon') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -12,65 +12,52 @@
 [class^="icon-"], [class*=" icon-"] {
 	font-family: 'icomoon';
 	speak: none;
-	font-size: @icon-size;
 	font-style: normal;
 	font-weight: normal;
 	font-variant: normal;
 	text-transform: none;
 
-	// Better Font Rendering
+	/* Better Font Rendering =========== */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-
-	// default icon color
-	color: @icon;
 }
 
-[class^="icon-"]:active {
-	color: @default-element-pressed;
-}
-
-.icon-selection-empty {
+.icon-tasks:before {
 	content: "\e600";
 }
-.icon-selection-checked {
+.icon-selection_empty {
 	content: "\e601";
 }
-.icon-plus:before {
+.icon-selection_checked {
 	content: "\e602";
 }
-.icon-i:before {
-	content: "\e603";
-}
-.icon-home:before {
+.icon-notes:before {
 	content: "\e604";
 }
-.icon-arrow-right:before {
+.icon-menu:before {
 	content: "\e605";
-	font-size: @slide-indicator-width;
 }
-.icon-tasks:before {
+.icon-logo_with_text:before {
 	content: "\e606";
 }
-.icon-notes:before {
+.icon-logo_only:before {
 	content: "\e607";
 }
 .icon-inbox:before {
 	content: "\e608";
 }
-.icon-logo_with_text:before {
+.icon-i:before {
 	content: "\e609";
-	color: @logo;
-	font-size: @banner-logo-size;
 }
-.icon-logo_only:before {
+.icon-home:before {
 	content: "\e60a";
-	color: @logo;
 }
-.icon-arrow-left:before {
+.icon-arrow_right:before {
 	content: "\e60b";
-	font-size: @slide-indicator-width;
 }
-.icon-menu:before {
+.icon-arrow_left:before {
 	content: "\e60c";
+}
+.icon-plus:before {
+	content: "\e603";
 }
