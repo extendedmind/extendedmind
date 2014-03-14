@@ -1,3 +1,5 @@
+/* global $ */
+
 'use strict';
 
 // Controller for all main slides
@@ -5,7 +7,7 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection. 
 function MainController(
-  $scope, $location, $rootScope, $timeout, $window, $filter,
+  $scope, $location, $rootScope, $timeout, $window, $filter, $document,
   UserSessionService, BackendClientService, ItemsService, ListsService,
   TagsService, TasksService, NotesService, FilterService, SwiperService,
   TasksSlidesService, NotesSlidesService) {
@@ -23,7 +25,111 @@ function MainController(
   $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
 
-  // Backend polling
+  // OMNIBAR
+
+  $scope.omnibarText = {};
+  $scope.omnibarPlaceholders = {};
+
+  $scope.omnibarVisible = false;
+  $scope.omnibarActive = false;
+  $scope.isMenuOpen = false;
+
+  $scope.setOmnibarPlaceholder = function(heading){
+    $scope.omnibarPlaceholders[heading] = heading + getOfflineIndicator();
+  };
+
+  function getOfflineIndicator(){
+    if (!$scope.online){
+      return '*';
+    }else{
+      return '';
+    }
+  }
+
+  $scope.saveOmnibarText = function(omnibarText) {
+    if (omnibarText.title && omnibarText.title.length > 0){
+      ItemsService.saveItem({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(/*item*/){
+        $scope.omnibarText.title = '';
+      });
+    }
+  };
+
+  $scope.clickOmnibarPlus = function(omnibarText, heading) {
+    if (omnibarText.title && omnibarText.title.length > 0){
+      $scope.saveOmnibarText(omnibarText);
+    }else{
+      $location.path(UserSessionService.getOwnerPrefix() + '/items/new');
+    }
+  }
+
+  $scope.omnibarFocus = function(heading) {
+    $scope.omnibarVisible = true;
+    $scope.omnibarActive = true;
+    $scope.omnibarPlaceholders[heading] = 'store / recall';
+    $scope.bindOmnibarElsewhereEvents();
+  };
+
+  $scope.omnibarKeyDown = function(event){ 
+    if (event.keyCode === 27){
+      clearOmnibar();
+    };
+  }
+
+  // "Click elsewhere to lose omnibar focus"
+
+  $scope.$on('$destroy', function() {
+    $scope.unbindOmnibarElsewhereEvents();
+  });
+
+  $scope.omnibarEventsBound = false;
+  $scope.unbindOmnibarElsewhereEvents = function() {
+    if ($scope.omnibarEventsBound){
+      $document.unbind('click', $scope.omnibarElsewhereCallback);
+    }
+    $scope.omnibarEventsBound = false;
+  };
+
+  $scope.bindOmnibarElsewhereEvents = function () {
+    if (!$scope.omnibarEventsBound){
+      $document.bind('click', $scope.omnibarElsewhereCallback);
+      $scope.omnibarEventsBound = true;
+    }
+  };
+
+  $scope.omnibarElsewhereCallback = function(event) {
+    // Rule out clicking on omnibar text itself,
+    // or any of the search results 
+    if (event.target.id !== 'omniItem' && event.target.id !== 'omnibarPlus' &&
+        event.target.id !== 'accordionTitleLink' &&
+        !$(event.target).is('input') &&
+        !$(event.target).is('label') &&
+        !$(event.target).hasClass('page-header') &&
+        !$(event.target).parents('.accordion-item-active').length &&
+        !$(event.target).parents('.item-actions').length) {
+      $scope.$apply(function(){
+        clearOmnibar();
+      });
+    }
+  };
+
+  function clearOmnibar(){
+    $scope.unbindOmnibarElsewhereEvents();
+    $scope.omnibarText.title = '';
+    $scope.omnibarActive = false;
+    $scope.omnibarVisible = false;
+    for (var heading in $scope.omnibarPlaceholders) {
+      if ($scope.omnibarPlaceholders.hasOwnProperty(heading)){
+        if ($scope.omnibarPlaceholders[heading] === 'store / recall'){
+          // This is the active omnibar, blur it programmatically
+          $('input#' + heading + 'OmnibarInput').blur();
+          $scope.omnibarPlaceholders[heading] = heading;
+          return;
+        }
+      }
+    }
+  }
+
+  // BACKEND POLLING
 
   var synchronizeItemsTimer;
   var synchronizeItemsDelay = 12 * 1000;
@@ -41,7 +147,8 @@ function MainController(
     angular.element($window).bind('blur', cancelSynchronizeItemsDelayed);
   }
 
-  function setMobileOrDesktop(width) {
+  function setWidth(width) {
+    $rootScope.currentWidth = width;
     if (width <= 480) {
       $rootScope.isDesktop = false;
       $rootScope.isMobile = true;
@@ -50,10 +157,10 @@ function MainController(
       $rootScope.isDesktop = true;
     }
   }
-  setMobileOrDesktop($window.innerWidth);
+  setWidth($window.innerWidth);
 
   function windowResized() {
-    setMobileOrDesktop($window.innerWidth);
+    setWidth($window.innerWidth);
   }
 
   angular.element($window).bind('resize', windowResized);
@@ -101,10 +208,6 @@ function MainController(
     angular.element($window).unbind('resize', windowResized);
   });
 
-  $scope.addNewItem = function(itemTitle) {
-    return ItemsService.saveItem({title: itemTitle}, UserSessionService.getActiveUUID());
-  };
-
   $scope.gotoHome = function() {
     if ($scope.feature === 'tasks') {
       SwiperService.swipeTo(TasksSlidesService.DATES);
@@ -151,7 +254,7 @@ function MainController(
 }
 
 MainController.$inject = [
-'$scope', '$location', '$rootScope', '$timeout', '$window', '$filter',
+'$scope', '$location', '$rootScope', '$timeout', '$window', '$filter', '$document',
 'UserSessionService', 'BackendClientService', 'ItemsService', 'ListsService',
 'TagsService', 'TasksService', 'NotesService', 'FilterService', 'SwiperService',
 'TasksSlidesService', 'NotesSlidesService'

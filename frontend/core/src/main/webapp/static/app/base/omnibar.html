@@ -1,0 +1,12 @@
+<form ng-init="setOmnibarPlaceholder(heading)" id="{{heading}}-omnibar" role="form" name="{{heading}}-addOmniItem" ng-submit="saveOmnibarText(omnibarText)">
+  <div class="form-group">
+    <div ng-class="(omnibarVisible && 'left-input-wrapper') || (!omnibarVisible && 'centered-horizontally')">
+      <label class="sr-only" for="omniItem">omniItem</label>
+      <input type="text" ng-focus="omnibarFocus(heading)" class="simple-input form-control" id="{{heading}}OmnibarInput" ng-model="omnibarText.title" dynamic-placeholder="{{omnibarPlaceholders[heading]}}" ng-keydown="omnibarKeyDown($event)" required>
+    </div>
+    <div ng-if="omnibarVisible" class="right-button-wrapper">
+      <button id="omnibarPlus" class="button" type="button" ng-click="clickOmnibarPlus(omnibarText)"><span class="icon-plus"></span>
+      </button>
+    </div>
+  </div>
+</form>

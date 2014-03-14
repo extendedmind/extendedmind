@@ -56,43 +56,54 @@ div[role=main] {
 // HEADER
 
 header {
-  position: absolute;
+  z-index: 1;
   top: 0px; 
   left: 0px;
   overflow: hidden;
   width: 100%;
-  padding-left: inherit;
-  display: table;
   * {
     vertical-align: middle;
-  }
-  nav {
-    display: table-cell;
   }
 }
 
 .page-header {
   min-height: @page-header-height;
+  //max-width: @two-column-grid-width;
+  .center-horizontally;
+  position: relative;
   .left-of-three {
-    width: 20%;
-  }
-  .right-of-three {
-    width: 20%;
+    padding-left: @horizontal-grid;
+    background-color: white;
+    float:left;
+    text-align: right;
+    // Width determined with javascript: 50%-50px
   }
   .center-of-three {
-    width: 60%;
+    width: 200px;
+    .transparent-background;
+  }
+  .right-of-three {
+    padding-right: @horizontal-grid;
+    background-color: white;
+    float:right;
+    text-align: left;
+    // Width determined with javascript: 50%-50px
   }
 }
 
-.heading-header {
+.heading-header{
+  position: absolute;
   text-align: center;
 }
 
 // CONTENT
 
+.page-heading {
+  height: @page-header-height;
+}
+
 .page-content-container {
   height: inherit;
-  padding-top: @page-header-height;
   padding-bottom: @footer-height;
   .accordion-wrapper {
     height: inherit;
@@ -157,6 +168,7 @@ footer {
 }
 
 .swiper-container.main-slides {
+  margin-top: -@page-header-height;
   margin-bottom: -@footer-height;
 }
 
