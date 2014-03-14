@@ -2,13 +2,13 @@
   <div class="column" ng-controller="TasksController">
     <header id="tasks-dates-header" class="page-header" ng-init="heading='dates'" ng-include="'static/app/base/pageHeader.html'"></header>
     <div id="tasks-dates-page-content-container" class="content-container page-content-container">
-      <div ng-include="'static/app/tasks/datePicker.html'" include-replace></div>
+      <div ng-if="isDatepickerVisible" class="swiper-no-swiping" ng-include="'static/app/tasks/datepicker.html'" include-replace></div>
       <div class="swiper-container vertical-slides" swiper-container="tasks/home" swiper-type="page" expected-slides="dates.length">
         <div class="swiper-wrapper" ng-class="getNoSwipingClass()">
           <div class="swiper-slide" ng-repeat="date in dates" swiper-slide="tasks/home/{{date.weekday}}" slide-index="$index" ng-init="subtask = {date: date.yyyymmdd}">
+            <h3 class="date-heading" ng-if="!isDatepickerVisible" ng-click="setDatepickerVisible()">{{date.displayDate}}</h3>
             <div class="inner-slide-content-container">
               <section id="date" class="date">
-                <h3>{{date.displayDate}}</h3>
                 <div>
                   <div class="inner-page-content-container" accordion>
                     <div ng-repeat="task in tasks | tasksByDate:date.yyyymmdd">

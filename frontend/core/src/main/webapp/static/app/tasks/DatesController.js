@@ -1,8 +1,9 @@
 'use strict';
 
-function DatesController($q, $scope, $timeout, DateService, TasksSlidesService, SwiperService) {
+function DatesController($document, $q, $scope, $timeout, DateService, TasksSlidesService, SwiperService) {
   var activeDay;
   $scope.dates = DateService.activeWeek();
+  $scope.isDatepickerVisible = false;
 
   DateService.registerDayChangeCallback(dayChangeCallback);
   function dayChangeCallback() {
@@ -33,12 +34,12 @@ function DatesController($q, $scope, $timeout, DateService, TasksSlidesService, 
     $q.when(
       SwiperService.setInitialSlidePath(
         TasksSlidesService.DATES,
-        TasksSlidesService.getDateSlidePath(activeDay))).then(
-      function(){
+        TasksSlidesService.getDateSlidePath(activeDay)))
+    .then(function(){
         // Need additional swiping if setting initial slide path fails to work
         SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(activeDay));
       });
-  };
+  }
   swipeToStartingDay();
 
   $scope.previousWeek = function() {
@@ -64,7 +65,50 @@ function DatesController($q, $scope, $timeout, DateService, TasksSlidesService, 
   $scope.visibleDateFormat = function(date) {
     return (date === activeDay) ? date.month.name : date.weekday.substring(0,1);
   };
+
+  $scope.setDatepickerVisible = function setDatepickerVisible() {
+    $scope.isDatepickerVisible = true;
+    bindElsewhereThanDatepickerEvents();
+  };
+
+  var elsewhereThanDatepickerEventsBound = false;
+
+  function bindElsewhereThanDatepickerEvents() {
+    if (!elsewhereThanDatepickerEventsBound) {
+      document.addEventListener('click', elseWhereThanDatepickerCallback, true);
+      document.addEventListener('touchmove', elseWhereThanDatepickerCallback, false);
+      elsewhereThanDatepickerEventsBound = true;
+    }
+  }
+
+  function elseWhereThanDatepickerCallback(event) {
+    var element = event.target;
+    if (event.target.id !== 'datepicker') {
+      while (element.parentNode) {
+        element = element.parentNode;
+        if (element.id === 'datepicker') {
+          return;
+        }
+      }
+    }
+    if (event.type === 'click') {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    $scope.$apply(function() {
+      $scope.isDatepickerVisible = false;
+      unbindElsewhereThanDatepickerEvents();
+    });
+  }
+
+  function unbindElsewhereThanDatepickerEvents() {
+    if (elsewhereThanDatepickerEventsBound) {
+      document.removeEventListener('click', elseWhereThanDatepickerCallback, true);
+      document.removeEventListener('touchmove', elseWhereThanDatepickerCallback, false);
+      elsewhereThanDatepickerEventsBound = false;
+    }
+  }
 }
 
-DatesController['$inject'] = ['$q', '$scope', '$timeout', 'DateService', 'TasksSlidesService', 'SwiperService'];
+DatesController['$inject'] = ['$document', '$q', '$scope', '$timeout', 'DateService', 'TasksSlidesService', 'SwiperService'];
 angular.module('em.app').controller('DatesController', DatesController);

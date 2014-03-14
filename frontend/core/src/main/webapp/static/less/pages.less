@@ -111,15 +111,32 @@ section#signup {
 // TASKS DATES
 
 section#tasks-dates {
-  #date-picker {
+  #datepicker {
     width: 100%;
     overflow-x: auto;
+    height: @datepicker-height;
+    overflow: hidden;
+    ul {
+      overflow: hidden;
+      li {
+        text-align: center;
+        min-width: 23px;
+        a {
+          display: inline-block;
+          width: 100%;
+        }
+      }
+    }
+    a {
+      color: @highlighted-element;
+    }
+    span.activeDay {
+      color: white;
+      background-color: @highlighted-element;
+    }
   }
   .inner-slide-content-container{
     padding-bottom: @footer-height;
-  }
-  #datebar {
-    color: @highlighted-element;
   }
 }
 
@@ -164,27 +181,4 @@ div#accordionTitleHeightFix {
 a#accordionTitleLink {
   color: @content;
   line-height: 19px;
-}
-
-#datepicker {
-  height: @datepicker-height;
-  overflow: hidden;
-  ul {
-    overflow: hidden;
-    li {
-      text-align: center;
-      min-width: 23px;
-      a {
-        display: inline-block;
-        width: 100%;
-      }
-    }
-  }
-  a {
-    color: @highlighted-element;
-  }
-  span.activeDay {
-    color: white;
-    background-color: @highlighted-element;
-  }
 }
