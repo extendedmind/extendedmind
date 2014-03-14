@@ -441,6 +441,7 @@
 				GCC_VERSION = "";
 				INFOPLIST_FILE = "em/em-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-weak_framework",
 					CoreFoundation,
@@ -456,7 +457,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = em;
-				PROVISIONING_PROFILE = "DBB8B1FC-4FF9-4086-8402-5A2EFA33BA03";
+				PROVISIONING_PROFILE = "7A143854-810F-4543-8130-937DB7EF878F";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -489,7 +490,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = em;
-				PROVISIONING_PROFILE = "DBB8B1FC-4FF9-4086-8402-5A2EFA33BA03";
+				PROVISIONING_PROFILE = "7A143854-810F-4543-8130-937DB7EF878F";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -519,7 +520,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-weak_framework",
 					CoreFoundation,
