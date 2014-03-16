@@ -6,9 +6,9 @@
       <div class="swiper-container vertical-slides" swiper-container="tasks/home" swiper-type="page" expected-slides="dates.length">
         <div class="swiper-wrapper" ng-class="getNoSwipingClass()">
           <div class="swiper-slide" ng-repeat="date in dates" swiper-slide="tasks/home/{{date.weekday}}" slide-index="$index" ng-init="subtask = {date: date.yyyymmdd}">
-            <h3 class="date-heading" ng-if="!isDatepickerVisible" ng-click="setDatepickerVisible()">{{date.displayDate}}</h3>
             <div class="inner-slide-content-container">
               <section id="date" class="date">
+                <h3 class="date-heading" ng-if="!isDatepickerVisible" ng-click="setDatepickerVisible()">{{date.displayDate}}</h3>
                 <div>
                   <div class="inner-page-content-container" accordion>
                     <div ng-repeat="task in tasks | tasksByDate:date.yyyymmdd">
