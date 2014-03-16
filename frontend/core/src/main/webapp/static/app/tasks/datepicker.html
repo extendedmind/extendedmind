@@ -3,67 +3,66 @@
     <ul class="horizontally-justified">
 
       <li class="justified-element datepicker-date">
-        <a href ng-click="previousWeek()">
-          <span class="icon-arrow-left"></span>
+        <a class="change-week-arrow" href ng-click="previousWeek()">
+          <span class="icon-arrow-left">-</span>
         </a>
       </li>
 
       <li class="justified-element datepicker-date">
-        <a href ng-click="dateClicked(dates[0])">
-          <span>{{visibleDateFormat(dates[0])}}</span><br>
-          <span ng-class="{activeDay: isDayActive(dates[0])}">{{dates[0].date}}</span>
+        <a ng-class="{activeDay: isDayActive(dates[0])}" href ng-click="dateClicked(dates[0])">
+          <span>{{visibleDateFormat(dates[0])}}</span>
+          <span class="day-date">{{dates[0].date}}</span>
         </a>
       </li>
 
       <li class="justified-element datepicker-date">
-        <a href ng-click="dateClicked(dates[1])">
-          <span>{{visibleDateFormat(dates[1])}}</span><br>
-          <span ng-class="{activeDay: isDayActive(dates[1])}">{{dates[1].date}}</span>
+        <a ng-class="{activeDay: isDayActive(dates[1])}" href ng-click="dateClicked(dates[1])">
+          <span>{{visibleDateFormat(dates[1])}}</span>
+          <span class="day-date">{{dates[1].date}}</span>
         </a>
       </li>
 
       <li class="justified-element datepicker-date">
-        <a href ng-click="dateClicked(dates[2])">
-          <span>{{visibleDateFormat(dates[2])}}</span><br>
-          <span ng-class="{activeDay: isDayActive(dates[2])}">{{dates[2].date}}</span>
+        <a ng-class="{activeDay: isDayActive(dates[2])}" href ng-click="dateClicked(dates[2])">
+          <span>{{visibleDateFormat(dates[2])}}</span>
+          <span class="day-date">{{dates[2].date}}</span>
         </a>
       </li>
 
       <li class="justified-element datepicker-date">
-        <a href ng-click="dateClicked(dates[3])">
-          <span>{{visibleDateFormat(dates[3])}}</span><br>
-          <span ng-class="{activeDay: isDayActive(dates[3])}">{{dates[3].date}}</span>
+        <a ng-class="{activeDay: isDayActive(dates[3])}" href ng-click="dateClicked(dates[3])">
+          <span>{{visibleDateFormat(dates[3])}}</span>
+          <span class="day-date">{{dates[3].date}}</span>
         </a>
       </li>
 
       <li class="justified-element datepicker-date">
-        <a href ng-click="dateClicked(dates[4])">
-          <span>{{visibleDateFormat(dates[4])}}</span><br>
-          <span ng-class="{activeDay: isDayActive(dates[4])}">{{dates[4].date}}</span>
+        <a ng-class="{activeDay: isDayActive(dates[4])}" href ng-click="dateClicked(dates[4])">
+          <span>{{visibleDateFormat(dates[4])}}</span>
+          <span class="day-date">{{dates[4].date}}</span>
         </a>
       </li>
 
       <li class="justified-element datepicker-date">
-        <a href ng-click="dateClicked(dates[5])">
-          <span>{{visibleDateFormat(dates[5])}}</span><br>
-          <span ng-class="{activeDay: isDayActive(dates[5])}">{{dates[5].date}}</span>
+        <a ng-class="{activeDay: isDayActive(dates[5])}" href ng-click="dateClicked(dates[5])">
+          <span>{{visibleDateFormat(dates[5])}}</span>
+          <span class="day-date">{{dates[5].date}}</span>
         </a>
       </li>
 
       <li class="justified-element datepicker-date">
-        <a href ng-click="dateClicked(dates[6])">
-          <span>{{visibleDateFormat(dates[6])}}</span><br>
-          <span ng-class="{activeDay: isDayActive(dates[6])}">{{dates[6].date}}</span>
+        <a ng-class="{activeDay: isDayActive(dates[6])}" href ng-click="dateClicked(dates[6])">
+          <span>{{visibleDateFormat(dates[6])}}</span>
+          <span class="day-date">{{dates[6].date}}</span>
         </a>
       </li>
 
       <li class="justified-element datepicker-date">
-        <a href ng-click="nextWeek()">
-          <span class="icon-arrow-right"></span>
+        <a class="change-week-arrow" href ng-click="nextWeek()">
+          <span class="icon-arrow-right">-</span>
         </a>
       </li>
 
-      <li id="stretch"></li>
     </ul>
   </nav>
 </div>

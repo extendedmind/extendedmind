@@ -112,27 +112,38 @@ section#signup {
 
 section#tasks-dates {
   #datepicker {
-    width: 100%;
-    overflow-x: auto;
-    height: @datepicker-height;
-    overflow: hidden;
+    // http://stackoverflow.com/a/14103766
     ul {
-      overflow: hidden;
+      display: table;
+      width: 100%;
       li {
+        display: table-cell;
+        width: 11.111111111%;  /* (100 / numItems)% */
         text-align: center;
-        min-width: 23px;
         a {
-          display: inline-block;
+          font-size: @small-font-size;
           width: 100%;
+          color: @highlighted-element;
+          display: table-cell;
+          span.day-date {
+            vertical-align: middle;
+            width: 25px;
+            height: 25px;
+            display: table-cell;
+          }
+        }
+        a.change-week-arrow {
+          display: block;
+        }
+        a.activeDay {
+          font-weight: bold;
+          span.day-date {
+            color: white;
+            border-radius: 50%; //http://css-tricks.com/almanac/properties/b/border-radius/
+            background-color: @highlighted-element;
+          }
         }
       }
-    }
-    a {
-      color: @highlighted-element;
-    }
-    span.activeDay {
-      color: white;
-      background-color: @highlighted-element;
     }
   }
   .date-heading {
