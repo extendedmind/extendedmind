@@ -1,6 +1,0 @@
-These steps must be repeated every time the font pack is updated with http://icomoon.io
-
-Open icon.less and 
-1. remove :before selector from .icon-selection_empty {} and .icon-selection_checked {}
-2. add ".." before fonts path
-3. remove line: line-height: 1;
