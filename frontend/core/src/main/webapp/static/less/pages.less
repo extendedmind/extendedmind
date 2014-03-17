@@ -112,19 +112,22 @@ section#signup {
 
 section#tasks-dates {
   #datepicker {
-    width: 260px;
     height: 60px;
     overflow: hidden;
     div#scroller {
+      // http://stackoverflow.com/a/18784257
+      // css divide width 100% to 3 column
       width: 300%;
-      height: 60px;
+      display: -webkit-flex;
+      -webkit-justify-content: center;
+      display: flex;
+      justify-content: center;
       nav[role=navigation].slide {
-        width: 260px;
-        height: 60px;
-        float: left;
-        // http://stackoverflow.com/a/14103766
-        // How to stretch html / css horizontal navigation items evenly and fully across a specified container
+        -webkit-flex: 1;
+        flex: 1;
         ul {
+          // http://stackoverflow.com/a/14103766
+          // How to stretch html / css horizontal navigation items evenly and fully across a specified container
           display: table;
           width: 100%;
           li {
@@ -194,7 +197,7 @@ button.default-button{
 }
 
 input[type="checkbox"]:checked ~ a#accordionTitleLink {
-  color:@default-element;
+  color: @default-element;
   .fade-color(@fade-time);
 }
 

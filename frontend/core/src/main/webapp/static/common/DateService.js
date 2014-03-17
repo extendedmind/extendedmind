@@ -1,6 +1,6 @@
 'use strict';
 
-function DateService($interval, $timeout) {
+function DateService($timeout) {
 
   var monthNames = [
   'jan', 'feb', 'mar', 'apr',
@@ -49,6 +49,27 @@ function DateService($interval, $timeout) {
     }
   }
 
+  var datepickerWeeks = [];
+  function initializeDatepickerWeeks() {
+    var datepickerDay = getFirstDayOfTheWeek(new Date());
+    datepickerDay.setDate(datepickerDay.getDate() - 7);
+    var firstDayOfPreviousWeek = getFirstDayOfTheWeek(datepickerDay);
+
+    datepickerDay = getFirstDayOfTheWeek(new Date());
+    datepickerDay.setDate(datepickerDay.getDate() + 7);
+    var firstDayOfNextWeek = getFirstDayOfTheWeek(datepickerDay);
+
+    datepickerDay = getFirstDayOfTheWeek(new Date());
+
+    var prev = weekDaysStartingFrom(firstDayOfPreviousWeek);
+    var active = weekDaysStartingFrom(datepickerDay);
+    var next = weekDaysStartingFrom(firstDayOfNextWeek);
+    datepickerWeeks.push(prev);
+    datepickerWeeks.push(active);
+    datepickerWeeks.push(next);
+  }
+  initializeDatepickerWeeks();
+
   // http://stackoverflow.com/a/3067896
   function yyyymmdd(date) {
     var yyyy, mm, dd;
@@ -71,7 +92,7 @@ function DateService($interval, $timeout) {
 
   function weekDaysStartingFrom(date) {
     var day;
-    activeWeek = [];
+    var week = [];
 
     for (var i = 0, len = weekdays.length; i < len; i++) {
       day = {};
@@ -87,11 +108,11 @@ function DateService($interval, $timeout) {
       day.displayDate = (date.toDateString() === today.date.toDateString() ? 'today' : day.month.name + ' ' + day.date);
       day.displayDateShort = day.date;
 
-      activeWeek.push(day);
+      week.push(day);
       date.setDate(date.getDate() + 1);
     }
 
-    return activeWeek;
+    return week;
   }
 
   function getWeekWithOffset(offsetDays) {
@@ -102,6 +123,31 @@ function DateService($interval, $timeout) {
   }
 
   return {
+    datepickerWeeks: function() {
+      return datepickerWeeks;
+    },
+    changeDatePickerWeeks: function(direction) {
+      if (direction === 'prev') {
+        var datepickerFirstMonday = new Date(datepickerWeeks[0][0].yyyymmdd);
+        datepickerFirstMonday.setDate(datepickerFirstMonday.getDate() - 7);
+
+        var firstDayOfPreviousWeek = getFirstDayOfTheWeek(datepickerFirstMonday);
+        var prev = weekDaysStartingFrom(firstDayOfPreviousWeek);
+
+        datepickerWeeks.splice((datepickerWeeks.length - 1), 1);
+        datepickerWeeks.unshift(prev);
+      } else if (direction === 'next') {
+        var datepickerLastMonday = new Date(datepickerWeeks[2][0].yyyymmdd);
+        datepickerLastMonday.setDate(datepickerLastMonday.getDate() + 7);
+
+        var firstDayOfNextWeek = getFirstDayOfTheWeek(datepickerLastMonday);
+        var next = weekDaysStartingFrom(firstDayOfNextWeek);
+
+        datepickerWeeks.splice(0, 1);
+        datepickerWeeks.push(next);
+      }
+      return datepickerWeeks;
+    },
     activeWeek: function() {
       return activeWeek || (function() {
         var date = getFirstDayOfTheWeek(new Date());
@@ -110,10 +156,12 @@ function DateService($interval, $timeout) {
       })();
     },
     nextWeek: function() {
-      return getWeekWithOffset(daysFromActiveWeekToNext);
+      activeWeek = getWeekWithOffset(daysFromActiveWeekToNext);
+      return activeWeek;
     },
     previousWeek: function() {
-      return getWeekWithOffset(daysFromActiveWeekToPrevious);
+      activeWeek = getWeekWithOffset(daysFromActiveWeekToPrevious);
+      return activeWeek;
     },
     registerDayChangeCallback: function(dayChangeCB) {
       dayChangeCallback = dayChangeCB;
@@ -124,7 +172,11 @@ function DateService($interval, $timeout) {
 
     // getters
     getMondayDate: function() {
-      return (activeWeek) ? activeWeek[0] : getFirstDayOfTheWeek(new Date());
+      return (activeWeek) ? activeWeek[0] : (function() {
+        var date = getFirstDayOfTheWeek(new Date());
+        activeWeek = weekDaysStartingFrom(date);
+        return activeWeek[0];
+      })();
     },
     getTodayDate: function() {
       if (activeWeek) {
@@ -141,5 +193,5 @@ function DateService($interval, $timeout) {
   };
 }
 
-DateService.$inject = ['$interval', '$timeout'];
+DateService.$inject = ['$timeout'];
 angular.module('common').factory('DateService', DateService);

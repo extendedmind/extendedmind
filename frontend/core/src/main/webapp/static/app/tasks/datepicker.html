@@ -1,162 +1,54 @@
-<div id="datepicker" class="swiper-no-swiping" datepicker>
+<div id="datepicker">
   <div id="scroller">
-    <nav role="navigation" class="slide">
+    <nav ng-repeat="week in datepickerWeeks" role="navigation" class="slide">
       <ul class="horizontally-justified">
 
         <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[0])}" href ng-click="dateClicked(dates[0])">
-            <span>{{visibleDateFormat(dates[0])}}</span>
-            <span class="day-date">{{dates[0].date}}</span>
+          <a ng-class="{activeDay: isDayActive(week[0])}" href ng-click="dateClicked(week[0])">
+            <span>{{visibleDateFormat(week[0])}}</span>
+            <span class="day-date">{{week[0].date}}</span>
           </a>
         </li>
 
         <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[1])}" href ng-click="dateClicked(dates[1])">
-            <span>{{visibleDateFormat(dates[1])}}</span>
-            <span class="day-date">{{dates[1].date}}</span>
+          <a ng-class="{activeDay: isDayActive(week[1])}" href ng-click="dateClicked(week[1])">
+            <span>{{visibleDateFormat(week[1])}}</span>
+            <span class="day-date">{{week[1].date}}</span>
           </a>
         </li>
 
         <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[2])}" href ng-click="dateClicked(dates[2])">
-            <span>{{visibleDateFormat(dates[2])}}</span>
-            <span class="day-date">{{dates[2].date}}</span>
+          <a ng-class="{activeDay: isDayActive(week[2])}" href ng-click="dateClicked(week[2])">
+            <span>{{visibleDateFormat(week[2])}}</span>
+            <span class="day-date">{{week[2].date}}</span>
           </a>
         </li>
 
         <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[3])}" href ng-click="dateClicked(dates[3])">
-            <span>{{visibleDateFormat(dates[3])}}</span>
-            <span class="day-date">{{dates[3].date}}</span>
+          <a ng-class="{activeDay: isDayActive(week[3])}" href ng-click="dateClicked(week[3])">
+            <span>{{visibleDateFormat(week[3])}}</span>
+            <span class="day-date">{{week[3].date}}</span>
           </a>
         </li>
 
         <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[4])}" href ng-click="dateClicked(dates[4])">
-            <span>{{visibleDateFormat(dates[4])}}</span>
-            <span class="day-date">{{dates[4].date}}</span>
+          <a ng-class="{activeDay: isDayActive(week[4])}" href ng-click="dateClicked(week[4])">
+            <span>{{visibleDateFormat(week[4])}}</span>
+            <span class="day-date">{{week[4].date}}</span>
           </a>
         </li>
 
         <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[5])}" href ng-click="dateClicked(dates[5])">
-            <span>{{visibleDateFormat(dates[5])}}</span>
-            <span class="day-date">{{dates[5].date}}</span>
+          <a ng-class="{activeDay: isDayActive(week[5])}" href ng-click="dateClicked(week[5])">
+            <span>{{visibleDateFormat(week[5])}}</span>
+            <span class="day-date">{{week[5].date}}</span>
           </a>
         </li>
 
         <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[6])}" href ng-click="dateClicked(dates[6])">
-            <span>{{visibleDateFormat(dates[6])}}</span>
-            <span class="day-date">{{dates[6].date}}</span>
-          </a>
-        </li>
-
-      </ul>
-    </nav>
-    <nav role="navigation" class="slide">
-      <ul class="horizontally-justified">
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[0])}" href ng-click="dateClicked(dates[0])">
-            <span>{{visibleDateFormat(dates[0])}}</span>
-            <span class="day-date">{{dates[0].date}}</span>
-          </a>
-        </li>
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[1])}" href ng-click="dateClicked(dates[1])">
-            <span>{{visibleDateFormat(dates[1])}}</span>
-            <span class="day-date">{{dates[1].date}}</span>
-          </a>
-        </li>
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[2])}" href ng-click="dateClicked(dates[2])">
-            <span>{{visibleDateFormat(dates[2])}}</span>
-            <span class="day-date">{{dates[2].date}}</span>
-          </a>
-        </li>
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[3])}" href ng-click="dateClicked(dates[3])">
-            <span>{{visibleDateFormat(dates[3])}}</span>
-            <span class="day-date">{{dates[3].date}}</span>
-          </a>
-        </li>
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[4])}" href ng-click="dateClicked(dates[4])">
-            <span>{{visibleDateFormat(dates[4])}}</span>
-            <span class="day-date">{{dates[4].date}}</span>
-          </a>
-        </li>
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[5])}" href ng-click="dateClicked(dates[5])">
-            <span>{{visibleDateFormat(dates[5])}}</span>
-            <span class="day-date">{{dates[5].date}}</span>
-          </a>
-        </li>
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[6])}" href ng-click="dateClicked(dates[6])">
-            <span>{{visibleDateFormat(dates[6])}}</span>
-            <span class="day-date">{{dates[6].date}}</span>
-          </a>
-        </li>
-
-      </ul>
-    </nav>
-    <nav role="navigation" class="slide">
-      <ul class="horizontally-justified">
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[0])}" href ng-click="dateClicked(dates[0])">
-            <span>{{visibleDateFormat(dates[0])}}</span>
-            <span class="day-date">{{dates[0].date}}</span>
-          </a>
-        </li>
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[1])}" href ng-click="dateClicked(dates[1])">
-            <span>{{visibleDateFormat(dates[1])}}</span>
-            <span class="day-date">{{dates[1].date}}</span>
-          </a>
-        </li>
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[2])}" href ng-click="dateClicked(dates[2])">
-            <span>{{visibleDateFormat(dates[2])}}</span>
-            <span class="day-date">{{dates[2].date}}</span>
-          </a>
-        </li>
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[3])}" href ng-click="dateClicked(dates[3])">
-            <span>{{visibleDateFormat(dates[3])}}</span>
-            <span class="day-date">{{dates[3].date}}</span>
-          </a>
-        </li>
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[4])}" href ng-click="dateClicked(dates[4])">
-            <span>{{visibleDateFormat(dates[4])}}</span>
-            <span class="day-date">{{dates[4].date}}</span>
-          </a>
-        </li>
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[5])}" href ng-click="dateClicked(dates[5])">
-            <span>{{visibleDateFormat(dates[5])}}</span>
-            <span class="day-date">{{dates[5].date}}</span>
-          </a>
-        </li>
-
-        <li class="justified-element datepicker-date">
-          <a ng-class="{activeDay: isDayActive(dates[6])}" href ng-click="dateClicked(dates[6])">
-            <span>{{visibleDateFormat(dates[6])}}</span>
-            <span class="day-date">{{dates[6].date}}</span>
+          <a ng-class="{activeDay: isDayActive(week[6])}" href ng-click="dateClicked(week[6])">
+            <span>{{visibleDateFormat(week[6])}}</span>
+            <span class="day-date">{{week[6].date}}</span>
           </a>
         </li>
 
