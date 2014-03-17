@@ -156,7 +156,7 @@
             <source>jsonFixtures.js</source>
           </preloadSources>
           <sourceIncludes>
-            <include>lib/iscroll-lite.js</include>
+            <include>lib/iscroll.js</include>
             <include>lib/jquery/jquery.js</include>
             <include>lib/angularjs/angular.js</include>
             <include>lib/angularjs/angular-route.js</include>
