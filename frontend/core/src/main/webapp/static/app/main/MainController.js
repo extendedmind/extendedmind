@@ -25,27 +25,6 @@ function MainController(
   $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
 
-  // OMNIBAR
-
-  $scope.omnibarText = {};
-  $scope.omnibarPlaceholders = {};
-
-  $scope.omnibarVisible = false;
-  $scope.omnibarActive = false;
-  $scope.isMenuOpen = false;
-
-  $scope.setOmnibarPlaceholder = function(heading){
-    $scope.omnibarPlaceholders[heading] = heading + getOfflineIndicator();
-  };
-
-  function getOfflineIndicator(){
-    if (!$scope.online){
-      return '*';
-    }else{
-      return '';
-    }
-  }
-
   $scope.saveOmnibarText = function(omnibarText) {
     if (omnibarText.title && omnibarText.title.length > 0){
       ItemsService.saveItem({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(/*item*/){
@@ -54,159 +33,13 @@ function MainController(
     }
   };
 
-  $scope.clickOmnibarPlus = function(omnibarText, heading) {
+  $scope.clickOmnibarPlus = function(omnibarText) {
     if (omnibarText.title && omnibarText.title.length > 0){
       $scope.saveOmnibarText(omnibarText);
     }else{
       $location.path(UserSessionService.getOwnerPrefix() + '/items/new');
     }
   }
-
-  $scope.omnibarFocus = function(heading) {
-    $scope.omnibarVisible = true;
-    $scope.omnibarActive = true;
-    $scope.omnibarPlaceholders[heading] = 'store / recall';
-    $scope.bindOmnibarElsewhereEvents();
-  };
-
-  $scope.omnibarKeyDown = function(event){ 
-    if (event.keyCode === 27){
-      clearOmnibar();
-    };
-  }
-
-  // "Click elsewhere to lose omnibar focus"
-
-  $scope.$on('$destroy', function() {
-    $scope.unbindOmnibarElsewhereEvents();
-  });
-
-  $scope.omnibarEventsBound = false;
-  $scope.unbindOmnibarElsewhereEvents = function() {
-    if ($scope.omnibarEventsBound){
-      $document.unbind('click', $scope.omnibarElsewhereCallback);
-    }
-    $scope.omnibarEventsBound = false;
-  };
-
-  $scope.bindOmnibarElsewhereEvents = function () {
-    if (!$scope.omnibarEventsBound){
-      $document.bind('click', $scope.omnibarElsewhereCallback);
-      $scope.omnibarEventsBound = true;
-    }
-  };
-
-  $scope.omnibarElsewhereCallback = function(event) {
-    // Rule out clicking on omnibar text itself,
-    // or any of the search results 
-    if (event.target.id !== 'omniItem' && event.target.id !== 'omnibarPlus' &&
-        event.target.id !== 'accordionTitleLink' &&
-        !$(event.target).is('input') &&
-        !$(event.target).is('label') &&
-        !$(event.target).hasClass('page-header') &&
-        !$(event.target).parents('.accordion-item-active').length &&
-        !$(event.target).parents('.item-actions').length) {
-      $scope.$apply(function(){
-        clearOmnibar();
-      });
-    }
-  };
-
-  function clearOmnibar(){
-    $scope.unbindOmnibarElsewhereEvents();
-    $scope.omnibarText.title = '';
-    $scope.omnibarActive = false;
-    $scope.omnibarVisible = false;
-    for (var heading in $scope.omnibarPlaceholders) {
-      if ($scope.omnibarPlaceholders.hasOwnProperty(heading)){
-        if ($scope.omnibarPlaceholders[heading] === 'store / recall'){
-          // This is the active omnibar, blur it programmatically
-          $('input#' + heading + 'OmnibarInput').blur();
-          $scope.omnibarPlaceholders[heading] = heading;
-          return;
-        }
-      }
-    }
-  }
-
-  // BACKEND POLLING
-
-  var synchronizeItemsTimer;
-  var synchronizeItemsDelay = 12 * 1000;
-  var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
-
-  // Start synchronize interval or just start synchronize interval. 
-  synchronizeItemsAndSynchronizeItemsDelayed();
-
-  // Global variable bindToFocusEvent specifies if focus event should be wathed. Variable is true by default
-  // for browsers, where hidden tab should not poll continuously, false in PhoneGap, because javascript
-  // execution is paused anyway when app is not in focus.
-  var bindToFocus = (typeof bindToFocusEvent !== 'undefined') ? bindToFocusEvent: true;
-  if (bindToFocus) {
-    angular.element($window).bind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
-    angular.element($window).bind('blur', cancelSynchronizeItemsDelayed);
-  }
-
-  function setWidth(width) {
-    $rootScope.currentWidth = width;
-    if (width <= 480) {
-      $rootScope.isDesktop = false;
-      $rootScope.isMobile = true;
-    } else {
-      $rootScope.isMobile = false;
-      $rootScope.isDesktop = true;
-    }
-  }
-  setWidth($window.innerWidth);
-
-  function windowResized() {
-    setWidth($window.innerWidth);
-  }
-
-  angular.element($window).bind('resize', windowResized);
-
-  function synchronizeItemsAndSynchronizeItemsDelayed() {
-    synchronizeItems();
-    synchronizeItemsDelayed();
-  }
-  function cancelSynchronizeItemsDelayed() {
-    $timeout.cancel(synchronizeItemsTimer);
-  }
-
-  // https://developer.mozilla.org/en/docs/Web/API/window.setInterval
-  function synchronizeItemsDelayed() {
-    synchronizeItemsTimer = $timeout(function() {
-      synchronizeItems();
-      synchronizeItemsDelayed();
-    }, synchronizeItemsDelay);
-  }
-
-  // Synchronize items if not already synchronizing and interval reached.
-  function synchronizeItems() {
-    var activeUUID = UserSessionService.getActiveUUID();
-    if (!UserSessionService.isItemsSynchronizing(activeUUID)) {
-      var itemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
-      
-      if (isNaN(itemsSynchronized) || itemsSynchronized > itemsSynchronizedThreshold) {
-        UserSessionService.setItemsSynchronizing(activeUUID);
-        ItemsService.synchronize(activeUUID).then(function() {
-          UserSessionService.setItemsSynchronized(activeUUID);
-        });
-      }
-    }
-  }
-
-  // Unbind window focus/blur events and stop timer and remove synchronize handler functions.
-  $scope.$on('$destroy', function() {
-    // http://www.bennadel.com/blog/2548-Don-t-Forget-To-Cancel-timeout-Timers-In-Your-destroy-Events-In-AngularJS.htm
-    $timeout.cancel(synchronizeItemsTimer);
-
-    if (bindToFocus) {
-      angular.element($window).unbind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
-      angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
-    }
-    angular.element($window).unbind('resize', windowResized);
-  });
 
   $scope.gotoHome = function() {
     if ($scope.feature === 'tasks') {

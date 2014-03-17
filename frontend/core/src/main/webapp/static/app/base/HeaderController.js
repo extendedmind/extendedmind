@@ -3,6 +3,8 @@
 
 function HeaderController($timeout, $scope, $location, $document, $element, $rootScope, SnapService) {
 
+  $scope.isMenuOpen = false;
+
   $scope.toggleMenu = function toggleMenu() {
     if ($rootScope.isMobile) {
       SnapService.toggle();
