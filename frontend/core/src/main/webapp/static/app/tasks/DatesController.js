@@ -2,7 +2,8 @@
 
 function DatesController($document, $q, $scope, $timeout, DateService, TasksSlidesService, SwiperService) {
   var activeDay;
-  $scope.dates = DateService.activeWeek();
+  /*$scope.activeWeek*/$scope.dates = DateService.activeWeek();
+  // $scope.weekdays = DateService.getWeekDays();
   $scope.isDatepickerVisible = false;
 
   DateService.registerDayChangeCallback(dayChangeCallback);
@@ -13,6 +14,8 @@ function DatesController($document, $q, $scope, $timeout, DateService, TasksSlid
   $scope.$on('destroy', function() {
     DateService.removeDayChangeCallback();
   });
+
+  // $scope.changeActiveWeek
 
   // Register a callback to swiper service
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks/home', 'DatesController');
