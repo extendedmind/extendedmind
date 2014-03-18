@@ -99,7 +99,7 @@ function swiperContainerDirective(SwiperService, $rootScope) {
           // If swiperSlideInfos is already full and the index is somewhere in the
           // middle of the pack, we need to increase bigger indexes by one
           if ($scope.expectedSlides === swiperSlideInfos.length
-              && index < swiperSlideInfos.length){
+            && index < swiperSlideInfos.length){
             for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
               if (swiperSlideInfos[i].slideIndex >= index){
                 swiperSlideInfos[i].slideIndex += 1;
@@ -218,9 +218,8 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         up = false;
 
         // http://www.javascriptkit.com/javatutors/touchevents2.shtml
-        if (Math.abs(distX) > Math.abs(distY)) { // horizontal
-          return; // false? true?
-        } else if (Math.abs(distX) < Math.abs(distY)) { // vertical
+        if (Math.abs(distX) >= horizontalRestraint && Math.abs(distY) <= 10) { // horizontal
+        } else if (Math.abs(distX) >= verticalRestraint && Math.abs(distY) <= verticalRestraint) { // vertical
           if (distY < 0) {
             down = true;
             up = false;
