@@ -1,4 +1,4 @@
-<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" ng-show="isSnapVisible" id="mobile-menu" class="snap-drawer snap-drawer-left" scrollable></div>
+<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" id="mobile-menu" class="snap-drawer snap-drawer-left" scrollable></div>
 <div class="slides-container" ng-init="feature='notes'" ng-controller="MainController" snap-directive>
   <header class="page-header" ng-class="omnibarVisible && 'header-hidden'"  ng-include="'static/app/main/pageHeader.html'"></header>
   <div class="swiper-container main-slides" swiper-container="notes" swiper-type="main" expected-slides="1">
