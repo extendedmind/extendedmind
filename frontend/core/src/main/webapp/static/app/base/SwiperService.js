@@ -73,10 +73,10 @@ function SwiperService($q) {
     }
   };
 
-  var executeSlideChangeCallbacks = function(swiperPath, path){
+  var executeSlideChangeCallbacks = function(swiperPath, path, activeIndex){
     if (slideChangeCallbacks[swiperPath]) {
       for (var i = 0; i < slideChangeCallbacks[swiperPath].length; i++) {
-        slideChangeCallbacks[swiperPath][i].callback(path);
+        slideChangeCallbacks[swiperPath][i].callback(path, activeIndex);
       }
     }
   };
@@ -113,9 +113,10 @@ function SwiperService($q) {
       }
     },
     onSlideChangeEnd: function(scope, swiperPath) {
+      var activeIndex = swipers[swiperPath].swiper.activeIndex;
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
       var path = activeSlide.getData('path');
-      executeSlideChangeCallbacks(swiperPath, path);
+      executeSlideChangeCallbacks(swiperPath, path, activeIndex);
     },
     setInitialSlidePath: function(swiperPath, slidePath) {
       initialSlidePaths[swiperPath] = slidePath;
@@ -155,6 +156,9 @@ function SwiperService($q) {
           return activeSlide.getData('path');
         }
       }
+    },
+    setSwiperResistance: function(swiperPath, resistance) {
+      swipers[swiperPath].swiper.params.resistance = resistance;
     },
     registerSlideChangeCallback: function(slideChangeCallback, swiperPath, id) {
       if (!slideChangeCallbacks[swiperPath]) {
