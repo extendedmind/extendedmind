@@ -3,17 +3,16 @@
 function snapDirective($rootScope, SnapService, SwiperService) {
   return {
     restrict: 'A',
-    link: function($scope, $element) {
-      var dragElement;
+    link: function($scope, $element, attrs) {
+      var swiperPath = attrs.snapDirective;
 
       $scope.setDrawerDragElement = function setDrawerDragElement() {
-        dragElement = document.getElementById('drawer-dragger');
-        var settings = {dragger: dragElement};
+        var settings = {dragger: document.getElementById('drawer-dragger')};
         SnapService.updateSettings(settings);
 
         // TODO set initial resistance in SwiperService
         setTimeout(function() {
-          SwiperService.setSwiperResistance('tasks', '100%');
+          SwiperService.setSwiperResistance(swiperPath, '100%');
         }, 0);
       };
 
@@ -24,14 +23,15 @@ function snapDirective($rootScope, SnapService, SwiperService) {
       SnapService.registerCloseCallback(snapperClosed);
       SnapService.registerAnimatedCallback(snapperAnimated);
 
-      SwiperService.registerSlideChangeCallback(mainSlideChanged, 'tasks', 'snapDirective');
-      // SwiperService.registerSlideChangeCallback(mainSlideChanged, 'notes', 'NavbarController');
+      if (swiperPath) {
+        SwiperService.registerSlideChangeCallback(mainSlideChanged, swiperPath, 'snapDirective');
+      }
 
       function mainSlideChanged(path, activeIndex) {
         if (activeIndex === 0) {
-          SwiperService.setSwiperResistance('tasks', '100%');
+          SwiperService.setSwiperResistance(swiperPath, '100%');
         } else {
-          SwiperService.setSwiperResistance('tasks', true);
+          SwiperService.setSwiperResistance(swiperPath, true);
         }
       }
 

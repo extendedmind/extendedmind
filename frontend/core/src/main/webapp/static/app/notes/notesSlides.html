@@ -1,9 +1,9 @@
 <div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" id="mobile-menu" class="snap-drawer snap-drawer-left" scrollable></div>
-<div class="slides-container" ng-init="feature='notes'" ng-controller="MainController" snap-directive>
+<div class="slides-container" ng-init="feature='notes'" ng-controller="MainController" snap-directive="notes">
   <header class="page-header" ng-class="omnibarVisible && 'header-hidden'"  ng-include="'static/app/main/pageHeader.html'"></header>
   <div class="swiper-container main-slides" swiper-container="notes" swiper-type="main" expected-slides="1">
-    <div ng-hide="isDesktop && isMenuOpen"  class="swiper-wrapper" ng-class="getNoSwipingClass()">
-      <div class="swiper-slide" swiper-slide="notes/home" slide-index=0 ng-include="'static/app/notes/recent.html'"></div>
+    <div ng-hide="isDesktop && isMenuOpen" class="swiper-wrapper" ng-class="getNoSwipingClass()">
+      <div class="swiper-slide" id="drawer-dragger" swiper-slide="notes/home" slide-index=0 ng-include="'static/app/notes/recent.html'" onload="setDrawerDragElement()"></div>
     </div>
     <div id="desktop-menu" ng-if="isDesktop && isMenuOpen" ng-include="'static/app/auth/menu.html'"></div>  
   </div>
