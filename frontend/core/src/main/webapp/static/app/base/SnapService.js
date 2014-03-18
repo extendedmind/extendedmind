@@ -10,6 +10,9 @@ function SnapService($q) {
         disable: 'right'  // use left only
       });
     },
+    updateSettings: function(settings) {
+      snapper.settings(settings);
+    },
     toggle: function() {
       // https://github.com/jakiestfu/Snap.js/#--how-do-i-make-a-toggle-button
       if(snapper.state().state == 'left') {
