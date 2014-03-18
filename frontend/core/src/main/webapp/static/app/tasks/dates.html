@@ -10,7 +10,7 @@
             <!-- init DatesController.getSubtask -->
             <div class="inner-slide-content-container">
               <section id="date" class="date">
-                <h3 class="date-heading" ng-if="!isDatepickerVisible" ng-click="setDatepickerVisible()">{{date.displayDate}}</h3>
+                <h3 class="date-heading" ng-hide="isDatepickerVisible" ng-click="setDatepickerVisible()">{{date.displayDate}}</h3>
                 <div>
                   <div class="inner-page-content-container" accordion>
                     <!-- filter weekday, activeWeek -->
