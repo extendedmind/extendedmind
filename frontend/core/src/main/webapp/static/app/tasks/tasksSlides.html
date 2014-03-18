@@ -1,13 +1,13 @@
-<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" ng-show="isSnapVisible" id="drawer" class="snap-drawer snap-drawer-left" scrollable></div>
+<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" ng-show="isSnapVisible" id="mobile-menu" class="snap-drawer snap-drawer-left" scrollable></div>
 <div class="slides-container" ng-init="feature='tasks'" ng-controller="MainController" snap-directive>
-  <!-- TODO: use ng-if with expected-slides="tasks.length > 0 && 6 || 2" -->
-  <header class="page-header" ng-include="'static/app/main/pageHeader.html'"></header>
+  <header class="page-header" ng-class="omnibarVisible && 'header-hidden'" ng-include="'static/app/main/pageHeader.html'"></header>
   <div class="swiper-container main-slides" swiper-container="tasks" swiper-type="main" expected-slides="3">
-    <div class="swiper-wrapper" ng-class="getNoSwipingClass()">
+    <div ng-hide="isDesktop && isMenuOpen" class="swiper-wrapper" ng-class="getNoSwipingClass()">
       <div class="swiper-slide" swiper-slide="tasks/home" slide-index=0 ng-include="'static/app/tasks/dates.html'"></div>
       <div class="swiper-slide" swiper-slide="tasks/overview" slide-index=1 ng-include="'static/app/tasks/overview.html'"></div>
       <div class="swiper-slide" swiper-slide="tasks/details" slide-index=2 ng-include="'static/app/tasks/details.html'"></div>
     </div>
+    <div id="desktop-menu" ng-if="isDesktop && isMenuOpen" ng-include="'static/app/auth/menu.html'"></div>  
   </div>
-  <footer ng-include="'static/app/main/footer.html'"></footer>
+  <footer ng-if="!omnibarVisible" ng-include="'static/app/main/footer.html'"></footer>
 </div>

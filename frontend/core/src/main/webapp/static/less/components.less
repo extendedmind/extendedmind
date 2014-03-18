@@ -71,22 +71,6 @@ li.datepicker-date {
 header.page-header nav {
   color: @highlighted-element;  
   min-height: @main-header-height;
-  #menu-content {
-    background-color: white;
-    width: auto;
-    padding-top: 10px;
-    .top-bottom-borders;
-    a {
-      color: @default-element;
-    }
-    a.collective{
-      // FIXME: This color is strange
-      color: @default-element;
-    }
-    a.collective:active{
-      color: @default-element-pressed;
-    }
-  }
   nav {
     max-width: @one-column-grid-width;
     // text-align: right;
@@ -94,19 +78,22 @@ header.page-header nav {
     margin-left: auto;
     width: inherit;
   }
+
+  #omnibar-label-wrapper {
+    .edges-fade-to-white;
+  }
+
   button#menu-button{
     .button;
-    padding: 10px 20px 10px 0; // increased clicking area
-    margin-left: -3px; // aligns menu button to the edge of the column
+    padding: 10px 20px 10px @horizontal-grid; // increased clicking area
   }
   button#menu-button:active{
     background-position: 0 0;
   }
 
-  div#add-new-button {
-    button{
-      padding: 5px 0px 5px 5px; // increased clicking area
-    }
+  button#plus-button {
+    .button;
+    padding: 8px @horizontal-grid 10px 20px; // increased clicking area
   }
 
   #omnibar-search-results {
@@ -123,5 +110,88 @@ div.page-heading {
   }
   input:focus {
     text-align: left; 
+  }
+}
+
+// OMNIBAR
+
+#omnibar-wrapper{
+  position: relative;
+  .omnibar-visible {
+    .left-input-wrapper;
+    input{
+      text-align: left !important;
+    }
+  }
+
+  .omnibar-hidden {
+    .center-horizontally;
+    input::-webkit-input-placeholder { /* WebKit browsers */
+      font-weight: bold;
+      color: @highlighted-element;
+    }
+    input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+      font-weight: bold;
+      color: @highlighted-element;
+    }
+    input::-moz-placeholder { /* Mozilla Firefox 19+ */
+      font-weight: bold;
+      color: @highlighted-element;
+    }
+    input:-ms-input-placeholder { /* Internet Explorer 10+ */
+      font-weight: bold;
+      color: @highlighted-element;
+    }
+  }
+
+  #omnibar-results{
+    float: left;
+    overflow-y: auto;
+    // height set with javascript    
+  }
+}
+
+
+// MENU
+
+// desktop
+#desktop-menu{
+  max-width: @one-column-grid-width;
+  height: inherit;
+  .center-horizontally;
+  #menu-content {
+    padding-left: @horizontal-grid;
+    width: auto;
+    padding-top: 10px;
+    a {
+      color: @default-element;
+    }
+    a.collective{
+      // FIXME: This color is strange
+      color: @default-element;
+    }
+    a.collective:active{
+      color: @default-element-pressed;
+    }
+  }
+}
+
+// mobile
+#mobile-menu {
+  background: #52575F;
+  color: #FEFFFF;
+  position: absolute;
+  width: 260px;
+  height: inherit;
+  #menu-content {
+    padding-bottom: @footer-height*1.5;
+    a, span {
+      padding-right: 30px;
+      padding-left: 30px;
+    }
+    a {
+      // http://getbootstrap.com/components/#dropdowns
+      display: block;
+    }
   }
 }

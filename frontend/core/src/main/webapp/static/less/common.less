@@ -451,7 +451,6 @@ span.icon-i:active, span.icon-plus:active {
   height: 0;
   width: 0;
   position: absolute;
-  pointer-events: none;
 }
 
 .onboarding-bubble:after {
@@ -469,27 +468,6 @@ span.icon-i:active, span.icon-plus:active {
 
 .danger-heading {
   color: @danger-text;
-}
-
-// DRAWER
-
-.snap-drawer {
-  position: absolute;
-  width: 260px;
-  height: inherit;
-  background: #52575F;
-  color: #FEFFFF;
-  #menu-content {
-    padding-bottom: @footer-height*1.5;
-    a, span {
-      padding-right: 30px;
-      padding-left: 30px;
-    }
-    a {
-      // http://getbootstrap.com/components/#dropdowns
-      display: block;
-    }
-  }
 }
 
 // CONTENT
@@ -537,4 +515,28 @@ a.content:active {
 
 .icon-arrow-left {
   font-size: @slide-indicator-width;
+}
+
+// GRADIENTS
+
+.edges-fade-to-white{
+
+  /* IE10 Consumer Preview */ 
+  background-image: -ms-linear-gradient(left, #FFFFFF 0%, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0) 75%, #FFFFFF 100%);
+
+  /* Mozilla Firefox */ 
+  background-image: -moz-linear-gradient(left, #FFFFFF 0%, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0) 75%, #FFFFFF 100%);
+
+  /* Opera */ 
+  background-image: -o-linear-gradient(left, #FFFFFF 0%, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0) 75%, #FFFFFF 100%);
+
+  /* Webkit (Safari/Chrome 10) */ 
+  background-image: -webkit-gradient(linear, left top, right top, color-stop(0, #FFFFFF), color-stop(0.2, rgba(255, 255, 255, 0)), color-stop(0.8, rgba(255, 255, 255, 0)), color-stop(1, #FFFFFF));
+
+  /* Webkit (Chrome 11+) */ 
+  background-image: -webkit-linear-gradient(left, #FFFFFF 0%, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0) 75%, #FFFFFF 100%);
+
+  /* W3C Markup, IE10 Release Preview */ 
+  background-image: linear-gradient(to right, #FFFFFF 0%, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0) 75%, #FFFFFF 100%);
+
 }

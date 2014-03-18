@@ -116,7 +116,6 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
         var activeUUID = UserSessionService.getActiveUUID();
         // First check that the user has login
         if (activeUUID){
-          console.log(activeUUID)
           if (!UserSessionService.isItemsSynchronizing(activeUUID)) {
             var itemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
             
@@ -130,94 +129,12 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
         }
       }
 
-      // OMNIBAR
-
-      $scope.omnibarText = {};
-      $scope.omnibarPlaceholders = {};
-
-      $scope.omnibarVisible = false;
-      $scope.omnibarActive = false;
-
-      $scope.setOmnibarPlaceholder = function(heading){
-        $scope.omnibarPlaceholders[heading] = heading + getOfflineIndicator();
-      };
-
-      function getOfflineIndicator(){
-        if (!$scope.online){
-          return '*';
-        }else{
-          return '';
-        }
-      }
-
-      $scope.omnibarFocus = function(heading) {
-        $scope.omnibarVisible = true;
-        $scope.omnibarActive = true;
-        $scope.omnibarPlaceholders[heading] = 'store / recall';
-        $scope.bindOmnibarElsewhereEvents();
-      };
-
-      $scope.omnibarKeyDown = function(event){
-        if (event.keyCode === 27){
-          clearOmnibar();
-        }
-      };
-
-      // "Click elsewhere to lose omnibar focus"
-
-      var omnibarEventsBound = false;
-      function unbindOmnibarElsewhereEvents() {
-        if (omnibarEventsBound){
-          $element.unbind('click', omnibarElsewhereCallback);
-        }
-        omnibarEventsBound = false;
-      };
-
-      $scope.bindOmnibarElsewhereEvents = function () {
-        if (!omnibarEventsBound){
-          $element.bind('click', omnibarElsewhereCallback);
-          omnibarEventsBound = true;
-        }
-      };
-
-      var omnibarElsewhereCallback = function(event) {
-        // Rule out clicking on omnibar text itself,
-        // or any of the search results 
-        if (event.target.id !== 'omniItem' && event.target.id !== 'omnibarPlus' &&
-            event.target.id !== 'accordionTitleLink' &&
-            !$(event.target).is('input') &&
-            !$(event.target).is('label') &&
-            !$(event.target).hasClass('page-header') &&
-            !$(event.target).parents('.accordion-item-active').length &&
-            !$(event.target).parents('.item-actions').length) {
-          $scope.$apply(function(){
-            clearOmnibar();
-          });
-        }
-      };
-
-      function clearOmnibar(){
-        unbindOmnibarElsewhereEvents();
-        $scope.omnibarText.title = '';
-        $scope.omnibarActive = false;
-        $scope.omnibarVisible = false;
-        for (var heading in $scope.omnibarPlaceholders) {
-          if ($scope.omnibarPlaceholders.hasOwnProperty(heading)){
-            if ($scope.omnibarPlaceholders[heading] === 'store / recall'){
-              // This is the active omnibar, blur it programmatically
-              $('input#' + heading + 'OmnibarInput').blur();
-              $scope.omnibarPlaceholders[heading] = heading;
-              return;
-            }
-          }
-        }
-      };
-
       // WINDOW RESIZING
 
-      function setWidth(width) {
+      function setDimensions(width, height) {
         $rootScope.currentWidth = width;
-        if (width <= 480) {
+        $rootScope.currentHeight = height;
+        if (width <= 568) {
           $rootScope.isDesktop = false;
           $rootScope.isMobile = true;
         } else {
@@ -225,11 +142,11 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
           $rootScope.isDesktop = true;
         }
       }
-      setWidth($window.innerWidth);
+      setDimensions($window.innerWidth, $window.innerHeight);
 
       function windowResized() {
         $scope.$apply(function(){
-          setWidth($window.innerWidth);
+          setDimensions($window.innerWidth, $window.innerHeight);
         });
       }
 
@@ -246,7 +163,6 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
           angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
         }
         angular.element($window).unbind('resize', windowResized);
-        unbindOmnibarElsewhereEvents();
       });
     }
   };

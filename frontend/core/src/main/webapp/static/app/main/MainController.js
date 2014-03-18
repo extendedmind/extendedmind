@@ -10,7 +10,7 @@ function MainController(
   $scope, $location, $rootScope, $timeout, $window, $filter, $document,
   UserSessionService, BackendClientService, ItemsService, ListsService,
   TagsService, TasksService, NotesService, FilterService, SwiperService,
-  TasksSlidesService, NotesSlidesService) {
+  TasksSlidesService, NotesSlidesService, SnapService) {
   // Data arrays 
   $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
@@ -25,6 +25,51 @@ function MainController(
   $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
 
+  // OMNIBAR
+
+  $scope.omnibarText = {};
+  $scope.omnibarPlaceholders = {};
+
+  $scope.omnibarVisible = false;
+
+  $scope.setOmnibarPlaceholder = function(heading){
+    $scope.omnibarPlaceholders[heading] = heading + getOfflineIndicator();
+  };
+
+  function getOfflineIndicator(){
+    if (!$scope.online){
+      return '*';
+    }else{
+      return '';
+    }
+  }
+
+  $scope.clickOmnibar = function(heading) {
+    $scope.omnibarVisible = true;
+    $scope.omnibarPlaceholders[heading] = 'store / recall';
+  };
+
+  $scope.omnibarKeyDown = function(event){
+    if (event.keyCode === 27){
+      $scope.clearOmnibar();
+    }
+  };
+
+  $scope.clearOmnibar = function(){
+    $scope.omnibarText.title = '';
+    $scope.omnibarVisible = false;
+    for (var heading in $scope.omnibarPlaceholders) {
+      if ($scope.omnibarPlaceholders.hasOwnProperty(heading)){
+        if ($scope.omnibarPlaceholders[heading] === 'store / recall'){
+          // This is the active omnibar, blur it programmatically
+          $('input#' + heading + 'OmnibarInput').blur();
+          $scope.omnibarPlaceholders[heading] = heading;
+          return;
+        }
+      }
+    }
+  };
+
   $scope.saveOmnibarText = function(omnibarText) {
     if (omnibarText.title && omnibarText.title.length > 0){
       ItemsService.saveItem({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(/*item*/){
@@ -33,6 +78,17 @@ function MainController(
     }
   };
 
+  $scope.saveAsTask = function(omnibarText) {
+    TasksService.saveTask({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(){
+      $scope.omnibarText.title = '';
+    });
+  }
+
+  $scope.saveAsNote = function(omnibarText) {
+    NotesService.saveNote({title: omnibarText.title}, UserSessionService.getActiveUUID());
+    $scope.omnibarText.title = '';
+  }
+
   $scope.clickOmnibarPlus = function(omnibarText) {
     if (omnibarText.title && omnibarText.title.length > 0){
       $scope.saveOmnibarText(omnibarText);
@@ -40,6 +96,20 @@ function MainController(
       $location.path(UserSessionService.getOwnerPrefix() + '/items/new');
     }
   }
+
+  // Menu actions
+
+  $scope.isMenuOpen = false;
+
+  $scope.toggleMenu = function toggleMenu() {
+    if ($rootScope.isMobile) {
+      SnapService.toggle();
+    } else if ($rootScope.isDesktop) {
+      $scope.isMenuOpen = !$scope.isMenuOpen;
+    }
+  };
+
+  // Navigation
 
   $scope.gotoHome = function() {
     if ($scope.feature === 'tasks') {
@@ -90,6 +160,6 @@ MainController.$inject = [
 '$scope', '$location', '$rootScope', '$timeout', '$window', '$filter', '$document',
 'UserSessionService', 'BackendClientService', 'ItemsService', 'ListsService',
 'TagsService', 'TasksService', 'NotesService', 'FilterService', 'SwiperService',
-'TasksSlidesService', 'NotesSlidesService'
+'TasksSlidesService', 'NotesSlidesService', 'SnapService'
 ];
 angular.module('em.app').controller('MainController', MainController);

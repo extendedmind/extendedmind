@@ -1,9 +1,10 @@
-<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" ng-show="isSnapVisible" id="drawer" class="snap-drawer snap-drawer-left" scrollable></div>
+<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" ng-show="isSnapVisible" id="mobile-menu" class="snap-drawer snap-drawer-left" scrollable></div>
 <div class="no-slides-container" ng-init="feature='inbox'" ng-controller="MainController" snap-directive>
-  <section id="inbox" class="two-column-grid page" ng-controller="ItemsController">
+  <header ng-class="omnibarVisible && 'header-hidden'" class="page-header" ng-include="'static/app/main/pageHeader.html'"></header>
+  <section ng-hide="isDesktop && isMenuOpen" id="inbox" class="two-column-grid page header-page" ng-controller="ItemsController">
     <div class="column">
-      <header class="page-header" ng-init="heading='inbox'" ng-include="'static/app/base/pageHeader.html'"></header>
-      <div id="inbox-page-content-container" class="content-container page-content-container">
+      <div class="page-heading swiper-no-swiping" ng-init="heading='inbox'" ng-include="'static/app/main/omnibar.html'"></div>
+      <div ng-if="!omnibarVisible" id="inbox-page-content-container" class="content-container page-content-container">
         <div class="accordion-wrapper">
           <div class="inner-page-content-container" accordion>
             <div ng-repeat="item in items | orderBy:'modified':true">
@@ -20,4 +21,5 @@
       TODO
     </aside>
   </section>
+  <div id="desktop-menu" ng-if="isDesktop && isMenuOpen" ng-include="'static/app/auth/menu.html'"></div>  
 </div>

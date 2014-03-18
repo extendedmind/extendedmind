@@ -1,0 +1,67 @@
+<div id="omnibar-wrapper" class="swiper-no-swiping" ng-controller="ItemsController">
+  <form ng-init="setOmnibarPlaceholder(heading)" id="{{heading}}-omnibar" role="form" name="{{heading}}-addOmniItem" ng-submit="saveOmnibarText(omnibarText)">
+    <div class="form-group">
+      <div ng-class="(omnibarVisible && 'omnibar-visible') || (!omnibarVisible && 'omnibar-hidden')">
+        <input type="text" ng-click="clickOmnibar(heading)" class="simple-input form-control" id="{{heading}}OmnibarInput" ng-model="omnibarText.title" dynamic-placeholder="{{omnibarPlaceholders[heading]}}" ng-keydown="omnibarKeyDown($event)" required>
+      </div>
+      <div ng-if="omnibarVisible" class="right-button-wrapper">
+        <button id="omnibarPlus" class="button" type="button" ng-click="clickOmnibarPlus(omnibarText)"><span class="icon-plus"></span>
+        </button>
+      </div>
+    </div>
+  </form>
+  <div ng-if="omnibarVisible" class="omnibar-actions">
+    <ul class="button-row">
+      <li class="button-container left-of-three border-right">
+        <button class="normal-button" type="button" ng-click="saveAsTask(omnibarText)" ng-disabled="!omnibarText.title || omnibarText.title.length === 0">
+          <span class="button-text">task</span>
+        </button>
+      </li>
+      <li class="button-container center-of-three">
+        <button class="normal-button" type="button" ng-click="saveAsNote(omnibarText)" ng-disabled="!omnibarText.title || omnibarText.title.length === 0">
+          <span class="button-text">note</span>
+        </button>
+      </li>
+      <li class="button-container right-of-three">
+        <button class="default-button" type="button" ng-click="clearOmnibar()">
+          <span class="button-text">cancel</span>
+        </button>
+      </li>
+    </ul>
+  </div>
+  <div id="omnibar-results" ng-if="omnibarText.title && omnibarText.title.length > 0" ng-style="{height: currentHeight - 130}"> 
+    <div class="filtered-items" ng-show="filteredItems.length">
+      <h3 ><a href ng-click="gotoInbox()" class="page-header">inbox</a></h3>
+      <div class="inner-page-content-container" accordion>
+        <div ng-repeat="item in filteredItems = (items | filter:{title:omnibarText.title}) | orderBy:'modified':true">
+          <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" toggle-complete="false"></div>
+          <div class="accordion-body" ng-if="isOpen(item)">
+            <div ng-include="'static/app/main/itemActions.html'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="filtered-items" ng-show="filteredTasks.length" ng-controller="TasksController">
+      <h3><a href ng-click="gotoTasks()" class="page-header">tasks</a></h3>
+      <div class="inner-page-content-container" accordion>
+        <div ng-repeat="task in filteredTasks = (tasks | filter:{title:omnibarText.title})">
+          <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+          <div class="accordion-body" ng-if="isOpen(task)">
+            <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="filtered-items" ng-show="filteredNotes.length" ng-controller="NotesController">
+      <h3><a href ng-click="gotoNotes()" class="page-header">notes</a></h3>
+      <div class="inner-page-content-container" accordion>
+        <div ng-repeat="note in filteredNotes = (notes | filter:{title:omnibarText.title})">
+          <div accordion-title="note" edit-item="editNote(task)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete></div>
+          <div class="accordion-body" ng-if="isOpen(note)">
+            <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,19 +1,23 @@
 {
-    "folders":
-    [
-        {
-            "path": "./",
-            "folder_exclude_patterns": ["target", ".*"],
-            "file_exclude_patterns": [".*"]
-        },
-        {
-            "path": "../phonegap",
-            "file_exclude_patterns": [".*"]
-        }
-    ],
-    "settings":
-    {
-      "tab_size": 2,
-      "translate_tabs_to_spaces": true
-    }
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				".*"
+			],
+			"folder_exclude_patterns":
+			[
+				"target",
+				".*"
+			],
+			"follow_symlinks": true,
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"tab_size": 2,
+		"translate_tabs_to_spaces": true
+	}
 }
