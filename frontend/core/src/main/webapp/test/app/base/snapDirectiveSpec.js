@@ -29,7 +29,6 @@ describe('snapDirective', function() {
 
   it('should create snapper', function() {
     expect(SnapService.createSnapper).toHaveBeenCalledWith($element[0]);
-    expect(SnapService.disableSliding).toHaveBeenCalled();
     expect(SnapService.registerOpenCallback).toHaveBeenCalledWith(jasmine.any(Function));
     expect(SnapService.registerCloseCallback).toHaveBeenCalledWith(jasmine.any(Function));
     expect(SnapService.registerAnimatedCallback).toHaveBeenCalledWith(jasmine.any(Function));
