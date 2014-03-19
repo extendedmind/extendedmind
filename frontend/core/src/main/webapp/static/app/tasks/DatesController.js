@@ -1,6 +1,6 @@
 'use strict';
 
-function DatesController($q, $scope, DateService, TasksSlidesService, SwiperService) {
+function DatesController($q, $scope, DateService, SwiperService) {
   var activeDay;
   /*$scope.activeWeek*/$scope.dates = DateService.activeWeek();
   // $scope.weekdays = DateService.getWeekDays();
@@ -15,6 +15,10 @@ function DatesController($q, $scope, DateService, TasksSlidesService, SwiperServ
   $scope.$on('destroy', function() {
     DateService.removeDayChangeCallback();
   });
+
+  function getDateSlidePath(activeDay){
+    return 'tasks/home/' + activeDay.weekday;
+  }
 
   // This function is intended to be called from datepicker directive.
   $scope.changeActiveWeek = function changeActiveWeek(direction, cb) {
@@ -48,11 +52,11 @@ function DatesController($q, $scope, DateService, TasksSlidesService, SwiperServ
     activeDay = DateService.getTodayDate() || DateService.getMondayDate();
     $q.when(
       SwiperService.setInitialSlidePath(
-        TasksSlidesService.DATES,
-        TasksSlidesService.getDateSlidePath(activeDay)))
+        'tasks/home',
+        getDateSlidePath(activeDay)))
     .then(function(){
         // Need additional swiping if setting initial slide path fails to work
-        SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(activeDay));
+        SwiperService.swipeTo(getDateSlidePath(activeDay));
       });
   }
   swipeToStartingDay();
@@ -69,7 +73,7 @@ function DatesController($q, $scope, DateService, TasksSlidesService, SwiperServ
 
   $scope.dateClicked = function(date) {
     activeDay = date;
-    SwiperService.swipeTo(TasksSlidesService.getDateSlidePath(date));
+    SwiperService.swipeTo(getDateSlidePath(date));
   };
 
   // http://coder1.com/articles/angularjs-managing-active-nav-elements
@@ -125,5 +129,5 @@ function DatesController($q, $scope, DateService, TasksSlidesService, SwiperServ
   }
 }
 
-DatesController['$inject'] = ['$q', '$scope', 'DateService', 'TasksSlidesService', 'SwiperService'];
+DatesController['$inject'] = ['$q', '$scope', 'DateService', 'SwiperService'];
 angular.module('em.app').controller('DatesController', DatesController);

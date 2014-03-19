@@ -2,7 +2,7 @@
   <ul class="horizontally-justified">
     <li id="home-link" class="justified-element">
       <a href ng-click="gotoHome()" ng-class="isActiveSlide('home') && 'active-slide'">
-        <span ng-bind="feature"></span>
+        <span ng-bind="homeHeading"></span>
       </a>
     </li>
     
@@ -14,7 +14,7 @@
     
     <li id="lists-link" class="justified-element">
       <a href ng-click="gotoDetails()" ng-class="isActiveSlide('details') && 'active-slide'">
-        <span>details</span>
+        <span ng-bind="feature"></span>
       </a>
     </li>
     <li id="stretch"></li>

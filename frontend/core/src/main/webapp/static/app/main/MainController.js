@@ -10,7 +10,7 @@ function MainController(
   $scope, $location, $rootScope, $timeout, $window, $filter, $document,
   UserSessionService, BackendClientService, ItemsService, ListsService,
   TagsService, TasksService, NotesService, FilterService, SwiperService,
-  TasksSlidesService, NotesSlidesService, SnapService) {
+  SnapService) {
   // Data arrays 
   $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
@@ -113,17 +113,17 @@ function MainController(
 
   $scope.gotoHome = function() {
     if ($scope.feature === 'tasks') {
-      SwiperService.swipeTo(TasksSlidesService.DATES);
+      SwiperService.swipeTo('tasks/home');
     }else if ($scope.feature === 'notes'){
-      SwiperService.swipeTo(NotesSlidesService.RECENT);
+      SwiperService.swipeTo('notes/home');
     }
   };
 
   $scope.gotoOverview = function() {
     if ($scope.feature === 'tasks') {
-      SwiperService.swipeTo(TasksSlidesService.OVERVIEW);
+      SwiperService.swipeTo('tasks/overview');
     }else if ($scope.feature === 'notes'){
-      SwiperService.swipeTo(NotesSlidesService.OVERVIEW);
+      SwiperService.swipeTo('notes/overview');
     }
   };
 
@@ -145,9 +145,9 @@ function MainController(
 
   $scope.gotoDetails = function(identifier) {
     if ($scope.feature === 'tasks') {
-      SwiperService.swipeTo(TasksSlidesService.DETAILS + '/' + identifier);
+      SwiperService.swipeTo('tasks/details/' + identifier);
     }else if ($scope.feature === 'notes') {
-      SwiperService.swipeTo(NotesSlidesService.DETAILS + '/' + identifier);
+      SwiperService.swipeTo('notes/details/' + identifier);
     }
   };
 
@@ -160,6 +160,6 @@ MainController.$inject = [
 '$scope', '$location', '$rootScope', '$timeout', '$window', '$filter', '$document',
 'UserSessionService', 'BackendClientService', 'ItemsService', 'ListsService',
 'TagsService', 'TasksService', 'NotesService', 'FilterService', 'SwiperService',
-'TasksSlidesService', 'NotesSlidesService', 'SnapService'
+'SnapService'
 ];
 angular.module('em.app').controller('MainController', MainController);

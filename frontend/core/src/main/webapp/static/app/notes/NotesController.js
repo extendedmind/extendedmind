@@ -1,6 +1,6 @@
 'use strict';
 
-function NotesController($location, $scope, $timeout, $routeParams, UserSessionService, NotesService, ListsService, SwiperService, NotesSlidesService) {
+function NotesController($location, $scope, $timeout, $routeParams, UserSessionService, NotesService, ListsService, SwiperService) {
 
   if (!$scope.note){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -83,5 +83,5 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
 
 NotesController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams',
                               'UserSessionService', 'NotesService', 'ListsService',
-                              'SwiperService', 'NotesSlidesService'];
+                              'SwiperService'];
 angular.module('em.app').controller('NotesController', NotesController);

@@ -197,10 +197,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        slide: ['TasksSlidesService', 'SwiperService',
-        function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath('tasks', TasksSlidesService.HOME);
-        }],
         owner: ['UserSessionService',
         function(UserSessionService) {
           UserSessionService.setMyActive();
@@ -215,15 +211,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        slide: ['TasksSlidesService', 'SwiperService',
-        function(TasksSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath('tasks', TasksSlidesService.HOME);
-        }],
         owner: ['$route', 'UserSessionService',
         function($route, UserSessionService) {
           UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
-
       }
     });
 
@@ -322,10 +313,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        slide: ['NotesSlidesService', 'SwiperService',
-        function(NotesSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath('notes', NotesSlidesService.RECENT);
-        }],
         owner: ['UserSessionService',
         function(UserSessionService) {
           return UserSessionService.setMyActive();
@@ -339,10 +326,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         auth: ['AuthenticationService',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        slide: ['NotesSlidesService', 'SwiperService',
-        function(NotesSlidesService, SwiperService) {
-          SwiperService.setInitialSlidePath('notes', NotesSlidesService.RECENT);
         }],
         owner: ['$route', 'UserSessionService',
         function($route, UserSessionService) {

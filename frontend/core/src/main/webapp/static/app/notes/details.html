@@ -1,0 +1,59 @@
+<section id="notes-details" class="two-column-grid page" ng-controller="NotesController">
+  <div class="column">
+    <div class="page-heading swiper-no-swiping" ng-init="heading='notes'" ng-include="'static/app/main/omnibar.html'"></div>
+    <div ng-hide="omnibarVisible" class="content-container page-content-container">
+      <div class="swiper-container vertical-slides" swiper-container="notes/details" swiper-type="page" expected-slides="count = lists.length + 1">
+        <div class="swiper-wrapper" ng-class="getNoSwipingClass()">
+          <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="notes/details/{{list.uuid}}" slide-index="$index" ng-init="newNote = {relationships: {list: list.uuid}}">
+            <div class="inner-slide-content-container">
+              <section class="list" ng-controller="ListsController">
+                <h3><a class="content" href ng-click="toggleListContent()">{{list.title}}</a></h3>
+                <div ng-if="showListContent" ng-include="'static/app/base/listActions.html'"></div>
+                <div>
+                  <div class="inner-page-content-container" accordion>
+                    <div ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
+                      <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
+                        <div class="teaser" ng-if="note.content">
+                          <a href ng-click="editNote(note)" id="note-teaser" ng-bind="getNoteContentTeaser(note)"></a>
+                        </div>
+                      </div>
+                      <div class="accordion-body" ng-if="isOpen(note)">
+                        <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+                      </div>
+                      <div class="teaser-empty" ng-if="!note.content"></div>
+                    </div>
+                    <div ng-include="'static/app/notes/addNote.html'"></div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div class="swiper-slide" swiper-slide="notes/details/uncategorized" slide-index="lists.length" ng-init="newNote = {}">
+            <div class="inner-page-content-container">
+              <section>
+                <h3>uncategorized</h3>
+                <div class="inner-page-content-container" accordion>
+                  <div ng-repeat="note in notes | itemsFilter:{name:'unsorted'}" ng-init="newNote = {}">
+                    <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
+                      <div class="teaser" ng-if="note.content">
+                        <a href ng-click="editNote(note)" id="note-teaser" ng-bind="getNoteContentTeaser(note)"></a>
+                      </div>
+                    </div>
+                    <div class="accordion-body" ng-if="isOpen(note)">
+                      <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+                    </div>
+                    <div class="teaser-empty" ng-if="!note.content"></div>
+                  </div>
+                  <div ng-include="'static/app/notes/addNote.html'"></div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>        
+      </div>
+    </div>
+  </div>
+  <aside class="column">
+    TODO
+  </aside>
+</section>

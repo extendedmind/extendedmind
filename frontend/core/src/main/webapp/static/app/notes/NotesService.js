@@ -67,7 +67,7 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
   ListsService.registerItemArchiveCallback(itemArchiveCallback, 'NotesService');
 
 
-  function addListToTasks(notesResponse){
+  function addListToNotes(notesResponse){
     if (notesResponse){
       for (var i=0, len=notesResponse.length; i<len; i++) {
         if (notesResponse[i].relationships && notesResponse[i].relationships.parent){
@@ -89,7 +89,7 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
   return {
     setNotes : function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      addListToTasks(notesResponse);
+      addListToNotes(notesResponse);
       return ArrayService.setArrays(
         notesResponse,
         notes[ownerUUID].activeNotes,

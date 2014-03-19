@@ -62,6 +62,15 @@ function ItemsController($scope, $location, $routeParams, UserSessionService, It
   $scope.addNew = function() {
     $location.path($scope.ownerPrefix + '/items/new');
   };
+
+  $scope.getOmnibarSearchResultsHeight = function() {
+    if ($scope.currentHeight <= 810){
+      return $scope.currentHeight - 130;
+    }else{
+      return 680;
+    }
+  }
+
 }
 
 ItemsController.$inject = ['$scope', '$location', '$routeParams', 'UserSessionService', 'ItemsService'];

@@ -29,7 +29,7 @@
       </li>
     </ul>
   </div>
-  <div id="omnibar-results" ng-if="omnibarText.title && omnibarText.title.length > 0" ng-style="{height: currentHeight - 130}"> 
+  <div id="omnibar-results" ng-if="omnibarText.title && omnibarText.title.length > 0" ng-style="{height: getOmnibarSearchResultsHeight()}"> 
     <div class="filtered-items" ng-show="filteredItems.length">
       <h3 ><a href ng-click="gotoInbox()" class="page-header">inbox</a></h3>
       <div class="inner-page-content-container" accordion>

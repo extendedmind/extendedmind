@@ -1,5 +1,5 @@
 <div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" id="mobile-menu" class="snap-drawer snap-drawer-left" scrollable></div>
-<div class="slides-container" ng-init="feature='tasks'" ng-controller="MainController" snap-directive="tasks">
+<div class="slides-container" ng-init="feature='tasks'; homeHeading='dates';" ng-controller="MainController" snap-directive="tasks">
   <header class="page-header" ng-class="omnibarVisible && 'header-hidden'" ng-include="'static/app/main/pageHeader.html'"></header>
   <div class="swiper-container main-slides" swiper-container="tasks" swiper-type="main" expected-slides="3">
     <div ng-hide="isDesktop && isMenuOpen" class="swiper-wrapper" ng-class="getNoSwipingClass()">
