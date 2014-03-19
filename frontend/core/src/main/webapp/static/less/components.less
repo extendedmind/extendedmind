@@ -160,6 +160,32 @@ div.page-heading {
 
 // MENU
 
+#menu-content {
+  font-size: @small-font-size;
+  a.feature-link {
+    font-size: @default-font-size;
+  }
+  a.active-feature {
+    margin-left: -18px;
+  }
+  a.active-feature:before{ 
+    content: '\2022';
+    margin-right: 10px;
+  }
+
+  li#collectives {
+    div {
+      padding-left: @horizontal-grid;      
+      a {
+        line-height: @vertical-grid-half;
+      }
+    }
+  }
+  li#my {
+    padding-top: @vertical-grid;
+  }
+}
+
 // desktop
 #desktop-menu{
   max-width: @one-column-grid-width;
@@ -185,13 +211,13 @@ div.page-heading {
 // mobile
 #mobile-menu {
   background: #52575F;
-  color: #FEFFFF;
   position: absolute;
   width: 260px;
   height: inherit;
   #menu-content {
     padding-bottom: @footer-height*1.5;
     a, span {
+      color: #FEFFFF;
       padding-right: 30px;
       padding-left: 30px;
     }
@@ -201,3 +227,4 @@ div.page-heading {
     }
   }
 }
+
