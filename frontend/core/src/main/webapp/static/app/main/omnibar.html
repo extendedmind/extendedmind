@@ -2,7 +2,7 @@
   <form ng-init="setOmnibarPlaceholder(heading)" id="{{heading}}-omnibar" role="form" name="{{heading}}-addOmniItem" ng-submit="saveOmnibarText(omnibarText)">
     <div class="form-group">
       <div ng-class="(omnibarVisible && 'omnibar-visible') || (!omnibarVisible && 'omnibar-hidden')">
-        <input type="text" ng-click="clickOmnibar(heading)" class="simple-input form-control" id="{{heading}}OmnibarInput" ng-model="omnibarText.title" dynamic-placeholder="{{omnibarPlaceholders[heading]}}" ng-keydown="omnibarKeyDown($event)" required>
+        <input type="text" ng-click="clickOmnibar(heading)" class="simple-input form-control omnibar-input" id="{{heading}}OmnibarInput" ng-model="omnibarText.title" dynamic-placeholder="{{omnibarPlaceholders[heading]}}" ng-keydown="omnibarKeyDown($event)" required>
       </div>
       <div ng-if="omnibarVisible" class="right-button-wrapper">
         <button id="omnibarPlus" class="button" type="button" ng-click="clickOmnibarPlus(omnibarText)"><span class="icon-plus"></span>
@@ -29,7 +29,7 @@
       </li>
     </ul>
   </div>
-  <div id="omnibar-results" ng-if="omnibarVisible" ng-style="{height: getOmnibarSearchResultsHeight()}">
+  <div id="omnibar-results" class="swiper-no-swiping" data-snap-ignore="true" ng-if="omnibarVisible" ng-style="{height: getOmnibarSearchResultsHeight()}">
     <div id="filtered-items-placeholder" ng-if="!omnibarText.title || omnibarText.title.length === 0" ng-style="{width: getColumnWidth()}" ng-click="clearOmnibar()">&nbsp;</div>
     <div id="filtered-items-container" ng-if="omnibarText.title && omnibarText.title.length > 0" >
       <div class="filtered-items" ng-show="filteredItems.length">
