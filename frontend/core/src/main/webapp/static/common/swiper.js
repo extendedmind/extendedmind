@@ -1367,7 +1367,15 @@ var Swiper = function (selector, params) {
 
             _this.touches.current = isH ? pageX : pageY ;
 
-            _this.positions.current = (_this.touches.current - _this.touches.start) * params.touchRatio + _this.positions.start;
+            var currentTouchRatio = params.touchRatio;
+            if ((params.leftEdgeTouchRatio !== undefined) && (_this.positions.current >= 0) && (_this.touches.current > _this.touches.start)) {
+                currentTouchRatio = params.leftEdgeTouchRatio;
+            }
+            else if ((params.rightEdgeTouchRatio !== undefined) && (_this.positions.current < -maxWrapperPosition())) {
+                currentTouchRatio = params.rightEdgeTouchRatio;
+            }
+
+            _this.positions.current = (_this.touches.current - _this.touches.start) * currentTouchRatio + _this.positions.start;
 
             //Resistance Callbacks
             if(_this.positions.current > 0 && params.onResistanceBefore) {
@@ -1377,7 +1385,7 @@ var Swiper = function (selector, params) {
                 _this.fireCallback(params.onResistanceAfter, _this, Math.abs(_this.positions.current + maxWrapperPosition()));
             }
             //Resistance
-            if (params.resistance && params.resistance!='100%') {
+            if (params.resistance && params.resistance!='100%' && currentTouchRatio !== 0) {
                 //Resistance for Negative-Back sliding
                 if(_this.positions.current > 0) {
                     var resistance = 1 - _this.positions.current/containerSize/2;
@@ -1388,11 +1396,10 @@ var Swiper = function (selector, params) {
                 }
                 //Resistance for After-End Sliding
                 if ( _this.positions.current < -maxWrapperPosition() ) {
-
-                    var diff = (_this.touches.current - _this.touches.start)*params.touchRatio + (maxWrapperPosition()+_this.positions.start);
+                    var diff = (_this.touches.current - _this.touches.start)*currentTouchRatio + (maxWrapperPosition()+_this.positions.start);
                     var resistance = (containerSize+diff)/(containerSize);
                     var newPos = _this.positions.current-diff*(1-resistance)/2;
-                    var stopPos = -maxWrapperPosition() - containerSize/2;
+                    var stopPos = -maxWrapperPosition() - containerSize/5.45;
 
                     if (newPos < stopPos || resistance<=0)
                         _this.positions.current = stopPos;
@@ -1400,7 +1407,7 @@ var Swiper = function (selector, params) {
                         _this.positions.current = newPos;
                 }
             }
-            if (params.resistance && params.resistance=='100%') {
+            if ((params.resistance && params.resistance=='100%') || currentTouchRatio === 0) {
                 //Resistance for Negative-Back sliding
                 if(_this.positions.current > 0 && !(params.freeMode&&!params.freeModeFluid)) {
                     _this.positions.current = 0;

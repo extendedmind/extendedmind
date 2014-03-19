@@ -9,8 +9,8 @@ function SwiperService($q) {
 
   var slideChangeCallbacks = {};
 
-  // Optional initial slide paths per swiper
-  var initialSlidePaths = {};
+  // Optional override parameters per swiper
+  var overrideSwiperParams = {};
 
   // Gets all swipers that match the given slide path
   var getSwiperInfosBySlidePath = function(slidePath) {
@@ -40,8 +40,8 @@ function SwiperService($q) {
 
   var getInitialSlideIndex = function(swiperPath, swiperSlidesPaths){
     var initialSlideIndex = 0;
-    if (initialSlidePaths[swiperPath]){
-      var slideIndex = getSlideIndexBySlidePath(initialSlidePaths[swiperPath], swiperSlidesPaths);
+    if (overrideSwiperParams[swiperPath] && overrideSwiperParams[swiperPath].initialSlidePath) {
+      var slideIndex = getSlideIndexBySlidePath(overrideSwiperParams[swiperPath].initialSlidePath, swiperSlidesPaths);
       if (slideIndex !== undefined){
         initialSlideIndex = slideIndex;
       }
@@ -50,11 +50,16 @@ function SwiperService($q) {
   };
 
   var getSwiperParameters = function(swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback) {
+    var leftEdgeTouchRatio = (overrideSwiperParams[swiperPath]) ? overrideSwiperParams[swiperPath].leftEdgeTouchRatio : undefined;
+    var rightEdgeTouchRatio = (overrideSwiperParams[swiperPath]) ? overrideSwiperParams[swiperPath].rightEdgeTouchRatio : undefined;
+
     var swiperParams = {
       noSwiping: true,
       queueStartCallbacks: true,
       queueEndCallbacks: true,
       simulateTouch: true,
+      leftEdgeTouchRatio: leftEdgeTouchRatio,
+      rightEdgeTouchRatio: rightEdgeTouchRatio,
       onSlideChangeEnd: onSlideChangeEndCallback
     };
     
@@ -119,7 +124,29 @@ function SwiperService($q) {
       executeSlideChangeCallbacks(swiperPath, path, activeIndex);
     },
     setInitialSlidePath: function(swiperPath, slidePath) {
-      initialSlidePaths[swiperPath] = slidePath;
+      if (overrideSwiperParams[swiperPath]) {
+        overrideSwiperParams[swiperPath].initialSlidePath = slidePath;
+      } else {
+        overrideSwiperParams[swiperPath] = {
+          initialSlidePath: slidePath
+        };
+      }
+    },
+    setEdgeTouchRatios: function(swiperPath, leftEdgeTouchRatio, rightEdgeTouchRatio) {
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
+        swipers[swiperPath].swiper.params.leftEdgeTouchRatio = leftEdgeTouchRatio;
+        swipers[swiperPath].swiper.params.rightEdgeTouchRatio = rightEdgeTouchRatio;
+      } else {
+        if (overrideSwiperParams[swiperPath]) {
+          overrideSwiperParams[swiperPath].leftEdgeTouchRatio = leftEdgeTouchRatio;
+          overrideSwiperParams[swiperPath].rightEdgeTouchRatio = rightEdgeTouchRatio;
+        } else {
+          overrideSwiperParams[swiperPath] = {
+            leftEdgeTouchRatio: leftEdgeTouchRatio,
+            rightEdgeTouchRatio: rightEdgeTouchRatio
+          };
+        }
+      }
     },
     swipeTo: function(slidePath) {
       var swiperInfos = getSwiperInfosBySlidePath(slidePath);
