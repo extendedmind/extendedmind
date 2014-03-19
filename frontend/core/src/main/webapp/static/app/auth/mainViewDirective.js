@@ -1,8 +1,7 @@
-/* global $ */
 
 'use strict';
 
-function mainViewDirective($window, $document, $rootScope, $timeout, ModalService, BackendClientService, UserSessionService, ItemsService, SnapService) {
+function mainViewDirective($window, $document, $rootScope, $timeout, ModalService, BackendClientService, UserSessionService, ItemsService, SnapService, SwiperService) {
   return {
     restrict: 'A',
     replace: 'true',
@@ -86,7 +85,7 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
         }
       };
     },
-    link: function($scope, $element){
+    link: function($scope){
 
       // BACKEND POLLING
 
@@ -148,9 +147,20 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
         if (width <= 568) {
           $rootScope.isDesktop = false;
           $rootScope.isMobile = true;
+
+          // Swiper override parameters.
+          var leftEdgeTouchRatio = 0;
+          var rightEdgeTouchRatio = 0.2;
+          SwiperService.setEdgeTouchRatios('tasks', leftEdgeTouchRatio, rightEdgeTouchRatio);
+          SwiperService.setEdgeTouchRatios('notes', leftEdgeTouchRatio, rightEdgeTouchRatio);
+
         } else {
           $rootScope.isMobile = false;
           $rootScope.isDesktop = true;
+
+          // Swiper override parameters.
+          SwiperService.setEdgeTouchRatios('tasks');
+          SwiperService.setEdgeTouchRatios('notes');
         }
       }
       setDimensions($window.innerWidth, $window.innerHeight);
@@ -179,5 +189,5 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
   };
 }
 mainViewDirective.$inject = ['$window', '$document', '$rootScope', '$timeout',
-'ModalService', 'BackendClientService', 'UserSessionService', 'ItemsService', 'SnapService'];
+'ModalService', 'BackendClientService', 'UserSessionService', 'ItemsService', 'SnapService', 'SwiperService'];
 angular.module('em.directives').directive('mainView', mainViewDirective);
