@@ -52,7 +52,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
           // Try to execute the next request in the queue
           executeRequests();
         }).
-      error(function(data, status/*, headers, config*/) {
+      error(function(data, status, headers, config) {
         if (status && (status === 404 || status === 502)){
             // Seems to be offline, stop processing
             HttpRequestQueueService.setOffline(headRequest);
@@ -64,7 +64,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
           }else {
             // Emit unsuspected error to root scope, so that
             // it can be listened on at by the application
-            $rootScope.$emit('emException', {type: 'http', status: status, data: data});
+            $rootScope.$emit('emException', {type: 'http', status: status, data: data, url: config.url});
           }
         });
     }
