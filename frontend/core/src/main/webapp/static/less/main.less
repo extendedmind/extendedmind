@@ -24,13 +24,6 @@ html {
   font-size: @default-font-size;
 }
 
-// HEADINGS
-
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  margin:0;
-}
-
 // LINKS
 
 a {
@@ -40,6 +33,25 @@ a {
 a:active {
   color: @default-element-pressed;
 }
+
+
+// HEADINGS
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  margin:0;
+  color: @content-heading;
+}
+
+h3 {
+  a {
+    color: @content-heading;
+  }
+  a:active {
+    color: @content-heading-pressed;
+  }
+}
+
 
 // LISTS
 

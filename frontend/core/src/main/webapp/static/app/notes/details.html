@@ -7,7 +7,7 @@
           <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="notes/details/{{list.uuid}}" slide-index="$index" ng-init="newNote = {relationships: {list: list.uuid}}">
             <div class="inner-slide-content-container">
               <section class="list" ng-controller="ListsController">
-                <h3><a class="content" href ng-click="toggleListContent()">{{list.title}}</a></h3>
+                <h3><a href ng-click="toggleListContent()">{{list.title}}</a></h3>
                 <div ng-if="showListContent" ng-include="'static/app/base/listActions.html'"></div>
                 <div>
                   <div class="inner-page-content-container" accordion>
