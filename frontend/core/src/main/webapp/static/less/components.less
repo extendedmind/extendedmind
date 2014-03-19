@@ -71,13 +71,6 @@ li.datepicker-date {
 header.page-header nav {
   color: @highlighted-element;  
   min-height: @main-header-height;
-  nav {
-    max-width: @one-column-grid-width;
-    // text-align: right;
-    margin-right: auto;
-    margin-left: auto;
-    width: inherit;
-  }
 
   #omnibar-label-wrapper {
     .edges-fade-to-white;
@@ -86,9 +79,15 @@ header.page-header nav {
   button#menu-button{
     .button;
     padding: 10px 20px 10px @horizontal-grid; // increased clicking area
+    span.icon-menu{
+      color: @highlighted-element;
+    }    
   }
   button#menu-button:active{
     background-position: 0 0;
+    span.icon-menu{
+      color: @highlighted-element-pressed;
+    }
   }
 
   button#plus-button {
@@ -112,6 +111,20 @@ div.page-heading {
     text-align: left; 
   }
 }
+
+// FOOTER
+
+footer {
+  a[class^='active-slide'],a[class*=' active-slide']{
+    span {
+      color: @highlighted-element;
+    }
+    span:active {
+      color: @highlighted-element-pressed;
+    }
+  }
+}
+
 
 // OMNIBAR
 
