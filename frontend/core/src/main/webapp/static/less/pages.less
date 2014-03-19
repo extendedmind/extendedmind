@@ -108,15 +108,24 @@ section#signup {
   }
 }
 
-section#inbox {
-  position: relative;
+// INBOX
+
+#inbox-container {
+  section#inbox {
+    position: relative;
+  }
+  div#menu-content {
+    padding-top: 0;
+  }
 }
 
 // TASKS DATES
 
 section#tasks-dates {
   #datepicker {
-    height: 60px;
+    z-index: 1;
+    height: @vertical-grid + 5;
+    margin-bottom: -5px;
     overflow: hidden;
     div#scroller {
       // http://stackoverflow.com/a/18784257
@@ -145,8 +154,8 @@ section#tasks-dates {
               display: table-cell;
               span.day-date {
                 vertical-align: middle;
-                width: 25px;
-                height: 25px;
+                height: 28px;
+                width: 28px;
                 display: table-cell;
               }
             }

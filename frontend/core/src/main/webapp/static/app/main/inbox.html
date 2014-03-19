@@ -1,5 +1,5 @@
 <div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" id="mobile-menu" class="snap-drawer snap-drawer-left" scrollable></div>
-<div class="no-slides-container" ng-init="feature='inbox'" ng-controller="MainController" snap-drawer>
+<div id="inbox-container" class="no-slides-container" ng-init="feature='inbox'" ng-controller="MainController" snap-drawer>
   <header ng-class="omnibarVisible && 'header-hidden'" class="page-header" ng-include="'static/app/main/pageHeader.html'"></header>
   <section ng-hide="isDesktop && isMenuOpen" id="inbox" class="two-column-grid page header-page" ng-controller="ItemsController" snap-drawer-drag>
     <div class="column">

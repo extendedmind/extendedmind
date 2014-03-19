@@ -20,7 +20,7 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
   
   $scope.setMyActive = function() {
     UserSessionService.setMyActive();
-    $location.path('/my/tasks');
+    $scope.gotoTasks();
   };
 
   $scope.logout = function() {
@@ -35,32 +35,29 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
 
   $scope.getFeatureClass = function(feature) {
     if ($location.path().endsWith(feature)){
-      return "active-feature";
+      return 'active-feature';
     }
   };
 
   $scope.gotoInbox = function() {
     if (getActiveFeature() !== 'inbox') {
       $location.path(UserSessionService.getOwnerPrefix() + '/inbox');
-    }else{
-      $scope.toggleMenu();
     }
+    $scope.toggleMenu();
   };
 
   $scope.gotoTasks = function() {
     if (getActiveFeature() !== 'tasks') {
       $location.path(UserSessionService.getOwnerPrefix() + '/tasks');
-    }else{
-      $scope.toggleMenu();
     }
+    $scope.toggleMenu();
   };
 
   $scope.gotoNotes = function() {
     if (getActiveFeature() !== 'notes') {
       $location.path(UserSessionService.getOwnerPrefix() + '/notes');
-    }else{
-      $scope.toggleMenu();
     }
+    $scope.toggleMenu();
   };
 
 }
