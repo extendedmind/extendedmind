@@ -138,10 +138,6 @@ function MainController(
       SwiperService.swipeTo('notes/details/' + identifier);
     }
   };
-
-  $scope.getNoSwipingClass = function getNoSwipingClass() {
-    return ($rootScope.noSwiping) ? 'swiper-no-swiping' : '';
-  };
 }
 
 MainController.$inject = [
