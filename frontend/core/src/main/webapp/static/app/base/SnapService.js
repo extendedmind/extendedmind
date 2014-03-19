@@ -1,7 +1,7 @@
 'use strict';
 
 function SnapService() {
-  var snapper, draggerElement;
+  var snapper, draggerElement, drawerSlidingDisabled = false;
 
   return {
     createSnapper: function(element) {
@@ -11,7 +11,9 @@ function SnapService() {
       } else {
         snapper = new Snap({
           element: element,
-          disable: 'right'  // use left only
+          disable: 'right',  // use left only
+          transitionSpeed: 0.2,
+          minDragDistance: 0
         });
         if (draggerElement) {
           snapper.settings({dragger: draggerElement});
@@ -41,7 +43,28 @@ function SnapService() {
       // http://stackoverflow.com/a/3458612
       snapper.on('animated', snapAnimated);
       function snapAnimated() {
+        callback(snapper.state().state);
+      }
+    },
+    registerCloseCallback: function(callback) {
+      snapper.on('close', callback);
+    },
+    registerEndCallback: function(callback) {
+      snapper.on('end', paneReleased);
+      function paneReleased() {
         callback(snapper);
+      }
+    },
+    disableSliding: function() {
+      if (!drawerSlidingDisabled) {
+        snapper.disable();
+        drawerSlidingDisabled = true;
+      }
+    },
+    enableSliding: function() {
+      if (drawerSlidingDisabled) {
+        snapper.enable();
+        drawerSlidingDisabled = false;
       }
     }
   };

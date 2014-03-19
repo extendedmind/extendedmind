@@ -10,18 +10,37 @@ function snapDrawerDirective($rootScope, SnapService) {
         $scope.noSwiping = false;
 
         SnapService.registerAnimatedCallback(snapperAnimated);
+        SnapService.registerEndCallback(snapperPaneReleased);
+        SnapService.registerCloseCallback(snapperClosed);
       }
 
-      function snapperAnimated(snap) {
-        if (snap.state().state === 'closed') {
-          $scope.$digest(setNoSwipingClass(false));
-        } else if (snap.state().state === 'left') {
-          $scope.$digest(setNoSwipingClass(true));
+      function snapperAnimated(snapperStatePaneState) {
+        SnapService.enableSliding();
+        if (snapperStatePaneState === 'closed') {
+          setNoSwipingClass(false);
+        } else if (snapperStatePaneState === 'left') {
+          setNoSwipingClass(true);
+        }
+      }
+
+      function snapperClosed() {
+        SnapService.disableSliding();
+        setNoSwipingClass(false);
+      }
+
+      function snapperPaneReleased(snapper) {
+        var snapperState = snapper.state();
+        if (snapperState.info.towards === 'left' && snapperState.info.flick) {
+          SnapService.disableSliding();
+          setNoSwipingClass(false);
         }
       }
 
       function setNoSwipingClass(swiping) {
-        $scope.noSwiping = swiping;
+        if ($scope.noSwiping !== swiping) {
+          $scope.noSwiping = swiping;
+          $scope.$digest();
+        }
       }
       $scope.getNoSwipingClass = function getNoSwipingClass() {
         return ($scope.noSwiping) ? 'swiper-no-swiping' : '';
