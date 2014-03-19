@@ -97,18 +97,6 @@ function MainController(
     }
   }
 
-  // Menu actions
-
-  $scope.isMenuOpen = false;
-
-  $scope.toggleMenu = function toggleMenu() {
-    if ($rootScope.isMobile) {
-      SnapService.toggle();
-    } else if ($rootScope.isDesktop) {
-      $scope.isMenuOpen = !$scope.isMenuOpen;
-    }
-  };
-
   // Navigation
 
   $scope.gotoHome = function() {

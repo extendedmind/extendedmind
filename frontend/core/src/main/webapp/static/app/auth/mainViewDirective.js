@@ -2,7 +2,7 @@
 
 'use strict';
 
-function mainViewDirective($window, $document, $rootScope, $timeout, ModalService, BackendClientService, UserSessionService, ItemsService) {
+function mainViewDirective($window, $document, $rootScope, $timeout, ModalService, BackendClientService, UserSessionService, ItemsService, SnapService) {
   return {
     restrict: 'A',
     replace: 'true',
@@ -74,6 +74,17 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
 
       // Clean up listening by executing the variable
       $scope.$on('$destroy', unbindEmException);
+
+
+      // MENU TOGGLE
+
+      $scope.isMenuOpen = false;
+      $scope.toggleMenu = function toggleMenu() {
+        $scope.isMenuOpen = !$scope.isMenuOpen;
+        if ($rootScope.isMobile) {
+          SnapService.toggle();
+        }
+      };
     },
     link: function($scope, $element){
 
@@ -168,5 +179,5 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
   };
 }
 mainViewDirective.$inject = ['$window', '$document', '$rootScope', '$timeout',
-'ModalService', 'BackendClientService', 'UserSessionService', 'ItemsService'];
+'ModalService', 'BackendClientService', 'UserSessionService', 'ItemsService', 'SnapService'];
 angular.module('em.directives').directive('mainView', mainViewDirective);

@@ -42,18 +42,24 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
   $scope.gotoInbox = function() {
     if (getActiveFeature() !== 'inbox') {
       $location.path(UserSessionService.getOwnerPrefix() + '/inbox');
+    }else{
+      $scope.toggleMenu();
     }
   };
 
   $scope.gotoTasks = function() {
     if (getActiveFeature() !== 'tasks') {
       $location.path(UserSessionService.getOwnerPrefix() + '/tasks');
+    }else{
+      $scope.toggleMenu();
     }
   };
 
   $scope.gotoNotes = function() {
     if (getActiveFeature() !== 'notes') {
       $location.path(UserSessionService.getOwnerPrefix() + '/notes');
+    }else{
+      $scope.toggleMenu();
     }
   };
 
