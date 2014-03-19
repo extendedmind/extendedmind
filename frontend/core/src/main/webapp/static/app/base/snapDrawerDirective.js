@@ -39,7 +39,9 @@ function snapDrawerDirective($rootScope, SnapService) {
       function setNoSwipingClass(swiping) {
         if ($scope.noSwiping !== swiping) {
           $scope.noSwiping = swiping;
-          $scope.$digest();
+          if (!$scope.$$phase){
+            $scope.$digest();
+          }
         }
       }
       $scope.getNoSwipingClass = function getNoSwipingClass() {
