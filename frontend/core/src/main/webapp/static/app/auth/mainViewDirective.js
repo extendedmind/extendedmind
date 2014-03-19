@@ -74,7 +74,6 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
       // Clean up listening by executing the variable
       $scope.$on('$destroy', unbindEmException);
 
-
       // MENU TOGGLE
 
       $scope.isMenuOpen = false;

@@ -69,7 +69,16 @@ function ItemsController($scope, $location, $routeParams, UserSessionService, It
     }else{
       return 680;
     }
-  }
+  };
+
+  $scope.getColumnWidth = function() {
+    if ($scope.currentWidth > 568){
+      // Desktop, leave 44 pixels of gutter
+      return 524;
+    }else{
+      return $scope.currentWidth - 44;
+    }
+  };
 
 }
 

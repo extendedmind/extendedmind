@@ -1,4 +1,3 @@
-/* global $ */
 'use strict';
 
 function HeaderController($q, $scope, $location, $document, $element, $rootScope, SwiperService, UserSessionService) {
@@ -8,7 +7,7 @@ function HeaderController($q, $scope, $location, $document, $element, $rootScope
     if(!$scope.$$phase) {
       $scope.$digest();
     }
-  }
+  };
   SwiperService.registerSlideChangeCallback(featureSlideChangeCallback, $scope.feature, 'HeaderController');
 
   $scope.getLabelWidth = function() {
@@ -18,13 +17,13 @@ function HeaderController($q, $scope, $location, $document, $element, $rootScope
     }else{
       return 412;
     }
-  }
+  };
 
   $scope.getCurrentHeading = function() {
     if ($scope.feature === 'inbox'){
       return 'inbox';
     }else{
-      var activeSlide = SwiperService.getActiveSlidePath($scope.feature)
+      var activeSlide = SwiperService.getActiveSlidePath($scope.feature);
       if (activeSlide){
         if (activeSlide.endsWith('home')){
           if ($scope.feature === 'tasks'){
@@ -32,8 +31,10 @@ function HeaderController($q, $scope, $location, $document, $element, $rootScope
           }else if ($scope.feature === 'notes'){
             return 'recent';
           }
+        }else if (activeSlide.endsWith('details')){
+          return $scope.feature;
         }else{
-          var lastSlashIndex = activeSlide.lastIndexOf('/')
+          var lastSlashIndex = activeSlide.lastIndexOf('/');
           if (lastSlashIndex !== -1){
             return activeSlide.substring(lastSlashIndex+1);
           }
@@ -50,7 +51,7 @@ function HeaderController($q, $scope, $location, $document, $element, $rootScope
     }else if ($scope.feature === 'notes'){
       $location.path(UserSessionService.getOwnerPrefix() + '/notes/new');
     }
-  }
+  };
 
 }
 
