@@ -10,14 +10,14 @@
       <a href class="feature-link" ng-click="gotoNotes()" ng-class="getFeatureClass('notes')">notes</a>
     </li>
     <li id="my" ng-show="useCollectives()">
-      <a href ng-click="setMyActive()">my information</a>
+      <a href ng-class="getMyClass()" ng-click="setMyActive()">my information</a>
     </li>
     <li id="collectives" ng-show="useCollectives()">
       <span>collectives</span>
       <ul>
         <li ng-repeat="(key, value) in collectives">
           <div ng-if="value[2] === false">
-            <a class="collective" href ng-click="setCollectiveActive(key)">{{value[0]}}</a>
+            <a class="collective" href ng-class="getCollectiveClass(key)" ng-click="setCollectiveActive(key)">{{value[0]}}</a>
           </div>
         </li>
       </ul>

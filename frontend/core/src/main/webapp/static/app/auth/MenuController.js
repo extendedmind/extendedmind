@@ -16,11 +16,13 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
   $scope.setCollectiveActive = function(uuid) {
     UserSessionService.setCollectiveActive(uuid);
     $location.path('/collective/' + uuid + '/tasks');
+    $scope.toggleMenu();
   };
   
   $scope.setMyActive = function() {
     UserSessionService.setMyActive();
-    $scope.gotoTasks();
+    $location.path('/my/tasks');
+    $scope.toggleMenu();
   };
 
   $scope.logout = function() {
@@ -35,7 +37,20 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
 
   $scope.getFeatureClass = function(feature) {
     if ($location.path().endsWith(feature)){
-      return 'active-feature';
+      return 'active';
+    }
+  };
+
+  $scope.getMyClass = function() {
+    console.log(UserSessionService.getOwnerPrefix());
+    if (UserSessionService.getOwnerPrefix() === 'my'){
+      return 'active';
+    }
+  };
+
+  $scope.getCollectiveClass = function(uuid) {
+    if (UserSessionService.getOwnerPrefix() == 'collective/' + uuid){
+      return 'active';
     }
   };
 

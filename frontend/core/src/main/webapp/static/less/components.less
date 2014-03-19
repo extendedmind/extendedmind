@@ -178,19 +178,22 @@ footer {
   a.feature-link {
     font-size: @default-font-size;
   }
-  a.active-feature {
+  a.active {
     margin-left: -18px;
   }
-  a.active-feature:before{ 
+  a.active:before{ 
     content: '\2022';
     margin-right: 10px;
   }
 
   li#collectives {
+    line-height: @vertical-grid;
+
     div {
       padding-left: @horizontal-grid;      
-      a {
+      a{
         line-height: @vertical-grid-half;
+        padding-bottom: @vertical-grid-half;
       }
     }
   }
