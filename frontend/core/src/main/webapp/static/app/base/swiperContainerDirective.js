@@ -16,9 +16,9 @@ function swiperContainerDirective(SwiperService, $rootScope) {
       $scope.expectedSlides = $scope.expectedSlidesFn();
 
       // Listen touch events on slide and set outerSwiping flag on to prevent clickable elements' click event.
-      $element[0].addEventListener('touchstart', swipeTouchStart, false);
-      $element[0].addEventListener('touchmove', swipeTouchMove, false);
-      $element[0].addEventListener('touchend', swipeTouchEnd, false);
+      $element[0].addEventListener('touchstart', mainSwiperTouchStart, false);
+      $element[0].addEventListener('touchmove', mainSwiperTouchMove, false);
+      $element[0].addEventListener('touchend', mainSwiperTouchEnd, false);
 
       function sortAndFlattenSlideInfos() {
         // does array contain slide objects
@@ -82,24 +82,24 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         // swiper or not.
         if ($scope.swiperType === 'page'){
           // We're expecting a slide, which has "inner-slide-content-container", which has section
-          element[0].firstElementChild.firstElementChild.addEventListener('touchstart', slideTouchStart, false);
-          element[0].firstElementChild.firstElementChild.addEventListener('touchmove', slideTouchMove, false);
-          element[0].firstElementChild.firstElementChild.addEventListener('touchend', slideTouchEnd, false);
-          element[0].firstElementChild.firstElementChild.addEventListener('scroll', slideScroll, false);
+          element[0].firstElementChild.firstElementChild.addEventListener('touchstart', pageSwiperSlideTouchStart, false);
+          element[0].firstElementChild.firstElementChild.addEventListener('touchmove', pageSwiperSlideTouchMove, false);
+          element[0].firstElementChild.firstElementChild.addEventListener('touchend', pageSwiperSlideTouchEnd, false);
+          element[0].firstElementChild.firstElementChild.addEventListener('scroll', pageSwiperSlideScroll, false);
         }
 
         // Slides from DOM (AngularJS directive) are not necessarily registered in desired order.
         // Slide array of objects is sorted later, during swiper initialization.
         var slideInfo = {slidePath: path, slideIndex: index, slideElement: element};
-        var oldSlideInfosIndex = undefined;
+        var oldSlideInfosIndex;
         if (initializeSwiperCalled) {
           oldSlideInfosIndex = getSlideInfosIndex(path);
         }
         if (oldSlideInfosIndex === undefined){
           // If swiperSlideInfos is already full and the index is somewhere in the
           // middle of the pack, we need to increase bigger indexes by one
-          if ($scope.expectedSlides === swiperSlideInfos.length
-            && index < swiperSlideInfos.length){
+          if ($scope.expectedSlides === swiperSlideInfos.length &&
+            index < swiperSlideInfos.length){
             for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
               if (swiperSlideInfos[i].slideIndex >= index){
                 swiperSlideInfos[i].slideIndex += 1;
@@ -136,14 +136,14 @@ function swiperContainerDirective(SwiperService, $rootScope) {
       var swipeDown = false;
       var swipeLeft = false;
       var swipeRight = false;
-      var swipeStartX, swipeStartY, swipeDistX, swipeDistY;
-      var horizontalRestraint = 1;
-      var verticalRestraint = 1;
+      var swipeStartX, swipeStartY, swipeDistanceX, swipeDistanceY;
+      var swipeRestraintX = 1;
+      var swipeRestraintY = 1;
 
-      function swipeTouchStart(event) {
-        var touchobj = event.changedTouches[0];
-        swipeStartX = touchobj.pageX;
-        swipeStartY = touchobj.pageY;
+      function mainSwiperTouchStart(event) {
+        var touches = event.changedTouches[0];
+        swipeStartX = touches.pageX;
+        swipeStartY = touches.pageY;
 
         $rootScope.outerSwiping = false;
         swipeLeft = false;
@@ -151,11 +151,13 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         swipeDown = false;
         swipeUp = false;
       }
-      function swipeTouchMove(event) {
+
+      // Main swiper swiping detection.
+      function mainSwiperTouchMove(event) {
         /*jshint validthis: true */
-        var touchobj = event.changedTouches[0];
-        swipeDistX = touchobj.pageX - swipeStartX;
-        swipeDistY = touchobj.pageY - swipeStartY;
+        var touches = event.changedTouches[0];
+        swipeDistanceX = touches.pageX - swipeStartX;
+        swipeDistanceY = touches.pageY - swipeStartY;
 
         swipeLeft = false;
         swipeRight = false;
@@ -163,94 +165,100 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         swipeUp = false;
 
         // http://www.javascriptkit.com/javatutors/touchevents2.shtml
-        if (Math.abs(swipeDistX) >= horizontalRestraint && Math.abs(swipeDistY) <= horizontalRestraint) { // horizontal
-          if (swipeDistX < 0) {
+        if (Math.abs(swipeDistanceX) >= swipeRestraintX && Math.abs(swipeDistanceY) <= swipeRestraintX) { // horizontal
+          if (swipeDistanceX < 0) {
             swipeLeft = true;
             swipeRight = false;
           } else {
             swipeLeft = false;
             swipeRight = true;
           }
-        } else if (Math.abs(swipeDistY) >= verticalRestraint && Math.abs(swipeDistX) <= verticalRestraint) { // vertical
-          if (swipeDistY < 0) {
-            swipeDown = true;
-            swipeUp = false;
-          } else {
+        } else if (Math.abs(swipeDistanceY) >= swipeRestraintY && Math.abs(swipeDistanceX) <= swipeRestraintY) { // vertical
+          if (swipeDistanceY < 0) {
             swipeDown = false;
             swipeUp = true;
+          } else {
+            swipeDown = true;
+            swipeUp = false;
           }
         }
-        swipeStartX = touchobj.pageX;
-        swipeStartY = touchobj.pageY;
+        swipeStartX = touches.pageX;
+        swipeStartY = touches.pageY;
       }
-      function swipeTouchEnd() {
-        // Swiper is swiping to some direction.
-        if (swipeUp || swipeDown || swipeRight || swipeRight) {
+      function mainSwiperTouchEnd() {
+        // Main swiper is swiping to some direction.
+        if (swipeUp || swipeDown || swipeLeft || swipeRight) {
           $rootScope.outerSwiping = true;
         }
       }
 
       // Overlapping swipers, should stopPropagation be called?
 
-      var up = false;
-      var down = false;
-      var startX, startY, distX, distY;
-      var slideScrollTimeout;
+      var swipePageSlideUp = false;
+      var swipePageSlideDown = false;
+      var swipePageSlideStartX, swipePageSlideStartY, swipePageSlideDistX, swipePageSlideDistY;
+      var pageSwiperSlideScrollTimeout;
 
-      function slideTouchStart(event) {
+      function pageSwiperSlideTouchStart(event) {
         $rootScope.innerSwiping = false;
-        var touchobj = event.changedTouches[0];
-        startX = touchobj.pageX;
-        startY = touchobj.pageY;
+        var touches = event.changedTouches[0];
+        swipePageSlideStartX = touches.pageX;
+        swipePageSlideStartY = touches.pageY;
 
-        // $rootScope.scrolling = false;
-        down = false;
-        up = false;
+        swipePageSlideDown = false;
+        swipePageSlideUp = false;
       }
 
-      function slideTouchMove(event) {
+      // This function checks swiping direction and slide scrolling position.
+      // Slide swiping is allowed if we are swiping up and on top of a slide or down and bottom.
+      // Otherwise do a regular scroll inside the slide.
+      function pageSwiperSlideTouchMove(event) {
         /*jshint validthis: true */
-        var touchobj = event.changedTouches[0];
-        distX = touchobj.pageX - startX;
-        distY = touchobj.pageY - startY;
+        var touches = event.changedTouches[0];
+        swipePageSlideDistX = touches.pageX - swipePageSlideStartX;
+        swipePageSlideDistY = touches.pageY - swipePageSlideStartY;
 
-        down = false;
-        up = false;
+        swipePageSlideDown = false;
+        swipePageSlideUp = false;
 
+        // Determine swipe direction.
         // http://www.javascriptkit.com/javatutors/touchevents2.shtml
-        if (Math.abs(distX) >= horizontalRestraint && Math.abs(distY) <= 10) { // horizontal
-        } else if (Math.abs(distX) >= verticalRestraint && Math.abs(distY) <= verticalRestraint) { // vertical
-          if (distY < 0) {
-            down = true;
-            up = false;
+        if (Math.abs(swipePageSlideDistX) > Math.abs(swipePageSlideDistY)) { // horizontal
+        } else if (Math.abs(swipePageSlideDistX) < Math.abs(swipePageSlideDistY)) { // vertical
+          if (swipePageSlideDistY < 0) {
+            swipePageSlideDown = true;
+            swipePageSlideUp = false;
           } else {
-            down = false;
-            up = true;
+            swipePageSlideDown = false;
+            swipePageSlideUp = true;
           }
 
-          // https://developer.mozilla.org/en-US/docs/Web/API/Element.scrollHeight#Determine_if_an_element_has_been_totally_scrolled
-          if (((this.scrollHeight - this.scrollTop) <= this.clientHeight) && down) {
-            // bottom
-          } else if ((this.scrollTop <= 0) && up) {
-            // top
+          // Find out scroll position of a slide and compare it with swiper direction.
+          // https://developer.mozilla.org/en-US/docs/Web/API/Element.scroswipe tllHeight#Determine_if_an_element_has_been_totally_scrolled
+          if (((this.scrollHeight - this.scrollTop) <= this.clientHeight) && swipePageSlideDown) {
+            // Bottom of a slide and swiping down. Do nothing and let the event bubble to swiper.
+          } else if ((this.scrollTop <= 0) && swipePageSlideUp) {
+            // Top of a slide on swiping up. Do nothing and let the event bubble to swiper.
           } else {
+            // Middle of a slide. Do a regular scroll and stop the event bubbling to swiper.
             event.stopPropagation();
+            event.stopImmediatePropagation();
           }
         }
       }
-      function slideTouchEnd() {
-        // Slide is swiping up or down.
-        if (down || up) {
+      function pageSwiperSlideTouchEnd() {
+        // Page swiper (vertical) slide is swiping up or down.
+        if (swipePageSlideDown || swipePageSlideUp) {
           $rootScope.innerSwiping = true;
         }
       }
 
-      function slideScroll() {
+      function pageSwiperSlideScroll() {
         $rootScope.scrolling = true;
-        if (slideScrollTimeout) {
-          clearTimeout(slideScrollTimeout);
+        if (pageSwiperSlideScrollTimeout) {
+          clearTimeout(pageSwiperSlideScrollTimeout);
         }
-        slideScrollTimeout = setTimeout(function() {
+        pageSwiperSlideScrollTimeout = setTimeout(function() {
           $rootScope.scrolling = false;
         }, 100);
         return false;
@@ -258,22 +266,21 @@ function swiperContainerDirective(SwiperService, $rootScope) {
 
       // Unbind all listeners
       $scope.$on('$destroy', function() {
-        $element[0].removeEventListener('touchstart', swipeTouchStart, false);
-        $element[0].removeEventListener('touchmove', swipeTouchMove, false);
-        $element[0].removeEventListener('touchend', swipeTouchEnd, false);
+        $element[0].removeEventListener('touchstart', mainSwiperTouchStart, false);
+        $element[0].removeEventListener('touchmove', mainSwiperTouchMove, false);
+        $element[0].removeEventListener('touchend', mainSwiperTouchEnd, false);
         
         if ($scope.swiperType === 'page'){
           for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
-            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchstart', slideTouchStart, false);
-            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchmove', slideTouchMove, false);
-            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchend', slideTouchEnd, false);
-            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('scroll', slideScroll, false);
+            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchstart', pageSwiperSlideTouchStart, false);
+            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchmove', pageSwiperSlideTouchMove, false);
+            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchend', pageSwiperSlideTouchEnd, false);
+            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('scroll', pageSwiperSlideScroll, false);
           }
         }
       });
-
-    }
-  };
+}
+};
 }
 swiperContainerDirective['$inject'] = ['SwiperService', '$rootScope'];
 angular.module('em.directives').directive('swiperContainer', swiperContainerDirective);
