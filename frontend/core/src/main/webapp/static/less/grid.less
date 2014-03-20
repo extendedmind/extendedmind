@@ -96,8 +96,12 @@ header {
 }
 
 .heading-header{
-  position: absolute;
+  position: relative;
   text-align: center;
+  min-height: @heading-header-height;
+  h3 {
+    padding-top: 10px; 
+  }
 }
 
 // CONTENT
@@ -129,7 +133,7 @@ header {
 
 .simple-content-container{
   height: inherit;
-  padding-top: @heading-header-height;
+  padding-bottom: @heading-header-height + 10px;
   overflow-y: auto;
 }
 
