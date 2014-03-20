@@ -184,6 +184,9 @@ function SwiperService($q) {
         }
       }
     },
+    setSwiping: function(swiperPath, swipe) {
+      swipers[swiperPath].swiper.params.swiping = swipe;
+    },
     setSwiperResistance: function(swiperPath, resistance) {
       swipers[swiperPath].swiper.params.resistance = resistance;
     },

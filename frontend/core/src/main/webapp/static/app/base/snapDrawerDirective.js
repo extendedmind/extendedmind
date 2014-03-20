@@ -1,10 +1,10 @@
 'use strict';
 
-function snapDrawerDirective($rootScope, SnapService) {
+function snapDrawerDirective($rootScope, SnapService, SwiperService) {
   return {
     restrict: 'A',
-    link: function($scope, $element) {
-      var preventSwipe = false;
+    link: function($scope, $element, attrs) {
+      var swiperPath = attrs.snapDrawer;
 
       function initializeSnapper() {
         SnapService.createSnapper($element[0]);
@@ -15,38 +15,35 @@ function snapDrawerDirective($rootScope, SnapService) {
       }
 
       function snapperAnimated(snapperStatePaneState) {
-        SnapService.enableSliding();
         if (snapperStatePaneState === 'closed') {
-          togglePreventSwipe(false);
+          if (swiperPath) {
+            SwiperService.setSwiping(swiperPath, true);
+            SnapService.enableSliding();
+          }
         } else if (snapperStatePaneState === 'left') {
-          togglePreventSwipe(true);
+          if (swiperPath) {
+            SwiperService.setSwiping(swiperPath, false);
+            SnapService.enableSliding();
+          }
         }
       }
 
       function snapperClosed() {
-        SnapService.disableSliding();
-        togglePreventSwipe(false);
+        if (swiperPath) {
+          SwiperService.setSwiping(swiperPath, true);
+          SnapService.disableSliding();
+        }
       }
 
       function snapperPaneReleased(snapper) {
         var snapperState = snapper.state();
         if (snapperState.info.towards === 'left' && snapperState.info.flick) {
-          SnapService.disableSliding();
-          togglePreventSwipe(false);
-        }
-      }
-
-      function togglePreventSwipe(swiping) {
-        if (preventSwipe !== swiping) {
-          preventSwipe = swiping;
-          if (!$scope.$$phase){
-            $scope.$digest();
+          if (swiperPath) {
+            SwiperService.setSwiping(swiperPath, true);
+            SnapService.disableSliding();
           }
         }
       }
-      $scope.getPreventSwipeClass = function getPreventSwipeClass() {
-        return (preventSwipe) ? 'swiper-no-swiping' : '';
-      };
 
       $scope.$watch('isMobile', function(newValue) {
         if (newValue === true) {
@@ -66,5 +63,5 @@ function snapDrawerDirective($rootScope, SnapService) {
     }
   };
 }
-snapDrawerDirective.$inject = ['$rootScope', 'SnapService'];
+snapDrawerDirective.$inject = ['$rootScope', 'SnapService', 'SwiperService'];
 angular.module('em.directives').directive('snapDrawer', snapDrawerDirective);

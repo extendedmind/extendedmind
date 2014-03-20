@@ -3,7 +3,7 @@
     <div class="page-heading swiper-no-swiping" ng-init="heading='tasks'" ng-include="'static/app/main/omnibar.html'"></div>
     <div ng-hide="omnibarVisible" class="content-container page-content-container">
       <div class="swiper-container vertical-slides" swiper-container="tasks/details" swiper-type="page" expected-slides="count = lists.length + contexts.length + 1">
-        <div class="swiper-wrapper" ng-class="getPreventSwipeClass()">
+        <div class="swiper-wrapper">
           <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="tasks/details/{{list.uuid}}" slide-index="$index" ng-init="subtask = {relationships: {list: list.uuid}}">
             <div class="inner-slide-content-container">
               <section class="list" ng-controller="ListsController">

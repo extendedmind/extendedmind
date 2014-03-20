@@ -1250,6 +1250,9 @@ var Swiper = function (selector, params) {
     var allowThresholdMove;
     var allowMomentumBounce = true;
     function onTouchStart(event) {
+        if (params.swiping === false) {
+            return false;
+        }
         if (params.preventLinks) _this.allowLinks = true;
         //Exit if slider is already was touched
         if (_this.isTouched || params.onlyExternal) {
@@ -1368,14 +1371,15 @@ var Swiper = function (selector, params) {
             _this.touches.current = isH ? pageX : pageY ;
 
             var currentTouchRatio = params.touchRatio;
+
+            if ((params.rightEdgeTouchRatio !== undefined) && (_this.positions.current < -maxWrapperPosition())) {
+                currentTouchRatio = params.rightEdgeTouchRatio;
+            }
+            _this.positions.current = (_this.touches.current - _this.touches.start) * currentTouchRatio + _this.positions.start;
+
             if ((params.leftEdgeTouchRatio !== undefined) && (_this.positions.current >= 0) && (_this.touches.current > _this.touches.start)) {
                 currentTouchRatio = params.leftEdgeTouchRatio;
             }
-            else if ((params.rightEdgeTouchRatio !== undefined) && (_this.positions.current < -maxWrapperPosition())) {
-                currentTouchRatio = params.rightEdgeTouchRatio;
-            }
-
-            _this.positions.current = (_this.touches.current - _this.touches.start) * currentTouchRatio + _this.positions.start;
 
             //Resistance Callbacks
             if(_this.positions.current > 0 && params.onResistanceBefore) {
