@@ -42,7 +42,6 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
   };
 
   $scope.getMyClass = function() {
-    console.log(UserSessionService.getOwnerPrefix());
     if (UserSessionService.getOwnerPrefix() === 'my'){
       return 'active';
     }
