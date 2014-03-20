@@ -29,22 +29,24 @@
             </div>
           </div>
           <div class="swiper-slide" swiper-slide="notes/details/uncategorized" slide-index="lists.length" ng-init="newNote = {}">
-            <div class="inner-page-content-container">
+            <div class="inner-slide-content-container">
               <section>
                 <h3>uncategorized</h3>
-                <div class="inner-page-content-container" accordion>
-                  <div ng-repeat="note in notes | itemsFilter:{name:'unsorted'}" ng-init="newNote = {}">
-                    <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
-                      <div class="teaser" ng-if="note.content">
-                        <a href ng-click="editNote(note)" id="note-teaser" ng-bind="getNoteContentTeaser(note)"></a>
+                <div>
+                  <div class="inner-page-content-container" accordion>
+                    <div ng-repeat="note in notes | itemsFilter:{name:'unsorted'}" ng-init="newNote = {}">
+                      <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
+                        <div class="teaser" ng-if="note.content">
+                          <a href ng-click="editNote(note)" id="note-teaser" ng-bind="getNoteContentTeaser(note)"></a>
+                        </div>
                       </div>
+                      <div class="accordion-body" ng-if="isOpen(note)">
+                        <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+                      </div>
+                      <div class="teaser-empty" ng-if="!note.content"></div>
                     </div>
-                    <div class="accordion-body" ng-if="isOpen(note)">
-                      <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
-                    </div>
-                    <div class="teaser-empty" ng-if="!note.content"></div>
+                    <div ng-include="'static/app/notes/addNote.html'"></div>
                   </div>
-                  <div ng-include="'static/app/notes/addNote.html'"></div>
                 </div>
               </section>
             </div>
