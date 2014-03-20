@@ -12,7 +12,7 @@ function SnapService() {
         snapper = new Snap({
           element: element,
           disable: 'right',  // use left only
-          transitionSpeed: 0.2,
+          transitionSpeed: 0.1,
           minDragDistance: 0,
           addBodyClasses: false,
         });
