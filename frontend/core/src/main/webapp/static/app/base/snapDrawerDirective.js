@@ -4,10 +4,10 @@ function snapDrawerDirective($rootScope, SnapService) {
   return {
     restrict: 'A',
     link: function($scope, $element) {
+      var preventSwipe = false;
 
       function initializeSnapper() {
         SnapService.createSnapper($element[0]);
-        $scope.noSwiping = false;
 
         SnapService.registerAnimatedCallback(snapperAnimated);
         SnapService.registerEndCallback(snapperPaneReleased);
@@ -17,35 +17,35 @@ function snapDrawerDirective($rootScope, SnapService) {
       function snapperAnimated(snapperStatePaneState) {
         SnapService.enableSliding();
         if (snapperStatePaneState === 'closed') {
-          setNoSwipingClass(false);
+          togglePreventSwipe(false);
         } else if (snapperStatePaneState === 'left') {
-          setNoSwipingClass(true);
+          togglePreventSwipe(true);
         }
       }
 
       function snapperClosed() {
         SnapService.disableSliding();
-        setNoSwipingClass(false);
+        togglePreventSwipe(false);
       }
 
       function snapperPaneReleased(snapper) {
         var snapperState = snapper.state();
         if (snapperState.info.towards === 'left' && snapperState.info.flick) {
           SnapService.disableSliding();
-          setNoSwipingClass(false);
+          togglePreventSwipe(false);
         }
       }
 
-      function setNoSwipingClass(swiping) {
-        if ($scope.noSwiping !== swiping) {
-          $scope.noSwiping = swiping;
+      function togglePreventSwipe(swiping) {
+        if (preventSwipe !== swiping) {
+          preventSwipe = swiping;
           if (!$scope.$$phase){
             $scope.$digest();
           }
         }
       }
-      $scope.getNoSwipingClass = function getNoSwipingClass() {
-        return ($scope.noSwiping) ? 'swiper-no-swiping' : '';
+      $scope.getPreventSwipeClass = function getPreventSwipeClass() {
+        return (preventSwipe) ? 'swiper-no-swiping' : '';
       };
 
       $scope.$watch('isMobile', function(newValue) {
