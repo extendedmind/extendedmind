@@ -44,8 +44,7 @@ function swiperContainerDirective(SwiperService, $rootScope) {
       }
 
       function updateSwiper(){
-        // Re-evaluate expected slides, in case it is a function
-        $scope.expectedSlides = $scope.expectedSlidesFn();
+        var currentExpectedSlides = $scope.expectedSlidesFn();
 
         // (Re)inializes the swiper after the digest to make sure the whole
         // DOM is ready before this is done. Otherwise Swiper does not register
@@ -58,7 +57,11 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         // is fired. Using $timeout causes flickering and slows down everything.
         // https://groups.google.com/forum/#!topic/angular/SCc45uVhTt9
         // http://stackoverflow.com/a/17303759/2659424
-        if ($scope.expectedSlides === swiperSlideInfos.length){
+        if (currentExpectedSlides === swiperSlideInfos.length){
+          // Update the expected slides variable only now, to make it possible
+          // to push indexes forward
+          $scope.expectedSlides = $scope.expectedSlidesFn();
+
           var slides = sortAndFlattenSlideInfos();
           if (!initializeSwiperCalled){
             SwiperService.initializeSwiper(
@@ -77,6 +80,7 @@ function swiperContainerDirective(SwiperService, $rootScope) {
       // Registers the path of the slide to the swiper
       // and sets up listeners for element, if needed
       this.registerSlide = function(path, element, index) {
+        
         // For vertical page outerSwiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal
         // swiper or not.
@@ -96,12 +100,12 @@ function swiperContainerDirective(SwiperService, $rootScope) {
           oldSlideInfosIndex = getSlideInfosIndex(path);
         }
         if (oldSlideInfosIndex === undefined){
-          // If swiperSlideInfos is already full and the index is somewhere in the
-          // middle of the pack, we need to increase bigger indexes by one
-          if ($scope.expectedSlides === swiperSlideInfos.length &&
-            index < swiperSlideInfos.length){
+          // If index is somewhere in the middle of the pack, we need to 
+          // increase bigger indexes by one
+          if ($scope.expectedSlides <= swiperSlideInfos.length){
             for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
               if (swiperSlideInfos[i].slideIndex >= index){
+                console.log("pushing: " + swiperSlideInfos[i].slideIndex);
                 swiperSlideInfos[i].slideIndex += 1;
               }
             }
@@ -118,12 +122,6 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         if (slideInfosIndex !== undefined){
           var oldSlideIndex = swiperSlideInfos[slideInfosIndex].slideIndex;
           swiperSlideInfos.splice(slideInfosIndex, 1);
-          // Move indexes one down
-          for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
-            if (swiperSlideInfos[i].slideIndex > oldSlideIndex){
-              swiperSlideInfos[i].slideIndex -= 1;
-            }
-          }
           updateSwiper();
         }
       };
