@@ -14,6 +14,16 @@ function snapDrawerDirective($rootScope, SnapService, SwiperService) {
         SnapService.registerCloseCallback(snapperClosed);
       }
 
+      // No clicking/tapping when drawer is open.
+      angular.element($element).bind('touchstart', drawerContentClicked);
+      function drawerContentClicked(event) {
+        if (SnapService.getState().state !== 'closed') {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }
+
+      // Snapper is "ready". Set swiper and snapper statuses.
       function snapperAnimated(snapperState) {
         if (snapperState.state === 'closed') {
           if (swiperPath) {
@@ -35,16 +45,21 @@ function snapDrawerDirective($rootScope, SnapService, SwiperService) {
         }
       }
 
-
+      // Enable swiping and disable sliding and vice versa when snapper pane is released and animation starts.
       function snapperPaneReleased(snapperState) {
+        // This if statement is according to current understanding the most reliable (yet not the most intuitive)
+        // way to detect that the drawer is closing.
         if (snapperState.info.opening === 'left' && snapperState.info.towards === 'left' && snapperState.info.flick) {
           if (swiperPath) {
             SwiperService.setSwiping(swiperPath, true);
             SnapService.disableSliding();
           }
+          // Drawer is opening
         } else if (snapperState.info.towards === 'right' && snapperState.info.flick) {
-          SwiperService.setSwiping(swiperPath, false);
-          SnapService.enableSliding();
+          if (swiperPath) {
+            SwiperService.setSwiping(swiperPath, false);
+            SnapService.enableSliding();
+          }
         }
       }
 

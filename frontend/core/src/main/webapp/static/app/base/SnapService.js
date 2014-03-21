@@ -67,6 +67,9 @@ function SnapService() {
         snapper.enable();
         drawerSlidingDisabled = false;
       }
+    },
+    getState: function() {
+      return snapper.state();
     }
   };
 }
