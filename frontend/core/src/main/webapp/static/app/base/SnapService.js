@@ -44,7 +44,7 @@ function SnapService() {
       // http://stackoverflow.com/a/3458612
       snapper.on('animated', snapAnimated);
       function snapAnimated() {
-        callback(snapper.state().state);
+        callback(snapper.state());
       }
     },
     registerCloseCallback: function(callback) {
@@ -53,7 +53,7 @@ function SnapService() {
     registerEndCallback: function(callback) {
       snapper.on('end', paneReleased);
       function paneReleased() {
-        callback(snapper);
+        callback(snapper.state());
       }
     },
     disableSliding: function() {

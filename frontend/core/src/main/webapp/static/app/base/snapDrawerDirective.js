@@ -14,13 +14,13 @@ function snapDrawerDirective($rootScope, SnapService, SwiperService) {
         SnapService.registerCloseCallback(snapperClosed);
       }
 
-      function snapperAnimated(snapperStatePaneState) {
-        if (snapperStatePaneState === 'closed') {
+      function snapperAnimated(snapperState) {
+        if (snapperState.state === 'closed') {
           if (swiperPath) {
             SwiperService.setSwiping(swiperPath, true);
             SnapService.enableSliding();
           }
-        } else if (snapperStatePaneState === 'left') {
+        } else if (snapperState.state === 'left') {
           if (swiperPath) {
             SwiperService.setSwiping(swiperPath, false);
             SnapService.enableSliding();
@@ -35,13 +35,16 @@ function snapDrawerDirective($rootScope, SnapService, SwiperService) {
         }
       }
 
-      function snapperPaneReleased(snapper) {
-        var snapperState = snapper.state();
-        if (snapperState.info.towards === 'left' && snapperState.info.flick) {
+
+      function snapperPaneReleased(snapperState) {
+        if (snapperState.info.opening === 'left' && snapperState.info.towards === 'left' && snapperState.info.flick) {
           if (swiperPath) {
             SwiperService.setSwiping(swiperPath, true);
             SnapService.disableSliding();
           }
+        } else if (snapperState.info.towards === 'right' && snapperState.info.flick) {
+          SwiperService.setSwiping(swiperPath, false);
+          SnapService.enableSliding();
         }
       }
 
