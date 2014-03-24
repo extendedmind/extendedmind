@@ -105,7 +105,6 @@ function swiperContainerDirective(SwiperService, $rootScope) {
           if ($scope.expectedSlides <= swiperSlideInfos.length){
             for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
               if (swiperSlideInfos[i].slideIndex >= index){
-                console.log("pushing: " + swiperSlideInfos[i].slideIndex);
                 swiperSlideInfos[i].slideIndex += 1;
               }
             }
