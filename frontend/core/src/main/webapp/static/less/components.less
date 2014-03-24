@@ -51,7 +51,7 @@ li.datepicker-date {
 
 
 .offline-indicator {
-  display:inline;
+  display: inline;
   vertical-align: top;
   font-size: @small-font-size;
 }
@@ -65,7 +65,7 @@ li.datepicker-date {
 
 #modalFooter{
   button[disabled].normal-button{
-    color:white;
+    color: white;
     background-color: @default-button-pressed;
   }
 }
@@ -103,7 +103,7 @@ header.page-header nav {
     height: 100%;
     background-color: white;
     z-index: 1;
-    position:relative;
+    position: relative;
   }
 }
 
@@ -182,9 +182,12 @@ footer {
 // MENU
 
 #menu-content {
-  font-size: @small-font-size;
+  a, span {
+    font-size: @small-font-size;
+    font-weight: 700;
+  }
   a.feature-link {
-    font-size: @default-font-size;
+    font-size: 1.17em;  // http://www.w3.org/TR/CSS2/sample.html
   }
   a.active {
     margin-left: -18px;
@@ -194,19 +197,19 @@ footer {
     margin-right: 10px;
   }
 
+  li:nth-child(3) { // padding-bottom for li with last a.feature-link
+    padding-bottom: @vertical-grid;
+  }
   li#collectives {
     line-height: @vertical-grid;
-
     div {
       padding-left: @horizontal-grid;      
       a{
+        font-size: @smallest-font-size;
         line-height: @vertical-grid-half;
         padding-bottom: @vertical-grid-half;
       }
     }
-  }
-  li#my {
-    padding-top: @vertical-grid;
   }
 }
 
@@ -219,7 +222,7 @@ footer {
     padding-top: @main-header-height;
     padding-left: @horizontal-grid;
     width: auto;
-    a {
+    a, span {
       color: @default-element;
     }
     a.collective{
@@ -234,12 +237,19 @@ footer {
 
 // mobile
 #mobile-menu {
-  background: #52575F;
+  background-color: @mobile-menu;
   position: absolute;
   width: 260px;
   height: inherit;
   #menu-content {
     padding-bottom: @footer-height*1.5;
+    div.banner {
+      height: @main-header-height - 10;
+      span.icon-logo_only {
+        vertical-align: middle;
+        font-size: @drawer-menu-icon-size;
+      }
+    }
     a, span {
       color: #FEFFFF;
       padding-right: 30px;
@@ -251,4 +261,3 @@ footer {
     }
   }
 }
-

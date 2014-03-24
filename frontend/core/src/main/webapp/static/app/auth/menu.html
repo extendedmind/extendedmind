@@ -1,13 +1,16 @@
 <div id="menu-content" class="swiper-no-swiping" ng-controller="MenuController">
+  <div ng-if="isMobile" class="banner">
+    <span class="icon-logo_only"></span>
+  </div>
   <ul>
-    <li>
-      <a href class="feature-link" ng-click="gotoInbox()" ng-class="getFeatureClass('inbox')">inbox</a>
-    </li>
     <li>
       <a href class="feature-link" ng-click="gotoTasks()" ng-class="getFeatureClass('tasks')">tasks</a>
     </li>
     <li>
       <a href class="feature-link" ng-click="gotoNotes()" ng-class="getFeatureClass('notes')">notes</a>
+    </li>
+    <li>
+      <a href class="feature-link" ng-click="gotoInbox()" ng-class="getFeatureClass('inbox')">inbox</a>
     </li>
     <li id="my" ng-show="useCollectives()">
       <a href ng-class="getMyClass()" ng-click="setMyActive()">my information</a>
