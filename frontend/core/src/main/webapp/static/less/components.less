@@ -197,7 +197,7 @@ footer {
     margin-right: 10px;
   }
 
-  li:nth-child(3) { // padding-bottom for li with last a.feature-link
+  li#last-feature { // padding-bottom for li with last a.feature-link
     padding-bottom: @vertical-grid;
   }
   li#collectives {
@@ -258,6 +258,9 @@ footer {
     a {
       // http://getbootstrap.com/components/#dropdowns
       display: block;
+    }
+    a:active {
+      background-color: @mobile-menu-pressed;
     }
   }
 }
