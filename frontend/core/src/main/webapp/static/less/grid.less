@@ -1,11 +1,4 @@
 
-// COMMON PADDING
-
-.apply-padding{
-  padding-left: @horizontal-grid;
-  padding-right: @horizontal-grid;
-}
-
 .indent {
   padding-left: @horizontal-grid;
 }
@@ -32,7 +25,8 @@ div[role=main] {
 }
 
 .one-column-grid {
-  .apply-padding;
+  padding-left: @horizontal-grid;
+  padding-right: @horizontal-grid;
   max-width: @one-column-grid-width;
   .center-horizontally;
 }
@@ -146,22 +140,22 @@ header {
 footer {
   position: relative;
   height: @footer-height;
+  width: inherit;
   text-align: justify;
   -ms-text-justify: distribute-all-lines;
   text-justify: distribute-all-lines;
-  .apply-padding;
   .center-horizontally;
-  max-width: @two-column-grid-width;
   background-color: white;
   font-size: @smallest-font-size;
   nav {
     padding-top: 5px;
     ul {
       li {
-        min-width: 50px;
         text-align: center;
         a {
-          width: 100%;
+          padding-right: @horizontal-grid;
+          padding-left: @horizontal-grid;
+          -webkit-tap-highlight-color: rgba(0,0,0,0); 
           display: inline-block !important;
         }
       }
