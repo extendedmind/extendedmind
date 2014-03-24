@@ -134,13 +134,16 @@ section#tasks-dates {
       // http://stackoverflow.com/a/18784257
       // css divide width 100% to 3 column
       width: 300%;
-      display: -webkit-flex;
-      -webkit-justify-content: center;
       display: flex;
+      display: -webkit-flex;
+      display: -ms-flexbox;
       justify-content: center;
+      -webkit-justify-content: center;
+      -ms-flex-pack: center;
       nav[role=navigation].slide {
-        -webkit-flex: 1;
         flex: 1;
+        -webkit-flex: 1;
+        -ms-flex: 1;
         ul {
           // http://stackoverflow.com/a/14103766
           // How to stretch html / css horizontal navigation items evenly and fully across a specified container
