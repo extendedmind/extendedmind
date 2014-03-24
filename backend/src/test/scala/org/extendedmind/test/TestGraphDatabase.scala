@@ -71,7 +71,7 @@ trait TestGraphDatabase extends GraphDatabase {
         
         // Valid, replaceable
         val replaceableToken = Token(UUIDUtils.getUUID(timoNode.getProperty("uuid").asInstanceOf[String]))
-        saveToken(timoNode, replaceableToken, Some(AuthenticatePayload(true)))
+        saveToken(timoNode, replaceableToken, Some(AuthenticatePayload(true, None)))
 
         val currentTime = System.currentTimeMillis()
         // Save another expired token

@@ -28,6 +28,9 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   // If rememberMe is set, the token can be replaced for 7 days
   val TOKEN_REPLACEABLE: Long = 604800000
 
+  // If rememberMe and extended are set, the token can be replaced for 90 days
+  val TOKEN_REPLACEABLE_EXTENDED: Long = 7776000000l;
+  
   // Password reset is valid for one hour
   val PASSWORD_RESET_DURATION: Long = 3600000
   
@@ -289,7 +292,11 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     tokenNode.setProperty("expires", expires)
     if (payload.isDefined && payload.get.rememberMe) {
       // Remember me has been clicked
-      val replaceable = currentTime + TOKEN_REPLACEABLE
+      val replaceable = if (payload.get.extended.isDefined && payload.get.extended.get == true)
+					      currentTime + TOKEN_REPLACEABLE_EXTENDED
+					    else
+					      currentTime + TOKEN_REPLACEABLE
+					    
       tokenNode.setProperty("replaceable", replaceable)
       return (currentTime, expires, Some(replaceable))
     }else if (tokenNode.hasProperty("replaceable")){

@@ -64,9 +64,21 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       authenticateResponse.token should not be (None)
     }
+    it("should return token on extended authenticate") {
+      val payload = AuthenticatePayload(true, Some(true))
+      Post("/authenticate", marshal(payload).right.get) ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> route ~> check {
+        val authenticateResponse = entityAs[String]
+        authenticateResponse should include("token")
+        authenticateResponse should include("authenticated")
+        authenticateResponse should include("expires")
+        authenticateResponse should include("replaceable")
+      }
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      authenticateResponse.token should not be (None)
+    }
     it("should swap token on token authentication") {
       val authenticateResponse = emailPasswordAuthenticateRememberMe(TIMO_EMAIL, TIMO_PASSWORD)
-      val payload = AuthenticatePayload(true)
+      val payload = AuthenticatePayload(true, Some(true))
       Post("/authenticate", marshal(payload).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("swapTokenResponse", entityAs[String])
         val tokenAuthenticateResponse = entityAs[SecurityContext]

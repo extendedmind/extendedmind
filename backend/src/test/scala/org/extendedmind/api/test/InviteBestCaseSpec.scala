@@ -206,7 +206,7 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
   }
 
   def emailPasswordAuthenticateRememberMe(email: String, password: String): SecurityContext = {
-    Post("/authenticate", marshal(AuthenticatePayload(true)).right.get) ~> addHeader(Authorization(BasicHttpCredentials(email, password))) ~> route ~> check {
+    Post("/authenticate", marshal(AuthenticatePayload(true, None)).right.get) ~> addHeader(Authorization(BasicHttpCredentials(email, password))) ~> route ~> check {
       entityAs[SecurityContext]
     }
   }
