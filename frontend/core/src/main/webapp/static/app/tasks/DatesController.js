@@ -22,6 +22,7 @@ function DatesController($q, $scope, DateService, SwiperService) {
 
   // This function is intended to be called from datepicker directive.
   $scope.changeActiveWeek = function changeActiveWeek(direction, cb) {
+    var weekdayIndex = activeDay.weekdayIndex;
     $scope.datepickerWeeks = DateService.changeDatePickerWeeks(direction);
     cb().then($scope.$digest()).then(function() {
       if (direction === 'prev') {
@@ -29,7 +30,8 @@ function DatesController($q, $scope, DateService, SwiperService) {
       } else if (direction === 'next') {
         $scope.dates = DateService.nextWeek();
       }
-      swipeToStartingDay();
+      var newActiveDay = $scope.dates[weekdayIndex];
+      swipeToStartingDay(newActiveDay);
     });
   };
 
@@ -48,8 +50,8 @@ function DatesController($q, $scope, DateService, SwiperService) {
   }
 
   // invoke function during compile and $scope.$apply();
-  function swipeToStartingDay() {
-    activeDay = DateService.getTodayDate() || DateService.getMondayDate();
+  function swipeToStartingDay(startingDay) {
+    activeDay = startingDay || DateService.getTodayDate() || DateService.getMondayDate();
     $q.when(
       SwiperService.setInitialSlidePath(
         'tasks/home',
@@ -76,13 +78,24 @@ function DatesController($q, $scope, DateService, SwiperService) {
     SwiperService.swipeTo(getDateSlidePath(date));
   };
 
-  // http://coder1.com/articles/angularjs-managing-active-nav-elements
-  $scope.isDayActive = function(date) {
-    return activeDay.yyyymmdd === date.yyyymmdd;
+  $scope.getDateClass = function getDateClass(date) {
+    var todayYYYYMMDD = DateService.getTodayYYYYMMDD();
+    var status = 'date';
+
+    if (date.yyyymmdd === activeDay.yyyymmdd) {
+      status += '-active';
+    }
+
+    if (date.yyyymmdd < todayYYYYMMDD) {
+      status += '-past';
+    } else if (date.yyyymmdd === todayYYYYMMDD) {
+      status += '-today';
+    }
+    return status;
   };
 
   $scope.visibleDateFormat = function(date) {
-    return (date.yyyymmdd === activeDay.yyyymmdd) ? date.month.name : date.weekday.substring(0,1);
+    return (date.yyyymmdd === activeDay.yyyymmdd) ? date.monthName : date.weekday.substring(0,1);
   };
 
   $scope.setDatepickerVisible = function setDatepickerVisible() {

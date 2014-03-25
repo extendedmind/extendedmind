@@ -151,7 +151,6 @@ section#tasks-dates {
           width: 100%;
           li {
             display: table-cell;
-            width: 14.2857143%;  /* (100 / numItems)% */
             text-align: center;
             a {
               font-size: @small-font-size;
@@ -165,15 +164,28 @@ section#tasks-dates {
                 display: table-cell;
               }
             }
-            a.change-week-arrow {
-              display: block;
-            }
-            a.activeDay {
+            a.date-active, a.date-active-today {
               font-weight: bold;
               span.day-date {
                 color: white;
                 border-radius: 50%; //http://css-tricks.com/almanac/properties/b/border-radius/
                 background-color: @highlighted-element;
+              }
+            }
+            a.date-past, a.date-active-past {
+              color: @default-element;
+            }
+            a.date-active-past {
+              span.day-date {
+                color: white;
+                border-radius: 50%; //http://css-tricks.com/almanac/properties/b/border-radius/
+                background-color: @default-element;
+              }
+            }
+            a.date-today {
+              span.day-date {
+                border-radius: 50%; //http://css-tricks.com/almanac/properties/b/border-radius/
+                border: 1px solid @highlighted-element;
               }
             }
           }

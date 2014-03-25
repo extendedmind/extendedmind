@@ -37,7 +37,7 @@ function DateService($timeout) {
   // This function is executed after timeout or interval for next day has reached its delay.
   function dayChanged() {
     today = new Today();
-    var firstDay = getFirstDayOfTheWeek(new Date());
+    var firstDay = getFirstDateOfTheWeek(new Date());
     weekDaysStartingFrom(firstDay);
     dayChangeCallback();
   }
@@ -51,20 +51,23 @@ function DateService($timeout) {
 
   var datepickerWeeks = [];
   function initializeDatepickerWeeks() {
-    var datepickerDay = getFirstDayOfTheWeek(new Date());
-    datepickerDay.setDate(datepickerDay.getDate() - 7);
-    var firstDayOfPreviousWeek = getFirstDayOfTheWeek(datepickerDay);
+    var firstDayOfCurrentWeek = getFirstDateOfTheWeek(new Date());
 
-    datepickerDay = getFirstDayOfTheWeek(new Date());
-    datepickerDay.setDate(datepickerDay.getDate() + 7);
-    var firstDayOfNextWeek = getFirstDayOfTheWeek(datepickerDay);
+    var firstDayOfPreviousWeek = new Date(
+      firstDayOfCurrentWeek.getFullYear(),
+      firstDayOfCurrentWeek.getMonth(),
+      firstDayOfCurrentWeek.getDate() - 7);
 
-    datepickerDay = getFirstDayOfTheWeek(new Date());
+    var firstDayOfNextWeek = new Date(
+      firstDayOfCurrentWeek.getFullYear(),
+      firstDayOfCurrentWeek.getMonth(),
+      firstDayOfCurrentWeek.getDate() + 7);
 
-    var prev = weekDaysStartingFrom(firstDayOfPreviousWeek);
-    var active = weekDaysStartingFrom(datepickerDay);
-    var next = weekDaysStartingFrom(firstDayOfNextWeek);
-    datepickerWeeks.push(prev);
+    var previous = datepickerWeekStartingFrom(firstDayOfPreviousWeek);
+    var active = datepickerWeekStartingFrom(firstDayOfCurrentWeek);
+    var next = datepickerWeekStartingFrom(firstDayOfNextWeek);
+
+    datepickerWeeks.push(previous);
     datepickerWeeks.push(active);
     datepickerWeeks.push(next);
   }
@@ -82,12 +85,43 @@ function DateService($timeout) {
   }
 
   // http://stackoverflow.com/a/4156516
-  function getFirstDayOfTheWeek(date) {
+  function getFirstDateOfTheWeek(date) {
     var currentDay = date.getDay();
     var diff = date.getDate() - currentDay + (currentDay === 0 ? -6 : 1); // adjust when day is sunday
     date.setDate(diff);
 
     return date;
+  }
+  /**
+   * @description
+   *
+   * Constructs a week with date objects in a following format:
+   *  date:         '18'
+   *  monthName:    'mar'
+   *  weekday:      'tuesday'
+   *  weekdayIndex: '1'
+   *  yyyyymmdd:    '2014-03-18'
+   *
+   * @param {Date} date First day of the week.
+   * @returns {Array} Week with datepicker dates.
+   */
+   function datepickerWeekStartingFrom(date) {
+    var week = [];
+    var day;
+
+    for (var i = 0, len = weekdays.length; i < len; i++) {
+      var dayIndex = (date.getDay() === 0) ? 6 : date.getDay() - 1;
+      day = {};
+      day.date = date.getDate();
+      day.weekday = weekdays[date.getDay()];
+      day.weekdayIndex = dayIndex;
+      day.monthName = monthNames[date.getMonth()];
+      day.yyyymmdd = yyyymmdd(date);
+
+      week.push(day);
+      date.setDate(date.getDate() + 1);
+    }
+    return week;
   }
 
   function weekDaysStartingFrom(date) {
@@ -95,9 +129,11 @@ function DateService($timeout) {
     var week = [];
 
     for (var i = 0, len = weekdays.length; i < len; i++) {
+      var dayIndex = (date.getDay() === 0) ? 6 : date.getDay() - 1;
       day = {};
       day.date = date.getDate();
       day.weekday = weekdays[date.getDay()];
+      day.weekdayIndex = dayIndex;
       day.month = {};
       day.month.name = monthNames[date.getMonth()];
       day.year = date.getFullYear();
@@ -116,7 +152,7 @@ function DateService($timeout) {
   }
 
   function getWeekWithOffset(offsetDays) {
-    var activeMonday = (activeWeek) ? new Date(activeWeek[0].yyyymmdd) : getFirstDayOfTheWeek(new Date());
+    var activeMonday = (activeWeek) ? new Date(activeWeek[0].yyyymmdd) : getFirstDateOfTheWeek(new Date());
     activeMonday.setDate(activeMonday.getDate() + offsetDays);
 
     return weekDaysStartingFrom(activeMonday);
@@ -126,33 +162,43 @@ function DateService($timeout) {
     datepickerWeeks: function() {
       return datepickerWeeks;
     },
-    changeDatePickerWeeks: function(direction) {
+    /**
+     * @description
+     * Previous, current and next week with datepicker dates.
+     *
+     * Either adds previous week to first and removes last week
+     * or adds next week to last and removes first week.
+     *
+     * @param {string} direction Previous or next week.
+     * @returns {Array} Datepicker weeks.
+     */
+     changeDatePickerWeeks: function(direction) {
       if (direction === 'prev') {
         var datepickerFirstMonday = new Date(datepickerWeeks[0][0].yyyymmdd);
         datepickerFirstMonday.setDate(datepickerFirstMonday.getDate() - 7);
 
-        var firstDayOfPreviousWeek = getFirstDayOfTheWeek(datepickerFirstMonday);
-        var prev = weekDaysStartingFrom(firstDayOfPreviousWeek);
+        var previousWeek = datepickerWeekStartingFrom(datepickerFirstMonday);
 
         datepickerWeeks.splice((datepickerWeeks.length - 1), 1);
-        datepickerWeeks.unshift(prev);
+        datepickerWeeks.unshift(previousWeek);
+
       } else if (direction === 'next') {
-        var datepickerLastMonday = new Date(datepickerWeeks[2][0].yyyymmdd);
+        var datepickerLastMonday = new Date(datepickerWeeks[datepickerWeeks.length - 1][0].yyyymmdd);
         datepickerLastMonday.setDate(datepickerLastMonday.getDate() + 7);
 
-        var firstDayOfNextWeek = getFirstDayOfTheWeek(datepickerLastMonday);
-        var next = weekDaysStartingFrom(firstDayOfNextWeek);
+        var nextWeek = datepickerWeekStartingFrom(datepickerLastMonday);
 
         datepickerWeeks.splice(0, 1);
-        datepickerWeeks.push(next);
+        datepickerWeeks.push(nextWeek);
       }
       return datepickerWeeks;
     },
     activeWeek: function() {
       return activeWeek || (function() {
-        var date = getFirstDayOfTheWeek(new Date());
+        var date = getFirstDateOfTheWeek(new Date());
 
-        return weekDaysStartingFrom(date);
+        activeWeek = weekDaysStartingFrom(date);
+        return activeWeek;
       })();
     },
     nextWeek: function() {
@@ -173,7 +219,7 @@ function DateService($timeout) {
     // getters
     getMondayDate: function() {
       return (activeWeek) ? activeWeek[0] : (function() {
-        var date = getFirstDayOfTheWeek(new Date());
+        var date = getFirstDateOfTheWeek(new Date());
         activeWeek = weekDaysStartingFrom(date);
         return activeWeek[0];
       })();
