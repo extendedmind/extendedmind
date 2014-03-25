@@ -1,6 +1,6 @@
 'use strict';
 
-function HeaderController($q, $scope, $location, $document, $element, $rootScope, SwiperService, UserSessionService) {
+function HeaderController($scope, $location, SwiperService, UserSessionService) {
 
   // Register callback to slide change which will update heading
   var featureSlideChangeCallback = function() {
@@ -52,9 +52,7 @@ function HeaderController($q, $scope, $location, $document, $element, $rootScope
       $location.path(UserSessionService.getOwnerPrefix() + '/notes/new');
     }
   };
-
 }
 
-HeaderController['$inject'] = [
-'$q', '$scope', '$location', '$document', '$element', '$rootScope', 'SwiperService', 'UserSessionService'];
+HeaderController['$inject'] = ['$scope', '$location', 'SwiperService', 'UserSessionService'];
 angular.module('em.app').controller('HeaderController', HeaderController);
