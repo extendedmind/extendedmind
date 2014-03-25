@@ -25,6 +25,11 @@ function LocalStorageService() {
     setUserUUID: function(uuid) {
       localStorage.setItem('userUUID', uuid);
     },
+    setCohort: function(cohort) {
+      if (cohort){
+        localStorage.setItem('cohort', cohort);
+      }
+    },
 
     // getters
     getCollectives: function() {
@@ -50,6 +55,9 @@ function LocalStorageService() {
     getUserUUID: function() {
       return localStorage.getItem('userUUID');
     },
+    getCohort: function() {
+      return localStorage.getItem('cohort');
+    },
 
     clearUser: function() {
       localStorage.removeItem('collectives');
@@ -59,6 +67,7 @@ function LocalStorageService() {
       localStorage.removeItem('replaceable');
       localStorage.removeItem('userType');
       localStorage.removeItem('userUUID');
+      localStorage.removeItem('cohort');
     }
   };
 }

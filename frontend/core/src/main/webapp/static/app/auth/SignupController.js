@@ -17,7 +17,12 @@ function SignupController($location, $scope, $routeParams, $window, Authenticati
     $scope.signupFailed = false;
     $scope.signupOffline = false;
     $scope.loginFailed = false;
-    AuthenticationService.signUp(inviteResponseCode, {email: $scope.user.username, password: $scope.user.password}).
+    // Cohort is a random number between 1 and 128
+    var randomCohort = Math.floor(Math.random() * 128) + 1;
+    AuthenticationService.signUp(inviteResponseCode,
+          {email: $scope.user.username,
+           password: $scope.user.password,
+           cohort: randomCohort}).
       then(function() {
         userLogin();
       }, function(signupResponse) {
@@ -45,11 +50,11 @@ function SignupController($location, $scope, $routeParams, $window, Authenticati
 
   $scope.gotoTermsOfService = function() {
     $window.open('http://ext.md/terms.html', '_system');
-  }
+  };
 
   $scope.gotoPrivacyPolicy = function() {
     $window.open('http://ext.md/privacy.html', '_system');
-  }
+  };
 
 }
 

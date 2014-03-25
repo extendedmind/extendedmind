@@ -5,18 +5,20 @@ import Validators._
 import org.extendedmind.security.SecurityContext
 
 case class User(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long],  
-                email: String, emailVerified: Option[Long])
+                email: String, emailVerified: Option[Long], cohort: Option[Int])
            extends Container{
-  require(validateEmailAddress(email), "Not a valid email address")  
+  require(validateEmailAddress(email), "Not a valid email address")
+  if (cohort.isDefined) require(cohort.get > 0 && cohort.get <= 128, "Cohort needs to be a number between 1 and 128")
 }
 
 object User{
-  def apply(email:String) = new User(None, None, None, email, None)
+  def apply(email:String, cohort: Option[Int]) = new User(None, None, None, email, None, cohort)
 }
-            
-case class SignUp(email: String, password: String){
+
+case class SignUp(email: String, password: String, cohort: Option[Int]){
   require(validateEmailAddress(email), "Not a valid email address")
   require(validatePassword(password), "Password needs to be 7 or more characters long")
+  if (cohort.isDefined) require(cohort.get > 0 && cohort.get <= 128, "Cohort needs to be a number between 1 and 128")
 }
 
 case class UserEmail(email: String){

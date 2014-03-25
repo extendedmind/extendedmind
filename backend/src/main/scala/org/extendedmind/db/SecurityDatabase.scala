@@ -241,6 +241,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     SecurityContext(
       sc.userUUID,
       sc.userType,
+      sc.cohort,
       Some(Token.encryptToken(token)),
       Some(tokenInfo._1),
       Some(tokenInfo._2),
@@ -313,14 +314,14 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       user.getProperty("passwordSalt").asInstanceOf[Array[Byte]])
   }
 
-  private def validatePassword(user: Node, attemptedPassword: String): Response[SecurityContext] = {
+  private def validatePassword(user: Node, attemptedPassword: String)(implicit neo4j: DatabaseService): Response[SecurityContext] = {
     for{
       validPassword <- validatePassword(attemptedPassword, getStoredPassword(user)).right
       sc <- Right(getSecurityContext(user)).right
     } yield sc
   }
   
-  private def validatePassword(user: Node, attemptedPassword: String, collectiveUUID: Option[UUID]): Response[SecurityContext] = {
+  private def validatePassword(user: Node, attemptedPassword: String, collectiveUUID: Option[UUID])(implicit neo4j: DatabaseService): Response[SecurityContext] = {
     for{
       validPassword <- validatePassword(attemptedPassword, getStoredPassword(user)).right
       sc <- getLimitedSecurityContext(user, collectiveUUID).right
@@ -341,15 +342,15 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     else ownerUUID
   }
 
-  private def getSecurityContext(user: Node): SecurityContext = {
+  private def getSecurityContext(user: Node)(implicit neo4j: DatabaseService): SecurityContext = {
     getCompleteSecurityContext(user, getUserType(user))
   }
   
-  private def getLimitedSecurityContext(user: Node, collectiveUUID: Option[UUID]): Response[SecurityContext] = {
+  private def getLimitedSecurityContext(user: Node, collectiveUUID: Option[UUID])(implicit neo4j: DatabaseService): Response[SecurityContext] = {
     getLimitedSecurityContext(user, getUserType(user), collectiveUUID)
   }
 
-  private def getCompleteSecurityContext(user: Node, userType: Byte): SecurityContext = {
+  private def getCompleteSecurityContext(user: Node, userType: Byte)(implicit neo4j: DatabaseService): SecurityContext = {
     val collectivesTraverser = collectivesTraversalDescription.traverse(user)
     val collectivesRelationshipList = collectivesTraverser.relationships().toList
     val sc = getSecurityContextSkeleton(user, userType).copy(
@@ -358,7 +359,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     sc
   }
   
-  private def getLimitedSecurityContext(user: Node, userType: Byte, collectiveUUID: Option[UUID]): Response[SecurityContext] = {
+  private def getLimitedSecurityContext(user: Node, userType: Byte, collectiveUUID: Option[UUID])(implicit neo4j: DatabaseService): Response[SecurityContext] = {
     val collectives: Option[Map[UUID,(String, Byte, Boolean)]] = {
       if (collectiveUUID.isEmpty){
         None
@@ -420,10 +421,11 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
 
-  private def getSecurityContextSkeleton(user: Node, userType: Byte): SecurityContext = {
+  private def getSecurityContextSkeleton(user: Node, userType: Byte)(implicit neo4j: DatabaseService): SecurityContext = {
     SecurityContext(
       getUUID(user),
       userType,
+      if (user.hasProperty("cohort")) Some(user.getProperty("cohort").asInstanceOf[Int]) else None,
       None,
       None,
       None,

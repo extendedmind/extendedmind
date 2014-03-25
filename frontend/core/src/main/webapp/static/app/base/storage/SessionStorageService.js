@@ -25,6 +25,11 @@ function SessionStorageService() {
     setUserUUID: function(userUUID) {
       sessionStorage.setItem('userUUID', userUUID);
     },
+    setCohort: function(cohort) {
+      if (cohort){
+        sessionStorage.setItem('cohort', cohort);
+      }
+    },
 
     // getters
     getActiveUUID: function() {
@@ -48,6 +53,9 @@ function SessionStorageService() {
     getUserUUID: function() {
       return sessionStorage.getItem('userUUID');
     },
+    getCohort: function() {
+      return sessionStorage.getItem('cohort');
+    },
     clearUser: function() {
       sessionStorage.removeItem('activeUUID');
       sessionStorage.removeItem('collectives');
@@ -56,6 +64,7 @@ function SessionStorageService() {
       sessionStorage.removeItem('credentials');
       sessionStorage.removeItem('userType');
       sessionStorage.removeItem('userUUID');
+      sessionStorage.removeItem('cohort');
     }
   };
 }

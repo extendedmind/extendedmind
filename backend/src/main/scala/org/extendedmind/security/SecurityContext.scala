@@ -4,7 +4,8 @@ import java.util.UUID
 import org.neo4j.graphdb.Node
 
 case class SecurityContext(userUUID: UUID, 
-						   userType: Byte, 
+						   userType: Byte,
+						   cohort: Option[Int],
 						   token: Option[String],
 						   authenticated: Option[Long],
 						   expires: Option[Long],

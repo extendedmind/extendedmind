@@ -148,7 +148,7 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                       // Accept invite
                       val testPassword = "testPassword"
                       Post("/invite/" + invites.invites(0).code.toHexString + "/accept",
-                        marshal(SignUp(invites.invites(0).email, testPassword)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                        marshal(SignUp(invites.invites(0).email, testPassword, Some(1))).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                           val acceptInviteResponse = entityAs[SetResult]
                           writeJsonOutput("acceptInviteResponse", entityAs[String])
                           acceptInviteResponse.uuid should not be None

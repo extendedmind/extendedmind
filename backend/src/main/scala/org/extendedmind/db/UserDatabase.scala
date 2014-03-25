@@ -77,6 +77,7 @@ trait UserDatabase extends AbstractGraphDatabase {
         if (userLabel.isDefined) userNode.addLabel(userLabel.get)
         setUserPassword(userNode, plainPassword)
         userNode.setProperty("email", user.email)
+        if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
         
         // Give user read permissions to common collectives
         val collectivesList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList

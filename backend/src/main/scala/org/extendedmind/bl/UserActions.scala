@@ -33,7 +33,7 @@ trait UserActions {
           signUp.email)
     for {
       isUnique <- db.validateEmailUniqueness(signUp.email).right
-      result <- db.putNewUser(User(signUp.email), signUp.password, settings.signUpMode).right
+      result <- db.putNewUser(User(signUp.email, signUp.cohort), signUp.password, settings.signUpMode).right
     } yield result
     
     // TODO: Send verification email as Future

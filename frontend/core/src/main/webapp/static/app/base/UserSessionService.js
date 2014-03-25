@@ -29,6 +29,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     SessionStorageService.setCredentials(LocalStorageService.getCredentials());
     SessionStorageService.setUserType(LocalStorageService.getUserType());
     SessionStorageService.setUserUUID(LocalStorageService.getUserUUID());
+    SessionStorageService.setCohort(LocalStorageService.getCohort());
   }
 
   function encodeUsernamePassword(username, password) {
@@ -87,6 +88,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       SessionStorageService.setCredentials(credentials);
       SessionStorageService.setUserType(authenticateResponse.userType);
       SessionStorageService.setUserUUID(authenticateResponse.userUUID);
+      SessionStorageService.setCohort(authenticateResponse.cohort);
 
       if (authenticateResponse.replaceable) {
         LocalStorageService.setExpires(authenticateResponse.expires + authExpiresDelta);
@@ -95,6 +97,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
         LocalStorageService.setReplaceable(authenticateResponse.replaceable + authExpiresDelta);
         LocalStorageService.setUserType(authenticateResponse.userType);
         LocalStorageService.setUserUUID(authenticateResponse.userUUID);
+        LocalStorageService.setCohort(authenticateResponse.cohort);
       }
       if (email) {
         setEmail(email);
@@ -162,6 +165,10 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     getUserUUID: function() {
       syncWebStorages();
       return SessionStorageService.getUserUUID();
+    },
+    getCohort: function() {
+      syncWebStorages();
+      return SessionStorageService.getCohort();
     },
     getLatestModified: function(ownerUUID) {
       return latestModified[ownerUUID];

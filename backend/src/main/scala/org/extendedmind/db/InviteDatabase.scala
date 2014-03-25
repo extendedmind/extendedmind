@@ -302,7 +302,7 @@ trait InviteDatabase extends UserDatabase {
   protected def acceptInviteNode(signUp: SignUp, code: Long, signUpMode: SignUpMode): Response[Node] = {
     withTx {
       implicit neo =>
-        val user = User(signUp.email)
+        val user = User(signUp.email, signUp.cohort)
         for {
           inviteNode <- getInviteNode(code, signUp.email).right
           userNode <- createUser(user, signUp.password, getExtraUserLabel(signUpMode)).right

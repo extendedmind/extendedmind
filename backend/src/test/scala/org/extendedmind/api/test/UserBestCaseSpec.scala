@@ -39,7 +39,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
- 
+
   before {
     db.insertTestData()
   }
@@ -51,7 +51,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
 
   describe("In the best case, UserService") {
     it("should create an administrator with POST to /signup because adminSignUp is set to true") {
-      val signUp = SignUp("test@ext.md", "infopwd")
+      val signUp = SignUp("test@ext.md", "infopwd", Some(1))
       Post("/signup",
         marshal(signUp).right.get) ~> route ~> check {
           val signUpResponse = entityAs[String]
@@ -60,6 +60,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
           signUpResponse should include("modified")
           val authenticationResponse = emailPasswordAuthenticate(signUp.email, signUp.password)
           authenticationResponse.userType should be(0)
+          authenticationResponse.cohort.get should be(1)
         }
     }
     it("should successfully get user with GET to /account, "
@@ -72,7 +73,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         accountResponse.uuid.get should equal(authenticateResponse.userUUID)
         accountResponse.email should equal(TIMO_EMAIL)
       }
-      val newUser = User("timo.tiuraniemi@iki.fi")
+      val newUser = User("timo.tiuraniemi@iki.fi", None)
       Put("/account",
         marshal(newUser).right.get) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> route ~> check {
           writeJsonOutput("putAccountResponse", entityAs[String])
