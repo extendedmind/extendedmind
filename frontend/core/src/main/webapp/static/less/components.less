@@ -79,6 +79,16 @@ header.page-header nav {
   #omnibar-label-wrapper {
     .edges-fade-to-white;
   }
+  
+  a#today-link {
+    display: block;
+    padding-left: @horizontal-grid;
+    color: @highlighted-element;
+    font-size: @small-font-size;
+  }
+  a.today-link-active {
+    font-weight: 700;
+  }
 
   button#menu-button{
     .button;
@@ -119,7 +129,7 @@ div.page-heading {
 // FOOTER
 
 footer {
-  a[class^='active-slide'],a[class*=' active-slide']{
+  a[class^='active-slide'], a[class*=' active-slide']{
     span {
       color: @highlighted-element;
     }

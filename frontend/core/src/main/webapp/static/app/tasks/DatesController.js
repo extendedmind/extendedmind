@@ -1,11 +1,11 @@
 'use strict';
 
-function DatesController($q, $scope, DateService, SwiperService) {
-  var activeDay;
+function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
+  $scope.activeDay = {};
   /*$scope.activeWeek*/$scope.dates = DateService.activeWeek();
   // $scope.weekdays = DateService.getWeekDays();
   $scope.datepickerWeeks = DateService.datepickerWeeks();
-  $scope.isDatepickerVisible = false;
+  $rootScope.isDatepickerVisible = false;
 
   DateService.registerDayChangeCallback(dayChangeCallback);
   function dayChangeCallback() {
@@ -22,7 +22,7 @@ function DatesController($q, $scope, DateService, SwiperService) {
 
   // This function is intended to be called from datepicker directive.
   $scope.changeActiveWeek = function changeActiveWeek(direction, cb) {
-    var weekdayIndex = activeDay.weekdayIndex;
+    var weekdayIndex = $scope.activeDay.weekdayIndex;
     $scope.datepickerWeeks = DateService.changeDatePickerWeeks(direction);
     cb().then($scope.$digest()).then(function() {
       if (direction === 'prev') {
@@ -38,10 +38,10 @@ function DatesController($q, $scope, DateService, SwiperService) {
   // Register a callback to swiper service
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks/home', 'DatesController');
   function slideChangeCallback(activeSlidePath) {
-    if (!activeSlidePath.endsWith(activeDay.weekday)){
+    if (!activeSlidePath.endsWith($scope.activeDay.weekday)){
       for (var i = 0, len = $scope.dates.length; i < len; i++) {
         if (activeSlidePath.endsWith($scope.dates[i].weekday)){
-          activeDay = $scope.dates[i];
+          $scope.activeDay = $scope.dates[i];
           // Run digest to change only date picker when swiping to new location
           $scope.$digest();
         }
@@ -51,14 +51,14 @@ function DatesController($q, $scope, DateService, SwiperService) {
 
   // invoke function during compile and $scope.$apply();
   function swipeToStartingDay(startingDay) {
-    activeDay = startingDay || DateService.getTodayDate() || DateService.getMondayDate();
+    $scope.activeDay = startingDay || DateService.getTodayDate() || DateService.getMondayDate();
     $q.when(
       SwiperService.setInitialSlidePath(
         'tasks/home',
-        getDateSlidePath(activeDay)))
+        getDateSlidePath($scope.activeDay)))
     .then(function(){
         // Need additional swiping if setting initial slide path fails to work
-        SwiperService.swipeTo(getDateSlidePath(activeDay));
+        SwiperService.swipeTo(getDateSlidePath($scope.activeDay));
       });
   }
   swipeToStartingDay();
@@ -74,7 +74,7 @@ function DatesController($q, $scope, DateService, SwiperService) {
   };
 
   $scope.dateClicked = function(date) {
-    activeDay = date;
+    $scope.activeDay = date;
     SwiperService.swipeTo(getDateSlidePath(date));
   };
 
@@ -82,7 +82,7 @@ function DatesController($q, $scope, DateService, SwiperService) {
     var todayYYYYMMDD = DateService.getTodayYYYYMMDD();
     var status = 'date';
 
-    if (date.yyyymmdd === activeDay.yyyymmdd) {
+    if (date.yyyymmdd === $scope.activeDay.yyyymmdd) {
       status += '-active';
     }
 
@@ -95,11 +95,19 @@ function DatesController($q, $scope, DateService, SwiperService) {
   };
 
   $scope.visibleDateFormat = function(date) {
-    return (date.yyyymmdd === activeDay.yyyymmdd) ? date.monthName : date.weekday.substring(0,1);
+    return (date.yyyymmdd === $scope.activeDay.yyyymmdd) ? date.monthName : date.weekday.substring(0,1);
   };
 
+  $scope.$watch('activeDay.yyyymmdd', function(newActiveYYYYMMDD) {
+    if (newActiveYYYYMMDD === DateService.getTodayYYYYMMDD()) {
+      $rootScope.isTodayActive = true;
+    } else {
+      $rootScope.isTodayActive = false;
+    }
+  });
+
   $scope.setDatepickerVisible = function setDatepickerVisible() {
-    $scope.isDatepickerVisible = true;
+    $rootScope.isDatepickerVisible = true;
     bindElsewhereThanDatepickerEvents();
   };
 
@@ -113,13 +121,27 @@ function DatesController($q, $scope, DateService, SwiperService) {
     }
   }
 
+  function gotoToday() {
+    if (!DateService.getTodayDate()) {
+      $scope.dates = DateService.setCurrentWeekActive();
+    }
+    swipeToStartingDay();
+  }
+
   function elseWhereThanDatepickerCallback(event) {
     var element = event.target;
-    if (event.target.id !== 'datepicker') {
+    if (element.id === 'datepicker') {
+      return;
+    } else if (element.id === 'today-link') {
+      gotoToday();
+    }
+    if (element.id !== 'datepicker' || element.id !== 'today-link') {
       while (element.parentNode) {
         element = element.parentNode;
         if (element.id === 'datepicker') {
           return;
+        } else if (element.id === 'today-link') {
+          gotoToday();
         }
       }
     }
@@ -128,7 +150,7 @@ function DatesController($q, $scope, DateService, SwiperService) {
       event.stopPropagation();
     }
     $scope.$apply(function() {
-      $scope.isDatepickerVisible = false;
+      $rootScope.isDatepickerVisible = false;
       unbindElsewhereThanDatepickerEvents();
     });
   }
@@ -142,5 +164,5 @@ function DatesController($q, $scope, DateService, SwiperService) {
   }
 }
 
-DatesController['$inject'] = ['$q', '$scope', 'DateService', 'SwiperService'];
+DatesController['$inject'] = ['$q', '$rootScope', '$scope', 'DateService', 'SwiperService'];
 angular.module('em.app').controller('DatesController', DatesController);

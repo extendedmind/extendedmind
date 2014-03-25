@@ -209,6 +209,14 @@ function DateService($timeout) {
       activeWeek = getWeekWithOffset(daysFromActiveWeekToPrevious);
       return activeWeek;
     },
+    setCurrentWeekActive: function() {
+      var date = getFirstDateOfTheWeek(new Date());
+
+      activeWeek = weekDaysStartingFrom(date);
+      datepickerWeeks.length = 0;
+      initializeDatepickerWeeks();
+      return activeWeek;
+    },
     registerDayChangeCallback: function(dayChangeCB) {
       dayChangeCallback = dayChangeCB;
     },
