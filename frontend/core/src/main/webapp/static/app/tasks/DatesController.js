@@ -86,7 +86,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
       status += '-active';
     }
 
-    if (date.yyyymmdd < todayYYYYMMDD) {
+    if (date.yyyymmdd < todayYYYYMMDD && DateService.isDateBeforeCurrentWeek(date)) {
       status += '-past';
     } else if (date.yyyymmdd === todayYYYYMMDD) {
       status += '-today';

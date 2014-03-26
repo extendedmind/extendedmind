@@ -223,6 +223,10 @@ function DateService($timeout) {
     removeDayChangeCallback: function() {
       dayChangeCallback = null;
     },
+    isDateBeforeCurrentWeek: function(date) {
+      var firstDayOfCurrentWeek = getFirstDateOfTheWeek(new Date());
+      return date.yyyymmdd < (yyyymmdd(firstDayOfCurrentWeek));
+    },
 
     // getters
     getMondayDate: function() {
