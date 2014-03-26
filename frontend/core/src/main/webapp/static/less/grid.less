@@ -14,7 +14,7 @@ div[role=main] {
   .center-horizontally;
   position: relative;
 
-  .one-column-grid, .two-column-grid, .column{
+  .one-column-grid, .two-column-grid, .column {
     min-height: inherit;
     min-width: inherit;
   }
@@ -58,22 +58,29 @@ header {
   * {
     vertical-align: middle;
   }
-  &.header-hidden{
+  &.header-hidden {
     z-index: 0 !important;
   }
 }
 
 .page-header {
-  min-height: @page-header-height;
+  height: @page-header-height;
   .center-horizontally;
   position: relative;
   #active-action-wrapper {
+    height: @page-header-height;
     background-color: white;
     float: left;
     text-align: right;
     // Width determined with javascript
+    #active-action-content-wrapper {
+      width: 82px;
+      height: @page-header-height;
+      float: right;
+    }
   }
   #omnibar-label-wrapper {
+    height: @page-header-height;
     float: left;
     text-align: center;
     label{
@@ -82,6 +89,7 @@ header {
     // Width determined with javascript
   }
   #plus-button-wrapper {
+    height: @page-header-height;
     background-color: white;
     float: right;
     text-align: left;
@@ -89,7 +97,7 @@ header {
   }
 }
 
-.heading-header{
+.heading-header {
   position: relative;
   text-align: center;
   min-height: @heading-header-height;
@@ -106,6 +114,7 @@ header {
 
 .page-content-container {
   height: inherit;
+  padding-top: 12px;
   padding-bottom: @footer-height + @page-header-height;
   .accordion-wrapper {
     height: inherit;
@@ -116,7 +125,7 @@ header {
     overflow-y: auto;
     display: block;
   }
-  .inner-slide-content-container{
+  .inner-slide-content-container {
     height: inherit;
     section {
       height: inherit;
@@ -125,7 +134,7 @@ header {
   }
 }
 
-.simple-content-container{
+.simple-content-container {
   height: inherit;
   padding-bottom: @heading-header-height + 10px;
   overflow-y: auto;
@@ -187,7 +196,7 @@ footer {
   body {
     div[role=main] > div.no-slides-container {
       .center-container;
-      section.page{
+      section.page {
         .absolute-center;
         min-height: @maximum-landscape-height;
         max-height: @maximum-landscape-height;

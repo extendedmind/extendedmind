@@ -2,7 +2,7 @@
 Fundamentals that affect the whole app.
 */
 
-*{
+* {
   // Use the same font throughout
   font-family: @font;
 
@@ -49,12 +49,13 @@ a:active {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
-  margin:0;
+  margin: 0;
   color: @content-heading;
   line-height: normal;
 }
 
 h3 {
+  min-height: @content-heading-height;
   a {
     color: @content-heading;
   }
@@ -68,8 +69,8 @@ h3 {
 
 ul {
   list-style-type: none;
-  padding:0;
-  margin:0;
+  padding: 0;
+  margin: 0;
 }
 
 // INPUTS

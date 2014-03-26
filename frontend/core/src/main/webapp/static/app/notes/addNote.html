@@ -1,8 +1,8 @@
-<form class="swiper-no-swiping" role="form" name="addNoteForm" ng-submit="addNote(newNote)">
+<form class="swiper-no-swiping add-element" role="form" name="addNoteForm" ng-submit="addNote(newNote)">
   <div class="form-group">
     <label class="sr-only" for="noteTitle">title</label>
     <div>
-      <input type="text" class="simple-input" id="noteTitle" ng-model="newNote.title" placeholder="add note..."></input>
+      <input type="text" class="simple-input" id="noteTitle" ng-model="newNote.title" placeholder="add note..." autocapitalize="none" autocorrect="off"></input>
     </div>
   </div>
 </form>

@@ -70,37 +70,46 @@ li.datepicker-date {
   }
 }
 
+.add-element {
+  // Add @vertical grid to make room for 'add [item]...' input
+  padding-bottom: @vertical-grid-half;
+}
+
 // PAGE HEADER
 
 header.page-header nav {
   color: @highlighted-element;  
-  min-height: @main-header-height;
 
   #omnibar-label-wrapper {
     .edges-fade-to-white;
   }
-  
-  a#today-link {
-    display: block;
-    padding-left: @horizontal-grid;
-    color: @highlighted-element;
-    font-size: @small-font-size;
-  }
-  a.today-link-active {
-    font-weight: 700;
-  }
 
-  button#menu-button{
-    .button;
-    padding: 10px 20px 10px @horizontal-grid; // increased clicking area
-    span.icon-menu{
+  div#active-action-content-wrapper {
+    a#today-link {
+      float: left;
       color: @highlighted-element;
-    }    
-  }
-  button#menu-button:active{
-    background-position: 0 0;
-    span.icon-menu{
-      color: @highlighted-element-pressed;
+      font-size: @small-font-size;
+      margin-top: 3px;
+      padding-left: @horizontal-grid + 4;
+      height: @page-header-height;
+    }
+    a.today-link-active {
+      font-weight: 700;
+    }
+
+    button#menu-button {
+      .button;
+      padding: 10px 20px 10px @horizontal-grid; // increased clicking area
+      span.icon-menu {
+        padding-right: 4px;
+        color: @highlighted-element;
+      }    
+    }
+    button#menu-button:active{
+      background-position: 0 0;
+      span.icon-menu {
+        color: @highlighted-element-pressed;
+      }
     }
   }
 
@@ -188,19 +197,19 @@ footer {
   }
 }
 
-
 // MENU
 
 #menu-content {
   a, span {
     font-size: @small-font-size;
     font-weight: 700;
+    margin-top: 2px;
   }
   a.feature-link {
     font-size: 1.17em;  // http://www.w3.org/TR/CSS2/sample.html
   }
   a.active {
-    margin-left: -18px;
+    margin-left: -17px;
   }
   a.active:before{ 
     content: '\2022';
@@ -229,7 +238,7 @@ footer {
   height: inherit;
   .center-horizontally;
   #menu-content {
-    padding-top: @main-header-height;
+    padding-top: @page-header-height;
     padding-left: @horizontal-grid;
     width: auto;
     a, span {
@@ -254,7 +263,7 @@ footer {
   #menu-content {
     padding-bottom: @footer-height*1.5;
     div.banner {
-      height: @main-header-height - 10;
+      height: @page-header-height;
       span.icon-logo_only {
         vertical-align: middle;
         font-size: @drawer-menu-icon-size;
