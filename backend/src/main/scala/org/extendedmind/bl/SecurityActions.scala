@@ -6,7 +6,7 @@ import org.extendedmind._
 import org.extendedmind.Response._
 import scaldi.Injector
 import scaldi.Injectable
-import spray.util.LoggingContext
+import akka.event.LoggingAdapter
 import org.extendedmind.security._
 import java.util.UUID
 import org.extendedmind.email.MailgunClient
@@ -23,8 +23,8 @@ trait SecurityActions {
   implicit val implicitActorRefFactory = actorRefFactory
   implicit val implicitExecutionContext = actorRefFactory.dispatcher 
   
-  def logout(userUUID: UUID, payload: Option[LogoutPayload])(implicit log: LoggingContext): Response[CountResult] = {
-    log.info("logout: user {} payload {}", userUUID, payload)
+  def logout(userUUID: UUID, payload: Option[LogoutPayload])(implicit log: LoggingAdapter): Response[CountResult] = {
+    log.info("logout: payload {}", payload)
     if (payload.isEmpty || payload.get.clearAll == false)
       Right(CountResult(1))
     else{
@@ -35,13 +35,13 @@ trait SecurityActions {
     }
   }
   
-  def changePassword(userUUID: UUID, newPassword: String)(implicit log: LoggingContext): Response[CountResult] = {
-    log.info("changePassword: user {}", userUUID)
+  def changePassword(userUUID: UUID, newPassword: String)(implicit log: LoggingAdapter): Response[CountResult] = {
+    log.info("changePassword")
     db.changePassword(userUUID, newPassword)
     db.destroyTokens(userUUID)
   }
   
-  def forgotPassword(userEmail: UserEmail)(implicit log: LoggingContext): Response[ForgotPasswordResult] = {
+  def forgotPassword(userEmail: UserEmail)(implicit log: LoggingAdapter): Response[ForgotPasswordResult] = {
     log.info("forgotPassword: user {}", userEmail.email)
     for {
       user <- db.getUser(userEmail.email).right
@@ -49,14 +49,14 @@ trait SecurityActions {
     } yield result
   }
   
-  def getPasswordResetExpires(code: Long, email: String)(implicit log: LoggingContext): Response[ForgotPasswordResult] = {
+  def getPasswordResetExpires(code: Long, email: String)(implicit log: LoggingAdapter): Response[ForgotPasswordResult] = {
     log.info("getPasswordResetable: user {}", email)
     for {
       expires <- db.getPasswordResetExpires(code, email).right
     } yield ForgotPasswordResult(expires)
   }
   
-  def resetPassword(code: Long, signUp: SignUp)(implicit log: LoggingContext): Response[CountResult] = {
+  def resetPassword(code: Long, signUp: SignUp)(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("resetPassword: user {}", signUp.email)
     val result = db.resetPassword(code, signUp)
     if (result.isRight){
@@ -66,7 +66,7 @@ trait SecurityActions {
     }
   }  
   
-  private def sendPasswordResetLink(user: User)(implicit log: LoggingContext): Response[ForgotPasswordResult] = {
+  private def sendPasswordResetLink(user: User)(implicit log: LoggingAdapter): Response[ForgotPasswordResult] = {
     val resetCode = Random.generateRandomUnsignedLong
     val currentTime = System.currentTimeMillis
     val resetCodeValid = currentTime + db.PASSWORD_RESET_DURATION

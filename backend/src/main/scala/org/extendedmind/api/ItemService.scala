@@ -22,6 +22,7 @@ import spray.can.Http
 import spray.util._
 import scala.concurrent.duration._
 import MediaTypes._
+import akka.event.DiagnosticLoggingAdapter
 
 trait ItemService extends ServiceBase {
 
@@ -34,8 +35,9 @@ trait ItemService extends ServiceBase {
             authorize(readAccess(ownerUUID, securityContext)) {
               complete {
                 Future[Items] {
+                  setLogContext(securityContext, ownerUUID)
                   itemActions.getItems(getOwner(ownerUUID, securityContext), modified, active, deleted, archived, completed) match {
-                    case Right(items) => items
+                    case Right(items) => processResult(items)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -49,8 +51,9 @@ trait ItemService extends ServiceBase {
           authorize(readAccess(ownerUUID, securityContext)) {
             complete {
               Future[Item] {
+                setLogContext(securityContext, ownerUUID, itemUUID)
                 itemActions.getItem(getOwner(ownerUUID, securityContext), itemUUID) match {
-                  case Right(item) => item
+                  case Right(item) => processResult(item)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -64,8 +67,9 @@ trait ItemService extends ServiceBase {
             entity(as[Item]) { item =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext, ownerUUID)
                   itemActions.putNewItem(getOwner(ownerUUID, securityContext), item) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processNewItemResult("item", sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -80,8 +84,9 @@ trait ItemService extends ServiceBase {
             entity(as[Item]) { item =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext, ownerUUID, itemUUID)
                   itemActions.putExistingItem(getOwner(ownerUUID, securityContext), itemUUID, item) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processResult(sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -95,8 +100,9 @@ trait ItemService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[DeleteItemResult] {
+                setLogContext(securityContext, ownerUUID, itemUUID)
                 itemActions.deleteItem(getOwner(ownerUUID, securityContext), itemUUID) match {
-                  case Right(dir) => dir
+                  case Right(dir) => processResult(dir)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -109,8 +115,9 @@ trait ItemService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[SetResult] {
+                setLogContext(securityContext, ownerUUID, itemUUID)
                 itemActions.undeleteItem(getOwner(ownerUUID, securityContext), itemUUID) match {
-                  case Right(sr) => sr
+                  case Right(sr) => processResult(sr)
                   case Left(e) => processErrors(e)
                 }
               }

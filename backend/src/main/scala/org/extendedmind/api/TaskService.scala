@@ -33,8 +33,9 @@ trait TaskService extends ServiceBase {
           authorize(readAccess(ownerUUID, securityContext)) {
             complete {
               Future[Task] {
+                setLogContext(securityContext, ownerUUID, taskUUID)
                 taskActions.getTask(getOwner(ownerUUID, securityContext), taskUUID) match {
-                  case Right(task) => task
+                  case Right(task) => processResult(task)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -48,8 +49,9 @@ trait TaskService extends ServiceBase {
             entity(as[Task]) { task =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext, ownerUUID)
                   taskActions.putNewTask(getOwner(ownerUUID, securityContext), task) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processNewItemResult("task", sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -64,8 +66,9 @@ trait TaskService extends ServiceBase {
             entity(as[Task]) { task =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext, ownerUUID, taskUUID)
                   taskActions.putExistingTask(getOwner(ownerUUID, securityContext), taskUUID, task) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processResult(sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -79,8 +82,9 @@ trait TaskService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[DeleteItemResult] {
+                setLogContext(securityContext, ownerUUID, taskUUID)
                 taskActions.deleteTask(getOwner(ownerUUID, securityContext), taskUUID) match {
-                  case Right(dir) => dir
+                  case Right(dir) => processResult(dir)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -93,8 +97,9 @@ trait TaskService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[SetResult] {
+                setLogContext(securityContext, ownerUUID, taskUUID)
                 taskActions.undeleteTask(getOwner(ownerUUID, securityContext), taskUUID) match {
-                  case Right(sr) => sr
+                  case Right(sr) => processResult(sr)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -107,8 +112,9 @@ trait TaskService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[CompleteTaskResult] {
+                setLogContext(securityContext, ownerUUID, taskUUID)
                 taskActions.completeTask(getOwner(ownerUUID, securityContext), taskUUID) match {
-                  case Right(task) => task
+                  case Right(task) => processResult(task)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -121,8 +127,9 @@ trait TaskService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[SetResult] {
+                setLogContext(securityContext, ownerUUID, taskUUID)
                 taskActions.uncompleteTask(getOwner(ownerUUID, securityContext), taskUUID) match {
-                  case Right(sr) => sr
+                  case Right(sr) => processResult(sr)
                   case Left(e) => processErrors(e)
                 }
               }

@@ -33,8 +33,9 @@ trait NoteService extends ServiceBase {
           authorize(readAccess(ownerUUID, securityContext)) {
             complete {
               Future[Note] {
+                setLogContext(securityContext, ownerUUID, noteUUID)
                 noteActions.getNote(getOwner(ownerUUID, securityContext), noteUUID) match {
-                  case Right(note) => note
+                  case Right(note) => processResult(note)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -48,8 +49,9 @@ trait NoteService extends ServiceBase {
             entity(as[Note]) { note =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext, ownerUUID)
                   noteActions.putNewNote(getOwner(ownerUUID, securityContext), note) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processNewItemResult("note", sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -64,8 +66,9 @@ trait NoteService extends ServiceBase {
             entity(as[Note]) { note =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext, ownerUUID, noteUUID)
                   noteActions.putExistingNote(getOwner(ownerUUID, securityContext), noteUUID, note) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processResult(sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -79,8 +82,9 @@ trait NoteService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[DeleteItemResult] {
+                setLogContext(securityContext, ownerUUID, noteUUID)
                 noteActions.deleteNote(getOwner(ownerUUID, securityContext), noteUUID) match {
-                  case Right(dir) => dir
+                  case Right(dir) => processResult(dir)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -93,8 +97,9 @@ trait NoteService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[SetResult] {
+                setLogContext(securityContext, ownerUUID, noteUUID)
                 noteActions.undeleteNote(getOwner(ownerUUID, securityContext), noteUUID) match {
-                  case Right(sr) => sr
+                  case Right(sr) => processResult(sr)
                   case Left(e) => processErrors(e)
                 }
               }

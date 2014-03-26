@@ -9,7 +9,7 @@ import org.extendedmind.Response._
 import scaldi.Injector
 import scaldi.Injectable
 import org.extendedmind.db.EmbeddedGraphDatabase
-import spray.util.LoggingContext
+import akka.event.LoggingAdapter
 import scala.util.{Success, Failure}
 import scala.concurrent.ExecutionContext
 import akka.actor.ActorRefFactory
@@ -26,7 +26,7 @@ trait UserActions {
   implicit val implicitActorRefFactory = actorRefFactory
   implicit val implicitExecutionContext = actorRefFactory.dispatcher 
   
-  def signUp(signUp: SignUp)(implicit log: LoggingContext): Response[SetResult] = {
+  def signUp(signUp: SignUp)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("signUp: email {}", signUp.email)
     if (settings.signUpMode == MODE_ADMIN) 
       log.warning("CRITICAL: Making {} an administrator because extendedmind.security.signUpMode is set to ADMIN", 
@@ -39,20 +39,20 @@ trait UserActions {
     // TODO: Send verification email as Future
   }
   
-  def getPublicUser(email: String)(implicit log: LoggingContext): Response[PublicUser] = {
+  def getPublicUser(email: String)(implicit log: LoggingAdapter): Response[PublicUser] = {
     log.info("getPublicUser: email {}", email)
     val user = db.getUser(email)
     if (user.isLeft) Left(user.left.get)
     else Right(PublicUser(user.right.get.uuid.get))
   }
    
-  def getUser(userUUID: UUID)(implicit log: LoggingContext): Response[User] = {
-    log.info("getUser: user {}", userUUID)
+  def getUser(userUUID: UUID)(implicit log: LoggingAdapter): Response[User] = {
+    log.info("getUser")
     db.getUser(userUUID)
   }
   
-  def putUser(userUUID: UUID, user: User)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putUser: user {}", userUUID)
+  def putUser(userUUID: UUID, user: User)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("putUser")
     db.putExistingUser(userUUID, user) match {
       case Right(result) => {
         Right(result._1)
@@ -64,8 +64,8 @@ trait UserActions {
     }
   }
   
-  def changeUserType(userUUID: UUID, userType: Integer)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("changeUserType: user {} to type {}", userUUID, userType)
+  def changeUserType(userUUID: UUID, userType: Integer)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("changeUserType: type {}", userType)
     db.changeUserType(userUUID, userType)
   }
   

@@ -33,8 +33,9 @@ trait ListService extends ServiceBase {
           authorize(readAccess(ownerUUID, securityContext)) {
             complete {
               Future[List] {
+                setLogContext(securityContext, ownerUUID, listUUID)
                 listActions.getList(getOwner(ownerUUID, securityContext), listUUID) match {
-                  case Right(list) => list
+                  case Right(list) => processResult(list)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -48,8 +49,9 @@ trait ListService extends ServiceBase {
             entity(as[List]) { list =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext, ownerUUID)
                   listActions.putNewList(getOwner(ownerUUID, securityContext), list) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processNewItemResult("list", sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -64,8 +66,9 @@ trait ListService extends ServiceBase {
             entity(as[List]) { list =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext, ownerUUID, listUUID)
                   listActions.putExistingList(getOwner(ownerUUID, securityContext), listUUID, list) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processResult(sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -79,8 +82,9 @@ trait ListService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[DeleteItemResult] {
+                setLogContext(securityContext, ownerUUID, listUUID)
                 listActions.deleteList(getOwner(ownerUUID, securityContext), listUUID) match {
-                  case Right(dir) => dir
+                  case Right(dir) => processResult(dir)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -93,8 +97,9 @@ trait ListService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[SetResult] {
+                setLogContext(securityContext, ownerUUID, listUUID)
                 listActions.undeleteList(getOwner(ownerUUID, securityContext), listUUID) match {
-                  case Right(sr) => sr
+                  case Right(sr) => processResult(sr)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -107,8 +112,9 @@ trait ListService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[ArchiveListResult] {
+                setLogContext(securityContext, ownerUUID, listUUID)
                 listActions.archiveList(getOwner(ownerUUID, securityContext), listUUID) match {
-                  case Right(result) => result
+                  case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }
               }

@@ -34,8 +34,9 @@ trait AdminService extends ServiceBase {
         authorize(adminAccess(securityContext)) {
           complete {
             Future[SetResult] {
+              setLogContext(securityContext)
               userActions.changeUserType(userUUID, userType) match {
-                case Right(sr) => sr
+                case Right(sr) => processResult(sr)
                 case Left(e) => processErrors(e)
               }
             }
@@ -50,8 +51,9 @@ trait AdminService extends ServiceBase {
             parameters("email") { email =>
               complete {
                 Future[PublicUser] {
+                  setLogContext(securityContext)
                   userActions.getPublicUser(email) match {
-                    case Right(publicUser) => publicUser
+                    case Right(publicUser) => processResult(publicUser)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -67,8 +69,9 @@ trait AdminService extends ServiceBase {
             entity(as[InviteRequest]) { inviteRequest =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext)
                   inviteActions.putNewInviteRequest(inviteRequest) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processResult(sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -83,8 +86,9 @@ trait AdminService extends ServiceBase {
           authorize(adminAccess(securityContext)) {
             complete {
               Future[DestroyResult] {
+                setLogContext(securityContext)
                 inviteActions.destroyInviteRequest(inviteRequestUUID) match {
-                  case Right(result) => result
+                  case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -97,8 +101,9 @@ trait AdminService extends ServiceBase {
           authorize(adminAccess(securityContext)) {
             complete {
               Future[InviteRequests] {
+                setLogContext(securityContext)
                 inviteActions.getInviteRequests match {
-                  case Right(inviteRequests) => inviteRequests
+                  case Right(inviteRequests) => processResult(inviteRequests)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -113,8 +118,9 @@ trait AdminService extends ServiceBase {
             entity(as[Option[InviteRequestAcceptDetails]]) { details =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext)
                   inviteActions.acceptInviteRequest(securityContext.userUUID, inviteRequestUUID, details) match {
-                    case Right(result) => result._1
+                    case Right(result) => processResult(result._1)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -128,8 +134,9 @@ trait AdminService extends ServiceBase {
           authorize(adminAccess(securityContext)) {
             complete {
               Future[Invites] {
+                setLogContext(securityContext)
                 inviteActions.getInvites match {
-                  case Right(invites) => invites
+                  case Right(invites) => processResult(invites)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -144,8 +151,9 @@ trait AdminService extends ServiceBase {
             entity(as[Collective]) { collective =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext)
                   collectiveActions.putNewCollective(securityContext.userUUID, collective) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processNewItemResult("collective", sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -161,8 +169,9 @@ trait AdminService extends ServiceBase {
             entity(as[Collective]) { collective =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext)
                   collectiveActions.putExistingCollective(collectiveUUID, collective) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processResult(sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -177,8 +186,9 @@ trait AdminService extends ServiceBase {
           authorize(adminAccess(securityContext)) {
             complete {
               Future[Collective] {
+                setLogContext(securityContext)
                 collectiveActions.getCollective(collectiveUUID) match {
-                  case Right(collective) => collective
+                  case Right(collective) => processResult(collective)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -193,8 +203,9 @@ trait AdminService extends ServiceBase {
             entity(as[UserAccessRight]) { userAccessRight =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext)
                   collectiveActions.setCollectiveUserPermission(collectiveUUID, securityContext.userUUID, userUUID, userAccessRight.access) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processResult(sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -208,8 +219,9 @@ trait AdminService extends ServiceBase {
           authorize(adminAccess(securityContext)) {
             complete {
               Future[CountResult] {
+                setLogContext(securityContext)
                 adminActions.resetTokens match {
-                  case Right(result) => result
+                  case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -222,8 +234,9 @@ trait AdminService extends ServiceBase {
           authorize(adminAccess(securityContext)) {
             complete {
               Future[CountResult] {
+                setLogContext(securityContext)
                 adminActions.rebuildItemsIndex(ownerUUID) match {
-                  case Right(result) => result
+                  case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -236,8 +249,9 @@ trait AdminService extends ServiceBase {
           authorize(adminAccess(securityContext)) {
             complete {
               Future[CountResult] {
+                setLogContext(securityContext)
                 adminActions.rebuildUserIndexes match {
-                  case Right(result) => result
+                  case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -250,28 +264,29 @@ trait AdminService extends ServiceBase {
           authorize(adminAccess(securityContext)) {
             complete {
               Future[CountResult] {
+                setLogContext(securityContext)
                 adminActions.rebuildInviteRequestsIndex match {
-                  case Right(result) => result
+                  case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }
               }
             }
           }
         }
-      } ~      
+      } ~
       migrateToLists { ownerUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
               Future[CountResult] {
                 adminActions.migrateToLists(ownerUUID) match {
-                  case Right(result) => result
+                  case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }
               }
             }
           }
-        }        
+        }
       } ~
       shutdown { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
@@ -279,7 +294,7 @@ trait AdminService extends ServiceBase {
             complete {
               adminActions.shutdown
               in(1.second) { actorSystem.shutdown() }
-              "Shutting down in 1 second..."
+              processResult("Shutting down in 1 second...")
             }
           }
         }

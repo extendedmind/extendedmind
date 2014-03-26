@@ -33,7 +33,7 @@ trait UserService extends ServiceBase {
             complete {
               Future[SetResult] {
                 userActions.signUp(signUp) match {
-                  case Right(sr) => sr
+                  case Right(sr) => processResult(sr)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -45,8 +45,9 @@ trait UserService extends ServiceBase {
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           complete {
             Future[User] {
+              setLogContext(securityContext)
               userActions.getUser(securityContext.userUUID) match {
-                case Right(user) => user
+                case Right(user) => processResult(user)
                 case Left(e) => processErrors(e)
               }
             }
@@ -58,8 +59,9 @@ trait UserService extends ServiceBase {
           entity(as[User]) { user =>
             complete {
               Future[SetResult] {
+                setLogContext(securityContext)
                 userActions.putUser(securityContext.userUUID, user) match {
-                  case Right(sr) => sr
+                  case Right(sr) => processResult(sr)
                   case Left(e) => processErrors(e)
                 }
               }

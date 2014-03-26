@@ -8,39 +8,38 @@ import org.extendedmind.domain.Item
 import java.util.UUID
 import org.extendedmind._
 import org.extendedmind.Response._
-import spray.util.LoggingContext
+import akka.event.LoggingAdapter
 
 trait ListActions {
 
   def db: GraphDatabase;
   
-  def putNewList(owner: Owner, list: List)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putNewList: owner {}", owner)
+  def putNewList(owner: Owner, list: List)(implicit log: LoggingAdapter): Response[SetResult] = {
     db.putNewList(owner, list)
   }
 
-  def putExistingList(owner: Owner, listUUID: UUID, list: List)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("putExistingList: owner {}, list {}", owner, listUUID)
+  def putExistingList(owner: Owner, listUUID: UUID, list: List)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("putExistingList")
     db.putExistingList(owner, listUUID, list)
   }
   
-   def getList(owner: Owner, listUUID: UUID)(implicit log: LoggingContext): Response[List] = {
-    log.info("getList: owner {}, list {}", owner, listUUID)
+   def getList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[List] = {
+    log.info("getList")
     db.getList(owner, listUUID)
   }
   
-  def deleteList(owner: Owner, listUUID: UUID)(implicit log: LoggingContext): Response[DeleteItemResult] = {
-    log.info("deleteList: owner {}, list {}", owner, listUUID)
+  def deleteList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[DeleteItemResult] = {
+    log.info("deleteList")
     db.deleteList(owner, listUUID)
   }
   
-  def undeleteList(owner: Owner, listUUID: UUID)(implicit log: LoggingContext): Response[SetResult] = {
-    log.info("undeleteList: owner {}, list {}", owner, listUUID)
+  def undeleteList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("undeleteList")
     db.undeleteItem(owner: Owner, listUUID, Some(ItemLabel.LIST))
   }
 
-  def archiveList(owner: Owner, listUUID: UUID)(implicit log: LoggingContext): Response[ArchiveListResult] = {
-    log.info("archiveList: owner {}, list {}", owner, listUUID)
+  def archiveList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[ArchiveListResult] = {
+    log.info("archiveList")
     db.archiveList(owner, listUUID)
   }
 }

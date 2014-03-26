@@ -22,18 +22,46 @@ import spray.can.Http
 import spray.util._
 import scala.concurrent.duration._
 import MediaTypes._
+import akka.event.LoggingAdapter
 
 // this class defines our service behavior independently from the service actor
 trait ServiceBase extends API with Injectable {
 
-  // Settings and configuration need to be initialized in the child class
+  // Settings, configuration and logging need to be initialized in the child class
   def settings: Settings
   def configurations: Injector
+  def putMdc(mdc: Map[String, Any])
+  def processResult[T <: Any](result: T): T
+  def processNewItemResult(itemType: String, result: SetResult): SetResult
+  
+  def logErrors(errors: scala.List[ResponseContent])
 
   implicit val implModules = configurations
   implicit val implSettings = settings
   implicit val executor = actorRefFactory.dispatcher
-  implicit val log = LoggingContext.fromActorRefFactory(actorRefFactory)
+  implicit val log: LoggingAdapter = LoggingContext.fromActorRefFactory(actorRefFactory)
+  implicit val implLogErrors = logErrors _
+  
+  def setLogContext(sc: SecurityContext, ownerUUID: UUID): Unit = {
+    setLogContext(sc, Some(ownerUUID))
+  }
+  
+  def setLogContext(sc: SecurityContext, ownerUUID: UUID, itemUUID: UUID): Unit = {
+    setLogContext(sc, Some(ownerUUID), Some(itemUUID))
+  }
+  
+  def setLogContext(sc: SecurityContext, ownerUUID: Option[UUID] = None, itemUUID: Option[UUID] = None): Unit = {
+    if (ownerUUID.isDefined){
+      if (ownerUUID.get != sc.userUUID && itemUUID.isDefined){
+        return putMdc(Map("user" -> sc.userUUID.toString, "collective" -> ownerUUID.get.toString(), "item" -> itemUUID.get.toString))
+      } else if (ownerUUID.get != sc.userUUID && itemUUID.isEmpty){
+        return putMdc(Map("user" -> sc.userUUID.toString, "collective" -> ownerUUID.get.toString()))
+      } else if (ownerUUID.get == sc.userUUID && itemUUID.isDefined){
+        return putMdc(Map("user" -> sc.userUUID.toString, "item" -> itemUUID.get.toString()))
+      }
+    }
+    return putMdc(Map("user" -> sc.userUUID.toString))
+  }
   
   def authenticateAuthenticator: ExtendedMindAuthenticateUserPassAuthenticator = {
     inject[ExtendedMindAuthenticateUserPassAuthenticator](by default new ExtendedMindAuthenticateUserPassAuthenticatorImpl)

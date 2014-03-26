@@ -33,8 +33,9 @@ trait TagService extends ServiceBase {
           authorize(readAccess(ownerUUID, securityContext)) {
             complete {
               Future[Tag] {
+                setLogContext(securityContext, ownerUUID, tagUUID)
                 tagActions.getTag(getOwner(ownerUUID, securityContext), tagUUID) match {
-                  case Right(tag) => tag
+                  case Right(tag) => processResult(tag)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -48,8 +49,9 @@ trait TagService extends ServiceBase {
             entity(as[Tag]) { tag =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext, ownerUUID)
                   tagActions.putNewTag(getOwner(ownerUUID, securityContext), tag) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processNewItemResult("tag",sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -64,8 +66,9 @@ trait TagService extends ServiceBase {
             entity(as[Tag]) { tag =>
               complete {
                 Future[SetResult] {
+                  setLogContext(securityContext, ownerUUID, tagUUID)
                   tagActions.putExistingTag(getOwner(ownerUUID, securityContext), tagUUID, tag) match {
-                    case Right(sr) => sr
+                    case Right(sr) => processResult(sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -79,8 +82,9 @@ trait TagService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[DeleteItemResult] {
+                setLogContext(securityContext, ownerUUID, tagUUID)
                 tagActions.deleteTag(getOwner(ownerUUID, securityContext), tagUUID) match {
-                  case Right(dir) => dir
+                  case Right(dir) => processResult(dir)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -93,8 +97,9 @@ trait TagService extends ServiceBase {
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[SetResult] {
+                setLogContext(securityContext, ownerUUID, tagUUID)
                 tagActions.undeleteTag(getOwner(ownerUUID, securityContext), tagUUID) match {
-                  case Right(sr) => sr
+                  case Right(sr) => processResult(sr)
                   case Left(e) => processErrors(e)
                 }
               }

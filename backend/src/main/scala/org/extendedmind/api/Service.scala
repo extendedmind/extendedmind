@@ -23,6 +23,8 @@ import spray.can.Http
 import spray.util._
 import scala.concurrent.duration._
 import MediaTypes._
+import akka.event._
+import scala.collection.JavaConverters._
 
 object Service {
   def rejectionHandler: RejectionHandler = {
@@ -36,7 +38,7 @@ object Service {
     }
   }
 
-  def exceptionHandler(implicit log: LoggingContext): ExceptionHandler = {
+  def exceptionHandler(implicit log: LoggingAdapter): ExceptionHandler = {
     ExceptionHandler {
       case e: InvalidAuthenticationException => ctx => {
         val currentTime = System.currentTimeMillis()
@@ -71,9 +73,41 @@ class ServiceActor extends HttpServiceActor with Service {
   def settings = SettingsExtension(context.system)
   def configurations = new Configuration(settings, actorRefFactory)
 
+  // LOGGING WITH MDC
+  
+  override implicit val log: DiagnosticLoggingAdapter = Logging(this);
+  override def putMdc(mdc: Map[String, Any]) {
+    log.mdc(mdc)
+  }
+  override def processResult[T <: Any](result: T): T = {
+    log.clearMDC()
+    result
+  }
+  override def processNewItemResult(itemType: String, result: SetResult): SetResult = {
+    val map: scala.collection.mutable.Map[String, Any] = scala.collection.mutable.Map("item" -> result.uuid.get)
+    log.mdc.foreach (keyValue => map.put(keyValue._1, keyValue._2))
+    log.mdc(map.toMap)
+    log.info("new " + itemType)
+    log.clearMDC()
+    result
+  }
+  
+  override def logErrors(errors: scala.List[ResponseContent]) = {
+    errors foreach (e => {
+    	val errorString = e.responseType + ": " + e.description
+    	println(errorString)
+    	if (e.throwable.isDefined){
+    	  log.error(e.throwable.get, errorString)
+    	}else{
+    	  log.error(errorString)
+    	}
+      }
+    )
+  }
+  
   // Setup implicits
-  implicit def implRejectionHandler(implicit log: LoggingContext) = Service.rejectionHandler
-  implicit def implExceptionHandler(implicit log: LoggingContext) = Service.exceptionHandler
+  implicit def implRejectionHandler = Service.rejectionHandler
+  implicit def implExceptionHandler = Service.exceptionHandler
 
   override def preStart = {
     // Load database on start
@@ -81,13 +115,14 @@ class ServiceActor extends HttpServiceActor with Service {
       throw new RuntimeException("Could not load database")
     }
   }
-  
+    
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling
   def receive = {
     runRoute(route)
   }
+    
 }
 
 // this class defines our service behavior independently from the service actor
@@ -102,7 +137,7 @@ trait Service extends AdminService
 			  with TagService {
 
   import JsonImplicits._
-  
+    
   val route = {
     getRoot {
       complete {

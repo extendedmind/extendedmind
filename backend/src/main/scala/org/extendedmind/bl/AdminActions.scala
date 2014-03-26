@@ -6,52 +6,52 @@ import org.extendedmind._
 import org.extendedmind.Response._
 import scaldi.Injector
 import scaldi.Injectable
-import spray.util.LoggingContext
 import org.extendedmind.security._
 import java.util.UUID
+import akka.event.LoggingAdapter
 
 trait AdminActions {
 
   def db: GraphDatabase;
 
-  def rebuildUserIndexes()(implicit log: LoggingContext): Response[CountResult] = {
+  def rebuildUserIndexes()(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("rebuildUserIndex")
     db.rebuildUserIndexes
   }
   
-  def rebuildInviteRequestsIndex()(implicit log: LoggingContext): Response[CountResult] = {
+  def rebuildInviteRequestsIndex()(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("rebuildInvitesIndex")
     db.rebuildInviteRequestsIndex
   }
   
-  def resetTokens()(implicit log: LoggingContext): Response[CountResult] = {
+  def resetTokens()(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("resetTokens")
     db.destroyAllTokens
   }
   
-  def rebuildItemsIndex(ownerUUID: UUID)(implicit log: LoggingContext): Response[CountResult] = {
+  def rebuildItemsIndex(ownerUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("rebuildItemsIndex")
     db.rebuildItemsIndex(ownerUUID)
   }
   
-  def migrateToLists(ownerUUID: UUID)(implicit log: LoggingContext): Response[CountResult] = {
+  def migrateToLists(ownerUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("migrateToLists")
     val countResult = db.migrateToLists(ownerUUID)
     if (countResult.isRight) log.info("migrated " + countResult.right.get.count + " projects to lists")
     countResult
   }
 
-  def loadDatabase(implicit log: LoggingContext): Boolean = {
+  def loadDatabase(implicit log: LoggingAdapter): Boolean = {
     log.info("loadDatabase")
     db.loadDatabase
   }
   
-  def checkDatabase(implicit log: LoggingContext): Boolean = {
+  def checkDatabase(implicit log: LoggingAdapter): Boolean = {
     log.info("checkDatabase")
     db.checkDatabase
   }
   
-  def shutdown(implicit log: LoggingContext): Unit = {
+  def shutdown(implicit log: LoggingAdapter): Unit = {
     log.info("shutdown")
     db.shutdownServer
   }

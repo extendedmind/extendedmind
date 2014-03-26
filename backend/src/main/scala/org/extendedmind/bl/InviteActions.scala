@@ -9,11 +9,11 @@ import org.extendedmind.Response._
 import scaldi.Injector
 import scaldi.Injectable
 import org.extendedmind.db.EmbeddedGraphDatabase
-import spray.util.LoggingContext
 import scala.util.{Success, Failure}
 import scala.concurrent.ExecutionContext
 import akka.actor.ActorRefFactory
 import akka.actor.ActorSystem
+import akka.event.LoggingAdapter
 import java.util.UUID
 
 trait InviteActions {
@@ -26,7 +26,7 @@ trait InviteActions {
   implicit val implicitActorRefFactory = actorRefFactory
   implicit val implicitExecutionContext = actorRefFactory.dispatcher 
     
-  def requestInvite(inviteRequest: InviteRequest)(implicit log: LoggingContext): Response[InviteRequestResult] = {
+  def requestInvite(inviteRequest: InviteRequest)(implicit log: LoggingAdapter): Response[InviteRequestResult] = {
     log.info("requestInvite: email {}", inviteRequest.email)
     val inviteRequestResult = db.postInviteRequest(inviteRequest)
     if (inviteRequestResult.isRight && inviteRequestResult.right.get.resultType == NEW_INVITE_REQUEST_RESULT){
@@ -51,7 +51,7 @@ trait InviteActions {
     inviteRequestResult
   }
   
-  def putNewInviteRequest(inviteRequest: InviteRequest)(implicit log: LoggingContext): Response[SetResult] = {
+  def putNewInviteRequest(inviteRequest: InviteRequest)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putNewInviteRequest: {}", inviteRequest)
     for {
       isUnique <- db.validateEmailUniqueness(inviteRequest.email).right
@@ -60,30 +60,30 @@ trait InviteActions {
     } yield uuidResult
   }
   
-  def getInviteRequests() (implicit log: LoggingContext): Response[InviteRequests] = {
+  def getInviteRequests() (implicit log: LoggingAdapter): Response[InviteRequests] = {
     log.info("getInviteRequests")
     db.getInviteRequests    
   }
   
-  def getInvites() (implicit log: LoggingContext): Response[Invites] = {
+  def getInvites() (implicit log: LoggingAdapter): Response[Invites] = {
     log.info("getInvites")
     db.getInvites
   }
   
-  def getInviteRequestQueueNumber(inviteRequestUUID: UUID) (implicit log: LoggingContext): 
+  def getInviteRequestQueueNumber(inviteRequestUUID: UUID) (implicit log: LoggingAdapter): 
         Response[InviteRequestQueueNumber] = {
     log.info("getInviteRequestQueueNumber for UUID {}", inviteRequestUUID)
     db.getInviteRequestQueueNumber(inviteRequestUUID)
   }
   
-  def getInvite(code: Long, email: String) (implicit log: LoggingContext): 
+  def getInvite(code: Long, email: String) (implicit log: LoggingAdapter): 
         Response[Invite] = {
     log.info("getInvite for code {}, email {}", code, email)
     db.getInvite(code, email)
   }
 
   def acceptInviteRequest(userUUID: UUID, inviteRequestUUID: UUID, details: Option[InviteRequestAcceptDetails])
-                         (implicit log: LoggingContext): Response[(SetResult, Invite)] = {
+                         (implicit log: LoggingAdapter): Response[(SetResult, Invite)] = {
     log.info("acceptInviteRequest: request {}", inviteRequestUUID)
     
     val acceptResult = db.acceptInviteRequest(userUUID, inviteRequestUUID, 
@@ -110,13 +110,13 @@ trait InviteActions {
     
   }
   
-  def acceptInvite(code: Long, signUp: SignUp) (implicit log: LoggingContext): 
+  def acceptInvite(code: Long, signUp: SignUp) (implicit log: LoggingAdapter): 
         Response[SetResult] = {
     log.info("acceptInvite for code {}, email {}, with signUpMode {}", code, signUp.email, settings.signUpMode)
     db.acceptInvite(signUp, code, settings.signUpMode)
   }
   
-  def destroyInviteRequest(inviteRequstUUID: UUID)(implicit log: LoggingContext): Response[DestroyResult] = {
+  def destroyInviteRequest(inviteRequstUUID: UUID)(implicit log: LoggingAdapter): Response[DestroyResult] = {
     log.info("destroyInviteRequest: request {}", inviteRequstUUID)
     db.destroyInviteRequest(inviteRequstUUID)
   }

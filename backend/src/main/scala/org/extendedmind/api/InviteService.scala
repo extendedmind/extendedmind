@@ -34,7 +34,7 @@ trait InviteService extends ServiceBase {
             complete {
               Future[InviteRequestResult] {
                 inviteActions.requestInvite(inviteRequest) match {
-                  case Right(inviteRequestResult) => inviteRequestResult
+                  case Right(inviteRequestResult) => processResult(inviteRequestResult)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -46,7 +46,7 @@ trait InviteService extends ServiceBase {
         complete {
           Future[InviteRequestQueueNumber] {
             inviteActions.getInviteRequestQueueNumber(inviteRequestUUID) match {
-              case Right(queueNumber) => queueNumber
+              case Right(queueNumber) => processResult(queueNumber)
               case Left(e) => processErrors(e)
             }
           }
@@ -57,7 +57,7 @@ trait InviteService extends ServiceBase {
           complete {
             Future[Invite] {
               inviteActions.getInvite(code, email) match {
-                case Right(invite) => invite
+                case Right(invite) => processResult(invite)
                 case Left(e) => processErrors(e)
               }
             }
@@ -70,7 +70,7 @@ trait InviteService extends ServiceBase {
             complete {
               Future[SetResult] {
                 inviteActions.acceptInvite(code, signUp) match {
-                  case Right(sr) => sr
+                  case Right(sr) => processResult(sr)
                   case Left(e) => processErrors(e)
                 }
               }

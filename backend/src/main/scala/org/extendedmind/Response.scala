@@ -3,6 +3,7 @@ package org.extendedmind
 import java.util.UUID
 import spray.routing._
 import spray.util._
+import akka.event.LoggingAdapter
 
 // List of custom rejections
 abstract class ExtendedMindException(description: String, throwable: Option[Throwable] = None) extends Exception(description) {
@@ -47,16 +48,8 @@ object Response{
     Left(List(ResponseContent(responseType, description, Some(throwable))))
   }
   
-  def logErrors(errors: List[ResponseContent])(implicit log: LoggingContext) = {
-    errors foreach (e => {
-    	val errorString = e.responseType + ": " + e.description
-    	println(errorString)
-    	log.info(errorString, e.throwable)
-      }
-    )
-  }
-  
-  def processErrors(errors: List[ResponseContent])(implicit log: LoggingContext) = {
+    
+  def processErrors(errors: List[ResponseContent])(implicit logErrors: List[ResponseContent] => Unit) = {
     // First log all errors
     logErrors(errors)
     if (!errors.isEmpty){

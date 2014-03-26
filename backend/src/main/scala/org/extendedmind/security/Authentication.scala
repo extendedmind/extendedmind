@@ -37,7 +37,7 @@ object Authentication{
   type UserPassRealmAuthenticator[T] = Option[UserPassRealm] => Future[Option[T]]
   type UserPassRememberAuthenticator[T] = Option[UserPassRemember] => Future[Option[T]]
 
-  def securityContextResponseToOption(response: Response[SecurityContext])(implicit log: LoggingContext): Option[SecurityContext] = {
+  def securityContextResponseToOption(response: Response[SecurityContext])(implicit logErrors: scala.List[ResponseContent] => Unit): Option[SecurityContext] = {
     response match {
       case Right(sc) => Some(sc)
       case Left(e) => {
@@ -76,6 +76,7 @@ class RealmHttpAuthenticator[U](val realm: String,
 trait ExtendedMindUserPassAuthenticator extends UserPassRealmAuthenticator[SecurityContext] {
 
   def db: GraphDatabase
+  implicit val implLogErrors: scala.List[ResponseContent] => Unit
 
   def apply(userPassRealm: Option[UserPassRealm]) = Promise.successful(
     userPassRealm match {
@@ -97,8 +98,9 @@ trait ExtendedMindUserPassAuthenticator extends UserPassRealmAuthenticator[Secur
     }).future
 }
 
-class ExtendedMindUserPassAuthenticatorImpl(implicit val settings: Settings, implicit val inj: Injector, implicit val log: LoggingContext)
+class ExtendedMindUserPassAuthenticatorImpl(implicit val settings: Settings, implicit val inj: Injector, implicit val logErrors: scala.List[ResponseContent] => Unit)
   extends ExtendedMindUserPassAuthenticator with Injectable {
+  override implicit val implLogErrors = logErrors
   override def db = inject[GraphDatabase]
 }
 
@@ -137,6 +139,8 @@ trait ExtendedMindAuthenticateUserPassAuthenticator extends UserPassRememberAuth
 
   def db: GraphDatabase
 
+  implicit val implLogErrors: scala.List[ResponseContent] => Unit
+
   def apply(userPassRemember: Option[UserPassRemember]) = Promise.successful(
     userPassRemember match {
       case Some(UserPassRemember(user, pass, payload)) => {
@@ -150,8 +154,9 @@ trait ExtendedMindAuthenticateUserPassAuthenticator extends UserPassRememberAuth
     }).future
 }
 
-class ExtendedMindAuthenticateUserPassAuthenticatorImpl(implicit val settings: Settings, implicit val inj: Injector, implicit val log: LoggingContext)
+class ExtendedMindAuthenticateUserPassAuthenticatorImpl(implicit val settings: Settings, implicit val inj: Injector, implicit val logErrors: scala.List[ResponseContent] => Unit)
   extends ExtendedMindAuthenticateUserPassAuthenticator with Injectable {
+  override implicit val implLogErrors = logErrors
   override def db = inject[GraphDatabase]
 }
 

@@ -31,7 +31,9 @@ trait SecurityService extends ServiceBase {
       postAuthenticate { url =>
         authenticate(ExtendedAuth(authenticateAuthenticator)) { securityContext =>
           complete {
-            securityContext
+            setLogContext(securityContext)
+            log.info("authenticate")
+            processResult(securityContext)
           }
         }
       } ~
@@ -40,8 +42,9 @@ trait SecurityService extends ServiceBase {
           entity(as[Option[LogoutPayload]]) { payload =>
             complete {
               Future[CountResult] {
+                setLogContext(securityContext)
                 securityActions.logout(securityContext.userUUID, payload) match {
-                  case Right(deleteCount) => deleteCount
+                  case Right(deleteCount) => processResult(deleteCount)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -54,8 +57,9 @@ trait SecurityService extends ServiceBase {
           entity(as[NewPassword]) { newPassword =>
             complete {
               Future[CountResult] {
+            	setLogContext(securityContext)
                 securityActions.changePassword(securityContext.userUUID, newPassword.password) match {
-                  case Right(count) => count
+                  case Right(count) => processResult(count)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -68,7 +72,7 @@ trait SecurityService extends ServiceBase {
           complete {
             Future[ForgotPasswordResult] {
               securityActions.forgotPassword(userEmail) match {
-                case Right(result) => result
+                case Right(result) => processResult(result)
                 case Left(e) => processErrors(e)
               }
             }
