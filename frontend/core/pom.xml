@@ -61,6 +61,13 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <targetPath>${project.basedir}/src/main/webapp/static</targetPath>
+      </resource>
+    </resources>    
     <testSourceDirectory>${project.basedir}/src/main/webapp/test</testSourceDirectory>
     <plugins>
       <plugin>
