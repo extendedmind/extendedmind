@@ -51,16 +51,19 @@ trait ServiceBase extends API with Injectable {
   }
   
   def setLogContext(sc: SecurityContext, ownerUUID: Option[UUID] = None, itemUUID: Option[UUID] = None): Unit = {
+    val mutableMap: scala.collection.mutable.Map[String, Any] = scala.collection.mutable.Map(("user" -> sc.userUUID.toString))
     if (ownerUUID.isDefined){
-      if (ownerUUID.get != sc.userUUID && itemUUID.isDefined){
-        return putMdc(Map("user" -> sc.userUUID.toString, "collective" -> ownerUUID.get.toString(), "item" -> itemUUID.get.toString))
-      } else if (ownerUUID.get != sc.userUUID && itemUUID.isEmpty){
-        return putMdc(Map("user" -> sc.userUUID.toString, "collective" -> ownerUUID.get.toString()))
-      } else if (ownerUUID.get == sc.userUUID && itemUUID.isDefined){
-        return putMdc(Map("user" -> sc.userUUID.toString, "item" -> itemUUID.get.toString()))
+      if (ownerUUID.get != sc.userUUID){
+        mutableMap.put("collective", ownerUUID.get.toString())
+      }
+      if(itemUUID.isDefined){
+        mutableMap.put("item", itemUUID.get.toString())
       }
     }
-    return putMdc(Map("user" -> sc.userUUID.toString))
+    if (sc.cohort.isDefined){
+      mutableMap.put("cohort", sc.cohort.get.asInstanceOf[java.lang.Integer])
+    }
+    putMdc(mutableMap.toMap)
   }
   
   def authenticateAuthenticator: ExtendedMindAuthenticateUserPassAuthenticator = {
