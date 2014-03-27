@@ -161,7 +161,7 @@
     <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>logback-mongodb-appender</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0.9</version>
       <scope>compile</scope>
     </dependency>
 
