@@ -42,8 +42,8 @@ class ServiceSpec extends SpraySpecBase with ImpermanentGraphDatabaseSpecBase{
 
   describe("Service") {
 
-    it("should return a list of available commands at root") {
-      Get() ~> route ~> check { entityAs[String] should include("is running") }
+    it("should return backend version at root") {
+      Get() ~> route ~> check {entityAs[String] should startWith("{\"version\":") }
     }
 
     it("should generate token response on /authenticate") {

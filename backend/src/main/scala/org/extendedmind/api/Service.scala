@@ -141,7 +141,7 @@ trait Service extends AdminService
   val route = {
     getRoot {
       complete {
-        "Extended Mind backend is running"  
+        "{\"version\":\"" + settings.version + "\"}"
       }
     } ~ adminRoutes ~ securityRoutes ~ userRoutes ~ inviteRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes
   }

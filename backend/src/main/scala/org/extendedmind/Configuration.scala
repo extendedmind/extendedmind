@@ -34,6 +34,7 @@ case object MODE_BETA extends SignUpMode
 case object MODE_NORMAL extends SignUpMode
 
 class Settings(config: Config) extends Extension {
+  val version = config.getString("extendedmind.version")
   val serverPort = config.getInt("extendedmind.server.port")
   val neo4jStoreDir = config.getString("extendedmind.neo4j.storeDir")
   val neo4jPropertiesFile: Option[String] = {
