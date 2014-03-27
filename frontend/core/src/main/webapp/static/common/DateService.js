@@ -14,6 +14,7 @@ function DateService($timeout) {
   var daysFromActiveWeekToPrevious = -daysFromActiveWeekToNext;
 
   var dayChangeCallback;
+  var today = new Today();
 
   function Today() {
     this.date = new Date();
@@ -21,7 +22,7 @@ function DateService($timeout) {
     setNextDayTimer(this.date);
   }
 
-  // Start timer timer for tomorrow.
+  // Start timer for tomorrow.
   // http://stackoverflow.com/a/5294766
   var nextDayTimer;
   function setNextDayTimer(date) {
@@ -37,11 +38,25 @@ function DateService($timeout) {
   // This function is executed after timeout or interval for next day has reached its delay.
   function dayChanged() {
     today = new Today();
-    var firstDay = getFirstDateOfTheWeek(new Date());
-    weekDaysStartingFrom(firstDay);
-    dayChangeCallback();
+    var weekChanged = false;
+    if (today.date.getDay() === 1) {  // Monday
+      activeWeek = weekDaysStartingFrom(new Date());
+      datepickerWeeks = [];
+      initializeDatepickerWeeks(new Date());
+      weekChanged = true;
+    } else {
+      for (var i = 0, len = activeWeek.length; i < len; i++) {
+        if (activeWeek[i].yyyymmdd === today.yyyymmdd) {
+          var yesterday = activeWeek[i-1];
+          yesterday.displayDate = yesterday.month.name + ' ' + yesterday.date;
+          activeWeek[i].displayDate = 'today';
+        }
+      }
+    }
+    if (dayChangeCallback) {
+      dayChangeCallback(weekChanged);
+    }
   }
-  var today = new Today();
 
   function stopNextDayTimer() {
     if (angular.isDefined(nextDayTimer)) {

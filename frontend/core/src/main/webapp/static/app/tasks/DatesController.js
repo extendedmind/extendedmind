@@ -2,17 +2,19 @@
 
 function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
   $scope.activeDay = {};
-  /*$scope.activeWeek*/$scope.dates = DateService.activeWeek();
-  // $scope.weekdays = DateService.getWeekDays();
+  $scope.weekdays = DateService.activeWeek();
   $scope.datepickerWeeks = DateService.datepickerWeeks();
   $rootScope.isDatepickerVisible = false;
 
   DateService.registerDayChangeCallback(dayChangeCallback);
-  function dayChangeCallback() {
-    $scope.dates = DateService.activeWeek();
+  function dayChangeCallback(weekChanged) {
+    if (weekChanged) {
+      $scope.weekdays = DateService.activeWeek();
+      $scope.datepickerWeeks = DateService.datepickerWeeks();
+    }
     swipeToStartingDay();
   }
-  $scope.$on('destroy', function() {
+  $scope.$on('$destroy', function() {
     DateService.removeDayChangeCallback();
   });
 
@@ -26,11 +28,11 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
     $scope.datepickerWeeks = DateService.changeDatePickerWeeks(direction);
     cb().then($scope.$digest()).then(function() {
       if (direction === 'prev') {
-        $scope.dates = DateService.previousWeek();
+        $scope.weekdays = DateService.previousWeek();
       } else if (direction === 'next') {
-        $scope.dates = DateService.nextWeek();
+        $scope.weekdays = DateService.nextWeek();
       }
-      var newActiveDay = $scope.dates[weekdayIndex];
+      var newActiveDay = $scope.weekdays[weekdayIndex];
       swipeToStartingDay(newActiveDay);
     });
   };
@@ -39,9 +41,9 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks/home', 'DatesController');
   function slideChangeCallback(activeSlidePath) {
     if (!activeSlidePath.endsWith($scope.activeDay.weekday)){
-      for (var i = 0, len = $scope.dates.length; i < len; i++) {
-        if (activeSlidePath.endsWith($scope.dates[i].weekday)){
-          $scope.activeDay = $scope.dates[i];
+      for (var i = 0, len = $scope.weekdays.length; i < len; i++) {
+        if (activeSlidePath.endsWith($scope.weekdays[i].weekday)){
+          $scope.activeDay = $scope.weekdays[i];
           // Run digest to change only date picker when swiping to new location
           $scope.$digest();
         }
@@ -63,13 +65,17 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
   }
   swipeToStartingDay();
 
+  $scope.getSubtask = function getSubtask(date) {
+    return {date: date.yyyymmdd};
+  };
+
   $scope.previousWeek = function() {
-    $scope.dates = DateService.previousWeek();
+    $scope.weekdays = DateService.previousWeek();
     swipeToStartingDay();
   };
 
   $scope.nextWeek = function() {
-    $scope.dates = DateService.nextWeek();
+    $scope.weekdays = DateService.nextWeek();
     swipeToStartingDay();
   };
 
@@ -123,7 +129,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
 
   function gotoToday() {
     if (!DateService.getTodayDate()) {
-      $scope.dates = DateService.setCurrentWeekActive();
+      $scope.weekdays = DateService.setCurrentWeekActive();
     }
     swipeToStartingDay();
   }
