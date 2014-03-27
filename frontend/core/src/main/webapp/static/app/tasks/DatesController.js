@@ -71,11 +71,13 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
 
   $scope.previousWeek = function() {
     $scope.weekdays = DateService.previousWeek();
+    $scope.datepickerWeeks = DateService.changeDatePickerWeeks('prev');
     swipeToStartingDay();
   };
 
   $scope.nextWeek = function() {
     $scope.weekdays = DateService.nextWeek();
+    $scope.datepickerWeeks = DateService.changeDatePickerWeeks('next');
     swipeToStartingDay();
   };
 
