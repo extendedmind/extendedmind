@@ -31,9 +31,9 @@ abstract class E2ESpecBase extends FunSpec
   }
 
   if (System.getProperty("os.name") == "Mac OS X") {
-    System.setProperty(PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"target/phantomjs-1.0-SNAPSHOT/mac/bin/phantomjs")  
+    System.setProperty(PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"target/phantomjs-1.9.7/mac/bin/phantomjs")  
   } else {    
-    System.setProperty(PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"target/phantomjs-1.0-SNAPSHOT/linux/bin/phantomjs")  
+    System.setProperty(PHANTOMJS_EXECUTABLE_PATH_PROPERTY,"target/phantomjs-1.9.7/linux/bin/phantomjs")  
   }
   implicit val webDriver: WebDriver = new PhantomJSDriver
   

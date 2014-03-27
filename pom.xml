@@ -50,8 +50,7 @@
     <scala.version>${scala.version.short}.3</scala.version>
     <skipScalaTestTests>false</skipScalaTestTests>
     <skipJUnitTests>true</skipJUnitTests>
-    <phantomjs.version>1.9.2</phantomjs.version>
-    <phantomjs.jar.version>1.0-SNAPSHOT</phantomjs.jar.version>
+    <phantomjs.version>1.9.7</phantomjs.version>
     <jetty.version>9.0.4.v20130625</jetty.version>
   </properties>
 
@@ -137,7 +136,7 @@
       <dependency>
         <groupId>org.extendedmind</groupId>
         <artifactId>phantomjs</artifactId>
-        <version>${phantomjs.jar.version}</version>
+        <version>${phantomjs.version}</version>
         <classifier>dist</classifier>
         <type>jar</type>
       </dependency>

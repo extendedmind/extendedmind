@@ -175,7 +175,7 @@
           <webDriverCapabilities>
             <capability>
               <name>phantomjs.binary.path</name>
-              <value>${project.build.directory}/phantomjs-${phantomjs.jar.version}/${platform.classifier}/bin/phantomjs</value>
+              <value>${project.build.directory}/phantomjs-${phantomjs.version}/${platform.classifier}/bin/phantomjs</value>
             </capability>
           </webDriverCapabilities>
         </configuration>
