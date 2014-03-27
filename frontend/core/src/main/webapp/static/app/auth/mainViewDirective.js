@@ -7,6 +7,16 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
     replace: 'true',
     templateUrl: 'static/app/auth/main.html',
     controller: function($scope) {
+      // Put version to scope
+      $.getJSON('static/config.json', function(data) {
+        $scope.extendedMindVersion = data.version;
+      });
+
+      // Back function globally available
+      $scope.gotoPreviousPage = function() {
+        window.history.back();
+      };
+
       // Online/offline status, optimistic default
       $scope.online = true;
       var onlineStatusCallback = function(online){
