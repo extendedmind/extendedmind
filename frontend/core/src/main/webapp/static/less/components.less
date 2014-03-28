@@ -283,3 +283,92 @@ footer {
     }
   }
 }
+
+
+// DATEPICKER
+
+#datepicker {
+  height: @vertical-grid + 6;
+  margin-top: -16px;
+  overflow: hidden;
+  div#scroller {
+    // http://stackoverflow.com/a/18784257
+    // css divide width 100% to 3 column
+    width: 300%;
+    height: inherit;
+    display: flex;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    justify-content: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    nav[role=navigation].slide {
+      height: inherit;
+      flex: 1;
+      -webkit-flex: 1;
+      -ms-flex: 1;
+      ul {
+        // http://stackoverflow.com/a/14103766
+        // How to stretch html / css horizontal navigation items evenly and fully across a specified container
+        width: 100%;
+        height: inherit;
+        li {
+          height: inherit;
+          vertical-align: middle;
+        }
+        li#datepicker-arrow-previous {
+          text-align: left;
+        }
+        li#datepicker-arrow-next {
+          text-align: right;
+        }
+        li.datepicker-date {
+          min-width: 11.11%;
+          text-align: center;
+          a {
+            font-size: @small-font-size;
+            width: inherit;
+            color: @highlighted-element;
+            span {
+              display: block;
+              min-width: 29px;
+            }
+            span.day-date {
+              display: block;
+              margin: 0 auto;
+              height: 28px;
+              width: 28px;
+              text-align: center;
+              line-height: 28px;
+            }
+          }
+          a.date-active, a.date-active-today {
+            font-weight: 700;
+            span.day-date {
+              color: white;
+              border-radius: 50%; //http://css-tricks.com/almanac/properties/b/border-radius/
+              background-color: @highlighted-element;
+            }
+          }
+          a.date-past, a.date-active-past {
+            color: @default-element;
+          }
+          a.date-active-past {
+            span.day-date {
+              color: white;
+              border-radius: 50%; //http://css-tricks.com/almanac/properties/b/border-radius/
+              background-color: @default-element;
+            }
+          }
+          a.date-today {
+            span.day-date {
+              line-height: 26px;
+              border-radius: 50%; //http://css-tricks.com/almanac/properties/b/border-radius/
+              border: 1px solid @highlighted-element;
+            }
+          }
+        }
+      }
+    }
+  }
+}
