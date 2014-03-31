@@ -9,9 +9,11 @@ function HttpRequestQueueService() {
   var primary, secondary;
   // After primary and secondary there is a FIFO queue
   var queue = [];
+  // Last request is exectued last
+  var last;
   // A simple boolean lock that signals if head & remove/setOffline process
   // is currently in progress
-  // NOTE: Might needs upgrading to proper mutex if web workers and thus
+  // NOTE: Might needs upgrading to proper mutex if web workers with
   //       multiple threads are used.
   var processing = false;
 
@@ -25,6 +27,9 @@ function HttpRequestQueueService() {
   }
   if (localStorage.getItem('requestQueue')){
     queue = JSON.parse(localStorage.getItem('requestQueue'));
+  }
+  if (localStorage.getItem('lastRequest')){
+    last = JSON.parse(localStorage.getItem('lastRequest'));
   }
 
   // Find index of a reversible item in queue
@@ -73,6 +78,8 @@ function HttpRequestQueueService() {
       return secondary;
     }else if (queue && queue.length > 0){
       return queue[0];
+    }else if (last){
+      return last;
     }
   }
 
@@ -88,7 +95,8 @@ function HttpRequestQueueService() {
           secondary = request;
           localStorage.setItem('secondaryRequest', JSON.stringify(secondary));
         }
-      }else{
+      }
+      else{
         var reverseRequestIndex = findReverseRequestIndex(request);
         if (reverseRequestIndex !== undefined &&
             (getHead() !== queue[reverseRequestIndex] || queue[reverseRequestIndex].offline)){
@@ -101,6 +109,16 @@ function HttpRequestQueueService() {
       }
       return true;
     },
+    concatLastContentDataArray: function(request) {
+      if (!last){
+        last = request;
+      }else{
+        // last already exists, concat the data from this request to
+        // the end of the data array in the last request
+        last.content.data.concat(request.content.data);
+      }
+      localStorage.setItem('lastRequest', JSON.stringify(last));
+    },
     remove: function(request) {
       if (request.primary){
         primary = undefined;
@@ -108,6 +126,9 @@ function HttpRequestQueueService() {
       }else if (request.secondary){
         secondary = undefined;
         localStorage.removeItem('secondaryRequest');
+      }else if (request.last){
+        last = undefined;
+        localStorage.removeItem('lastRequest');
       }else{
         var requestIndex = findRequestIndex(request);
         if (requestIndex !== undefined){
@@ -137,6 +158,9 @@ function HttpRequestQueueService() {
       }
       // Release lock
       processing = false;
+    },
+    releaseLock: function () {
+      processing = false;      
     },
     getHead: function () {
       if (!processing){

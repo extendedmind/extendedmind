@@ -1,4 +1,4 @@
-/* global angular */
+/* global $ */
 'use strict';
 
 function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
@@ -28,32 +28,33 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   function executeRequests() {
     var headRequest = HttpRequestQueueService.getHead();
     if (headRequest){
-      $http(headRequest.content).
-      success(function(data /*, status, headers, config*/) {
-          // First, execute callback
-          if (headRequest.primary && primaryCallback){
-            primaryCallback(headRequest, data);
-          }else if (headRequest.secondary && secondaryCallback){
-            secondaryCallback(headRequest, data, HttpRequestQueueService.getQueue());
-            HttpRequestQueueService.saveQueue();
-          }else if (defaultCallback){
-            defaultCallback(headRequest, data, HttpRequestQueueService.getQueue());
-            HttpRequestQueueService.saveQueue();
-          }
-          // Then remove the request from queue and release lock
-          HttpRequestQueueService.remove(headRequest);
+      if (!headRequest.last){
+        $http(headRequest.content).
+        success(function(data /*, status, headers, config*/) {
+            // First, execute callback
+            if (headRequest.primary && primaryCallback){
+              primaryCallback(headRequest, data);
+            }else if (headRequest.secondary && secondaryCallback){
+              secondaryCallback(headRequest, data, HttpRequestQueueService.getQueue());
+              HttpRequestQueueService.saveQueue();
+            }else if (defaultCallback){
+              defaultCallback(headRequest, data, HttpRequestQueueService.getQueue());
+              HttpRequestQueueService.saveQueue();
+            }
+            // Then remove the request from queue and release lock
+            HttpRequestQueueService.remove(headRequest);
 
-          // Execute online callback
-          online = true;
-          if (onlineCallback) {
-            onlineCallback(online);
-          }
+            // Execute online callback
+            online = true;
+            if (onlineCallback) {
+              onlineCallback(online);
+            }
 
-          // Try to execute the next request in the queue
-          executeRequests();
-        }).
-      error(function(data, status, headers, config) {
-        if (status && (status === 404 || status === 502)){
+            // Try to execute the next request in the queue
+            executeRequests();
+          }).
+        error(function(data, status, headers, config) {
+          if (status && (status === 404 || status === 502)){
             // Seems to be offline, stop processing
             HttpRequestQueueService.setOffline(headRequest);
             online = false;
@@ -64,9 +65,27 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
           }else {
             // Emit unsuspected error to root scope, so that
             // it can be listened on at by the application
+            HttpRequestQueueService.releaseLock();
             $rootScope.$emit('emException', {type: 'http', status: status, data: data, url: config.url});
           }
         });
+      }else{
+        // Last is executed without any expectations of a result
+        $.ajax({
+          type: headRequest.content.method.toUpperCase(),
+          url: headRequest.content.url,
+          data: headRequest.content.data,
+          contentType: "application/json", 
+          dataType: "json",
+          success: function () {
+            // Then remove the request and release lock
+            HttpRequestQueueService.remove(headRequest);
+          },
+          failure: function () {
+            HttpRequestQueueService.releaseLock();
+          }
+        });
+      }
     }
   }
 
@@ -175,6 +194,14 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     HttpRequestQueueService.push(request);
     executeRequests();
   };
+
+  // Custom method for last post, i.e. analytics
+  methods.postLast = function(url, data) {
+    var request = getRequest('post', url, undefined, data);
+    request.last = true;
+    HttpRequestQueueService.concatLastContentDataArray(request);
+    // Don't execute requests, last is sent only after something else
+  }
 
   // DELETE, POST and PUT are methods which utilize
   // the offline request queue

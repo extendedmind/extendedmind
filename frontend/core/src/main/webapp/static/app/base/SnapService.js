@@ -73,4 +73,4 @@ function SnapService() {
     }
   };
 }
-angular.module('common').factory('SnapService', SnapService);
+angular.module('em.services').factory('SnapService', SnapService);
