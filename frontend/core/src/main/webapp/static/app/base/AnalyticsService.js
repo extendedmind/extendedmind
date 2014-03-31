@@ -1,6 +1,6 @@
 'use strict';
 
-function AnalyticsService(UserSessionService, HttpClientService) {
+function AnalyticsService($q, UserSessionService, HttpClientService) {
 
   // START SESSION.JS
 
@@ -126,7 +126,7 @@ function AnalyticsService(UserSessionService, HttpClientService) {
         if (ret.os=='Linux'){
           var distros = ['CentOS','Debian','Fedora','Gentoo','Mandriva','Mageia','Red Hat','Slackware','SUSE','Turbolinux','Ubuntu'];
           for (var i = 0; i < distros.length;i++){
-            if (nav.useragent.toLowerCase().match(distros[i].toLowerCase())){
+            if (nav.userAgent.toLowerCase().match(distros[i].toLowerCase())){
               ret.distro = distros[i];
               break;
             }
@@ -329,7 +329,11 @@ function AnalyticsService(UserSessionService, HttpClientService) {
                   options.location_cookie,
                   win.google.loader.ClientLocation,
                   options.location_cookie_timeout * 60 * 60 * 1000);
-              }};
+              }
+              // #### CUSTOM CALLBACK
+              gapiCallback(window.session.location);
+              // ####
+            };
             util.embed_script("https://www.google.com/jsapi?callback=gloader_ready");
           } else {
             callback(location);
@@ -475,12 +479,18 @@ function AnalyticsService(UserSessionService, HttpClientService) {
 
   // END SESSION.JS
 
+  var deferredLocation = $q.defer();
+
+  function gapiCallback(location){
+    deferredLocation.resolve(location);
+  }
 
   var analyticsUrl = '/collect/1.0/event/put';
 
   function getAnonymousPayload(type){
 
   };
+
 
   function getUserPayload(type){
     var data = getAnonymousData(type);
@@ -495,8 +505,19 @@ function AnalyticsService(UserSessionService, HttpClientService) {
     ]
   };
 
+
   return {
+    visitLaunch: function() {
+      deferredLocation.promise.then(function(location){
+        // Location is fetched from Google API
+        //HttpClientService.postLast(analyticsUrl, getAnonymousPayload("visit_signup"));
+      });
+    },
     visitSignup: function() {
+      deferredLocation.promise.then(function(location){
+        console.log(location);
+      });
+
       HttpClientService.postLast(analyticsUrl, getAnonymousPayload("visit_signup"));
     },
     visitLogin: function() {
@@ -510,5 +531,5 @@ function AnalyticsService(UserSessionService, HttpClientService) {
     },
   };
 }
-AnalyticsService['$inject'] = ['UserSessionService', 'HttpClientService'];
+AnalyticsService['$inject'] = ['$q', 'UserSessionService', 'HttpClientService'];
 angular.module('em.services').factory('AnalyticsService', AnalyticsService);
