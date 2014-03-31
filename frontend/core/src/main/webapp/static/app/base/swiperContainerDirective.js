@@ -50,7 +50,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         }
       }
 
-      function updateSwiper(){
+      function updateSwiper() {
         var currentExpectedSlides = $scope.expectedSlidesFn();
 
         // (Re)inializes the swiper after the digest to make sure the whole
@@ -233,7 +233,12 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
       var swipePageSlideDown = false;
       var swipePageSlideStartX, swipePageSlideStartY, swipePageSlideDistX, swipePageSlideDistY;
       var pageSwiperSlideScrollTimeout;
-      var pullToRefreshPosition = 200;
+
+      var pullToRefreshPosition = 200;  // in pixels
+      var pullToPreviousWeekElement = document.getElementById('pull-to-previous-week');
+      var pullToNextWeekElement = document.getElementById('pull-to-next-week');
+      var isPullToPreviousWeekLoaderActive = false;
+      var isPullToNextWeekLoaderActive = false;
 
       function pageSwiperSlideTouchStart(event) {
         $rootScope.innerSwiping = false;
@@ -285,9 +290,26 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
           // Find out scroll position of a slide and compare it with swiper direction.
           // https://developer.mozilla.org/en-US/docs/Web/API/Element.scroswipe tllHeight#Determine_if_an_element_has_been_totally_scrolled
           if (((this.scrollHeight - this.scrollTop) <= this.clientHeight) && swipePageSlideDown) {
-            // Bottom of a slide and swiping down. Do nothing and let the event bubble to swiper.
+            // Bottom of a slide and swiping down. Let the event bubble to swiper.
+
+            // Toggle pull to next week indicator in DOM
+            if (positiveHoldPosition > pullToRefreshPosition) {
+              pullToNextWeekElement.className = 'week-loader-active';
+              isPullToNextWeekLoaderActive = true;
+            } else if (isPullToNextWeekLoaderActive) {
+              pullToNextWeekElement.className = 'week-loader';
+            }
           } else if ((this.scrollTop <= 0) && swipePageSlideUp) {
-            // Top of a slide on swiping up. Do nothing and let the event bubble to swiper.
+            // Top of a slide on swiping up. Let the event bubble to swiper.
+
+            // Toggle pull to previous week indicator in DOM
+            if (negativeHoldPosition > pullToRefreshPosition) {
+              pullToPreviousWeekElement.className = 'week-loader-active';
+              isPullToPreviousWeekLoaderActive = true;
+            } else if (isPullToPreviousWeekLoaderActive) {
+              pullToPreviousWeekElement.className = 'week-loader';
+            }
+
           } else {
             // Middle of a slide. Do a regular scroll and stop the event bubbling to swiper.
             event.stopPropagation();
@@ -306,6 +328,15 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
           SwiperService.reachedNegativeResistancePullToRefreshPosition($scope.swiperPath);
         } else if (positiveHoldPosition > pullToRefreshPosition) {
           SwiperService.reachedPositiveResistancePullToRefreshPosition($scope.swiperPath);
+        }
+
+        // Toggle pull to previous/next week indicator in DOM
+        if (isPullToPreviousWeekLoaderActive) {
+          pullToPreviousWeekElement.className = 'week-loader';
+          isPullToPreviousWeekLoaderActive = false;
+        } else if (isPullToNextWeekLoaderActive) {
+          pullToNextWeekElement.className = 'week-loader';
+          isPullToNextWeekLoaderActive = false;
         }
       }
 

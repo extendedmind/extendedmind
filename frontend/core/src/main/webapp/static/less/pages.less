@@ -128,27 +128,21 @@ section#tasks-dates {
   .date-heading {
     position: relative;
   }
-  .week-loader {
-    color: @default-element;
+  #pull-to-previous-week, #pull-to-next-week {
     text-align: center;
     line-height: 200px;
     height: 200px;
     width: 100%;
   }
-  .previous-week-loader {
+  #pull-to-previous-week {
     position: absolute;
     top: -200px;
-    left: 0;
   }
-  .next-week-loader {
-    content: "next week...";
-    bottom: -200px;
-    left: 0;
+  .week-loader {
+    color: @default-element;
   }
-  .swiper-wrapper::after {
-    display: block;
-    .week-loader;
-    .next-week-loader;
+  .week-loader-active {
+    color: @highlighted-element;
   }
 }
 
