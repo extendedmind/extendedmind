@@ -1,6 +1,6 @@
 'use strict';
 
-function swiperContainerDirective(SwiperService, $rootScope) {
+function swiperContainerDirective($rootScope, $window, SwiperService) {
 
   return {
     restrict: 'A',
@@ -19,6 +19,13 @@ function swiperContainerDirective(SwiperService, $rootScope) {
       $element[0].addEventListener('touchstart', mainSwiperTouchStart, false);
       $element[0].addEventListener('touchmove', mainSwiperTouchMove, false);
       $element[0].addEventListener('touchend', mainSwiperTouchEnd, false);
+
+      // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
+      if ($window.navigator.msPointerEnabled) {
+        $element[0].addEventListener('MSPointerDown', mainSwiperTouchStart, false);
+        $element[0].addEventListener('MSPointerMove', mainSwiperTouchMove, false);
+        $element[0].addEventListener('MSPointerUp', mainSwiperTouchEnd, false);
+      }
 
       function sortAndFlattenSlideInfos() {
         // does array contain slide objects
@@ -69,7 +76,9 @@ function swiperContainerDirective(SwiperService, $rootScope) {
               $scope.swiperPath,
               $scope.swiperType,
               slides,
-              onSlideChangeEndCallback);
+              onSlideChangeEndCallback,
+              onResistanceBeforeCallback,
+              onResistanceAfterCallback);
             initializeSwiperCalled = true;
           }else {
             SwiperService.refreshSwiper($scope.swiperPath, slides);
@@ -80,7 +89,7 @@ function swiperContainerDirective(SwiperService, $rootScope) {
       // Registers the path of the slide to the swiper
       // and sets up listeners for element, if needed
       this.registerSlide = function(path, element, index) {
-        
+
         // For vertical page outerSwiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal
         // swiper or not.
@@ -90,6 +99,13 @@ function swiperContainerDirective(SwiperService, $rootScope) {
           element[0].firstElementChild.firstElementChild.addEventListener('touchmove', pageSwiperSlideTouchMove, false);
           element[0].firstElementChild.firstElementChild.addEventListener('touchend', pageSwiperSlideTouchEnd, false);
           element[0].firstElementChild.firstElementChild.addEventListener('scroll', pageSwiperSlideScroll, false);
+
+          // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
+          if ($window.navigator.msPointerEnabled) {
+            element[0].firstElementChild.firstElementChild.addEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
+            element[0].firstElementChild.firstElementChild.addEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
+            element[0].firstElementChild.firstElementChild.addEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
+          }
         }
 
         // Slides from DOM (AngularJS directive) are not necessarily registered in desired order.
@@ -119,7 +135,6 @@ function swiperContainerDirective(SwiperService, $rootScope) {
       this.unregisterSlide = function(path) {
         var slideInfosIndex = getSlideInfosIndex(path);
         if (slideInfosIndex !== undefined){
-          var oldSlideIndex = swiperSlideInfos[slideInfosIndex].slideIndex;
           swiperSlideInfos.splice(slideInfosIndex, 1);
           updateSwiper();
         }
@@ -127,6 +142,14 @@ function swiperContainerDirective(SwiperService, $rootScope) {
 
       function onSlideChangeEndCallback() {
         SwiperService.onSlideChangeEnd($scope, $scope.swiperPath);
+      }
+
+      var negativeHoldPosition, positiveHoldPosition;
+      function onResistanceBeforeCallback(swiper, negativePosition) {
+        negativeHoldPosition = negativePosition;
+      }
+      function onResistanceAfterCallback(swiper, positivePosition) {
+        positiveHoldPosition = positivePosition;
       }
 
       var swipeUp = false;
@@ -138,9 +161,13 @@ function swiperContainerDirective(SwiperService, $rootScope) {
       var swipeRestraintY = 1;
 
       function mainSwiperTouchStart(event) {
-        var touches = event.changedTouches[0];
-        swipeStartX = touches.pageX;
-        swipeStartY = touches.pageY;
+        if (event.type === 'touchstart') {
+          swipeStartX = event.targetTouches[0].pageX;
+          swipeStartY = event.targetTouches[0].pageY;
+        } else {
+          swipeStartX = event.pageX;
+          swipeStartY = event.pageY;
+        }
 
         $rootScope.outerSwiping = false;
         swipeLeft = false;
@@ -152,9 +179,14 @@ function swiperContainerDirective(SwiperService, $rootScope) {
       // Main swiper swiping detection.
       function mainSwiperTouchMove(event) {
         /*jshint validthis: true */
-        var touches = event.changedTouches[0];
-        swipeDistanceX = touches.pageX - swipeStartX;
-        swipeDistanceY = touches.pageY - swipeStartY;
+
+        if (event.type === 'touchmove') {
+          swipeDistanceX = event.targetTouches[0].pageX - swipeStartX;
+          swipeDistanceY = event.targetTouches[0].pageY - swipeStartY;
+        } else {
+          swipeDistanceX = event.pageX - swipeStartX;
+          swipeDistanceY = event.pageY - swipeStartY;
+        }
 
         swipeLeft = false;
         swipeRight = false;
@@ -179,8 +211,14 @@ function swiperContainerDirective(SwiperService, $rootScope) {
             swipeUp = false;
           }
         }
-        swipeStartX = touches.pageX;
-        swipeStartY = touches.pageY;
+
+        if (event.type === 'touchmove') {
+          swipeStartX = event.targetTouches[0].pageX;
+          swipeStartY = event.targetTouches[0].pageY;
+        } else {
+          swipeStartX = event.pageX;
+          swipeStartY = event.pageY;
+        }
       }
       function mainSwiperTouchEnd() {
         // Main swiper is swiping to some direction.
@@ -195,15 +233,24 @@ function swiperContainerDirective(SwiperService, $rootScope) {
       var swipePageSlideDown = false;
       var swipePageSlideStartX, swipePageSlideStartY, swipePageSlideDistX, swipePageSlideDistY;
       var pageSwiperSlideScrollTimeout;
+      var pullToRefreshPosition = 200;
 
       function pageSwiperSlideTouchStart(event) {
         $rootScope.innerSwiping = false;
-        var touches = event.changedTouches[0];
-        swipePageSlideStartX = touches.pageX;
-        swipePageSlideStartY = touches.pageY;
+
+        if (event.type === 'touchstart') {
+          swipePageSlideStartX = event.targetTouches[0].pageX;
+          swipePageSlideStartY = event.targetTouches[0].pageY;
+        } else {
+          swipePageSlideStartX = event.pageX;
+          swipePageSlideStartY = event.pageY;
+        }
 
         swipePageSlideDown = false;
         swipePageSlideUp = false;
+
+        negativeHoldPosition = 0;
+        positiveHoldPosition = 0;
       }
 
       // This function checks swiping direction and slide scrolling position.
@@ -211,9 +258,14 @@ function swiperContainerDirective(SwiperService, $rootScope) {
       // Otherwise do a regular scroll inside the slide.
       function pageSwiperSlideTouchMove(event) {
         /*jshint validthis: true */
-        var touches = event.changedTouches[0];
-        swipePageSlideDistX = touches.pageX - swipePageSlideStartX;
-        swipePageSlideDistY = touches.pageY - swipePageSlideStartY;
+
+        if (event.type === 'touchmove') {
+          swipePageSlideDistX = event.targetTouches[0].pageX - swipePageSlideStartX;
+          swipePageSlideDistY = event.targetTouches[0].pageY - swipePageSlideStartY;
+        } else {
+          swipePageSlideDistX = event.pageX - swipePageSlideStartX;
+          swipePageSlideDistY = event.pageY - swipePageSlideStartY;
+        }
 
         swipePageSlideDown = false;
         swipePageSlideUp = false;
@@ -248,6 +300,13 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         if (swipePageSlideDown || swipePageSlideUp) {
           $rootScope.innerSwiping = true;
         }
+
+        // Fire pull to refresh callbacks
+        if (negativeHoldPosition > pullToRefreshPosition) {
+          SwiperService.reachedNegativeResistancePullToRefreshPosition($scope.swiperPath);
+        } else if (positiveHoldPosition > pullToRefreshPosition) {
+          SwiperService.reachedPositiveResistancePullToRefreshPosition($scope.swiperPath);
+        }
       }
 
       function pageSwiperSlideScroll() {
@@ -266,7 +325,14 @@ function swiperContainerDirective(SwiperService, $rootScope) {
         $element[0].removeEventListener('touchstart', mainSwiperTouchStart, false);
         $element[0].removeEventListener('touchmove', mainSwiperTouchMove, false);
         $element[0].removeEventListener('touchend', mainSwiperTouchEnd, false);
-        
+
+        // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
+        if ($window.navigator.msPointerEnabled) {
+          $element[0].removeEventListener('MSPointerDown', mainSwiperTouchStart, false);
+          $element[0].removeEventListener('MSPointerMove', mainSwiperTouchMove, false);
+          $element[0].removeEventListener('MSPointerUp', mainSwiperTouchEnd, false);
+        }
+
         if ($scope.swiperType === 'page'){
           for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
             swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchstart', pageSwiperSlideTouchStart, false);
@@ -274,10 +340,18 @@ function swiperContainerDirective(SwiperService, $rootScope) {
             swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchend', pageSwiperSlideTouchEnd, false);
             swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('scroll', pageSwiperSlideScroll, false);
           }
+          // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
+          if ($window.navigator.msPointerEnabled) {
+            for (var j = 0, swiperSlideInfosLength = swiperSlideInfos.length; j < swiperSlideInfosLength; j++) {
+              swiperSlideInfos[j].slideElement[0].firstElementChild.firstElementChild.removeEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
+              swiperSlideInfos[j].slideElement[0].firstElementChild.firstElementChild.removeEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
+              swiperSlideInfos[j].slideElement[0].firstElementChild.firstElementChild.removeEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
+            }
+          }
         }
       });
 }
 };
 }
-swiperContainerDirective['$inject'] = ['SwiperService', '$rootScope'];
+swiperContainerDirective['$inject'] = ['$rootScope', '$window', 'SwiperService'];
 angular.module('em.directives').directive('swiperContainer', swiperContainerDirective);

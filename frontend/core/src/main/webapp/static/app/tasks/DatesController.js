@@ -37,7 +37,30 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
     });
   };
 
-  // Register a callback to swiper service
+  // Pull to refresh previous/next week callbacks
+  SwiperService.registerNegativeResistancePullToRefreshCallback(
+    negativeResistancePullToRefreshCallback,
+    'tasks/home',
+    DatesController);
+  SwiperService.registerPositiveResistancePullToRefreshCallback(
+    positiveResistancePullToRefreshCallback,
+    'tasks/home',
+    DatesController);
+  
+  function negativeResistancePullToRefreshCallback() {
+    $scope.weekdays = DateService.previousWeek();
+    $scope.datepickerWeeks = DateService.changeDatePickerWeeks('prev');
+    var newActiveDay = $scope.weekdays[6];
+    swipeToStartingDay(newActiveDay);
+  }
+  function positiveResistancePullToRefreshCallback() {
+    $scope.weekdays = DateService.nextWeek();
+    $scope.datepickerWeeks = DateService.changeDatePickerWeeks('next');
+    var newActiveDay = $scope.weekdays[0];
+    swipeToStartingDay(newActiveDay);
+  }
+
+  // Register a slide change callback to swiper service
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks/home', 'DatesController');
   function slideChangeCallback(activeSlidePath) {
     if (!activeSlidePath.endsWith($scope.activeDay.weekday)){
