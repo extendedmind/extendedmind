@@ -1,6 +1,6 @@
 'use strict';
 
-function AuthenticationService($rootScope, $location, $q, BackendClientService, UserSessionService) {
+function AuthenticationService($rootScope, $location, $q, BackendClientService, UserSessionService, AnalyticsService) {
 
   var acceptRegex = /\/accept/;
   var authenticateRegex = /authenticate/;
@@ -221,6 +221,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse.data, user.username);
         // Update backend client to use token authentication instead of username/password
         BackendClientService.setCredentials(encodedCredentials);
+        AnalyticsService.login();
         return authenticateResponse;
       });
     },
@@ -289,5 +290,5 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     putChangePasswordRegex: putChangePasswordRegexp
   };
 }
-AuthenticationService.$inject = ['$rootScope', '$location', '$q', 'BackendClientService', 'UserSessionService'];
+AuthenticationService.$inject = ['$rootScope', '$location', '$q', 'BackendClientService', 'UserSessionService', 'AnalyticsService'];
 angular.module('em.services').factory('AuthenticationService', AuthenticationService);

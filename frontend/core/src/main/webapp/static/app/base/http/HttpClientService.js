@@ -74,7 +74,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
         $.ajax({
           type: headRequest.content.method.toUpperCase(),
           url: headRequest.content.url,
-          data: headRequest.content.data,
+          data: JSON.stringify(headRequest.content.data),
           contentType: "application/json", 
           dataType: "json",
           success: function () {
@@ -201,6 +201,22 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     request.last = true;
     HttpRequestQueueService.concatLastContentDataArray(request);
     // Don't execute requests, last is sent only after something else
+  }
+  methods.postLastOnline = function(url, data) {
+    $.ajax({
+      type: 'POST',
+      url: url,
+      data: JSON.stringify(data),
+      contentType: "application/json", 
+      dataType: "json",
+      success: function () {
+        // Don't do anything
+      },
+      failure: function (data) {
+        // Only log failure of analytics
+        console.log("postLastOnline failed")
+      }
+    });
   }
 
   // DELETE, POST and PUT are methods which utilize

@@ -7,10 +7,16 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
     replace: 'true',
     templateUrl: 'static/app/auth/main.html',
     controller: function($scope) {
-      // Put version to scope
+
+      // Global variable "packaging" is defined in index.html
+      $rootScope.packaging = packaging;
+
+      // Put version to root scope
       $.getJSON('static/config.json', function(data) {
-        $scope.extendedMindVersion = data.version;
+        $rootScope.extendedMindVersion = data.version;
       });
+
+      $rootScope.collectAnalytics = packaging !== 'devel' ? true : true;
 
       // Back function globally available
       $scope.gotoPreviousPage = function() {
