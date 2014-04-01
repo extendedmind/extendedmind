@@ -28,6 +28,8 @@ function swiperClickDirective($parse, $rootScope) {
             scope.$apply(function() {
               fn(scope, {$event: event});
             });
+          } else {
+            event.preventDefault();
           }
         });
       };
