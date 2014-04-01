@@ -1403,8 +1403,11 @@ var Swiper = function (selector, params) {
                     var diff = (_this.touches.current - _this.touches.start)*currentTouchRatio + (maxWrapperPosition()+_this.positions.start);
                     var resistance = (containerSize+diff)/(containerSize);
                     var newPos = _this.positions.current-diff*(1-resistance)/2;
-                    var stopPos = -maxWrapperPosition() - containerSize/2;
-
+                    if (params.rightEdgeTouchRatio !== undefined) {
+                        var stopPos = -maxWrapperPosition() - containerSize/5.39;
+                    } else {
+                        var stopPos = -maxWrapperPosition() - containerSize/2;
+                    }
                     if (newPos < stopPos || resistance<=0)
                         _this.positions.current = stopPos;
                     else
