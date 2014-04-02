@@ -1,6 +1,6 @@
 'use strict';
 
-function MenuController($location, $scope, AuthenticationService, UserSessionService) {
+function MenuController($location, $scope, AuthenticationService, UserSessionService, AnalyticsService) {
   $scope.collectives = UserSessionService.getCollectives();
 
   function getActiveFeature() {
@@ -56,6 +56,7 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
 
   $scope.gotoInbox = function() {
     if (getActiveFeature() !== 'inbox') {
+      AnalyticsService.visit('inbox');
       $location.path(UserSessionService.getOwnerPrefix() + '/inbox');
     }
     $scope.toggleMenu();
@@ -63,6 +64,7 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
 
   $scope.gotoTasks = function() {
     if (getActiveFeature() !== 'tasks') {
+      AnalyticsService.visit('tasks');
       $location.path(UserSessionService.getOwnerPrefix() + '/tasks');
     }
     $scope.toggleMenu();
@@ -70,6 +72,7 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
 
   $scope.gotoNotes = function() {
     if (getActiveFeature() !== 'notes') {
+      AnalyticsService.visit('notes');
       $location.path(UserSessionService.getOwnerPrefix() + '/notes');
     }
     $scope.toggleMenu();
@@ -77,5 +80,5 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
 
 }
 
-MenuController.$inject = ['$location', '$scope', 'AuthenticationService', 'UserSessionService'];
+MenuController.$inject = ['$location', '$scope', 'AuthenticationService', 'UserSessionService', 'AnalyticsService'];
 angular.module('em.app').controller('MenuController', MenuController);

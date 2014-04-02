@@ -1,6 +1,6 @@
 'use strict';
 
-function ItemsController($location, $scope, $routeParams, UserSessionService, ItemsService) {
+function ItemsController($location, $routeParams, $scope, UserSessionService, ItemsService, AnalyticsService) {
   if (!$scope.item){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
       if ($routeParams.uuid) {
@@ -16,6 +16,11 @@ function ItemsController($location, $scope, $routeParams, UserSessionService, It
   };
 
   $scope.saveItem = function(item) {
+    if (item.uuid){
+      AnalyticsService.do('saveItem', 'new');
+    }else{
+      AnalyticsService.do('saveItem', 'existing');
+    }
     ItemsService.saveItem(item, UserSessionService.getActiveUUID());
     window.history.back();
   };
@@ -25,6 +30,7 @@ function ItemsController($location, $scope, $routeParams, UserSessionService, It
   };
 
   $scope.editItemTitle = function(item) {
+    AnalyticsService.do('editItemTitle');
     ItemsService.saveItem(item, UserSessionService.getActiveUUID());
   };
 
@@ -33,6 +39,7 @@ function ItemsController($location, $scope, $routeParams, UserSessionService, It
   };
 
   $scope.deleteItem = function(item) {
+    AnalyticsService.do('deleteItem');
     ItemsService.deleteItem(item, UserSessionService.getActiveUUID());
   };
 
@@ -46,6 +53,7 @@ function ItemsController($location, $scope, $routeParams, UserSessionService, It
   };
 
   $scope.taskEditDone = function(task) {
+    AnalyticsService.do('itemToTaskDone');
     ItemsService.itemToTask(task, UserSessionService.getActiveUUID());
   };
 
@@ -59,6 +67,7 @@ function ItemsController($location, $scope, $routeParams, UserSessionService, It
   };
 
   $scope.noteEditDone = function(note) {
+    AnalyticsService.do('itemToNoteDone');
     ItemsService.itemToNote(note, UserSessionService.getActiveUUID());
   };
 
@@ -85,5 +94,5 @@ function ItemsController($location, $scope, $routeParams, UserSessionService, It
 
 }
 
-ItemsController.$inject = ['$location', '$scope', '$routeParams', 'UserSessionService', 'ItemsService'];
+ItemsController.$inject = ['$location', '$routeParams', '$scope', 'UserSessionService', 'ItemsService', 'AnalyticsService'];
 angular.module('em.app').controller('ItemsController', ItemsController);

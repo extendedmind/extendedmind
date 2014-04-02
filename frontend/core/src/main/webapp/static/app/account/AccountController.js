@@ -1,6 +1,8 @@
 'use strict';
 
-function AccountController($location, $scope, AccountService) {
+function AccountController($location, $scope, AccountService, AnalyticsService) {
+  
+  AnalyticsService.visit('account');
 
   AccountService.getAccount().then(function(authenticateResponse) {
     $scope.email = authenticateResponse.email;
@@ -15,5 +17,5 @@ function AccountController($location, $scope, AccountService) {
   };
 }
 
-AccountController['$inject'] = ['$location', '$scope', 'AccountService'];
+AccountController['$inject'] = ['$location', '$scope', 'AccountService', 'AnalyticsService'];
 angular.module('em.app').controller('AccountController', AccountController);

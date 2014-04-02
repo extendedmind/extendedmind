@@ -1,6 +1,6 @@
 'use strict';
 
-function NotesController($location, $scope, $timeout, $routeParams, UserSessionService, NotesService, ListsService, SwiperService) {
+function NotesController($location, $scope, $timeout, $routeParams, UserSessionService, NotesService, ListsService, SwiperService, AnalyticsService) {
 
   if (!$scope.note){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -20,13 +20,19 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
   }
 
   $scope.saveNote = function(note) {
+    if (note.uuid){
+      AnalyticsService.do("saveNote", "new");
+    }else{
+      AnalyticsService.do("saveNote", "existing");
+    }
     NotesService.saveNote(note, UserSessionService.getActiveUUID());
     window.history.back();
   };
 
   $scope.noteQuickEditDone = function(note) {
+    AnalyticsService.do("noteQuickEditDone");    
     NotesService.saveNote(note, UserSessionService.getActiveUUID());
-    $scope.close(note);
+    $scope.close(note, true);
   };
 
   $scope.cancelEdit = function() {
@@ -34,10 +40,12 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.addNew = function() {
+    AnalyticsService.visit("newNote");
     $location.path($scope.ownerPrefix + '/notes/new');
   };
 
   $scope.editNoteTitle = function(note) {
+    AnalyticsService.do("editNoteTitle");
     NotesService.saveNote(note, UserSessionService.getActiveUUID());
   };
 
@@ -46,6 +54,7 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.deleteNote = function(note) {
+    AnalyticsService.do("deleteNote");
     NotesService.deleteNote(note, UserSessionService.getActiveUUID());
   };
 
@@ -58,6 +67,7 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
     }
     delete newNote.title;
 
+    AnalyticsService.do("addNote");
     NotesService.saveNote(newNoteToSave, UserSessionService.getActiveUUID());
   };
 
@@ -83,5 +93,5 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
 
 NotesController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams',
                               'UserSessionService', 'NotesService', 'ListsService',
-                              'SwiperService'];
+                              'SwiperService', 'AnalyticsService'];
 angular.module('em.app').controller('NotesController', NotesController);

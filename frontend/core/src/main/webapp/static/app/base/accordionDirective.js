@@ -42,10 +42,10 @@ angular.module('em.directives').directive('accordion', ['$document',
         }
       };
 
-      $scope.close = function(item) {
+      $scope.close = function(item, skipSave) {
         angular.forEach($scope.thisController.titleScopes, function (titleScope) {
           if (titleScope.item === item){
-            titleScope.closeItem();
+            titleScope.closeItem(skipSave);
             $scope.openItem = undefined;
             return;
           }

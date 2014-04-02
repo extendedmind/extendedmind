@@ -2,6 +2,8 @@
 
 function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClientService) {
 
+  var deferredLocation = $q.defer();
+
   // Skip all analytics, if it is not in use  
   if ($rootScope.collectAnalytics){
 
@@ -333,7 +335,7 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
                     options.location_cookie_timeout * 60 * 60 * 1000);
                 }
                 // #### CUSTOM CALLBACK
-                gapiCallback(window.session.location);
+                deferredLocation.resolve(window.session.location);
                 // ####
               };
               util.embed_script("https://www.google.com/jsapi?callback=gloader_ready");
@@ -480,13 +482,7 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
 
     // END SESSION.JS
 
-    // Use promise to get location, if more than 3 seconds has passed without location,
-    // fail location
-
-    var deferredLocation = $q.defer();
-    var gapiCallback = function gapiCallback(location){
-      deferredLocation.resolve(location);
-    }
+    // if more than 3 seconds has passed without location, fail location search
     $timeout(function(){
       if (!window.session.location){
         deferredLocation.reject();
@@ -496,11 +492,18 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
 
   var analyticsUrl = '/collect/1.0/event/put';
 
-  function getAnonymousPayload(type){
+  function getPayload(type, description, id, fullSession){
     var session = $.extend({},window.session);
-    return [
+
+    if (!fullSession){
+      // Remove unnecessary
+      delete session.current_session;
+      delete session.original_session;
+    }
+    var payload =  [
       {
         type: type,
+        time: new Date().toISOString(),
         data: {
           packaging: $rootScope.packaging,
           version: $rootScope.extendedMindVersion,
@@ -508,55 +511,78 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
         }
       }
     ];
-  };
-
-  function getUserPayload(type){
-    var payload = getAnonymousPayload(type);
-    payload[0].data.user = UserSessionService.getActiveUUID();
+    if (description){
+      payload[0].data.description = description;
+    }
+    if (id){
+      payload[0].id = id;
+    }
+    var user = UserSessionService.getUser();
+    if (user){
+      payload[0].data.user = user;
+    }
     return payload;
   };
 
-  function postAnonymousOnlineWithDeferredLocation(url, type){
+  function postAnalytics(payload){
+    function postAnalyticsOnlineOffline(payload){
+      if (UserSessionService.isOfflineEnabled()){
+        HttpClientService.postLast(analyticsUrl, payload);
+      }else{
+        HttpClientService.postLastOnline(analyticsUrl, payload);
+      }
+    }
     deferredLocation.promise.then(function(location){
       // Got location
-      HttpClientService.postLastOnline(analyticsUrl, getAnonymousPayload(type));
+      postAnalyticsOnlineOffline(payload);
     }, function() {
       // No location data, send analytics without it
-      HttpClientService.postLastOnline(analyticsUrl, getAnonymousPayload(type));
+      postAnalyticsOnlineOffline(payload);
     });
   }
 
+  function sendAnalytics(type, description){
+    postAnalytics(getPayload(type, description));
+  };
+
   return {
-    visitLaunch: function() {
+    visitEntry: function(location) {
       if ($rootScope.collectAnalytics){
-        postAnonymousOnlineWithDeferredLocation("visit_launch");
+        var payload = getPayload("visit_" + location, undefined, undefined, true);
+        return postAnalytics(payload);
       }
     },
-    visitSignup: function() {
+    visit: function(location) {
       if ($rootScope.collectAnalytics){
-        postAnonymousOnlineWithDeferredLocation("visit_signup");
+        return sendAnalytics("visit_" + location);
       }
     },
-    visitLogin: function() {
+    do: function(action, description) {
       if ($rootScope.collectAnalytics){
-        postAnonymousOnlineWithDeferredLocation("visit_login");
+        return sendAnalytics(action, description);
       }
     },
-    signup: function() {
+    error: function(location, errorType) {
       if ($rootScope.collectAnalytics){
-        HttpClientService.postLastOnline(analyticsUrl, getUserPayload("signup"));
+        return sendAnalytics("error_" + location, errorType);
       }
     },
-    login: function() {
+    startSession: function(id) {
       if ($rootScope.collectAnalytics){
-        HttpClientService.postLastOnline(analyticsUrl, getUserPayload("login"));
+        var payload = getPayload("session", undefined, id);
+        postAnalytics(payload);
+        return payload.time;
       }
     },
-    startSession: function() {
+    stopSession: function(id, startTime) {
       if ($rootScope.collectAnalytics){
-        HttpClientService.postLast(analyticsUrl, getUserPayload("start_session"));
+        var payload = getPayload("session", undefined, id);
+        payload[0].data.endTime = payload[0].time;
+        payload[0].time = startTime;
+        postAnalytics(payload);
+        return payload[0].data.endTime;
       }
-    },
+    }
   };
 }
 AnalyticsService['$inject'] = ['$q', '$timeout', '$rootScope', 'UserSessionService', 'HttpClientService'];

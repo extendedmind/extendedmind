@@ -2,8 +2,8 @@
 
 function LaunchController($location, $scope, AuthenticationService, AnalyticsService) {
 
-  AnalyticsService.visitLaunch();
-
+  AnalyticsService.visitEntry('launch');
+  
   $scope.user = {};
 
   $scope.launchUser = function launchUser() {

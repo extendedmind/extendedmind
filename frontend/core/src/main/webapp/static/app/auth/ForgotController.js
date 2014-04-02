@@ -1,6 +1,9 @@
 'use strict';
 
-function ForgotController($routeParams, $scope, $location, AuthenticationService, UserSessionService) {
+function ForgotController($routeParams, $scope, $location, AuthenticationService, UserSessionService, AnalyticsService) {
+  
+  AnalyticsService.visit('forgot');
+
   var passwordResetCode = $routeParams.hex_code;
   var email = $routeParams.email;
   $scope.user = {
@@ -57,7 +60,7 @@ function ForgotController($routeParams, $scope, $location, AuthenticationService
           }else if (resetPasswordResponse.data && resetPasswordResponse.data.count){
             // Authenticate using the new password
             AuthenticationService.login({username:$scope.user.email, password: $scope.user.password}).then(
-              function(authenticationResponse) {
+              function(/*authenticationResponse*/) {
                 $location.path('/');
                 $location.search({});
               }, function(error){
@@ -65,9 +68,9 @@ function ForgotController($routeParams, $scope, $location, AuthenticationService
                   $scope.resetOffline = true;
                 }else {
                   $scope.loginFailed = true;
-                }      
+                }
               }
-            )
+            );
           }
         }
       );
@@ -76,5 +79,5 @@ function ForgotController($routeParams, $scope, $location, AuthenticationService
 
 }
 
-ForgotController['$inject'] = ['$routeParams', '$scope', '$location', 'AuthenticationService', 'UserSessionService'];
+ForgotController['$inject'] = ['$routeParams', '$scope', '$location', 'AuthenticationService', 'UserSessionService', 'AnalyticsService'];
 angular.module('em.app').controller('ForgotController', ForgotController);

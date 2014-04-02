@@ -183,6 +183,19 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     },
     getRememberByDefault: function() {
       return offlineBufferEnabled;
+    },
+    getUser: function() {
+      syncWebStorages();
+      if (SessionStorageService.getUserUUID()){
+        var user = {
+          uuid: SessionStorageService.getUserUUID(),
+          type: parseInt(SessionStorageService.getUserType())
+        };
+        if (SessionStorageService.getCohort()){
+          user.cohort = parseInt(SessionStorageService.getCohort());
+        }
+        return user;
+      }
     }
   };
 }

@@ -1,6 +1,6 @@
 'use strict';
 
-function MockAuthBackendService($httpBackend, AuthenticationService) {
+function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService) {
 
   function mockAcceptInvite() {
     $httpBackend.whenPOST(AuthenticationService.acceptInviteRegex).respond(function() {
@@ -15,6 +15,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
       var authenticateResponse = getJSONFixture('authenticateResponse.json');
       var now = new Date();
       authenticateResponse.authenticated = now.getTime();
+      authenticateResponse.userUUID = UUIDService.randomUUID();
       authenticateResponse.expires = now.getTime() + 1000*60*60*12;
       if (data.indexOf('true') != -1){
         authenticateResponse.replaceable = now.getTime() + 1000*60*60*24*7;
@@ -111,5 +112,5 @@ function MockAuthBackendService($httpBackend, AuthenticationService) {
   };
 }
 
-MockAuthBackendService.$inject = ['$httpBackend', 'AuthenticationService'];
+MockAuthBackendService.$inject = ['$httpBackend', 'AuthenticationService', 'UUIDService'];
 angular.module('em.appTest').factory('MockAuthBackendService', MockAuthBackendService);

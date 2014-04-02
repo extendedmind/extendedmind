@@ -2,7 +2,7 @@
 
 function LoginController($location, $scope, UserSessionService, AuthenticationService, AnalyticsService) {
 
-  AnalyticsService.visitLogin();
+  AnalyticsService.visitEntry('login');
 
   $scope.user = {};
   $scope.isUserEmailReadOnly = false;
@@ -19,11 +19,14 @@ function LoginController($location, $scope, UserSessionService, AuthenticationSe
     $scope.loginFailed = false;
     $scope.loginOffline = false;
     AuthenticationService.login($scope.user).then(function() {
+      AnalyticsService.do('login');
       $location.path('/my/tasks');
     }, function(authenticateResponse) {
       if (authenticateResponse && (authenticateResponse.status === 404 || authenticateResponse.status === 502)){
+        AnalyticsService.error('login', 'offline');
         $scope.loginOffline = true;
       }else if(authenticateResponse && (authenticateResponse.status === 403)){
+        AnalyticsService.error('login', 'failed');
         $scope.loginFailed = true;
       }
     });

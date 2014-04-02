@@ -34,9 +34,9 @@ angular.module('em.directives').directive('accordionTitle', [
         return $scope.isOpen;
       };
 
-      $scope.closeItem = function() {
+      $scope.closeItem = function(skipSave) {
         if ($scope.isOpen){
-          $scope.endTitleEdit();
+          $scope.endTitleEdit(skipSave);
           $element.parent().removeClass('accordion-item-active');
           $scope.isOpen = false;
           return true;
@@ -56,12 +56,14 @@ angular.module('em.directives').directive('accordionTitle', [
         }
       };
 
-      $scope.endTitleEdit = function(){
+      $scope.endTitleEdit = function(skipSave){
         // Programmatically blur the input
         $element.find('input#accordionTitleInput')[0].blur();
         if ($scope.oldTitle !== $scope.item.title){
-          // Title has changed, call edit title method with new title
-          $scope.editItemTitle({item: $scope.item});
+          if (!skipSave){
+            // Title has changed, call edit title method with new title
+            $scope.editItemTitle({item: $scope.item});
+          }
           $scope.oldTitle = $scope.item.title;
         }
       };

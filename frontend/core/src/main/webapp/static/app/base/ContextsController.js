@@ -1,6 +1,6 @@
 'use strict';
 
-function ContextsController($location, $scope, $timeout, $routeParams, UserSessionService, TagsService, SwiperService) {
+function ContextsController($location, $scope, $timeout, $routeParams, UserSessionService, TagsService, SwiperService, AnalyticsService) {
 
   if (!$scope.context){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -33,12 +33,12 @@ function ContextsController($location, $scope, $timeout, $routeParams, UserSessi
   $scope.addContext = function(newContext) {
     if (!newContext.title  || newContext.title.length === 0) return false;
     TagsService.saveTag(newContext, UserSessionService.getActiveUUID()).then(function(/*context*/) {
-      // TODO something
+      AnalyticsService.do("addContext");
     });
     $scope.newContext = {title: undefined, tagType: 'context'};
   };
 }
 
 ContextsController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService',
-                                 'TagsService', 'SwiperService'];
+                                 'TagsService', 'SwiperService', 'AnalyticsService'];
 angular.module('em.app').controller('ContextsController', ContextsController);

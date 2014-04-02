@@ -114,8 +114,8 @@ function HttpRequestQueueService() {
         last = request;
       }else{
         // last already exists, concat the data from this request to
-        // the end of the data array in the last request
-        last.content.data.concat(request.content.data);
+        // the end of the data array in the last request        
+        last.content.data = last.content.data.concat(request.content.data);
       }
       localStorage.setItem('lastRequest', JSON.stringify(last));
     },

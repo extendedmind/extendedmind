@@ -1,6 +1,6 @@
 'use strict';
 
-function AuthenticationService($rootScope, $location, $q, BackendClientService, UserSessionService, AnalyticsService) {
+function AuthenticationService($rootScope, $location, $q, BackendClientService, UserSessionService) {
 
   var acceptRegex = /\/accept/;
   var authenticateRegex = /authenticate/;
@@ -192,7 +192,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
 
   return {
     verifyAndUpdateAuthentication: function() {
-      if (UserSessionService.getLatestModified() !== undefined){
+      if (UserSessionService.getLatestModified(UserSessionService.getUserUUID()) !== undefined){
         return verifyAndUpdateAuthentication();
       }else{
         // When there is no data in-memory, this needs to be done online 
@@ -221,7 +221,6 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse.data, user.username);
         // Update backend client to use token authentication instead of username/password
         BackendClientService.setCredentials(encodedCredentials);
-        AnalyticsService.login();
         return authenticateResponse;
       });
     },
@@ -290,5 +289,5 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     putChangePasswordRegex: putChangePasswordRegexp
   };
 }
-AuthenticationService.$inject = ['$rootScope', '$location', '$q', 'BackendClientService', 'UserSessionService', 'AnalyticsService'];
+AuthenticationService.$inject = ['$rootScope', '$location', '$q', 'BackendClientService', 'UserSessionService'];
 angular.module('em.services').factory('AuthenticationService', AuthenticationService);

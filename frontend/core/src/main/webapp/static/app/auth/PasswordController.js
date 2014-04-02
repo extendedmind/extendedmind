@@ -1,6 +1,8 @@
 'use strict';
 
-function PasswordController($location, $scope, AuthenticationService, UserSessionService) {
+function PasswordController($location, $scope, AuthenticationService, UserSessionService, AnalyticsService) {
+
+  AnalyticsService.visit('password');
 
   $scope.changePassword = function changePassword() {
     var email = UserSessionService.getEmail();
@@ -8,9 +10,10 @@ function PasswordController($location, $scope, AuthenticationService, UserSessio
     $scope.changePasswordFailed = false;
     $scope.loginFailed = false;
     AuthenticationService.putChangePassword(email, $scope.user.currentPassword, $scope.user.newPassword)
-    .then(function(changePasswordResponse) {
+    .then(function(/*changePasswordResponse*/) {
+      AnalyticsService.do('changePassword');
       AuthenticationService.login({username: email, password: $scope.user.newPassword}).then(
-        function(authenticationResponse) {
+        function(/*authenticationResponse*/) {
           $location.path('/my/account');
         }, function(error){
           if (error.status === 404 || error.status === 502){
@@ -21,8 +24,10 @@ function PasswordController($location, $scope, AuthenticationService, UserSessio
         });
     }, function(error){
       if (error.status === 404 || error.status === 502){
+        AnalyticsService.error('changePassword', 'offline');
         $scope.changePasswordOffline = true;
       }else {
+        AnalyticsService.error('changePassword', 'failed');
         $scope.changePasswordFailed = true;
       }
     });
@@ -33,5 +38,5 @@ function PasswordController($location, $scope, AuthenticationService, UserSessio
   };
 }
 
-PasswordController['$inject'] = ['$location', '$scope', 'AuthenticationService', 'UserSessionService'];
+PasswordController['$inject'] = ['$location', '$scope', 'AuthenticationService', 'UserSessionService', 'AnalyticsService'];
 angular.module('em.app').controller('PasswordController', PasswordController);

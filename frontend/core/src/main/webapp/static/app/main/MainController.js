@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, bindToFocusEvent, bindToResumeEvent */
 
 'use strict';
 
@@ -10,7 +10,8 @@ function MainController(
   $scope, $location, $rootScope, $timeout, $window, $filter, $document,
   UserSessionService, BackendClientService, ItemsService, ListsService,
   TagsService, TasksService, NotesService, FilterService, SwiperService,
-  SnapService) {
+  SnapService, AnalyticsService, UUIDService) {
+
   // Data arrays 
   $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
@@ -24,6 +25,84 @@ function MainController(
 
   $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
+
+  // BACKEND POLLING
+
+  var synchronizeItemsTimer;
+  var synchronizeItemsDelay = 12 * 1000;
+  var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
+
+  // Start synchronize interval or just start synchronize interval. 
+  synchronizeItemsAndSynchronizeItemsDelayed();
+
+  // Global variable bindToFocusEvent specifies if focus event should be listened to. Variable is true by default
+  // for browsers, where hidden tab should not poll continuously, false in Cordova where javascript
+  // execution is paused anyway when app is not in focus.
+  var bindToFocus = (typeof bindToFocusEvent !== 'undefined') ? bindToFocusEvent: true;
+  if (bindToFocus) {
+    angular.element($window).bind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
+    angular.element($window).bind('blur', cancelSynchronizeItemsDelayed);
+  }
+  // Global variable bindToResumeEvent specifies if resume/pause events should be listened to. Variable is false
+  // for browsers, and true in Cordova.      
+  var bindToResume = (typeof bindToResumeEvent !== 'undefined') ? bindToResumeEvent: false;
+  if (bindToResume) {
+    // Cordova events
+    angular.element($window).bind('resume', $scope.startSession);
+    angular.element($window).bind('pause', $scope.stopSession);
+  }
+
+  function synchronizeItemsAndSynchronizeItemsDelayed() {
+    $scope.startSession();
+    synchronizeItems();
+    synchronizeItemsDelayed();
+  }
+  function cancelSynchronizeItemsDelayed() {
+    $scope.stopSession();
+    $timeout.cancel(synchronizeItemsTimer);
+  }
+
+  // https://developer.mozilla.org/en/docs/Web/API/window.setInterval
+  function synchronizeItemsDelayed() {
+    synchronizeItemsTimer = $timeout(function() {
+      synchronizeItems();
+      synchronizeItemsDelayed();
+    }, synchronizeItemsDelay);
+  }
+
+  // Synchronize items if not already synchronizing and interval reached.
+  function synchronizeItems() {
+    var activeUUID = UserSessionService.getActiveUUID();
+    // First check that the user has login
+    if (activeUUID){
+      if (!UserSessionService.isItemsSynchronizing(activeUUID)) {
+        var itemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
+        
+        if (isNaN(itemsSynchronized) || itemsSynchronized > itemsSynchronizedThreshold) {
+          UserSessionService.setItemsSynchronizing(activeUUID);
+          ItemsService.synchronize(activeUUID).then(function() {
+            UserSessionService.setItemsSynchronized(activeUUID);
+          });
+        }
+      }
+    }
+  }
+
+  // CLEANUP
+
+  $scope.$on('$destroy', function() {
+    // http://www.bennadel.com/blog/2548-Don-t-Forget-To-Cancel-timeout-Timers-In-Your-destroy-Events-In-AngularJS.htm
+    $timeout.cancel(synchronizeItemsTimer);
+
+    if (bindToFocus) {
+      angular.element($window).unbind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
+      angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
+    }
+    if (bindToResume) {
+      angular.element($window).unbind('resume', $scope.startSession);
+      angular.element($window).unbind('pause', $scope.stopSession);
+    }
+  });
 
   // OMNIBAR
 
@@ -82,12 +161,12 @@ function MainController(
     TasksService.saveTask({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(){
       $scope.omnibarText.title = '';
     });
-  }
+  };
 
   $scope.saveAsNote = function(omnibarText) {
     NotesService.saveNote({title: omnibarText.title}, UserSessionService.getActiveUUID());
     $scope.omnibarText.title = '';
-  }
+  };
 
   $scope.clickOmnibarPlus = function(omnibarText) {
     if (omnibarText.title && omnibarText.title.length > 0){
@@ -95,7 +174,7 @@ function MainController(
     }else{
       $location.path(UserSessionService.getOwnerPrefix() + '/items/new');
     }
-  }
+  };
 
   // Navigation
 
@@ -144,6 +223,6 @@ MainController.$inject = [
 '$scope', '$location', '$rootScope', '$timeout', '$window', '$filter', '$document',
 'UserSessionService', 'BackendClientService', 'ItemsService', 'ListsService',
 'TagsService', 'TasksService', 'NotesService', 'FilterService', 'SwiperService',
-'SnapService'
+'SnapService', 'AnalyticsService', 'UUIDService'
 ];
 angular.module('em.app').controller('MainController', MainController);

@@ -1,6 +1,8 @@
 'use strict';
 
-function SignupController($location, $scope, $routeParams, $window, AuthenticationService) {
+function SignupController($location, $scope, $routeParams, $window, AuthenticationService, AnalyticsService) {
+
+  AnalyticsService.visitEntry('signup');
 
   $scope.user = {};
   var inviteResponseCode = $routeParams.hex_code;
@@ -24,6 +26,7 @@ function SignupController($location, $scope, $routeParams, $window, Authenticati
            password: $scope.user.password,
            cohort: randomCohort}).
       then(function() {
+        AnalyticsService.do('signup');
         userLogin();
       }, function(signupResponse) {
         if (signupResponse && (signupResponse.status === 404 ||signupResponse.status === 502)){
@@ -49,14 +52,16 @@ function SignupController($location, $scope, $routeParams, $window, Authenticati
   }
 
   $scope.gotoTermsOfService = function() {
+    AnalyticsService.visit("terms");
     $window.open('http://ext.md/terms.html', '_system');
   };
 
   $scope.gotoPrivacyPolicy = function() {
+    AnalyticsService.visit("privacy");
     $window.open('http://ext.md/privacy.html', '_system');
   };
 
 }
 
-SignupController['$inject'] = ['$location', '$scope', '$routeParams', '$window', 'AuthenticationService'];
+SignupController['$inject'] = ['$location', '$scope', '$routeParams', '$window', 'AuthenticationService', 'AnalyticsService'];
 angular.module('em.app').controller('SignupController', SignupController);

@@ -1,23 +1,12 @@
-
 'use strict';
 
-function mainViewDirective($window, $document, $rootScope, $timeout, ModalService, BackendClientService, UserSessionService, ItemsService, SnapService, SwiperService) {
+function mainViewDirective($window, $document, $rootScope, $timeout, ModalService, BackendClientService, UserSessionService, ItemsService, SnapService, SwiperService, AnalyticsService, UUIDService) {
+
   return {
     restrict: 'A',
     replace: 'true',
     templateUrl: 'static/app/auth/main.html',
     controller: function($scope) {
-
-      // Global variable "packaging" is defined in index.html
-      $rootScope.packaging = packaging;
-
-      // Put version to root scope
-      $.getJSON('static/config.json', function(data) {
-        $rootScope.extendedMindVersion = data.version;
-      });
-
-      $rootScope.collectAnalytics = packaging !== 'devel' ? true : true;
-
       // Back function globally available
       $scope.gotoPreviousPage = function() {
         window.history.back();
@@ -80,6 +69,7 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
             ModalService.createDialog('static/app/auth/errorMessage.html', modalOptions);
           }
         }else{
+          AnalyticsService.error('unexpected', JSON.stringify(exception));
           $scope.errorMessageHeading = 'something unexpected happened, sorry!';
           $scope.errorMessageText = JSON.stringify(exception, null, 4);
           $scope.modalSuccessText = 'close';
@@ -102,57 +92,19 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
     },
     link: function($scope){
 
-      // BACKEND POLLING
+      // SESSION MANAGEMENT
 
-      var synchronizeItemsTimer;
-      var synchronizeItemsDelay = 12 * 1000;
-      var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
-
-      // Start synchronize interval or just start synchronize interval. 
-      synchronizeItemsAndSynchronizeItemsDelayed();
-
-      // Global variable bindToFocusEvent specifies if focus event should be wathed. Variable is true by default
-      // for browsers, where hidden tab should not poll continuously, false in PhoneGap, because javascript
-      // execution is paused anyway when app is not in focus.
-      var bindToFocus = (typeof bindToFocusEvent !== 'undefined') ? bindToFocusEvent: true;
-      if (bindToFocus) {
-        angular.element($window).bind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
-        angular.element($window).bind('blur', cancelSynchronizeItemsDelayed);
-      }
-
-      function synchronizeItemsAndSynchronizeItemsDelayed() {
-        synchronizeItems();
-        synchronizeItemsDelayed();
-      }
-      function cancelSynchronizeItemsDelayed() {
-        $timeout.cancel(synchronizeItemsTimer);
-      }
-
-      // https://developer.mozilla.org/en/docs/Web/API/window.setInterval
-      function synchronizeItemsDelayed() {
-        synchronizeItemsTimer = $timeout(function() {
-          synchronizeItems();
-          synchronizeItemsDelayed();
-        }, synchronizeItemsDelay);
-      }
-
-      // Synchronize items if not already synchronizing and interval reached.
-      function synchronizeItems() {
-        var activeUUID = UserSessionService.getActiveUUID();
-        // First check that the user has login
-        if (activeUUID){
-          if (!UserSessionService.isItemsSynchronizing(activeUUID)) {
-            var itemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
-            
-            if (isNaN(itemsSynchronized) || itemsSynchronized > itemsSynchronizedThreshold) {
-              UserSessionService.setItemsSynchronizing(activeUUID);
-              ItemsService.synchronize(activeUUID).then(function() {
-                UserSessionService.setItemsSynchronized(activeUUID);
-              });
-            }
-          }
+      var currentSessionId, currentSessionStartTime;
+      $scope.startSession = function() {
+        if (!currentSessionId){
+          currentSessionId = UUIDService.randomUUID();
+          currentSessionStartTime = AnalyticsService.startSession(currentSessionId);
         }
-      }
+      };
+      $scope.stopSession = function() {
+        AnalyticsService.stopSession(currentSessionId, currentSessionStartTime);
+        currentSessionId = undefined;
+      };
 
       // WINDOW RESIZING
 
@@ -191,18 +143,11 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
       // CLEANUP
 
       $scope.$on('$destroy', function() {
-        // http://www.bennadel.com/blog/2548-Don-t-Forget-To-Cancel-timeout-Timers-In-Your-destroy-Events-In-AngularJS.htm
-        $timeout.cancel(synchronizeItemsTimer);
-
-        if (bindToFocus) {
-          angular.element($window).unbind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
-          angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
-        }
         angular.element($window).unbind('resize', windowResized);
       });
     }
   };
 }
 mainViewDirective.$inject = ['$window', '$document', '$rootScope', '$timeout',
-'ModalService', 'BackendClientService', 'UserSessionService', 'ItemsService', 'SnapService', 'SwiperService'];
+'ModalService', 'BackendClientService', 'UserSessionService', 'ItemsService', 'SnapService', 'SwiperService', 'AnalyticsService', 'UUIDService'];
 angular.module('em.directives').directive('mainView', mainViewDirective);
