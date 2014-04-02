@@ -29,6 +29,7 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
     AuthenticationService.logout().then(function() {
       $location.path('/login');
     });
+    $scope.toggleMenu();
   };
 
   $scope.useCollectives = function() {
