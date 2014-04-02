@@ -28,13 +28,13 @@
               </section>
             </div>
           </div>
-          <div class="swiper-slide" swiper-slide="notes/details/uncategorized" slide-index="lists.length" ng-init="newNote = {}">
+          <div class="swiper-slide" swiper-slide="notes/details/recent" slide-index="lists.length" ng-init="newNote = {}">
             <div class="inner-slide-content-container">
               <section>
-                <h3>uncategorized</h3>
+                <h3>recent</h3>
                 <div>
                   <div class="inner-page-content-container" accordion>
-                    <div ng-repeat="note in notes | itemsFilter:{name:'unsorted'}" ng-init="newNote = {}">
+                    <div ng-repeat="note in notes | limitTo: 10 | orderBy:'modified':true" ng-init="newNote = {}">
                       <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
                         <div class="teaser" ng-if="note.content">
                           <a href ng-click="editNote(note)" id="note-teaser" ng-bind="getNoteContentTeaser(note)"></a>
@@ -45,7 +45,6 @@
                       </div>
                       <div class="teaser-empty" ng-if="!note.content"></div>
                     </div>
-                    <div ng-include="'static/app/notes/addNote.html'"></div>
                   </div>
                 </div>
               </section>

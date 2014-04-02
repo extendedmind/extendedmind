@@ -29,7 +29,7 @@ function HeaderController($scope, $location, SwiperService, UserSessionService) 
           if ($scope.feature === 'tasks'){
             return 'dates';
           }else if ($scope.feature === 'notes'){
-            return 'uncategorized';
+            return 'unsorted';
           }
         }else if (activeSlide.endsWith('details')){
           return $scope.feature;

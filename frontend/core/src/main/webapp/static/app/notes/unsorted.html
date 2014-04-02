@@ -1,11 +1,11 @@
-<section id="notes-uncategorized" class="two-column-grid page" ng-controller="NotesController">
+<section id="notes-unsorted" class="two-column-grid page" ng-controller="NotesController">
   <div class="column">
     <div class="page-heading swiper-no-swiping" ng-init="heading=homeHeading" ng-include="'static/app/main/omnibar.html'"></div>
     <div ng-hide="omnibarVisible" class="content-container page-content-container">
       <div class="inner-page-content-container">
         <div>
           <div class="inner-page-content-container" accordion>
-            <div ng-repeat="note in notes | orderBy:'modified':true" ng-init="newNote = {}">
+            <div ng-repeat="note in notes | itemsFilter:{name:'unsorted'}" ng-init="newNote = {}">
               <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
                 <div class="teaser" ng-if="note.content">
                   <a href ng-click="editNote(note)" id="note-teaser" ng-bind="getNoteContentTeaser(note)"></a>
