@@ -55,12 +55,27 @@ trait UserService extends ServiceBase {
         }
       } ~
       putAccount { url =>
-        authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           entity(as[User]) { user =>
             complete {
               Future[SetResult] {
                 setLogContext(securityContext)
                 userActions.putUser(securityContext.userUUID, user) match {
+                  case Right(sr) => processResult(sr)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
+      putEmail { url =>
+        authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
+          entity(as[UserEmail]) { email =>
+            complete {
+              Future[SetResult] {
+                setLogContext(securityContext)
+                userActions.putEmail(securityContext.userUUID, email) match {
                   case Right(sr) => processResult(sr)
                   case Left(e) => processErrors(e)
                 }

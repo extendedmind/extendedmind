@@ -40,9 +40,10 @@ trait TestGraphDatabase extends GraphDatabase {
   var emtUUID: UUID = null
 
   def insertTestData(testDataLocation: Option[String] = None) {
-    val timoNode = createUser(User(TIMO_EMAIL, Some(1)), TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
-    val lauriNode = createUser(User(LAURI_EMAIL, None), LAURI_PASSWORD, Some(UserLabel.ADMIN)).right.get
-    val jpNode = createUser(User(JP_EMAIL, None), JP_PASSWORD, Some(UserLabel.ADMIN)).right.get
+    val timoUser = User(TIMO_EMAIL, Some(1), None)
+    val timoNode = createUser(timoUser, TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
+    val lauriNode = createUser(User(LAURI_EMAIL, None, None), LAURI_PASSWORD, Some(UserLabel.ADMIN)).right.get
+    val jpNode = createUser(User(JP_EMAIL, None, None), JP_PASSWORD, Some(UserLabel.ADMIN)).right.get
 
     // Collectives
     val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true)
@@ -51,7 +52,7 @@ trait TestGraphDatabase extends GraphDatabase {
       Some("private collective for extended mind technologies"), false)
 
     // Info node created after common collective "extended mind" but should still be part of it
-    val infoNode = createUser(User(INFO_EMAIL, None), INFO_PASSWORD).right.get
+    val infoNode = createUser(User(INFO_EMAIL, None, None), INFO_PASSWORD).right.get
 
     // Add permissions to collectives
     withTx {
@@ -64,6 +65,9 @@ trait TestGraphDatabase extends GraphDatabase {
     }
     withTx {
       implicit neo =>
+        // Add preferences to timo node
+        putExistingUser(getUUID(timoNode), timoUser.copy(preferences = Some(UserPreferences(Some("web")))))
+
         // Valid, unreplaceable
         timoUUID = getUUID(timoNode)
         val token = Token(timoUUID)

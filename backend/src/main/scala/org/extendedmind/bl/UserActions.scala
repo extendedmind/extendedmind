@@ -33,7 +33,7 @@ trait UserActions {
           signUp.email)
     for {
       isUnique <- db.validateEmailUniqueness(signUp.email).right
-      result <- db.putNewUser(User(signUp.email, signUp.cohort), signUp.password, settings.signUpMode).right
+      result <- db.putNewUser(User(signUp.email, signUp.cohort, None), signUp.password, settings.signUpMode).right
     } yield result
     
     // TODO: Send verification email as Future
@@ -53,7 +53,12 @@ trait UserActions {
   
   def putUser(userUUID: UUID, user: User)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putUser")
-    db.putExistingUser(userUUID, user) match {
+    db.putExistingUser(userUUID, user)
+  }
+  
+  def putEmail(userUUID: UUID, email: UserEmail)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("putEmail")
+    db.changeUserEmail(userUUID, email.email) match {
       case Right(result) => {
         Right(result._1)
         // TODO

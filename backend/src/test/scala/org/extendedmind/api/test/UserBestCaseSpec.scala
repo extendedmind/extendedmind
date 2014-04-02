@@ -64,27 +64,45 @@ class UserBestCaseSpec extends ServiceSpecBase {
         }
     }
     it("should successfully get user with GET to /account, "
-      + "change email with PUT to /account "
-      + "and get the changed email back") {
-      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        writeJsonOutput("accountResponse", entityAs[String])
-        val accountResponse = entityAs[User]
-        accountResponse.uuid.get should equal(authenticateResponse.userUUID)
-        accountResponse.email should equal(TIMO_EMAIL)
-      }
-      val newUser = User("timo.tiuraniemi@iki.fi", None)
+      + "change email and set onboarded with PUT to /account "
+      + "and get the changed email and onboarded status back") {
+      val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      val newUser = User("ignored@example.com", None, Some(UserPreferences(Some("web"))))
       Put("/account",
-        marshal(newUser).right.get) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> route ~> check {
+        marshal(newUser).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           writeJsonOutput("putAccountResponse", entityAs[String])
           val putAccountResponse = entityAs[SetResult]
           putAccountResponse.modified should not be None
         }
       Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val accountResponse = entityAs[User]
-        accountResponse.email should equal(newUser.email)
+        accountResponse.preferences.get.onboarded.get should be("web")
       }
-      val newEmailAuthenticateResponse = emailPasswordAuthenticate(newUser.email, TIMO_PASSWORD)
+      val newEmailAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      newEmailAuthenticateResponse.userUUID should not be None
+      newEmailAuthenticateResponse.preferences.get.onboarded.get should be("web")
+    }
+    it("should successfully change email with PUT to /email "
+      + "and get the changed email back") {
+      val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        writeJsonOutput("accountResponse", entityAs[String])
+        val accountResponse = entityAs[User]
+        accountResponse.uuid.get should equal(authenticateResponse.userUUID)
+        accountResponse.email should equal(LAURI_EMAIL)
+      }      
+      val newEmail = UserEmail("lauri.jarvilehto@filosofianakatemia.fi")
+      Put("/email",
+        marshal(newEmail).right.get) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD))) ~> route ~> check {
+          writeJsonOutput("putEmailResponse", entityAs[String])
+          val putAccountResponse = entityAs[SetResult]
+          putAccountResponse.modified should not be None
+      }
+      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val accountResponse = entityAs[User]
+        accountResponse.email should equal(newEmail.email)
+      }
+      val newEmailAuthenticateResponse = emailPasswordAuthenticate(newEmail.email, LAURI_PASSWORD)
       newEmailAuthenticateResponse.userUUID should not be None
     }
   }

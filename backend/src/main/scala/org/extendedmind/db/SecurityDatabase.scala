@@ -19,6 +19,7 @@ import scala.collection.mutable.HashMap
 import org.neo4j.graphdb.Relationship
 import spray.util.LoggingContext
 import org.extendedmind.domain.SignUp
+import org.extendedmind.domain.UserPreferences
 
 trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   
@@ -246,7 +247,8 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       Some(tokenInfo._1),
       Some(tokenInfo._2),
       tokenInfo._3,
-      sc.collectives)
+      sc.collectives,
+      sc.preferences)
   }
 
   protected def saveToken(userNode: Node, token: Token, payload: Option[AuthenticatePayload]): (Long, Long, Option[Long]) = {
@@ -430,7 +432,8 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       None,
       None,
       None,
-      None)
+      None,
+      if (user.hasProperty("onboarded")) Some(UserPreferences(Some(user.getProperty("onboarded").asInstanceOf[String]))) else None)
   }
   
   private def collectivesTraversalDescription: TraversalDescription = {

@@ -31,9 +31,16 @@ trait UserDatabase extends AbstractGraphDatabase {
     }yield result
   }
   
-  def putExistingUser(userUUID: UUID, user: User): Response[(SetResult, Boolean)] = {
+  def putExistingUser(userUUID: UUID, user: User): Response[SetResult] = {
     for {
-      updateResult <- updateUser(userUUID, user).right
+      userNode <- updateUser(userUUID, user).right
+      result <- Right(getSetResult(userNode, false)).right
+    } yield result
+  }
+  
+  def changeUserEmail(userUUID: UUID, email: String): Response[(SetResult, Boolean)] = {
+    for {
+      updateResult <- updateUserEmail(userUUID, email).right
       result <- Right(getSetResult(updateResult._1, false)).right
     } yield (result, updateResult._2)
   }
@@ -54,7 +61,8 @@ trait UserDatabase extends AbstractGraphDatabase {
         for{
           userNode <- getNode(uuid, OwnerLabel.USER).right
           user <- toCaseClass[User](userNode).right
-        }yield user
+          completeUser <- Right(addTransientUserProperties(userNode, user)).right
+        }yield completeUser
     }
   }
   
@@ -90,25 +98,41 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def updateUser(userUUID: UUID, user: User): Response[(Node, Boolean)] = {
+  protected def updateUser(userUUID: UUID, user: User): Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
           userNode <- getNode(userUUID, OwnerLabel.USER).right
           result <- Right(updateUser(userNode, user)).right
+        } yield userNode
+    }
+  }
+  
+  protected def updateUser(userNode: Node, user: User)(implicit neo4j: DatabaseService): Unit = {
+    if (user.preferences.isDefined && user.preferences.get.onboarded.isDefined && !userNode.hasProperty("onboarded")){
+      userNode.setProperty("onboarded", user.preferences.get.onboarded.get);
+    }
+  }
+  
+  protected def updateUserEmail(userUUID: UUID, email: String): Response[(Node, Boolean)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          result <- Right(updateUserEmail(userNode, email)).right
         } yield (userNode, result)
     }
   }
   
-  protected def updateUser(userNode: Node, user: User)(implicit neo4j: DatabaseService): Boolean = {
-    if (userNode.getProperty("email").asInstanceOf[String] != user.email){
-      userNode.setProperty("email", user.email)
+  protected def updateUserEmail(userNode: Node, email: String)(implicit neo4j: DatabaseService): Boolean = {
+    if (userNode.getProperty("email").asInstanceOf[String] != email){
+      userNode.setProperty("email", email)
       true
     }else{
       false
     }
   }
-
+  
   protected def setUserPassword(userNode: Node, plainPassword: String)(implicit neo4j: DatabaseService) = {
     val salt = PasswordService.generateSalt
     val encryptedPassword = PasswordService.getEncryptedPassword(
@@ -176,6 +200,15 @@ trait UserDatabase extends AbstractGraphDatabase {
     withTx {
       implicit neo4j =>
       	neo4j.gds.schema().indexFor(label).on(property).create()
+    }
+  }
+  
+  protected def addTransientUserProperties(userNode: Node, user: User)
+                (implicit neo4j: DatabaseService): User = {
+    if (userNode.hasProperty("onboarded")){
+      user.copy(preferences = Some(UserPreferences(Some(userNode.getProperty("onboarded").asInstanceOf[String])))) 
+    }else{
+      user
     }
   }
   
