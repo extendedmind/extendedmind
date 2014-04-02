@@ -54,15 +54,25 @@
 @highlighted-element: #0f82fe;
 @highlighted-element-pressed: darken(@highlighted-element, 20%);
 
+// Buttons
+
+@normal-button: #0f82fe;
+@normal-button-pressed: darken(@normal-button, 20%);
+@normal-button-disabled: lighten(#b0b0b6, 20%);
+
 @default-button: #b0b0b6;
-@default-button-pressed: #00baff;
+@default-button-pressed: darken(@default-button, 20%);
 @default-button-disabled: lighten(@default-button, 20%);
 
 @highlighted-button: #0f82fe;
+@highlighted-button-pressed: lighten(@highlighted-button, 20%);
+
 @cancel-button: #7e7e7e;
-@cancel-button-pressed: lighten(@cancel-button, 20%);
+@cancel-button-pressed: darken(@cancel-button, 20%);
+
 @delete-button: #e22c09;
-@delete-button-pressed: lighten(@delete-button, 20%);
+@delete-button-pressed: darken(@delete-button, 20%);
+
 @overdue-task: @delete-button;
 
 // Misc

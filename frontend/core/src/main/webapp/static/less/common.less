@@ -36,41 +36,47 @@ Only universal code that would work by itself in any web page.
 
 // HORIZONTAL LAYOUT
 
+// two in a row
 .left-of-two {
   float: left;
   width: 50%;
-  .small-border-right:after {
-    margin-left: 22%;
-  }
-  &.border-right {
-    border-right: solid 1px white !important;
-  }
+  border-right: 1px solid white;
 }
 .right-of-two {
   float: right;
   width: 50%;
-  text-align: right;
 }
 
+// three in a row
 .left-of-three {
   float: left;
   width: 33.33%;
-  .small-border-right:after {
-    margin-left: 12%;
-  }
-  &.border-right {
-    border-right: solid 1px white !important;
-  }
-}
-.right-of-three {
-  float: right;
-  width: 33.33%;
-  text-align: right;
+  border-right: 1px solid white;
 }
 .center-of-three {
   float: left;
   width: 33.34%;
-  text-align: center;
+  border-right: 1px solid white;
+}
+.right-of-three {
+  float: right;
+  width: 33.33%;
+}
+
+// four in a row
+.left-of-four {
+  float: left;
+  width: 25%;
+  border-right: 1px solid white;
+}
+.center-of-four {
+  float: left;
+  width: 25%;
+  border-right: 1px solid white;
+}
+.right-of-four {
+  float: right;
+  width: 25%;
 }
 
 .horizontally-justified {
@@ -246,16 +252,29 @@ Only universal code that would work by itself in any web page.
   }
 }
 
-button.normal-button {
+button.default-button {
   color: white;
   & {
-    background-color: @highlighted-button;
+    background-color: @default-button;
   }
   &:active {
     background-color: @default-button-pressed;
   }
   &[disabled] {
     background-color: @default-button-disabled;
+  }
+}
+
+button.normal-button {
+  color: white;
+  & {
+    background-color: @normal-button;
+  }
+  &:active {
+    background-color: @normal-button-pressed;
+  }
+  &[disabled] {
+    background-color: @normal-button-disabled;
   }
 }
 

@@ -1,7 +1,6 @@
 'use strict';
 
-function ItemsController($scope, $location, $routeParams, UserSessionService, ItemsService) {
-  
+function ItemsController($location, $scope, $routeParams, UserSessionService, ItemsService) {
   if (!$scope.item){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
       if ($routeParams.uuid) {
@@ -11,6 +10,10 @@ function ItemsController($scope, $location, $routeParams, UserSessionService, It
       }
     }
   }
+
+  $scope.omnibarHasText = function omnibarHasText() {
+    return $scope.omnibarText.title && $scope.omnibarText.title.length !== 0;
+  };
 
   $scope.saveItem = function(item) {
     ItemsService.saveItem(item, UserSessionService.getActiveUUID());
@@ -82,5 +85,5 @@ function ItemsController($scope, $location, $routeParams, UserSessionService, It
 
 }
 
-ItemsController.$inject = ['$scope', '$location', '$routeParams', 'UserSessionService', 'ItemsService'];
+ItemsController.$inject = ['$location', '$scope', '$routeParams', 'UserSessionService', 'ItemsService'];
 angular.module('em.app').controller('ItemsController', ItemsController);

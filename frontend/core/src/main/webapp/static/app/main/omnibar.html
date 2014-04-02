@@ -12,17 +12,22 @@
   </form>
   <div ng-if="omnibarVisible" class="omnibar-actions">
     <ul class="button-row">
-      <li class="button-container left-of-three border-right">
-        <button class="normal-button" type="button" ng-click="saveAsTask(omnibarText)" ng-disabled="!omnibarText.title || omnibarText.title.length === 0">
+      <li class="button-container left-of-four border-right">
+        <button class="normal-button" type="button" ng-click="clickOmnibarPlus(omnibarText)" ng-disabled="!omnibarHasText()">
+          <span class="button-text">inbox</span>
+        </button>
+      </li>
+      <li class="button-container center-of-four">
+        <button class="default-button" type="button" ng-click="saveAsTask(omnibarText)" ng-disabled="!omnibarHasText()">
           <span class="button-text">task</span>
         </button>
       </li>
-      <li class="button-container center-of-three">
-        <button class="normal-button" type="button" ng-click="saveAsNote(omnibarText)" ng-disabled="!omnibarText.title || omnibarText.title.length === 0">
+      <li class="button-container center-of-four">
+        <button class="default-button" type="button" ng-click="saveAsNote(omnibarText)" ng-disabled="!omnibarHasText()">
           <span class="button-text">note</span>
         </button>
       </li>
-      <li class="button-container right-of-three">
+      <li class="button-container right-of-four">
         <button class="default-button" type="button" ng-click="clearOmnibar()">
           <span class="button-text">cancel</span>
         </button>
@@ -30,8 +35,8 @@
     </ul>
   </div>
   <div id="omnibar-results" class="swiper-no-swiping" data-snap-ignore="true" ng-if="omnibarVisible" ng-style="{height: getOmnibarSearchResultsHeight()}">
-    <div id="filtered-items-placeholder" ng-if="!omnibarText.title || omnibarText.title.length === 0" ng-style="{width: getColumnWidth()}" ng-click="clearOmnibar()">&nbsp;</div>
-    <div id="filtered-items-container" ng-if="omnibarText.title && omnibarText.title.length > 0" >
+    <div id="filtered-items-placeholder" ng-if="!omnibarHasText()" ng-style="{width: getColumnWidth()}" ng-click="clearOmnibar()">&nbsp;</div>
+    <div id="filtered-items-container" ng-if="omnibarHasText()">
       <div class="filtered-items" ng-show="filteredItems.length">
         <h3 ><a href ng-click="gotoInbox()">inbox</a></h3>
         <div class="inner-page-content-container" accordion>
