@@ -235,14 +235,19 @@ footer {
 
 // desktop
 #desktop-menu {
+  background-color: white;
+  position: relative;
   max-width: @one-column-grid-width;
   height: inherit;
+  overflow-y: scroll;
   .center-horizontally;
   #menu-content {
     padding-top: @page-header-height;
+    padding-bottom: @footer-height;
     padding-left: @horizontal-grid;
     width: auto;
     a, span {
+      display: block;
       color: @default-element;
     }
     a.collective {
