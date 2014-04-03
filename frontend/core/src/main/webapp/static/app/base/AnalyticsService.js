@@ -1,6 +1,6 @@
 'use strict';
 
-function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClientService) {
+function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClientService, BackendClientService) {
 
   var deferredLocation = $q.defer();
 
@@ -490,7 +490,7 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
     }, 3000)
   }
 
-  var analyticsUrl = '/collect/1.0/event/put';
+  var analyticsUrl = BackendClientService.getUrlPrefix() + '/collect/1.0/event/put';
 
   function getPayload(type, description, id, fullSession){
     var session = $.extend({},window.session);
@@ -585,5 +585,5 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
     }
   };
 }
-AnalyticsService['$inject'] = ['$q', '$timeout', '$rootScope', 'UserSessionService', 'HttpClientService'];
+AnalyticsService['$inject'] = ['$q', '$timeout', '$rootScope', 'UserSessionService', 'HttpClientService', 'BackendClientService'];
 angular.module('em.services').factory('AnalyticsService', AnalyticsService);

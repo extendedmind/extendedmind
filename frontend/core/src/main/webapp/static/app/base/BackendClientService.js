@@ -167,6 +167,10 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
     });
   };
 
+  methods.getUrlPrefix = function() {
+    return getUrlPrefix();
+  }
+
   // Callback registration
   methods.registerRefreshCredentialsCallback = function(callback){
     refreshCredentialsCallback = callback;
