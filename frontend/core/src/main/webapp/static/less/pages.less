@@ -145,37 +145,3 @@ section#tasks-dates {
     color: @highlighted-element;
   }
 }
-
-// When item is active, show top&bottom borders
-.accordion-item-active {
-  border-top-style: solid;
-  border-bottom-style: solid;
-  border-width: 1px;
-  border-color: @separator;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  .accordion-title-open {
-    margin-top: -5px;
-    padding-bottom: 5px;
-    .left-input-wrapper {
-      padding-left: 1px;
-    }
-    &.no-checkbox {
-      margin-top: -6px;
-    }
-  }
-}
-
-input[type="checkbox"]:checked ~ a#accordionTitleLink {
-  color: @default-element;
-  .fade-color(@fade-time);
-}
-
-div#accordionTitleHeightFix {
-  height: @vertical-grid;
-}
-
-a#accordionTitleLink {
-  color: @content;
-  line-height: 19px;
-}

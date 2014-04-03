@@ -2,10 +2,11 @@
 Extended Mind specific UI-components.
 */
 
-// When item is active, show top&bottom borders
+// ACCORDION
+
+// When item is active, show top border
 .accordion-item-active {
   border-top-style: solid;
-  border-bottom-style: solid;
   border-width: 1px;
   border-color: @separator;
   padding-top: 5px;
@@ -23,7 +24,7 @@ Extended Mind specific UI-components.
 }
 
 input[type="checkbox"]:checked ~ a#accordionTitleLink {
-  color: white;
+  color: @default-element;
   .fade-color(@fade-time);
 }
 
@@ -32,13 +33,11 @@ div#accordionTitleHeightFix {
 }
 
 a#accordionTitleLink {
-  color: white;
-  line-height: @vertical-grid-half;
+  color: @content;
+  line-height: 19px;
 }
 
-li.datepicker-date {
-  line-height: @vertical-grid-half;
-}
+// TEASER
 
 .teaser {
   line-height: @vertical-grid-half;
@@ -49,12 +48,15 @@ li.datepicker-date {
   padding-bottom: @vertical-grid-half;
 } 
 
+// OFFLINE
 
 .offline-indicator {
   display: inline;
   vertical-align: top;
   font-size: @small-font-size;
 }
+
+// ERRORS
 
 #errorMessage {
   h3 {
@@ -63,12 +65,16 @@ li.datepicker-date {
   }
 }
 
+// MODALS
+
 #modalFooter {
   button[disabled].normal-button {
     color: white;
     background-color: @default-button-pressed;
   }
 }
+
+// ADD ITEM/NOTE/TASK..
 
 .add-element {
   // Add @vertical grid to make room for 'add [item]...' input
@@ -292,6 +298,10 @@ footer {
 
 
 // DATEPICKER
+
+li.datepicker-date {
+  line-height: @vertical-grid-half;
+}
 
 #datepicker {
   height: @vertical-grid + 6;
