@@ -43,22 +43,12 @@ function MainController(
     angular.element($window).bind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
     angular.element($window).bind('blur', cancelSynchronizeItemsDelayed);
   }
-  // Global variable bindToResumeEvent specifies if resume/pause events should be listened to. Variable is false
-  // for browsers, and true in Cordova.      
-  var bindToResume = (typeof bindToResumeEvent !== 'undefined') ? bindToResumeEvent: false;
-  if (bindToResume) {
-    // Cordova events
-    document.addEventListener('resume', $scope.startSession, false);
-    document.addEventListener('pause', $scope.stopSession, false);
-  }
 
   function synchronizeItemsAndSynchronizeItemsDelayed() {
-    $scope.startSession();
     synchronizeItems();
     synchronizeItemsDelayed();
   }
   function cancelSynchronizeItemsDelayed() {
-    $scope.stopSession();
     $timeout.cancel(synchronizeItemsTimer);
   }
 
@@ -72,18 +62,15 @@ function MainController(
 
   // Synchronize items if not already synchronizing and interval reached.
   function synchronizeItems() {
+    $scope.registerActivity();
     var activeUUID = UserSessionService.getActiveUUID();
     // First check that the user has login
     if (activeUUID){
-      if (!UserSessionService.isItemsSynchronizing(activeUUID)) {
-        var itemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
-        
-        if (isNaN(itemsSynchronized) || itemsSynchronized > itemsSynchronizedThreshold) {
-          UserSessionService.setItemsSynchronizing(activeUUID);
-          ItemsService.synchronize(activeUUID).then(function() {
-            UserSessionService.setItemsSynchronized(activeUUID);
-          });
-        }
+      var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
+      if (isNaN(sinceLastItemsSynchronized) || sinceLastItemsSynchronized > itemsSynchronizedThreshold) {
+        ItemsService.synchronize(activeUUID).then(function() {
+          UserSessionService.setItemsSynchronized(activeUUID);
+        });
       }
     }
   }
@@ -93,14 +80,9 @@ function MainController(
   $scope.$on('$destroy', function() {
     // http://www.bennadel.com/blog/2548-Don-t-Forget-To-Cancel-timeout-Timers-In-Your-destroy-Events-In-AngularJS.htm
     $timeout.cancel(synchronizeItemsTimer);
-
     if (bindToFocus) {
       angular.element($window).unbind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
       angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
-    }
-    if (bindToResume) {
-      document.removeEventListener('resume', $scope.startSession, false);
-      document.removeEventListener('pause', $scope.stopSession, false);
     }
   });
 

@@ -128,17 +128,10 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
         latestModified[ownerUUID] = modified;
       }
     },
-    setItemsSynchronizing: function(ownerUUID) {
-      if (!itemsSynchronize[ownerUUID]) {
-        itemsSynchronize[ownerUUID] = {};
-      }
-      itemsSynchronize[ownerUUID].itemsSynchronizing = true;
-    },
     setItemsSynchronized: function(ownerUUID) {
       if (!itemsSynchronize[ownerUUID]) {
         itemsSynchronize[ownerUUID] = {};
       }
-      itemsSynchronize[ownerUUID].itemsSynchronizing = false;
       itemsSynchronize[ownerUUID].itemsSynchronized = Date.now();
     },
 
@@ -172,11 +165,6 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     },
     getLatestModified: function(ownerUUID) {
       return latestModified[ownerUUID];
-    },
-    isItemsSynchronizing: function(ownerUUID) {
-      if (itemsSynchronize[ownerUUID]) {
-        return itemsSynchronize[ownerUUID].itemsSynchronizing;
-      }
     },
     getItemsSynchronized: function(ownerUUID) {
       return (itemsSynchronize[ownerUUID]) ? itemsSynchronize[ownerUUID].itemsSynchronized : undefined;

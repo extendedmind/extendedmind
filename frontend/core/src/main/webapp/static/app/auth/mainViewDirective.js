@@ -94,17 +94,27 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
 
       // SESSION MANAGEMENT
 
-      var currentSessionId, currentSessionStartTime;
-      $scope.startSession = function() {
+      var currentSessionId, currentSessionStartTime, currentSessionLatestActivity;
+      $scope.registerActivity = function() {
         if (!currentSessionId){
-          currentSessionId = UUIDService.randomUUID();
-          currentSessionStartTime = AnalyticsService.startSession(currentSessionId);
+          startNewSession();
+        }else{
+          var now = Date.now();
+          // If 20 seconds has passed since last activity, consider this a new session
+          if (currentSessionLatestActivity && (currentSessionLatestActivity < (now - 20000))){
+            AnalyticsService.stopSession(currentSessionId, currentSessionStartTime);
+            startNewSession();
+          }else {
+            currentSessionLatestActivity = now;
+          }
         }
       };
-      $scope.stopSession = function() {
-        AnalyticsService.stopSession(currentSessionId, currentSessionStartTime);
-        currentSessionId = undefined;
-      };
+
+      function startNewSession() {
+        currentSessionId = UUIDService.randomUUID();
+        currentSessionStartTime = AnalyticsService.startSession(currentSessionId);
+        currentSessionLatestActivity = undefined;  
+      }
 
       // WINDOW RESIZING
 
