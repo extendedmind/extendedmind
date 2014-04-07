@@ -48,8 +48,8 @@ function MainController(
   var bindToResume = (typeof bindToResumeEvent !== 'undefined') ? bindToResumeEvent: false;
   if (bindToResume) {
     // Cordova events
-    angular.element($window).bind('resume', $scope.startSession);
-    angular.element($window).bind('pause', $scope.stopSession);
+    document.addEventListener('resume', $scope.startSession, false);
+    document.addEventListener('pause', $scope.stopSession, false);
   }
 
   function synchronizeItemsAndSynchronizeItemsDelayed() {
@@ -99,8 +99,8 @@ function MainController(
       angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
     }
     if (bindToResume) {
-      angular.element($window).unbind('resume', $scope.startSession);
-      angular.element($window).unbind('pause', $scope.stopSession);
+      document.removeEventListener('resume', $scope.startSession, false);
+      document.removeEventListener('pause', $scope.stopSession, false);
     }
   });
 
