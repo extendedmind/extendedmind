@@ -88,7 +88,7 @@ function MainController(
   // ONBOARDING
   var userPreferences = UserSessionService.getPreferences();
   if (!userPreferences || (userPreferences && !userPreferences.onboarded)) {
-    OnboardingService.launchOnboarding(onboardingSuccessCallback, $scope);
+    OnboardingService.launchOnboarding(onboardingSuccessCallback);
   }
   function onboardingSuccessCallback() {
     UserSessionService.setPreferences('onboarded', $rootScope.packaging);

@@ -1,7 +1,7 @@
 /* global $, IScroll */
 'use strict';
 
-function OnboardingService($compile, $http, $q, $timeout, ModalService) {
+function OnboardingService($q, $timeout, ModalService) {
   var onboardingModalOptions = {
     id: 'onboarding-modal',
     showHeaderCloseButton: false,
@@ -12,7 +12,6 @@ function OnboardingService($compile, $http, $q, $timeout, ModalService) {
   var scroller;
   var scrollEndCallback;
   var adjustModalMaxHeightCallback;
-  var launched = false;
 
   function refreshScroller() {
     return $q.when(scroller.refresh());
@@ -22,13 +21,6 @@ function OnboardingService($compile, $http, $q, $timeout, ModalService) {
     registerDeferredScrollEndCallback();
     if (adjustModalMaxHeightCallback) {
       adjustModalMaxHeightCallback();
-    }
-  }
-
-  function createModal() {
-    if(!launched) {
-      launched = true;
-      ModalService.createDialog('static/app/base/onboarding.html', onboardingModalOptions);
     }
   }
 
@@ -53,7 +45,6 @@ function OnboardingService($compile, $http, $q, $timeout, ModalService) {
       $timeout(function() {
         refreshScroller().then(function() {
           registerAndExecuteCallbacks();
-          createModal();
         });
       }, 200);
     },
@@ -72,14 +63,11 @@ function OnboardingService($compile, $http, $q, $timeout, ModalService) {
     getScrollerPagesLength: function getScrollerPagesLength() {
       return scroller.pages.length;
     },
-    launchOnboarding: function launchOnboarding(successCallback, scope) {
+    launchOnboarding: function launchOnboarding(successCallback) {
       onboardingModalOptions.success = {
         fn: successCallback
       };
-      $http.get('static/app/base/onboarding.html').success(function(element) {
-        var onboardingCarouselElement = $compile(angular.element(element)[0])(scope);
-        $(document.body).append(onboardingCarouselElement);
-      });
+      ModalService.createDialog('static/app/base/onboarding.html', onboardingModalOptions);
     },
     destroyScroller: function destroyScroller() {
       scroller.destroy();
@@ -91,7 +79,7 @@ function OnboardingService($compile, $http, $q, $timeout, ModalService) {
   };
 }
 
-OnboardingService.$inject = ['$compile', '$http', '$q', '$timeout', 'ModalService'];
+OnboardingService.$inject = ['$q', '$timeout', 'ModalService'];
 angular.module('em.services').factory('OnboardingService', OnboardingService);
 
 function onboardingCarouselDirective($window, OnboardingService) {
