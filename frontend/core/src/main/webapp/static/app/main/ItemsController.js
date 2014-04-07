@@ -77,9 +77,9 @@ function ItemsController($location, $routeParams, $scope, UserSessionService, It
 
   $scope.getOmnibarSearchResultsHeight = function() {
     if ($scope.currentHeight <= 810){
-      return $scope.currentHeight - 130;
+      return $scope.currentHeight - 142;
     }else{
-      return 680;
+      return 668;
     }
   };
 
