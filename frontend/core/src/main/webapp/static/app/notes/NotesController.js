@@ -59,6 +59,7 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.addNote = function(newNote) {
+    if (!newNote.title  || newNote.title.length === 0) return false;    
     var newNoteToSave = {title: newNote.title};
     if (newNote.relationships && newNote.relationships.list){
       newNoteToSave.relationships = {
