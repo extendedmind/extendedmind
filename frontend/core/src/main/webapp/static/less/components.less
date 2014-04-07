@@ -95,7 +95,7 @@ header.page-header nav {
       float: left;
       color: @highlighted-element;
       font-size: @small-font-size;
-      margin-top: 3px;
+      margin-top: 10px;
       padding-left: @horizontal-grid + 4;
       height: @page-header-height;
     }
@@ -105,7 +105,7 @@ header.page-header nav {
 
     button#menu-button {
       .button;
-      padding: 10px 20px 10px @horizontal-grid; // increased clicking area
+      padding: 19px 20px 13px @horizontal-grid; // increased clicking area
       span.icon-menu {
         padding-right: 4px;
         color: @highlighted-element;
@@ -121,7 +121,7 @@ header.page-header nav {
 
   button#plus-button {
     .button;
-    padding: 10px @horizontal-grid 10px 20px; // increased clicking area
+    padding: 17px @horizontal-grid 17px 20px; // increased clicking area
   }
 
   #omnibar-search-results {
@@ -159,8 +159,12 @@ footer {
 
 #omnibar-wrapper {
   position: relative;
+  height: @page-header-height;
+  form, .form-group, input {
+    height:inherit;
+  }
   .omnibar-visible {
-    height: @page-header-height;
+    height: inherit;
     .left-input-wrapper;
     input {
       text-align: left !important;
@@ -168,6 +172,7 @@ footer {
   }
 
   .omnibar-hidden {
+    height: inherit;
     .center-horizontally;
     input::-webkit-input-placeholder { /* WebKit browsers */
       font-size: @large-font-size;
@@ -355,7 +360,7 @@ li.datepicker-date {
               height: 28px;
               width: 28px;
               text-align: center;
-              line-height: 28px;
+              padding-top: 4px;
             }
           }
           a.date-active, a.date-active-today {
@@ -378,7 +383,6 @@ li.datepicker-date {
           }
           a.date-today {
             span.day-date {
-              line-height: 26px;
               border-radius: 50%; //http://css-tricks.com/almanac/properties/b/border-radius/
               border: 1px solid @highlighted-element;
             }
