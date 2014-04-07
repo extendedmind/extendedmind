@@ -113,11 +113,11 @@ header {
 }
 
 .page-content-container {
-  height: inherit;
+  height: 100%;
   padding-top: 12px;
   padding-bottom: @footer-height + @page-header-height;
   .accordion-wrapper {
-    height: inherit;
+    height: 100%;
   }
   .inner-page-content-container {
     height: inherit;
@@ -196,10 +196,12 @@ footer {
   body {
     div[role=main] > div.no-slides-container {
       .center-container;
+      min-height: @maximum-landscape-height;
+      max-height: @maximum-landscape-height;
+      margin-top: -@maximum-landscape-height / 2;
+      top: 50%;
       section.page {
         .absolute-center;
-        min-height: @maximum-landscape-height;
-        max-height: @maximum-landscape-height;
       }
     }
     div[role=main] > div.slides-container {

@@ -13,25 +13,6 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
     }
   }
 
-  $scope.setCollectiveActive = function(uuid) {
-    UserSessionService.setCollectiveActive(uuid);
-    $location.path('/collective/' + uuid + '/tasks');
-    $scope.toggleMenu();
-  };
-  
-  $scope.setMyActive = function() {
-    UserSessionService.setMyActive();
-    $location.path('/my/tasks');
-    $scope.toggleMenu();
-  };
-
-  $scope.logout = function() {
-    AuthenticationService.logout().then(function() {
-      $location.path('/login');
-    });
-    $scope.toggleMenu();
-  };
-
   $scope.useCollectives = function() {
     return $scope.collectives && Object.keys($scope.collectives).length > 1;
   };
@@ -54,14 +35,6 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
     }
   };
 
-  $scope.gotoInbox = function() {
-    if (getActiveFeature() !== 'inbox') {
-      AnalyticsService.visit('inbox');
-      $location.path(UserSessionService.getOwnerPrefix() + '/inbox');
-    }
-    $scope.toggleMenu();
-  };
-
   $scope.gotoTasks = function() {
     if (getActiveFeature() !== 'tasks') {
       AnalyticsService.visit('tasks');
@@ -78,6 +51,42 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
     $scope.toggleMenu();
   };
 
+  $scope.gotoInbox = function() {
+    if (getActiveFeature() !== 'inbox') {
+      AnalyticsService.visit('inbox');
+      $location.path(UserSessionService.getOwnerPrefix() + '/inbox');
+    }
+    $scope.toggleMenu();
+  };
+  
+  $scope.setMyActive = function() {
+    UserSessionService.setMyActive();
+    $location.path('/my/tasks');
+    $scope.toggleMenu();
+  };
+
+  $scope.setCollectiveActive = function(uuid) {
+    UserSessionService.setCollectiveActive(uuid);
+    $location.path('/collective/' + uuid + '/tasks');
+    $scope.toggleMenu();
+  };
+
+  $scope.gotoAccount = function gotoAccount() {
+    $location.path('/my/account');
+    $scope.toggleMenu();
+  };
+
+  $scope.gotoAbout = function gotoAbout() {
+    $location.path('/about');
+    $scope.toggleMenu();
+  }
+
+  $scope.logout = function() {
+    AuthenticationService.logout().then(function() {
+      $location.path('/login');
+    });
+    $scope.toggleMenu();
+  };
 }
 
 MenuController.$inject = ['$location', '$scope', 'AuthenticationService', 'UserSessionService', 'AnalyticsService'];

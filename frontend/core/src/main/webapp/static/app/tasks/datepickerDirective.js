@@ -1,3 +1,4 @@
+/* global IScroll */
 'use strict';
 
 function datepickerDirective($q) {

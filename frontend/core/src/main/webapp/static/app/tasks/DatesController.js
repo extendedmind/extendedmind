@@ -93,15 +93,19 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
   };
 
   $scope.previousWeek = function() {
+    var weekdayIndex = $scope.activeDay.weekdayIndex;
     $scope.weekdays = DateService.previousWeek();
     $scope.datepickerWeeks = DateService.changeDatePickerWeeks('prev');
-    swipeToStartingDay();
+    var newActiveDay = $scope.weekdays[weekdayIndex];
+    swipeToStartingDay(newActiveDay);
   };
 
   $scope.nextWeek = function() {
+    var weekdayIndex = $scope.activeDay.weekdayIndex;
     $scope.weekdays = DateService.nextWeek();
     $scope.datepickerWeeks = DateService.changeDatePickerWeeks('next');
-    swipeToStartingDay();
+    var newActiveDay = $scope.weekdays[weekdayIndex];
+    swipeToStartingDay(newActiveDay);
   };
 
   $scope.dateClicked = function(date) {
