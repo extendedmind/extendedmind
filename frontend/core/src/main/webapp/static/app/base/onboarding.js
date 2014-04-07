@@ -1,19 +1,35 @@
+/* global $, IScroll */
 'use strict';
 
-function OnboardingService($q, $timeout, ModalService) {
+function OnboardingService($compile, $http, $q, $timeout, ModalService) {
   var onboardingModalOptions = {
-    id: 'onboardingDialog',
+    id: 'onboarding-modal',
     showHeaderCloseButton: false,
-    backdrop: true,
     footerTemplateUrl: 'static/app/base/onboardingFooter.html',
-    modalClass: 'modal'
+    modalClass: 'modal small-modal'
   };
-  
+
   var scroller;
   var scrollEndCallback;
+  var adjustModalMaxHeightCallback;
+  var launched = false;
 
   function refreshScroller() {
-    $q.when(scroller.refresh()).then(registerDeferredScrollEndCallback);
+    return $q.when(scroller.refresh());
+  }
+
+  function registerAndExecuteCallbacks() {
+    registerDeferredScrollEndCallback();
+    if (adjustModalMaxHeightCallback) {
+      adjustModalMaxHeightCallback();
+    }
+  }
+
+  function createModal() {
+    if(!launched) {
+      launched = true;
+      ModalService.createDialog('static/app/base/onboarding.html', onboardingModalOptions);
+    }
   }
 
   function registerDeferredScrollEndCallback() {
@@ -32,8 +48,14 @@ function OnboardingService($q, $timeout, ModalService) {
         momentum: false,
         scrollX: true
       });
+
       // http://iscrolljs.com/#refresh
-      $timeout(refreshScroller, 200);
+      $timeout(function() {
+        refreshScroller().then(function() {
+          registerAndExecuteCallbacks();
+          createModal();
+        });
+      }, 200);
     },
     nextSlide: function nextSlide() {
       scroller.next();
@@ -41,31 +63,99 @@ function OnboardingService($q, $timeout, ModalService) {
     registerScrollEndCallback: function registerScrollEndCallback(callback) {
       scrollEndCallback = callback;
     },
+    registerAdjustModalMaxHeightCallback: function registerAdjustModalMaxHeightCallback(callback) {
+      adjustModalMaxHeightCallback = callback;
+    },
     getScrollerCurrentSlide: function getScrollerCurrentSlide() {
       return scroller.currentPage.pageX;
     },
     getScrollerPagesLength: function getScrollerPagesLength() {
       return scroller.pages.length;
     },
-    launchOnboarding: function launchOnboarding() {
-      ModalService.createDialog('static/app/base/onboarding.html', onboardingModalOptions);
+    launchOnboarding: function launchOnboarding(successCallback, scope) {
+      onboardingModalOptions.success = {
+        fn: successCallback
+      };
+      $http.get('static/app/base/onboarding.html').success(function(element) {
+        var onboardingCarouselElement = $compile(angular.element(element)[0])(scope);
+        $(document.body).append(onboardingCarouselElement);
+      });
+    },
+    destroyScroller: function destroyScroller() {
+      scroller.destroy();
+      scroller = null;
+    },
+    executeOnboardingSuccessCallback: function executeOnboardingSuccessCallback() {
+      onboardingModalOptions.success.fn();
     }
   };
 }
 
-OnboardingService.$inject = ['$q', '$timeout', 'ModalService'];
+OnboardingService.$inject = ['$compile', '$http', '$q', '$timeout', 'ModalService'];
 angular.module('em.services').factory('OnboardingService', OnboardingService);
 
-function onboardingCarouselDirective(OnboardingService) {
+function onboardingCarouselDirective($window, OnboardingService) {
   return {
     restrict: 'A',
     replace: true,
-    link: function postLink($scope, $element) {
-      OnboardingService.initializeCarousel($element[0]);
+    link: function postLink(scope, element) {
+
+      // http://codepen.io/anon/pen/Icfbj
+      function adjustModalMaxHeight() {
+
+        $('.modal').each(function() {
+          if($(this).hasClass('in') === false){
+            $(this).show();
+          }
+
+          var contentHeight = $window.innerHeight - 20;
+          var footerHeight = $(this).find('.modal-footer').outerHeight();
+
+          $(this).find('.modal-content').css({
+            'max-height': function() {
+              return contentHeight;
+            }
+          });
+
+          $(this).find('.modal-body').css({
+            'max-height': function() {
+              return (contentHeight - footerHeight);
+            }
+          });
+
+          $(this).find('.modal-dialog').css({
+            'margin-top': function() {
+              return -($(this).outerHeight() / 2);
+            },
+            'margin-left': function() {
+              return -($(this).outerWidth() / 2);
+            }
+          });
+          if($(this).hasClass('in') === false){
+            $(this).hide();
+          }
+        });
+      }
+
+      adjustModalMaxHeight();
+      OnboardingService.registerAdjustModalMaxHeightCallback(adjustModalMaxHeight);
+      OnboardingService.initializeCarousel(element[0]);
+
+      angular.element($window).bind('resize', adjustModalMaxHeight);
+
+      // Hide event from ModalService
+      var onboardingModal = document.getElementById('onboarding-modal');
+      angular.element(onboardingModal).bind('hidden.bs.modal', tearDown);
+
+      function tearDown() {
+        OnboardingService.executeOnboardingSuccessCallback();
+        angular.element($window).unbind('resize', adjustModalMaxHeight);
+        OnboardingService.destroyScroller();
+      }
     }
   };
 }
-onboardingCarouselDirective.$inject = ['OnboardingService'];
+onboardingCarouselDirective.$inject = ['$window', 'OnboardingService'];
 angular.module('em.directives').directive('onboardingCarousel', onboardingCarouselDirective);
 
 function onboardingFooterDirective(OnboardingService) {
@@ -76,7 +166,7 @@ function onboardingFooterDirective(OnboardingService) {
 
       scope.nextOnboardingSlide = function nextOnboardingSlide() {
         if (OnboardingService.getScrollerCurrentSlide() === OnboardingService.getScrollerPagesLength() - 1) {
-          scope.$modalCancel();
+          scope.$modalSuccess();
         } else {
           OnboardingService.nextSlide();
         }

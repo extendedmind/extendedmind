@@ -8,9 +8,8 @@
 // which are part of every main slide collection. 
 function MainController(
   $scope, $location, $rootScope, $timeout, $window, $filter, $document,
-  UserSessionService, BackendClientService, ItemsService, ListsService,
-  TagsService, TasksService, NotesService, FilterService, SwiperService,
-  SnapService, AnalyticsService, UUIDService) {
+  AccountService, UserSessionService, BackendClientService, ItemsService, ListsService,
+  TagsService, TasksService, NotesService, FilterService, OnboardingService, SwiperService) {
 
   // Data arrays 
   $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
@@ -85,6 +84,16 @@ function MainController(
       angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
     }
   });
+
+  // ONBOARDING
+  var userPreferences = UserSessionService.getPreferences();
+  if (!userPreferences || (userPreferences && !userPreferences.onboarded)) {
+    OnboardingService.launchOnboarding(onboardingSuccessCallback, $scope);
+  }
+  function onboardingSuccessCallback() {
+    UserSessionService.setPreferences('onboarded', $rootScope.packaging);
+    AccountService.putAccountPreferences();
+  }
 
   // OMNIBAR
 
@@ -203,8 +212,7 @@ function MainController(
 
 MainController.$inject = [
 '$scope', '$location', '$rootScope', '$timeout', '$window', '$filter', '$document',
-'UserSessionService', 'BackendClientService', 'ItemsService', 'ListsService',
-'TagsService', 'TasksService', 'NotesService', 'FilterService', 'SwiperService',
-'SnapService', 'AnalyticsService', 'UUIDService'
+'AccountService', 'UserSessionService', 'BackendClientService', 'ItemsService', 'ListsService',
+'TagsService', 'TasksService', 'NotesService', 'FilterService', 'OnboardingService', 'SwiperService'
 ];
 angular.module('em.app').controller('MainController', MainController);

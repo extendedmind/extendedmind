@@ -30,6 +30,11 @@ function LocalStorageService() {
         localStorage.setItem('cohort', cohort);
       }
     },
+    setPreferences: function(preferences) {
+      if (preferences) {
+        localStorage.setItem('preferences', JSON.stringify(preferences));
+      }
+    },
 
     // getters
     getCollectives: function() {
@@ -58,6 +63,11 @@ function LocalStorageService() {
     getCohort: function() {
       return localStorage.getItem('cohort');
     },
+    getPreferences: function() {
+      if (localStorage.getItem('preferences')) {
+        return JSON.parse(localStorage.getItem('preferences'));
+      }
+    },
 
     clearUser: function() {
       localStorage.removeItem('collectives');
@@ -68,6 +78,7 @@ function LocalStorageService() {
       localStorage.removeItem('userType');
       localStorage.removeItem('userUUID');
       localStorage.removeItem('cohort');
+      localStorage.removeItem('preferences');
     }
   };
 }

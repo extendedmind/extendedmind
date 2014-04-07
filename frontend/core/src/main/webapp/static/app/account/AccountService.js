@@ -12,8 +12,16 @@ function AccountService(BackendClientService, UserSessionService) {
         return accountResponse.data;
       });
     },
+    putAccountPreferences: function() {
+      var payload = {
+        email: UserSessionService.getEmail(),
+        preferences: UserSessionService.getPreferences()
+      };
+      BackendClientService.putOnline('/api/account', this.putAccountRegex, payload);
+    },
     // Regular expressions for account requests
     getAccountRegex: new RegExp(/api\/account/.source),
+    putAccountRegex: new RegExp(/api\/account/.source),
     putChangePasswordRegex: new RegExp(
       /^/.source +
       BackendClientService.apiPrefixRegex.source +

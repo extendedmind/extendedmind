@@ -10,10 +10,19 @@ function MockAccountBackendService($httpBackend, AccountService) {
       return expectResponse(method, url, data, headers, accountResponse);
     });
   }
+
+  function mockPutAccount(expectResponse) {
+    $httpBackend.whenPUT(AccountService.putAccountRegex)
+    .respond(function(method, url, data, headers) {
+      var putAccountResponse = getJSONFixture('putAccountResponse.json');
+      return expectResponse(method, url, data, headers, putAccountResponse);
+    });
+  }
   
   return {
     mockAccountBackend: function(expectResponse) {
       mockGetAccount(expectResponse);
+      mockPutAccount(expectResponse);
     }
   };
 }

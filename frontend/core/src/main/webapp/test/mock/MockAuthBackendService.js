@@ -107,7 +107,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       mockPostForgotPassword();
       mockGetPasswordResetExpires(expectResponse);
       mockPostResetPassword(expectResponse);
-      mockPutChangePassword(expectResponse);      
+      mockPutChangePassword(expectResponse);
     }
   };
 }

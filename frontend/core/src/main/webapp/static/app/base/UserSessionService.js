@@ -30,6 +30,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     SessionStorageService.setUserType(LocalStorageService.getUserType());
     SessionStorageService.setUserUUID(LocalStorageService.getUserUUID());
     SessionStorageService.setCohort(LocalStorageService.getCohort());
+    SessionStorageService.setPreferences(LocalStorageService.getPreferences());
   }
 
   function encodeUsernamePassword(username, password) {
@@ -89,6 +90,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       SessionStorageService.setUserType(authenticateResponse.userType);
       SessionStorageService.setUserUUID(authenticateResponse.userUUID);
       SessionStorageService.setCohort(authenticateResponse.cohort);
+      SessionStorageService.setPreferences(authenticateResponse.preferences);
 
       if (authenticateResponse.replaceable) {
         LocalStorageService.setExpires(authenticateResponse.expires + authExpiresDelta);
@@ -98,6 +100,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
         LocalStorageService.setUserType(authenticateResponse.userType);
         LocalStorageService.setUserUUID(authenticateResponse.userUUID);
         LocalStorageService.setCohort(authenticateResponse.cohort);
+        LocalStorageService.setPreferences(authenticateResponse.preferences);
       }
       if (email) {
         setEmail(email);
@@ -121,6 +124,16 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     },
     setEmail: function(email) {
       setEmail(email);
+    },
+    setPreferences: function(name, value) {
+      var preferences = this.getPreferences() || {};
+      if (!preferences.name) {
+        preferences[name] = value;
+      }
+      SessionStorageService.setPreferences(preferences);
+      if (offlineBufferEnabled || LocalStorageService.getReplaceable() !== null) {
+        LocalStorageService.setPreferences(preferences);
+      }
     },
     setLatestModified: function(modified, ownerUUID) {
       // Only set if given value is larger than set value
@@ -168,6 +181,10 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     },
     getItemsSynchronized: function(ownerUUID) {
       return (itemsSynchronize[ownerUUID]) ? itemsSynchronize[ownerUUID].itemsSynchronized : undefined;
+    },
+    getPreferences: function() {
+      syncWebStorages();
+      return SessionStorageService.getPreferences();
     },
     getRememberByDefault: function() {
       return offlineBufferEnabled;

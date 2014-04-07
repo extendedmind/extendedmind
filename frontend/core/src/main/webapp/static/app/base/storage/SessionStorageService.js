@@ -30,6 +30,11 @@ function SessionStorageService() {
         sessionStorage.setItem('cohort', cohort);
       }
     },
+    setPreferences: function(preferences) {
+      if (preferences) {
+        sessionStorage.setItem('preferences', JSON.stringify(preferences));
+      }
+    },
 
     // getters
     getActiveUUID: function() {
@@ -56,6 +61,11 @@ function SessionStorageService() {
     getCohort: function() {
       return sessionStorage.getItem('cohort');
     },
+    getPreferences: function() {
+      if (sessionStorage.getItem('preferences')) {
+        return JSON.parse(sessionStorage.getItem('preferences'));
+      }
+    },
     clearUser: function() {
       sessionStorage.removeItem('activeUUID');
       sessionStorage.removeItem('collectives');
@@ -65,6 +75,7 @@ function SessionStorageService() {
       sessionStorage.removeItem('userType');
       sessionStorage.removeItem('userUUID');
       sessionStorage.removeItem('cohort');
+      sessionStorage.removeItem('preferences');
     }
   };
 }
