@@ -102,8 +102,13 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
   }
 
   function authenticate(remember) {
+    var payload = {rememberMe: remember};
+    if (remember && $rootScope.packaging.endsWith('phonegap')){
+      // In apps use extended 90 day replaceable authentication
+      payload.extended = true;
+    }
     return BackendClientService.postOnline('/api/authenticate', postAuthenticateRegexp,
-      {rememberMe: remember},
+      payload,
       true, [403, 404, 502]);
   }
 
