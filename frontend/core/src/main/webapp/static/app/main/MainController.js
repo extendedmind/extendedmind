@@ -144,6 +144,7 @@ function MainController(
     if (omnibarText.title && omnibarText.title.length > 0){
       ItemsService.saveItem({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(/*item*/){
         $scope.omnibarText.title = '';
+        $scope.clearOmnibar();
       });
     }
   };
@@ -151,17 +152,20 @@ function MainController(
   $scope.saveAsTask = function(omnibarText) {
     TasksService.saveTask({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(){
       $scope.omnibarText.title = '';
+      $scope.clearOmnibar();
     });
   };
 
   $scope.saveAsNote = function(omnibarText) {
     NotesService.saveNote({title: omnibarText.title}, UserSessionService.getActiveUUID());
     $scope.omnibarText.title = '';
+    $scope.clearOmnibar();
   };
 
   $scope.clickOmnibarPlus = function(omnibarText) {
     if (omnibarText.title && omnibarText.title.length > 0){
       $scope.saveOmnibarText(omnibarText);
+      $scope.clearOmnibar();
     }else{
       $location.path(UserSessionService.getOwnerPrefix() + '/items/new');
     }
