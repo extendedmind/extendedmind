@@ -21,46 +21,57 @@ function SignupController($location, $scope, $routeParams, $window, Authenticati
     $scope.loginFailed = false;
     // Cohort is a random number between 1 and 128
     var randomCohort = Math.floor(Math.random() * 128) + 1;
-    AuthenticationService.signUp(inviteResponseCode,
-          {email: $scope.user.username,
-           password: $scope.user.password,
-           cohort: randomCohort}).
-      then(function() {
-        AnalyticsService.do('signup');
-        userLogin();
-      }, function(signupResponse) {
-        if (signupResponse && (signupResponse.status === 404 ||signupResponse.status === 502)){
-          $scope.signupOffline = true;
-        }else if(signupResponse && (signupResponse.status === 400)){
-          $scope.signupFailed = true;
-        }
-      });
+    AuthenticationService.acceptInvite(inviteResponseCode,
+      {email: $scope.user.username,
+       password: $scope.user.password,
+       cohort: randomCohort}).
+    then(function() {
+      AnalyticsService.do('acceptInvite');
+      loginUser(true);
+    }, function(signupResponse) {
+      if (signupResponse && (signupResponse.status === 404 ||signupResponse.status === 502)){
+        $scope.signupOffline = true;
+      }else if(signupResponse && (signupResponse.status === 400)){
+        $scope.signupFailed = true;
+      }
+    });
   };
 
-  function userLogin() {
+  function loginUser(gotoWelcomePage) {
     AuthenticationService.login($scope.user).then(function() {
-      // Clears GET parameters from the URL
-      $location.url($location.path());
-      $location.path('/my/tasks');
+      redirectUser(gotoWelcomePage);
     }, function(authenticateResponse) {
-      if (authenticateResponse && (authenticateResponse.status === 404 || authenticateResponse.status === 502)){
-        $scope.signupOffline = true;
-      }else if(authenticateResponse && (authenticateResponse.status === 403)){
-        $scope.loginFailed = true;
-      }
+      loginError(authenticateResponse);
     });
   }
 
+  function redirectUser(gotoWelcomePage) {
+    // Clears GET parameters from the URL
+    $location.url($location.path());
+    if (gotoWelcomePage) {
+      $location.path('/welcome');
+    } else {
+      $location.path('/my/tasks');
+    }
+  }
+
+  function loginError(authenticateResponse) {
+    if (authenticateResponse && (authenticateResponse.status === 404 || authenticateResponse.status === 502)){
+      $scope.signupOffline = true;
+    }else if(authenticateResponse && (authenticateResponse.status === 403)){
+      $scope.loginFailed = true;
+    }
+  }
+
   $scope.gotoTermsOfService = function() {
-    AnalyticsService.visit("terms");
+    AnalyticsService.visit('terms');
     $window.open('http://ext.md/terms.html', '_system');
   };
 
   $scope.gotoPrivacyPolicy = function() {
-    AnalyticsService.visit("privacy");
+    AnalyticsService.visit('privacy');
     $window.open('http://ext.md/privacy.html', '_system');
   };
-
 }
 
 SignupController['$inject'] = ['$location', '$scope', '$routeParams', '$window', 'AuthenticationService', 'AnalyticsService'];

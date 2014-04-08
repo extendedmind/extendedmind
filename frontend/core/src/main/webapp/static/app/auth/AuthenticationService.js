@@ -246,7 +246,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         return inviteRequestResponse;
       });
     },
-    signUp: function(inviteResponseCode, data) {
+    acceptInvite: function(inviteResponseCode, data) {
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',
         acceptInviteRegexp, data, true, [400, 404, 502]);
     },

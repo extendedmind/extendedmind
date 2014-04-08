@@ -69,6 +69,30 @@ section#launch {
   }
 }
 
+section#welcome {
+  max-width: 350px;
+  .column {
+    overflow-y: auto;
+    .banner {
+      padding-bottom: @vertical-grid;
+      span {
+        width: 200px;
+        display: block;
+        text-align: center;
+        .center-horizontally;
+      }
+      padding-top: @vertical-grid * 1.5;
+    }
+    .content {
+      text-align: center;
+      line-height: @vertical-grid-half;
+      #welcome-instructions {
+        padding-bottom: @vertical-grid;
+      }
+    }
+  }
+}
+
 section#forgot {
   .column {
     .banner {
