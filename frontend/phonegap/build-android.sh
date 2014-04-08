@@ -4,8 +4,12 @@ RELEASE_BUILDDIR="bin"
 RELEASE_UNSIGNED="em-release-unsigned.apk" # produced by "ant release" command
 RELEASE_BUILD_APK="em-release.apk"
 
-# check required environment variables are set
+# check required environment variables are there
 : ${ANDROID_HOME:?"Need to set ANDROID_HOME non-empty"}
+
+# copy fonts
+cp ~/.phonegap/android/HelveticaNeueLight.otf app/www/static/fonts/HelveticaNeueLight.otf
+cp ~/.phonegap/android/HelveticaNeueRoman.ttf app/www/static/fonts/HelveticaNeueRoman.ttf
 
 # new dir
 cd ${ANDROID_ROOT}
