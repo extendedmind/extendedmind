@@ -12,7 +12,7 @@ describe('AuthenticationService', function() {
   var authenticateResponse = getJSONFixture('authenticateResponse.json');
   var logoutResponse = getJSONFixture('logoutResponse.json');
   var inviteResponse = getJSONFixture('inviteResponse.json');
-  var signUpResponse = getJSONFixture('signUpResponse.json');
+  var acceptInviteResponse = getJSONFixture('acceptInviteResponse.json');
   var changePasswordResponse = getJSONFixture('passwordResponse.json');
   var inviteRequestResponse;
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
@@ -289,8 +289,8 @@ describe('AuthenticationService', function() {
   it('should sign up', function() {
     var inviteResponseCode = '123';
     var signUp;
-    $httpBackend.expectPOST('/api/invite/' + inviteResponseCode + '/accept').respond(200, signUpResponse);
-    AuthenticationService.signUp(inviteResponseCode, {email: 'timo@ext.md', password: 'timopwd'}).then(function(response) {
+    $httpBackend.expectPOST('/api/invite/' + inviteResponseCode + '/accept').respond(200, acceptInviteResponse);
+    AuthenticationService.acceptInvite(inviteResponseCode, {email: 'timo@ext.md', password: 'timopwd'}).then(function(response) {
       signUp = response;
     });
     expect(signUp).toBeUndefined();
