@@ -11,6 +11,16 @@ function MainController(
   AccountService, UserSessionService, BackendClientService, ItemsService, ListsService,
   TagsService, TasksService, NotesService, FilterService, OnboardingService, SwiperService) {
 
+  // ONBOARDING
+  var userPreferences = UserSessionService.getPreferences();
+  if (!userPreferences || (userPreferences && !userPreferences.onboarded)) {
+    OnboardingService.launchOnboarding(onboardingSuccessCallback);
+  }
+  function onboardingSuccessCallback() {
+    UserSessionService.setPreferences('onboarded', $rootScope.packaging);
+    AccountService.putAccountPreferences();
+  }
+
   // Data arrays 
   $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
@@ -84,16 +94,6 @@ function MainController(
       angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
     }
   });
-
-  // ONBOARDING
-  var userPreferences = UserSessionService.getPreferences();
-  if (!userPreferences || (userPreferences && !userPreferences.onboarded)) {
-    OnboardingService.launchOnboarding(onboardingSuccessCallback);
-  }
-  function onboardingSuccessCallback() {
-    UserSessionService.setPreferences('onboarded', $rootScope.packaging);
-    AccountService.putAccountPreferences();
-  }
 
   // OMNIBAR
 

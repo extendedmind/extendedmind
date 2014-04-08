@@ -11,7 +11,7 @@ function OnboardingService($q, $timeout, ModalService) {
 
   var scroller;
   var scrollEndCallback;
-  var adjustModalMaxHeightCallback;
+  var adjustModalMaxHeightAndPositionCallback;
 
   function refreshScroller() {
     return $q.when(scroller.refresh());
@@ -19,8 +19,8 @@ function OnboardingService($q, $timeout, ModalService) {
 
   function registerAndExecuteCallbacks() {
     registerDeferredScrollEndCallback();
-    if (adjustModalMaxHeightCallback) {
-      adjustModalMaxHeightCallback();
+    if (adjustModalMaxHeightAndPositionCallback) {
+      adjustModalMaxHeightAndPositionCallback();
     }
   }
 
@@ -34,7 +34,7 @@ function OnboardingService($q, $timeout, ModalService) {
   }
 
   return {
-    initializeCarousel: function initializeCarousel(element) {
+    initializeCarousel: function initializeCarousel(element, showOnboardingModalCallback) {
       scroller = new IScroll(element, {
         snap: true,
         momentum: false,
@@ -43,6 +43,7 @@ function OnboardingService($q, $timeout, ModalService) {
 
       // http://iscrolljs.com/#refresh
       $timeout(function() {
+        showOnboardingModalCallback();
         refreshScroller().then(function() {
           registerAndExecuteCallbacks();
         });
@@ -54,8 +55,8 @@ function OnboardingService($q, $timeout, ModalService) {
     registerScrollEndCallback: function registerScrollEndCallback(callback) {
       scrollEndCallback = callback;
     },
-    registerAdjustModalMaxHeightCallback: function registerAdjustModalMaxHeightCallback(callback) {
-      adjustModalMaxHeightCallback = callback;
+    registeradjustModalMaxHeightAndPositionCallback: function registeradjustModalMaxHeightAndPositionCallback(callback) {
+      adjustModalMaxHeightAndPositionCallback = callback;
     },
     getScrollerCurrentSlide: function getScrollerCurrentSlide() {
       return scroller.currentPage.pageX;
@@ -67,7 +68,8 @@ function OnboardingService($q, $timeout, ModalService) {
       onboardingModalOptions.success = {
         fn: successCallback
       };
-      ModalService.createDialog('static/app/base/onboarding.html', onboardingModalOptions);
+      ModalService.createDialog('static/app/base/onboarding.html', onboardingModalOptions,
+        {deferredShow: true});
     },
     destroyScroller: function destroyScroller() {
       scroller.destroy();
@@ -82,14 +84,30 @@ function OnboardingService($q, $timeout, ModalService) {
 OnboardingService.$inject = ['$q', '$timeout', 'ModalService'];
 angular.module('em.services').factory('OnboardingService', OnboardingService);
 
-function onboardingCarouselDirective($window, OnboardingService) {
+function onboardingCarouselDirective($q, $window, OnboardingService) {
   return {
     restrict: 'A',
     replace: true,
     link: function postLink(scope, element) {
+      var initializeCarouselDeferred = $q.defer();
+
+      var onboardingImages = document.getElementsByTagName('img');
+      var onboardingImagesLength = onboardingImages.length;
+      var numberOfLoadedOnboardingImages = 0;
+
+      for (var i = 0; i < onboardingImagesLength; i++) {
+        onboardingImages[i].addEventListener('load', onboardingImageLoaded);
+      }
+
+      function onboardingImageLoaded() {
+        numberOfLoadedOnboardingImages++;
+        if (numberOfLoadedOnboardingImages === onboardingImagesLength) {
+          initializeCarouselDeferred.resolve();
+        }
+      }
 
       // http://codepen.io/anon/pen/Icfbj
-      function adjustModalMaxHeight() {
+      function adjustModalMaxHeightAndPosition() {
 
         $('.modal').each(function() {
           if($(this).hasClass('in') === false){
@@ -125,11 +143,17 @@ function onboardingCarouselDirective($window, OnboardingService) {
         });
       }
 
-      adjustModalMaxHeight();
-      OnboardingService.registerAdjustModalMaxHeightCallback(adjustModalMaxHeight);
-      OnboardingService.initializeCarousel(element[0]);
+      initializeCarouselDeferred.promise.then(function() {
+        OnboardingService.initializeCarousel(element[0], showOnboardingModal);
+      });
 
-      angular.element($window).bind('resize', adjustModalMaxHeight);
+      function showOnboardingModal() {
+        var onboardingModalElement = angular.element(document.getElementById('onboarding-modal'));
+        onboardingModalElement.modal('show');
+      }
+      OnboardingService.registeradjustModalMaxHeightAndPositionCallback(adjustModalMaxHeightAndPosition);
+
+      angular.element($window).bind('resize', adjustModalMaxHeightAndPosition);
 
       // Hide event from ModalService
       var onboardingModal = document.getElementById('onboarding-modal');
@@ -137,13 +161,13 @@ function onboardingCarouselDirective($window, OnboardingService) {
 
       function tearDown() {
         OnboardingService.executeOnboardingSuccessCallback();
-        angular.element($window).unbind('resize', adjustModalMaxHeight);
+        angular.element($window).unbind('resize', adjustModalMaxHeightAndPosition);
         OnboardingService.destroyScroller();
       }
     }
   };
 }
-onboardingCarouselDirective.$inject = ['$window', 'OnboardingService'];
+onboardingCarouselDirective.$inject = ['$q', '$window', 'OnboardingService'];
 angular.module('em.directives').directive('onboardingCarousel', onboardingCarouselDirective);
 
 function onboardingFooterDirective(OnboardingService) {

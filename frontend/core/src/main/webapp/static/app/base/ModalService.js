@@ -442,10 +442,11 @@ angular.module('em.services').factory('ModalService', ["$document", "$compile", 
             $compile(modalEl)(scope);
             body.append(modalEl);
 
-            $timeout(function () {
+            if (!passedInLocals || (passedInLocals && !passedInLocals.deferredShow)) {
+              $timeout(function () {
                 $(modalElementID).modal('show');
-            }, 200);
-
+              }, 200);
+            }
 
             if (options.removeOnDismiss) {
                 //Setup the Bootstrap callback to remove from the modal when dismissed
