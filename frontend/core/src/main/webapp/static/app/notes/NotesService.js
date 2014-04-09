@@ -97,6 +97,7 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
     },
     updateNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
+      addListToNotes(notesResponse);
       return ArrayService.updateArrays(
         notesResponse,
         notes[ownerUUID].activeNotes,

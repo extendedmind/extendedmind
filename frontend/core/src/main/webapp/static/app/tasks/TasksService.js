@@ -204,6 +204,9 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
     updateTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       cleanRecentlyCompletedTasks(ownerUUID);
+      addContextToTasks(tasksResponse, ownerUUID);
+      addListToTasks(tasksResponse);
+      addDateToTasks(tasksResponse);
       return ArrayService.updateArrays(
           tasksResponse,
           tasks[ownerUUID].activeTasks,
