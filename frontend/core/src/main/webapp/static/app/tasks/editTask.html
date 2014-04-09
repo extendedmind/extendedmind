@@ -10,11 +10,11 @@
 
           <div class="form-group">
             <label class="sr-only" for="taskTitle">title</label>
-            <input type="text" class="simple-input" id="taskTitle" ng-model="task.title" placeholder="title..." required>
+            <input type="text" class="simple-input" id="taskTitle" ng-model="task.title" placeholder="title..." maxlength="128" required>
           </div>
           <div class="form-group">
             <label class="sr-only" for="taskDescription">description</label>
-            <textarea class="simple-input" id="taskDescription" ng-model="task.description" placeholder="description..." expanding-textarea></textarea>
+            <textarea class="simple-input" id="taskDescription" ng-model="task.description" placeholder="description..." maxlength="1024" expanding-textarea></textarea>
           </div>
 
           <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
