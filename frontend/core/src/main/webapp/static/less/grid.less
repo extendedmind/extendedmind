@@ -143,9 +143,6 @@ header {
   height: 100%;
   padding-top: 12px;
   padding-bottom: @footer-height + @page-header-height;
-  .accordion-wrapper {
-    height: 100%;
-  }
   .inner-page-content-container {
     height: inherit;
     position: relative;
@@ -158,6 +155,13 @@ header {
       height: inherit;
       overflow-y: auto;
     }
+  }
+  .accordion-wrapper{
+    // NOTE: Due to mysterous iphone laggy accordion, height,
+    // nor probably anything else can not be set here.
+    // Don't add anything here if you don't know how to test
+    // the laggy accordion bug.
+    // height: inherit;
   }
 }
 
