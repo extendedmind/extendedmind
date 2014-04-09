@@ -311,9 +311,9 @@ footer {
   background-color: @mobile-menu;
   position: absolute;
   width: 260px;
-  height: inherit;
+  height: 100%;
+  overflow-y: scroll;
   #menu-content {
-    padding-bottom: @footer-height*1.5;
     div.banner {
       padding-top: 8px;
       height: @page-header-height;
@@ -330,9 +330,6 @@ footer {
     a {
       // http://getbootstrap.com/components/#dropdowns
       display: block;
-    }
-    a:active {
-      background-color: @mobile-menu-pressed;
     }
   }
 }

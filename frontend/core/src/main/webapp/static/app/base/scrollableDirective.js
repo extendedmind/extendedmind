@@ -1,13 +1,19 @@
+/* global IScroll */
 'use strict';
 
-function scrollableDirective() {
+function scrollableDirective($timeout) {
   return {
     restrict: 'A',
     link: function postLink($scope, $element) {
       var scroller;
 
-      scroller = new IScroll($element[0], {
-        deceleration: 0.006
+      $scope.$on('$includeContentLoaded', function() {
+        scroller = new IScroll($element[0], {
+          deceleration: 0.006
+        });
+        $timeout(function() {
+          scroller.refresh();
+        }, 200);
       });
 
       $scope.$on('$destroy', function() {
@@ -17,5 +23,5 @@ function scrollableDirective() {
     }
   };
 }
-scrollableDirective.$inject = [];
+scrollableDirective.$inject = ['$timeout'];
 angular.module('em.directives').directive('scrollable', scrollableDirective);
