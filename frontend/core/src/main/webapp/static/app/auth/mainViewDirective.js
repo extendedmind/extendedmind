@@ -113,7 +113,7 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
       function startNewSession() {
         currentSessionId = UUIDService.randomUUID();
         currentSessionStartTime = AnalyticsService.startSession(currentSessionId);
-        currentSessionLatestActivity = undefined;  
+        currentSessionLatestActivity = undefined;
       }
 
       // WINDOW RESIZING
