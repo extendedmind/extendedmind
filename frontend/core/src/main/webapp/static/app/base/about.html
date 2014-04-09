@@ -4,11 +4,19 @@
   <section ng-hide="isDesktop && isMenuOpen" id="about" class="one-column-grid page" snap-drawer-drag>
     <div class="column">
       <div class="content-container simple-content-container">
-        <h3>version</h3>
-        <span ng-bind="extendedMindVersion"></span>
-        <button type="submit" id="about-button" class="wide-button normal-button" ng-click="gotoPreviousPage()">
-          <span class="button-text">done</span>
-        </button>
+        <div class="page-wrap">
+          <ul>
+            <li class="simple-content">
+              <h3>version</h3>
+              <span ng-bind="extendedMindVersion"></span>
+            </li>
+          </ul>
+        </div>
+        <footer class="site-footer">
+          <button type="submit" id="about-button" class="wide-button normal-button" ng-click="gotoPreviousPage()">
+            <span class="button-text">done</span>
+          </button>
+        </footer>
       </div>
     </div>
   </section>

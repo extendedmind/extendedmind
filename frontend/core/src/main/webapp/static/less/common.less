@@ -138,6 +138,17 @@ Only universal code that would work by itself in any web page.
   }
 }
 
+// LINKS
+
+.highlighted-link {
+  display: block;
+  color: @highlighted-element;
+}
+
+.highlighted-link:active {
+  color: @highlighted-element-pressed;
+}
+
 // INPUTS
 
 .simple-input {
@@ -380,7 +391,7 @@ select {
 // SCROLLBARS
 
 ::-webkit-scrollbar {
-  display:none;
+  display: none;
 }
 
 // Temporary classes (to be refactored)
@@ -487,19 +498,21 @@ a.content:active {
 
 // MODALS
 
-.modal-body {
-  overflow-y: scroll;
-}
-
-.small-modal {
+#onboarding-modal.small-modal {
   .modal-dialog {
-    max-width: @max-modal-width;
     width: 90%;
     margin: 0;
     position: absolute;
     top: 50%;
     left: 50%;
+    .modal-body {
+      overflow-y: scroll;
+    }
   }
+}
+
+.modal-dialog {
+  max-width: @max-modal-width;
 }
 
 // ICOMOON TWEAKS

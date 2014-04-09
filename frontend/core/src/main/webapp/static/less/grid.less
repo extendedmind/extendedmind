@@ -51,7 +51,7 @@ div[role=main] {
 
 header {
   z-index: 1;
-  top: 0px; 
+  top: 0px;
   left: 0px;
   overflow: hidden;
   width: 100%;
@@ -129,7 +129,7 @@ header {
   text-align: center;
   min-height: @heading-header-height;
   h3 {
-    padding-top: 18px; 
+    padding-top: 18px;
   }
 }
 
@@ -156,7 +156,7 @@ header {
       overflow-y: auto;
     }
   }
-  .accordion-wrapper{
+  .accordion-wrapper {
     // NOTE: Due to mysterous iphone laggy accordion, height,
     // nor probably anything else can not be set here.
     // Don't add anything here if you don't know how to test
@@ -177,6 +177,25 @@ header {
 
 .content-container {
   width: inherit;
+  padding-top: 12px;
+}
+
+// STICKY PAGE FOOTER
+
+// http://css-tricks.com/snippets/css/sticky-footer/
+.page-wrap {
+  min-height: 100%;
+  /* equal to footer height */
+  margin-bottom: -@vertical-grid;
+}
+.site-footer, .page-wrap:after {
+  content: "";
+  display: block;
+  /* .push must be the same height as footer */
+  height: @vertical-grid;
+}
+.site-footer {
+  font-size: @default-font-size;
 }
 
 // FOOTER

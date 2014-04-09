@@ -4,14 +4,22 @@
   <section ng-hide="isDesktop && isMenuOpen" id="account" class="one-column-grid page" snap-drawer-drag>
     <div class="column">
       <div class="content-container simple-content-container">
-        <span>{{email}}</span>
-        <a class="text-muted click-to-slide" href ng-click="gotoChangePassword()">
-          <span class="link-title">change password</span>
-          <span class="icon-arrow-right"></span>
-        </a>
-        <button type="submit" id="account-button" class="wide-button normal-button" ng-click="gotoMainPage()">
-          <span class="button-text">done</span>
-        </button>
+        <div class="page-wrap">
+          <ul>
+            <li class="simple-content">
+              <h3>email</h3>
+              <span>{{email}}</span>
+            </li>
+            <li class="simple-content">
+              <a class="highlighted-link" href ng-click="gotoChangePassword()">change password</a>
+            </li>
+          </ul>
+        </div>
+        <footer class="site-footer">
+          <button type="submit" id="account-button" class="wide-button normal-button" ng-click="gotoMainPage()">
+            <span class="button-text">done</span>
+          </button>
+        </footer>
       </div>
     </div>
   </section>
