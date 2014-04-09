@@ -19,6 +19,13 @@
 
           <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
 
+          <div ng-if="task.date" class="form-group">
+            <label class="sr-only" for="taskRepeat">repeating</label>
+            <select class="simple-input swiper-no-swiping" id="taskRepeat" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes">
+              <option value="">select repeating...</option>
+            </select>
+          </div>
+
           <div class="form-group">
             <label class="sr-only" for="taskLink">url</label>
             <input type="text" class="simple-input" id="taskLink" ng-model="task.link" placeholder="url...">

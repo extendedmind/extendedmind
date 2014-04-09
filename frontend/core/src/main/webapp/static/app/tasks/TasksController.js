@@ -20,6 +20,8 @@ function TasksController($location, $scope, $routeParams, UserSessionService, Ta
     }
   }
 
+  $scope.repeatTypes = ['daily', 'weekly', 'biweekly', 'monthly', 'bimonthly', 'yearly'];
+
   $scope.taskHasDate = function(task) {
     if (task.date) {
       return true;
