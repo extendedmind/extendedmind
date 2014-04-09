@@ -1,7 +1,7 @@
 'use strict';
 
 function AccountController($location, $scope, AccountService, AnalyticsService) {
-  
+
   AnalyticsService.visit('account');
 
   AccountService.getAccount().then(function(authenticateResponse) {
