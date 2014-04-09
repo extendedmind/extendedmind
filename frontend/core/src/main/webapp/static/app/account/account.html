@@ -1,9 +1,8 @@
-<div class="no-slides-container" ng-controller="AccountController">
-  <section id="edit-item" class="one-column-grid page">
+<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" id="mobile-menu" class="snap-drawer snap-drawer-left" scrollable></div>
+<div id="account-container" class="no-slides-container" ng-init="feature='account'" ng-controller="AccountController" snap-drawer>
+  <header class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
+  <section ng-hide="isDesktop && isMenuOpen" id="account" class="one-column-grid page" snap-drawer-drag>
     <div class="column">
-      <header class="heading-header">
-        <h3>account</h3>
-      </header>
       <div class="content-container simple-content-container">
         <span>{{email}}</span>
         <a class="text-muted click-to-slide" href ng-click="gotoChangePassword()">
@@ -16,4 +15,5 @@
       </div>
     </div>
   </section>
+  <div id="desktop-menu" ng-if="isDesktop && isMenuOpen" ng-include="'static/app/auth/menu.html'"></div>
 </div>

@@ -83,13 +83,33 @@ a#accordionTitleLink {
 
 // PAGE HEADER
 
+header.static-page-header nav {
+  div#menu-button-wrapper {
+    button#menu-button {
+      .button;
+      padding: 19px 20px 13px @horizontal-grid - 4; // increased clicking area, align icon to grid with right padding
+      span.icon-menu {
+        color: @highlighted-element;
+      }    
+    }
+    button#menu-button:active {
+      span.icon-menu {
+        color: @highlighted-element-pressed;
+      }
+    }
+  }
+  div#static-feature {
+    color: @highlighted-element;
+    font-weight: 700;
+  }
+}
+
 header.page-header nav {
   color: @highlighted-element;  
 
   #omnibar-label-wrapper {
     .edges-fade-to-white;
   }
-
   div#active-action-content-wrapper {
     a#today-link {
       float: left;
@@ -161,7 +181,7 @@ footer {
   position: relative;
   height: @page-header-height;
   form, .form-group, input {
-    height:inherit;
+    height: inherit;
   }
   .omnibar-visible {
     height: inherit;

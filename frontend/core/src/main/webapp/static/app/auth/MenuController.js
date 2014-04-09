@@ -79,7 +79,7 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
   $scope.gotoAbout = function gotoAbout() {
     $location.path('/about');
     $scope.toggleMenu();
-  }
+  };
 
   $scope.logout = function() {
     AuthenticationService.logout().then(function() {

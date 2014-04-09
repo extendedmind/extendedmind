@@ -25,7 +25,7 @@ section#login, section#signup, section#launch, section#waiting, section#forgot {
       }
       // Make content a "sticky footer"
       min-height: 100%;
-      margin-bottom: -@login-content-height; 
+      margin-bottom: -@login-content-height;
       padding-top: @vertical-grid * 1.5;
     }
     .banner:after {
@@ -136,6 +136,12 @@ section#signup {
 }
 
 // INBOX
+
+#account-container {
+  section#account {
+    position: relative;
+  }
+}
 
 #inbox-container {
   section#inbox {

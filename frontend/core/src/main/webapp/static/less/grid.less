@@ -63,6 +63,33 @@ header {
   }
 }
 
+.static-page-header {
+  height: @page-header-height;
+  position: relative;
+  background-color: white;
+  nav {
+    max-width: @one-column-grid-width;
+    margin-left: auto;
+    margin-right: auto;
+    #menu-button-wrapper {
+      width: 30%;
+      height: @page-header-height;
+      float: left;
+    }
+    #static-feature-wrapper {
+      width: 40%;
+      height: @page-header-height;
+      float: left;
+      display: table;
+      #static-feature {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+      }
+    }
+  }
+}
+
 .page-header {
   height: @page-header-height;
   .center-horizontally;
