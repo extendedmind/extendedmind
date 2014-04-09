@@ -58,7 +58,7 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
     }
     $scope.toggleMenu();
   };
-  
+
   $scope.setMyActive = function() {
     UserSessionService.setMyActive();
     $location.path('/my/tasks');
