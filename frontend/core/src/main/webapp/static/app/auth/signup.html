@@ -9,7 +9,7 @@
           <div id="email" class="form-group">
             <label for="email" class="sr-only">email</label>
             <input type="email" name="email" class="simple-input" id="input-email" ng-model="user.username" readonly placeholder="enter email..." ng-blur="emailAttempted=true" required />
-            <p ng-show="signupForm.email.$invalid && !signupForm.email.$pristine && emailAttempted" class="validation-error">not a valid email address</p>            
+            <p ng-show="signupForm.email.$invalid && !signupForm.email.$pristine && emailAttempted" class="validation-error">not a valid email address</p>
           </div>
           <div id="password" class="form-group">
             <label for="password" class="sr-only">password</label>
@@ -31,7 +31,7 @@
               <span class="button-text">signup</span>
             </button>
             <p ng-show="signupFailed" class="validation-error">could not sign up, please try again later</p>
-            <p ng-show="signupOffline" class="validation-error">can't connect to server. are you online?</p>            
+            <p ng-show="signupOffline" class="validation-error">can't connect to server. are you online?</p>
             <p ng-show="loginFailed" class="validation-error">could not login with new signup, please try to login later</p>
           </div>
         </form>
