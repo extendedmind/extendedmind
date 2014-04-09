@@ -1,9 +1,8 @@
-<div class="no-slides-container">
-  <section id="about" class="one-column-grid page">
+<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" id="mobile-menu" class="snap-drawer snap-drawer-left" scrollable></div>
+<div id="about-container" class="no-slides-container" ng-init="feature='about'" snap-drawer>
+  <header class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
+  <section ng-hide="isDesktop && isMenuOpen" id="about" class="one-column-grid page" snap-drawer-drag>
     <div class="column">
-      <header class="heading-header">
-        <h3>about</h3>
-      </header>
       <div class="content-container simple-content-container">
         <h3>version</h3>
         <span ng-bind="extendedMindVersion"></span>
@@ -13,4 +12,5 @@
       </div>
     </div>
   </section>
+  <div id="desktop-menu" ng-if="isDesktop && isMenuOpen" ng-include="'static/app/auth/menu.html'"></div>
 </div>

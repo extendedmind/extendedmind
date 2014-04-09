@@ -46,7 +46,7 @@ a#accordionTitleLink {
 
 .teaser, .teaser-empty {
   padding-bottom: @vertical-grid-half;
-} 
+}
 
 // OFFLINE
 
@@ -90,7 +90,7 @@ header.static-page-header nav {
       padding: 19px 20px 13px @horizontal-grid - 4; // increased clicking area, align icon to grid with right padding
       span.icon-menu {
         color: @highlighted-element;
-      }    
+      }
     }
     button#menu-button:active {
       span.icon-menu {
@@ -105,7 +105,7 @@ header.static-page-header nav {
 }
 
 header.page-header nav {
-  color: @highlighted-element;  
+  color: @highlighted-element;
 
   #omnibar-label-wrapper {
     .edges-fade-to-white;
@@ -129,7 +129,7 @@ header.page-header nav {
       span.icon-menu {
         padding-right: 4px;
         color: @highlighted-element;
-      }    
+      }
     }
     button#menu-button:active {
       background-position: 0 0;
@@ -157,7 +157,7 @@ div.page-heading {
     text-align: center;
   }
   input.omnibar-input:focus {
-    text-align: left; 
+    text-align: left;
   }
 }
 
@@ -243,10 +243,13 @@ footer {
   a.feature-link {
     font-size: 1.17em;  // http://www.w3.org/TR/CSS2/sample.html
   }
-  a.active {
+  a.feature-link.active {
     margin-left: -18px;
   }
-  a.active:before { 
+  a.active {
+    margin-left: -16px;
+  }
+  a.active:before {
     content: '\2022';
     margin-right: 10px;
   }
@@ -257,7 +260,7 @@ footer {
   li#collectives {
     line-height: @vertical-grid;
     div {
-      padding-left: @horizontal-grid;      
+      padding-left: @horizontal-grid;
       a {
         font-size: @smallest-font-size;
         line-height: @vertical-grid-half;
@@ -265,17 +268,11 @@ footer {
       }
     }
   }
-  li#my, li#collectives {
-    a.active {
-      margin-left: -16px;
-    }
-  }
 }
 
 // desktop
 #desktop-menu {
   background-color: white;
-  position: relative;
   max-width: @one-column-grid-width;
   height: inherit;
   overflow-y: scroll;

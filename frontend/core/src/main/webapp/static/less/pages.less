@@ -135,24 +135,25 @@ section#signup {
   }
 }
 
-// INBOX
+// STATIC PAGES WITH MENU
 
-#account-container {
-  section#account {
+#account-container, #about-container, #inbox-container {
+  section#account, section#about, section#inbox {
     position: relative;
+  }
+  div#menu-content {
+    padding-top: 0;
   }
 }
 
+// INBOX
+
 #inbox-container {
   section#inbox {
-    position: relative;
     margin-top: -@page-header-height;
     #inbox-page-content-container {
       padding-bottom: @footer-height;
     }
-  }
-  div#menu-content {
-    padding-top: 0;
   }
 }
 
