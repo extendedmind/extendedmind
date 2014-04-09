@@ -154,7 +154,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   protected def getNodes(nodeUUIDList: scala.List[UUID], label: Label, acceptDeleted: Boolean = false): Response[scala.List[Node]] = {
     Right(nodeUUIDList map (uuid => {
-      val nodeResponse = getNode(uuid, label)
+      val nodeResponse = getNode(uuid, label, acceptDeleted)
       if (nodeResponse.isLeft) return Left(nodeResponse.left.get)
       else nodeResponse.right.get
     }))

@@ -34,7 +34,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
 
   // Item stays deleted for 30 days before it is destroyed
   val DESTROY_TRESHOLD: Long = 2592000000l
-  
+
   // PUBLIC
 
   def putNewItem(owner: Owner, item: Item): Response[SetResult] = {
@@ -63,8 +63,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     }
   }
 
-  def getItems(owner: Owner, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean)
-  			  (implicit log: LoggingContext): Response[Items] = {
+  def getItems(owner: Owner, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean)(implicit log: LoggingContext): Response[Items] = {
     withTx {
       implicit neo =>
         for {
@@ -123,8 +122,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
 
   // PRIVATE
 
-  protected def getItems(itemNodes: Iterable[Node], owner: Owner)
-  						(implicit neo4j: DatabaseService, log: LoggingContext): Response[Items] = {
+  protected def getItems(itemNodes: Iterable[Node], owner: Owner)(implicit neo4j: DatabaseService, log: LoggingContext): Response[Items] = {
     val itemBuffer = new ListBuffer[Item]
     val taskBuffer = new ListBuffer[Task]
     val noteBuffer = new ListBuffer[Note]
@@ -156,19 +154,19 @@ trait ItemDatabase extends AbstractGraphDatabase {
           return fail(INTERNAL_SERVER_ERROR, tag.left.get.toString)
         }
         tagBuffer.append(tag.right.get)
-      } else if (itemNode.hasLabel(MainLabel.ITEM)){
+      } else if (itemNode.hasLabel(MainLabel.ITEM)) {
         val item = toCaseClass[Item](itemNode)
         if (item.isLeft) {
           return fail(INTERNAL_SERVER_ERROR, "Could not convert node to Item with error: " + item.left.get)
         }
-        itemBuffer.append(item.right.get)        
+        itemBuffer.append(item.right.get)
       } else {
         val labels = itemNode.getLabels().toList.foldLeft("") {
-            ((acc, n) =>
-              acc + ", " + n.name())
+          ((acc, n) =>
+            acc + ", " + n.name())
         }
         log.warning("Owner " + getOwnerUUID(owner) + " has node " + itemNode.getId() + " with labels " + labels +
-                    " that was found in the items index")
+          " that was found in the items index")
       })
     Right(Items(
       if (itemBuffer.isEmpty) None else Some(itemBuffer.toList),
@@ -518,7 +516,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
       for {
         newTagNodes <- getTagNodes(newUUIDList, ownerNodes).right
         newTagRelationships <- Right(createTagRelationships(itemNode, newTagNodes)).right
-        removedTagNodes <- getTagNodes(removedUUIDList, ownerNodes).right
+        removedTagNodes <- getTagNodes(removedUUIDList, ownerNodes, true).right
         removedTagRelationships <- getTagRelationships(itemNode, removedTagNodes).right
         result <- Right(deleteTagRelationships(removedTagRelationships)).right
       } yield newTagRelationships
@@ -528,8 +526,8 @@ trait ItemDatabase extends AbstractGraphDatabase {
     }
   }
 
-  protected def getTagNodes(tagUUIDList: scala.List[UUID], ownerNodes: OwnerNodes)(implicit neo4j: DatabaseService): Response[scala.List[Node]] = {
-    val tagNodes = getNodes(tagUUIDList, ItemLabel.TAG)
+  protected def getTagNodes(tagUUIDList: scala.List[UUID], ownerNodes: OwnerNodes, acceptDeleted: Boolean = false)(implicit neo4j: DatabaseService): Response[scala.List[Node]] = {
+    val tagNodes = getNodes(tagUUIDList, ItemLabel.TAG, acceptDeleted)
     if (tagNodes.isRight) {
       // Check that owner has access to all tags
       val ownerFromTag: TraversalDescription =
@@ -614,9 +612,6 @@ trait ItemDatabase extends AbstractGraphDatabase {
 
   protected def getTagRelationships(itemNode: Node, tagNodes: scala.List[Node])(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
     if (tagNodes.isEmpty) return Right(None)
-
-    println("removedNodes: " + tagNodes(0).getProperty("title").asInstanceOf[String]);
-
     val tagNodesFromItem: TraversalDescription =
       Traversal.description()
         .depthFirst()
@@ -689,13 +684,13 @@ trait ItemDatabase extends AbstractGraphDatabase {
         .evaluator(Evaluators.excludeStartPosition())
         .evaluator(LabelEvaluator(scala.List(MainLabel.ITEM)))
         .evaluator(PropertyEvaluator(MainLabel.ITEM, "deleted"))
-        
+
     val traverser = deletedItemsFromOwner.traverse(getOwnerNode(ownerNodes))
     val deletedItemList = traverser.nodes().toList
     var count = 0
     val currentTime = System.currentTimeMillis()
     deletedItemList.foreach(deletedItem => {
-      if (deletedItem.getProperty("deleted").asInstanceOf[Long] + DESTROY_TRESHOLD < currentTime){
+      if (deletedItem.getProperty("deleted").asInstanceOf[Long] + DESTROY_TRESHOLD < currentTime) {
         count += 1
         destroyItem(deletedItem)
       }
@@ -745,14 +740,14 @@ trait ItemDatabase extends AbstractGraphDatabase {
   protected def rebuildItemsIndex(ownerNode: Node)(implicit neo4j: DatabaseService): Response[CountResult] = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
     val ownerUUID = getUUID(ownerNode)
-    val oldItemsInIndex = itemsIndex.query( "owner:\"" + UUIDUtils.getTrimmedBase64UUID(ownerUUID) + "\"").toList    
+    val oldItemsInIndex = itemsIndex.query("owner:\"" + UUIDUtils.getTrimmedBase64UUID(ownerUUID) + "\"").toList
     oldItemsInIndex.foreach(itemNode => {
       itemsIndex.remove(itemNode)
     })
-    
+
     // Add all back to index
     val itemsFromOwner: TraversalDescription = itemsTraversal
-    val traverser = itemsFromOwner.traverse(ownerNode)    
+    val traverser = itemsFromOwner.traverse(ownerNode)
     traverser.nodes.foreach(itemNode => {
       addToItemsIndex(ownerUUID, itemNode, itemNode.getProperty("modified").asInstanceOf[Long])
     })
@@ -774,7 +769,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
       projectNode.removeLabel(ItemParentLabel.PROJECT)
       projectNode.removeLabel(ItemLabel.TASK)
       projectNode.addLabel(ItemLabel.LIST)
-      if (projectNode.hasProperty("completed")){
+      if (projectNode.hasProperty("completed")) {
         projectNode.setProperty("archived", projectNode.getProperty("completed").asInstanceOf[Long])
         projectNode.removeProperty("completed")
       }

@@ -27,7 +27,6 @@ import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
 import spray.http.StatusCodes._
 
-
 /**
  * Best case test for tags. Also generates .json files.
  */
@@ -41,7 +40,7 @@ class TagBestCaseSpec extends ServiceSpecBase {
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
- 
+
   before {
     db.insertTestData()
   }
@@ -59,48 +58,61 @@ class TagBestCaseSpec extends ServiceSpecBase {
       + "and undelete it with POST to /[userUUID]/tag/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newTag = Tag("home", None, None, CONTEXT, None)
+      val newTag2 = Tag("office", None, None, CONTEXT, None)
       Put("/" + authenticateResponse.userUUID + "/tag",
         marshal(newTag).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putTagResponse = entityAs[SetResult]
           writeJsonOutput("putTagResponse", entityAs[String])
           putTagResponse.modified should not be None
           putTagResponse.uuid should not be None
-          val updatedTag = newTag.copy(description = Some("my home"))
-          Put("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get,
-            marshal(updatedTag).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-              val putExistingTagResponse = entityAs[String]
-              writeJsonOutput("putExistingTagResponse", putExistingTagResponse)
-              putExistingTagResponse should include("modified")
-              putExistingTagResponse should not include ("uuid")
-              Get("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                val tagResponse = entityAs[Tag]
-                writeJsonOutput("tagResponse", entityAs[String])
-                tagResponse.description.get should be("my home")
-                // Add the tag to a Note
-                val newNote = Note("bike details", None, Some("model: 12345"), None,
-                  Some(ExtendedItemRelationships(None, None, Some(scala.List(putTagResponse.uuid.get)))))
-                val putNoteResponse = putNewNote(newNote, authenticateResponse)
-                val noteWithTag = getNote(putNoteResponse.uuid.get, authenticateResponse)
-                noteWithTag.relationships.get.tags.get should be(scala.List(putTagResponse.uuid.get))
-                Delete("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                  val deleteTagResponse = entityAs[String]
-                  writeJsonOutput("deleteTagResponse", deleteTagResponse)
-                  deleteTagResponse should include("deleted")
+
+          Put("/" + authenticateResponse.userUUID + "/tag",
+            marshal(newTag2).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              val putTag2Response = entityAs[SetResult]
+              val updatedTag = newTag.copy(description = Some("my home"))
+              Put("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get,
+                marshal(updatedTag).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  val putExistingTagResponse = entityAs[String]
+                  writeJsonOutput("putExistingTagResponse", putExistingTagResponse)
+                  putExistingTagResponse should include("modified")
+                  putExistingTagResponse should not include ("uuid")
                   Get("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                	val failure = responseAs[String]        
-                	status should be (BadRequest)
-                    failure should startWith("Item " + putTagResponse.uuid.get + " is deleted")
-                  }
-                  Post("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                    val undeleteTagResponse = entityAs[String]
-                    writeJsonOutput("undeleteTagResponse", undeleteTagResponse)
-                    undeleteTagResponse should include("modified")
-                    val undeletedTag = getTag(putTagResponse.uuid.get, authenticateResponse)
-                    undeletedTag.deleted should be(None)
-                    undeletedTag.modified should not be (None)
+                    val tagResponse = entityAs[Tag]
+                    writeJsonOutput("tagResponse", entityAs[String])
+                    tagResponse.description.get should be("my home")
+                    // Add the tag to a Note
+                    val newNote = Note("bike details", None, Some("model: 12345"), None,
+                      Some(ExtendedItemRelationships(None, None, Some(scala.List(putTagResponse.uuid.get)))))
+                    val putNoteResponse = putNewNote(newNote, authenticateResponse)
+                    val noteWithTag = getNote(putNoteResponse.uuid.get, authenticateResponse)
+                    noteWithTag.relationships.get.tags.get should be(scala.List(putTagResponse.uuid.get))
+                    Delete("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      val deleteTagResponse = entityAs[String]
+                      writeJsonOutput("deleteTagResponse", deleteTagResponse)
+                      deleteTagResponse should include("deleted")
+                      Get("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                        val failure = responseAs[String]
+                        status should be(BadRequest)
+                        failure should startWith("Item " + putTagResponse.uuid.get + " is deleted")
+                      }
+                      // Change note context to new value and verify that change works
+                      Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
+                        marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(None, None, Some(scala.List(putTag2Response.uuid.get)))))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                          val reputExistingNoteResponse = entityAs[SetResult]
+                          reputExistingNoteResponse.modified should not be None
+                      }
+                      
+                      Post("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                        val undeleteTagResponse = entityAs[String]
+                        writeJsonOutput("undeleteTagResponse", undeleteTagResponse)
+                        undeleteTagResponse should include("modified")
+                        val undeletedTag = getTag(putTagResponse.uuid.get, authenticateResponse)
+                        undeletedTag.deleted should be(None)
+                        undeletedTag.modified should not be (None)
+                      }
+                    }
                   }
                 }
-              }
             }
         }
     }

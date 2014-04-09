@@ -40,7 +40,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       tasks[ownerUUID].deletedTasks,
       getOtherArrays(ownerUUID));
   }
-  
+
   // Setup callback to ListsService
   var itemArchiveCallback = function(children, archived, ownerUUID){
     if (tasks[ownerUUID] && children){
@@ -181,8 +181,6 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       if (task.relationships.hasOwnProperty('context')){
         delete task.relationships.context;
       }
-
-      console.log(task);
       return context;
     }
   }
@@ -485,6 +483,6 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
                    uncompleteRegex.source),
   };
 }
-  
+
 TasksService.$inject = ['$q', '$rootScope', 'UUIDService', 'UserSessionService', 'BackendClientService', 'ArrayService', 'ListsService', 'TagsService'];
 angular.module('em.services').factory('TasksService', TasksService);
