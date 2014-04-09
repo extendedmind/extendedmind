@@ -8,6 +8,8 @@ function TagsService($q, BackendClientService, ArrayService){
   var tagRegex = /\/tag/;
   var tagSlashRegex = /\/tag\//;
  
+  var tagDeletedCallbacks = {};
+
   function initializeArrays(ownerUUID){
     if (!tags[ownerUUID]){
       tags[ownerUUID] = {
@@ -27,10 +29,21 @@ function TagsService($q, BackendClientService, ArrayService){
     },
     updateTags: function(tagsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      return ArrayService.updateArrays(
+      var latestModified = ArrayService.updateArrays(
         tagsResponse,
         tags[ownerUUID].activeTags,
         tags[ownerUUID].deletedTags);
+      if (latestModified){
+        // Go through response to see if something was deleted
+        for (var i=0, len=tagsResponse.length; i<len; i++) {
+          if (tagsResponse[i].deleted){
+            for (var id in tagDeletedCallbacks) {
+              tagDeletedCallbacks[id](tagsResponse[i], ownerUUID);
+            }
+          }
+        }
+      }
+      return latestModified;
     },
     getTags : function(ownerUUID) {
       initializeArrays(ownerUUID);
@@ -84,6 +97,10 @@ function TagsService($q, BackendClientService, ArrayService){
               tag,
               tags[ownerUUID].activeTags,
               tags[ownerUUID].deletedTags);
+
+          for (var id in tagDeletedCallbacks) {
+            tagDeletedCallbacks[id](tag, ownerUUID);
+          }
         }
       });
     },
@@ -129,6 +146,26 @@ function TagsService($q, BackendClientService, ArrayService){
               tag,
               tags[ownerUUID].activeTags,
               tags[ownerUUID].deletedTags);
+    },
+    // Register callbacks that are fired on tag deletion.
+    registerTagDeletedCallback: function (tagDeletedCallback, id) {
+      tagDeletedCallbacks[id] = tagDeletedCallback;
+    },
+    removeDeletedTagFromItems: function(items, deletedTag) {
+      for (var i=0, len=items.length; i<len; i++) {
+        if (items[i].relationships){
+          if (items[i].relationships.tags){
+            for (var j=0, jlen=items[i].relationships.tags.length; j<jlen; j++) {
+              if (items[i].relationships.tags[j] === deletedTag.uuid){
+                items[i].relationships.tags.splice(j, 1);
+              }
+            }
+          }
+          if (items[i].relationships.context === deletedTag.uuid){
+            delete items[i].relationships.context;
+          }
+        }
+      }
     }
   };
 }

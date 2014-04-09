@@ -21,6 +21,10 @@ function ContextsController($location, $scope, $timeout, $routeParams, UserSessi
     $location.path(UserSessionService.getOwnerPrefix() + '/contexts/edit/' + context.uuid);
   };
 
+  $scope.deleteContext = function(context) {
+    TagsService.deleteTag(context, UserSessionService.getActiveUUID());
+  };
+
   $scope.cancelEdit = function() {
     window.history.back();
   };

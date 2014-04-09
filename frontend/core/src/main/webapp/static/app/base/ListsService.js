@@ -11,6 +11,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
   var archiveRegex = /\/archive/;
 
   var itemArchiveCallbacks = {};
+  var listDeletedCallbacks = {};
 
   function initializeArrays(ownerUUID){
     if (!lists[ownerUUID]){
@@ -37,11 +38,24 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
     },
     updateLists: function(listsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      return ArrayService.updateArrays(
+
+      var latestModified = ArrayService.updateArrays(
         listsResponse,
         lists[ownerUUID].activeLists,
         lists[ownerUUID].deletedLists,
         getOtherArrays(ownerUUID));
+
+      if (latestModified){
+        // Go through response to see if something was deleted
+        for (var i=0, len=listsResponse.length; i<len; i++) {
+          if (listsResponse[i].deleted){
+            for (var id in listDeletedCallbacks) {
+              listDeletedCallbacks[id](listsResponse[i], ownerUUID);
+            }
+          }
+        }
+     }
+      return latestModified;
     },
     getLists: function(ownerUUID) {
       initializeArrays(ownerUUID);
@@ -101,6 +115,10 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
             lists[ownerUUID].activeLists,
             lists[ownerUUID].deletedLists,
             getOtherArrays(ownerUUID));
+
+          for (var id in listDeletedCallbacks) {
+            listDeletedCallbacks[id](list, ownerUUID);
+          }
         }
       });
     },
@@ -176,6 +194,21 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
     // stores to its arrays.
     registerItemArchiveCallback: function (itemArchiveCallback, id) {
       itemArchiveCallbacks[id] = itemArchiveCallback;
+    },
+    registerListDeletedCallback: function (listDeletedCallback, id) {
+      listDeletedCallbacks[id] = listDeletedCallback;
+    },
+    removeDeletedListFromItems: function(items, deletedList) {
+      for (var i=0, len=items.length; i<len; i++) {
+        if (items[i].relationships){
+          if (items[i].relationships.parent === deletedList.uuid){
+            delete items[i].relationships.parent;
+          }
+          if (items[i].relationships.list === deletedList.uuid){
+            delete items[i].relationships.list;
+          }
+        }
+      }
     }
   };
 }

@@ -49,9 +49,8 @@ angular.module('em.filters').filter('itemsFilter', [
 
         while (items[i]) {
           sortedTask = false;
-
           if (items[i].relationships) {
-            if (items[i].relationships.parent || items[i].relationships.tags) {
+            if (items[i].relationships.parent || (items[i].relationships.tags && items[i].relationships.tags.length > 0)) {
               sortedTask = true;
             }
           }

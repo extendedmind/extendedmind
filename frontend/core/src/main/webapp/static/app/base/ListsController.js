@@ -42,6 +42,10 @@ function ListsController($location, $scope, $timeout, $routeParams, UserSessionS
   $scope.archiveList = function(list) {
     ListsService.archiveList(list, UserSessionService.getActiveUUID());
   };
+
+  $scope.deleteList = function(list) {
+    ListsService.deleteList(list, UserSessionService.getActiveUUID());
+  };
 }
 
 ListsController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService',

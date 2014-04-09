@@ -63,7 +63,7 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
     var newNoteToSave = {title: newNote.title};
     if (newNote.relationships && newNote.relationships.list){
       newNoteToSave.relationships = {
-        parent: newNote.relationships.list
+        list: newNote.relationships.list
       };
     }
     delete newNote.title;

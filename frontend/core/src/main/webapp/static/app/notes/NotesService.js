@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-function NotesService(UUIDService, UserSessionService, BackendClientService, ArrayService, ListsService){
+function NotesService(UUIDService, UserSessionService, BackendClientService, ArrayService, ListsService, TagsService){
 
   // An object containing notes for every owner
   var notes = {};
@@ -66,6 +66,27 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
   };
   ListsService.registerItemArchiveCallback(itemArchiveCallback, 'NotesService');
 
+  // Setup callback for tag deletion
+  var tagDeletedCallback = function(deletedTag, ownerUUID){
+    if (notes[ownerUUID] && deletedTag){
+      // Remove deleted tags from notes
+      TagsService.removeDeletedTagFromItems(notes[ownerUUID].activeNotes, deletedTag);
+      TagsService.removeDeletedTagFromItems(notes[ownerUUID].deletedNotes, deletedTag);
+      TagsService.removeDeletedTagFromItems(notes[ownerUUID].archivedNotes, deletedTag);
+    }
+  };
+  TagsService.registerTagDeletedCallback(tagDeletedCallback, 'NotesService');
+
+  // Setup callback for list deletion
+  var listDeletedCallback = function(deletedList, ownerUUID){
+    if (notes[ownerUUID] && deletedList){
+      // Remove deleted list from notes
+      ListsService.removeDeletedListFromItems(notes[ownerUUID].activeNotes, deletedList);
+      ListsService.removeDeletedListFromItems(notes[ownerUUID].deletedNotes, deletedList);
+      ListsService.removeDeletedListFromItems(notes[ownerUUID].archivedNotes, deletedList);
+    }
+  };
+  ListsService.registerListDeletedCallback(listDeletedCallback, 'NotesService');
 
   function addListToNotes(notesResponse){
     if (notesResponse){
@@ -78,10 +99,16 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
   }
 
   function moveListToParent(note){
-    if (note.relationships && note.relationships.list){
+    if (note.relationships){
       var list = note.relationships.list;
-      note.relationships.parent = list;
-      delete note.relationships.list;
+      if (list){
+        note.relationships.parent = list;
+      }else if (note.relationships.hasOwnProperty('parent')){
+        delete note.relationships.parent;
+      }
+      if (note.relationships.hasOwnProperty('list')){
+        delete note.relationships.list;
+      }
       return list;
     }
   }
@@ -251,5 +278,5 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
   };
 }
   
-NotesService.$inject = ['UUIDService', 'UserSessionService', 'BackendClientService', 'ArrayService', 'ListsService'];
+NotesService.$inject = ['UUIDService', 'UserSessionService', 'BackendClientService', 'ArrayService', 'ListsService', 'TagsService'];
 angular.module('em.services').factory('NotesService', NotesService);

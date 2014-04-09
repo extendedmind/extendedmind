@@ -28,9 +28,18 @@
               <section class="context" ng-controller="ContextsController">
                 <h3><a href ng-click="toggleContextContent()">@{{context.title}}</a></h3>
                 <div ng-if="showContextContent">
-                  <button class="wide-button default-button" type="button" ng-click="editContext(context)">
-                    more
-                  </button>
+                  <ul class="button-row">
+                    <li class="button-container left-of-two border-right">
+                      <button class="default-button" type="button" ng-click="editContext(context)">
+                        more
+                      </button>
+                    </li>
+                    <li class="button-container right-of-two">
+                      <button class="delete-button" type="button" ng-click="deleteContext(context)">
+                        delete
+                      </button>
+                    </li>
+                  </ul>
                 </div>
                 <div>
                   <div class="inner-page-content-container" accordion>

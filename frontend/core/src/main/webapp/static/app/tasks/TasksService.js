@@ -77,6 +77,30 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
   };
   ListsService.registerItemArchiveCallback(itemArchiveCallback, 'TasksService');
 
+  // Setup callback for tags
+  var tagDeletedCallback = function(deletedTag, ownerUUID){
+    if (tasks[ownerUUID] && deletedTag){
+      // Remove tags from existing parents
+      TagsService.removeDeletedTagFromItems(tasks[ownerUUID].activeTasks, deletedTag);
+      TagsService.removeDeletedTagFromItems(tasks[ownerUUID].deletedTasks, deletedTag);
+      TagsService.removeDeletedTagFromItems(tasks[ownerUUID].archivedTasks, deletedTag);
+      TagsService.removeDeletedTagFromItems(tasks[ownerUUID].completedTasks, deletedTag);
+    }
+  };
+  TagsService.registerTagDeletedCallback(tagDeletedCallback, 'TasksService');
+
+  // Setup callback for lists
+  var listDeletedCallback = function(deletedList, ownerUUID){
+    if (tasks[ownerUUID] && deletedList){
+      // Remove list from existing parents
+      ListsService.removeDeletedListFromItems(tasks[ownerUUID].activeTasks, deletedList);
+      ListsService.removeDeletedListFromItems(tasks[ownerUUID].deletedTasks, deletedList);
+      ListsService.removeDeletedListFromItems(tasks[ownerUUID].archivedTasks, deletedList);
+      ListsService.removeDeletedListFromItems(tasks[ownerUUID].completedTasks, deletedList);
+    }
+  };
+  ListsService.registerListDeletedCallback(listDeletedCallback, 'TasksService');
+
   function cleanRecentlyCompletedTasks(ownerUUID){
     if (tasks[ownerUUID]){
       // Loop through recently completed tasks and delete them from the activeTasks array
@@ -127,7 +151,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
   }
 
   function moveContextToTags(task, ownerUUID){
-    if (task.relationships && task.relationships.context){
+    if (task.relationships){
       var context = task.relationships.context;
       if (task.relationships.tags){
         var foundCurrent = false;
@@ -135,7 +159,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
         for (var i=0, len=task.relationships.tags.length; i<len; i++) {
           var tag = TagsService.getTagByUUID(task.relationships.tags[i], ownerUUID);
           if (tag && tag.tagType === 'context'){
-            if (tag.uuid === context){
+            if (context && tag.uuid === context){
               foundCurrent = true;
             }else{
               previousContextIndex = i;
@@ -146,23 +170,34 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
           // Remove old
           task.relationships.tags.splice(previousContextIndex, 1);
         }
-        if (!foundCurrent){
+        if (!foundCurrent && context){
           // Add new
           task.relationships.tags.push(context);
         }
-      }else{
+      }else if (context){
         task.relationships.tags = [context];
       }
-      delete task.relationships.context;
+
+      if (task.relationships.hasOwnProperty('context')){
+        delete task.relationships.context;
+      }
+
+      console.log(task);
       return context;
     }
   }
 
   function moveListToParent(task){
-    if (task.relationships && task.relationships.list){
+    if (task.relationships){
       var list = task.relationships.list;
-      task.relationships.parent = list;
-      delete task.relationships.list;
+      if (list){
+        task.relationships.parent = list;
+      }else if (task.relationships.hasOwnProperty('parent')){
+        delete task.relationships.parent;
+      }
+      if (task.relationships.hasOwnProperty('list')){
+        delete task.relationships.list;
+      }
       return list;
     }
   }
@@ -172,7 +207,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       task.due = task.date;
       delete task.date;
       return task.due;
-    } 
+    }
   }
 
   function processCompletedTask(task, ownerUUID){
@@ -248,7 +283,6 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
           task.date = due;
         }
       }
-
       var deferred = $q.defer();
       cleanRecentlyCompletedTasks(ownerUUID);
       var context = moveContextToTags(task, ownerUUID);
