@@ -81,7 +81,7 @@ trait MailgunClient {
           "acceptInviteLink",
           settings.emailSecureUrlPrefix
             + settings.acceptInviteURI
-            .replaceAll("inviteValue", invite.code.toHexString)
+            .replaceAll("inviteValue", invite.code.toLong.toHexString)
             .replaceAll("emailValue", invite.email))
         .replaceAll("logoLink", settings.emailUrlPrefix + "logoname.png"))
     sendEmail(sendEmailRequest)
@@ -104,11 +104,11 @@ trait MailgunClient {
   def sendEmailVerificationLink(email: String, emailVerificationCode: Long): Future[SendEmailResponse] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, email,
       settings.verifyEmailTitle,
-      resetPasswordHtmlTemplate
+      verifyEmailHtmlTemplate
         .replaceAll(
           "verifyEmailLink",
           settings.emailSecureUrlPrefix
-            + settings.resetPasswordURI
+            + settings.verifyEmailURI
             .replaceAll("verifyCodeValue", emailVerificationCode.toHexString)
             .replaceAll("emailValue", email))
         .replaceAll("logoLink", settings.emailUrlPrefix + "logoname.png"))

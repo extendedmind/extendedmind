@@ -57,11 +57,29 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       else if (parsedData.email === 'example@example.com') {
         inviteRequestResponse.resultType = 'inviteRequest';
       }
+      else if (parsedData.email === 'coupon@example.com') {
+        inviteRequestResponse.resultType = 'inviteCoupon';
+      }
+      else if (parsedData.email === 'automatic@example.com') {
+        inviteRequestResponse.resultType = 'inviteAutomatic';
+      }
       // New invite
       else {
         inviteRequestResponse.resultType = 'newInviteRequest';
       }
       return [200, inviteRequestResponse];
+    });
+  }
+
+
+  function mockPostInviteRequestBypass() {
+    $httpBackend.whenPOST(AuthenticationService.postInviteRequestBypassRegex).respond(function(method, url, data) {
+      var inviteResponse = getJSONFixture('inviteResponse.json');
+      var parsedData = JSON.parse(data);
+      if (parsedData.coupon === '1234') {
+        return [400, {}];
+      }
+      return [200, inviteResponse];
     });
   }
 
@@ -111,6 +129,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       mockGetInvite();
       mockLogout(expectResponse);
       mockPostInviteRequest();
+      mockPostInviteRequestBypass();
       mockPostForgotPassword();
       mockGetPasswordResetExpires(expectResponse);
       mockPostResetPassword(expectResponse);

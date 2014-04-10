@@ -39,9 +39,9 @@ describe('LaunchController', function() {
     inviteRequestResponse.resultType = 'newInviteRequest';
     inviteRequestResponse.queueNumber = 155500;
 
-    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
+    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email, bypass: true})
     .respond(200, inviteRequestResponse);
-    
+
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
@@ -49,7 +49,8 @@ describe('LaunchController', function() {
     expect($location.path).toHaveBeenCalledWith('/waiting');
     expect($location.search).toHaveBeenCalledWith({
       uuid: inviteRequestResponse.result.uuid,
-      queueNumber: inviteRequestResponse.queueNumber
+      queueNumber: inviteRequestResponse.queueNumber,
+      request: true
     });
     expect(UserSessionService.setEmail).toHaveBeenCalledWith($scope.user.email);
   });
@@ -59,17 +60,18 @@ describe('LaunchController', function() {
     inviteRequestResponse.resultType = 'inviteRequest';
     inviteRequestResponse.queueNumber = 123;
 
-    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
+    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email, bypass: true})
     .respond(200, inviteRequestResponse);
 
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
-    
+
     expect($location.path).toHaveBeenCalledWith('/waiting');
     expect($location.search).toHaveBeenCalledWith({
       uuid: inviteRequestResponse.result.uuid,
-      queueNumber: inviteRequestResponse.queueNumber
+      queueNumber: inviteRequestResponse.queueNumber,
+      request: true
     });
     expect(UserSessionService.setEmail).toHaveBeenCalledWith($scope.user.email);
   });
@@ -78,7 +80,7 @@ describe('LaunchController', function() {
     // SETUP
     inviteRequestResponse.resultType = 'invite';
 
-    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
+    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email, bypass: true})
     .respond(200, inviteRequestResponse);
 
     // EXECUTE
@@ -87,7 +89,8 @@ describe('LaunchController', function() {
 
     expect($location.path).toHaveBeenCalledWith('/waiting');
     expect($location.search).toHaveBeenCalledWith({
-      email: $scope.user.email
+      email: $scope.user.email,
+      invite : true
     });
     expect(UserSessionService.setEmail).toHaveBeenCalledWith($scope.user.email);
   });
@@ -96,7 +99,7 @@ describe('LaunchController', function() {
     // SETUP
     inviteRequestResponse.resultType = 'user';
 
-    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
+    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email, bypass: true})
     .respond(200, inviteRequestResponse);
 
     // EXECUTE
@@ -109,7 +112,7 @@ describe('LaunchController', function() {
   it('should show an http error 404 not found message', function() {
     inviteRequestResponse.status = 404;
 
-    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
+    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email, bypass: true})
     .respond(404, inviteRequestResponse);
 
     $scope.launchUser();
@@ -121,7 +124,7 @@ describe('LaunchController', function() {
   it('should show an http error 502 bad gateway message', function() {
     inviteRequestResponse.status = 502;
 
-    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
+    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email, bypass: true})
     .respond(502, inviteRequestResponse);
 
     $scope.launchUser();
@@ -131,7 +134,7 @@ describe('LaunchController', function() {
   });
 
   it('should show launch failed message', function() {
-    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email})
+    $httpBackend.expectPOST('/api/invite/request', {email: $scope.user.email, bypass: true})
     .respond(400, inviteRequestResponse);
 
     $scope.launchUser();

@@ -21,10 +21,14 @@ function SignupController($location, $scope, $routeParams, $window, Authenticati
     $scope.loginFailed = false;
     // Cohort is a random number between 1 and 128
     var randomCohort = Math.floor(Math.random() * 128) + 1;
-    AuthenticationService.acceptInvite(inviteResponseCode,
-      {email: $scope.user.username,
+    var payload = {email: $scope.user.username,
        password: $scope.user.password,
-       cohort: randomCohort}).
+       cohort: randomCohort};
+    if ($routeParams.bypass){
+      payload.bypass = true;
+    }
+
+    AuthenticationService.acceptInvite(inviteResponseCode, payload).
     then(function() {
       AnalyticsService.do('acceptInvite');
       loginUser(true);

@@ -140,7 +140,7 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                       assert(invites.invites.size === 1)
                       // Get invite
                       Get("/invite/" + invites.invites(0).code.toHexString + "?email=" + invites.invites(0).email) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-                        val inviteResponse = entityAs[Invite]
+                        val inviteResponse = entityAs[InviteResult]
                         writeJsonOutput("inviteResponse", entityAs[String])
                         inviteResponse.email should be(invites.invites(0).email)
                         inviteResponse.accepted should be(None)
@@ -168,7 +168,7 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
 
                           // Should return accepted when getting invite again
                           Get("/invite/" + invites.invites(0).code.toHexString + "?email=" + invites.invites(0).email) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-                            val acceptedInviteResponse = entityAs[Invite]
+                            val acceptedInviteResponse = entityAs[InviteResult]
                             writeJsonOutput("acceptedInviteResponse", entityAs[String])
                             acceptedInviteResponse.email should be(invites.invites(0).email)
                             acceptedInviteResponse.accepted should not be None

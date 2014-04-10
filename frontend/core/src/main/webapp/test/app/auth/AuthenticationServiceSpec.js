@@ -2,7 +2,7 @@
 
 describe('AuthenticationService', function() {
 
-  // INJECTS 
+  // INJECTS
 
   var $httpBackend, $location, $q;
   var AuthenticationService, BackendClientService, HttpClientService;
@@ -154,7 +154,7 @@ describe('AuthenticationService', function() {
     expect(BackendClientService.postOnline).toHaveBeenCalledWith(
       '/api/invite/request',
       postInviteRequestRegex,
-      {email: email},
+      {email: email, bypass: true},
       true,
       skipLogStatuses);
     expect(MockUserSessionService.setEmail).toHaveBeenCalledWith(email);
@@ -262,7 +262,7 @@ describe('AuthenticationService', function() {
     MockUserSessionService.setIsAuthenticated(true);
     MockUserSessionService.setIsAuthenticateValid(true);
     MockUserSessionService.setIsAuthenticateReplaceable(false);
-    
+
     var loggedOut;
     $httpBackend.expectPOST('/api/logout').respond(200, logoutResponse);
     AuthenticationService.logout().then(function(response) {

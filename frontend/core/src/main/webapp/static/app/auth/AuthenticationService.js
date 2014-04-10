@@ -81,7 +81,16 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
   putChangePasswordRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
-    /password$/.source);
+    /password$/.source
+    ),
+  postInviteRequestBypassRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    inviteRegex.source +
+    requestRegex.source +
+    /\//.source +
+    BackendClientService.uuidRegex.source +
+    /\/bypass$/.source);
 
   // Register refresh credentials callback to backend
   BackendClientService.registerRefreshCredentialsCallback(verifyAndUpdateAuthentication);
@@ -251,13 +260,26 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
       return BackendClientService.postOnline(
         '/api/invite/request',
         postInviteRequestRegexp,
-        {email: email},
+        {email: email,
+         bypass: true},
         true,
         [400, 404, 502])
       .then(function(inviteRequestResponse) {
         UserSessionService.setEmail(email);
         return inviteRequestResponse;
       });
+    },
+    postInviteRequestBypass: function(uuid, email, coupon) {
+      var payload = {email: email};
+      if (coupon){
+        payload.inviteCoupon = coupon;
+      }
+      return BackendClientService.postOnline(
+        '/api/invite/request/' + uuid + '/bypass',
+        postInviteRequestBypassRegexp,
+        payload,
+        true,
+        [400, 404, 502]);
     },
     acceptInvite: function(inviteResponseCode, data) {
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',
@@ -306,7 +328,8 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     getPasswordResetExpiresRegex: getPasswordResetExpiresRegexp,
     postResetPasswordRegex: postResetPasswordRegexp,
     putChangePasswordRegex: putChangePasswordRegexp,
-    postVerifyEmailRegex: postVerifyEmailRegexp
+    postVerifyEmailRegex: postVerifyEmailRegexp,
+    postInviteRequestBypassRegex: postInviteRequestBypassRegexp
   };
 }
 AuthenticationService.$inject = ['$rootScope', '$location', '$q', 'BackendClientService', 'UserSessionService'];

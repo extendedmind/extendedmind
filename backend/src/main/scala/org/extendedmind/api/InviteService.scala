@@ -44,11 +44,17 @@ trait InviteService extends ServiceBase {
       } ~
       postInviteRequestBypass { inviteRequestUUID =>
         authorize(settings.signUpMethod == SIGNUP_INVITE_COUPON || settings.signUpMethod == SIGNUP_INVITE_AUTOMATIC) {
-          entity(as[Option[InviteCoupon]]) { inviteCoupon =>
+          entity(as[InviteBypass]) { bypass =>
             complete {
-              Future[Invite] {
-                inviteActions.bypassInvite(inviteRequestUUID, inviteCoupon) match {
-                  case Right(invite) => processResult(invite._2)
+              Future[InviteResult] {
+                inviteActions.bypassInvite(inviteRequestUUID, bypass.inviteCoupon) match {                  
+                  case Right(invite) => processResult(
+                		  					InviteResult(
+                		  					    invite._2.email,
+                		  					    invite._2.code.toHexString,
+                		  					    invite._2.accepted,
+                		  					    invite._2.message,
+                		  					    invite._2.emailId))
                   case Left(e) => processErrors(e)
                 }
               }
@@ -69,9 +75,14 @@ trait InviteService extends ServiceBase {
       getInvite { code =>
         parameters("email") { email =>
           complete {
-            Future[Invite] {
+            Future[InviteResult] {
               inviteActions.getInvite(code, email) match {
-                case Right(invite) => processResult(invite)
+                case Right(invite) => processResult(InviteResult(
+                		  					    invite.email,
+                		  					    invite.code.toHexString,
+                		  					    invite.accepted,
+                		  					    invite.message,
+                		  					    invite.emailId))
                 case Left(e) => processErrors(e)
               }
             }

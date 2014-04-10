@@ -22,9 +22,10 @@ case class InviteRequestQueueNumber(queueNumber: Int)
 
 case class InviteRequestAcceptDetails(message: Option[String], bypass: Option[Boolean])
 
-case class InviteCoupon(inviteCoupon: String)
+case class InviteBypass(inviteCoupon: Option[String])
 
 case class Invite(email: String, code: Long, accepted: Option[Long], message: Option[String], emailId: Option[String])
+case class InviteResult(email: String, code: String, accepted: Option[Long], message: Option[String], emailId: Option[String])
 
 case class Invites(invites: scala.List[Invite])
 

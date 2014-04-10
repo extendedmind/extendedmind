@@ -13,7 +13,6 @@ function VerifyController($routeParams, $scope, $location, AuthenticationService
     $location.path('/my/tasks');
   };
 
-
   $scope.emailVerified = false;
   $scope.emailVerificationFailed = undefined;
 

@@ -52,7 +52,7 @@ trait InviteActions {
             log.error("Could not send invite request confirmation email to {}", inviteRequest.email)
         }
       }
-      if (inviteRequest.bypass.isDefined && inviteRequest.bypass.get) {
+      if (inviteRequest.bypass.isDefined && inviteRequest.bypass.get && inviteRequestResult.right.get.resultType != INVITE_RESULT) {
         // Bypass logic
         if (settings.signUpMethod == SIGNUP_INVITE_AUTOMATIC) {
           return Right(inviteRequestResult.right.get.copy(resultType = INVITE_AUTOMATIC_RESULT))
@@ -64,7 +64,7 @@ trait InviteActions {
     inviteRequestResult
   }
 
-  def bypassInvite(inviteRequestUUID: UUID, coupon: Option[InviteCoupon])(implicit log: LoggingAdapter): Response[(SetResult, Invite)] = {
+  def bypassInvite(inviteRequestUUID: UUID, coupon: Option[String])(implicit log: LoggingAdapter): Response[(SetResult, Invite)] = {
     // Bypass logic
     if (settings.signUpMethod == SIGNUP_INVITE_AUTOMATIC) {
       // Create new invite, skip sending email
