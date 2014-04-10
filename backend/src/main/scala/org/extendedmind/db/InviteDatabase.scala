@@ -28,7 +28,12 @@ trait InviteDatabase extends UserDatabase {
     for {
       info <- createInviteRequestInformation(inviteRequest).right
       setResult <- Right(getSetResult(info._2, true)).right
-      inviteRequestResult <- Right(InviteRequestResult(info._1, if (info._1 == USER_RESULT) None else Some(setResult), info._3)).right
+      inviteRequestResult <- Right(
+          InviteRequestResult(
+              info._1,
+              if (info._1 == USER_RESULT) None else Some(setResult), 
+              info._3
+          )).right
     } yield inviteRequestResult
   }
 
@@ -94,9 +99,21 @@ trait InviteDatabase extends UserDatabase {
     }
   }
 
-  def acceptInviteRequest(userUUID: UUID, inviteRequestUUID: UUID, message: Option[String]): Response[(SetResult, Invite)] = {
+  def acceptInviteRequest(userUUID: Option[UUID], inviteRequestUUID: UUID, message: Option[String]): Response[(SetResult, Invite)] = {
+    // First get user node result, hard to do in for comprehension
+    val userNodeResult: Option[Response[Node]] = 
+      if (userUUID.isDefined) Some(getNode(userUUID.get, OwnerLabel.USER))
+      else None
+    // Handle errors
+    if (userNodeResult.isDefined && userNodeResult.get.isLeft){
+      return Left(userNodeResult.get.left.get)
+    }
+    // Get node value
+    val userNode: Option[Node] = 
+      if (userNodeResult.isDefined) Some(userNodeResult.get.right.get)
+      else None
+
     for {
-      userNode <- getNode(userUUID, OwnerLabel.USER).right
       ir <- createInvite(userNode, inviteRequestUUID, message).right
       result <- Right(getSetResult(ir._1, true)).right
     } yield (result, ir._2)
@@ -135,11 +152,11 @@ trait InviteDatabase extends UserDatabase {
     }
   }
 
-  def acceptInvite(signUp: SignUp, code: Long, signUpMode: SignUpMode): Response[SetResult] = {
+  def acceptInvite(signUp: SignUp, code: Long, signUpMode: SignUpMode): Response[(SetResult, Option[Long])] = {
     for {
-      userNode <- acceptInviteNode(signUp, code, signUpMode).right
-      result <- Right(getSetResult(userNode, true)).right
-    } yield result
+      acceptResult<- acceptInviteNode(signUp, code, signUpMode).right
+      result <- Right(getSetResult(acceptResult._1, true)).right
+    } yield (result, acceptResult._2)
   }
 
   def destroyInviteRequest(inviteRequestUUID: UUID): Response[DestroyResult] = {
@@ -247,7 +264,7 @@ trait InviteDatabase extends UserDatabase {
     }
   }
 
-  protected def createInvite(userNode: Node, inviteRequestUUID: UUID, message: Option[String]): Response[(Node, Invite)] = {
+  protected def createInvite(userNode: Option[Node], inviteRequestUUID: UUID, message: Option[String]): Response[(Node, Invite)] = {
     withTx {
       implicit neo =>
         val inviteRequestNode = getNode(inviteRequestUUID, MainLabel.REQUEST)
@@ -258,7 +275,9 @@ trait InviteDatabase extends UserDatabase {
           val invite = Invite(email, Random.generateRandomUnsignedLong, None, message, None)
           val inviteNode = createNode(invite, MainLabel.INVITE)
           inviteRequestNode.right.get --> SecurityRelationship.IS_ORIGIN --> inviteNode
-          userNode --> SecurityRelationship.IS_ACCEPTER --> inviteNode
+          if (userNode.isDefined){
+            userNode.get --> SecurityRelationship.IS_ACCEPTER --> inviteNode
+          }
           // Remove invite request from index
           val inviteRequests = neo.gds.index().forNodes("inviteRequests")
           inviteRequests.remove(inviteRequestNode.right.get)
@@ -299,24 +318,22 @@ trait InviteDatabase extends UserDatabase {
     }
   }
 
-  protected def acceptInviteNode(signUp: SignUp, code: Long, signUpMode: SignUpMode): Response[Node] = {
+  protected def acceptInviteNode(signUp: SignUp, code: Long, signUpMode: SignUpMode): Response[(Node, Option[Long])] = {
+    val currentTime = System.currentTimeMillis().asInstanceOf[java.lang.Long]
     withTx {
       implicit neo =>
         val user = User(signUp.email, signUp.cohort, None)
         for {
           inviteNode <- getInviteNode(code, signUp.email).right
-          userNode <- createUser(user, signUp.password, getExtraUserLabel(signUpMode)).right
-          relationship <- Right(linkInviteAndUser(inviteNode, userNode)).right
-        } yield userNode
+          userNodeResult <- createUser(user, signUp.password, getExtraUserLabel(signUpMode), 
+        		  				 emailVerified = if (signUp.bypass.isDefined && signUp.bypass.get) None else Some(currentTime)).right
+          relationship <- Right(linkInviteAndUser(inviteNode, userNodeResult._1, currentTime)).right
+        } yield (userNodeResult._1, userNodeResult._2)
     }
   }
 
-  protected def linkInviteAndUser(inviteNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Relationship = {
-    val currentTime = System.currentTimeMillis().asInstanceOf[java.lang.Long]
+  protected def linkInviteAndUser(inviteNode: Node, userNode: Node, currentTime: Long)(implicit neo4j: DatabaseService): Relationship = {
     inviteNode.setProperty("accepted", currentTime)
-    // When the user accepts invite using a code sent to her email, 
-    // that means that the email is also verified
-    userNode.setProperty("emailVerified", currentTime)
     inviteNode --> SecurityRelationship.IS_ORIGIN --> userNode <
   }
 

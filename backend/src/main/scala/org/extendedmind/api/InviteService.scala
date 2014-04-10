@@ -42,6 +42,20 @@ trait InviteService extends ServiceBase {
           }
         }
       } ~
+      postInviteRequestBypass { inviteRequestUUID =>
+        authorize(settings.signUpMethod == SIGNUP_INVITE_COUPON || settings.signUpMethod == SIGNUP_INVITE_AUTOMATIC) {
+          entity(as[Option[InviteCoupon]]) { inviteCoupon =>
+            complete {
+              Future[Invite] {
+                inviteActions.bypassInvite(inviteRequestUUID, inviteCoupon) match {
+                  case Right(invite) => processResult(invite._2)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
       getInviteRequestQueueNumber { inviteRequestUUID =>
         complete {
           Future[InviteRequestQueueNumber] {

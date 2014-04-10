@@ -41,9 +41,9 @@ trait TestGraphDatabase extends GraphDatabase {
 
   def insertTestData(testDataLocation: Option[String] = None) {
     val timoUser = User(TIMO_EMAIL, Some(1), None)
-    val timoNode = createUser(timoUser, TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get
-    val lauriNode = createUser(User(LAURI_EMAIL, None, None), LAURI_PASSWORD, Some(UserLabel.ADMIN)).right.get
-    val jpNode = createUser(User(JP_EMAIL, None, None), JP_PASSWORD, Some(UserLabel.ADMIN)).right.get
+    val timoNode = createUser(timoUser, TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get._1
+    val lauriNode = createUser(User(LAURI_EMAIL, None, None), LAURI_PASSWORD, Some(UserLabel.ADMIN)).right.get._1
+    val jpNode = createUser(User(JP_EMAIL, None, None), JP_PASSWORD, Some(UserLabel.ADMIN)).right.get._1
 
     // Collectives
     val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true)

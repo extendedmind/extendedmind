@@ -23,7 +23,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       return expectResponse(method, url, data, headers, authenticateResponse);
     });
   }
-  
+
   function mockGetInvite(){
     $httpBackend.whenGET(AuthenticationService.getInviteRegex).respond(function() {
       var inviteResponse = getJSONFixture('inviteResponse.json');
@@ -90,13 +90,20 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
     });
   }
 
+  function mockPostVerifyEmail() {
+    $httpBackend.whenPOST(AuthenticationService.postVerifyEmailRegex).respond(function(method, url, data, headers) {
+      var verifyEmailResponse = getJSONFixture('putAccountResponse.json');
+      return [200, verifyEmailResponse];
+    });
+  }
+
   function mockPutChangePassword(expectResponse) {
     $httpBackend.whenPUT(AuthenticationService.putChangePasswordRegex).respond(function(method, url, data, headers) {
       var changePasswordResponse = getJSONFixture('passwordResponse.json');
       return expectResponse(method, url, data, headers, changePasswordResponse);
     });
   }
-  
+
   return {
     mockAuthBackend: function(expectResponse) {
       mockAcceptInvite();
@@ -107,6 +114,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       mockPostForgotPassword();
       mockGetPasswordResetExpires(expectResponse);
       mockPostResetPassword(expectResponse);
+      mockPostVerifyEmail();
       mockPutChangePassword(expectResponse);
     }
   };

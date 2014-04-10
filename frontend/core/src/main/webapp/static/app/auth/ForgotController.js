@@ -1,8 +1,8 @@
 'use strict';
 
 function ForgotController($routeParams, $scope, $location, AuthenticationService, UserSessionService, AnalyticsService) {
-  
-  AnalyticsService.visit('forgot');
+
+  AnalyticsService.visitEntry('forgot');
 
   var passwordResetCode = $routeParams.hex_code;
   var email = $routeParams.email;

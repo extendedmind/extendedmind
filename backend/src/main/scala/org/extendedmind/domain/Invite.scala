@@ -13,17 +13,19 @@ case object INVITE_COUPON_RESULT extends InviteRequestResultType
 case object INVITE_AUTOMATIC_RESULT extends InviteRequestResultType
 case object USER_RESULT extends InviteRequestResultType
 
-case class InviteRequest(uuid: Option[UUID], email: String, emailId: Option[String], automatic: Option[Boolean]){
+case class InviteRequest(uuid: Option[UUID], email: String, emailId: Option[String], bypass: Option[Boolean]){
   require(validateEmailAddress(email), "Not a valid email address")
 }
 case class InviteRequests(inviteRequests: scala.List[InviteRequest])
 
 case class InviteRequestQueueNumber(queueNumber: Int)
 
-case class InviteRequestAcceptDetails(message: String)
+case class InviteRequestAcceptDetails(message: Option[String], bypass: Option[Boolean])
+
+case class InviteCoupon(inviteCoupon: String)
 
 case class Invite(email: String, code: Long, accepted: Option[Long], message: Option[String], emailId: Option[String])
 
 case class Invites(invites: scala.List[Invite])
 
-case class InviteRequestResult(resultType: InviteRequestResultType, result: Option[SetResult], queueNumber: Option[Int], inviteCoupon: Option[String], inviteCode: Option[Int])
+case class InviteRequestResult(resultType: InviteRequestResultType, result: Option[SetResult], queueNumber: Option[Int])

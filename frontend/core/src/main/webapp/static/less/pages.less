@@ -12,7 +12,7 @@ section.page {
 
 @login-content-height: @vertical-grid*5.1;
 
-section#login, section#signup, section#launch, section#waiting, section#forgot {
+section#login, section#signup, section#launch, section#waiting, section#forgot, section#verify {
   .column {
     overflow-y: auto;
     .banner {
@@ -93,7 +93,7 @@ section#welcome {
   }
 }
 
-section#forgot {
+section#forgot, section#verify {
   .column {
     .banner {
       margin-bottom: -@vertical-grid * 7.5;
@@ -106,7 +106,7 @@ section#forgot {
         }
       }
     }
-    #instructions-sent {
+    #instructions-success {
       .instruction-text {
         padding-bottom: @vertical-grid;
       }

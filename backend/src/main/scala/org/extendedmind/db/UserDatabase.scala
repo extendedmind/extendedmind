@@ -24,11 +24,11 @@ trait UserDatabase extends AbstractGraphDatabase {
 
   // PUBLICs
   
-  def putNewUser(user: User, password: String, signUpMode: SignUpMode): Response[SetResult] = {
+  def putNewUser(user: User, password: String, signUpMode: SignUpMode): Response[(SetResult, Option[Long])] = {
     for{
-      user <- createUser(user, password, getExtraUserLabel(signUpMode)).right
-      result <- Right(getSetResult(user, true)).right
-    }yield result
+      userResult <- createUser(user, password, getExtraUserLabel(signUpMode)).right
+      result <- Right(getSetResult(userResult._1, true)).right
+    }yield (result, userResult._2)
   }
   
   def putExistingUser(userUUID: UUID, user: User): Response[SetResult] = {
@@ -78,7 +78,8 @@ trait UserDatabase extends AbstractGraphDatabase {
   
   // PRIVATE
   
-  protected def createUser(user: User, plainPassword: String, userLabel: Option[Label] = None): Response[Node] = {
+  protected def createUser(user: User, plainPassword: String,
+		  				   userLabel: Option[Label] = None, emailVerified: Option[Long] = None): Response[(Node, Option[Long])] = {
     withTx{
       implicit neo4j =>
         val userNode = createNode(user, MainLabel.OWNER, OwnerLabel.USER)
@@ -87,6 +88,18 @@ trait UserDatabase extends AbstractGraphDatabase {
         userNode.setProperty("email", user.email)
         if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
         
+        val emailVerificationCode = if (emailVerified.isDefined){
+	      // When the user accepts invite using a code sent to her email, 
+	      // that means that the email is also verified
+	      userNode.setProperty("emailVerified", emailVerified.get)
+	      None
+	    }else {
+	      // Need to create a verification code
+	      val emailVerificationCode = Random.generateRandomUnsignedLong
+	      userNode.setProperty("emailVerificationCode", emailVerificationCode)      
+	      Some(emailVerificationCode)
+	    }
+        
         // Give user read permissions to common collectives
         val collectivesList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
         if (!collectivesList.isEmpty) {
@@ -94,7 +107,7 @@ trait UserDatabase extends AbstractGraphDatabase {
             userNode --> SecurityRelationship.CAN_READ --> collective;
           })
         }
-        Right(userNode)
+        Right((userNode, emailVerificationCode))
     }
   }
   

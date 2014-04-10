@@ -59,6 +59,13 @@ class Settings(config: Config) extends Extension {
       case "ON" => SIGNUP_ON
     }
   }
+  val signUpCoupon: Option[String] = {
+    if (config.hasPath("extendedmind.security.signUpCoupon"))
+      Some(config.getString("extendedmind.security.signUpCoupon"))
+    else
+      None
+  }
+  
   val signUpMode: SignUpMode  = {
     config.getString("extendedmind.security.signUpMode") match {
       case "ADMIN" => MODE_ADMIN
@@ -85,6 +92,9 @@ class Settings(config: Config) extends Extension {
   val acceptInviteURI = config.getString("extendedmind.email.templates.acceptInviteURI")
   val resetPasswordTitle = config.getString("extendedmind.email.templates.resetPasswordTitle")
   val resetPasswordURI = config.getString("extendedmind.email.templates.resetPasswordURI")
+  val verifyEmailTitle = config.getString("extendedmind.email.templates.verifyEmailTitle")
+  val verifyEmailURI = config.getString("extendedmind.email.templates.verifyEmailURI")
+
 }
 
 object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{

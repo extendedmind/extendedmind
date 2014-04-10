@@ -119,7 +119,7 @@ trait AdminService extends ServiceBase {
               complete {
                 Future[SetResult] {
                   setLogContext(securityContext)
-                  inviteActions.acceptInviteRequest(securityContext.userUUID, inviteRequestUUID, details) match {
+                  inviteActions.acceptInviteRequest(Some(securityContext.userUUID), inviteRequestUUID, details) match {
                     case Right(result) => processResult(result._1)
                     case Left(e) => processErrors(e)
                   }

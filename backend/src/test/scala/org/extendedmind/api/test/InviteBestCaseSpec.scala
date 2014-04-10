@@ -58,11 +58,11 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       + "and accept the request with POST to /invite/request/[UUID]/accept "
       + "and accept the invite with POST to /invite/[code]/accept ") {
       val testEmail = "example@example.com"
-      val testInviteRequest = InviteRequest(None, testEmail, None)
+      val testInviteRequest = InviteRequest(None, testEmail, None, None)
       val testEmail2 = "example2@example.com"
-      val testInviteRequest2 = InviteRequest(None, testEmail2, None)
+      val testInviteRequest2 = InviteRequest(None, testEmail2, None, None)
       val testEmail3 = "example3@example.com"
-      val testInviteRequest3 = InviteRequest(None, testEmail3, None)
+      val testInviteRequest3 = InviteRequest(None, testEmail3, None, None)
 
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "1234") })
@@ -148,7 +148,7 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                       // Accept invite
                       val testPassword = "testPassword"
                       Post("/invite/" + invites.invites(0).code.toHexString + "/accept",
-                        marshal(SignUp(invites.invites(0).email, testPassword, Some(1))).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                        marshal(SignUp(invites.invites(0).email, testPassword, Some(1), None)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                           val acceptInviteResponse = entityAs[SetResult]
                           writeJsonOutput("acceptInviteResponse", entityAs[String])
                           acceptInviteResponse.uuid should not be None

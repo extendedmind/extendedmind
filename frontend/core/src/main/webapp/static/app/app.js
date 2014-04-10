@@ -79,6 +79,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    $routeProvider.when('/verify/:hex_code', {
+      templateUrl: 'static/app/auth/verify.html'
+    });
+
     $routeProvider.when('/404', {
       templateUrl: 'static/app/main/pageNotFound.html',
       controller: 'PageNotFoundController'

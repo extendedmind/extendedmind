@@ -23,6 +23,7 @@ trait API extends HttpService {
   val getInviteRequests = get & path("invite" / "requests".r)
   val getInviteRequestQueueNumber = get & path("invite" / "request" / JavaUUID)
   val postInviteRequestAccept = post & path("invite" / "request" / JavaUUID / "accept")
+  val postInviteRequestBypass = post & path("invite" / "request" / JavaUUID / "bypass")
   val deleteInviteRequest = delete & path("invite" / "request" / JavaUUID)
   val getInvite = get & path("invite" / HexLongNumber)  
   val getInvites = get & path("invites".r)
@@ -39,6 +40,7 @@ trait API extends HttpService {
   val postForgotPassword = post & path("password" / "forgot".r)
   val getPasswordResetExpires = get & path("password" / HexLongNumber)
   val postResetPassword = post & path("password" / HexLongNumber / "reset")
+  val postVerifyEmail = post & path("email" / HexLongNumber / "verify")
   
   // Collectives
   val putNewCollective = put & path("collective".r)

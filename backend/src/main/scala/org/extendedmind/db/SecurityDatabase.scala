@@ -203,6 +203,13 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       result <- Right(getSetResult(userNode, true)).right
     } yield result
   }
+  
+  def verifyEmail(code: Long, email: String): Response[SetResult] = {
+    for {
+      userNode <- verifyEmailNode(code, email).right
+      result <- Right(getSetResult(userNode, true)).right
+    } yield result
+  }
 
   
   // PRIVATE
@@ -527,6 +534,30 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           result <- Right(setUserPassword(userNode, signUp.password)).right
           result <- Right(clearPasswordResetExpires(userNode)).right
         } yield userNode
+    }
+  }
+  
+  private def verifyEmailNode(code: Long, email: String): Response[Node] = {
+    withTx {
+      implicit neo =>
+        for {
+          userNode <- getUserNode(email).right
+          emailVerified <- verifyEmail(code, userNode).right
+        } yield userNode
+    }
+  }
+  
+  private def verifyEmail(code: Long, userNode: Node)(implicit neo4j: DatabaseService): Response[Long] = {
+    if (userNode.hasProperty("emailVerificationCode")){
+      if (userNode.getProperty("emailVerificationCode").asInstanceOf[Long] == code){
+        val currentTime = System.currentTimeMillis()
+        userNode.setProperty("emailVerified", currentTime)
+        Right(currentTime)
+      }else{
+        fail(INVALID_PARAMETER, "invalid verification code")
+      }
+    }else{
+      fail(INVALID_PARAMETER, "email not verifiable")
     }
   }
   

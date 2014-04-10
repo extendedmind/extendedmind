@@ -50,8 +50,12 @@ class UserBestCaseSpec extends ServiceSpecBase {
   }
 
   describe("In the best case, UserService") {
-    it("should create an administrator with POST to /signup because adminSignUp is set to true") {
-      val signUp = SignUp("test@ext.md", "infopwd", Some(1))
+    it("should create an administrator with POST to /signup because adminSignUp is set to true") {      
+      val testEmail = "example@example.com"
+      stub(mockMailgunClient.sendEmailVerificationLink(mockEq(testEmail), anyObject())).toReturn(
+        Future { SendEmailResponse("OK", "1234") })
+
+      val signUp = SignUp(testEmail, "infopwd", Some(1), None)
       Post("/signup",
         marshal(signUp).right.get) ~> route ~> check {
           val signUpResponse = entityAs[String]
@@ -90,7 +94,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         val accountResponse = entityAs[User]
         accountResponse.uuid.get should equal(authenticateResponse.userUUID)
         accountResponse.email should equal(LAURI_EMAIL)
-      }      
+      }
       val newEmail = UserEmail("lauri.jarvilehto@filosofianakatemia.fi")
       Put("/email",
         marshal(newEmail).right.get) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD))) ~> route ~> check {

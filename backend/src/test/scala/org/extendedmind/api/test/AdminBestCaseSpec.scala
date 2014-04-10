@@ -56,7 +56,8 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       val newInviteRequest = InviteRequest(
         Some(UUID.fromString(uuid)),
         "test@example.com",
-        Some("messageId"))
+        Some("messageId"),
+        None)
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Put("/invite/request",
         marshal(newInviteRequest).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {

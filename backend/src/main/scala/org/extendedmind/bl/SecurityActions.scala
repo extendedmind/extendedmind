@@ -57,14 +57,19 @@ trait SecurityActions {
   }
   
   def resetPassword(code: Long, signUp: SignUp)(implicit log: LoggingAdapter): Response[CountResult] = {
-    log.info("resetPassword: user {}", signUp.email)
+    log.info("resetPassword: {}", signUp.email)
     val result = db.resetPassword(code, signUp)
     if (result.isRight){
       db.destroyTokens(result.right.get.uuid.get)
     }else{
       Left(result.left.get)
     }
-  }  
+  }
+  
+  def verifyEmail(code: Long, email: String)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("verifyEmail: {}", email)
+    db.verifyEmail(code, email)
+  }
   
   private def sendPasswordResetLink(user: User)(implicit log: LoggingAdapter): Response[ForgotPasswordResult] = {
     val resetCode = Random.generateRandomUnsignedLong

@@ -33,10 +33,23 @@ trait UserActions {
           signUp.email)
     for {
       isUnique <- db.validateEmailUniqueness(signUp.email).right
-      result <- db.putNewUser(User(signUp.email, signUp.cohort, None), signUp.password, settings.signUpMode).right
-    } yield result
-    
-    // TODO: Send verification email as Future
+      userResult <- db.putNewUser(User(signUp.email, signUp.cohort, None), signUp.password, settings.signUpMode).right
+      sent <- if (userResult._2.isDefined)
+                Right(sendEmailVerification(signUp.email, userResult._2.get)).right
+              else Right(Unit).right
+    } yield userResult._1
+  }
+  
+  def sendEmailVerification(email: String, emailVerificationCode: Long)(implicit log: LoggingAdapter) {
+    log.info("sendEmailVerification: email {}", email)
+    val futureMailResponse = mailgun.sendEmailVerificationLink(email, emailVerificationCode)
+    futureMailResponse onSuccess {
+      case SendEmailResponse(message, id) => {
+        log.info("Email verification sent to " + email + " with id " + id)
+      }
+      case _ =>
+        log.error("Could not send email verification to {}", email)
+    }
   }
   
   def getPublicUser(email: String)(implicit log: LoggingAdapter): Response[PublicUser] = {

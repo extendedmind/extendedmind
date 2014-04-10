@@ -9,7 +9,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
   var logoutRegex = /logout/;
   var requestRegex = /request/;
   var passwordRegex = /password/;
-  
+
   var acceptInviteRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
@@ -68,6 +68,14 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     /\//.source +
     BackendClientService.hexCodeRegex.source +
     /\/reset/.source +
+    /$/.source
+    ),
+  postVerifyEmailRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    /email\//.source +
+    BackendClientService.hexCodeRegex.source +
+    /\/verify/.source +
     /$/.source
     ),
   putChangePasswordRegexp = new RegExp(
@@ -200,7 +208,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
       if (UserSessionService.getLatestModified(UserSessionService.getUserUUID()) !== undefined){
         return verifyAndUpdateAuthentication();
       }else{
-        // When there is no data in-memory, this needs to be done online 
+        // When there is no data in-memory, this needs to be done online
         return verifyAndUpdateAuthentication(true);
       }
     },
@@ -274,6 +282,12 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         {email: email,
          password: password}, true);
     },
+    postVerifyEmail: function(resetCode, email) {
+      return BackendClientService.postOnline(
+        '/api/email/' + resetCode + '/verify',
+        postVerifyEmailRegexp,
+        {email: email}, true);
+    },
     putChangePassword: function(email, currentPassword, newPassword) {
       return BackendClientService.putOnlineWithUsernamePassword(
         '/api/password',
@@ -291,7 +305,8 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     postForgotPasswordRegex: postForgotPasswordRegexp,
     getPasswordResetExpiresRegex: getPasswordResetExpiresRegexp,
     postResetPasswordRegex: postResetPasswordRegexp,
-    putChangePasswordRegex: putChangePasswordRegexp
+    putChangePasswordRegex: putChangePasswordRegexp,
+    postVerifyEmailRegex: postVerifyEmailRegexp
   };
 }
 AuthenticationService.$inject = ['$rootScope', '$location', '$q', 'BackendClientService', 'UserSessionService'];

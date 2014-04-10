@@ -102,6 +102,18 @@ trait SecurityService extends ServiceBase {
             }
           }
         }
+      } ~
+      postVerifyEmail { code =>
+        entity(as[UserEmail]) { email =>
+          complete {
+            Future[SetResult] {
+              securityActions.verifyEmail(code, email.email) match {
+                case Right(result) => result
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
       }
   }
 
