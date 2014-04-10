@@ -1,0 +1,24 @@
+<div class="no-slides-container" ng-controller="VerifyController">
+  <section id="verify" class="one-column-grid fixed-height page">
+    <div class="column">
+      <div class="banner">
+        <span class="icon-logo_with_text"></span>
+      </div>
+      <div ng-if="emailVerified" id="instructions-success" class="content">
+        <span class="instruction-text">
+          email verified. press the button below to access your extended mind.
+        </span>
+        <div class="button-container">
+          <button type="submit" id="goto-login-button" class="wide-button normal-button" ng-click="gotoService()">
+            <span class="button-text">continue</span>
+          </button>
+        </div>
+      </div>
+      <div ng-if="emailVerifiedFailed" class="content">
+        <span class="instruction-text">
+          email verification failed: {{emailVerificationFailed}}
+        </span>
+      </div>
+    </div>
+  </section>
+</div>
