@@ -105,7 +105,7 @@ describe('LaunchController', function() {
     // EXECUTE
     $scope.launchUser();
     $httpBackend.flush();
-    expect($location.path).toHaveBeenCalledWith('/');
+    expect($location.path).toHaveBeenCalledWith('/login');
     expect(UserSessionService.setEmail).toHaveBeenCalledWith($scope.user.email);
   });
 

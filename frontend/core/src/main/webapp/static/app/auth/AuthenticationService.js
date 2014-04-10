@@ -182,34 +182,73 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     return deferredAuthentication.promise;
   }
 
-  function checkEmailStatus(inviteRequestResponse) {
+  function checkEmailStatus(inviteRequestResponse, user) {
     // Redirect user with new invite request to waiting page, then show queue.
     if (inviteRequestResponse.data.resultType === 'newInviteRequest') {
-      redirectToWaitingPage();
+      redirectToInviteWaitingPage();
     }
     // Redirect user with existing invite request to waiting page, then show queue.
     else if (inviteRequestResponse.data.resultType === 'inviteRequest') {
-      redirectToWaitingPage();
+      redirectToInviteWaitingPage();
     }
     // Redirect invited user to waiting page, then show info text
     else if (inviteRequestResponse.data.resultType === 'invite') {
       $location.path('/waiting');
       $location.search({
-        email: UserSessionService.getEmail()
+        email: user.email,
+        invite: true
       });
     }
     // Redirect existing user to front page.
     else if (inviteRequestResponse.data.resultType === 'user') {
       $location.path('/login');
-    }
-
-    function redirectToWaitingPage() {
+    // Redirect coupon to waiting page with possibility to give coupon
+    }else if (inviteRequestResponse.data.resultType === 'inviteCoupon') {
       $location.path('/waiting');
       $location.search({
         uuid: inviteRequestResponse.data.result.uuid,
-        queueNumber: inviteRequestResponse.data.queueNumber
+        queueNumber: inviteRequestResponse.data.queueNumber,
+        email: user.email,
+        coupon: true
       });
     }
+    // Accept invite directly by bypassing queue
+    else if (inviteRequestResponse.data.resultType === 'inviteAutomatic') {
+      postInviteRequestBypass(inviteRequestResponse.data.result.uuid, user.email).then(
+      function(inviteResponse){
+        if (inviteResponse.data){
+          $location.path('/accept/' + inviteResponse.data.code);
+          $location.search({
+            email: user.email,
+            bypass: true
+          });
+        }
+      }, function(/*error*/){
+        return false;
+      });
+    }
+    function redirectToInviteWaitingPage() {
+      $location.path('/waiting');
+      $location.search({
+        uuid: inviteRequestResponse.data.result.uuid,
+        queueNumber: inviteRequestResponse.data.queueNumber,
+        request: true
+      });
+    }
+    return true;
+  }
+
+  function postInviteRequestBypass(uuid, email, coupon) {
+    var payload = {email: email};
+    if (coupon){
+      payload.inviteCoupon = coupon;
+    }
+    return BackendClientService.postOnline(
+      '/api/invite/request/' + uuid + '/bypass',
+      postInviteRequestBypassRegexp,
+      payload,
+      true,
+      [400, 404, 502]);
   }
 
   return {
@@ -221,6 +260,9 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         return verifyAndUpdateAuthentication(true);
       }
     },
+    checkEmailStatus: function(response, user) {
+      return checkEmailStatus(response, user);
+    },
     checkAndRedirectUser: function() {
       // Existing user
       if (UserSessionService.getUserUUID()) {
@@ -231,7 +273,9 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
           postInviteRequestRegexp,
           {email: UserSessionService.getEmail()},
           true)
-        .then(checkEmailStatus);
+        .then(function(response) {
+          checkEmailStatus(response, {email: UserSessionService.getEmail()});
+        });
       } else {
         $location.path('/launch');
       }
@@ -270,16 +314,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
       });
     },
     postInviteRequestBypass: function(uuid, email, coupon) {
-      var payload = {email: email};
-      if (coupon){
-        payload.inviteCoupon = coupon;
-      }
-      return BackendClientService.postOnline(
-        '/api/invite/request/' + uuid + '/bypass',
-        postInviteRequestBypassRegexp,
-        payload,
-        true,
-        [400, 404, 502]);
+      return postInviteRequestBypass(uuid, email, coupon);
     },
     acceptInvite: function(inviteResponseCode, data) {
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',

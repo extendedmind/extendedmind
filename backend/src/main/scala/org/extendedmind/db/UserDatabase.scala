@@ -99,9 +99,6 @@ trait UserDatabase extends AbstractGraphDatabase {
 	      userNode.setProperty("emailVerificationCode", emailVerificationCode)      
 	      Some(emailVerificationCode)
 	    }
-        
-        println(emailVerified)
-        println(emailVerificationCode)
                 
         // Give user read permissions to common collectives
         val collectivesList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList

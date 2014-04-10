@@ -182,7 +182,8 @@ describe('AuthenticationService', function() {
     expect($location.path).toHaveBeenCalledWith('/waiting');
     expect($location.search).toHaveBeenCalledWith({
       uuid: inviteRequestResponse.result.uuid,
-      queueNumber: inviteRequestResponse.queueNumber
+      queueNumber: inviteRequestResponse.queueNumber,
+      request: true
     });
   });
 
@@ -202,7 +203,8 @@ describe('AuthenticationService', function() {
     expect($location.path).toHaveBeenCalledWith('/waiting');
     expect($location.search).toHaveBeenCalledWith({
       uuid: inviteRequestResponse.result.uuid,
-      queueNumber: inviteRequestResponse.queueNumber
+      queueNumber: inviteRequestResponse.queueNumber,
+      request: true
     });
   });
 
@@ -221,7 +223,8 @@ describe('AuthenticationService', function() {
 
     expect($location.path).toHaveBeenCalledWith('/waiting');
     expect($location.search).toHaveBeenCalledWith({
-      email: email
+      email: email,
+      invite: true
     });
   });
 

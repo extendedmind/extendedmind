@@ -48,6 +48,7 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         routes: ['$location', '$route',
         function($location, $route) {
           if (!$route.current.params.hex_code || !$route.current.params.email) {
+            $location.url($location.path());
             $location.path('/login');
           }
         }]

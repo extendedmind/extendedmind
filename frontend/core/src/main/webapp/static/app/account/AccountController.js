@@ -2,12 +2,11 @@
 
 function AccountController($location, $scope, AccountService, AnalyticsService) {
 
-  // $scope.isUserVerified = false;
-
+  $scope.isUserVerified = false;
   AnalyticsService.visit('account');
 
   AccountService.getAccount().then(function(accountResponse) {
-    // $scope.isUserVerified = accountResponse.verified ? true : false;
+    $scope.isUserVerified = accountResponse.emailVerified ? true : false;
     $scope.email = accountResponse.email;
   });
 
