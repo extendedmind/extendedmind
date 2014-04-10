@@ -4,28 +4,21 @@
   <section ng-hide="isDesktop && isMenuOpen" id="about" class="one-column-grid page" snap-drawer-drag>
     <div class="column">
       <div class="content-container simple-content-container">
-        <div class="page-wrap">
-          <ul>
-            <li class="simple-content">
-              <h3>version</h3>
-              <span ng-bind="extendedMindVersion"></span>
-            </li>
-            <li class="simple-content">
-              <a class="highlighted-link" href ng-click="gotoTermsOfService()">terms of service</a>
-              <a class="highlighted-link" href ng-click="gotoPrivacyPolicy()">privacy policy</a>
-            </li>
-            <li id="about-help" class="simple-content">
-              <small>in case you need any help, email
-                <a class="highlighted-link" href="mailto:support@ext.md"> support@ext.md</a>
-              </small>
-            </li>
-          </ul>
-        </div>
-        <footer class="site-footer">
-          <button type="submit" id="about-button" class="wide-button normal-button" ng-click="gotoPreviousPage()">
-            <span class="button-text">done</span>
-          </button>
-        </footer>
+        <ul>
+          <li class="simple-content">
+            <h3>version</h3>
+            <span ng-bind="extendedMindVersion"></span>
+          </li>
+          <li class="simple-content">
+            <a class="highlighted-link" href ng-click="openTermsOfServiceModal()">terms of service</a>
+            <a class="highlighted-link" href ng-click="openPrivacyPolicyModal()">privacy policy</a>
+          </li>
+          <li id="about-help" class="simple-content">
+            <small>in case you need any help, email
+              <a class="highlighted-link" href="mailto:support@ext.md"> support@ext.md</a>
+            </small>
+          </li>
+        </ul>
       </div>
     </div>
   </section>

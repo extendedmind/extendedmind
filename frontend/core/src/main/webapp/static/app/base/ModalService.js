@@ -314,7 +314,7 @@ angular.module('em.services').factory('ModalService', ["$document", "$compile", 
             };
 
             var buildModalHeader = function () {
-                var defaultHeaderTail = 
+                var defaultHeaderTail =
                     '    <button ng-show="$showHeaderCloseButton" type="button" class="close" ng-click="$modalCancel()">&times;</button>' +
                     '    <h2 ng-show="$showHeader">{{$title}}</h2>' +
                     '  </div>';

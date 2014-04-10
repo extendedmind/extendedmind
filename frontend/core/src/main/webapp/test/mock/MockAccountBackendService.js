@@ -2,6 +2,17 @@
 'use strict';
 
 function MockAccountBackendService($httpBackend, AccountService) {
+  var termsOfService =
+  'Lorem Ipsum is simply dummy text of the printing and typesetting industry.' +
+  'Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s,' +
+  'when an unknown printer took a galley of type and scrambled it to make a type specimen book.' +
+  'It has survived not only five centuries, but also the leap into electronic typesetting,' +
+  'remaining essentially unchanged.' +
+  'It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,' +
+  'and more recently with desktop publishing software' +
+  'It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,' +
+  'and more recently with desktop publishing software' +
+  'like Aldus PageMaker including versions of Lorem Ipsum.';
 
   function mockGetAccount(expectResponse){
     $httpBackend.whenGET(AccountService.getAccountRegex)
@@ -11,6 +22,16 @@ function MockAccountBackendService($httpBackend, AccountService) {
     });
   }
 
+  function mockGetTermsOfService() {
+    $httpBackend.whenGET('http://ext.md/terms.html').
+    respond(termsOfService);
+  }
+
+  function mockGetPrivacyPolicy() {
+    $httpBackend.whenGET('http://ext.md/privacy.html').
+    respond(termsOfService);
+  }
+
   function mockPutAccount(expectResponse) {
     $httpBackend.whenPUT(AccountService.putAccountRegex)
     .respond(function(method, url, data, headers) {
@@ -18,11 +39,13 @@ function MockAccountBackendService($httpBackend, AccountService) {
       return expectResponse(method, url, data, headers, putAccountResponse);
     });
   }
-  
+
   return {
     mockAccountBackend: function(expectResponse) {
       mockGetAccount(expectResponse);
       mockPutAccount(expectResponse);
+      mockGetTermsOfService();
+      mockGetPrivacyPolicy();
     }
   };
 }
