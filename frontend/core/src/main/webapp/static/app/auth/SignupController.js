@@ -1,6 +1,6 @@
 'use strict';
 
-function SignupController($location, $scope, $routeParams, $window, AuthenticationService, AnalyticsService) {
+function SignupController($location, $scope, $rootScope, $routeParams, $window, AuthenticationService, AnalyticsService) {
 
   AnalyticsService.visitEntry('signup');
 
@@ -31,7 +31,12 @@ function SignupController($location, $scope, $routeParams, $window, Authenticati
     AuthenticationService.acceptInvite(inviteResponseCode, payload).
     then(function() {
       AnalyticsService.do('acceptInvite');
-      loginUser(true);
+      if ($rootScope.packaging.endsWith('phonegap')){
+        // In PhoneGap, don't go to welcome page
+        loginUser(false);
+      }else{
+        loginUser(true);
+      }
     }, function(signupResponse) {
       if (signupResponse && (signupResponse.status === 404 ||signupResponse.status === 502)){
         $scope.signupOffline = true;
@@ -78,5 +83,5 @@ function SignupController($location, $scope, $routeParams, $window, Authenticati
   };
 }
 
-SignupController['$inject'] = ['$location', '$scope', '$routeParams', '$window', 'AuthenticationService', 'AnalyticsService'];
+SignupController['$inject'] = ['$location', '$scope', '$rootScope', '$routeParams', '$window', 'AuthenticationService', 'AnalyticsService'];
 angular.module('em.app').controller('SignupController', SignupController);
