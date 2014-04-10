@@ -2,10 +2,13 @@
 
 function AccountController($location, $scope, AccountService, AnalyticsService) {
 
+  // $scope.isUserVerified = false;
+
   AnalyticsService.visit('account');
 
-  AccountService.getAccount().then(function(authenticateResponse) {
-    $scope.email = authenticateResponse.email;
+  AccountService.getAccount().then(function(accountResponse) {
+    // $scope.isUserVerified = accountResponse.verified ? true : false;
+    $scope.email = accountResponse.email;
   });
 
   $scope.gotoChangePassword = function gotoChangePassword() {

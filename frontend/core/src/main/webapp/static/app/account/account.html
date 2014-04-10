@@ -4,22 +4,17 @@
   <section ng-hide="isDesktop && isMenuOpen" id="account" class="one-column-grid page" snap-drawer-drag>
     <div class="column">
       <div class="content-container simple-content-container">
-        <div class="page-wrap">
-          <ul>
-            <li class="simple-content">
-              <h3>email</h3>
-              <span>{{email}}</span>
-            </li>
-            <li class="simple-content">
-              <a class="highlighted-link" href ng-click="gotoChangePassword()">change password</a>
-            </li>
-          </ul>
-        </div>
-        <footer class="site-footer">
-          <button type="submit" id="account-button" class="wide-button normal-button" ng-click="gotoMainPage()">
-            <span class="button-text">done</span>
-          </button>
-        </footer>
+        <ul>
+          <li class="simple-content">
+            <h3>email</h3>
+            <span>{{email}}</span>
+            <!-- <span id="email-verification-status" ng-if="isUserVerified">verified</span> -->
+            <!-- <span id="email-verification-status" ng-if="!isUserVerified">not verified</span> -->
+          </li>
+          <li class="simple-content">
+            <a class="highlighted-link" href ng-click="gotoChangePassword()">change password</a>
+          </li>
+        </ul>
       </div>
     </div>
   </section>
