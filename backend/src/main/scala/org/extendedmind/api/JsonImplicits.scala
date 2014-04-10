@@ -41,6 +41,8 @@ object JsonImplicits extends DefaultJsonProtocol {
           case NEW_INVITE_REQUEST_RESULT => "newInviteRequest"
           case INVITE_REQUEST_RESULT => "inviteRequest"
           case INVITE_RESULT => "invite"
+          case INVITE_COUPON_RESULT => "inviteCoupon"
+          case INVITE_AUTOMATIC_RESULT => "inviteAutomatic"
           case USER_RESULT => "user"
         })
     def read(value: JsValue) = value match {
@@ -48,6 +50,8 @@ object JsonImplicits extends DefaultJsonProtocol {
         if (x == "newInviteRequest") NEW_INVITE_REQUEST_RESULT
         else if (x == "inviteRequest") INVITE_REQUEST_RESULT 
         else if (x == "invite") INVITE_RESULT 
+        else if (x == "inviteCoupon") INVITE_COUPON_RESULT 
+        else if (x == "inviteAutomatic") INVITE_AUTOMATIC_RESULT 
         else if (x == "user") USER_RESULT 
 
         else deserializationError("Expected 'context', 'keyword' or 'history' but got " + x)
@@ -63,8 +67,8 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implLogoutPayload = jsonFormat1(LogoutPayload.apply)
   implicit val implNewPassword = jsonFormat1(NewPassword.apply)
   implicit val implCountResult = jsonFormat1(CountResult.apply)
-  implicit val implInviteRequest = jsonFormat3(InviteRequest.apply)
-  implicit val implInviteRequestResult = jsonFormat3(InviteRequestResult.apply)
+  implicit val implInviteRequest = jsonFormat4(InviteRequest.apply)
+  implicit val implInviteRequestResult = jsonFormat5(InviteRequestResult.apply)
   implicit val implInviteRequests = jsonFormat1(InviteRequests.apply)
   implicit val implInviteRequestQueueNumber = jsonFormat1(InviteRequestQueueNumber.apply)
   implicit val implInviteRequestAcceptDetails = jsonFormat1(InviteRequestAcceptDetails.apply)

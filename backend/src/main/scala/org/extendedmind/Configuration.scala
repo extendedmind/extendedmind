@@ -25,6 +25,8 @@ import akka.actor.ActorRefFactory
 sealed abstract class SignUpMethod
 case object SIGNUP_ON extends SignUpMethod
 case object SIGNUP_INVITE extends SignUpMethod
+case object SIGNUP_INVITE_COUPON extends SignUpMethod
+case object SIGNUP_INVITE_AUTOMATIC extends SignUpMethod
 case object SIGNUP_OFF extends SignUpMethod
 
 sealed abstract class SignUpMode
@@ -52,6 +54,8 @@ class Settings(config: Config) extends Extension {
     config.getString("extendedmind.security.signUpMethod") match {
       case "OFF" => SIGNUP_OFF
       case "INVITE" => SIGNUP_INVITE
+      case "INVITE_COUPON" => SIGNUP_INVITE_COUPON
+      case "INVITE_AUTOMATIC" => SIGNUP_INVITE_AUTOMATIC
       case "ON" => SIGNUP_ON
     }
   }

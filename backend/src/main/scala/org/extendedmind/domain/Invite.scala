@@ -9,9 +9,11 @@ sealed abstract class InviteRequestResultType
 case object NEW_INVITE_REQUEST_RESULT extends InviteRequestResultType
 case object INVITE_REQUEST_RESULT extends InviteRequestResultType
 case object INVITE_RESULT extends InviteRequestResultType
+case object INVITE_COUPON_RESULT extends InviteRequestResultType
+case object INVITE_AUTOMATIC_RESULT extends InviteRequestResultType
 case object USER_RESULT extends InviteRequestResultType
 
-case class InviteRequest(uuid: Option[UUID], email: String, emailId: Option[String]){
+case class InviteRequest(uuid: Option[UUID], email: String, emailId: Option[String], automatic: Option[Boolean]){
   require(validateEmailAddress(email), "Not a valid email address")
 }
 case class InviteRequests(inviteRequests: scala.List[InviteRequest])
@@ -24,4 +26,4 @@ case class Invite(email: String, code: Long, accepted: Option[Long], message: Op
 
 case class Invites(invites: scala.List[Invite])
 
-case class InviteRequestResult(resultType: InviteRequestResultType, result: Option[SetResult], queueNumber: Option[Int])
+case class InviteRequestResult(resultType: InviteRequestResultType, result: Option[SetResult], queueNumber: Option[Int], inviteCoupon: Option[String], inviteCode: Option[Int])
