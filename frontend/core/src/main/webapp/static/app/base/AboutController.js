@@ -45,6 +45,8 @@ function AboutController($scope, $window, AnalyticsService, ModalService) {
     }
 
     contentHeight = $window.innerHeight - 20;
+
+    // TODO: may not exist yet!
     footerHeight = policyModalElement.getElementsByClassName('modal-footer')[0].offsetHeight;
 
     policyModalElement.getElementsByClassName('modal-content')[0].style.maxHeight = contentHeight;

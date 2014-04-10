@@ -5,7 +5,7 @@
 // Controller for all main slides
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
-// which are part of every main slide collection. 
+// which are part of every main slide collection.
 function MainController(
   $scope, $location, $rootScope, $timeout, $window, $filter, $document,
   AccountService, UserSessionService, BackendClientService, ItemsService, ListsService,
@@ -21,7 +21,7 @@ function MainController(
     AccountService.putAccountPreferences();
   }
 
-  // Data arrays 
+  // Data arrays
   $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
   $scope.notes = NotesService.getNotes(UserSessionService.getActiveUUID());
@@ -41,7 +41,7 @@ function MainController(
   var synchronizeItemsDelay = 12 * 1000;
   var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
 
-  // Start synchronize interval or just start synchronize interval. 
+  // Start synchronize interval or just start synchronize interval.
   synchronizeItemsAndSynchronizeItemsDelayed();
 
   // Global variable bindToFocusEvent specifies if focus event should be listened to. Variable is true by default

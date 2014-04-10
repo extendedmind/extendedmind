@@ -33,6 +33,8 @@ function OnboardingService($q, $timeout, ModalService) {
     scrollEndCallback(scroller.currentPage.pageX);
   }
 
+  var onboardingSuccessCallback;
+
   return {
     initializeCarousel: function initializeCarousel(element, showOnboardingModalCallback) {
       scroller = new IScroll(element, {
@@ -65,9 +67,7 @@ function OnboardingService($q, $timeout, ModalService) {
       return scroller.pages.length;
     },
     launchOnboarding: function launchOnboarding(successCallback) {
-      onboardingModalOptions.success = {
-        fn: successCallback
-      };
+      onboardingSuccessCallback = successCallback;
       ModalService.createDialog('static/app/base/onboarding.html', onboardingModalOptions,
         {deferredShow: true});
     },
@@ -76,7 +76,7 @@ function OnboardingService($q, $timeout, ModalService) {
       scroller = null;
     },
     executeOnboardingSuccessCallback: function executeOnboardingSuccessCallback() {
-      onboardingModalOptions.success.fn();
+      onboardingSuccessCallback();
     }
   };
 }
