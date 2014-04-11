@@ -190,7 +190,8 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
               nodeList.foreach(node => {
                 println("Invite request for " + node.getProperty("email").asInstanceOf[String] 
                         + " has duplicate uuid " 
-                        + UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String]))
+                        + UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
+                        + " with id " + node.getId())
               })
             }
             fail(INTERNAL_SERVER_ERROR, "Ḿore than one " + label.labelName.toLowerCase() + " found with given " + nodeProperty + 
