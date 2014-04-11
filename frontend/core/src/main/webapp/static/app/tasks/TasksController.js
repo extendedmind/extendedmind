@@ -35,9 +35,9 @@ function TasksController($location, $scope, $routeParams, UserSessionService, Ta
 
   $scope.saveTask = function(task) {
     if (task.uuid){
-      AnalyticsService.do("saveTask", "new");
+      AnalyticsService.do('saveTask', 'new');
     }else{
-      AnalyticsService.do("saveTask", "existing");
+      AnalyticsService.do('saveTask', 'existing');
     }
     TasksService.saveTask(task, UserSessionService.getActiveUUID());
     window.history.back();
@@ -52,7 +52,7 @@ function TasksController($location, $scope, $routeParams, UserSessionService, Ta
   };
 
   $scope.editTaskTitle = function(task) {
-    AnalyticsService.do("editTaskTitle");
+    AnalyticsService.do('editTaskTitle');
     TasksService.saveTask(task, UserSessionService.getActiveUUID());
   };
 
@@ -62,10 +62,10 @@ function TasksController($location, $scope, $routeParams, UserSessionService, Ta
 
   $scope.taskChecked = function(task) {
     if (task.completed) {
-      AnalyticsService.do("uncompleteTask");
+      AnalyticsService.do('uncompleteTask');
       TasksService.uncompleteTask(task, UserSessionService.getActiveUUID());
     } else {
-      AnalyticsService.do("completeTask");
+      AnalyticsService.do('completeTask');
       TasksService.completeTask(task, UserSessionService.getActiveUUID());
     }
   };
@@ -76,7 +76,7 @@ function TasksController($location, $scope, $routeParams, UserSessionService, Ta
   };
 
   $scope.deleteTask = function(task) {
-    AnalyticsService.do("deleteTask");
+    AnalyticsService.do('deleteTask');
     TasksService.deleteTask(task, UserSessionService.getActiveUUID());
   };
 
@@ -98,12 +98,12 @@ function TasksController($location, $scope, $routeParams, UserSessionService, Ta
     delete subtask.title;
 
     TasksService.saveTask(subtaskToSave, UserSessionService.getActiveUUID()).then(function(/*subtaskToSave*/){
-      AnalyticsService.do("addTask");
+      AnalyticsService.do('addTask');
     });
   };
 
   $scope.taskQuickEditDone = function(task) {
-    AnalyticsService.do("taskQuickEditDone");
+    AnalyticsService.do('taskQuickEditDone');
     TasksService.saveTask(task, UserSessionService.getActiveUUID());
     $scope.close(task, true);
   };
