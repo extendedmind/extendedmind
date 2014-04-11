@@ -9,7 +9,7 @@ function SignupController($location, $scope, $rootScope, $routeParams, $window, 
 
   AuthenticationService.getInvite(inviteResponseCode, $routeParams.email).then(function(inviteResponse) {
     if (inviteResponse.data.accepted) {
-      location.url($location.path());
+      $location.url($location.path());
       if ($rootScope.packaging.endsWith('phonegap')){
         $location.path('/login');
       }else {
