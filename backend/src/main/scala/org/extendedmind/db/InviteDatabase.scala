@@ -191,11 +191,35 @@ trait InviteDatabase extends UserDatabase {
         // Add all back to index
         val inviteRequestNodes = findNodesByLabel(MainLabel.REQUEST)
         var count = 0
+        val inviteRequestUUIDMap = scala.collection.mutable.HashMap.empty[String,Node]
+
         inviteRequestNodes.foreach(inviteRequestNode => {
-          if (inviteRequestNode.getRelationships().toList.isEmpty) {
-            createInviteRequestModifiedIndex(inviteRequestNode)
-            count += 1
-          }
+          
+          val uuid = inviteRequestNode.getProperty("uuid").asInstanceOf[String]
+          // Because of our duplicate UUID bug, check that this isn't on the list already
+          if (inviteRequestUUIDMap.contains(uuid)){
+            val duplicateNode =
+              if (inviteRequestNode.getRelationships().toList.isEmpty){
+                // Prefer earlier
+                inviteRequestNode
+              }else {
+                inviteRequestUUIDMap.get(uuid).get
+              }
+            // Delete duplicate
+            if (duplicateNode.getRelationships().toList.isEmpty){
+              println("Deleting invite request for " + duplicateNode.getProperty("email").asInstanceOf[String] 
+                        + " has duplicate uuid " 
+                        + UUIDUtils.getUUID(duplicateNode.getProperty("uuid").asInstanceOf[String])
+                        + " with id " + duplicateNode.getId())
+              duplicateNode.delete
+            }
+          }else {
+            inviteRequestUUIDMap.put(uuid, inviteRequestNode)
+            if (inviteRequestNode.getRelationships().toList.isEmpty) {
+              createInviteRequestModifiedIndex(inviteRequestNode)
+              count += 1
+            }
+          }       
         })
         Right(CountResult(count))
     }
