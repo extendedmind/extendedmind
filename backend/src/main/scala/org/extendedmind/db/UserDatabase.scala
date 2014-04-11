@@ -82,32 +82,36 @@ trait UserDatabase extends AbstractGraphDatabase {
 		  				   userLabel: Option[Label] = None, emailVerified: Option[Long] = None): Response[(Node, Option[Long])] = {
     withTx{
       implicit neo4j =>
-        val userNode = createNode(user, MainLabel.OWNER, OwnerLabel.USER)
-        if (userLabel.isDefined) userNode.addLabel(userLabel.get)
-        setUserPassword(userNode, plainPassword)
-        userNode.setProperty("email", user.email)
-        if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
+       	if (findNodesByLabelAndProperty(OwnerLabel.USER, "email", user.email).toList.size > 0){
+       	  fail(INVALID_PARAMETER, "User already exists with given email " + user.email)
+       	}else{
+          val userNode = createNode(user, MainLabel.OWNER, OwnerLabel.USER)
+          if (userLabel.isDefined) userNode.addLabel(userLabel.get)
+          setUserPassword(userNode, plainPassword)
+          userNode.setProperty("email", user.email)
+          if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
         
-        val emailVerificationCode = if (emailVerified.isDefined){
-	      // When the user accepts invite using a code sent to her email, 
-	      // that means that the email is also verified
-	      userNode.setProperty("emailVerified", emailVerified.get)
-	      None
-	    }else {
-	      // Need to create a verification code
-	      val emailVerificationCode = Random.generateRandomUnsignedLong
-	      userNode.setProperty("emailVerificationCode", emailVerificationCode)      
-	      Some(emailVerificationCode)
-	    }
+            val emailVerificationCode = if (emailVerified.isDefined){
+    	    // When the user accepts invite using a code sent to her email, 
+	        // that means that the email is also verified
+	        userNode.setProperty("emailVerified", emailVerified.get)
+	        None
+	      }else {
+	        // Need to create a verification code
+	        val emailVerificationCode = Random.generateRandomUnsignedLong
+	        userNode.setProperty("emailVerificationCode", emailVerificationCode)      
+	        Some(emailVerificationCode)
+	      }
                 
-        // Give user read permissions to common collectives
-        val collectivesList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
-        if (!collectivesList.isEmpty) {
-          collectivesList.foreach(collective => {
-            userNode --> SecurityRelationship.CAN_READ --> collective;
-          })
-        }
-        Right((userNode, emailVerificationCode))
+          // Give user read permissions to common collectives
+          val collectivesList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
+          if (!collectivesList.isEmpty) {
+            collectivesList.foreach(collective => {
+              userNode --> SecurityRelationship.CAN_READ --> collective;
+            })
+          }
+          Right((userNode, emailVerificationCode))
+       	}
     }
   }
   
