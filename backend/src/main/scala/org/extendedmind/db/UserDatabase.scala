@@ -163,6 +163,14 @@ trait UserDatabase extends AbstractGraphDatabase {
         if (nodeIter.toList.isEmpty) {
           fail(INVALID_PARAMETER, "No users found with given email " + email)
         } else if (nodeIter.toList.size > 1) {
+
+          nodeIter.toList.foreach(node => {
+            println("User " + node.getProperty("email").asInstanceOf[String] 
+                    + " has duplicate node " 
+                    + UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
+                    + " with id " + node.getId())
+          })
+          
           fail(INTERNAL_SERVER_ERROR, "Ḿore than one user found with given email " + email)
         } else
           Right(nodeIter.toList(0))
