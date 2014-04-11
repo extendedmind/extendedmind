@@ -15,6 +15,7 @@ trait API extends HttpService {
   // User
   val postSignUp = post & path("signup".r)
   val getUser = get & path("user".r)
+  val deleteUser = delete & path("user" / JavaUUID)
   
   // Invite
   val postInvite = post & path(JavaUUID / "invite")

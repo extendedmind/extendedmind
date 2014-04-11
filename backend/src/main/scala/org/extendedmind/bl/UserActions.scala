@@ -87,6 +87,10 @@ trait UserActions {
     db.changeUserType(userUUID, userType)
   }
   
+  def destroyUser(userUUID: UUID)(implicit log: LoggingAdapter): Response[DestroyResult] = {
+    log.info("destroyUser: {}", userUUID)
+    db.destroyUser(userUUID)
+  }
 }
 
 class UserActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, 

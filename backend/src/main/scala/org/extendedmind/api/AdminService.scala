@@ -62,6 +62,22 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
+      deleteUser {userUUID =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          // Only admins can destroy invite requests
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[DestroyResult] {
+                setLogContext(securityContext)
+                userActions.destroyUser(userUUID) match {
+                  case Right(result) => processResult(result)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
       putInviteRequest { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can put invite requests

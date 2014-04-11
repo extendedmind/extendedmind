@@ -76,6 +76,35 @@ trait UserDatabase extends AbstractGraphDatabase {
     Right(CountResult(3))
   }
   
+  def destroyUser(userUUID: UUID): Response[DestroyResult] = {
+    withTx {
+      implicit neo4j =>
+        val user = getNode(userUUID, OwnerLabel.USER)
+        if (user.isLeft) Left(user.left.get)
+        else {
+          val relationships = user.right.get.getRelationships().toList
+          if (relationships.size > 0) {
+            // The minimum is invite and
+            if (relationships.size > 2){
+              return fail(INVALID_PARAMETER, "Can't destroy user that has more than two relationships, has " + relationships.size)
+            }
+            relationships.foreach(relationship => {
+              if (relationship.getType.name != SecurityRelationship.IS_ORIGIN.name 
+                  && relationship.getType.name != SecurityRelationship.CAN_READ.name
+                  && relationship.getType.name != SecurityRelationship.CAN_READ_WRITE.name){
+                return fail(INVALID_PARAMETER, "Can't delete relationship of type " + relationship.getType.name)
+              }else{
+                relationship.delete()
+              }
+            })
+          }
+          // Delete it completely
+          user.right.get.delete()
+          Right(DestroyResult(scala.List(userUUID)))
+        }
+    }
+  }
+  
   // PRIVATE
   
   protected def createUser(user: User, plainPassword: String,
