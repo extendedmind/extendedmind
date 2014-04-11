@@ -1,4 +1,4 @@
-/* global $, bindToFocusEvent, bindToResumeEvent */
+/* global $, bindToFocusEvent */
 
 'use strict';
 
