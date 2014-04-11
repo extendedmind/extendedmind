@@ -25,6 +25,14 @@ function ItemsController($location, $routeParams, $scope, UserSessionService, It
     window.history.back();
   };
 
+  $scope.addNewItem = function addNewItem() {
+    if ($scope.item.title && $scope.item.title.length > 0) {
+      ItemsService.saveItem({title: $scope.item.title}, UserSessionService.getActiveUUID()).then(function(/*item*/){
+        $scope.item.title = '';
+      });
+    }
+  };
+
   $scope.cancelEdit = function() {
     window.history.back();
   };
