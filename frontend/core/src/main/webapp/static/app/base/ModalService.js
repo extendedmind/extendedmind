@@ -362,7 +362,7 @@ angular.module('em.services').factory('ModalService', ["$document", "$compile", 
                       '<button class="btn btn-primary" ng-click="$modalSuccess()">{{$modalSuccessLabel}}</button>';
                 }
 
-                return '<div class="modal-footer>"' +
+                return '<div class="modal-footer">' +
                     footerContents +
                     '</div>';
             };
