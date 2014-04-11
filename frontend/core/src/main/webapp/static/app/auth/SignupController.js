@@ -9,7 +9,14 @@ function SignupController($location, $scope, $rootScope, $routeParams, $window, 
 
   AuthenticationService.getInvite(inviteResponseCode, $routeParams.email).then(function(inviteResponse) {
     if (inviteResponse.data.accepted) {
-      $location.path('/login');
+      location.url($location.path());
+      if ($rootScope.packaging.endsWith('phonegap')){
+        $location.path('/login');
+      }else {
+        // Direct user to the welcome page so that it is possible to load app
+        // from the invite link, when used from the web
+        $location.path('/welcome');
+      }
     } else {
       $scope.user.username = inviteResponse.data.email;
     }
