@@ -1,18 +1,18 @@
 'use strict';
 
-function AboutController($scope, $window, AnalyticsService, ModalService) {
+function AboutController($http, $q, $scope, $window, AnalyticsService, ModalService) {
   var policyModalElement, contentHeight, footerHeight;
 
   AnalyticsService.visit('about');
 
   $scope.openTermsOfServiceModal = function openTermsOfServiceModal() {
     AnalyticsService.visit('terms');
-    initializePolicyModal('http://ext.md/terms.html');
+    constructPolicyModal('http://ext.md/terms.html');
   };
 
   $scope.openPrivacyPolicyModal = function openPrivacyPolicyModal() {
     AnalyticsService.visit('privacy');
-    initializePolicyModal('http://ext.md/privacy.html');
+    constructPolicyModal('http://ext.md/privacy.html');
   };
 
   $scope.closePolicyModal = function closePolicyModal() {
@@ -24,19 +24,28 @@ function AboutController($scope, $window, AnalyticsService, ModalService) {
     angular.element($window).unbind('resize', adjustModalMaxHeightAndPosition);
   }
 
-  function initializePolicyModal(templateUrl) {
+  function constructPolicyModal(policyModalTemplateUrl) {
     var policyModalOptions = {
       scope: $scope,
       id: 'policy-modal',
-      showHeaderCloseButton: false,
-      footerTemplateUrl: 'static/app/base/policyModalFooter.html'
+      showHeaderCloseButton: false
     };
 
-    ModalService.createDialog(templateUrl, policyModalOptions);
-    policyModalElement = document.getElementById('policy-modal');
+    $q.all([
+      $http.get(policyModalTemplateUrl),
+      $http.get('static/app/base/policyModalFooter.html')
+      ]).then(initializePolicyModal);
 
-    angular.element(policyModalElement).bind('show.bs.modal', adjustModalMaxHeightAndPosition);
-    angular.element($window).bind('resize', adjustModalMaxHeightAndPosition);
+    function initializePolicyModal(policyModalElements) {
+      policyModalOptions.template = policyModalElements[0].data;
+      policyModalOptions.footerTemplate = policyModalElements[1].data;
+
+      ModalService.createDialog(null, policyModalOptions);
+      policyModalElement = document.getElementById('policy-modal');
+
+      angular.element(policyModalElement).bind('show.bs.modal', adjustModalMaxHeightAndPosition);
+      angular.element($window).bind('resize', adjustModalMaxHeightAndPosition);
+    }
   }
 
   function adjustModalMaxHeightAndPosition() {
@@ -45,8 +54,6 @@ function AboutController($scope, $window, AnalyticsService, ModalService) {
     }
 
     contentHeight = $window.innerHeight - 20;
-
-    // TODO: may not exist yet!
     footerHeight = policyModalElement.getElementsByClassName('modal-footer')[0].offsetHeight;
 
     policyModalElement.getElementsByClassName('modal-content')[0].style.maxHeight = contentHeight;
@@ -63,5 +70,5 @@ function AboutController($scope, $window, AnalyticsService, ModalService) {
   }
 }
 
-AboutController['$inject'] = ['$scope', '$window', 'AnalyticsService', 'ModalService'];
+AboutController['$inject'] = ['$http', '$q', '$scope', '$window', 'AnalyticsService', 'ModalService'];
 angular.module('em.app').controller('AboutController', AboutController);
