@@ -306,7 +306,10 @@ footer {
       // FIXME: This color is strange
       color: @default-element;
     }
-    a.collective:active {
+    a:hover {
+      color: @default-element-hover;
+    }
+    a:active {
       color: @default-element-pressed;
     }
   }
@@ -336,6 +339,9 @@ footer {
     a {
       // http://getbootstrap.com/components/#dropdowns
       display: block;
+    }
+    a:active {
+      color: @default-element-pressed;
     }
   }
 }
