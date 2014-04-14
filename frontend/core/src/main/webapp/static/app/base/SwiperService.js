@@ -1,6 +1,6 @@
 'use strict';
 
-// iDangero.us Swiper Service       
+// iDangero.us Swiper Service
 // http://www.idangero.us/sliders/swiper/api.php
 function SwiperService($q) {
 
@@ -46,6 +46,8 @@ function SwiperService($q) {
       var slideIndex = getSlideIndexBySlidePath(overrideSwiperParams[swiperPath].initialSlidePath, swiperSlidesPaths);
       if (slideIndex !== undefined){
         initialSlideIndex = slideIndex;
+        // set initial slide path to undefined for future swiper instances
+        overrideSwiperParams[swiperPath].initialSlidePath = undefined;
       }
     }
     return initialSlideIndex;
@@ -66,7 +68,7 @@ function SwiperService($q) {
       onResistanceBefore: onResistanceBeforeCallback,
       onResistanceAfter: onResistanceAfterCallback
     };
-    
+
     swiperParams.initialSlide = getInitialSlideIndex(swiperPath, swiperSlidesPaths);
     if (swiperType === 'main'){
       swiperParams.mode = 'horizontal';
@@ -175,31 +177,31 @@ function SwiperService($q) {
         }
       }
     },
-    swipeTo: function(slidePath) {
+    swipeTo: function(slidePath, transitionSpeed) {
       var swiperInfos = getSwiperInfosBySlidePath(slidePath);
 
-      // First, swipe in the main swiper to the right index 
+      // First, swipe in the main swiper to the right index
       // Second, swipe (vertically) with the page swiper
-      this.swipeMainSlide(slidePath, swiperInfos);
-      this.swipePageSlide(slidePath, swiperInfos);
+      this.swipeMainSlide(slidePath, swiperInfos, transitionSpeed);
+      this.swipePageSlide(slidePath, swiperInfos, transitionSpeed);
     },
-    swipeMainSlide: function(slidePath, swiperInfos) {
+    swipeMainSlide: function(slidePath, swiperInfos, transitionSpeed) {
       swiperInfos = swiperInfos || getSwiperInfosBySlidePath(slidePath);
 
       if (swiperInfos.main){
         var mainSwiperIndex = getSlideIndexBySlidePath(slidePath, swiperInfos.main.slidesPaths);
         if (mainSwiperIndex !== undefined){
-          swiperInfos.main.swiper.swipeTo(mainSwiperIndex);
+          swiperInfos.main.swiper.swipeTo(mainSwiperIndex, transitionSpeed);
         }
       }
     },
-    swipePageSlide: function(slidePath, swiperInfos) {
+    swipePageSlide: function(slidePath, swiperInfos, transitionSpeed) {
       swiperInfos = swiperInfos || getSwiperInfosBySlidePath(slidePath);
 
       if (swiperInfos.page) {
         var pageSwiperIndex = swiperInfos.page.slidesPaths.indexOf(slidePath);
         if (pageSwiperIndex !== -1){
-          swiperInfos.page.swiper.swipeTo(pageSwiperIndex);
+          swiperInfos.page.swiper.swipeTo(pageSwiperIndex, transitionSpeed);
         }
       }
     },

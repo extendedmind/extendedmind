@@ -7,8 +7,8 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
 function MainController(
-  $scope, $location, $rootScope, $timeout, $window, $filter, $document,
-  AccountService, UserSessionService, BackendClientService, ItemsService, ListsService,
+  $filter, $location, $rootScope, $scope, $timeout, $window,
+  AccountService, UserSessionService, ItemsService, ListsService,
   TagsService, TasksService, NotesService, FilterService, OnboardingService, SwiperService) {
 
   // ONBOARDING
@@ -143,29 +143,44 @@ function MainController(
   $scope.saveOmnibarText = function(omnibarText) {
     if (omnibarText.title && omnibarText.title.length > 0){
       ItemsService.saveItem({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(/*item*/){
-        $scope.omnibarText.title = '';
         $scope.clearOmnibar();
+        if ($scope.feature !== 'inbox') {
+          $location.path(UserSessionService.getOwnerPrefix() + '/inbox');
+        }
       });
     }
   };
 
   $scope.saveAsTask = function(omnibarText) {
     TasksService.saveTask({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(){
-      $scope.omnibarText.title = '';
       $scope.clearOmnibar();
+
+      if ($scope.feature !== 'tasks') {
+        SwiperService.setInitialSlidePath('tasks', 'tasks/details');
+        SwiperService.setInitialSlidePath('tasks/details', 'tasks/details/unsorted');
+        $location.path(UserSessionService.getOwnerPrefix() + '/tasks');
+      } else {
+        var swipeTransitionSpeed = 0;
+        SwiperService.swipeTo('tasks/details', swipeTransitionSpeed);
+        SwiperService.swipeTo('tasks/details/unsorted', swipeTransitionSpeed);
+      }
     });
   };
 
   $scope.saveAsNote = function(omnibarText) {
     NotesService.saveNote({title: omnibarText.title}, UserSessionService.getActiveUUID());
-    $scope.omnibarText.title = '';
     $scope.clearOmnibar();
+    if ($scope.feature !== 'notes') {
+      $location.path(UserSessionService.getOwnerPrefix() + '/notes');
+    } else {
+      var swipeTransitionSpeed = 0;
+      SwiperService.swipeTo('notes/home', swipeTransitionSpeed);
+    }
   };
 
   $scope.clickOmnibarPlus = function(omnibarText) {
     if (omnibarText.title && omnibarText.title.length > 0){
       $scope.saveOmnibarText(omnibarText);
-      $scope.clearOmnibar();
     }else{
       $location.path(UserSessionService.getOwnerPrefix() + '/items/new');
     }
@@ -215,8 +230,8 @@ function MainController(
 }
 
 MainController.$inject = [
-'$scope', '$location', '$rootScope', '$timeout', '$window', '$filter', '$document',
-'AccountService', 'UserSessionService', 'BackendClientService', 'ItemsService', 'ListsService',
+'$filter', '$location', '$rootScope', '$scope', '$timeout', '$window',
+'AccountService', 'UserSessionService', 'ItemsService', 'ListsService',
 'TagsService', 'TasksService', 'NotesService', 'FilterService', 'OnboardingService', 'SwiperService'
 ];
 angular.module('em.app').controller('MainController', MainController);
