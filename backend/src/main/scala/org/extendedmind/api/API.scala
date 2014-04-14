@@ -12,44 +12,37 @@ trait API extends HttpService {
   // All valid paths
   val getRoot = get & path("")
 
-  // User
-  val postSignUp = post & path("signup".r)
-  val getUser = get & path("user".r)
-  val deleteUser = delete & path("user" / JavaUUID)
-  
-  // Invite
+  // INVITE
   val postInvite = post & path(JavaUUID / "invite")
   val postInviteRequest = post & path("invite" / "request".r)
-  val putInviteRequest = put & path("invite" / "request".r)
-  val getInviteRequests = get & path("invite" / "requests".r)
   val getInviteRequestQueueNumber = get & path("invite" / "request" / JavaUUID)
-  val postInviteRequestAccept = post & path("invite" / "request" / JavaUUID / "accept")
   val postInviteRequestBypass = post & path("invite" / "request" / JavaUUID / "bypass")
-  val deleteInviteRequest = delete & path("invite" / "request" / JavaUUID)
   val getInvite = get & path("invite" / HexLongNumber)  
-  val getInvites = get & path("invites".r)
   val postInviteAccept = post & path("invite" / HexLongNumber / "accept")
   
-  // Security
+  // USER
+  val postSignUp = post & path("signup".r)  
+  val getAccount = get & path("account".r)
+  val putAccount = put & path("account".r)
+  val getUser = get & path("user".r)  
+
+  // SECURITY
   val postAuthenticate = post & path("authenticate".r)
   val postLogout = post & path("logout".r)
   val putChangePassword = put & path("password".r)
-  val getAccount = get & path("account".r)
-  val putAccount = put & path("account".r)
   val putEmail = put & path("email".r)
-  val postChangeUserType = post & path("user" / JavaUUID / "type" / IntNumber)
   val postForgotPassword = post & path("password" / "forgot".r)
   val getPasswordResetExpires = get & path("password" / HexLongNumber)
   val postResetPassword = post & path("password" / HexLongNumber / "reset")
   val postVerifyEmail = post & path("email" / HexLongNumber / "verify")
   
-  // Collectives
+  // COLLECTIVES
   val putNewCollective = put & path("collective".r)
   val putExistingCollective = put & path("collective" / JavaUUID)
   val getCollective = get & path("collective" / JavaUUID)
   val postCollectiveUserPermission = post & path("collective" / JavaUUID / "user" / JavaUUID)
   
-  // Items
+  // ITEMS
   val getItems = get & path(JavaUUID / "items")
   val getItem = get & path(JavaUUID / "item" / JavaUUID)
   val putNewItem = put & path(JavaUUID / "item")
@@ -57,7 +50,7 @@ trait API extends HttpService {
   val deleteItem = delete & path(JavaUUID / "item" / JavaUUID)
   val undeleteItem = post & path(JavaUUID / "item" / JavaUUID / "undelete")
   
-  // Tasks
+  // TASKS
   val getTask = get & path(JavaUUID / "task" / JavaUUID)
   val putNewTask = put & path(JavaUUID / "task")
   val putExistingTask = put & path(JavaUUID / "task" / JavaUUID)
@@ -67,14 +60,14 @@ trait API extends HttpService {
   val uncompleteTask = post & path(JavaUUID / "task" / JavaUUID / "uncomplete")
   val assignTask = post & path(JavaUUID / "task" / JavaUUID / "assign")
   
-  // Notes
+  // NOTES
   val getNote = get & path(JavaUUID / "note" / JavaUUID)
   val putNewNote = put & path(JavaUUID / "note")
   val putExistingNote = put & path(JavaUUID / "note" / JavaUUID)
   val deleteNote = delete & path(JavaUUID / "note" / JavaUUID)
   val undeleteNote = post & path(JavaUUID / "note" / JavaUUID / "undelete")
   
-  // Lists
+  // LISTS
   val getList = get & path(JavaUUID / "list" / JavaUUID)
   val putNewList = put & path(JavaUUID / "list")
   val putExistingList = put & path(JavaUUID / "list" / JavaUUID)
@@ -84,19 +77,31 @@ trait API extends HttpService {
   // TODO:
   val unarchiveList = post & path(JavaUUID / "list" / JavaUUID / "unarchive")
   
-  // Tags
+  // TAGS
   val getTag = get & path(JavaUUID / "tag" / JavaUUID)
   val putNewTag = put & path(JavaUUID / "tag")
   val putExistingTag = put & path(JavaUUID / "tag" / JavaUUID)
   val deleteTag = delete & path(JavaUUID / "tag" / JavaUUID)
   val undeleteTag = post & path(JavaUUID / "tag" / JavaUUID / "undelete")
   
-  // Admin
-  val resetTokens = post & path("tokens" / "reset".r)
-  val rebuildItemsIndex = post & path(JavaUUID / "items" / "rebuild")
-  val rebuildUserIndexes = post & path("users"/ "rebuild".r)
-  val rebuildInviteRequestsIndex = post & path("invite"/ "requests"/ "rebuild".r)
-  val migrateToLists = post & path(JavaUUID / "migrate"/ "lists")
+  // ADMIN
+  // Users
+  val deleteUser = delete & path("admin" / "user" / JavaUUID)
+  val postChangeUserType = post & path("admin" / "user" / JavaUUID / "type" / IntNumber)  
+  val rebuildUserItemsIndex = post & path("admin" / "user" / JavaUUID / "items" / "rebuild")
+  val migrateUserToLists = post & path("admin" / "user" / JavaUUID / "migrate"/ "lists")
+  val rebuildUserIndexes = post & path("admin" / "users"/ "rebuild".r)
+  // Invites
+  val rebuildInviteRequestsIndex = post & path("admin" / "invite"/ "requests"/ "rebuild".r)
+  val putInviteRequest = put & path("admin" / "invite" / "request".r)  
+  val getInviteRequests = get & path("admin" / "invite" / "requests".r)
+  val deleteInviteRequest = delete & path("admin" / "invite" / "request" / JavaUUID)  
+  val postInviteRequestAccept = post & path("admin" / "invite" / "request" / JavaUUID / "accept")
+  val getInvites = get & path("admin" / "invites".r)
+  // Security
+  val resetTokens = post & path("admin" / "tokens" / "reset".r)
+  
+  // SYSTEM
   val shutdown = post & path("shutdown".r)
 
 }

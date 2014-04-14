@@ -52,10 +52,10 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
   describe("In the best case, InviteService") {
 
     it("should successfully create invite requests with POST to /invite/request "
-      + "and get them back with GET to /invite/requests "
+      + "and get them back with GET to /admin/invite/requests "
       + "and get the right order number with GET to /invite/request/[UUID] "
-      + "and delete it with DELETE to /invite/request/[UUID] "
-      + "and accept the request with POST to /invite/request/[UUID]/accept "
+      + "and delete it with DELETE to /admin/invite/request/[UUID] "
+      + "and accept the request with POST to /admin/invite/request/[UUID]/accept "
       + "and accept the invite with POST to /invite/[code]/accept ") {
       val testEmail = "example@example.com"
       val testInviteRequest = InviteRequest(None, testEmail, None, None)
@@ -93,7 +93,7 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                   verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail3, inviteRequestResponse3.result.get.uuid.get)
                   // Get the request back
                   val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-                  Get("/invite/requests") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  Get("/admin/invite/requests") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val inviteRequests = entityAs[InviteRequests]
                     writeJsonOutput("inviteRequestsResponse", entityAs[String])
                     inviteRequests.inviteRequests(0).email should be(testEmail)
@@ -111,7 +111,7 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                     }
 
                     // Delete the middle invite request
-                    Delete("/invite/request/" + inviteRequestResponse2.result.get.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    Delete("/admin/invite/request/" + inviteRequestResponse2.result.get.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                       val deleteInviteRequestResponse = entityAs[DestroyResult]
                       writeJsonOutput("deleteInviteRequestResponse", entityAs[String])
                       deleteInviteRequestResponse.destroyed.size should be(1)
@@ -120,8 +120,9 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                     Get("/invite/request/" + inviteRequestResponse3.result.get.uuid.get) ~> route ~> check {
                       entityAs[InviteRequestQueueNumber].queueNumber should be(2)
                     }
+                    
                     // Accept invite request  
-                    Post("/invite/request/" + inviteRequestResponse.result.get.uuid.get + "/accept") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    Post("/admin/invite/request/" + inviteRequestResponse.result.get.uuid.get + "/accept") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                       val acceptInviteRequestResponse = entityAs[SetResult]
                       writeJsonOutput("acceptInviteRequestResponse", entityAs[String])
                       acceptInviteRequestResponse.uuid should not be None
@@ -134,7 +135,7 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                     }
 
                     // Get the invites
-                    Get("/invites") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    Get("/admin/invites") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                       val invites = entityAs[Invites]
                       writeJsonOutput("invitesResponse", entityAs[String])
                       assert(invites.invites.size === 1)

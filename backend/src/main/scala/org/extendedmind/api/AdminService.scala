@@ -245,7 +245,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      rebuildItemsIndex { ownerUUID =>
+      rebuildUserItemsIndex { ownerUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
@@ -290,7 +290,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      migrateToLists { ownerUUID =>
+      migrateUserToLists { ownerUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {

@@ -50,7 +50,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
   }
 
   describe("In the best case, AdminService") {
-    it("should successfully put invite request with PUT to /invite/request "
+    it("should successfully put invite request with PUT to /admin/invite/request "
       + "and get it back with forced UUID from GET to /invite/request/[UUID]") {
       val uuid = "f107899f-dd00-4754-bd7e-7ffa5399d604"
       val newInviteRequest = InviteRequest(
@@ -59,7 +59,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         Some("messageId"),
         None)
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      Put("/invite/request",
+      Put("/admin/invite/request",
         marshal(newInviteRequest).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           writeJsonOutput("inviteRequestResponse", entityAs[String])
           val inviteRequestResponse = entityAs[SetResult]
@@ -69,7 +69,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
           Get("/invite/request/" + uuid) ~> route ~> check {
             entityAs[InviteRequestQueueNumber].queueNumber should be(1)
           }
-          Get("/invite/requests") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          Get("/admin/invite/requests") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
             val inviteRequests = entityAs[InviteRequests]
             inviteRequests.inviteRequests(0).uuid.get.toString() should equal(uuid)
             inviteRequests.inviteRequests(0).emailId.get should equal("messageId")
@@ -160,34 +160,34 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/user?email=" + INFO_EMAIL) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val infoUser = entityAs[PublicUser]
-        Post("/user/" + infoUser.uuid + "/type/" + Token.ALFA) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        Post("/admin/user/" + infoUser.uuid + "/type/" + Token.ALFA) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           writeJsonOutput("changeUserTypeResponse", entityAs[String])
           val changeUserTypeResponse = entityAs[SetResult]
           changeUserTypeResponse.modified should not be None
           val infoAuthenticateResponse = emailPasswordAuthenticate(INFO_EMAIL, INFO_PASSWORD)
           infoAuthenticateResponse.userType should equal(Token.ALFA)
-          Post("/user/" + infoUser.uuid + "/type/" + Token.NORMAL) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          Post("/admin/user/" + infoUser.uuid + "/type/" + Token.NORMAL) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
             val infoReAuthenticateResponse = emailPasswordAuthenticate(INFO_EMAIL, INFO_PASSWORD)
             infoReAuthenticateResponse.userType should equal(Token.NORMAL)
           }
         }
       }
     }
-    it("should successfully reset tokens with POST to /tokens/reset, " +
-      "rebuild user indexes with POST to /users/rebuild, " +
-      "and rebuild item indexes with POST to /[userUUID]/items/rebuild") {
-      Post("/tokens/reset") ~> addCredentials(BasicHttpCredentials("token", emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD).token.get)) ~> route ~> check {
+    it("should successfully reset tokens with POST to /admin/tokens/reset, " +
+      "rebuild user indexes with POST to /admin/users/rebuild, " +
+      "and rebuild item indexes with POST to /admin/[userUUID]/items/rebuild") {
+      Post("/admin/tokens/reset") ~> addCredentials(BasicHttpCredentials("token", emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD).token.get)) ~> route ~> check {
         writeJsonOutput("tokensResetResponse", entityAs[String])
         val countResult = entityAs[CountResult]
         countResult.count should be(6)
       }
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      Post("/users/rebuild") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Post("/admin/users/rebuild") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("usersRebuildResponse", entityAs[String])
         val countResult = entityAs[CountResult]
         countResult.count should be(3)
       }
-      Post("/" + authenticateResponse.userUUID + "/items/rebuild") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Post("/admin/user/" + authenticateResponse.userUUID + "/items/rebuild") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("itemsRebuildResponse", entityAs[String])
         val countResult = entityAs[CountResult]
         countResult.count should be(22)
