@@ -6,7 +6,7 @@ import org.extendedmind.security.SecurityContext
 
 case class UserPreferences(onboarded: Option[String])
 
-case class User(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long],  
+case class User(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long], created: Option[Long],
                 email: String, emailVerified: Option[Long], cohort: Option[Int],
                 preferences: Option[UserPreferences])
            extends Container{
@@ -15,7 +15,7 @@ case class User(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long
 }
 
 object User{
-  def apply(email:String, cohort: Option[Int], preferences: Option[UserPreferences]) = new User(None, None, None, email, None, cohort, preferences)
+  def apply(email:String, cohort: Option[Int], preferences: Option[UserPreferences]) = new User(None, None, None, None, email, None, cohort, preferences)
 }
 
 case class SignUp(email: String, password: String, cohort: Option[Int], bypass: Option[Boolean]){

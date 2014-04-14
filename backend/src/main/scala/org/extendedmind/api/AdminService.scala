@@ -275,13 +275,13 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      rebuildInviteRequestsIndex { url =>
+      upgradeOwners { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
               Future[CountResult] {
                 setLogContext(securityContext)
-                adminActions.rebuildInviteRequestsIndex match {
+                adminActions.upgradeOwners match {
                   case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }
@@ -290,12 +290,13 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      migrateUserToLists { ownerUUID =>
+      rebuildInviteRequestsIndex { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
               Future[CountResult] {
-                adminActions.migrateToLists(ownerUUID) match {
+                setLogContext(securityContext)
+                adminActions.rebuildInviteRequestsIndex match {
                   case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }

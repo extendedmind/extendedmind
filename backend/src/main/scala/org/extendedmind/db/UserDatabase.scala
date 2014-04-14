@@ -76,6 +76,19 @@ trait UserDatabase extends AbstractGraphDatabase {
     Right(CountResult(3))
   }
   
+  def upgradeOwners: Response[CountResult] = {
+    withTx {
+      implicit neo4j =>
+        val owners = findNodesByLabel(MainLabel.OWNER)
+        var count = 0
+        owners.foreach(ownerNode => {
+          ownerNode.setProperty("created", (ownerNode.getProperty("modified").asInstanceOf[Long]))
+          count += 1
+        })
+        return Right(CountResult(count))
+    }
+  }
+  
   def destroyUser(userUUID: UUID): Response[DestroyResult] = {
     withTx {
       implicit neo4j =>
@@ -139,6 +152,10 @@ trait UserDatabase extends AbstractGraphDatabase {
               userNode --> SecurityRelationship.CAN_READ --> collective;
             })
           }
+          
+          // Finally, set created timestamp to now
+	      userNode.setProperty("created", System.currentTimeMillis())
+          
           Right((userNode, emailVerificationCode))
        	}
     }

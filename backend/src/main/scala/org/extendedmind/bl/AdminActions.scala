@@ -15,8 +15,13 @@ trait AdminActions {
   def db: GraphDatabase;
 
   def rebuildUserIndexes()(implicit log: LoggingAdapter): Response[CountResult] = {
-    log.info("rebuildUserIndex")
+    log.info("rebuildUserIndexes")
     db.rebuildUserIndexes
+  }
+  
+  def upgradeOwners()(implicit log: LoggingAdapter): Response[CountResult] = {
+    log.info("upgradeOwners")
+    db.upgradeOwners
   }
   
   def rebuildInviteRequestsIndex()(implicit log: LoggingAdapter): Response[CountResult] = {
@@ -32,13 +37,6 @@ trait AdminActions {
   def rebuildItemsIndex(ownerUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("rebuildItemsIndex")
     db.rebuildItemsIndex(ownerUUID)
-  }
-  
-  def migrateToLists(ownerUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
-    log.info("migrateToLists")
-    val countResult = db.migrateToLists(ownerUUID)
-    if (countResult.isRight) log.info("migrated " + countResult.right.get.count + " projects to lists")
-    countResult
   }
 
   def loadDatabase(implicit log: LoggingAdapter): Boolean = {

@@ -38,11 +38,6 @@ object TagLabel {
   val HISTORY = Label("HISTORY")
 }
 
-object ItemParentLabel {
-  val AREA = Label("AREA")
-  val PROJECT = Label("PROJECT")
-}
-
 object SecurityLabel {
   val PRIVATE = Label("PRIVATE")
   val EXCLUSIVE = Label("EXCLUSIVE") 
