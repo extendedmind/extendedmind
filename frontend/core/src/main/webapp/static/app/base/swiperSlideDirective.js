@@ -4,7 +4,7 @@ function swiperSlideDirective() {
   return {
     restrict: 'A',
     // All relevant business logic is in the container, which is
-    // injected into the link with require. ^ means search for parent 
+    // injected into the link with require. ^ means search for parent
     // elements for direcitive.
     require: '^swiperContainer',
     scope: {

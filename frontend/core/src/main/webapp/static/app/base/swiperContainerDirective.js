@@ -55,12 +55,12 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
 
         // (Re)inializes the swiper after the digest to make sure the whole
         // DOM is ready before this is done. Otherwise Swiper does not register
-        // the slides. It is in the registerSlide function to prevent the DOM 
+        // the slides. It is in the registerSlide function to prevent the DOM
         // from being incomplete before the swiper is created.
         //
-        // To get this to work, we have to know the expected slide count. 
-        // Using $scope.$evalAsync should have done the right thing, but it is 
-        // fired way too early - only the first slides is evaluated before it 
+        // To get this to work, we have to know the expected slide count.
+        // Using $scope.$evalAsync should have done the right thing, but it is
+        // fired way too early - only the first slides is evaluated before it
         // is fired. Using $timeout causes flickering and slows down everything.
         // https://groups.google.com/forum/#!topic/angular/SCc45uVhTt9
         // http://stackoverflow.com/a/17303759/2659424
@@ -116,9 +116,9 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
           oldSlideInfosIndex = getSlideInfosIndex(path);
         }
         if (oldSlideInfosIndex === undefined){
-          // If index is somewhere in the middle of the pack, we need to 
+          // If index is somewhere in the middle of the pack, we need to
           // increase bigger indexes by one
-          if ($scope.expectedSlides <= swiperSlideInfos.length){
+          if ($scope.expectedSlides <= swiperSlideInfos.length) {
             for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
               if (swiperSlideInfos[i].slideIndex >= index){
                 swiperSlideInfos[i].slideIndex += 1;

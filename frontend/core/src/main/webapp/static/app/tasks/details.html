@@ -18,7 +18,7 @@
                       </div>
                     </div>
                     <div ng-include="'static/app/tasks/addTask.html'"></div>
-                  </div>                  
+                  </div>
                 </div>
               </section>
             </div>
@@ -59,7 +59,7 @@
             <div class="inner-slide-content-container">
               <section class="unsorted">
                 <h3>unsorted</h3>
-                <div>              
+                <div>
                   <div class="inner-page-content-container" accordion>
                     <div ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}" ng-init="subtask = {}">
                       <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
@@ -73,7 +73,7 @@
               </section>
             </div>
           </div>
-        </div>        
+        </div>
       </div>
     </div>
   </div>
