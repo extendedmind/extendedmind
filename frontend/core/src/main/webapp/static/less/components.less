@@ -254,22 +254,10 @@ footer {
   a, span {
     font-size: @small-font-size;
     .font-bold;
-    margin-top: 2px;
   }
   a.feature-link {
     font-size: 1.17em;  // http://www.w3.org/TR/CSS2/sample.html
   }
-  a.feature-link.active {
-    margin-left: -18px;
-  }
-  a.active {
-    margin-left: -16px;
-  }
-  a.active:before {
-    content: '\2022';
-    margin-right: 10px;
-  }
-
   li#last-feature { // padding-bottom for li with last a.feature-link
     padding-bottom: @vertical-grid;
   }
@@ -312,6 +300,16 @@ footer {
     a:active {
       color: @default-element-pressed;
     }
+    a.feature-link.active {
+      margin-left: -18px;
+    }
+    a.active {
+      margin-left: -16px;
+    }
+    a.active:before {
+      content: '\2022';
+      margin-right: 10px;
+    }
   }
 }
 
@@ -331,21 +329,38 @@ footer {
         font-size: @drawer-menu-icon-size;
       }
     }
+    ul {
+      margin-top: 2px;
+    }
     a, span {
       color: #FEFFFF;
       padding-right: 30px;
       padding-left: 30px;
     }
+    a:active {
+      color: @default-element-pressed;
+    }
+    a.feature-link.active {
+      background-color: white;
+      color: black;
+    }
     a {
       // http://getbootstrap.com/components/#dropdowns
       display: block;
     }
-    a:active {
-      color: @default-element-pressed;
+    a.feature-link:active {
+      background-color: white;
+      color: black;
+    }
+    a.active:not(.feature-link) {
+      margin-left: -16px;
+    }
+    a.active:not(.feature-link):before {
+      content: '\2022';
+      margin-right: 10px;
     }
   }
 }
-
 
 // DATEPICKER
 
