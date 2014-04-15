@@ -96,24 +96,6 @@ Only universal code that would work by itself in any web page.
   }
 }
 
-
-// ANIMATIONS
-
-.animate-hide {
-  -webkit-transition: all linear 0.2s;
-  transition: all linear 0.2s;
-  opacity: 1;
-}
-
-.animate-hide.ng-hide-add,
-.animate-hide.ng-hide-remove {
-  display: block!important;
-}
-
-.animate-hide.ng-hide {
-  opacity: 0;
-}
-
 .fade-color(@fade-time) {
   -o-transition: @fade-time linear;
   -moz-transition: @fade-time linear;
@@ -585,4 +567,83 @@ a.content:active {
   /* W3C Markup, IE10 Release Preview */
   background-image: linear-gradient(to right, #FFFFFF 0%, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0) 75%, #FFFFFF 100%);
 
+}
+
+// ANIMATIONS
+
+.omnibar-animation.ng-enter, .omnibar-animation.ng-leave {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.omnibar-animation.ng-enter {
+  -webkit-animation: .3s fade-in;
+  -moz-animation: .3s fade-in;
+  -o-animation: .3s fade-in;
+  animation: .3s fade-in;
+
+  display: none;  // https://github.com/angular/angular.js/issues/4225
+}
+
+.omnibar-animation.ng-enter.ng-enter-active {
+  display: block; // https://github.com/angular/angular.js/issues/4225
+}
+
+.omnibar-animation.ng-leave {
+  -webkit-animation: .3s fade-out;
+  -moz-animation: .3s fade-out;
+  -o-animation: .3s fade-out;
+  animation: .3s fade-out;
+}
+
+// HIDE
+
+.omnibar-animation.ng-hide-add {
+  -webkit-animation: .3s fade-out;
+  -moz-animation: .3s fade-out;
+  -o-animation: .3s fade-out;
+  animation: .3s fade-out;
+}
+
+.omnibar-animation.ng-hide-remove {
+  -webkit-animation: .3s fade-in;
+  -moz-animation: .3s fade-in;
+  -o-animation: .3s fade-in;
+  animation: .3s fade-in;
+}
+
+.omnibar-animation.ng-hide-add, .omnibar-animation.ng-hide-remove {
+  display: block !important;
+  position: absolute;
+}
+
+.omnibar-animation.ng-hide {
+  opacity: 0;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@-moz-keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@-webkit-keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@-moz-keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@-webkit-keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
