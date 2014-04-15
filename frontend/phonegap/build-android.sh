@@ -22,6 +22,9 @@ fi
 # run phonegap command locally
 cordova build android
 
+# copy platform specific index file
+cp www/phonegap-android.html platforms/android/assets/www/index.html
+
 cd platforms/android
 
 # make new build using ant release configuration
