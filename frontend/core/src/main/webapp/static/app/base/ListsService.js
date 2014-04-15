@@ -62,7 +62,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       return lists[ownerUUID].activeLists;
     },
     getArchivedLists: function(ownerUUID) {
-      initializeArrays(ownerUUID);      
+      initializeArrays(ownerUUID);
       return lists[ownerUUID].archivedLists;
     },
     getListByUUID: function(uuid, ownerUUID) {
@@ -105,6 +105,10 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       return deferred.promise;
     },
     deleteList: function(list, ownerUUID) {
+      // Check if list has already been deleted
+      if (lists[ownerUUID].deletedLists.indexOf(list) > -1){
+        return;
+      }
       BackendClientService.deleteOnline('/api/' + ownerUUID + '/list/' + list.uuid,
                this.deleteListRegex).then(function(result) {
         if (result.data){
@@ -212,6 +216,6 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
     }
   };
 }
-  
+
 ListsService.$inject = ['$q', 'BackendClientService', 'ArrayService', 'TagsService'];
 angular.module('em.services').factory('ListsService', ListsService);

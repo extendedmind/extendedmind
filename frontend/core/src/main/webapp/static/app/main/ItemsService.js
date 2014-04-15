@@ -45,7 +45,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
     UserSessionService.setLatestModified(latestModified, ownerUUID);
   }
 
-  // Register callbacks to BackendClientService 
+  // Register callbacks to BackendClientService
   var synchronizeCallback = function(request, response /*, queue*/) {
     if (!jQuery.isEmptyObject(response)){
       // TODO: The entire offline queue should be evaluated to see, if
@@ -109,11 +109,11 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
     // PUT
     // ***
     }else if (request.content.method === 'put'){
-      // TODO: Make this better by not replacing the UUID and modified values 
+      // TODO: Make this better by not replacing the UUID and modified values
       //       right away but instead creating a realUuid and realModified values
       //       that can be traded for the real ones on synchronize callback. That
       //       would ensure that when going online, the items don't change places
-      //       and also (if using 'track by' with uuid+modified key in lists) no 
+      //       and also (if using 'track by' with uuid+modified key in lists) no
       //       unnecessary rendering would take place after online => faster UX.
       var uuid, oldUuid;
       if (request.params.uuid){
@@ -176,7 +176,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       }
     // ******
     // DELETE
-    // ******      
+    // ******
     }else if (request.content.method === 'delete'){
       properties = {deleted: response.deleted, modified: response.result.modified};
       if (request.params.type === 'item'){
@@ -294,7 +294,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
     }
     return deferred.promise;
   };
-  
+
   return {
     // Main method to synchronize all arrays with backend.
     synchronize: function(ownerUUID) {
@@ -361,6 +361,10 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       return deferred.promise;
     },
     deleteItem: function(item, ownerUUID) {
+      // Check if item has already been deleted
+      if (items[ownerUUID].deletedItems.indexOf(item) > -1){
+        return;
+      }
       if (UserSessionService.isOfflineEnabled()){
         // Offline
         var params = {type: 'item', owner: ownerUUID, uuid: item.uuid,
@@ -444,7 +448,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
                    BackendClientService.undeleteRegex.source),
   };
 }
-  
+
 ItemsService.$inject = ['$q', '$rootScope', 'UUIDService', 'BackendClientService', 'UserSessionService', 'ArrayService',
                            'TagsService', 'ListsService', 'TasksService', 'NotesService'];
 angular.module('em.services').factory('ItemsService', ItemsService);

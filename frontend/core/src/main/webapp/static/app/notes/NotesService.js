@@ -7,7 +7,7 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
   var notes = {};
   var noteRegex = /\/note/;
   var noteSlashRegex = /\/note\//;
- 
+
   function initializeArrays(ownerUUID){
     if (!notes[ownerUUID]){
       notes[ownerUUID] = {
@@ -194,7 +194,7 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
           }
           setNote(note, ownerUUID);
         }else {
-          // Online      
+          // Online
           BackendClientService.putOnline('/api/' + ownerUUID + '/note',
                    this.putNewNoteRegex, note).then(function(result) {
             if (result.data){
@@ -210,6 +210,10 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
       }
     },
     deleteNote : function(note, ownerUUID) {
+      // Check if note has already been deleted
+      if (notes[ownerUUID].deletedNotes.indexOf(note) > -1){
+        return;
+      }
       if (UserSessionService.isOfflineEnabled()){
         // Offline
         var params = {type: 'note', owner: ownerUUID, uuid: note.uuid,
@@ -277,6 +281,6 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
                    BackendClientService.undeleteRegex.source)
   };
 }
-  
+
 NotesService.$inject = ['UUIDService', 'UserSessionService', 'BackendClientService', 'ArrayService', 'ListsService', 'TagsService'];
 angular.module('em.services').factory('NotesService', NotesService);

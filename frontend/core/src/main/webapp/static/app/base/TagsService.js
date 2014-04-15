@@ -7,7 +7,7 @@ function TagsService($q, BackendClientService, ArrayService){
   var tags = {};
   var tagRegex = /\/tag/;
   var tagSlashRegex = /\/tag\//;
- 
+
   var tagDeletedCallbacks = {};
 
   function initializeArrays(ownerUUID){
@@ -16,7 +16,7 @@ function TagsService($q, BackendClientService, ArrayService){
         activeTags: [],
         deletedTags: []
       };
-    }    
+    }
   }
 
   return {
@@ -50,23 +50,23 @@ function TagsService($q, BackendClientService, ArrayService){
       return tags[ownerUUID].activeTags;
     },
     getTagByUUID : function(uuid, ownerUUID) {
-      initializeArrays(ownerUUID);      
+      initializeArrays(ownerUUID);
       return tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveTag : function(tag, ownerUUID) {
-      var deferred = $q.defer();      
+      var deferred = $q.defer();
       if (tag.uuid){
         // Existing tag
         BackendClientService.putOnline('/api/' + ownerUUID + '/tag/' + tag.uuid,
                  this.putExistingTagRegex, tag).then(function(result) {
           if (result.data){
             tag.modified = result.data.modified;
-            initializeArrays(ownerUUID);            
+            initializeArrays(ownerUUID);
             ArrayService.updateItem(
               tag,
               tags[ownerUUID].activeTags,
               tags[ownerUUID].deletedTags);
-            deferred.resolve(tag);            
+            deferred.resolve(tag);
           }
         });
       }else{
@@ -81,13 +81,17 @@ function TagsService($q, BackendClientService, ArrayService){
               tag,
               tags[ownerUUID].activeTags,
               tags[ownerUUID].deletedTags);
-            deferred.resolve(tag);            
+            deferred.resolve(tag);
           }
         });
       }
-      return deferred.promise;      
+      return deferred.promise;
     },
     deleteTag : function(tag, ownerUUID) {
+      // Check if tag has already been deleted
+      if (tags[ownerUUID].deletedTags.indexOf(tag) > -1){
+        return;
+      }
       BackendClientService.deleteOnline('/api/' + ownerUUID + '/tag/' + tag.uuid,
                this.deleteTagRegex).then(function(result) {
         if (result.data){
@@ -169,6 +173,6 @@ function TagsService($q, BackendClientService, ArrayService){
     }
   };
 }
-  
+
 TagsService.$inject = ['$q', 'BackendClientService', 'ArrayService'];
 angular.module('em.services').factory('TagsService', TagsService);

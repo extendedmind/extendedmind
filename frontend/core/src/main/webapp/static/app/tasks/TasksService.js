@@ -341,6 +341,10 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       return deferred.promise;
     },
     deleteTask: function(task, ownerUUID) {
+      // Check if task has already been deleted
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
+        return;
+      }
       cleanRecentlyCompletedTasks(ownerUUID);
       if (UserSessionService.isOfflineEnabled()){
         // Offline
