@@ -14,7 +14,11 @@ app/platforms/android/assets/static
 app/platforms/android/assets/www/static
 app/platforms/android/assets/www/index.html
 app/platforms/android/res/xml/config.xml
+
+app/platforms/android/CordovaLib/ant-build/build.prop
+app/platforms/android/CordovaLib/ant-build/classes.jar
+app/platforms/android/ant-build/build.prop
+app/platforms/android/ant-build/dexedLibs/
+
 app/platforms/ios/cordova/defaults.xml
 *.keystore
-
-
