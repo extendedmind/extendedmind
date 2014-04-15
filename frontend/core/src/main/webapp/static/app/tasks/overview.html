@@ -6,7 +6,7 @@
         <div ng-include="'static/app/base/listsOverview.html'" include-replace></div>
         <section ng-init="newContext={title:undefined, tagType:'context'}" ng-controller="ContextsController">
           <h3><a href ng-click="gotoContexts()" class="page-header">contexts</a></h3>
-          <ul class="indent list-arrow-right">
+          <ul class="list-arrow-right">
             <li ng-show="contexts.length" ng-repeat="context in contexts">
               <a class="click-to-slide" href ng-click="gotoDetails(context.uuid)">
                 <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right"></span>
