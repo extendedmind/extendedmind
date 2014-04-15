@@ -67,7 +67,7 @@
         <filtering>true</filtering>
         <targetPath>${project.basedir}/src/main/webapp/static</targetPath>
       </resource>
-    </resources>    
+    </resources>
     <testSourceDirectory>${project.basedir}/src/main/webapp/test</testSourceDirectory>
     <plugins>
       <plugin>
@@ -166,8 +166,9 @@
             <include>lib/iscroll.js</include>
             <include>lib/jquery/jquery.js</include>
             <include>lib/angularjs/angular.js</include>
-            <include>lib/angularjs/angular-route.js</include>
+            <include>lib/angularjs/angular-animate.js</include>
             <include>lib/angularjs/angular-mocks.js</include>
+            <include>lib/angularjs/angular-route.js</include>
             <include>lib/base64.js</include>
             <include>lib/fastclick.js</include>
             <include>lib/expanding.js</include>
@@ -194,7 +195,7 @@
         <executions>
           <execution>
             <id>lesscss</id>
-            <phase>prepare-package</phase>  
+            <phase>prepare-package</phase>
             <goals>
               <goal>compile</goal>
             </goals>
@@ -278,7 +279,7 @@
     </plugins>
     <pluginManagement>
       <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings 
+        <!--This plugin's configuration is used to store Eclipse m2e settings
           only. It has no influence on the Maven build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
