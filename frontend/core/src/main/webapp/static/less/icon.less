@@ -1,16 +1,16 @@
 @font-face {
 	font-family: 'icomoon';
-	src: url('../fonts/icomoon.eot');
-	src: url('../fonts/icomoon.eot') format('embedded-opentype'),
-	url('../fonts/icomoon.woff') format('woff'),
-	url('../fonts/icomoon.ttf') format('truetype'),
-	url('../fonts/icomoon.svg') format('svg');
+	src:url('../fonts/icomoon.eot');
+	src:url('../fonts/icomoon.eot') format('embedded-opentype'),
+		url('../fonts/icomoon.woff') format('woff'),
+		url('../fonts/icomoon.ttf') format('truetype'),
+		url('../fonts/icomoon.svg?') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
 
 [class^="icon-"], [class*=" icon-"] {
-	font-family: 'icomoon' !important;
+	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
 	font-weight: normal;
@@ -25,11 +25,14 @@
 .icon-tasks:before {
 	content: "\e600";
 }
-.icon-selection_empty {
+.icon-selection-empty {
 	content: "\e601";
 }
-.icon-selection_checked {
+.icon-selection-checked {
 	content: "\e602";
+}
+.icon-plus:before {
+	content: "\e603";
 }
 .icon-notes:before {
 	content: "\e604";
@@ -37,10 +40,10 @@
 .icon-menu:before {
 	content: "\e605";
 }
-.icon-logo_with_text:before {
+.icon-logo-with-text:before {
 	content: "\e606";
 }
-.icon-logo_only:before {
+.icon-logo-only:before {
 	content: "\e607";
 }
 .icon-inbox:before {
@@ -52,12 +55,9 @@
 .icon-home:before {
 	content: "\e60a";
 }
-.icon-arrow_right:before {
+.icon-arrow-right:before {
 	content: "\e60b";
 }
-.icon-arrow_left:before {
+.icon-arrow-left:before {
 	content: "\e60c";
-}
-.icon-plus:before {
-	content: "\e603";
 }
