@@ -55,6 +55,22 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
+  def getUsers: Response[Users] = {
+    withTx{
+      implicit neo4j =>
+        val users = findNodesByLabel(OwnerLabel.USER).toList
+        if (users.isEmpty){
+          Right(Users(scala.List()))
+        }else{
+          Right(Users(users map (userNode => {
+            val response = toCaseClass[User](userNode)
+            if (response.isLeft) return Left(response.left.get)
+            else response.right.get
+          })));
+        }
+    }
+  }
+  
   def getUser(uuid: UUID): Response[User] = {
     withTx{
       implicit neo =>

@@ -18,6 +18,8 @@ object User{
   def apply(email:String, cohort: Option[Int], preferences: Option[UserPreferences]) = new User(None, None, None, None, email, None, cohort, preferences)
 }
 
+case class Users(users: scala.List[User])
+
 case class SignUp(email: String, password: String, cohort: Option[Int], bypass: Option[Boolean]){
   require(validateEmailAddress(email), "Not a valid email address")
   require(validatePassword(password), "Password needs to be 7 or more characters long")

@@ -64,6 +64,11 @@ trait UserActions {
     db.getUser(userUUID)
   }
   
+  def getUsers(implicit log: LoggingAdapter): Response[Users] = {
+    log.info("getUsers")
+    db.getUsers
+  }
+  
   def putUser(userUUID: UUID, user: User)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putUser")
     db.putExistingUser(userUUID, user)

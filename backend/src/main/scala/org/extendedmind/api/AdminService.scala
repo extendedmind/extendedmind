@@ -62,7 +62,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      deleteUser {userUUID =>
+      deleteUser { userUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can destroy invite requests
           authorize(adminAccess(securityContext)) {
@@ -71,6 +71,21 @@ trait AdminService extends ServiceBase {
                 setLogContext(securityContext)
                 userActions.destroyUser(userUUID) match {
                   case Right(result) => processResult(result)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
+      getUsers { url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[Users] {
+                setLogContext(securityContext)
+                userActions.getUsers match {
+                  case Right(users) => processResult(users)
                   case Left(e) => processErrors(e)
                 }
               }
