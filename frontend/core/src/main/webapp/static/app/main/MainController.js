@@ -151,6 +151,13 @@ function MainController(
     }
   };
 
+  $scope.isActiveSlide = function isActiveSlide(pathFragment) {
+    var activeSlide = SwiperService.getActiveSlidePath($scope.feature);
+    if (activeSlide && (activeSlide.indexOf(pathFragment) != -1)){
+      return true;
+    }
+  };
+
   $scope.saveAsTask = function(omnibarText) {
     TasksService.saveTask({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(){
       $scope.clearOmnibar();

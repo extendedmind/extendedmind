@@ -13,13 +13,6 @@ function NavbarController($scope, SwiperService, UserSessionService) {
     // Run digest to change only navbar when swiping to new location
     $scope.$digest();
   }
-
-  $scope.isActiveSlide = function(pathFragment) {
-    var activeSlide = SwiperService.getActiveSlidePath($scope.feature);
-    if (activeSlide && (activeSlide.indexOf(pathFragment) != -1)){
-      return true;
-    }
-  };
 }
 
 NavbarController.$inject = ['$scope', 'SwiperService', 'UserSessionService'];
