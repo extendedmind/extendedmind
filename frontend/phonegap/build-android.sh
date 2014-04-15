@@ -22,5 +22,7 @@ fi
 # run phonegap command locally
 cordova build android
 
+cd platforms/android
+
 # make new build using ant release configuration
 ant release
