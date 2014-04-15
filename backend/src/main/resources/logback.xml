@@ -29,16 +29,15 @@
     </encoder>
   </appender>
 
-  <!--
   <appender name="MONGODB" class="org.extendedmind.logback.MongoDBAppender">
       <host>localhost</host>
       <port>27017</port>
       <db>cube_development</db>
-  </appender>-->
+  </appender>
 
   <root level="debug">
     <appender-ref ref="CONSOLE" />  
-    <appender-ref ref="FILE" />
+    <!--<appender-ref ref="FILE" /> -->
     <!--<appender-ref ref="MONGODB" />-->
   </root>
 </configuration>
