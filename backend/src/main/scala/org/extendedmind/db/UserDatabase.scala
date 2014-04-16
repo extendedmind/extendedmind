@@ -95,11 +95,26 @@ trait UserDatabase extends AbstractGraphDatabase {
   def upgradeOwners: Response[CountResult] = {
     withTx {
       implicit neo4j =>
-        val owners = findNodesByLabel(MainLabel.OWNER)
+        val owners = findNodesByLabel(MainLabel.OWNER).toList
         var count = 0
         owners.foreach(ownerNode => {
-          ownerNode.setProperty("created", (ownerNode.getProperty("modified").asInstanceOf[Long]))
-          count += 1
+          if (ownerNode.hasProperty("created")){
+            println("owner has created: " + ownerNode.getProperty("created"))
+          }else{
+            ownerNode.setProperty("created", ownerNode.getProperty("modified").asInstanceOf[Long])
+            count += 1
+          }
+          ownerNode.getRelationships().foreach(relationship => {
+            if (relationship.getType().name == SecurityRelationship.IS_ORIGIN.name && 
+                relationship.getStartNode().hasLabel(MainLabel.INVITE)){
+              println("found invite relationship")
+              if (!relationship.getStartNode().hasProperty("accepted")){
+                // Give accepted
+            	println("setting accepted")
+                relationship.getStartNode().setProperty("accepted", ownerNode.getProperty("modified").asInstanceOf[Long])
+              }
+            }
+          })
         })
         return Right(CountResult(count))
     }
