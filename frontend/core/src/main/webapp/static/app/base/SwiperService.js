@@ -18,10 +18,10 @@ function SwiperService($q) {
   var getSwiperInfosBySlidePath = function(slidePath) {
     var swiperInfos = {};
     for (var swiperPath in swipers) {
-      if (slidePath.startsWith(swiperPath)){
+      if (slidePath.startsWith(swiperPath)) {
         if (swipers[swiperPath].swiperType === 'main') {
           swiperInfos.main = swipers[swiperPath];
-        }else if (swipers[swiperPath].swiperType === 'page'){
+        } else if (swipers[swiperPath].swiperType === 'page') {
           swiperInfos.page = swipers[swiperPath];
         }
       }
@@ -31,20 +31,20 @@ function SwiperService($q) {
 
   // Finds the index of the slide that starts with the given slide
   var getSlideIndexBySlidePath = function(slidePath, slides) {
-    if (slidePath){
+    if (slidePath) {
       for (var i = 0; i < slides.length; i++) {
-        if (slidePath.startsWith(slides[i])){
+        if (slidePath.startsWith(slides[i])) {
           return i;
         }
       }
     }
   };
 
-  var getInitialSlideIndex = function(swiperPath, swiperSlidesPaths){
+  var getInitialSlideIndex = function(swiperPath, swiperSlidesPaths) {
     var initialSlideIndex = 0;
     if (overrideSwiperParams[swiperPath] && overrideSwiperParams[swiperPath].initialSlidePath) {
       var slideIndex = getSlideIndexBySlidePath(overrideSwiperParams[swiperPath].initialSlidePath, swiperSlidesPaths);
-      if (slideIndex !== undefined){
+      if (slideIndex !== undefined) {
         initialSlideIndex = slideIndex;
         // set initial slide path to undefined for future swiper instances
         overrideSwiperParams[swiperPath].initialSlidePath = undefined;
@@ -70,9 +70,9 @@ function SwiperService($q) {
     };
 
     swiperParams.initialSlide = getInitialSlideIndex(swiperPath, swiperSlidesPaths);
-    if (swiperType === 'main'){
+    if (swiperType === 'main') {
       swiperParams.mode = 'horizontal';
-    } else if (swiperType === 'page'){
+    } else if (swiperType === 'page') {
       swiperParams.mode = 'vertical';
     }
     return swiperParams;
@@ -84,7 +84,7 @@ function SwiperService($q) {
     }
   };
 
-  var executeSlideChangeCallbacks = function(swiperPath, path, activeIndex){
+  var executeSlideChangeCallbacks = function(swiperPath, path, activeIndex) {
     if (slideChangeCallbacks[swiperPath]) {
       for (var i = 0; i < slideChangeCallbacks[swiperPath].length; i++) {
         slideChangeCallbacks[swiperPath][i].callback(path, activeIndex);
@@ -131,11 +131,11 @@ function SwiperService($q) {
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
     },
     refreshSwiper: function(swiperPath, swiperSlidesPaths) {
-      if (swipers[swiperPath] && swipers[swiperPath].swiper){
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         // Set initial slide path
         swipers[swiperPath].swiper.params.initialSlide = getInitialSlideIndex(swiperPath, swiperSlidesPaths);
         swipers[swiperPath].slidesPaths = swiperSlidesPaths;
-        $q.when(swipers[swiperPath].swiper.reInit()).then(function(){
+        $q.when(swipers[swiperPath].swiper.reInit()).then(function() {
           setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
         });
       }
@@ -188,9 +188,9 @@ function SwiperService($q) {
     swipeMainSlide: function(slidePath, swiperInfos, transitionSpeed) {
       swiperInfos = swiperInfos || getSwiperInfosBySlidePath(slidePath);
 
-      if (swiperInfos.main){
+      if (swiperInfos.main) {
         var mainSwiperIndex = getSlideIndexBySlidePath(slidePath, swiperInfos.main.slidesPaths);
-        if (mainSwiperIndex !== undefined){
+        if (mainSwiperIndex !== undefined) {
           swiperInfos.main.swiper.swipeTo(mainSwiperIndex, transitionSpeed);
         }
       }
@@ -200,13 +200,13 @@ function SwiperService($q) {
 
       if (swiperInfos.page) {
         var pageSwiperIndex = swiperInfos.page.slidesPaths.indexOf(slidePath);
-        if (pageSwiperIndex !== -1){
+        if (pageSwiperIndex !== -1) {
           swiperInfos.page.swiper.swipeTo(pageSwiperIndex, transitionSpeed);
         }
       }
     },
     getActiveSlidePath: function(swiperPath) {
-      if (swipers[swiperPath] && swipers[swiperPath].swiper){
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
         if (activeSlide) {
           return activeSlide.getData('path');
@@ -224,7 +224,7 @@ function SwiperService($q) {
         slideChangeCallbacks[swiperPath] = [];
       } else {
         for (var i = 0; i < slideChangeCallbacks[swiperPath].length; i++) {
-          if (slideChangeCallbacks[swiperPath][i].id === id){
+          if (slideChangeCallbacks[swiperPath][i].id === id) {
             // Already registered, replace callback
             slideChangeCallbacks[swiperPath][i].callback = slideChangeCallback;
             return;

@@ -44,7 +44,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
 
       function getSlideInfosIndex(path) {
         for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
-          if (swiperSlideInfos[i].slidePath === path){
+          if (swiperSlideInfos[i].slidePath === path) {
             return i;
           }
         }
@@ -64,13 +64,13 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         // is fired. Using $timeout causes flickering and slows down everything.
         // https://groups.google.com/forum/#!topic/angular/SCc45uVhTt9
         // http://stackoverflow.com/a/17303759/2659424
-        if (currentExpectedSlides === swiperSlideInfos.length){
+        if (currentExpectedSlides === swiperSlideInfos.length) {
           // Update the expected slides variable only now, to make it possible
           // to push indexes forward
           $scope.expectedSlides = $scope.expectedSlidesFn();
 
           var slides = sortAndFlattenSlideInfos();
-          if (!initializeSwiperCalled){
+          if (!initializeSwiperCalled) {
             SwiperService.initializeSwiper(
               $element[0],
               $scope.swiperPath,
@@ -80,7 +80,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
               onResistanceBeforeCallback,
               onResistanceAfterCallback);
             initializeSwiperCalled = true;
-          }else {
+          } else {
             SwiperService.refreshSwiper($scope.swiperPath, slides);
           }
         }
@@ -93,7 +93,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         // For vertical page outerSwiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal
         // swiper or not.
-        if ($scope.swiperType === 'page'){
+        if ($scope.swiperType === 'page') {
           // We're expecting a slide, which has "inner-slide-content-container", which has section
           element[0].firstElementChild.firstElementChild.addEventListener('touchstart', pageSwiperSlideTouchStart, false);
           element[0].firstElementChild.firstElementChild.addEventListener('touchmove', pageSwiperSlideTouchMove, false);
@@ -115,18 +115,18 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         if (initializeSwiperCalled) {
           oldSlideInfosIndex = getSlideInfosIndex(path);
         }
-        if (oldSlideInfosIndex === undefined){
+        if (oldSlideInfosIndex === undefined) {
           // If index is somewhere in the middle of the pack, we need to
           // increase bigger indexes by one
           if ($scope.expectedSlides <= swiperSlideInfos.length) {
             for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
-              if (swiperSlideInfos[i].slideIndex >= index){
+              if (swiperSlideInfos[i].slideIndex >= index) {
                 swiperSlideInfos[i].slideIndex += 1;
               }
             }
           }
           swiperSlideInfos.push(slideInfo);
-        }else{
+        } else {
           swiperSlideInfos[oldSlideInfosIndex] = slideInfo;
         }
         updateSwiper();
@@ -134,7 +134,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
 
       this.unregisterSlide = function(path) {
         var slideInfosIndex = getSlideInfosIndex(path);
-        if (slideInfosIndex !== undefined){
+        if (slideInfosIndex !== undefined) {
           swiperSlideInfos.splice(slideInfosIndex, 1);
           updateSwiper();
         }
@@ -364,7 +364,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
           $element[0].removeEventListener('MSPointerUp', mainSwiperTouchEnd, false);
         }
 
-        if ($scope.swiperType === 'page'){
+        if ($scope.swiperType === 'page') {
           for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
             swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchstart', pageSwiperSlideTouchStart, false);
             swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchmove', pageSwiperSlideTouchMove, false);
