@@ -28,15 +28,14 @@ trait AdminService extends ServiceBase {
   import JsonImplicits._
 
   def adminRoutes = {
-    postChangeUserType { (userUUID, userType) =>
+    getStatistics { url =>
       authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-        // Only admins can change user type
         authorize(adminAccess(securityContext)) {
           complete {
-            Future[SetResult] {
+            Future[Statistics] {
               setLogContext(securityContext)
-              userActions.changeUserType(userUUID, userType) match {
-                case Right(sr) => processResult(sr)
+              adminActions.getStatistics match {
+                case Right(users) => processResult(users)
                 case Left(e) => processErrors(e)
               }
             }
@@ -44,6 +43,22 @@ trait AdminService extends ServiceBase {
         }
       }
     } ~
+      postChangeUserType { (userUUID, userType) =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          // Only admins can change user type
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[SetResult] {
+                setLogContext(securityContext)
+                userActions.changeUserType(userUUID, userType) match {
+                  case Right(sr) => processResult(sr)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
       getUser { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can get users for now

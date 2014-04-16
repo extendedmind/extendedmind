@@ -85,6 +85,7 @@ trait API extends HttpService {
   val undeleteTag = post & path(JavaUUID / "tag" / JavaUUID / "undelete")
   
   // ADMIN
+  val getStatistics = get & path("admin".r)
   // Users
   val deleteUser = delete & path("admin" / "user" / JavaUUID)
   val getUsers = get & path("admin" / "users".r)

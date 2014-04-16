@@ -17,6 +17,10 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
     return $scope.collectives && Object.keys($scope.collectives).length > 1;
   };
 
+  $scope.isAdmin = function() {
+    return UserSessionService.getUserType() === 0;
+  };
+
   $scope.getFeatureClass = function(feature) {
     if ($location.path().endsWith(feature)){
       return 'active';
@@ -30,7 +34,7 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
   };
 
   $scope.getCollectiveClass = function(uuid) {
-    if (UserSessionService.getOwnerPrefix() == 'collective/' + uuid){
+    if (UserSessionService.getOwnerPrefix() === 'collective/' + uuid){
       return 'active';
     }
   };
@@ -78,6 +82,11 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
 
   $scope.gotoAbout = function gotoAbout() {
     $location.path('/about');
+    $scope.toggleMenu();
+  };
+
+  $scope.gotoAdmin = function gotoAdmin() {
+    $location.path('/admin');
     $scope.toggleMenu();
   };
 

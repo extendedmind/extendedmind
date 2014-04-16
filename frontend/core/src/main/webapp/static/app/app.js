@@ -503,6 +503,12 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       controller: 'PageNotFoundController',
       redirectTo: '404'
     });
+
+    // ADMINISTRATION
+    $routeProvider.when('/admin', {
+      templateUrl: 'static/app/admin/admin.html'
+    });
+
   }]);
 
 angular.module('em.app').run(function($rootScope) {

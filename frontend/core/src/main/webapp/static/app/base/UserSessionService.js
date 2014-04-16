@@ -18,7 +18,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       setUserSessionStorageData();
     }
   }
-  
+
   function setUserSessionStorageData() {
     if (!SessionStorageService.getActiveUUID()) {
       SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
@@ -201,6 +201,9 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
         }
         return user;
       }
+    },
+    getUserType: function() {
+      return parseInt(SessionStorageService.getUserType());
     }
   };
 }

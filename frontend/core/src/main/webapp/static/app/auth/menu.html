@@ -31,6 +31,10 @@
     <li>
       <a href ng-click="gotoAbout()" ng-class="getFeatureClass('about')">about</a>
     </li>
+    <li ng-if="isAdmin()">
+      <a href ng-click="gotoAdmin()" ng-class="getFeatureClass('admin')">admin</a>
+    </li>
+
     <li>
       <a href ng-click="logout()">logout</a>
     </li>

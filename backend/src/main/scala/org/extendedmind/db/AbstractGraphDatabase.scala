@@ -27,6 +27,9 @@ import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.RelationshipType
 import spray.util.LoggingContext
 import java.lang.Boolean
+import org.neo4j.cypher.javacompat.ExecutionEngine
+import akka.event.LoggingAdapter
+import org.neo4j.index.lucene.QueryContext
 
 case class OwnerNodes(user: Node, collective: Option[Node])
 
@@ -38,16 +41,18 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   def settings: Settings
   implicit val implSettings = settings
 
+  var engine: ExecutionEngine = null;
+
   // Implicit Neo4j Scala wrapper serialization exclusions
   implicit val serializeExclusions: Option[scala.List[String]] = Some(
     // Always exclude the direct setting of the following:
     scala.List("uuid", "modified", "deleted", // Container
-        "visibility", // ShareableItem
-        "relationships", // ExtendedItem
-        "completed", "assignee", "assigner", // Task
-        "archived", // List
-        "parent", "tagType" // Tag
-        ))
+      "visibility", // ShareableItem
+      "relationships", // ExtendedItem
+      "completed", "assignee", "assigner", // Task
+      "archived", // List
+      "parent", "tagType" // Tag
+      ))
   // Implicit Neo4j Scala wrapper converters
   implicit val customConverters: Option[Map[String, AnyRef => AnyRef]] =
     // Convert trimmed Base64 UUID to java.util.UUID
@@ -71,32 +76,64 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
         new WrappingNeoServerBootstrapper(ds.gds.asInstanceOf[GraphDatabaseAPI], config);
       srv.start();
     }
+
   }
-  
+
   // LOAD DATABASE TO MEMORY
-  
-  def loadDatabase(): Boolean = {
+
+  def loadDatabase(implicit log: LoggingAdapter): Boolean = {
     withTx {
       implicit neo4j =>
         // Sixty seconds wait for first load
-        neo4j.gds.isAvailable(1000*60)
+        val available = neo4j.gds.isAvailable(1000 * 60)
+        engine = new ExecutionEngine(ds.gds)
+        val statistics = getStatisticsInTx
+        log.info("users: " + statistics.users +
+          ", invites: " + statistics.invites +
+          ", inviteRequests: " + statistics.inviteRequests +
+          ", items: " + statistics.items)
+        available
     }
   }
-  
+
   def checkDatabase(): Boolean = {
     withTx {
       implicit neo4j =>
         neo4j.gds.isAvailable(1000)
     }
   }
-  
+
   // SHUTDOWN
-  
+
   def shutdownServer(): Unit = {
     withTx {
       implicit neo4j =>
         neo4j.gds.shutdown()
     }
+  }
+
+  // STATISTICS
+
+  def getStatistics(): Response[Statistics] = {
+    withTx {
+      implicit neo4j =>
+        Right(getStatisticsInTx)
+    }
+  }
+
+  def getStatisticsInTx(implicit neo4j: DatabaseService): Statistics = {
+    if (engine == null) engine = new ExecutionEngine(neo4j.gds)
+    val userCountResult = engine.execute("start n=node(*) match (n:USER) return count(n) as userCount").iterator().next()
+    val inviteCountResult = engine.execute("start n=node(*) match (n:INVITE) return count(n) as inviteCount").iterator().next()
+
+    // Use indexes to get invite requests and items
+    val inviteRequestCount = neo4j.gds.index().forNodes("inviteRequests").query("*:*").size()
+    val itemCount = neo4j.gds.index().forNodes("items").query("*:*").size()    
+
+    Statistics(userCountResult.get("userCount").asInstanceOf[Long],
+      inviteCountResult.get("inviteCount").asInstanceOf[Long],
+      inviteRequestCount,
+      itemCount)
   }
 
   // CONVERSION
@@ -126,26 +163,26 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
         SetResult(uuid, node.getProperty("modified").asInstanceOf[Long])
     }
   }
-  
+
   def forceUUID(setResult: SetResult, uuid: Option[UUID], label: Label): Response[SetResult] = {
     if (uuid.isEmpty) Right(setResult)
-    else{
+    else {
       withTx {
         implicit neo4j =>
           val node = getNode(setResult.uuid.get, label)
           if (node.isLeft) Left(node.left.get)
-          else{
+          else {
             node.right.get.setProperty("uuid", UUIDUtils.getTrimmedBase64UUID(uuid.get))
             Right(SetResult(uuid, node.right.get.getProperty("modified").asInstanceOf[Long]))
           }
       }
     }
   }
-  
+
   protected def getUUID(node: Node): UUID = {
     UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
   }
-  
+
   protected def getEndNodeUUIDList(relationships: scala.List[Relationship]): scala.List[UUID] = {
     relationships map (relationship => getUUID(relationship.getEndNode()))
   }
@@ -161,66 +198,64 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   }
 
   protected def getNodeOption(nodeUUID: Option[UUID], label: Label, acceptDeleted: Boolean = false): Response[Option[Node]] = {
-    if (nodeUUID.isDefined){
+    if (nodeUUID.isDefined) {
       val nodeResponse = getNode(nodeUUID.get, label, acceptDeleted)
       if (nodeResponse.isLeft) return Left(nodeResponse.left.get)
       else Right(Some(nodeResponse.right.get))
-    }
-    else Right(None)
+    } else Right(None)
   }
-  
+
   protected def getNode(nodeUUID: UUID, label: Label, acceptDeleted: Boolean = false): Response[Node] = {
     val uuidString = UUIDUtils.getTrimmedBase64UUID(nodeUUID)
     getNode("uuid", uuidString, label, Some(nodeUUID.toString()), acceptDeleted)
   }
-  
-  protected def getNode(nodeProperty: String, nodeValue: AnyRef, label: Label, nodeStringValue: Option[String], 
-                        acceptDeleted: Boolean)(implicit log: LoggingContext): Response[Node] = {
+
+  protected def getNode(nodeProperty: String, nodeValue: AnyRef, label: Label, nodeStringValue: Option[String],
+    acceptDeleted: Boolean)(implicit log: LoggingContext): Response[Node] = {
     withTx {
       implicit neo =>
         val nodeList = findNodesByLabelAndProperty(label, nodeProperty, nodeValue).toList
         if (nodeList.isEmpty)
-          fail(INVALID_PARAMETER, label.labelName.toLowerCase() + " not found with given " + nodeProperty + 
-              (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
-        else if (nodeList.size > 1){
+          fail(INVALID_PARAMETER, label.labelName.toLowerCase() + " not found with given " + nodeProperty +
+            (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
+        else if (nodeList.size > 1) {
           // Check if nodeList contains the same node multiple times
-          if (nodeList.distinct.size() > 1){
+          if (nodeList.distinct.size() > 1) {
             // Print debug information
-            if (nodeProperty == "uuid" && label.name == "REQUEST"){
+            if (nodeProperty == "uuid" && label.name == "REQUEST") {
               nodeList.foreach(node => {
-                println("Invite request for " + node.getProperty("email").asInstanceOf[String] 
-                        + " has duplicate uuid " 
-                        + UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
-                        + " with id " + node.getId())
+                println("Invite request for " + node.getProperty("email").asInstanceOf[String]
+                  + " has duplicate uuid "
+                  + UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
+                  + " with id " + node.getId())
               })
             }
-            fail(INTERNAL_SERVER_ERROR, "Ḿore than one " + label.labelName.toLowerCase() + " found with given " + nodeProperty + 
+            fail(INTERNAL_SERVER_ERROR, "Ḿore than one " + label.labelName.toLowerCase() + " found with given " + nodeProperty +
               (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
-          }else{
+          } else {
             log.warning("Found " + nodeList.size + " duplicate values in index for " + label.labelName + ":" + nodeProperty)
             Right(nodeList(0))
           }
-        }else {
-          if (!acceptDeleted && nodeList(0).hasProperty("deleted")){
-            fail(INVALID_PARAMETER, label.labelName.toLowerCase() + " deleted with given " + nodeProperty + 
-                (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
-          }else{
+        } else {
+          if (!acceptDeleted && nodeList(0).hasProperty("deleted")) {
+            fail(INVALID_PARAMETER, label.labelName.toLowerCase() + " deleted with given " + nodeProperty +
+              (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
+          } else {
             Right(nodeList(0))
           }
         }
     }
   }
-  
-  protected def getRelationship(first: Node, second: Node, relationshipType: RelationshipType*)(implicit neo4j: DatabaseService): 
-            Response[Option[Relationship]] = {
-    val relationshipList = first.getRelationships(relationshipType:_*).toList
+
+  protected def getRelationship(first: Node, second: Node, relationshipType: RelationshipType*)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+    val relationshipList = first.getRelationships(relationshipType: _*).toList
     var returnValue: Option[Relationship] = None
     relationshipList.foreach(relationship => {
-      if (relationship.getEndNode() == second || relationship.getStartNode() == second){
-        if (returnValue.isDefined){
-          return fail(INTERNAL_SERVER_ERROR, "More than one relationship of types " + relationshipType 
-                      + " found between nodes " + getUUID(first) 
-                      + " and " + getUUID(second))
+      if (relationship.getEndNode() == second || relationship.getStartNode() == second) {
+        if (returnValue.isDefined) {
+          return fail(INTERNAL_SERVER_ERROR, "More than one relationship of types " + relationshipType
+            + " found between nodes " + getUUID(first)
+            + " and " + getUUID(second))
         }
         returnValue = Some(relationship)
       }
@@ -232,7 +267,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     if (owner.collectiveUUID.isDefined) owner.collectiveUUID.get
     else owner.userUUID
   }
-  
+
   protected def getOwnerNode(ownerNodes: OwnerNodes): Node = {
     if (ownerNodes.collective.isDefined) ownerNodes.collective.get
     else ownerNodes.user

@@ -36,7 +36,7 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
   }
 
   function emitRegexException(regex, method, url){
-    $rootScope.$emit('emException', {type: 'regex', regex: regex, method: method, url: url});
+    $rootScope.$emit('emException', {type: 'regex', regex: regex.source, method: method, url: url});
   }
 
   // Method for setting credentials to all subsequent http calls

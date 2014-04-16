@@ -2,7 +2,7 @@
 'use strict';
 
 function MockBackendService(MockListsBackendService, MockTagsBackendService, MockTasksBackendService, MockNotesBackendService,
-  MockItemsBackendService, MockAccountBackendService, MockAuthBackendService, base64) {
+  MockItemsBackendService, MockAccountBackendService, MockAuthBackendService, MockAdminBackendService, base64) {
   return {
     expectResponse: function(method, url, data, headers, responseData, skipAuthenticationCheck) {
       var parsedAuthorizationHeader, userNamePass, parsedUserNamePass, userName, response;
@@ -35,6 +35,7 @@ function MockBackendService(MockListsBackendService, MockTagsBackendService, Moc
       this.mockItemsBackend();
       this.mockAccountBackend();
       this.mockAuthBackend();
+      this.mockAdminBackend();
     },
     mockListsBackend: function() {
       MockListsBackendService.mockListsBackend(this.expectResponse);
@@ -54,6 +55,9 @@ function MockBackendService(MockListsBackendService, MockTagsBackendService, Moc
     mockAccountBackend: function() {
       MockAccountBackendService.mockAccountBackend(this.expectResponse);
     },
+    mockAdminBackend: function() {
+      MockAdminBackendService.mockAdminBackend(this.expectResponse);
+    },
     mockAuthBackend: function() {
       MockAuthBackendService.mockAuthBackend(this.expectResponse);
     }
@@ -62,6 +66,6 @@ function MockBackendService(MockListsBackendService, MockTagsBackendService, Moc
 
 MockBackendService.$inject = [
 'MockListsBackendService', 'MockTagsBackendService', 'MockTasksBackendService', 'MockNotesBackendService',
-'MockItemsBackendService', 'MockAccountBackendService', 'MockAuthBackendService', 'base64'
+'MockItemsBackendService', 'MockAccountBackendService', 'MockAuthBackendService', 'MockAdminBackendService', 'base64'
 ];
 angular.module('em.appTest').factory('MockBackendService', MockBackendService);

@@ -296,7 +296,7 @@ trait InviteDatabase extends UserDatabase {
         else {
           // Create an invite from the invite request
           val email = inviteRequestNode.right.get.getProperty("email").asInstanceOf[String]
-          val invite = Invite(email, Random.generateRandomUnsignedLong, None, message, None)
+          val invite = Invite(email, Random.generateRandomUnsignedLong, None, message, None, None)
           val inviteNode = createNode(invite, MainLabel.INVITE)
           inviteRequestNode.right.get --> SecurityRelationship.IS_ORIGIN --> inviteNode
           if (userNode.isDefined){

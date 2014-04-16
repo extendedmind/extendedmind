@@ -1,0 +1,55 @@
+<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" id="mobile-menu" class="snap-drawer snap-drawer-left"></div>
+<div id="admin-container" class="no-slides-container" ng-init="feature='admin'" ng-controller="AdminController" snap-drawer>
+  <header class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
+  <section ng-hide="isDesktop && isMenuOpen" id="admin" class="one-column-grid page" snap-drawer-drag>
+    <div class="column">
+      <div class="content-container simple-content-container" ng-switch on="adminMode">
+        <ul ng-switch-default>
+          <li class="simple-content">
+            <h3>users</h3>
+            <a href ng-click="gotoUsers()" ng-bind="userCount"></a>
+          </li>
+          <li class="simple-content">
+            <h3>invites</h3>
+            <a href ng-click="gotoInvites()" ng-bind="inviteCount"></a>
+          </li>
+          <li class="simple-content">
+            <h3>invite requests</h3>
+            <a href ng-click="gotoInviteRequests()" ng-bind="inviteRequestCount"></a>
+          </li>
+          <li class="simple-content">
+            <h3>items</h3>
+            <span>{{itemCount}}</span>
+          </li>
+        </ul>
+        <ul ng-switch-when="users">
+          <li>
+            <a href ng-click="gotoStatistics()" class="highlighted-link">back</a>
+          </li>
+          <li class="simple-content" ng-repeat="user in users | orderBy:'created':true">
+            <a ng-href="mailto:{{user.email}}" ng-bind="user.email"></a> since: {{getDateString(user.created)}}
+          </li>
+        </ul>
+        <ul ng-switch-when="invites">
+          <li>
+            <a href ng-click="gotoStatistics()" class="highlighted-link">back</a>
+          </li>
+          <li class="simple-content" ng-repeat="invite in invites | orderBy:'accepted':true">
+            <a ng-href="mailto:{{invite.email}}" ng-bind="invite.email"></a> modified: {{getDateString(invite.modified)}}
+            <div ng-if="invite.accepted">accepted: {{getDateString(invite.accepted)}}</div>
+          </li>
+        </ul>
+        <ul ng-switch-when="inviteRequests">
+          <li>
+            <a href ng-click="gotoStatistics()" class="highlighted-link">back</a>
+          </li>
+          <li class="simple-content" ng-repeat="inviteRequest in inviteRequests">
+            <a ng-href="mailto:{{inviteRequest.email}}" ng-bind="inviteRequest.email"></a> modified: {{getDateString(inviteRequest.modified)}}<br/><a href ng-click="acceptInviteRequest(inviteRequest)" class="highlighted-link">accept</a>
+            <a href ng-click="deleteInviteRequest(inviteRequest)" class="warning-link">delete</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+  <div id="desktop-menu" ng-if="isDesktop && isMenuOpen" ng-include="'static/app/auth/menu.html'"></div>
+</div>

@@ -14,6 +14,11 @@ trait AdminActions {
 
   def db: GraphDatabase;
 
+  def getStatistics()(implicit log: LoggingAdapter): Response[Statistics] = {
+    log.info("getStatistics")
+    db.getStatistics
+  }
+  
   def rebuildUserIndexes()(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("rebuildUserIndexes")
     db.rebuildUserIndexes

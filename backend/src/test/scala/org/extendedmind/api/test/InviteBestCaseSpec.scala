@@ -58,11 +58,11 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       + "and accept the request with POST to /admin/invite/request/[UUID]/accept "
       + "and accept the invite with POST to /invite/[code]/accept ") {
       val testEmail = "example@example.com"
-      val testInviteRequest = InviteRequest(None, testEmail, None, None)
+      val testInviteRequest = InviteRequest(None, testEmail, None, None, None)
       val testEmail2 = "example2@example.com"
-      val testInviteRequest2 = InviteRequest(None, testEmail2, None, None)
+      val testInviteRequest2 = InviteRequest(None, testEmail2, None, None, None)
       val testEmail3 = "example3@example.com"
-      val testInviteRequest3 = InviteRequest(None, testEmail3, None, None)
+      val testInviteRequest3 = InviteRequest(None, testEmail3, None, None, None)
 
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "1234") })

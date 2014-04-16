@@ -262,6 +262,9 @@ function DateService($timeout) {
     },
     getTodayYYYYMMDD: function() {
       return today.yyyymmdd;
+    },
+    getYYYYMMDD: function(date) {
+      return yyyymmdd(date);
     }
   };
 }

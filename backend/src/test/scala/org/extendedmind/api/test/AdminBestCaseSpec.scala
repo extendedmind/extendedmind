@@ -57,6 +57,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         Some(UUID.fromString(uuid)),
         "test@example.com",
         Some("messageId"),
+        None,
         None)
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Put("/admin/invite/request",
@@ -191,6 +192,20 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         writeJsonOutput("itemsRebuildResponse", entityAs[String])
         val countResult = entityAs[CountResult]
         countResult.count should be(22)
+      }
+    }
+    it("should successfully get statistics with GET to /admin") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Get("/admin") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val statistics = entityAs[Statistics]
+        writeJsonOutput("statisticsResponse", entityAs[String])
+      }
+    }
+    it("should successfully get users with GET to /admin/users") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val users = entityAs[Users]
+        writeJsonOutput("usersResponse", entityAs[String])
       }
     }
   }
