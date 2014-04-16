@@ -1,6 +1,6 @@
 'use strict';
 
-function AdminController($scope, DateService, AdminService, AnalyticsService) {
+function AdminController($scope, DateService, AdminService, AuthenticationService, AnalyticsService) {
 
   AnalyticsService.visit('admin');
 
@@ -27,6 +27,14 @@ function AdminController($scope, DateService, AdminService, AnalyticsService) {
       if (invitesResponse.data){
         $scope.invites = invitesResponse.data.invites;
         $scope.adminMode = 'invites';
+      }
+    });
+  };
+
+  $scope.resendInvite = function(invite){
+    AuthenticationService.resendInvite(invite.uuid, invite.email).then(function(resendResponse){
+      if (resendResponse.data){
+        invite.resent = true;
       }
     });
   };
@@ -73,5 +81,5 @@ function AdminController($scope, DateService, AdminService, AnalyticsService) {
   };
 }
 
-AdminController['$inject'] = ['$scope', 'DateService', 'AdminService', 'AnalyticsService'];
+AdminController['$inject'] = ['$scope', 'DateService', 'AdminService', 'AuthenticationService', 'AnalyticsService'];
 angular.module('em.app').controller('AdminController', AdminController);

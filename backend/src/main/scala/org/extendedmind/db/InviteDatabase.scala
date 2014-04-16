@@ -135,6 +135,16 @@ trait InviteDatabase extends UserDatabase {
         } yield invite
     }
   }
+  
+  def getInvite(inviteUUID: UUID, email: String): Response[Invite] = {
+    withTx {
+      implicit neo =>
+	    for {
+	      inviteNode <- getInviteNode(inviteUUID, email).right
+	      invite <- toCaseClass[Invite](inviteNode).right
+	    } yield invite
+    }
+  }
 
   def getInvites(): Response[Invites] = {
     withTx {
@@ -296,7 +306,7 @@ trait InviteDatabase extends UserDatabase {
         else {
           // Create an invite from the invite request
           val email = inviteRequestNode.right.get.getProperty("email").asInstanceOf[String]
-          val invite = Invite(email, Random.generateRandomUnsignedLong, None, message, None, None)
+          val invite = Invite(None, email, Random.generateRandomUnsignedLong, None, message, None, None)
           val inviteNode = createNode(invite, MainLabel.INVITE)
           inviteRequestNode.right.get --> SecurityRelationship.IS_ORIGIN --> inviteNode
           if (userNode.isDefined){
@@ -337,6 +347,21 @@ trait InviteDatabase extends UserDatabase {
             fail(INVALID_PARAMETER, invalidParameterDescription)
           } else {
             Right(inviteNode)
+          }
+        }
+    }
+  }
+  
+  protected def getInviteNode(uuid: UUID, email: String): Response[Node] = {
+    withTx {
+      implicit neo =>
+        val inviteNode = getNode(uuid, MainLabel.INVITE)
+        if (inviteNode.isLeft) Left(inviteNode.left.get)
+        else{
+          if(inviteNode.right.get.getProperty("email").asInstanceOf[String] == email){
+            Right(inviteNode.right.get)          
+          }else{
+            fail(INVALID_PARAMETER, "invite not found with given UUID " + uuid + " and email " + email)
           }
         }
     }

@@ -90,7 +90,13 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     requestRegex.source +
     /\//.source +
     BackendClientService.uuidRegex.source +
-    /\/bypass$/.source);
+    /\/bypass$/.source),
+  resendInviteRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    inviteRegex.source +
+    BackendClientService.uuidRegex.source +
+    /\/resend$/.source);
 
   // Register refresh credentials callback to backend
   BackendClientService.registerRefreshCredentialsCallback(verifyAndUpdateAuthentication);
@@ -195,6 +201,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     else if (inviteRequestResponse.data.resultType === 'invite') {
       $location.path('/waiting');
       $location.search({
+        uuid: inviteRequestResponse.data.result.uuid,
         email: user.email,
         invite: true
       });
@@ -316,6 +323,11 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     postInviteRequestBypass: function(uuid, email, coupon) {
       return postInviteRequestBypass(uuid, email, coupon);
     },
+    resendInvite: function(uuid, email) {
+      console.log(resendInviteRegexp)
+      return BackendClientService.postOnline('/api/invite/' + uuid + '/resend',
+        resendInviteRegexp, {email: email}, true);
+    },
     acceptInvite: function(inviteResponseCode, data) {
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',
         acceptInviteRegexp, data, true, [400, 404, 502]);
@@ -364,7 +376,8 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     postResetPasswordRegex: postResetPasswordRegexp,
     putChangePasswordRegex: putChangePasswordRegexp,
     postVerifyEmailRegex: postVerifyEmailRegexp,
-    postInviteRequestBypassRegex: postInviteRequestBypassRegexp
+    postInviteRequestBypassRegex: postInviteRequestBypassRegexp,
+    resendInviteRegex: resendInviteRegexp
   };
 }
 AuthenticationService.$inject = ['$rootScope', '$location', '$q', 'BackendClientService', 'UserSessionService'];

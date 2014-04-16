@@ -89,6 +89,7 @@ describe('LaunchController', function() {
 
     expect($location.path).toHaveBeenCalledWith('/waiting');
     expect($location.search).toHaveBeenCalledWith({
+      uuid: inviteRequestResponse.result.uuid,
       email: $scope.user.email,
       invite : true
     });

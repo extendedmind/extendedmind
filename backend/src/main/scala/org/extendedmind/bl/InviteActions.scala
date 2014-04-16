@@ -138,6 +138,31 @@ trait InviteActions {
     }
     acceptResult
   }
+  
+  def resendInviteEmail(inviteUUID: UUID, email: String)(implicit log: LoggingAdapter): Response[CountResult] = {
+    log.info("resendInviteEmail: invite {} email {}", inviteUUID, email)
+    
+    val invite = db.getInvite(inviteUUID, email)
+    if (invite.isRight){
+      val futureMailResponse = mailgun.sendInvite(invite.right.get)
+      futureMailResponse onSuccess {
+        case SendEmailResponse(message, id) => {
+          val saveResponse = db.putExistingInvite(inviteUUID,
+            invite.right.get.copy(emailId = Some(id)))
+          if (saveResponse.isLeft)
+            log.error("Error updating resent invite for email {} with id {}, error: {}",
+              invite.right.get.email, id, saveResponse.left.get.head)
+          else log.info("Resent invite with email: {} and UUID: {} with emailId: {}",
+            invite.right.get.email, inviteUUID, id)
+        }
+        case _ =>
+          log.error("Could not send invite email to {}", invite.right.get.email)
+      }
+      Right(CountResult(1))
+    }else{
+      Left(invite.left.get)
+    }
+  }
 
   def acceptInvite(code: Long, signUp: SignUp)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("acceptInvite for code {}, email {}, with signUpMode {}", code, signUp.email, settings.signUpMode)

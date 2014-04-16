@@ -37,6 +37,12 @@
           <li class="simple-content" ng-repeat="invite in invites | orderBy:'accepted':true">
             <a ng-href="mailto:{{invite.email}}" ng-bind="invite.email"></a> modified: {{getDateString(invite.modified)}}
             <div ng-if="invite.accepted">accepted: {{getDateString(invite.accepted)}}</div>
+            <div ng-if="!invite.accepted && !invite.resent">
+              <a href ng-click="resendInvite(invite)" class="highlighted-link">resend</a>
+            </div>
+            <div ng-if="!invite.accepted && invite.resent">
+              resent
+            </div>
           </li>
         </ul>
         <ul ng-switch-when="inviteRequests">

@@ -126,9 +126,17 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
                       val acceptInviteRequestResponse = entityAs[SetResult]
                       writeJsonOutput("acceptInviteRequestResponse", entityAs[String])
                       acceptInviteRequestResponse.uuid should not be None
-                    }
-                    verify(mockMailgunClient).sendInvite(anyObject())
 
+                      // Should be able to resend invite
+                      Post("/invite/" + acceptInviteRequestResponse.uuid.get + "/resend",
+                        marshal(UserEmail(testInviteRequest.email)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                          val resendInviteResponse = entityAs[CountResult]
+                          writeJsonOutput("resendInviteResponse", entityAs[String])
+                          resendInviteResponse.count should be(1)
+                      }
+                    }
+                    verify(mockMailgunClient, times(2)).sendInvite(anyObject())
+                    
                     // Verify that the last one is now number 1 
                     Get("/invite/request/" + inviteRequestResponse3.result.get.uuid.get) ~> route ~> check {
                       entityAs[InviteRequestQueueNumber].queueNumber should be(1)

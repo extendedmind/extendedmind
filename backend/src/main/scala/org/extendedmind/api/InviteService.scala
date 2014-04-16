@@ -102,6 +102,20 @@ trait InviteService extends ServiceBase {
             }
           }
         }
+      } ~
+      postInviteResend { inviteUUID =>
+        authorize(settings.signUpMethod != SIGNUP_OFF) {
+          entity(as[UserEmail]) { userEmail =>
+            complete {
+              Future[CountResult] {
+                inviteActions.resendInviteEmail(inviteUUID, userEmail.email) match {
+                  case Right(count) => processResult(count)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
       }
   }
 

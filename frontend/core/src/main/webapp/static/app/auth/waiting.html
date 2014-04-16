@@ -7,9 +7,16 @@
       <div class="content">
         <div ng-if="invite" id="invite">
           <span class="instruction-text">
-            we have sent you an email to join extended mind.</br>
-            please click on the link in the email to sign up to the service.
+            we have sent you an email to join extended mind.<br/>
+            please click on the link in the email to sign up to the service.<br/>
+            if you have not received an invitation email, click on the button below.
           </span>
+          <button ng-if="!resent" type="submit" id="resend-button" class="wide-button normal-button" ng-click="resendInvite()">
+            <span class="button-text">resend invitation</span>
+          </button>
+          <button ng-if="resent" type="submit" id="resend-button" disabled class="wide-button normal-button" ng-click="resendInvite()">
+            <span class="button-text">invitation resent</span>
+          </button>
         </div>
         <div ng-if="request" id="request">
           <span class="instruction-text">
@@ -17,6 +24,9 @@
             <h1>{{user.inviteQueueNumber}}</h1>
             people before you on the extendedmind waiting list
           </span>
+          <button type="submit" id="waiting-button" class="wide-button normal-button" ng-click="openEMBlogInNewWindow()">
+            <span class="button-text">visit blog</span>
+          </button>
         </div>
         <div ng-if="coupon" id="coupon">
           <span class="instruction-text">
@@ -36,11 +46,6 @@
               <p ng-show="invalidCoupon" class="validation-error">invalid code</p>
             </div>
           </form>
-        </div>
-        <div ng-if="!coupon" class="button-container">
-          <button type="submit" id="waiting-button" class="wide-button normal-button" ng-click="openEMBlogInNewWindow()">
-            <span class="button-text">visit blog</span>
-          </button>
         </div>
       </div>
     </div>

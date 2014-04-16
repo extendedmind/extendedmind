@@ -83,6 +83,13 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
     });
   }
 
+  function mockResendInvite() {
+    $httpBackend.whenPOST(AuthenticationService.resendInviteRegex).respond(function(method, url, data) {
+      var resendInviteResponse = getJSONFixture('resendInviteResponse.json');
+      return [200, resendInviteResponse];
+    });
+  }
+
   function mockPostForgotPassword() {
     $httpBackend.whenPOST(AuthenticationService.postForgotPasswordRegex).respond(function(method, url, data) {
       var forgotPasswordResponse = getJSONFixture('forgotPasswordResponse.json');
@@ -130,6 +137,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       mockLogout(expectResponse);
       mockPostInviteRequest();
       mockPostInviteRequestBypass();
+      mockResendInvite();
       mockPostForgotPassword();
       mockGetPasswordResetExpires(expectResponse);
       mockPostResetPassword(expectResponse);

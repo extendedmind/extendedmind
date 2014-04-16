@@ -41,6 +41,16 @@ function WaitingController($routeParams, $scope, $window, $location, AnalyticsSe
       });
   }
 
+  $scope.resent = false;
+  $scope.resendInvite = function() {
+    AuthenticationService.resendInvite($scope.user.uuid, $scope.user.email).then(
+      function(resendResponse){
+        if (resendResponse.data){
+          $scope.resent = true;
+        }
+      });
+  };
+
   $scope.openEMBlogInNewWindow = function openBlogInNewWindow() {
     AnalyticsService.visit('blog');
     $window.open('http://extendedmind.org/', '_system');
