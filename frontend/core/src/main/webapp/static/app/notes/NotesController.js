@@ -1,17 +1,25 @@
 'use strict';
 
-function NotesController($location, $scope, $timeout, $routeParams, UserSessionService, NotesService, ListsService, SwiperService, AnalyticsService) {
+function NotesController($location, $rootScope, $routeParams, $scope, $timeout, UserSessionService, NotesService, ListsService, SwiperService, AnalyticsService) {
 
-  if (!$scope.note){
-    if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
+  if (!$scope.note) {
+    // edit note or new note dialog
+    if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)) {
+      // edit note
       if ($routeParams.uuid) {
         $scope.note = NotesService.getNoteByUUID($routeParams.uuid, UserSessionService.getActiveUUID());
-      }else {
+      }
+      // new note
+      else {
         $scope.note = {
           relationships: {
             tags: []
           }
         };
+        if ($rootScope.omnibarNote) {
+          $scope.note.title = $rootScope.omnibarNote.title;
+          delete $rootScope.omnibarNote;
+        }
         if ($routeParams.parentUUID){
           $scope.note.relationships.list = $routeParams.parentUUID;
         }
@@ -21,16 +29,16 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
 
   $scope.saveNote = function(note) {
     if (note.uuid){
-      AnalyticsService.do("saveNote", "new");
-    }else{
-      AnalyticsService.do("saveNote", "existing");
+      AnalyticsService.do('saveNote', 'new');
+    } else {
+      AnalyticsService.do('saveNote', 'existing');
     }
     NotesService.saveNote(note, UserSessionService.getActiveUUID());
-    window.history.back();
+    $location.path(UserSessionService.getOwnerPrefix() + '/notes');
   };
 
   $scope.noteQuickEditDone = function(note) {
-    AnalyticsService.do("noteQuickEditDone");    
+    AnalyticsService.do('noteQuickEditDone');
     NotesService.saveNote(note, UserSessionService.getActiveUUID());
     $scope.close(note, true);
   };
@@ -40,12 +48,12 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.addNew = function() {
-    AnalyticsService.visit("newNote");
+    AnalyticsService.visit('newNote');
     $location.path($scope.ownerPrefix + '/notes/new');
   };
 
   $scope.editNoteTitle = function(note) {
-    AnalyticsService.do("editNoteTitle");
+    AnalyticsService.do('editNoteTitle');
     NotesService.saveNote(note, UserSessionService.getActiveUUID());
   };
 
@@ -54,12 +62,12 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.deleteNote = function(note) {
-    AnalyticsService.do("deleteNote");
+    AnalyticsService.do('deleteNote');
     NotesService.deleteNote(note, UserSessionService.getActiveUUID());
   };
 
   $scope.addNote = function(newNote) {
-    if (!newNote.title  || newNote.title.length === 0) return false;    
+    if (!newNote.title  || newNote.title.length === 0) return false;
     var newNoteToSave = {title: newNote.title};
     if (newNote.relationships && newNote.relationships.list){
       newNoteToSave.relationships = {
@@ -68,7 +76,7 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
     }
     delete newNote.title;
 
-    AnalyticsService.do("addNote");
+    AnalyticsService.do('addNote');
     NotesService.saveNote(newNoteToSave, UserSessionService.getActiveUUID());
   };
 
@@ -92,7 +100,8 @@ function NotesController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 }
 
-NotesController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams',
-                              'UserSessionService', 'NotesService', 'ListsService',
-                              'SwiperService', 'AnalyticsService'];
+NotesController['$inject'] = [
+'$location', '$rootScope', '$routeParams', '$scope', '$timeout',
+'UserSessionService', 'NotesService', 'ListsService',
+'SwiperService', 'AnalyticsService'];
 angular.module('em.app').controller('NotesController', NotesController);

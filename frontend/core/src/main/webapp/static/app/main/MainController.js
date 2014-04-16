@@ -74,7 +74,7 @@ function MainController(
     $scope.registerActivity();
     var activeUUID = UserSessionService.getActiveUUID();
     // First check that the user has login
-    if (activeUUID){
+    if (activeUUID) {
       var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
       if (isNaN(sinceLastItemsSynchronized) || sinceLastItemsSynchronized > itemsSynchronizedThreshold) {
         ItemsService.synchronize(activeUUID).then(function() {
@@ -102,35 +102,36 @@ function MainController(
 
   $scope.omnibarVisible = false;
 
-  $scope.setOmnibarPlaceholder = function(heading){
+  $scope.setOmnibarPlaceholder = function(heading) {
     $scope.omnibarPlaceholders[heading] = heading + getOfflineIndicator();
   };
 
-  function getOfflineIndicator(){
-    if (!$scope.online){
+  function getOfflineIndicator() {
+    if (!$scope.online) {
       return '*';
-    }else{
+    } else {
       return '';
     }
   }
 
   $scope.clickOmnibar = function(heading) {
+    // NOTE Heading may be not correct before $digest() because ng-init is not run.
     $scope.omnibarVisible = true;
     $scope.omnibarPlaceholders[heading] = 'store / recall';
   };
 
-  $scope.omnibarKeyDown = function(event){
-    if (event.keyCode === 27){
+  $scope.omnibarKeyDown = function(event) {
+    if (event.keyCode === 27) {
       $scope.clearOmnibar();
     }
   };
 
-  $scope.clearOmnibar = function(){
+  $scope.clearOmnibar = function() {
     $scope.omnibarText.title = '';
     $scope.omnibarVisible = false;
     for (var heading in $scope.omnibarPlaceholders) {
-      if ($scope.omnibarPlaceholders.hasOwnProperty(heading)){
-        if ($scope.omnibarPlaceholders[heading] === 'store / recall'){
+      if ($scope.omnibarPlaceholders.hasOwnProperty(heading)) {
+        if ($scope.omnibarPlaceholders[heading] === 'store / recall') {
           // This is the active omnibar, blur it programmatically
           $('input#' + heading + 'OmnibarInput').blur();
           $scope.omnibarPlaceholders[heading] = heading;
@@ -141,8 +142,8 @@ function MainController(
   };
 
   $scope.saveOmnibarText = function(omnibarText) {
-    if (omnibarText.title && omnibarText.title.length > 0){
-      ItemsService.saveItem({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(/*item*/){
+    if (omnibarText.title && omnibarText.title.length > 0) {
+      ItemsService.saveItem({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(/*item*/) {
         $scope.clearOmnibar();
         if ($scope.feature !== 'inbox') {
           $location.path(UserSessionService.getOwnerPrefix() + '/inbox');
@@ -153,42 +154,26 @@ function MainController(
 
   $scope.isActiveSlide = function isActiveSlide(pathFragment) {
     var activeSlide = SwiperService.getActiveSlidePath($scope.feature);
-    if (activeSlide && (activeSlide.indexOf(pathFragment) != -1)){
+    if (activeSlide && (activeSlide.indexOf(pathFragment) != -1)) {
       return true;
     }
   };
 
-  $scope.saveAsTask = function(omnibarText) {
-    TasksService.saveTask({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(){
-      $scope.clearOmnibar();
-
-      if ($scope.feature !== 'tasks') {
-        SwiperService.setInitialSlidePath('tasks', 'tasks/details');
-        SwiperService.setInitialSlidePath('tasks/details', 'tasks/details/unsorted');
-        $location.path(UserSessionService.getOwnerPrefix() + '/tasks');
-      } else {
-        var swipeTransitionSpeed = 0;
-        SwiperService.swipeTo('tasks/details', swipeTransitionSpeed);
-        SwiperService.swipeTo('tasks/details/unsorted', swipeTransitionSpeed);
-      }
-    });
+  $scope.saveAsTask = function saveAsTask(omnibarText) {
+    $rootScope.omnibarTask = omnibarText; // FIXME  service for active user data
+    $location.path(UserSessionService.getOwnerPrefix() + '/tasks/new');
+    // TODO set swiper state for edit task cancel
   };
 
-  $scope.saveAsNote = function(omnibarText) {
-    NotesService.saveNote({title: omnibarText.title}, UserSessionService.getActiveUUID());
-    $scope.clearOmnibar();
-    if ($scope.feature !== 'notes') {
-      $location.path(UserSessionService.getOwnerPrefix() + '/notes');
-    } else {
-      var swipeTransitionSpeed = 0;
-      SwiperService.swipeTo('notes/home', swipeTransitionSpeed);
-    }
+  $scope.saveAsNote = function saveAsNote(omnibarText) {
+    $rootScope.omnibarNote = omnibarText;
+    $location.path(UserSessionService.getOwnerPrefix() + '/notes/new');
   };
 
   $scope.clickOmnibarPlus = function(omnibarText) {
-    if (omnibarText.title && omnibarText.title.length > 0){
+    if (omnibarText.title && omnibarText.title.length > 0) {
       $scope.saveOmnibarText(omnibarText);
-    }else{
+    } else {
       $location.path(UserSessionService.getOwnerPrefix() + '/items/new');
     }
   };
@@ -198,7 +183,7 @@ function MainController(
   $scope.gotoHome = function() {
     if ($scope.feature === 'tasks') {
       SwiperService.swipeTo('tasks/home');
-    }else if ($scope.feature === 'notes'){
+    } else if ($scope.feature === 'notes') {
       SwiperService.swipeTo('notes/home');
     }
   };
@@ -206,7 +191,7 @@ function MainController(
   $scope.gotoOverview = function() {
     if ($scope.feature === 'tasks') {
       SwiperService.swipeTo('tasks/overview');
-    }else if ($scope.feature === 'notes'){
+    } else if ($scope.feature === 'notes') {
       SwiperService.swipeTo('notes/overview');
     }
   };
@@ -216,13 +201,13 @@ function MainController(
   };
 
   $scope.gotoLists = function() {
-    if ($scope.lists.length > 0){
+    if ($scope.lists.length > 0) {
       $scope.gotoDetails($scope.lists[0].uuid);
     }
   };
 
   $scope.gotoContexts = function() {
-    if ($scope.contexts.length > 0){
+    if ($scope.contexts.length > 0) {
       $scope.gotoDetails($scope.contexts[0].uuid);
     }
   };
@@ -230,7 +215,7 @@ function MainController(
   $scope.gotoDetails = function(identifier) {
     if ($scope.feature === 'tasks') {
       SwiperService.swipeTo('tasks/details/' + identifier);
-    }else if ($scope.feature === 'notes') {
+    } else if ($scope.feature === 'notes') {
       SwiperService.swipeTo('notes/details/' + identifier);
     }
   };

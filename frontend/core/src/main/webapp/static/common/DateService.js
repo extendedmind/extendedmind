@@ -10,6 +10,7 @@ function DateService($timeout) {
   var weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
   var activeWeek;
+  var initialDate;
   var daysFromActiveWeekToNext = 7;
   var daysFromActiveWeekToPrevious = -daysFromActiveWeekToNext;
 
@@ -42,7 +43,7 @@ function DateService($timeout) {
     if (today.date.getDay() === 1) {  // Monday
       activeWeek = weekDaysStartingFrom(new Date());
       datepickerWeeks = [];
-      initializeDatepickerWeeks(new Date());
+      initializeDatepickerWeeks();
       weekChanged = true;
     } else {
       for (var i = 0, len = activeWeek.length; i < len; i++) {
@@ -65,8 +66,8 @@ function DateService($timeout) {
   }
 
   var datepickerWeeks = [];
-  function initializeDatepickerWeeks() {
-    var firstDayOfCurrentWeek = getFirstDateOfTheWeek(new Date());
+  function initializeDatepickerWeeks(initialDate) {
+    var firstDayOfCurrentWeek = getFirstDateOfTheWeek(initialDate || new Date());
 
     var firstDayOfPreviousWeek = new Date(
       firstDayOfCurrentWeek.getFullYear(),
@@ -224,11 +225,24 @@ function DateService($timeout) {
       activeWeek = getWeekWithOffset(daysFromActiveWeekToPrevious);
       return activeWeek;
     },
+    constructActiveWeekByDate: function(date) {
+      initialDate = new Date(date);
+      var firstDateOfWeek = getFirstDateOfTheWeek(date);
+      activeWeek = weekDaysStartingFrom(firstDateOfWeek);
+    },
+    constructDatePickerWeeksByDate: function(date) {
+      if (datepickerWeeks) {
+        datepickerWeeks.length = 0;
+      }
+      initializeDatepickerWeeks(date);
+    },
     setCurrentWeekActive: function() {
       var date = getFirstDateOfTheWeek(new Date());
 
       activeWeek = weekDaysStartingFrom(date);
-      datepickerWeeks.length = 0;
+      if (datepickerWeeks) {
+        datepickerWeeks.length = 0;
+      }
       initializeDatepickerWeeks();
       return activeWeek;
     },
@@ -244,6 +258,17 @@ function DateService($timeout) {
     },
 
     // getters
+    getInitialDate: function() {
+      if (initialDate) {
+        var initialDateYYYYMMDD = yyyymmdd(initialDate);
+        for (var i = 0, len = activeWeek.length; i < len; i++) {
+          if (activeWeek[i].yyyymmdd === initialDateYYYYMMDD) {
+            initialDate = undefined;
+            return activeWeek[i];
+          }
+        }
+      }
+    },
     getMondayDate: function() {
       return (activeWeek) ? activeWeek[0] : (function() {
         var date = getFirstDateOfTheWeek(new Date());
@@ -265,6 +290,9 @@ function DateService($timeout) {
     },
     getYYYYMMDD: function(date) {
       return yyyymmdd(date);
+    },
+    getWeekday: function(date) {
+      return weekdays[date.getDay()];
     }
   };
 }

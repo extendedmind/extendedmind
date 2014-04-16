@@ -85,7 +85,7 @@ function DatesController($rootScope, $scope, DateService, SwiperService) {
       SwiperService.swipeTo(getDateSlidePath($scope.activeDay), transitionSpeed);
     }
   }
-  swipeToStartingDay(null, true);
+  swipeToStartingDay(DateService.getInitialDate(), true);
 
   $scope.getSubtask = function getSubtask(date) {
     return {date: date.yyyymmdd};
