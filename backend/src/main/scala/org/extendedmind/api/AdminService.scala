@@ -339,9 +339,11 @@ trait AdminService extends ServiceBase {
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
-              adminActions.shutdown
-              in(1.second) { actorSystem.shutdown() }
-              processResult("Shutting down in 1 second...")
+              in(1.second) { 
+                adminActions.shutdown
+                actorSystem.shutdown
+              }
+              "Shutting down in 1 second..."
             }
           }
         }
