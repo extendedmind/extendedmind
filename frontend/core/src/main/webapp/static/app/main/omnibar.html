@@ -4,8 +4,8 @@
       <div ng-class="(omnibarVisible && 'omnibar-visible') || (!omnibarVisible && 'omnibar-hidden')">
         <input type="text" ng-click="clickOmnibar(heading)" class="simple-input form-control omnibar-input" id="{{heading}}OmnibarInput" ng-model="omnibarText.title" dynamic-placeholder="{{omnibarPlaceholders[heading]}}" ng-keydown="omnibarKeyDown($event)" required>
       </div>
-      <div ng-if="omnibarVisible" class="right-button-wrapper">
-        <button id="omnibarPlus" class="button" type="button" ng-click="clickOmnibarPlus(omnibarText)"><span class="x"></span>
+      <div ng-show="omnibarHasText()" class="right-button-wrapper">
+        <button id="omnibarX" class="button" type="button" ng-click="omnibarText=''"><span class="icon-x"></span>
         </button>
       </div>
     </div>
