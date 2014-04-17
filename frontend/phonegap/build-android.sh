@@ -19,11 +19,11 @@ if [ -d ${RELEASE_BUILDDIR} ]; then
     rm -r ${RELEASE_BUILDDIR}
 fi
 
-# run phonegap command locally
-cordova build android
-
 # copy platform specific index file
 cp www/phonegap-android.html platforms/android/assets/www/index.html
+
+# run phonegap command locally
+cordova build android
 
 cd platforms/android
 
