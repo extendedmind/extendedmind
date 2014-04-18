@@ -133,6 +133,31 @@ header {
   }
 }
 
+.edit-header {
+  height: @heading-header-height;
+  nav {
+    height: @heading-header-height;
+    max-width: @one-column-grid-width;
+    margin-left: auto;
+    margin-right: auto;
+    ul {
+      li {
+        display: table;
+        height: @heading-header-height;
+        * {
+          height: inherit;
+          display: table-cell;
+          vertical-align: middle;
+        }
+        button {
+          padding-right: @horizontal-grid;
+          padding-left: @horizontal-grid;
+        }
+      }
+    }
+  }
+}
+
 // CONTENT
 
 .page-heading {

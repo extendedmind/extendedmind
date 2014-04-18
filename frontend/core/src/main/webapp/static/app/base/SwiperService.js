@@ -177,31 +177,31 @@ function SwiperService($q) {
         }
       }
     },
-    swipeTo: function(slidePath, transitionSpeed) {
+    swipeTo: function(slidePath) {
       var swiperInfos = getSwiperInfosBySlidePath(slidePath);
 
       // First, swipe in the main swiper to the right index
       // Second, swipe (vertically) with the page swiper
-      this.swipeMainSlide(slidePath, swiperInfos, transitionSpeed);
-      this.swipePageSlide(slidePath, swiperInfos, transitionSpeed);
+      this.swipeMainSlide(slidePath, swiperInfos);
+      this.swipePageSlide(slidePath, swiperInfos);
     },
-    swipeMainSlide: function(slidePath, swiperInfos, transitionSpeed) {
+    swipeMainSlide: function(slidePath, swiperInfos) {
       swiperInfos = swiperInfos || getSwiperInfosBySlidePath(slidePath);
 
       if (swiperInfos.main) {
         var mainSwiperIndex = getSlideIndexBySlidePath(slidePath, swiperInfos.main.slidesPaths);
         if (mainSwiperIndex !== undefined) {
-          swiperInfos.main.swiper.swipeTo(mainSwiperIndex, transitionSpeed);
+          swiperInfos.main.swiper.swipeTo(mainSwiperIndex);
         }
       }
     },
-    swipePageSlide: function(slidePath, swiperInfos, transitionSpeed) {
+    swipePageSlide: function(slidePath, swiperInfos) {
       swiperInfos = swiperInfos || getSwiperInfosBySlidePath(slidePath);
 
       if (swiperInfos.page) {
         var pageSwiperIndex = swiperInfos.page.slidesPaths.indexOf(slidePath);
         if (pageSwiperIndex !== -1) {
-          swiperInfos.page.swiper.swipeTo(pageSwiperIndex, transitionSpeed);
+          swiperInfos.page.swiper.swipeTo(pageSwiperIndex);
         }
       }
     },

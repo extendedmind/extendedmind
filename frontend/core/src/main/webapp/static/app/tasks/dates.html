@@ -8,7 +8,7 @@
           <div id="pull-to-previous-week" class="week-loader">
             <span>previous week...</span>
           </div>
-          <div class="swiper-slide" ng-repeat="date in weekdays" swiper-slide="tasks/home/{{date.weekday}}" slide-index="$index" ng-init="subtask = getSubtask(date)">
+          <div class="swiper-slide" ng-repeat="date in weekdays track by date.weekdayIndex" swiper-slide="tasks/home/{{date.weekday}}" slide-index="$index">
             <div class="inner-slide-content-container">
               <section id="date" class="date">
                 <h3 class="date-heading" ng-hide="isDatepickerVisible" ng-click="setDatepickerVisible()">{{date.displayDate}}</h3>

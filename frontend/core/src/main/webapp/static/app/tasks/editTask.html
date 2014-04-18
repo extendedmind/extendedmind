@@ -1,43 +1,38 @@
 <div class="no-slides-container" ng-controller="MainController">
-  <section id="edit-task" class="one-column-grid page" ng-controller="TasksController">
-    <div class="column">
-      <header class="heading-header">
-        <h3 ng-if="task.uuid">edit task</h3>
-        <h3 ng-if="!task.uuid">new task</h3>
-      </header>
-      <div class="content-container simple-content-container">
-        <form class="form-horizontal" role="form" name="taskEdit">
+  <div ng-controller="TasksController">
+    <header class="edit-header" edit-header="task" item-edit-form="taskEdit" save-item="saveTask(task)" cancel-edit="cancelEdit()"></header>
+    <section id="edit-task" class="one-column-grid page">
+      <div class="column">
 
-          <div class="form-group">
-            <label class="sr-only" for="taskTitle">title</label>
-            <input type="text" class="simple-input" id="taskTitle" ng-model="task.title" placeholder="title..." maxlength="128" required>
-          </div>
-          <div class="form-group">
-            <label class="sr-only" for="taskDescription">description</label>
-            <textarea class="simple-input" id="taskDescription" ng-model="task.description" placeholder="description..." maxlength="1024" expanding-textarea></textarea>
-          </div>
+        <div class="content-container simple-content-container">
+          <form class="form-horizontal" role="form" name="taskEdit">
 
-          <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
+            <div class="form-group">
+              <label class="sr-only" for="taskTitle">title</label>
+              <input type="text" class="simple-input" id="taskTitle" ng-model="task.title" placeholder="title..." maxlength="128" required>
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="taskDescription">description</label>
+              <textarea class="simple-input" id="taskDescription" ng-model="task.description" placeholder="description..." maxlength="1024" expanding-textarea></textarea>
+            </div>
 
-          <div ng-if="task.date" class="form-group">
-            <label class="sr-only" for="taskRepeat">repeating</label>
-            <select class="simple-input swiper-no-swiping" id="taskRepeat" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes">
-              <option value="">select repeating...</option>
-            </select>
-          </div>
+            <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
 
-          <div class="form-group">
-            <label class="sr-only" for="taskLink">url</label>
-            <input type="text" class="simple-input" id="taskLink" ng-model="task.link" placeholder="url...">
-          </div>
+            <div ng-if="task.date" class="form-group">
+              <label class="sr-only" for="taskRepeat">repeating</label>
+              <select class="simple-input swiper-no-swiping" id="taskRepeat" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes">
+                <option value="">select repeating...</option>
+              </select>
+            </div>
 
-          <div class="form-group vertical-buttons">
-            <button type="submit" class="wide-button normal-button" ng-disabled="!taskEdit.$valid" ng-click="saveTask(task)">save</button>
-            <button type="button" class="wide-button cancel-button" ng-click="cancelEdit()">cancel</button>
-          </div>
+            <div class="form-group">
+              <label class="sr-only" for="taskLink">url</label>
+              <input type="text" class="simple-input" id="taskLink" ng-model="task.link" placeholder="url...">
+            </div>
 
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </div>

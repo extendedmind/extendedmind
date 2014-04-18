@@ -1,6 +1,6 @@
 'use strict';
 
-function DatesController($rootScope, $scope, DateService, SwiperService) {
+function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
   $scope.activeDay = {};
   $scope.weekdays = DateService.activeWeek();
   $scope.datepickerWeeks = DateService.datepickerWeeks();
@@ -76,20 +76,20 @@ function DatesController($rootScope, $scope, DateService, SwiperService) {
 
   // Invoke function during compile and $scope.$apply();
   // Set initial swiper slide path to staring day or swipe to active day.
-  function swipeToStartingDay(startingDay, slideInitialized, transitionSpeed) {
+  function swipeToStartingDay(startingDay, init) {
     $scope.activeDay = startingDay || DateService.getTodayDate() || DateService.getMondayDate();
-
-    if (slideInitialized) {
-      SwiperService.setInitialSlidePath('tasks/home', getDateSlidePath($scope.activeDay));
-    } else {
-      SwiperService.swipeTo(getDateSlidePath($scope.activeDay), transitionSpeed);
-    }
+    $q.when(
+      SwiperService.setInitialSlidePath(
+        'tasks/home',
+        getDateSlidePath($scope.activeDay)))
+    .then(function(){
+      if (!init) {
+        // Need additional swiping if setting initial slide path fails to work
+        SwiperService.swipeTo(getDateSlidePath($scope.activeDay));
+      }
+    });
   }
   swipeToStartingDay(DateService.getInitialDate(), true);
-
-  $scope.getSubtask = function getSubtask(date) {
-    return {date: date.yyyymmdd};
-  };
 
   $scope.previousWeek = function() {
     var weekdayIndex = $scope.activeDay.weekdayIndex;
@@ -133,6 +133,12 @@ function DatesController($rootScope, $scope, DateService, SwiperService) {
   };
 
   $scope.$watch('activeDay.yyyymmdd', function(newActiveYYYYMMDD) {
+    if ($scope.subtask) {
+      delete $scope.subtask;
+    }
+    $scope.subtask = {
+      date: newActiveYYYYMMDD
+    };
     if (newActiveYYYYMMDD === DateService.getTodayYYYYMMDD()) {
       $rootScope.isTodayActive = true;
     } else {
@@ -159,7 +165,7 @@ function DatesController($rootScope, $scope, DateService, SwiperService) {
     if (!DateService.getTodayDate()) {
       $scope.weekdays = DateService.setCurrentWeekActive();
     }
-    swipeToStartingDay(null, null, 0);
+    swipeToStartingDay();
   }
 
   function elseWhereThanDatepickerCallback(event) {
@@ -198,5 +204,5 @@ function DatesController($rootScope, $scope, DateService, SwiperService) {
   }
 }
 
-DatesController['$inject'] = ['$rootScope', '$scope', 'DateService', 'SwiperService'];
+DatesController['$inject'] = ['$q', '$rootScope', '$scope', 'DateService', 'SwiperService'];
 angular.module('em.app').controller('DatesController', DatesController);

@@ -1,22 +1,12 @@
 <div id="taskCoreFields">
-  <div ng-switch="showDate">
-    <div ng-switch-default class="item-actions">
 
-      <div ng-switch="taskHasDate(task)">
-        <div ng-switch-default>
-          <span class="simple-input default-element" ng-click="focusDate()">select date...</span>
-        </div>
-        <div ng-switch-when="true">
-          <span class="simple-input default-element" ng-model="task.date" ng-click="focusDate()">{{task.date | date:'dd/MM/yyyy'}}</span>
-        </div>
-      </div>
-
+  <div class="form-group">
+    <div ng-if="showDateInput">
+      <label for="taskDue" class="sr-only">select date...</label>
+      <input class="swiper-no-swiping" type="date" id="taskDue" ng-model="task.date" date-input>
     </div>
-    <div ng-switch-when="true">
-      <div class="form-group">
-        <label for="taskDue" class="sr-only">select date...</label>
-        <input type="date" id="taskDue" class="simple-input swiper-no-swiping" ng-model="task.date" date-today>
-      </div>
+    <div ng-if="!showDateInput" class="item-actions">
+      <span class="simple-input default-element date-input-placeholder" ng-click="focusDate()">select date...</span>
     </div>
   </div>
 

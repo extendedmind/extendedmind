@@ -161,6 +161,10 @@ Only universal code that would work by itself in any web page.
   }
 }
 
+.date-input-placeholder {
+  display: block;
+}
+
 // Input on the left and  button on the right OR
 // Checkbox on the left, input in the center, and button on the right
 
@@ -303,6 +307,19 @@ button.enabled-button {
   }
 }
 
+button.transparent-button {
+  color: @normal-button;
+  &:hover {
+    color: @normal-button-hover;
+  }
+  &:active {
+    color: @normal-button-pressed;
+  }
+  &[disabled] {
+    color: @normal-button-disabled;
+  }
+}
+
 // CHECKBOXES
 
 // Make labels clickable
@@ -334,6 +351,16 @@ input[type="checkbox"] + label.overdue:before {
 input[type="checkbox"]:checked + label:before {
   .icon-selection-checked;
   color: @highlighted-element;
+}
+
+input[type=date] {
+  background: none;
+  border: none;
+  color: @default-element;
+  outline: none;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 // SELECTIONS
@@ -649,4 +676,34 @@ a.content:active {
 @-webkit-keyframes fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
+}
+
+// DESKTOP MENU
+
+.desktop-menu-animation.ng-enter {
+  -webkit-animation: .1s fade-in;
+  -moz-animation: .1s fade-in;
+  -o-animation: .1s fade-in;
+  animation: .1s fade-in;
+}
+
+.desktop-menu-animation.ng-leave {
+  -webkit-animation: .1s fade-out;
+  -moz-animation: .1s fade-out;
+  -o-animation: .1s fade-out;
+  animation: .1s fade-out;
+}
+
+.desktop-menu-animation.ng-hide-add {
+  -webkit-animation: .1s fade-out;
+  -moz-animation: .1s fade-out;
+  -o-animation: .1s fade-out;
+  animation: .1s fade-out;
+}
+
+.desktop-menu-animation.ng-hide-remove {
+  -webkit-animation: .1s fade-in;
+  -moz-animation: .1s fade-in;
+  -o-animation: .1s fade-in;
+  animation: .1s fade-in;
 }

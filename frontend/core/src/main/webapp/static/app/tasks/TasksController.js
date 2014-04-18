@@ -2,13 +2,13 @@
 
 function TasksController($location, $rootScope, $routeParams, $scope, DateService, SwiperService, UserSessionService, TasksService, AnalyticsService) {
 
+  // edit tasks or new task dialog
   if (!$scope.task) {
-    // edit tasks or new task dialog
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)) {
       // edit task
       if ($routeParams.uuid) {
         $scope.task = TasksService.getTaskByUUID($routeParams.uuid, UserSessionService.getActiveUUID());
-        if ($scope.task.due) $scope.showDate = true;
+        if ($scope.task.due) $scope.showDateInput = true;
       }
       // new task
       else {
@@ -27,19 +27,22 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
       }
     }
   }
-
-  $scope.repeatTypes = ['daily', 'weekly', 'biweekly', 'monthly', 'bimonthly', 'yearly'];
-
-  $scope.taskHasDate = function(task) {
-    if (task.date) {
-      return true;
+  // existing task
+  else {
+    if ($scope.task.due) {
+      $scope.showDateInput = true;
     }
-    return false;
-  };
+  }
 
   $scope.focusDate = function() {
-    $scope.showDate = true;
+    $scope.showDateInput = true;
   };
+
+  $scope.hideDate = function() {
+    $scope.showDateInput = false;
+  };
+
+  $scope.repeatTypes = ['daily', 'weekly', 'biweekly', 'monthly', 'bimonthly', 'yearly'];
 
   $scope.saveTask = function(task) {
     if (task.uuid) {
