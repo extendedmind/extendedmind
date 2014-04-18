@@ -1,3 +1,4 @@
+/* global $ */
 'use strict';
 
 // From:
@@ -95,7 +96,7 @@ angular.module('em.directives').directive('accordion', ['$document',
         if (!(!$scope.closedOtherItems && event.target.id === 'accordionTitleLink')) {
           // If clicking elswehere than on the input or on an element that has as parent
           // the accordion-title, close accordion and unbind events.
-          // NOTE: Class item-actions is needed to get clicking on buttons inside the 
+          // NOTE: Class item-actions is needed to get clicking on buttons inside the
           //       accordion to work!
           if (($scope.closedOtherItems && event.target.id === 'accordionTitleLink') ||
             (!$(event.target).parents('.accordion-item-active').length &&
@@ -108,12 +109,12 @@ angular.module('em.directives').directive('accordion', ['$document',
               $scope.openItem = undefined;
               $scope.unbindElsewhereEvents();
             });
-          }
         }
-      };
-    },
-    link: function(scope, element) {
-      element.addClass('accordion');
-    }
-  };
+      }
+    };
+  },
+  link: function(scope, element) {
+    element.addClass('accordion');
+  }
+};
 }]);
