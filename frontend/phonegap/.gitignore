@@ -8,7 +8,7 @@ app/config.xml
 # ios
 app/platforms/ios/build
 app/platforms/ios/www
-# must exist: app/platforms/ios/em/config.xml
+app/platforms/ios/em/config.xml
 app/platforms/ios/cordova/defaults.xml
 
 # android
