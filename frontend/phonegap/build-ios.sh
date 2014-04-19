@@ -4,7 +4,7 @@
 cd app
 
 # copy platform specific index file
-cp -rf www/phonegap-ios.html platforms/ios/www/index.html
+cp -rf ../src/main/resources/www/phonegap-ios.html www/index.html
 
 # make phonegap build
 cordova build ios

@@ -20,7 +20,7 @@ if [ -d ${RELEASE_BUILDDIR} ]; then
 fi
 
 # copy platform specific index file
-cp www/phonegap-android.html platforms/android/assets/www/index.html
+cp ../src/main/resources/www/phonegap-android.html www/index.html
 
 # run phonegap command locally
 cordova build android

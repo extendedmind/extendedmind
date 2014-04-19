@@ -2,17 +2,22 @@
 
 # all of these get copied from source folder automatically during "phonegap build"
 app/www/static
+app/www/index.html
+app/config.xml
 
 # ios
 app/platforms/ios/build
 app/platforms/ios/www
-# must exists app/platforms/ios/em/config.xml
+# must exist: app/platforms/ios/em/config.xml
+app/platforms/ios/cordova/defaults.xml
 
 # android
 app/platforms/android/ant.properties
+app/platforms/android/config.xml
 app/platforms/android/assets/static
 app/platforms/android/assets/www/static
 app/platforms/android/assets/www/index.html
+app/platforms/android/assets/www/cordova.js
 app/platforms/android/res/xml/config.xml
 
 app/platforms/android/CordovaLib/ant-build
@@ -20,5 +25,4 @@ app/platforms/android/CordovaLib/ant-gen
 app/platforms/android/ant-build
 app/platforms/android/ant-gen
 
-app/platforms/ios/cordova/defaults.xml
 *.keystore
