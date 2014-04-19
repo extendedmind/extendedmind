@@ -29,6 +29,11 @@ trait AdminActions {
     db.upgradeOwners
   }
   
+  def upgradeOwner(ownerUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("upgradeOwner: {}" + ownerUUID)
+    db.upgradeOwner(ownerUUID)
+  }
+  
   def rebuildInviteRequestsIndex()(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("rebuildInvitesIndex")
     db.rebuildInviteRequestsIndex

@@ -93,31 +93,17 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
   
   def upgradeOwners: Response[CountResult] = {
-    withTx {
-      implicit neo4j =>
-        val owners = findNodesByLabel(MainLabel.OWNER).toList
-        var count = 0
-        owners.foreach(ownerNode => {
-          if (ownerNode.hasProperty("created")){
-            println("owner has created: " + ownerNode.getProperty("created"))
-          }else{
-            ownerNode.setProperty("created", ownerNode.getProperty("modified").asInstanceOf[Long])
-            count += 1
-          }
-          ownerNode.getRelationships().foreach(relationship => {
-            if (relationship.getType().name == SecurityRelationship.IS_ORIGIN.name && 
-                relationship.getStartNode().hasLabel(MainLabel.INVITE)){
-              println("found invite relationship")
-              if (!relationship.getStartNode().hasProperty("accepted")){
-                // Give accepted
-            	println("setting accepted")
-                relationship.getStartNode().setProperty("accepted", ownerNode.getProperty("modified").asInstanceOf[Long])
-              }
-            }
-          })
-        })
-        return Right(CountResult(count))
-    }
+    for{
+      ownerUUIDs <- getOwnerUUIDs.right
+      count <- upgradeOwners(ownerUUIDs).right
+    } yield count
+  }
+  
+  def upgradeOwner(ownerUUID: UUID): Response[SetResult] = {
+    for{
+      ownerNode <- upgradeOwnerNode(ownerUUID).right
+      result <- Right(getSetResult(ownerNode, false)).right
+    } yield result
   }
   
   def destroyUser(userUUID: UUID): Response[DestroyResult] = {
@@ -313,5 +299,58 @@ trait UserDatabase extends AbstractGraphDatabase {
       user
     }
   }
+  
+    
+  protected def getOwnerUUIDs: Response[scala.List[UUID]] = {
+    withTx {
+      implicit neo4j =>
+        val ownerNodeList = findNodesByLabel(MainLabel.OWNER).toList
+        val ownerUUIDList = ownerNodeList.map(ownerNode => {
+          getUUID(ownerNode)
+        })
+        Right(ownerUUIDList)
+    }
+  }
+  
+  protected def upgradeOwners(ownerUUIDs: scala.List[UUID]): Response[CountResult] = {
+    ownerUUIDs.foreach(ownerUUID => {
+      val upgradeResult = upgradeOwnerNode(ownerUUID)
+      if (upgradeResult.isLeft){
+        return Left(upgradeResult.left.get)
+      }
+    })
+    Right(CountResult(ownerUUIDs.size))
+  }
+  
+  protected def upgradeOwnerNode(ownerUUID: UUID): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        val ownerNodeResponse = getNode(ownerUUID, MainLabel.OWNER)
+        if (ownerNodeResponse.isLeft) 
+          Left(ownerNodeResponse.left.get)
+        else {
+          val ownerNode = ownerNodeResponse.right.get
+          if (ownerNode.hasProperty("created")){
+	        println("owner has created: " + ownerNode.getProperty("created"))
+          }else{
+	        println("setting created")
+	        ownerNode.setProperty("created", ownerNode.getProperty("modified").asInstanceOf[Long])
+	      }
+	      ownerNode.getRelationships().foreach(relationship => {
+	        if (relationship.getType().name == SecurityRelationship.IS_ORIGIN.name && 
+	            relationship.getStartNode().hasLabel(MainLabel.INVITE)){
+	          println("found invite relationship")
+	          if (!relationship.getStartNode().hasProperty("accepted")){
+	            // Give accepted
+	            println("setting accepted")
+	            relationship.getStartNode().setProperty("accepted", ownerNode.getProperty("modified").asInstanceOf[Long])
+	          }
+	        }
+	      })
+	      Right(ownerNode)
+        }
+    }
+  }
+
   
 }
