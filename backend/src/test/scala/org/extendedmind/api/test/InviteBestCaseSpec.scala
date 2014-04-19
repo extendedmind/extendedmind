@@ -79,14 +79,16 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
           inviteRequestResponse.resultType should be (NEW_INVITE_REQUEST_RESULT)
           inviteRequestResponse.result.get.uuid should not be None
           inviteRequestResponse.result.get.modified should not be None
+          inviteRequestResponse.queueNumber.get should be (1)
 
           Post("/invite/request",
             marshal(testInviteRequest2).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val inviteRequestResponse2 = entityAs[InviteRequestResult]
-
+              inviteRequestResponse2.queueNumber.get should be (2)
               Post("/invite/request",
                 marshal(testInviteRequest3).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                   val inviteRequestResponse3 = entityAs[InviteRequestResult]
+                  inviteRequestResponse3.queueNumber.get should be (3)
 
                   verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail, inviteRequestResponse.result.get.uuid.get)
                   verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail2, inviteRequestResponse2.result.get.uuid.get)
