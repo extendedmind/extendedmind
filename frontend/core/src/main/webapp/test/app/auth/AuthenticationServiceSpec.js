@@ -172,7 +172,7 @@ describe('AuthenticationService', function() {
     spyOn(MockUserSessionService, 'getEmail').andReturn('example@example.com');
     spyOn(MockUserSessionService, 'getUserUUID').andReturn();
     var email = MockUserSessionService.getEmail();
-    $httpBackend.expectPOST('/api/invite/request', {email: email}).
+    $httpBackend.expectPOST('/api/invite/request', {email: email, bypass: true}).
     respond(200, inviteRequestResponse);
 
     // EXECUTE
@@ -193,7 +193,7 @@ describe('AuthenticationService', function() {
     spyOn(MockUserSessionService, 'getEmail').andReturn('example@example.com');
     spyOn(MockUserSessionService, 'getUserUUID').andReturn();
     var email = MockUserSessionService.getEmail();
-    $httpBackend.expectPOST('/api/invite/request', {email: email}).
+    $httpBackend.expectPOST('/api/invite/request', {email: email, bypass: true}).
     respond(200, inviteRequestResponse);
 
     // EXECUTE
@@ -214,7 +214,7 @@ describe('AuthenticationService', function() {
     spyOn(MockUserSessionService, 'getEmail').andReturn('example@example.com');
     spyOn(MockUserSessionService, 'getUserUUID').andReturn();
     var email = MockUserSessionService.getEmail();
-    $httpBackend.expectPOST('/api/invite/request', {email: email}).
+    $httpBackend.expectPOST('/api/invite/request', {email: email, bypass: true}).
     respond(200, inviteRequestResponse);
 
     // EXECUTE
@@ -235,7 +235,7 @@ describe('AuthenticationService', function() {
     spyOn(MockUserSessionService, 'getEmail').andReturn('example@example.com');
     spyOn(MockUserSessionService, 'getUserUUID').andReturn();
     var email = MockUserSessionService.getEmail();
-    $httpBackend.expectPOST('/api/invite/request', {email: email}).
+    $httpBackend.expectPOST('/api/invite/request', {email: email, bypass: true}).
     respond(200, inviteRequestResponse);
 
     // EXECUTE

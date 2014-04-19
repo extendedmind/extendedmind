@@ -278,7 +278,8 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         BackendClientService.postOnline(
           '/api/invite/request',
           postInviteRequestRegexp,
-          {email: UserSessionService.getEmail()},
+          {email: UserSessionService.getEmail(),
+           bypass: true},
           true)
         .then(function(response) {
           checkEmailStatus(response, {email: UserSessionService.getEmail()});
