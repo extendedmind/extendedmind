@@ -164,23 +164,41 @@
       <artifactId>maven-clean-plugin</artifactId>
       <configuration>
         <filesets>
+          <!-- Android -->
           <fileset>
-            <directory>${basedir}/app/platforms/android</directory>
-            <includes>
-              <include>ant.properties</include>
-            </includes>
+            <directory>${basedir}/app/platforms/android/ant-build</directory>
           </fileset>
           <fileset>
-            <directory>${basedir}/app/www/static</directory>
+            <directory>${basedir}/app/platforms/android/ant-gen</directory>
+          </fileset>
+          <fileset>
+            <directory>${basedir}/app/platforms/android/CordovaLib/ant-build</directory>
+          </fileset>
+          <fileset>
+            <directory>${basedir}/app/platforms/android/CordovaLib/ant-gen</directory>
           </fileset>
           <fileset>
             <directory>${basedir}/app/platforms/android/bin</directory>
           </fileset>
+          <!-- iOS -->
+          <fileset>
+            <directory>${basedir}/app/platforms/ios/build</directory>
+          </fileset>
+          <!-- Common -->
           <fileset>
             <directory>${basedir}/app/www/static</directory>
           </fileset>
           <fileset>
-            <directory>${basedir}/app/platforms/ios/build</directory>
+            <directory>${basedir}/app</directory>
+            <includes>
+              <include>config.xml</include>
+            </includes>
+          </fileset>
+          <fileset>
+            <directory>${basedir}/app/www</directory>
+            <includes>
+              <include>index.html</include>
+            </includes>
           </fileset>
         </filesets>
       </configuration>
