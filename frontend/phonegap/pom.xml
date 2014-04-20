@@ -222,6 +222,21 @@
                 </action>
               </pluginExecution>
               <pluginExecution>
+                <pluginExecutionFilter>
+				  <groupId>org.codehaus.mojo</groupId>
+				  <artifactId>build-helper-maven-plugin</artifactId>
+				  <versionRange>
+                    [1.8,)
+                  </versionRange>
+                  <goals>
+                    <goal>regex-property</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
                <pluginExecutionFilter>
                 <groupId>
                  org.codehaus.mojo
