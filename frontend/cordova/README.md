@@ -15,6 +15,7 @@ sudo npm install -g cordova shelljs
 * Mac
 
 brew install nodejs
+export NODE_PATH="/usr/local/lib/node_modules"
 sudo npm install -g cordova shelljs
 
 Android

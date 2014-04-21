@@ -7,10 +7,12 @@ var path = require( "path" ),
     fontroot = rootdir + "/assets/fonts",
     buildroot = rootdir + "/assets/build/android";
 
-// copy fonts
-shell.exec( "cp -f " + fontroot + "/Helvetica*.* " + androidroot + "/assets/www/static/fonts", {silent:false} );
+if (shell.test('-d', androidroot)){
+  // copy fonts
+  shell.exec( "cp -f " + fontroot + "/Helvetica*.* " + androidroot + "/assets/www/static/fonts", {silent:false} );
 
-// copy edited Android sources
-shell.exec( "cp -f " + buildroot + "/*.java " + androidroot + "/src/org/extendedmind", {silent:false} );
+  // copy edited Android sources
+  shell.exec( "cp -f " + buildroot + "/*.java " + androidroot + "/src/org/extendedmind", {silent:false} );
+}
 
 process.exit(0);

@@ -30,3 +30,5 @@ frontend/cordova/app/platforms
 frontend/cordova/app/plugins
 frontend/cordova/app/assets/fonts
 frontend/cordova/app/assets/build
+frontend/cordova/app/www
+frontend/cordova/app/config.xml
