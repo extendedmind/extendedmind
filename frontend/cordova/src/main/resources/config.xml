@@ -24,6 +24,7 @@
     <preference name="show-splash-screen-spinner" value="true" />
     <preference name="auto-hide-splash-screen" value="true" />
     <preference name="disable-cursor" value="false" />
+    <preference name="SplashScreen" value="splash" />
     <access origin="*" />
     <content src="index.html" />
 </widget>
