@@ -25,3 +25,8 @@ logs/
 # Ignore OSX DS store
 .DS_Store
 
+# Ignore Cordova generated directories
+frontend/cordova/app/platforms
+frontend/cordova/app/plugins
+frontend/cordova/app/assets/fonts
+frontend/cordova/app/assets/build

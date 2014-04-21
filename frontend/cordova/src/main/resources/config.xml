@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="org.extendedmind" version="${project.version.trimmed}" xmlns="http://www.w3.org/ns/widgets">
+    <name>extmd</name>
+    <description>
+        Mobile application for Extended Mind.
+    </description>
+    <author email="timo.tiuraniemi@iki.fi" href="http://www.extendedmind.org">
+        Extended Mind Team
+    </author>
+    <!-- If you do not want any permissions to be added to your app, add the
+    following tag to your config.xml; you will still have the INTERNET
+    permission on your app, which Cordova requires. -->
+    <preference name="permissions" value="none"/>
+    <preference name="orientation" value="portrait" />
+    <preference name="target-device" value="universal" />
+    <preference name="fullscreen" value="true" />
+    <preference name="webviewbounce" value="true" />
+    <preference name="prerendered-icon" value="true" />
+    <preference name="stay-in-webview" value="false" />
+    <preference name="ios-statusbarstyle" value="black-opaque" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="detect-data-types" value="true" />
+    <preference name="exit-on-suspend" value="false" />
+    <preference name="show-splash-screen-spinner" value="true" />
+    <preference name="auto-hide-splash-screen" value="true" />
+    <preference name="disable-cursor" value="false" />
+    <access origin="*" />
+    <content src="index.html" />
+</widget>
