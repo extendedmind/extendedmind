@@ -15,11 +15,8 @@ if (shell.test('-d', androidroot)){
   });
   shell.exec( "cp -f " + iconroot + "/icon.png " + androidroot + "/res/drawable/icon.png", {silent:false} );
 
-  // copy splash screens to Cordova Android directories and filenames
-  [ "-hdpi", "-ldpi", "-mdpi", "-xhdpi" ].forEach( function( item ) {
-      shell.exec( "cp -f " + screenroot + "/*" + item + ".png " + androidroot + "/res/drawable" + item + "/splash.png", {silent:false} );
-  });
-  shell.exec( "cp -f " + screenroot + "/screen.png " + androidroot + "/res/drawable/splash.png", {silent:false} );
+  // copy splash screens to Cordova Android directory
+  shell.exec( "cp -f " + screenroot + "/screen.png " + androidroot + "/res/drawable/splash.9.png", {silent:false} );
 
   // copy ant.properties
   shell.exec( "cp -f " + buildroot + "/ant.properties " + androidroot, {silent:false} );
