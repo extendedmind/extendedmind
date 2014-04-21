@@ -2,24 +2,20 @@
 <configuration>
 
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-    <target>System.out</target>
     <encoder>
       <pattern>%date{MM/dd HH:mm:ss} %-5level[%.15thread] %logger{1} -
         %msg%n</pattern>
     </encoder>
-    <root level="DEBUG">
-      <appender-ref ref="CONSOLE" />
-    </root>
   </appender>
 
-  <appender name="FILE"
+  <!--appender name="FILE"
     class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>logs/em.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <!-- daily rollover -->
+      daily rollover
       <fileNamePattern>logs/em.%d{yyyy-MM-dd}.log</fileNamePattern>
 
-      <!-- keep 365 days' worth of history -->
+       keep 365 days' worth of history
       <maxHistory>365</maxHistory>
     </rollingPolicy>
 
@@ -27,17 +23,15 @@
       <pattern>%date{MM/dd HH:mm:ss} %-5level[%.15thread] %logger{1} -
         %msg%n</pattern>
     </encoder>
-  </appender>
+  </appender-->
 
-  <appender name="MONGODB" class="org.extendedmind.logback.MongoDBAppender">
+  <!--appender name="MONGODB" class="org.extendedmind.logback.MongoDBAppender">
       <host>localhost</host>
       <port>27017</port>
       <db>cube_development</db>
-  </appender>
+  </appender-->>
 
   <root level="debug">
-    <appender-ref ref="CONSOLE" />  
-    <!--<appender-ref ref="FILE" /> -->
-    <!--<appender-ref ref="MONGODB" />-->
+    <appender-ref ref="CONSOLE" />
   </root>
 </configuration>
