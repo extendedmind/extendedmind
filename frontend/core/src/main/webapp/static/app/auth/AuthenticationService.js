@@ -111,7 +111,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
 
   function getAuthenticatePayload(remember){
     var payload = {rememberMe: remember};
-    if (remember && $rootScope.packaging.endsWith('phonegap')){
+    if (remember && $rootScope.packaging.endsWith('cordova')){
       // In apps use extended 90 day replaceable authentication
       payload.extended = true;
     }

@@ -10,7 +10,7 @@ function SignupController($location, $scope, $rootScope, $routeParams, $window, 
   AuthenticationService.getInvite(inviteResponseCode, $routeParams.email).then(function(inviteResponse) {
     if (inviteResponse.data.accepted) {
       $location.url($location.path());
-      if ($rootScope.packaging.endsWith('phonegap')){
+      if ($rootScope.packaging.endsWith('cordova')){
         $location.path('/login');
       }else {
         // Direct user to the welcome page so that it is possible to load app
@@ -38,8 +38,8 @@ function SignupController($location, $scope, $rootScope, $routeParams, $window, 
     AuthenticationService.acceptInvite(inviteResponseCode, payload).
     then(function() {
       AnalyticsService.do('acceptInvite');
-      if ($rootScope.packaging.endsWith('phonegap')){
-        // In PhoneGap, don't go to welcome page
+      if ($rootScope.packaging.endsWith('cordova')){
+        // In apps, don't go to welcome page
         loginUser(false);
       }else{
         loginUser(true);

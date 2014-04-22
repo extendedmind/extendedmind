@@ -37,14 +37,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 
   <profiles>
     <profile>
-      <id>phonegap</id>
+      <id>cordova</id>
       <activation>
         <file>
-          <exists>${user.home}/.phonegap</exists>
+          <exists>${user.home}/.extendedmind</exists>
         </file>
       </activation>
       <modules>
-        <module>phonegap</module>
+        <module>cordova</module>
       </modules>
     </profile>
   </profiles>
