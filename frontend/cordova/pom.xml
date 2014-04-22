@@ -49,27 +49,6 @@
       <properties>
         <skipAndroid>false</skipAndroid>
       </properties>
-      <build>
-        <resources>
-          <resource>
-            <directory>${user.home}/.extendedmind/android</directory>
-            <includes>
-              <include>Helvetica*.*</include>
-            </includes>
-            <targetPath>${project.basedir}/app/assets/fonts</targetPath>
-          </resource>
-          <resource>
-            <directory>src/main/resources</directory>
-            <includes>
-              <include>ant.properties</include>
-              <include>AndroidManifest.xml</include>
-              <include>*.java</include>
-            </includes>
-            <filtering>true</filtering>
-            <targetPath>${project.basedir}/app/assets/build/android</targetPath>
-          </resource>
-        </resources>
-      </build>
     </profile>
     <profile>
       <id>cordova-ios</id>
@@ -92,6 +71,16 @@
         </includes>
         <filtering>true</filtering>
         <targetPath>${project.basedir}/app</targetPath>
+      </resource>
+      <resource>
+        <directory>src/main/resources/ios</directory>
+        <filtering>true</filtering>
+        <targetPath>${project.basedir}/app/assets/build/ios</targetPath>
+      </resource>
+      <resource>
+        <directory>src/main/resources/android</directory>
+        <filtering>true</filtering>
+        <targetPath>${project.basedir}/app/assets/build/android</targetPath>
       </resource>
     </resources>
     <sourceDirectory>${basedir}/src</sourceDirectory>
@@ -230,6 +219,9 @@
             </fileset>
             <fileset>
               <directory>${basedir}/app/assets/fonts</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/app/assets/build</directory>
             </fileset>
             <fileset>
               <directory>${basedir}/app</directory>
