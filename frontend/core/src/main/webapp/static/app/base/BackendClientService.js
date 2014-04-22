@@ -175,8 +175,11 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
   methods.registerRefreshCredentialsCallback = function(callback){
     refreshCredentialsCallback = callback;
   };
-  methods.registerPrimaryPostCallback = function(callback){
-    HttpClientService.registerCallback('primary', callback);
+  methods.registerPrimaryPostResultCallback = function(callback){
+    HttpClientService.registerCallback('primaryResult', callback);
+  };
+  methods.registerPrimaryPostCreateCallback = function(callback){
+    HttpClientService.registerCallback('primaryCreate', callback);
   };
   methods.registerSecondaryGetCallback = function(callback){
     HttpClientService.registerCallback('secondary', callback);

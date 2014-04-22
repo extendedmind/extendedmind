@@ -22,18 +22,26 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   }
 
   // Callbacks
-  var primaryCallback, secondaryCallback, defaultCallback, onlineCallback;
-  
+  var primaryResultCallback, primaryCreateCallback, secondaryCallback, defaultCallback, onlineCallback;
+
   // Recursive method to empty the queue
   function executeRequests() {
+    // First always check if primary should be created first
+    // to avoid errors with authentication
+    if (!HttpRequestQueueService.isPrimaryHead() && primaryCreateCallback){
+      var primaryRequestInfo = primaryCreateCallback();
+      if (primaryRequestInfo){
+        processPrimaryRequest(primaryRequestInfo.url, primaryRequestInfo.data);
+      }
+    }
     var headRequest = HttpRequestQueueService.getHead();
     if (headRequest){
       if (!headRequest.last){
         $http(headRequest.content).
         success(function(data /*, status, headers, config*/) {
             // First, execute callback
-            if (headRequest.primary && primaryCallback){
-              primaryCallback(headRequest, data);
+            if (headRequest.primary && primaryResultCallback){
+              primaryResultCallback(headRequest, data);
             }else if (headRequest.secondary && secondaryCallback){
               secondaryCallback(headRequest, data, HttpRequestQueueService.getQueue());
               HttpRequestQueueService.saveQueue();
@@ -75,13 +83,13 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
           type: headRequest.content.method.toUpperCase(),
           url: headRequest.content.url,
           data: JSON.stringify(headRequest.content.data),
-          contentType: "application/json", 
+          contentType: "application/json",
           dataType: "json",
           success: function () {
             // Then remove the request and release lock
             HttpRequestQueueService.remove(headRequest);
           },
-          failure: function () {
+          error: function () {
             HttpRequestQueueService.releaseLock();
           }
         });
@@ -89,6 +97,11 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     }
   }
 
+  function processPrimaryRequest(url, data){
+    var request = getRequest('post', url, undefined, data);
+    request.primary = true;
+    HttpRequestQueueService.push(request);
+  }
 
   // Methods for credentials
   methods.setCredentials = function(encodedCredentials) {
@@ -177,16 +190,14 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
 
   // Custom method for a primary POST, i.e. authentication
   methods.postPrimary = function (url, data) {
-    var request = getRequest('post', url, undefined, data);
-    request.primary = true;
-    HttpRequestQueueService.push(request);
+    processPrimaryRequest(url, data);
     executeRequests();
   };
 
   methods.clearPrimary = function() {
     HttpRequestQueueService.clearPrimary();
   };
-  
+
   // Custom method for secondary GET, i.e. delta getter
   methods.getSecondary = function(url, params) {
     var request = getRequest('get', url, params);
@@ -207,7 +218,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
       type: 'POST',
       url: url,
       data: JSON.stringify(data),
-      contentType: "application/json", 
+      contentType: "application/json",
       dataType: "json",
       success: function () {
         // Don't do anything
@@ -241,10 +252,12 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     executeRequests();
   };
 
-  // Methods to register callbacks when 
+  // Methods to register callbacks when
   methods.registerCallback = function(type, callback){
-    if (type === 'primary'){
-      primaryCallback = callback;
+    if (type === 'primaryResult'){
+      primaryResultCallback = callback;
+    }else if (type === 'primaryCreate'){
+      primaryCreateCallback = callback;
     }else if (type === 'secondary'){
       secondaryCallback = callback;
     }else if (type === 'default'){

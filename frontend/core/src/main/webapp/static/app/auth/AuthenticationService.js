@@ -107,7 +107,29 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     // Update backend client with new token
     BackendClientService.setCredentials(encodedCredentials);
   };
-  BackendClientService.registerPrimaryPostCallback(swapTokenCallback);
+  BackendClientService.registerPrimaryPostResultCallback(swapTokenCallback);
+
+  function getAuthenticatePayload(remember){
+    var payload = {rememberMe: remember};
+    if (remember && $rootScope.packaging.endsWith('phonegap')){
+      // In apps use extended 90 day replaceable authentication
+      payload.extended = true;
+    }
+    return payload;
+  }
+
+  // Register authentication create callback
+  var createAuthenticationRequest = function() {
+    if (UserSessionService.isAuthenticated() &&
+        !UserSessionService.isAuthenticateValid() &&
+        UserSessionService.isAuthenticateReplaceable()) {
+      // Make sure the latest credentials are in use
+      BackendClientService.setCredentials(UserSessionService.getCredentials());
+      // Create new primary request
+      return {url: '/api/authenticate', data: getAuthenticatePayload(true)};
+    }
+  }
+  BackendClientService.registerPrimaryPostCreateCallback(createAuthenticationRequest);
 
   function swapTokenAndAuthenticate() {
     var remember = true;
@@ -124,14 +146,10 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     });
   }
 
+
   function authenticate(remember) {
-    var payload = {rememberMe: remember};
-    if (remember && $rootScope.packaging.endsWith('phonegap')){
-      // In apps use extended 90 day replaceable authentication
-      payload.extended = true;
-    }
     return BackendClientService.postOnline('/api/authenticate', postAuthenticateRegexp,
-      payload,
+      getAuthenticatePayload(remember),
       true, [403, 404, 502]);
   }
 
@@ -151,9 +169,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
           if (UserSessionService.isOfflineEnabled() && !online){
             // Push token swap to be the first thing that is done
             // when online connection is up
-            BackendClientService.postPrimary('/api/authenticate', postAuthenticateRegexp, {
-              rememberMe: true
-            });
+            BackendClientService.postPrimary('/api/authenticate', postAuthenticateRegexp, getAuthenticatePayload(true));
             validateAuthentication();
           }else{
             // Online
@@ -325,7 +341,6 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
       return postInviteRequestBypass(uuid, email, coupon);
     },
     resendInvite: function(uuid, email) {
-      console.log(resendInviteRegexp)
       return BackendClientService.postOnline('/api/invite/' + uuid + '/resend',
         resendInviteRegexp, {email: email}, true);
     },

@@ -1,6 +1,6 @@
 /* global angular */
 'use strict';
-/* 
+/*
 * Stores all requests into local storage
 */
 function HttpRequestQueueService() {
@@ -17,7 +17,7 @@ function HttpRequestQueueService() {
   //       multiple threads are used.
   var processing = false;
 
-  // Initialize variables from local storage when service 
+  // Initialize variables from local storage when service
   // is created
   if (localStorage.getItem('primaryRequest')){
     primary = JSON.parse(localStorage.getItem('primaryRequest'));
@@ -100,7 +100,7 @@ function HttpRequestQueueService() {
         var reverseRequestIndex = findReverseRequestIndex(request);
         if (reverseRequestIndex !== undefined &&
             (getHead() !== queue[reverseRequestIndex] || queue[reverseRequestIndex].offline)){
-          // Found reverse method that is either not the head or is the head but has been set offline  
+          // Found reverse method that is either not the head or is the head but has been set offline
           removeFromQueue(reverseRequestIndex);
           return false;
         }else {
@@ -114,7 +114,7 @@ function HttpRequestQueueService() {
         last = request;
       }else{
         // last already exists, concat the data from this request to
-        // the end of the data array in the last request        
+        // the end of the data array in the last request
         last.content.data = last.content.data.concat(request.content.data);
       }
       localStorage.setItem('lastRequest', JSON.stringify(last));
@@ -160,7 +160,7 @@ function HttpRequestQueueService() {
       processing = false;
     },
     releaseLock: function () {
-      processing = false;      
+      processing = false;
     },
     getHead: function () {
       if (!processing){
@@ -170,6 +170,9 @@ function HttpRequestQueueService() {
           return getHead();
         }
       }
+    },
+    isPrimaryHead: function() {
+      if (primary) return true;
     },
     getQueue: function(){
       return queue;

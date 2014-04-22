@@ -3,14 +3,14 @@
 
 describe('ItemsService', function() {
 
-  // INJECTS 
+  // INJECTS
 
   var $httpBackend;
   var ItemsService, BackendClientService, HttpClientService,
       ListsService, TagsService, TasksService, NotesService, UUIDService, AuthenticationService;
 
   // MOCKS
-  
+
   var now = new Date();
   var putNewItemResponse = getJSONFixture('putItemResponse.json');
   putNewItemResponse.modified = now.getTime();
@@ -255,7 +255,7 @@ describe('ItemsService', function() {
         'title': 'test item'
       }]
     };
-    
+
     $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() +
                            '/items?modified=' + MockUserSessionService.getLatestModified() +
                            '&deleted=true&archived=true&completed=true')
@@ -456,7 +456,7 @@ describe('ItemsService', function() {
        .respond(200, archiveTripToDublinResponse);
     ListsService.archiveList(tripToDublin, testOwnerUUID);
     $httpBackend.flush();
-    
+
     // The list should not be active anymore
     expect(ListsService.getListByUUID(tripToDublin.uuid, testOwnerUUID))
       .toBeUndefined();
@@ -593,7 +593,7 @@ describe('ItemsService', function() {
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(4);
-    
+
     // 2. make item into task
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
        .respond(404);
@@ -706,7 +706,7 @@ describe('ItemsService', function() {
       .toBe(1);
 
     // 2. complete it
-    
+
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task', testTask)
        .respond(404);
     TasksService.completeTask(testTask, testOwnerUUID);
@@ -773,7 +773,7 @@ describe('ItemsService', function() {
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(4);
-    
+
     // 2. make item into note
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
        .respond(404);
@@ -872,7 +872,13 @@ describe('ItemsService', function() {
     MockUserSessionService.authenticated = true;
     MockUserSessionService.authenticateValid = false;
     MockUserSessionService.authenticateReplaceable = true;
-    // 1. save new item
+
+    // Mock authenticate callback
+    var authenticateCallback = function(){
+      MockUserSessionService.authenticateValid = true;
+    }
+    BackendClientService.registerPrimaryPostResultCallback(authenticateCallback);
+
     var testItem = {
       'title': 'test note'
     };
