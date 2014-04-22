@@ -79,6 +79,17 @@ function LocalStorageService() {
       localStorage.removeItem('userUUID');
       localStorage.removeItem('cohort');
       localStorage.removeItem('preferences');
+
+      // Also clear offline queue
+      if (localStorage.getItem('primaryRequest')){
+        localStorage.removeItem('primaryRequest');
+      }
+      if (localStorage.getItem('secondaryRequest')){
+        localStorage.removeItem('secondaryRequest');
+      }
+      if (localStorage.getItem('requestQueue')){
+        localStorage.removeItem('requestQueue');
+      }
     }
   };
 }
