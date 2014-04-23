@@ -25,9 +25,13 @@ import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import java.util.concurrent.TimeUnit
 
 abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
 
+  implicit val timeout = RouteTestTimeout(Duration(10, TimeUnit.SECONDS))
+  
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {
     Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(email, password))) ~> route ~> check {
       entityAs[SecurityContext]
