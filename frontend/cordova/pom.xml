@@ -82,6 +82,13 @@
         <filtering>true</filtering>
         <targetPath>${project.basedir}/app/assets/build/android</targetPath>
       </resource>
+      <resource>
+        <directory>${user.home}/.extendedmind/android</directory>
+        <targetPath>${project.basedir}/app/assets/fonts</targetPath>
+        <includes>
+          <include>Helvetica*.*</include>
+        </includes>
+      </resource>
     </resources>
     <sourceDirectory>${basedir}/src</sourceDirectory>
     <plugins>
