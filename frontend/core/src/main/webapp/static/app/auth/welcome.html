@@ -8,12 +8,14 @@
         <div>welcome to your<br/>
           <span class="font-bold">extended mind!</span><br/><br/><br/>
         </div>
-        <div id="welcome-instructions">extended mind is currently in private beta.
-          to access extended mind, register your mobile device to HockeyApp and we'll notify you when your app is ready.
+        <div id="welcome-instructions">download the <b>extended mind app</b> from the app store or the play store
         </div>
-        <button type="submit" id="welcome-button" class="wide-button normal-button" onClick="window.open('https://rink.hockeyapp.net/recruit/26c383ec8a2841c6ab269185b27363e5', '_system_')">
-          <span class="button-text">register device</span>
-        </button>
+        <div id="welcome-store-buttons">
+          <a href onClick="window.open('http://itunes.com/apps/extendedmind', '_system_')"><img src="/static/img/appstore.png" style="width: 120px;"/><a>&nbsp; &nbsp;<a href onClick="window.open('https://play.google.com/store/apps/details?id=org.extendedmind', '_system_')"><img src="/static/img/playstore.png" style="width: 120px;"/><a>
+        </div>
+        <a href ng-hide="true" id="welcome-continue-link" class="highlighted-link" ng-click="gotoTasks()">
+          or try out the pre-beta web app
+        </a>
       </div>
     </div>
   </section>
