@@ -156,7 +156,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
   function bindElsewhereThanDatepickerEvents() {
     if (!elsewhereThanDatepickerEventsBound) {
       document.addEventListener('click', elseWhereThanDatepickerCallback, true);
-      document.addEventListener('touchmove', elseWhereThanDatepickerCallback, false);
+      document.addEventListener('touchmove', elseWhereThanDatepickerCallback, true);
       elsewhereThanDatepickerEventsBound = true;
     }
   }
@@ -173,6 +173,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
     if (element.id === 'datepicker') {
       return;
     } else if (element.id === 'today-link') {
+      event.stopPropagation();
       gotoToday();
     }
     if (element.id !== 'datepicker' || element.id !== 'today-link') {
@@ -181,6 +182,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
         if (element.id === 'datepicker') {
           return;
         } else if (element.id === 'today-link') {
+          event.stopPropagation();
           gotoToday();
         }
       }
@@ -198,7 +200,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
   function unbindElsewhereThanDatepickerEvents() {
     if (elsewhereThanDatepickerEventsBound) {
       document.removeEventListener('click', elseWhereThanDatepickerCallback, true);
-      document.removeEventListener('touchmove', elseWhereThanDatepickerCallback, false);
+      document.removeEventListener('touchmove', elseWhereThanDatepickerCallback, true);
       elsewhereThanDatepickerEventsBound = false;
     }
   }
