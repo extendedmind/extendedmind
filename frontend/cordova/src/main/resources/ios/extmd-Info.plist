@@ -59,7 +59,7 @@
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleVersion</key>
-    <string>1.0</string>
+    <string>0</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NSMainNibFile</key>
@@ -78,7 +78,7 @@
       <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
     <key>CFBundleShortVersionString</key>
-    <string>0</string>
+    <string>${project.version.trimmed}</string>
     <!-- EXTENDED MIND DEFINITIONS START -->
     <key>UIStatusBarHidden</key>
     <true/>
