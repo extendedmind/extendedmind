@@ -1,6 +1,5 @@
 #import "FirstViewController.h"
 #import "LoginViewController.h"
-#import <Parse/Parse.h>
 
 @interface FirstViewController ()
 

@@ -26,7 +26,6 @@
 		52A038CD18A5789F00FBA4C9 /* TaskItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 52A038CC18A5789F00FBA4C9 /* TaskItem.m */; };
 		52A038D018A5792C00FBA4C9 /* InboxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52A038CF18A5792C00FBA4C9 /* InboxViewController.m */; };
 		52A038D318A57D1C00FBA4C9 /* AddTaskViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52A038D218A57D1C00FBA4C9 /* AddTaskViewController.m */; };
-		52B03EB018AABCDD004F1116 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B03EAF18AABCDD004F1116 /* Parse.framework */; };
 		52B03EB218AABDD1004F1116 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B03EB118AABDD1004F1116 /* SystemConfiguration.framework */; };
 		52B03EB418AAC62D004F1116 /* libz.1.1.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B03EB318AAC62D004F1116 /* libz.1.1.3.dylib */; };
 		52B03EB618AAC636004F1116 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B03EB518AAC636004F1116 /* MobileCoreServices.framework */; };
@@ -90,7 +89,6 @@
 				52B03EB218AABDD1004F1116 /* SystemConfiguration.framework in Frameworks */,
 				5267B3011890651A0018FC7B /* CoreGraphics.framework in Frameworks */,
 				5267B3031890651A0018FC7B /* UIKit.framework in Frameworks */,
-				52B03EB018AABCDD004F1116 /* Parse.framework in Frameworks */,
 				5267B2FF1890651A0018FC7B /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -463,10 +461,7 @@
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/joonas/Documents/projects/emt/muut/EMPrototype,
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EMPrototype/EMPrototype-Prefix.pch";
 				INFOPLIST_FILE = "EMPrototype/EMPrototype-Info.plist";
@@ -481,10 +476,7 @@
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/joonas/Documents/projects/emt/muut/EMPrototype,
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EMPrototype/EMPrototype-Prefix.pch";
 				INFOPLIST_FILE = "EMPrototype/EMPrototype-Info.plist";
