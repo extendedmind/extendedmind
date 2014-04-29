@@ -12,10 +12,10 @@ function AccountService(BackendClientService, UserSessionService) {
         return accountResponse.data;
       });
     },
-    putAccountPreferences: function() {
+    putAccountPreferences: function(userPreferences) {
       var payload = {
         email: UserSessionService.getEmail(),
-        preferences: UserSessionService.getPreferences()
+        preferences: userPreferences
       };
       BackendClientService.putOnline('/api/account', this.putAccountRegex, payload);
     },

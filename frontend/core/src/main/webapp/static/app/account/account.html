@@ -14,6 +14,10 @@
           <li class="simple-content">
             <a class="highlighted-link" href ng-click="gotoChangePassword()">change password</a>
           </li>
+          <li ng-if="showOnboardingSetting()" class="simple-content">
+            <input class="input-checkbox" type="checkbox" name="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="showOnboardingChecked(settings.showOnboarding)"/>
+            <label class="default-element" for="showOnboarding">show onboarding again on next login</label>
+          </li>
         </ul>
       </div>
     </div>

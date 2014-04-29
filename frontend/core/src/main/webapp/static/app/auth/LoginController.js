@@ -1,6 +1,6 @@
 'use strict';
 
-function LoginController($location, $scope, UserSessionService, AuthenticationService, AnalyticsService) {
+function LoginController($location, $scope, UserSessionService, AuthenticationService, AnalyticsService, BackendClientService) {
 
   AnalyticsService.visitEntry('login');
 
@@ -41,5 +41,5 @@ function LoginController($location, $scope, UserSessionService, AuthenticationSe
   };
 }
 
-LoginController['$inject'] = ['$location', '$scope', 'UserSessionService', 'AuthenticationService', 'AnalyticsService'];
+LoginController['$inject'] = ['$location', '$scope', 'UserSessionService', 'AuthenticationService', 'AnalyticsService', 'BackendClientService'];
 angular.module('em.app').controller('LoginController', LoginController);
