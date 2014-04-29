@@ -14,6 +14,19 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     }
   }
 
+  function emitException(error, skipLogStatuses) {
+    if (error && isOffline(error.status)){
+      online = false;
+      if (onlineCallback) {
+        onlineCallback(online);
+      }
+      $rootScope.$emit('emException', {type: 'onlineRequired', status: error.status, data: error.data});
+    }
+    if(!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1){
+      $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
+    }
+  }
+
   function getRequest(method, url, params, data){
     var request = {
       content: {
@@ -150,15 +163,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
       }
       return success;
     }, function(error) {
-      if (error && isOffline(error.status)){
-        online = false;
-        if (onlineCallback) {
-          onlineCallback(online);
-        }
-      }
-      if(!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1){
-        $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
-      }
+      emitException(error, skipLogStatuses);
       return $q.reject(error);
     });
   };
@@ -167,7 +172,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     return $http({method: 'put', url: url, data: data}).then(function(success) {
       return success;
     }, function(error) {
-      $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
+      emitException(error);
       return $q.reject(error);
     });
   };
@@ -182,6 +187,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     .then(function(success) {
       return success;
     }, function(error) {
+      emitException(error);
       return $q.reject(error);
     });
   };
@@ -190,7 +196,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     return $http({method: 'delete', url: url}).then(function(success) {
       return success;
     }, function(error) {
-      $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
+      emitException(error);
       return $q.reject(error);
     });
   };

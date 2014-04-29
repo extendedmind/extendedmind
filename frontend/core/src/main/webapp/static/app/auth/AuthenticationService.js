@@ -177,7 +177,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
               validateAuthentication();
             },function(error){
               // Error branch, emit onlineRequired
-              if (error && (error.status === 404 || error.status === 502)){
+              if (BackendClientService.isOffline(error.status)){
                 // Emit online required exception
                 $rootScope.$emit('emException', {
                   type: 'onlineRequired',

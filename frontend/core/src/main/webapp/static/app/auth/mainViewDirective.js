@@ -47,33 +47,42 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
       // Listen to exceptions emitted to rootscope
       var unbindEmException = $rootScope.$on('emException', function(name, exception) {
         var modalOptions = {
-         scope: $scope,
-         id: 'errorDialog',
-         showHeaderCloseButton: false,
-         backdrop: true,
-         footerTemplateUrl:'static/app/auth/modalFooter.html',
-         modalClass: 'modal small-modal'
-       };
+          scope: $scope,
+          id: 'errorDialog',
+          showHeaderCloseButton: false,
+          backdrop: true,
+          footerTemplateUrl:'static/app/auth/modalFooter.html',
+          modalClass: 'modal small-modal'
+        };
 
-       if (exception.type === 'onlineRequired'){
-        if (!$scope.retrying){
-          $scope.errorMessageHeading = 'no online connection';
-          $scope.errorMessageText = 'please connect to the internet and press retry to access your information';
-          $scope.modalSuccessText = 'retry';
-          modalOptions.allowBackdropDismiss = false;
-          modalOptions.asyncSuccess = true;
-          modalOptions.success = {fn: onlineRequiredRetryCallback,
-            fnParam: exception.retry,
-            fnParamParam: exception.retryParam,
-            fnPromise: exception.promise};
-            ModalService.createDialog('static/app/auth/errorMessage.html', modalOptions);
+        if (exception.type === 'onlineRequired'){
+          if (!$scope.retrying){
+            $scope.errorMessageHeading = 'no online connection';
+            if (expection.retry){
+              $scope.errorMessageText = 'please connect to the internet and press retry to access your information';
+              $scope.modalSuccessText = 'retry';
+              modalOptions.allowBackdropDismiss = false;
+              modalOptions.asyncSuccess = true;
+              modalOptions.success = {
+                fn: onlineRequiredRetryCallback,
+                fnParam: exception.retry,
+                fnParamParam: exception.retryParam,
+                fnPromise: exception.promise
+              };
+              ModalService.createDialog('static/app/auth/errorMessage.html', modalOptions);
+            }else{
+              // No retry possibility
+              $scope.modalSuccessText = 'close';
+              $scope.errorMessageText = 'you need to be online to complete this action';
+              ModalService.createDialog('static/app/auth/errorMessage.html', modalOptions);
+            }
           }
         }else{
           AnalyticsService.error('unexpected', JSON.stringify(exception));
           $scope.errorMessageHeading = 'something unexpected happened, sorry!';
           $scope.errorMessageText = JSON.stringify(exception, null, 4);
           $scope.modalSuccessText = 'close';
-          ModalService.createDialog('static/app/auth/errorMessage.html',modalOptions);
+          ModalService.createDialog('static/app/auth/errorMessage.html', modalOptions);
         }
       });
 
