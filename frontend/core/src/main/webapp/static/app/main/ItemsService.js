@@ -310,7 +310,9 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
     saveItem: function(item, ownerUUID) {
       var deferred = $q.defer();
       var params;
-      if (item.uuid){
+      if (items[ownerUUID].deletedItems.indexOf(item) > -1){
+        deferred.reject(item);
+      }else if (item.uuid){
         // Existing item
         if (UserSessionService.isOfflineEnabled()){
           // Push to offline buffer
@@ -391,6 +393,10 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       }
     },
     undeleteItem: function(item, ownerUUID) {
+      // Check that item is deleted before trying to undelete
+      if (items[ownerUUID].deletedItems.indexOf(item) === -1){
+        return;
+      }
       if (UserSessionService.isOfflineEnabled()){
         // Offline
         var params = {type: 'item', owner: ownerUUID, uuid: item.uuid};
@@ -411,6 +417,10 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       }
     },
     itemToTask: function(item, ownerUUID) {
+      // Check that item is not deleted before trying to turn it into a task
+      if (items[ownerUUID].deletedItems.indexOf(item) > -1){
+        return;
+      }
       var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.uuid);
       if (index !== undefined) {
         TasksService.saveTask(item, ownerUUID);
@@ -418,6 +428,10 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       }
     },
     itemToNote: function(item, ownerUUID) {
+      // Check that item is not deleted before trying to turn it into a note
+      if (items[ownerUUID].deletedItems.indexOf(item) > -1){
+        return;
+      }
       var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.uuid);
       if (index !== undefined) {
         NotesService.saveNote(item, ownerUUID);

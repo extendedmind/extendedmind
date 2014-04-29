@@ -151,6 +151,9 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
       return notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveNote : function(note, ownerUUID) {
+      if (notes[ownerUUID].deletedNotes.indexOf(note) > -1){
+        return;
+      }
       var params;
       var list = moveListToParent(note);
       if (note.uuid){
@@ -239,6 +242,10 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
       }
     },
     undeleteNote : function(note, ownerUUID) {
+      // Check that note is deleted before trying to undelete
+      if (notes[ownerUUID].deletedNotes.indexOf(note) === -1){
+        return;
+      }
       if (UserSessionService.isOfflineEnabled()){
         // Offline
         var params = {type: 'note', owner: ownerUUID, uuid: note.uuid};

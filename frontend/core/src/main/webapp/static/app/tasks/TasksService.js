@@ -282,60 +282,64 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
         }
       }
       var deferred = $q.defer();
-      cleanRecentlyCompletedTasks(ownerUUID);
-      var context = moveContextToTags(task, ownerUUID);
-      var list = moveListToParent(task);
-      var due = moveDateToDue(task);
-      if (task.uuid){
-        // Existing task
-        if (UserSessionService.isOfflineEnabled()){
-          // Push to offline buffer
-          params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
-          BackendClientService.put('/api/' + params.owner + '/task/' + task.uuid,
-                   this.putExistingTaskRegex, params, task);
-          task.modified = (new Date()).getTime() + 1000000;
-          updateTransientProperties(context, list, due);
-          updateTask(task, ownerUUID);
-          deferred.resolve(task);
-        }else{
-          // Online
-          BackendClientService.putOnline('/api/' + ownerUUID + '/task/' + task.uuid,
-                   this.putExistingTaskRegex, task).then(function(result) {
-            if (result.data){
-              task.modified = result.data.modified;
-              updateTransientProperties(context, list, due);
-              updateTask(task, ownerUUID);
-              deferred.resolve(task);
-            }
-          });
-        }
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
+        deferred.reject(task);
       }else{
-        // New task
-        if (UserSessionService.isOfflineEnabled()){
-          // Push to offline queue with fake UUID
-          var fakeUUID = UUIDService.generateFakeUUID();
-          var params = {type: 'task', owner: ownerUUID, fakeUUID: fakeUUID};
-          BackendClientService.put('/api/' + params.owner + '/task',
-                   this.putNewTaskRegex, params, task);
-          task.uuid = fakeUUID;
-          // Use a fake modified that is far enough in the to make
-          // it to the end of the list
-          task.modified = (new Date()).getTime() + 1000000;
-          updateTransientProperties(context, list, due);
-          setTask(task, ownerUUID);
-          deferred.resolve(task);
-        } else{
-          // Online
-          BackendClientService.putOnline('/api/' + ownerUUID + '/task',
-                 this.putNewTaskRegex, task).then(function(result) {
-            if (result.data){
-              task.uuid = result.data.uuid;
-              task.modified = result.data.modified;
-              updateTransientProperties(context, list, due);
-              setTask(task, ownerUUID);
-              deferred.resolve(task);
-            }
-          });
+        cleanRecentlyCompletedTasks(ownerUUID);
+        var context = moveContextToTags(task, ownerUUID);
+        var list = moveListToParent(task);
+        var due = moveDateToDue(task);
+        if (task.uuid){
+          // Existing task
+          if (UserSessionService.isOfflineEnabled()){
+            // Push to offline buffer
+            params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
+            BackendClientService.put('/api/' + params.owner + '/task/' + task.uuid,
+                     this.putExistingTaskRegex, params, task);
+            task.modified = (new Date()).getTime() + 1000000;
+            updateTransientProperties(context, list, due);
+            updateTask(task, ownerUUID);
+            deferred.resolve(task);
+          }else{
+            // Online
+            BackendClientService.putOnline('/api/' + ownerUUID + '/task/' + task.uuid,
+                     this.putExistingTaskRegex, task).then(function(result) {
+              if (result.data){
+                task.modified = result.data.modified;
+                updateTransientProperties(context, list, due);
+                updateTask(task, ownerUUID);
+                deferred.resolve(task);
+              }
+            });
+          }
+        }else{
+          // New task
+          if (UserSessionService.isOfflineEnabled()){
+            // Push to offline queue with fake UUID
+            var fakeUUID = UUIDService.generateFakeUUID();
+            var params = {type: 'task', owner: ownerUUID, fakeUUID: fakeUUID};
+            BackendClientService.put('/api/' + params.owner + '/task',
+                     this.putNewTaskRegex, params, task);
+            task.uuid = fakeUUID;
+            // Use a fake modified that is far enough in the to make
+            // it to the end of the list
+            task.modified = (new Date()).getTime() + 1000000;
+            updateTransientProperties(context, list, due);
+            setTask(task, ownerUUID);
+            deferred.resolve(task);
+          } else{
+            // Online
+            BackendClientService.putOnline('/api/' + ownerUUID + '/task',
+                   this.putNewTaskRegex, task).then(function(result) {
+              if (result.data){
+                task.uuid = result.data.uuid;
+                task.modified = result.data.modified;
+                updateTransientProperties(context, list, due);
+                setTask(task, ownerUUID);
+                deferred.resolve(task);
+              }
+            });
+          }
         }
       }
       return deferred.promise;
@@ -372,6 +376,10 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       }
     },
     undeleteTask: function(task, ownerUUID) {
+      // Check that task is deleted before trying to undelete
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) === -1){
+        return;
+      }
       cleanRecentlyCompletedTasks(ownerUUID);
       if (UserSessionService.isOfflineEnabled()){
         // Offline
@@ -392,6 +400,11 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       }
     },
     completeTask: function(task, ownerUUID) {
+      // Check that task is not deleted before trying to complete
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
+        return;
+      }
+
       cleanRecentlyCompletedTasks(ownerUUID);
       if (UserSessionService.isOfflineEnabled()){
         // Offline
@@ -416,6 +429,11 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       }
     },
     uncompleteTask: function(task, ownerUUID) {
+      // Check that task is not deleted before trying to uncomplete
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
+        return;
+      }
+
       if (UserSessionService.isOfflineEnabled()){
         var params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
         // Offline
@@ -444,6 +462,11 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
 
     },
     taskToList: function(task, ownerUUID) {
+      // Check that task is not deleted before trying to turn it into a list
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
+        return;
+      }
+
       cleanRecentlyCompletedTasks(ownerUUID);
       var index = tasks[ownerUUID].activeTasks.findFirstIndexByKeyValue('uuid', task.uuid);
       if (index !== undefined && !task.reminder && !task.repeating && !task.completed) {

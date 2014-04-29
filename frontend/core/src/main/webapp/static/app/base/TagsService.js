@@ -55,7 +55,9 @@ function TagsService($q, BackendClientService, ArrayService){
     },
     saveTag : function(tag, ownerUUID) {
       var deferred = $q.defer();
-      if (tag.uuid){
+      if (tags[ownerUUID].deletedTags.indexOf(tag) > -1){
+        deferred.reject(tag);
+      }else if (tag.uuid){
         // Existing tag
         BackendClientService.putOnline('/api/' + ownerUUID + '/tag/' + tag.uuid,
                  this.putExistingTagRegex, tag).then(function(result) {
@@ -109,6 +111,10 @@ function TagsService($q, BackendClientService, ArrayService){
       });
     },
     undeleteTag : function(tag, ownerUUID) {
+      // Check that tag is deleted before trying to undelete
+      if (tags[ownerUUID].deletedTags.indexOf(tag) === -1){
+        return;
+      }
       BackendClientService.postOnline('/api/' + ownerUUID + '/tag/' + tag.uuid + '/undelete',
                this.deleteTagRegex).then(function(result) {
         if (result.data){

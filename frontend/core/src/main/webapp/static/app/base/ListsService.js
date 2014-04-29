@@ -70,7 +70,10 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
     },
     saveList: function(list, ownerUUID) {
       var deferred = $q.defer();
-      if (list.uuid){
+      // Check that list is not deleted before trying to save
+      if (lists[ownerUUID].deletedLists.indexOf(list) > -1){
+        deferred.reject(list);
+      }else if (list.uuid){
         // Existing list
         BackendClientService.putOnline('/api/' + ownerUUID + '/list/' + list.uuid,
                  this.putExistingListRegex, list).then(function(result) {
@@ -127,6 +130,10 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       });
     },
     undeleteList: function(list, ownerUUID) {
+      // Check that list is deleted before trying to undelete
+      if (lists[ownerUUID].deletedLists.indexOf(list) === -1){
+        return;
+      }
       BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/undelete',
                this.deleteListRegex).then(function(result) {
         if (result.data){
@@ -141,6 +148,10 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       });
     },
     archiveList: function(list, ownerUUID) {
+      // Check that list is active before trying to archive
+      if (lists[ownerUUID].activeLists.indexOf(list) === -1){
+        return;
+      }
       BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/archive',
                this.deleteListRegex).then(function(result) {
         if (result.data){
