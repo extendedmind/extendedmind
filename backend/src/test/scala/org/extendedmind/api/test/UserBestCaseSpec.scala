@@ -81,10 +81,23 @@ class UserBestCaseSpec extends ServiceSpecBase {
       Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val accountResponse = entityAs[User]
         accountResponse.preferences.get.onboarded.get should be("web")
+
+        val newEmailAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+        newEmailAuthenticateResponse.userUUID should not be None
+        newEmailAuthenticateResponse.preferences.get.onboarded.get should be("web")
+        
+        // Remove onboarded
+        Put("/account",
+          marshal(accountResponse.copy(preferences = None)).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
+            val putAccountResponse = entityAs[SetResult]
+            putAccountResponse.modified should not be None
+          }
+        Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
+          val accountResponse = entityAs[User]
+          accountResponse.preferences should be(None)
+        }
       }
-      val newEmailAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
-      newEmailAuthenticateResponse.userUUID should not be None
-      newEmailAuthenticateResponse.preferences.get.onboarded.get should be("web")
+        
     }
     it("should successfully change email with PUT to /email "
       + "and get the changed email back") {
