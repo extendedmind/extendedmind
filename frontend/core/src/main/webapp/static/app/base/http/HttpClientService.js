@@ -15,15 +15,16 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   }
 
   function emitException(error, skipLogStatuses) {
+    var exceptionType = 'http';
     if (error && isOffline(error.status)){
       online = false;
       if (onlineCallback) {
         onlineCallback(online);
       }
-      $rootScope.$emit('emException', {type: 'onlineRequired', status: error.status, data: error.data});
+      exceptionType = 'onlineRequired';
     }
-    if(!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1){
-      $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data});
+    if (!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1){
+      $rootScope.$emit('emException', {type: exceptionType, status: error.status, data: error.data});
     }
   }
 
