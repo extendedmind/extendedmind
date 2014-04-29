@@ -58,7 +58,7 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
         if (exception.type === 'onlineRequired'){
           if (!$scope.retrying){
             $scope.errorMessageHeading = 'no online connection';
-            if (expection.retry){
+            if (exception.retry){
               $scope.errorMessageText = 'please connect to the internet and press retry to access your information';
               $scope.modalSuccessText = 'retry';
               modalOptions.allowBackdropDismiss = false;
