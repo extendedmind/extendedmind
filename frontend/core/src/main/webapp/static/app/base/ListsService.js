@@ -69,6 +69,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       return lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveList: function(list, ownerUUID) {
+      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       // Check that list is not deleted before trying to save
       if (lists[ownerUUID].deletedLists.indexOf(list) > -1){
@@ -79,7 +80,6 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
                  this.putExistingListRegex, list).then(function(result) {
           if (result.data){
             list.modified = result.data.modified;
-            initializeArrays(ownerUUID);
             ArrayService.updateItem(
               list,
               lists[ownerUUID].activeLists,
@@ -95,7 +95,6 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
           if (result.data){
             list.uuid = result.data.uuid;
             list.modified = result.data.modified;
-            initializeArrays(ownerUUID);
             ArrayService.setItem(
               list,
               lists[ownerUUID].activeLists,
@@ -108,6 +107,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       return deferred.promise;
     },
     deleteList: function(list, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check if list has already been deleted
       if (lists[ownerUUID].deletedLists.indexOf(list) > -1){
         return;
@@ -130,6 +130,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       });
     },
     undeleteList: function(list, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check that list is deleted before trying to undelete
       if (lists[ownerUUID].deletedLists.indexOf(list) === -1){
         return;
@@ -148,6 +149,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       });
     },
     archiveList: function(list, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check that list is active before trying to archive
       if (lists[ownerUUID].activeLists.indexOf(list) === -1){
         return;

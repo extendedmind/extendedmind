@@ -308,6 +308,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       return items[ownerUUID].activeItems.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveItem: function(item, ownerUUID) {
+      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       var params;
       if (items[ownerUUID].deletedItems.indexOf(item) > -1){
@@ -363,6 +364,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       return deferred.promise;
     },
     deleteItem: function(item, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check if item has already been deleted
       if (items[ownerUUID].deletedItems.indexOf(item) > -1){
         return;
@@ -393,6 +395,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       }
     },
     undeleteItem: function(item, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check that item is deleted before trying to undelete
       if (items[ownerUUID].deletedItems.indexOf(item) === -1){
         return;
@@ -417,6 +420,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       }
     },
     itemToTask: function(item, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check that item is not deleted before trying to turn it into a task
       if (items[ownerUUID].deletedItems.indexOf(item) > -1){
         return;
@@ -428,6 +432,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
       }
     },
     itemToNote: function(item, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check that item is not deleted before trying to turn it into a note
       if (items[ownerUUID].deletedItems.indexOf(item) > -1){
         return;

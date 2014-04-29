@@ -281,6 +281,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
           task.date = due;
         }
       }
+      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
         deferred.reject(task);
@@ -345,6 +346,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       return deferred.promise;
     },
     deleteTask: function(task, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check if task has already been deleted
       if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
         return;
@@ -376,6 +378,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       }
     },
     undeleteTask: function(task, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check that task is deleted before trying to undelete
       if (tasks[ownerUUID].deletedTasks.indexOf(task) === -1){
         return;
@@ -400,6 +403,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       }
     },
     completeTask: function(task, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to complete
       if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
         return;
@@ -429,6 +433,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       }
     },
     uncompleteTask: function(task, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to uncomplete
       if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
         return;
@@ -462,6 +467,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
 
     },
     taskToList: function(task, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to turn it into a list
       if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
         return;

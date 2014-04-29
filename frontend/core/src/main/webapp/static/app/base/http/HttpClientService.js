@@ -45,6 +45,8 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   // Callbacks
   var primaryResultCallback, primaryCreateCallback, secondaryCallback, defaultCallback, onlineCallback;
 
+
+  var retryingExecution = false;
   // Recursive method to empty the queue
   function executeRequests() {
     // First always check if primary should be created first
@@ -60,6 +62,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
       if (!headRequest.last){
         $http(headRequest.content).
         success(function(data /*, status, headers, config*/) {
+            retryingExecution = false;
             // First, execute callback
             if (headRequest.primary && primaryResultCallback){
               primaryResultCallback(headRequest, data);
@@ -84,6 +87,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
           }).
         error(function(data, status, headers, config) {
           if (isOffline(status)){
+            retryingExecution = false;
             // Seems to be offline, stop processing
             HttpRequestQueueService.setOffline(headRequest);
             online = false;
@@ -92,10 +96,19 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
               onlineCallback(online);
             }
           }else {
-            // Emit unsuspected error to root scope, so that
-            // it can be listened on at by the application
-            HttpRequestQueueService.releaseLock();
-            $rootScope.$emit('emException', {type: 'http', status: status, data: data, url: config.url});
+            // Add retrying to 403 Forbidden which may have to do with
+            // an old request being run on refocus to app after 12 hours
+            // from last authentication
+            if (!retryingExecution && status === 403){
+              retryingExecution = true;
+              executeRequests();
+            }else {
+              retryingExecution = false;
+              // Emit unsuspected error to root scope, so that
+              // it can be listened on at by the application
+              HttpRequestQueueService.releaseLock();
+              $rootScope.$emit('emException', {type: 'http', status: status, data: data, url: config.url});
+            }
           }
         });
       }else{

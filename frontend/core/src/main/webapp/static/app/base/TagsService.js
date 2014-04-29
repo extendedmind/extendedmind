@@ -54,6 +54,7 @@ function TagsService($q, BackendClientService, ArrayService){
       return tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveTag : function(tag, ownerUUID) {
+      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       if (tags[ownerUUID].deletedTags.indexOf(tag) > -1){
         deferred.reject(tag);
@@ -63,7 +64,6 @@ function TagsService($q, BackendClientService, ArrayService){
                  this.putExistingTagRegex, tag).then(function(result) {
           if (result.data){
             tag.modified = result.data.modified;
-            initializeArrays(ownerUUID);
             ArrayService.updateItem(
               tag,
               tags[ownerUUID].activeTags,
@@ -78,7 +78,6 @@ function TagsService($q, BackendClientService, ArrayService){
           if (result.data){
             tag.uuid = result.data.uuid;
             tag.modified = result.data.modified;
-            initializeArrays(ownerUUID);
             ArrayService.setItem(
               tag,
               tags[ownerUUID].activeTags,
@@ -90,6 +89,7 @@ function TagsService($q, BackendClientService, ArrayService){
       return deferred.promise;
     },
     deleteTag : function(tag, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check if tag has already been deleted
       if (tags[ownerUUID].deletedTags.indexOf(tag) > -1){
         return;
@@ -111,6 +111,7 @@ function TagsService($q, BackendClientService, ArrayService){
       });
     },
     undeleteTag : function(tag, ownerUUID) {
+      initializeArrays(ownerUUID);
       // Check that tag is deleted before trying to undelete
       if (tags[ownerUUID].deletedTags.indexOf(tag) === -1){
         return;
