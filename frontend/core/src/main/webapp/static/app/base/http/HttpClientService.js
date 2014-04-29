@@ -7,6 +7,13 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   var credentials;
   var online = true;
 
+  // Offline checker for the entire application
+  function isOffline(status) {
+    if (status === 0 || status === 404 || status === 502){
+      return true;
+    }
+  }
+
   function getRequest(method, url, params, data){
     var request = {
       content: {
@@ -62,7 +69,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
             executeRequests();
           }).
         error(function(data, status, headers, config) {
-          if (status && (status === 404 || status === 502)){
+          if (isOffline(status)){
             // Seems to be offline, stop processing
             HttpRequestQueueService.setOffline(headRequest);
             online = false;
@@ -123,7 +130,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
         }
         return success;
       }, function(error){
-        if (error && (error.status === 404 || error.status === 502)){
+        if (error && isOffline(error.status)){
           online = false;
           if (onlineCallback) {
             onlineCallback(online);
@@ -143,7 +150,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
       }
       return success;
     }, function(error) {
-      if (error && (error.status === 404 || error.status === 502)){
+      if (error && isOffline(error.status)){
         online = false;
         if (onlineCallback) {
           onlineCallback(online);
@@ -251,6 +258,10 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     HttpRequestQueueService.push(request);
     executeRequests();
   };
+
+  methods.isOffline = function(status) {
+    return isOffline(status);
+  }
 
   // Methods to register callbacks when
   methods.registerCallback = function(type, callback){

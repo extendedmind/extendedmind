@@ -1,6 +1,6 @@
 'use strict';
 
-function SignupController($location, $scope, $rootScope, $routeParams, $window, AuthenticationService, AnalyticsService) {
+function SignupController($location, $scope, $rootScope, $routeParams, $window, AuthenticationService, AnalyticsService, BackendClientService) {
 
   AnalyticsService.visitEntry('signup');
 
@@ -44,10 +44,10 @@ function SignupController($location, $scope, $rootScope, $routeParams, $window, 
       }else{
         loginUser(true);
       }
-    }, function(signupResponse) {
-      if (signupResponse && (signupResponse.status === 404 ||signupResponse.status === 502)){
+    }, function(error) {
+      if (BackendClientService.isOffline(error.status)){
         $scope.signupOffline = true;
-      }else if(signupResponse && (signupResponse.status === 400)){
+      }else if(error.status === 400){
         $scope.signupFailed = true;
       }
     });
@@ -72,9 +72,9 @@ function SignupController($location, $scope, $rootScope, $routeParams, $window, 
   }
 
   function loginError(authenticateResponse) {
-    if (authenticateResponse && (authenticateResponse.status === 404 || authenticateResponse.status === 502)){
+    if (BackendClientService.isOffline(authenticateResponse.status)){
       $scope.signupOffline = true;
-    }else if(authenticateResponse && (authenticateResponse.status === 403)){
+    }else if(authenticateResponse.status === 403){
       $scope.loginFailed = true;
     }
   }
@@ -90,5 +90,5 @@ function SignupController($location, $scope, $rootScope, $routeParams, $window, 
   };
 }
 
-SignupController['$inject'] = ['$location', '$scope', '$rootScope', '$routeParams', '$window', 'AuthenticationService', 'AnalyticsService'];
+SignupController['$inject'] = ['$location', '$scope', '$rootScope', '$routeParams', '$window', 'AuthenticationService', 'AnalyticsService', 'BackendClientService'];
 angular.module('em.app').controller('SignupController', SignupController);

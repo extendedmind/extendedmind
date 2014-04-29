@@ -1,6 +1,6 @@
 'use strict';
 
-function ForgotController($routeParams, $scope, $location, AuthenticationService, UserSessionService, AnalyticsService) {
+function ForgotController($routeParams, $scope, $location, BackendClientService, AuthenticationService, UserSessionService, AnalyticsService) {
 
   AnalyticsService.visitEntry('forgot');
 
@@ -34,9 +34,9 @@ function ForgotController($routeParams, $scope, $location, AuthenticationService
     if ($scope.user.email){
       AuthenticationService.postForgotPassword($scope.user.email).then(
         function(forgotPasswordResponse){
-          if (forgotPasswordResponse && (forgotPasswordResponse.status === 404 || forgotPasswordResponse.status === 502)){
+          if (BackendClientService.isOffline(forgotPasswordResponse.status)){
             $scope.sendOffline = true;
-          }else if(forgotPasswordResponse && (forgotPasswordResponse.status !== 200)){
+          }else if(forgotPasswordResponse.status !== 200){
             $scope.sendFailed = true;
           }else if (forgotPasswordResponse.data){
             $scope.resetCodeExpires = forgotPasswordResponse.data.resetCodeExpires;
@@ -53,9 +53,9 @@ function ForgotController($routeParams, $scope, $location, AuthenticationService
     if ($scope.user.password){
       AuthenticationService.postResetPassword(passwordResetCode, $scope.user.email, $scope.user.password).then(
         function(resetPasswordResponse){
-          if (resetPasswordResponse && (resetPasswordResponse.status === 404 || resetPasswordResponse.status === 502)){
+          if (BackendClientService.isOffline(resetPasswordResponse.status)){
             $scope.resetOffline = true;
-          }else if(resetPasswordResponse && (resetPasswordResponse.status !== 200)){
+          }else if(resetPasswordResponse.status !== 200){
             $scope.resetFailed = true;
           }else if (resetPasswordResponse.data && resetPasswordResponse.data.count){
             // Authenticate using the new password
@@ -64,7 +64,7 @@ function ForgotController($routeParams, $scope, $location, AuthenticationService
                 $location.path('/');
                 $location.search({});
               }, function(error){
-                if (error.status === 404 || error.status === 502){
+                if (BackendClientService.isOffline(error.status)){
                   $scope.resetOffline = true;
                 }else {
                   $scope.loginFailed = true;
@@ -79,5 +79,5 @@ function ForgotController($routeParams, $scope, $location, AuthenticationService
 
 }
 
-ForgotController['$inject'] = ['$routeParams', '$scope', '$location', 'AuthenticationService', 'UserSessionService', 'AnalyticsService'];
+ForgotController['$inject'] = ['$routeParams', '$scope', '$location', 'BackendClientService', 'AuthenticationService', 'UserSessionService', 'AnalyticsService'];
 angular.module('em.app').controller('ForgotController', ForgotController);

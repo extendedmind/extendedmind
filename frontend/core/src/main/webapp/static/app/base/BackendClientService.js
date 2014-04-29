@@ -171,6 +171,10 @@ function BackendClientService($q, $rootScope, base64, HttpClientService, UserSes
     return getUrlPrefix();
   }
 
+  methods.isOffline = function(status) {
+    return HttpClientService.isOffline(status);
+  }
+
   // Callback registration
   methods.registerRefreshCredentialsCallback = function(callback){
     refreshCredentialsCallback = callback;

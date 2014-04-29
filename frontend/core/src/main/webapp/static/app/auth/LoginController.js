@@ -22,10 +22,10 @@ function LoginController($location, $scope, UserSessionService, AuthenticationSe
       AnalyticsService.do('login');
       $location.path('/my/tasks');
     }, function(authenticateResponse) {
-      if (authenticateResponse && (authenticateResponse.status === 404 || authenticateResponse.status === 502)){
+      if (BackendClientService.isOffline(authenticateResponse.status)){
         AnalyticsService.error('login', 'offline');
         $scope.loginOffline = true;
-      }else if(authenticateResponse && (authenticateResponse.status === 403)){
+      }else if(authenticateResponse.status === 403){
         AnalyticsService.error('login', 'failed');
         $scope.loginFailed = true;
       }

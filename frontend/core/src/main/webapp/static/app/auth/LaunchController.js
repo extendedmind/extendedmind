@@ -1,6 +1,6 @@
 'use strict';
 
-function LaunchController($location, $scope, AuthenticationService, AnalyticsService) {
+function LaunchController($location, $scope, AuthenticationService, AnalyticsService, BackendClientService) {
 
   AnalyticsService.visitEntry('launch');
 
@@ -20,7 +20,7 @@ function LaunchController($location, $scope, AuthenticationService, AnalyticsSer
   };
 
   function emailStatusFailure(error) {
-    if (error.status === 404 || error.status === 502) {
+    if (BackendClientService.isOffline(error.status)) {
       $scope.launchOffline = true;
     } else {
       $scope.launchFailed = true;
@@ -28,5 +28,5 @@ function LaunchController($location, $scope, AuthenticationService, AnalyticsSer
   }
 }
 
-LaunchController['$inject'] = ['$location', '$scope', 'AuthenticationService', 'AnalyticsService'];
+LaunchController['$inject'] = ['$location', '$scope', 'AuthenticationService', 'AnalyticsService', 'BackendClientService'];
 angular.module('em.app').controller('LaunchController', LaunchController);

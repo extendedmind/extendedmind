@@ -1,6 +1,6 @@
 'use strict';
 
-function PasswordController($location, $scope, AuthenticationService, UserSessionService, AnalyticsService) {
+function PasswordController($location, $scope, AuthenticationService, BackendClientService, UserSessionService, AnalyticsService) {
 
   AnalyticsService.visit('password');
 
@@ -16,14 +16,14 @@ function PasswordController($location, $scope, AuthenticationService, UserSessio
         function(/*authenticationResponse*/) {
           $location.path('/my/account');
         }, function(error){
-          if (error.status === 404 || error.status === 502){
+          if (BackendClientService.isOffline(error.status)){
             $scope.changePasswordOffline = true;
           }else {
             $scope.loginFailed = true;
           }
         });
     }, function(error){
-      if (error.status === 404 || error.status === 502){
+      if (BackendClientService.isOffline(error.status)){
         AnalyticsService.error('changePassword', 'offline');
         $scope.changePasswordOffline = true;
       }else {
@@ -38,5 +38,5 @@ function PasswordController($location, $scope, AuthenticationService, UserSessio
   };
 }
 
-PasswordController['$inject'] = ['$location', '$scope', 'AuthenticationService', 'UserSessionService', 'AnalyticsService'];
+PasswordController['$inject'] = ['$location', '$scope', 'AuthenticationService', 'BackendClientService', 'UserSessionService', 'AnalyticsService'];
 angular.module('em.app').controller('PasswordController', PasswordController);

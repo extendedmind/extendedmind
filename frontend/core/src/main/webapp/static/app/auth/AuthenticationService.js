@@ -150,7 +150,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
   function authenticate(remember) {
     return BackendClientService.postOnline('/api/authenticate', postAuthenticateRegexp,
       getAuthenticatePayload(remember),
-      true, [403, 404, 502]);
+      true, [0, 403, 404, 502]);
   }
 
   function verifyAndUpdateAuthentication(online){
@@ -271,7 +271,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
       postInviteRequestBypassRegexp,
       payload,
       true,
-      [400, 404, 502]);
+      [0, 400, 404, 502]);
   }
 
   return {
@@ -331,7 +331,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         {email: email,
          bypass: true},
         true,
-        [400, 404, 502])
+        [0, 400, 404, 502])
       .then(function(inviteRequestResponse) {
         UserSessionService.setEmail(email);
         return inviteRequestResponse;
@@ -346,7 +346,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     },
     acceptInvite: function(inviteResponseCode, data) {
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',
-        acceptInviteRegexp, data, true, [400, 404, 502]);
+        acceptInviteRegexp, data, true, [0, 400, 404, 502]);
     },
     postForgotPassword: function(email) {
       return BackendClientService.postOnline(

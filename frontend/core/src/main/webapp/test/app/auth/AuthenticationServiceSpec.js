@@ -142,7 +142,7 @@ describe('AuthenticationService', function() {
 
   it('should post invite request', function() {
     var email = 'example@example.com';
-    var skipLogStatuses = [400, 404, 502];
+    var skipLogStatuses = [0, 400, 404, 502];
     var postInviteRequestRegex = /^\/api\/invite\/request$/;
     spyOn(BackendClientService, 'postOnline').andCallThrough();
     spyOn(MockUserSessionService, 'setEmail');

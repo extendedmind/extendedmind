@@ -279,7 +279,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
           return result;
         },
         function(error) {
-          if (error && (error.status === 404 || error.status === 502)){
+          if (BackendClientService.isOffline(error.status)){
             // Emit online required exception
             $rootScope.$emit('emException', {
               type: 'onlineRequired',
