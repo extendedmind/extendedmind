@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source setup-environment.sh
+
 # make new iOS project from sources
 cd app
 

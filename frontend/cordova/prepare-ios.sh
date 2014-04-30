@@ -1,3 +1,7 @@
+#!/bin/bash
+
+source setup-environment.sh
+
 if [ -d "app/platforms/ios" ]
 then
   echo "iOS already prepared, skipping."
