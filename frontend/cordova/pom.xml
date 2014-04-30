@@ -36,6 +36,8 @@
     <encoding>UTF-8</encoding>
     <skipAndroid>true</skipAndroid>
     <skipIos>true</skipIos>
+    <cordova.bundleId>org.extendedmind</cordova.bundleId>
+    <cordova.buildNumber>0</cordova.buildNumber>
   </properties>
 
   <profiles>

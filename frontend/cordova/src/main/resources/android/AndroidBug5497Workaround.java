@@ -1,4 +1,4 @@
-package org.extendedmind;
+package ${cordova.bundleId};
 
 import android.app.Activity;
 import android.graphics.Rect;

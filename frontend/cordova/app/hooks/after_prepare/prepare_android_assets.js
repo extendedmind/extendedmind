@@ -12,7 +12,12 @@ if (shell.test('-d', androidroot)){
   shell.exec( "cp -f " + fontroot + "/Helvetica*.* " + androidroot + "/assets/www/static/fonts", {silent:false} );
 
   // copy edited Android sources
-  shell.exec( "cp -f " + buildroot + "/*.java " + androidroot + "/src/org/extendedmind", {silent:false} );
+
+  if (shell.test('-d', androidroot + "/src/org/extendedmind/nightly")){
+    shell.exec( "cp -f " + buildroot + "/*.java " + androidroot + "/src/org/extendedmind/nightly", {silent:false} );
+  }else {
+    shell.exec( "cp -f " + buildroot + "/*.java " + androidroot + "/src/org/extendedmind", {silent:false} );
+  }
 }
 
 process.exit(0);

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="org.extendedmind" version="${project.version.trimmed}" xmlns="http://www.w3.org/ns/widgets">
+<widget id="${cordova.bundleId}" version="${project.version.trimmed}" xmlns="http://www.w3.org/ns/widgets">
     <name>extmd</name>
     <description>
         Mobile application for Extended Mind.
