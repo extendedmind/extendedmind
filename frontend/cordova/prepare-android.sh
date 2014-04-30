@@ -1,6 +1,5 @@
 # check required environment variables are there
 : ${ANDROID_HOME:?"Need to set ANDROID_HOME non-empty"}
-: ${NODE_PATH:?"Need to set NODE_PATH non-empty"}
 
 [ -z "$NODE_PATH" ] && NODE_PATH="/usr/local/lib/node_modules"
 if env | grep -q ^NODE_PATH=
