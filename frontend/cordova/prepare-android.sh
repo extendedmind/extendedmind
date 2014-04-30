@@ -7,7 +7,7 @@ then
   echo NODE_PATH is already exported
 else
   echo NODE_PATH was not exported, but now it is
-  export NODE_PATH
+  export NODE_PATH=/usr/local/lib/node_modules
 fi
 
 if [ -d "app/platforms/android" ]
