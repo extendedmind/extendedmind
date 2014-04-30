@@ -8,7 +8,7 @@ function expandingTextareaDirective($timeout) {
   return {
     restrict:'A',
     link: function(scope, element) {
-      element.expandingTextarea();
+      element.expanding();
       // Needed to get textarea to increase size
       // on load
       $timeout(function(){
