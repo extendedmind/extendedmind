@@ -40,7 +40,8 @@ function OnboardingService($q, $timeout, ModalService) {
       scroller = new IScroll(element, {
         snap: true,
         momentum: false,
-        scrollX: true
+        scrollX: true,
+        disableTouch: true
       });
 
       // http://iscrolljs.com/#refresh
