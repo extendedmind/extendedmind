@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var path = require( "path" ),
     fs = require( "fs" ),
-    shell = require( "shelljs/global" ),
+    shell = require( "shelljs" ),
     rootdir = process.argv[ 2 ],
     androidroot = rootdir + "/platforms/android",
     fontroot = rootdir + "/assets/fonts",

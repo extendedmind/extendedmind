@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var path = require( "path" ),
     fs = require( "fs" ),
-    shell = require( "shelljs/global" ),
+    shell = require( "shelljs" ),
     rootdir = process.argv[ 2 ],
     iosroot = rootdir + "/platforms/ios",
     buildroot = rootdir + "/assets/build/ios";
