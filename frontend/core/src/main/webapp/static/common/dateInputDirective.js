@@ -3,24 +3,25 @@
 function dateInputDirective() {
   return {
     restrict: 'A',
-    link: function(scope, element) {
+    link: function(scope, element, attrs) {
 
-      if (!scope.task.date) {
-        element[0].focus();
-        element[0].value = new Date().toISOString().substring(0, 10);
-      }
-
-      function hideDateInput() {
-        if (!scope.task.date) {
-          scope.$apply(scope.hideDate());
+      // http://ruoyusun.com/2013/08/24/a-glimpse-of-angularjs-scope-via-example.html
+      scope.$watch(attrs.dateInput, function(newValue) {
+        if (newValue) {
+          if (!scope.task.date) {
+            scope.$evalAsync(function() {
+              element[0].focus();
+              element[0].value = new Date().toISOString().substring(0, 10);
+            });
+          }
         }
-      }
-
-      element[0].addEventListener('blur', hideDateInput, false);
-
-      scope.$on('$destroy', function() {
-        element[0].removeEventListener('blur', hideDateInput, false);
       });
+
+      scope.hideDateInput = function hideDateInput() {
+        if (!scope.task.date) {
+          scope.hideDate();
+        }
+      };
     }
   };
 }
