@@ -228,6 +228,33 @@ function MainController(
   $scope.showContent = function showContent(feature) {
     return $scope.isFeatureActive(feature);
   };
+
+  // Layout for expanding text areas require a max height
+  // that needs to be defined programmatically
+
+  $scope.getEditTaskDescriptionMaxHeight = function() {
+    if ($scope.currentHeight <= 810){
+      return $scope.currentHeight - 320;
+    }else{
+      return 490;
+    }
+  };
+
+  $scope.getEditNoteContentMaxHeight = function() {
+    if ($scope.currentHeight <= 810){
+      return $scope.currentHeight - 150;
+    }else{
+      return 660;
+    }
+  };
+
+  $scope.getEditSimpleDescriptionMaxHeight = function() {
+    if ($scope.currentHeight <= 810){
+      return $scope.currentHeight - 180;
+    }else{
+      return 630;
+    }
+  };
 }
 
 MainController.$inject = [

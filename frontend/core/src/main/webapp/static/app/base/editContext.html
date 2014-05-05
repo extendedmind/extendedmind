@@ -9,9 +9,9 @@
               <label class="sr-only" for="contextTitle">title</label>
               <input type="text" id="contextTitle" class="simple-input" ng-model="context.title" placeholder="title..." required>
             </div>
-            <div class="form-group">
+            <div class="form-group" ng-style="{maxHeight: getEditSimpleDescriptionMaxHeight()}">
               <label class="sr-only" for="contextDescription">description</label>
-              <textarea id="contextDescription" class="simple-input" ng-model="context.description" placeholder="description..." expanding-textarea></textarea>
+              <textarea id="contextDescription" ng-style="{maxHeight: getEditSimpleDescriptionMaxHeight()}" class="simple-input" ng-model="context.description" placeholder="description..." expanding-textarea></textarea>
             </div>
             <div class="form-group">
               <label class="sr-only" for="contextLink">url</label>
