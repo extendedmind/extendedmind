@@ -12,7 +12,6 @@ if (shell.test('-d', iosroot)){
 
   // copy edited .plist
   shell.exec( "cp -Rf " + buildroot + "/*.plist " + iosroot + "/extmd/", {silent:false} );
-
 }
 
 process.exit(0);
