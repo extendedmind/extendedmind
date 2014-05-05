@@ -37,9 +37,4 @@ describe('AccountController', function() {
     $scope.gotoChangePassword();
     expect($location.path).toHaveBeenCalledWith('/my/account/password');
   });
-
-  it('should go back to \'/my/tasks\'', function() {
-    $scope.gotoMainPage();
-    expect($location.path).toHaveBeenCalledWith('/my/tasks');
-  });
 });

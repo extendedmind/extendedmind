@@ -289,7 +289,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     checkAndRedirectUser: function() {
       // Existing user
       if (UserSessionService.getUserUUID()) {
-        $location.path('/my/tasks');
+        $location.path('/my');
       } else if (UserSessionService.getEmail() && !UserSessionService.getUserUUID()) {
         BackendClientService.postOnline(
           '/api/invite/request',

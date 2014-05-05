@@ -1,14 +1,14 @@
 <section id="tasks-overview" class="two-column-grid page" ng-controller="TasksController">
   <div class="column">
-    <div class="page-heading swiper-no-swiping" ng-init="heading='overview'" ng-include="'static/app/main/omnibar.html'"></div>
+    <div class="page-heading swiper-no-swiping" ng-init="heading = 'overview'; omnibarFeature = 'tasks'" ng-include="'static/app/main/omnibar.html'"></div>
     <div ng-hide="omnibarVisible && isActiveSlide('overview')" class="content-container page-content-container omnibar-animation">
       <div class="inner-page-content-container">
         <div ng-include="'static/app/base/listsOverview.html'" include-replace></div>
         <section ng-init="newContext={title:undefined, tagType:'context'}" ng-controller="ContextsController">
-          <h3><a href ng-click="gotoContexts()" class="page-header">contexts</a></h3>
+          <h3><a href class="page-header" ng-click="gotoContexts()">contexts</a></h3>
           <ul class="list-arrow-right">
             <li ng-show="contexts.length" ng-repeat="context in contexts">
-              <a class="click-to-slide" href ng-click="gotoDetails(context.uuid)">
+              <a href class="click-to-slide" ng-click="gotoDetails(context.uuid)">
                 <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right"></span>
               </a>
             </li>
@@ -16,7 +16,7 @@
               <form class="swiper-no-swiping add-element" role="form" name="addContextForm" ng-submit="addContext(newContext)" autocapitalize="none" autocorrect="off">
                 <div class="form-group">
                   <label class="sr-only" for="contextTitle">title</label>
-                  <input type="text" class="simple-input" id="contextTitle" ng-model="newContext.title" placeholder="add context..."></input>
+                  <input type="text" id="contextTitle" class="simple-input" ng-model="newContext.title" placeholder="add context..."></input>
                 </div>
               </form>
             </li>
@@ -24,7 +24,7 @@
         </section>
 
         <section>
-          <h3><a href ng-click="gotoDetails('unsorted')" class="page-header">unsorted</a></h3>
+          <h3><a href class="page-header" ng-click="gotoDetails('unsorted')">unsorted</a></h3>
         </section>
 
       </div>

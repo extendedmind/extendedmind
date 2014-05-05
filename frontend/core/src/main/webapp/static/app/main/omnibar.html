@@ -1,8 +1,8 @@
 <div id="omnibar-wrapper" class="swiper-no-swiping" ng-controller="ItemsController">
-  <form ng-init="setOmnibarPlaceholder(heading)" id="{{heading}}-omnibar" role="form" name="{{heading}}-addOmniItem" ng-submit="saveOmnibarText(omnibarText)">
+  <form id="{{heading}}-omnibar" ng-init="setOmnibarPlaceholder(omnibarFeature, heading)" role="form" name="{{heading}}-addOmniItem" ng-submit="saveOmnibarText(omnibarText)">
     <div class="form-group">
       <div ng-class="(omnibarVisible && 'omnibar-visible') || (!omnibarVisible && 'omnibar-hidden')">
-        <input type="text" ng-click="clickOmnibar(heading)" class="simple-input form-control omnibar-input" id="{{heading}}OmnibarInput" ng-model="omnibarText.title" dynamic-placeholder="{{omnibarPlaceholders[heading]}}" ng-keydown="omnibarKeyDown($event)" required>
+        <input type="text" id="{{omnibarFeature + heading}}OmnibarInput" class="simple-input form-control omnibar-input" ng-model="omnibarText.title" dynamic-placeholder="{{omnibarPlaceholders[omnibarFeature + heading]}}" ng-click="clickOmnibar(omnibarFeature, heading)" ng-keydown="omnibarKeyDown($event)" required>
       </div>
       <div ng-show="omnibarHasText()" class="right-button-wrapper">
         <button id="omnibarX" class="button" type="button" ng-click="omnibarText=''"><span class="icon-x"></span>
@@ -13,58 +13,58 @@
   <div ng-if="omnibarVisible" class="omnibar-actions omnibar-animation">
     <ul class="button-row">
       <li class="button-container left-of-four border-right">
-        <button class="normal-button" type="button" ng-click="clickOmnibarPlus(omnibarText)" ng-disabled="!omnibarHasText()">
+        <button type="button" class="normal-button" ng-click="clickOmnibarPlus(omnibarText)" ng-disabled="!omnibarHasText()">
           <span class="button-text">inbox</span>
         </button>
       </li>
       <li class="button-container center-of-four">
-        <button class="default-button" type="button" ng-click="saveAsTask(omnibarText)" ng-disabled="!omnibarHasText()">
+        <button type="button" class="default-button" ng-click="saveAsTask(omnibarText)" ng-disabled="!omnibarHasText()">
           <span class="button-text">task</span>
         </button>
       </li>
       <li class="button-container center-of-four">
-        <button class="default-button" type="button" ng-click="saveAsNote(omnibarText)" ng-disabled="!omnibarHasText()">
+        <button type="button" class="default-button" ng-click="saveAsNote(omnibarText)" ng-disabled="!omnibarHasText()">
           <span class="button-text">note</span>
         </button>
       </li>
       <li class="button-container right-of-four">
-        <button class="default-button" type="button" ng-click="clearOmnibar()">
+        <button type="button" class="default-button" ng-click="clearOmnibar(heading)">
           <span class="button-text">cancel</span>
         </button>
       </li>
     </ul>
   </div>
-  <div id="omnibar-results" class="swiper-no-swiping" data-snap-ignore="true" ng-if="omnibarVisible" ng-style="{height: getOmnibarSearchResultsHeight()}">
-    <div id="filtered-items-placeholder" ng-if="!omnibarHasText()" ng-style="{width: getColumnWidth()}" ng-click="clearOmnibar()">&nbsp;</div>
-    <div id="filtered-items-container" ng-if="omnibarHasText()">
-      <div class="filtered-items" ng-show="filteredItems.length">
+  <div ng-if="omnibarVisible" id="omnibar-results" class="swiper-no-swiping" ng-style="{height: getOmnibarSearchResultsHeight()}" data-snap-ignore="true" >
+    <div ng-if="!omnibarHasText()" id="filtered-items-placeholder" ng-style="{width: getColumnWidth()}" ng-click="clearOmnibar(heading)">&nbsp;</div>
+    <div ng-if="omnibarHasText()" id="filtered-items-container">
+      <div ng-show="filteredItems.length" class="filtered-items">
         <h3 ><a href ng-click="gotoInbox()">inbox</a></h3>
         <div class="inner-page-content-container" accordion>
           <div ng-repeat="item in filteredItems = (items | filter:{title:omnibarText.title}) | orderBy:'modified':true">
             <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" toggle-complete="false"></div>
-            <div class="accordion-body" ng-if="isOpen(item)">
+            <div ng-if="isOpen(item)" class="accordion-body">
               <div ng-include="'static/app/main/itemActions.html'"></div>
             </div>
           </div>
         </div>
       </div>
-      <div class="filtered-items" ng-show="filteredTasks.length" ng-controller="TasksController">
+      <div ng-show="filteredTasks.length" class="filtered-items" ng-controller="TasksController">
         <h3><a href ng-click="gotoTasks()">tasks</a></h3>
         <div class="inner-page-content-container" accordion>
           <div ng-repeat="task in filteredTasks = (tasks | filter:{title:omnibarText.title})">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-            <div class="accordion-body" ng-if="isOpen(task)">
+            <div ng-if="isOpen(task)" class="accordion-body">
               <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
         </div>
       </div>
-      <div class="filtered-items" ng-show="filteredNotes.length" ng-controller="NotesController">
+      <div ng-show="filteredNotes.length" class="filtered-items" ng-controller="NotesController">
         <h3><a href ng-click="gotoNotes()">notes</a></h3>
         <div class="inner-page-content-container" accordion>
           <div ng-repeat="note in filteredNotes = (notes | filter:{title:omnibarText.title})">
             <div accordion-title="note" edit-item="editNote(task)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete></div>
-            <div class="accordion-body" ng-if="isOpen(note)">
+            <div ng-if="isOpen(note)" class="accordion-body">
               <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
             </div>
           </div>

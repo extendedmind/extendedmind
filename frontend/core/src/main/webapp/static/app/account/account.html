@@ -1,15 +1,13 @@
-<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" id="mobile-menu" class="snap-drawer snap-drawer-left"></div>
-<div id="account-container" class="no-slides-container" ng-init="feature='account'" ng-controller="AccountController" snap-drawer>
-  <header class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
-  <section ng-hide="isDesktop && isMenuOpen" id="account" class="one-column-grid page" snap-drawer-drag>
+<div id="account-container">
+  <section ng-hide="isDesktop && isMenuOpen" id="account" class="one-column-grid page" ng-controller="AccountController" snap-drawer-drag="account">
     <div class="column">
       <div class="content-container simple-content-container">
         <ul>
           <li class="simple-content">
             <h3>email</h3>
             <span>{{email}}</span>
-            <span id="email-verification-status" ng-if="isUserVerified">verified</span>
-            <span id="email-verification-status" ng-if="!isUserVerified">not verified</span>
+            <span ng-if="isUserVerified" id="email-verification-status">verified</span>
+            <span ng-if="!isUserVerified" id="email-verification-status">not verified</span>
           </li>
           <li class="simple-content">
             <a class="highlighted-link" href ng-click="gotoChangePassword()">change password</a>
@@ -22,5 +20,5 @@
       </div>
     </div>
   </section>
-  <div id="desktop-menu" ng-if="isDesktop && isMenuOpen" ng-include="'static/app/auth/menu.html'"></div>
+  <div ng-if="isDesktop && isMenuOpen" id="desktop-menu" class="desktop-menu-animation" ng-include="'static/app/auth/menu.html'"></div>
 </div>

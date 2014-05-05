@@ -1,15 +1,13 @@
-<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" id="mobile-menu" class="snap-drawer snap-drawer-left"></div>
-<div id="inbox-container" class="no-slides-container" ng-init="feature='inbox'" ng-controller="MainController" snap-drawer>
-  <header ng-class="omnibarVisible && 'header-hidden'" class="page-header" ng-include="'static/app/main/pageHeader.html'"></header>
-  <section ng-hide="isDesktop && isMenuOpen" id="inbox" class="two-column-grid page header-page" ng-controller="ItemsController" snap-drawer-drag>
+<div ng-show="isFeatureActive('inbox')" id="inbox-container">
+  <section ng-hide="isDesktop && isMenuOpen" id="inbox" class="two-column-grid page header-page" ng-controller="ItemsController" snap-drawer-drag="inbox">
     <div class="column">
-      <div class="page-heading" ng-init="heading='inbox'" ng-include="'static/app/main/omnibar.html'"></div>
+      <div class="page-heading" ng-init="heading = 'inbox'; omnibarFeature = 'inbox'" ng-include="'static/app/main/omnibar.html'"></div>
       <div ng-if="!omnibarVisible" id="inbox-page-content-container" class="content-container page-content-container no-heading-content-container omnibar-animation">
         <div class="accordion-wrapper">
           <div class="inner-page-content-container" accordion>
-            <div ng-repeat="item in items">
+            <div ng-if="showContent('inbox')" ng-repeat="item in items">
               <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" has-complete="false" toggle-complete></div>
-              <div class="accordion-body" ng-if="isOpen(item)">
+              <div ng-if="isOpen(item)" class="accordion-body">
                 <div class="accordion-inner" ng-include="'static/app/main/itemActions.html'"></div>
               </div>
             </div>
@@ -19,7 +17,7 @@
           <div class="form-group">
             <label class="sr-only" for="itemTitle">title</label>
             <div>
-              <input type="text" class="simple-input" id="itemTitle" ng-model="item.title" placeholder="add item..." maxlength="128"></input>
+              <input type="text" id="itemTitle" class="simple-input" ng-model="item.title" placeholder="add item..." maxlength="128"></input>
             </div>
           </div>
         </form>
@@ -29,5 +27,5 @@
       TODO
     </aside>
   </section>
-  <div id="desktop-menu" ng-if="isDesktop && isMenuOpen" ng-include="'static/app/auth/menu.html'"></div>
+  <div ng-if="isDesktop && isMenuOpen" id="desktop-menu" class="desktop-menu-animation" ng-include="'static/app/auth/menu.html'"></div>
 </div>

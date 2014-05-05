@@ -1,6 +1,6 @@
 'use strict';
 
-function NotesController($location, $rootScope, $routeParams, $scope, $timeout, UserSessionService, NotesService, ListsService, SwiperService, AnalyticsService) {
+function NotesController($location, $rootScope, $routeParams, $scope, UserSessionService, NotesService, ListsService, AnalyticsService) {
 
   if (!$scope.note) {
     // edit note or new note dialog
@@ -34,7 +34,10 @@ function NotesController($location, $rootScope, $routeParams, $scope, $timeout, 
       AnalyticsService.do('saveNote', 'existing');
     }
     NotesService.saveNote(note, UserSessionService.getActiveUUID());
-    $location.path(UserSessionService.getOwnerPrefix() + '/notes');
+    if (!$scope.isFeatureActive('notes')) {
+      $scope.setActiveFeature('notes');
+    }
+    $location.path(UserSessionService.getOwnerPrefix());
   };
 
   $scope.noteQuickEditDone = function(note) {
@@ -44,7 +47,7 @@ function NotesController($location, $rootScope, $routeParams, $scope, $timeout, 
   };
 
   $scope.cancelEdit = function() {
-    window.history.back();
+    $scope.gotoPreviousPage();
   };
 
   $scope.addNew = function() {
@@ -101,7 +104,7 @@ function NotesController($location, $rootScope, $routeParams, $scope, $timeout, 
 }
 
 NotesController['$inject'] = [
-'$location', '$rootScope', '$routeParams', '$scope', '$timeout',
+'$location', '$rootScope', '$routeParams', '$scope',
 'UserSessionService', 'NotesService', 'ListsService',
-'SwiperService', 'AnalyticsService'];
+'AnalyticsService'];
 angular.module('em.app').controller('NotesController', NotesController);

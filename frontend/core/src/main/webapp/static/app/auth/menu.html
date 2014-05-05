@@ -4,37 +4,36 @@
   </div>
   <ul>
     <li>
-      <a href class="feature-link" ng-click="gotoTasks()" ng-class="getFeatureClass('tasks')">tasks</a>
+      <a href class="feature-link" ng-class="getFeatureClass('tasks')" ng-click="gotoFeature('tasks')">tasks</a>
     </li>
     <li>
-      <a href class="feature-link" ng-click="gotoNotes()" ng-class="getFeatureClass('notes')">notes</a>
+      <a href class="feature-link" ng-class="getFeatureClass('notes')" ng-click="gotoFeature('notes')">notes</a>
     </li>
     <li id="last-feature">
-      <a href class="feature-link" ng-click="gotoInbox()" ng-class="getFeatureClass('inbox')">inbox</a>
+      <a href class="feature-link" ng-class="getFeatureClass('inbox')" ng-click="gotoFeature('inbox')">inbox</a>
     </li>
-    <li id="my" ng-show="useCollectives()">
+    <li ng-show="useCollectives()" id="my">
       <a href ng-class="getMyClass()" ng-click="setMyActive()">my information</a>
     </li>
-    <li id="collectives" ng-show="useCollectives()">
+    <li ng-show="useCollectives()" id="collectives">
       <span>collectives</span>
       <ul>
         <li ng-repeat="(key, value) in collectives">
           <div ng-if="value[2] === false">
-            <a class="collective" href ng-class="getCollectiveClass(key)" ng-click="setCollectiveActive(key)">{{value[0]}}</a>
+            <a href class="collective" ng-class="getCollectiveClass(key)" ng-click="setCollectiveActive(key)">{{value[0]}}</a>
           </div>
         </li>
       </ul>
     </li>
     <li>
-      <a href ng-click="gotoAccount()" ng-class="getFeatureClass('account')">account</a>
+      <a href ng-class="getFeatureClass('account')" ng-click="gotoFeature('account')">account</a>
     </li>
     <li>
-      <a href ng-click="gotoAbout()" ng-class="getFeatureClass('about')">about</a>
+      <a href ng-class="getFeatureClass('about')" ng-click="gotoFeature('about')">about</a>
     </li>
     <li ng-if="isAdmin()">
-      <a href ng-click="gotoAdmin()" ng-class="getFeatureClass('admin')">admin</a>
+      <a href ng-class="getFeatureClass('admin')" ng-click="gotoFeature('admin')">admin</a>
     </li>
-
     <li>
       <a href ng-click="logout()">logout</a>
     </li>

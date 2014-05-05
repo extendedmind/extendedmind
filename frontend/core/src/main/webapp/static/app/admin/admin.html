@@ -1,7 +1,5 @@
-<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" id="mobile-menu" class="snap-drawer snap-drawer-left"></div>
-<div id="admin-container" class="no-slides-container" ng-init="feature='admin'" ng-controller="AdminController" snap-drawer>
-  <header class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
-  <section ng-hide="isDesktop && isMenuOpen" id="admin" class="one-column-grid page" snap-drawer-drag>
+<div id="admin-container" ng-controller="AdminController">
+  <section ng-hide="isDesktop && isMenuOpen" id="admin" class="one-column-grid page" snap-drawer-drag="admin">
     <div class="column">
       <div class="content-container simple-content-container" ng-switch on="adminMode">
         <ul ng-switch-default>
@@ -57,5 +55,5 @@
       </div>
     </div>
   </section>
-  <div id="desktop-menu" ng-if="isDesktop && isMenuOpen" ng-include="'static/app/auth/menu.html'"></div>
+  <div ng-if="isDesktop && isMenuOpen" id="desktop-menu" class="desktop-menu-animation" ng-include="'static/app/auth/menu.html'"></div>
 </div>

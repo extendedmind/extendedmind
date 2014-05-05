@@ -140,6 +140,18 @@ function SwiperService($q) {
         });
       }
     },
+    refreshSwiperAndChildSwipers: function(swiperPath) {
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
+        swipers[swiperPath].swiper.reInit();
+        swipers[swiperPath].slidesPaths.forEach(refreshChildSwiper);
+      }
+
+      function refreshChildSwiper(slidePath, slideIndex, parentSwiper) {
+        if (swipers[parentSwiper[slideIndex]]) {
+          swipers[parentSwiper[slideIndex]].swiper.reInit();
+        }
+      }
+    },
     onSlideChangeEnd: function(scope, swiperPath) {
       var activeIndex = swipers[swiperPath].swiper.activeIndex;
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
@@ -214,7 +226,9 @@ function SwiperService($q) {
       }
     },
     setSwiping: function(swiperPath, swipe) {
-      swipers[swiperPath].swiper.params.swiping = swipe;
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
+        swipers[swiperPath].swiper.params.swiping = swipe;
+      }
     },
     setSwiperResistance: function(swiperPath, resistance) {
       swipers[swiperPath].swiper.params.resistance = resistance;

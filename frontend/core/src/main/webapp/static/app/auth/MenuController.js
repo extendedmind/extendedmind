@@ -3,94 +3,57 @@
 function MenuController($location, $scope, AuthenticationService, UserSessionService, AnalyticsService) {
   $scope.collectives = UserSessionService.getCollectives();
 
-  function getActiveFeature() {
-    if ($location.path().endsWith('inbox')){
-      return 'inbox';
-    }else if ($location.path().endsWith('tasks')){
-      return 'tasks';
-    }else if ($location.path().endsWith('notes')){
-      return 'notes';
-    }
-  }
-
-  $scope.useCollectives = function() {
+  $scope.useCollectives = function useCollectives() {
     return $scope.collectives && Object.keys($scope.collectives).length > 1;
   };
 
-  $scope.isAdmin = function() {
+  $scope.isAdmin = function isAdmin() {
     return UserSessionService.getUserType() === 0;
   };
 
-  $scope.getFeatureClass = function(feature) {
-    if ($location.path().endsWith(feature)){
+  $scope.getFeatureClass = function getFeatureClass(feature) {
+    if ($scope.isFeatureActive(feature)) {
       return 'active';
     }
   };
 
-  $scope.getMyClass = function() {
-    if (UserSessionService.getOwnerPrefix() === 'my'){
+  $scope.getMyClass = function getMyClass() {
+    if (UserSessionService.getOwnerPrefix() === 'my') {
       return 'active';
     }
   };
 
-  $scope.getCollectiveClass = function(uuid) {
-    if (UserSessionService.getOwnerPrefix() === 'collective/' + uuid){
+  $scope.getCollectiveClass = function getCollectiveClass(uuid) {
+    if (UserSessionService.getOwnerPrefix() === 'collective/' + uuid) {
       return 'active';
     }
   };
 
-  $scope.gotoTasks = function() {
-    if (getActiveFeature() !== 'tasks') {
-      AnalyticsService.visit('tasks');
-      $location.path(UserSessionService.getOwnerPrefix() + '/tasks');
+  $scope.setMyActive = function setMyActive() {
+    if (!$location.path().startsWith('/my')) {
+      UserSessionService.setMyActive();
+      $location.path('/my');
     }
     $scope.toggleMenu();
   };
 
-  $scope.gotoNotes = function() {
-    if (getActiveFeature() !== 'notes') {
-      AnalyticsService.visit('notes');
-      $location.path(UserSessionService.getOwnerPrefix() + '/notes');
+  $scope.setCollectiveActive = function setCollectiveActive(uuid) {
+    if (!$location.path().startsWith('/collective/' + uuid)) {
+      UserSessionService.setCollectiveActive(uuid);
+      $location.path('/collective/' + uuid);
     }
     $scope.toggleMenu();
   };
 
-  $scope.gotoInbox = function() {
-    if (getActiveFeature() !== 'inbox') {
-      AnalyticsService.visit('inbox');
-      $location.path(UserSessionService.getOwnerPrefix() + '/inbox');
+  $scope.gotoFeature = function gotoFeature(feature) {
+    if (!$scope.isFeatureActive(feature)) {
+      $scope.setActiveFeature(feature);
+      AnalyticsService.visit(feature);
     }
     $scope.toggleMenu();
   };
 
-  $scope.setMyActive = function() {
-    UserSessionService.setMyActive();
-    $location.path('/my/tasks');
-    $scope.toggleMenu();
-  };
-
-  $scope.setCollectiveActive = function(uuid) {
-    UserSessionService.setCollectiveActive(uuid);
-    $location.path('/collective/' + uuid + '/tasks');
-    $scope.toggleMenu();
-  };
-
-  $scope.gotoAccount = function gotoAccount() {
-    $location.path('/my/account');
-    $scope.toggleMenu();
-  };
-
-  $scope.gotoAbout = function gotoAbout() {
-    $location.path('/about');
-    $scope.toggleMenu();
-  };
-
-  $scope.gotoAdmin = function gotoAdmin() {
-    $location.path('/admin');
-    $scope.toggleMenu();
-  };
-
-  $scope.logout = function() {
+  $scope.logout = function logout() {
     AuthenticationService.logout().then(function() {
       $location.path('/login');
     });

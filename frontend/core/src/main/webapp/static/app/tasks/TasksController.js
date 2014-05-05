@@ -82,12 +82,15 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
 
       SwiperService.setInitialSlidePath('tasks', mainSlidePath);
       SwiperService.setInitialSlidePath(mainSlidePath, pageSlidePath);
-      $location.path(UserSessionService.getOwnerPrefix() + '/tasks');
+      if (!$scope.isFeatureActive('tasks')) {
+        $scope.setActiveFeature('tasks');
+      }
+      $location.path(UserSessionService.getOwnerPrefix());
     }
   };
 
   $scope.cancelEdit = function() {
-    window.history.back();
+    $scope.gotoPreviousPage();
   };
 
   $scope.addNew = function() {

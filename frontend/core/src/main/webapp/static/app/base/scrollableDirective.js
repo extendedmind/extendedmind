@@ -4,19 +4,21 @@
 function scrollableDirective($timeout) {
   return {
     restrict: 'A',
-    link: function postLink($scope, $element) {
+    link: function postLink(scope, element) {
+      // hide drawer menu before swiper is ready
+      scope.featureContainerReady = false;
       var scroller;
 
-      $scope.$on('$includeContentLoaded', function() {
-        scroller = new IScroll($element[0], {
+      scope.$on('$includeContentLoaded', function() {
+        scroller = new IScroll(element[0], {
           deceleration: 0.006
         });
         $timeout(function() {
-          scroller.refresh();
+          scope.featureContainerReady = true;
         }, 200);
       });
 
-      $scope.$on('$destroy', function() {
+      scope.$on('$destroy', function() {
         scroller.destroy();
         scroller = null;
       });

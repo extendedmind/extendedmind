@@ -6,7 +6,7 @@
  * @summary
  * Wrapper directive for (mobile) clicks inside swiper.
  * Replace ng-click="expression" with this in DOM.
- * 
+ *
  * @see
  * http://docs.angularjs.org/api/ng/directive/ngClick
  * angular.js ngClick directive source code

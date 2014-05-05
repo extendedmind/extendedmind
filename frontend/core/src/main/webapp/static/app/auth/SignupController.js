@@ -1,6 +1,6 @@
 'use strict';
 
-function SignupController($location, $scope, $rootScope, $routeParams, $window, AuthenticationService, AnalyticsService, BackendClientService) {
+function SignupController($location, $rootScope, $routeParams, $scope, $window, AuthenticationService, AnalyticsService, BackendClientService) {
 
   AnalyticsService.visitEntry('signup');
 
@@ -29,9 +29,9 @@ function SignupController($location, $scope, $rootScope, $routeParams, $window, 
     // Cohort is a random number between 1 and 128
     var randomCohort = Math.floor(Math.random() * 128) + 1;
     var payload = {email: $scope.user.username,
-       password: $scope.user.password,
-       cohort: randomCohort};
-    if ($routeParams.bypass){
+     password: $scope.user.password,
+     cohort: randomCohort};
+     if ($routeParams.bypass){
       payload.bypass = true;
     }
 
@@ -67,7 +67,7 @@ function SignupController($location, $scope, $rootScope, $routeParams, $window, 
     if (gotoWelcomePage) {
       $location.path('/welcome');
     } else {
-      $location.path('/my/tasks');
+      $location.path('/my');
     }
   }
 
@@ -90,5 +90,5 @@ function SignupController($location, $scope, $rootScope, $routeParams, $window, 
   };
 }
 
-SignupController['$inject'] = ['$location', '$scope', '$rootScope', '$routeParams', '$window', 'AuthenticationService', 'AnalyticsService', 'BackendClientService'];
+SignupController['$inject'] = ['$location', '$rootScope', '$routeParams', '$scope', '$window', 'AuthenticationService', 'AnalyticsService', 'BackendClientService'];
 angular.module('em.app').controller('SignupController', SignupController);

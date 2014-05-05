@@ -22,6 +22,34 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    $routeProvider.when('/my', {
+      templateUrl: 'static/app/main/main.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
+        }],
+        owner: ['UserSessionService',
+        function(UserSessionService) {
+          return UserSessionService.setMyActive();
+        }]
+      }
+    });
+
+    $routeProvider.when('/collective/:collectiveUUID/', {
+      templateUrl: 'static/app/main/main.html',
+      resolve: {
+        auth: ['AuthenticationService',
+        function(AuthenticationService) {
+          return AuthenticationService.verifyAndUpdateAuthentication();
+        }],
+        owner: ['$route', 'UserSessionService',
+        function($route, UserSessionService) {
+          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        }]
+      }
+    });
+
     $routeProvider.when('/launch', {
       templateUrl: 'static/app/auth/launch.html'
     });
@@ -93,53 +121,8 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       templateUrl: 'static/app/auth/login.html'
     });
 
-    $routeProvider.when('/my/account', {
-      templateUrl: 'static/app/account/account.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(AuthenticationService) {
-          return AuthenticationService.verifyAndUpdateAuthentication();
-        }]
-      }
-    });
-
-    $routeProvider.when('/about', {
-      templateUrl: 'static/app/base/about.html'
-    });
-
     $routeProvider.when('/my/account/password', {
       templateUrl: 'static/app/auth/changePassword.html'
-    });
-
-
-    // INBOX
-
-    $routeProvider.when('/my/inbox', {
-      templateUrl: 'static/app/main/inbox.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(AuthenticationService) {
-          return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          return UserSessionService.setMyActive();
-        }]
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/inbox', {
-      templateUrl: 'static/app/main/inbox.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(AuthenticationService) {
-          return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
-        }]
-      }
     });
 
     // ITEMS
@@ -203,34 +186,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     // TASKS
-
-    $routeProvider.when('/my/tasks', {
-      templateUrl: 'static/app/tasks/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(AuthenticationService) {
-          return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
-        }]
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/tasks', {
-      templateUrl: 'static/app/tasks/tasksSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(AuthenticationService) {
-          return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
-        }]
-      }
-    });
 
     $routeProvider.when('/my/tasks/edit/:uuid', {
       templateUrl: 'static/app/tasks/editTask.html',
@@ -319,34 +274,6 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
     });
 
     // NOTES
-
-    $routeProvider.when('/my/notes', {
-      templateUrl: 'static/app/notes/notesSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(AuthenticationService) {
-          return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          return UserSessionService.setMyActive();
-        }]
-      }
-    });
-
-    $routeProvider.when('/collective/:collectiveUUID/notes', {
-      templateUrl: 'static/app/notes/notesSlides.html',
-      resolve: {
-        auth: ['AuthenticationService',
-        function(AuthenticationService) {
-          return AuthenticationService.verifyAndUpdateAuthentication();
-        }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
-        }]
-      }
-    });
 
     $routeProvider.when('/my/notes/edit/:uuid', {
       templateUrl: 'static/app/notes/editNote.html',

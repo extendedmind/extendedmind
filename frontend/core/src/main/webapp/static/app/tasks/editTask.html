@@ -9,25 +9,25 @@
 
             <div class="form-group">
               <label class="sr-only" for="taskTitle">title</label>
-              <input type="text" class="simple-input font-bold" id="taskTitle" ng-model="task.title" placeholder="title..." maxlength="128" required>
+              <input type="text" id="taskTitle" class="simple-input font-bold" ng-model="task.title" placeholder="title..." maxlength="128" required>
             </div>
             <div class="form-group">
               <label class="sr-only" for="taskDescription">description</label>
-              <textarea class="simple-input" id="taskDescription" ng-model="task.description" placeholder="description..." maxlength="1024" expanding-textarea></textarea>
+              <textarea id="taskDescription" class="simple-input" ng-model="task.description" placeholder="description..." maxlength="1024" expanding-textarea></textarea>
             </div>
 
             <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
 
             <div ng-if="task.date" class="form-group">
               <label class="sr-only" for="taskRepeat">repeating</label>
-              <select class="simple-input swiper-no-swiping" id="taskRepeat" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes">
+              <select id="taskRepeat" class="simple-input swiper-no-swiping" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes">
                 <option value="">select repeating...</option>
               </select>
             </div>
 
             <div class="form-group">
               <label class="sr-only" for="taskLink">url</label>
-              <input type="text" class="simple-input" id="taskLink" ng-model="task.link" placeholder="url...">
+              <input type="text" id="taskLink" class="simple-input" ng-model="task.link" placeholder="url...">
             </div>
 
           </form>

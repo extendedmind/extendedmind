@@ -1,12 +1,13 @@
 'use strict';
 
-function snapDrawerDragDirective(SnapService) {
+function snapDrawerDragDirective() {
   return {
     restrict: 'A',
-    link: function($scope, $element) {
-      SnapService.setDraggerElement($element[0]);
+    require: '^featureContainer',
+    link: function(scope, element, attrs, featureContainerController) {
+      featureContainerController.registerSnapDrawerDragElement(attrs.snapDrawerDrag, element[0]);
     }
   };
 }
-snapDrawerDragDirective.$inject = ['SnapService'];
+snapDrawerDragDirective.$inject = [];
 angular.module('em.directives').directive('snapDrawerDrag', snapDrawerDragDirective);

@@ -20,7 +20,7 @@ function LoginController($location, $scope, UserSessionService, AuthenticationSe
     $scope.loginOffline = false;
     AuthenticationService.login($scope.user).then(function() {
       AnalyticsService.do('login');
-      $location.path('/my/tasks');
+      $location.path('/my');
     }, function(authenticateResponse) {
       if (BackendClientService.isOffline(authenticateResponse.status)){
         AnalyticsService.error('login', 'offline');

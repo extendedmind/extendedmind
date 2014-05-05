@@ -1,6 +1,6 @@
 'use strict';
 
-function mainViewDirective($injector, $window, $document, $rootScope, $timeout, ModalService, BackendClientService, UserSessionService, ItemsService, SnapService, SwiperService, AnalyticsService, UUIDService) {
+function mainViewDirective($injector, $rootScope, $window, ModalService, BackendClientService, UserSessionService, SnapService, SwiperService, AnalyticsService, UUIDService) {
 
   return {
     restrict: 'A',
@@ -9,7 +9,7 @@ function mainViewDirective($injector, $window, $document, $rootScope, $timeout, 
     controller: function($scope) {
       // Back function globally available
       $scope.gotoPreviousPage = function() {
-        window.history.back();
+        $window.history.back();
       };
 
       // Online/offline status, optimistic default
@@ -96,18 +96,48 @@ function mainViewDirective($injector, $window, $document, $rootScope, $timeout, 
         }
       });
 
-      // Clean up listening by executing the variable
-      $scope.$on('$destroy', unbindEmException);
+      /**
+      * Feature switching between (desktop/drawer) menu feature entries.
+      *
+      * These are here because the drawer menu is not under the MainController.js
+      **/
+
+      // Default values start
+      $scope.activeFeature = 'tasks';
+      // Default values end
+
+      // Feature is either content feature (true) or system feature (false).
+      var features = {
+        tasks: true,
+        notes: true,
+        inbox: true,
+        account: false,
+        about: false,
+        admin: false
+      };
+      $scope.setActiveFeature = function setActiveFeature(feature) {
+        $scope.activeFeature = feature;
+      };
+      $scope.isFeatureActive = function isFeatureActive(feature) {
+        return $scope.activeFeature === feature;
+      };
+      $scope.isContentFeatureActive = function isContentFeatureActive() {
+        return features[$scope.activeFeature];
+      };
 
       // MENU TOGGLE
-
       $scope.isMenuOpen = false;
       $scope.toggleMenu = function toggleMenu() {
-        $scope.isMenuOpen = !$scope.isMenuOpen;
         if ($rootScope.isMobile) {
           SnapService.toggle();
+        } else {
+          $scope.isMenuOpen = !$scope.isMenuOpen;
         }
       };
+      // Feature switching end.
+
+      // Clean up listening by executing the variable
+      $scope.$on('$destroy', unbindEmException);
     },
     link: function($scope){
 
@@ -177,6 +207,7 @@ function mainViewDirective($injector, $window, $document, $rootScope, $timeout, 
     }
   };
 }
-mainViewDirective.$inject = ['$injector', '$window', '$document', '$rootScope', '$timeout',
-'ModalService', 'BackendClientService', 'UserSessionService', 'ItemsService', 'SnapService', 'SwiperService', 'AnalyticsService', 'UUIDService'];
+
+mainViewDirective.$inject = ['$injector', '$rootScope', '$window',
+'ModalService', 'BackendClientService', 'UserSessionService', 'SnapService', 'SwiperService', 'AnalyticsService', 'UUIDService'];
 angular.module('em.directives').directive('mainView', mainViewDirective);

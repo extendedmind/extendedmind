@@ -102,8 +102,8 @@ function MainController(
 
   $scope.omnibarVisible = false;
 
-  $scope.setOmnibarPlaceholder = function(heading) {
-    $scope.omnibarPlaceholders[heading] = heading + getOfflineIndicator();
+  $scope.setOmnibarPlaceholder = function(omnibarFeature, heading) {
+    $scope.omnibarPlaceholders[omnibarFeature + heading] = heading + getOfflineIndicator();
   };
 
   function getOfflineIndicator() {
@@ -114,10 +114,10 @@ function MainController(
     }
   }
 
-  $scope.clickOmnibar = function(heading) {
+  $scope.clickOmnibar = function(omnibarFeature, heading) {
     // NOTE Heading may be not correct before $digest() because ng-init is not run.
     $scope.omnibarVisible = true;
-    $scope.omnibarPlaceholders[heading] = 'store / recall';
+    $scope.omnibarPlaceholders[omnibarFeature + heading] = 'store / recall';
   };
 
   $scope.omnibarKeyDown = function(event) {
@@ -126,7 +126,7 @@ function MainController(
     }
   };
 
-  $scope.clearOmnibar = function() {
+  $scope.clearOmnibar = function(pageHeading) {
     $scope.omnibarText.title = '';
     $scope.omnibarVisible = false;
     for (var heading in $scope.omnibarPlaceholders) {
@@ -134,7 +134,7 @@ function MainController(
         if ($scope.omnibarPlaceholders[heading] === 'store / recall') {
           // This is the active omnibar, blur it programmatically
           $('input#' + heading + 'OmnibarInput').blur();
-          $scope.omnibarPlaceholders[heading] = heading;
+          $scope.omnibarPlaceholders[heading] = pageHeading;
           return;
         }
       }
@@ -145,17 +145,22 @@ function MainController(
     if (omnibarText.title && omnibarText.title.length > 0) {
       ItemsService.saveItem({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(/*item*/) {
         $scope.clearOmnibar();
-        if ($scope.feature !== 'inbox') {
-          $location.path(UserSessionService.getOwnerPrefix() + '/inbox');
+        if (!$scope.isFeatureActive('inbox')) {
+          $scope.setActiveFeature('inbox');
         }
       });
     }
   };
 
   $scope.isActiveSlide = function isActiveSlide(pathFragment) {
-    var activeSlide = SwiperService.getActiveSlidePath($scope.feature);
+    var activeSlide = SwiperService.getActiveSlidePath($scope.activeFeature);
     if (activeSlide && (activeSlide.indexOf(pathFragment) != -1)) {
       return true;
+      // NOTE Swiper may not have set active slide for this feature during init
+    } else if (!activeSlide) {
+      if (pathFragment === 'home') {
+        return true;
+      }
     }
   };
 
@@ -181,17 +186,17 @@ function MainController(
   // Navigation
 
   $scope.gotoHome = function() {
-    if ($scope.feature === 'tasks') {
+    if ($scope.isFeatureActive('tasks')) {
       SwiperService.swipeTo('tasks/home');
-    } else if ($scope.feature === 'notes') {
+    } else if ($scope.isFeatureActive('notes')) {
       SwiperService.swipeTo('notes/home');
     }
   };
 
   $scope.gotoOverview = function() {
-    if ($scope.feature === 'tasks') {
+    if ($scope.isFeatureActive('tasks')) {
       SwiperService.swipeTo('tasks/overview');
-    } else if ($scope.feature === 'notes') {
+    } else if ($scope.isFeatureActive('notes')) {
       SwiperService.swipeTo('notes/overview');
     }
   };
@@ -213,11 +218,15 @@ function MainController(
   };
 
   $scope.gotoDetails = function(identifier) {
-    if ($scope.feature === 'tasks') {
+    if ($scope.isFeatureActive('tasks')) {
       SwiperService.swipeTo('tasks/details/' + identifier);
-    } else if ($scope.feature === 'notes') {
+    } else if ($scope.isFeatureActive('notes')) {
       SwiperService.swipeTo('notes/details/' + identifier);
     }
+  };
+
+  $scope.showContent = function showContent(feature) {
+    return $scope.isFeatureActive(feature);
   };
 }
 

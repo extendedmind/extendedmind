@@ -1,6 +1,6 @@
 'use strict';
 
-function ListsController($location, $scope, $timeout, $routeParams, UserSessionService, ListsService, SwiperService, AnalyticsService) {
+function ListsController($location, $scope, $routeParams, UserSessionService, ListsService, AnalyticsService) {
 
   if (!$scope.list){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
@@ -14,7 +14,7 @@ function ListsController($location, $scope, $timeout, $routeParams, UserSessionS
 
   $scope.saveList = function(list) {
     ListsService.saveList(list, UserSessionService.getActiveUUID());
-    window.history.back();
+    $scope.gotoPreviousPage();
   };
 
   $scope.editList = function(list) {
@@ -22,7 +22,7 @@ function ListsController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 
   $scope.cancelEdit = function() {
-    window.history.back();
+    $scope.gotoPreviousPage();
   };
 
   $scope.showListContent = false;
@@ -34,7 +34,7 @@ function ListsController($location, $scope, $timeout, $routeParams, UserSessionS
 
     if (!newList.title  || newList.title.length === 0) return false;
     ListsService.saveList(newList, UserSessionService.getActiveUUID()).then(function(/*list*/) {
-      AnalyticsService.do("addList");
+      AnalyticsService.do('addList');
     });
     $scope.newList = {title: undefined};
   };
@@ -48,6 +48,6 @@ function ListsController($location, $scope, $timeout, $routeParams, UserSessionS
   };
 }
 
-ListsController['$inject'] = ['$location', '$scope', '$timeout', '$routeParams', 'UserSessionService',
-                              'ListsService', 'SwiperService', 'AnalyticsService'];
+ListsController['$inject'] = ['$location', '$scope', '$routeParams', 'UserSessionService',
+'ListsService', 'AnalyticsService'];
 angular.module('em.app').controller('ListsController', ListsController);

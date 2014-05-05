@@ -1,6 +1,6 @@
 <section id="notes-details" class="two-column-grid page" ng-controller="NotesController">
   <div class="column">
-    <div class="page-heading swiper-no-swiping" ng-init="heading='notes'" ng-include="'static/app/main/omnibar.html'"></div>
+    <div class="page-heading swiper-no-swiping" ng-init="heading = 'notes'; omnibarFeature = 'notes'" ng-include="'static/app/main/omnibar.html'"></div>
     <div ng-hide="omnibarVisible" class="content-container page-content-container">
       <div class="swiper-container vertical-slides" swiper-container="notes/details" swiper-type="page" expected-slides="count = lists.length + 1">
         <div class="swiper-wrapper">
@@ -11,16 +11,16 @@
                 <div ng-if="showListContent" ng-include="'static/app/base/listActions.html'"></div>
                 <div>
                   <div class="inner-page-content-container" accordion>
-                    <div ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
+                    <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
                       <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
-                        <div class="teaser" ng-if="note.content">
-                          <a href ng-click="editNote(note)" id="note-teaser" ng-bind="getNoteContentTeaser(note)"></a>
+                        <div ng-if="note.content" class="teaser">
+                          <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
                         </div>
                       </div>
-                      <div class="accordion-body" ng-if="isOpen(note)">
+                      <div ng-if="isOpen(note)" class="accordion-body">
                         <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
                       </div>
-                      <div class="teaser-empty" ng-if="!note.content"></div>
+                      <div ng-if="!note.content" class="teaser-empty"></div>
                     </div>
                     <div ng-include="'static/app/notes/addNote.html'"></div>
                   </div>
@@ -34,23 +34,23 @@
                 <h3>recent</h3>
                 <div>
                   <div class="inner-page-content-container" accordion>
-                    <div ng-repeat="note in notes | limitTo: 10 | orderBy:'modified':true" ng-init="newNote = {}">
+                    <div ng-if="showContent('notes')" ng-repeat="note in notes | limitTo: 10 | orderBy:'modified':true" ng-init="newNote = {}">
                       <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
-                        <div class="teaser" ng-if="note.content">
-                          <a href ng-click="editNote(note)" id="note-teaser" ng-bind="getNoteContentTeaser(note)"></a>
+                        <div ng-if="note.content" class="teaser">
+                          <a href id="note-teaser" ng-click="editNote(note)" ng-bind="getNoteContentTeaser(note)"></a>
                         </div>
                       </div>
-                      <div class="accordion-body" ng-if="isOpen(note)">
+                      <div ng-if="isOpen(note)" class="accordion-body">
                         <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
                       </div>
-                      <div class="teaser-empty" ng-if="!note.content"></div>
+                      <div ng-if="!note.content" class="teaser-empty"></div>
                     </div>
                   </div>
                 </div>
               </section>
             </div>
           </div>
-        </div>        
+        </div>
       </div>
     </div>
   </div>

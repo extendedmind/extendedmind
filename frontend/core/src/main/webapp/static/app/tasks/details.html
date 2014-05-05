@@ -1,6 +1,6 @@
 <section id="tasks-details" class="two-column-grid page" ng-controller="TasksController">
   <div class="column">
-    <div class="page-heading swiper-no-swiping" ng-init="heading='tasks'" ng-include="'static/app/main/omnibar.html'"></div>
+    <div class="page-heading swiper-no-swiping" ng-init="heading = 'tasks'; omnibarFeature = 'tasks'" ng-include="'static/app/main/omnibar.html'"></div>
     <div ng-hide="omnibarVisible && isActiveSlide('details')" class="content-container page-content-container">
       <div class="swiper-container vertical-slides" swiper-container="tasks/details" swiper-type="page" expected-slides="count = lists.length + contexts.length + 1">
         <div class="swiper-wrapper">
@@ -11,9 +11,9 @@
                 <div ng-if="showListContent" ng-include="'static/app/base/listActions.html'"></div>
                 <div>
                   <div class="inner-page-content-container" accordion>
-                    <div ng-repeat="task in tasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
+                    <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
                       <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-                      <div class="accordion-body" ng-if="isOpen(task)">
+                      <div ng-if="isOpen(task)" class="accordion-body">
                         <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>
                     </div>
@@ -43,9 +43,9 @@
                 </div>
                 <div>
                   <div class="inner-page-content-container" accordion>
-                    <div ng-repeat="task in tasks | itemsFilter:{name:'byContextUUID', filterBy: context.uuid}">
+                    <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'byContextUUID', filterBy: context.uuid}">
                       <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-                      <div class="accordion-body" ng-if="isOpen(task)">
+                      <div ng-if="isOpen(task)" class="accordion-body">
                         <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>
                     </div>
@@ -61,9 +61,9 @@
                 <h3>unsorted</h3>
                 <div>
                   <div class="inner-page-content-container" accordion>
-                    <div ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}" ng-init="subtask = {}">
+                    <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}" ng-init="subtask = {}">
                       <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-                      <div class="accordion-body" ng-if="isOpen(task)">
+                      <div ng-if="isOpen(task)" class="accordion-body">
                         <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>
                     </div>

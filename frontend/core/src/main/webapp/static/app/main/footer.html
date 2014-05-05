@@ -1,20 +1,20 @@
-<nav id="{{feature}}-footer" class="swiper-no-swiping" role="navigation" ng-controller="NavbarController">
+<nav id="{{activeFeature}}-footer" class="swiper-no-swiping" role="navigation" ng-controller="NavbarController">
   <ul class="horizontally-justified">
     <li id="home-link" class="justified-element">
-      <a href ng-click="gotoHome()" ng-class="isActiveSlide('home') && 'active-slide'">
-        <span ng-bind="homeHeading"></span>
+      <a href ng-class="isActiveSlide('home') && 'active-slide'" ng-click="gotoHome()">
+        <span>{{homeHeading}}</span>
       </a>
     </li>
 
     <li id="menu-link" class="justified-element">
-      <a href ng-click="gotoOverview()" ng-class="isActiveSlide('overview') && 'active-slide'">
+      <a href ng-class="isActiveSlide('overview') && 'active-slide'" ng-click="gotoOverview()">
         <span>overview</span>
       </a>
     </li>
 
     <li id="lists-link" class="justified-element">
-      <a href ng-click="gotoDetails()" ng-class="isActiveSlide('details') && 'active-slide'">
-        <span ng-bind="feature"></span>
+      <a href ng-class="isActiveSlide('details') && 'active-slide'" ng-click="gotoDetails()">
+        <span>{{activeFeature}}</span>
       </a>
     </li>
     <li id="stretch"></li>

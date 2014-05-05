@@ -1,13 +1,8 @@
-<div ng-if="isMobile" ng-include="'static/app/auth/menu.html'" id="mobile-menu" class="snap-drawer snap-drawer-left" scrollable></div>
-<div class="slides-container" ng-init="feature='notes'; homeHeading='unsorted';" ng-controller="MainController" snap-drawer="notes">
-  <header class="page-header" ng-class="omnibarVisible && 'header-hidden'"  ng-include="'static/app/main/pageHeader.html'"></header>
-  <div class="swiper-container main-slides" swiper-container="notes" swiper-type="main" expected-slides="3">
-    <div ng-hide="isDesktop && isMenuOpen" class="swiper-wrapper">
-      <div class="swiper-slide" swiper-slide="notes/home" slide-index=0 ng-include="'static/app/notes/unsorted.html'" snap-drawer-drag></div>
-      <div class="swiper-slide" swiper-slide="notes/overview" slide-index=1 ng-include="'static/app/notes/overview.html'"></div>
-      <div class="swiper-slide" swiper-slide="notes/details" slide-index=2 ng-include="'static/app/notes/details.html'"></div>
-    </div>
-    <div id="desktop-menu" ng-if="isDesktop && isMenuOpen" ng-include="'static/app/auth/menu.html'"></div>
+<div ng-show="isFeatureActive('notes')" class="swiper-container main-slides" swiper-container="notes" swiper-type="main" expected-slides="3">
+  <div ng-hide="isDesktop && isMenuOpen" class="swiper-wrapper">
+    <div class="swiper-slide" swiper-slide="notes/home" slide-index=0 ng-include="'static/app/notes/unsorted.html'" snap-drawer-drag="notes"></div>
+    <div class="swiper-slide" swiper-slide="notes/overview" slide-index=1 ng-include="'static/app/notes/overview.html'"></div>
+    <div class="swiper-slide" swiper-slide="notes/details" slide-index=2 ng-include="'static/app/notes/details.html'"></div>
   </div>
-  <footer ng-if="!omnibarVisible" ng-include="'static/app/main/footer.html'"></footer>
+  <div ng-if="isDesktop && isMenuOpen" id="desktop-menu" class="desktop-menu-animation" ng-include="'static/app/auth/menu.html'"></div>
 </div>

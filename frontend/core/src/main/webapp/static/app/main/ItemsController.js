@@ -22,7 +22,7 @@ function ItemsController($location, $routeParams, $scope, UserSessionService, It
       AnalyticsService.do('saveItem', 'existing');
     }
     ItemsService.saveItem(item, UserSessionService.getActiveUUID());
-    window.history.back();
+    $scope.gotoPreviousPage();
   };
 
   $scope.addNewItem = function addNewItem() {
@@ -34,7 +34,7 @@ function ItemsController($location, $routeParams, $scope, UserSessionService, It
   };
 
   $scope.cancelEdit = function() {
-    window.history.back();
+    $scope.gotoPreviousPage();
   };
 
   $scope.editItemTitle = function(item) {
@@ -99,7 +99,6 @@ function ItemsController($location, $routeParams, $scope, UserSessionService, It
       return $scope.currentWidth - 44;
     }
   };
-
 }
 
 ItemsController.$inject = ['$location', '$routeParams', '$scope', 'UserSessionService', 'ItemsService', 'AnalyticsService'];
