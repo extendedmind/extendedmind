@@ -1,6 +1,6 @@
 'use strict';
 
-function mainViewDirective($window, $document, $rootScope, $timeout, ModalService, BackendClientService, UserSessionService, ItemsService, SnapService, SwiperService, AnalyticsService, UUIDService) {
+function mainViewDirective($injector, $window, $document, $rootScope, $timeout, ModalService, BackendClientService, UserSessionService, ItemsService, SnapService, SwiperService, AnalyticsService, UUIDService) {
 
   return {
     restrict: 'A',
@@ -77,6 +77,16 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
               ModalService.createDialog('static/app/auth/errorMessage.html', modalOptions);
             }
           }
+        }else if (exception.type === 'http' && exception.status === 403) {
+          // Redirect thrown 403 Forbidden exception to the login page
+          AnalyticsService.error('forbidden', JSON.stringify(exception));
+          var email = UserSessionService.getEmail();
+          UserSessionService.clearUser();
+          UserSessionService.setEmail(email);
+          // $location can not be injected directly presumably because this directive
+          // is defined above ng-view
+          var $location = $injector.get('$location');
+          $location.url('/login');
         }else{
           AnalyticsService.error('unexpected', JSON.stringify(exception));
           $scope.errorMessageHeading = 'something unexpected happened, sorry!';
@@ -167,6 +177,6 @@ function mainViewDirective($window, $document, $rootScope, $timeout, ModalServic
     }
   };
 }
-mainViewDirective.$inject = ['$window', '$document', '$rootScope', '$timeout',
+mainViewDirective.$inject = ['$injector', '$window', '$document', '$rootScope', '$timeout',
 'ModalService', 'BackendClientService', 'UserSessionService', 'ItemsService', 'SnapService', 'SwiperService', 'AnalyticsService', 'UUIDService'];
 angular.module('em.directives').directive('mainView', mainViewDirective);

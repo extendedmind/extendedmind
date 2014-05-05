@@ -104,7 +104,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
               executeRequests();
             }else {
               retryingExecution = false;
-              // Emit unsuspected error to root scope, so that
+              // Emit error to root scope, so that
               // it can be listened on at by the application
               HttpRequestQueueService.releaseLock();
               $rootScope.$emit('emException', {type: 'http', status: status, data: data, url: config.url});
