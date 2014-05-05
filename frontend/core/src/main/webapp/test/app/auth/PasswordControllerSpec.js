@@ -27,14 +27,18 @@ describe('PasswordController', function() {
     $httpBackend.verifyNoOutstandingRequest();
   });
 
-  it('should go back to \'/my/account\'', function() {
+  it('should go back to \'/my\' account page', function() {
     PasswordController = $controller('PasswordController', {
       $scope: $scope
     });
 
+    $scope.gotoPreviousPage = function gotoPreviousPage() {
+      $location.path('/my');
+    };
+
     $scope.gotoAccountPage();
 
-    expect($location.path).toHaveBeenCalledWith('/my/account');
+    expect($location.path).toHaveBeenCalledWith('/my');
   });
 
   it('should change password', function() {
@@ -44,6 +48,11 @@ describe('PasswordController', function() {
     PasswordController = $controller('PasswordController', {
       $scope: $scope
     });
+
+    $scope.gotoPreviousPage = function gotoPreviousPage() {
+      $location.path('/my');
+    };
+
     $scope.user = {
       currentPassword: 'currentPassword',
       newPassword: 'newPassword'
@@ -69,6 +78,6 @@ describe('PasswordController', function() {
 
     expect(UserSessionService.setAuthenticateInformation).toHaveBeenCalledWith(authenticateResponse, email);
 
-    expect($location.path).toHaveBeenCalledWith('/my/account');
+    expect($location.path).toHaveBeenCalledWith('/my');
   });
 });

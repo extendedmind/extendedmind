@@ -160,10 +160,10 @@ describe('AuthenticationService', function() {
     expect(MockUserSessionService.setEmail).toHaveBeenCalledWith(email);
   });
 
-  it('should resolve authenticated user and redirect from \'/\' to \'/my/tasks\'', function() {
+  it('should resolve authenticated user and redirect from \'/\' to \'/my\'', function() {
     spyOn(MockUserSessionService, 'getUserUUID').andReturn(testOwnerUUID);
     AuthenticationService.checkAndRedirectUser();
-    expect($location.path).toHaveBeenCalledWith('/my/tasks');
+    expect($location.path).toHaveBeenCalledWith('/my');
   });
 
   it('should resolve user with new invite request and redirect from \'/\' to \'/waiting\'', function() {

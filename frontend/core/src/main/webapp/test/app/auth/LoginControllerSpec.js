@@ -56,7 +56,7 @@ describe('LoginController', function() {
 
     expect($scope.user.remember).toBeUndefined();
     expect(AuthenticationService.login).toHaveBeenCalledWith($scope.user);
-    expect($location.path).toHaveBeenCalledWith('/my/tasks');
+    expect($location.path).toHaveBeenCalledWith('/my');
   });
 
   it('should goto forgot page with email', function() {
@@ -66,7 +66,7 @@ describe('LoginController', function() {
     $scope.user.username = 'example@example.com';
 
     $scope.gotoForgot();
-    
+
     expect($location.path).toHaveBeenCalledWith('/forgot');
     expect($location.search).toHaveBeenCalledWith({email: $scope.user.username});
   });
