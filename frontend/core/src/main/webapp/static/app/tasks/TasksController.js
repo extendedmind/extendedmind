@@ -42,7 +42,7 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
     $scope.showDateInput = false;
   };
 
-  $scope.repeatTypes = ['daily', 'weekly', 'biweekly', 'monthly', 'bimonthly', 'yearly'];
+  $scope.repeatTypes = ['daily', 'weekly', 'monthly', 'yearly'];
 
   $scope.saveTask = function(task) {
     if (task.uuid) {
