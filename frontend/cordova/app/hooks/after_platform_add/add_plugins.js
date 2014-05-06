@@ -3,7 +3,7 @@
 //this hook installs all your plugins
  
 var pluginlist = [
-    "org.apache.cordova.keyboard"
+    "https://github.com/apache/cordova-plugins.git#master:keyboard"
 ];
  
 // no need to configure below
