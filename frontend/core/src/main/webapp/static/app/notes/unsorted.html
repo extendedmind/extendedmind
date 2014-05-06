@@ -1,7 +1,7 @@
 <section id="notes-unsorted" class="two-column-grid page" ng-controller="NotesController">
   <div class="column">
     <div class="page-heading swiper-no-swiping" ng-init="heading = 'unsorted'; omnibarFeature = 'notes'" ng-include="'static/app/main/omnibar.html'"></div>
-    <div ng-hide="omnibarVisible" class="content-container page-content-container no-heading-content-container">
+    <div ng-hide="omnibarVisible && isActiveSlide('unsorted')" class="content-container page-content-container no-heading-content-container">
       <div class="inner-page-content-container">
         <div>
           <div class="inner-page-content-container" accordion>

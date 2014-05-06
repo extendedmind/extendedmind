@@ -2,7 +2,7 @@
   <section ng-hide="isDesktop && isMenuOpen" id="inbox" class="two-column-grid page header-page" ng-controller="ItemsController" snap-drawer-drag="inbox">
     <div class="column">
       <div class="page-heading" ng-init="heading = 'inbox'; omnibarFeature = 'inbox'" ng-include="'static/app/main/omnibar.html'"></div>
-      <div ng-if="!omnibarVisible" id="inbox-page-content-container" class="content-container page-content-container no-heading-content-container omnibar-animation">
+      <div ng-hide="omnibarVisible" id="inbox-page-content-container" class="content-container page-content-container no-heading-content-container omnibar-animation">
         <div class="accordion-wrapper">
           <div class="inner-page-content-container" accordion>
             <div ng-if="showContent('inbox')" ng-repeat="item in items">

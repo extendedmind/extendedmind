@@ -1,7 +1,7 @@
 <section id="notes-overview" class="two-column-grid page" ng-controller="NotesController">
   <div class="column">
     <div class="page-heading swiper-no-swiping" ng-init="heading = 'overview'; omnibarFeature = 'notes'" ng-include="'static/app/main/omnibar.html'"></div>
-    <div ng-hide="omnibarVisible" class="content-container page-content-container">
+    <div ng-hide="omnibarVisible && isActiveSlide('overview')" class="content-container page-content-container">
       <div class="inner-page-content-container">
         <div ng-include="'static/app/base/listsOverview.html'" include-replace></div>
         <section>

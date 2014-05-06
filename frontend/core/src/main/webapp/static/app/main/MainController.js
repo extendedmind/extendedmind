@@ -70,6 +70,7 @@ function MainController(
   }
 
   // Synchronize items if not already synchronizing and interval reached.
+  $rootScope.isLoading = false;
   function synchronizeItems() {
     $scope.registerActivity();
     var activeUUID = UISessionService.getActiveUUID();
@@ -77,8 +78,13 @@ function MainController(
     if (activeUUID) {
       var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
       if (isNaN(sinceLastItemsSynchronized) || sinceLastItemsSynchronized > itemsSynchronizedThreshold) {
+        if (UserSessionService.getLatestModified(activeUUID) === undefined){
+          // This is the first load for the user, set loading variable
+          $rootScope.isLoading = true;
+        }
         ItemsService.synchronize(activeUUID).then(function() {
           UserSessionService.setItemsSynchronized(activeUUID);
+          $rootScope.isLoading = false;
         });
       }
     }
