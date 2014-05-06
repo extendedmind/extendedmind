@@ -109,4 +109,44 @@ describe('UISessionService', function() {
     SessionStorageService.setActiveUUID(testCollectiveUUID);
     expect(UISessionService.getActiveUUID()).toEqual(testCollectiveUUID);
   });
+
+  it('should change feature', function() {
+    inject(function(_UISessionService_) {
+      UISessionService = _UISessionService_;
+    });
+    var callbackCalled = false;
+    function featureChangedCallback(/*newFeature, oldFeature*/){
+      callbackCalled = true;
+    }
+    UISessionService.registerFeatureChangedCallback(featureChangedCallback);
+
+    // 1. Change feature starting from an empty feature history
+
+    UISessionService.changeFeature(
+      {name: 'tasks'}
+    );
+    expect(callbackCalled).toEqual(true);
+    expect(UISessionService.getPreviousFeatureName()).toBeUndefined();
+
+    // 2. Change to edit screen
+
+    var testData = {title: 'test'};
+    var testState = 'tasks/lists/123';
+    UISessionService.changeFeature(
+      {name: 'taskEdit', data: testData},
+      {name: 'tasks', state: testState}
+    );
+    expect(UISessionService.getPreviousFeatureName()).toEqual('tasks');
+    expect(UISessionService.getFeatureData('taskEdit')).toEqual(testData);
+    expect(UISessionService.getFeatureState('tasks')).toEqual(testState);
+
+    // 3. Change away to notes
+
+    UISessionService.changeFeature(
+      {name: 'notes'}
+    );
+    expect(UISessionService.getPreviousFeatureName()).toEqual('taskEdit');
+    expect(UISessionService.getFeatureData('taskEdit')).toEqual(testData);
+
+  });
 });

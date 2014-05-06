@@ -6,12 +6,12 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
   // Map containing states and datas of features
   var featureMap = {};
   // List containing history of features
-  var featureHistory = {};
+  var featureHistory = [];
+  var featureChangedCallback;
 
   var ownerPrefix = 'my'; // default owner
 
   return {
-
     // owner
     getOwnerPrefix: function() {
       return ownerPrefix;
@@ -41,6 +41,42 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
       }
       return SessionStorageService.getActiveUUID();
     },
+
+    // Feature history
+    changeFeature: function(newFeature, oldFeature){
+      featureMap[newFeature.name] = {
+        state: newFeature.state,
+        data: newFeature.data
+      };
+      if (oldFeature){
+        featureMap[oldFeature.name] = {
+          state: oldFeature.state,
+          data: oldFeature.data
+        };
+      }
+      featureHistory.push(newFeature.name);
+
+      // Fire feature changed callback
+      if (featureChangedCallback) featureChangedCallback(newFeature, oldFeature);
+    },
+    getPreviousFeatureName: function(){
+      if (featureHistory.length > 1){
+        return featureHistory[featureHistory.length-2];
+      }
+    },
+    getFeatureState: function(featureName){
+      if (featureMap[featureName]){
+        return featureMap[featureName].state;
+      }
+    },
+    getFeatureData: function(featureName){
+      if (featureMap[featureName]){
+        return featureMap[featureName].data;
+      }
+    },
+    registerFeatureChangedCallback: function(callback) {
+      featureChangedCallback = callback;
+    }
   };
 }
 UISessionService.$inject = ['$rootScope', 'LocalStorageService', 'SessionStorageService'];
