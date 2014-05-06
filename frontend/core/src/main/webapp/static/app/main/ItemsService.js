@@ -443,6 +443,20 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
         items[ownerUUID].activeItems.splice(index, 1);
       }
     },
+    itemToList: function(item, ownerUUID) {
+      initializeArrays(ownerUUID);
+      // Check that item is not deleted before trying to turn it into a list
+      if (items[ownerUUID].deletedItems.indexOf(item) > -1){
+        return;
+      }
+
+      var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.uuid);
+      if (index !== undefined) {
+        // Save as list and remove from the activeItems array
+        ListsService.saveList(item, ownerUUID);
+        items[ownerUUID].activeItems.splice(index, 1);
+      }
+    },
     // Regular expressions for item requests
     getItemsRegex: getItemsRegex,
     putNewItemRegex:

@@ -1,17 +1,22 @@
 <div ng-switch="itemType" ng-controller="ItemsController">
   <div class="item-actions" ng-switch-default>
     <ul class="button-row">
-      <li class="button-container left-of-three">
-        <button class="default-button" type="button" ng-click="itemToNote(item)">
-          <span class="button-text">note</span>
-        </button>
-      </li>
-      <li class="button-container center-of-three">
+      <li class="button-container left-of-four">
         <button class="default-button" type="button" ng-click="itemToTask(item)">
           <span class="button-text">task</span>
         </button>
       </li>
-      <li class="button-container right-of-three">
+      <li class="button-container center-of-four">
+        <button class="default-button" type="button" ng-click="itemToNote(item)">
+          <span class="button-text">note</span>
+        </button>
+      </li>
+      <li class="button-container center-of-four">
+        <button class="default-button" type="button" ng-click="itemToList(item)">
+          <span class="button-text">list</span>
+        </button>
+      </li>
+      <li class="button-container right-of-four">
         <button class="delete-button" type="button" ng-click="deleteItem(item)">
           <span class="button-text">delete</span>
         </button>

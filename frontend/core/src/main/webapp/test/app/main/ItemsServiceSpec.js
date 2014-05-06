@@ -22,6 +22,10 @@ describe('ItemsService', function() {
   undeleteItemResponse.modified = now.getTime();
   var putExistingTaskResponse = getJSONFixture('putExistingTaskResponse.json');
   putExistingTaskResponse.modified = now.getTime();
+  var putExistingNoteResponse = getJSONFixture('putExistingNoteResponse.json');
+  putExistingNoteResponse.modified = now.getTime();
+  var putExistingListResponse = getJSONFixture('putExistingListResponse.json');
+  putExistingListResponse.modified = now.getTime();
   var completeTaskResponse = getJSONFixture('completeTaskResponse.json');
   completeTaskResponse.result.modified = now.getTime();
   var uncompleteTaskResponse = getJSONFixture('uncompleteTaskResponse.json');
@@ -412,7 +416,7 @@ describe('ItemsService', function() {
   it('should convert item to note', function () {
     var yoga = ItemsService.getItemByUUID('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID);
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/note/' + yoga.uuid)
-       .respond(200, putExistingTaskResponse);
+       .respond(200, putExistingNoteResponse);
     ItemsService.itemToNote(yoga, testOwnerUUID);
     $httpBackend.flush();
 
@@ -426,6 +430,26 @@ describe('ItemsService', function() {
     expect(NotesService.getNoteByUUID(yoga.uuid, testOwnerUUID))
       .toBeDefined();
     expect(NotesService.getNotes(testOwnerUUID).length)
+      .toBe(4);
+  });
+
+  it('should convert item to list', function () {
+    var yoga = ItemsService.getItemByUUID('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + yoga.uuid)
+       .respond(200, putExistingListResponse);
+    ItemsService.itemToList(yoga, testOwnerUUID);
+    $httpBackend.flush();
+
+    // There should be two left
+    expect(ItemsService.getItemByUUID(yoga.uuid, testOwnerUUID))
+      .toBeUndefined();
+    expect(ItemsService.getItems(testOwnerUUID).length)
+      .toBe(2);
+
+    // Lists should have the new item
+    expect(ListsService.getListByUUID(yoga.uuid, testOwnerUUID))
+      .toBeDefined();
+    expect(ListsService.getLists(testOwnerUUID).length)
       .toBe(4);
   });
 

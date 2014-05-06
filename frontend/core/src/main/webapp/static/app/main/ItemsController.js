@@ -74,6 +74,11 @@ function ItemsController($location, $routeParams, $scope, UISessionService, Item
     $location.path($scope.ownerPrefix + '/notes/edit/' + note.uuid);
   };
 
+  $scope.itemToList = function(item) {
+    AnalyticsService.do('itemToList');
+    ItemsService.itemToList(item, UISessionService.getActiveUUID());
+  };
+
   $scope.noteEditDone = function(note) {
     AnalyticsService.do('itemToNoteDone');
     ItemsService.itemToNote(note, UISessionService.getActiveUUID());

@@ -153,28 +153,6 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
     TasksService.saveTask(task, UISessionService.getActiveUUID());
     $scope.close(task, true);
   };
-
-  $scope.getDoneButtonClass = function(task) {
-    if (!(task.relationships && task.relationships.list)) {
-      return 'left-of-three';
-    } else {
-      return 'left-of-two';
-    }
-  };
-
-  $scope.getSubtaskButtonClass = function(task) {
-    if (!(task.relationships && task.relationships.list)) {
-      return 'center-of-three';
-    }
-  };
-
-  $scope.getDeleteButtonClass = function(task) {
-    if (!(task.relationships && task.relationships.list)) {
-      return 'right-of-three';
-    } else {
-      return 'right-of-two';
-    }
-  };
 }
 
 TasksController['$inject'] = ['$location', '$rootScope', '$routeParams', '$scope', 'DateService', 'SwiperService', 'UISessionService', 'TasksService', 'AnalyticsService'];
