@@ -8,7 +8,7 @@
 // which are part of every main slide collection.
 function MainController(
   $filter, $location, $rootScope, $scope, $timeout, $window,
-  AccountService, UserSessionService, ItemsService, ListsService,
+  AccountService, UISessionService, UserSessionService, ItemsService, ListsService,
   TagsService, TasksService, NotesService, FilterService, OnboardingService, SwiperService) {
 
   // ONBOARDING
@@ -22,17 +22,17 @@ function MainController(
   }
 
   // Data arrays
-  $scope.items = ItemsService.getItems(UserSessionService.getActiveUUID());
-  $scope.tasks = TasksService.getTasks(UserSessionService.getActiveUUID());
-  $scope.notes = NotesService.getNotes(UserSessionService.getActiveUUID());
-  $scope.lists = ListsService.getLists(UserSessionService.getActiveUUID());
-  $scope.tags = TagsService.getTags(UserSessionService.getActiveUUID());
+  $scope.items = ItemsService.getItems(UISessionService.getActiveUUID());
+  $scope.tasks = TasksService.getTasks(UISessionService.getActiveUUID());
+  $scope.notes = NotesService.getNotes(UISessionService.getActiveUUID());
+  $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
+  $scope.tags = TagsService.getTags(UISessionService.getActiveUUID());
 
   $scope.$watch('tags.length', function(/*newValue, oldValue*/) {
     $scope.contexts = $filter('filter')($scope.tags, {tagType:'context'});
   });
 
-  $scope.ownerPrefix = UserSessionService.getOwnerPrefix();
+  $scope.ownerPrefix = UISessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
 
   // BACKEND POLLING
@@ -72,7 +72,7 @@ function MainController(
   // Synchronize items if not already synchronizing and interval reached.
   function synchronizeItems() {
     $scope.registerActivity();
-    var activeUUID = UserSessionService.getActiveUUID();
+    var activeUUID = UISessionService.getActiveUUID();
     // First check that the user has login
     if (activeUUID) {
       var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
@@ -143,7 +143,7 @@ function MainController(
 
   $scope.saveOmnibarText = function(omnibarText) {
     if (omnibarText.title && omnibarText.title.length > 0) {
-      ItemsService.saveItem({title: omnibarText.title}, UserSessionService.getActiveUUID()).then(function(/*item*/) {
+      ItemsService.saveItem({title: omnibarText.title}, UISessionService.getActiveUUID()).then(function(/*item*/) {
         $scope.clearOmnibar();
         if (!$scope.isFeatureActive('inbox')) {
           $scope.setActiveFeature('inbox');
@@ -166,20 +166,20 @@ function MainController(
 
   $scope.saveAsTask = function saveAsTask(omnibarText) {
     $rootScope.omnibarTask = omnibarText; // FIXME  service for active user data
-    $location.path(UserSessionService.getOwnerPrefix() + '/tasks/new');
+    $location.path(UISessionService.getOwnerPrefix() + '/tasks/new');
     // TODO set swiper state for edit task cancel
   };
 
   $scope.saveAsNote = function saveAsNote(omnibarText) {
     $rootScope.omnibarNote = omnibarText;
-    $location.path(UserSessionService.getOwnerPrefix() + '/notes/new');
+    $location.path(UISessionService.getOwnerPrefix() + '/notes/new');
   };
 
   $scope.clickOmnibarPlus = function(omnibarText) {
     if (omnibarText.title && omnibarText.title.length > 0) {
       $scope.saveOmnibarText(omnibarText);
     } else {
-      $location.path(UserSessionService.getOwnerPrefix() + '/items/new');
+      $location.path(UISessionService.getOwnerPrefix() + '/items/new');
     }
   };
 
@@ -259,7 +259,7 @@ function MainController(
 
 MainController.$inject = [
 '$filter', '$location', '$rootScope', '$scope', '$timeout', '$window',
-'AccountService', 'UserSessionService', 'ItemsService', 'ListsService',
+'AccountService', 'UISessionService', 'UserSessionService', 'ItemsService', 'ListsService',
 'TagsService', 'TasksService', 'NotesService', 'FilterService', 'OnboardingService', 'SwiperService'
 ];
 angular.module('em.app').controller('MainController', MainController);

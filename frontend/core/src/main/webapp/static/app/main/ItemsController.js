@@ -1,10 +1,10 @@
 'use strict';
 
-function ItemsController($location, $routeParams, $scope, UserSessionService, ItemsService, AnalyticsService) {
+function ItemsController($location, $routeParams, $scope, UISessionService, ItemsService, AnalyticsService) {
   if (!$scope.item){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
       if ($routeParams.uuid) {
-        $scope.item = ItemsService.getItemByUUID($routeParams.uuid, UserSessionService.getActiveUUID());
+        $scope.item = ItemsService.getItemByUUID($routeParams.uuid, UISessionService.getActiveUUID());
       }else{
         $scope.item = {};
       }
@@ -21,13 +21,13 @@ function ItemsController($location, $routeParams, $scope, UserSessionService, It
     }else{
       AnalyticsService.do('saveItem', 'existing');
     }
-    ItemsService.saveItem(item, UserSessionService.getActiveUUID());
+    ItemsService.saveItem(item, UISessionService.getActiveUUID());
     $scope.gotoPreviousPage();
   };
 
   $scope.addNewItem = function addNewItem() {
     if ($scope.item.title && $scope.item.title.length > 0) {
-      ItemsService.saveItem({title: $scope.item.title}, UserSessionService.getActiveUUID()).then(function(/*item*/){
+      ItemsService.saveItem({title: $scope.item.title}, UISessionService.getActiveUUID()).then(function(/*item*/){
         $scope.item.title = '';
       });
     }
@@ -39,7 +39,7 @@ function ItemsController($location, $routeParams, $scope, UserSessionService, It
 
   $scope.editItemTitle = function(item) {
     AnalyticsService.do('editItemTitle');
-    ItemsService.saveItem(item, UserSessionService.getActiveUUID());
+    ItemsService.saveItem(item, UISessionService.getActiveUUID());
   };
 
   $scope.editItem  = function(item) {
@@ -48,7 +48,7 @@ function ItemsController($location, $routeParams, $scope, UserSessionService, It
 
   $scope.deleteItem = function(item) {
     AnalyticsService.do('deleteItem');
-    ItemsService.deleteItem(item, UserSessionService.getActiveUUID());
+    ItemsService.deleteItem(item, UISessionService.getActiveUUID());
   };
 
   $scope.itemToTask = function(item) {
@@ -62,7 +62,7 @@ function ItemsController($location, $routeParams, $scope, UserSessionService, It
 
   $scope.taskEditDone = function(task) {
     AnalyticsService.do('itemToTaskDone');
-    ItemsService.itemToTask(task, UserSessionService.getActiveUUID());
+    ItemsService.itemToTask(task, UISessionService.getActiveUUID());
   };
 
   $scope.itemToNote = function(item) {
@@ -76,7 +76,7 @@ function ItemsController($location, $routeParams, $scope, UserSessionService, It
 
   $scope.noteEditDone = function(note) {
     AnalyticsService.do('itemToNoteDone');
-    ItemsService.itemToNote(note, UserSessionService.getActiveUUID());
+    ItemsService.itemToNote(note, UISessionService.getActiveUUID());
   };
 
   $scope.addNew = function() {
@@ -101,5 +101,5 @@ function ItemsController($location, $routeParams, $scope, UserSessionService, It
   };
 }
 
-ItemsController.$inject = ['$location', '$routeParams', '$scope', 'UserSessionService', 'ItemsService', 'AnalyticsService'];
+ItemsController.$inject = ['$location', '$routeParams', '$scope', 'UISessionService', 'ItemsService', 'AnalyticsService'];
 angular.module('em.app').controller('ItemsController', ItemsController);

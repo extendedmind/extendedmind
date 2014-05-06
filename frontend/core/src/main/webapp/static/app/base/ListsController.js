@@ -1,11 +1,11 @@
 'use strict';
 
-function ListsController($location, $scope, $routeParams, UserSessionService, ListsService, AnalyticsService) {
+function ListsController($location, $scope, $routeParams, UISessionService, ListsService, AnalyticsService) {
 
   if (!$scope.list){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
       if ($routeParams.uuid) {
-        $scope.list = ListsService.getListByUUID($routeParams.uuid, UserSessionService.getActiveUUID());
+        $scope.list = ListsService.getListByUUID($routeParams.uuid, UISessionService.getActiveUUID());
       }else {
         $scope.list = {};
       }
@@ -13,12 +13,12 @@ function ListsController($location, $scope, $routeParams, UserSessionService, Li
   }
 
   $scope.saveList = function(list) {
-    ListsService.saveList(list, UserSessionService.getActiveUUID());
+    ListsService.saveList(list, UISessionService.getActiveUUID());
     $scope.gotoPreviousPage();
   };
 
   $scope.editList = function(list) {
-    $location.path(UserSessionService.getOwnerPrefix() + '/lists/edit/' + list.uuid);
+    $location.path(UISessionService.getOwnerPrefix() + '/lists/edit/' + list.uuid);
   };
 
   $scope.cancelEdit = function() {
@@ -33,21 +33,21 @@ function ListsController($location, $scope, $routeParams, UserSessionService, Li
   $scope.addList = function(newList) {
 
     if (!newList.title  || newList.title.length === 0) return false;
-    ListsService.saveList(newList, UserSessionService.getActiveUUID()).then(function(/*list*/) {
+    ListsService.saveList(newList, UISessionService.getActiveUUID()).then(function(/*list*/) {
       AnalyticsService.do('addList');
     });
     $scope.newList = {title: undefined};
   };
 
   $scope.archiveList = function(list) {
-    ListsService.archiveList(list, UserSessionService.getActiveUUID());
+    ListsService.archiveList(list, UISessionService.getActiveUUID());
   };
 
   $scope.deleteList = function(list) {
-    ListsService.deleteList(list, UserSessionService.getActiveUUID());
+    ListsService.deleteList(list, UISessionService.getActiveUUID());
   };
 }
 
-ListsController['$inject'] = ['$location', '$scope', '$routeParams', 'UserSessionService',
+ListsController['$inject'] = ['$location', '$scope', '$routeParams', 'UISessionService',
 'ListsService', 'AnalyticsService'];
 angular.module('em.app').controller('ListsController', ListsController);

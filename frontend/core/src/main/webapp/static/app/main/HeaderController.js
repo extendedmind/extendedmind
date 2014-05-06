@@ -1,6 +1,6 @@
 'use strict';
 
-function HeaderController($scope, $location, UserSessionService) {
+function HeaderController($scope, $location, UISessionService) {
 
   $scope.getLabelWidth = function() {
     if ($scope.currentWidth <= 568){
@@ -13,14 +13,14 @@ function HeaderController($scope, $location, UserSessionService) {
 
   $scope.addNew = function() {
     if ($scope.isFeatureActive('inbox')) {
-      $location.path(UserSessionService.getOwnerPrefix() + '/items/new');
+      $location.path(UISessionService.getOwnerPrefix() + '/items/new');
     } else if ($scope.isFeatureActive('tasks')) {
-      $location.path(UserSessionService.getOwnerPrefix() + '/tasks/new');
+      $location.path(UISessionService.getOwnerPrefix() + '/tasks/new');
     } else if ($scope.isFeatureActive('notes')) {
-      $location.path(UserSessionService.getOwnerPrefix() + '/notes/new');
+      $location.path(UISessionService.getOwnerPrefix() + '/notes/new');
     }
   };
 }
 
-HeaderController['$inject'] = ['$scope', '$location', 'UserSessionService'];
+HeaderController['$inject'] = ['$scope', '$location', 'UISessionService'];
 angular.module('em.app').controller('HeaderController', HeaderController);

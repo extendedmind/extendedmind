@@ -1,6 +1,6 @@
 'use strict';
 
-function ForgotController($routeParams, $scope, $location, BackendClientService, AuthenticationService, UserSessionService, AnalyticsService) {
+function ForgotController($routeParams, $scope, $location, BackendClientService, AuthenticationService, AnalyticsService) {
 
   AnalyticsService.visitEntry('forgot');
 
@@ -79,5 +79,5 @@ function ForgotController($routeParams, $scope, $location, BackendClientService,
 
 }
 
-ForgotController['$inject'] = ['$routeParams', '$scope', '$location', 'BackendClientService', 'AuthenticationService', 'UserSessionService', 'AnalyticsService'];
+ForgotController['$inject'] = ['$routeParams', '$scope', '$location', 'BackendClientService', 'AuthenticationService', 'AnalyticsService'];
 angular.module('em.app').controller('ForgotController', ForgotController);

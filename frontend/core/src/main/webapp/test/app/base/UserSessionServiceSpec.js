@@ -4,8 +4,6 @@ describe('UserSessionService', function() {
 
   var LocalStorageService, SessionStorageService, UserSessionService;
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
-  var testCollectiveUUID = '5d2f8997-8bdf-4922-b891-6a6127682049';
-  var testUserUUID = '3e38b63d-85c2-4e5d-afb6-eae0e5150c1f';
   var swapTokenBufferTimeAndThenSome = 11*60*1000;
   var authenticateResponse = getJSONFixture('authenticateResponse.json');
 
@@ -191,68 +189,4 @@ describe('UserSessionService', function() {
     expect(SessionStorageService.setEmail).toHaveBeenCalledWith('example@example.com');
   });
 
-  it('should set my uuid as an active uuid', function() {
-    inject(function(_UserSessionService_) {
-      UserSessionService = _UserSessionService_;
-    });
-    spyOn(UserSessionService, 'getUserUUID').andCallThrough();
-    spyOn(SessionStorageService, 'setActiveUUID');
-
-    SessionStorageService.setUserUUID(testUserUUID);
-    UserSessionService.setMyActive();
-    expect(UserSessionService.getUserUUID).toHaveBeenCalled();
-    expect(SessionStorageService.setActiveUUID).toHaveBeenCalledWith(testUserUUID);
-  });
-
-  it('should set collective uuid as an active uuid', function() {
-    inject(function(_UserSessionService_) {
-      UserSessionService = _UserSessionService_;
-    });
-    spyOn(SessionStorageService, 'setActiveUUID');
-
-    UserSessionService.setCollectiveActive(testCollectiveUUID);
-    expect(SessionStorageService.setActiveUUID).toHaveBeenCalledWith(testCollectiveUUID);
-  });
-
-  it('should set \'my\' as an active prefix', function() {
-    inject(function(_UserSessionService_) {
-      UserSessionService = _UserSessionService_;
-    });
-    SessionStorageService.setUserUUID(testUserUUID);
-    UserSessionService.setMyActive();
-    expect(UserSessionService.getOwnerPrefix()).toEqual('my');
-  });
-
-  it('should set \'collective/[collective uuid]\' as an active prefix', function() {
-    inject(function(_UserSessionService_) {
-      UserSessionService = _UserSessionService_;
-    });
-
-    UserSessionService.setCollectiveActive(testCollectiveUUID);
-    expect(UserSessionService.getOwnerPrefix()).toEqual('collective/' + testCollectiveUUID);
-  });
-
-  it('should set active uuid from localStorage', function() {
-    inject(function(_UserSessionService_) {
-      UserSessionService = _UserSessionService_;
-    });
-    expect(UserSessionService.getActiveUUID()).toBeUndefined();
-
-    spyOn(LocalStorageService, 'getExpires').andReturn(Date.now() + swapTokenBufferTimeAndThenSome);
-    spyOn(LocalStorageService, 'getUserUUID').andReturn(testUserUUID);
-
-    expect(UserSessionService.getActiveUUID()).toEqual(testUserUUID);
-  });
-
-  it('should not override sessionStorage\'s existing active uuid from localStorage', function() {
-    inject(function(_UserSessionService_) {
-      UserSessionService = _UserSessionService_;
-    });
-    spyOn(LocalStorageService, 'getExpires').andReturn(Date.now() + swapTokenBufferTimeAndThenSome);
-    spyOn(LocalStorageService, 'getUserUUID').andReturn(testUserUUID);
-
-    expect(UserSessionService.getActiveUUID()).toEqual(testUserUUID);
-    SessionStorageService.setActiveUUID(testCollectiveUUID);
-    expect(UserSessionService.getActiveUUID()).toEqual(testCollectiveUUID);
-  });
 });

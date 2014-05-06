@@ -44,6 +44,16 @@ function mainViewDirective($injector, $rootScope, $window, ModalService, Backend
         });
       };
 
+      function redirectToLogin(){
+        var email = UserSessionService.getEmail();
+        UserSessionService.clearUser();
+        UserSessionService.setEmail(email);
+        // $location can not be injected directly presumably because this directive
+        // is defined above ng-view
+        var $location = $injector.get('$location');
+        $location.url('/login');
+      }
+
       // Listen to exceptions emitted to rootscope
       var unbindEmException = $rootScope.$on('emException', function(name, exception) {
         var modalOptions = {
@@ -80,13 +90,11 @@ function mainViewDirective($injector, $rootScope, $window, ModalService, Backend
         }else if (exception.type === 'http' && exception.status === 403) {
           // Redirect thrown 403 Forbidden exception to the login page
           AnalyticsService.error('forbidden', JSON.stringify(exception));
-          var email = UserSessionService.getEmail();
-          UserSessionService.clearUser();
-          UserSessionService.setEmail(email);
-          // $location can not be injected directly presumably because this directive
-          // is defined above ng-view
-          var $location = $injector.get('$location');
-          $location.url('/login');
+          redirectToLogin();
+        }else if (exception.type === 'session') {
+          // Redirect session errors to the login page
+          AnalyticsService.error('session', exception.description);
+          redirectToLogin();
         }else{
           AnalyticsService.error('unexpected', JSON.stringify(exception));
           $scope.errorMessageHeading = 'something unexpected happened, sorry!';

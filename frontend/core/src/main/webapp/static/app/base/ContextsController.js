@@ -1,11 +1,11 @@
 'use strict';
 
-function ContextsController($location, $scope, $routeParams, UserSessionService, TagsService, AnalyticsService) {
+function ContextsController($location, $scope, $routeParams, UISessionService, TagsService, AnalyticsService) {
 
   if (!$scope.context){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
       if ($routeParams.uuid) {
-        $scope.context = TagsService.getTagByUUID($routeParams.uuid, UserSessionService.getActiveUUID());
+        $scope.context = TagsService.getTagByUUID($routeParams.uuid, UISessionService.getActiveUUID());
       }else {
         $scope.context = {};
       }
@@ -13,16 +13,16 @@ function ContextsController($location, $scope, $routeParams, UserSessionService,
   }
 
   $scope.saveContext = function(context) {
-    TagsService.saveTag(context, UserSessionService.getActiveUUID());
+    TagsService.saveTag(context, UISessionService.getActiveUUID());
     $scope.gotoPreviousPage();
   };
 
   $scope.editContext = function(context) {
-    $location.path(UserSessionService.getOwnerPrefix() + '/contexts/edit/' + context.uuid);
+    $location.path(UISessionService.getOwnerPrefix() + '/contexts/edit/' + context.uuid);
   };
 
   $scope.deleteContext = function(context) {
-    TagsService.deleteTag(context, UserSessionService.getActiveUUID());
+    TagsService.deleteTag(context, UISessionService.getActiveUUID());
   };
 
   $scope.cancelEdit = function() {
@@ -36,13 +36,13 @@ function ContextsController($location, $scope, $routeParams, UserSessionService,
 
   $scope.addContext = function(newContext) {
     if (!newContext.title  || newContext.title.length === 0) return false;
-    TagsService.saveTag(newContext, UserSessionService.getActiveUUID()).then(function(/*context*/) {
+    TagsService.saveTag(newContext, UISessionService.getActiveUUID()).then(function(/*context*/) {
       AnalyticsService.do('addContext');
     });
     $scope.newContext = {title: undefined, tagType: 'context'};
   };
 }
 
-ContextsController['$inject'] = ['$location', '$scope', '$routeParams', 'UserSessionService',
+ContextsController['$inject'] = ['$location', '$scope', '$routeParams', 'UISessionService',
 'TagsService', 'AnalyticsService'];
 angular.module('em.app').controller('ContextsController', ContextsController);

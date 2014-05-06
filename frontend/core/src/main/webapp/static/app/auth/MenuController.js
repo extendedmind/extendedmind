@@ -1,6 +1,6 @@
 'use strict';
 
-function MenuController($location, $scope, AuthenticationService, UserSessionService, AnalyticsService) {
+function MenuController($location, $scope, AuthenticationService, UISessionService, UserSessionService, AnalyticsService) {
   $scope.collectives = UserSessionService.getCollectives();
 
   $scope.useCollectives = function useCollectives() {
@@ -18,20 +18,20 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
   };
 
   $scope.getMyClass = function getMyClass() {
-    if (UserSessionService.getOwnerPrefix() === 'my') {
+    if (UISessionService.getOwnerPrefix() === 'my') {
       return 'active';
     }
   };
 
   $scope.getCollectiveClass = function getCollectiveClass(uuid) {
-    if (UserSessionService.getOwnerPrefix() === 'collective/' + uuid) {
+    if (UISessionService.getOwnerPrefix() === 'collective/' + uuid) {
       return 'active';
     }
   };
 
   $scope.setMyActive = function setMyActive() {
     if (!$location.path().startsWith('/my')) {
-      UserSessionService.setMyActive();
+      UISessionService.setMyActive();
       $location.path('/my');
     }
     $scope.toggleMenu();
@@ -39,7 +39,7 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
 
   $scope.setCollectiveActive = function setCollectiveActive(uuid) {
     if (!$location.path().startsWith('/collective/' + uuid)) {
-      UserSessionService.setCollectiveActive(uuid);
+      UISessionService.setCollectiveActive(uuid);
       $location.path('/collective/' + uuid);
     }
     $scope.toggleMenu();
@@ -61,5 +61,5 @@ function MenuController($location, $scope, AuthenticationService, UserSessionSer
   };
 }
 
-MenuController.$inject = ['$location', '$scope', 'AuthenticationService', 'UserSessionService', 'AnalyticsService'];
+MenuController.$inject = ['$location', '$scope', 'AuthenticationService', 'UISessionService', 'UserSessionService', 'AnalyticsService'];
 angular.module('em.app').controller('MenuController', MenuController);

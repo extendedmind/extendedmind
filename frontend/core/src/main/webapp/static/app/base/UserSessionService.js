@@ -5,12 +5,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   var latestModified = {};
   var itemsSynchronize = {};
-  var ownerPrefix = 'my'; // default owner
   var offlineBufferEnabled = (typeof useOfflineBuffer !== 'undefined') ? useOfflineBuffer: false;
-
-  function setOwnerPrefix(owner) {
-    ownerPrefix = owner;
-  }
 
   // Sync session storage with local storage.
   function syncWebStorages() {
@@ -20,9 +15,6 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
   }
 
   function setUserSessionStorageData() {
-    if (!SessionStorageService.getActiveUUID()) {
-      SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
-    }
     SessionStorageService.setCollectives(LocalStorageService.getCollectives());
     SessionStorageService.setEmail(LocalStorageService.getEmail());
     SessionStorageService.setExpires(LocalStorageService.getExpires());
@@ -107,21 +99,6 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       }
       return credentials;
     },
-
-    // owner
-    getOwnerPrefix: function() {
-      return ownerPrefix;
-    },
-
-    // Set active UUID and url prefix
-    setCollectiveActive: function(uuid) {
-      SessionStorageService.setActiveUUID(uuid);
-      setOwnerPrefix('collective' + '/' + SessionStorageService.getActiveUUID());
-    },
-    setMyActive: function() {
-      SessionStorageService.setActiveUUID(this.getUserUUID());
-      setOwnerPrefix('my');
-    },
     setEmail: function(email) {
       setEmail(email);
     },
@@ -149,10 +126,6 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     },
 
     // Web storage getters
-    getActiveUUID: function() {
-      syncWebStorages();
-      return SessionStorageService.getActiveUUID();
-    },
     getCollectives: function() {
       syncWebStorages();
       return SessionStorageService.getCollectives();

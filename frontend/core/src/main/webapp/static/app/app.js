@@ -29,9 +29,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          return UserSessionService.setMyActive();
+        owner: ['UISessionService',
+        function(UISessionService) {
+          return UISessionService.setMyActive();
         }]
       }
     });
@@ -43,9 +43,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        owner: ['$route', 'UISessionService',
+        function($route, UISessionService) {
+          UISessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -134,9 +134,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
+        owner: ['UISessionService',
+        function(UISessionService) {
+          UISessionService.setMyActive();
         }]
 
       }
@@ -149,9 +149,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        owner: ['$route', 'UISessionService',
+        function($route, UISessionService) {
+          UISessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -163,9 +163,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
+        owner: ['UISessionService',
+        function(UISessionService) {
+          UISessionService.setMyActive();
         }]
 
       }
@@ -178,9 +178,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        owner: ['$route', 'UISessionService',
+        function($route, UISessionService) {
+          UISessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -194,9 +194,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
+        owner: ['UISessionService',
+        function(UISessionService) {
+          UISessionService.setMyActive();
         }]
       }
     });
@@ -208,9 +208,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        owner: ['$route', 'UISessionService',
+        function($route, UISessionService) {
+          UISessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
 
       }
@@ -223,9 +223,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
+        owner: ['UISessionService',
+        function(UISessionService) {
+          UISessionService.setMyActive();
         }]
 
       }
@@ -238,9 +238,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        owner: ['$route', 'UISessionService',
+        function($route, UISessionService) {
+          UISessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -252,9 +252,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
+        owner: ['UISessionService',
+        function(UISessionService) {
+          UISessionService.setMyActive();
         }]
       }
     });
@@ -266,9 +266,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        owner: ['$route', 'UISessionService',
+        function($route, UISessionService) {
+          UISessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -282,9 +282,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
+        owner: ['UISessionService',
+        function(UISessionService) {
+          UISessionService.setMyActive();
         }]
 
       }
@@ -297,9 +297,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        owner: ['$route', 'UISessionService',
+        function($route, UISessionService) {
+          UISessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
 
       }
@@ -312,9 +312,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
+        owner: ['UISessionService',
+        function(UISessionService) {
+          UISessionService.setMyActive();
         }]
 
       }
@@ -327,9 +327,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        owner: ['$route', 'UISessionService',
+        function($route, UISessionService) {
+          UISessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -341,9 +341,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
+        owner: ['UISessionService',
+        function(UISessionService) {
+          UISessionService.setMyActive();
         }]
       }
     });
@@ -355,9 +355,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        owner: ['$route', 'UISessionService',
+        function($route, UISessionService) {
+          UISessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -371,9 +371,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
+        owner: ['UISessionService',
+        function(UISessionService) {
+          UISessionService.setMyActive();
         }]
 
       }
@@ -386,9 +386,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        owner: ['$route', 'UISessionService',
+        function($route, UISessionService) {
+          UISessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });
@@ -402,9 +402,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['UserSessionService',
-        function(UserSessionService) {
-          UserSessionService.setMyActive();
+        owner: ['UISessionService',
+        function(UISessionService) {
+          UISessionService.setMyActive();
         }]
 
       }
@@ -417,9 +417,9 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
-        owner: ['$route', 'UserSessionService',
-        function($route, UserSessionService) {
-          UserSessionService.setCollectiveActive($route.current.params.collectiveUUID);
+        owner: ['$route', 'UISessionService',
+        function($route, UISessionService) {
+          UISessionService.setCollectiveActive($route.current.params.collectiveUUID);
         }]
       }
     });

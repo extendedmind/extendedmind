@@ -1,13 +1,13 @@
 'use strict';
 
-function TasksController($location, $rootScope, $routeParams, $scope, DateService, SwiperService, UserSessionService, TasksService, AnalyticsService) {
+function TasksController($location, $rootScope, $routeParams, $scope, DateService, SwiperService, UISessionService, TasksService, AnalyticsService) {
 
   // edit tasks or new task dialog
   if (!$scope.task) {
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)) {
       // edit task
       if ($routeParams.uuid) {
-        $scope.task = TasksService.getTaskByUUID($routeParams.uuid, UserSessionService.getActiveUUID());
+        $scope.task = TasksService.getTaskByUUID($routeParams.uuid, UISessionService.getActiveUUID());
         if ($scope.task.due) $scope.showDateInput = true;
       }
       // new task
@@ -50,7 +50,7 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
     } else {
       AnalyticsService.do('saveTask', 'existing');
     }
-    TasksService.saveTask(task, UserSessionService.getActiveUUID()).then(gotoTask);
+    TasksService.saveTask(task, UISessionService.getActiveUUID()).then(gotoTask);
 
     function gotoTask(savedTask) {
       var mainSlidePath, pageSlidePath;
@@ -85,7 +85,7 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
       if (!$scope.isFeatureActive('tasks')) {
         $scope.setActiveFeature('tasks');
       }
-      $location.path(UserSessionService.getOwnerPrefix());
+      $location.path(UISessionService.getOwnerPrefix());
     }
   };
 
@@ -99,31 +99,31 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
 
   $scope.editTaskTitle = function(task) {
     AnalyticsService.do('editTaskTitle');
-    TasksService.saveTask(task, UserSessionService.getActiveUUID());
+    TasksService.saveTask(task, UISessionService.getActiveUUID());
   };
 
   $scope.editTask = function(task) {
-    $location.path(UserSessionService.getOwnerPrefix() + '/tasks/edit/' + task.uuid);
+    $location.path(UISessionService.getOwnerPrefix() + '/tasks/edit/' + task.uuid);
   };
 
   $scope.taskChecked = function(task) {
     if (task.completed) {
       AnalyticsService.do('uncompleteTask');
-      TasksService.uncompleteTask(task, UserSessionService.getActiveUUID());
+      TasksService.uncompleteTask(task, UISessionService.getActiveUUID());
     } else {
       AnalyticsService.do('completeTask');
-      TasksService.completeTask(task, UserSessionService.getActiveUUID());
+      TasksService.completeTask(task, UISessionService.getActiveUUID());
     }
   };
 
   $scope.taskToList = function(task) {
-    TasksService.taskToList(task, UserSessionService.getActiveUUID());
-    $location.path(UserSessionService.getOwnerPrefix() + '/tasks/new/' + task.uuid);
+    TasksService.taskToList(task, UISessionService.getActiveUUID());
+    $location.path(UISessionService.getOwnerPrefix() + '/tasks/new/' + task.uuid);
   };
 
   $scope.deleteTask = function(task) {
     AnalyticsService.do('deleteTask');
-    TasksService.deleteTask(task, UserSessionService.getActiveUUID());
+    TasksService.deleteTask(task, UISessionService.getActiveUUID());
   };
 
   $scope.addSubtask = function(subtask) {
@@ -143,14 +143,14 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
     }
     delete subtask.title;
 
-    TasksService.saveTask(subtaskToSave, UserSessionService.getActiveUUID()).then(function(/*subtaskToSave*/) {
+    TasksService.saveTask(subtaskToSave, UISessionService.getActiveUUID()).then(function(/*subtaskToSave*/) {
       AnalyticsService.do('addTask');
     });
   };
 
   $scope.taskQuickEditDone = function(task) {
     AnalyticsService.do('taskQuickEditDone');
-    TasksService.saveTask(task, UserSessionService.getActiveUUID());
+    TasksService.saveTask(task, UISessionService.getActiveUUID());
     $scope.close(task, true);
   };
 
@@ -177,5 +177,5 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
   };
 }
 
-TasksController['$inject'] = ['$location', '$rootScope', '$routeParams', '$scope', 'DateService', 'SwiperService', 'UserSessionService', 'TasksService', 'AnalyticsService'];
+TasksController['$inject'] = ['$location', '$rootScope', '$routeParams', '$scope', 'DateService', 'SwiperService', 'UISessionService', 'TasksService', 'AnalyticsService'];
 angular.module('em.app').controller('TasksController', TasksController);
