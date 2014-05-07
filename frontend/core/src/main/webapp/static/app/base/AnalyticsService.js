@@ -4,7 +4,7 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
 
   var deferredLocation = $q.defer();
 
-  // Skip all analytics, if it is not in use  
+  // Skip all analytics, if it is not in use
   if ($rootScope.collectAnalytics){
 
     // START SESSION.JS
@@ -219,7 +219,7 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
           };
           device.viewport = {
             width: win.innerWidth || doc.documentElement.clientWidth || doc.body.clientWidth,
-            height: win.innerHeight || doc.documentElement.clientHeight || doc.body.clientHeight 
+            height: win.innerHeight || doc.documentElement.clientHeight || doc.body.clientHeight
           };
           device.is_tablet = !!nav.userAgent.match(/(iPad|SCH-I800|xoom|kindle)/i);
           device.is_phone = !device.is_tablet && !!nav.userAgent.match(/(iPhone|iPod|blackberry|android 0.5|htc|lg|midp|mmp|mobile|nokia|opera mini|palm|pocket|psp|sgh|smartphone|symbian|treo mini|Playstation Portable|SonyEricsson|Samsung|MobileExplorer|PalmSource|Benq|Windows Phone|Windows Mobile|IEMobile|Windows CE|Nintendo Wii)/i);
@@ -355,7 +355,7 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
         ipinfodb_location: function(api_key){
           return function (callback){
             var location_cookie = util.get_obj(options.location_cookie);
-            if (!location_cookie && location_cookie.source === 'ipinfodb'){ 
+            if (!location_cookie && location_cookie.source === 'ipinfodb'){
             win.ipinfocb = function(data){
               if (data.statusCode === "OK"){
                 data.source = "ipinfodb";
@@ -524,20 +524,21 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
     return payload;
   };
 
-  function postAnalytics(payload){
-    function postAnalyticsOnlineOffline(payload){
-      if (UserSessionService.isOfflineEnabled()){
+  function postAnalytics(payload, forceOnline){
+    function postAnalyticsOnlineOffline(payload, forceOnline){
+      if (UserSessionService.isOfflineEnabled() && !forceOnline){
         HttpClientService.postLast(analyticsUrl, payload);
       }else{
+        console.log("online");
         HttpClientService.postLastOnline(analyticsUrl, payload);
       }
     }
     deferredLocation.promise.then(function(location){
       // Got location
-      postAnalyticsOnlineOffline(payload);
+      postAnalyticsOnlineOffline(payload, forceOnline);
     }, function() {
       // No location data, send analytics without it
-      postAnalyticsOnlineOffline(payload);
+      postAnalyticsOnlineOffline(payload, forceOnline);
     });
   }
 
@@ -549,7 +550,7 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
     visitEntry: function(location) {
       if ($rootScope.collectAnalytics){
         var payload = getPayload("visit_" + location, undefined, undefined, true);
-        return postAnalytics(payload);
+        return postAnalytics(payload, true);
       }
     },
     visit: function(location) {
