@@ -172,7 +172,6 @@ header.page-header nav {
 
   #omnibar-search-results {
     height: 100%;
-    background-color: white;
     z-index: 1;
     position: relative;
   }
@@ -298,7 +297,6 @@ footer {
 
 // desktop
 #desktop-menu {
-  background-color: white;
   max-width: @one-column-grid-width;
   height: inherit;
   overflow-y: auto;
@@ -382,6 +380,13 @@ footer {
       margin-right: 10px;
     }
   }
+}
+
+// Override again with background color of the next element
+// of the mobile menu
+#feature-container {
+  position: relative;
+  background-color: white;
 }
 
 // DATEPICKER
@@ -515,4 +520,15 @@ li.datepicker-date {
   padding-top: @vertical-grid * 3;
   color: @default-element;
   text-align: center;
+}
+
+// INPUT FIELD BACKDROP
+
+.input-backdrop {
+  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+}
+
+.input-backdrop.active {
+  background-color: gray;
 }
