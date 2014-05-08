@@ -5,7 +5,7 @@
         <input type="text" id="{{omnibarFeature + heading}}OmnibarInput" class="simple-input form-control omnibar-input" ng-model="omnibarText.title" dynamic-placeholder="{{omnibarPlaceholders[omnibarFeature + heading]}}" ng-click="clickOmnibar(omnibarFeature, heading)" ng-keydown="omnibarKeyDown($event)" maxlength="128" required>
       </div>
       <div ng-show="omnibarHasText()" class="right-button-wrapper">
-        <button id="omnibarX" class="button" type="button" ng-click="omnibarText=''"><span class="icon-x"></span>
+        <button id="omnibarX" class="button" type="button" ng-click="omnibarText.title=''"><span class="icon-x"></span>
         </button>
       </div>
     </div>
@@ -36,11 +36,11 @@
   </div>
   <div ng-if="omnibarVisible" id="omnibar-results" class="swiper-no-swiping" ng-style="{height: getOmnibarSearchResultsHeight()}" data-snap-ignore="true" >
     <div ng-if="!omnibarHasText()" id="filtered-items-placeholder" ng-style="{width: getColumnWidth()}" ng-click="clearOmnibar(heading)">&nbsp;</div>
-    <div ng-if="omnibarHasText()" id="filtered-items-container">
+    <div ng-if="isSearchActive()" id="filtered-items-container">
       <div ng-show="filteredItems.length" class="filtered-items">
         <h3 ><a href ng-click="gotoInbox()">inbox</a></h3>
         <div class="inner-page-content-container" accordion>
-          <div ng-repeat="item in filteredItems = (items | filter:{title:omnibarText.title}) | orderBy:'modified':true">
+          <div ng-repeat="item in filteredItems = (items | filter:{title:searchText.delayed}) | orderBy:'modified':true">
             <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" toggle-complete="false"></div>
             <div ng-if="isOpen(item)" class="accordion-body" editable-field-container="auto">
               <div ng-include="'static/app/main/itemActions.html'"></div>
@@ -51,7 +51,7 @@
       <div ng-show="filteredTasks.length" class="filtered-items" ng-controller="TasksController">
         <h3><a href ng-click="gotoTasks()">tasks</a></h3>
         <div class="inner-page-content-container" accordion>
-          <div ng-repeat="task in filteredTasks = (tasks | filter:{title:omnibarText.title})">
+          <div ng-repeat="task in filteredTasks = (tasks | filter:{title:searchText.delayed})">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
             <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
               <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
@@ -62,7 +62,7 @@
       <div ng-show="filteredNotes.length" class="filtered-items" ng-controller="NotesController">
         <h3><a href ng-click="gotoNotes()">notes</a></h3>
         <div class="inner-page-content-container" accordion>
-          <div ng-repeat="note in filteredNotes = (notes | filter:{title:omnibarText.title})">
+          <div ng-repeat="note in filteredNotes = (notes | filter:{title:searchText.delayed})">
             <div accordion-title="note" edit-item="editNote(task)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete></div>
             <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
               <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>

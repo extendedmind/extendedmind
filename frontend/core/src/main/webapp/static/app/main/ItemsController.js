@@ -1,6 +1,6 @@
 'use strict';
 
-function ItemsController($location, $routeParams, $scope, UISessionService, ItemsService, AnalyticsService) {
+function ItemsController($location, $routeParams, $scope, $timeout, UISessionService, ItemsService, AnalyticsService) {
   if (!$scope.item){
     if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
       if ($routeParams.uuid) {
@@ -14,6 +14,24 @@ function ItemsController($location, $routeParams, $scope, UISessionService, Item
   $scope.omnibarHasText = function omnibarHasText() {
     return $scope.omnibarText.title && $scope.omnibarText.title.length !== 0;
   };
+
+  $scope.searchText = {};
+  $scope.isSearchActive = function isSearchActive() {
+    return $scope.searchText.delayed && $scope.searchText.delayed.length > 1;
+  }
+  $scope.$watch('omnibarText.title', function(newTitle, oldTitle) {
+    $scope.searchText.current = newTitle;
+    if (newTitle && newTitle.length > 1){
+      // Use a delayed update for search
+      $timeout(function(){
+        if ($scope.searchText.current === newTitle){
+          $scope.searchText.delayed = newTitle;
+        }
+      }, 700);
+    }else{
+      $scope.searchText.delayed = undefined;
+    }
+  });
 
   $scope.saveItem = function(item) {
     if (item.uuid){
@@ -106,5 +124,5 @@ function ItemsController($location, $routeParams, $scope, UISessionService, Item
   };
 }
 
-ItemsController.$inject = ['$location', '$routeParams', '$scope', 'UISessionService', 'ItemsService', 'AnalyticsService'];
+ItemsController.$inject = ['$location', '$routeParams', '$scope', '$timeout', 'UISessionService', 'ItemsService', 'AnalyticsService'];
 angular.module('em.app').controller('ItemsController', ItemsController);
