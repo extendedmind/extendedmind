@@ -1,8 +1,8 @@
 <form class="swiper-no-swiping add-element" role="form" name="subtaskToList" ng-submit="addSubtask(subtask)" autocapitalize="none" autocorrect="off">
-  <div class="form-group">
+  <div class="form-group" editable-field-container="disable">
     <label class="sr-only" for="taskTitle">title</label>
     <div>
-      <input type="text" class="simple-input" id="taskTitle" ng-model="subtask.title" placeholder="add task..." maxlength="128"></input>
+      <input type="text" class="simple-input" id="taskTitle" ng-model="subtask.title" placeholder="add task..." maxlength="128" editable-field></input>
     </div>
   </div>
 </form>

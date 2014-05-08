@@ -4,11 +4,7 @@ Extended Mind specific UI-components.
 
 // ACCORDION
 
-// When item is active, show top border
 .accordion-item-active {
-  border-top-style: solid;
-  border-width: 1px;
-  border-color: @separator;
   padding-top: 5px;
   padding-bottom: 5px;
   .accordion-title-open {
@@ -543,7 +539,7 @@ li.datepicker-date {
   #omnibar-label-wrapper {
     background-image: none !important;
   }
-  #active-action-wrapper, #plus-button-wrapper{
+  #active-action-wrapper, #plus-button-wrapper, #feature-container{
     background-color: inherit;
   }
 }
@@ -554,6 +550,6 @@ li.datepicker-date {
   }
 }
 
-.editable-field, .editable-field-container {
+.editable-field.active, .editable-field-container.active {
   background-color: white;
 }

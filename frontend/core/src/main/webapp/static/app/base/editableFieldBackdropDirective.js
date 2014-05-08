@@ -6,41 +6,27 @@ function editableFieldBackdropDirective($document) {
     controller: function($scope, $element, $attrs) {
       $element.addClass('editable-field-backdrop');
 
-      if ($attrs.editableFieldBackdrop === 'disable'){
+      $scope.disableBackdrop = function(){
         $element.addClass('backdrop-disable');
-      }
-
-      var showBackdropCallback, hideBackdropCallback;
-      this.showBackdrop = function(){
-        $element.addClass('active');
-        if (showBackdropCallback) showBackdropCallback();
       };
-      this.hideBackdrop = function(){
+      $scope.showBackdrop = function(){
+        $element.addClass('active');
+      };
+      $scope.hideBackdrop = function(){
         $element.removeClass('active');
         $element.addClass('animating');
-        if (hideBackdropCallback) hideBackdropCallback();
-      };
-      this.registerEditableFieldCallbacks = function(showCallback, hideCallback){
-        showBackdropCallback = showCallback;
-        hideBackdropCallback = hideCallback;
       };
 
       // Listen to transition end callbacks
 
-      var transitionEndCallback = function() {
+      var transitionEndCallback = function(event) {
         $element.removeClass('animating');
       };
-
-      angular.element($element).bind('webkitTransitionend', transitionEndCallback);
-      angular.element($element).bind('oTransitionend', transitionEndCallback);
-      angular.element($element).bind('msTransitionend', transitionEndCallback);
-      angular.element($element).bind('transitionend', transitionEndCallback);
-
+      angular.element($element).bind(
+        'webkitTransitionend oTransitionend msTransitionend transitionend',transitionEndCallback);
       $scope.$on('$destroy', function(){
-        angular.element($element).unbind('webkitTransitionend', transitionEndCallback);
-        angular.element($element).unbind('oTransitionend', transitionEndCallback);
-        angular.element($element).unbind('msTransitionend', transitionEndCallback);
-        angular.element($element).unbind('transitionend', transitionEndCallback);
+        angular.element($element).unbind(
+          'webkitTransitionend oTransitionend msTransitionend transitionend', transitionEndCallback);
       });
     }
   };

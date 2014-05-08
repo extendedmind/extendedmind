@@ -1,8 +1,8 @@
 <form class="swiper-no-swiping add-element" role="form" name="addNoteForm" ng-submit="addNote(newNote)">
-  <div class="form-group">
+  <div class="form-group" editable-field-container="disable">
     <label class="sr-only" for="noteTitle">title</label>
     <div>
-      <input type="text" class="simple-input" id="noteTitle" ng-model="newNote.title" placeholder="add note..." autocapitalize="none" maxlength="128" autocorrect="off"></input>
+      <input type="text" class="simple-input" id="noteTitle" ng-model="newNote.title" placeholder="add note..." autocapitalize="none" maxlength="128" autocorrect="off" editable-field></input>
     </div>
   </div>
 </form>

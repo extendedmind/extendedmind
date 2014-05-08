@@ -17,7 +17,7 @@
                           <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
                         </div>
                       </div>
-                      <div ng-if="isOpen(note)" class="accordion-body">
+                      <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
                         <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
                       </div>
                       <div ng-if="!note.content" class="teaser-empty"></div>
@@ -40,7 +40,7 @@
                           <a href id="note-teaser" ng-click="editNote(note)" ng-bind="getNoteContentTeaser(note)"></a>
                         </div>
                       </div>
-                      <div ng-if="isOpen(note)" class="accordion-body">
+                      <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
                         <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
                       </div>
                       <div ng-if="!note.content" class="teaser-empty"></div>

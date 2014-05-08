@@ -13,7 +13,7 @@
                   <div class="inner-page-content-container" accordion>
                     <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
                       <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-                      <div ng-if="isOpen(task)" class="accordion-body">
+                      <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
                         <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>
                     </div>
@@ -45,7 +45,7 @@
                   <div class="inner-page-content-container" accordion>
                     <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'byContextUUID', filterBy: context.uuid}">
                       <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-                      <div ng-if="isOpen(task)" class="accordion-body">
+                      <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
                         <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>
                     </div>
@@ -63,7 +63,7 @@
                   <div class="inner-page-content-container" accordion>
                     <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}" ng-init="subtask = {}">
                       <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-                      <div ng-if="isOpen(task)" class="accordion-body">
+                      <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
                         <div class="accordion-inner" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>
                     </div>

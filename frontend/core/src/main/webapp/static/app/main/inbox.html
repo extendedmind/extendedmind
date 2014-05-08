@@ -7,17 +7,17 @@
           <div class="inner-page-content-container" accordion>
             <div ng-if="showContent('inbox')" ng-repeat="item in items">
               <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" has-complete="false" toggle-complete></div>
-              <div ng-if="isOpen(item)" class="accordion-body">
+              <div ng-if="isOpen(item)" class="accordion-body" editable-field-container="auto">
                 <div class="accordion-inner" ng-include="'static/app/main/itemActions.html'"></div>
               </div>
             </div>
           </div>
         </div>
         <form class="add-element" role="form" name="itemToInbox" ng-submit="addNewItem()" autocapitalize="none" autocorrect="off">
-          <div class="form-group">
+          <div class="form-group" editable-field-container="disable">
             <label class="sr-only" for="itemTitle">title</label>
             <div>
-              <input type="text" id="itemTitle" class="simple-input" ng-model="item.title" placeholder="add item..." maxlength="128"></input>
+              <input type="text" id="itemTitle" class="simple-input" ng-model="item.title" placeholder="add item..." maxlength="128" editable-field></input>
             </div>
           </div>
         </form>

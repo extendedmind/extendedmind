@@ -10,7 +10,7 @@
       <a id="accordionTitleLink" class="accordion-toggle center-input-wrapper" href ng-click="clickTitle()">{{item.title}}</a>
     </div>
   </div>
-  <form ng-switch-when="true" role="form" name="itemTitleEdit" class="table-wrapper accordion-title-open" ng-class="!hasComplete && 'no-checkbox'" editable-field-container>
+  <form ng-switch-when="true" role="form" name="itemTitleEdit" class="table-wrapper accordion-title-open" ng-class="!hasComplete && 'no-checkbox'" editable-field-container="auto">
     <div ng-if="hasComplete" class="left-checkbox-wrapper">
       <input type="checkbox" id="{{item.uuid}}" name="checkbox" class="input-checkbox" ng-checked="item.completed" swiper-click="itemChecked()" editable-field />
       <label class="checkbox swiper-no-swiping" for="{{item.uuid}}"></label>
@@ -24,5 +24,4 @@
       </button>
     </div>
   </form>
-  <div ng-transclude></div>
 </div>
