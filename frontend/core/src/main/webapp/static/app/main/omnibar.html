@@ -63,7 +63,7 @@
         <h3><a href ng-click="gotoNotes()">notes</a></h3>
         <div class="inner-page-content-container" accordion>
           <div ng-repeat="note in filteredNotes = (notes | filter:{title:searchText.delayed})">
-            <div accordion-title="note" edit-item="editNote(task)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete></div>
+            <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete></div>
             <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
               <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
             </div>
