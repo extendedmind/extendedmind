@@ -529,7 +529,6 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
       if (UserSessionService.isOfflineEnabled() && !forceOnline){
         HttpClientService.postLast(analyticsUrl, payload);
       }else{
-        console.log("online");
         HttpClientService.postLastOnline(analyticsUrl, payload);
       }
     }
