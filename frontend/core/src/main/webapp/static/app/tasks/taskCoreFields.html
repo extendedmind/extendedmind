@@ -3,7 +3,7 @@
   <div class="form-group">
     <div ng-if="showDateInput">
       <label for="taskDue" class="sr-only">select date...</label>
-      <input type="date" id="taskDue" class="swiper-no-swiping" ng-model="task.date" ng-blur="hideDateInput()" date-input="showDateInput">
+      <input type="date" id="taskDue" class="swiper-no-swiping" ng-model="task.date" ng-blur="hideDateInput()" date-input="showDateInput" editable-field>
     </div>
     <div ng-if="!showDateInput" class="item-actions">
       <span class="simple-input default-element date-input-placeholder" ng-click="focusDate()">select date...</span>
@@ -12,13 +12,13 @@
 
   <div class="form-group">
     <label class="sr-only" for="taskList">list</label>
-    <select id="taskList" class="simple-input swiper-no-swiping" ng-model="task.relationships.list" ng-options="list.uuid as list.title for list in lists">
+    <select id="taskList" class="simple-input swiper-no-swiping" ng-model="task.relationships.list" ng-options="list.uuid as list.title for list in lists" editable-field>
       <option value="">select list...</option>
     </select>
   </div>
   <div ng-show="contexts.length" class="form-group">
     <label class="sr-only" for="taskContext">context</label>
-    <select id="taskContext" class="simple-input swiper-no-swiping" ng-model="task.relationships.context" ng-options="context.uuid as context.title for context in contexts">
+    <select id="taskContext" class="simple-input swiper-no-swiping" ng-model="task.relationships.context" ng-options="context.uuid as context.title for context in contexts" editable-field>
       <option value="">select context...</option>
     </select>
   </div>

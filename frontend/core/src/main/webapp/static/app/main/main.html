@@ -1,5 +1,5 @@
 <div ng-if="isMobile" ng-show="featureContainerReady" id="mobile-menu" ng-include="'static/app/auth/menu.html'" class="snap-drawer snap-drawer-left" scrollable></div>
-<div id="feature-container" feature-container ng-controller="MainController">
+<div id="feature-container" feature-container ng-controller="MainController" editable-field-backdrop="disable">
   <header ng-if="isContentFeatureActive()" class="page-header" ng-class="omnibarVisible && 'header-hidden'" ng-include="'static/app/main/pageHeader.html'"></header>
   <header ng-if="!isContentFeatureActive()" class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
 

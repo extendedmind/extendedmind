@@ -522,13 +522,38 @@ li.datepicker-date {
   text-align: center;
 }
 
-// INPUT FIELD BACKDROP
+// EDITABLE FIELD
 
-.input-backdrop {
-  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+.editable-field-backdrop {
+  -webkit-transition:background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -moz-transition:background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -o-transition:background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -ms-transition:background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  transition:background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
 }
 
-.input-backdrop.active {
-  background-color: gray;
+.editable-field-backdrop.active {
+  background-color: #f6f6f6 !important;
+  &.backdrop-disable * {
+    pointer-events: none;
+  }
+}
+
+.editable-field-backdrop.active, .editable-field-backdrop.animating{
+  #omnibar-label-wrapper {
+    background-image: none !important;
+  }
+  #active-action-wrapper, #plus-button-wrapper{
+    background-color: inherit;
+  }
+}
+
+.backdrop-disable .editable-field-container{
+  * {
+    pointer-events: auto !important;
+  }
+}
+
+.editable-field, .editable-field-container {
+  background-color: white;
 }

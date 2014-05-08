@@ -1,21 +1,21 @@
 <div class="no-slides-container" ng-controller="MainController">
-  <div id="edit-page" ng-controller="ItemsController">
+  <div id="edit-page" ng-controller="ItemsController" editable-field-backdrop>
     <header class="edit-header" edit-header="item" item-edit-form="itemEdit" save-item="saveItem(item)" cancel-edit="cancelEdit()"></header>
     <section id="edit-item" class="one-column-grid page">
       <div class="column">
         <div class="content-container simple-content-container">
-          <form role="form" name="itemEdit">
+          <form role="form" name="itemEdit" editable-field-container>
             <div class="form-group">
               <label class="sr-only" for="itemTitle">title</label>
-              <input type="text" class="simple-input font-bold" id="itemTitle" ng-model="item.title" placeholder="title..." maxlength="128" required>
+              <input type="text" id="itemTitle" class="simple-input font-bold" ng-model="item.title" placeholder="title..." maxlength="128" required editable-field>
             </div>
             <div class="form-group" ng-style="{maxHeight: getEditSimpleDescriptionMaxHeight()}">
               <label class="sr-only" for="itemDescription">description</label>
-              <textarea class="simple-input" ng-style="{maxHeight: getEditSimpleDescriptionMaxHeight()}" id="itemDescription" ng-model="item.description" placeholder="description..." maxlength="1024" expanding-textarea></textarea>
+              <textarea id="itemDescription" class="simple-input" ng-style="{maxHeight: getEditSimpleDescriptionMaxHeight()}" ng-model="item.description" placeholder="description..." maxlength="1024" expanding-textarea editable-field></textarea>
             </div>
             <div class="form-group">
               <label class="sr-only" for="itemLink">url</label>
-              <input type="text" class="simple-input" id="itemLink" ng-model="item.link" placeholder="url...">
+              <input type="text" id="itemLink" class="simple-input" ng-model="item.link" placeholder="url..." editable-field>
             </div>
           </form>
         </div>
