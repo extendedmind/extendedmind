@@ -8,7 +8,7 @@ ul.indent {
   padding-left: @horizontal-grid + 10px;
 }
 
-div[role=main] {
+div#root {
   line-height: @vertical-grid;
   max-height: @maximum-height;
   .center-horizontally;
@@ -254,7 +254,7 @@ footer {
 // once the screen size is bigger than a tablet
 @media (min-width: @maximum-width) and (min-height: @maximum-landscape-height) {
   body {
-    div[role=main] > div.no-slides-container {
+    div#root > div.no-slides-container {
       .center-container;
       min-height: @maximum-landscape-height;
       max-height: @maximum-landscape-height;
@@ -274,7 +274,7 @@ footer {
         .absolute-center;
       }
     }
-    div[role=main] > div.slides-container {
+    div#root > div.slides-container {
       position: inherit;
       top: 50%;
       min-height: @maximum-landscape-height;

@@ -1,11 +1,11 @@
 'use strict';
 
-function mainViewDirective($injector, $rootScope, $window, ModalService, BackendClientService, UserSessionService, SnapService, SwiperService, AnalyticsService, UUIDService) {
+function rootViewDirective($injector, $rootScope, $window, ModalService, BackendClientService, UserSessionService, SnapService, SwiperService, AnalyticsService, UUIDService) {
 
   return {
     restrict: 'A',
     replace: 'true',
-    templateUrl: 'static/app/auth/main.html',
+    templateUrl: 'static/app/auth/root.html',
     controller: function($scope) {
       // Back function globally available
       $scope.gotoPreviousPage = function() {
@@ -216,6 +216,6 @@ function mainViewDirective($injector, $rootScope, $window, ModalService, Backend
   };
 }
 
-mainViewDirective.$inject = ['$injector', '$rootScope', '$window',
+rootViewDirective.$inject = ['$injector', '$rootScope', '$window',
 'ModalService', 'BackendClientService', 'UserSessionService', 'SnapService', 'SwiperService', 'AnalyticsService', 'UUIDService'];
-angular.module('em.directives').directive('mainView', mainViewDirective);
+angular.module('em.directives').directive('rootView', rootViewDirective);
