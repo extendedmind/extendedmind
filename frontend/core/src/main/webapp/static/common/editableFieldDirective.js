@@ -27,5 +27,5 @@ function editableFieldDirective() {
   };
 }
 editableFieldDirective.$inject = [];
-angular.module('em.directives').directive('editableField', editableFieldDirective);
+angular.module('common').directive('editableField', editableFieldDirective);
 

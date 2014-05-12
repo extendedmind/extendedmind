@@ -32,5 +32,4 @@ function editableFieldBackdropDirective($document) {
   };
 }
 editableFieldBackdropDirective['$inject'] = ['$document'];
-angular.module('em.directives').directive('editableFieldBackdrop', editableFieldBackdropDirective);
-
+angular.module('common').directive('editableFieldBackdrop', editableFieldBackdropDirective);

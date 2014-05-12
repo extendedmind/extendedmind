@@ -34,5 +34,5 @@ function editableFieldContainerDirective() {
     }
   };
 }
-angular.module('em.directives').directive('editableFieldContainer', editableFieldContainerDirective);
+angular.module('common').directive('editableFieldContainer', editableFieldContainerDirective);
 
