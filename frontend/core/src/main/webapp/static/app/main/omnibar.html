@@ -13,17 +13,17 @@
   <div ng-if="omnibarVisible" class="omnibar-actions omnibar-animation">
     <ul class="button-row">
       <li class="button-container left-of-four border-right">
-        <button type="button" class="normal-button" ng-click="clickOmnibarPlus(omnibarText)" ng-disabled="!omnibarHasText()">
+        <button type="button" class="normal-button" ng-click="clickOmnibarPlus(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
           <span class="button-text">inbox</span>
         </button>
       </li>
       <li class="button-container center-of-four">
-        <button type="button" class="default-button" ng-click="saveAsTask(omnibarText)" ng-disabled="!omnibarHasText()">
+        <button type="button" class="default-button" ng-click="saveAsTask(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
           <span class="button-text">task</span>
         </button>
       </li>
       <li class="button-container center-of-four">
-        <button type="button" class="default-button" ng-click="saveAsNote(omnibarText)" ng-disabled="!omnibarHasText()">
+        <button type="button" class="default-button" ng-click="saveAsNote(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
           <span class="button-text">note</span>
         </button>
       </li>
@@ -35,8 +35,8 @@
     </ul>
   </div>
   <div ng-if="omnibarVisible" id="omnibar-results" class="swiper-no-swiping" ng-style="{height: getOmnibarSearchResultsHeight()}" data-snap-ignore="true" >
-    <div ng-if="!omnibarHasText()" id="filtered-items-placeholder" ng-style="{width: getColumnWidth()}" ng-click="clearOmnibar(heading)">&nbsp;</div>
-    <div ng-if="isSearchActive()" id="filtered-items-container">
+    <div ng-if="!isSearchActive() || isLoading" id="filtered-items-placeholder" ng-style="{width: getColumnWidth()}" ng-click="clearOmnibar(heading)">&nbsp;</div>
+    <div ng-if="isSearchActive() && !isLoading" id="filtered-items-container">
       <div ng-show="filteredItems.length" class="filtered-items">
         <h3 ><a href ng-click="gotoInbox()">inbox</a></h3>
         <div class="inner-page-content-container" accordion>

@@ -109,28 +109,12 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
       *
       * These are here because the drawer menu is not under the MainController.js
       **/
-
-      // Default values start
       $scope.activeFeature = 'tasks';
-      // Default values end
-
-      // Feature is either content feature (true) or system feature (false).
-      var features = {
-        tasks: true,
-        notes: true,
-        inbox: true,
-        account: false,
-        about: false,
-        admin: false
-      };
       $scope.setActiveFeature = function setActiveFeature(feature) {
         $scope.activeFeature = feature;
       };
       $scope.isFeatureActive = function isFeatureActive(feature) {
         return $scope.activeFeature === feature;
-      };
-      $scope.isContentFeatureActive = function isContentFeatureActive() {
-        return features[$scope.activeFeature];
       };
 
       // MENU TOGGLE

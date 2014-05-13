@@ -1,7 +1,7 @@
 <section id="tasks-overview" class="two-column-grid page" ng-controller="TasksController">
   <div class="column">
     <div class="page-heading swiper-no-swiping" ng-init="heading = 'overview'; omnibarFeature = 'tasks'" ng-include="'static/app/main/omnibar.html'"></div>
-    <div ng-hide="(omnibarVisible && isActiveSlide('overview')) || isLoading" class="content-container page-content-container omnibar-animation">
+    <div ng-hide="omnibarVisible && isActiveSlide('overview')" class="content-container page-content-container omnibar-animation">
       <div class="inner-page-content-container">
         <div ng-include="'static/app/base/listsOverview.html'" include-replace></div>
         <section ng-init="newContext={title:undefined, tagType:'context'}" ng-controller="ContextsController">
@@ -27,7 +27,6 @@
         </section>
       </div>
     </div>
-    <div ng-if="isLoading && !omnibarVisible" class="loading-animation" loading-animation></div>
   </div>
   <aside class="column">
     TODO

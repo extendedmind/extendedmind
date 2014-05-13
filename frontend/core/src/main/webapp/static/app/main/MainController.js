@@ -21,7 +21,8 @@ function MainController(
     AccountService.putAccountPreferences(UserSessionService.getPreferences());
   }
 
-  // Data arrays
+  // DATA ARRAYS
+
   $scope.items = ItemsService.getItems(UISessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UISessionService.getActiveUUID());
   $scope.notes = NotesService.getNotes(UISessionService.getActiveUUID());
@@ -34,6 +35,25 @@ function MainController(
 
   $scope.ownerPrefix = UISessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
+
+  // FEATURES
+
+  var contentFeatures = ['tasks', 'notes', 'inbox'];
+  var activeContentFeatures = {};
+
+  $scope.$watch('activeFeature', function(newActiveFeature) {
+    if (contentFeatures.indexOf(newActiveFeature) > -1){
+      activeContentFeatures[newActiveFeature] = true;
+    }
+  });
+
+  $scope.isContentFeatureActive = function isContentFeatureActive(feature) {
+    if (feature){
+      return activeContentFeatures[feature];
+    }else{
+      return (contentFeatures.indexOf($scope.activeFeature) > -1);
+    }
+  };
 
   // BACKEND POLLING
 
@@ -151,7 +171,7 @@ function MainController(
   };
 
   $scope.saveOmnibarText = function(omnibarText) {
-    if (omnibarText.title && omnibarText.title.length > 0) {
+    if (omnibarText.title && omnibarText.title.length > 0 && !$scope.isLoading) {
       ItemsService.saveItem({title: omnibarText.title}, UISessionService.getActiveUUID()).then(function(/*item*/) {
         $scope.clearOmnibar();
         if (!$scope.isFeatureActive('inbox')) {

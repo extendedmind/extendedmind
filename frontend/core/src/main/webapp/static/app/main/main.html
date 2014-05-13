@@ -3,9 +3,9 @@
   <header ng-if="isContentFeatureActive()" class="page-header" ng-class="omnibarVisible && 'header-hidden'" ng-include="'static/app/main/pageHeader.html'"></header>
   <header ng-if="!isContentFeatureActive()" class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
 
-  <div ng-if="isContentFeatureActive()" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>
-  <div ng-if="isContentFeatureActive()" ng-include="'static/app/notes/notesSlides.html'" include-replace></div>
-  <div ng-if="isContentFeatureActive()" ng-include="'static/app/main/inbox.html'" include-replace></div>
+  <div ng-if="isContentFeatureActive('tasks')" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>
+  <div ng-if="isContentFeatureActive('notes')" ng-include="'static/app/notes/notesSlides.html'" include-replace></div>
+  <div ng-if="isContentFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>
 
   <div ng-if="isFeatureActive('account') && !isContentFeatureActive()" ng-include="'static/app/account/account.html'" include-replace></div>
   <div ng-if="isFeatureActive('about') && !isContentFeatureActive()" ng-include="'static/app/base/about.html'" include-replace></div>

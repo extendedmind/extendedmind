@@ -1,8 +1,8 @@
-<div ng-show="isFeatureActive('tasks')" class="swiper-container main-slides" swiper-container="tasks" swiper-type="main" expected-slides="3">
+<div ng-show="isFeatureActive('tasks')" class="swiper-container main-slides" swiper-container="tasks" swiper-type="main" expected-slides="(isLoading && 1) || (!isLoading && 3)">
   <div ng-hide="isDesktop && isMenuOpen" class="swiper-wrapper">
     <div class="swiper-slide" swiper-slide="tasks/home" slide-index=0 ng-include="'static/app/tasks/dates.html'" snap-drawer-drag="tasks"></div>
-    <div class="swiper-slide" swiper-slide="tasks/overview" slide-index=1 ng-include="'static/app/tasks/overview.html'"></div>
-    <div class="swiper-slide" swiper-slide="tasks/details" slide-index=2 ng-include="'static/app/tasks/details.html'"></div>
+    <div ng-if="!isLoading" class="swiper-slide" swiper-slide="tasks/overview" slide-index=1 ng-include="'static/app/tasks/overview.html'"></div>
+    <div ng-if="!isLoading" class="swiper-slide" swiper-slide="tasks/details" slide-index=2 ng-include="'static/app/tasks/details.html'"></div>
   </div>
   <div ng-if="isDesktop && isMenuOpen" id="desktop-menu" class="desktop-menu-animation" ng-include="'static/app/auth/menu.html'"></div>
 </div>
