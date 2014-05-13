@@ -114,11 +114,14 @@ describe('UISessionService', function() {
     inject(function(_UISessionService_) {
       UISessionService = _UISessionService_;
     });
+    spyOn(SessionStorageService, 'getUserUUID').andReturn(testUserUUID);
+
     var callbackCalled = false;
     function featureChangedCallback(/*newFeature, oldFeature*/){
       callbackCalled = true;
     }
     UISessionService.registerFeatureChangedCallback(featureChangedCallback);
+    UISessionService.setMyActive();
 
     // 1. Change feature starting from an empty feature history
 

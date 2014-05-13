@@ -3,10 +3,10 @@
 
 function UISessionService($rootScope, LocalStorageService, SessionStorageService) {
 
-  // Map containing states and datas of features
+  // Map containing states and datas of features per owner
   var featureMap = {};
-  // List containing history of features
-  var featureHistory = [];
+  // List containing history of features per owner
+  var featureHistory = {};
   var featureChangedCallback;
 
   var ownerPrefix = 'my'; // default owner
@@ -19,11 +19,14 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
     // Set active UUID and url prefix
     setCollectiveActive: function(uuid) {
       SessionStorageService.setActiveUUID(uuid);
+      if (!featureMap[uuid]) featureMap[uuid] = {};
       ownerPrefix = 'collective' + '/' + SessionStorageService.getActiveUUID();
     },
     setMyActive: function() {
-      if (SessionStorageService.getUserUUID()){
-        SessionStorageService.setActiveUUID(SessionStorageService.getUserUUID());
+      var userUUID = SessionStorageService.getUserUUID();
+      if (userUUID){
+        SessionStorageService.setActiveUUID(userUUID);
+        if (!featureMap[userUUID]) featureMap[userUUID] = {};
         ownerPrefix = 'my';
       }else{
         // User's UUID not known
@@ -44,34 +47,39 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
 
     // Feature history
     changeFeature: function(newFeature, oldFeature){
-      featureMap[newFeature.name] = {
+      var uuid = this.getActiveUUID();
+      featureMap[uuid][newFeature.name] = {
         state: newFeature.state,
         data: newFeature.data
       };
       if (oldFeature){
-        featureMap[oldFeature.name] = {
+        featureMap[uuid][oldFeature.name] = {
           state: oldFeature.state,
           data: oldFeature.data
         };
       }
-      featureHistory.push(newFeature.name);
+      if (!featureHistory[uuid]) featureHistory[uuid] = [];
+      featureHistory[uuid].push(newFeature.name);
 
       // Fire feature changed callback
       if (featureChangedCallback) featureChangedCallback(newFeature, oldFeature);
     },
     getPreviousFeatureName: function(){
-      if (featureHistory.length > 1){
-        return featureHistory[featureHistory.length-2];
+      var uuid = this.getActiveUUID();
+      if (featureHistory[uuid].length > 1){
+        return featureHistory[uuid][featureHistory[uuid].length-2];
       }
     },
     getFeatureState: function(featureName){
-      if (featureMap[featureName]){
-        return featureMap[featureName].state;
+      var uuid = this.getActiveUUID();
+      if (featureMap[uuid][featureName]){
+        return featureMap[uuid][featureName].state;
       }
     },
     getFeatureData: function(featureName){
-      if (featureMap[featureName]){
-        return featureMap[featureName].data;
+      var uuid = this.getActiveUUID();
+      if (featureMap[uuid][featureName]){
+        return featureMap[uuid][featureName].data;
       }
     },
     registerFeatureChangedCallback: function(callback) {
