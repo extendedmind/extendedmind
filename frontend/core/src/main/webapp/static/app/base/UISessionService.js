@@ -7,7 +7,7 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
   var featureMap = {};
   // List containing history of features per owner
   var featureHistory = {};
-  var featureChangedCallback;
+  var featureChangedCallbacks = [];
 
   var ownerPrefix = 'my'; // default owner
 
@@ -61,13 +61,21 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
       if (!featureHistory[uuid]) featureHistory[uuid] = [];
       featureHistory[uuid].push(newFeature.name);
 
-      // Fire feature changed callback
-      if (featureChangedCallback) featureChangedCallback(newFeature, oldFeature);
+      // Fire feature changed callbacks
+      for (var i = 0, len = featureChangedCallbacks.length; i < len; i++) {
+        featureChangedCallbacks[i].callback(newFeature, oldFeature);
+      }
     },
     getPreviousFeatureName: function(){
       var uuid = this.getActiveUUID();
       if (featureHistory[uuid].length > 1){
         return featureHistory[uuid][featureHistory[uuid].length-2];
+      }
+    },
+    getCurrentFeatureName: function(){
+      var uuid = this.getActiveUUID();
+      if (featureHistory[uuid].length > 1){
+        return featureHistory[uuid][featureHistory[uuid].length-1];
       }
     },
     getFeatureState: function(featureName){
@@ -82,8 +90,17 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
         return featureMap[uuid][featureName].data;
       }
     },
-    registerFeatureChangedCallback: function(callback) {
-      featureChangedCallback = callback;
+    registerFeatureChangedCallback: function(callback, id) {
+      for (var i = 0; i < featureChangedCallbacks.length; i++) {
+        if (featureChangedCallbacks[i].id === id) {
+          // Already registered, replace callback
+          featureChangedCallbacks[i].callback = callback;
+          return;
+        }
+      }
+      featureChangedCallbacks.push({
+        callback: callback,
+        id: id});
     }
   };
 }

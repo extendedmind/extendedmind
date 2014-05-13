@@ -120,7 +120,7 @@ describe('UISessionService', function() {
     function featureChangedCallback(/*newFeature, oldFeature*/){
       callbackCalled = true;
     }
-    UISessionService.registerFeatureChangedCallback(featureChangedCallback);
+    UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'test');
     UISessionService.setMyActive();
 
     // 1. Change feature starting from an empty feature history
