@@ -11,6 +11,7 @@ function TasksController($location, $scope, DateService, SwiperService, UISessio
         };
       }
       if ($scope.task.due) $scope.showDateInput = true;
+      else $scope.showDateInput = false;
     }
   }
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'TasksController');
