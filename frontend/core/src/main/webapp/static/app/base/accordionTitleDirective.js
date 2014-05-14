@@ -65,7 +65,7 @@ angular.module('em.directives').directive('accordionTitle', [
         }else{
           title = $scope.item.title;
         }
-        var maximumTitleLength = 40;
+        var maximumTitleLength = 50;
         if (title.length <= maximumTitleLength){
           return title;
         } else{
