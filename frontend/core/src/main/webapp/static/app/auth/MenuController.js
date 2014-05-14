@@ -12,7 +12,7 @@ function MenuController($location, $scope, AuthenticationService, UISessionServi
   };
 
   $scope.getFeatureClass = function getFeatureClass(feature) {
-    if ($scope.isFeatureActive(feature)) {
+    if (UISessionService.getCurrentFeatureName() === feature) {
       return 'active';
     }
   };
@@ -46,8 +46,8 @@ function MenuController($location, $scope, AuthenticationService, UISessionServi
   };
 
   $scope.gotoFeature = function gotoFeature(feature) {
-    if (!$scope.isFeatureActive(feature)) {
-      $scope.setActiveFeature(feature);
+    if (UISessionService.getCurrentFeatureName() !== feature) {
+      UISessionService.changeFeature({name: feature});
       AnalyticsService.visit(feature);
     }
     $scope.toggleMenu();

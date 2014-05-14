@@ -1,4 +1,4 @@
-<div ng-switch="itemType" ng-controller="ItemsController">
+<div ng-switch="itemType">
   <div class="item-actions" ng-switch-default>
     <ul class="button-row">
       <li class="button-container left-of-four">
@@ -24,19 +24,19 @@
     </ul>
   </div>
 
-  <div ng-switch-when="task" ng-controller="TasksController">
+  <div ng-switch-when="task">
     <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
     <div class="item-actions">
-      <button class="wide-button normal-button" type="button" ng-click="taskEditDone(task)">
+      <button class="wide-button normal-button" type="button" ng-click="closeAndCall(task, taskEditDone)">
         <span class="button-text">done</span>
       </button>
     </div>
   </div>
 
-  <div ng-switch-when="note" ng-controller="NotesController">
+  <div ng-switch-when="note">
     <div ng-include="'static/app/notes/noteCoreFields.html'"></div>
     <div class="item-actions">
-      <button class="wide-button normal-button" type="button" ng-click="noteEditDone(note)">
+      <button class="wide-button normal-button" type="button" ng-click="closeAndCall(note, noteEditDone)">
         <span class="button-text">done</span>
       </button>
     </div>

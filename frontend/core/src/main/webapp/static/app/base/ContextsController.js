@@ -2,15 +2,16 @@
 
 function ContextsController($location, $scope, $routeParams, UISessionService, TagsService, AnalyticsService) {
 
-  if (!$scope.context){
-    if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
-      if ($routeParams.uuid) {
-        $scope.context = TagsService.getTagByUUID($routeParams.uuid, UISessionService.getActiveUUID());
-      }else {
+  var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
+    if (newFeature.name === 'contextEdit'){
+      if (newFeature.data){
+        $scope.context = newFeature.data;
+      }else{
         $scope.context = {};
       }
     }
   }
+  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ContextsController');
 
   $scope.saveContext = function(context) {
     TagsService.saveTag(context, UISessionService.getActiveUUID());
@@ -18,28 +19,32 @@ function ContextsController($location, $scope, $routeParams, UISessionService, T
   };
 
   $scope.editContext = function(context) {
-    $location.path(UISessionService.getOwnerPrefix() + '/contexts/edit/' + context.uuid);
+    UISessionService.changeFeature({name: 'contextEdit', data: context});
+  };
+
+  $scope.editContextTitle = function(context) {
+    AnalyticsService.do('editContextTitle');
+    TagsService.saveTag(context, UISessionService.getActiveUUID());
   };
 
   $scope.deleteContext = function(context) {
     TagsService.deleteTag(context, UISessionService.getActiveUUID());
   };
 
-  $scope.cancelEdit = function() {
-    $scope.gotoPreviousPage();
-  };
-
-  $scope.showContextContent = false;
-  $scope.toggleContextContent = function() {
-    $scope.showContextContent = !$scope.showContextContent;
-  };
-
   $scope.addContext = function(newContext) {
     if (!newContext.title  || newContext.title.length === 0) return false;
-    TagsService.saveTag(newContext, UISessionService.getActiveUUID()).then(function(/*context*/) {
+
+    var contextToSave = {title: newContext.title, tagType: newContext.tagType};
+    delete newContext.title;
+
+    TagsService.saveTag(contextToSave, UISessionService.getActiveUUID()).then(function(/*context*/) {
       AnalyticsService.do('addContext');
     });
-    $scope.newContext = {title: undefined, tagType: 'context'};
+  };
+
+  $scope.contextQuickEditDone = function(context) {
+    AnalyticsService.do('contextQuickEditDone');
+    TagsService.saveTag(context, UISessionService.getActiveUUID());
   };
 }
 

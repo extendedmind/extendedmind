@@ -1,16 +1,17 @@
 'use strict';
 
-function ListsController($location, $scope, $routeParams, UISessionService, ListsService, AnalyticsService) {
+function ListsController($location, $scope, UISessionService, ListsService, AnalyticsService) {
 
-  if (!$scope.list){
-    if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
-      if ($routeParams.uuid) {
-        $scope.list = ListsService.getListByUUID($routeParams.uuid, UISessionService.getActiveUUID());
-      }else {
+  var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
+    if (newFeature.name === 'listEdit'){
+      if (newFeature.data){
+        $scope.list = newFeature.data;
+      }else{
         $scope.list = {};
       }
     }
   }
+  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ListsController');
 
   $scope.saveList = function(list) {
     ListsService.saveList(list, UISessionService.getActiveUUID());
@@ -18,25 +19,22 @@ function ListsController($location, $scope, $routeParams, UISessionService, List
   };
 
   $scope.editList = function(list) {
-    $location.path(UISessionService.getOwnerPrefix() + '/lists/edit/' + list.uuid);
+    UISessionService.changeFeature({name: 'listEdit', data: list});
   };
 
-  $scope.cancelEdit = function() {
-    $scope.gotoPreviousPage();
-  };
-
-  $scope.showListContent = false;
-  $scope.toggleListContent = function() {
-    $scope.showListContent = !$scope.showListContent;
+  $scope.editListTitle = function(list) {
+    AnalyticsService.do('editListTitle');
+    ListsService.saveList(list, UISessionService.getActiveUUID());
   };
 
   $scope.addList = function(newList) {
-
     if (!newList.title  || newList.title.length === 0) return false;
-    ListsService.saveList(newList, UISessionService.getActiveUUID()).then(function(/*list*/) {
+
+    var listToSave = {title: newList.title};
+    delete newList.title;
+    ListsService.saveList(listToSave, UISessionService.getActiveUUID()).then(function(/*list*/) {
       AnalyticsService.do('addList');
     });
-    $scope.newList = {title: undefined};
   };
 
   $scope.archiveList = function(list) {
@@ -46,8 +44,13 @@ function ListsController($location, $scope, $routeParams, UISessionService, List
   $scope.deleteList = function(list) {
     ListsService.deleteList(list, UISessionService.getActiveUUID());
   };
+
+  $scope.listQuickEditDone = function(list) {
+    AnalyticsService.do('listQuickEditDone');
+    ListsService.saveList(list, UISessionService.getActiveUUID());
+  };
 }
 
-ListsController['$inject'] = ['$location', '$scope', '$routeParams', 'UISessionService',
+ListsController['$inject'] = ['$location', '$scope', 'UISessionService',
 'ListsService', 'AnalyticsService'];
 angular.module('em.app').controller('ListsController', ListsController);

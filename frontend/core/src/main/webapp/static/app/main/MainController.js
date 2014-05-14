@@ -7,7 +7,7 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
 function MainController(
-  $filter, $location, $rootScope, $scope, $timeout, $window,
+  $controller, $filter, $location, $rootScope, $scope, $timeout, $window,
   AccountService, UISessionService, UserSessionService, ItemsService, ListsService,
   TagsService, TasksService, NotesService, FilterService, OnboardingService, SwiperService) {
 
@@ -35,25 +35,6 @@ function MainController(
 
   $scope.ownerPrefix = UISessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
-
-  // FEATURES
-
-  var contentFeatures = ['tasks', 'notes', 'inbox'];
-  var activeContentFeatures = {};
-
-  $scope.$watch('activeFeature', function(newActiveFeature) {
-    if (contentFeatures.indexOf(newActiveFeature) > -1){
-      activeContentFeatures[newActiveFeature] = true;
-    }
-  });
-
-  $scope.isContentFeatureActive = function isContentFeatureActive(feature) {
-    if (feature){
-      return activeContentFeatures[feature];
-    }else{
-      return (contentFeatures.indexOf($scope.activeFeature) > -1);
-    }
-  };
 
   // BACKEND POLLING
 
@@ -128,8 +109,7 @@ function MainController(
 
   $scope.omnibarText = {};
   $scope.omnibarPlaceholders = {};
-
-  $scope.omnibarVisible = false;
+  $scope.omnibarVisible = undefined;
 
   $scope.setOmnibarPlaceholder = function(omnibarFeature, heading) {
     $scope.omnibarPlaceholders[omnibarFeature + heading] = heading + getOfflineIndicator();
@@ -145,7 +125,7 @@ function MainController(
 
   $scope.clickOmnibar = function(omnibarFeature, heading) {
     // NOTE Heading may be not correct before $digest() because ng-init is not run.
-    $scope.omnibarVisible = true;
+    $scope.omnibarVisible = heading;
     $scope.omnibarPlaceholders[omnibarFeature + heading] = 'store / recall';
   };
 
@@ -172,17 +152,17 @@ function MainController(
 
   $scope.saveOmnibarText = function(omnibarText) {
     if (omnibarText.title && omnibarText.title.length > 0 && !$scope.isLoading) {
-      ItemsService.saveItem({title: omnibarText.title}, UISessionService.getActiveUUID()).then(function(/*item*/) {
+      ItemsService.saveItem({title: omnibarText.title}, UISessionService.getActiveUUID()).then(function(item) {
         $scope.clearOmnibar();
         if (!$scope.isFeatureActive('inbox')) {
-          $scope.setActiveFeature('inbox');
+          UISessionService.changeFeature({name: 'inbox', data: item});
         }
       });
     }
   };
 
   $scope.isActiveSlide = function isActiveSlide(pathFragment) {
-    var activeSlide = SwiperService.getActiveSlidePath($scope.activeFeature);
+    var activeSlide = SwiperService.getActiveSlidePath($scope.getActiveFeature());
     if (activeSlide && (activeSlide.indexOf(pathFragment) != -1)) {
       return true;
       // NOTE Swiper may not have set active slide for this feature during init
@@ -194,9 +174,10 @@ function MainController(
   };
 
   $scope.saveAsTask = function saveAsTask(omnibarText) {
-    $rootScope.omnibarTask = omnibarText; // FIXME  service for active user data
-    $location.path(UISessionService.getOwnerPrefix() + '/tasks/new');
-    // TODO set swiper state for edit task cancel
+    UISessionService.changeFeature(
+      {name: 'taskEdit', data: omnibarText}
+    );
+    $scope.clearOmnibar();
   };
 
   $scope.saveAsNote = function saveAsNote(omnibarText) {
@@ -210,6 +191,10 @@ function MainController(
     } else {
       $location.path(UISessionService.getOwnerPrefix() + '/items/new');
     }
+  };
+
+  $scope.cancelEdit = function() {
+    UISessionService.changeFeature({name: UISessionService.getPreviousFeatureName()});
   };
 
   // Navigation
@@ -284,10 +269,21 @@ function MainController(
       return 630;
     }
   };
+
+  // INJECT OTHER CONTENT CONTROLLERS HERE
+  // This is done because editX.html and xSlides.html
+  // need to be side by side in main.html, and they
+  // should both use the same controller
+
+  $controller('TasksController',{$scope: $scope});
+  $controller('ListsController',{$scope: $scope});
+  $controller('ContextsController',{$scope: $scope});
+  $controller('NotesController',{$scope: $scope});
+  $controller('ItemsController',{$scope: $scope});
 }
 
 MainController.$inject = [
-'$filter', '$location', '$rootScope', '$scope', '$timeout', '$window',
+'$controller', '$filter', '$location', '$rootScope', '$scope', '$timeout', '$window',
 'AccountService', 'UISessionService', 'UserSessionService', 'ItemsService', 'ListsService',
 'TagsService', 'TasksService', 'NotesService', 'FilterService', 'OnboardingService', 'SwiperService'
 ];

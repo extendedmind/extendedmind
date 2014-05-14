@@ -17,7 +17,9 @@ angular.module('em.directives').directive('accordionTitle', [
       editItemTitle: '&',
       editItem: '&',
       hasComplete: '=',
-      toggleComplete: '&'
+      toggleComplete: '&',
+      boldTitle: '=?',
+      titlePrefix: '=?'
     },  // Create an isolated scope
     link: function($scope, $element, $attrs, accordionCtrl) {
       accordionCtrl.addItem($scope);
@@ -56,6 +58,21 @@ angular.module('em.directives').directive('accordionTitle', [
         }
       };
 
+      $scope.getItemTitle = function() {
+        var title;
+        if ($scope.titlePrefix){
+          title = $scope.titlePrefix + $scope.item.title;
+        }else{
+          title = $scope.item.title;
+        }
+        var maximumTitleLength = 40;
+        if (title.length <= maximumTitleLength){
+          return title;
+        } else{
+          return title.substring(0, maximumTitleLength) + '...';
+        }
+      };
+
       $scope.endTitleEdit = function(skipSave){
         // Programmatically blur the input
         $element.find('input#accordionTitleInput')[0].blur();
@@ -84,11 +101,17 @@ angular.module('em.directives').directive('accordionTitle', [
         }
       };
 
-      $scope.getTitleInputClass = function() {
+      $scope.getTitleInputClasses = function() {
+        var titleInputClasses;
         if ($scope.hasComplete){
-          return 'center-input-wrapper';
+          titleInputClasses = 'center-input-wrapper';
+        }else{
+          titleInputClasses = 'left-input-wrapper';
         }
-        return 'left-input-wrapper';
+        if ($scope.boldTitle){
+          titleInputClasses += ' bold-title';
+        }
+        return titleInputClasses;
       };
 
       $scope.itemChecked = function() {

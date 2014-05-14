@@ -1,31 +1,19 @@
 'use strict';
 
-function NotesController($location, $rootScope, $routeParams, $scope, UISessionService, NotesService, ListsService, AnalyticsService) {
+function NotesController($location, $routeParams, $scope, UISessionService, NotesService, ListsService, AnalyticsService) {
 
-  if (!$scope.note) {
-    // edit note or new note dialog
-    if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)) {
-      // edit note
-      if ($routeParams.uuid) {
-        $scope.note = NotesService.getNoteByUUID($routeParams.uuid, UISessionService.getActiveUUID());
-      }
-      // new note
-      else {
+  var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
+    if (newFeature.name === 'noteEdit'){
+      if (newFeature.data){
+        $scope.note = newFeature.data;
+      }else{
         $scope.note = {
-          relationships: {
-            tags: []
-          }
+          relationships: {}
         };
-        if ($rootScope.omnibarNote) {
-          $scope.note.title = $rootScope.omnibarNote.title;
-          delete $rootScope.omnibarNote;
-        }
-        if ($routeParams.parentUUID){
-          $scope.note.relationships.list = $routeParams.parentUUID;
-        }
       }
     }
   }
+  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'NotesController');
 
   $scope.saveNote = function(note) {
     if (note.uuid){
@@ -35,7 +23,7 @@ function NotesController($location, $rootScope, $routeParams, $scope, UISessionS
     }
     NotesService.saveNote(note, UISessionService.getActiveUUID());
     if (!$scope.isFeatureActive('notes')) {
-      $scope.setActiveFeature('notes');
+      UISessionService.changeFeature({name: 'notes', data: note});
     }
     $location.path(UISessionService.getOwnerPrefix());
   };
@@ -43,16 +31,6 @@ function NotesController($location, $rootScope, $routeParams, $scope, UISessionS
   $scope.noteQuickEditDone = function(note) {
     AnalyticsService.do('noteQuickEditDone');
     NotesService.saveNote(note, UISessionService.getActiveUUID());
-    $scope.close(note, true);
-  };
-
-  $scope.cancelEdit = function() {
-    $scope.gotoPreviousPage();
-  };
-
-  $scope.addNew = function() {
-    AnalyticsService.visit('newNote');
-    $location.path($scope.ownerPrefix + '/notes/new');
   };
 
   $scope.editNoteTitle = function(note) {
@@ -61,7 +39,7 @@ function NotesController($location, $rootScope, $routeParams, $scope, UISessionS
   };
 
   $scope.editNote = function(note) {
-    $location.path(UISessionService.getOwnerPrefix() + '/notes/edit/' + note.uuid);
+    UISessionService.changeFeature({name: 'noteEdit', data: note});
   };
 
   $scope.deleteNote = function(note) {
@@ -83,14 +61,6 @@ function NotesController($location, $rootScope, $routeParams, $scope, UISessionS
     NotesService.saveNote(newNoteToSave, UISessionService.getActiveUUID());
   };
 
-  $scope.newList = {title: undefined};
-  $scope.addList = function(newList) {
-    ListsService.saveList(newList, UISessionService.getActiveUUID()).then(function(/*list*/) {
-      // TODO
-    });
-    $scope.newList = {title: undefined};
-  };
-
   $scope.getNoteContentTeaser = function(note) {
     if (note.content){
       var maximumTeaserLength = 80;
@@ -104,7 +74,7 @@ function NotesController($location, $rootScope, $routeParams, $scope, UISessionS
 }
 
 NotesController['$inject'] = [
-'$location', '$rootScope', '$routeParams', '$scope',
+'$location', '$routeParams', '$scope',
 'UISessionService', 'NotesService', 'ListsService',
 'AnalyticsService'];
 angular.module('em.app').controller('NotesController', NotesController);

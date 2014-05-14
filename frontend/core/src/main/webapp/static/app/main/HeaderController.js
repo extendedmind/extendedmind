@@ -13,11 +13,11 @@ function HeaderController($scope, $location, UISessionService) {
 
   $scope.addNew = function() {
     if ($scope.isFeatureActive('inbox')) {
-      $location.path(UISessionService.getOwnerPrefix() + '/items/new');
+      UISessionService.changeFeature({name: 'itemEdit'});
     } else if ($scope.isFeatureActive('tasks')) {
-      $location.path(UISessionService.getOwnerPrefix() + '/tasks/new');
+      UISessionService.changeFeature({name: 'taskEdit'});
     } else if ($scope.isFeatureActive('notes')) {
-      $location.path(UISessionService.getOwnerPrefix() + '/notes/new');
+      UISessionService.changeFeature({name: 'noteEdit'});
     }
   };
 }

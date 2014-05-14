@@ -74,7 +74,7 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
     },
     getCurrentFeatureName: function(){
       var uuid = this.getActiveUUID();
-      if (featureHistory[uuid].length > 1){
+      if (featureHistory[uuid].length > 0){
         return featureHistory[uuid][featureHistory[uuid].length-1];
       }
     },

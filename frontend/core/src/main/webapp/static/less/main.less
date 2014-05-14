@@ -63,13 +63,16 @@ h1, h2, h3, h4, h5, h6 {
   line-height: normal;
 }
 
-h3 {
+h3, .bold-title {
   min-height: @content-heading-height;
-  a {
+  a&, input, a {
     .font-bold;
     color: @content-heading;
   }
-  a:active {
+  a&, input {
+    font-size: @large-font-size;
+  }
+  a&:active, input:active, a:active {
     color: @content-heading-pressed;
   }
 }

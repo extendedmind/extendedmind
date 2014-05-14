@@ -1,5 +1,5 @@
 <div ng-show="isFeatureActive('inbox')" id="inbox-container">
-  <section ng-hide="isDesktop && isMenuOpen" id="inbox" class="two-column-grid page header-page" ng-controller="ItemsController" snap-drawer-drag="inbox">
+  <section ng-hide="isDesktop && isMenuOpen" id="inbox" class="two-column-grid page header-page" snap-drawer-drag="inbox">
     <div class="column">
       <div class="page-heading" ng-init="heading = 'inbox'; omnibarFeature = 'inbox'" ng-include="'static/app/main/omnibar.html'"></div>
       <div ng-hide="omnibarVisible" id="inbox-page-content-container" class="content-container page-content-container no-heading-content-container omnibar-animation">
@@ -13,11 +13,11 @@
             </div>
           </div>
         </div>
-        <form class="add-element" role="form" name="itemToInbox" ng-submit="addNewItem()" autocapitalize="none" autocorrect="off">
+        <form class="add-element" role="form" name="itemToInbox" ng-init="newItem = {}" ng-submit="addNewItem(newItem)" autocapitalize="none" autocorrect="off">
           <div class="form-group" editable-field-container="disable">
             <label class="sr-only" for="itemTitle">title</label>
             <div>
-              <input type="text" id="itemTitle" class="simple-input" ng-model="item.title" placeholder="add item..." maxlength="128" editable-field></input>
+              <input type="text" id="itemTitle" class="simple-input" ng-model="newItem.title" placeholder="add item..." maxlength="128" editable-field></input>
             </div>
           </div>
         </form>

@@ -1,5 +1,5 @@
 <section id="tasks-dates" class="two-column-grid page single-lineheight" ng-controller="DatesController">
-  <div class="column" ng-controller="TasksController">
+  <div class="column">
     <div class="page-heading swiper-no-swiping" ng-init="heading = 'dates'; omnibarFeature = 'tasks'" ng-include="'static/app/main/omnibar.html'"></div>
     <div ng-if="!isLoading" ng-hide="omnibarVisible && isActiveSlide('home')" class="content-container page-content-container omnibar-animation">
       <div ng-if="isDatepickerVisible" class="swiper-no-swiping" data-snap-ignore="true" datepicker></div>

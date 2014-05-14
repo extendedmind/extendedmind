@@ -1,14 +1,14 @@
-<div ng-controller="TasksController">
+<div>
   <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
   <div class="item-actions">
     <ul class="button-row">
       <li class="button-container left-of-two">
-        <button type="button" class="normal-button" ng-click="taskQuickEditDone(task)">
+        <button type="button" class="normal-button" ng-click="closeAndCall(task, taskQuickEditDone)">
           done
         </button>
       </li>
       <li class="button-container right-of-two">
-        <button type="button" class="delete-button" ng-click="deleteTask(task)">
+        <button type="button" class="delete-button" ng-click="closeAndCall(task, deleteTask)">
           delete
         </button>
       </li>

@@ -1,10 +1,10 @@
-<nav id="{{activeFeature}}-header" class="swiper-no-swiping" role="navigation">
+<nav id="{{getActiveFeature()}}-header" class="swiper-no-swiping" role="navigation">
   <div id="menu-button-wrapper">
     <button id="menu-button" type="button" ng-click="toggleMenu()" alt="menu">
       <span class="icon-menu"></span>
     </button>
   </div>
   <div id="static-feature-wrapper">
-    <div id="static-feature">{{activeFeature}}</div>
+    <div id="static-feature">{{getActiveFeature()}}</div>
   </div>
 </nav>

@@ -1,27 +1,104 @@
 'use strict';
 
-function featureContainerDirective($rootScope, SnapService, SwiperService) {
+function featureContainerDirective($rootScope, SnapService, SwiperService, UISessionService) {
   return {
     restrict: 'A',
     controller: function($scope, $element) {
+
+      // FEATURE DEFAULT VALUES AND ARRAYS
+
+      var contentFeatures = ['tasks', 'notes', 'items', 'inbox'];
+      var activeContentFeatures = {tasks: true};
+      var helperFeatures = {
+        taskEdit: 'tasks',
+        noteEdit: 'notes',
+        itemEdit: 'inbox'
+      };
+      var systemFeatures = ['account', 'about', 'admin'];
       var featureElements = {};
       $scope.homeHeading = 'dates';
       $scope.currentHeading = 'dates';
 
-      setFeatureContainerClass($scope.activeFeature);
+      // COMMON FEATURE METHODS IN SCOPE
 
-      SwiperService.registerSlideChangeCallback(setPageHeading, 'tasks', featureContainerDirective);
-      SwiperService.registerSlideChangeCallback(setPageHeading, 'notes', featureContainerDirective);
+      $scope.getActiveFeature = function getActiveFeature(){
+        return UISessionService.getCurrentFeatureName();
+      };
+
+      $scope.isFeatureActive = function isFeatureActive(feature) {
+        return $scope.getActiveFeature() === feature;
+      };
+
+      $scope.isContentFeatureActive = function isContentFeatureActive(feature) {
+        if (feature){
+          return activeContentFeatures[feature] || activeContentFeatures[helperFeatures[feature]];
+        }else{
+          return (contentFeatures.indexOf($scope.getActiveFeature()) > -1);
+        }
+      };
+
+      $scope.isSystemFeatureActive = function isSystemFeatureActive() {
+        return (systemFeatures.indexOf($scope.getActiveFeature()) > -1);
+      };
+
+      $scope.featureHasFooter = function featureHasFooter() {
+        return ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes'));
+      };
+
+      // UI SESSION SERVICE HOOKS
+
+      // http://ruoyusun.com/2013/08/24/a-glimpse-of-angularjs-scope-via-example.html
+      $scope.$watch('activeFeature', function(newActiveFeature, oldActiveFeature) {
+        if (contentFeatures.indexOf(newActiveFeature) > -1){
+          activeContentFeatures[newActiveFeature] = true;
+          if (newActiveFeature !== oldActiveFeature) {
+            if ($scope.isContentFeatureActive(newActiveFeature)) {
+              initializeContentFeature(newActiveFeature);
+              $scope.$evalAsync(function() {
+                reInitSwipers(newActiveFeature);
+              });
+            }
+          }
+        }
+      });
+      var featureChangedCallback = function featureChangedCallback(newActiveFeature, oldActiveFeature) {
+        $scope.activeFeature = newActiveFeature.name;
+      }
+      UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'featureContainerDirective');
+      $scope.activeFeature = 'tasks';
+      UISessionService.changeFeature({name: $scope.activeFeature});
+
+      // SWIPER SERVICE HOOKS
+
+      SwiperService.registerSlideChangeCallback(setPageHeading, 'tasks', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(setPageHeading, 'notes', 'featureContainerDirective');
+
+      // CALLBACK REGISTRATION
 
       this.registerSnapDrawerDragElement = function registerSnapDrawerDragElement(feature, element) {
         if ($scope.isFeatureActive(feature)) {
           SnapService.setDraggerElement(element);
         }
-        if (!featureElements[feature]) {
-          featureElements[feature] = {};
-        }
+        if (!featureElements[feature]) featureElements[feature] = {};
         featureElements[feature].dragElement = element;
       };
+
+      // SET CORRECT CLASSES TO FEATURE CONTAINER ELEMENT
+
+      setFeatureContainerClass($scope.getActiveFeature());
+
+       // https://developer.mozilla.org/en-US/docs/Web/API/Element.classList
+      function setFeatureContainerClass(feature) {
+        if (feature === 'tasks' || feature === 'notes') {
+          $element[0].classList.toggle('no-slides-container', false);
+          $element[0].classList.toggle('slides-container', true);
+        } else {
+          $element[0].classList.toggle('no-slides-container', true);
+          $element[0].classList.toggle('slides-container', false);
+        }
+      }
+
+      // PRIVATE FUNCTIONS
 
       function setHomeHeading(feature) {
         if (feature === 'notes') {
@@ -44,7 +121,7 @@ function featureContainerDirective($rootScope, SnapService, SwiperService) {
         if ($scope.isFeatureActive('inbox')) {
           $scope.currentHeading = 'inbox';
         } else {
-          var activeSlide = SwiperService.getActiveSlidePath($scope.activeFeature);
+          var activeSlide = SwiperService.getActiveSlidePath($scope.getActiveFeature());
           if (!activeSlide) {
             if ($scope.isFeatureActive('tasks')) {
               $scope.currentHeading = 'dates';
@@ -59,7 +136,7 @@ function featureContainerDirective($rootScope, SnapService, SwiperService) {
                 $scope.currentHeading = 'unsorted';
               }
             } else if (activeSlide.endsWith('details')) {
-              $scope.currentHeading = $scope.activeFeature;
+              $scope.currentHeading = $scope.getActiveFeature();
             } else {
               var lastSlashIndex = activeSlide.lastIndexOf('/');
               if (lastSlashIndex !== -1) {
@@ -73,42 +150,15 @@ function featureContainerDirective($rootScope, SnapService, SwiperService) {
         }
       }
 
-      // https://developer.mozilla.org/en-US/docs/Web/API/Element.classList
-      function setFeatureContainerClass(feature) {
-        if (feature === 'tasks' || feature === 'notes') {
-          $element[0].classList.toggle('no-slides-container', false);
-          $element[0].classList.toggle('slides-container', true);
-        } else {
-          $element[0].classList.toggle('no-slides-container', true);
-          $element[0].classList.toggle('slides-container', false);
-        }
-      }
-
-      // http://ruoyusun.com/2013/08/24/a-glimpse-of-angularjs-scope-via-example.html
-      $scope.$watch('activeFeature', function(newActiveFeature, oldActiveFeature) {
-        if (newActiveFeature !== oldActiveFeature) {
-          if ($scope.isContentFeatureActive(newActiveFeature)) {
-            initializeContentFeature(newActiveFeature);
-            $scope.$evalAsync(function() {
-              reInitSwipers(newActiveFeature);
-            });
-          }
-        }
-      });
-
       function initializeContentFeature(feature) {
         setHomeHeading(feature);
         setPageHeading();
         setFeatureContainerClass(feature);
 
-        if ($rootScope.isMobile) {
+        if ($rootScope.isMobile && featureElements[feature]) {
           SnapService.setDraggerElement(featureElements[feature].dragElement);
         }
       }
-
-      $scope.featureHasFooter = function featureHasFooter() {
-        return ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes'));
-      };
     },
     link: function(scope, element) {
 
@@ -132,21 +182,21 @@ function featureContainerDirective($rootScope, SnapService, SwiperService) {
       // Snapper is "ready". Set swiper and snapper statuses.
       function snapperAnimated(snapperState) {
         if (snapperState.state === 'closed') {
-          if (scope.activeFeature) {
-            SwiperService.setSwiping(scope.activeFeature, true);
+          if (scope.getActiveFeature()) {
+            SwiperService.setSwiping(scope.getActiveFeature(), true);
             SnapService.enableSliding();
           }
         } else if (snapperState.state === 'left') {
-          if (scope.activeFeature) {
-            SwiperService.setSwiping(scope.activeFeature, false);
+          if (scope.getActiveFeature()) {
+            SwiperService.setSwiping(scope.getActiveFeature(), false);
             SnapService.enableSliding();
           }
         }
       }
 
       function snapperClosed() {
-        if (scope.activeFeature) {
-          SwiperService.setSwiping(scope.activeFeature, true);
+        if (scope.getActiveFeature()) {
+          SwiperService.setSwiping(scope.getActiveFeature(), true);
           SnapService.disableSliding();
         }
       }
@@ -156,14 +206,14 @@ function featureContainerDirective($rootScope, SnapService, SwiperService) {
         // This if statement is according to current understanding the most reliable (yet not the most intuitive)
         // way to detect that the drawer is closing.
         if (snapperState.info.opening === 'left' && snapperState.info.towards === 'left' && snapperState.info.flick) {
-          if (scope.activeFeature) {
-            SwiperService.setSwiping(scope.activeFeature, true);
+          if (scope.getActiveFeature()) {
+            SwiperService.setSwiping(scope.getActiveFeature(), true);
             SnapService.disableSliding();
           }
           // Drawer is opening
         } else if (snapperState.info.towards === 'right' && snapperState.info.flick) {
-          if (scope.activeFeature) {
-            SwiperService.setSwiping(scope.activeFeature, false);
+          if (scope.getActiveFeature()) {
+            SwiperService.setSwiping(scope.getActiveFeature(), false);
             SnapService.enableSliding();
           }
         }
@@ -187,5 +237,5 @@ function featureContainerDirective($rootScope, SnapService, SwiperService) {
     }
   };
 }
-featureContainerDirective.$inject = ['$rootScope', 'SnapService', 'SwiperService'];
+featureContainerDirective.$inject = ['$rootScope', 'SnapService', 'SwiperService', 'UISessionService'];
 angular.module('em.directives').directive('featureContainer', featureContainerDirective);

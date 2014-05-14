@@ -1,38 +1,19 @@
 'use strict';
 
-function TasksController($location, $rootScope, $routeParams, $scope, DateService, SwiperService, UISessionService, TasksService, AnalyticsService) {
-
-  // edit tasks or new task dialog
-  if (!$scope.task) {
-    if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)) {
-      // edit task
-      if ($routeParams.uuid) {
-        $scope.task = TasksService.getTaskByUUID($routeParams.uuid, UISessionService.getActiveUUID());
-        if ($scope.task.due) $scope.showDateInput = true;
-      }
-      // new task
-      else {
+function TasksController($location, $scope, DateService, SwiperService, UISessionService, TasksService, AnalyticsService) {
+  var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
+    if (newFeature.name === 'taskEdit'){
+      if (newFeature.data){
+        $scope.task = newFeature.data;
+      }else{
         $scope.task = {
-          relationships: {
-            tags: []
-          }
+          relationships: {}
         };
-        if ($rootScope.omnibarTask) {
-          $scope.task.title = $rootScope.omnibarTask.title;
-          delete $rootScope.omnibarTask;
-        }
-        if ($routeParams.parentUUID) {
-          $scope.task.relationships.list = $routeParams.parentUUID;
-        }
       }
+      if ($scope.task.due) $scope.showDateInput = true;
     }
   }
-  // existing task
-  else {
-    if ($scope.task.due) {
-      $scope.showDateInput = true;
-    }
-  }
+  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'TasksController');
 
   $scope.focusDate = function() {
     $scope.showDateInput = true;
@@ -67,7 +48,6 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
       else if (savedTask.relationships && savedTask.relationships.parent) {
         mainSlidePath = 'tasks/details';
         pageSlidePath = mainSlidePath + '/' + savedTask.relationships.parent;
-
       }
       // context
       else if (savedTask.relationships && savedTask.relationships.tags && savedTask.relationships.tags[0]) {
@@ -83,18 +63,9 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
       SwiperService.setInitialSlidePath('tasks', mainSlidePath);
       SwiperService.setInitialSlidePath(mainSlidePath, pageSlidePath);
       if (!$scope.isFeatureActive('tasks')) {
-        $scope.setActiveFeature('tasks');
+        UISessionService.changeFeature({name: 'tasks', data: savedTask});
       }
-      $location.path(UISessionService.getOwnerPrefix());
     }
-  };
-
-  $scope.cancelEdit = function() {
-    $scope.gotoPreviousPage();
-  };
-
-  $scope.addNew = function() {
-    $location.path($scope.ownerPrefix + '/tasks/new');
   };
 
   $scope.editTaskTitle = function(task) {
@@ -103,7 +74,7 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
   };
 
   $scope.editTask = function(task) {
-    $location.path(UISessionService.getOwnerPrefix() + '/tasks/edit/' + task.uuid);
+    UISessionService.changeFeature({name: 'taskEdit', data: task});
   };
 
   $scope.taskChecked = function(task) {
@@ -151,9 +122,8 @@ function TasksController($location, $rootScope, $routeParams, $scope, DateServic
   $scope.taskQuickEditDone = function(task) {
     AnalyticsService.do('taskQuickEditDone');
     TasksService.saveTask(task, UISessionService.getActiveUUID());
-    $scope.close(task, true);
   };
 }
 
-TasksController['$inject'] = ['$location', '$rootScope', '$routeParams', '$scope', 'DateService', 'SwiperService', 'UISessionService', 'TasksService', 'AnalyticsService'];
+TasksController['$inject'] = ['$location', '$scope', 'DateService', 'SwiperService', 'UISessionService', 'TasksService', 'AnalyticsService'];
 angular.module('em.app').controller('TasksController', TasksController);

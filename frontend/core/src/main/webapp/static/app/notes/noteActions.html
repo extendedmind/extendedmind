@@ -3,12 +3,12 @@
   <div class="item-actions">
     <ul class="button-row">
       <li class="button-container left-of-two">
-        <button type="button" class="normal-button" ng-click="noteQuickEditDone(note)">
+        <button type="button" class="normal-button" ng-click="closeAndCall(note, noteQuickEditDone)">
           done
         </button>
-      </li>    
+      </li>
       <li class="button-container right-of-two">
-        <button type="button" class="delete-button" ng-click="deleteNote(note)">
+        <button type="button" class="delete-button" ng-click="closeAndCall(note, deleteNote)">
           delete
         </button>
       </li>

@@ -1,16 +1,16 @@
 <ul class="button-row">
   <li class="button-container left-of-three border-right">
-    <button class="default-button" type="button" ng-click="editList(list)">
-      more
+    <button type="button" class="normal-button" ng-click="closeAndCall(list, listQuickEditDone)">
+      done
     </button>
   </li>
   <li class="button-container center-of-three">
-    <button class="default-button" type="button" ng-click="archiveList(list)">
+    <button class="default-button" type="button" ng-click="closeAndCall(list, archiveList)">
       archive
     </button>
   </li>
   <li class="button-container right-of-three">
-    <button class="delete-button" type="button" ng-click="deleteList(list)">
+    <button class="delete-button" type="button" ng-click="closeAndCall(list, deleteList)">
       delete
     </button>
   </li>

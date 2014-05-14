@@ -104,19 +104,6 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
         }
       });
 
-      /**
-      * Feature switching between (desktop/drawer) menu feature entries.
-      *
-      * These are here because the drawer menu is not under the MainController.js
-      **/
-      $scope.activeFeature = 'tasks';
-      $scope.setActiveFeature = function setActiveFeature(feature) {
-        $scope.activeFeature = feature;
-      };
-      $scope.isFeatureActive = function isFeatureActive(feature) {
-        return $scope.activeFeature === feature;
-      };
-
       // MENU TOGGLE
       $scope.isMenuOpen = false;
       $scope.toggleMenu = function toggleMenu() {

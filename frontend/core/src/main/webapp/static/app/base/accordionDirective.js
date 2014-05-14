@@ -14,6 +14,8 @@ angular.module('em.directives').directive('accordion', ['$document',
 
       // This array keeps track of the accordion title scopes
       this.titleScopes = [];
+      $scope.thisController = this;
+
       // Ensure that all the items in this accordion are closed
       $scope.closedOtherItems = false;
       this.closeOthers = function(activeScope) {
@@ -53,10 +55,15 @@ angular.module('em.directives').directive('accordion', ['$document',
         });
       };
 
+      $scope.closeAndCall = function closeInFn(item, itemAction) {
+        $scope.close(item, true);
+        itemAction(item);
+      };
+
       // This is called from the accordion-title directive to add itself to the accordion
       this.addItem = function(itemScope) {
         var that = this;
-        this.titleScopes.push(itemScope);
+        $scope.thisController.titleScopes.push(itemScope);
 
         itemScope.$on('$destroy', function() {
           that.removeItem(itemScope);
@@ -77,7 +84,6 @@ angular.module('em.directives').directive('accordion', ['$document',
 
       // "Click elsewhere to close accordion"
 
-      $scope.thisController = this;
       $scope.eventsBound = false;
       $scope.unbindElsewhereEvents = function() {
         if ($scope.eventsBound){

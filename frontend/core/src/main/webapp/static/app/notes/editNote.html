@@ -1,21 +1,19 @@
-<div class="no-slides-container" ng-controller="MainController">
-  <div id="edit-page" ng-controller="NotesController">
-    <header class="edit-header" edit-header="note" item-edit-form="noteEdit" save-item="saveNote(note)" cancel-edit="cancelEdit()"></header>
-    <section id="edit-note" class="one-column-grid page">
-      <div class="column">
-        <div class="content-container simple-content-container">
-          <form role="form" name="noteEdit" editable-field-container>
-            <div class="form-group">
-              <label class="sr-only" for="noteTitle">title</label>
-              <input type="text" class="simple-input font-bold" id="noteTitle" ng-model="note.title" placeholder="title..." maxlength="128" required editable-field>
-            </div>
-            <div class="form-group" ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
-              <label class="sr-only" for="noteContent">content</label>
-              <textarea class="simple-input" ng-style="{maxHeight: getEditNoteContentMaxHeight()}" id="noteContent" ng-model="note.content" placeholder="content..." maxlength="1024" expanding-textarea editable-field></textarea>
-            </div>
-          </form>
-        </div>
+<div id="edit-page">
+  <header class="edit-header" edit-header="note" item-edit-form="noteEdit" save-item="saveNote(note)" cancel-edit="cancelEdit()"></header>
+  <section id="edit-note" class="one-column-grid page">
+    <div class="column">
+      <div class="content-container simple-content-container">
+        <form role="form" name="noteEdit" editable-field-container>
+          <div class="form-group">
+            <label class="sr-only" for="noteTitle">title</label>
+            <input type="text" class="simple-input font-bold" id="noteTitle" ng-model="note.title" placeholder="title..." maxlength="128" required editable-field>
+          </div>
+          <div class="form-group" ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
+            <label class="sr-only" for="noteContent">content</label>
+            <textarea class="simple-input" ng-style="{maxHeight: getEditNoteContentMaxHeight()}" id="noteContent" ng-model="note.content" placeholder="content..." maxlength="1024" expanding-textarea editable-field></textarea>
+          </div>
+        </form>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </div>

@@ -1,14 +1,20 @@
 'use strict';
 
 function ItemsController($location, $routeParams, $scope, $timeout, UISessionService, ItemsService, AnalyticsService) {
-  if (!$scope.item){
-    if ($location.path().indexOf('/edit/' != -1) || $location.path().indexOf('/new' != -1)){
-      if ($routeParams.uuid) {
-        $scope.item = ItemsService.getItemByUUID($routeParams.uuid, UISessionService.getActiveUUID());
+
+  var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
+    if (newFeature.name === 'itemEdit'){
+      if (newFeature.data){
+        $scope.item = newFeature.data;
       }else{
         $scope.item = {};
       }
     }
+  }
+  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ItemsController');
+
+  var resetInboxEdit = function(){
+    $scope.itemType = 'item';
   }
 
   $scope.omnibarHasText = function omnibarHasText() {
@@ -40,33 +46,33 @@ function ItemsController($location, $routeParams, $scope, $timeout, UISessionSer
       AnalyticsService.do('saveItem', 'existing');
     }
     ItemsService.saveItem(item, UISessionService.getActiveUUID());
-    $scope.gotoPreviousPage();
-  };
-
-  $scope.addNewItem = function addNewItem() {
-    if ($scope.item.title && $scope.item.title.length > 0) {
-      ItemsService.saveItem({title: $scope.item.title}, UISessionService.getActiveUUID()).then(function(/*item*/){
-        $scope.item.title = '';
-      });
+    if (!$scope.isFeatureActive('inbox')) {
+      UISessionService.changeFeature({name: 'inbox', data: item});
     }
   };
 
-  $scope.cancelEdit = function() {
-    $scope.gotoPreviousPage();
+  $scope.addNewItem = function addNewItem(newItem) {
+    if (newItem.title && newItem.title.length > 0) {
+      var newItemToSave = {title: newItem.title};
+      delete newItem.title;
+      ItemsService.saveItem(newItemToSave, UISessionService.getActiveUUID());
+    }
   };
 
   $scope.editItemTitle = function(item) {
     AnalyticsService.do('editItemTitle');
     ItemsService.saveItem(item, UISessionService.getActiveUUID());
+    resetInboxEdit();
   };
 
   $scope.editItem  = function(item) {
-    $location.path($scope.ownerPrefix + '/items/edit/' + item.uuid);
+    UISessionService.changeFeature({name: 'itemEdit', data: item});
   };
 
   $scope.deleteItem = function(item) {
     AnalyticsService.do('deleteItem');
     ItemsService.deleteItem(item, UISessionService.getActiveUUID());
+    resetInboxEdit();
   };
 
   $scope.itemToTask = function(item) {
@@ -74,13 +80,10 @@ function ItemsController($location, $routeParams, $scope, $timeout, UISessionSer
     $scope.task = item;
   };
 
-  $scope.taskEditMore = function(task) {
-    $location.path($scope.ownerPrefix + '/tasks/edit/' + task.uuid);
-  };
-
   $scope.taskEditDone = function(task) {
     AnalyticsService.do('itemToTaskDone');
     ItemsService.itemToTask(task, UISessionService.getActiveUUID());
+    resetInboxEdit();
   };
 
   $scope.itemToNote = function(item) {
@@ -88,22 +91,16 @@ function ItemsController($location, $routeParams, $scope, $timeout, UISessionSer
     $scope.note = item;
   };
 
-  $scope.itemToNoteMore = function(note) {
-    $location.path($scope.ownerPrefix + '/notes/edit/' + note.uuid);
-  };
-
   $scope.itemToList = function(item) {
     AnalyticsService.do('itemToList');
     ItemsService.itemToList(item, UISessionService.getActiveUUID());
+    resetInboxEdit();
   };
 
   $scope.noteEditDone = function(note) {
     AnalyticsService.do('itemToNoteDone');
     ItemsService.itemToNote(note, UISessionService.getActiveUUID());
-  };
-
-  $scope.addNew = function() {
-    $location.path($scope.ownerPrefix + '/items/new');
+    resetInboxEdit();
   };
 
   $scope.getOmnibarSearchResultsHeight = function() {
