@@ -9,6 +9,12 @@ function editableFieldBackdropDirective($document) {
       $scope.disableBackdrop = function(){
         $element.addClass('backdrop-disable');
       };
+      $scope.undisableBackdrop = function(){
+        if ($element.hasClass('backdrop-disable')){
+          $element.removeClass('backdrop-disable');
+          return true;
+        }
+      };
       $scope.showBackdrop = function(){
         $element.addClass('active');
       };
