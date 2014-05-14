@@ -25,15 +25,31 @@
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
   <title ng-bind="page.getTitle()"></title>
   <link rel="stylesheet" href="static/css/em.css"/>
+  <script src="cordova.js"></script>
+  <script src="keyboard.js"></script>
   <script>
     var packaging = "ios-cordova";
     var urlPrefix = 'https://ext.md';
     var html5Mode = false;
     var bindToFocusEvent = false;
     var useOfflineBuffer = true;
+
+    // Wait for device API libraries to load
+    //
+    function onLoad() {
+      document.addEventListener("deviceready", onDeviceReady, false);
+    }
+
+    // device APIs are available
+    //
+    function onDeviceReady() {
+      // Now safe to use device APIs
+      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+    }
+
   </script>
 </head>
-<body>
+<body onload="onLoad()">
   <div class="ios" root-view></div>
   <script src="static/em.min.js"></script>
 </body>

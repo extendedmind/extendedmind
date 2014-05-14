@@ -8,6 +8,10 @@
         Extended Mind Team
     </author>
 
+    <feature name="Keyboard">
+        <param name="ios-package" value="IonicKeyboard" onload="true" />
+    </feature>
+
     <!-- If you do not want any permissions to be added to your app, add the
     following tag to your config.xml; you will still have the INTERNET
     permission on your app, which Cordova requires. -->
@@ -26,8 +30,6 @@
     <preference name="auto-hide-splash-screen" value="true" />
     <preference name="disable-cursor" value="false" />
     <preference name="SplashScreen" value="splash" />
-    <preference name="HideKeyboardFormAccessoryBar" value="true"/>
-    <preference name="KeyboardShrinksView" value="false"/>
 
     <access origin="*" />
     <content src="index.html" />
