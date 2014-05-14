@@ -1,6 +1,6 @@
 'use strict';
 
-function ListsController($location, $scope, UISessionService, ListsService, AnalyticsService) {
+function ListsController($scope, UISessionService, ListsService, AnalyticsService) {
 
   var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
     if (newFeature.name === 'listEdit'){
@@ -51,6 +51,6 @@ function ListsController($location, $scope, UISessionService, ListsService, Anal
   };
 }
 
-ListsController['$inject'] = ['$location', '$scope', 'UISessionService',
+ListsController['$inject'] = ['$scope', 'UISessionService',
 'ListsService', 'AnalyticsService'];
 angular.module('em.app').controller('ListsController', ListsController);

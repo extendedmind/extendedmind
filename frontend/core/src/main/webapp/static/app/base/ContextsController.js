@@ -1,6 +1,6 @@
 'use strict';
 
-function ContextsController($location, $scope, $routeParams, UISessionService, TagsService, AnalyticsService) {
+function ContextsController($scope, UISessionService, TagsService, AnalyticsService) {
 
   var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
     if (newFeature.name === 'contextEdit'){
@@ -48,6 +48,6 @@ function ContextsController($location, $scope, $routeParams, UISessionService, T
   };
 }
 
-ContextsController['$inject'] = ['$location', '$scope', '$routeParams', 'UISessionService',
+ContextsController['$inject'] = ['$scope', 'UISessionService',
 'TagsService', 'AnalyticsService'];
 angular.module('em.app').controller('ContextsController', ContextsController);

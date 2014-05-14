@@ -1,6 +1,6 @@
 'use strict';
 
-function TasksController($location, $scope, DateService, SwiperService, UISessionService, TasksService, AnalyticsService) {
+function TasksController($scope, DateService, SwiperService, UISessionService, TasksService, AnalyticsService) {
   var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
     if (newFeature.name === 'taskEdit'){
       if (newFeature.data){
@@ -88,11 +88,6 @@ function TasksController($location, $scope, DateService, SwiperService, UISessio
     }
   };
 
-  $scope.taskToList = function(task) {
-    TasksService.taskToList(task, UISessionService.getActiveUUID());
-    $location.path(UISessionService.getOwnerPrefix() + '/tasks/new/' + task.uuid);
-  };
-
   $scope.deleteTask = function(task) {
     AnalyticsService.do('deleteTask');
     TasksService.deleteTask(task, UISessionService.getActiveUUID());
@@ -126,5 +121,5 @@ function TasksController($location, $scope, DateService, SwiperService, UISessio
   };
 }
 
-TasksController['$inject'] = ['$location', '$scope', 'DateService', 'SwiperService', 'UISessionService', 'TasksService', 'AnalyticsService'];
+TasksController['$inject'] = ['$scope', 'DateService', 'SwiperService', 'UISessionService', 'TasksService', 'AnalyticsService'];
 angular.module('em.app').controller('TasksController', TasksController);

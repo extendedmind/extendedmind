@@ -1,6 +1,6 @@
 'use strict';
 
-function HeaderController($scope, $location, UISessionService) {
+function HeaderController($scope, UISessionService) {
 
   $scope.getLabelWidth = function() {
     if ($scope.currentWidth <= 568){
@@ -22,5 +22,5 @@ function HeaderController($scope, $location, UISessionService) {
   };
 }
 
-HeaderController['$inject'] = ['$scope', '$location', 'UISessionService'];
+HeaderController['$inject'] = ['$scope', 'UISessionService'];
 angular.module('em.app').controller('HeaderController', HeaderController);

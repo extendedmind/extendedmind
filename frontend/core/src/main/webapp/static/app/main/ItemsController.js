@@ -1,6 +1,6 @@
 'use strict';
 
-function ItemsController($location, $routeParams, $scope, $timeout, UISessionService, ItemsService, AnalyticsService) {
+function ItemsController($scope, $timeout, UISessionService, ItemsService, AnalyticsService) {
 
   var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
     if (newFeature.name === 'itemEdit'){
@@ -119,7 +119,78 @@ function ItemsController($location, $routeParams, $scope, $timeout, UISessionSer
       return $scope.currentWidth - 44;
     }
   };
+
+  // OMNIBAR
+
+  $scope.omnibarText = {};
+  $scope.omnibarPlaceholders = {};
+  $scope.omnibarVisible = undefined;
+
+  $scope.setOmnibarPlaceholder = function(omnibarFeature, heading) {
+    $scope.omnibarPlaceholders[omnibarFeature + heading] = {text: heading + getOfflineIndicator(), heading: heading};
+  };
+
+  function getOfflineIndicator() {
+    if (!$scope.online) {
+      return '*';
+    } else {
+      return '';
+    }
+  }
+
+  $scope.clickOmnibar = function(omnibarFeature, heading) {
+    // NOTE Heading may be not correct before $digest() because ng-init is not run.
+    $scope.omnibarVisible = heading;
+    $scope.omnibarPlaceholders[omnibarFeature + heading] = {text: 'store / recall', heading: heading};
+  };
+
+  $scope.omnibarKeyDown = function(event) {
+    if (event.keyCode === 27) {
+      $scope.clearOmnibar();
+    }
+  };
+
+  $scope.clearOmnibar = function() {
+    $scope.omnibarText.title = '';
+    $scope.omnibarVisible = false;
+    for (var key in $scope.omnibarPlaceholders) {
+      if ($scope.omnibarPlaceholders.hasOwnProperty(key)) {
+        if ($scope.omnibarPlaceholders[key].text === 'store / recall') {
+          // This is the active omnibar, blur it programmatically
+          $('input#' + key + 'OmnibarInput').blur();
+          $scope.omnibarPlaceholders[key].text = $scope.omnibarPlaceholders[key].heading;
+          return;
+        }
+      }
+    }
+  };
+
+  $scope.saveOmnibarText = function(omnibarText) {
+    if (omnibarText.title && omnibarText.title.length > 0 && !$scope.isLoading) {
+      ItemsService.saveItem({title: omnibarText.title}, UISessionService.getActiveUUID()).then(function(item) {
+        $scope.clearOmnibar();
+        if (!$scope.isFeatureActive('inbox')) {
+          UISessionService.changeFeature({name: 'inbox', data: item});
+        }
+      });
+    }
+  };
+
+  $scope.editAsTask = function editAsTask(omnibarText) {
+    UISessionService.changeFeature(
+      {name: 'taskEdit', data: {title: omnibarText.title}}
+    );
+    $scope.clearOmnibar();
+  };
+
+  $scope.editAsNote = function editAsNote(omnibarText) {
+    UISessionService.changeFeature(
+      {name: 'noteEdit', data: {title: omnibarText.title}}
+    );
+    $scope.clearOmnibar();
+  };
+
 }
 
-ItemsController.$inject = ['$location', '$routeParams', '$scope', '$timeout', 'UISessionService', 'ItemsService', 'AnalyticsService'];
+ItemsController.$inject = ['$scope', '$timeout', 'UISessionService', 'ItemsService', 'AnalyticsService'];
 angular.module('em.app').controller('ItemsController', ItemsController);

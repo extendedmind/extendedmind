@@ -40,18 +40,26 @@ function SwiperService($q) {
     }
   };
 
-  var getInitialSlideIndex = function(swiperPath, swiperSlidesPaths) {
-    var initialSlideIndex = 0;
+  function getInitialSlideIndex(swiperPath, swiperSlidesPaths) {
+    var overrideSlideIndex = useOverrideSlideIndex(swiperPath, swiperSlidesPaths);
+    if (overrideSlideIndex !== undefined){
+      return overrideSlideIndex;
+    }else{
+      // Default to first slide
+      return 0;
+    }
+  };
+
+  function useOverrideSlideIndex(swiperPath, swiperSlidesPaths){
     if (overrideSwiperParams[swiperPath] && overrideSwiperParams[swiperPath].initialSlidePath) {
       var slideIndex = getSlideIndexBySlidePath(overrideSwiperParams[swiperPath].initialSlidePath, swiperSlidesPaths);
       if (slideIndex !== undefined) {
-        initialSlideIndex = slideIndex;
         // set initial slide path to undefined for future swiper instances
         overrideSwiperParams[swiperPath].initialSlidePath = undefined;
+        return slideIndex;
       }
     }
-    return initialSlideIndex;
-  };
+  }
 
   var getSwiperParameters = function(swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback, onResistanceBeforeCallback, onResistanceAfterCallback) {
     var leftEdgeTouchRatio = (overrideSwiperParams[swiperPath]) ? overrideSwiperParams[swiperPath].leftEdgeTouchRatio : undefined;
@@ -133,22 +141,38 @@ function SwiperService($q) {
     refreshSwiper: function(swiperPath, swiperSlidesPaths) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         // Set initial slide path
-        swipers[swiperPath].swiper.params.initialSlide = getInitialSlideIndex(swiperPath, swiperSlidesPaths);
+        var initialSlideIndex = 0;
+        var overrideSlideIndex = useOverrideSlideIndex(swiperPath, swiperSlidesPaths);
+        if (overrideSlideIndex !== undefined){
+          initialSlideIndex = overrideSlideIndex;
+        }
+        swipers[swiperPath].swiper.params.initialSlide = initialSlideIndex;
         swipers[swiperPath].slidesPaths = swiperSlidesPaths;
         $q.when(swipers[swiperPath].swiper.reInit()).then(function() {
           setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
+          if ((overrideSlideIndex !== undefined) && (swipers[swiperPath].swiper.activeIndex !== overrideSlideIndex) ){
+            // Re-init did not work, still wrong slide, need to swipe there
+            // NOTE: Adding a 0 after this call would make swiping instant, but the animation might
+            //       be helpful in understanding where this is transitioning
+            swipers[swiperPath].swiper.swipeTo(overrideSlideIndex);
+          }
         });
       }
     },
     refreshSwiperAndChildSwipers: function(swiperPath) {
-      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
-        swipers[swiperPath].swiper.reInit();
-        swipers[swiperPath].slidesPaths.forEach(refreshChildSwiper);
+      if (swipers[swiperPath]) {
+        this.refreshSwiper(swiperPath, swipers[swiperPath].slidesPaths);
+        var thisService = this;
+        swipers[swiperPath].slidesPaths.forEach(function(slidePath){
+          if (swipers[slidePath]){
+            thisService.refreshSwiper(slidePath, swipers[slidePath].slidesPaths);
+          }
+        });
       }
 
       function refreshChildSwiper(slidePath, slideIndex, parentSwiper) {
         if (swipers[parentSwiper[slideIndex]]) {
-          swipers[parentSwiper[slideIndex]].swiper.reInit();
+          this.refreshSwiper(parentSwiper[slideIndex], swipers[parentSwiper[slideIndex]].slidesPaths);
         }
       }
     },

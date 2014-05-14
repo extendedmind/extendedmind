@@ -7,7 +7,7 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
 function MainController(
-  $controller, $filter, $location, $rootScope, $scope, $timeout, $window,
+  $controller, $filter, $rootScope, $scope, $timeout, $window,
   AccountService, UISessionService, UserSessionService, ItemsService, ListsService,
   TagsService, TasksService, NotesService, FilterService, OnboardingService, SwiperService) {
 
@@ -105,60 +105,11 @@ function MainController(
     }
   });
 
-  // OMNIBAR
 
-  $scope.omnibarText = {};
-  $scope.omnibarPlaceholders = {};
-  $scope.omnibarVisible = undefined;
+  // GENERAL
 
-  $scope.setOmnibarPlaceholder = function(omnibarFeature, heading) {
-    $scope.omnibarPlaceholders[omnibarFeature + heading] = heading + getOfflineIndicator();
-  };
-
-  function getOfflineIndicator() {
-    if (!$scope.online) {
-      return '*';
-    } else {
-      return '';
-    }
-  }
-
-  $scope.clickOmnibar = function(omnibarFeature, heading) {
-    // NOTE Heading may be not correct before $digest() because ng-init is not run.
-    $scope.omnibarVisible = heading;
-    $scope.omnibarPlaceholders[omnibarFeature + heading] = 'store / recall';
-  };
-
-  $scope.omnibarKeyDown = function(event) {
-    if (event.keyCode === 27) {
-      $scope.clearOmnibar();
-    }
-  };
-
-  $scope.clearOmnibar = function(pageHeading) {
-    $scope.omnibarText.title = '';
-    $scope.omnibarVisible = false;
-    for (var heading in $scope.omnibarPlaceholders) {
-      if ($scope.omnibarPlaceholders.hasOwnProperty(heading)) {
-        if ($scope.omnibarPlaceholders[heading] === 'store / recall') {
-          // This is the active omnibar, blur it programmatically
-          $('input#' + heading + 'OmnibarInput').blur();
-          $scope.omnibarPlaceholders[heading] = pageHeading;
-          return;
-        }
-      }
-    }
-  };
-
-  $scope.saveOmnibarText = function(omnibarText) {
-    if (omnibarText.title && omnibarText.title.length > 0 && !$scope.isLoading) {
-      ItemsService.saveItem({title: omnibarText.title}, UISessionService.getActiveUUID()).then(function(item) {
-        $scope.clearOmnibar();
-        if (!$scope.isFeatureActive('inbox')) {
-          UISessionService.changeFeature({name: 'inbox', data: item});
-        }
-      });
-    }
+  $scope.cancelEdit = function() {
+    UISessionService.changeFeature({name: UISessionService.getPreviousFeatureName()});
   };
 
   $scope.isActiveSlide = function isActiveSlide(pathFragment) {
@@ -171,30 +122,6 @@ function MainController(
         return true;
       }
     }
-  };
-
-  $scope.saveAsTask = function saveAsTask(omnibarText) {
-    UISessionService.changeFeature(
-      {name: 'taskEdit', data: omnibarText}
-    );
-    $scope.clearOmnibar();
-  };
-
-  $scope.saveAsNote = function saveAsNote(omnibarText) {
-    $rootScope.omnibarNote = omnibarText;
-    $location.path(UISessionService.getOwnerPrefix() + '/notes/new');
-  };
-
-  $scope.clickOmnibarPlus = function(omnibarText) {
-    if (omnibarText.title && omnibarText.title.length > 0) {
-      $scope.saveOmnibarText(omnibarText);
-    } else {
-      $location.path(UISessionService.getOwnerPrefix() + '/items/new');
-    }
-  };
-
-  $scope.cancelEdit = function() {
-    UISessionService.changeFeature({name: UISessionService.getPreviousFeatureName()});
   };
 
   // Navigation
@@ -283,7 +210,7 @@ function MainController(
 }
 
 MainController.$inject = [
-'$controller', '$filter', '$location', '$rootScope', '$scope', '$timeout', '$window',
+'$controller', '$filter', '$rootScope', '$scope', '$timeout', '$window',
 'AccountService', 'UISessionService', 'UserSessionService', 'ItemsService', 'ListsService',
 'TagsService', 'TasksService', 'NotesService', 'FilterService', 'OnboardingService', 'SwiperService'
 ];

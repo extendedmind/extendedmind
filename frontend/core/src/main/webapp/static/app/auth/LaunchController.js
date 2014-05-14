@@ -1,6 +1,6 @@
 'use strict';
 
-function LaunchController($location, $scope, AuthenticationService, AnalyticsService, BackendClientService) {
+function LaunchController($scope, AuthenticationService, AnalyticsService, BackendClientService) {
 
   AnalyticsService.visitEntry('launch');
 
@@ -28,5 +28,5 @@ function LaunchController($location, $scope, AuthenticationService, AnalyticsSer
   }
 }
 
-LaunchController['$inject'] = ['$location', '$scope', 'AuthenticationService', 'AnalyticsService', 'BackendClientService'];
+LaunchController['$inject'] = ['$scope', 'AuthenticationService', 'AnalyticsService', 'BackendClientService'];
 angular.module('em.app').controller('LaunchController', LaunchController);

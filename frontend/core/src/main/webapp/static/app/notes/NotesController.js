@@ -1,6 +1,6 @@
 'use strict';
 
-function NotesController($location, $routeParams, $scope, UISessionService, NotesService, ListsService, AnalyticsService) {
+function NotesController($scope, UISessionService, NotesService, ListsService, AnalyticsService) {
 
   var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
     if (newFeature.name === 'noteEdit'){
@@ -25,7 +25,6 @@ function NotesController($location, $routeParams, $scope, UISessionService, Note
     if (!$scope.isFeatureActive('notes')) {
       UISessionService.changeFeature({name: 'notes', data: note});
     }
-    $location.path(UISessionService.getOwnerPrefix());
   };
 
   $scope.noteQuickEditDone = function(note) {
@@ -74,7 +73,7 @@ function NotesController($location, $routeParams, $scope, UISessionService, Note
 }
 
 NotesController['$inject'] = [
-'$location', '$routeParams', '$scope',
+'$scope',
 'UISessionService', 'NotesService', 'ListsService',
 'AnalyticsService'];
 angular.module('em.app').controller('NotesController', NotesController);

@@ -2,7 +2,7 @@
   <form id="{{heading}}-omnibar" ng-init="setOmnibarPlaceholder(omnibarFeature, heading)" role="form" name="{{heading}}-addOmniItem" ng-submit="saveOmnibarText(omnibarText)">
     <div class="form-group">
       <div ng-class="(omnibarVisible && 'omnibar-visible') || (!omnibarVisible && 'omnibar-hidden')">
-        <input type="text" id="{{omnibarFeature + heading}}OmnibarInput" class="simple-input form-control omnibar-input" ng-model="omnibarText.title" dynamic-placeholder="{{omnibarPlaceholders[omnibarFeature + heading]}}" ng-click="clickOmnibar(omnibarFeature, heading)" ng-keydown="omnibarKeyDown($event)" maxlength="128" required>
+        <input type="text" id="{{omnibarFeature + heading}}OmnibarInput" class="simple-input form-control omnibar-input" ng-model="omnibarText.title" dynamic-placeholder="{{omnibarPlaceholders[omnibarFeature + heading].text}}" ng-click="clickOmnibar(omnibarFeature, heading)" ng-keydown="omnibarKeyDown($event)" maxlength="128" required>
       </div>
       <div ng-show="omnibarHasText()" class="right-button-wrapper">
         <button id="omnibarX" class="button" type="button" ng-click="omnibarText.title=''"><span class="icon-x"></span>
@@ -13,22 +13,22 @@
   <div ng-if="omnibarVisible === heading" class="omnibar-actions omnibar-animation">
     <ul class="button-row">
       <li class="button-container left-of-four border-right">
-        <button type="button" class="normal-button" ng-click="clickOmnibarPlus(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
+        <button type="button" class="normal-button" ng-click="saveOmnibarText(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
           <span class="button-text">inbox</span>
         </button>
       </li>
       <li class="button-container center-of-four">
-        <button type="button" class="default-button" ng-click="saveAsTask(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
+        <button type="button" class="default-button" ng-click="editAsTask(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
           <span class="button-text">task</span>
         </button>
       </li>
       <li class="button-container center-of-four">
-        <button type="button" class="default-button" ng-click="saveAsNote(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
+        <button type="button" class="default-button" ng-click="editAsNote(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
           <span class="button-text">note</span>
         </button>
       </li>
       <li class="button-container right-of-four">
-        <button type="button" class="default-button" ng-click="clearOmnibar(heading)">
+        <button type="button" class="default-button" ng-click="clearOmnibar()">
           <span class="button-text">cancel</span>
         </button>
       </li>
