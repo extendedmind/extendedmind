@@ -57,6 +57,8 @@ function scrollToDirective($timeout, SwiperService) {
     require: '^scrollToContainer',
     link: function postLink(scope, element, attrs, scrollToWrapperController) {
       var scroller;
+
+      // Control add item... input element's focus.
       var addItem = {
         focus: false
       };
@@ -80,7 +82,6 @@ function scrollToDirective($timeout, SwiperService) {
           scope.$evalAsync(function() {
             scroller.refresh();
             if (addItem.focus) {
-              console.log(addItem.element);
               scroller.scrollToElement(addItem.element, 500);
             }
           });
@@ -101,6 +102,7 @@ function scrollToDirective($timeout, SwiperService) {
         delete addItem.element;
       };
 
+      // IScroll needs to be refreshed, when the DOM is rendered.
       scope.scrollerIncludeContentLoaded = function scrollerIncludeContentLoaded() {
         scroller.refresh();
       };
@@ -123,11 +125,14 @@ function scrollToDirective($timeout, SwiperService) {
       var scrollerWrapper = element[0];
       var scrollerContent = element[0].firstElementChild;
 
+      // Return threshold to set edge loader element's height
       scope.getRubberBandThreshold = function getRubberBandThreshold() {
         return 100;
       };
 
-      var rubberBandThreshold = scope.$last ? -40 : 60;
+      // Default rubber band threshold is 70 pixels. Bottom edge loader height is 100 pixels which increases bottom slide
+      // height by 100 pixels respectively. We can use the same variable with the following threshold adjustment.
+      var rubberBandThreshold = (attrs.scrollToBottomEdge === 'true') ? -30 : 70;
       var reachedEdgeThreshold = false;
 
       function pageSwiperSlideTouchMove() {
@@ -154,24 +159,25 @@ function scrollToDirective($timeout, SwiperService) {
         }
 
         function scrolledPastTopEdgeThreshold() {
-          return scroller.y >= 60;
+          return scroller.y >= rubberBandThreshold;
         }
       }
 
       function pageSwiperSlideTouchEnd() {
         if (reachedEdgeThreshold) {
+          reachedEdgeThreshold = false;
           swipeTo('edge');
-        } else if (scrolledPastSlideTopThreshold()) {
+        } else if (scrolledUpwardPastSlideTopThreshold()) {
           swipeTo('previous');
-        } else if (scrolledPastSlideBottomThreshold()) {
+        } else if (scrolledDownWardPastSlideBottomThreshold()) {
           swipeTo('next');
         }
 
-        function scrolledPastSlideTopThreshold() {
-          return scroller.y >= 60 && scroller.directionY === -1;
+        function scrolledUpwardPastSlideTopThreshold() {
+          return scroller.y >= rubberBandThreshold && scroller.directionY === -1;
         }
 
-        function scrolledPastSlideBottomThreshold() {
+        function scrolledDownWardPastSlideBottomThreshold() {
           return (scrollerWrapper.clientHeight - scrollerContent.scrollHeight >= scroller.y + rubberBandThreshold) && scroller.directionY === 1;
         }
       }
