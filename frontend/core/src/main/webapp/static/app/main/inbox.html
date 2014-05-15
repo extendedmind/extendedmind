@@ -3,24 +3,28 @@
     <div class="column">
       <div class="page-heading" ng-init="heading = 'inbox'; omnibarFeature = 'inbox'" ng-include="'static/app/main/omnibar.html'"></div>
       <div ng-hide="omnibarVisible" id="inbox-page-content-container" class="content-container page-content-container no-heading-content-container omnibar-animation">
-        <div class="accordion-wrapper">
-          <div class="inner-page-content-container" accordion>
-            <div ng-if="showContent('inbox')" ng-repeat="item in items">
-              <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" has-complete="false" toggle-complete></div>
-              <div ng-if="isOpen(item)" class="accordion-body" editable-field-container="auto">
-                <div class="accordion-inner" ng-include="'static/app/main/itemActions.html'"></div>
+        <div id="wrapper" style="height: 100%;" scroll-to-container="inbox" scroll-to="inbox">
+          <div id="scroller" style="min-height: 101%">
+            <div class="accordion-wrapper">
+              <div class="inner-page-content-container" accordion>
+                <div ng-if="showContent('inbox')" ng-repeat="item in scrollToItems = items">
+                  <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" has-complete="false" toggle-complete></div>
+                  <div ng-if="isOpen(item)" class="accordion-body" editable-field-container="auto">
+                    <div class="accordion-inner" ng-include="'static/app/main/itemActions.html'"></div>
+                  </div>
+                </div>
               </div>
             </div>
+            <form class="add-element" role="form" name="itemToInbox" ng-init="newItem = {}" ng-submit="addNewItem(newItem)" autocapitalize="none" autocorrect="off">
+              <div class="form-group" editable-field-container="disable">
+                <label class="sr-only" for="itemTitle">title</label>
+                <div>
+                  <input type="text" id="itemTitle" class="simple-input" ng-model="newItem.title" ng-blur="blurredAddElement()" ng-focus="focusedAddElement($event)" placeholder="add item..." maxlength="128" editable-field></input>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
-        <form class="add-element" role="form" name="itemToInbox" ng-init="newItem = {}" ng-submit="addNewItem(newItem)" autocapitalize="none" autocorrect="off">
-          <div class="form-group" editable-field-container="disable">
-            <label class="sr-only" for="itemTitle">title</label>
-            <div>
-              <input type="text" id="itemTitle" class="simple-input" ng-model="newItem.title" placeholder="add item..." maxlength="128" editable-field></input>
-            </div>
-          </div>
-        </form>
       </div>
     </div>
     <aside class="column">

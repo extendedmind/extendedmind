@@ -61,11 +61,13 @@ function SwiperService($q) {
     }
   }
 
-  var getSwiperParameters = function(swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback, onResistanceBeforeCallback, onResistanceAfterCallback) {
+  var getSwiperParameters = function(swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback, onResistanceBeforeCallback, onResistanceAfterCallback, disableSwiper) {
     var leftEdgeTouchRatio = (overrideSwiperParams[swiperPath]) ? overrideSwiperParams[swiperPath].leftEdgeTouchRatio : undefined;
     var rightEdgeTouchRatio = (overrideSwiperParams[swiperPath]) ? overrideSwiperParams[swiperPath].rightEdgeTouchRatio : undefined;
+    var swiping = disableSwiper ? false : true;
 
     var swiperParams = {
+      swiping: swiping,
       noSwiping: true,
       queueStartCallbacks: true,
       queueEndCallbacks: true,
@@ -116,7 +118,7 @@ function SwiperService($q) {
   };
 
   return {
-    initializeSwiper: function(containerElement, swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback, onResistanceBeforeCallback, onResistanceAfterCallback) {
+    initializeSwiper: function(containerElement, swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback, onResistanceBeforeCallback, onResistanceAfterCallback, disableSwiper) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         delete swipers[swiperPath].swiper;
       }
@@ -126,7 +128,8 @@ function SwiperService($q) {
         swiperSlidesPaths,
         onSlideChangeEndCallback,
         onResistanceBeforeCallback,
-        onResistanceAfterCallback);
+        onResistanceAfterCallback,
+        disableSwiper);
       var swiper = new Swiper(containerElement, params);
 
       swipers[swiperPath] = {
@@ -211,6 +214,16 @@ function SwiperService($q) {
             rightEdgeTouchRatio: rightEdgeTouchRatio
           };
         }
+      }
+    },
+    swipeNext: function(swiperPath) {
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
+        swipers[swiperPath].swiper.swipeNext();
+      }
+    },
+    swipePrevious: function(swiperPath) {
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
+        swipers[swiperPath].swiper.swipePrev();
       }
     },
     swipeTo: function(slidePath) {

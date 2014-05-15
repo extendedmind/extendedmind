@@ -35,6 +35,7 @@ angular.module('em.directives').directive('accordion', ['$document',
         if (!$scope.eventsBound){
           $scope.bindElsewhereEvents();
         }
+        return $scope.closedOtherItems;
       };
 
       $scope.isOpen = function(item) {
@@ -43,6 +44,14 @@ angular.module('em.directives').directive('accordion', ['$document',
             return true;
           }
         }
+      };
+
+      this.refreshScroller = function refreshScroller() {
+        $scope.refreshScroller();
+      };
+
+      this.refreshScrollerAndScrollToElement = function refreshScrollerAndScrollToElement(element) {
+        $scope.refreshScrollerAndScrollToElement(element);
       };
 
       $scope.close = function(item, skipSave) {

@@ -33,11 +33,15 @@ angular.module('em.directives').directive('accordionTitle', [
         }else{
           $scope.closeItem();
         }
+        accordionCtrl.refreshScrollerAndScrollToElement($element[0]);
         return $scope.isOpen;
       };
 
       $scope.closeItem = function(skipSave) {
         if ($scope.isOpen){
+          setTimeout(function() {
+        accordionCtrl.refreshScroller();
+      },800);
           $scope.endTitleEdit(skipSave);
           $element.parent().removeClass('accordion-item-active');
           $scope.isOpen = false;
@@ -52,7 +56,7 @@ angular.module('em.directives').directive('accordionTitle', [
           accordionCtrl.closeOthers($scope);
         }else{
           // Not open, don't open unless nothing else was closed
-          if (!accordionCtrl.closeOthers($scope)){
+          if (!accordionCtrl.closeOthers($scope, $element)){
             $scope.toggleOpen();
           }
         }

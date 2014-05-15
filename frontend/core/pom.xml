@@ -163,7 +163,7 @@
             <source>jsonFixtures.js</source>
           </preloadSources>
           <sourceIncludes>
-            <include>lib/iscroll.js</include>
+            <include>lib/iscroll-probe.js</include>
             <include>lib/jquery/jquery.js</include>
             <include>lib/angularjs/angular.js</include>
             <include>lib/angularjs/angular-animate.js</include>

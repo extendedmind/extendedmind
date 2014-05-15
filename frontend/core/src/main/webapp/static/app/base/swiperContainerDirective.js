@@ -7,7 +7,8 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
     scope: {
       swiperPath: '@swiperContainer',
       swiperType: '@swiperType',
-      expectedSlidesFn: '&expectedSlides'
+      expectedSlidesFn: '&expectedSlides',
+      disableSwiper: '=?swiperContainerDisable'
     },
     controller: function($scope, $element) {
       var swiperSlideInfos = [];
@@ -78,7 +79,8 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
               slides,
               onSlideChangeEndCallback,
               onResistanceBeforeCallback,
-              onResistanceAfterCallback);
+              onResistanceAfterCallback,
+              $scope.disableSwiper);
             initializeSwiperCalled = true;
           } else {
             SwiperService.refreshSwiper($scope.swiperPath, slides);
@@ -93,20 +95,20 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         // For vertical page outerSwiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal
         // swiper or not.
-        if ($scope.swiperType === 'page') {
+        // if ($scope.swiperType === 'page') {
           // We're expecting a slide, which has "inner-slide-content-container", which has section
-          element[0].firstElementChild.firstElementChild.addEventListener('touchstart', pageSwiperSlideTouchStart, false);
-          element[0].firstElementChild.firstElementChild.addEventListener('touchmove', pageSwiperSlideTouchMove, false);
-          element[0].firstElementChild.firstElementChild.addEventListener('touchend', pageSwiperSlideTouchEnd, false);
-          element[0].firstElementChild.firstElementChild.addEventListener('scroll', pageSwiperSlideScroll, false);
+          // element[0].firstElementChild.firstElementChild.addEventListener('touchstart', pageSwiperSlideTouchStart, false);
+          // element[0].firstElementChild.firstElementChild.addEventListener('touchmove', pageSwiperSlideTouchMove, false);
+          // element[0].firstElementChild.firstElementChild.addEventListener('touchend', pageSwiperSlideTouchEnd, false);
+          // element[0].firstElementChild.firstElementChild.addEventListener('scroll', pageSwiperSlideScroll, false);
 
           // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
-          if ($window.navigator.msPointerEnabled) {
-            element[0].firstElementChild.firstElementChild.addEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
-            element[0].firstElementChild.firstElementChild.addEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
-            element[0].firstElementChild.firstElementChild.addEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
-          }
-        }
+          // if ($window.navigator.msPointerEnabled) {
+            // element[0].firstElementChild.firstElementChild.addEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
+            // element[0].firstElementChild.firstElementChild.addEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
+            // element[0].firstElementChild.firstElementChild.addEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
+          // }
+        // }
 
         // Slides from DOM (AngularJS directive) are not necessarily registered in desired order.
         // Slide array of objects is sorted later, during swiper initialization.
@@ -288,7 +290,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
           }
 
           // Find out scroll position of a slide and compare it with swiper direction.
-          // https://developer.mozilla.org/en-US/docs/Web/API/Element.scroswipe tllHeight#Determine_if_an_element_has_been_totally_scrolled
+          // https://developer.mozilla.org/en-US/docs/Web/API/Element.scrollHeight#Determine_if_an_element_has_been_totally_scrolled
           if (((this.scrollHeight - this.scrollTop) <= this.clientHeight) && swipePageSlideDown) {
             // Bottom of a slide and swiping down. Let the event bubble to swiper.
 

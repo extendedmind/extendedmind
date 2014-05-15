@@ -2,27 +2,29 @@
   <div class="column">
     <div class="page-heading swiper-no-swiping" ng-init="heading = 'notes'; omnibarFeature = 'notes'" ng-include="'static/app/main/omnibar.html'"></div>
     <div ng-hide="omnibarVisible && isActiveSlide('details')" class="content-container page-content-container">
-      <div class="swiper-container vertical-slides" swiper-container="notes/details" swiper-type="page" expected-slides="count = lists.length + 1">
+      <div class="swiper-container vertical-slides" swiper-container="notes/details" swiper-type="page" swiper-container-disable="true" expected-slides="count = lists.length + 1">
         <div class="swiper-wrapper">
           <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="notes/details/{{list.uuid}}" slide-index="$index" ng-init="newNote = {relationships: {list: list.uuid}}">
             <div class="inner-slide-content-container">
-              <section class="list">
-                <h3><a href ng-click="toggleListContent()">{{list.title}}</a></h3>
-                <div ng-if="showListContent" ng-include="'static/app/base/listActions.html'"></div>
-                <div>
-                  <div class="inner-page-content-container" accordion>
-                    <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
-                      <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
-                        <div ng-if="note.content" class="teaser">
-                          <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
+              <section class="list" scroll-to="notes/details/{{list.uuid}}" scroll-to-swiper="notes/details">
+                <div id="scroller" style="min-height: 101%">
+                  <h3><a href ng-click="toggleListContent()">{{list.title}}</a></h3>
+                  <div ng-if="showListContent" ng-include="'static/app/base/listActions.html'"></div>
+                  <div>
+                    <div class="inner-page-content-container" accordion>
+                      <div ng-if="showContent('notes')" ng-repeat="note in scrollToItems = (notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid})">
+                        <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
+                          <div ng-if="note.content" class="teaser">
+                            <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
+                          </div>
+                          <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
+                            <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+                          </div>
+                          <div ng-if="!note.content" class="teaser-empty"></div>
                         </div>
+                        <div ng-include="'static/app/notes/addNote.html'" onload="scrollerIncludeContentLoaded()"></div>
                       </div>
-                      <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
-                        <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
-                      </div>
-                      <div ng-if="!note.content" class="teaser-empty"></div>
                     </div>
-                    <div ng-include="'static/app/notes/addNote.html'"></div>
                   </div>
                 </div>
               </section>
@@ -30,20 +32,22 @@
           </div>
           <div class="swiper-slide" swiper-slide="notes/details/recent" slide-index="lists.length" ng-init="newNote = {}">
             <div class="inner-slide-content-container">
-              <section>
-                <h3>recent</h3>
-                <div>
-                  <div class="inner-page-content-container" accordion>
-                    <div ng-if="showContent('notes')" ng-repeat="note in notes | limitTo: 10 | orderBy:'modified':true" ng-init="newNote = {}">
-                      <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
-                        <div ng-if="note.content" class="teaser">
-                          <a href id="note-teaser" ng-click="editNote(note)" ng-bind="getNoteContentTeaser(note)"></a>
+              <section scroll-to="notes/details/recent" scroll-to-swiper="notes/details">
+                <div id="scroller" style="min-height: 101%">
+                  <h3>recent</h3>
+                  <div>
+                    <div class="inner-page-content-container" accordion>
+                      <div ng-if="showContent('notes')" ng-repeat="note in scrollToItems = (notes | limitTo: 10 | orderBy:'modified':true)" ng-init="newNote = {}">
+                        <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
+                          <div ng-if="note.content" class="teaser">
+                            <a href id="note-teaser" ng-click="editNote(note)" ng-bind="getNoteContentTeaser(note)"></a>
+                          </div>
                         </div>
+                        <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
+                          <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+                        </div>
+                        <div ng-if="!note.content" class="teaser-empty"></div>
                       </div>
-                      <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
-                        <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
-                      </div>
-                      <div ng-if="!note.content" class="teaser-empty"></div>
                     </div>
                   </div>
                 </div>
