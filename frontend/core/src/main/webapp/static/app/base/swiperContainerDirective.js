@@ -17,16 +17,16 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
       $scope.expectedSlides = $scope.expectedSlidesFn();
 
       // Listen touch events on slide and set outerSwiping flag on to prevent clickable elements' click event.
-      $element[0].addEventListener('touchstart', mainSwiperTouchStart, false);
-      $element[0].addEventListener('touchmove', mainSwiperTouchMove, false);
-      $element[0].addEventListener('touchend', mainSwiperTouchEnd, false);
+      // $element[0].addEventListener('touchstart', mainSwiperTouchStart, false);
+      // $element[0].addEventListener('touchmove', mainSwiperTouchMove, false);
+      // $element[0].addEventListener('touchend', mainSwiperTouchEnd, false);
 
       // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
-      if ($window.navigator.msPointerEnabled) {
-        $element[0].addEventListener('MSPointerDown', mainSwiperTouchStart, false);
-        $element[0].addEventListener('MSPointerMove', mainSwiperTouchMove, false);
-        $element[0].addEventListener('MSPointerUp', mainSwiperTouchEnd, false);
-      }
+      // if ($window.navigator.msPointerEnabled) {
+      //   $element[0].addEventListener('MSPointerDown', mainSwiperTouchStart, false);
+      //   $element[0].addEventListener('MSPointerMove', mainSwiperTouchMove, false);
+      //   $element[0].addEventListener('MSPointerUp', mainSwiperTouchEnd, false);
+      // }
 
       function sortAndFlattenSlideInfos() {
         // does array contain slide objects

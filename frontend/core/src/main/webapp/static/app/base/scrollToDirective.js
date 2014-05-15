@@ -44,6 +44,10 @@ function scrollToContainerDirective() {
           edgeElements[edge].toggleElementActiveCallback(isActive);
         }
       };
+
+      this.getContainerName = function getContainerName() {
+        return $attrs.scrollToContainer;
+      };
     }
   };
 }
@@ -74,6 +78,7 @@ function scrollToDirective($timeout, SwiperService) {
         scroller.options.probeType = 2;
         scroller.on('scroll', pageSwiperSlideTouchMove);
       }
+      scroller.on('scrollStart', scrollStart);
       if (attrs.scrollToSwiper) {
         element.bind('touchend', pageSwiperSlideTouchEnd);
       }
@@ -140,6 +145,14 @@ function scrollToDirective($timeout, SwiperService) {
       var bottomEdgeRubberBandThreshold = (attrs.scrollToBottomEdge === 'true') ? -100 : 0;
       var reachedEdgeThreshold = false;
 
+      function scrollStart() {
+        if (scroller.directionY === 0) {
+          SwiperService.setOnlyExternal(scrollToWrapperController.getContainerName(), false);
+        } else {
+          SwiperService.setOnlyExternal(scrollToWrapperController.getContainerName(), true);
+        }
+      }
+
       function pageSwiperSlideTouchMove() {
         if (attrs.scrollToBottomEdge === 'true') {
           if (scrolledPastBottomEdgeThreshold()) {
@@ -169,6 +182,7 @@ function scrollToDirective($timeout, SwiperService) {
       }
 
       function pageSwiperSlideTouchEnd() {
+        SwiperService.setOnlyExternal(scrollToWrapperController.getContainerName(), false);
         if (reachedEdgeThreshold) {
           reachedEdgeThreshold = false;
           swipeTo('edge');

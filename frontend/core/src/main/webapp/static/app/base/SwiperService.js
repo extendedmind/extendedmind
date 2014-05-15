@@ -48,7 +48,7 @@ function SwiperService($q) {
       // Default to first slide
       return 0;
     }
-  };
+  }
 
   function useOverrideSlideIndex(swiperPath, swiperSlidesPaths){
     if (overrideSwiperParams[swiperPath] && overrideSwiperParams[swiperPath].initialSlidePath) {
@@ -265,6 +265,11 @@ function SwiperService($q) {
     setSwiping: function(swiperPath, swipe) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         swipers[swiperPath].swiper.params.swiping = swipe;
+      }
+    },
+    setOnlyExternal: function(swiperPath, swipe) {
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
+        swipers[swiperPath].swiper.params.onlyExternal = swipe;
       }
     },
     setSwiperResistance: function(swiperPath, resistance) {
