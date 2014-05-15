@@ -63,7 +63,10 @@ function scrollToDirective($timeout, SwiperService) {
         focus: false
       };
 
-      scroller = new IScroll(element[0], {mouseWheel: true});
+      scroller = new IScroll(element[0], {
+        mouseWheel: true,
+        preventDefaultException: { tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|LABEL)$/ }
+      });
 
       // Strict boolean type equality (===) can be achieved with scope.$eval(attrs.scrollTo<Top|Bottom>Edge).
       // Currently it is not needed.
