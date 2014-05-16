@@ -61,13 +61,12 @@ function SwiperService($q) {
     }
   }
 
-  var getSwiperParameters = function(swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback, onResistanceBeforeCallback, onResistanceAfterCallback, disableSwiper) {
+  var getSwiperParameters = function(swiperPath, swiperType, swiperSlidesPaths, onSlideChangeEndCallback, onResistanceBeforeCallback, onResistanceAfterCallback, onlyExternalSwipe) {
     var leftEdgeTouchRatio = (overrideSwiperParams[swiperPath]) ? overrideSwiperParams[swiperPath].leftEdgeTouchRatio : undefined;
     var rightEdgeTouchRatio = (overrideSwiperParams[swiperPath]) ? overrideSwiperParams[swiperPath].rightEdgeTouchRatio : undefined;
-    var swiping = disableSwiper ? false : true;
 
     var swiperParams = {
-      swiping: swiping,
+      onlyExternal: onlyExternalSwipe ? true : false,
       noSwiping: true,
       queueStartCallbacks: true,
       queueEndCallbacks: true,

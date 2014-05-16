@@ -8,7 +8,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
       swiperPath: '@swiperContainer',
       swiperType: '@swiperType',
       expectedSlidesFn: '&expectedSlides',
-      disableSwiper: '=?swiperContainerDisable'
+      onlyExternalSwipe: '=?swiperContainerOnlyExternalSwipe'
     },
     controller: function($scope, $element) {
       var swiperSlideInfos = [];
@@ -68,7 +68,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
               onSlideChangeEndCallback,
               onResistanceBeforeCallback,
               onResistanceAfterCallback,
-              $scope.disableSwiper);
+              $scope.onlyExternalSwipe);
             initializeSwiperCalled = true;
           } else {
             SwiperService.refreshSwiper($scope.swiperPath, slides);
