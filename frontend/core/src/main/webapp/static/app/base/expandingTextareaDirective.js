@@ -8,15 +8,18 @@ function expandingTextareaDirective($timeout) {
   return {
     restrict:'A',
     link: function(scope, element) {
-      element.expanding();
-      // Needed to get textarea to increase size
-      // on load
-      $timeout(function(){
-        element.change();
-      }, 0);
+      if (!element.expanding('active')) {
+        element.expanding();
+        // Needed to get textarea to increase size
+        // on load
+        $timeout(function(){
+          element.change();
+        }, 200);
+      }
 
       scope.$on('$destroy', function() {
-        element.expanding('destroy');
+        if (element.expanding('active'))
+          element.expanding('destroy');
       });
     }
   };
