@@ -68,11 +68,6 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
       $scope.activeFeature = 'tasks';
       UISessionService.changeFeature({name: $scope.activeFeature});
 
-      // SWIPER SERVICE HOOKS
-
-      SwiperService.registerSlideChangeCallback(setPageHeading, 'tasks', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(setPageHeading, 'notes', 'featureContainerDirective');
-
       // CALLBACK REGISTRATION
 
       this.registerSnapDrawerDragElement = function registerSnapDrawerDragElement(feature, element) {
@@ -106,42 +101,7 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
         }
       }
 
-      // Register callback to active feature or slide change which will update heading
-      function setPageHeading() {
-        if ($scope.isFeatureActive('inbox')) {
-          $scope.currentHeading = 'inbox';
-        } else {
-          var activeSlide = SwiperService.getActiveSlidePath($scope.getActiveFeature());
-          if (!activeSlide) {
-            if ($scope.isFeatureActive('tasks')) {
-              $scope.currentHeading = 'dates';
-            } else if ($scope.isFeatureActive('notes')) {
-              $scope.currentHeading = 'unsorted';
-            }
-          } else {
-            if (activeSlide.endsWith('home')) {
-              if ($scope.isFeatureActive('tasks')) {
-                $scope.currentHeading = 'dates';
-              } else if ($scope.isFeatureActive('notes')) {
-                $scope.currentHeading = 'unsorted';
-              }
-            } else if (activeSlide.endsWith('details')) {
-              $scope.currentHeading = $scope.getActiveFeature();
-            } else {
-              var lastSlashIndex = activeSlide.lastIndexOf('/');
-              if (lastSlashIndex !== -1) {
-                $scope.currentHeading = activeSlide.substring(lastSlashIndex + 1);
-              }
-            }
-          }
-        }
-        if (!$scope.$$phase) {
-          $scope.$digest();
-        }
-      }
-
       function initializeContentFeature(feature) {
-        setPageHeading();
         setFeatureContainerClass(feature);
 
         if ($rootScope.isMobile && featureElements[feature]) {
