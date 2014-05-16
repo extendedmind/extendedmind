@@ -17,7 +17,7 @@
     </div>
     <div ng-class="getTitleInputClasses()">
       <label class="sr-only" for="accordionTitleInput">title</label>
-      <input id="accordionTitleInput" type="text" ng-focus="startTitleEdit($event)" ng-keypress="evaluateKeyPress($event)" class="simple-input swiper-no-swiping" ng-model="item.title" placeholder="title..." maxlength="128" required editable-field>
+      <textarea id="accordionTitleInput" type="text" ng-focus="startTitleEdit($event)" ng-keypress="evaluateKeyPress($event)" class="simple-input swiper-no-swiping" ng-model="item.title" placeholder="title..." maxlength="128" required expanding-textarea editable-field /></textarea>
     </div>
     <div class="right-button-wrapper">
       <button class="button" type="button" ng-click="pressItemEdit()"><span class="icon-i"></span>

@@ -78,8 +78,8 @@ angular.module('em.directives').directive('accordionTitle', [
       };
 
       $scope.endTitleEdit = function(skipSave){
-        // Programmatically blur the input
-        $element.find('input#accordionTitleInput')[0].blur();
+        // Programmatically blur the textarea
+        $element.find('textarea#accordionTitleInput')[0].blur();
         if ($scope.oldTitle !== $scope.item.title){
           if (!skipSave){
             // Title has changed, call edit title method with new title
