@@ -5,7 +5,7 @@ function scrollToEdgeDirective() {
   return {
     restrict: 'A',
     replace: true,
-    require: '^scrollToContainer',
+    require: '^scrollTo',
     template: function(tElement, tAttrs) {
       if (tAttrs.scrollToEdge === 'top') {
         var previousLoaderText = 'previous...';
@@ -25,11 +25,11 @@ function scrollToEdgeDirective() {
         '</div>';
       }
     },
-    link: function postLink(scope, element, attrs, scrollToContainerController) {
+    link: function postLink(scope, element, attrs, scrollToController) {
       if (attrs.scrollToEdge === 'bottom') {
         element.css('bottom', '-' + scope.getRubberBandThreshold() + 'px');
       }
-      scrollToContainerController.registerToggleEdgeElementActiveCallback(attrs.scrollToEdge, toggleElementActive);
+      scrollToController.registerToggleEdgeElementActiveCallback(attrs.scrollToEdge, toggleElementActive);
 
       function toggleElementActive(isActive) {
         element[0].classList.toggle('loader-active', isActive);

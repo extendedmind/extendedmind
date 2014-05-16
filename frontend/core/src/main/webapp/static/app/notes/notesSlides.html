@@ -1,5 +1,5 @@
 <div ng-show="isFeatureActive('notes')" class="swiper-container main-slides" swiper-container="notes" swiper-type="main" expected-slides="3">
-  <div ng-hide="isDesktop && isMenuOpen" class="swiper-wrapper" scroll-to-container="notes">
+  <div ng-hide="isDesktop && isMenuOpen" class="swiper-wrapper">
     <div class="swiper-slide" swiper-slide="notes/home" slide-index=0 ng-include="'static/app/notes/unsorted.html'" snap-drawer-drag="notes"></div>
     <div class="swiper-slide" swiper-slide="notes/overview" slide-index=1 ng-include="'static/app/notes/overview.html'"></div>
     <div class="swiper-slide" swiper-slide="notes/details" slide-index=2 ng-include="'static/app/notes/details.html'"></div>

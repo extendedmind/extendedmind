@@ -1,65 +1,24 @@
 /* global IScroll */
 'use strict';
 
-function scrollToContainerDirective() {
+function scrollToDirective($timeout, SwiperService, UISessionService) {
 
   return {
     restrict: 'A',
     controller: function($scope, $element, $attrs) {
-      var scrollers = {};
       var edgeElements = {};
 
-      $scope.$watch('activeFeature', iterateActiveScrollers);
-
-      function iterateActiveScrollers(activeFeature) {
-        if (activeFeature === $attrs.scrollToContainer) {
-          // TODO: maybe add main swiper slide and vertical swiper slide comparison with scroller path
-          for (var scroller in scrollers) {
-            if (scrollers.hasOwnProperty(scroller)) {
-              refreshScrollerAsynchronously(scrollers[scroller]);
-            }
-          }
-        }
-      }
-
-      function refreshScrollerAsynchronously(scroller) {
-        $scope.$evalAsync(function() {
-          scroller.refresh();
-        });
-      }
-
-      this.registerScroller = function registerScroller(scroller, scrollerId) {
-        scrollers[scrollerId] = scroller;
-      };
-
       this.registerToggleEdgeElementActiveCallback = function registerToggleEdgeElementActiveCallback(edge, toggleElementActiveCallback) {
-        if (!edgeElements[edge]) {
-          edgeElements[edge] = {};
-        }
-        edgeElements[edge].toggleElementActiveCallback = toggleElementActiveCallback;
+        edgeElements[edge] = toggleElementActiveCallback;
       };
 
-      this.fireToggleEdgeElementActiveCallback = function fireEdgeElementCallback(edge, isActive) {
+      $scope.fireToggleEdgeElementActiveCallback = function fireEdgeElementCallback(edge, isActive) {
         if (edgeElements[edge]) {
-          edgeElements[edge].toggleElementActiveCallback(isActive);
+          edgeElements[edge](isActive);
         }
       };
-
-      this.getContainerName = function getContainerName() {
-        return $attrs.scrollToContainer;
-      };
-    }
-  };
-}
-scrollToContainerDirective.$inject = [];
-angular.module('em.directives').directive('scrollToContainer', scrollToContainerDirective);
-
-function scrollToDirective($timeout, SwiperService) {
-
-  return {
-    restrict: 'A',
-    require: '^scrollToContainer',
-    link: function postLink(scope, element, attrs, scrollToWrapperController) {
+    },
+    link: function postLink(scope, element, attrs) {
       var scroller;
 
       // Control add item... input element's focus.
@@ -74,7 +33,7 @@ function scrollToDirective($timeout, SwiperService) {
 
       // Strict boolean type equality (===) can be achieved with scope.$eval(attrs.scrollTo<Top|Bottom>Edge).
       // Currently it is not needed.
-      if (attrs.scrollToTopEdge === 'true' || attrs.scrollToBottomEdge === 'true') {
+      if (attrs.scrollToTopEdge === 'true' || attrs.scrollToBottomEdge === 'true') {
         scroller.options.probeType = 2;
         scroller.on('scroll', pageSwiperSlideTouchMove);
       }
@@ -82,8 +41,6 @@ function scrollToDirective($timeout, SwiperService) {
       if (attrs.scrollToSwiper) {
         element.bind('touchend', pageSwiperSlideTouchEnd);
       }
-
-      scrollToWrapperController.registerScroller(scroller, attrs.scrollTo);
 
       scope.$watch('scrollToItems.length', function(newLength, oldLength) {
         if (newLength > oldLength) {
@@ -147,27 +104,27 @@ function scrollToDirective($timeout, SwiperService) {
 
       function scrollStart() {
         if (scroller.directionY === 0) {
-          SwiperService.setOnlyExternal(scrollToWrapperController.getContainerName(), false);
+          SwiperService.setOnlyExternal(UISessionService.getCurrentFeatureName(), false);
         } else {
-          SwiperService.setOnlyExternal(scrollToWrapperController.getContainerName(), true);
+          SwiperService.setOnlyExternal(UISessionService.getCurrentFeatureName(), true);
         }
       }
 
       function pageSwiperSlideTouchMove() {
         if (attrs.scrollToBottomEdge === 'true') {
           if (scrolledPastBottomEdgeThreshold()) {
-            scrollToWrapperController.fireToggleEdgeElementActiveCallback('bottom', true);
+            scope.fireToggleEdgeElementActiveCallback('bottom', true);
             reachedEdgeThreshold = true;
           } else {
-            scrollToWrapperController.fireToggleEdgeElementActiveCallback('bottom', false);
+            scope.fireToggleEdgeElementActiveCallback('bottom', false);
             reachedEdgeThreshold = false;
           }
         } else if (attrs.scrollToTopEdge === 'true') {
           if (scrolledPastTopEdgeThreshold()) {
-            scrollToWrapperController.fireToggleEdgeElementActiveCallback('top', true);
+            scope.fireToggleEdgeElementActiveCallback('top', true);
             reachedEdgeThreshold = true;
           } else {
-            scrollToWrapperController.fireToggleEdgeElementActiveCallback('top', false);
+            scope.fireToggleEdgeElementActiveCallback('top', false);
             reachedEdgeThreshold = false;
           }
         }
@@ -182,7 +139,7 @@ function scrollToDirective($timeout, SwiperService) {
       }
 
       function pageSwiperSlideTouchEnd() {
-        SwiperService.setOnlyExternal(scrollToWrapperController.getContainerName(), false);
+        SwiperService.setOnlyExternal(UISessionService.getCurrentFeatureName(), false);
         if (reachedEdgeThreshold) {
           reachedEdgeThreshold = false;
           swipeTo('edge');
@@ -223,5 +180,5 @@ function scrollToDirective($timeout, SwiperService) {
     }
   };
 }
-scrollToDirective.$inject = ['$timeout', 'SwiperService'];
+scrollToDirective.$inject = ['$timeout', 'SwiperService', 'UISessionService'];
 angular.module('em.directives').directive('scrollTo', scrollToDirective);
