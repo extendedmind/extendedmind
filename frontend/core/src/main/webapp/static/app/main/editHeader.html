@@ -1,14 +1,14 @@
 <nav id="edit-header">
   <ul class="horizontally-justified">
     <li class="justified-element">
-      <button type="button" class="button transparent-button font-bold" ng-click="cancelEdit()">cancel</button>
+      <button id="edit-cancel-button" type="button" class="button transparent-button font-bold" ng-click="cancelEdit()">cancel</button>
     </li>
     <li class="justified-element">
       <h3 ng-if="item.uuid">edit {{itemType}}</h3>
       <h3 ng-if="!item.uuid">new {{itemType}}</h3>
     </li>
     <li class="justified-element">
-      <button type="submit" class="button transparent-button font-bold" ng-disabled="!itemEditForm.$valid" ng-click="saveItem(item)">save</button>
+      <button id="edit-save-button" type="submit" class="button transparent-button font-bold" ng-disabled="!itemEditForm.$valid" ng-click="saveItem(item)">save</button>
     </li>
     <li id="stretch"></li>
   </ul>
