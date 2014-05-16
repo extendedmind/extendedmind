@@ -120,7 +120,13 @@
         display: 'block',
         border: '0 solid',
         visibility: 'hidden',
-        minHeight: this.$textarea.outerHeight()
+
+// EXTENDED MIND MODIFICATION
+
+        minHeight: this.$textarea.css('min-height')
+
+// MODIFIED
+
       };
 
       if(this.$textarea.attr("wrap") === "off") css.overflowX = "scroll";

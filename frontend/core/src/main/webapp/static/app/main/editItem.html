@@ -6,15 +6,15 @@
         <form role="form" name="itemEdit" editable-field-container>
           <div class="form-group">
             <label class="sr-only" for="itemTitle">title</label>
-            <input type="text" id="itemTitle" class="simple-input font-bold" ng-model="item.title" placeholder="title..." maxlength="128" required editable-field>
-          </div>
-          <div class="form-group" ng-style="{maxHeight: getEditSimpleDescriptionMaxHeight()}">
-            <label class="sr-only" for="itemDescription">description</label>
-            <textarea id="itemDescription" class="simple-input" ng-style="{maxHeight: getEditSimpleDescriptionMaxHeight()}" ng-model="item.description" placeholder="description..." maxlength="1024" expanding-textarea editable-field></textarea>
+            <textarea type="text" id="itemTitle" class="simple-input font-bold" ng-model="item.title" placeholder="title..." maxlength="128" required expanding-textarea editable-field></textarea>
           </div>
           <div class="form-group">
             <label class="sr-only" for="itemLink">url</label>
             <input type="text" id="itemLink" class="simple-input" ng-model="item.link" placeholder="url..." editable-field>
+          </div>
+          <div class="form-group" ng-style="{maxHeight: getEditSimpleDescriptionMaxHeight()}">
+            <label class="sr-only" for="itemDescription">description</label>
+            <textarea id="itemDescription" class="simple-input" ng-style="{maxHeight: getEditSimpleDescriptionMaxHeight()}" ng-model="item.description" placeholder="description..." maxlength="1024" expanding-textarea editable-field></textarea>
           </div>
         </form>
       </div>
