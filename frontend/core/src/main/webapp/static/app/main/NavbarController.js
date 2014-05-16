@@ -18,7 +18,7 @@ function NavbarController($scope, SwiperService, UserSessionService) {
     if (feature === 'notes') {
       return 'unsorted';
     } else if (feature === 'tasks') {
-      return 'dates';
+      return 'timeline';
     } else if (feature === 'inbox') {
       return 'inbox';
     }

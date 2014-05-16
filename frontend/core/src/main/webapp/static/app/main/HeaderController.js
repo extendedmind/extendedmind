@@ -8,7 +8,7 @@ function HeaderController($scope, UISessionService, SwiperService) {
   SwiperService.registerSlideChangeCallback(setPageHeading, 'notes', 'HeaderController');
   UISessionService.registerFeatureChangedCallback(setPageHeading, 'HeaderController');
 
-  var currentHeading = 'dates';
+  var currentHeading = 'timeline';
 
   // Register callback to active feature or slide change which will update heading
   function setPageHeading(variable) {
@@ -25,14 +25,14 @@ function HeaderController($scope, UISessionService, SwiperService) {
 
       if (!activeSlide) {
         if ($scope.isFeatureActive('tasks')) {
-          currentHeading = 'dates';
+          currentHeading = 'timeline';
         } else if ($scope.isFeatureActive('notes')) {
           currentHeading = 'unsorted';
         }
       } else {
         if (activeSlide.endsWith('home')) {
           if ($scope.isFeatureActive('tasks')) {
-            currentHeading = 'dates';
+            currentHeading = 'timeline';
           } else if ($scope.isFeatureActive('notes')) {
             currentHeading = 'unsorted';
           }
