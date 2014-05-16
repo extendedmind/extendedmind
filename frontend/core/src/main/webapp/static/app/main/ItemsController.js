@@ -1,8 +1,9 @@
+/* global $ */
 'use strict';
 
 function ItemsController($scope, $timeout, UISessionService, ItemsService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
+  var featureChangedCallback = function featureChangedCallback(newFeature/*, oldFeature*/){
     if (newFeature.name === 'itemEdit'){
       if (newFeature.data){
         $scope.item = newFeature.data;
@@ -10,12 +11,12 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
         $scope.item = {};
       }
     }
-  }
+  };
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ItemsController');
 
   var resetInboxEdit = function(){
     $scope.itemType = 'item';
-  }
+  };
 
   $scope.omnibarHasText = function omnibarHasText() {
     return $scope.omnibarText.title && $scope.omnibarText.title.length !== 0;
@@ -24,8 +25,8 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
   $scope.searchText = {};
   $scope.isSearchActive = function isSearchActive() {
     return $scope.searchText.delayed && $scope.searchText.delayed.length > 1;
-  }
-  $scope.$watch('omnibarText.title', function(newTitle, oldTitle) {
+  };
+  $scope.$watch('omnibarText.title', function(newTitle/*, oldTitle*/) {
     $scope.searchText.current = newTitle;
     if (newTitle && newTitle.length > 1){
       // Use a delayed update for search
@@ -51,11 +52,12 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
     }
   };
 
-  $scope.addNewItem = function addNewItem(newItem) {
+  $scope.addNewItem = function addNewItem(newItem, refreshScrollerAndScrollToFocusedAddElementCallback) {
     if (newItem.title && newItem.title.length > 0) {
       var newItemToSave = {title: newItem.title};
       delete newItem.title;
       ItemsService.saveItem(newItemToSave, UISessionService.getActiveUUID());
+      if (refreshScrollerAndScrollToFocusedAddElementCallback) refreshScrollerAndScrollToFocusedAddElementCallback();
     }
   };
 
@@ -179,14 +181,14 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
   $scope.editAsTask = function editAsTask(omnibarText) {
     UISessionService.changeFeature(
       {name: 'taskEdit', data: {title: omnibarText.title}}
-    );
+      );
     $scope.clearOmnibar();
   };
 
   $scope.editAsNote = function editAsNote(omnibarText) {
     UISessionService.changeFeature(
       {name: 'noteEdit', data: {title: omnibarText.title}}
-    );
+      );
     $scope.clearOmnibar();
   };
 

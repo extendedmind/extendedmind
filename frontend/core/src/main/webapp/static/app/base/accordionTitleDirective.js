@@ -39,9 +39,7 @@ angular.module('em.directives').directive('accordionTitle', [
 
       $scope.closeItem = function(skipSave) {
         if ($scope.isOpen){
-          setTimeout(function() {
-        accordionCtrl.refreshScroller();
-      },800);
+          accordionCtrl.refreshScroller();
           $scope.endTitleEdit(skipSave);
           $element.parent().removeClass('accordion-item-active');
           $scope.isOpen = false;

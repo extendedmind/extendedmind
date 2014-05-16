@@ -13,7 +13,7 @@
                     <div ng-if="isOpen(list)" class="accordion-body" editable-field-container="auto">
                       <div class="accordion-inner" ng-include="'static/app/base/listActions.html'"></div>
                     </div>
-                    <div ng-if="showContent('notes')" ng-repeat="note in scrollToItems = (notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid})">
+                    <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
                       <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
                         <div ng-if="note.content" class="teaser">
                           <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
@@ -24,7 +24,7 @@
                         <div ng-if="!note.content" class="teaser-empty"></div>
                       </div>
                     </div>
-                    <div ng-include="'static/app/notes/addNote.html'" onload="scrollerIncludeContentLoaded()"></div>
+                    <div ng-include="'static/app/notes/addNote.html'"></div>
                   </div>
                 </div>
               </section>
@@ -37,7 +37,7 @@
                   <h3>recent</h3>
                   <div>
                     <div class="inner-page-content-container" accordion>
-                      <div ng-if="showContent('notes')" ng-repeat="note in scrollToItems = (notes | limitTo: 10 | orderBy:'modified':true)" ng-init="newNote = {}">
+                      <div ng-if="showContent('notes')" ng-repeat="note in notes | limitTo: 10 | orderBy:'modified':true" ng-init="newNote = {}">
                         <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
                           <div ng-if="note.content" class="teaser">
                             <a href id="note-teaser" ng-click="editNote(note)" ng-bind="getNoteContentTeaser(note)"></a>

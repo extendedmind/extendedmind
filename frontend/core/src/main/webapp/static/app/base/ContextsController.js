@@ -2,7 +2,7 @@
 
 function ContextsController($scope, UISessionService, TagsService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
+  var featureChangedCallback = function featureChangedCallback(newFeature/*, oldFeature*/){
     if (newFeature.name === 'contextEdit'){
       if (newFeature.data){
         $scope.context = newFeature.data;
@@ -10,7 +10,7 @@ function ContextsController($scope, UISessionService, TagsService, AnalyticsServ
         $scope.context = {};
       }
     }
-  }
+  };
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ContextsController');
 
   $scope.saveContext = function(context) {
@@ -31,7 +31,7 @@ function ContextsController($scope, UISessionService, TagsService, AnalyticsServ
     TagsService.deleteTag(context, UISessionService.getActiveUUID());
   };
 
-  $scope.addContext = function(newContext) {
+  $scope.addContext = function(newContext, refreshScrollerAndScrollToFocusedAddElementCallback) {
     if (!newContext.title  || newContext.title.length === 0) return false;
 
     var contextToSave = {title: newContext.title, tagType: newContext.tagType};
@@ -40,6 +40,7 @@ function ContextsController($scope, UISessionService, TagsService, AnalyticsServ
     TagsService.saveTag(contextToSave, UISessionService.getActiveUUID()).then(function(/*context*/) {
       AnalyticsService.do('addContext');
     });
+    if (refreshScrollerAndScrollToFocusedAddElementCallback) refreshScrollerAndScrollToFocusedAddElementCallback();
   };
 
   $scope.contextQuickEditDone = function(context) {

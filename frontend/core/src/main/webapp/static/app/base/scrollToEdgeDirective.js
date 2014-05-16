@@ -27,7 +27,7 @@ function scrollToEdgeDirective() {
     },
     link: function postLink(scope, element, attrs, scrollToController) {
       if (attrs.scrollToEdge === 'bottom') {
-        element.css('bottom', '-' + scope.getRubberBandThreshold() + 'px');
+        element.css('bottom', '-' + scope.getBottomEdgeRubberBandThreshold() + 'px');
       }
       scrollToController.registerToggleEdgeElementActiveCallback(attrs.scrollToEdge, toggleElementActive);
 

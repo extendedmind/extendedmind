@@ -1,7 +1,7 @@
 'use strict';
 
 function TasksController($scope, DateService, SwiperService, UISessionService, TasksService, AnalyticsService) {
-  var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
+  var featureChangedCallback = function featureChangedCallback(newFeature/*, oldFeature*/){
     if (newFeature.name === 'taskEdit'){
       if (newFeature.data){
         $scope.task = newFeature.data;
@@ -12,13 +12,13 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
       }
       $scope.initializeTask($scope.task);
     }
-  }
+  };
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'TasksController');
 
   $scope.initializeTask = function(task){
     if (task.due) $scope.showDateInput = true;
     else $scope.showDateInput = false;
-  }
+  };
 
   $scope.focusDate = function() {
     $scope.showDateInput = true;
@@ -96,7 +96,7 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     TasksService.deleteTask(task, UISessionService.getActiveUUID());
   };
 
-  $scope.addSubtask = function(subtask) {
+  $scope.addSubtask = function(subtask, refreshScrollerAndScrollToFocusedAddElementCallback) {
     if (!subtask.title  || subtask.title.length === 0) return false;
     var subtaskToSave = {title: subtask.title};
     if (subtask.date) {
@@ -116,6 +116,7 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     TasksService.saveTask(subtaskToSave, UISessionService.getActiveUUID()).then(function(/*subtaskToSave*/) {
       AnalyticsService.do('addTask');
     });
+    if (refreshScrollerAndScrollToFocusedAddElementCallback) refreshScrollerAndScrollToFocusedAddElementCallback();
   };
 
   $scope.taskQuickEditDone = function(task) {

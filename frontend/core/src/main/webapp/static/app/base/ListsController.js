@@ -2,7 +2,7 @@
 
 function ListsController($scope, UISessionService, ListsService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
+  var featureChangedCallback = function featureChangedCallback(newFeature/*, oldFeature*/){
     if (newFeature.name === 'listEdit'){
       if (newFeature.data){
         $scope.list = newFeature.data;
@@ -10,7 +10,7 @@ function ListsController($scope, UISessionService, ListsService, AnalyticsServic
         $scope.list = {};
       }
     }
-  }
+  };
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ListsController');
 
   $scope.saveList = function(list) {
@@ -27,7 +27,7 @@ function ListsController($scope, UISessionService, ListsService, AnalyticsServic
     ListsService.saveList(list, UISessionService.getActiveUUID());
   };
 
-  $scope.addList = function(newList) {
+  $scope.addList = function(newList, refreshScrollerAndScrollToFocusedAddElementCallback) {
     if (!newList.title  || newList.title.length === 0) return false;
 
     var listToSave = {title: newList.title};
@@ -35,6 +35,7 @@ function ListsController($scope, UISessionService, ListsService, AnalyticsServic
     ListsService.saveList(listToSave, UISessionService.getActiveUUID()).then(function(/*list*/) {
       AnalyticsService.do('addList');
     });
+    if (refreshScrollerAndScrollToFocusedAddElementCallback) refreshScrollerAndScrollToFocusedAddElementCallback();
   };
 
   $scope.archiveList = function(list) {

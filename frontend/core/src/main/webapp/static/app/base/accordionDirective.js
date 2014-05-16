@@ -47,11 +47,11 @@ angular.module('em.directives').directive('accordion', ['$document',
       };
 
       this.refreshScroller = function refreshScroller() {
-        $scope.refreshScroller();
+        if (angular.isFunction($scope.refreshScroller)) $scope.refreshScroller();
       };
 
       this.refreshScrollerAndScrollToElement = function refreshScrollerAndScrollToElement(element) {
-        $scope.refreshScrollerAndScrollToElement(element);
+        if (angular.isFunction($scope.refreshScrollerAndScrollToElement)) $scope.refreshScrollerAndScrollToElement(element);
       };
 
       $scope.close = function(item, skipSave) {
@@ -67,6 +67,7 @@ angular.module('em.directives').directive('accordion', ['$document',
       $scope.closeAndCall = function closeInFn(item, itemAction) {
         $scope.close(item, true);
         itemAction(item);
+        if (angular.isFunction($scope.refreshScroller)) $scope.refreshScroller();
       };
 
       // This is called from the accordion-title directive to add itself to the accordion

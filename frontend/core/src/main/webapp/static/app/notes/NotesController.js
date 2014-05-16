@@ -2,7 +2,7 @@
 
 function NotesController($scope, UISessionService, NotesService, ListsService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(newFeature, oldFeature){
+  var featureChangedCallback = function featureChangedCallback(newFeature/*, oldFeature*/){
     if (newFeature.name === 'noteEdit'){
       if (newFeature.data){
         $scope.note = newFeature.data;
@@ -12,7 +12,7 @@ function NotesController($scope, UISessionService, NotesService, ListsService, A
         };
       }
     }
-  }
+  };
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'NotesController');
 
   $scope.saveNote = function(note) {
@@ -46,7 +46,7 @@ function NotesController($scope, UISessionService, NotesService, ListsService, A
     NotesService.deleteNote(note, UISessionService.getActiveUUID());
   };
 
-  $scope.addNote = function(newNote) {
+  $scope.addNote = function(newNote, refreshScrollerAndScrollToFocusedAddElementCallback) {
     if (!newNote.title  || newNote.title.length === 0) return false;
     var newNoteToSave = {title: newNote.title};
     if (newNote.relationships && newNote.relationships.list){
@@ -58,6 +58,7 @@ function NotesController($scope, UISessionService, NotesService, ListsService, A
 
     AnalyticsService.do('addNote');
     NotesService.saveNote(newNoteToSave, UISessionService.getActiveUUID());
+    if (refreshScrollerAndScrollToFocusedAddElementCallback) refreshScrollerAndScrollToFocusedAddElementCallback();
   };
 
   $scope.getNoteContentTeaser = function(note) {

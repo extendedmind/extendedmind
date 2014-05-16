@@ -5,7 +5,7 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
 
   return {
     restrict: 'A',
-    controller: function($scope, $element, $attrs) {
+    controller: function($scope) {
       var edgeElements = {};
 
       this.registerToggleEdgeElementActiveCallback = function registerToggleEdgeElementActiveCallback(edge, toggleElementActiveCallback) {
@@ -19,6 +19,13 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
       };
     },
     link: function postLink(scope, element, attrs) {
+
+      // IScroll needs to be refreshed, when the DOM is rendered.
+      function delayedScrollerRefresh() {
+        return $timeout(function() {
+          scroller.refresh();
+        }, 200);
+      }
       var scroller;
 
       // Control add item... input element's focus.
@@ -30,6 +37,7 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
         mouseWheel: true,
         preventDefaultException: { tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|LABEL)$/ }
       });
+      delayedScrollerRefresh();
 
       // Strict boolean type equality (===) can be achieved with scope.$eval(attrs.scrollTo<Top|Bottom>Edge).
       // Currently it is not needed.
@@ -42,21 +50,6 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
         element.bind('touchend', pageSwiperSlideTouchEnd);
       }
 
-      scope.$watch('scrollToItems.length', function(newLength, oldLength) {
-        if (newLength > oldLength) {
-          scope.$evalAsync(function() {
-            scroller.refresh();
-            if (addItem.focus) {
-              scroller.scrollToElement(addItem.element, 500);
-            }
-          });
-        } else if (newLength < oldLength) {
-          $timeout(function() {
-            scroller.refresh();
-          }, 200);
-        }
-      });
-
       scope.focusedAddElement = function focusedAddElement(event) {
         addItem.focus = true;
         addItem.element = event.target;
@@ -67,31 +60,31 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
         delete addItem.element;
       };
 
-      // IScroll needs to be refreshed, when the DOM is rendered.
-      scope.scrollerIncludeContentLoaded = function scrollerIncludeContentLoaded() {
-        scroller.refresh();
-      };
-
-      scope.refreshScroller = function refreshScroller() {
-        scroller.refresh();
-      };
-
       scope.scrollToElement = function scrollToElement(element) {
         scroller.scrollToElement(element, 500);
       };
 
+      scope.refreshScroller = function refreshScroller() {
+        delayedScrollerRefresh();
+      };
+
       scope.refreshScrollerAndScrollToElement = function refreshScrollerAndScrollToElement(element) {
-        $timeout(function() {
-          scroller.refresh();
+        delayedScrollerRefresh().then(function() {
           scroller.scrollToElement(element, 500);
-        }, 200);
+        });
+      };
+
+      scope.refreshScrollerAndScrollToFocusedAddElement = function refreshScrollerAndScrollToFocusedAddElement() {
+        delayedScrollerRefresh().then(function() {
+          if (addItem.focus) scroller.scrollToElement(addItem.element, 500);
+        });
       };
 
       var scrollerWrapper = element[0];
       var scrollerContent = element[0].firstElementChild;
 
       // Return threshold to set edge loader element's height
-      scope.getRubberBandThreshold = function getRubberBandThreshold() {
+      scope.getBottomEdgeRubberBandThreshold = function getBottomEdgeRubberBandThreshold() {
         return 100;
       };
 
@@ -139,7 +132,6 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
       }
 
       function pageSwiperSlideTouchEnd() {
-        SwiperService.setOnlyExternal(UISessionService.getCurrentFeatureName(), false);
         if (reachedEdgeThreshold) {
           reachedEdgeThreshold = false;
           swipeTo('edge');
@@ -156,6 +148,7 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
         function scrolledDownWardPastSlideBottomThreshold() {
           return (scrollerWrapper.clientHeight - scrollerContent.scrollHeight >= scroller.y + rubberBandThreshold) && scroller.directionY === 1;
         }
+        SwiperService.setOnlyExternal(UISessionService.getCurrentFeatureName(), false);
       }
 
       function swipeTo(destination) {
