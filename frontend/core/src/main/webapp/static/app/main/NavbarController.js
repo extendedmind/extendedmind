@@ -12,6 +12,17 @@ function NavbarController($scope, SwiperService, UserSessionService) {
     // Run digest to change only navbar when swiping to new location
     $scope.$digest();
   }
+
+  $scope.getHomeHeading = function() {
+    var feature = $scope.getActiveFeature();
+    if (feature === 'notes') {
+      return 'unsorted';
+    } else if (feature === 'tasks') {
+      return 'dates';
+    } else if (feature === 'inbox') {
+      return 'inbox';
+    }
+  }
 }
 
 NavbarController.$inject = ['$scope', 'SwiperService', 'UserSessionService'];

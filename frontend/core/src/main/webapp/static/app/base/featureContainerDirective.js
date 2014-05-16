@@ -100,16 +100,6 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
 
       // PRIVATE FUNCTIONS
 
-      function setHomeHeading(feature) {
-        if (feature === 'notes') {
-          $scope.homeHeading = 'unsorted';
-        } else if (feature === 'tasks') {
-          $scope.homeHeading = 'dates';
-        } else if (feature === 'inbox') {
-          $scope.homeHeading = 'inbox';
-        }
-      }
-
       function reInitSwipers(feature) {
         if (feature === 'tasks' || feature === 'notes') {
           SwiperService.refreshSwiperAndChildSwipers(feature);
@@ -151,7 +141,6 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
       }
 
       function initializeContentFeature(feature) {
-        setHomeHeading(feature);
         setPageHeading();
         setFeatureContainerClass(feature);
 
