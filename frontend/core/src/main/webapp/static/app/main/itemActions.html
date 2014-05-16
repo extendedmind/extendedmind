@@ -25,7 +25,7 @@
   </div>
 
   <div ng-switch-when="task">
-    <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
+    <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskCoreFields.html'"></div>
     <div class="item-actions">
       <button class="wide-button normal-button" type="button" ng-click="closeAndCall(task, taskEditDone)">
         <span class="button-text">done</span>

@@ -10,11 +10,15 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
           relationships: {}
         };
       }
-      if ($scope.task.due) $scope.showDateInput = true;
-      else $scope.showDateInput = false;
+      $scope.initializeTask($scope.task);
     }
   }
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'TasksController');
+
+  $scope.initializeTask = function(task){
+    if (task.due) $scope.showDateInput = true;
+    else $scope.showDateInput = false;
+  }
 
   $scope.focusDate = function() {
     $scope.showDateInput = true;
