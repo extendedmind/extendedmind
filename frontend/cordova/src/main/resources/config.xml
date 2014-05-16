@@ -9,7 +9,11 @@
     </author>
 
     <feature name="Keyboard">
-        <param name="ios-package" value="IonicKeyboard" onload="true" />
+      <param name="ios-package" value="IonicKeyboard" onload="true" />
+    </feature>
+
+    <feature name="SplashScreen">
+      <param name="android-package" value="org.apache.cordova.splashscreen.SplashScreen" />
     </feature>
 
     <!-- If you do not want any permissions to be added to your app, add the

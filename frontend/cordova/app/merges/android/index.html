@@ -37,6 +37,7 @@
   </style>
 
   <link rel="stylesheet" href="static/css/em.css"/>
+  <script src="cordova.js"></script>
   <script>
     var packaging = "android-cordova";
     var urlPrefix = 'https://ext.md';
@@ -44,6 +45,20 @@
     var bindToFocusEvent = false;
     var bindToResumeEvent = true;
     var useOfflineBuffer = true;
+
+    // Wait for device API libraries to load
+    //
+    function onLoad() {
+      document.addEventListener("deviceready", onDeviceReady, false);
+    }
+
+    // device APIs are available
+    //
+    function onDeviceReady() {
+      // Now safe to use device APIs
+      navigator.splashscreen.hide();
+    }
+
   </script>
 </head>
 <body>
