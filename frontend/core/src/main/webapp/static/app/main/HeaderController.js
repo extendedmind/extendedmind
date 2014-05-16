@@ -8,31 +8,40 @@ function HeaderController($scope, UISessionService, SwiperService) {
   SwiperService.registerSlideChangeCallback(setPageHeading, 'notes', 'HeaderController');
   UISessionService.registerFeatureChangedCallback(setPageHeading, 'HeaderController');
 
+  var currentHeading = 'dates';
+
   // Register callback to active feature or slide change which will update heading
-  function setPageHeading() {
+  function setPageHeading(variable) {
     if ($scope.isFeatureActive('inbox')) {
-      $scope.currentHeading = 'inbox';
+      currentHeading = 'inbox';
     } else {
       var activeSlide = SwiperService.getActiveSlidePath($scope.getActiveFeature());
+
+      // TasksController sets as state the new main slide path. This is needed because
+      // SwiperService returns the old slide at this point
+      if (variable.state){
+        activeSlide = variable.state;
+      }
+
       if (!activeSlide) {
         if ($scope.isFeatureActive('tasks')) {
-          $scope.currentHeading = 'dates';
+          currentHeading = 'dates';
         } else if ($scope.isFeatureActive('notes')) {
-          $scope.currentHeading = 'unsorted';
+          currentHeading = 'unsorted';
         }
       } else {
         if (activeSlide.endsWith('home')) {
           if ($scope.isFeatureActive('tasks')) {
-            $scope.currentHeading = 'dates';
+            currentHeading = 'dates';
           } else if ($scope.isFeatureActive('notes')) {
-            $scope.currentHeading = 'unsorted';
+            currentHeading = 'unsorted';
           }
         } else if (activeSlide.endsWith('details')) {
-          $scope.currentHeading = $scope.getActiveFeature();
+          currentHeading = $scope.getActiveFeature();
         } else {
           var lastSlashIndex = activeSlide.lastIndexOf('/');
           if (lastSlashIndex !== -1) {
-            $scope.currentHeading = activeSlide.substring(lastSlashIndex + 1);
+            currentHeading = activeSlide.substring(lastSlashIndex + 1);
           }
         }
       }
@@ -40,6 +49,9 @@ function HeaderController($scope, UISessionService, SwiperService) {
     if (!$scope.$$phase) {
       $scope.$digest();
     }
+  }
+  $scope.getCurrentHeading = function(){
+    return currentHeading;
   }
 
   $scope.getLabelWidth = function() {

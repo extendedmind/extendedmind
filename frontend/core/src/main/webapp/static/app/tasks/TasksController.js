@@ -61,11 +61,10 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
         pageSlidePath = mainSlidePath + '/unsorted';
       }
 
-      SwiperService.setInitialSlidePath('tasks', mainSlidePath);
-      SwiperService.setInitialSlidePath(mainSlidePath, pageSlidePath);
       if (!$scope.isFeatureActive('tasks')) {
-        UISessionService.changeFeature({name: 'tasks', data: savedTask});
+        UISessionService.changeFeature({name: 'tasks', data: savedTask, state: mainSlidePath});
       }
+      SwiperService.swipeTo(pageSlidePath);
     }
   };
 

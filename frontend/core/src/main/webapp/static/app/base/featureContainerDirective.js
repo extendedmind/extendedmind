@@ -16,8 +16,6 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
       };
       var systemFeatures = ['account', 'about', 'admin'];
       var featureElements = {};
-      $scope.homeHeading = 'dates';
-      $scope.currentHeading = 'dates';
 
       // COMMON FEATURE METHODS IN SCOPE
 
@@ -47,26 +45,21 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
 
       // UI SESSION SERVICE HOOKS
 
-      // http://ruoyusun.com/2013/08/24/a-glimpse-of-angularjs-scope-via-example.html
-      $scope.$watch('activeFeature', function(newActiveFeature, oldActiveFeature) {
-        if (contentFeatures.indexOf(newActiveFeature) > -1){
-          activeContentFeatures[newActiveFeature] = true;
-          if (newActiveFeature !== oldActiveFeature) {
-            if ($scope.isContentFeatureActive(newActiveFeature)) {
-              initializeContentFeature(newActiveFeature);
-              $scope.$evalAsync(function() {
-                reInitSwipers(newActiveFeature);
-              });
+      var featureChangedCallback = function featureChangedCallback(newActiveFeature, oldActiveFeature) {
+        if (contentFeatures.indexOf(newActiveFeature.name) > -1){
+          activeContentFeatures[newActiveFeature.name] = true;
+          if (!oldActiveFeature || (newActiveFeature.name !== oldActiveFeature.name)) {
+            if ($scope.isContentFeatureActive(newActiveFeature.name)) {
+              setFeatureContainerClass(newActiveFeature.name);
+              if ($rootScope.isMobile && featureElements[newActiveFeature.name]) {
+                SnapService.setDraggerElement(featureElements[newActiveFeature.name].dragElement);
+              }
             }
           }
         }
-      });
-      var featureChangedCallback = function featureChangedCallback(newActiveFeature, oldActiveFeature) {
-        $scope.activeFeature = newActiveFeature.name;
       }
       UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'featureContainerDirective');
-      $scope.activeFeature = 'tasks';
-      UISessionService.changeFeature({name: $scope.activeFeature});
+      UISessionService.changeFeature({name: 'tasks'});
 
       // CALLBACK REGISTRATION
 
@@ -93,21 +86,6 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
         }
       }
 
-      // PRIVATE FUNCTIONS
-
-      function reInitSwipers(feature) {
-        if (feature === 'tasks' || feature === 'notes') {
-          SwiperService.refreshSwiperAndChildSwipers(feature);
-        }
-      }
-
-      function initializeContentFeature(feature) {
-        setFeatureContainerClass(feature);
-
-        if ($rootScope.isMobile && featureElements[feature]) {
-          SnapService.setDraggerElement(featureElements[feature].dragElement);
-        }
-      }
     },
     link: function(scope, element) {
 
