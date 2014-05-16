@@ -1,8 +1,8 @@
 <section ng-init="newList={}">
-  <h3><a href class="page-header" swiper-click="gotoLists()">lists</a></h3>
+  <h3><a href class="page-header" ng-click="gotoLists()">lists</a></h3>
   <ul class="list-arrow-right">
     <li ng-if="lists && lists.length" ng-class="selected" ng-repeat="list in lists">
-      <a class="text-muted click-to-slide" href swiper-click="gotoDetails(list.uuid)">
+      <a class="text-muted click-to-slide" href ng-click="gotoDetails(list.uuid)">
         <span class="link-title">{{list.title}}</span>
         <span class="icon-arrow-right"></span>
       </a>
