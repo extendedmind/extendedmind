@@ -14,6 +14,10 @@ function expandingTextareaDirective($timeout) {
       $timeout(function(){
         element.change();
       }, 0);
+
+      scope.$on('$destroy', function() {
+        element.expanding('destroy');
+      });
     }
   };
 };
