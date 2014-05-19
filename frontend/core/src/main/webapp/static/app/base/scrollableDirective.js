@@ -5,18 +5,14 @@ function scrollableDirective($timeout) {
   return {
     restrict: 'A',
     link: function postLink(scope, element) {
-      // hide drawer menu before swiper is ready
-      scope.featureContainerReady = false;
       var scroller;
 
-      scope.$on('$includeContentLoaded', function() {
-        scroller = new IScroll(element[0], {
-          deceleration: 0.006
-        });
-        $timeout(function() {
-          scope.featureContainerReady = true;
-        }, 200);
+      scroller = new IScroll(element[0], {
+        deceleration: 0.006
       });
+      $timeout(function() {
+        scroller.refresh();
+      }, 200);
 
       scope.$on('$destroy', function() {
         scroller.destroy();
