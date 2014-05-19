@@ -106,7 +106,7 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
       };
 
       // Default rubber band threshold is 60 pixels.
-      var rubberBandThreshold = 60;
+      var rubberBandThreshold = 20;
       // Bottom edge loader height is 100 pixels which increases bottom slide height by 100 pixels respectively.
       // Set new variable with the following threshold adjustment for bottom edge slide which contains loader.
       var bottomEdgeRubberBandThreshold = (attrs.scrollToBottomEdge === 'true') ? -100 : 0;
