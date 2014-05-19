@@ -6,7 +6,7 @@
         <div class="swiper-wrapper">
           <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="tasks/details/{{list.uuid}}" slide-index="$index" ng-init="subtask = {relationships: {list: list.uuid}}">
             <div class="inner-slide-content-container">
-              <section class="list"scroll-to="tasks/details/{{list.uuid}}" scroll-to-swiper="tasks/details">
+              <section class="list" scroll-to="tasks/details/{{list.uuid}}" scroll-to-swiper="tasks/details">
                 <div id="scroller" style="min-height: 101%">
                   <div class="inner-page-content-container" accordion>
                     <div accordion-title="list" edit-item="editList(list)" edit-item-title="editListTitle(list)" bold-title="true" has-complete="false" toggle-complete></div>
@@ -19,7 +19,7 @@
                         <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>
                     </div>
-                    <div ng-include="'static/app/tasks/addTask.html'"></div>
+                    <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
                   </div>
                 </div>
               </section>
@@ -53,7 +53,7 @@
                         <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>
                     </div>
-                    <div ng-include="'static/app/tasks/addTask.html'"></div>
+                    <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
                   </div>
                 </div>
               </section>
@@ -72,7 +72,7 @@
                           <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
                         </div>
                       </div>
-                      <div ng-include="'static/app/tasks/addTask.html'"></div>
+                      <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
                     </div>
                   </div>
                 </div>
