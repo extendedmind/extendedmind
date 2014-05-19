@@ -2,7 +2,6 @@
 <groups xmlns="http://www.isdc.ro/wro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
   <group name="em.min">
-    <js>/src/main/webapp/static/lib/iscroll-probe.js</js>
   	<js>/src/main/webapp/static/lib/jquery/jquery.min.js</js>
   	<js>/src/main/webapp/static/lib/angularjs/angular.min.js</js>
     <js>/src/main/webapp/static/lib/angularjs/angular-animate.min.js</js>
