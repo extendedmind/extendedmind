@@ -105,11 +105,13 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
         return 100;
       };
 
-      // Default rubber band threshold is 60 pixels.
+      // Default rubber band threshold is 20 pixels.
       var rubberBandThreshold = 20;
+      // Default edge rubber band threshold.
+      var topEdgeRubberBandThreshold = 70;
       // Bottom edge loader height is 100 pixels which increases bottom slide height by 100 pixels respectively.
       // Set new variable with the following threshold adjustment for bottom edge slide which contains loader.
-      var bottomEdgeRubberBandThreshold = (attrs.scrollToBottomEdge === 'true') ? -100 : 0;
+      var bottomEdgeRubberBandThreshold = -30;
       var reachedEdgeThreshold = false;
 
       function scrollStart() {
@@ -117,15 +119,7 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
       }
 
       function pageSwiperSlideTouchMove() {
-        if (attrs.scrollToBottomEdge === 'true') {
-          if (scrolledPastBottomEdgeThreshold()) {
-            scope.fireToggleEdgeElementActiveCallback('bottom', true);
-            reachedEdgeThreshold = true;
-          } else {
-            scope.fireToggleEdgeElementActiveCallback('bottom', false);
-            reachedEdgeThreshold = false;
-          }
-        } else if (attrs.scrollToTopEdge === 'true') {
+        if (attrs.scrollToTopEdge === 'true') {
           if (scrolledPastTopEdgeThreshold()) {
             scope.fireToggleEdgeElementActiveCallback('top', true);
             reachedEdgeThreshold = true;
@@ -133,14 +127,22 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
             scope.fireToggleEdgeElementActiveCallback('top', false);
             reachedEdgeThreshold = false;
           }
-        }
-
-        function scrolledPastBottomEdgeThreshold() {
-          return scrollerWrapper.clientHeight - scrollerContent.scrollHeight >= scroller.y + rubberBandThreshold + bottomEdgeRubberBandThreshold;
+        } else if (attrs.scrollToBottomEdge === 'true') {
+          if (scrolledPastBottomEdgeThreshold()) {
+            scope.fireToggleEdgeElementActiveCallback('bottom', true);
+            reachedEdgeThreshold = true;
+          } else {
+            scope.fireToggleEdgeElementActiveCallback('bottom', false);
+            reachedEdgeThreshold = false;
+          }
         }
 
         function scrolledPastTopEdgeThreshold() {
-          return scroller.y >= rubberBandThreshold;
+          return scroller.y >= topEdgeRubberBandThreshold;
+        }
+
+        function scrolledPastBottomEdgeThreshold() {
+          return scrollerWrapper.clientHeight - scrollerContent.scrollHeight >= scroller.y + bottomEdgeRubberBandThreshold;
         }
       }
 
