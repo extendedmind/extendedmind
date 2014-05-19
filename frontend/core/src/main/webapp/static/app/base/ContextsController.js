@@ -31,7 +31,7 @@ function ContextsController($scope, UISessionService, TagsService, AnalyticsServ
     TagsService.deleteTag(context, UISessionService.getActiveUUID());
   };
 
-  $scope.addContext = function(newContext, refreshScrollerAndScrollToFocusedAddElementCallback) {
+  $scope.addContext = function(newContext) {
     if (!newContext.title  || newContext.title.length === 0) return false;
 
     var contextToSave = {title: newContext.title, tagType: newContext.tagType};
@@ -40,7 +40,6 @@ function ContextsController($scope, UISessionService, TagsService, AnalyticsServ
     TagsService.saveTag(contextToSave, UISessionService.getActiveUUID()).then(function(/*context*/) {
       AnalyticsService.do('addContext');
     });
-    if (refreshScrollerAndScrollToFocusedAddElementCallback) refreshScrollerAndScrollToFocusedAddElementCallback();
   };
 
   $scope.contextQuickEditDone = function(context) {

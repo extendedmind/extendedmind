@@ -52,12 +52,11 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
     }
   };
 
-  $scope.addNewItem = function addNewItem(newItem, refreshScrollerAndScrollToFocusedAddElementCallback) {
+  $scope.addNewItem = function addNewItem(newItem) {
     if (newItem.title && newItem.title.length > 0) {
       var newItemToSave = {title: newItem.title};
       delete newItem.title;
       ItemsService.saveItem(newItemToSave, UISessionService.getActiveUUID());
-      if (refreshScrollerAndScrollToFocusedAddElementCallback) refreshScrollerAndScrollToFocusedAddElementCallback();
     }
   };
 

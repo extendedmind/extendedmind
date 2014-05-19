@@ -1,0 +1,18 @@
+<section ng-init="newContext={title:undefined, tagType:'context'}">
+  <h3><a href class="page-header" ng-click="gotoContexts()">contexts</a></h3>
+  <ul class="list-arrow-right">
+    <li ng-show="contexts.length" ng-repeat="context in contexts">
+      <a href class="click-to-slide" ng-click="gotoDetails(context.uuid)">
+        <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right"></span>
+      </a>
+    </li>
+    <li>
+      <form class="add-element" role="form" name="addContextForm" ng-submit="callAndRefresh(addContext, newContext)" autocapitalize="none" autocorrect="off" add-item>
+        <div class="form-group" editable-field-container="disable">
+          <label class="sr-only" for="contextTitle">title</label>
+          <input type="text" id="contextTitle" class="simple-input" ng-model="newContext.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" placeholder="add context..." editable-field></input>
+        </div>
+      </form>
+    </li>
+  </ul>
+</section>

@@ -97,7 +97,7 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     TasksService.deleteTask(task, UISessionService.getActiveUUID());
   };
 
-  $scope.addSubtask = function(subtask, refreshScrollerAndScrollToFocusedAddElementCallback) {
+  $scope.addSubtask = function(subtask) {
     if (!subtask.title  || subtask.title.length === 0) return false;
     var subtaskToSave = {title: subtask.title};
     if (subtask.date) {
@@ -117,7 +117,6 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     TasksService.saveTask(subtaskToSave, UISessionService.getActiveUUID()).then(function(/*subtaskToSave*/) {
       AnalyticsService.do('addTask');
     });
-    if (refreshScrollerAndScrollToFocusedAddElementCallback) refreshScrollerAndScrollToFocusedAddElementCallback();
   };
 
   $scope.taskQuickEditDone = function(task) {

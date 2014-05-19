@@ -9,8 +9,25 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
     controller: function($scope) {
       var edgeElements = {};
 
+      // Control add item... input element's focus.
+      $scope.addItems = {};
+
       this.registerToggleEdgeElementActiveCallback = function registerToggleEdgeElementActiveCallback(edge, toggleElementActiveCallback) {
         edgeElements[edge] = toggleElementActiveCallback;
+      };
+
+      this.registerAddItemElement = function registerAddItemElement(element) {
+        $scope.addItems[element] = {
+          focus: false
+        };
+      };
+
+      this.focusedAddItemElement = function focusedAddItemElement(element) {
+        if ($scope.addItems[element]) $scope.addItems[element].focus = true;
+      };
+
+      this.blurredAddItemElement = function blurredAddItemElement(element) {
+        if ($scope.addItems[element]) $scope.addItems[element].focus = false;
       };
 
       $scope.fireToggleEdgeElementActiveCallback = function fireEdgeElementCallback(edge, isActive) {
@@ -38,13 +55,9 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
       }
       var scroller;
 
-      // Control add item... input element's focus.
-      var addItem = {
-        focus: false
-      };
-
       scroller = new IScroll(element[0], {
         mouseWheel: true,
+        disableMouse: true,
         preventDefaultException: { tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|LABEL)$/ }
       });
       delayedScrollerRefresh();
@@ -57,16 +70,6 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
       }
       scroller.on('scrollStart', scrollStart);
       element.bind('touchend', pageSwiperSlideTouchEnd);
-
-      scope.focusedAddElement = function focusedAddElement(event) {
-        addItem.focus = true;
-        addItem.element = event.target;
-      };
-
-      scope.blurredAddElement = function blurredAddElement() {
-        addItem.focus = false;
-        delete addItem.element;
-      };
 
       scope.scrollToElement = function scrollToElement(element) {
         scroller.scrollToElement(element, 500);
@@ -85,11 +88,11 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
         }
       };
 
-      scope.refreshScrollerAndScrollToFocusedAddElement = function refreshScrollerAndScrollToFocusedAddElement() {
+      scope.refreshScrollerAndScrollToFocusedAddElement = function refreshScrollerAndScrollToFocusedAddElement(element) {
         var refreshPromise = delayedScrollerRefresh();
         if (refreshPromise){
           refreshPromise.then(function() {
-            if (addItem.focus) scroller.scrollToElement(addItem.element, 500);
+            if (scope.addItems[element] && scope.addItems[element].focus) scroller.scrollToElement(element, 500);
           });
         }
       };
@@ -102,8 +105,8 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
         return 100;
       };
 
-      // Default rubber band threshold is 70 pixels.
-      var rubberBandThreshold = 70;
+      // Default rubber band threshold is 60 pixels.
+      var rubberBandThreshold = 60;
       // Bottom edge loader height is 100 pixels which increases bottom slide height by 100 pixels respectively.
       // Set new variable with the following threshold adjustment for bottom edge slide which contains loader.
       var bottomEdgeRubberBandThreshold = (attrs.scrollToBottomEdge === 'true') ? -100 : 0;

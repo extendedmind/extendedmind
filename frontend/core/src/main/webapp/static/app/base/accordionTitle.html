@@ -10,7 +10,7 @@
       <a id="accordionTitleLink" ng-class="getTitleInputClasses()" class="accordion-toggle" href ng-click="clickTitle()">{{getItemTitle()}}</a>
     </div>
   </div>
-  <form ng-switch-when="true" role="form" name="itemTitleEdit" class="table-wrapper accordion-title-open" ng-class="!hasComplete && 'no-checkbox'" editable-field-container="auto">
+  <form ng-switch-when="true" role="form" name="itemTitleEdit" class="table-wrapper accordion-title-open" ng-class="!hasComplete && 'no-checkbox'" editable-field-container="auto" data-snap-ignore="true">
     <div ng-if="hasComplete" class="left-checkbox-wrapper">
       <input type="checkbox" id="{{item.uuid}}" name="checkbox" class="input-checkbox" ng-checked="item.completed" ng-click="itemChecked()" editable-field />
       <label class="checkbox swiper-no-swiping" for="{{item.uuid}}"></label>
@@ -19,7 +19,7 @@
       <label class="sr-only" for="accordionTitleInput">title</label>
       <textarea id="accordionTitleInput" type="text" ng-focus="startTitleEdit($event)" ng-keypress="evaluateKeyPress($event)" class="simple-input swiper-no-swiping" ng-model="item.title" placeholder="title..." maxlength="128" required expanding-textarea editable-field /></textarea>
     </div>
-    <div class="right-button-wrapper">
+    <div class="right-button-wrapper swiper-no-swiping">
       <button class="button" type="button" ng-click="pressItemEdit()"><span class="icon-i"></span>
       </button>
     </div>

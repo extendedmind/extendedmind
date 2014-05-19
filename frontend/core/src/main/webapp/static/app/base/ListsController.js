@@ -27,7 +27,7 @@ function ListsController($scope, UISessionService, ListsService, AnalyticsServic
     ListsService.saveList(list, UISessionService.getActiveUUID());
   };
 
-  $scope.addList = function(newList, refreshScrollerAndScrollToFocusedAddElementCallback) {
+  $scope.addList = function(newList) {
     if (!newList.title  || newList.title.length === 0) return false;
 
     var listToSave = {title: newList.title};
@@ -35,7 +35,6 @@ function ListsController($scope, UISessionService, ListsService, AnalyticsServic
     ListsService.saveList(listToSave, UISessionService.getActiveUUID()).then(function(/*list*/) {
       AnalyticsService.do('addList');
     });
-    if (refreshScrollerAndScrollToFocusedAddElementCallback) refreshScrollerAndScrollToFocusedAddElementCallback();
   };
 
   $scope.archiveList = function(list) {
