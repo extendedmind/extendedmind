@@ -88,6 +88,7 @@ angular.module('em.directives').directive('accordionTitle', [
       };
 
       $scope.pressItemEdit = function(){
+        $scope.closeItem(true);
         $scope.editItem({item: $scope.item});
       };
 
