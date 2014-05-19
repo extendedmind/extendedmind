@@ -2,10 +2,10 @@
 
 function NotesController($scope, UISessionService, NotesService, ListsService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(newFeature/*, oldFeature*/){
-    if (newFeature.name === 'noteEdit'){
-      if (newFeature.data){
-        $scope.note = newFeature.data;
+  var featureChangedCallback = function featureChangedCallback(name, data, state){
+    if (name === 'noteEdit'){
+      if (data){
+        $scope.note = data;
       }else{
         $scope.note = {
           relationships: {}
@@ -23,7 +23,7 @@ function NotesController($scope, UISessionService, NotesService, ListsService, A
     }
     NotesService.saveNote(note, UISessionService.getActiveUUID());
     if (!$scope.isFeatureActive('notes')) {
-      UISessionService.changeFeature({name: 'notes', data: note});
+      UISessionService.changeFeature('notes', note);
     }
   };
 
@@ -38,7 +38,7 @@ function NotesController($scope, UISessionService, NotesService, ListsService, A
   };
 
   $scope.editNote = function(note) {
-    UISessionService.changeFeature({name: 'noteEdit', data: note});
+    UISessionService.changeFeature('noteEdit', note);
   };
 
   $scope.deleteNote = function(note) {

@@ -109,7 +109,7 @@ function MainController(
   // GENERAL
 
   $scope.cancelEdit = function() {
-    UISessionService.changeFeature({name: UISessionService.getPreviousFeatureName()});
+    UISessionService.changeFeature(UISessionService.getPreviousFeatureName());
   };
 
   $scope.isActiveSlide = function isActiveSlide(pathFragment) {

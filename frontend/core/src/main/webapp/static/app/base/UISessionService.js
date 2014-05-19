@@ -46,24 +46,18 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
     },
 
     // Feature history
-    changeFeature: function(newFeature, oldFeature){
+    changeFeature: function(name, data, state){
       var uuid = this.getActiveUUID();
-      featureMap[uuid][newFeature.name] = {
-        state: newFeature.state,
-        data: newFeature.data
+      featureMap[uuid][name] = {
+        data: data,
+        state: state
       };
-      if (oldFeature){
-        featureMap[uuid][oldFeature.name] = {
-          state: oldFeature.state,
-          data: oldFeature.data
-        };
-      }
       if (!featureHistory[uuid]) featureHistory[uuid] = [];
-      featureHistory[uuid].push(newFeature.name);
+      featureHistory[uuid].push(name);
 
       // Fire feature changed callbacks
       for (var i = 0, len = featureChangedCallbacks.length; i < len; i++) {
-        featureChangedCallbacks[i].callback(newFeature, oldFeature);
+        featureChangedCallbacks[i].callback(name, data, state);
       }
     },
     getPreviousFeatureName: function(){
@@ -76,6 +70,12 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
       var uuid = this.getActiveUUID();
       if (featureHistory[uuid].length > 0){
         return featureHistory[uuid][featureHistory[uuid].length-1];
+      }
+    },
+    setCurrentFeatureState: function(state){
+      var uuid = this.getActiveUUID();
+      if (featureHistory[uuid].length > 0){
+        featureMap[uuid][featureHistory[uuid][featureHistory[uuid].length-1]].state = state;
       }
     },
     getFeatureState: function(featureName){

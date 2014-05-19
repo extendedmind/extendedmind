@@ -1,10 +1,11 @@
 'use strict';
 
 function TasksController($scope, DateService, SwiperService, UISessionService, TasksService, AnalyticsService) {
-  var featureChangedCallback = function featureChangedCallback(newFeature/*, oldFeature*/){
-    if (newFeature.name === 'taskEdit'){
-      if (newFeature.data){
-        $scope.task = newFeature.data;
+
+  var featureChangedCallback = function featureChangedCallback(name, data, state){
+    if (name === 'taskEdit'){
+      if (data){
+        $scope.task = data;
       }else{
         $scope.task = {
           relationships: {}
@@ -66,7 +67,7 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
       }
 
       if (!$scope.isFeatureActive('tasks')) {
-        UISessionService.changeFeature({name: 'tasks', data: savedTask, state: mainSlidePath});
+        UISessionService.changeFeature('tasks', savedTask, mainSlidePath);
       }
       SwiperService.swipeTo(pageSlidePath);
     }
@@ -78,7 +79,7 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
   };
 
   $scope.editTask = function(task) {
-    UISessionService.changeFeature({name: 'taskEdit', data: task});
+    UISessionService.changeFeature('taskEdit', task);
   };
 
   $scope.taskChecked = function(task) {

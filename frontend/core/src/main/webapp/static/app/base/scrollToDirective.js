@@ -5,6 +5,7 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
 
   return {
     restrict: 'A',
+    require: '^featureContainer',
     controller: function($scope) {
       var edgeElements = {};
 
@@ -18,7 +19,12 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
         }
       };
     },
-    link: function postLink(scope, element, attrs) {
+    link: function postLink(scope, element, attrs, featureContainerController) {
+      featureContainerController.registerViewActiveCallback(attrs.scrollTo, scrollerViewActive);
+
+      function scrollerViewActive(){
+        delayedScrollerRefresh();
+      }
 
       // IScroll needs to be refreshed, when the DOM is rendered.
       function delayedScrollerRefresh() {

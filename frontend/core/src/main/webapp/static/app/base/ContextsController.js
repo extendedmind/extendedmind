@@ -2,10 +2,10 @@
 
 function ContextsController($scope, UISessionService, TagsService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(newFeature/*, oldFeature*/){
-    if (newFeature.name === 'contextEdit'){
-      if (newFeature.data){
-        $scope.context = newFeature.data;
+  var featureChangedCallback = function featureChangedCallback(name, data, state){
+    if (name === 'contextEdit'){
+      if (data){
+        $scope.context = data;
       }else{
         $scope.context = {};
       }
@@ -19,7 +19,7 @@ function ContextsController($scope, UISessionService, TagsService, AnalyticsServ
   };
 
   $scope.editContext = function(context) {
-    UISessionService.changeFeature({name: 'contextEdit', data: context});
+    UISessionService.changeFeature('contextEdit', context);
   };
 
   $scope.editContextTitle = function(context) {

@@ -4,23 +4,31 @@ function HeaderController($scope, UISessionService, SwiperService) {
 
   // SWIPER SERVICE HOOKS
 
-  SwiperService.registerSlideChangeCallback(setPageHeading, 'tasks', 'HeaderController');
-  SwiperService.registerSlideChangeCallback(setPageHeading, 'notes', 'HeaderController');
-  UISessionService.registerFeatureChangedCallback(setPageHeading, 'HeaderController');
+  SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'HeaderController');
+  SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'HeaderController');
+  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'HeaderController');
 
   var currentHeading = 'timeline';
 
+  function featureChangedCallback(name, data, state){
+    // Controllers set as state the new main slide path. This is needed because
+    // SwiperService returns the old slide at this point
+    setPageHeading(state);
+  }
+
+  function slideChangedCallback(/*activeSlidePath*/){
+    setPageHeading();
+  }
+
   // Register callback to active feature or slide change which will update heading
-  function setPageHeading(variable) {
+  function setPageHeading(overrideActiveSlide) {
     if ($scope.isFeatureActive('inbox')) {
       currentHeading = 'inbox';
     } else {
       var activeSlide = SwiperService.getActiveSlidePath($scope.getActiveFeature());
 
-      // TasksController sets as state the new main slide path. This is needed because
-      // SwiperService returns the old slide at this point
-      if (variable.state){
-        activeSlide = variable.state;
+      if (overrideActiveSlide && (activeSlide !== overrideActiveSlide)){
+        activeSlide = overrideActiveSlide;
       }
 
       if (!activeSlide) {
@@ -65,11 +73,11 @@ function HeaderController($scope, UISessionService, SwiperService) {
 
   $scope.addNew = function() {
     if ($scope.isFeatureActive('inbox')) {
-      UISessionService.changeFeature({name: 'itemEdit'});
+      UISessionService.changeFeature('itemEdit');
     } else if ($scope.isFeatureActive('tasks')) {
-      UISessionService.changeFeature({name: 'taskEdit'});
+      UISessionService.changeFeature('taskEdit');
     } else if ($scope.isFeatureActive('notes')) {
-      UISessionService.changeFeature({name: 'noteEdit'});
+      UISessionService.changeFeature('noteEdit');
     }
   };
 }

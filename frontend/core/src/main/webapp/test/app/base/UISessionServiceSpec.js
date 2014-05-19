@@ -125,9 +125,7 @@ describe('UISessionService', function() {
 
     // 1. Change feature starting from an empty feature history
 
-    UISessionService.changeFeature(
-      {name: 'tasks'}
-    );
+    UISessionService.changeFeature('tasks');
     expect(callbackCalled).toEqual(true);
     expect(UISessionService.getPreviousFeatureName()).toBeUndefined();
 
@@ -135,19 +133,16 @@ describe('UISessionService', function() {
 
     var testData = {title: 'test'};
     var testState = 'tasks/lists/123';
-    UISessionService.changeFeature(
-      {name: 'taskEdit', data: testData},
-      {name: 'tasks', state: testState}
-    );
+
+    UISessionService.setCurrentFeatureState(testState);
+    UISessionService.changeFeature('taskEdit', testData);
     expect(UISessionService.getPreviousFeatureName()).toEqual('tasks');
     expect(UISessionService.getFeatureData('taskEdit')).toEqual(testData);
     expect(UISessionService.getFeatureState('tasks')).toEqual(testState);
 
     // 3. Change away to notes
 
-    UISessionService.changeFeature(
-      {name: 'notes'}
-    );
+    UISessionService.changeFeature('notes');
     expect(UISessionService.getPreviousFeatureName()).toEqual('taskEdit');
     expect(UISessionService.getFeatureData('taskEdit')).toEqual(testData);
 

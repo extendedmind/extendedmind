@@ -2,10 +2,10 @@
 
 function ListsController($scope, UISessionService, ListsService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(newFeature/*, oldFeature*/){
-    if (newFeature.name === 'listEdit'){
-      if (newFeature.data){
-        $scope.list = newFeature.data;
+  var featureChangedCallback = function featureChangedCallback(name, data, state){
+    if (name === 'listEdit'){
+      if (data){
+        $scope.list = data;
       }else{
         $scope.list = {};
       }
@@ -19,7 +19,7 @@ function ListsController($scope, UISessionService, ListsService, AnalyticsServic
   };
 
   $scope.editList = function(list) {
-    UISessionService.changeFeature({name: 'listEdit', data: list});
+    UISessionService.changeFeature('listEdit', list);
   };
 
   $scope.editListTitle = function(list) {

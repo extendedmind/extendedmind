@@ -3,7 +3,7 @@
     <div class="page-heading swiper-no-swiping" ng-init="heading = 'unsorted'; omnibarFeature = 'notes'" ng-include="'static/app/main/omnibar.html'"></div>
     <div ng-hide="omnibarVisible && isActiveSlide('home')" class="content-container page-content-container no-heading-content-container">
       <div class="inner-page-content-container">
-        <div id="wrapper" style="height: 100%; position: absolute;" scroll-to="notes">
+        <div id="wrapper" style="height: 100%; position: absolute;" scroll-to="notes/home">
           <div id="scroller" style="min-height: 101%">
             <div class="inner-page-content-container" accordion>
               <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'unsorted'}" ng-init="newNote = {}">

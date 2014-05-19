@@ -16,6 +16,7 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
       };
       var systemFeatures = ['account', 'about', 'admin'];
       var featureElements = {};
+      var viewActiveCallbacks = {};
 
       // COMMON FEATURE METHODS IN SCOPE
 
@@ -45,21 +46,19 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
 
       // UI SESSION SERVICE HOOKS
 
-      var featureChangedCallback = function featureChangedCallback(newActiveFeature, oldActiveFeature) {
-        if (contentFeatures.indexOf(newActiveFeature.name) > -1){
-          activeContentFeatures[newActiveFeature.name] = true;
-          if (!oldActiveFeature || (newActiveFeature.name !== oldActiveFeature.name)) {
-            if ($scope.isContentFeatureActive(newActiveFeature.name)) {
-              setFeatureContainerClass(newActiveFeature.name);
-              if ($rootScope.isMobile && featureElements[newActiveFeature.name]) {
-                SnapService.setDraggerElement(featureElements[newActiveFeature.name].dragElement);
-              }
+      var featureChangedCallback = function featureChangedCallback(name, data, state){
+        if (contentFeatures.indexOf(name) > -1){
+          activeContentFeatures[name] = true;
+          if ($scope.isContentFeatureActive(name)) {
+            setFeatureContainerClass(name);
+            if ($rootScope.isMobile && featureElements[name]) {
+              SnapService.setDraggerElement(featureElements[name].dragElement);
             }
           }
         }
       }
       UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'featureContainerDirective');
-      UISessionService.changeFeature({name: 'tasks'});
+      UISessionService.changeFeature('tasks');
 
       // CALLBACK REGISTRATION
 
@@ -69,6 +68,10 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
         }
         if (!featureElements[feature]) featureElements[feature] = {};
         featureElements[feature].dragElement = element;
+      };
+
+      this.registerViewActiveCallback = function registerViewActiveCallback(viewId, callback) {
+        viewActiveCallbacks[viewId] = callback;
       };
 
       // SET CORRECT CLASSES TO FEATURE CONTAINER ELEMENT

@@ -47,7 +47,7 @@ function MenuController($location, $scope, AuthenticationService, UISessionServi
 
   $scope.gotoFeature = function gotoFeature(feature) {
     if (UISessionService.getCurrentFeatureName() !== feature) {
-      UISessionService.changeFeature({name: feature});
+      UISessionService.changeFeature(feature);
       AnalyticsService.visit(feature);
     }
     $scope.toggleMenu();

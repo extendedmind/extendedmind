@@ -3,10 +3,10 @@
 
 function ItemsController($scope, $timeout, UISessionService, ItemsService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(newFeature/*, oldFeature*/){
-    if (newFeature.name === 'itemEdit'){
-      if (newFeature.data){
-        $scope.item = newFeature.data;
+  var featureChangedCallback = function featureChangedCallback(name, data, state){
+    if (name === 'itemEdit'){
+      if (data){
+        $scope.item = data;
       }else{
         $scope.item = {};
       }
@@ -48,7 +48,7 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
     }
     ItemsService.saveItem(item, UISessionService.getActiveUUID());
     if (!$scope.isFeatureActive('inbox')) {
-      UISessionService.changeFeature({name: 'inbox', data: item});
+      UISessionService.changeFeature('inbox', item);
     }
   };
 
@@ -68,7 +68,7 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
   };
 
   $scope.editItem  = function(item) {
-    UISessionService.changeFeature({name: 'itemEdit', data: item});
+    UISessionService.changeFeature('itemEdit', item);
   };
 
   $scope.deleteItem = function(item) {
@@ -172,23 +172,19 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
       ItemsService.saveItem({title: omnibarText.title}, UISessionService.getActiveUUID()).then(function(item) {
         $scope.clearOmnibar();
         if (!$scope.isFeatureActive('inbox')) {
-          UISessionService.changeFeature({name: 'inbox', data: item});
+          UISessionService.changeFeature('inbox', item);
         }
       });
     }
   };
 
   $scope.editAsTask = function editAsTask(omnibarText) {
-    UISessionService.changeFeature(
-      {name: 'taskEdit', data: {title: omnibarText.title}}
-      );
+    UISessionService.changeFeature('taskEdit', {title: omnibarText.title});
     $scope.clearOmnibar();
   };
 
   $scope.editAsNote = function editAsNote(omnibarText) {
-    UISessionService.changeFeature(
-      {name: 'noteEdit', data: {title: omnibarText.title}}
-      );
+    UISessionService.changeFeature('noteEdit', {title: omnibarText.title});
     $scope.clearOmnibar();
   };
 
