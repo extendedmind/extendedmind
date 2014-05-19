@@ -46,9 +46,7 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
         scroller.on('scroll', pageSwiperSlideTouchMove);
       }
       scroller.on('scrollStart', scrollStart);
-      if (attrs.scrollToSwiper) {
-        element.bind('touchend', pageSwiperSlideTouchEnd);
-      }
+      element.bind('touchend', pageSwiperSlideTouchEnd);
 
       scope.focusedAddElement = function focusedAddElement(event) {
         addItem.focus = true;
@@ -96,11 +94,7 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
       var reachedEdgeThreshold = false;
 
       function scrollStart() {
-        if (scroller.directionY === 0) {
-          SwiperService.setOnlyExternal(UISessionService.getCurrentFeatureName(), false);
-        } else {
-          SwiperService.setOnlyExternal(UISessionService.getCurrentFeatureName(), true);
-        }
+        SwiperService.setOnlyExternal(UISessionService.getCurrentFeatureName(), true);
       }
 
       function pageSwiperSlideTouchMove() {
@@ -132,23 +126,25 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
       }
 
       function pageSwiperSlideTouchEnd() {
-        if (reachedEdgeThreshold) {
-          reachedEdgeThreshold = false;
-          swipeTo('edge');
-        } else if (scrolledUpwardPastSlideTopThreshold()) {
-          swipeTo('previous');
-        } else if (scrolledDownWardPastSlideBottomThreshold()) {
-          swipeTo('next');
-        }
-
         function scrolledUpwardPastSlideTopThreshold() {
           return scroller.y >= rubberBandThreshold && scroller.directionY === -1;
         }
-
         function scrolledDownWardPastSlideBottomThreshold() {
           return (scrollerWrapper.clientHeight - scrollerContent.scrollHeight >= scroller.y + rubberBandThreshold) && scroller.directionY === 1;
         }
+
         SwiperService.setOnlyExternal(UISessionService.getCurrentFeatureName(), false);
+
+        if (attrs.scrollToSwiper){
+          if (reachedEdgeThreshold) {
+            reachedEdgeThreshold = false;
+            swipeTo('edge');
+          } else if (scrolledUpwardPastSlideTopThreshold()) {
+            swipeTo('previous');
+          } else if (scrolledDownWardPastSlideBottomThreshold()) {
+            swipeTo('next');
+          }
+        }
       }
 
       function swipeTo(destination) {

@@ -496,7 +496,13 @@ IScroll.prototype = {
 		this.directionX = deltaX > 0 ? -1 : deltaX < 0 ? 1 : 0;
 		this.directionY = deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0;
 
-		if ( !this.moved ) {
+// EXTENDED MIND MODIFICATION START
+		//if ( !this.moved ) {
+
+		if ( !this.moved && ((!this.scrollX && this.directionY !== 0) || (!this.scrollY && this.directionX !== 0)) ) {
+
+// EXTENDED MIND MODIFICATION  END
+
 			this._execEvent('scrollStart');
 		}
 
