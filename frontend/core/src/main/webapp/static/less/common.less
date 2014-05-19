@@ -707,3 +707,22 @@ a.content:active {
   -o-animation: .1s fade-in;
   animation: .1s fade-in;
 }
+
+// WORD BREAKING
+// http://kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/
+.break-words {
+
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-all;
+
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  // For Firefox to hyphenate correctly
+  // we would need LANG to be set by the user
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
