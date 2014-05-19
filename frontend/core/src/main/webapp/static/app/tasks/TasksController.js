@@ -69,7 +69,7 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
       if (!$scope.isFeatureActive('tasks')) {
         UISessionService.changeFeature('tasks', savedTask, mainSlidePath);
       }
-      SwiperService.swipeTo(pageSlidePath);
+      SwiperService.swipeToWithCallback(pageSlidePath);
     }
   };
 

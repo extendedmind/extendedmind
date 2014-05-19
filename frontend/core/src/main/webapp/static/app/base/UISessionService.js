@@ -48,10 +48,18 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
     // Feature history
     changeFeature: function(name, data, state){
       var uuid = this.getActiveUUID();
-      featureMap[uuid][name] = {
-        data: data,
-        state: state
-      };
+      if (!featureMap[uuid][name]){
+        featureMap[uuid][name] = {
+          data: data,
+          state: state
+        };
+      }else{
+        featureMap[uuid][name].data = data;
+        // Don't overwrite existing data with undefined
+        if(state){
+          featureMap[uuid][name].state = state;
+        }
+      }
       if (!featureHistory[uuid]) featureHistory[uuid] = [];
       featureHistory[uuid].push(name);
 

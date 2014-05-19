@@ -46,6 +46,17 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
 
       // UI SESSION SERVICE HOOKS
 
+      function executeViewActiveCallbacks(viewId){
+        if (viewActiveCallbacks[viewId]){
+          viewActiveCallbacks[viewId]();
+        }
+        var subViewId = SwiperService.getActiveSlidePath(viewId);
+
+        if (subViewId && viewActiveCallbacks[subViewId]){
+          viewActiveCallbacks[subViewId]();
+        }
+      }
+
       var featureChangedCallback = function featureChangedCallback(name, data, state){
         if (contentFeatures.indexOf(name) > -1){
           activeContentFeatures[name] = true;
@@ -56,9 +67,30 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
             }
           }
         }
+
+        if (!state) state = UISessionService.getFeatureState(name);
+
+        executeViewActiveCallbacks(state);
       }
       UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'featureContainerDirective');
       UISessionService.changeFeature('tasks');
+
+      // SWIPER SERVICE HOOKS
+
+      var slideChangedCallback = function slideChangedCallback(activeSlidePath){
+        executeViewActiveCallbacks(activeSlidePath);
+
+        // Don't set to main slide path, if page slide path is already set
+        if (!UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()) ||
+            !UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()).startsWith(activeSlidePath)){
+          UISessionService.setCurrentFeatureState(activeSlidePath);
+        }
+      }
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/home', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/details', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes/details', 'featureContainerDirective');
 
       // CALLBACK REGISTRATION
 

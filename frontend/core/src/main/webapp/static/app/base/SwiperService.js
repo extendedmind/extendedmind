@@ -21,8 +21,10 @@ function SwiperService($q) {
       if (slidePath.startsWith(swiperPath)) {
         if (swipers[swiperPath].swiperType === 'main') {
           swiperInfos.main = swipers[swiperPath];
+          swiperInfos.mainPath = swiperPath;
         } else if (swipers[swiperPath].swiperType === 'page') {
           swiperInfos.page = swipers[swiperPath];
+          swiperInfos.pagePath = swiperPath;
         }
       }
     }
@@ -54,8 +56,12 @@ function SwiperService($q) {
     if (overrideSwiperParams[swiperPath] && overrideSwiperParams[swiperPath].initialSlidePath) {
       var slideIndex = getSlideIndexBySlidePath(overrideSwiperParams[swiperPath].initialSlidePath, swiperSlidesPaths);
       if (slideIndex !== undefined) {
+        // execute slide change callbacks on override
+        executeSlideChangeCallbacks(swiperPath, overrideSwiperParams[swiperPath].initialSlidePath, slideIndex);
+
         // set initial slide path to undefined for future swiper instances
         overrideSwiperParams[swiperPath].initialSlidePath = undefined;
+
         return slideIndex;
       }
     }
@@ -232,6 +238,13 @@ function SwiperService($q) {
       // Second, swipe (vertically) with the page swiper
       this.swipeMainSlide(slidePath, swiperInfos);
       this.swipePageSlide(slidePath, swiperInfos);
+      return swiperInfos;
+    },
+    swipeToWithCallback: function(slidePath) {
+      var swiperInfos = this.swipeTo(slidePath);
+      if (swiperInfos.pagePath){
+        executeSlideChangeCallbacks(swiperInfos.pagePath, slidePath);
+      }
     },
     swipeMainSlide: function(slidePath, swiperInfos) {
       swiperInfos = swiperInfos || getSwiperInfosBySlidePath(slidePath);

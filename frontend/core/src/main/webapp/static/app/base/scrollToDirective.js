@@ -20,16 +20,20 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
       };
     },
     link: function postLink(scope, element, attrs, featureContainerController) {
-      featureContainerController.registerViewActiveCallback(attrs.scrollTo, scrollerViewActive);
+      featureContainerController.registerViewActiveCallback(attrs.scrollTo, scrollerViewActiveCallback);
 
-      function scrollerViewActive(){
+      function scrollerViewActiveCallback(){
         delayedScrollerRefresh();
       }
 
       // IScroll needs to be refreshed, when the DOM is rendered.
+      var refreshing = false;
       function delayedScrollerRefresh() {
+        if (refreshing) return false;
+        refreshing = true;
         return $timeout(function() {
           scroller.refresh();
+          refreshing = false;
         }, 200);
       }
       var scroller;
@@ -73,15 +77,21 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
       };
 
       scope.refreshScrollerAndScrollToElement = function refreshScrollerAndScrollToElement(element) {
-        delayedScrollerRefresh().then(function() {
-          scroller.scrollToElement(element, 500);
-        });
+        var refreshPromise = delayedScrollerRefresh();
+        if (refreshPromise){
+          refreshPromise.then(function() {
+            scroller.scrollToElement(element, 500);
+          });
+        }
       };
 
       scope.refreshScrollerAndScrollToFocusedAddElement = function refreshScrollerAndScrollToFocusedAddElement() {
-        delayedScrollerRefresh().then(function() {
-          if (addItem.focus) scroller.scrollToElement(addItem.element, 500);
-        });
+        var refreshPromise = delayedScrollerRefresh();
+        if (refreshPromise){
+          refreshPromise.then(function() {
+            if (addItem.focus) scroller.scrollToElement(addItem.element, 500);
+          });
+        }
       };
 
       var scrollerWrapper = element[0];
