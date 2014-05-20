@@ -9,8 +9,11 @@
     <li>
       <a href class="feature-link" ng-class="getFeatureClass('notes')" ng-click="gotoFeature('notes')">notes</a>
     </li>
-    <li id="last-feature">
+    <li id="{{isAdmin() ? '' : 'last-feature'}}">
       <a href class="feature-link" ng-class="getFeatureClass('inbox')" ng-click="gotoFeature('inbox')">inbox</a>
+    </li>
+    <li ng-if="isAdmin()" id="last-feature">
+      <a href class="feature-link" ng-class="getFeatureClass('dashboard')" ng-click="gotoFeature('dashboard')">dashboard</a>
     </li>
     <li ng-show="useCollectives()" id="my">
       <a href ng-class="getMyClass()" ng-click="setMyActive()">my information</a>

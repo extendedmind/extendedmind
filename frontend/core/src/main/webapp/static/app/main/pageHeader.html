@@ -7,8 +7,8 @@
       <a href ng-if="isDatepickerVisible" id="today-link" ng-class="{'today-link-active': isTodayActive}">today</a>
     </div>
   </div>
-  <div id="omnibar-label-wrapper"><label for="{{getActiveFeature() + getCurrentHeading()}}OmnibarInput" ng-style="{width: getLabelWidth()}">&nbsp;</label></div>
-  <div id="plus-button-wrapper" ng-style="{width: (currentWidth - getLabelWidth()) * 0.5}">
+  <div id="omnibar-label-wrapper" ng-class="featureHasPlusButton() ? 'edges-fade-to-white' : 'left-edge-fades-to-white'"><label for="{{getActiveFeature() + getCurrentHeading()}}OmnibarInput" ng-style="{width: getLabelWidth()}">&nbsp;</label></div>
+  <div ng-if="featureHasPlusButton()" id="plus-button-wrapper" ng-style="{width: (currentWidth - getLabelWidth()) * 0.5}">
     <button id="plus-button" type="button" ng-click="addNew()" alt="add new">
       <span class="icon-plus"></span>
     </button>

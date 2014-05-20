@@ -1,0 +1,8 @@
+<div ng-show="isFeatureActive('dashboard')" class="swiper-container main-slides" swiper-container="dashboard" swiper-type="main" expected-slides=3>
+  <div ng-hide="isDesktop && isMenuOpen" class="swiper-wrapper">
+    <div class="swiper-slide" swiper-slide="dashboard/daily" slide-index=0 snap-drawer-drag="dashboard" ng-include="'static/app/dashboard/daily.html'"></div>
+    <div class="swiper-slide" swiper-slide="dashboard/weekly" slide-index=1 ng-include="'static/app/dashboard/weekly.html'"></div>
+    <div class="swiper-slide" swiper-slide="dashboard/monthly" slide-index=1  ng-include="'static/app/dashboard/monthly.html'"></div>
+  </div>
+  <div ng-if="isDesktop && isMenuOpen" id="desktop-menu" class="desktop-menu-animation" ng-include="'static/app/auth/menu.html'"></div>
+</div>

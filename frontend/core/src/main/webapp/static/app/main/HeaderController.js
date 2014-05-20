@@ -6,6 +6,7 @@ function HeaderController($scope, UISessionService, SwiperService) {
 
   SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'HeaderController');
   SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'HeaderController');
+  SwiperService.registerSlideChangeCallback(slideChangedCallback, 'dashboard', 'HeaderController');
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'HeaderController');
 
   var currentHeading = 'timeline';
@@ -36,6 +37,8 @@ function HeaderController($scope, UISessionService, SwiperService) {
           currentHeading = 'timeline';
         } else if ($scope.isFeatureActive('notes')) {
           currentHeading = 'unsorted';
+        } else if ($scope.isFeatureActive('dashboard')) {
+          currentHeading = 'daily';
         }
       } else {
         if (activeSlide.endsWith('home')) {
@@ -44,6 +47,8 @@ function HeaderController($scope, UISessionService, SwiperService) {
           } else if ($scope.isFeatureActive('notes')) {
             currentHeading = 'unsorted';
           }
+        } else if (activeSlide.endsWith('daily')) {
+          currentHeading = 'daily';
         } else if (activeSlide.endsWith('details')) {
           currentHeading = $scope.getActiveFeature();
         } else {
@@ -60,7 +65,9 @@ function HeaderController($scope, UISessionService, SwiperService) {
   }
   $scope.getCurrentHeading = function(){
     return currentHeading;
-  }
+  };
+
+  $scope.hasPlusButton = false;
 
   $scope.getLabelWidth = function() {
     if ($scope.currentWidth <= 568){

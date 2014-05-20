@@ -1,4 +1,4 @@
-/* global $, bindToFocusEvent */
+/* global bindToFocusEvent */
 
 'use strict';
 
@@ -125,26 +125,6 @@ function MainController(
   };
 
   // Navigation
-
-  $scope.gotoHome = function() {
-    if ($scope.isFeatureActive('tasks')) {
-      SwiperService.swipeTo('tasks/home');
-    } else if ($scope.isFeatureActive('notes')) {
-      SwiperService.swipeTo('notes/home');
-    }
-  };
-
-  $scope.gotoOverview = function() {
-    if ($scope.isFeatureActive('tasks')) {
-      SwiperService.swipeTo('tasks/overview');
-    } else if ($scope.isFeatureActive('notes')) {
-      SwiperService.swipeTo('notes/overview');
-    }
-  };
-
-  $scope.gotoDetails = function() {
-    $scope.gotoLists();
-  };
 
   $scope.gotoLists = function() {
     if ($scope.lists.length > 0) {

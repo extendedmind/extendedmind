@@ -7,7 +7,7 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
 
       // FEATURE DEFAULT VALUES AND ARRAYS
 
-      var contentFeatures = ['tasks', 'notes', 'items', 'inbox'];
+      var contentFeatures = ['tasks', 'notes', 'inbox', 'dashboard'];
       var activeContentFeatures = {tasks: true};
       var helperFeatures = {
         taskEdit: 'tasks',
@@ -41,6 +41,10 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
       };
 
       $scope.featureHasFooter = function featureHasFooter() {
+        return ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes') || $scope.isFeatureActive('dashboard'));
+      };
+
+      $scope.featureHasPlusButton = function featureHasPlusButton() {
         return ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes'));
       };
 
@@ -71,7 +75,7 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
         if (!state) state = UISessionService.getFeatureState(name);
 
         executeViewActiveCallbacks(state);
-      }
+      };
       UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'featureContainerDirective');
       UISessionService.changeFeature('tasks');
 
@@ -82,15 +86,17 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
 
         // Don't set to main slide path, if page slide path is already set
         if (!UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()) ||
-            !UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()).startsWith(activeSlidePath)){
+          !UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()).startsWith(activeSlidePath)){
           UISessionService.setCurrentFeatureState(activeSlidePath);
         }
-      }
+      };
+
       SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'featureContainerDirective');
       SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/home', 'featureContainerDirective');
       SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/details', 'featureContainerDirective');
       SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'featureContainerDirective');
       SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes/details', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'dashboard', 'featureContainerDirective');
 
       // CALLBACK REGISTRATION
 
@@ -111,8 +117,8 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
       setFeatureContainerClass($scope.getActiveFeature());
 
        // https://developer.mozilla.org/en-US/docs/Web/API/Element.classList
-      function setFeatureContainerClass(feature) {
-        if (feature === 'tasks' || feature === 'notes') {
+       function setFeatureContainerClass(feature) {
+        if (feature === 'tasks' || feature === 'notes' || feature === 'dashboard') {
           $element[0].classList.toggle('no-slides-container', false);
           $element[0].classList.toggle('slides-container', true);
         } else {
