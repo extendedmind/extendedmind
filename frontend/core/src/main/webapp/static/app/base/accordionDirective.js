@@ -109,12 +109,12 @@ angular.module('em.directives').directive('accordion', ['$document',
 
       $scope.elsewhereCallback = function(event) {
         // First rule out clicking on link with a closed accordion
-        if (!(!$scope.closedOtherItems && event.target.id === 'accordionTitleLink')) {
+        if (!(!$scope.closedOtherItems && (event.target.id === 'accordionTitleLink' || event.target.id === 'accordionTitleLinkContent'))) {
           // If clicking elswehere than on the input or on an element that has as parent
           // the accordion-title, close accordion and unbind events.
           // NOTE: Class item-actions is needed to get clicking on buttons inside the
           //       accordion to work!
-          if (($scope.closedOtherItems && event.target.id === 'accordionTitleLink') ||
+          if (($scope.closedOtherItems && (event.target.id === 'accordionTitleLink' || event.target.id === 'accordionTitleLinkContent')) ||
             (!$(event.target).parents('.accordion-item-active').length &&
               !$(event.target).parents('.item-actions').length)) {
             $scope.$apply(function() {

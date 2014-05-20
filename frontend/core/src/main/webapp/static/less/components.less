@@ -42,6 +42,14 @@ a#accordionTitleLink {
   color: @content;
   line-height: 19px;
   .break-words;
+  &.needsPadding {
+    padding-top: 4px;
+  }
+}
+
+div#closedAccordionTitleWrapper {
+  max-height: @vertical-grid;
+  overflow: hidden;
 }
 
 // SIMPLE CONTENT
@@ -520,6 +528,51 @@ li.datepicker-date {
   text-align: center;
 }
 
+// FADE OUT TOO LONG TEXT ELLIPSIS
+// From: http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/
+
+.ellipsis {
+  overflow: hidden;
+  height: @vertical-grid;
+  line-height:22px;
+}
+
+.ellipsis:before {
+  content:"";
+  float: left;
+  width: 5px;
+  height: @vertical-grid;
+}
+
+.ellipsis > span {
+  float: right;
+  width: 100%;
+  margin-left: -5px;
+}
+
+.ellipsis:after {
+  content: "\00a0";
+
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+
+  float: right;
+  position: relative;
+  top: -24px;
+  left: 100%;
+  width: 7em;
+  margin-left: -7em;
+  padding-right: 5px;
+  text-align: right;
+  background: -webkit-gradient(linear, left top, right top,
+    from(rgba(255, 255, 255, 0)), to(white), color-stop(75%, white));
+  background: -moz-linear-gradient(to right, rgba(255, 255, 255, 0), white 75%, white);
+  background: -o-linear-gradient(to right, rgba(255, 255, 255, 0), white 75%, white);
+  background: -ms-linear-gradient(to right, rgba(255, 255, 255, 0), white 75%, white);
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), white 75%, white);
+}
+
 // EDITABLE FIELD
 
 .editable-field-backdrop {
@@ -538,7 +591,7 @@ li.datepicker-date {
 }
 
 .editable-field-backdrop.active, .editable-field-backdrop.animating{
-  #omnibar-label-wrapper {
+  #omnibar-label-wrapper, .ellipsis:after {
     background-image: none !important;
   }
   #active-action-wrapper, #plus-button-wrapper, #feature-container{

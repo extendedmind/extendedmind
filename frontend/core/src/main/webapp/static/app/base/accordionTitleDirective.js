@@ -67,12 +67,7 @@ angular.module('em.directives').directive('accordionTitle', [
         }else{
           title = $scope.item.title;
         }
-        var maximumTitleLength = 50;
-        if (title.length <= maximumTitleLength){
-          return title;
-        } else{
-          return title.substring(0, maximumTitleLength) + '...';
-        }
+        return title;
       };
 
       $scope.endTitleEdit = function(skipSave){
@@ -103,6 +98,19 @@ angular.module('em.directives').directive('accordionTitle', [
           event.preventDefault();
         }
       };
+
+      $scope.getTitleLinkClasses = function() {
+        var classes = $scope.getTitleInputClasses();
+        // Add ellipsis class when title is on two lines
+        if (isTitleOnTwoLines()) classes += ' ellipsis needsPadding';
+        return classes;
+      }
+
+      function isTitleOnTwoLines() {
+        var width = $element.find('a#accordionTitleLink')[0].clientWidth;
+        if ($scope.item.title.length * 8.5 > width * 1.2)
+          return true;
+      }
 
       $scope.getTitleInputClasses = function() {
         var titleInputClasses;
