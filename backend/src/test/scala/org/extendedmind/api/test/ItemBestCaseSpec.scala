@@ -68,7 +68,7 @@ class ItemBestCaseSpec extends ServiceSpecBase {
       + "and delete it with DELETE to /[userUUID]/item/[itemUUID] "
       + "and undelete it with POST to /[userUUID]/item/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newItem = Item(None, None, None, "learn how to fly", None, None)
+      val newItem = Item("learn how to fly", None, None)
       Put("/" + authenticateResponse.userUUID + "/item",
         marshal(newItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putItemResponse = entityAs[SetResult]
@@ -76,7 +76,7 @@ class ItemBestCaseSpec extends ServiceSpecBase {
           putItemResponse.modified should not be None
           putItemResponse.uuid should not be None
 
-          val updatedItem = Item(None, None, None, "learn how to fly", Some("not kidding"), None)
+          val updatedItem = Item("learn how to fly", Some("not kidding"), None)
           Put("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get,
             marshal(updatedItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               val putExistingItemResponse = entityAs[String]

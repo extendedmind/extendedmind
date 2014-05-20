@@ -6,7 +6,7 @@ import org.extendedmind.security.SecurityContext
 
 case class UserPreferences(onboarded: Option[String])
 
-case class User(uuid: Option[UUID], modified: Option[Long], deleted: Option[Long], created: Option[Long],
+case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 email: String, emailVerified: Option[Long], cohort: Option[Int],
                 preferences: Option[UserPreferences])
            extends Container{

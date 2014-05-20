@@ -100,7 +100,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
     }
     it("should successfully update item to task with PUT to /[userUUID]/task/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newItem = Item(None, None, None, "learn how to fly", None, None)
+      val newItem = Item("learn how to fly", None, None)
       Put("/" + authenticateResponse.userUUID + "/item",
         marshal(newItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putItemResponse = entityAs[SetResult]

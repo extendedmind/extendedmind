@@ -46,7 +46,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   // Implicit Neo4j Scala wrapper serialization exclusions
   implicit val serializeExclusions: Option[scala.List[String]] = Some(
     // Always exclude the direct setting of the following:
-    scala.List("uuid", "modified", "deleted", // Container
+    scala.List("uuid", "created", "modified", "deleted", // Container
       "visibility", // ShareableItem
       "relationships", // ExtendedItem
       "completed", "assignee", "assigner", // Task
@@ -63,7 +63,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   protected def kernelExtensions(setupAutoindexing: Boolean = true): java.util.ArrayList[KernelExtensionFactory[_]] = {
     val extensions = new java.util.ArrayList[KernelExtensionFactory[_]](2);
     extensions.add(new UUIDKernelExtensionFactory(false, false, setupAutoindexing));
-    extensions.add(new TimestampKernelExtensionFactory(setupAutoindexing));
+    extensions.add(new TimestampKernelExtensionFactory(setupAutoindexing, true));
     extensions
   }
 

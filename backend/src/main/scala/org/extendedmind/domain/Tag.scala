@@ -10,7 +10,7 @@ case object CONTEXT extends TagType
 case object HISTORY extends TagType
 
 case class Tag(
-      uuid: Option[UUID], modified: Option[Long], deleted: Option[Long],
+      uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
       title: String, 
       description: Option[String], 
       link: Option[String],
@@ -28,6 +28,6 @@ object Tag{
 		  	link: Option[String],
             tagType: TagType,
             parent: Option[UUID]) 
-        = new Tag(None, None, None, title, description, link, Some(tagType), 
+        = new Tag(None, None, None, None, title, description, link, Some(tagType), 
                    None, parent)
 }

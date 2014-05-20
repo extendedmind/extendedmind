@@ -105,9 +105,9 @@ trait TestGraphDatabase extends GraphDatabase {
 
     // Store items for user
     putNewItem(Owner(timoUUID, None),
-      Item(None, None, None, "should I start yoga?", None, None)).right.get
+      Item("should I start yoga?", None, None)).right.get
     putNewItem(Owner(timoUUID, None),
-      Item(None, None, None, "remember the milk", None, None)).right.get
+      Item("remember the milk", None, None)).right.get
 
     // Store tags for user
     val homeTag = putNewTag(Owner(timoUUID, None),
@@ -183,9 +183,9 @@ trait TestGraphDatabase extends GraphDatabase {
 
     // Store items for EMT
     putNewItem(Owner(timoUUID, Some(emtUUID)),
-      Item(None, None, None, "should we try a premortem?", None, None)).right.get
+      Item("should we try a premortem?", None, None)).right.get
     putNewItem(Owner(timoUUID, Some(emtUUID)),
-      Item(None, None, None, "review agile project planning tools", None, None)).right.get
+      Item("review agile project planning tools", None, None)).right.get
 
     // Store tasks for EMT
     putNewTask(Owner(timoUUID, Some(emtUUID)),

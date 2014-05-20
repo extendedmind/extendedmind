@@ -117,7 +117,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
     }
     it("should successfully update item to list with PUT to /[userUUID]/list/[listUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newItem = Item(None, None, None, "learn how to fly", None, None)
+      val newItem = Item("learn how to fly", None, None)
       Put("/" + authenticateResponse.userUUID + "/item",
         marshal(newItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putItemResponse = entityAs[SetResult]
@@ -167,7 +167,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
       			.relationships.get.parent.get should be (putSubListResponse.uuid.get)
       
       // Turn task into list
-      val putTaskToListResponse = putExistingList(List(Some(putTaskResponse.uuid.get), Some(putTaskResponse.modified), None, None, 
+      val putTaskToListResponse = putExistingList(List(Some(putTaskResponse.uuid.get), None, Some(putTaskResponse.modified), None, None, 
     		  newTask.title, None, None, None, None, None, None, None, None),
           putTaskResponse.uuid.get, authenticateResponse)
       val listFromTask = getList(putTaskResponse.uuid.get, authenticateResponse)

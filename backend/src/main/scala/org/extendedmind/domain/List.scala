@@ -5,7 +5,7 @@ import org.extendedmind.SetResult
 import Validators._
 
 case class List(
-      uuid: Option[UUID], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
+      uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
       title: String, 
       description: Option[String], 
       link: Option[String],
@@ -28,7 +28,7 @@ object List{
 		  	completable: Option[Boolean],
 		  	due: Option[String],
             relationships: Option[ExtendedItemRelationships]) 
-        = new List(None, None, None, None,  title, description, 
+        = new List(None, None, None, None, None,  title, description, 
                    link, completable, due, None, None, None, relationships)
 }
 

@@ -93,10 +93,7 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
           user --> SecurityRelationship.CAN_READ --> collectiveNode;
       })
     }
-    
-    // Finally, set created timestamp to now
-	collectiveNode.setProperty("created", System.currentTimeMillis())
-    
+        
     Right(collectiveNode)
   }
   

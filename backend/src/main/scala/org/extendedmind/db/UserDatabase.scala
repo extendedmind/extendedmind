@@ -170,9 +170,6 @@ trait UserDatabase extends AbstractGraphDatabase {
             })
           }
 
-          // Finally, set created timestamp to now
-          userNode.setProperty("created", System.currentTimeMillis())
-
           Right((userNode, emailVerificationCode))
         }
     }
