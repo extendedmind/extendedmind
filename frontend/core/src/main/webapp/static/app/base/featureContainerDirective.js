@@ -41,7 +41,17 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
       };
 
       $scope.featureHasFooter = function featureHasFooter() {
-        return ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes') || $scope.isFeatureActive('dashboard'));
+        if ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes') || $scope.isFeatureActive('dashboard')){
+          if (UserSessionService.getUIPreference('hideFooter') && $rootScope.packaging.endsWith('cordova')){
+            $element[0].classList.toggle('hide-footer', true);
+            return false;
+          }else{
+            $element[0].classList.toggle('hide-footer', false);
+            return true;
+          }
+        }else{
+          return false;
+        }
       };
 
       $scope.featureHasPlusButton = function featureHasPlusButton() {

@@ -12,14 +12,20 @@
           <li class="simple-content">
             <a class="highlighted-link" href ng-click="gotoChangePassword()">change password</a>
           </li>
-          <li ng-if="showOnboardingSetting()">
-            <input class="input-checkbox" type="checkbox" name="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="showOnboardingChecked(settings.showOnboarding)"/>
-            <label class="default-element small-font" for="showOnboarding">show onboarding on next login</label>
-          </li>
-          <li ng-if="showOnboardingSetting()">
-            <input class="input-checkbox" type="checkbox" name="checkbox" id="hidePlus" ng-model="settings.hidePlus" ng-change="hidePlus(settings.hidePlus)"/>
-            <label class="default-element small-font" for="hidePlus">hide plus button</label>
-          </li>
+          <div ng-if="showSettings()">
+            <li>
+              <input class="input-checkbox" type="checkbox" name="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="showOnboardingChecked(settings.showOnboarding)"/>
+              <label class="default-element small-font" for="showOnboarding">show onboarding on next login</label>
+            </li>
+            <li>
+              <input class="input-checkbox" type="checkbox" name="checkbox" id="hidePlus" ng-model="settings.hidePlus" ng-change="hidePlus(settings.hidePlus)"/>
+              <label class="default-element small-font" for="hidePlus">hide plus button</label>
+            </li>
+            <li>
+              <input class="input-checkbox" type="checkbox" name="checkbox" id="hideFooter" ng-model="settings.hideFooter" ng-change="hideFooter(settings.hideFooter)"/>
+              <label class="default-element small-font" for="hideFooter">hide footer on mobile</label>
+            </li>
+          </div>
         </ul>
       </div>
     </div>

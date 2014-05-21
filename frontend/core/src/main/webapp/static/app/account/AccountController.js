@@ -30,19 +30,27 @@ function AccountController($rootScope, $location, $scope, AccountService, Analyt
     AccountService.updateAccountPreferences();
   };
 
-  $scope.hidePlus = function() {
+  function updateHideSetting(name, hideValue){
     var userPreferences = UserSessionService.getPreferences();
     if (!userPreferences.ui) userPreferences.ui = {}
-    if ($scope.settings.hidePlus){
-      userPreferences.ui.hidePlus = true;
+    if (hideValue){
+      userPreferences.ui[name] = true;
     }else{
-      userPreferences.ui.hidePlus = false;
+      userPreferences.ui[name] = false;
     }
     UserSessionService.setPreferences(userPreferences);
     AccountService.updateAccountPreferences();
+  }
+
+  $scope.hidePlus = function() {
+    updateHideSetting('hidePlus', $scope.settings.hidePlus)
   };
 
-  $scope.showOnboardingSetting = function() {
+  $scope.hideFooter = function() {
+    updateHideSetting('hideFooter', $scope.settings.hideFooter)
+  };
+
+  $scope.showSettings = function() {
     // Only show the onboarding checkbox for ALFA and ADMIN users
     if (UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1){
       return true;

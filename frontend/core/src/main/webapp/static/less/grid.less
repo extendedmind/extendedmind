@@ -171,6 +171,7 @@ header {
   height: 100%;
   padding-top: 12px;
   padding-bottom: @footer-height + @page-header-height;
+
   .inner-page-content-container {
     height: inherit;
     position: relative;
@@ -191,6 +192,10 @@ header {
     // the laggy accordion bug.
     // height: inherit;
   }
+}
+
+.hide-footer .page-content-container{
+  padding-bottom: @page-header-height + @vertical-grid-half;
 }
 
 .no-heading-content-container {
