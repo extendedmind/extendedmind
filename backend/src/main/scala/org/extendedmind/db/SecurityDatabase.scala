@@ -440,7 +440,8 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       None,
       None,
       None,
-      if (user.hasProperty("onboarded")) Some(UserPreferences(Some(user.getProperty("onboarded").asInstanceOf[String]))) else None)
+      getUserPreferences(user)
+    )
   }
   
   private def collectivesTraversalDescription: TraversalDescription = {

@@ -54,7 +54,7 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
   describe("In the best case, SecurityService") {
     it("should return token on authenticate") {
       Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> route ~> check {
-        val authenticateResponse = entityAs[String]
+        val authenticateResponse = responseAs[String]
         writeJsonOutput("authenticateResponse", authenticateResponse)
         authenticateResponse should include("token")
         authenticateResponse should include("authenticated")
@@ -67,7 +67,7 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
     it("should return token on extended authenticate") {
       val payload = AuthenticatePayload(true, Some(true))
       Post("/authenticate", marshal(payload).right.get) ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> route ~> check {
-        val authenticateResponse = entityAs[String]
+        val authenticateResponse = responseAs[String]
         authenticateResponse should include("token")
         authenticateResponse should include("authenticated")
         authenticateResponse should include("expires")
@@ -80,8 +80,8 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
       val authenticateResponse = emailPasswordAuthenticateRememberMe(TIMO_EMAIL, TIMO_PASSWORD)
       val payload = AuthenticatePayload(true, Some(true))
       Post("/authenticate", marshal(payload).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        writeJsonOutput("swapTokenResponse", entityAs[String])
-        val tokenAuthenticateResponse = entityAs[SecurityContext]
+        writeJsonOutput("swapTokenResponse", responseAs[String])
+        val tokenAuthenticateResponse = responseAs[SecurityContext]
         tokenAuthenticateResponse.token.get should not be (authenticateResponse.token.get)
         tokenAuthenticateResponse.collectives should not be None
         tokenAuthenticateResponse.authenticated should not be None
@@ -90,7 +90,7 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
 
         // Should be able to swap it again, but this time without rememberMe
         Post("/authenticate") ~> addCredentials(BasicHttpCredentials("token", tokenAuthenticateResponse.token.get)) ~> route ~> check {
-          val tokenReAuthenticateResponse = entityAs[SecurityContext]
+          val tokenReAuthenticateResponse = responseAs[SecurityContext]
           tokenReAuthenticateResponse.token.get should not be (tokenAuthenticateResponse.token.get)
           tokenAuthenticateResponse.authenticated should not be None
           tokenAuthenticateResponse.expires should not be None
@@ -108,15 +108,15 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
     it("should successfully logout with POST to /logout") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Post("/logout") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        writeJsonOutput("logoutResponse", entityAs[String])
-        val logoutResponse = entityAs[CountResult]
+        writeJsonOutput("logoutResponse", responseAs[String])
+        val logoutResponse = responseAs[CountResult]
         logoutResponse.count should equal(1)
       }
       val authenticateResponse1 = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       val authenticateResponse2 = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       Post("/logout",
         marshal(LogoutPayload(true)).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse1.token.get)) ~> route ~> check {
-          val logoutResponse = entityAs[CountResult]
+          val logoutResponse = responseAs[CountResult]
           logoutResponse.count should equal(2)
         }
     }
@@ -125,8 +125,8 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
       val newPassword = "newTestPassword"
       Put("/password",
         marshal(NewPassword(newPassword)).right.get) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD))) ~> route ~> check {
-          writeJsonOutput("passwordResponse", entityAs[String])
-          val passwordResponse = entityAs[CountResult]
+          writeJsonOutput("passwordResponse", responseAs[String])
+          val passwordResponse = responseAs[CountResult]
           passwordResponse.count should equal(1)
         }
       val newPasswordAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, newPassword)
@@ -139,20 +139,20 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
       val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])      
               
       Post("/password/forgot", marshal(UserEmail(TIMO_EMAIL)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-        writeJsonOutput("forgotPasswordResponse", entityAs[String])
-        val forgotPasswordResponse = entityAs[ForgotPasswordResult]
+        writeJsonOutput("forgotPasswordResponse", responseAs[String])
+        val forgotPasswordResponse = responseAs[ForgotPasswordResult]
         forgotPasswordResponse.resetCodeExpires should not be None
         verify(mockMailgunClient).sendPasswordResetLink(emailCaptor.capture(), resetCodeCaptor.capture())
         // Get reset code expiration
         Get("/password/" + resetCodeCaptor.getValue().toHexString + "?email=" + TIMO_EMAIL) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-          val passwordResetExpiresResponse = entityAs[ForgotPasswordResult]
-          writeJsonOutput("passwordResetExpiresResponse", entityAs[String])
+          val passwordResetExpiresResponse = responseAs[ForgotPasswordResult]
+          writeJsonOutput("passwordResetExpiresResponse", responseAs[String])
         }
         // Reset password
         val testPassword = "testPassword"
         Post("/password/" + resetCodeCaptor.getValue.toHexString + "/reset", marshal(SignUp(TIMO_EMAIL, testPassword, Some(1), None)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-          val resetPasswordResponse = entityAs[CountResult]
-          writeJsonOutput("resetPasswordResponse", entityAs[String])
+          val resetPasswordResponse = responseAs[CountResult]
+          writeJsonOutput("resetPasswordResponse", responseAs[String])
           val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, testPassword)
           // Make sure that reset password again with the same code fails
           Post("/password/" + resetCodeCaptor.getValue.toHexString + "/reset", marshal(SignUp(TIMO_EMAIL, testPassword, Some(1),None)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {

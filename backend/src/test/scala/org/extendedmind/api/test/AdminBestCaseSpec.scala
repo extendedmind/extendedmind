@@ -62,16 +62,16 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Put("/admin/invite/request",
         marshal(newInviteRequest).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          writeJsonOutput("inviteRequestResponse", entityAs[String])
-          val inviteRequestResponse = entityAs[SetResult]
+          writeJsonOutput("inviteRequestResponse", responseAs[String])
+          val inviteRequestResponse = responseAs[SetResult]
           inviteRequestResponse.uuid.get.toString should equal(uuid)
           inviteRequestResponse.modified should not be None
 
           Get("/invite/request/" + uuid) ~> route ~> check {
-            entityAs[InviteRequestQueueNumber].queueNumber should be(1)
+            responseAs[InviteRequestQueueNumber].queueNumber should be(1)
           }
           Get("/admin/invite/requests") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-            val inviteRequests = entityAs[InviteRequests]
+            val inviteRequests = responseAs[InviteRequests]
             inviteRequests.inviteRequests(0).uuid.get.toString() should equal(uuid)
             inviteRequests.inviteRequests(0).emailId.get should equal("messageId")
           }
@@ -84,8 +84,8 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       val testCollective = Collective("Test", None)
       Put("/collective",
         marshal(testCollective).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          writeJsonOutput("putCollectiveResponse", entityAs[String])
-          val putCollectiveResponse = entityAs[SetResult]
+          writeJsonOutput("putCollectiveResponse", responseAs[String])
+          val putCollectiveResponse = responseAs[SetResult]
           putCollectiveResponse.uuid should not be None
           putCollectiveResponse.modified should not be None
 
@@ -99,14 +99,14 @@ class AdminBestCaseSpec extends ServiceSpecBase {
           // Update collective
           Put("/collective/" + putCollectiveResponse.uuid.get,
             marshal(testCollective.copy(description = Some("test description"))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
-              writeJsonOutput("putExistingCollectiveResponse", entityAs[String])
-              val putExistingCollectiveResponse = entityAs[SetResult]
+              writeJsonOutput("putExistingCollectiveResponse", responseAs[String])
+              val putExistingCollectiveResponse = responseAs[SetResult]
               putExistingCollectiveResponse.uuid should be(None)
               assert(putExistingCollectiveResponse.modified > putCollectiveResponse.modified)
               // Get it back
               Get("/collective/" + putCollectiveResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
-                val collectiveResponse = entityAs[Collective]
-                writeJsonOutput("collectiveResponse", entityAs[String])
+                val collectiveResponse = responseAs[Collective]
+                writeJsonOutput("collectiveResponse", responseAs[String])
                 collectiveResponse.description.get should be("test description")
 
                 // Should be possible to assign read/write access to new collective
@@ -115,8 +115,8 @@ class AdminBestCaseSpec extends ServiceSpecBase {
 
                 Post("/collective/" + putCollectiveResponse.uuid.get + "/user/" + getUserUUID(LAURI_EMAIL, reauthenticateResponse),
                   marshal(UserAccessRight(Some(2))).right.get) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
-                    val postCollectiveUserPermissionResponse = entityAs[SetResult]
-                    writeJsonOutput("postCollectiveUserPermissionResponse", entityAs[String])
+                    val postCollectiveUserPermissionResponse = responseAs[SetResult]
+                    writeJsonOutput("postCollectiveUserPermissionResponse", responseAs[String])
                     assert(postCollectiveUserPermissionResponse.modified > putExistingCollectiveResponse.modified)
                     val lauriReauthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
                     lauriReauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._2 should equal(2)
@@ -128,8 +128,8 @@ class AdminBestCaseSpec extends ServiceSpecBase {
     it("should successfully get user with GET /user?email=[email]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/user?email=" + LAURI_EMAIL) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        writeJsonOutput("userResponse", entityAs[String])
-        val publicUser = entityAs[PublicUser]
+        writeJsonOutput("userResponse", responseAs[String])
+        val publicUser = responseAs[PublicUser]
         publicUser.uuid should not be None
       }
     }
@@ -141,8 +141,8 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       val collectiveUuidMap = getCollectiveUUIDMap(authenticateResponse)
       val emtUUID = collectiveUuidMap.get("extended mind technologies").get
       Get("/" + emtUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val itemsResponse = entityAs[Items]
-        writeJsonOutput("collectiveItemsResponse", entityAs[String])
+        val itemsResponse = responseAs[Items]
+        writeJsonOutput("collectiveItemsResponse", responseAs[String])
         itemsResponse.items should not be None
         itemsResponse.tasks should not be None
         itemsResponse.tasks.get.length should equal(1)
@@ -160,10 +160,10 @@ class AdminBestCaseSpec extends ServiceSpecBase {
     it("should successfully change user type with POST to /user/UUID/type/INT") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/user?email=" + INFO_EMAIL) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val infoUser = entityAs[PublicUser]
+        val infoUser = responseAs[PublicUser]
         Post("/admin/user/" + infoUser.uuid + "/type/" + Token.ALFA) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          writeJsonOutput("changeUserTypeResponse", entityAs[String])
-          val changeUserTypeResponse = entityAs[SetResult]
+          writeJsonOutput("changeUserTypeResponse", responseAs[String])
+          val changeUserTypeResponse = responseAs[SetResult]
           changeUserTypeResponse.modified should not be None
           val infoAuthenticateResponse = emailPasswordAuthenticate(INFO_EMAIL, INFO_PASSWORD)
           infoAuthenticateResponse.userType should equal(Token.ALFA)
@@ -178,34 +178,34 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       "rebuild user indexes with POST to /admin/users/rebuild, " +
       "and rebuild item indexes with POST to /admin/[userUUID]/items/rebuild") {
       Post("/admin/tokens/reset") ~> addCredentials(BasicHttpCredentials("token", emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD).token.get)) ~> route ~> check {
-        writeJsonOutput("tokensResetResponse", entityAs[String])
-        val countResult = entityAs[CountResult]
+        writeJsonOutput("tokensResetResponse", responseAs[String])
+        val countResult = responseAs[CountResult]
         countResult.count should be(6)
       }
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Post("/admin/users/rebuild") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        writeJsonOutput("usersRebuildResponse", entityAs[String])
-        val countResult = entityAs[CountResult]
+        writeJsonOutput("usersRebuildResponse", responseAs[String])
+        val countResult = responseAs[CountResult]
         countResult.count should be(3)
       }
       Post("/admin/user/" + authenticateResponse.userUUID + "/items/rebuild") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        writeJsonOutput("itemsRebuildResponse", entityAs[String])
-        val countResult = entityAs[CountResult]
+        writeJsonOutput("itemsRebuildResponse", responseAs[String])
+        val countResult = responseAs[CountResult]
         countResult.count should be(22)
       }
     }
     it("should successfully get statistics with GET to /admin") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/admin") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val statistics = entityAs[Statistics]
-        writeJsonOutput("statisticsResponse", entityAs[String])
+        val statistics = responseAs[Statistics]
+        writeJsonOutput("statisticsResponse", responseAs[String])
       }
     }
     it("should successfully get users with GET to /admin/users") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val users = entityAs[Users]
-        writeJsonOutput("usersResponse", entityAs[String])
+        val users = responseAs[Users]
+        writeJsonOutput("usersResponse", responseAs[String])
       }
     }
   }

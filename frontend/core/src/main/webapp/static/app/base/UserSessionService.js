@@ -36,6 +36,20 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     }
   }
 
+  function migrateTransportPreferences(transportPreferences){
+    if (transportPreferences){
+      var preferences = {
+        onboarded: transportPreferences.onboarded
+      };
+      if (transportPreferences.ui){
+        preferences.ui = JSON.parse(transportPreferences.ui);
+      }
+      return preferences;
+    }else{
+      return {};
+    }
+  }
+
   return {
     isAuthenticated: function() {
       return SessionStorageService.getExpires() || LocalStorageService.getExpires();
@@ -75,6 +89,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     setAuthenticateInformation: function(authenticateResponse, email) {
       var authExpiresDelta = Date.now() - authenticateResponse.authenticated;
       var credentials = encodeUsernamePassword('token', authenticateResponse.token);
+      var preferences = migrateTransportPreferences(authenticateResponse.preferences);
 
       SessionStorageService.setCollectives(authenticateResponse.collectives);
       SessionStorageService.setExpires(authenticateResponse.expires + authExpiresDelta);
@@ -82,7 +97,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       SessionStorageService.setUserType(authenticateResponse.userType);
       SessionStorageService.setUserUUID(authenticateResponse.userUUID);
       SessionStorageService.setCohort(authenticateResponse.cohort);
-      SessionStorageService.setPreferences(authenticateResponse.preferences);
+      SessionStorageService.setPreferences(preferences);
 
       if (authenticateResponse.replaceable) {
         LocalStorageService.setExpires(authenticateResponse.expires + authExpiresDelta);
@@ -92,7 +107,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
         LocalStorageService.setUserType(authenticateResponse.userType);
         LocalStorageService.setUserUUID(authenticateResponse.userUUID);
         LocalStorageService.setCohort(authenticateResponse.cohort);
-        LocalStorageService.setPreferences(authenticateResponse.preferences);
+        LocalStorageService.setPreferences(preferences);
       }
       if (email) {
         setEmail(email);
@@ -102,15 +117,23 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     setEmail: function(email) {
       setEmail(email);
     },
-    setPreferences: function(name, value) {
+    setPreference: function(name, value) {
       var preferences = this.getPreferences() || {};
-      if (!preferences.name) {
+      if (value !== undefined) {
         preferences[name] = value;
+      }else if (preferences[name] !== undefined){
+        delete preferences[name];
       }
+      this.setPreferences(preferences);
+    },
+    setPreferences: function(preferences) {
       SessionStorageService.setPreferences(preferences);
       if (offlineBufferEnabled || LocalStorageService.getReplaceable() !== null) {
         LocalStorageService.setPreferences(preferences);
       }
+    },
+    setTransportPreferences: function(transportPreferences) {
+      this.setPreferences(migrateTransportPreferences(transportPreferences))
     },
     setLatestModified: function(modified, ownerUUID) {
       // Only set if given value is larger than set value
@@ -154,6 +177,14 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     },
     getItemsSynchronized: function(ownerUUID) {
       return (itemsSynchronize[ownerUUID]) ? itemsSynchronize[ownerUUID].itemsSynchronized : undefined;
+    },
+    getTransportPreferences: function() {
+      syncWebStorages();
+      var preferences = SessionStorageService.getPreferences();
+      if (preferences.ui){
+        preferences.ui = JSON.stringify(preferences.ui);
+      }
+      return preferences;
     },
     getPreferences: function() {
       syncWebStorages();

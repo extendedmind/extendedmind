@@ -34,34 +34,34 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
   
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {
     Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(email, password))) ~> route ~> check {
-      entityAs[SecurityContext]
+      responseAs[SecurityContext]
     }
   }
 
   def emailPasswordAuthenticateRememberMe(email: String, password: String): SecurityContext = {
     Post("/authenticate", marshal(AuthenticatePayload(true, None)).right.get) ~> addHeader(Authorization(BasicHttpCredentials(email, password))) ~> route ~> check {
-      entityAs[SecurityContext]
+      responseAs[SecurityContext]
     }
   }
 
   def putNewItem(newItem: Item, authenticateResponse: SecurityContext): SetResult = {
     Put("/" + authenticateResponse.userUUID + "/item",
       marshal(newItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        entityAs[SetResult]
+        responseAs[SetResult]
       }
   }
   
   def putNewNote(newNote: Note, authenticateResponse: SecurityContext): SetResult = {
     Put("/" + authenticateResponse.userUUID + "/note",
       marshal(newNote).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        entityAs[SetResult]
+        responseAs[SetResult]
       }
   }
 
   def putExistingNote(existingNote: Note, noteUUID: UUID, authenticateResponse: SecurityContext): SetResult = {
     Put("/" + authenticateResponse.userUUID + "/note/" + noteUUID.toString(),
       marshal(existingNote).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        entityAs[SetResult]
+        responseAs[SetResult]
       }
   }
 
@@ -69,7 +69,7 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
     val ownerUUID = if (collectiveUUID.isDefined) collectiveUUID.get else authenticateResponse.userUUID
     Put("/" + ownerUUID + "/task",
       marshal(newTask).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        entityAs[SetResult]
+        responseAs[SetResult]
       }
   }
 
@@ -78,7 +78,7 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
     val ownerUUID = if (collectiveUUID.isDefined) collectiveUUID.get else authenticateResponse.userUUID
     Put("/" + ownerUUID + "/task/" + taskUUID.toString(),
       marshal(existingTask).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        entityAs[SetResult]
+        responseAs[SetResult]
       }
   }
 
@@ -86,7 +86,7 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
     val ownerUUID = if (collectiveUUID.isDefined) collectiveUUID.get else authenticateResponse.userUUID
     Put("/" + ownerUUID + "/list",
       marshal(newList).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        entityAs[SetResult]
+        responseAs[SetResult]
       }
   }
 
@@ -95,45 +95,45 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
     val ownerUUID = if (collectiveUUID.isDefined) collectiveUUID.get else authenticateResponse.userUUID
     Put("/" + ownerUUID + "/list/" + listUUID.toString(),
       marshal(existingList).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        entityAs[SetResult]
+        responseAs[SetResult]
       }
   }
   
   
   def getItem(itemUUID: UUID, authenticateResponse: SecurityContext): Item = {
     Get("/" + authenticateResponse.userUUID + "/item/" + itemUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-      entityAs[Item]
+      responseAs[Item]
     }
   }
 
   def getTask(taskUUID: UUID, authenticateResponse: SecurityContext, collectiveUUID: Option[UUID] = None): Task = {
     val ownerUUID = if (collectiveUUID.isDefined) collectiveUUID.get else authenticateResponse.userUUID
     Get("/" + ownerUUID + "/task/" + taskUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-      entityAs[Task]
+      responseAs[Task]
     }
   }
 
   def getNote(noteUUID: UUID, authenticateResponse: SecurityContext): Note = {
     Get("/" + authenticateResponse.userUUID + "/note/" + noteUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-      entityAs[Note]
+      responseAs[Note]
     }
   }
   
   def getList(listUUID: UUID, authenticateResponse: SecurityContext): List = {
     Get("/" + authenticateResponse.userUUID + "/list/" + listUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-      entityAs[List]
+      responseAs[List]
     }
   }
   
   def getTag(tagUUID: UUID, authenticateResponse: SecurityContext): Tag = {
     Get("/" + authenticateResponse.userUUID + "/tag/" + tagUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-      entityAs[Tag]
+      responseAs[Tag]
     }
   }
 
   def getUserUUID(email: String, authenticateResponse: SecurityContext): UUID = {
     Get("/user?email=" + email) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-      entityAs[PublicUser].uuid
+      responseAs[PublicUser].uuid
     }
   }
 

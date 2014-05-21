@@ -61,23 +61,23 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       val newTask = Task("learn Spanish", None, None, None, None, None, None)
       Put("/" + authenticateResponse.userUUID + "/task",
         marshal(newTask).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          val putTaskResponse = entityAs[SetResult]
-          writeJsonOutput("putTaskResponse", entityAs[String])
+          val putTaskResponse = responseAs[SetResult]
+          writeJsonOutput("putTaskResponse", responseAs[String])
           putTaskResponse.modified should not be None
           putTaskResponse.uuid should not be None
           val updatedTask = newTask.copy(due = Some("2014-03-01"))
           Put("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get,
             marshal(updatedTask).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-              val putExistingTaskResponse = entityAs[String]
+              val putExistingTaskResponse = responseAs[String]
               writeJsonOutput("putExistingTaskResponse", putExistingTaskResponse)
               putExistingTaskResponse should include("modified")
               putExistingTaskResponse should not include ("uuid")
               Get("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                val taskResponse = entityAs[Task]
-                writeJsonOutput("taskResponse", entityAs[String])
+                val taskResponse = responseAs[Task]
+                writeJsonOutput("taskResponse", responseAs[String])
                 taskResponse.due.get should be("2014-03-01")
                 Delete("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                  val deleteTaskResponse = entityAs[String]
+                  val deleteTaskResponse = responseAs[String]
                   writeJsonOutput("deleteTaskResponse", deleteTaskResponse)
                   deleteTaskResponse should include("deleted")
                   Get("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -86,7 +86,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
                     failure should startWith("Item " + putTaskResponse.uuid.get + " is deleted")
                   }
                   Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                    val undeleteTaskResponse = entityAs[String]
+                    val undeleteTaskResponse = responseAs[String]
                     writeJsonOutput("undeleteTaskResponse", undeleteTaskResponse)
                     undeleteTaskResponse should include("modified")
                     val undeletedTask = getTask(putTaskResponse.uuid.get, authenticateResponse)
@@ -103,12 +103,12 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       val newItem = Item("learn how to fly", None, None)
       Put("/" + authenticateResponse.userUUID + "/item",
         marshal(newItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          val putItemResponse = entityAs[SetResult]
+          val putItemResponse = responseAs[SetResult]
           val updatedToTask = Task("learn how to fly", None, None, Some("2014-03-01"), None, None, None)
           Put("/" + authenticateResponse.userUUID + "/task/" + putItemResponse.uuid.get,
             marshal(updatedToTask).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               Get("/" + authenticateResponse.userUUID + "/task/" + putItemResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                val taskResponse = entityAs[Task]
+                val taskResponse = responseAs[Task]
                 taskResponse.due.get should be("2014-03-01")
               }
             }
@@ -121,11 +121,11 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
 
       Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        writeJsonOutput("completeTaskResponse", entityAs[String])
+        writeJsonOutput("completeTaskResponse", responseAs[String])
         val taskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
         taskResponse.completed should not be None
         Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/uncomplete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          writeJsonOutput("uncompleteTaskResponse", entityAs[String])
+          writeJsonOutput("uncompleteTaskResponse", responseAs[String])
           val untaskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
           untaskResponse.completed should be(None)
         }
@@ -139,8 +139,8 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
 
       Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        writeJsonOutput("completeRepeatingTaskResponse", entityAs[String])
-        val completeTaskResponse = entityAs[CompleteTaskResult]
+        writeJsonOutput("completeRepeatingTaskResponse", responseAs[String])
+        val completeTaskResponse = responseAs[CompleteTaskResult]
         completeTaskResponse.generated.get.due.get should be ("2014-01-07")
         val generatedTaskResponse = getTask(completeTaskResponse.generated.get.uuid.get, authenticateResponse)
         generatedTaskResponse.completed should be (None)
@@ -153,7 +153,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
           uncompletedTaskResponse.completed should be(None)
         }
         Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          val recompleteTaskResponse = entityAs[CompleteTaskResult]
+          val recompleteTaskResponse = responseAs[CompleteTaskResult]
           recompleteTaskResponse.generated should be (None)	  
           val completedTaskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
           completedTaskResponse.completed should not be None
@@ -161,7 +161,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
 
         // Complete subtask, and make sure another child is created
         Post("/" + authenticateResponse.userUUID + "/task/" + generatedTaskResponse.uuid.get + "/complete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          val completeSubTaskResponse = entityAs[CompleteTaskResult]
+          val completeSubTaskResponse = responseAs[CompleteTaskResult]
           completeSubTaskResponse.generated.get.due.get should be("2014-01-14")
           val generatedSubTaskResponse = getTask(completeTaskResponse.generated.get.uuid.get, authenticateResponse)
           generatedSubTaskResponse.completed should not be (None)
@@ -169,7 +169,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
 
           // Deleting subtask ends repeating
           Delete("/" + authenticateResponse.userUUID + "/task/" + generatedSubTaskResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-            val deleteTaskResponse = entityAs[DeleteItemResult]
+            val deleteTaskResponse = responseAs[DeleteItemResult]
             deleteTaskResponse.deleted should not be None
           }
         }
@@ -180,7 +180,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       + "and update tags with PUT to /[userUUID]/task/[taskUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/" + authenticateResponse.userUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val itemsResponse = entityAs[Items]
+        val itemsResponse = responseAs[Items]
         val newTask = Task("review inbox", None, None, None, None, None, Some(
             ExtendedItemRelationships(None, None, Some(scala.List(itemsResponse.tags.get(0).uuid.get)))))
         val putTaskResponse = putNewTask(newTask, authenticateResponse)

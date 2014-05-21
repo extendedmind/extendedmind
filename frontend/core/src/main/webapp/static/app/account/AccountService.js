@@ -8,14 +8,15 @@ function AccountService(BackendClientService, UserSessionService) {
       .then(function(accountResponse) {
         if (accountResponse.status === 200 && accountResponse.data.email){
           UserSessionService.setEmail(accountResponse.data.email);
+          UserSessionService.setTransportPreferences(accountResponse.data.preferences);
         }
         return accountResponse.data;
       });
     },
-    putAccountPreferences: function(userPreferences) {
+    updateAccountPreferences: function() {
       var payload = {
         email: UserSessionService.getEmail(),
-        preferences: userPreferences
+        preferences: UserSessionService.getTransportPreferences()
       };
       BackendClientService.putOnline('/api/account', this.putAccountRegex, payload);
     },

@@ -4,7 +4,9 @@ import java.util.UUID
 import Validators._
 import org.extendedmind.security.SecurityContext
 
-case class UserPreferences(onboarded: Option[String])
+case class UserPreferences(onboarded: Option[String], ui: Option[String]){
+  if (ui.isDefined) require(validateLength(ui.get, 2048), "UI preferences max length is 2048")
+}
 
 case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 email: String, emailVerified: Option[Long], cohort: Option[Int],

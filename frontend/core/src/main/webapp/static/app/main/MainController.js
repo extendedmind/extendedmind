@@ -17,8 +17,8 @@ function MainController(
     OnboardingService.launchOnboarding(onboardingSuccessCallback);
   }
   function onboardingSuccessCallback() {
-    UserSessionService.setPreferences('onboarded', $rootScope.packaging);
-    AccountService.putAccountPreferences(UserSessionService.getPreferences());
+    UserSessionService.setPreference('onboarded', $rootScope.packaging);
+    AccountService.updateAccountPreferences();
   }
 
   // DATA ARRAYS

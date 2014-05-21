@@ -43,7 +43,7 @@ class ServiceSpec extends SpraySpecBase with ImpermanentGraphDatabaseSpecBase{
   describe("Service") {
 
     it("should return backend version at root") {
-      Get() ~> route ~> check {entityAs[String] should startWith("{\"version\":") }
+      Get() ~> route ~> check {responseAs[String] should startWith("{\"version\":") }
     }
 
     it("should generate token response on /authenticate") {
@@ -51,7 +51,7 @@ class ServiceSpec extends SpraySpecBase with ImpermanentGraphDatabaseSpecBase{
       Post("/authenticate"
           ) ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))
           ) ~> route ~> check {
-        val authenticateResponse = entityAs[String]
+        val authenticateResponse = responseAs[String]
         authenticateResponse should include("token")
       }
       verify(mockGraphDatabase).generateToken(TIMO_EMAIL, TIMO_PASSWORD, None)

@@ -186,11 +186,20 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
 
   protected def updateUser(userNode: Node, user: User)(implicit neo4j: DatabaseService): Unit = {
+    // Onboarding status
     if (user.preferences.isDefined && user.preferences.get.onboarded.isDefined && !userNode.hasProperty("onboarded")) {
       userNode.setProperty("onboarded", user.preferences.get.onboarded.get);
     } else if ((user.preferences.isEmpty || user.preferences.get.onboarded.isEmpty) && userNode.hasProperty("onboarded")) {
       userNode.removeProperty("onboarded");
     }
+    
+    // UI Preferences
+    if (user.preferences.isDefined && user.preferences.get.ui.isDefined) {
+      userNode.setProperty("ui", user.preferences.get.ui.get);
+    } else if ((user.preferences.isEmpty || user.preferences.get.ui.isEmpty) && userNode.hasProperty("ui")) {
+      userNode.removeProperty("ui");
+    }
+    
   }
 
   protected def updateUserEmail(userUUID: UUID, email: String): Response[(Node, Boolean)] = {
@@ -291,10 +300,16 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
 
   protected def addTransientUserProperties(userNode: Node, user: User)(implicit neo4j: DatabaseService): User = {
-    if (userNode.hasProperty("onboarded")) {
-      user.copy(preferences = Some(UserPreferences(Some(userNode.getProperty("onboarded").asInstanceOf[String]))))
-    } else {
-      user
+    user.copy(preferences = getUserPreferences(userNode))
+  }
+
+  protected def getUserPreferences(userNode: Node)(implicit neo4j: DatabaseService): Option[UserPreferences] = {
+    if (userNode.hasProperty("onboarded") || userNode.hasProperty("ui")){
+      Some(UserPreferences(
+        if (userNode.hasProperty("onboarded")) Some(userNode.getProperty("onboarded").asInstanceOf[String]) else None, 
+        if (userNode.hasProperty("ui")) Some(userNode.getProperty("ui").asInstanceOf[String]) else None))
+    }else{
+      None
     }
   }
 

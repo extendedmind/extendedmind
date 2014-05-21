@@ -59,25 +59,25 @@ class NoteBestCaseSpec extends ServiceSpecBase {
       val newNote = Note("home measurements", None, None, Some("bedroom wall: 420cm*250cm"), None)
       Put("/" + authenticateResponse.userUUID + "/note",
         marshal(newNote).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          val putNoteResponse = entityAs[SetResult]
-          writeJsonOutput("putNoteResponse", entityAs[String])
+          val putNoteResponse = responseAs[SetResult]
+          writeJsonOutput("putNoteResponse", responseAs[String])
           putNoteResponse.modified should not be None
           putNoteResponse.uuid should not be None
 
           val updatedNote = newNote.copy(description = Some("Helsinki home dimensions"))
           Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
             marshal(updatedNote).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-              val putExistingNoteResponse = entityAs[String]
+              val putExistingNoteResponse = responseAs[String]
               writeJsonOutput("putExistingNoteResponse", putExistingNoteResponse)
               putExistingNoteResponse should include("modified")
               putExistingNoteResponse should not include ("uuid")
               Get("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                val noteResponse = entityAs[Note]
-                writeJsonOutput("noteResponse", entityAs[String])
+                val noteResponse = responseAs[Note]
+                writeJsonOutput("noteResponse", responseAs[String])
                 noteResponse.content should not be None
                 noteResponse.description.get should be("Helsinki home dimensions")
                 Delete("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                  val deleteNoteResponse = entityAs[String]
+                  val deleteNoteResponse = responseAs[String]
                   writeJsonOutput("deleteNoteResponse", deleteNoteResponse)
                   deleteNoteResponse should include("deleted")
                   Get("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -86,7 +86,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                     failure should startWith("Item " + putNoteResponse.uuid.get + " is deleted")
                   }
                   Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                    val undeleteNoteResponse = entityAs[String]
+                    val undeleteNoteResponse = responseAs[String]
                     writeJsonOutput("undeleteNoteResponse", undeleteNoteResponse)
                     undeleteNoteResponse should include("modified")
                     val undeletedTask = getNote(putNoteResponse.uuid.get, authenticateResponse)

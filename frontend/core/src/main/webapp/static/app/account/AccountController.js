@@ -10,6 +10,10 @@ function AccountController($rootScope, $location, $scope, AccountService, Analyt
   AccountService.getAccount().then(function(accountResponse) {
     $scope.isUserVerified = accountResponse.emailVerified ? true : false;
     $scope.email = accountResponse.email;
+    var userPreferences = UserSessionService.getPreferences();
+    if (userPreferences.ui && userPreferences.ui.hidePlus !== undefined){
+      $scope.settings.hidePlus = userPreferences.ui.hidePlus;
+    }
   });
 
   $scope.gotoChangePassword = function gotoChangePassword() {
@@ -17,14 +21,25 @@ function AccountController($rootScope, $location, $scope, AccountService, Analyt
   };
 
   $scope.showOnboardingChecked = function() {
+    var userPreferences = UserSessionService.getPreferences();
     if ($scope.settings.showOnboarding){
-      var userPreferences = UserSessionService.getPreferences();
-      delete userPreferences.onboarded;
-      AccountService.putAccountPreferences(userPreferences);
+      UserSessionService.setPreference('onboarded', undefined);
     }else{
-      UserSessionService.setPreferences('onboarded', $rootScope.packaging);
-      AccountService.putAccountPreferences(UserSessionService.getPreferences());
+      UserSessionService.setPreference('onboarded', $rootScope.packaging);
     }
+    AccountService.updateAccountPreferences();
+  };
+
+  $scope.hidePlus = function() {
+    var userPreferences = UserSessionService.getPreferences();
+    if (!userPreferences.ui) userPreferences.ui = {}
+    if ($scope.settings.hidePlus){
+      userPreferences.ui.hidePlus = true;
+    }else{
+      userPreferences.ui.hidePlus = false;
+    }
+    UserSessionService.setPreferences(userPreferences);
+    AccountService.updateAccountPreferences();
   };
 
   $scope.showOnboardingSetting = function() {

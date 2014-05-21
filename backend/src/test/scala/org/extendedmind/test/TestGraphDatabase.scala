@@ -66,7 +66,7 @@ trait TestGraphDatabase extends GraphDatabase {
     withTx {
       implicit neo =>
         // Add preferences to timo node
-        putExistingUser(getUUID(timoNode), timoUser.copy(preferences = Some(UserPreferences(Some("web")))))
+        putExistingUser(getUUID(timoNode), timoUser.copy(preferences = Some(UserPreferences(Some("web"), None))))
 
         // Valid, unreplaceable
         timoUUID = getUUID(timoNode)

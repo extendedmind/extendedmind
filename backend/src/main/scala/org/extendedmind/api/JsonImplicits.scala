@@ -89,7 +89,7 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implTag = jsonFormat10(Tag.apply)  
   implicit val implItems = jsonFormat5(Items.apply)
   implicit val implCollective = jsonFormat8(Collective.apply)
-  implicit val implUserPreferences = jsonFormat1(UserPreferences.apply)
+  implicit val implUserPreferences = jsonFormat2(UserPreferences.apply)
   implicit val implUser = jsonFormat8(User.apply)
   implicit val implUsers = jsonFormat1(Users.apply)
   implicit val implStatistics = jsonFormat4(Statistics.apply)
