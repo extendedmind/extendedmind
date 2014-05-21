@@ -65,6 +65,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
               $scope.swiperPath,
               $scope.swiperType,
               slides,
+              onSwiperCreatedCallback,
               onSlideChangeEndCallback,
               onResistanceBeforeCallback,
               onResistanceAfterCallback,
@@ -111,6 +112,10 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
           updateSwiper();
         }
       };
+
+      function onSwiperCreatedCallback() {
+        SwiperService.onSwiperCreated($scope, $scope.swiperPath);
+      }
 
       function onSlideChangeEndCallback() {
         SwiperService.onSlideChangeEnd($scope, $scope.swiperPath);

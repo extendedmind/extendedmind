@@ -293,6 +293,12 @@ function DateService($timeout) {
     },
     getWeekday: function(date) {
       return weekdays[date.getDay()];
+    },
+    getFirstDateOfTheWeek: function(date) {
+      return getFirstDateOfTheWeek(date);
+    },
+    getFirstDateOfTheMonth: function(date) {
+      return new Date(date.getFullYear(), date.getMonth(), 1);
     }
   };
 }

@@ -144,7 +144,7 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
     },
     getArchivedNotes : function(ownerUUID) {
       initializeArrays(ownerUUID);
-      return notes[ownerUUID].activeNotes;
+      return notes[ownerUUID].archivedNotes;
     },
     getNoteByUUID : function(uuid, ownerUUID) {
       initializeArrays(ownerUUID);

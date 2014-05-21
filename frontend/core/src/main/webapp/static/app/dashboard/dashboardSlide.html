@@ -1,0 +1,18 @@
+<section id="dashboard-{{dashboardSlide}}" class="two-column-grid page">
+  <div class="column">
+    <div class="page-heading swiper-no-swiping" ng-include="'static/app/main/omnibar.html'"></div>
+    <div ng-hide="omnibarVisible && isActiveSlide({{dashboardSlide}})" class="content-container page-content-container no-heading-content-container">
+      <div class="inner-page-content-container">
+        <ul>
+          <li class="simple-content dashboard-info" ng-repeat="message in dashboardSlides[slideIndex].messages">
+            <span class="font-bold">{{message.comparedItemsNumber}}</span>
+            <span>{{message.comparedItemsText}}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <aside class="column">
+    TODO
+  </aside>
+</section>

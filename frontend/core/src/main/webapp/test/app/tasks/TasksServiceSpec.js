@@ -3,7 +3,7 @@
 
 describe('TasksService', function() {
 
-  // INJECTS 
+  // INJECTS
 
   var $httpBackend;
   var TasksService, BackendClientService, HttpClientService, ListsService;
@@ -165,12 +165,12 @@ describe('TasksService', function() {
     var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
     expect(TasksService.getCompletedTasks(testOwnerUUID).length)
       .toBe(0);
-    
+
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/complete')
        .respond(200, completeTaskResponse);
     TasksService.completeTask(cleanCloset, testOwnerUUID);
     $httpBackend.flush();
-    
+
     // The task should still be active and in its old place, but with the complete flag set
     expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID).completed)
       .toBeDefined();
