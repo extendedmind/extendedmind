@@ -39,19 +39,26 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
     link: function postLink(scope, element, attrs, featureContainerController) {
       featureContainerController.registerViewActiveCallback(attrs.scrollTo, scrollerViewActiveCallback);
 
+      var refreshTimeout = 200;
+      var refreshing = false;
       function scrollerViewActiveCallback(){
-        delayedScrollerRefresh();
+        if (refreshing) return;
+        refreshing = true;
+        // Refresh without digest
+        setTimeout(function(){
+          scroller.refresh();
+          refreshing = false;
+        }, refreshTimeout);
       }
 
       // IScroll needs to be refreshed, when the DOM is rendered.
-      var refreshing = false;
       function delayedScrollerRefresh() {
         if (refreshing) return false;
         refreshing = true;
         return $timeout(function() {
           scroller.refresh();
           refreshing = false;
-        }, 200);
+        }, refreshTimeout);
       }
       var scroller;
 
