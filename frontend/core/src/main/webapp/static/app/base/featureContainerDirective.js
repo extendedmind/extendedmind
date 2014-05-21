@@ -1,6 +1,6 @@
 'use strict';
 
-function featureContainerDirective($rootScope, SnapService, SwiperService, UISessionService) {
+function featureContainerDirective($rootScope, SnapService, SwiperService, UISessionService, UserSessionService) {
   return {
     restrict: 'A',
     controller: function($scope, $element) {
@@ -45,7 +45,15 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
       };
 
       $scope.featureHasPlusButton = function featureHasPlusButton() {
-        return ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes'));
+        if ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes')){
+          if (UserSessionService.getUIPreference('hidePlus')){
+            return false;
+          }else{
+            return true;
+          }
+        }else{
+          return false;
+        }
       };
 
       // UI SESSION SERVICE HOOKS
@@ -205,5 +213,5 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
     }
   };
 }
-featureContainerDirective.$inject = ['$rootScope', 'SnapService', 'SwiperService', 'UISessionService'];
+featureContainerDirective.$inject = ['$rootScope', 'SnapService', 'SwiperService', 'UISessionService', 'UserSessionService'];
 angular.module('em.directives').directive('featureContainer', featureContainerDirective);

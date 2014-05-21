@@ -12,13 +12,13 @@
           <li class="simple-content">
             <a class="highlighted-link" href ng-click="gotoChangePassword()">change password</a>
           </li>
-          <li ng-if="showOnboardingSetting()" class="simple-content">
+          <li ng-if="showOnboardingSetting()">
             <input class="input-checkbox" type="checkbox" name="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="showOnboardingChecked(settings.showOnboarding)"/>
-            <label class="default-element" for="showOnboarding">show onboarding again on next login</label>
+            <label class="default-element small-font" for="showOnboarding">show onboarding on next login</label>
           </li>
-          <li ng-if="showOnboardingSetting()" class="simple-content">
+          <li ng-if="showOnboardingSetting()">
             <input class="input-checkbox" type="checkbox" name="checkbox" id="hidePlus" ng-model="settings.hidePlus" ng-change="hidePlus(settings.hidePlus)"/>
-            <label class="default-element" for="hidePlus">hide plus button</label>
+            <label class="default-element small-font" for="hidePlus">hide plus button</label>
           </li>
         </ul>
       </div>

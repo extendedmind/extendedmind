@@ -190,6 +190,13 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       syncWebStorages();
       return SessionStorageService.getPreferences();
     },
+    getUIPreference: function(key) {
+      syncWebStorages();
+      var preferences = SessionStorageService.getPreferences();
+      if (preferences.ui){
+        return preferences.ui[key];
+      }
+    },
     getRememberByDefault: function() {
       return offlineBufferEnabled;
     },
