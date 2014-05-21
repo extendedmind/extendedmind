@@ -61,7 +61,6 @@ function MenuController($location, $scope, AuthenticationService, UISessionServi
     AuthenticationService.logout().then(function() {
       $location.path('/login');
     });
-    $scope.toggleMenu();
   };
 }
 
