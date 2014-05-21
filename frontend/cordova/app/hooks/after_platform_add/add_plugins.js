@@ -3,8 +3,7 @@
 //this hook installs all your plugins
 
 var pluginlist = [
-    "https://github.com/driftyco/ionic-plugins-keyboard",
-    "org.apache.cordova.splashscreen"
+    "https://github.com/driftyco/ionic-plugins-keyboard"
 ];
 
 // no need to configure below
