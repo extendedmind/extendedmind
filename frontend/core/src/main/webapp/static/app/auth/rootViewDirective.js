@@ -44,7 +44,9 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
         });
       };
 
+      var exiting = false;
       function redirectToLogin(){
+        exiting = true;
         var email = UserSessionService.getEmail();
         UserSessionService.clearUser();
         UserSessionService.setEmail(email);
@@ -92,9 +94,11 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
           AnalyticsService.error('forbidden', JSON.stringify(exception));
           redirectToLogin();
         }else if (exception.type === 'session') {
-          // Redirect session errors to the login page
-          AnalyticsService.error('session', exception.description);
-          redirectToLogin();
+          if (!exiting){
+            // Redirect session errors to the login page
+            AnalyticsService.error('session', exception.description);
+            redirectToLogin();
+          }
         }else{
           AnalyticsService.error('unexpected', JSON.stringify(exception));
           $scope.errorMessageHeading = 'something unexpected happened, sorry!';

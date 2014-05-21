@@ -316,7 +316,6 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     },
     logout: function() {
       return BackendClientService.postOnline('/api/logout', postLogoutRegexp).then(function(logoutResponse) {
-        UserSessionService.clearUser();
         return logoutResponse.data;
       });
     },

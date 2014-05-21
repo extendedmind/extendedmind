@@ -267,9 +267,14 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
             processSynchronizeUpdateResult(ownerUUID, result.data);
           }
           deferred.resolve();
-        }, function(/*error*/){
-          // just resolve, because this command does not need to always succeed
-          deferred.resolve();
+        }, function(error){
+          if (error.status === 403){
+            // Got 403, need to go to login
+            $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
+          }else{
+            // just resolve, because this command does not need to always succeed
+            deferred.resolve();
+          }
         });
       }
     }else {
@@ -289,6 +294,9 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
               retryParam: ownerUUID,
               promise: deferred
             });
+          }else if (error.status === 403){
+            // Got 403, need to go to login
+            $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
           }
         });
     }

@@ -70,31 +70,31 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
     },
     getPreviousFeatureName: function(){
       var uuid = this.getActiveUUID();
-      if (featureHistory[uuid].length > 1){
+      if (featureHistory[uuid] && featureHistory[uuid].length > 1){
         return featureHistory[uuid][featureHistory[uuid].length-2];
       }
     },
     getCurrentFeatureName: function(){
       var uuid = this.getActiveUUID();
-      if (featureHistory[uuid].length > 0){
+      if (featureHistory[uuid] && featureHistory[uuid].length > 0){
         return featureHistory[uuid][featureHistory[uuid].length-1];
       }
     },
     setCurrentFeatureState: function(state){
       var uuid = this.getActiveUUID();
-      if (featureHistory[uuid].length > 0){
+      if (featureHistory[uuid] && featureHistory[uuid].length > 0){
         featureMap[uuid][featureHistory[uuid][featureHistory[uuid].length-1]].state = state;
       }
     },
     getFeatureState: function(featureName){
       var uuid = this.getActiveUUID();
-      if (featureMap[uuid][featureName]){
+      if (featureHistory[uuid] && featureMap[uuid][featureName]){
         return featureMap[uuid][featureName].state;
       }
     },
     getFeatureData: function(featureName){
       var uuid = this.getActiveUUID();
-      if (featureMap[uuid][featureName]){
+      if (featureHistory[uuid] && featureMap[uuid][featureName]){
         return featureMap[uuid][featureName].data;
       }
     },
