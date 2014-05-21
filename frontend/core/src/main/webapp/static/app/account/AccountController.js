@@ -11,9 +11,15 @@ function AccountController($rootScope, $location, $scope, AccountService, Analyt
     $scope.isUserVerified = accountResponse.emailVerified ? true : false;
     $scope.email = accountResponse.email;
     var userPreferences = UserSessionService.getPreferences();
-    if (userPreferences.ui && userPreferences.ui.hidePlus !== undefined){
-      $scope.settings.hidePlus = userPreferences.ui.hidePlus;
+    if (userPreferences.ui){
+      if (userPreferences.ui.hidePlus !== undefined){
+        $scope.settings.hidePlus = userPreferences.ui.hidePlus;
+      }
+      if (userPreferences.ui.hideFooter !== undefined){
+        $scope.settings.hideFooter = userPreferences.ui.hideFooter;
+      }
     }
+
   });
 
   $scope.gotoChangePassword = function gotoChangePassword() {
