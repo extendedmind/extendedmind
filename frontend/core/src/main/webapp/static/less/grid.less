@@ -194,7 +194,7 @@ header {
   }
 }
 
-.hide-footer .page-content-container{
+.hide-footer .page-content-container {
   padding-bottom: @page-header-height + @vertical-grid-half;
 }
 
@@ -233,6 +233,16 @@ footer {
           padding-right: @horizontal-grid;
           padding-left: @horizontal-grid;
           display: inline-block !important;
+        }
+      }
+      li#left-slide-link {
+        a {
+          padding-right: @horizontal-grid - 10px; // make room for long names
+        }
+      }
+      li#right-slide-link {
+        a {
+          padding-left: @horizontal-grid - 10px; // make room for long names
         }
       }
     }

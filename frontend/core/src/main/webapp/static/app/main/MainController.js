@@ -143,6 +143,8 @@ function MainController(
       SwiperService.swipeTo('tasks/details/' + identifier);
     } else if ($scope.isFeatureActive('notes')) {
       SwiperService.swipeTo('notes/details/' + identifier);
+    } else if ($scope.isFeatureActive('archive')) {
+      SwiperService.swipeTo('archive/details/' + identifier);
     }
   };
 

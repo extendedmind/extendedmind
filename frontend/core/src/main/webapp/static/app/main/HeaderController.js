@@ -7,6 +7,7 @@ function HeaderController($scope, UISessionService, SwiperService) {
   SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'HeaderController');
   SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'HeaderController');
   SwiperService.registerSlideChangeCallback(slideChangedCallback, 'dashboard', 'HeaderController');
+  SwiperService.registerSlideChangeCallback(slideChangedCallback, 'archive', 'HeaderController');
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'HeaderController');
 
   var currentHeading = 'timeline';
@@ -39,6 +40,8 @@ function HeaderController($scope, UISessionService, SwiperService) {
           currentHeading = 'unsorted';
         } else if ($scope.isFeatureActive('dashboard')) {
           currentHeading = 'daily';
+        } else if ($scope.isFeatureActive('archive')) {
+          currentHeading = 'completed';
         }
       } else {
         if (activeSlide.endsWith('home')) {
@@ -47,6 +50,8 @@ function HeaderController($scope, UISessionService, SwiperService) {
           } else if ($scope.isFeatureActive('notes')) {
             currentHeading = 'unsorted';
           }
+        } else if (activeSlide.endsWith('completed')) {
+          currentHeading = 'completed';
         } else if (activeSlide.endsWith('daily')) {
           currentHeading = 'daily';
         } else if (activeSlide.endsWith('details')) {

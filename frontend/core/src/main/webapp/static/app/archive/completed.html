@@ -1,0 +1,22 @@
+<section id="archive-completed" class="two-column-grid page">
+  <div class="column">
+    <div class="page-heading swiper-no-swiping" ng-init="heading = 'completed'; omnibarFeature = 'archive'" ng-include="'static/app/main/omnibar.html'"></div>
+    <div ng-hide="omnibarVisible && isActiveSlide({{'completed'}})" class="content-container page-content-container no-heading-content-container">
+      <div class="inner-page-content-container">
+
+        <div ng-repeat="task in completedTasks">
+          <div class="table-wrapper">
+            <input type="checkbox" class="left-checkbox-wrapper" id="{{task.uuid}}" name="checkbox" class="input-checkbox" ng-checked="task.completed" ng-click="completedTaskChecked(task)"/>
+            <label class="checkbox swiper-no-swiping" for="{{task.uuid}}"></label>
+            <span>{{task.title}}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<aside class="column">
+  TODO
+</aside>
+</section>

@@ -7,7 +7,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
 
       // FEATURE DEFAULT VALUES AND ARRAYS
 
-      var contentFeatures = ['tasks', 'notes', 'inbox', 'dashboard'];
+      var contentFeatures = ['tasks', 'notes', 'inbox', 'dashboard', 'archive'];
       var activeContentFeatures = {tasks: true};
       var helperFeatures = {
         taskEdit: 'tasks',
@@ -45,7 +45,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       };
 
       $scope.featureHasFooter = function featureHasFooter() {
-        if ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes') || $scope.isFeatureActive('dashboard')){
+        if ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes') || $scope.isFeatureActive('dashboard') || $scope.isFeatureActive('archive')){
           if (UserSessionService.getUIPreference('hideFooter') && ($rootScope.packaging.endsWith('cordova') || $rootScope.packaging === 'devel')){
             $element[0].classList.toggle('hide-footer', true);
             return false;
@@ -110,15 +110,16 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         if (!UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()) ||
           !UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()).startsWith(activeSlidePath)){
           UISessionService.setCurrentFeatureState(activeSlidePath);
-        }
-      };
+      }
+    };
 
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/home', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/details', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes/details', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'dashboard', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/home', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/details', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes/details', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'dashboard', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'archive', 'featureContainerDirective');
 
       // CALLBACK REGISTRATION
 
@@ -144,7 +145,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
 
        // https://developer.mozilla.org/en-US/docs/Web/API/Element.classList
        function setFeatureContainerClass(feature) {
-        if (feature === 'tasks' || feature === 'notes' || feature === 'dashboard') {
+        if (feature === 'tasks' || feature === 'notes' || feature === 'dashboard' || feature === 'archive') {
           $element[0].classList.toggle('no-slides-container', false);
           $element[0].classList.toggle('slides-container', true);
         } else {

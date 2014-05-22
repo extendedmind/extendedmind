@@ -163,6 +163,7 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
           SwiperService.setEdgeTouchRatios('tasks', leftEdgeTouchRatio, rightEdgeTouchRatio);
           SwiperService.setEdgeTouchRatios('notes', leftEdgeTouchRatio, rightEdgeTouchRatio);
           SwiperService.setEdgeTouchRatios('dashboard', leftEdgeTouchRatio, rightEdgeTouchRatio);
+          SwiperService.setEdgeTouchRatios('archive', leftEdgeTouchRatio, rightEdgeTouchRatio);
 
         } else {
           $rootScope.isMobile = false;
@@ -172,6 +173,7 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
           SwiperService.setEdgeTouchRatios('tasks');
           SwiperService.setEdgeTouchRatios('notes');
           SwiperService.setEdgeTouchRatios('dashboard');
+          SwiperService.setEdgeTouchRatios('archive');
         }
       }
       setDimensions($window.innerWidth, $window.innerHeight);

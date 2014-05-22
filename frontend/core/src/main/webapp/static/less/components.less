@@ -537,11 +537,11 @@ li.datepicker-date {
 .ellipsis {
   overflow: hidden;
   height: @vertical-grid;
-  line-height:22px;
+  line-height: 22px;
 }
 
 .ellipsis:before {
-  content:"";
+  content: "";
   float: left;
   width: 5px;
   height: @vertical-grid;
@@ -579,11 +579,11 @@ li.datepicker-date {
 // EDITABLE FIELD
 
 .editable-field-backdrop {
-  -webkit-transition:background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-  -moz-transition:background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-  -o-transition:background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-  -ms-transition:background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-  transition:background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -webkit-transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -moz-transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -o-transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -ms-transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
 }
 
 .editable-field-backdrop.active {
@@ -593,16 +593,16 @@ li.datepicker-date {
   }
 }
 
-.editable-field-backdrop.active, .editable-field-backdrop.animating{
+.editable-field-backdrop.active, .editable-field-backdrop.animating {
   #omnibar-label-wrapper, .ellipsis:after {
     background-image: none !important;
   }
-  #active-action-wrapper, #plus-button-wrapper, #feature-container, .border-button{
+  #active-action-wrapper, #plus-button-wrapper, #feature-container, .border-button {
     background-color: inherit;
   }
 }
 
-.backdrop-disable .editable-field-container.active{
+.backdrop-disable .editable-field-container.active {
   * {
     pointer-events: auto !important;
   }

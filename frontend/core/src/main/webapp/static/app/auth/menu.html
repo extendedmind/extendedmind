@@ -12,22 +12,32 @@
     <li id="{{isAdmin() ? '' : 'last-feature'}}">
       <a href class="feature-link" ng-class="getFeatureClass('inbox')" ng-click="gotoFeature('inbox')">inbox</a>
     </li>
-    <li ng-if="isAdmin()" id="last-feature">
-      <a href class="feature-link" ng-class="getFeatureClass('dashboard')" ng-click="gotoFeature('dashboard')">dashboard</a>
-    </li>
-    <li ng-show="useCollectives()" id="my">
-      <a href ng-class="getMyClass()" ng-click="setMyActive()">my information</a>
-    </li>
-    <li ng-show="useCollectives()" id="collectives">
-      <span>collectives</span>
-      <ul>
-        <li ng-repeat="(key, value) in collectives">
-          <div ng-if="value[2] === false">
-            <a href class="collective" ng-class="getCollectiveClass(key)" ng-click="setCollectiveActive(key)">{{value[0]}}</a>
-          </div>
-        </li>
-      </ul>
-    </li>
+
+    <div ng-if="isAdmin()">
+      <li >
+        <a href class="feature-link" ng-class="getFeatureClass('dashboard')" ng-click="gotoFeature('dashboard')">dashboard</a>
+      </li>
+      <li id="last-feature">
+        <a href class="feature-link" ng-class="getFeatureClass('archive')" ng-click="gotoFeature('archive')">archive</a>
+      </li>
+    </div>
+
+    <div ng-if="useCollectives()">
+      <li id="my">
+        <a href ng-class="getMyClass()" ng-click="setMyActive()">my information</a>
+      </li>
+      <li id="collectives">
+        <span>collectives</span>
+        <ul>
+          <li ng-repeat="(key, value) in collectives">
+            <div ng-if="value[2] === false">
+              <a href class="collective" ng-class="getCollectiveClass(key)" ng-click="setCollectiveActive(key)">{{value[0]}}</a>
+            </div>
+          </li>
+        </ul>
+      </li>
+    </div>
+
     <li>
       <a href ng-class="getFeatureClass('account')" ng-click="gotoFeature('account')">account</a>
     </li>
