@@ -279,6 +279,26 @@ button.normal-button {
   }
 }
 
+button.border-button {
+  border-style:solid !important;
+  border-width:2px !important;
+  background-color: white;
+  font-size: @default-font-size;
+  & {
+    color: @normal-button;
+    border-color: @normal-button;
+  }
+  &:active {
+    color: @normal-button-pressed;
+    border-color: @normal-button-pressed;
+  }
+  &[disabled] {
+    color: @normal-button-disabled;
+    border-color: @normal-button-disabled;
+  }
+}
+
+
 button.cancel-button {
   color: white;
   & {

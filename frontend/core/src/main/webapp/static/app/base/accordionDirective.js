@@ -16,6 +16,21 @@ angular.module('em.directives').directive('accordion', ['$document',
       this.titleScopes = [];
       $scope.thisController = this;
 
+      // Optional first element open method
+      function openFirstElement(){
+        if ($scope.thisController.titleScopes && $scope.thisController.titleScopes.length > 0){
+          $scope.thisController.titleScopes[0].toggleOpen();
+          if (!$scope.eventsBound){
+            $scope.bindElsewhereEvents();
+          }
+
+          return $scope.thisController.titleScopes[0].item;
+        }
+      }
+      if ($scope.registerOpenFirstElementCallback){
+        $scope.registerOpenFirstElementCallback(openFirstElement);
+      }
+
       // Ensure that all the items in this accordion are closed
       $scope.closedOtherItems = false;
       this.closeOthers = function(activeScope) {
@@ -51,7 +66,9 @@ angular.module('em.directives').directive('accordion', ['$document',
       };
 
       this.refreshScrollerAndScrollToElement = function refreshScrollerAndScrollToElement(element) {
-        if (angular.isFunction($scope.refreshScrollerAndScrollToElement)) $scope.refreshScrollerAndScrollToElement(element);
+        if (angular.isFunction($scope.refreshScrollerAndScrollToElement)){
+          $scope.refreshScrollerAndScrollToElement(element);
+        }
       };
 
       $scope.close = function(item, skipSave) {
@@ -86,6 +103,7 @@ angular.module('em.directives').directive('accordion', ['$document',
         if ( index !== -1 ) {
           this.titleScopes.splice(this.titleScopes.indexOf(titleScope), 1);
         }
+        if ($scope.itemRemoved) $scope.itemRemoved(titleScope.item);
       };
 
       $scope.$on('$destroy', function() {
@@ -121,6 +139,7 @@ angular.module('em.directives').directive('accordion', ['$document',
               angular.forEach($scope.thisController.titleScopes, function (titleScope) {
                 titleScope.closeItem();
               });
+              if ($scope.accordionClosed) $scope.accordionClosed();
 
               $scope.openItem = undefined;
               $scope.unbindElsewhereEvents();

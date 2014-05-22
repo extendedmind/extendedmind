@@ -1,4 +1,4 @@
-<div ng-show="isFeatureActive('inbox')" id="inbox-container">
+<div ng-show="isFeatureActive('inbox')" id="inbox-container" ng-controller="InboxController">
   <section ng-hide="isDesktop && isMenuOpen" id="inbox" class="two-column-grid page header-page" snap-drawer-drag="inbox">
     <div class="column">
       <div class="page-heading" ng-init="heading = 'inbox'; omnibarFeature = 'inbox'" ng-include="'static/app/main/omnibar.html'"></div>
@@ -9,7 +9,7 @@
               <div class="inner-page-content-container" accordion>
                 <div ng-if="showContent('inbox')" ng-repeat="item in items">
                   <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" has-complete="false" toggle-complete></div>
-                  <div ng-if="isOpen(item)" class="accordion-body" editable-field-container="auto">
+                  <div ng-if="isOpen(item) || isInboxSorting(item)" class="accordion-body" editable-field-container="auto">
                     <div class="accordion-inner" ng-include="'static/app/main/itemActions.html'"></div>
                   </div>
                 </div>
@@ -23,9 +23,17 @@
                 </div>
               </div>
             </form>
+            <footer ng-if="!(isDesktop && isMenuOpen) && (items.length > 2 && sortingItem === undefined)">
+              <nav id="inbox-footer" class="swiper-no-swiping item-actions" role="navigation">
+                <button class="wide-button border-button" ng-click="sortInbox()">
+                  <span class="button-text" ng-bind="getSortingText()"></span>
+                </button>
+              </nav>
+            </footer>
           </div>
         </div>
       </div>
+
     </div>
     <aside class="column">
       TODO
