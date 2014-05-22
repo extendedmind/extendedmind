@@ -6,7 +6,7 @@
         <section>
           <h3><a href class="page-header" ng-click="gotoLists()">archived lists</a></h3>
           <ul class="list-arrow-right">
-            <li ng-class="selected" ng-repeat="list in archivedLists">
+            <li ng-class="selected" ng-repeat="list in archivedLists | orderBy:'archived':true">
               <a class="text-muted click-to-slide" href ng-click="gotoDetails(list.uuid)">
                 <span class="link-title">{{list.title}}</span>
                 <span class="icon-arrow-right"></span>
