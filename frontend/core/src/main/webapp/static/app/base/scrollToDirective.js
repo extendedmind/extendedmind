@@ -46,8 +46,10 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
         refreshing = true;
         // Refresh without digest
         setTimeout(function(){
-          scroller.refresh();
-          refreshing = false;
+          if (scroller){
+            scroller.refresh();
+            refreshing = false;
+          }
         }, refreshTimeout);
       }
 
@@ -56,8 +58,11 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
         if (refreshing) return false;
         refreshing = true;
         return $timeout(function() {
-          scroller.refresh();
-          refreshing = false;
+          // Check that scroller has not been destroyed in the mean time
+          if (scroller){
+            scroller.refresh();
+            refreshing = false;
+          }
         }, refreshTimeout);
       }
       var scroller;
@@ -193,6 +198,7 @@ function scrollToDirective($timeout, SwiperService, UISessionService) {
         element.unbind('touchend', pageSwiperSlideTouchEnd);
         scroller.destroy();
         scroller = null;
+        featureContainerController.removeViewActiveCallback(attrs.scrollTo);
       });
     }
   };

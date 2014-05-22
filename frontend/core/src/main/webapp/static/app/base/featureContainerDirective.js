@@ -1,6 +1,6 @@
 'use strict';
 
-function featureContainerDirective($rootScope, SnapService, SwiperService, UISessionService, UserSessionService) {
+function featureContainerDirective($rootScope, $timeout, SnapService, SwiperService, UISessionService, UserSessionService) {
   return {
     restrict: 'A',
     controller: function($scope, $element) {
@@ -40,9 +40,13 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
         return (systemFeatures.indexOf($scope.getActiveFeature()) > -1);
       };
 
+      $scope.refreshContentFeature = function refreshContentFeature(feature) {
+        activeContentFeatures[feature] = false;
+      };
+
       $scope.featureHasFooter = function featureHasFooter() {
         if ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes') || $scope.isFeatureActive('dashboard')){
-          if (UserSessionService.getUIPreference('hideFooter') && $rootScope.packaging.endsWith('cordova')){
+          if (UserSessionService.getUIPreference('hideFooter') && ($rootScope.packaging.endsWith('cordova') || $rootScope.packaging === 'devel')){
             $element[0].classList.toggle('hide-footer', true);
             return false;
           }else{
@@ -128,6 +132,10 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
 
       this.registerViewActiveCallback = function registerViewActiveCallback(viewId, callback) {
         viewActiveCallbacks[viewId] = callback;
+      };
+
+      this.removeViewActiveCallback = function removeViewActiveCallback(viewId) {
+        delete viewActiveCallbacks[viewId];
       };
 
       // SET CORRECT CLASSES TO FEATURE CONTAINER ELEMENT
@@ -223,5 +231,5 @@ function featureContainerDirective($rootScope, SnapService, SwiperService, UISes
     }
   };
 }
-featureContainerDirective.$inject = ['$rootScope', 'SnapService', 'SwiperService', 'UISessionService', 'UserSessionService'];
+featureContainerDirective.$inject = ['$rootScope', '$timeout', 'SnapService', 'SwiperService', 'UISessionService', 'UserSessionService'];
 angular.module('em.directives').directive('featureContainer', featureContainerDirective);

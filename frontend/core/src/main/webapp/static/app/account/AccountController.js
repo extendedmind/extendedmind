@@ -49,11 +49,15 @@ function AccountController($rootScope, $location, $scope, AccountService, Analyt
   }
 
   $scope.hidePlus = function() {
-    updateHideSetting('hidePlus', $scope.settings.hidePlus)
+    updateHideSetting('hidePlus', $scope.settings.hidePlus);
   };
 
   $scope.hideFooter = function() {
-    updateHideSetting('hideFooter', $scope.settings.hideFooter)
+    updateHideSetting('hideFooter', $scope.settings.hideFooter);
+    $scope.refreshContentFeature('tasks');
+    $scope.refreshContentFeature('notes');
+    $scope.refreshContentFeature('dashboard');
+    $scope.refreshContentFeature('archive');
   };
 
   $scope.showSettings = function() {
