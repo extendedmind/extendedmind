@@ -48,8 +48,12 @@ class Settings(config: Config) extends Extension {
   val isHighAvailability = config.getBoolean("extendedmind.neo4j.isHighAvailability")
   val startNeo4jServer = config.getBoolean("extendedmind.neo4j.startServer")
   val neo4jServerPort = config.getInt("extendedmind.neo4j.serverPort")
+  val disableTimestamps =
+    if (config.hasPath("extendedmind.neo4j.disableTimestamps"))
+      config.getBoolean("extendedmind.neo4j.disableTimestamps")
+    else false
+    
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
-  
   val signUpMethod: SignUpMethod  = {
     config.getString("extendedmind.security.signUpMethod") match {
       case "OFF" => SIGNUP_OFF

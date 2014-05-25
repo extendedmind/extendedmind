@@ -63,7 +63,11 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   protected def kernelExtensions(setupAutoindexing: Boolean = true): java.util.ArrayList[KernelExtensionFactory[_]] = {
     val extensions = new java.util.ArrayList[KernelExtensionFactory[_]](2);
     extensions.add(new UUIDKernelExtensionFactory(false, false, setupAutoindexing));
-    extensions.add(new TimestampKernelExtensionFactory(setupAutoindexing, true));
+
+    if (settings.disableTimestamps)
+      println("WARNING: Automatic timestamps disabled!")
+    else
+      extensions.add(new TimestampKernelExtensionFactory(setupAutoindexing, true));
     extensions
   }
 
@@ -128,7 +132,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
     // Use indexes to get invite requests and items
     val inviteRequestCount = neo4j.gds.index().forNodes("inviteRequests").query("*:*").size()
-    val itemCount = neo4j.gds.index().forNodes("items").query("*:*").size()    
+    val itemCount = neo4j.gds.index().forNodes("items").query("*:*").size()
 
     Statistics(userCountResult.get("userCount").asInstanceOf[Long],
       inviteCountResult.get("inviteCount").asInstanceOf[Long],

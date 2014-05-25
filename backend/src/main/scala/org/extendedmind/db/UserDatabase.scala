@@ -106,6 +106,13 @@ trait UserDatabase extends AbstractGraphDatabase {
     } yield result
   }
 
+  def upgradeItems: Response[CountResult] = {
+    for {
+      ownerUUIDs <- getOwnerUUIDs.right
+      count <- upgradeItems(ownerUUIDs).right
+    } yield count
+  }
+
   def destroyUser(userUUID: UUID): Response[DestroyResult] = {
     withTx {
       implicit neo4j =>
@@ -192,14 +199,14 @@ trait UserDatabase extends AbstractGraphDatabase {
     } else if ((user.preferences.isEmpty || user.preferences.get.onboarded.isEmpty) && userNode.hasProperty("onboarded")) {
       userNode.removeProperty("onboarded");
     }
-    
+
     // UI Preferences
     if (user.preferences.isDefined && user.preferences.get.ui.isDefined) {
       userNode.setProperty("ui", user.preferences.get.ui.get);
     } else if ((user.preferences.isEmpty || user.preferences.get.ui.isEmpty) && userNode.hasProperty("ui")) {
       userNode.removeProperty("ui");
     }
-    
+
   }
 
   protected def updateUserEmail(userUUID: UUID, email: String): Response[(Node, Boolean)] = {
@@ -304,11 +311,11 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
 
   protected def getUserPreferences(userNode: Node)(implicit neo4j: DatabaseService): Option[UserPreferences] = {
-    if (userNode.hasProperty("onboarded") || userNode.hasProperty("ui")){
+    if (userNode.hasProperty("onboarded") || userNode.hasProperty("ui")) {
       Some(UserPreferences(
-        if (userNode.hasProperty("onboarded")) Some(userNode.getProperty("onboarded").asInstanceOf[String]) else None, 
+        if (userNode.hasProperty("onboarded")) Some(userNode.getProperty("onboarded").asInstanceOf[String]) else None,
         if (userNode.hasProperty("ui")) Some(userNode.getProperty("ui").asInstanceOf[String]) else None))
-    }else{
+    } else {
       None
     }
   }
@@ -364,4 +371,52 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
+  protected def upgradeItems(ownerUUIDs: scala.List[UUID]): Response[CountResult] = {
+    var count: Long = 0
+    ownerUUIDs.foreach(ownerUUID => {
+      val upgradeResult = upgradeItemsForOwner(ownerUUID)
+      if (upgradeResult.isLeft) {
+        return Left(upgradeResult.left.get)
+      } else {
+        count += upgradeResult.right.get
+      }
+    })
+    Right(CountResult(count))
+  }
+
+  protected def upgradeItemsForOwner(ownerUUID: UUID): Response[Long] = {
+    withTx {
+      implicit neo4j =>
+        val ownerNodeResponse = getNode(ownerUUID, MainLabel.OWNER)
+        if (ownerNodeResponse.isLeft)
+          Left(ownerNodeResponse.left.get)
+        else {
+          val ownerNode = ownerNodeResponse.right.get
+          var count: Long = 0
+          ownerNode.getRelationships().foreach(ownerRelationship => {
+            if (!ownerRelationship.hasProperty("created")) {
+              ownerRelationship.setProperty("created", ownerRelationship.getProperty("modified").asInstanceOf[Long])
+            }
+            if (ownerRelationship.getType().name == SecurityRelationship.OWNS.name) {
+
+              if (!ownerRelationship.getEndNode().hasProperty("created")) {
+                ownerRelationship.getEndNode().setProperty("created", ownerRelationship.getEndNode().getProperty("modified").asInstanceOf[Long])
+                count += 1
+              }
+              // Also update item relationships
+              ownerRelationship.getEndNode().getRelationships().foreach(itemRelationship => {
+                if (itemRelationship.getType().name == ItemRelationship.HAS_PARENT.name ||
+                  itemRelationship.getType().name == ItemRelationship.HAS_TAG.name ||
+                  itemRelationship.getType().name == ItemRelationship.HAS_ORIGIN.name) {
+                  if (!itemRelationship.hasProperty("created")) {
+                    itemRelationship.setProperty("created", itemRelationship.getProperty("modified").asInstanceOf[Long])
+                  }
+                }
+              })
+            }
+          })
+          Right(count)
+        }
+    }
+  }
 }
