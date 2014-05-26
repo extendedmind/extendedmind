@@ -36,38 +36,36 @@
   </div>
   <div ng-if="omnibarVisible === heading" id="omnibar-results" class="swiper-no-swiping" ng-style="{height: getOmnibarSearchResultsHeight()}" data-snap-ignore="true" >
     <div ng-if="!isSearchActive() || isLoading" id="filtered-items-placeholder" ng-style="{width: getColumnWidth()}" ng-click="clearOmnibar(heading)">&nbsp;</div>
-    <div ng-if="isSearchActive() && !isLoading" id="filtered-items-container" scroll-to="omnibar" style="height: 100%;">
-      <div id="scroller" style="min-height: 101%;">
-        <div ng-show="filteredItems.length" class="filtered-items">
-          <h3 ><a href ng-click="gotoInbox()">inbox</a></h3>
-          <div class="inner-page-content-container" accordion>
-            <div ng-repeat="item in filteredItems = (items | filter:{title:searchText.delayed} | limitTo:10)">
-              <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" toggle-complete="false"></div>
-              <div ng-if="isOpen(item)" class="accordion-body" editable-field-container="auto">
-                <div ng-include="'static/app/main/itemActions.html'"></div>
-              </div>
+    <div ng-if="isSearchActive() && !isLoading" id="filtered-items-container">
+      <div ng-show="filteredItems.length" class="filtered-items">
+        <h3 ><a href ng-click="gotoInbox()">inbox</a></h3>
+        <div class="inner-page-content-container" accordion>
+          <div ng-repeat="item in filteredItems = (items | filter:{title:searchText.delayed} | limitTo:10)">
+            <div accordion-title="item" edit-item="editItem(item)" edit-item-title="editItemTitle(item)" toggle-complete="false"></div>
+            <div ng-if="isOpen(item)" class="accordion-body" editable-field-container="auto">
+              <div ng-include="'static/app/main/itemActions.html'"></div>
             </div>
           </div>
         </div>
-        <div ng-show="filteredTasks.length" class="filtered-items">
-          <h3><a href ng-click="gotoTasks()">tasks</a></h3>
-          <div class="inner-page-content-container" accordion>
-            <div ng-repeat="task in filteredTasks = (tasks | filter:{title:searchText.delayed} | limitTo:10)">
-              <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-              <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
-                <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
-              </div>
+      </div>
+      <div ng-show="filteredTasks.length" class="filtered-items">
+        <h3><a href ng-click="gotoTasks()">tasks</a></h3>
+        <div class="inner-page-content-container" accordion>
+          <div ng-repeat="task in filteredTasks = (tasks | filter:{title:searchText.delayed} | limitTo:10)">
+            <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+            <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
+              <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
         </div>
-        <div ng-show="filteredNotes.length" class="filtered-items">
-          <h3><a href ng-click="gotoNotes()">notes</a></h3>
-          <div class="inner-page-content-container" accordion>
-            <div ng-repeat="note in filteredNotes = (notes | filter:{title:searchText.delayed} | limitTo:10)">
-              <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete></div>
-              <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
-                <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
-              </div>
+      </div>
+      <div ng-show="filteredNotes.length" class="filtered-items">
+        <h3><a href ng-click="gotoNotes()">notes</a></h3>
+        <div class="inner-page-content-container" accordion>
+          <div ng-repeat="note in filteredNotes = (notes | filter:{title:searchText.delayed} | limitTo:10)">
+            <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete></div>
+            <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
+              <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
             </div>
           </div>
         </div>

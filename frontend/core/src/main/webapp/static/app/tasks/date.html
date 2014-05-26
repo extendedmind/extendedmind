@@ -1,18 +1,14 @@
-<section id="date" class="date" scroll-to="tasks/home/{{date.weekday}}" scroll-to-swiper="tasks/home" scroll-to-top-edge="{{$first}}" scroll-to-bottom-edge="{{$last}}">
-  <div id="scroller" style="min-height: 101%;">
-    <div ng-if="$first" scroll-to-edge="top" scroll-to-edge-text="previous week..."></div>
-    <h3 ng-hide="isDatepickerVisible" class="date-heading" ng-click="setDatepickerVisible()">{{date.displayDate}}</h3>
-    <div>
-      <div class="inner-page-content-container" accordion>
-        <div ng-if="showContent('tasks')" ng-repeat="task in tasks | tasksByDate:date.yyyymmdd">
-          <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-          <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
-            <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
-          </div>
+<section id="date" class="date">
+  <h3 ng-hide="isDatepickerVisible" class="date-heading" ng-click="setDatepickerVisible()">{{date.displayDate}}</h3>
+  <div>
+    <div class="inner-page-content-container" accordion>
+      <div ng-if="showContent('tasks')" ng-repeat="task in tasks | tasksByDate:date.yyyymmdd">
+        <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+        <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
+          <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
         </div>
-        <div ng-include="'static/app/tasks/addTask.html'"></div>
       </div>
+      <div ng-include="'static/app/tasks/addTask.html'"></div>
     </div>
-    <div ng-if="$last" scroll-to-edge="bottom" scroll-to-edge-text="next week..."></div>
   </div>
 </section>

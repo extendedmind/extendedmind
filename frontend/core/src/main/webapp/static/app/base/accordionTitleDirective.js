@@ -33,13 +33,17 @@ angular.module('em.directives').directive('accordionTitle', [ '$rootScope',
         }else{
           $scope.closeItem();
         }
+        /* TODO
         accordionCtrl.refreshScrollerAndScrollToElement($element[0]);
+        */
         return $scope.isOpen;
       };
 
       $scope.closeItem = function(skipSave) {
         if ($scope.isOpen){
+          /* TODO
           accordionCtrl.refreshScroller();
+          */
           $scope.endTitleEdit(skipSave);
           $element.parent().removeClass('accordion-item-active');
           $scope.isOpen = false;
@@ -111,7 +115,7 @@ angular.module('em.directives').directive('accordionTitle', [ '$rootScope',
           }
         }
         return classes;
-      }
+      };
 
       function isTitleOnTwoLines() {
         var width = $element.find('a#accordionTitleLink')[0].clientWidth;

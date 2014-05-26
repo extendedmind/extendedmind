@@ -3,31 +3,27 @@
     <div class="page-heading swiper-no-swiping" ng-init="heading = 'details'; omnibarFeature = 'archive'" ng-include="'static/app/main/omnibar.html'"></div>
     <div ng-hide="omnibarVisible && isActiveSlide({{'details'}})" class="content-container page-content-container no-heading-content-container">
       <div class="inner-page-content-container">
-        <div class="swiper-container vertical-slides" swiper-container="archive/details" swiper-type="page" swiper-container-only-external-swipe="true" expected-slides="archivedLists.length">
+        <div class="swiper-container vertical-slides" swiper-container="archive/details" swiper-type="page" expected-slides="archivedLists.length">
           <div class="swiper-wrapper">
             <div class="swiper-slide" ng-repeat="list in archivedLists | orderBy:'archived':true" swiper-slide="archive/details/{{list.uuid}}" slide-index="$index">
               <div class="inner-slide-content-container">
-                <section class="list" scroll-to="archive/details/{{list.uuid}}" scroll-to-swiper="archive/details">
-                  <div id="scroller" style="min-height: 101%">
-
-                    <div class="inner-page-content-container">
-                      <h3 class="page-header">{{list.title}}</h3>
-
-                      <div ng-if="completedTasks && completedTasks.length">
-                        <h3>tasks</h3>
-                        <div ng-repeat="task in completedTasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid} | orderBy:'completed':true">
-                          <div class="table-wrapper">
-                            <input type="checkbox" class="left-checkbox-wrapper" id="{{task.uuid}}" name="checkbox" class="input-checkbox" ng-checked="task.completed" ng-click="completedTaskChecked(task)"/>
-                            <label class="checkbox swiper-no-swiping" for="{{task.uuid}}"></label>
-                            <span>{{task.title}}</span>
-                          </div>
+                <section class="list">
+                  <div class="inner-page-content-container">
+                    <h3 class="page-header">{{list.title}}</h3>
+                    <div ng-if="completedTasks && completedTasks.length">
+                      <h3>tasks</h3>
+                      <div ng-repeat="task in completedTasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid} | orderBy:'completed':true">
+                        <div class="table-wrapper">
+                          <input type="checkbox" class="left-checkbox-wrapper" id="{{task.uuid}}" name="checkbox" class="input-checkbox" ng-checked="task.completed" ng-click="completedTaskChecked(task)"/>
+                          <label class="checkbox swiper-no-swiping" for="{{task.uuid}}"></label>
+                          <span>{{task.title}}</span>
                         </div>
                       </div>
-                      <div ng-if="archivedNotes && archivedNotes.length">
-                        <h3>notes</h3>
-                        <div ng-repeat="note in archivedNotes | itemsFilter:{name:'byListUUID', filterBy: list.uuid} | orderBy:'archived':true">
-                          {{note.title}}
-                        </div>
+                    </div>
+                    <div ng-if="archivedNotes && archivedNotes.length">
+                      <h3>notes</h3>
+                      <div ng-repeat="note in archivedNotes | itemsFilter:{name:'byListUUID', filterBy: list.uuid} | orderBy:'archived':true">
+                        {{note.title}}
                       </div>
                     </div>
                   </div>
