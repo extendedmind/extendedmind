@@ -1,17 +1,17 @@
 <div class="accordion-title" ng-switch="isOpen">
   <div ng-switch-when="false" id="closedAccordionTitleWrapper">
     <div ng-if="hasComplete" class="table-wrapper" >
-      <input type="checkbox" class="left-checkbox-wrapper" id="{{item.uuid}}" name="checkbox" class="input-checkbox" ng-checked="item.completed" ng-click="itemChecked()" />
+      <input type="checkbox" class="left-checkbox-wrapper" id="{{item.uuid}}" name="checkbox" class="input-checkbox" ng-checked="item.completed" swiper-click="itemChecked()" />
       <label class="checkbox swiper-no-swiping" for="{{item.uuid}}"></label>
-      <a id="accordionTitleLink" ng-class="getTitleLinkClasses()" class="accordion-toggle" href ng-click="clickTitle()">
+      <a id="accordionTitleLink" ng-class="getTitleLinkClasses()" class="accordion-toggle" href swiper-click="clickTitle()">
         <span id="accordionTitleLinkContent">
-        {{getItemTitle()}}
+          {{getItemTitle()}}
         </span>
       </a>
     </div>
     <div ng-if="!hasComplete" id="soloAccordionTitleLinkWrapper" class="table-wrapper">
       <div id="accordionTitleHeightFix"><br/></div>
-      <a id="accordionTitleLink" ng-class="getTitleLinkClasses()" class="accordion-toggle" href ng-click="clickTitle()">
+      <a id="accordionTitleLink" ng-class="getTitleLinkClasses()" class="accordion-toggle" href swiper-click="clickTitle()">
         <span id="accordionTitleLinkContent">{{getItemTitle()}}</span>
       </a>
     </div>
@@ -26,7 +26,7 @@
       <textarea id="accordionTitleInput" type="text" ng-focus="startTitleEdit($event)" ng-keypress="evaluateKeyPress($event)" class="simple-input swiper-no-swiping" ng-model="item.title" placeholder="title..." maxlength="128" required expanding-textarea editable-field /></textarea>
     </div>
     <div class="right-button-wrapper swiper-no-swiping">
-      <button class="button" type="button" ng-click="pressItemEdit()"><span class="icon-i"></span>
+      <button class="button" type="button" swiper-click="pressItemEdit()"><span class="icon-i"></span>
       </button>
     </div>
   </form>
