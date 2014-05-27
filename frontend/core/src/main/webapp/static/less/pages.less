@@ -182,8 +182,12 @@ section#signup {
 #inbox-container {
   section#inbox {
     #inbox-page-content-container {
-      overflow-y: auto;
+      overflow-y: hidden;
       padding-bottom: @footer-height;
+      .scroll-container {
+        height: inherit;
+        overflow-y: auto;
+      }
     }
   }
 }
