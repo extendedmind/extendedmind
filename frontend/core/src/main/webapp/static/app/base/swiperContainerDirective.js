@@ -238,6 +238,8 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
 
       var swipePageSlideUp = false;
       var swipePageSlideDown = false;
+      var swipePageSlideTop = false;
+      var swipePageSlideBottom = false;
       var swipePageSlideStartX, swipePageSlideStartY, swipePageSlideDistX, swipePageSlideDistY;
       var pageSwiperSlideScrollTimeout;
 
@@ -248,7 +250,15 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
       var isPullToNextWeekLoaderActive = false;
 
       function pageSwiperSlideTouchStart(event) {
+        // Reset variables
         $rootScope.innerSwiping = false;
+        swipePageSlideDown = false;
+        swipePageSlideUp = false;
+        swipePageSlideTop = false;
+        swipePageSlideBottom = false;
+        negativeHoldPosition = 0;
+        positiveHoldPosition = 0;
+
 
         if (event.type === 'touchstart') {
           swipePageSlideStartX = event.targetTouches[0].pageX;
@@ -258,11 +268,13 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
           swipePageSlideStartY = event.pageY;
         }
 
-        swipePageSlideDown = false;
-        swipePageSlideUp = false;
-
-        negativeHoldPosition = 0;
-        positiveHoldPosition = 0;
+        // Evaluate top and bottom of scroll
+        if ((this.scrollHeight - this.scrollTop) <= this.clientHeight) {
+          swipePageSlideBottom = true;
+        }
+        if (this.scrollTop <= 0){
+          swipePageSlideTop = true;
+        }
       }
 
       // This function checks swiping direction and slide scrolling position.
@@ -296,7 +308,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
 
           // Find out scroll position of a slide and compare it with swiper direction.
           // https://developer.mozilla.org/en-US/docs/Web/API/Element.scrollHeight#Determine_if_an_element_has_been_totally_scrolled
-          if (((this.scrollHeight - this.scrollTop) <= this.clientHeight) && swipePageSlideDown) {
+          if (swipePageSlideBottom && swipePageSlideDown) {
             // Bottom of a slide and swiping down. Let the event bubble to swiper.
 
             // Toggle pull to next week indicator in DOM
@@ -306,7 +318,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
             } else if (isPullToNextWeekLoaderActive) {
               pullToNextWeekElement.className = 'loader';
             }
-          } else if ((this.scrollTop <= 0) && swipePageSlideUp) {
+          } else if (swipePageSlideTop && swipePageSlideUp) {
             // Top of a slide on swiping up. Let the event bubble to swiper.
 
             // Toggle pull to previous week indicator in DOM
