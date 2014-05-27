@@ -14,7 +14,7 @@ function SnapService() {
           disable: 'right',  // use left only
           transitionSpeed: 0.2,
           minDragDistance: 0,
-          addBodyClasses: false,
+          addBodyClasses: false
         });
         if (draggerElement) {
           snapper.settings({dragger: draggerElement});
