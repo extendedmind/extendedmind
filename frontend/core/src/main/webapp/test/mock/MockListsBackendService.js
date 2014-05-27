@@ -7,7 +7,7 @@ function MockListsBackendService($httpBackend, ListsService, UUIDService) {
     $httpBackend.whenPUT(ListsService.putNewListRegex)
     .respond(function(method, url, data, headers) {
       var putNewListResponse = getJSONFixture('putListResponse.json');
-      putNewListResponse.modified = (new Date()).getTime();
+      putNewListResponse.created = putNewListResponse.modified = (new Date()).getTime();
       putNewListResponse.uuid = UUIDService.randomUUID();
       return expectResponse(method, url, data, headers, putNewListResponse);
     });

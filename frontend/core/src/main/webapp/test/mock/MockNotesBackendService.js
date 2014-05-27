@@ -8,11 +8,11 @@ function MockNotesBackendService($httpBackend, NotesService, UUIDService) {
       .respond(function(method, url, data, headers) {
         var putNewNoteResponse = getJSONFixture('putNoteResponse.json');
         putNewNoteResponse.uuid = UUIDService.randomUUID();
-        putNewNoteResponse.modified = (new Date()).getTime();
+        putNewNoteResponse.created = putNewNoteResponse.modified = (new Date()).getTime();
         return expectResponse(method, url, data, headers, putNewNoteResponse);
       });
   }
-  
+
   function mockPutExistingNote(expectResponse){
     $httpBackend.whenPUT(NotesService.putExistingNoteRegex)
       .respond(function(method, url, data, headers) {

@@ -1,18 +1,18 @@
 /*global angular, getJSONFixture, sessionStorage */
 'use strict';
 
-function MockTagsBackendService($httpBackend, TagsService, UUIDService) {  
+function MockTagsBackendService($httpBackend, TagsService, UUIDService) {
 
   function mockPutNewTag(expectResponse){
     $httpBackend.whenPUT(TagsService.putNewTagRegex)
       .respond(function(method, url, data, headers) {
         var putNewTagResponse = getJSONFixture('putTagResponse.json');
         putNewTagResponse.uuid = UUIDService.randomUUID();
-        putNewTagResponse.modified = (new Date()).getTime();
+        putNewTagResponse.created = putNewTagResponse.modified = (new Date()).getTime();
         return expectResponse(method, url, data, headers, putNewTagResponse);
       });
   };
-  
+
   function mockPutExistingTag(expectResponse){
     $httpBackend.whenPUT(TagsService.putExistingTagRegex)
       .respond(function(method, url, data, headers) {
@@ -28,7 +28,7 @@ function MockTagsBackendService($httpBackend, TagsService, UUIDService) {
         var deleteTagResponse = getJSONFixture('deleteTagResponse.json');
         deleteTagResponse.result.modified = (new Date()).getTime();
         return expectResponse(method, url, data, headers, deleteTagResponse);
-      });    
+      });
   };
 
   function mockUndeleteTag(expectResponse){
@@ -37,7 +37,7 @@ function MockTagsBackendService($httpBackend, TagsService, UUIDService) {
         var undeleteTagResponse = getJSONFixture('undeleteTagResponse.json');
         undeleteTagResponse.modified = (new Date()).getTime();
         return expectResponse(method, url, data, headers, undeleteTagResponse);
-      });    
+      });
   };
 
   return {

@@ -175,7 +175,6 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
           BackendClientService.putOnline('/api/' + ownerUUID + '/note/' + note.uuid,
                    this.putExistingNoteRegex, note).then(function(result) {
             if (result.data){
-              note.created = result.data.created;
               note.modified = result.data.modified;
               if (list){
                 note.relationships.list = list;
@@ -193,7 +192,7 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
           BackendClientService.put('/api/' + ownerUUID + '/note',
                    this.putNewNoteRegex, params, note);
           note.uuid = fakeUUID;
-          note.modified = (new Date()).getTime() + 1000000;
+          note.created = note.modified = (new Date()).getTime() + 1000000;
           if (list){
             note.relationships.list = list;
           }
@@ -205,6 +204,7 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
             if (result.data){
               note.uuid = result.data.uuid;
               note.modified = result.data.modified;
+              note.created = result.data.created;
               if (list){
                 note.relationships.list = list;
               }

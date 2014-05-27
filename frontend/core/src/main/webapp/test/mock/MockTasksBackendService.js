@@ -8,7 +8,8 @@ function MockTasksBackendService($httpBackend, TasksService, UUIDService) {
     .respond(function(method, url, data, headers) {
       var putNewTaskResponse = getJSONFixture('putTaskResponse.json');
       putNewTaskResponse.uuid = UUIDService.randomUUID();
-      putNewTaskResponse.modified = (new Date()).getTime();
+      putNewTaskResponse.created = putNewTaskResponse.modified = (new Date()).getTime();
+      console.log(putNewTaskResponse)
       return expectResponse(method, url, data, headers, putNewTaskResponse);
     });
   }

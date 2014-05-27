@@ -28,12 +28,12 @@ function MockItemsBackendService($httpBackend, ItemsService, UUIDService) {
     $httpBackend.whenPUT(ItemsService.putNewItemRegex)
       .respond(function(method, url, data, headers) {
         var putNewItemResponse = getJSONFixture('putItemResponse.json');
-        putNewItemResponse.modified = (new Date()).getTime();
+        putNewItemResponse.created = putNewItemResponse.modified = (new Date()).getTime();
         putNewItemResponse.uuid = UUIDService.randomUUID();
         return expectResponse(method, url, data, headers, putNewItemResponse);
       });
   }
-  
+
   function mockPutExistingItem(expectResponse){
     $httpBackend.whenPUT(ItemsService.putExistingItemRegex)
       .respond(function(method, url, data, headers) {
