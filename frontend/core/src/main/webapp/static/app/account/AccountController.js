@@ -59,13 +59,6 @@ function AccountController($rootScope, $location, $scope, AccountService, Analyt
     $scope.refreshContentFeature('dashboard');
     $scope.refreshContentFeature('archive');
   };
-
-  $scope.showSettings = function() {
-    // Only show the onboarding checkbox for ALFA and ADMIN users
-    if (UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1){
-      return true;
-    }
-  };
 }
 
 AccountController['$inject'] = ['$rootScope', '$location', '$scope', 'AccountService', 'AnalyticsService', 'UserSessionService'];
