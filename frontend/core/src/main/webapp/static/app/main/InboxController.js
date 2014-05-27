@@ -1,9 +1,9 @@
 'use strict';
 
 function InboxController($scope) {
-  var openFirstElementCalback;
+  var openFirstElementCallback;
   $scope.registerOpenFirstElementCallback = function registerOpenFirstElementCallback(callback){
-    openFirstElementCalback = callback;
+    openFirstElementCallback = callback;
   };
 
   $scope.accordionClosed = function accordionClosed(){
@@ -18,8 +18,8 @@ function InboxController($scope) {
   };
 
   $scope.sortInbox = function sortInbox(){
-    if (openFirstElementCalback){
-      $scope.sortingItem = openFirstElementCalback();
+    if (openFirstElementCallback){
+      $scope.sortingItem = openFirstElementCallback($scope.sortingItem);
     }
   };
 
@@ -30,7 +30,7 @@ function InboxController($scope) {
   $scope.getSortingText = function getSortingText(){
     if ($scope.sortingItem) return 'done sorting';
     else return 'sort inbox';
-  }
+  };
 
 }
 

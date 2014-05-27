@@ -4,9 +4,8 @@
 // https://github.com/angular-app/Samples/tree/master/1820EN_10_Code/03_basic_accordion_directive
 
 // The accordion-title directive indicates the title of a block of html that will expand and collapse in an accordion
-angular.module('em.directives').directive('accordionTitle', [ '$rootScope',
-  function ($rootScope) {
-    return {
+function accordionTitleDirective($rootScope) {
+  return {
     require: '^accordion',        // We need this directive to be inside an accordion
     restrict: 'A',                // It will be an attribute
     transclude: true,             // Transcludes teaser below title
@@ -23,27 +22,24 @@ angular.module('em.directives').directive('accordionTitle', [ '$rootScope',
     },  // Create an isolated scope
     link: function($scope, $element, $attrs, accordionCtrl) {
       accordionCtrl.addItem($scope);
+
+      if ($scope.$parent.$first) accordionCtrl.notifyFirst();
+      if ($scope.$parent.$last) accordionCtrl.notifyLast();
+
       $scope.isOpen = false;
       $scope.oldTitle = $scope.item.title;
 
-      $scope.toggleOpen = function() {
+      $scope.openItem = function openItem(skipScroll) {
         if (!$scope.isOpen){
           $scope.isOpen = true;
           $element.parent().addClass('accordion-item-active');
-        }else{
-          $scope.closeItem();
         }
-        /* TODO
-        accordionCtrl.refreshScrollerAndScrollToElement($element[0]);
-        */
+        if (!skipScroll) accordionCtrl.scrollToElement($element);
         return $scope.isOpen;
       };
 
       $scope.closeItem = function(skipSave) {
         if ($scope.isOpen){
-          /* TODO
-          accordionCtrl.refreshScroller();
-          */
           $scope.endTitleEdit(skipSave);
           $element.parent().removeClass('accordion-item-active');
           $scope.isOpen = false;
@@ -54,12 +50,12 @@ angular.module('em.directives').directive('accordionTitle', [ '$rootScope',
 
       $scope.clickTitle = function() {
         if ($scope.isOpen){
-          $scope.toggleOpen();
+          $scope.openItem();
           accordionCtrl.closeOthers($scope);
         }else{
           // Not open, don't open unless nothing else was closed
           if (!accordionCtrl.closeOthers($scope, $element)){
-            $scope.toggleOpen();
+            $scope.openItem();
           }
         }
       };
@@ -143,4 +139,6 @@ angular.module('em.directives').directive('accordionTitle', [ '$rootScope',
       };
     }
   };
-}]);
+}
+accordionTitleDirective.$inject = ['$rootScope'];
+angular.module('em.directives').directive('accordionTitle', accordionTitleDirective);

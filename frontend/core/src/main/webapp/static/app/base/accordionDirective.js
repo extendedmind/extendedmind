@@ -6,27 +6,28 @@
 
 // The accordion directive simply sets up the directive controller
 // and adds an accordion CSS class to itself element.
-angular.module('em.directives').directive('accordion', ['$document',
-  function($document) {
-    return {
-      restrict: 'A',
-      controller: function($scope) {
+function accordionDirective($document) {
+  return {
+    restrict: 'A',
+    controller: function($scope) {
+      var accordionReady = false;
+      var lastCallback;
 
       // This array keeps track of the accordion title scopes
       this.titleScopes = [];
       $scope.thisController = this;
 
       // Optional first element open method
-      function openFirstElement(){
+      function openFirstElement(previousFirstItem){
         if ($scope.thisController.titleScopes && $scope.thisController.titleScopes.length > 0){
-          $scope.thisController.titleScopes[0].toggleOpen();
+          $scope.thisController.titleScopes[0].openItem(previousFirstItem);
           if (!$scope.eventsBound){
             $scope.bindElsewhereEvents();
           }
-
           return $scope.thisController.titleScopes[0].item;
         }
       }
+
       if ($scope.registerOpenFirstElementCallback){
         $scope.registerOpenFirstElementCallback(openFirstElement);
       }
@@ -61,17 +62,24 @@ angular.module('em.directives').directive('accordion', ['$document',
         }
       };
 
-      /* TODO
-      this.refreshScroller = function refreshScroller() {
-        if (angular.isFunction($scope.refreshScroller)) $scope.refreshScroller();
+      this.notifyFirst = function notifyFirst() {
+        accordionReady = false;
       };
 
-      this.refreshScrollerAndScrollToElement = function refreshScrollerAndScrollToElement(element) {
-        if (angular.isFunction($scope.refreshScrollerAndScrollToElement)){
-          $scope.refreshScrollerAndScrollToElement(element);
+      this.notifyLast = function notifyLast() {
+        accordionReady = true;
+        if (lastCallback) lastCallback();
+      };
+
+      this.scrollToElement = function scrollToElement(element) {
+        if (angular.isFunction($scope.scrollToElement)) {
+          $scope.scrollToElement(element);
         }
       };
-      */
+
+      $scope.registerLastCallback = function registerLastCallback(callback) {
+        lastCallback = callback;
+      };
 
       $scope.close = function(item, skipSave) {
         angular.forEach($scope.thisController.titleScopes, function (titleScope) {
@@ -86,9 +94,6 @@ angular.module('em.directives').directive('accordion', ['$document',
       $scope.closeAndCall = function closeInFn(item, itemAction) {
         $scope.close(item, true);
         itemAction(item);
-        /* TODO
-        if (angular.isFunction($scope.refreshScroller)) $scope.refreshScroller();
-        */
       };
 
       // This is called from the accordion-title directive to add itself to the accordion
@@ -136,9 +141,11 @@ angular.module('em.directives').directive('accordion', ['$document',
           // the accordion-title, close accordion and unbind events.
           // NOTE: Class item-actions is needed to get clicking on buttons inside the
           //       accordion to work!
-          if (($scope.closedOtherItems && (event.target.id === 'accordionTitleLink' || event.target.id === 'accordionTitleLinkContent')) ||
-            (!$(event.target).parents('.accordion-item-active').length &&
-              !$(event.target).parents('.item-actions').length)) {
+          if (($scope.closedOtherItems && (event.target.id === 'accordionTitleLink' ||
+               event.target.id === 'accordionTitleLinkContent')) ||
+               (!$(event.target).parents('.accordion-item-active').length &&
+                !$(event.target).parents('.item-actions').length)) {
+
             $scope.$apply(function() {
               angular.forEach($scope.thisController.titleScopes, function (titleScope) {
                 titleScope.closeItem();
@@ -148,12 +155,14 @@ angular.module('em.directives').directive('accordion', ['$document',
               $scope.openItem = undefined;
               $scope.unbindElsewhereEvents();
             });
+          }
         }
-      }
-    };
-  },
-  link: function(scope, element) {
-    element.addClass('accordion');
-  }
-};
-}]);
+      };
+    },
+    link: function(scope, element) {
+      element.addClass('accordion');
+    }
+  };
+}
+accordionDirective.$inject = ['$document'];
+angular.module('em.directives').directive('accordion', accordionDirective);

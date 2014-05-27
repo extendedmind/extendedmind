@@ -3,7 +3,7 @@
     <div class="column">
       <div class="page-heading" ng-init="heading = 'inbox'; omnibarFeature = 'inbox'" ng-include="'static/app/main/omnibar.html'"></div>
       <div ng-hide="omnibarVisible" id="inbox-page-content-container" class="content-container page-content-container no-heading-content-container omnibar-animation">
-        <div class="scroll-container">
+        <div class="scroll-container" scroll-to>
           <div class="accordion-wrapper">
             <div class="inner-page-content-container" accordion>
               <div ng-if="showContent('inbox')" ng-repeat="item in items">
