@@ -64,6 +64,6 @@ object Response{
 /**
  * Result that is returned from every PUT/POST method
  */
-case class SetResult(uuid: Option[UUID], modified: Long)
+case class SetResult(uuid: Option[UUID], created: Option[Long], modified: Long)
 
 case class CountResult(count: Long)

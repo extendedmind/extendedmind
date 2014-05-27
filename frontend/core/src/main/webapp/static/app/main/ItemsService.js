@@ -353,7 +353,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
           // Use the fake uuid and a fake modified that is far enough in the to make
           // it to the end of the list
           item.uuid = fakeUUID;
-          item.modified = (new Date()).getTime() + 1000000;
+          item.created = item.modified = (new Date()).getTime() + 1000000;
           setItem(item, ownerUUID);
           deferred.resolve(item);
         } else{
@@ -362,6 +362,7 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
                  this.putNewItemRegex, item).then(function(result) {
             if (result.data){
               item.uuid = result.data.uuid;
+              item.created = result.data.created;
               item.modified = result.data.modified;
               setItem(item, ownerUUID);
               deferred.resolve(item);

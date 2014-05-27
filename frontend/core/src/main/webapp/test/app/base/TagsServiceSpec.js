@@ -2,7 +2,7 @@
 
 describe('TagsService', function() {
 
-  // INJECTS 
+  // INJECTS
 
   var $httpBackend;
   var TagsService, BackendClientService, HttpClientService;
@@ -34,17 +34,20 @@ describe('TagsService', function() {
       TagsService.setTags(
         [{
           'uuid': '1208d45b-3b8c-463e-88f3-f7ef19ce87cd',
+          'created': 1391066914167,
           'modified': 1391066914167,
           'title': 'home',
           'tagType': 'context'
         }, {
           'uuid': '81daf688-d34d-4551-9a24-564a5861ace9',
+          'created': 1391066914032,
           'modified': 1391066914032,
           'title': 'email',
           'tagType': 'context',
           'parent': 'e1bc540a-97fe-4c9f-9a44-ffcd7a8563e8'
         }, {
           'uuid': 'c933e120-90e7-488b-9f15-ea2ee2887e67',
+          'created': 1391066914132,
           'modified': 1391066914132,
           'title': 'secret',
           'tagType': 'keyword'
@@ -108,11 +111,11 @@ afterEach(function() {
     expect(TagsService.getTagByUUID(secret.uuid, testOwnerUUID).modified)
     .toBe(putExistingTagResponse.modified);
 
-    // Should move to the end of the array
+    // Should not change places
     var tags = TagsService.getTags(testOwnerUUID);
     expect(tags.length)
     .toBe(3);
-    expect(tags[2].uuid)
+    expect(tags[1].uuid)
     .toBe(secret.uuid);
   });
 
@@ -138,11 +141,11 @@ afterEach(function() {
     expect(TagsService.getTagByUUID(secret.uuid, testOwnerUUID).modified)
     .toBe(undeleteTagResponse.modified);
 
-    // There should be three left with the undeleted secret the last
+    // There should be three left with the undeleted secret in its old place
     tags = TagsService.getTags(testOwnerUUID);
     expect(tags.length)
     .toBe(3);
-    expect(tags[2].uuid)
+    expect(tags[1].uuid)
     .toBe(secret.uuid);
   });
 });

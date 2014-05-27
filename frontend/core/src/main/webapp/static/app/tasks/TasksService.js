@@ -324,7 +324,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
             task.uuid = fakeUUID;
             // Use a fake modified that is far enough in the to make
             // it to the end of the list
-            task.modified = (new Date()).getTime() + 1000000;
+            task.created = task.modified = (new Date()).getTime() + 1000000;
             updateTransientProperties(context, list, due);
             setTask(task, ownerUUID);
             deferred.resolve(task);
@@ -334,6 +334,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
                    this.putNewTaskRegex, task).then(function(result) {
               if (result.data){
                 task.uuid = result.data.uuid;
+                task.created = result.data.created;
                 task.modified = result.data.modified;
                 updateTransientProperties(context, list, due);
                 setTask(task, ownerUUID);

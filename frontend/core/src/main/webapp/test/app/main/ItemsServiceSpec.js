@@ -13,7 +13,7 @@ describe('ItemsService', function() {
 
   var now = new Date();
   var putNewItemResponse = getJSONFixture('putItemResponse.json');
-  putNewItemResponse.modified = now.getTime();
+  putNewItemResponse.created = putNewItemResponse.modified = now.getTime();
   var putExistingItemResponse = getJSONFixture('putExistingItemResponse.json');
   putExistingItemResponse.modified = now.getTime();
   var deleteItemResponse = getJSONFixture('deleteItemResponse.json');
@@ -100,19 +100,23 @@ describe('ItemsService', function() {
       var testItemData = {
           'items': [{
               'uuid': 'f7724771-4469-488c-aabd-9db188672a9b',
+              'created': 1391278509634,
               'modified': 1391278509634,
               'title': 'should I start yoga?'
             }, {
               'uuid': 'd1e764e8-3be3-4e3f-8bec-8c3f9e7843e9',
+              'created': 1391278509640,
               'modified': 1391278509640,
               'title': 'remember the milk'
             }, {
               'uuid': '7a612ca2-7de0-45ad-a758-d949df37f51e',
+              'created': 1391278509745,
               'modified': 1391278509745,
               'title': 'buy new shoes'
             }],
           'tasks': [{
               'uuid': '7a612ca2-7de0-45ad-a758-d949df37f51e',
+              'created': 1391278509745,
               'modified': 1391278509745,
               'title': 'write essay body',
               'due': '2014-03-09',
@@ -121,10 +125,12 @@ describe('ItemsService', function() {
               }
             }, {
               'uuid': '7b53d509-853a-47de-992c-c572a6952629',
+              'created': 1391278509698,
               'modified': 1391278509698,
               'title': 'clean closet'
             }, {
               'uuid': '9a1ce3aa-f476-43c4-845e-af59a9a33760',
+              'created': 1391278509717,
               'modified': 1391278509717,
               'title': 'print tickets',
               'link': 'http://www.finnair.fi',
@@ -136,6 +142,7 @@ describe('ItemsService', function() {
               }
             }, {
               'uuid': '1a1ce3aa-f476-43c4-845e-af59a9a33760',
+              'created': 1391278509917,
               'modified': 1391278509917,
               'title': 'buy tickets',
               'completed': 1391278509917,
@@ -145,10 +152,12 @@ describe('ItemsService', function() {
             }],
           'notes': [{
               'uuid': 'a1cd149a-a287-40a0-86d9-0a14462f22d6',
+              'created': 1391627811070,
               'modified': 1391627811070,
               'title': 'contexts could be used to prevent access to data'
             },{
               'uuid': 'c2cd149a-a287-40a0-86d9-0a14462f22d6',
+              'created': 1391627811050,
               'modified': 1391627811050,
               'title': 'office door code',
               'content': '4321',
@@ -157,6 +166,7 @@ describe('ItemsService', function() {
               }
             }, {
               'uuid': '848cda60-d725-40cc-b756-0b1e9fa5b7d8',
+              'created': 1391627811059,
               'modified': 1391627811059,
               'title': 'notes on productivity',
               'content': '##what I\'ve learned about productivity \n ' +
@@ -177,34 +187,40 @@ describe('ItemsService', function() {
             }],
           'lists': [{
               'uuid': '0da0bff6-3bd7-4884-adba-f47fab9f270d',
+              'created': 1390912600957,
               'modified': 1390912600957,
               'title': 'extended mind technologies',
               'link': 'http://ext.md'
             }, {
               'uuid': 'bf726d03-8fee-4614-8b68-f9f885938a51',
+              'created': 1390912600947,
               'modified': 1390912600947,
               'title': 'trip to Dublin',
               'completable': true,
               'due': '2013-10-31'
             }, {
               'uuid': '07bc96d1-e8b2-49a9-9d35-1eece6263f98',
+              'created': 1390912600983,
               'modified': 1390912600983,
               'title': 'write essay on cognitive biases',
               'completable': true
           }],
           'tags': [{
               'uuid': '1208d45b-3b8c-463e-88f3-f7ef19ce87cd',
+              'created': 1391066914167,
               'modified': 1391066914167,
               'title': 'home',
               'tagType': 'context'
             }, {
               'uuid': '81daf688-d34d-4551-9a24-564a5861ace9',
+              'created': 1391066914032,
               'modified': 1391066914032,
               'title': 'email',
               'tagType': 'context',
               'parent': 'e1bc540a-97fe-4c9f-9a44-ffcd7a8563e8'
             }, {
               'uuid': 'c933e120-90e7-488b-9f15-ea2ee2887e67',
+              'created': 1391066914132,
               'modified': 1391066914132,
               'title': 'secret',
               'tagType': 'keyword'
@@ -355,11 +371,11 @@ describe('ItemsService', function() {
     expect(ItemsService.getItemByUUID(rememberTheMilk.uuid, testOwnerUUID).modified)
       .toBe(putExistingItemResponse.modified);
 
-    // Should move to the end of the array
+    // Should not change places
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(3);
-    expect(items[2].uuid)
+    expect(items[1].uuid)
       .toBe(rememberTheMilk.uuid);
   });
 
@@ -385,11 +401,11 @@ describe('ItemsService', function() {
     expect(ItemsService.getItemByUUID(rememberTheMilk.uuid, testOwnerUUID).modified)
       .toBe(undeleteItemResponse.modified);
 
-    // There should be three left with the undeleted rememberTheMilk the last
+    // There should be three left with the undeleted rememberTheMilk in its old place
     items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(3);
-    expect(items[2].uuid)
+    expect(items[1].uuid)
       .toBe(rememberTheMilk.uuid);
   });
 
@@ -575,7 +591,7 @@ describe('ItemsService', function() {
       .toBe(4);
     expect(UUIDService.isFakeUUID(items[3].uuid))
       .toBeFalsy();
-    expect(items[3].description)
+    expect(items[1].description)
       .toBeDefined();
 
     // 6. delete online
@@ -597,9 +613,9 @@ describe('ItemsService', function() {
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
-    expect(items[3].deleted)
+    expect(items[1].deleted)
       .toBeUndefined();
-    expect(items[3].modified)
+    expect(items[1].modified)
       .toBe(undeleteItemResponse.modified);
   });
 
@@ -683,7 +699,7 @@ describe('ItemsService', function() {
       .toBe(4);
     expect(UUIDService.isFakeUUID(tasks[3].uuid))
       .toBeFalsy();
-    expect(tasks[3].description)
+    expect(tasks[1].description)
       .toBeDefined();
 
     // 7. delete online
@@ -705,9 +721,9 @@ describe('ItemsService', function() {
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(4);
-    expect(tasks[3].deleted)
+    expect(tasks[1].deleted)
       .toBeUndefined();
-    expect(tasks[3].modified)
+    expect(tasks[1].modified)
       .toBe(undeleteItemResponse.modified);
   });
 

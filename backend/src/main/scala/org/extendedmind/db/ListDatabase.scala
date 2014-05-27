@@ -208,7 +208,10 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
         implicit neo4j =>
           val itemsIndex = neo4j.gds.index().forNodes("items")
           Some(itemNodes map (itemNode => {
-            val setResult = SetResult(Some(getUUID(itemNode)), itemNode.getProperty("modified").asInstanceOf[Long])
+            val setResult = SetResult(
+                Some(getUUID(itemNode)),
+                Some(itemNode.getProperty("created").asInstanceOf[Long]),
+                itemNode.getProperty("modified").asInstanceOf[Long])
             updateModifiedIndex(itemsIndex, itemNode, setResult.modified)
             setResult
           }))

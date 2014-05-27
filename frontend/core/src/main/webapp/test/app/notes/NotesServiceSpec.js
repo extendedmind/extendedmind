@@ -3,7 +3,7 @@
 
 describe('NotesService', function() {
 
-  // INJECTS 
+  // INJECTS
 
   var $httpBackend;
   var NotesService, BackendClientService, HttpClientService, ListsService;
@@ -12,7 +12,7 @@ describe('NotesService', function() {
 
   var now = new Date();
   var putNewNoteResponse = getJSONFixture('putNoteResponse.json');
-  putNewNoteResponse.modified = now.getTime();
+  putNewNoteResponse.created = putNewNoteResponse.modified = now.getTime();
   var putExistingNoteResponse = getJSONFixture('putExistingNoteResponse.json');
   putExistingNoteResponse.modified = now.getTime();
   var deleteNoteResponse = getJSONFixture('deleteNoteResponse.json');
@@ -36,10 +36,12 @@ describe('NotesService', function() {
       NotesService.setNotes(
         [{
           'uuid': 'a1cd149a-a287-40a0-86d9-0a14462f22d6',
+          'created': 1391627811070,
           'modified': 1391627811070,
           'title': 'contexts could be used to prevent access to data'
         },{
           'uuid': 'c2cd149a-a287-40a0-86d9-0a14462f22d6',
+          'created': 1391627811050,
           'modified': 1391627811050,
           'title': 'office door code',
           'content': '4321',
@@ -48,6 +50,7 @@ describe('NotesService', function() {
           }
         }, {
           'uuid': '848cda60-d725-40cc-b756-0b1e9fa5b7d8',
+          'created': 1391627811059,
           'modified': 1391627811059,
           'title': 'notes on productivity',
           'content': '##what I\'ve learned about productivity \n ' +
@@ -107,11 +110,11 @@ describe('NotesService', function() {
     expect(NotesService.getNoteByUUID(putNewNoteResponse.uuid, testOwnerUUID))
       .toBeDefined();
 
-    // Should go to the end of the array
+    // Should stay in its old place
     var notes = NotesService.getNotes(testOwnerUUID);
     expect(notes.length)
       .toBe(4);
-    expect(notes[3].uuid)
+    expect(notes[1].uuid)
       .toBe(putNewNoteResponse.uuid);
   });
 
@@ -125,11 +128,11 @@ describe('NotesService', function() {
     expect(NotesService.getNoteByUUID(officeDoorCode.uuid, testOwnerUUID).modified)
       .toBe(putExistingNoteResponse.modified);
 
-    // Should move to the end of the array
+    // Should stay in its old place
     var notes = NotesService.getNotes(testOwnerUUID);
     expect(notes.length)
       .toBe(3);
-    expect(notes[2].uuid)
+    expect(notes[1].uuid)
       .toBe(officeDoorCode.uuid);
   });
 
@@ -155,11 +158,11 @@ describe('NotesService', function() {
     expect(NotesService.getNoteByUUID(officeDoorCode.uuid, testOwnerUUID).modified)
       .toBe(undeleteNoteResponse.modified);
 
-    // There should be three left with the undeleted officeDoorCode the last
+    // There should be three left with the undeleted officeDoorCode in its old place
     notes = NotesService.getNotes(testOwnerUUID);
     expect(notes.length)
       .toBe(3);
-    expect(notes[2].uuid)
+    expect(notes[0].uuid)
       .toBe(officeDoorCode.uuid);
   });
 

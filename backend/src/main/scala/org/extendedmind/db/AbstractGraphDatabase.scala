@@ -158,13 +158,20 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def getSetResult(node: Node, includeUUID: Boolean): SetResult = {
+  protected def getSetResult(node: Node, newNode: Boolean): SetResult = {
     withTx {
       implicit neo4j =>
-        val uuid = if (includeUUID)
-          Some(UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String]))
-        else None
-        SetResult(uuid, node.getProperty("modified").asInstanceOf[Long])
+        val uuid =
+          if (newNode)
+            Some(UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String]))
+          else None
+        val created = 
+          if (newNode)
+            Some(node.getProperty("created").asInstanceOf[Long])
+          else
+            None
+        
+        SetResult(uuid, created, node.getProperty("modified").asInstanceOf[Long])
     }
   }
 
@@ -177,7 +184,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
           if (node.isLeft) Left(node.left.get)
           else {
             node.right.get.setProperty("uuid", UUIDUtils.getTrimmedBase64UUID(uuid.get))
-            Right(SetResult(uuid, node.right.get.getProperty("modified").asInstanceOf[Long]))
+            Right(SetResult(uuid, None, node.right.get.getProperty("modified").asInstanceOf[Long]))
           }
       }
     }

@@ -12,7 +12,7 @@ describe('TasksService', function() {
 
   var now = new Date();
   var putNewTaskResponse = getJSONFixture('putTaskResponse.json');
-  putNewTaskResponse.modified = now.getTime();
+  putNewTaskResponse.created = putNewTaskResponse.modified = now.getTime();
   var putExistingTaskResponse = getJSONFixture('putExistingTaskResponse.json');
   putExistingTaskResponse.modified = now.getTime();
   var deleteTaskResponse = getJSONFixture('deleteTaskResponse.json');
@@ -40,6 +40,7 @@ describe('TasksService', function() {
       TasksService.setTasks(
         [{
           'uuid': '7a612ca2-7de0-45ad-a758-d949df37f51e',
+          'created': 1391278509745,
           'modified': 1391278509745,
           'title': 'write essay body',
           'due': '2014-03-09',
@@ -48,10 +49,12 @@ describe('TasksService', function() {
           }
         }, {
           'uuid': '7b53d509-853a-47de-992c-c572a6952629',
+          'created': 1391278509698,
           'modified': 1391278509698,
           'title': 'clean closet'
         }, {
           'uuid': '9a1ce3aa-f476-43c4-845e-af59a9a33760',
+          'created': 1391278509717,
           'modified': 1391278509717,
           'title': 'print tickets',
           'link': 'http://www.finnair.fi',
@@ -121,11 +124,11 @@ describe('TasksService', function() {
     expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID).modified)
       .toBe(putExistingTaskResponse.modified);
 
-    // Should move to the end of the array
+    // Should stay iin its old place
     var tasks = TasksService.getTasks(testOwnerUUID);
     expect(tasks.length)
       .toBe(3);
-    expect(tasks[2].uuid)
+    expect(tasks[0].uuid)
       .toBe(cleanCloset.uuid);
   });
 
@@ -151,11 +154,11 @@ describe('TasksService', function() {
     expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID).modified)
       .toBe(undeleteTaskResponse.modified);
 
-    // There should be three left with the undeleted cleanCloset the last
+    // There should be three left with the undeleted cleanCloset in its old place
     tasks = TasksService.getTasks(testOwnerUUID);
     expect(tasks.length)
       .toBe(3);
-    expect(tasks[2].uuid)
+    expect(tasks[0].uuid)
       .toBe(cleanCloset.uuid);
   });
 

@@ -3,7 +3,7 @@
 
 describe('ListsService', function() {
 
-  // INJECTS 
+  // INJECTS
 
   var $httpBackend;
   var ListsService,
@@ -16,7 +16,7 @@ describe('ListsService', function() {
 
   var now = new Date();
   var putNewListResponse = getJSONFixture('putListResponse.json');
-  putNewListResponse.modified = now.getTime();
+  putNewListResponse.created = putNewListResponse.modified = now.getTime();
   var putExistingListResponse = getJSONFixture('putExistingListResponse.json');
   putExistingListResponse.modified = now.getTime();
   var deleteListResponse = getJSONFixture('deleteListResponse.json');
@@ -43,17 +43,20 @@ describe('ListsService', function() {
       ListsService.setLists(
         [{
             'uuid': '0da0bff6-3bd7-4884-adba-f47fab9f270d',
+            'created': 1390912600957,
             'modified': 1390912600957,
             'title': 'extended mind technologies',
             'link': 'http://ext.md'
           }, {
             'uuid': 'bf726d03-8fee-4614-8b68-f9f885938a51',
+            'created': 1390912600947,
             'modified': 1390912600947,
             'title': 'trip to Dublin',
             'completable': true,
             'due': '2013-10-31'
           }, {
             'uuid': '07bc96d1-e8b2-49a9-9d35-1eece6263f98',
+            'created': 1390912600983,
             'modified': 1390912600983,
             'title': 'write essay on cognitive biases',
             'completable': true
@@ -118,11 +121,11 @@ describe('ListsService', function() {
     expect(ListsService.getListByUUID(tripToDublin.uuid, testOwnerUUID).modified)
       .toBe(putExistingListResponse.modified);
 
-    // Should move to the end of the array
+    // Should not change place
     var lists = ListsService.getLists(testOwnerUUID, testOwnerUUID);
     expect(lists.length)
       .toBe(3);
-    expect(lists[2].uuid)
+    expect(lists[0].uuid)
       .toBe(tripToDublin.uuid);
   });
 
@@ -148,11 +151,11 @@ describe('ListsService', function() {
     expect(ListsService.getListByUUID(tripToDublin.uuid, testOwnerUUID).modified)
       .toBe(undeleteListResponse.modified);
 
-    // There should be three left with trip to dublin the last
+    // There should be three left with trip to dublin in the same place
     lists = ListsService.getLists(testOwnerUUID);
     expect(lists.length)
       .toBe(3);
-    expect(lists[2].uuid)
+    expect(lists[0].uuid)
       .toBe(tripToDublin.uuid);
   });
 

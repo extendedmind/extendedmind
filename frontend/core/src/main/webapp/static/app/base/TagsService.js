@@ -77,6 +77,7 @@ function TagsService($q, BackendClientService, ArrayService){
                  this.putNewTagRegex, tag).then(function(result) {
           if (result.data){
             tag.uuid = result.data.uuid;
+            tag.created = result.data.created;
             tag.modified = result.data.modified;
             ArrayService.setItem(
               tag,

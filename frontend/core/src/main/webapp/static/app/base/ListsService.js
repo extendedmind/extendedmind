@@ -94,6 +94,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
                  this.putNewListRegex, list).then(function(result) {
           if (result.data){
             list.uuid = result.data.uuid;
+            list.created = result.data.created;
             list.modified = result.data.modified;
             ArrayService.setItem(
               list,
