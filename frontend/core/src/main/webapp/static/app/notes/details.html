@@ -7,23 +7,25 @@
           <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="notes/details/{{list.uuid}}" slide-index="$index" ng-init="newNote = {relationships: {list: list.uuid}}">
             <div class="inner-slide-content-container">
               <section class="list">
-                <div class="inner-page-content-container" accordion>
-                  <div accordion-title="list" edit-item="editList(list)" edit-item-title="editListTitle(list)" bold-title="true" has-complete="false" toggle-complete></div>
-                  <div ng-if="isOpen(list)" class="accordion-body" editable-field-container="auto">
-                    <div class="accordion-inner" ng-include="'static/app/base/listActions.html'"></div>
-                  </div>
-                  <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
-                    <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
-                      <div ng-if="note.content" class="teaser">
-                        <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
-                      </div>
-                      <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
-                        <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
-                      </div>
-                      <div ng-if="!note.content" class="teaser-empty"></div>
+                <div>
+                  <div class="inner-page-content-container" accordion>
+                    <div accordion-title="list" edit-item="editList(list)" edit-item-title="editListTitle(list)" bold-title="true" has-complete="false" toggle-complete></div>
+                    <div ng-if="isOpen(list)" class="accordion-body" editable-field-container="auto">
+                      <div class="accordion-inner" ng-include="'static/app/base/listActions.html'"></div>
                     </div>
+                    <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
+                      <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
+                        <div ng-if="note.content" class="teaser">
+                          <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
+                        </div>
+                        <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
+                          <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+                        </div>
+                        <div ng-if="!note.content" class="teaser-empty"></div>
+                      </div>
+                    </div>
+                    <div ng-include="'static/app/notes/addNote.html'"></div>
                   </div>
-                  <div ng-include="'static/app/notes/addNote.html'"></div>
                 </div>
               </section>
             </div>
