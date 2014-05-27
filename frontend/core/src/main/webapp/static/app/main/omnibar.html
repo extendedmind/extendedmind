@@ -34,7 +34,7 @@
       </li>
     </ul>
   </div>
-  <div ng-if="omnibarVisible === heading" id="omnibar-results" class="swiper-no-swiping" ng-style="{height: getOmnibarSearchResultsHeight()}" data-snap-ignore="true" >
+  <div ng-if="omnibarVisible === heading" id="omnibar-results" class="swiper-no-swiping" ng-style="{height: getOmnibarSearchResultsHeight()}" data-snap-ignore="true" scroll-to>
     <div ng-if="!isSearchActive() || isLoading" id="filtered-items-placeholder" ng-style="{width: getColumnWidth()}" ng-click="clearOmnibar(heading)">&nbsp;</div>
     <div ng-if="isSearchActive() && !isLoading" id="filtered-items-container">
       <div ng-show="filteredItems.length" class="filtered-items">

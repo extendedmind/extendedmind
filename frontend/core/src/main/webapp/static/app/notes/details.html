@@ -6,7 +6,7 @@
         <div class="swiper-wrapper">
           <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="notes/details/{{list.uuid}}" slide-index="$index" ng-init="newNote = {relationships: {list: list.uuid}}">
             <div class="inner-slide-content-container">
-              <section class="list">
+              <section class="list" scroll-to>
                 <div>
                   <div class="inner-page-content-container" accordion>
                     <div accordion-title="list" edit-item="editList(list)" edit-item-title="editListTitle(list)" bold-title="true" has-complete="false" toggle-complete></div>
@@ -32,7 +32,7 @@
           </div>
           <div class="swiper-slide" swiper-slide="notes/details/recent" slide-index="lists.length" ng-init="newNote = {}">
             <div class="inner-slide-content-container">
-              <section>
+              <section scroll-to>
                 <h3>recent</h3>
                 <div>
                   <div class="inner-page-content-container" accordion>

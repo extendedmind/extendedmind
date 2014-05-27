@@ -6,7 +6,7 @@
         <div class="swiper-wrapper">
           <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="tasks/details/{{list.uuid}}" slide-index="$index" ng-init="subtask = {relationships: {list: list.uuid}}">
             <div class="inner-slide-content-container">
-              <section class="list">
+              <section class="list" scroll-to>
                 <div>
                   <div class="inner-page-content-container" accordion>
                     <div accordion-title="list" edit-item="editList(list)" edit-item-title="editListTitle(list)" bold-title="true" has-complete="false" toggle-complete></div>
@@ -27,7 +27,7 @@
           </div>
           <div class="swiper-slide" ng-repeat="context in contexts" swiper-slide="tasks/details/{{context.uuid}}" slide-index="lists.length + $index" ng-init="subtask = {relationships: {context: context.uuid}}">
             <div class="inner-slide-content-container">
-              <section class="context">
+              <section class="context" scroll-to>
                 <div>
                   <div class="inner-page-content-container" accordion>
                     <div accordion-title="context" edit-item="editContext(context)" edit-item-title="editContextTitle(context)" bold-title="true" title-prefix="'@'" has-complete="false" toggle-complete></div>
@@ -61,7 +61,7 @@
           </div>
           <div class="swiper-slide" swiper-slide="tasks/details/unsorted" slide-index="lists.length + contexts.length" ng-init="subtask = {}">
             <div class="inner-slide-content-container">
-              <section class="unsorted">
+              <section class="unsorted" scroll-to>
                 <h3>unsorted</h3>
                 <div>
                   <div class="inner-page-content-container" accordion>

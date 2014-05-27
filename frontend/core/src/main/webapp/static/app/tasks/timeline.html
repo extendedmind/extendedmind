@@ -10,7 +10,7 @@
           </div>
           <div class="swiper-slide" ng-repeat="date in weekdays track by date.weekdayIndex" swiper-slide="tasks/home/{{date.weekday}}" slide-index="$index">
             <div class="inner-slide-content-container">
-              <section id="date" class="date">
+              <section id="date" class="date" scroll-to>
                 <h3 ng-hide="isDatepickerVisible" class="date-heading" ng-click="setDatepickerVisible()">{{date.displayDate}}</h3>
                 <div>
                   <div class="inner-page-content-container" accordion>
