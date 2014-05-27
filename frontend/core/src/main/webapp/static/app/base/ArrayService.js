@@ -76,7 +76,7 @@ function ArrayService(){
         return latestModified;
       }
     },
-    // Based on given backend response, updates all given arrays and returns the 
+    // Based on given backend response, updates all given arrays and returns the
     // latest (biggest) modified value.
     updateArrays: function(response, activeArray, deletedArray, otherArrays) {
       if (response) {
@@ -100,11 +100,11 @@ function ArrayService(){
       }else if (otherArrayInfo) {
         insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
       }else{
-        insertItemToArray(item, activeArray, 'modified');
+        insertItemToArray(item, activeArray, 'created');
       }
       return item.modified;
     },
-    // item and activeArray are mandatory, rest are optional    
+    // item and activeArray are mandatory, rest are optional
     updateItem: function(item, activeArray, deletedArray, otherArrays) {
       var activeItemId, deletedItemId, otherArrayItemId;
       var otherArrayInfo = getFirstMatchingArrayInfoByProperty(item, otherArrays);
@@ -125,7 +125,7 @@ function ArrayService(){
         }else if (otherArrayInfo && item[otherArrayInfo.id]){
           insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
         }else{
-          insertItemToArray(item, activeArray, 'modified');
+          insertItemToArray(item, activeArray, 'created');
         }
       }else if (deletedItemId !== undefined) {
         deletedArray.splice(deletedItemId, 1);
@@ -133,7 +133,7 @@ function ArrayService(){
           if (otherArrayInfo && item[otherArrayInfo.id]){
             insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
           }else {
-            insertItemToArray(item, activeArray, 'modified');
+            insertItemToArray(item, activeArray, 'created');
           }
         }else{
           insertItemToArray(item, deletedArray, 'deleted');
@@ -145,8 +145,8 @@ function ArrayService(){
         }else if (!otherArrayInfo &&
                  (!otherArrayWithItemInfo || !item[otherArrayWithItemInfo.id])){
           // Item does not belong to a new other array, nor anymore to the other array
-          // it used to belong to => it is active again. 
-          insertItemToArray(item, activeArray, 'modified');
+          // it used to belong to => it is active again.
+          insertItemToArray(item, activeArray, 'created');
         }else if (otherArrayInfo && (otherArrayInfo.id !== otherArrayWithItemInfo.id)) {
           // Should be placed in another other array
           insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
@@ -157,10 +157,10 @@ function ArrayService(){
       }else {
         this.setItem(item, activeArray, deletedArray, otherArrays);
       }
-      
+
       return item.modified;
     },
-    // uuid, properties and activeArray are mandatory, rest are optional    
+    // uuid, properties and activeArray are mandatory, rest are optional
     updateItemProperties: function(uuid, properties, activeArray, deletedArray, otherArrays) {
       var activeItemId = activeArray.findFirstIndexByKeyValue('uuid', uuid);
       function updateProperties(item, properties){
@@ -195,5 +195,5 @@ function ArrayService(){
     }
  };
 }
-  
+
 angular.module('em.services').factory('ArrayService', ArrayService);
