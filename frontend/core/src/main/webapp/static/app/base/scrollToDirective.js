@@ -22,7 +22,7 @@ function scrollToDirective() {
       scope.scrollToElement = function scrollToElement(element) {
         scrollToContainer.animate({
           scrollTop: element.offset().top - scrollToContainer.offset().top + scrollToContainer.scrollTop()
-        }, 250);
+        }, 450);
       };
 
       scope.$on('$destroy', function() {

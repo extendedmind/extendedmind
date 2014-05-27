@@ -34,7 +34,7 @@ function accordionTitleDirective($rootScope) {
           $scope.isOpen = true;
           $element.parent().addClass('accordion-item-active');
         }
-        if (!skipScroll) accordionCtrl.scrollToElement($element);
+        if (!skipScroll) accordionCtrl.scrollToElement($element.parent());
         return $scope.isOpen;
       };
 
