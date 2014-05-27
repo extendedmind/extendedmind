@@ -286,6 +286,15 @@ function SwiperService($q) {
         }
       }
     },
+    getMainSwiperSlide: function(slidePath){
+      var swiperInfos = getSwiperInfosBySlidePath(slidePath);
+      if (swiperInfos.main) {
+        var mainSwiperIndex = getSlideIndexBySlidePath(slidePath, swiperInfos.main.slidesPaths);
+        if (mainSwiperIndex !== undefined) {
+          return swiperInfos.main.slidesPaths[mainSwiperIndex];
+        }
+      }
+    },
     setSwiping: function(swiperPath, swipe) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         swipers[swiperPath].swiper.params.swiping = swipe;

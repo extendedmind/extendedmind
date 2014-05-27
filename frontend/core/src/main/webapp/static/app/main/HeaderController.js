@@ -27,10 +27,14 @@ function HeaderController($scope, UISessionService, SwiperService) {
     if ($scope.isFeatureActive('inbox')) {
       currentHeading = 'inbox';
     } else {
-      var activeSlide = SwiperService.getActiveSlidePath($scope.getActiveFeature());
-
-      if (overrideActiveSlide && (activeSlide !== overrideActiveSlide)){
-        activeSlide = overrideActiveSlide;
+      var activeSlide;
+      if (overrideActiveSlide){
+        activeSlide = SwiperService.getMainSwiperSlide(overrideActiveSlide);
+        if (!activeSlide) {
+          activeSlide = overrideActiveSlide;
+        }
+      }else {
+        activeSlide = SwiperService.getActiveSlidePath($scope.getActiveFeature());
       }
 
       if (!activeSlide) {
