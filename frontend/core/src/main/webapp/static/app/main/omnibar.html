@@ -1,5 +1,5 @@
 <div id="omnibar-wrapper" class="swiper-no-swiping">
-  <form id="{{heading}}-omnibar" ng-init="setOmnibarPlaceholder(omnibarFeature, heading)" role="form" name="{{heading}}-addOmniItem" ng-submit="saveOmnibarText(omnibarText)">
+  <form id="{{heading}}-omnibar" ng-init="setOmnibarPlaceholder(omnibarFeature, heading)" role="form" name="{{heading}}-addOmniItem" ng-submit="saveOmnibarText(omnibarText)" autocapitalize="none" autocorrect="off">
     <div class="form-group">
       <div ng-class="(omnibarVisible && 'omnibar-visible') || (!omnibarVisible && 'omnibar-hidden')">
         <input type="text" id="{{omnibarFeature + heading}}OmnibarInput" class="simple-input form-control omnibar-input" ng-model="omnibarText.title" dynamic-placeholder="{{omnibarPlaceholders[omnibarFeature + heading].text}}" ng-click="clickOmnibar(omnibarFeature, heading)" ng-keydown="omnibarKeyDown($event)" maxlength="128" required>
