@@ -240,7 +240,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
       var swipePageSlideDown = false;
       var swipePageSlideTop = false;
       var swipePageSlideBottom = false;
-      var swipePageSlideStartX, swipePageSlideStartY, swipePageSlideDistX, swipePageSlideDistY;
+      var swipePageSlideStartX, swipePageSlideStartY, swipePageSlideDistX, swipePageSlideDistY, swipePageSlideYSpeedStart, swipePageSlideYSpeed;
       var pageSwiperSlideScrollTimeout;
 
       var pullToRefreshPosition = 200;  // in pixels
@@ -259,7 +259,6 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         negativeHoldPosition = 0;
         positiveHoldPosition = 0;
 
-
         if (event.type === 'touchstart') {
           swipePageSlideStartX = event.targetTouches[0].pageX;
           swipePageSlideStartY = event.targetTouches[0].pageY;
@@ -269,12 +268,19 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         }
 
         // Evaluate top and bottom of scroll
-        if ((this.scrollHeight - this.scrollTop) <= this.clientHeight) {
+
+        // Because of this:
+        // http://stackoverflow.com/questions/8546863/current-scroll-position-when-using-webkit-overflow-scrollingtouch-safari-ios
+        // we need to use speed as well
+
+        if (((this.scrollHeight - this.scrollTop) <= this.clientHeight) ||
+           (((this.scrollHeight - this.scrollTop) <= this.clientHeight + 200) && swipePageSlideYSpeed && swipePageSlideYSpeed < 30)) {
           swipePageSlideBottom = true;
         }
-        if (this.scrollTop <= 0){
+        if (this.scrollTop <= 0 || (this.scrollTop <= 200 && swipePageSlideYSpeed && swipePageSlideYSpeed > 30)){
           swipePageSlideTop = true;
         }
+        swipePageSlideYSpeed = swipePageSlideYSpeedStart = undefined;
       }
 
       // This function checks swiping direction and slide scrolling position.
@@ -290,6 +296,12 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
           swipePageSlideDistX = event.pageX - swipePageSlideStartX;
           swipePageSlideDistY = event.pageY - swipePageSlideStartY;
         }
+
+
+        if (swipePageSlideYSpeedStart !== undefined){
+          swipePageSlideYSpeed = swipePageSlideYSpeedStart - this.scrollTop;
+        }
+        swipePageSlideYSpeedStart = this.scrollTop;
 
         swipePageSlideDown = false;
         swipePageSlideUp = false;
