@@ -110,11 +110,11 @@ describe('NotesService', function() {
     expect(NotesService.getNoteByUUID(putNewNoteResponse.uuid, testOwnerUUID))
       .toBeDefined();
 
-    // Should stay in its old place
+    // Should move to the end of the array
     var notes = NotesService.getNotes(testOwnerUUID);
     expect(notes.length)
       .toBe(4);
-    expect(notes[1].uuid)
+    expect(notes[3].uuid)
       .toBe(putNewNoteResponse.uuid);
   });
 
@@ -132,7 +132,7 @@ describe('NotesService', function() {
     var notes = NotesService.getNotes(testOwnerUUID);
     expect(notes.length)
       .toBe(3);
-    expect(notes[1].uuid)
+    expect(notes[0].uuid)
       .toBe(officeDoorCode.uuid);
   });
 
