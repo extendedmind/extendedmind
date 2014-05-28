@@ -5,10 +5,6 @@ function scrollToDirective() {
   return {
     restrict: 'A',
     require: '^featureContainer',
-    /* TODO
-    controller: function() {
-    },
-    */
     link: function postLink(scope, element, attrs, featureContainerController) {
       featureContainerController.registerViewActiveCallback(attrs.scrollTo, scrollerViewActiveCallback);
 

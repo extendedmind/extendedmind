@@ -23,7 +23,7 @@ function expandingTextareaDirective($timeout) {
       });
     }
   };
-};
+}
 
 expandingTextareaDirective['$inject'] = ['$timeout'];
 angular.module('em.directives').directive('expandingTextarea', expandingTextareaDirective);

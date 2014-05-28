@@ -43,7 +43,9 @@ function accordionDirective($document) {
             }
           }
         });
-        $scope.openItem = activeScope.item;
+        $scope.openTitle = {
+          item: activeScope.item,
+        };
 
         // This is called when accordion title is opened
         // so it's a good place to bind to start listening
@@ -55,8 +57,8 @@ function accordionDirective($document) {
       };
 
       $scope.isOpen = function(item) {
-        if ($scope.openItem){
-          if ($scope.openItem.uuid === item.uuid){
+        if ($scope.openTitle){
+          if ($scope.openTitle.item.uuid === item.uuid){
             return true;
           }
         }
@@ -89,7 +91,7 @@ function accordionDirective($document) {
       };
       this.getTitleLinkElementWidth = function(){
         return titleLinkElementWidth;
-      }
+      };
 
       // ACCORDION MANIPULATION
 
@@ -97,7 +99,7 @@ function accordionDirective($document) {
         angular.forEach($scope.thisController.titleScopes, function (titleScope) {
           if (titleScope.item === item){
             titleScope.closeItem(skipSave);
-            $scope.openItem = undefined;
+            $scope.openTitle = undefined;
             return;
           }
         });
@@ -154,9 +156,9 @@ function accordionDirective($document) {
           // NOTE: Class item-actions is needed to get clicking on buttons inside the
           //       accordion to work!
           if (($scope.closedOtherItems && (event.target.id === 'accordionTitleLink' ||
-               event.target.id === 'accordionTitleLinkContent')) ||
-               (!$(event.target).parents('.accordion-item-active').length &&
-                !$(event.target).parents('.item-actions').length)) {
+           event.target.id === 'accordionTitleLinkContent')) ||
+           (!$(event.target).parents('.accordion-item-active').length &&
+            !$(event.target).parents('.item-actions').length)) {
 
             $scope.$apply(function() {
               angular.forEach($scope.thisController.titleScopes, function (titleScope) {
@@ -164,7 +166,7 @@ function accordionDirective($document) {
               });
               if ($scope.accordionClosed) $scope.accordionClosed();
 
-              $scope.openItem = undefined;
+              $scope.openTitle = undefined;
               $scope.unbindElsewhereEvents();
             });
           }

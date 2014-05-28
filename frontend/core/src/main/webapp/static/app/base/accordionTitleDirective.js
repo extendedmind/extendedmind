@@ -4,7 +4,7 @@
 // https://github.com/angular-app/Samples/tree/master/1820EN_10_Code/03_basic_accordion_directive
 
 // The accordion-title directive indicates the title of a block of html that will expand and collapse in an accordion
-function accordionTitleDirective($rootScope) {
+function accordionTitleDirective() {
   return {
     require: '^accordion',        // We need this directive to be inside an accordion
     restrict: 'A',                // It will be an attribute
@@ -33,8 +33,10 @@ function accordionTitleDirective($rootScope) {
         if (!$scope.isOpen){
           $scope.isOpen = true;
           $element.parent().addClass('accordion-item-active');
+          if (!skipScroll) {
+            accordionCtrl.scrollToElement($element.parent());
+          }
         }
-        if (!skipScroll) accordionCtrl.scrollToElement($element.parent());
         return $scope.isOpen;
       };
 
@@ -49,10 +51,7 @@ function accordionTitleDirective($rootScope) {
       };
 
       $scope.clickTitle = function() {
-        if ($scope.isOpen){
-          $scope.openItem();
-          accordionCtrl.closeOthers($scope);
-        }else{
+        if (!$scope.isOpen) {
           // Not open, don't open unless nothing else was closed
           if (!accordionCtrl.closeOthers($scope, $element)){
             $scope.openItem();
@@ -120,5 +119,5 @@ function accordionTitleDirective($rootScope) {
     }
   };
 }
-accordionTitleDirective.$inject = ['$rootScope'];
+accordionTitleDirective.$inject = [];
 angular.module('em.directives').directive('accordionTitle', accordionTitleDirective);
