@@ -121,7 +121,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       parent <- getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG).right
       completeTag <- Right(tag.copy(
         tagType = (if (tagNode.hasLabel(TagLabel.CONTEXT)) Some(CONTEXT) 
-                   else if (tagNode.hasLabel(TagLabel.CONTEXT)) Some(KEYWORD)
+                   else if (tagNode.hasLabel(TagLabel.KEYWORD)) Some(KEYWORD)
                    else Some(HISTORY)),
         parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))))).right
     } yield completeTag
