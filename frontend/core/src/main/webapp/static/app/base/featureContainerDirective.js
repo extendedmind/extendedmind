@@ -96,7 +96,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
 
         if (!state) state = UISessionService.getFeatureState(name);
 
-        executeViewActiveCallbacks(state);
+        //executeViewActiveCallbacks(state);
       };
       UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'featureContainerDirective');
       UISessionService.changeFeature('tasks');

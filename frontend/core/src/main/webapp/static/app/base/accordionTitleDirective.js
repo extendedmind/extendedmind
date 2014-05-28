@@ -99,27 +99,7 @@ function accordionTitleDirective($rootScope) {
         }
       };
 
-      $scope.getTitleLinkClasses = function() {
-        var classes = $scope.getTitleInputClasses();
-        // Add ellipsis class when title is on two lines
-        if (isTitleOnTwoLines()){
-          classes += ' ellipsis';
-          if ($rootScope.packaging === 'ios-cordova'){
-            classes += ' needsSmallPadding';
-          }else {
-            classes += ' needsBigPadding';
-          }
-        }
-        return classes;
-      };
-
-      function isTitleOnTwoLines() {
-        var width = $element.find('a#accordionTitleLink')[0].clientWidth;
-        if ($scope.item.title.length * 8.5 > width * 1.2)
-          return true;
-      }
-
-      $scope.getTitleInputClasses = function() {
+      $scope.getTitleClasses = function() {
         var titleInputClasses;
         if ($scope.hasComplete){
           titleInputClasses = 'center-input-wrapper';

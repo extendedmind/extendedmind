@@ -81,6 +81,18 @@ function accordionDirective($document) {
         lastCallback = callback;
       };
 
+      // TITLE LINK HANDLING
+      // Getting innerWidth is expensive so use this as a cache
+      var titleLinkElementWidth;
+      this.setTitleLinkElementWidth = function(width) {
+        titleLinkElementWidth = width;
+      };
+      this.getTitleLinkElementWidth = function(){
+        return titleLinkElementWidth;
+      }
+
+      // ACCORDION MANIPULATION
+
       $scope.close = function(item, skipSave) {
         angular.forEach($scope.thisController.titleScopes, function (titleScope) {
           if (titleScope.item === item){
