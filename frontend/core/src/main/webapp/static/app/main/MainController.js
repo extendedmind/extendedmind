@@ -9,7 +9,7 @@
 function MainController(
   $controller, $filter, $rootScope, $scope, $timeout, $window,
   AccountService, UISessionService, UserSessionService, ItemsService, ListsService,
-  TagsService, TasksService, NotesService, FilterService, OnboardingService, SwiperService) {
+  TagsService, TasksService, NotesService, SynchronizeService, FilterService, OnboardingService, SwiperService) {
 
   // ONBOARDING
   var userPreferences = UserSessionService.getPreferences();
@@ -86,7 +86,7 @@ function MainController(
             $rootScope.isLoading = true;
           });
         }
-        ItemsService.synchronize(activeUUID).then(function() {
+        SynchronizeService.synchronize(activeUUID).then(function() {
           UserSessionService.setItemsSynchronized(activeUUID);
           $rootScope.isLoading = false;
         });
@@ -194,6 +194,6 @@ function MainController(
 MainController.$inject = [
 '$controller', '$filter', '$rootScope', '$scope', '$timeout', '$window',
 'AccountService', 'UISessionService', 'UserSessionService', 'ItemsService', 'ListsService',
-'TagsService', 'TasksService', 'NotesService', 'FilterService', 'OnboardingService', 'SwiperService'
+'TagsService', 'TasksService', 'NotesService', 'SynchronizeService', 'FilterService', 'OnboardingService', 'SwiperService'
 ];
 angular.module('em.app').controller('MainController', MainController);
