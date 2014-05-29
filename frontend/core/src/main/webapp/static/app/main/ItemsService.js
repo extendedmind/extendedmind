@@ -1,7 +1,7 @@
 /* global angular*/
 'use strict';
 
-function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSessionService, ArrayService, TagsService, ListsService, TasksService, NotesService){
+function ItemsService($q, UUIDService, BackendClientService, UserSessionService, ArrayService, TagsService, ListsService, TasksService, NotesService){
   var items = {};
 
   var itemRegex = /\/item/;
@@ -231,6 +231,6 @@ function ItemsService($q, $rootScope, UUIDService, BackendClientService, UserSes
   };
 }
 
-ItemsService.$inject = ['$q', '$rootScope', 'UUIDService', 'BackendClientService', 'UserSessionService', 'ArrayService',
+ItemsService.$inject = ['$q', 'UUIDService', 'BackendClientService', 'UserSessionService', 'ArrayService',
                            'TagsService', 'ListsService', 'TasksService', 'NotesService'];
 angular.module('em.services').factory('ItemsService', ItemsService);

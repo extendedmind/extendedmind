@@ -1,7 +1,7 @@
 /* global angular, jQuery */
 'use strict';
 
-function SynchronizeService($q, $rootScope, UUIDService, BackendClientService, UserSessionService, ArrayService, TagsService, ListsService, TasksService, NotesService, ItemsService){
+function SynchronizeService($q, $rootScope, BackendClientService, UserSessionService, TagsService, ListsService, TasksService, NotesService, ItemsService){
 
   var itemsRegex = /\/items/;
   var getItemsRegex = new RegExp(BackendClientService.apiPrefixRegex.source +
@@ -271,6 +271,6 @@ function SynchronizeService($q, $rootScope, UUIDService, BackendClientService, U
   };
 }
 
-SynchronizeService.$inject = ['$q', '$rootScope', 'UUIDService', 'BackendClientService', 'UserSessionService', 'ArrayService',
+SynchronizeService.$inject = ['$q', '$rootScope', 'BackendClientService', 'UserSessionService',
                            'TagsService', 'ListsService', 'TasksService', 'NotesService', 'ItemsService'];
 angular.module('em.services').factory('SynchronizeService', SynchronizeService);
