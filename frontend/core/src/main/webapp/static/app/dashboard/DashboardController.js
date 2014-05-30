@@ -1,6 +1,6 @@
 'use strict';
 
-function DashboardController($scope, DateService, ListsService, NotesService, SwiperService, TasksService, UISessionService) {
+function DashboardController($scope, DateService, ListsService, NotesService, SwiperService, TasksService, SynchronizeService, UISessionService) {
   $scope.dashboardSlides = [];
 
   var completedTasks = TasksService.getCompletedTasks(UISessionService.getActiveUUID());
@@ -9,11 +9,21 @@ function DashboardController($scope, DateService, ListsService, NotesService, Sw
   var createdNotes = notes.concat(archivedNotes);
   var listsArchived = ListsService.getArchivedLists(UISessionService.getActiveUUID());
 
+  $scope.isCompletedLoading = true;
+  $scope.isArchivedLoading = true;
+
   function swiperCreatedCallback() {
     if ($scope.dashboardSlides.length === 1) {
       initializeDashboardSlideInfo('weekly');
       initializeDashboardSlideInfo('monthly');
     }
+
+    SynchronizeService.synchronizeCompleted(UISessionService.getActiveUUID()).then(function(){
+      $scope.isCompletedLoading = false;
+    });
+    SynchronizeService.synchronizeArchived(UISessionService.getActiveUUID()).then(function(){
+      $scope.isArchivedLoading = false;
+    });
   }
 
   function initializeDashboardSlideInfo(slideName) {
@@ -75,5 +85,5 @@ function DashboardController($scope, DateService, ListsService, NotesService, Sw
   }
 }
 
-DashboardController['$inject'] = ['$scope', 'DateService', 'ListsService', 'NotesService', 'SwiperService', 'TasksService', 'UISessionService'];
+DashboardController['$inject'] = ['$scope', 'DateService', 'ListsService', 'NotesService', 'SwiperService', 'TasksService', 'SynchronizeService', 'UISessionService'];
 angular.module('em.app').controller('DashboardController', DashboardController);

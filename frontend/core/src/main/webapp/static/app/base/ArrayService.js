@@ -8,23 +8,27 @@ function ArrayService(){
 
   // Modified from:
   // http://stackoverflow.com/questions/1344500/efficient-way-to-insert-a-number-into-a-sorted-array-of-numbers
-  function insertItemToArray(element, array, field) {
-    array.splice(locationOfItemInArray(element, array, field) + 1, 0, element);
+  function insertItemToArray(element, array, field, reverse) {
+    array.splice(locationOfItemInArray(element, array, field, reverse) + 1, 0, element);
     return array;
   }
 
-  function locationOfItemInArray(element, array, field, start, end) {
+  function locationOfItemInArray(element, array, field, reverse, start, end) {
     start = start || 0;
     end = end || array.length;
 
     var pivot = parseInt(start + (end - start) / 2, 10);
     if (end - start <= 1){
-      return (array[pivot] && (array[pivot][field] > element[field])) ? pivot - 1 : pivot;
+      if (reverse){
+        return (array[pivot] && (array[pivot][field] < element[field])) ? pivot - 1 : pivot;
+      }else{
+        return (array[pivot] && (array[pivot][field] > element[field])) ? pivot - 1 : pivot;
+      }
     }
-    if (array[pivot][field] < element[field]) {
-      return locationOfItemInArray(element, array, field, pivot, end);
+    if ((!reverse && array[pivot][field] < element[field]) || (reverse && array[pivot][field] > element[field]))  {
+      return locationOfItemInArray(element, array, field, reverse, pivot, end);
     } else {
-      return locationOfItemInArray(element, array, field, start, pivot);
+      return locationOfItemInArray(element, array, field, reverse, start, pivot);
     }
   }
 
@@ -98,7 +102,7 @@ function ArrayService(){
       if (deletedArray && item.deleted){
         insertItemToArray(item, deletedArray, 'deleted');
       }else if (otherArrayInfo) {
-        insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
+        insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
       }else{
         insertItemToArray(item, activeArray, 'created');
       }
@@ -123,7 +127,7 @@ function ArrayService(){
         if (item.deleted){
           insertItemToArray(item, deletedArray, 'deleted');
         }else if (otherArrayInfo && item[otherArrayInfo.id]){
-          insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
+          insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
         }else{
           insertItemToArray(item, activeArray, 'created');
         }
@@ -131,7 +135,7 @@ function ArrayService(){
         deletedArray.splice(deletedItemId, 1);
         if (!item.deleted){
           if (otherArrayInfo && item[otherArrayInfo.id]){
-            insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
+            insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
           }else {
             insertItemToArray(item, activeArray, 'created');
           }
@@ -149,10 +153,10 @@ function ArrayService(){
           insertItemToArray(item, activeArray, 'created');
         }else if (otherArrayInfo && (otherArrayInfo.id !== otherArrayWithItemInfo.id)) {
           // Should be placed in another other array
-          insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id);
+          insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
         }else{
           // Just updating modified in current other array
-          insertItemToArray(item, otherArrayWithItemInfo.array, otherArrayWithItemInfo.id);
+          insertItemToArray(item, otherArrayWithItemInfo.array, otherArrayWithItemInfo.id, otherArrayInfo.reverse);
         }
       }else {
         this.setItem(item, activeArray, deletedArray, otherArrays);
@@ -192,6 +196,32 @@ function ArrayService(){
         }
       }
       return true;
+    },
+    combineArrays: function(firstArray, secondArray, id, reverse) {
+      function compareById(firstItem, secondItem){
+
+        if (reverse){
+          if (firstItem[id] > secondItem[id]){
+            return -1;
+          }else if (firstItem[id] < secondItem[id]){
+            return 1;
+          }
+        }else{
+          if (firstItem[id] < secondItem[id]){
+            return -1;
+          }else if (firstItem[id] > secondItem[id]){
+            return 1;
+          }
+        }
+        return 0;
+      }
+      if (!firstArray || !firstArray.length) return secondArray;
+      if (!secondArray || !secondArray.length) return firstArray;
+
+      var combinedArray = firstArray.concat(secondArray);
+
+      // Sort combined array
+      return combinedArray.sort(compareById);
     }
  };
 }

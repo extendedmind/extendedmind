@@ -16,7 +16,6 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       };
       var systemFeatures = ['account', 'about', 'admin'];
       var featureElements = {};
-      var viewActiveCallbacks = {};
 
       // COMMON FEATURE METHODS IN SCOPE
 
@@ -72,17 +71,6 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
 
       // UI SESSION SERVICE HOOKS
 
-      function executeViewActiveCallbacks(viewId){
-        if (viewActiveCallbacks[viewId]){
-          viewActiveCallbacks[viewId]();
-        }
-        var subViewId = SwiperService.getActiveSlidePath(viewId);
-
-        if (subViewId && viewActiveCallbacks[subViewId]){
-          viewActiveCallbacks[subViewId]();
-        }
-      }
-
       var featureChangedCallback = function featureChangedCallback(name, data, state){
         if (contentFeatures.indexOf(name) > -1){
           activeContentFeatures[name] = true;
@@ -95,8 +83,6 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         }
 
         if (!state) state = UISessionService.getFeatureState(name);
-
-        //executeViewActiveCallbacks(state);
       };
       UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'featureContainerDirective');
       UISessionService.changeFeature('tasks');
@@ -104,22 +90,21 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       // SWIPER SERVICE HOOKS
 
       var slideChangedCallback = function slideChangedCallback(activeSlidePath){
-        executeViewActiveCallbacks(activeSlidePath);
 
         // Don't set to main slide path, if page slide path is already set
         if (!UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()) ||
           !UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()).startsWith(activeSlidePath)){
           UISessionService.setCurrentFeatureState(activeSlidePath);
-      }
-    };
+        }
+      };
 
-    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'featureContainerDirective');
-    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/home', 'featureContainerDirective');
-    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/details', 'featureContainerDirective');
-    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'featureContainerDirective');
-    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes/details', 'featureContainerDirective');
-    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'dashboard', 'featureContainerDirective');
-    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'archive', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/home', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/details', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes/details', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'dashboard', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'archive', 'featureContainerDirective');
 
       // CALLBACK REGISTRATION
 
@@ -129,14 +114,6 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         }
         if (!featureElements[feature]) featureElements[feature] = {};
         featureElements[feature].dragElement = element;
-      };
-
-      this.registerViewActiveCallback = function registerViewActiveCallback(viewId, callback) {
-        viewActiveCallbacks[viewId] = callback;
-      };
-
-      this.removeViewActiveCallback = function removeViewActiveCallback(viewId) {
-        delete viewActiveCallbacks[viewId];
       };
 
       // SET CORRECT CLASSES TO FEATURE CONTAINER ELEMENT

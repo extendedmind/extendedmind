@@ -186,6 +186,30 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
   BackendClientService.registerSecondaryGetCallback(synchronizeCallback);
   BackendClientService.registerDefaultCallback(defaultCallback);
 
+  var getAllOnline = function getAllOnline(ownerUUID, getAllMethod, deferred){
+    getAllMethod(ownerUUID).then(
+      function(result){
+        deferred.resolve();
+        return result;
+      },
+      function(error) {
+        if (BackendClientService.isOffline(error.status)){
+          // Emit online required exception
+          $rootScope.$emit('emException', {
+            type: 'onlineRequired',
+            status: error.status,
+            data: error.data,
+            retry: getAllMethod,
+            retryParam: ownerUUID,
+            promise: deferred
+          });
+        }else if (error.status === 403){
+          // Got 403, need to go to login
+          $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
+        }
+      });
+  };
+
   var getAllItemsOnline = function getAllItemsOnline(ownerUUID) {
     return BackendClientService.getSecondary('/api/' + ownerUUID + '/items', getItemsRegex, undefined, true).then(function(result) {
       if (result.data){
@@ -236,35 +260,60 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
         });
       }
     }else {
-      getAllItemsOnline(ownerUUID).then(
-        function(result){
-          deferred.resolve();
-          return result;
-        },
-        function(error) {
-          if (BackendClientService.isOffline(error.status)){
-            // Emit online required exception
-            $rootScope.$emit('emException', {
-              type: 'onlineRequired',
-              status: error.status,
-              data: error.data,
-              retry: getAllItemsOnline,
-              retryParam: ownerUUID,
-              promise: deferred
-            });
-          }else if (error.status === 403){
-            // Got 403, need to go to login
-            $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
-          }
-        });
+      getAllOnline(ownerUUID, getAllItemsOnline, deferred);
     }
     return deferred.promise;
+  };
+
+
+  var getAllCompletedOnline = function getAllCompletedOnline(ownerUUID){
+    return BackendClientService.getSecondary('/api/' + ownerUUID + '/items?completed=true&active=false', getItemsRegex, undefined, true).then(function(result) {
+      if (result.data){
+        // Update task arrays
+        TasksService.updateTasks(result.data.tasks, ownerUUID);
+        UserSessionService.setCompletedSynchronized(ownerUUID);
+      }
+      return result;
+    });
+  };
+
+  var getAllArchivedOnline = function getAllArchivedOnline(ownerUUID){
+    return BackendClientService.getSecondary('/api/' + ownerUUID + '/items?archived=true&active=false', getItemsRegex, undefined, true).then(function(result) {
+      if (result.data){
+        // Update all arrays with archived values
+        TagsService.updateTags(result.data.tags, ownerUUID);
+        ListsService.updateLists(result.data.lists, ownerUUID);
+        TasksService.updateTasks(result.data.tasks, ownerUUID);
+        NotesService.updateNotes(result.data.notes, ownerUUID);
+        ItemsService.updateItems(result.data.items, ownerUUID);
+        UserSessionService.setArchivedSynchronized(ownerUUID);
+      }
+      return result;
+    });
   };
 
   return {
     // Main method to synchronize all arrays with backend.
     synchronize: function(ownerUUID) {
       return synchronize(ownerUUID);
+    },
+    synchronizeCompleted: function(ownerUUID) {
+      var deferred = $q.defer();
+      if (!UserSessionService.getCompletedSynchronized()){
+        getAllOnline(ownerUUID, getAllCompletedOnline, deferred);
+      }else {
+        deferred.resolve();
+      }
+      return deferred.promise;
+    },
+    synchronizeArchived: function(ownerUUID) {
+      var deferred = $q.defer();
+      if (!UserSessionService.getArchivedSynchronized()){
+        getAllOnline(ownerUUID, getAllArchivedOnline, deferred);
+      }else {
+        deferred.resolve();
+      }
+      return deferred.promise;
     },
     // Regular expressions for item requests
     getItemsRegex: getItemsRegex

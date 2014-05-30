@@ -23,7 +23,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
 
   function getOtherArrays(ownerUUID){
     return [{array: tasks[ownerUUID].archivedTasks, id: 'archived'},
-            {array: tasks[ownerUUID].completedTasks, id: 'completed'}];
+            {array: tasks[ownerUUID].completedTasks, id: 'completed', reverse: true}];
   }
 
   function updateTask(task, ownerUUID) {
@@ -43,6 +43,7 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
 
   // Setup callback to ListsService
   var itemArchiveCallback = function(children, archived, ownerUUID){
+    cleanRecentlyCompletedTasks(ownerUUID);
     if (tasks[ownerUUID] && children){
       for (var i=0, len=children.length; i<len; i++) {
         var activeTask = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);

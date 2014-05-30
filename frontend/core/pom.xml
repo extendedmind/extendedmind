@@ -168,6 +168,7 @@
             <include>lib/angularjs/angular-animate.js</include>
             <include>lib/angularjs/angular-mocks.js</include>
             <include>lib/angularjs/angular-route.js</include>
+            <include>lib/angularjs/ngInfiniteScroll.js</include>
             <include>lib/base64.js</include>
             <include>lib/fastclick.js</include>
             <include>lib/snap.js</include>

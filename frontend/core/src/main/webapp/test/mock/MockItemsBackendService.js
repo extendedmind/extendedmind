@@ -8,6 +8,23 @@ function MockItemsBackendService($httpBackend, ItemsService, UUIDService) {
       .respond(function(method, url, data, headers) {
         if (url.indexOf('?modified=') != -1){
           return expectResponse(method, url, data, headers, {});
+        }else if (url.indexOf('?completed=true') != -1){
+          var response = {
+            'tasks': []
+          };
+          for(var i = 0; i < 3; i++) {
+            var now = new Date().getTime();
+            response.tasks.push({
+              'uuid': UUIDService.randomUUID(),
+              'created': now,
+              'modified': now,
+              'completed': now + i,
+              'title': 'test completed ' + i
+            })
+          }
+          return expectResponse(method, url, data, headers, response)
+        }else if (url.indexOf('?archived=true') != -1){
+          return expectResponse(method, url, data, headers, {});
         }else{
           var authenticateResponse = getJSONFixture('authenticateResponse.json');
           for (var collectiveUUID in authenticateResponse.collectives) {

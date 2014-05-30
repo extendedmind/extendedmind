@@ -4,15 +4,8 @@ function scrollToDirective() {
 
   return {
     restrict: 'A',
-    require: '^featureContainer',
-    link: function postLink(scope, element, attrs, featureContainerController) {
-      featureContainerController.registerViewActiveCallback(attrs.scrollTo, scrollerViewActiveCallback);
-
+    link: function postLink(scope, element) {
       var scrollToContainer = element;
-
-      function scrollerViewActiveCallback(){
-        // TODO
-      }
 
       // http://stackoverflow.com/a/2906009
       scope.scrollToElement = function scrollToElement(element) {
@@ -20,10 +13,6 @@ function scrollToDirective() {
           scrollTop: element.offset().top - scrollToContainer.offset().top + scrollToContainer.scrollTop()
         }, 450);
       };
-
-      scope.$on('$destroy', function() {
-        featureContainerController.removeViewActiveCallback(attrs.scrollTo);
-      });
     }
   };
 }

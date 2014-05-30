@@ -133,7 +133,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       }
     },
     setTransportPreferences: function(transportPreferences) {
-      this.setPreferences(migrateTransportPreferences(transportPreferences))
+      this.setPreferences(migrateTransportPreferences(transportPreferences));
     },
     setLatestModified: function(modified, ownerUUID) {
       // Only set if given value is larger than set value
@@ -147,7 +147,14 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       }
       itemsSynchronize[ownerUUID].itemsSynchronized = Date.now();
     },
-
+    setCompletedSynchronized: function(ownerUUID) {
+      if (!itemsSynchronize[ownerUUID]) itemsSynchronize[ownerUUID] = {};
+      itemsSynchronize[ownerUUID].completedSynchronized = Date.now();
+    },
+    setArchivedSynchronized: function(ownerUUID) {
+      if (!itemsSynchronize[ownerUUID]) itemsSynchronize[ownerUUID] = {};
+      itemsSynchronize[ownerUUID].archivedSynchronized = Date.now();
+    },
     // Web storage getters
     getCollectives: function() {
       syncWebStorages();
@@ -177,6 +184,12 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     },
     getItemsSynchronized: function(ownerUUID) {
       return (itemsSynchronize[ownerUUID]) ? itemsSynchronize[ownerUUID].itemsSynchronized : undefined;
+    },
+    getCompletedSynchronized: function(ownerUUID) {
+      return (itemsSynchronize[ownerUUID]) ? itemsSynchronize[ownerUUID].completedSynchronized : undefined;
+    },
+    getArchivedSynchronized: function(ownerUUID) {
+      return (itemsSynchronize[ownerUUID]) ? itemsSynchronize[ownerUUID].archivedSynchronized : undefined;
     },
     getTransportPreferences: function() {
       syncWebStorages();
