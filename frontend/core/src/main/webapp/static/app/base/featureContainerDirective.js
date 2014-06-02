@@ -143,6 +143,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       }
 
       // No clicking/tapping when drawer is open.
+      // TODO Bind/unbind with drawer menu open/close
       angular.element(element).bind('touchstart', drawerContentClicked);
       function drawerContentClicked(event) {
         if (SnapService.getState().state !== 'closed') {

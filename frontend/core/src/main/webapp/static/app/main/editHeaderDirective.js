@@ -8,9 +8,17 @@ function editHeaderDirective() {
       itemType: '@editHeader',
       itemEditForm: '=',
       cancelEdit: '&',
-      saveItem: '&'
+      saveItem: '&',
+      onDestroy: '&'
     },
-    templateUrl: 'static/app/main/editHeader.html'
+    templateUrl: 'static/app/main/editHeader.html',
+    link: function postLink(scope) {
+      scope.$on('$destroy', function() {
+        if (angular.isFunction(scope.onDestroy)) {
+          scope.onDestroy();
+        }
+      });
+    }
   };
 }
 editHeaderDirective.$inject = [];

@@ -30,7 +30,8 @@ function MainController(
   $scope.tags = TagsService.getTags(UISessionService.getActiveUUID());
 
   $scope.$watch('tags.length', function(/*newValue, oldValue*/) {
-    $scope.contexts = $filter('filter')($scope.tags, {tagType:'context'});
+    $scope.contexts = $filter('filter')($scope.tags, {tagType: 'context'});
+    $scope.keywords = $filter('filter')($scope.tags, {tagType: 'keyword'});
   });
 
   $scope.ownerPrefix = UISessionService.getOwnerPrefix();

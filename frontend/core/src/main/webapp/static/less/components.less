@@ -19,6 +19,31 @@ Extended Mind specific UI-components.
   }
 }
 
+.keywords-container {
+  line-height: @vertical-grid / 1.2;
+  #new-keyword {
+    margin-right: -4px;
+  }
+}
+
+button.keyword {
+  color: #0f82fe;
+  border: 1px solid;
+  padding: 2px 4px;
+  margin-right: 4px;
+}
+
+button.selected-keyword {
+  background-color: #0f82fe;
+  color: white;
+  padding: 3px 6px;
+  margin-right: 4px;
+}
+
+button.keyword:disabled {
+  opacity: .5;
+}
+
 // quick edit task indentation
 .accordion-inner {
   #taskCoreFields {

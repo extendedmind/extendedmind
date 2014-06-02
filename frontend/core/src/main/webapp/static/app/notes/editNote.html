@@ -1,17 +1,45 @@
 <div id="edit-page">
-  <header class="edit-header" edit-header="note" item-edit-form="noteEdit" save-item="saveNote(note)" cancel-edit="cancelEdit()"></header>
+  <header class="edit-header" edit-header="note" item-edit-form="noteEdit" save-item="saveNote(note)" cancel-edit="cancelEdit()" on-destroy="clearKeyword()"></header>
   <section id="edit-note" class="one-column-grid page">
     <div class="column">
       <div class="content-container simple-content-container">
         <form role="form" name="noteEdit" editable-field-container>
+
           <div class="form-group">
             <label class="sr-only" for="noteTitle">title</label>
             <textarea type="text" class="simple-input font-bold" id="noteTitle" ng-model="note.title" placeholder="title..." maxlength="128" required expanding-textarea editable-field></textarea>
           </div>
-          <div class="form-group" ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
-            <label class="sr-only" for="noteContent">content</label>
-            <textarea class="simple-input" ng-style="{maxHeight: getEditNoteContentMaxHeight()}" id="noteContent" ng-model="note.content" placeholder="content..." expanding-textarea editable-field></textarea>
+
+          <div class="form-group">
+            <label class="sr-only" for="noteKeywords">keywords</label>
+            <input type="text" class="simple-input" id="noteKeywords" ng-model="newKeyword.title" placeholder="keywords..." maxlength="128" editable-field autocapitalize="none"></input>
           </div>
+
+          <div ng-switch="showKeywords()">
+            <div class="keywords-container">
+              <span ng-if="showKeywords()" id="new-keyword">
+                <button class="small-font button keyword" ng-disabled="isSelectedKeyword()" ng-click="selectNewKeyword()">
+                  {{newKeyword.title}} <strong>+</strong>
+                </button>
+              </span>
+
+              <span ng-if="noteHasKeywords()">
+                <button type="button" class="button small-font selected-keyword" ng-repeat="keyword in noteKeywords()" ng-click="unSelectKeyword(keyword)">{{keyword.title}} <strong>x</strong></button>
+              </span>
+            </div>
+
+            <div ng-switch-default class="form-group" ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
+              <label class="sr-only" for="noteContent">content</label>
+              <textarea class="simple-input" ng-style="{maxHeight: getEditNoteContentMaxHeight()}" id="noteContent" ng-model="note.content" placeholder="content..." expanding-textarea editable-field></textarea>
+            </div>
+
+            <div ng-switch-when="true" class="keywords-container">
+              <button ng-hide="isNewKeyword(keyword)" ng-repeat="keyword in otherThanNoteKeywords() | filter: {title: newKeyword.title}" ng-click="selectExistingKeyword(keyword)" class="button small-font keyword">
+                {{keyword.title}} <strong>+</strong>
+              </button>
+            </div>
+          </div>
+
         </form>
       </div>
     </div>
