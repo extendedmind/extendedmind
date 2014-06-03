@@ -166,6 +166,7 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
 
   $scope.selectExistingKeyword = function selectExistingKeyword(keyword) {
     addKeywordToNote(keyword);
+    $scope.clearKeyword();
   };
 
   $scope.selectNewKeyword = function selectNewKeyword() {
