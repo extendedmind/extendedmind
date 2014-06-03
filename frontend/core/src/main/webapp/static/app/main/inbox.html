@@ -22,7 +22,7 @@
               </div>
             </div>
           </form>
-          <footer ng-if="!(isDesktop && isMenuOpen) && (items.length > 2 && sortingItem === undefined)">
+          <footer ng-if="!(isDesktop && isMenuOpen) && (items.length > 0 && sortingItem === undefined)">
             <nav id="inbox-footer" class="swiper-no-swiping item-actions" role="navigation">
               <button id="scroll-to-element" class="wide-button border-button" ng-click="sortInbox()">
                 <span class="button-text" ng-bind="getSortingText()"></span>
