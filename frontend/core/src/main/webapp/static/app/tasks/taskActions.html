@@ -1,17 +1,52 @@
-<div class="swiper-no-swiping" data-snap-ignore="true">
-  <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
-  <div class="item-actions">
+<div class="swiper-no-swiping" data-snap-ignore="true" ng-init="openSnooze = {isOpen: false, showPickDate: false}">
+
+  <ul ng-if="openSnooze.isOpen === false" class="button-row item-actions">
+    <li class="button-container left-of-two">
+      <button type="button" class="normal-button" ng-click="openSnooze.isOpen = true">
+        date
+      </button>
+    </li>
+    <li class="button-container right-of-two">
+      <button type="button" class="delete-button" ng-click="closeAndCall(task, deleteTask)">
+        delete
+      </button>
+    </li>
+  </ul>
+
+  <div ng-if="openSnooze.isOpen === true" class="item-actions small-font">
     <ul class="button-row">
-      <li class="button-container left-of-two">
-        <button type="button" class="normal-button" ng-click="closeAndCall(task, taskQuickEditDone)">
-          done
-        </button>
+      <li class="button-container left-of-three">
+        <button type="button" class="highlighted-button" ng-disabled="isTaskDateTodayOrLess(task)" ng-click="closeAndCall(task, setDateToday)">today</button>
       </li>
-      <li class="button-container right-of-two">
-        <button type="button" class="delete-button" ng-click="closeAndCall(task, deleteTask)">
-          delete
-        </button>
+      <li class="button-container center-of-three">
+        <button type="button" class="highlighted-button" ng-disabled="isTaskDateTomorrow(task)" ng-click="closeAndCall(task, setDateTomorrow)">tomorrow</button>
+      </li>
+      <li class="button-container right-of-three">
+        <button type="button" class="highlighted-button" ng-click="closeAndCall(task, setDateWeekend)">weekend</button>
+      </li>
+    </ul>
+
+    <ul class="button-row">
+      <li class="button-container left-of-three">
+        <button type="button" class="highlighted-button" ng-disabled="isTaskDateFirstDayOfNextWeek(task)" ng-click="closeAndCall(task, setDateFirstDayOfNextWeek)">next week</button>
+      </li>
+      <li class="button-container center-of-three">
+        <button type="button" class="highlighted-button" ng-disabled="isTaskDateFirstDayOfNextMonth(task)" ng-click="closeAndCall(task, setDateFirstDayOfNextMonth)">next month</button>
+      </li>
+      <li class="button-container right-of-three">
+        <div class="form-group">
+          <!-- placeholder for date picker -->
+          <button type="button" class="highlighted-button" ng-disabled="true">pick date</button>
+          <!-- <div ng-if="openSnooze.showPickDate === true">
+            <label for="taskDue" class="sr-only">pick date</label>
+            <input type="date" id="taskDue" class="swiper-no-swiping highlighted-link" ng-model="task.date" ng-blur="openSnooze.showPickDate = false" date-input="openSnooze.showPickDate" editable-field>
+          </div>
+          <div ng-if="openSnooze.showPickDate === false" class="item-actions">
+            <span class="simple-input highlighted-link date-input-placeholder" ng-click="openSnooze.showPickDate = true">pick date</span>
+          </div> -->
+        </div>
       </li>
     </ul>
   </div>
+
 </div>

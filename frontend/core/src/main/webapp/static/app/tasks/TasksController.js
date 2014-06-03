@@ -2,7 +2,7 @@
 
 function TasksController($scope, DateService, SwiperService, UISessionService, TasksService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(name, data, state){
+  var featureChangedCallback = function featureChangedCallback(name, data/*, state*/){
     if (name === 'taskEdit'){
       if (data){
         $scope.task = data;
@@ -122,6 +122,46 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
   $scope.taskQuickEditDone = function(task) {
     AnalyticsService.do('taskQuickEditDone');
     TasksService.saveTask(task, UISessionService.getActiveUUID());
+  };
+
+  $scope.setDateToday = function setDateToday(task) {
+    task.date = DateService.getTodayYYYYMMDD();
+    AnalyticsService.do('taskDateSet');
+    TasksService.saveTask(task, UISessionService.getActiveUUID());
+  };
+  $scope.setDateTomorrow = function setDateTomorrow(task) {
+    task.date = DateService.getTomorrowYYYYMMDD();
+    AnalyticsService.do('taskDateSet');
+    TasksService.saveTask(task, UISessionService.getActiveUUID());
+  };
+  $scope.setDateWeekend = function setDateWeekend(task) {
+    // NOTE if task.date === Sunday?
+    task.date = DateService.getSaturdayYYYYMMDD();
+    AnalyticsService.do('taskDateSet');
+    TasksService.saveTask(task, UISessionService.getActiveUUID());
+  };
+  $scope.setDateFirstDayOfNextWeek = function setDateFirstDayOfNextWeek(task) {
+    task.date = DateService.getNextMondayYYYYMMDD();
+    AnalyticsService.do('taskDateSet');
+    TasksService.saveTask(task, UISessionService.getActiveUUID());
+  };
+  $scope.setDateFirstDayOfNextMonth = function setDateFirstDayOfNextMonth(task) {
+    task.date = DateService.getFirstDateOfNextMonthYYYYMMDD();
+    AnalyticsService.do('taskDateSet');
+    TasksService.saveTask(task, UISessionService.getActiveUUID());
+  };
+
+  $scope.isTaskDateTodayOrLess = function isTaskDateTodayOrLess(task) {
+    return task.date <= DateService.getTodayYYYYMMDD();
+  };
+  $scope.isTaskDateTomorrow = function isTaskDateTomorrow(task) {
+    return task.date === DateService.getTomorrowYYYYMMDD();
+  };
+  $scope.isTaskDateFirstDayOfNextWeek = function isTaskDateFirstDayOfNextWeek(task) {
+    return task.date === DateService.getNextMondayYYYYMMDD();
+  };
+  $scope.isTaskDateFirstDayOfNextMonth = function isTaskDateFirstDayOfNextMonth(task) {
+    return task.date === DateService.getFirstDateOfNextMonthYYYYMMDD();
   };
 }
 

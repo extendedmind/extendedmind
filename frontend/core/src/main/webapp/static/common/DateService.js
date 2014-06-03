@@ -285,9 +285,6 @@ function DateService($timeout) {
         }
       }
     },
-    getTodayYYYYMMDD: function() {
-      return today.yyyymmdd;
-    },
     getYYYYMMDD: function(date) {
       return yyyymmdd(date);
     },
@@ -299,6 +296,39 @@ function DateService($timeout) {
     },
     getFirstDateOfTheMonth: function(date) {
       return new Date(date.getFullYear(), date.getMonth(), 1);
+    },
+    getTodayYYYYMMDD: function() {
+      return today.yyyymmdd;
+    },
+    getTomorrowYYYYMMDD: function() {
+      var tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      return yyyymmdd(tomorrow);
+    },
+    getSaturdayYYYYMMDD: function() {
+      // http://stackoverflow.com/a/1579109
+      var saturday = new Date();
+      var offsetToSaturday = (weekdays.indexOf('saturday') + (7 - saturday.getDay())) % 7;
+      saturday.setDate(saturday.getDate() + offsetToSaturday);
+
+      return yyyymmdd(saturday);
+    },
+    getNextMondayYYYYMMDD: function() {
+      var monday = new Date();
+      var offsetToMonday = (weekdays.indexOf('monday') + (7 - monday.getDay())) % 7;
+      monday.setDate(monday.getDate() + offsetToMonday);
+
+      return yyyymmdd(monday);
+    },
+    getFirstDateOfNextMonthYYYYMMDD: function() {
+      var firstDateOfNextMonth = new Date();
+      firstDateOfNextMonth.setMonth(firstDateOfNextMonth.getMonth() + 1);
+      firstDateOfNextMonth.setDate(1);
+
+      // TODO parameters:
+      // returns same day next month / first weekday of next month / same day of next month if both weekend or !weekend
+      return yyyymmdd(firstDateOfNextMonth);
     }
   };
 }

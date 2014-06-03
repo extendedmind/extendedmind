@@ -253,6 +253,19 @@ Only universal code that would work by itself in any web page.
   }
 }
 
+button.highlighted-button {
+  background-color: white;
+  & {
+    color: @highlighted-button;
+  }
+  &:active {
+    color: @highlighted-button-pressed;
+  }
+  &[disabled] {
+    color: @highlighted-button-disabled;
+  }
+}
+
 button.default-button {
   color: white;
   & {
