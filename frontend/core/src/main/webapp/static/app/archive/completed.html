@@ -3,7 +3,7 @@
     <div class="page-heading swiper-no-swiping" ng-init="heading = 'completed'; omnibarFeature = 'archive'" ng-include="'static/app/main/omnibar.html'"></div>
     <div ng-if="!isCompletedLoading" ng-hide="omnibarVisible && isActiveSlide({{'completed'}})" class="content-container page-content-container no-heading-content-container" >
       <div class="inner-page-content-container" swiper-prevent>
-        <div infinite-scroll="addMoreCompleted()" infinite-scroll-parent infinite-scroll-distance="1" scroll-to accordion>
+        <div infinite-scroll="addMoreCompleted()" infinite-scroll-parent scroll-to accordion>
           <div ng-if="showContent('archive')" ng-repeat="task in fullCompletedTasks | limitTo: getCompletedTasksLimit()">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
             <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">

@@ -1,6 +1,6 @@
 'use strict';
 
-function swiperPreventDirective($window) {
+function swiperPreventDirective($window, $rootScope) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
@@ -8,6 +8,7 @@ function swiperPreventDirective($window) {
       // Prevent horizontal when going up/down to prevent flickering
       element[0].addEventListener('touchstart', slideTouchStart, false);
       element[0].addEventListener('touchmove', slideTouchMove, false);
+      element[0].addEventListener('scroll', slideScroll, false);
 
       // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
       if ($window.navigator.msPointerEnabled) {
@@ -46,9 +47,22 @@ function swiperPreventDirective($window) {
         }
       }
 
+      var scrollTimeout;
+      function slideScroll() {
+        $rootScope.scrolling = true;
+        if (scrollTimeout) {
+          clearTimeout(scrollTimeout);
+        }
+        scrollTimeout = setTimeout(function() {
+          $rootScope.scrolling = false;
+        }, 500);
+        return false;
+      }
+
       scope.$on('$destroy', function() {
         element[0].removeEventListener('touchstart', slideTouchStart, false);
         element[0].removeEventListener('touchmove', slideTouchMove, false);
+        element[0].removeEventListener('scroll', slideScroll, false);
 
         if ($window.navigator.msPointerEnabled) {
           element[0].removeEventListener('MSPointerDown', slideTouchStart, false);
@@ -58,5 +72,5 @@ function swiperPreventDirective($window) {
     }
   };
 }
-swiperPreventDirective['$inject'] = ['$window'];
+swiperPreventDirective['$inject'] = ['$window', '$rootScope'];
 angular.module('em.directives').directive('swiperPrevent', swiperPreventDirective);

@@ -12,7 +12,7 @@ function MockItemsBackendService($httpBackend, ItemsService, UUIDService) {
           var response = {
             'tasks': []
           };
-          for(var i = 0; i < 3; i++) {
+          for(var i = 0; i < 100; i++) {
             var now = new Date().getTime();
             response.tasks.push({
               'uuid': UUIDService.randomUUID(),
