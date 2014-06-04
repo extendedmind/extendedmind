@@ -13,12 +13,35 @@ function MockItemsBackendService($httpBackend, ItemsService, UUIDService) {
             'tasks': []
           };
           for(var i = 0; i < 100; i++) {
-            var now = new Date().getTime();
+            var referenceDate = new Date();
+            if (i < 10 ){
+              // First ten are today
+            }else if (i < 20){
+              // Yesterday
+              referenceDate.setDate(referenceDate.getDate()-1);
+            }else if (i < 30){
+              // Two days ago
+              referenceDate.setDate(referenceDate.getDate()-2);
+            }else if (i < 40){
+              // Week ago
+              referenceDate.setDate(referenceDate.getDate()-7);
+            }else if (i < 50){
+              // Month ago
+              referenceDate.setDate(referenceDate.getDate()-31);
+            }else if (i < 60){
+              // Two months ago
+              referenceDate.setDate(referenceDate.getDate()-62);
+            }else {
+              // Way back
+              referenceDate.setDate(referenceDate.getDate()-1000);
+            }
+            var referenceEpoch = referenceDate.getTime();
+
             response.tasks.push({
               'uuid': UUIDService.randomUUID(),
-              'created': now,
-              'modified': now,
-              'completed': now + i,
+              'created': referenceEpoch,
+              'modified': referenceEpoch,
+              'completed': referenceEpoch + i,
               'title': 'test completed ' + i
             })
           }
