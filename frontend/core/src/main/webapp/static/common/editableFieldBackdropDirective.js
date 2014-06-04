@@ -1,9 +1,9 @@
 'use strict';
 
-function editableFieldBackdropDirective($document) {
+function editableFieldBackdropDirective() {
   return {
     restrict: 'A',
-    controller: function($scope, $element, $attrs) {
+    controller: function($scope, $element) {
       $element.addClass('editable-field-backdrop');
 
       $scope.disableBackdrop = function(){
@@ -25,7 +25,7 @@ function editableFieldBackdropDirective($document) {
 
       // Listen to transition end callbacks
 
-      var transitionEndCallback = function(event) {
+      var transitionEndCallback = function() {
         $element.removeClass('animating');
       };
       angular.element($element).bind(

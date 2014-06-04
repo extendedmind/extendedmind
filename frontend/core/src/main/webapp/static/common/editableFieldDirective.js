@@ -1,6 +1,6 @@
 'use strict';
 
-function editableFieldDirective() {
+function editableFieldDirective($animate) {
   return {
     require: '^editableFieldContainer',
     restrict: 'A',
@@ -8,11 +8,11 @@ function editableFieldDirective() {
       $element.addClass('editable-field');
 
       var editableFieldFocus = function() {
-        $element.addClass('active');
+        $animate.addClass($element[0], 'active');
         editableFieldContainerDirectiveController.showBackdrop();
       };
       var editableFieldBlur = function() {
-        $element.removeClass('active');
+        $animate.removeClass($element[0], 'active');
         editableFieldContainerDirectiveController.hideBackdrop();
       };
 
@@ -26,6 +26,6 @@ function editableFieldDirective() {
     }
   };
 }
-editableFieldDirective.$inject = [];
+editableFieldDirective.$inject = ['$animate'];
 angular.module('common').directive('editableField', editableFieldDirective);
 

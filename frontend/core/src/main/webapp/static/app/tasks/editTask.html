@@ -2,17 +2,13 @@
   <header class="edit-header" edit-header="task" item-edit-form="taskEdit" save-item="saveTask(task)" cancel-edit="cancelEdit()"></header>
   <section id="edit-task" class="one-column-grid page">
     <div class="column">
-
       <div class="content-container simple-content-container">
         <form class="form-horizontal" role="form" name="taskEdit" editable-field-container>
-
           <div class="form-group">
             <label class="sr-only" for="taskTitle">title</label>
             <textarea type="text" id="taskTitle" class="simple-input font-bold" ng-model="task.title" placeholder="title..." maxlength="128" required expanding-textarea editable-field></textarea>
           </div>
-
           <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
-
           <div ng-if="task.date" class="form-group">
             <label class="sr-only" for="taskRepeat">repeating</label>
             <select id="taskRepeat" class="simple-input swiper-no-swiping" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes" editable-field>

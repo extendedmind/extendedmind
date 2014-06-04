@@ -387,9 +387,11 @@ input[type="checkbox"]:checked + label:before {
 }
 
 input[type=date] {
+  &.simple-input {
+    color: @default-element;
+  }
   background: none;
   border: none;
-  color: @default-element;
   outline: none;
   padding-bottom: 0;
   padding-left: 0;

@@ -34,10 +34,10 @@
         <div class="form-group">
           <div ng-if="openSnooze.showPickDate === true">
             <label for="taskDue" class="sr-only">pick date</label>
-            <input type="date" id="taskDue" class="swiper-no-swiping highlighted-link" ng-model="task.date" ng-blur="hideDateInput()" date-input="{{openSnooze.showPickDate}}" date-input-set-focus="true" editable-field>
+            <input type="date" id="taskDue" class="swiper-no-swiping highlighted-link" ng-model="task.date" ng-blur="hideDateInput()" date-input="{{openSnooze.showPickDate}}" date-input-set-focus="true">
           </div>
           <div ng-if="openSnooze.showPickDate === false" class="item-actions">
-            <span class="simple-input highlighted-link date-input-placeholder" ng-click="openSnooze.showPickDate = true">pick date</span>
+            <span class="simple-input highlighted-link" ng-click="openSnooze.showPickDate = true">pick date</span>
           </div>
         </div>
       </li>
