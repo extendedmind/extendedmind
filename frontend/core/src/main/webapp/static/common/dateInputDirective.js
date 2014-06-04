@@ -13,12 +13,24 @@ function dateInputDirective() {
               element[0].focus();
               element[0].value = new Date().toISOString().substring(0, 10);
             });
+          } else if (attrs.dateInputSetFocus) {
+            scope.$evalAsync(function() {
+              element[0].focus();
+            });
           }
         }
       });
 
+      var initialDate = scope.task.date;
+
       scope.hideDateInput = function hideDateInput() {
-        if (!scope.task.date) {
+        if (attrs.dateInputSetFocus) {
+          scope.openSnooze.showPickDate = false;
+          if (initialDate !== scope.task.date) {
+            scope.closeAndCall(scope.task, scope.taskQuickEditDone);
+          }
+        }
+        else if (!scope.task.date) {
           scope.hideDate();
         }
       };

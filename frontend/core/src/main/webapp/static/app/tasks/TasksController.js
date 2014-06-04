@@ -126,29 +126,24 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
 
   $scope.setDateToday = function setDateToday(task) {
     task.date = DateService.getTodayYYYYMMDD();
-    AnalyticsService.do('taskDateSet');
-    TasksService.saveTask(task, UISessionService.getActiveUUID());
+    $scope.taskQuickEditDone(task);
   };
   $scope.setDateTomorrow = function setDateTomorrow(task) {
     task.date = DateService.getTomorrowYYYYMMDD();
-    AnalyticsService.do('taskDateSet');
-    TasksService.saveTask(task, UISessionService.getActiveUUID());
+    $scope.taskQuickEditDone(task);
   };
   $scope.setDateWeekend = function setDateWeekend(task) {
     // NOTE if task.date === Sunday?
     task.date = DateService.getSaturdayYYYYMMDD();
-    AnalyticsService.do('taskDateSet');
-    TasksService.saveTask(task, UISessionService.getActiveUUID());
+    $scope.taskQuickEditDone(task);
   };
   $scope.setDateFirstDayOfNextWeek = function setDateFirstDayOfNextWeek(task) {
     task.date = DateService.getNextMondayYYYYMMDD();
-    AnalyticsService.do('taskDateSet');
-    TasksService.saveTask(task, UISessionService.getActiveUUID());
+    $scope.taskQuickEditDone(task);
   };
   $scope.setDateFirstDayOfNextMonth = function setDateFirstDayOfNextMonth(task) {
     task.date = DateService.getFirstDateOfNextMonthYYYYMMDD();
-    AnalyticsService.do('taskDateSet');
-    TasksService.saveTask(task, UISessionService.getActiveUUID());
+    $scope.taskQuickEditDone(task);
   };
 
   $scope.isTaskDateTodayOrLess = function isTaskDateTodayOrLess(task) {
@@ -156,6 +151,9 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
   };
   $scope.isTaskDateTomorrow = function isTaskDateTomorrow(task) {
     return task.date === DateService.getTomorrowYYYYMMDD();
+  };
+  $scope.isTaskDateSaturday = function isTaskDateSaturday(task) {
+    return task.date === DateService.getSaturdayYYYYMMDD();
   };
   $scope.isTaskDateFirstDayOfNextWeek = function isTaskDateFirstDayOfNextWeek(task) {
     return task.date === DateService.getNextMondayYYYYMMDD();
