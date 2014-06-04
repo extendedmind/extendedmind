@@ -9,7 +9,8 @@
 function MainController(
   $controller, $filter, $rootScope, $scope, $timeout, $window,
   AccountService, UISessionService, UserSessionService, ItemsService, ListsService,
-  TagsService, TasksService, NotesService, SynchronizeService, FilterService, OnboardingService, SwiperService, ArrayService) {
+  TagsService, TasksService, NotesService, SynchronizeService, FilterService, OnboardingService,
+  SwiperService, ArrayService, UUIDService) {
 
   // ONBOARDING
   var userPreferences = UserSessionService.getPreferences();
@@ -38,21 +39,87 @@ function MainController(
     $scope.keywords = $filter('filter')($scope.tags, {tagType: 'keyword'});
   });
 
+
+  function combineListsArrays(){
+    if ($scope.archivedLists.length && $scope.lists.length){
+      $scope.listsSelectOptions = $scope.lists.slice(0);
+      // Push a fake list as archived list delimiter
+      $scope.listsSelectOptions.push({uuid: UUIDService.generateFakeUUID(), title: '--------', delimiter: true});
+      $scope.listsSelectOptions = $scope.listsSelectOptions.concat($scope.archivedLists);
+    }else if ($scope.lists.length && !$scope.archivedLists.length){
+      $scope.listsSelectOptions = $scope.lists;
+    }else if ($scope.archivedLists.length && !$scope.lists.length){
+      $scope.listsSelectOptions = $scope.archivedLists;
+    }else{
+      $scope.listsSelectOptions = [];
+    }
+    // TODO: Create list option
+  }
+
+  $scope.$watch('lists.length', function(/*newValue, oldValue*/) {
+    combineListsArrays();
+  });
+  $scope.$watch('archivedLists.length', function(/*newValue, oldValue*/) {
+    combineListsArrays();
+  });
+
+  function combineNotesArrays(){
+    if ($scope.notes.length && $scope.archivedNotes.length){
+      $scope.allNotes = $scope.notes.concat($scope.archivedNotes);
+    }else if ($scope.notes.length && !$scope.archivedNotes.length){
+      $scope.allNotes = $scope.notes;
+    }else if ($scope.archivedNotes.length && !$scope.notes.length){
+      $scope.allNotes = $scope.archivedNotes;
+    }else{
+      $scope.allNotes = [];
+    }
+  }
+
+  $scope.$watch('notes.length', function(/*newValue, oldValue*/) {
+    combineNotesArrays();
+  });
+  $scope.$watch('archivedNotes.length', function(/*newValue, oldValue*/) {
+    combineNotesArrays();
+  });
+
+  function combineTasksArrays(){
+    var activeArchivedTasks = [];
+    var i = 0;
+    while ($scope.archivedTasks[i]) {
+      if ($scope.archivedTasks[i].completed === undefined){
+        activeArchivedTasks.push($scope.archivedTasks[i]);
+      }
+      i++;
+    }
+    $scope.allActiveTasks =
+        ArrayService.combineArrays(
+          activeArchivedTasks,
+          $scope.tasks, 'created', true);
+  }
+
+  $scope.$watch('tasks.length', function(/*newValue, oldValue*/) {
+    combineTasksArrays();
+  });
+  $scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
+    combineTasksArrays();
+  });
+
+
   var completedArrayCallbacks = {};
   var watchingFullCompleted = false;
   $scope.createFullCompletedTasks = function createFullCompletedTasks(callback, id){
-    function combineCompletedArrays(){
-      var filteredArchivedTasks = [];
+    function combineCompletedTasksArrays(){
+      var completedArchivedTasks = [];
       var i = 0;
       while ($scope.archivedTasks[i]) {
         if ($scope.archivedTasks[i].completed !== undefined){
-          filteredArchivedTasks.push($scope.archivedTasks[i]);
+          completedArchivedTasks.push($scope.archivedTasks[i]);
         }
         i++;
       }
       $scope.fullCompletedTasks =
         ArrayService.combineArrays(
-          filteredArchivedTasks,
+          completedArchivedTasks,
           $scope.completedTasks, 'completed', true);
 
       for (var id in completedArrayCallbacks) {
@@ -65,10 +132,10 @@ function MainController(
     if (!watchingFullCompleted){
       watchingFullCompleted = true;
       $scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
-        combineCompletedArrays();
+        combineCompletedTasksArrays();
       });
-      $scope.$watchCollection('completedTasks', function(/*newValue, oldValue*/) {
-        combineCompletedArrays();
+      $scope.$watch('completedTasks.length', function(/*newValue, oldValue*/) {
+        combineCompletedTasksArrays();
       });
     }
   }
@@ -234,6 +301,7 @@ function MainController(
 MainController.$inject = [
 '$controller', '$filter', '$rootScope', '$scope', '$timeout', '$window',
 'AccountService', 'UISessionService', 'UserSessionService', 'ItemsService', 'ListsService',
-'TagsService', 'TasksService', 'NotesService', 'SynchronizeService', 'FilterService', 'OnboardingService', 'SwiperService', 'ArrayService'
+'TagsService', 'TasksService', 'NotesService', 'SynchronizeService', 'FilterService', 'OnboardingService',
+'SwiperService', 'ArrayService', 'UUIDService'
 ];
 angular.module('em.app').controller('MainController', MainController);

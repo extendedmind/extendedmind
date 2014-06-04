@@ -10,7 +10,7 @@
   </div>
   <div class="form-group">
     <label class="sr-only" for="taskList">list</label>
-    <select id="taskList" class="simple-input swiper-no-swiping" ng-model="task.relationships.list" ng-options="list.uuid as list.title for list in lists" editable-field>
+    <select id="taskList" class="simple-input swiper-no-swiping" ng-model="task.relationships.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
       <option value="">select list...</option>
     </select>
   </div>
