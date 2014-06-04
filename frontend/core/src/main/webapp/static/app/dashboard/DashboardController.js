@@ -3,28 +3,12 @@
 function DashboardController($scope, DateService, ListsService, NotesService, SwiperService, TasksService, SynchronizeService, UISessionService) {
   $scope.dashboardSlides = [];
 
-  var completedTasks = TasksService.getCompletedTasks(UISessionService.getActiveUUID());
-  var notes = NotesService.getNotes(UISessionService.getActiveUUID());
-  var archivedNotes = NotesService.getArchivedNotes(UISessionService.getActiveUUID());
-  var createdNotes = notes.concat(archivedNotes);
-  var listsArchived = ListsService.getArchivedLists(UISessionService.getActiveUUID());
+  var createdNotes;
+  // Use MainController
+  $scope.createFullCompletedTasks();
 
   $scope.isCompletedLoading = true;
   $scope.isArchivedLoading = true;
-
-  function swiperCreatedCallback() {
-    if ($scope.dashboardSlides.length === 1) {
-      initializeDashboardSlideInfo('weekly');
-      initializeDashboardSlideInfo('monthly');
-    }
-
-    SynchronizeService.synchronizeCompleted(UISessionService.getActiveUUID()).then(function(){
-      $scope.isCompletedLoading = false;
-    });
-    SynchronizeService.synchronizeArchived(UISessionService.getActiveUUID()).then(function(){
-      $scope.isArchivedLoading = false;
-    });
-  }
 
   function initializeDashboardSlideInfo(slideName) {
     var dashboardSlide = {
@@ -34,20 +18,29 @@ function DashboardController($scope, DateService, ListsService, NotesService, Sw
 
     var numberOfComparedItems = 0;
 
-    numberOfComparedItems = getNumberOfComparedItems(slideName, completedTasks, 'completed');
+    numberOfComparedItems = getNumberOfComparedItems(slideName, $scope.fullCompletedTasks, 'completed');
     writeDashboardMessage(dashboardSlide, 'task', numberOfComparedItems, 'completed');
 
     numberOfComparedItems = getNumberOfComparedItems(slideName, createdNotes, 'created');
     writeDashboardMessage(dashboardSlide, 'note', numberOfComparedItems, 'created');
 
-    numberOfComparedItems = getNumberOfComparedItems(slideName, listsArchived, 'archived');
+    numberOfComparedItems = getNumberOfComparedItems(slideName, $scope.archivedLists, 'archived');
     writeDashboardMessage(dashboardSlide, 'list', numberOfComparedItems, 'archived');
 
     $scope.dashboardSlides.push(dashboardSlide);
   }
 
-  SwiperService.registerSwiperCreatedCallback(swiperCreatedCallback, 'dashboard', 'DashboardController');
-  initializeDashboardSlideInfo('daily');
+  SynchronizeService.synchronizeCompleted(UISessionService.getActiveUUID()).then(function(){
+    $scope.isCompletedLoading = false;
+    SynchronizeService.synchronizeArchived(UISessionService.getActiveUUID()).then(function(){
+      $scope.isArchivedLoading = false;
+      createdNotes = $scope.notes.concat($scope.archivedNotes);
+      initializeDashboardSlideInfo('daily');
+      initializeDashboardSlideInfo('weekly');
+      initializeDashboardSlideInfo('monthly');
+    });
+  });
+
 
   function getNumberOfComparedItems(slideName, itemArray, itemComparisonKey) {
     var numberOfComparedItems = 0;
@@ -82,6 +75,11 @@ function DashboardController($scope, DateService, ListsService, NotesService, Sw
       (numberOfComparedItems === 1 ? '' : 's') + ' ' +
       comparisonResultInfo
     });
+  }
+
+  $scope.getExpectedDashboardSlides = function getExpectedDashboardSlides(){
+    if ($scope.dashboardSlides.length) return $scope.dashboardSlides.length;
+    else return 1;
   }
 }
 

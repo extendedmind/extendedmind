@@ -1,4 +1,4 @@
-<div ng-show="isFeatureActive('dashboard')" class="swiper-container main-slides" swiper-container="dashboard" swiper-type="main" expected-slides=dashboardSlides.length ng-controller="DashboardController">
+<div ng-show="isFeatureActive('dashboard')" class="swiper-container main-slides" swiper-container="dashboard" swiper-type="main" expected-slides="getExpectedDashboardSlides()" ng-controller="DashboardController">
   <div ng-hide="isDesktop && isMenuOpen" class="swiper-wrapper">
     <div class="swiper-slide" swiper-slide="dashboard/daily" slide-index=0 dashboard-slide="daily" snap-drawer-drag="dashboard"></div>
     <div ng-if="dashboardSlides.length === 3" class="swiper-slide" swiper-slide="dashboard/weekly" slide-index=1 dashboard-slide="weekly"></div>

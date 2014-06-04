@@ -1,35 +1,14 @@
 'use strict';
 
-function ArchiveController($scope, ListsService, NotesService, SwiperService, TasksService, SynchronizeService, UISessionService, ArrayService) {
+function ArchiveController($scope, ListsService, NotesService, SwiperService, TasksService, SynchronizeService, UISessionService) {
   $scope.archiveSlides = [];
-  $scope.completedTasks = TasksService.getCompletedTasks(UISessionService.getActiveUUID());
-  $scope.archivedTasks = TasksService.getArchivedTasks(UISessionService.getActiveUUID());
-  $scope.archivedNotes = NotesService.getArchivedNotes(UISessionService.getActiveUUID());
-  $scope.archivedLists = ListsService.getArchivedLists(UISessionService.getActiveUUID());
 
-  function combineCompletedArrays(){
-    var filteredArchivedTasks = [];
-    var i = 0;
-    while ($scope.archivedTasks[i]) {
-      if ($scope.archivedTasks[i].completed !== undefined){
-        filteredArchivedTasks.push($scope.archivedTasks[i]);
-      }
-      i++;
-    }
-    $scope.fullCompletedTasks =
-      ArrayService.combineArrays(
-        filteredArchivedTasks,
-        $scope.completedTasks, 'completed', true);
+  function setCompletedTaskLimit(fullCompleteTasksSize){
     if ($scope.fullCompletedTasks.length < 25){
       $scope.completedTasksLimit = $scope.fullCompletedTasks.length;
     }
   }
-  $scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
-    combineCompletedArrays();
-  });
-  $scope.$watchCollection('completedTasks', function(/*newValue, oldValue*/) {
-    combineCompletedArrays();
-  });
+  $scope.createFullCompletedTasks(setCompletedTaskLimit, 'ArchiveController');
 
   $scope.slides = {
     leftSlide: {
@@ -225,5 +204,5 @@ function ArchiveController($scope, ListsService, NotesService, SwiperService, Ta
   SwiperService.registerSwiperCreatedCallback(swiperCreatedCallback, 'archive', 'ArchiveController');
 }
 
-ArchiveController['$inject'] = ['$scope', 'ListsService', 'NotesService', 'SwiperService', 'TasksService', 'SynchronizeService', 'UISessionService', 'ArrayService'];
+ArchiveController['$inject'] = ['$scope', 'ListsService', 'NotesService', 'SwiperService', 'TasksService', 'SynchronizeService', 'UISessionService'];
 angular.module('em.app').controller('ArchiveController', ArchiveController);

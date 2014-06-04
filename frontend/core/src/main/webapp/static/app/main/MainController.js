@@ -9,7 +9,7 @@
 function MainController(
   $controller, $filter, $rootScope, $scope, $timeout, $window,
   AccountService, UISessionService, UserSessionService, ItemsService, ListsService,
-  TagsService, TasksService, NotesService, SynchronizeService, FilterService, OnboardingService, SwiperService) {
+  TagsService, TasksService, NotesService, SynchronizeService, FilterService, OnboardingService, SwiperService, ArrayService) {
 
   // ONBOARDING
   var userPreferences = UserSessionService.getPreferences();
@@ -25,14 +25,53 @@ function MainController(
 
   $scope.items = ItemsService.getItems(UISessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UISessionService.getActiveUUID());
+  $scope.completedTasks = TasksService.getCompletedTasks(UISessionService.getActiveUUID());
+  $scope.archivedTasks = TasksService.getArchivedTasks(UISessionService.getActiveUUID());
   $scope.notes = NotesService.getNotes(UISessionService.getActiveUUID());
+  $scope.archivedNotes = NotesService.getArchivedNotes(UISessionService.getActiveUUID());
   $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
+  $scope.archivedLists = ListsService.getArchivedLists(UISessionService.getActiveUUID());
   $scope.tags = TagsService.getTags(UISessionService.getActiveUUID());
 
   $scope.$watch('tags.length', function(/*newValue, oldValue*/) {
     $scope.contexts = $filter('filter')($scope.tags, {tagType: 'context'});
     $scope.keywords = $filter('filter')($scope.tags, {tagType: 'keyword'});
   });
+
+  var completedArrayCallbacks = {};
+  var watchingFullCompleted = false;
+  $scope.createFullCompletedTasks = function createFullCompletedTasks(callback, id){
+    function combineCompletedArrays(){
+      var filteredArchivedTasks = [];
+      var i = 0;
+      while ($scope.archivedTasks[i]) {
+        if ($scope.archivedTasks[i].completed !== undefined){
+          filteredArchivedTasks.push($scope.archivedTasks[i]);
+        }
+        i++;
+      }
+      $scope.fullCompletedTasks =
+        ArrayService.combineArrays(
+          filteredArchivedTasks,
+          $scope.completedTasks, 'completed', true);
+
+      for (var id in completedArrayCallbacks) {
+        completedArrayCallbacks[id]($scope.fullCompletedTasks.length);
+      }
+    }
+
+    if (callback) completedArrayCallbacks[id] = callback;
+
+    if (!watchingFullCompleted){
+      watchingFullCompleted = true;
+      $scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
+        combineCompletedArrays();
+      });
+      $scope.$watchCollection('completedTasks', function(/*newValue, oldValue*/) {
+        combineCompletedArrays();
+      });
+    }
+  }
 
   $scope.ownerPrefix = UISessionService.getOwnerPrefix();
   $scope.filterService = FilterService;
@@ -195,6 +234,6 @@ function MainController(
 MainController.$inject = [
 '$controller', '$filter', '$rootScope', '$scope', '$timeout', '$window',
 'AccountService', 'UISessionService', 'UserSessionService', 'ItemsService', 'ListsService',
-'TagsService', 'TasksService', 'NotesService', 'SynchronizeService', 'FilterService', 'OnboardingService', 'SwiperService'
+'TagsService', 'TasksService', 'NotesService', 'SynchronizeService', 'FilterService', 'OnboardingService', 'SwiperService', 'ArrayService'
 ];
 angular.module('em.app').controller('MainController', MainController);
