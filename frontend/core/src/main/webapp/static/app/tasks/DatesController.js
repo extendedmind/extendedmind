@@ -68,7 +68,8 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
         if (activeSlidePath.endsWith($scope.weekdays[i].weekday)){
           $scope.activeDay = $scope.weekdays[i];
           // Run digest to change only date picker when swiping to new location
-          $scope.$digest();
+          if(!$scope.$$phase) $scope.$digest();
+          return;
         }
       }
     }
