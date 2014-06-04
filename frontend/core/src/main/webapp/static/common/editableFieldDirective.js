@@ -28,4 +28,3 @@ function editableFieldDirective($animate) {
 }
 editableFieldDirective.$inject = ['$animate'];
 angular.module('common').directive('editableField', editableFieldDirective);
-
