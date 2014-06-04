@@ -95,16 +95,16 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         if (!UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()) ||
           !UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()).startsWith(activeSlidePath)){
           UISessionService.setCurrentFeatureState(activeSlidePath);
-        }
-      };
+      }
+    };
 
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/home', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/details', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes/details', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'dashboard', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'archive', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/home', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/details', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes/details', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'dashboard', 'featureContainerDirective');
+    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'archive', 'featureContainerDirective');
 
       // CALLBACK REGISTRATION
 
@@ -143,8 +143,6 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       }
 
       // No clicking/tapping when drawer is open.
-      // TODO Bind/unbind with drawer menu open/close
-      angular.element(element).bind('touchstart', drawerContentClicked);
       function drawerContentClicked(event) {
         if (SnapService.getState().state !== 'closed') {
           event.preventDefault();
@@ -155,11 +153,13 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       // Snapper is "ready". Set swiper and snapper statuses.
       function snapperAnimated(snapperState) {
         if (snapperState.state === 'closed') {
+          angular.element(element).unbind('touchstart', drawerContentClicked);
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), true);
             SnapService.enableSliding();
           }
         } else if (snapperState.state === 'left') {
+          angular.element(element).bind('touchstart', drawerContentClicked);
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), false);
             SnapService.enableSliding();
@@ -202,6 +202,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
 
       scope.$on('$destroy', function() {
         SnapService.deleteSnapper();
+        angular.element(element).unbind('touchstart', drawerContentClicked);
       });
 
       if ($rootScope.isMobile) {
