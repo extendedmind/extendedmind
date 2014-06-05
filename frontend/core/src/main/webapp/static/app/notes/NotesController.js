@@ -220,6 +220,49 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
       tagType: 'keyword'
     };
   };
+
+  var selectedOmnibarKeywords = [];
+
+  $scope.getSelectedAndFilterUnselectedKeywords = function getSelectedAndFilterUnselectedKeywords() {
+    if ($scope.searchText.delayed) {
+      return $scope.keywords.filter(function(keyword) {
+        return selectedOmnibarKeywords.indexOf(keyword) !== -1 || keyword.title.indexOf($scope.searchText.delayed) !== -1;
+      });
+    } else {
+      return $scope.keywords;
+    }
+  };
+
+  $scope.getFilteredOmnibarNotes = function getFilteredOmnibarNotes() {
+    // show nothing if no keywords selected
+    if (selectedOmnibarKeywords.length) {
+      var filteredNotes = [];
+
+      $scope.notes.forEach(function(note) {
+        if (note.relationships && note.relationships.tags) {
+          if (selectedOmnibarKeywords.every(function(keyword) {
+            return (note.relationships.tags.indexOf(keyword.uuid) !== -1);
+          })) {
+            filteredNotes.push(note);
+          }
+        }
+      });
+      return filteredNotes;
+    }
+  };
+
+  $scope.toggleKeywordSelected = function toggleKeywordSelected(keyword) {
+    var toggledKeywordIndex = selectedOmnibarKeywords.indexOf(keyword);
+    if (toggledKeywordIndex === -1) {
+      selectedOmnibarKeywords.push(keyword);
+    } else {
+      selectedOmnibarKeywords.splice(toggledKeywordIndex, 1);
+    }
+  };
+
+  $scope.clearSelectedOmnibarKeywords = function clearSelectedOmnibarKeywords() {
+    selectedOmnibarKeywords = [];
+  };
 }
 
 NotesController['$inject'] = [
