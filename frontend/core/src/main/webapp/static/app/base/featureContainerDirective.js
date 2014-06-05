@@ -44,8 +44,12 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       };
 
       $scope.featureHasFooter = function featureHasFooter() {
-        if ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes') || $scope.isFeatureActive('dashboard') || $scope.isFeatureActive('archive')){
-          if (UserSessionService.getUIPreference('hideFooter') && ($rootScope.packaging.endsWith('cordova') || $rootScope.packaging === 'devel')){
+        if ($scope.isFeatureActive('tasks')
+            || $scope.isFeatureActive('notes')
+            || $scope.isFeatureActive('dashboard')
+            || $scope.isFeatureActive('archive')){
+          if (UserSessionService.getUIPreference('hideFooter')
+              && ($rootScope.packaging.endsWith('cordova') || $rootScope.packaging === 'devel')){
             $element[0].classList.toggle('hide-footer', true);
             return false;
           }else{
@@ -153,13 +157,13 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       // Snapper is "ready". Set swiper and snapper statuses.
       function snapperAnimated(snapperState) {
         if (snapperState.state === 'closed') {
-          angular.element(element).unbind('touchstart', drawerContentClicked);
+          angular.element(element[0].parentNode).unbind('touchstart', drawerContentClicked);
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), true);
             SnapService.enableSliding();
           }
         } else if (snapperState.state === 'left') {
-          angular.element(element).bind('touchstart', drawerContentClicked);
+          angular.element(element[0].parentNode).bind('touchstart', drawerContentClicked);
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), false);
             SnapService.enableSliding();
