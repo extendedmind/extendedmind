@@ -1,21 +1,23 @@
-<div ng-if="isMobile" id="mobile-menu" ng-include="'static/app/auth/menu.html'" class="snap-drawer snap-drawer-left" scrollable></div>
-<div id="feature-container" feature-container ng-controller="MainController">
-  <header ng-show="isContentFeatureActive()" class="page-header" ng-class="omnibarVisible && 'header-hidden'" ng-include="'static/app/main/pageHeader.html'"></header>
-  <header ng-if="isSystemFeatureActive()" class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
+<div id="menu" ng-include="'static/app/auth/menu.html'" class="snap-drawer snap-drawer-left" scrollable></div>
+<div id="feature-container-wrapper">
+  <div id="feature-container" feature-container ng-controller="MainController">
+    <header ng-show="isContentFeatureActive()" class="page-header" ng-class="omnibarVisible && 'header-hidden'" ng-include="'static/app/main/pageHeader.html'"></header>
+    <header ng-if="isSystemFeatureActive()" class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
 
-  <div ng-if="isContentFeatureActive('tasks')" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>
-  <div ng-if="isFeatureActive('taskEdit')" ng-include="'static/app/tasks/editTask.html'" include-replace></div>
-  <div ng-if="isContentFeatureActive('notes')" ng-include="'static/app/notes/notesSlides.html'" include-replace></div>
-  <div ng-if="isFeatureActive('noteEdit')" ng-include="'static/app/notes/editNote.html'" include-replace></div>
-  <div ng-if="isContentFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>
-  <div ng-if="isFeatureActive('itemEdit')" ng-include="'static/app/main/editItem.html'" include-replace></div>
-  <div ng-if="isFeatureActive('listEdit')" ng-include="'static/app/base/editList.html'" include-replace></div>
-  <div ng-if="isFeatureActive('contextEdit')" ng-include="'static/app/base/editContext.html'" include-replace></div>
-  <div ng-if="isFeatureActive('dashboard')" ng-include="'static/app/dashboard/dashboardSlides.html'" include-replace></div>
-  <div ng-if="isFeatureActive('archive')" ng-include="'static/app/archive/archiveSlides.html'" include-replace></div>
-  <div ng-if="isFeatureActive('account') && !isContentFeatureActive()" ng-include="'static/app/account/account.html'" include-replace></div>
-  <div ng-if="isFeatureActive('about') && !isContentFeatureActive()" ng-include="'static/app/base/about.html'" include-replace></div>
-  <div ng-if="isFeatureActive('admin') && !isContentFeatureActive()" ng-include="'static/app/admin/admin.html'" include-replace></div>
+    <div ng-if="isContentFeatureActive('tasks')" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>
+    <div ng-if="isFeatureActive('taskEdit')" ng-include="'static/app/tasks/editTask.html'" include-replace></div>
+    <div ng-if="isContentFeatureActive('notes')" ng-include="'static/app/notes/notesSlides.html'" include-replace></div>
+    <div ng-if="isFeatureActive('noteEdit')" ng-include="'static/app/notes/editNote.html'" include-replace></div>
+    <div ng-if="isContentFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>
+    <div ng-if="isFeatureActive('itemEdit')" ng-include="'static/app/main/editItem.html'" include-replace></div>
+    <div ng-if="isFeatureActive('listEdit')" ng-include="'static/app/base/editList.html'" include-replace></div>
+    <div ng-if="isFeatureActive('contextEdit')" ng-include="'static/app/base/editContext.html'" include-replace></div>
+    <div ng-if="isFeatureActive('dashboard')" ng-include="'static/app/dashboard/dashboardSlides.html'" include-replace></div>
+    <div ng-if="isFeatureActive('archive')" ng-include="'static/app/archive/archiveSlides.html'" include-replace></div>
+    <div ng-if="isFeatureActive('account') && !isContentFeatureActive()" ng-include="'static/app/account/account.html'" include-replace></div>
+    <div ng-if="isFeatureActive('about') && !isContentFeatureActive()" ng-include="'static/app/base/about.html'" include-replace></div>
+    <div ng-if="isFeatureActive('admin') && !isContentFeatureActive()" ng-include="'static/app/admin/admin.html'" include-replace></div>
 
-  <footer ng-if="featureHasFooter()" ng-hide="omnibarVisible" ng-include="'static/app/main/footer.html'"></footer>
+    <footer ng-if="featureHasFooter()" ng-hide="omnibarVisible" ng-include="'static/app/main/footer.html'"></footer>
+  </div>
 </div>

@@ -111,11 +111,7 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
       // MENU TOGGLE
       $scope.isMenuOpen = false;
       $scope.toggleMenu = function toggleMenu() {
-        if ($rootScope.isMobile) {
-          SnapService.toggle();
-        } else {
-          $scope.isMenuOpen = !$scope.isMenuOpen;
-        }
+        SnapService.toggle();
       };
       // Feature switching end.
 

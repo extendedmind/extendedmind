@@ -295,71 +295,8 @@ footer {
 
 // MENU
 
-#menu-content {
-  a, span {
-    font-size: @small-font-size;
-    .font-bold;
-  }
-  a.feature-link {
-    font-size: 1.17em;  // http://www.w3.org/TR/CSS2/sample.html
-  }
-  li.last-feature { // padding-bottom for li with last a.feature-link
-    padding-bottom: @vertical-grid;
-  }
-  li#collectives {
-    line-height: @vertical-grid;
-    div {
-      padding-left: @horizontal-grid;
-      a {
-        font-size: @smallest-font-size;
-        line-height: @vertical-grid-half;
-        padding-bottom: @vertical-grid-half;
-      }
-    }
-  }
-}
-
-// desktop
-#desktop-menu {
-  max-width: @one-column-grid-width;
-  height: inherit;
-  overflow-y: auto;
-  .center-horizontally;
-  #menu-content {
-    padding-top: @page-header-height;
-    padding-bottom: @footer-height;
-    padding-left: @horizontal-grid;
-    width: auto;
-    a, span {
-      display: block;
-      color: @default-element;
-    }
-    a.collective {
-      // FIXME: This color is strange
-      color: @default-element;
-    }
-    a:hover {
-      color: @default-element-hover;
-    }
-    a:active {
-      color: @default-element-pressed;
-    }
-    a.feature-link.active {
-      margin-left: -18px;
-    }
-    a.active {
-      margin-left: -16px;
-    }
-    a.active:before {
-      content: '\2022';
-      margin-right: 10px;
-    }
-  }
-}
-
-// mobile
-#mobile-menu {
-  background-color: @mobile-menu;
+#menu {
+  background-color: @menu;
   position: absolute;
   width: 260px;
   height: 100%;
@@ -371,6 +308,27 @@ footer {
       span.icon-logo-only {
         vertical-align: middle;
         font-size: @drawer-menu-icon-size;
+      }
+    }
+    a, span {
+      font-size: @small-font-size;
+      .font-bold;
+    }
+    a.feature-link {
+      font-size: 1.17em;  // http://www.w3.org/TR/CSS2/sample.html
+    }
+    li.last-feature { // padding-bottom for li with last a.feature-link
+      padding-bottom: @vertical-grid;
+    }
+    li#collectives {
+      line-height: @vertical-grid;
+      div {
+        padding-left: @horizontal-grid;
+        a {
+          font-size: @smallest-font-size;
+          line-height: @vertical-grid-half;
+          padding-bottom: @vertical-grid-half;
+        }
       }
     }
     ul {
@@ -408,7 +366,7 @@ footer {
 
 // Override again with background color of the next element
 // of the mobile menu
-#feature-container {
+#feature-container-wrapper {
   position: relative;
   background-color: white;
 }
@@ -612,7 +570,7 @@ li.datepicker-date {
   #omnibar-label-wrapper, .ellipsis:after {
     background-image: none !important;
   }
-  #active-action-wrapper, #plus-button-wrapper, #feature-container, .border-button {
+  #active-action-wrapper, #plus-button-wrapper, #feature-container-wrapper, #feature-container, .border-button {
     background-color: inherit;
   }
 }

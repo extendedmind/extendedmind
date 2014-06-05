@@ -277,27 +277,14 @@ footer {
 // once the screen size is bigger than a tablet
 @media (min-width: @maximum-width) and (min-height: @maximum-landscape-height) {
   body {
-    div#root > div.no-slides-container {
+    div#root > div#feature-container-wrapper > div.no-slides-container {
       .center-container;
       min-height: @maximum-landscape-height;
       max-height: @maximum-landscape-height;
       margin-top: -@maximum-landscape-height / 2;
       top: 50%;
-      #edit-page {
-        section.page {
-          top: 120px;
-        }
-      }
-      #inbox-container {
-        section#inbox {
-          top: -60px;
-        }
-      }
-      section.page {
-        .absolute-center;
-      }
     }
-    div#root > div.slides-container {
+    div#root > div#feature-container-wrapper > div.slides-container {
       position: inherit;
       top: 50%;
       min-height: @maximum-landscape-height;

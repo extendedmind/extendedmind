@@ -76,7 +76,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
           activeContentFeatures[name] = true;
           if ($scope.isContentFeatureActive(name)) {
             setFeatureContainerClass(name);
-            if ($rootScope.isMobile && featureElements[name]) {
+            if (featureElements[name]) {
               SnapService.setDraggerElement(featureElements[name].dragElement);
             }
           }
@@ -135,7 +135,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
     link: function(scope, element) {
 
       function initializeSnapper() {
-        SnapService.createSnapper(element[0]);
+        SnapService.createSnapper(element[0].parentNode);
 
         SnapService.registerAnimatedCallback(snapperAnimated);
         SnapService.registerEndCallback(snapperPaneReleased);
@@ -192,22 +192,13 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         }
       }
 
-      scope.$watch('isMobile', function(newValue) {
-        if (newValue === true) {
-          initializeSnapper();
-        } else if (newValue === false) {
-          SnapService.deleteSnapper();
-        }
-      });
+      initializeSnapper();
 
       scope.$on('$destroy', function() {
         SnapService.deleteSnapper();
         angular.element(element).unbind('touchstart', drawerContentClicked);
       });
 
-      if ($rootScope.isMobile) {
-        initializeSnapper();
-      }
     }
   };
 }

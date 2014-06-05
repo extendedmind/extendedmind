@@ -1,5 +1,5 @@
 <div id="account-container">
-  <section ng-hide="isDesktop && isMenuOpen" id="account" class="one-column-grid page" ng-controller="AccountController" snap-drawer-drag="account">
+  <section id="account" class="one-column-grid page" ng-controller="AccountController" snap-drawer-drag="account">
     <div class="column">
       <div class="content-container simple-content-container">
         <ul>
@@ -28,5 +28,4 @@
       </div>
     </div>
   </section>
-  <div ng-if="isDesktop && isMenuOpen" id="desktop-menu" class="desktop-menu-animation" ng-include="'static/app/auth/menu.html'"></div>
 </div>

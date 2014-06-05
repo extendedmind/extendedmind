@@ -1,5 +1,5 @@
 <div id="admin-container" ng-controller="AdminController">
-  <section ng-hide="isDesktop && isMenuOpen" id="admin" class="one-column-grid page" snap-drawer-drag="admin">
+  <section id="admin" class="one-column-grid page" snap-drawer-drag="admin">
     <div class="column">
       <div class="content-container simple-content-container" ng-switch on="adminMode">
         <ul ng-switch-default>
@@ -55,5 +55,4 @@
       </div>
     </div>
   </section>
-  <div ng-if="isDesktop && isMenuOpen" id="desktop-menu" class="desktop-menu-animation" ng-include="'static/app/auth/menu.html'"></div>
 </div>
