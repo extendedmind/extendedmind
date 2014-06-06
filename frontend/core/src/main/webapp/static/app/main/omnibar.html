@@ -34,7 +34,7 @@
       </li>
     </ul>
 
-    <button class="small-font button" ng-class="omnibarKeywords.isVisible ? 'selected-keyword' : 'keyword'" ng-click="omnibarKeywords.isVisible = !omnibarKeywords.isVisible; clearSelectedOmnibarKeywords()">
+    <button ng-if="keywords.length" class="small-font button" ng-class="omnibarKeywords.isVisible ? 'selected-keyword' : 'keyword'" ng-click="omnibarKeywords.isVisible = !omnibarKeywords.isVisible; clearSelectedOmnibarKeywords()">
       <span ng-bind="omnibarKeywords.isVisible ? 'hide' : 'show'"></span> keywords <strong ng-bind="omnibarKeywords.isVisible ? 'x' : '+'"></strong>
     </button>
 
