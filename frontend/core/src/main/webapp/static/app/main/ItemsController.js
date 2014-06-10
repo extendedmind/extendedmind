@@ -3,17 +3,6 @@
 
 function ItemsController($scope, $timeout, UISessionService, ItemsService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(name, data, state){
-    if (name === 'itemEdit'){
-      if (data){
-        $scope.item = data;
-      }else{
-        $scope.item = {};
-      }
-    }
-  };
-  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ItemsController');
-
   var resetInboxEdit = function(){
     $scope.itemType = 'item';
   };
@@ -38,14 +27,15 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
     }
   };
 
-  $scope.editItemTitle = function(item) {
-    AnalyticsService.do('editItemTitle');
+  $scope.editItemFields = function(item) {
+    AnalyticsService.do('editItemFields');
     ItemsService.saveItem(item, UISessionService.getActiveUUID());
     resetInboxEdit();
   };
 
+  $scope.itemDetails = {visible: false};
   $scope.editItem  = function(item) {
-    UISessionService.changeFeature('itemEdit', item);
+    $scope.itemDetails.visible = !$scope.itemDetails.visible;
   };
 
   $scope.deleteItem = function(item) {

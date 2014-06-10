@@ -73,8 +73,8 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     }
   };
 
-  $scope.editTaskTitle = function(task) {
-    AnalyticsService.do('editTaskTitle');
+  $scope.editTaskFields = function(task) {
+    AnalyticsService.do('editTaskFields');
     TasksService.saveTask(task, UISessionService.getActiveUUID());
   };
 

@@ -4,7 +4,7 @@
       <div class="inner-page-content-container" swiper-prevent>
         <div class="inner-page-content" scroll-to accordion>
           <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'unsorted'}" ng-init="newNote = {}">
-            <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
+            <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
               <div ng-if="note.content" class="teaser">
                 <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
               </div>

@@ -9,20 +9,26 @@
                 <section class="list" scroll-to>
                   <div>
                     <div class="inner-page-content-container" accordion>
-                      <h3 class="page-header">{{list.title}}</h3>
-                      <div ng-if="(archivedTasks && archivedTasks.length) || (completedTasks && completedTasks.length)">
+                      <div accordion-title="list" edit-item="editList(list)" edit-item-inline="true" edit-item-fields="editListFields(list)" bold-title="true" has-complete="false" toggle-complete></div>
+                      <div ng-if="isOpen(list)" class="accordion-body" editable-field-container="auto">
+                        <div class="accordion-inner">
+                          <div item-core-fields="list" item-core-fields-details="listDetails"></div>
+                          <div ng-include="'static/app/base/listActions.html'"></div>
+                        </div>
+                      </div>
+                      <div ng-show="(filteredArchivedTasks && filteredArchivedTasks.length)">
                         <h4>tasks</h4>
-                        <div ng-repeat="task in archivedTasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid} | orderBy:'created'">
-                          <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+                        <div ng-repeat="task in filteredArchivedTasks = (archivedTasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid} | orderBy:'created')">
+                          <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
                           <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
                             <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
                           </div>
                         </div>
                       </div>
-                      <div ng-if="archivedNotes && archivedNotes.length">
+                      <div ng-show="filteredArchivedNotes && filteredArchivedNotes.length">
                         <h4>notes</h4>
-                        <div ng-repeat="note in archivedNotes | itemsFilter:{name:'byListUUID', filterBy: list.uuid} | orderBy:'created'">
-                          <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
+                        <div ng-repeat="note in filteredArchivedNotes = (archivedNotes | itemsFilter:{name:'byListUUID', filterBy: list.uuid} | orderBy:'created')">
+                          <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
                             <div ng-if="note.content" class="teaser">
                               <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
                             </div>

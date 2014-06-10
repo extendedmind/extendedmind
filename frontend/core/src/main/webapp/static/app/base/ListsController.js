@@ -2,28 +2,18 @@
 
 function ListsController($scope, UISessionService, ListsService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(name, data, state){
-    if (name === 'listEdit'){
-      if (data){
-        $scope.list = data;
-      }else{
-        $scope.list = {};
-      }
-    }
-  };
-  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ListsController');
-
   $scope.saveList = function(list) {
     ListsService.saveList(list, UISessionService.getActiveUUID());
     $scope.gotoPreviousPage();
   };
 
+  $scope.listDetails = {visible: false};
   $scope.editList = function(list) {
-    UISessionService.changeFeature('listEdit', list);
+    $scope.listDetails.visible = !$scope.listDetails.visible;
   };
 
-  $scope.editListTitle = function(list) {
-    AnalyticsService.do('editListTitle');
+  $scope.editListFields = function(list) {
+    AnalyticsService.do('editListFields');
     ListsService.saveList(list, UISessionService.getActiveUUID());
   };
 

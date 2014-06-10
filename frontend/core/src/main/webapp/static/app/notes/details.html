@@ -8,12 +8,15 @@
               <section class="list" scroll-to>
                 <div>
                   <div class="inner-page-content-container" accordion>
-                    <div accordion-title="list" edit-item="editList(list)" edit-item-title="editListTitle(list)" bold-title="true" has-complete="false" toggle-complete></div>
+                    <div accordion-title="list" edit-item="editList(list)" edit-item-inline="true" edit-item-fields="editListFields(list)" bold-title="true" has-complete="false" toggle-complete></div>
                     <div ng-if="isOpen(list)" class="accordion-body" editable-field-container="auto">
-                      <div class="accordion-inner" ng-include="'static/app/base/listActions.html'"></div>
+                      <div class="accordion-inner">
+                        <div item-core-fields="list" item-core-fields-details="listDetails"></div>
+                        <div ng-include="'static/app/base/listActions.html'"></div>
+                      </div>
                     </div>
                     <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
-                      <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
+                      <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
                         <div ng-if="note.content" class="teaser">
                           <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
                         </div>
@@ -36,7 +39,7 @@
                 <div>
                   <div class="inner-page-content-container" accordion>
                     <div ng-if="showContent('notes')" ng-repeat="note in notes | limitTo: 10 | orderBy:'modified':true" ng-init="newNote = {}">
-                      <div accordion-title="note" edit-item="editNote(note)" edit-item-title="editNoteTitle(note)" has-complete="false" toggle-complete>
+                      <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
                         <div ng-if="note.content" class="teaser">
                           <a href id="note-teaser" ng-click="editNote(note)" ng-bind="getNoteContentTeaser(note)"></a>
                         </div>

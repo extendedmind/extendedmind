@@ -8,12 +8,15 @@
               <section class="list" scroll-to>
                 <div>
                   <div class="inner-page-content-container" accordion>
-                    <div accordion-title="list" edit-item="editList(list)" edit-item-title="editListTitle(list)" bold-title="true" has-complete="false" toggle-complete></div>
+                    <div accordion-title="list" edit-item="editList(list)" edit-item-inline="true" edit-item-fields="editListFields(list)" bold-title="true" has-complete="false" toggle-complete></div>
                     <div ng-if="isOpen(list)" class="accordion-body" editable-field-container="auto">
-                      <div class="accordion-inner" ng-include="'static/app/base/listActions.html'"></div>
+                      <div class="accordion-inner">
+                        <div item-core-fields="list" item-core-fields-details="listDetails"></div>
+                        <div ng-include="'static/app/base/listActions.html'"></div>
+                      </div>
                     </div>
                     <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
-                      <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+                      <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
                       <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
                         <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>
@@ -29,9 +32,10 @@
               <section class="context" scroll-to>
                 <div>
                   <div class="inner-page-content-container" accordion>
-                    <div accordion-title="context" edit-item="editContext(context)" edit-item-title="editContextTitle(context)" bold-title="true" title-prefix="'@'" has-complete="false" toggle-complete></div>
+                    <div accordion-title="context" edit-item="editContext(context)" edit-item-inline="true" edit-item-fields="editContextFields(context)" bold-title="true" title-prefix="'@'" has-complete="false" toggle-complete></div>
                     <div ng-if="isOpen(context)" class="accordion-body swiper-no-swiping" editable-field-container="auto">
                       <div class="accordion-inner">
+                        <div item-core-fields="context" item-core-fields-details="contextDetails"></div>
                         <ul class="button-row">
                           <li class="button-container left-of-two border-right">
                             <button class="normal-button" type="button" ng-click="closeAndCall(context, contextQuickEditDone)">
@@ -47,7 +51,7 @@
                       </div>
                     </div>
                     <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'byContextUUID', filterBy: context.uuid}">
-                      <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+                      <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
                       <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
                         <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>
@@ -65,7 +69,7 @@
                 <div>
                   <div class="inner-page-content-container" accordion>
                     <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}" ng-init="subtask = {}">
-                      <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+                      <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
                       <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
                         <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
                       </div>

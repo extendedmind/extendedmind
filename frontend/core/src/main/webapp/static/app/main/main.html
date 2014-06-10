@@ -9,8 +9,6 @@
     <div ng-if="isFeatureActive('noteEdit')" ng-include="'static/app/notes/editNote.html'" include-replace></div>
     <div ng-if="isContentFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>
     <div ng-if="isFeatureActive('itemEdit')" ng-include="'static/app/main/editItem.html'" include-replace></div>
-    <div ng-if="isFeatureActive('listEdit')" ng-include="'static/app/base/editList.html'" include-replace></div>
-    <div ng-if="isFeatureActive('contextEdit')" ng-include="'static/app/base/editContext.html'" include-replace></div>
     <div ng-if="isFeatureActive('dashboard')" ng-include="'static/app/dashboard/dashboardSlides.html'" include-replace></div>
     <div ng-if="isFeatureActive('archive')" ng-include="'static/app/archive/archiveSlides.html'" include-replace></div>
     <div ng-if="isFeatureActive('account') && !isContentFeatureActive()" ng-include="'static/app/account/account.html'" include-replace></div>

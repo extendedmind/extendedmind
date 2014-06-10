@@ -11,8 +11,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       var activeContentFeatures = {tasks: true};
       var helperFeatures = {
         taskEdit: 'tasks',
-        noteEdit: 'notes',
-        itemEdit: 'inbox'
+        noteEdit: 'notes'
       };
       var systemFeatures = ['account', 'about', 'admin'];
       var featureElements = {};

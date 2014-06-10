@@ -13,8 +13,9 @@ function accordionTitleDirective() {
     templateUrl: 'static/app/base/accordionTitle.html',
     scope: {
       item: '=accordionTitle',
-      editItemTitle: '&',
+      editItemFields: '&',
       editItem: '&',
+      editItemInline: '=?',
       hasComplete: '=',
       toggleComplete: '&',
       boldTitle: '=?',
@@ -27,7 +28,13 @@ function accordionTitleDirective() {
       if ($scope.$parent.$last) accordionCtrl.notifyLast();
 
       $scope.isOpen = false;
-      $scope.oldTitle = $scope.item.title;
+
+      function cacheFields(){
+        $scope.oldTitle = $scope.item.title;
+        $scope.oldLink = $scope.item.link;
+        $scope.oldDescription = $scope.item.description;
+      }
+      cacheFields();
 
       $scope.openItem = function openItem(skipScroll) {
         if (!$scope.isOpen){
@@ -42,7 +49,7 @@ function accordionTitleDirective() {
 
       $scope.closeItem = function(skipSave) {
         if ($scope.isOpen){
-          $scope.endTitleEdit(skipSave);
+          $scope.endFieldsEdit(skipSave);
           $element.parent().removeClass('accordion-item-active');
           $scope.isOpen = false;
           return true;
@@ -69,20 +76,26 @@ function accordionTitleDirective() {
         return title;
       };
 
-      $scope.endTitleEdit = function(skipSave){
+      $scope.endFieldsEdit = function(skipSave){
         // Programmatically blur the textarea
         $element.find('textarea#accordionTitleInput')[0].blur();
-        if ($scope.oldTitle !== $scope.item.title){
+        // Reset description field
+        if ($scope.item.description === '') delete $scope.item.description;
+        if ($scope.oldTitle !== $scope.item.title
+            || $scope.oldLink !== $scope.item.link
+            || $scope.oldDescription !== $scope.item.description){
           if (!skipSave){
-            // Title has changed, call edit title method with new title
-            $scope.editItemTitle({item: $scope.item});
+            // Task fields have changed
+            $scope.editItemFields({item: $scope.item});
           }
-          $scope.oldTitle = $scope.item.title;
+          cacheFields();
         }
       };
 
       $scope.pressItemEdit = function(){
-        $scope.closeItem(true);
+        if (!$scope.editItemInline){
+          $scope.closeItem(true);
+        }
         $scope.editItem({item: $scope.item});
       };
 
@@ -93,7 +106,7 @@ function accordionTitleDirective() {
       $scope.evaluateKeyPress = function(event) {
         // Enter key
         if(event.which === 13) {
-          $scope.endTitleEdit();
+          $scope.endFieldsEdit();
           event.preventDefault();
         }
       };

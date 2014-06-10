@@ -2,28 +2,18 @@
 
 function ContextsController($scope, UISessionService, TagsService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(name, data, state){
-    if (name === 'contextEdit'){
-      if (data){
-        $scope.context = data;
-      }else{
-        $scope.context = {};
-      }
-    }
-  };
-  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ContextsController');
-
   $scope.saveContext = function(context) {
     TagsService.saveTag(context, UISessionService.getActiveUUID());
     $scope.gotoPreviousPage();
   };
 
+  $scope.contextDetails = {visible: false};
   $scope.editContext = function(context) {
-    UISessionService.changeFeature('contextEdit', context);
+    $scope.contextDetails.visible = !$scope.contextDetails.visible;
   };
 
-  $scope.editContextTitle = function(context) {
-    AnalyticsService.do('editContextTitle');
+  $scope.editContextFields = function(context) {
+    AnalyticsService.do('editContextFields');
     TagsService.saveTag(context, UISessionService.getActiveUUID());
   };
 

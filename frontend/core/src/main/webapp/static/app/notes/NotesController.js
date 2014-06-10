@@ -93,8 +93,8 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
     NotesService.saveNote(note, UISessionService.getActiveUUID());
   };
 
-  $scope.editNoteTitle = function(note) {
-    AnalyticsService.do('editNoteTitle');
+  $scope.editNoteFields = function(note) {
+    AnalyticsService.do('editNoteFields');
     NotesService.saveNote(note, UISessionService.getActiveUUID());
   };
 
