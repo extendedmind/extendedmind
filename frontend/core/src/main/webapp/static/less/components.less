@@ -137,8 +137,9 @@ div#closedAccordionTitleWrapper {
 
 // PAGE HEADER
 
-header.static-page-header nav {
-  div#menu-button-wrapper {
+header.static-page-header {
+  background-color: white;
+  .active-item-container {
     button#menu-button {
       .button;
       padding: 19px 20px 13px @horizontal-grid - 4; // increased clicking area, align icon to grid with right padding
@@ -151,16 +152,6 @@ header.static-page-header nav {
         color: @highlighted-element-pressed;
       }
     }
-  }
-  div#static-feature {
-    color: @highlighted-element;
-    font-weight: 700;
-  }
-}
-
-header.page-header nav {
-  color: @highlighted-element;
-  div#active-action-content-wrapper {
     a#today-link {
       float: left;
       color: @highlighted-element;
@@ -172,41 +163,18 @@ header.page-header nav {
     a.today-link-active {
       .font-bold;
     }
-
-    button#menu-button {
-      .button;
-      padding: 19px 20px 13px @horizontal-grid; // increased clicking area
-      span.icon-menu {
-        padding-right: 4px;
-        color: @highlighted-element;
-      }
-    }
-    button#menu-button:active {
-      background-position: 0 0;
-      span.icon-menu {
-        color: @highlighted-element-pressed;
-      }
-    }
   }
-
-  button#plus-button {
+  .heading {
+    color: @highlighted-element;
+    font-weight: 700;
+  }
+  .omni-button {
     .button;
+    line-height: normal;
     padding: 17px @horizontal-grid 17px 20px; // increased clicking area
-  }
-
-  #omnibar-search-results {
-    height: 100%;
-    z-index: 1;
-    position: relative;
-  }
-}
-
-div.page-heading {
-  input.omnibar-input {
-    text-align: center;
-  }
-  input.omnibar-input:focus {
-    text-align: left;
+    span {
+      font-size: 16px;
+    }
   }
 }
 
@@ -229,48 +197,19 @@ footer {
   }
 }
 
-
 // OMNIBAR
 
-#omnibar-wrapper {
+.omnibar-container {
+  .one-column-grid;
   position: relative;
-  height: @page-header-height;
+
+  // Push omnibar under page header
+  min-height: @page-header-height;
+
+  padding-top: 10px;
   form, .form-group, input {
     height: inherit;
   }
-  .omnibar-visible {
-    height: inherit;
-    .left-input-wrapper;
-    input {
-      text-align: left !important;
-    }
-  }
-
-  .omnibar-hidden {
-    height: inherit;
-    .center-horizontally;
-    input::-webkit-input-placeholder { /* WebKit browsers */
-      font-size: @large-font-size;
-      .font-bold;
-      color: @highlighted-element;
-    }
-    input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-      font-size: @large-font-size;
-      .font-bold;
-      color: @highlighted-element;
-    }
-    input::-moz-placeholder { /* Mozilla Firefox 19+ */
-      font-size: @large-font-size;
-      .font-bold;
-      color: @highlighted-element;
-    }
-    input:-ms-input-placeholder { /* Internet Explorer 10+ */
-      font-size: @large-font-size;
-      .font-bold;
-      color: @highlighted-element;
-    }
-  }
-
   #omnibar-results {
     margin-top: 12px;
     float: left;
@@ -285,12 +224,42 @@ footer {
       padding-top: @vertical-grid-half;
     }
   }
+  #omnibarX {
+    //padding-bottom: 6px;
+    span {
+      font-size: 18px;
+    }
+  }
 }
 
-#omnibarX {
-  font-size: 18px;
-  //padding-top: 0;
-  padding-bottom: 9px;
+.omnibar-hidden .omnibar-container {
+  margin-top: -@page-header-height;
+}
+
+.omnibar-animation.ng-enter, .omnibar-animation.ng-leave {
+  position: absolute;
+  left: @horizontal-grid;
+  right: @horizontal-grid;
+}
+
+.omnibar-animation.ng-enter {
+  -webkit-animation: .3s fade-in;
+  -moz-animation: .3s fade-in;
+  -o-animation: .3s fade-in;
+  animation: .3s fade-in;
+
+  display: none;  // https://github.com/angular/angular.js/issues/4225
+}
+
+.omnibar-animation.ng-enter.ng-enter-active {
+  display: block; // https://github.com/angular/angular.js/issues/4225
+}
+
+.omnibar-animation.ng-leave {
+  -webkit-animation: .3s fade-out;
+  -moz-animation: .3s fade-out;
+  -o-animation: .3s fade-out;
+  animation: .3s fade-out;
 }
 
 // MENU
@@ -305,10 +274,6 @@ footer {
     div.banner {
       padding-top: 8px;
       height: @page-header-height;
-      span.icon-logo-only {
-        vertical-align: middle;
-        font-size: @drawer-menu-icon-size;
-      }
     }
     a, span {
       font-size: @small-font-size;
@@ -570,7 +535,7 @@ li.datepicker-date {
   #omnibar-label-wrapper, .ellipsis:after {
     background-image: none !important;
   }
-  #active-action-wrapper, #plus-button-wrapper, #feature-container-wrapper, #feature-container, .border-button {
+  #active-action-wrapper, #plus-button-wrapper, #feature-container-wrapper, #feature-container, .border-button, .static-page-header {
     background-color: inherit;
   }
 }

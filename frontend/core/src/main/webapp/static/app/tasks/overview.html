@@ -1,7 +1,6 @@
 <section id="tasks-overview" class="two-column-grid page">
   <div class="column">
-    <div class="page-heading swiper-no-swiping" ng-init="heading = 'overview'; omnibarFeature = 'tasks'" ng-include="'static/app/main/omnibar.html'"></div>
-    <div ng-hide="omnibarVisible && isActiveSlide('overview')" class="content-container page-content-container omnibar-animation" scroll-to>
+    <div ng-hide="omnibarVisible && isActiveSlide('overview')" class="content-container page-content-container" scroll-to>
       <div class="inner-page-content-container" swiper-prevent>
         <div ng-include="'static/app/base/listsOverview.html'" include-replace></div>
         <div ng-include="'static/app/base/contextsOverview.html'" include-replace></div>

@@ -18,28 +18,6 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
     $scope.itemType = 'item';
   };
 
-  $scope.omnibarHasText = function omnibarHasText() {
-    return $scope.omnibarText.title && $scope.omnibarText.title.length !== 0;
-  };
-
-  $scope.searchText = {};
-  $scope.isSearchActive = function isSearchActive() {
-    return $scope.searchText.delayed && $scope.searchText.delayed.length > 1;
-  };
-  $scope.$watch('omnibarText.title', function(newTitle/*, oldTitle*/) {
-    $scope.searchText.current = newTitle;
-    if (newTitle && newTitle.length > 1){
-      // Use a delayed update for search
-      $timeout(function(){
-        if ($scope.searchText.current === newTitle){
-          $scope.searchText.delayed = newTitle;
-        }
-      }, 700);
-    }else{
-      $scope.searchText.delayed = undefined;
-    }
-  });
-
   $scope.saveItem = function(item) {
     if (item.uuid){
       AnalyticsService.do('saveItem', 'new');
@@ -104,45 +82,35 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
     resetInboxEdit();
   };
 
-  $scope.getOmnibarSearchResultsHeight = function() {
-    if ($scope.currentHeight <= 810){
-      return $scope.currentHeight - 142;
-    }else{
-      return 668;
-    }
-  };
-
-  $scope.getColumnWidth = function() {
-    if ($scope.currentWidth > 568){
-      // Desktop, leave 44 pixels of gutter
-      return 524;
-    }else{
-      return $scope.currentWidth - 44;
-    }
-  };
-
   // OMNIBAR
 
   $scope.omnibarText = {};
-  $scope.omnibarPlaceholders = {};
-  $scope.omnibarVisible = undefined;
+  $scope.omnibarVisible = false;
+  $scope.searchText = {};
 
-  $scope.setOmnibarPlaceholder = function(omnibarFeature, heading) {
-    $scope.omnibarPlaceholders[omnibarFeature + heading] = {text: heading + getOfflineIndicator(), heading: heading};
+  $scope.omnibarHasText = function omnibarHasText() {
+    return $scope.omnibarText.title && $scope.omnibarText.title.length !== 0;
   };
 
-  function getOfflineIndicator() {
-    if (!$scope.online) {
-      return '*';
-    } else {
-      return '';
+  $scope.isSearchActive = function isSearchActive() {
+    return $scope.searchText.delayed && $scope.searchText.delayed.length > 1;
+  };
+  $scope.$watch('omnibarText.title', function(newTitle/*, oldTitle*/) {
+    $scope.searchText.current = newTitle;
+    if (newTitle && newTitle.length > 1){
+      // Use a delayed update for search
+      $timeout(function(){
+        if ($scope.searchText.current === newTitle){
+          $scope.searchText.delayed = newTitle;
+        }
+      }, 700);
+    }else{
+      $scope.searchText.delayed = undefined;
     }
-  }
+  });
 
-  $scope.clickOmnibar = function(omnibarFeature, heading) {
-    // NOTE Heading may be not correct before $digest() because ng-init is not run.
-    $scope.omnibarVisible = heading;
-    $scope.omnibarPlaceholders[omnibarFeature + heading] = {text: 'store / recall', heading: heading};
+  $scope.clickOmnibar = function() {
+    $scope.omnibarVisible = true;
   };
 
   $scope.omnibarKeyDown = function(event) {
@@ -154,16 +122,7 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
   $scope.clearOmnibar = function() {
     $scope.omnibarText.title = '';
     $scope.omnibarVisible = false;
-    for (var key in $scope.omnibarPlaceholders) {
-      if ($scope.omnibarPlaceholders.hasOwnProperty(key)) {
-        if ($scope.omnibarPlaceholders[key].text === 'store / recall') {
-          // This is the active omnibar, blur it programmatically
-          $('input#' + key + 'OmnibarInput').blur();
-          $scope.omnibarPlaceholders[key].text = $scope.omnibarPlaceholders[key].heading;
-          return;
-        }
-      }
-    }
+    $('input#omnibar-input').blur();
   };
 
   $scope.saveOmnibarText = function(omnibarText) {
@@ -185,6 +144,23 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
   $scope.editAsNote = function editAsNote(omnibarText) {
     UISessionService.changeFeature('noteEdit', {title: omnibarText.title});
     $scope.clearOmnibar();
+  };
+
+  $scope.getOmnibarSearchResultsHeight = function() {
+    if ($scope.currentHeight <= 810){
+      return $scope.currentHeight - 142;
+    }else{
+      return 668;
+    }
+  };
+
+  $scope.getColumnWidth = function() {
+    if ($scope.currentWidth > 568){
+      // Desktop, leave 44 pixels of gutter
+      return 524;
+    }else{
+      return $scope.currentWidth - 44;
+    }
   };
 
 }

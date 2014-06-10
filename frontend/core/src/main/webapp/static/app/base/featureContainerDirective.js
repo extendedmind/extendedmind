@@ -61,17 +61,13 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         }
       };
 
-      $scope.featureHasPlusButton = function featureHasPlusButton() {
-        if ($scope.isFeatureActive('tasks') || $scope.isFeatureActive('notes')){
-          if (UserSessionService.getUIPreference('hidePlus')){
-            return false;
-          }else{
-            return true;
-          }
-        }else{
-          return false;
+      $scope.getCurrentHeading = function getCurrentHeading() {
+        var currentHeading = $scope.getActiveFeature();
+        if (!$scope.online) {
+          currentHeading += '*';
         }
-      };
+        return currentHeading;
+      }
 
       // UI SESSION SERVICE HOOKS
 

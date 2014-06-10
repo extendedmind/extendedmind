@@ -58,9 +58,6 @@ header {
   * {
     vertical-align: middle;
   }
-  &.header-hidden {
-    z-index: 0 !important;
-  }
 }
 
 .static-page-header {
@@ -70,56 +67,30 @@ header {
     max-width: @one-column-grid-width;
     margin-left: auto;
     margin-right: auto;
-    #menu-button-wrapper {
+    .active-item-container {
       width: 30%;
       height: @page-header-height;
       float: left;
     }
-    #static-feature-wrapper {
+    .heading-container {
       width: 40%;
       height: @page-header-height;
       float: left;
       display: table;
-      #static-feature {
+      .heading {
         display: table-cell;
         vertical-align: middle;
         text-align: center;
       }
     }
-  }
-}
-
-.page-header {
-  height: @page-header-height;
-  .center-horizontally;
-  position: relative;
-  #active-action-wrapper {
-    background-color: white;
-    height: @page-header-height;
-    float: left;
-    text-align: right;
-    // Width determined with javascript
-    #active-action-content-wrapper {
-      width: 82px;
+    .omni-button-container {
       height: @page-header-height;
       float: right;
+      text-align: center;
+      label {
+        display: block;
+      }
     }
-  }
-  #omnibar-label-wrapper {
-    height: @page-header-height;
-    float: left;
-    text-align: center;
-    label {
-      display: block;
-    }
-    // Width determined with javascript
-  }
-  #plus-button-wrapper {
-    background-color: white;
-    height: @page-header-height;
-    float: right;
-    text-align: left;
-    // Width determined with javascript
   }
 }
 
@@ -169,8 +140,8 @@ header {
 
 .page-content-container {
   height: 100%;
-  padding-top: 12px;
-  padding-bottom: @footer-height + @page-header-height;
+  padding-top: @page-header-height + 12px;
+  padding-bottom: @footer-height;
 
   .inner-page-content-container, .inner-page-content {
     height: inherit;
@@ -198,19 +169,10 @@ header {
   padding-bottom: @page-header-height + @vertical-grid-half;
 }
 
-.no-heading-content-container {
-  padding-top: 3px;
-}
-
 .simple-content-container {
   height: inherit;
   padding-bottom: @heading-header-height + @vertical-grid-half;
   overflow-y: auto;
-}
-
-.content-container {
-  width: inherit;
-  padding-top: 12px;
 }
 
 // FOOTER

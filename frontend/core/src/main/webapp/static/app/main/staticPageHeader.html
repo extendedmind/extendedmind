@@ -1,10 +1,16 @@
-<nav id="{{getActiveFeature()}}-header" class="swiper-no-swiping" role="navigation">
-  <div id="menu-button-wrapper">
-    <button id="menu-button" type="button" ng-click="toggleMenu()" alt="menu">
+<nav id="page-header" class="swiper-no-swiping" role="navigation" ng-controller="HeaderController">
+  <div class="active-item-container">
+    <button ng-if="!isDatepickerVisible" id="menu-button" type="button" ng-click="toggleMenu()" alt="menu">
       <span class="icon-menu"></span>
     </button>
+    <a href ng-if="isDatepickerVisible" id="today-link" ng-class="{'today-link-active': isTodayActive}">today</a>
   </div>
-  <div id="static-feature-wrapper">
-    <div id="static-feature">{{getActiveFeature()}}</div>
+  <div class="heading-container">
+    <div class="heading">{{getCurrentHeading()}}</div>
+  </div>
+  <div class="omni-button-container">
+    <label class="omni-button" for="omnibar-input">
+      <span class="icon-logo-only"></span>
+    </label>
   </div>
 </nav>

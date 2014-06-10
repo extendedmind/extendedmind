@@ -1,6 +1,5 @@
 <section id="archive-details" class="two-column-grid page">
   <div class="column">
-    <div class="page-heading swiper-no-swiping" ng-init="heading = 'details'; omnibarFeature = 'archive'" ng-include="'static/app/main/omnibar.html'"></div>
     <div ng-if="!isArchivedLoading" ng-hide="omnibarVisible && isActiveSlide({{'details'}})" class="content-container page-content-container no-heading-content-container">
       <div class="inner-page-content-container">
         <div class="swiper-container vertical-slides" swiper-container="archive/details" swiper-type="page" expected-slides="archivedLists.length">

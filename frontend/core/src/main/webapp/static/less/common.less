@@ -486,10 +486,10 @@ a.click-to-slide {
   color: @default-element;
 }
 
-span.icon-i, span.icon-plus {
+span.icon-i, span.icon-plus, span.icon-logo-only {
   color: @highlighted-element;
 }
-span.icon-i:active, span.icon-plus:active {
+span.icon-i:active, span.icon-plus:active, span.icon-logo-only:active {
   color: @highlighted-element-pressed;
 }
 
@@ -620,10 +620,6 @@ a.content:active {
   font-size: @slide-indicator-width;
 }
 
-#about-help {
-  line-height: @vertical-grid-half;
-}
-
 // GRADIENTS
 
 .edges-fade-to-white {
@@ -666,59 +662,6 @@ a.content:active {
   background-image: linear-gradient(to right, #FFFFFF 0%, rgba(255, 255, 255, 0) 25%);
 }
 
-// ANIMATIONS
-
-.omnibar-animation.ng-enter, .omnibar-animation.ng-leave {
-  position: absolute;
-  left: 0;
-  right: 0;
-}
-
-.omnibar-animation.ng-enter {
-  -webkit-animation: .3s fade-in;
-  -moz-animation: .3s fade-in;
-  -o-animation: .3s fade-in;
-  animation: .3s fade-in;
-
-  display: none;  // https://github.com/angular/angular.js/issues/4225
-}
-
-.omnibar-animation.ng-enter.ng-enter-active {
-  display: block; // https://github.com/angular/angular.js/issues/4225
-}
-
-.omnibar-animation.ng-leave {
-  -webkit-animation: .3s fade-out;
-  -moz-animation: .3s fade-out;
-  -o-animation: .3s fade-out;
-  animation: .3s fade-out;
-}
-
-// HIDE
-
-.omnibar-animation.ng-hide-add {
-  -webkit-animation: .3s fade-out;
-  -moz-animation: .3s fade-out;
-  -o-animation: .3s fade-out;
-  animation: .3s fade-out;
-}
-
-.omnibar-animation.ng-hide-remove {
-  -webkit-animation: .3s fade-in;
-  -moz-animation: .3s fade-in;
-  -o-animation: .3s fade-in;
-  animation: .3s fade-in;
-}
-
-.omnibar-animation.ng-hide-add, .omnibar-animation.ng-hide-remove {
-  display: block !important;
-  position: absolute;
-}
-
-.omnibar-animation.ng-hide {
-  opacity: 0;
-}
-
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -743,36 +686,6 @@ a.content:active {
 @-webkit-keyframes fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
-}
-
-// DESKTOP MENU
-
-.desktop-menu-animation.ng-enter {
-  -webkit-animation: .1s fade-in;
-  -moz-animation: .1s fade-in;
-  -o-animation: .1s fade-in;
-  animation: .1s fade-in;
-}
-
-.desktop-menu-animation.ng-leave {
-  -webkit-animation: .1s fade-out;
-  -moz-animation: .1s fade-out;
-  -o-animation: .1s fade-out;
-  animation: .1s fade-out;
-}
-
-.desktop-menu-animation.ng-hide-add {
-  -webkit-animation: .1s fade-out;
-  -moz-animation: .1s fade-out;
-  -o-animation: .1s fade-out;
-  animation: .1s fade-out;
-}
-
-.desktop-menu-animation.ng-hide-remove {
-  -webkit-animation: .1s fade-in;
-  -moz-animation: .1s fade-in;
-  -o-animation: .1s fade-in;
-  animation: .1s fade-in;
 }
 
 // WORD BREAKING

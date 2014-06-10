@@ -1,7 +1,7 @@
 <div id="account-container">
   <section id="account" class="one-column-grid page" ng-controller="AccountController" snap-drawer-drag="account">
     <div class="column">
-      <div class="content-container simple-content-container">
+      <div ng-hide="omnibarVisible" class="content-container simple-content-container">
         <ul>
           <li class="simple-content">
             <h3>email</h3>
@@ -15,10 +15,6 @@
           <li>
             <input class="input-checkbox" type="checkbox" name="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="showOnboardingChecked(settings.showOnboarding)"/>
             <label class="default-element small-font" for="showOnboarding">show onboarding on next login</label>
-          </li>
-          <li>
-            <input class="input-checkbox" type="checkbox" name="checkbox" id="hidePlus" ng-model="settings.hidePlus" ng-change="hidePlus(settings.hidePlus)"/>
-            <label class="default-element small-font" for="hidePlus">hide plus button</label>
           </li>
           <li>
             <input class="input-checkbox" type="checkbox" name="checkbox" id="hideFooter" ng-model="settings.hideFooter" ng-change="hideFooter(settings.hideFooter)"/>

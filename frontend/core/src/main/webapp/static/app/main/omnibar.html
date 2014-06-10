@@ -1,8 +1,8 @@
-<div ng-init="omnibarKeywords = {isVisible: false}" id="omnibar-wrapper" class="swiper-no-swiping">
-  <form id="{{heading}}-omnibar" ng-init="setOmnibarPlaceholder(omnibarFeature, heading)" role="form" name="{{heading}}-addOmniItem" ng-submit="saveOmnibarText(omnibarText)" autocapitalize="none" autocorrect="off">
+<div ng-init="omnibarKeywords = {isVisible: false}" class="omnibar-container swiper-no-swiping">
+  <form id="omnibar" role="form" name="add-omni-item" ng-submit="saveOmnibarText(omnibarText)" autocapitalize="none" autocorrect="off">
     <div class="form-group">
-      <div ng-class="(omnibarVisible && 'omnibar-visible') || (!omnibarVisible && 'omnibar-hidden')">
-        <input type="text" id="{{omnibarFeature + heading}}OmnibarInput" class="simple-input form-control omnibar-input" ng-model="omnibarText.title" dynamic-placeholder="{{omnibarPlaceholders[omnibarFeature + heading].text}}" ng-click="clickOmnibar(omnibarFeature, heading)" ng-keydown="omnibarKeyDown($event)" maxlength="128" required>
+      <div class="left-input-wrapper">
+        <input type="text" id="omnibar-input" class="simple-input form-control omnibar-input" ng-model="omnibarText.title" placeholder="store / recall" ng-click="clickOmnibar()" ng-keydown="omnibarKeyDown($event)" maxlength="128" required>
       </div>
       <div ng-show="omnibarHasText()" class="right-button-wrapper">
         <button id="omnibarX" class="button" type="button" ng-click="omnibarText.title=''"><span class="icon-x"></span>
@@ -10,7 +10,7 @@
       </div>
     </div>
   </form>
-  <div ng-if="omnibarVisible === heading" class="omnibar-actions omnibar-animation">
+  <div ng-if="omnibarVisible" class="omnibar-actions omnibar-animation">
     <ul class="button-row">
       <li class="button-container left-of-four border-right">
         <button type="button" class="normal-button" ng-click="saveOmnibarText(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
@@ -45,7 +45,7 @@
     </div>
 
   </div>
-  <div ng-if="omnibarVisible === heading" id="omnibar-results" class="swiper-no-swiping" ng-style="{height: getOmnibarSearchResultsHeight()}" data-snap-ignore="true" scroll-to>
+  <div ng-if="omnibarVisible" id="omnibar-results" class="swiper-no-swiping" ng-style="{height: getOmnibarSearchResultsHeight()}" data-snap-ignore="true" scroll-to>
 
     <div ng-if="omnibarKeywords.isVisible && !isLoading">
       <div ng-show="filteredNotes.length" class="filtered-items">
