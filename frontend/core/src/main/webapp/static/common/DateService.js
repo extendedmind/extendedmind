@@ -288,6 +288,9 @@ function DateService($timeout) {
     getYYYYMMDD: function(date) {
       return yyyymmdd(date);
     },
+    getDateFromYYYYMMDD: function(yyyymmdd) {
+      return new Date(yyyymmdd);
+    },
     getWeekday: function(date) {
       return weekdays[date.getDay()];
     },
@@ -303,32 +306,28 @@ function DateService($timeout) {
     getTomorrowYYYYMMDD: function() {
       var tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-
       return yyyymmdd(tomorrow);
     },
-    getSaturdayYYYYMMDD: function() {
+    getDateTodayOrFromLaterYYYYMMDD: function(dateYYYYMMDD) {
+      return (dateYYYYMMDD < today.yyyymmdd) ? new Date() : new Date(dateYYYYMMDD);
+    },
+
+    // setters
+    setReferenceDate: function(weekday, referenceDate) {
       // http://stackoverflow.com/a/1579109
-      var saturday = new Date();
-      var offsetToSaturday = (weekdays.indexOf('saturday') + (7 - saturday.getDay())) % 7;
-      saturday.setDate(saturday.getDate() + offsetToSaturday);
-
-      return yyyymmdd(saturday);
+      var offsetToWeekday = (weekdays.indexOf(weekday) + (7 - referenceDate.getDay())) % 7;
+      if (offsetToWeekday === 0) offsetToWeekday = 7; // jump seven days if reference day is same day as weekday
+      referenceDate.setDate(referenceDate.getDate() + offsetToWeekday);
+      return this;
     },
-    getNextMondayYYYYMMDD: function() {
-      var monday = new Date();
-      var offsetToMonday = (weekdays.indexOf('monday') + (7 - monday.getDay())) % 7;
-      monday.setDate(monday.getDate() + offsetToMonday);
-
-      return yyyymmdd(monday);
+    setOffsetDate: function(offsetDays, date) {
+      date.setDate(date.getDate() + offsetDays);
+      return this;
     },
-    getFirstDateOfNextMonthYYYYMMDD: function() {
-      var firstDateOfNextMonth = new Date();
-      firstDateOfNextMonth.setMonth(firstDateOfNextMonth.getMonth() + 1);
-      firstDateOfNextMonth.setDate(1);
-
-      // TODO parameters:
-      // returns same day next month / first weekday of next month / same day of next month if both weekend or !weekend
-      return yyyymmdd(firstDateOfNextMonth);
+    setDateToFirstDayOfNextMonth: function(referenceDate) {
+      referenceDate.setMonth(referenceDate.getMonth() + 1);
+      referenceDate.setDate(1);
+      return this;
     }
   };
 }

@@ -119,6 +119,12 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     });
   };
 
+  function setTaskDateAndSave(task, dateSetterFn) {
+    var startingDate = DateService.getDateTodayOrFromLaterYYYYMMDD(task.date);
+    task.date = dateSetterFn(startingDate).getYYYYMMDD(startingDate);
+    $scope.taskQuickEditDone(task);
+  }
+
   $scope.taskQuickEditDone = function(task) {
     AnalyticsService.do('taskQuickEditDone');
     TasksService.saveTask(task, UISessionService.getActiveUUID());
@@ -132,34 +138,29 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     task.date = DateService.getTomorrowYYYYMMDD();
     $scope.taskQuickEditDone(task);
   };
+  $scope.setDateNextDay = function setDateNextDay(task) {
+    setTaskDateAndSave(task, DateService.setOffsetDate.bind(DateService, 1));
+  };
+  $scope.setDateTwoDaysLater = function setDateTwoDaysLater(task) {
+    setTaskDateAndSave(task, DateService.setOffsetDate.bind(DateService, 2));
+  };
   $scope.setDateWeekend = function setDateWeekend(task) {
-    // NOTE if task.date === Sunday?
-    task.date = DateService.getSaturdayYYYYMMDD();
-    $scope.taskQuickEditDone(task);
+    setTaskDateAndSave(task, DateService.setReferenceDate.bind(DateService, 'saturday'));
   };
   $scope.setDateFirstDayOfNextWeek = function setDateFirstDayOfNextWeek(task) {
-    task.date = DateService.getNextMondayYYYYMMDD();
-    $scope.taskQuickEditDone(task);
+    setTaskDateAndSave(task, DateService.setReferenceDate.bind(DateService, 'monday'));
   };
   $scope.setDateFirstDayOfNextMonth = function setDateFirstDayOfNextMonth(task) {
-    task.date = DateService.getFirstDateOfNextMonthYYYYMMDD();
-    $scope.taskQuickEditDone(task);
+    setTaskDateAndSave(task, DateService.setDateToFirstDayOfNextMonth.bind(DateService));
   };
 
   $scope.isTaskDateTodayOrLess = function isTaskDateTodayOrLess(task) {
+    if (!task.date) return; // set date/snooze ng-swith-default value
     return task.date <= DateService.getTodayYYYYMMDD();
   };
-  $scope.isTaskDateTomorrow = function isTaskDateTomorrow(task) {
-    return task.date === DateService.getTomorrowYYYYMMDD();
-  };
-  $scope.isTaskDateSaturday = function isTaskDateSaturday(task) {
-    return task.date === DateService.getSaturdayYYYYMMDD();
-  };
-  $scope.isTaskDateFirstDayOfNextWeek = function isTaskDateFirstDayOfNextWeek(task) {
-    return task.date === DateService.getNextMondayYYYYMMDD();
-  };
-  $scope.isTaskDateFirstDayOfNextMonth = function isTaskDateFirstDayOfNextMonth(task) {
-    return task.date === DateService.getFirstDateOfNextMonthYYYYMMDD();
+
+  $scope.taskHasDate = function taskHasDate(task) {
+    return task.date;
   };
 }
 
