@@ -271,7 +271,7 @@ footer {
   height: 100%;
   overflow-y: auto;
   #menu-content {
-    div.banner {
+    li.account-link {
       padding-top: 8px;
       height: @page-header-height;
     }
@@ -307,7 +307,7 @@ footer {
     a:active {
       color: @default-element-pressed;
     }
-    a.feature-link.active {
+    a.active {
       background-color: white;
       color: black;
     }
@@ -315,16 +315,9 @@ footer {
       // http://getbootstrap.com/components/#dropdowns
       display: block;
     }
-    a.feature-link:active {
+    a:active {
       background-color: white;
       color: black;
-    }
-    a.active:not(.feature-link) {
-      margin-left: -16px;
-    }
-    a.active:not(.feature-link):before {
-      content: '\2022';
-      margin-right: 10px;
     }
   }
 }

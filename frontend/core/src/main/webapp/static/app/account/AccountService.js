@@ -1,6 +1,15 @@
 'use strict';
 
 function AccountService(BackendClientService, UserSessionService) {
+
+  var logoutRegex = /logout/;
+  var postLogoutRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    logoutRegex.source +
+    /$/.source
+    );
+
   return {
     getAccount: function() {
       return BackendClientService.get('/api/account',
@@ -20,9 +29,15 @@ function AccountService(BackendClientService, UserSessionService) {
       };
       BackendClientService.putOnline('/api/account', this.putAccountRegex, payload);
     },
+    logout: function() {
+      return BackendClientService.postOnline('/api/logout', postLogoutRegexp).then(function(logoutResponse) {
+        return logoutResponse.data;
+      });
+    },
     // Regular expressions for account requests
     getAccountRegex: new RegExp(/api\/account/.source),
     putAccountRegex: new RegExp(/api\/account/.source),
+    postLogoutRegex: postLogoutRegexp,
     putChangePasswordRegex: new RegExp(
       /^/.source +
       BackendClientService.apiPrefixRegex.source +

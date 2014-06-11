@@ -144,6 +144,9 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
         currentSessionLatestActivity = undefined;
       }
 
+      // Collectives are globally visible
+      $scope.collectives = UserSessionService.getCollectives();
+
       // WINDOW RESIZING
 
       function setDimensions(width, height) {

@@ -10,7 +10,6 @@ describe('AuthenticationService', function() {
   // MOCKS
 
   var authenticateResponse = getJSONFixture('authenticateResponse.json');
-  var logoutResponse = getJSONFixture('logoutResponse.json');
   var inviteResponse = getJSONFixture('inviteResponse.json');
   var acceptInviteResponse = getJSONFixture('acceptInviteResponse.json');
   var changePasswordResponse = getJSONFixture('passwordResponse.json');
@@ -260,21 +259,6 @@ describe('AuthenticationService', function() {
     $httpBackend.flush();
 
     expect(MockUserSessionService.setEmail).toHaveBeenCalledWith(email);
-  });
-
-  it('should log out', function() {
-    MockUserSessionService.setIsAuthenticated(true);
-    MockUserSessionService.setIsAuthenticateValid(true);
-    MockUserSessionService.setIsAuthenticateReplaceable(false);
-
-    var loggedOut;
-    $httpBackend.expectPOST('/api/logout').respond(200, logoutResponse);
-    AuthenticationService.logout().then(function(response) {
-      loggedOut = response;
-    });
-    expect(loggedOut).toBeUndefined();
-    $httpBackend.flush();
-    expect(loggedOut).toBeDefined();
   });
 
   it('should get invite', function() {

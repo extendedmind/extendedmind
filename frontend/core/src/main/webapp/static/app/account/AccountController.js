@@ -1,58 +1,89 @@
 'use strict';
 
-function AccountController($rootScope, $location, $scope, AccountService, AnalyticsService, UserSessionService) {
+function AccountController($rootScope, $location, $scope, AccountService, AnalyticsService, UserSessionService, UISessionService) {
 
   $scope.isUserVerified = false;
   AnalyticsService.visit('account');
 
-  $scope.settings = {};
-
   AccountService.getAccount().then(function(accountResponse) {
     $scope.isUserVerified = accountResponse.emailVerified ? true : false;
     $scope.email = accountResponse.email;
-    var userPreferences = UserSessionService.getPreferences();
-    if (userPreferences.ui){
-      if (userPreferences.ui.hideFooter !== undefined){
-        $scope.settings.hideFooter = userPreferences.ui.hideFooter;
-      }
-    }
-
   });
 
   $scope.gotoChangePassword = function gotoChangePassword() {
     $location.path('/my/account/password');
   };
 
-  $scope.showOnboardingChecked = function() {
-    var userPreferences = UserSessionService.getPreferences();
-    if ($scope.settings.showOnboarding){
-      UserSessionService.setPreference('onboarded', undefined);
-    }else{
-      UserSessionService.setPreference('onboarded', $rootScope.packaging);
-    }
-    AccountService.updateAccountPreferences();
+  $scope.gotoAdmin = function gotoAdmin() {
+    $location.path('/admin');
   };
 
-  function updateHideSetting(name, hideValue){
-    var userPreferences = UserSessionService.getPreferences();
-    if (!userPreferences.ui) userPreferences.ui = {}
-    if (hideValue){
-      userPreferences.ui[name] = true;
+  $scope.useCollectives = function useCollectives() {
+    return $scope.collectives && Object.keys($scope.collectives).length > 1;
+  };
+
+  $scope.setMyActive = function setMyActive() {
+    if (!$location.path().startsWith('/my')) {
+      UISessionService.setMyActive();
+      UISessionService.changeFeature('tasks');
+      $location.path('/my');
     }else{
-      userPreferences.ui[name] = false;
+      $scope.toggleMenu();
     }
-    UserSessionService.setPreferences(userPreferences);
-    AccountService.updateAccountPreferences();
+  };
+
+  $scope.setCollectiveActive = function setCollectiveActive(uuid) {
+    if (!$location.path().startsWith('/collective/' + uuid)) {
+      UISessionService.setCollectiveActive(uuid);
+      UISessionService.changeFeature('tasks');
+      $location.path('/collective/' + uuid);
+    }
+  };
+
+  $scope.gotoCollectiveInbox = function gotoCollectiveInbox(uuid){
+    $scope.setCollectiveActive(uuid);
+    UISessionService.changeFeature('inbox');
   }
 
-  $scope.hideFooter = function() {
-    updateHideSetting('hideFooter', $scope.settings.hideFooter);
-    $scope.refreshContentFeature('tasks');
-    $scope.refreshContentFeature('notes');
-    $scope.refreshContentFeature('dashboard');
-    $scope.refreshContentFeature('archive');
+  $scope.gotoCollectiveTasks = function gotoCollectiveTasks(uuid){
+    $scope.setCollectiveActive(uuid);
+    UISessionService.changeFeature('tasks');
+  }
+
+  $scope.gotoCollectiveNotes = function gotoCollectiveNotes(uuid){
+    $scope.setCollectiveActive(uuid);
+    UISessionService.changeFeature('notes');
+  }
+
+  $scope.gotoCollectiveArchive = function gotoCollectiveArchive(uuid){
+    $scope.setCollectiveActive(uuid);
+    UISessionService.changeFeature('archive');
+  }
+
+  $scope.getMyClass = function getMyClass() {
+    if (UISessionService.getOwnerPrefix() === 'my') {
+      return 'active';
+    }else{
+      return 'highlighted-link';
+    }
+  };
+
+  $scope.getCollectiveClass = function getCollectiveClass(uuid) {
+    if (UISessionService.getOwnerPrefix() === 'collective/' + uuid) {
+      return 'active';
+    }else{
+      return 'highlighted-link';
+    }
+  };
+
+  // LOGOUT
+  $scope.logout = function logout() {
+    AccountService.logout().then(function() {
+      $location.path('/login');
+      UserSessionService.clearUser();
+    });
   };
 }
 
-AccountController['$inject'] = ['$rootScope', '$location', '$scope', 'AccountService', 'AnalyticsService', 'UserSessionService'];
+AccountController['$inject'] = ['$rootScope', '$location', '$scope', 'AccountService', 'AnalyticsService', 'UserSessionService', 'UISessionService'];
 angular.module('em.app').controller('AccountController', AccountController);

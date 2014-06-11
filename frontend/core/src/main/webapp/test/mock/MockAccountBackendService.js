@@ -40,12 +40,21 @@ function MockAccountBackendService($httpBackend, AccountService) {
     });
   }
 
+  function mockLogout(expectResponse){
+    $httpBackend.whenPOST(AccountService.postLogoutRegex)
+    .respond(function(method, url, data, headers) {
+      var logoutResponse = getJSONFixture('logoutResponse.json');
+      return expectResponse(method, url, data, headers, logoutResponse);
+    });
+  }
+
   return {
     mockAccountBackend: function(expectResponse) {
       mockGetAccount(expectResponse);
       mockPutAccount(expectResponse);
       mockGetTermsOfService();
       mockGetPrivacyPolicy();
+      mockLogout(expectResponse);
     }
   };
 }

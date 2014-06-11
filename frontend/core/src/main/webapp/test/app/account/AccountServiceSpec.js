@@ -2,12 +2,13 @@
 
 describe('AccountService', function() {
 
-  // INJECTS 
+  // INJECTS
   var $httpBackend;
   var AccountService, UserSessionService;
 
   // MOCKS
   var accountResponse = getJSONFixture('accountResponse.json');
+  var logoutResponse = getJSONFixture('logoutResponse.json');
 
   // SETUP / TEARDOWN
   beforeEach(function() {
@@ -33,5 +34,16 @@ describe('AccountService', function() {
       expect(UserSessionService.setEmail).toHaveBeenCalledWith(authenticateResponse.email);
     });
     $httpBackend.flush();
+  });
+
+  it('should log out', function() {
+    var loggedOut;
+    $httpBackend.expectPOST('/api/logout').respond(200, logoutResponse);
+    AccountService.logout().then(function(response) {
+      loggedOut = response;
+    });
+    expect(loggedOut).toBeUndefined();
+    $httpBackend.flush();
+    expect(loggedOut).toBeDefined();
   });
 });

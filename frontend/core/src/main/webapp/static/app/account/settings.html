@@ -1,5 +1,5 @@
-<div id="about-container" ng-controller="AboutController">
-  <section id="about" class="one-column-grid page" snap-drawer-drag="about">
+<div id="settings-container">
+  <section id="settings" class="one-column-grid page" ng-controller="SettingsController" snap-drawer-drag="account">
     <div class="column">
       <div ng-hide="omnibarVisible" class="content-container simple-content-container">
         <ul>
@@ -15,6 +15,14 @@
             <small>in case you need any help, email
               <a class="highlighted-link" href="mailto:support@ext.md"> support@ext.md</a>
             </small>
+          </li>
+          <li>
+            <input class="input-checkbox" type="checkbox" name="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="showOnboardingChecked(settings.showOnboarding)"/>
+            <label class="default-element small-font" for="showOnboarding">show onboarding on next login</label>
+          </li>
+          <li>
+            <input class="input-checkbox" type="checkbox" name="checkbox" id="hideFooter" ng-model="settings.hideFooter" ng-change="hideFooter(settings.hideFooter)"/>
+            <label class="default-element small-font" for="hideFooter">hide footer on mobile</label>
           </li>
         </ul>
       </div>

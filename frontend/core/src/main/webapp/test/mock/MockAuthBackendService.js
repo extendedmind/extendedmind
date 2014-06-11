@@ -31,14 +31,6 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
     });
   }
 
-  function mockLogout(expectResponse){
-    $httpBackend.whenPOST(AuthenticationService.postLogoutRegex)
-    .respond(function(method, url, data, headers) {
-      var logoutResponse = getJSONFixture('logoutResponse.json');
-      return expectResponse(method, url, data, headers, logoutResponse);
-    });
-  }
-
   function mockPostInviteRequest() {
     $httpBackend.whenPOST(AuthenticationService.postInviteRequestRegex).respond(function(method, url, data) {
       var inviteRequestResponse = getJSONFixture('inviteRequestResponse.json');
@@ -134,7 +126,6 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       mockAcceptInvite();
       mockAuthenticate(expectResponse);
       mockGetInvite();
-      mockLogout(expectResponse);
       mockPostInviteRequest();
       mockPostInviteRequestBypass();
       mockResendInvite();

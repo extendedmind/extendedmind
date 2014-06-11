@@ -23,7 +23,6 @@ function MainController(
   }
 
   // DATA ARRAYS
-
   $scope.items = ItemsService.getItems(UISessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UISessionService.getActiveUUID());
   $scope.completedTasks = TasksService.getCompletedTasks(UISessionService.getActiveUUID());

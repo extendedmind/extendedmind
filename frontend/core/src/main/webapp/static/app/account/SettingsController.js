@@ -1,10 +1,53 @@
 'use strict';
 
-function AboutController($http, $q, $scope, $window, AnalyticsService, ModalService) {
+function SettingsController($http, $q, $rootScope, $scope, $window, AccountService, AnalyticsService, UserSessionService, ModalService) {
+
+  $scope.isUserVerified = false;
+  AnalyticsService.visit('settings');
+
+  $scope.settings = {};
+
+  AccountService.getAccount().then(function(accountResponse) {
+    var userPreferences = UserSessionService.getPreferences();
+    if (userPreferences.ui){
+      if (userPreferences.ui.hideFooter !== undefined){
+        $scope.settings.hideFooter = userPreferences.ui.hideFooter;
+      }
+    }
+  });
+
+  $scope.showOnboardingChecked = function() {
+    var userPreferences = UserSessionService.getPreferences();
+    if ($scope.settings.showOnboarding){
+      UserSessionService.setPreference('onboarded', undefined);
+    }else{
+      UserSessionService.setPreference('onboarded', $rootScope.packaging);
+    }
+    AccountService.updateAccountPreferences();
+  };
+
+  function updateHideSetting(name, hideValue){
+    var userPreferences = UserSessionService.getPreferences();
+    if (!userPreferences.ui) userPreferences.ui = {}
+    if (hideValue){
+      userPreferences.ui[name] = true;
+    }else{
+      userPreferences.ui[name] = false;
+    }
+    UserSessionService.setPreferences(userPreferences);
+    AccountService.updateAccountPreferences();
+  }
+
+  $scope.hideFooter = function() {
+    updateHideSetting('hideFooter', $scope.settings.hideFooter);
+    $scope.refreshContentFeature('tasks');
+    $scope.refreshContentFeature('notes');
+    $scope.refreshContentFeature('dashboard');
+    $scope.refreshContentFeature('archive');
+  };
+
+
   var policyModalElement, contentHeight, footerHeight;
-
-  AnalyticsService.visit('about');
-
   $scope.openTermsOfServiceModal = function openTermsOfServiceModal() {
     AnalyticsService.visit('terms');
     constructPolicyModal('http://ext.md/terms.html');
@@ -68,7 +111,8 @@ function AboutController($http, $q, $scope, $window, AnalyticsService, ModalServ
       policyModalElement.style.display = '';
     }
   }
+
 }
 
-AboutController['$inject'] = ['$http', '$q', '$scope', '$window', 'AnalyticsService', 'ModalService'];
-angular.module('em.app').controller('AboutController', AboutController);
+SettingsController['$inject'] = ['$http', '$q', '$rootScope', '$scope', '$window', 'AccountService', 'AnalyticsService', 'UserSessionService', 'ModalService'];
+angular.module('em.app').controller('SettingsController', SettingsController);

@@ -1,6 +1,6 @@
 <section id="tasks-timeline" class="two-column-grid page single-lineheight" ng-controller="DatesController">
   <div class="column">
-    <div ng-if="!isLoading" ng-hide="omnibarVisible && isActiveSlide('home')" class="content-container page-content-container">
+    <div ng-if="!isLoading" ng-hide="omnibarVisible && isActiveSlide('home')" class="content-container page-content-container omnibar-animation">
       <div ng-if="isDatepickerVisible" class="swiper-no-swiping" data-snap-ignore="true" datepicker></div>
       <div class="swiper-container vertical-slides" swiper-container="tasks/home" swiper-type="page" expected-slides="weekdays.length">
         <div class="swiper-wrapper">

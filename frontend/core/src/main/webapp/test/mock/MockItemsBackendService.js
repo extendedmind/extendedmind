@@ -1,10 +1,10 @@
 /*global angular, getJSONFixture */
 'use strict';
 
-function MockItemsBackendService($httpBackend, ItemsService, UUIDService) {
+function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService, UUIDService) {
 
   function mockGetItems(expectResponse){
-    $httpBackend.whenGET(ItemsService.getItemsRegex)
+    $httpBackend.whenGET(SynchronizeService.getItemsRegex)
       .respond(function(method, url, data, headers) {
         if (url.indexOf('?modified=') != -1){
           return expectResponse(method, url, data, headers, {});
@@ -113,5 +113,5 @@ function MockItemsBackendService($httpBackend, ItemsService, UUIDService) {
   };
 }
 
-MockItemsBackendService.$inject = ['$httpBackend', 'ItemsService', 'UUIDService'];
+MockItemsBackendService.$inject = ['$httpBackend', 'ItemsService', 'SynchronizeService', 'UUIDService'];
 angular.module('em.appTest').factory('MockItemsBackendService', MockItemsBackendService);

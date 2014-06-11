@@ -1,5 +1,8 @@
 <div id="menu-content" class="swiper-no-swiping" ng-controller="MenuController">
   <ul>
+    <li class="account-link">
+      <a href ng-class="getFeatureClass('account')" ng-click="gotoFeature('account')">{{getActiveOwnerName()}}</a>
+    </li>
     <li>
       <a href class="feature-link" ng-class="getFeatureClass('inbox')" ng-click="gotoFeature('inbox')">inbox</a>
     </li>
@@ -13,37 +16,11 @@
       <a href class="feature-link" ng-class="getFeatureClass('archive')" ng-click="gotoFeature('archive')">archive</a>
     </li>
 
-    <li >
+    <li>
       <a href ng-class="getFeatureClass('dashboard')" ng-click="gotoFeature('dashboard')">dashboard</a>
     </li>
-
-    <div ng-if="useCollectives()">
-      <li id="my">
-        <a href ng-class="getMyClass()" ng-click="setMyActive()">my information</a>
-      </li>
-      <li id="collectives">
-        <span>collectives</span>
-        <ul>
-          <li ng-repeat="(key, value) in collectives">
-            <div ng-if="value[2] === false">
-              <a href class="collective" ng-class="getCollectiveClass(key)" ng-click="setCollectiveActive(key)">{{value[0]}}</a>
-            </div>
-          </li>
-        </ul>
-      </li>
-    </div>
-
     <li>
-      <a href ng-class="getFeatureClass('account')" ng-click="gotoFeature('account')">account</a>
-    </li>
-    <li>
-      <a href ng-class="getFeatureClass('about')" ng-click="gotoFeature('about')">about</a>
-    </li>
-    <li ng-if="isAdmin()">
-      <a href ng-class="getFeatureClass('admin')" ng-click="gotoFeature('admin')">admin</a>
-    </li>
-    <li>
-      <a href ng-click="logout()">logout</a>
+      <a href ng-class="getFeatureClass('settings')" ng-click="gotoFeature('settings')">settings</a>
     </li>
   </ul>
 </div>

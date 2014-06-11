@@ -4,21 +4,45 @@
       <div ng-hide="omnibarVisible" class="content-container simple-content-container">
         <ul>
           <li class="simple-content">
-            <h3>email</h3>
-            <span>{{email}}</span>
+            <h3>user</h3>
+            <a href ng-class="getMyClass()" ng-click="setMyActive()">{{email}}</a>
             <span ng-if="isUserVerified" id="email-verification-status">verified</span>
             <span ng-if="!isUserVerified" id="email-verification-status">not verified</span>
+            <ul class="button-row">
+              <li class="button-container left-of-two">
+                <button type="button" class="default-button small-font" ng-click="gotoChangePassword()">change password</button>
+              </li>
+              <li class="button-container right-of-two">
+                <button type="button" class="default-button small-font" ng-click="logout()">logout</button>
+              </li>
+            </ul>
+            <div ng-if="isAdmin()">
+              <a href class="highlighted-link" ng-click="gotoAdmin()">admin</a>
+            </div>
           </li>
-          <li class="simple-content">
-            <a class="highlighted-link" href ng-click="gotoChangePassword()">change password</a>
-          </li>
-          <li>
-            <input class="input-checkbox" type="checkbox" name="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="showOnboardingChecked(settings.showOnboarding)"/>
-            <label class="default-element small-font" for="showOnboarding">show onboarding on next login</label>
-          </li>
-          <li>
-            <input class="input-checkbox" type="checkbox" name="checkbox" id="hideFooter" ng-model="settings.hideFooter" ng-change="hideFooter(settings.hideFooter)"/>
-            <label class="default-element small-font" for="hideFooter">hide footer on mobile</label>
+          <li ng-if="useCollectives()"class="simple-content">
+            <h3>collectives</h3>
+            <ul>
+              <li ng-repeat="(key, value) in collectives">
+                <div ng-if="value[2] === false">
+                  <a href ng-class="getCollectiveClass(key)" ng-click="setCollectiveActive(key)">{{value[0]}}</a>
+                  <ul class="button-row">
+                    <li class="button-container left-of-four">
+                      <button type="button" class="default-button small-font" ng-click="gotoCollectiveInbox(key)">inbox</button>
+                    </li>
+                    <li class="button-container center-of-four">
+                      <button type="button" class="default-button small-font" ng-click="gotoCollectiveTasks(key)">tasks</button>
+                    </li>
+                    <li class="button-container center-of-four">
+                      <button type="button" class="default-button small-font" ng-click="gotoCollectiveNotes(key)">notes</button>
+                    </li>
+                    <li class="button-container right-of-four">
+                      <button type="button" class="default-button small-font" ng-click="gotoCollectiveArchive(key)">archive</button>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
           </li>
         </ul>
       </div>

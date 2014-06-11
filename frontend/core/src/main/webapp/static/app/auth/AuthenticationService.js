@@ -6,7 +6,6 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
   var authenticateRegex = /authenticate/;
   var emailRegex = /\?email=.+/;
   var inviteRegex = /invite\//;
-  var logoutRegex = /logout/;
   var requestRegex = /request/;
   var passwordRegex = /password/;
 
@@ -37,12 +36,6 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     BackendClientService.apiPrefixRegex.source +
     inviteRegex.source +
     requestRegex.source +
-    /$/.source
-    ),
-  postLogoutRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    logoutRegex.source +
     /$/.source
     ),
   postForgotPasswordRegexp = new RegExp(
@@ -314,11 +307,6 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         return authenticateResponse;
       });
     },
-    logout: function() {
-      return BackendClientService.postOnline('/api/logout', postLogoutRegexp).then(function(logoutResponse) {
-        return logoutResponse.data;
-      });
-    },
     getInvite: function(inviteResponseCode, email) {
       return BackendClientService.get('/api/invite/' + inviteResponseCode + '?email=' + email,
         getInviteRegexp, true);
@@ -385,7 +373,6 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     getInviteRegex: getInviteRegexp,
     postAuthenticateRegex: postAuthenticateRegexp,
     postInviteRequestRegex: postInviteRequestRegexp,
-    postLogoutRegex: postLogoutRegexp,
     postForgotPasswordRegex: postForgotPasswordRegexp,
     getPasswordResetExpiresRegex: getPasswordResetExpiresRegexp,
     postResetPasswordRegex: postResetPasswordRegexp,

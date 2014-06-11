@@ -1,48 +1,34 @@
 'use strict';
 
 function MenuController($location, $scope, AuthenticationService, UISessionService, UserSessionService, AnalyticsService) {
-  $scope.collectives = UserSessionService.getCollectives();
-
-  $scope.useCollectives = function useCollectives() {
-    return $scope.collectives && Object.keys($scope.collectives).length > 1;
-  };
 
   $scope.isAdmin = function isAdmin() {
     return UserSessionService.getUserType() === 0;
   };
 
+  $scope.getActiveOwnerName = function(){
+    var activeUUID = UISessionService.getActiveUUID();
+    var ownerName;
+    if (activeUUID === UserSessionService.getUserUUID()){
+      ownerName = UserSessionService.getEmail();
+    }else{
+      angular.forEach($scope.collectives, function(collective, uuid){
+        if (activeUUID === uuid){
+          ownerName = collective[0];
+        }
+      })
+    }
+    var maximumOwnerNameLength = 22;
+    if (ownerName.length > maximumOwnerNameLength){
+      return ownerName.substring(0, maximumOwnerNameLength) + '...';
+    }
+    return ownerName;
+  }
+
   $scope.getFeatureClass = function getFeatureClass(feature) {
     if (UISessionService.getCurrentFeatureName() === feature) {
       return 'active';
     }
-  };
-
-  $scope.getMyClass = function getMyClass() {
-    if (UISessionService.getOwnerPrefix() === 'my') {
-      return 'active';
-    }
-  };
-
-  $scope.getCollectiveClass = function getCollectiveClass(uuid) {
-    if (UISessionService.getOwnerPrefix() === 'collective/' + uuid) {
-      return 'active';
-    }
-  };
-
-  $scope.setMyActive = function setMyActive() {
-    if (!$location.path().startsWith('/my')) {
-      UISessionService.setMyActive();
-      $location.path('/my');
-    }
-    $scope.toggleMenu();
-  };
-
-  $scope.setCollectiveActive = function setCollectiveActive(uuid) {
-    if (!$location.path().startsWith('/collective/' + uuid)) {
-      UISessionService.setCollectiveActive(uuid);
-      $location.path('/collective/' + uuid);
-    }
-    $scope.toggleMenu();
   };
 
   $scope.gotoFeature = function gotoFeature(feature) {
@@ -54,14 +40,6 @@ function MenuController($location, $scope, AuthenticationService, UISessionServi
       UISessionService.changeFeature(feature, undefined, state);
       AnalyticsService.visit(feature);
     }
-    $scope.toggleMenu();
-  };
-
-  $scope.logout = function logout() {
-    AuthenticationService.logout().then(function() {
-      $location.path('/login');
-      UserSessionService.clearUser();
-    });
     $scope.toggleMenu();
   };
 }
