@@ -6,7 +6,7 @@
     <a href ng-if="isDatepickerVisible" id="today-link" ng-class="{'today-link-active': isTodayActive}">today</a>
   </div>
   <div class="heading-container">
-    <div class="heading">{{getCurrentHeading()}}</div>
+    <a href class="heading" ng-click="switchFeature()">{{getCurrentHeading()}}</a>
   </div>
   <div class="omni-button-container">
     <label class="omni-button" for="omnibar-input">
