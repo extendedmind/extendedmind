@@ -18,7 +18,7 @@ function MenuController($location, $scope, AuthenticationService, UISessionServi
         }
       })
     }
-    var maximumOwnerNameLength = 22;
+    var maximumOwnerNameLength = 20;
     if (ownerName.length > maximumOwnerNameLength){
       return ownerName.substring(0, maximumOwnerNameLength) + '...';
     }
