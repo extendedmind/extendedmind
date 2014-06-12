@@ -230,30 +230,6 @@ function MainController(
     }
   };
 
-  // Navigation
-
-  $scope.gotoLists = function() {
-    if ($scope.lists.length > 0) {
-      $scope.gotoDetails($scope.lists[0].uuid);
-    }
-  };
-
-  $scope.gotoContexts = function() {
-    if ($scope.contexts.length > 0) {
-      $scope.gotoDetails($scope.contexts[0].uuid);
-    }
-  };
-
-  $scope.gotoDetails = function(identifier) {
-    if ($scope.isFeatureActive('tasks')) {
-      SwiperService.swipeTo('tasks/details/' + identifier);
-    } else if ($scope.isFeatureActive('notes')) {
-      SwiperService.swipeTo('notes/details/' + identifier);
-    } else if ($scope.isFeatureActive('archive')) {
-      SwiperService.swipeTo('archive/details/' + identifier);
-    }
-  };
-
   $scope.showContent = function showContent(feature) {
     return $scope.isFeatureActive(feature);
   };

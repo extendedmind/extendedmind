@@ -1,0 +1,30 @@
+<section id="tasks-contexts" class="two-column-grid page">
+  <div class="column">
+    <div ng-hide="omnibarVisible && isActiveSlide('contexts')" class="content-container page-content-container" scroll-to>
+      <div class="inner-page-content-container" swiper-prevent>
+        <section>
+          <h3>contexts</h3>
+          <ul class="list-arrow-right">
+            <li ng-show="contexts.length" ng-repeat="context in contexts">
+              <a href class="click-to-slide" ng-click="showContextDetails(context)">
+                <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right"></span>
+              </a>
+            </li>
+            <li>
+              <form class="add-element" role="form" name="addContextForm" ng-submit="callAndRefresh(addContext, newContext)" autocapitalize="none" autocorrect="off" add-item>
+                <div class="form-group" editable-field-container="disable">
+                  <label class="sr-only" for="contextTitle">title</label>
+                  <input type="text" id="contextTitle" class="simple-input" ng-model="newContext.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" placeholder="add context..." editable-field></input>
+                </div>
+              </form>
+            </li>
+          </ul>
+          <h3><a href class="page-header" swiper-click="showNoContextDetails()"><span class="link-title">no context</span><span class="icon-arrow-right"></span></a></h3>
+        </section>
+      </div>
+    </div>
+  </div>
+  <aside class="column">
+    TODO
+  </aside>
+</section>

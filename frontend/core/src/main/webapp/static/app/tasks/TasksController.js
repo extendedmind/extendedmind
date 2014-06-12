@@ -162,6 +162,17 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
   $scope.taskHasDate = function taskHasDate(task) {
     return task.date;
   };
+
+  // Navigation
+  $scope.context = undefined;
+  $scope.showContextDetails = function(selectedContext) {
+    $scope.context = selectedContext;
+    SwiperService.swipeTo('tasks/details');
+  };
+  $scope.showNoContextDetails = function() {
+    $scope.context = undefined;
+    SwiperService.swipeTo('tasks/details');
+  };
 }
 
 TasksController['$inject'] = ['$scope', 'DateService', 'SwiperService', 'UISessionService', 'TasksService', 'AnalyticsService'];

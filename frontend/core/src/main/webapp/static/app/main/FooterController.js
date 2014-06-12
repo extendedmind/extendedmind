@@ -12,7 +12,7 @@ function FooterController($scope, SwiperService) {
     tasks: {
       leftSlide: 'home',
       leftHeading: 'timeline',
-      center: 'overview',
+      center: 'contexts',
       right: 'details'
     },
     dashboard: {

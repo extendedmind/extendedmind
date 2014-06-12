@@ -1,85 +1,43 @@
 <section id="tasks-details" class="two-column-grid page">
   <div class="column">
-    <div ng-hide="(omnibarVisible && isActiveSlide('details'))" class="content-container page-content-container">
-      <div class="swiper-container vertical-slides" swiper-container="tasks/details" swiper-type="page" expected-slides="count = lists.length + contexts.length + 1">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide" ng-repeat="list in lists" swiper-slide="tasks/details/{{list.uuid}}" slide-index="$index" ng-init="subtask = {relationships: {list: list.uuid}}">
-            <div class="inner-slide-content-container">
-              <section class="list" scroll-to>
-                <div>
-                  <div class="inner-page-content-container" accordion>
-                    <div accordion-title="list" edit-item="editList(list)" edit-item-inline="true" edit-item-fields="editListFields(list)" bold-title="true" has-complete="false" toggle-complete></div>
-                    <div ng-if="isOpen(list)" class="accordion-body" editable-field-container="auto">
-                      <div class="accordion-inner">
-                        <div item-core-fields="list" item-core-fields-details="listDetails"></div>
-                        <div ng-include="'static/app/base/listActions.html'"></div>
-                      </div>
-                    </div>
-                    <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
-                      <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-                      <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
-                        <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
-                      </div>
-                    </div>
-                    <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
-                  </div>
-                </div>
-              </section>
+    <div ng-hide="omnibarVisible && isActiveSlide('overview')" class="content-container page-content-container" scroll-to>
+      <div class="inner-page-content-container" swiper-prevent>
+        <div ng-if="context" class="inner-page-content" ng-init="subtask = {relationships: {context: context.uuid}}" scroll-to accordion>
+          <div accordion-title="context" edit-item="editContext(context)" edit-item-inline="true" edit-item-fields="editContextFields(context)" bold-title="true" title-prefix="'@'" has-complete="false" toggle-complete></div>
+          <div ng-if="isOpen(context)" class="accordion-body swiper-no-swiping" editable-field-container="auto">
+            <div class="accordion-inner">
+              <div item-core-fields="context" item-core-fields-details="contextDetails"></div>
+              <ul class="button-row">
+                <li class="button-container left-of-two border-right">
+                  <button class="normal-button" type="button" ng-click="closeAndCall(context, contextQuickEditDone)">
+                    done
+                  </button>
+                </li>
+                <li class="button-container right-of-two">
+                  <button class="delete-button" type="button" ng-click="closeAndCall(context, deleteContext)">
+                    delete
+                  </button>
+                </li>
+              </ul>
             </div>
           </div>
-          <div class="swiper-slide" ng-repeat="context in contexts" swiper-slide="tasks/details/{{context.uuid}}" slide-index="lists.length + $index" ng-init="subtask = {relationships: {context: context.uuid}}">
-            <div class="inner-slide-content-container">
-              <section class="context" scroll-to>
-                <div>
-                  <div class="inner-page-content-container" accordion>
-                    <div accordion-title="context" edit-item="editContext(context)" edit-item-inline="true" edit-item-fields="editContextFields(context)" bold-title="true" title-prefix="'@'" has-complete="false" toggle-complete></div>
-                    <div ng-if="isOpen(context)" class="accordion-body swiper-no-swiping" editable-field-container="auto">
-                      <div class="accordion-inner">
-                        <div item-core-fields="context" item-core-fields-details="contextDetails"></div>
-                        <ul class="button-row">
-                          <li class="button-container left-of-two border-right">
-                            <button class="normal-button" type="button" ng-click="closeAndCall(context, contextQuickEditDone)">
-                              done
-                            </button>
-                          </li>
-                          <li class="button-container right-of-two">
-                            <button class="delete-button" type="button" ng-click="closeAndCall(context, deleteContext)">
-                              delete
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'byContextUUID', filterBy: context.uuid}">
-                      <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-                      <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
-                        <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
-                      </div>
-                    </div>
-                    <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
-                  </div>
-                </div>
-              </section>
+          <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'byContextUUID', filterBy: context.uuid}">
+            <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+            <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
+              <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
-          <div class="swiper-slide" swiper-slide="tasks/details/unsorted" slide-index="lists.length + contexts.length" ng-init="subtask = {}">
-            <div class="inner-slide-content-container">
-              <section class="unsorted" scroll-to>
-                <h3>unsorted</h3>
-                <div>
-                  <div class="inner-page-content-container" accordion>
-                    <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}" ng-init="subtask = {}">
-                      <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-                      <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
-                        <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
-                      </div>
-                    </div>
-                    <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
-                  </div>
-                </div>
-              </section>
+          <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
+        </div>
+        <div ng-if="!context" class="inner-page-content" ng-init="subtask = {}" scroll-to accordion>
+          <h3>no context</h3>
+          <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}">
+            <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+            <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
+              <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
+          <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
         </div>
       </div>
     </div>
