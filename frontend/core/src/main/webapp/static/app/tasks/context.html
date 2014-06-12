@@ -29,7 +29,7 @@
           </div>
           <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
         </div>
-        <div ng-if="!context" class="inner-page-content" scroll-to accordion>
+        <div ng-if="context === null" class="inner-page-content" scroll-to accordion>
           <h3>no context</h3>
           <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>

@@ -6,14 +6,12 @@ function FooterController($scope, SwiperService) {
     notes: {
       leftSlide: 'home',
       leftHeading: 'recent',
-      center: 'keywords',
-      right: 'details'
+      right: 'keywords'
     },
     tasks: {
       leftSlide: 'home',
       leftHeading: 'timeline',
-      center: 'contexts',
-      right: 'details'
+      right: 'contexts'
     },
     dashboard: {
       leftSlide: 'daily',
@@ -24,8 +22,7 @@ function FooterController($scope, SwiperService) {
     archive: {
       leftSlide: 'completed',
       leftHeading: 'completed',
-      center: 'lists',
-      right: 'details'
+      right: 'lists'
     },
     list: {
       leftSlide: 'tasks',
@@ -72,6 +69,13 @@ function FooterController($scope, SwiperService) {
   $scope.gotoRightSlide = function gotoRightSlide() {
     gotoSlide('right');
   };
+
+  $scope.hasCenterSlide = function(){
+    var feature = $scope.getActiveFeature();
+    if (feature && slides[feature] && slides[feature].center) {
+      return true;
+    }
+  }
 
   $scope.getLeftSlideName = function getLeftSlideName() {
     return getSlideInfoByPosition('leftSlide');
