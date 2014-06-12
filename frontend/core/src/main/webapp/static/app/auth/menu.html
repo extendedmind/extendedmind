@@ -15,9 +15,9 @@
     <li>
       <div class="lists-heading-container" >
         <a href class="lists-link" ng-class="getFeatureClass('lists')" ng-click="gotoFeature('lists')">lists</a>
-        <a ng-if="lists.length" href ng-class="getFeatureClass('lists')" class="hide-expand-link" ng-click="toggleLists()">
-          <span ng-if="listsVisible">-</span>
-          <span ng-if="!listsVisible">+</span>
+        <a href ng-class="getFeatureClass('lists')" class="hide-expand-link" ng-click="toggleLists()">
+          <span ng-if="lists.length && listsVisible">-</span>
+          <span ng-if="lists.length && !listsVisible">+</span>
         </a>
       </div>
       <ul class="lists" ng-if="listsVisible">
