@@ -66,6 +66,7 @@ function MenuController($location, $scope, AuthenticationService, UISessionServi
 
   $scope.toggleLists = function(){
     $scope.listsVisible = !$scope.listsVisible;
+    if ($scope.refreshScroller) $scope.refreshScroller();
   }
 
   $scope.getListTitleText = function(list){
