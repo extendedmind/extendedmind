@@ -47,7 +47,7 @@ function MenuController($location, $scope, AuthenticationService, UISessionServi
 
   $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
 
-  $scope.listsVisible = false;
+  $scope.listsVisible = true;
   $scope.getListClass = function getListClass(list) {
     if (UISessionService.getCurrentFeatureName() === 'list' &&
         UISessionService.getFeatureData('list') === list) {
