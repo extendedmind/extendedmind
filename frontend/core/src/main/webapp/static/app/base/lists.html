@@ -3,22 +3,35 @@
     <div class="column">
       <div ng-hide="omnibarVisible" class="content-container page-content-container">
         <div class="inner-page-content-container" swiper-prevent>
-          <ul class="list-arrow-right">
-            <li ng-if="lists && lists.length" ng-class="selected" ng-repeat="list in lists">
-              <a class="text-muted click-to-slide" href swiper-click="gotoList(list)">
-                <span class="link-title">{{list.title}}</span>
-                <span class="icon-arrow-right"></span>
-              </a>
-            </li>
-            <li>
-              <form class="add-element" role="form" name="addListForm" ng-submit="callAndRefresh(addList, newList)" autocapitalize="none" autocorrect="off" add-item>
-              <div class="form-group" editable-field-container="disable">
-                <label class="sr-only" for="listTitle">title</label>
-                <input type="text" id="listTitle" class="simple-input" ng-model="newList.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" placeholder="add list..." editable-field/>
+          <div scroll-to accordion>
+            <div ng-repeat="list in lists">
+              <div accordion-title="list" edit-item="editList(list)" edit-item-inline="true" edit-item-fields="editListFields(list)" has-complete="false" toggle-complete></div>
+              <div ng-if="isOpen(list)" class="accordion-body" editable-field-container="auto">
+                <div class="accordion-inner">
+                  <div item-core-fields="list" item-core-fields-details="listDetails"></div>
+                  <ul class="button-row swiper-no-swiping" data-snap-ignore="true">
+                    <li class="button-container left-of-two">
+                      <button class="default-button" type="button" ng-click="closeAndCall(list, archiveListAndMoveInbox)">
+                        archive
+                      </button>
+                    </li>
+                    <li class="button-container right-of-two">
+                      <button class="delete-button" type="button" ng-click="closeAndCall(list, deleteListAndMoveToInbox)">
+                        delete
+                      </button>
+                    </li>
+                  </ul>
                 </div>
-              </form>
-            </li>
-          </ul>
+              </div>
+            </div>
+            <form class="add-element" role="form" name="addListForm" ng-submit="callAndRefresh(addList, newList)" autocapitalize="none" autocorrect="off" add-item>
+            <div class="form-group" editable-field-container="disable">
+              <label class="sr-only" for="listTitle">title</label>
+              <input type="text" id="listTitle" class="simple-input" ng-model="newList.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" placeholder="add list..." editable-field/>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </section>

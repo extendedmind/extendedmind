@@ -2,12 +2,43 @@
 
 function HeaderController($scope, $rootScope, UISessionService) {
 
+  var featureChangedCallback = function featureChangedCallback(name, data/*, state*/){
+    if (name === 'list'){
+      if (data){
+        var maximumHeadingLength = 30;
+        if (data.title.length > maximumHeadingLength){
+          $scope.overrideHeading = data.title.substring(0, maximumHeadingLength-2) + '...';
+        }else{
+          $scope.overrideHeading = data.title;
+        }
+      }
+    }else{
+      $scope.overrideHeading = undefined;
+    }
+  };
+  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'HeaderController');
+
   $scope.getCurrentHeading = function getCurrentHeading() {
-    var currentHeading = $scope.getActiveFeature();
+    var currentHeading;
+    if ($scope.overrideHeading){
+      currentHeading = $scope.overrideHeading;
+    }else{
+      currentHeading = $scope.getActiveFeature();
+    }
     if (!$scope.online) {
       currentHeading += '*';
     }
     return currentHeading;
+  }
+
+  $scope.getHeadingClass = function getHeadingClass() {
+    if ($scope.overrideHeading){
+      if ($scope.overrideHeading.length > 9 && $scope.overrideHeading.length <= 15) {
+        return 'medium-heading';
+      }else if ($scope.overrideHeading.length > 15){
+        return 'long-heading';
+      }
+    }
   }
 
   $scope.switchFeature = function(){

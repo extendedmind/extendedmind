@@ -2,7 +2,7 @@
   <div class="column">
     <div ng-hide="omnibarVisible && isActiveSlide('details')" class="content-container page-content-container" scroll-to>
       <div class="inner-page-content-container" swiper-prevent>
-        <div ng-if="context" class="inner-page-content" scroll-to accordion>
+        <div ng-if="context" scroll-to accordion>
           <div accordion-title="context" edit-item="editContext(context)" edit-item-inline="true" edit-item-fields="editContextFields(context)" bold-title="true" title-prefix="'@'" has-complete="false" toggle-complete></div>
           <div ng-if="isOpen(context)" class="accordion-body swiper-no-swiping" editable-field-container="auto">
             <div class="accordion-inner">
@@ -29,7 +29,7 @@
           </div>
           <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
         </div>
-        <div ng-if="!context" class="inner-page-content" scroll-to accordion>
+        <div ng-if="!context" scroll-to accordion>
           <h3>no context</h3>
           <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>

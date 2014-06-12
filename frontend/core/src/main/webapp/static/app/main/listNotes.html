@@ -3,29 +3,6 @@
     <div ng-hide="omnibarVisible" class="content-container page-content-container">
       <div class="inner-page-content-container" swiper-prevent>
         <div scroll-to accordion>
-          <div accordion-title="list" edit-item="editList(list)" edit-item-inline="true" edit-item-fields="editListFields(list)" bold-title="true" has-complete="false" toggle-complete></div>
-          <div ng-if="isOpen(list)" class="accordion-body" editable-field-container="auto">
-            <div class="accordion-inner">
-              <div item-core-fields="list" item-core-fields-details="listDetails"></div>
-              <ul class="button-row swiper-no-swiping" data-snap-ignore="true">
-                <li class="button-container left-of-three border-right">
-                  <button type="button" class="normal-button" ng-click="closeAndCall(list, listQuickEditDone)">
-                    done
-                  </button>
-                </li>
-                <li class="button-container center-of-three">
-                  <button class="default-button" type="button" ng-click="closeAndCall(list, archiveListAndMoveToNextList)">
-                    archive
-                  </button>
-                </li>
-                <li class="button-container right-of-three">
-                  <button class="delete-button" type="button" ng-click="closeAndCall(list, deleteListAndMoveToNextList)">
-                    delete
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </div>
           <div ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
               <div ng-if="note.content" class="teaser">

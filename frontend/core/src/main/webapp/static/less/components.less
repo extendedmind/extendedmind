@@ -169,6 +169,23 @@ header.static-page-header {
     font-weight: 700;
     font-size: @large-font-size;
   }
+
+  .long-heading, .medium-heading {
+    display: table;
+    line-height: @vertical-grid-half;
+    .heading {
+      display: table-cell;
+      vertical-align: middle;
+    }
+  }
+  .medium-heading .heading {
+    font-size: @default-font-size;
+  }
+  .long-heading .heading {
+    font-size: @small-font-size;
+  }
+
+
   .omni-button {
     .button;
     line-height: normal;
