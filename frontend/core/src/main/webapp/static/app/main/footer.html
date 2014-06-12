@@ -6,7 +6,7 @@
       </a>
     </li>
 
-    <li id="center-slide-link" class="justified-element">
+    <li ng-if="getActiveFeature() !== 'list'"id="center-slide-link" class="justified-element">
       <a href ng-class="isActiveSlide(getCenterSlideName()) && 'active-slide'" ng-click="gotoCenterSlide()">
         <span>{{getCenterSlideHeading()}}</span>
       </a>

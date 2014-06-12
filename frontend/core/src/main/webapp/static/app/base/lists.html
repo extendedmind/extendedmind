@@ -1,0 +1,26 @@
+<div id="lists-container">
+  <section id="lists" class="one-column-grid page" snap-drawer-drag="lists" ng-init="newList = {};">
+    <div class="column">
+      <div ng-hide="omnibarVisible" class="content-container simple-content-container">
+        <div class="inner-page-content-container" swiper-prevent>
+          <h3><a href class="page-header" swiper-click="gotoLists()">lists</a></h3>
+          <ul class="list-arrow-right">
+            <li ng-if="lists && lists.length" ng-class="selected" ng-repeat="list in lists">
+              <a class="text-muted click-to-slide" href swiper-click="gotoList(list)">
+                <span class="link-title">{{list.title}}</span>
+                <span class="icon-arrow-right"></span>
+              </a>
+            </li>
+            <li>
+              <form class="add-element" role="form" name="addListForm" ng-submit="callAndRefresh(addList, newList)" autocapitalize="none" autocorrect="off" add-item>
+              <div class="form-group" editable-field-container="disable">
+                <label class="sr-only" for="listTitle">title</label>
+                <input type="text" id="listTitle" class="simple-input" ng-model="newList.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" placeholder="add list..." editable-field/>
+                </div>
+              </form>
+            </li>
+          </ul>
+      </div>
+    </div>
+  </section>
+</div>

@@ -2,6 +2,14 @@
 
 function HeaderController($scope, $rootScope, UISessionService) {
 
+  $scope.getCurrentHeading = function getCurrentHeading() {
+    var currentHeading = $scope.getActiveFeature();
+    if (!$scope.online) {
+      currentHeading += '*';
+    }
+    return currentHeading;
+  }
+
   $scope.switchFeature = function(){
     var activeFeature = $scope.getActiveFeature();
     if (activeFeature === 'inbox'){

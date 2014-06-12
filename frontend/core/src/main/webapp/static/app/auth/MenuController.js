@@ -1,6 +1,6 @@
 'use strict';
 
-function MenuController($location, $scope, AuthenticationService, UISessionService, UserSessionService, AnalyticsService) {
+function MenuController($location, $scope, AuthenticationService, UISessionService, UserSessionService, AnalyticsService, ListsService) {
 
   $scope.isAdmin = function isAdmin() {
     return UserSessionService.getUserType() === 0;
@@ -42,7 +42,40 @@ function MenuController($location, $scope, AuthenticationService, UISessionServi
     }
     $scope.toggleMenu();
   };
+
+  // LISTS
+
+  $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
+
+  $scope.listsVisible = false;
+  $scope.getListClass = function getListClass(list) {
+    if (UISessionService.getCurrentFeatureName() === 'list' &&
+        UISessionService.getFeatureData('list') === list) {
+      return 'active';
+    }
+  };
+
+  $scope.gotoList = function(list){
+    if (UISessionService.getCurrentFeatureName() !== 'list' ||
+        UISessionService.getFeatureState('list') !== list) {
+      UISessionService.changeFeature('list', list);
+      AnalyticsService.visit('list');
+    }
+    $scope.toggleMenu();
+  }
+
+  $scope.toggleLists = function(){
+    $scope.listsVisible = !$scope.listsVisible;
+  }
+
+  $scope.getListTitleText = function(list){
+    var maximumListNameLength = 35;
+    if (list.title.length > maximumListNameLength){
+      return list.title.substring(0, maximumListNameLength-2) + '...';
+    }
+    return list.title;
+  }
 }
 
-MenuController.$inject = ['$location', '$scope', 'AuthenticationService', 'UISessionService', 'UserSessionService', 'AnalyticsService'];
+MenuController.$inject = ['$location', '$scope', 'AuthenticationService', 'UISessionService', 'UserSessionService', 'AnalyticsService', 'ListsService'];
 angular.module('em.app').controller('MenuController', MenuController);

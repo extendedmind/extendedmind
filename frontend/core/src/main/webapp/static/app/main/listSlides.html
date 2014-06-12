@@ -1,0 +1,6 @@
+<div ng-show="isFeatureActive('list')" class="swiper-container main-slides" swiper-container="list" swiper-type="main" expected-slides=2>
+  <div class="swiper-wrapper">
+    <div class="swiper-slide" swiper-slide="list/tasks" slide-index=0 ng-include="'static/app/main/listTasks.html'" snap-drawer-drag="list"></div>
+    <div class="swiper-slide" swiper-slide="list/notes" slide-index=1 ng-include="'static/app/main/listNotes.html'"></div>
+  </div>
+</div>

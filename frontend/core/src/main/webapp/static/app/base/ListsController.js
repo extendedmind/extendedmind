@@ -2,6 +2,15 @@
 
 function ListsController($scope, UISessionService, ListsService, AnalyticsService) {
 
+  var featureChangedCallback = function featureChangedCallback(name, data/*, state*/){
+    if (name === 'list'){
+      $scope.list = data;
+      $scope.subtask = {relationships: {list: $scope.list.uuid}};
+      $scope.newNote = {relationships: {list: $scope.list.uuid}};
+    }
+  };
+  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ListsController');
+
   $scope.saveList = function(list) {
     ListsService.saveList(list, UISessionService.getActiveUUID());
     $scope.gotoPreviousPage();
@@ -39,6 +48,27 @@ function ListsController($scope, UISessionService, ListsService, AnalyticsServic
     AnalyticsService.do('listQuickEditDone');
     ListsService.saveList(list, UISessionService.getActiveUUID());
   };
+
+  // Navigation
+
+  $scope.gotoList = function(list){
+    if (UISessionService.getCurrentFeatureName() !== 'list' ||
+        UISessionService.getFeatureState('list') !== list) {
+      UISessionService.changeFeature('list', list);
+      AnalyticsService.visit('list');
+    }
+  }
+
+  $scope.archiveListAndMoveInbox = function(list){
+    $scope.archiveList(list);
+    UISessionService.changeFeature('inbox');
+  }
+
+  $scope.deleteListAndMoveToInbox = function(list){
+    $scope.deleteList(list);
+    UISessionService.changeFeature('inbox');
+  }
+
 }
 
 ListsController['$inject'] = ['$scope', 'UISessionService',

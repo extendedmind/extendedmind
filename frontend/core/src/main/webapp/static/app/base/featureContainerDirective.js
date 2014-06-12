@@ -46,7 +46,8 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         if ($scope.isFeatureActive('tasks')
             || $scope.isFeatureActive('notes')
             || $scope.isFeatureActive('dashboard')
-            || $scope.isFeatureActive('archive')){
+            || $scope.isFeatureActive('archive')
+            || $scope.isFeatureActive('list')){
           if (UserSessionService.getUIPreference('hideFooter')
               && ($rootScope.packaging.endsWith('cordova') || $rootScope.packaging === 'devel')){
             $element[0].classList.toggle('hide-footer', true);
@@ -59,14 +60,6 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
           return false;
         }
       };
-
-      $scope.getCurrentHeading = function getCurrentHeading() {
-        var currentHeading = $scope.getActiveFeature();
-        if (!$scope.online) {
-          currentHeading += '*';
-        }
-        return currentHeading;
-      }
 
       // UI SESSION SERVICE HOOKS
 

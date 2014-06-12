@@ -26,6 +26,11 @@ function FooterController($scope, SwiperService) {
       leftHeading: 'completed',
       center: 'lists',
       right: 'details'
+    },
+    list: {
+      leftSlide: 'tasks',
+      leftHeading: 'tasks',
+      right: 'notes'
     }
   };
 
@@ -34,6 +39,8 @@ function FooterController($scope, SwiperService) {
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'notes', 'FooterController');
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'dashboard', 'FooterController');
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'archive', 'FooterController');
+  SwiperService.registerSlideChangeCallback(slideChangeCallback, 'list', 'FooterController');
+
   function slideChangeCallback(/*activeSlidePath*/) {
     // Run digest to change only navbar when swiping to new location
     $scope.$digest();

@@ -279,35 +279,21 @@ footer {
       font-size: @small-font-size;
       .font-bold;
     }
-    a.feature-link {
+    a.feature-link, a.heading-toggle{
       font-size: 1.17em;  // http://www.w3.org/TR/CSS2/sample.html
     }
     li.last-feature { // padding-bottom for li with last a.feature-link
       padding-bottom: @vertical-grid;
     }
-    li#collectives {
-      line-height: @vertical-grid;
-      div {
-        padding-left: @horizontal-grid;
-        a {
-          font-size: @smallest-font-size;
-          line-height: @vertical-grid-half;
-          padding-bottom: @vertical-grid-half;
-        }
-      }
-    }
     ul {
       margin-top: 4px;
     }
-    a, span {
+    a {
       color: #FEFFFF;
       padding-right: 30px;
       padding-left: 30px;
     }
-    a:active {
-      color: @default-element-pressed;
-    }
-    a.active {
+    a.active, a.system-link:active, a.feature-link:active, a.list-link:active {
       background-color: white;
       color: black;
     }
@@ -315,9 +301,31 @@ footer {
       // http://getbootstrap.com/components/#dropdowns
       display: block;
     }
-    a:active {
-      background-color: white;
-      color: black;
+    .list {
+      display: table;
+      line-height: @vertical-grid-half;
+      height: @vertical-grid;
+      .list-link {
+        width: 100%;
+        display: table-cell;
+        vertical-align: middle;
+        padding-left: 40px;
+      }
+    }
+    .list-last{
+      margin-bottom: @vertical-grid-half;
+    }
+    .lists-heading-container{
+      display:table;
+      .feature-link {
+        display: table-cell;
+        width: 90%;
+      }
+      a.hide-expand-link {
+        vertical-align: middle;
+        display: table-cell;
+        width: 10%;
+      }
     }
   }
 }
