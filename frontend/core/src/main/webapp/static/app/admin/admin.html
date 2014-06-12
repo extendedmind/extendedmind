@@ -1,7 +1,7 @@
-<div id="admin-container" ng-controller="AdminController">
-  <section id="admin" class="one-column-grid page" snap-drawer-drag="admin">
+<div class="single-page-container" ng-controller="AdminController">
+  <section id="admin" class="one-column-grid single-page page" snap-drawer-drag="admin">
     <div class="column">
-      <div ng-hide="omnibarVisible" class="content-container simple-content-container" ng-switch on="adminMode">
+      <div ng-hide="omnibarVisible" class="content-container page-content-container" ng-switch on="adminMode">
         <ul ng-switch-default>
           <li class="simple-content">
             <h3>users</h3>

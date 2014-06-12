@@ -64,10 +64,10 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       // UI SESSION SERVICE HOOKS
 
       var featureChangedCallback = function featureChangedCallback(name, data, state){
+        setFeatureContainerClass(name);
         if (contentFeatures.indexOf(name) > -1){
           activeContentFeatures[name] = true;
           if ($scope.isContentFeatureActive(name)) {
-            setFeatureContainerClass(name);
             if (featureElements[name]) {
               SnapService.setDraggerElement(featureElements[name].dragElement);
             }
@@ -115,9 +115,13 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
 
       setFeatureContainerClass($scope.getActiveFeature());
 
-       // https://developer.mozilla.org/en-US/docs/Web/API/Element.classList
-       function setFeatureContainerClass(feature) {
-        if (feature === 'tasks' || feature === 'notes' || feature === 'dashboard' || feature === 'archive') {
+      // https://developer.mozilla.org/en-US/docs/Web/API/Element.classList
+      function setFeatureContainerClass(feature) {
+        if (feature === 'tasks' ||
+            feature === 'notes' ||
+            feature === 'dashboard' ||
+            feature === 'archive' ||
+            feature === 'list') {
           $element[0].classList.toggle('no-slides-container', false);
           $element[0].classList.toggle('slides-container', true);
         } else {

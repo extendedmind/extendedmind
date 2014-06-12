@@ -175,6 +175,14 @@ header {
   overflow-y: auto;
 }
 
+.single-page-content-container {
+  overflow-y: hidden;
+  .scroll-container {
+    height: inherit;
+    overflow-y: auto;
+  }
+}
+
 // FOOTER
 
 footer {
@@ -229,8 +237,15 @@ footer {
 
 // NO SWIPER
 
-.no-slides-container .header-page {
-  margin-top: -@page-header-height;
+.no-slides-container {
+  .single-page-container {
+    height: 100%;
+    .single-page {
+      margin-top: -@page-header-height;
+      height: inherit;
+      position: relative;
+    }
+  }
 }
 
 // RESPONSIVE

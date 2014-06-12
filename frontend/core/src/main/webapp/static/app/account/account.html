@@ -1,7 +1,7 @@
-<div id="account-container">
-  <section id="account" class="one-column-grid page" ng-controller="AccountController" snap-drawer-drag="account">
+<div class="single-page-container">
+  <section id="account" class="one-column-grid single-page page" ng-controller="AccountController" snap-drawer-drag="account">
     <div class="column">
-      <div ng-hide="omnibarVisible" class="content-container simple-content-container">
+      <div ng-hide="omnibarVisible" class="content-container page-content-container single-page-content-container">
         <ul>
           <li class="simple-content">
             <h3>user</h3>
@@ -10,10 +10,10 @@
             <span ng-if="!isUserVerified" id="email-verification-status">not verified</span>
             <ul class="button-row">
               <li class="button-container left-of-two">
-                <button type="button" class="default-button small-font" ng-click="gotoChangePassword()">change password</button>
+                <button type="button" class="default-button smallest-font" ng-click="gotoChangePassword()">change password</button>
               </li>
               <li class="button-container right-of-two">
-                <button type="button" class="default-button small-font" ng-click="logout()">logout</button>
+                <button type="button" class="default-button smallest-font" ng-click="logout()">logout</button>
               </li>
             </ul>
             <div ng-if="isAdmin()">

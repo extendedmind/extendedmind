@@ -279,7 +279,7 @@ footer {
       font-size: @small-font-size;
       .font-bold;
     }
-    a.feature-link, a.heading-toggle{
+    a.feature-link, a.lists-link{
       font-size: 1.17em;  // http://www.w3.org/TR/CSS2/sample.html
     }
     li.last-feature { // padding-bottom for li with last a.feature-link
@@ -293,7 +293,8 @@ footer {
       padding-right: 30px;
       padding-left: 30px;
     }
-    a.active, a.system-link:active, a.feature-link:active, a.list-link:active {
+    a.active, a.system-link:active, a.feature-link:active,
+    a.lists-link:active, a.lists-link:active + a.hide-expand-link, a.list-link:active {
       background-color: white;
       color: black;
     }
