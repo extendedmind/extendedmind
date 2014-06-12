@@ -17,6 +17,8 @@ function HeaderController($scope, $rootScope, UISessionService) {
     }else if (activeFeature === 'tasks'){
       UISessionService.changeFeature('notes');
     }else if (activeFeature === 'notes'){
+      UISessionService.changeFeature('lists');
+    }else if (activeFeature === 'lists'){
       UISessionService.changeFeature('archive');
     }else if (activeFeature === 'archive'){
       UISessionService.changeFeature('inbox');
