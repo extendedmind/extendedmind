@@ -26,20 +26,6 @@
               <li ng-repeat="(key, value) in collectives">
                 <div ng-if="value[2] === false">
                   <a href ng-class="getCollectiveClass(key)" ng-click="setCollectiveActive(key)">{{value[0]}}</a>
-                  <ul class="button-row">
-                    <li class="button-container left-of-four">
-                      <button type="button" class="default-button small-font" ng-click="gotoCollectiveInbox(key)">inbox</button>
-                    </li>
-                    <li class="button-container center-of-four">
-                      <button type="button" class="default-button small-font" ng-click="gotoCollectiveTasks(key)">tasks</button>
-                    </li>
-                    <li class="button-container center-of-four">
-                      <button type="button" class="default-button small-font" ng-click="gotoCollectiveNotes(key)">notes</button>
-                    </li>
-                    <li class="button-container right-of-four">
-                      <button type="button" class="default-button small-font" ng-click="gotoCollectiveArchive(key)">archive</button>
-                    </li>
-                  </ul>
                 </div>
               </li>
             </ul>

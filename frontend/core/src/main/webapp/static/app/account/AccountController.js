@@ -37,28 +37,10 @@ function AccountController($rootScope, $location, $scope, AccountService, Analyt
       UISessionService.setCollectiveActive(uuid);
       UISessionService.changeFeature('tasks');
       $location.path('/collective/' + uuid);
+    }else{
+      $scope.toggleMenu();
     }
   };
-
-  $scope.gotoCollectiveInbox = function gotoCollectiveInbox(uuid){
-    $scope.setCollectiveActive(uuid);
-    UISessionService.changeFeature('inbox');
-  }
-
-  $scope.gotoCollectiveTasks = function gotoCollectiveTasks(uuid){
-    $scope.setCollectiveActive(uuid);
-    UISessionService.changeFeature('tasks');
-  }
-
-  $scope.gotoCollectiveNotes = function gotoCollectiveNotes(uuid){
-    $scope.setCollectiveActive(uuid);
-    UISessionService.changeFeature('notes');
-  }
-
-  $scope.gotoCollectiveArchive = function gotoCollectiveArchive(uuid){
-    $scope.setCollectiveActive(uuid);
-    UISessionService.changeFeature('archive');
-  }
 
   $scope.getMyClass = function getMyClass() {
     if (UISessionService.getOwnerPrefix() === 'my') {
