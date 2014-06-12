@@ -5,8 +5,8 @@ function FooterController($scope, SwiperService) {
   var slides = {
     notes: {
       leftSlide: 'home',
-      leftHeading: 'unsorted',
-      center: 'overview',
+      leftHeading: 'recent',
+      center: 'keywords',
       right: 'details'
     },
     tasks: {
@@ -24,7 +24,7 @@ function FooterController($scope, SwiperService) {
     archive: {
       leftSlide: 'completed',
       leftHeading: 'completed',
-      center: 'overview',
+      center: 'lists',
       right: 'details'
     }
   };

@@ -9,7 +9,7 @@
 function MainController(
   $controller, $filter, $rootScope, $scope, $timeout, $window,
   AccountService, UISessionService, UserSessionService, ItemsService, ListsService,
-  TagsService, TasksService, NotesService, SynchronizeService, FilterService, OnboardingService,
+  TagsService, TasksService, NotesService, SynchronizeService, OnboardingService,
   SwiperService, ArrayService, UUIDService) {
 
   // ONBOARDING
@@ -62,6 +62,7 @@ function MainController(
     combineListsArrays();
   });
 
+  var allNotesUpdatedCallbacks = {};
   function combineNotesArrays(){
     if ($scope.notes.length && $scope.archivedNotes.length){
       $scope.allNotes = $scope.notes.concat($scope.archivedNotes);
@@ -72,6 +73,13 @@ function MainController(
     }else{
       $scope.allNotes = [];
     }
+
+    for (var id in allNotesUpdatedCallbacks) {
+      allNotesUpdatedCallbacks[id]($scope.allNotes.length);
+    }
+  }
+  $scope.registerAllNotesUpdatedCallback = function(callback, id){
+    allNotesUpdatedCallbacks[id] = callback;
   }
 
   $scope.$watch('notes.length', function(/*newValue, oldValue*/) {
@@ -140,7 +148,6 @@ function MainController(
   }
 
   $scope.ownerPrefix = UISessionService.getOwnerPrefix();
-  $scope.filterService = FilterService;
 
   // BACKEND POLLING
 
@@ -269,6 +276,7 @@ function MainController(
   $controller('TasksController',{$scope: $scope});
   $controller('ListsController',{$scope: $scope});
   $controller('ContextsController',{$scope: $scope});
+  $controller('KeywordsController',{$scope: $scope});
   $controller('NotesController',{$scope: $scope});
   $controller('ItemsController',{$scope: $scope});
 }
@@ -276,7 +284,7 @@ function MainController(
 MainController.$inject = [
 '$controller', '$filter', '$rootScope', '$scope', '$timeout', '$window',
 'AccountService', 'UISessionService', 'UserSessionService', 'ItemsService', 'ListsService',
-'TagsService', 'TasksService', 'NotesService', 'SynchronizeService', 'FilterService', 'OnboardingService',
+'TagsService', 'TasksService', 'NotesService', 'SynchronizeService', 'OnboardingService',
 'SwiperService', 'ArrayService', 'UUIDService'
 ];
 angular.module('em.app').controller('MainController', MainController);

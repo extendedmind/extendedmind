@@ -23,7 +23,7 @@ angular.module('em.filters').filter('itemsFilter', [
         }
         return filteredValues;
       };
-      itemsFilter.byContextUUID = function(items, uuid) {
+      itemsFilter.byTagUUID = function(items, uuid) {
         var filteredValues, i;
         filteredValues = [];
         i = 0;
@@ -49,12 +49,9 @@ angular.module('em.filters').filter('itemsFilter', [
 
         while (items[i]) {
           sortedTask = false;
-          if (items[i].relationships) {
-            if (items[i].relationships.parent || (items[i].relationships.tags && items[i].relationships.tags.length > 0)) {
-              sortedTask = true;
-            }
-          }
-          if (!sortedTask) {
+          if (!items[i].relationships
+              || !items[i].relationships.tags
+              || !items[i].relationships.tags.length > 0) {
             filteredValues.push(items[i]);
           }
           i++;

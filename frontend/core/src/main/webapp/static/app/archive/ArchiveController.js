@@ -4,8 +4,8 @@ function ArchiveController($scope, ListsService, NotesService, SwiperService, Ta
   $scope.archiveSlides = [];
 
   function setCompletedTaskLimit(fullCompleteTasksSize){
-    if ($scope.fullCompletedTasks.length < 25){
-      $scope.completedTasksLimit = $scope.fullCompletedTasks.length;
+    if (fullCompleteTasksSize < 25){
+      $scope.completedTasksLimit = fullCompleteTasksSize;
     }
   }
   $scope.createFullCompletedTasks(setCompletedTaskLimit, 'ArchiveController');
@@ -16,7 +16,7 @@ function ArchiveController($scope, ListsService, NotesService, SwiperService, Ta
       slideIndex: 0
     },
     centerSlide: {
-      slideName: 'overview',
+      slideName: 'lists',
       slideIndex: 1
     },
     rightSlide: {

@@ -1,0 +1,34 @@
+<section id="notes-keywords" class="two-column-grid page">
+  <div class="column">
+    <div ng-hide="omnibarVisible && isActiveSlide('keywords')" class="content-container page-content-container">
+      <div class="inner-page-content-container" swiper-prevent>
+        <section ng-init="newKeyword={title:undefined, tagType:'keyword'}">
+          <h3>keywords</h3>
+          <ul>
+            <li ng-show="keywords.length" ng-repeat="keyword in keywords">
+              <a href class="click-to-slide" ng-click="showKeywordDetails(keyword)">
+                <span class="link-title">@{{keyword.title}}</span><span class="icon-arrow-right"></span>
+              </a>
+            </li>
+            <li>
+              <form class="add-element" role="form" name="addContextForm" ng-submit="callAndRefresh(addKeyword, newKeyword)" autocapitalize="none" autocorrect="off" add-item>
+                <div class="form-group" editable-field-container="disable">
+                  <label class="sr-only" for="keywordTitle">title</label>
+                  <input type="text" id="keywordTitle" class="simple-input" ng-model="newKeyword.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" placeholder="add keyword..." editable-field/>
+                </div>
+              </form>
+            </li>
+          </ul>
+          <h3>
+            <a href class="page-header click-to-slide" swiper-click="showNoKeywordDetails()">
+              <span class="link-title">no keywords</span><span class="icon-arrow-right"></span>
+            </a>
+          </h3>
+        </section>
+      </div>
+    </div>
+  </div>
+  <aside class="column">
+    TODO
+  </aside>
+</section>

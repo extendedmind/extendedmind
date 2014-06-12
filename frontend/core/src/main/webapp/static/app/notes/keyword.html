@@ -1,0 +1,58 @@
+<section id="notes-keyword" class="two-column-grid page">
+  <div class="column">
+    <div ng-hide="omnibarVisible && isActiveSlide('details')" class="content-container page-content-container">
+      <div class="inner-page-content-container" swiper-prevent>
+        <div ng-if="keyword" class="inner-page-content" scroll-to accordion>
+          <div accordion-title="keyword" edit-item="editKeyword(keyword)" edit-item-inline="true" edit-item-fields="editKeywordFields(keyword)" bold-title="true" title-prefix="'@'" has-complete="false" toggle-complete></div>
+          <div ng-if="isOpen(keyword)" class="accordion-body swiper-no-swiping" editable-field-container="auto">
+            <div class="accordion-inner">
+              <div item-core-fields="keyword" item-core-fields-details="keywordDetails"></div>
+              <ul class="button-row">
+                <li class="button-container left-of-two border-right">
+                  <button class="normal-button" type="button" ng-click="closeAndCall(keyword, keywordQuickEditDone)">
+                    done
+                  </button>
+                </li>
+                <li class="button-container right-of-two">
+                  <button class="delete-button" type="button" ng-click="closeAndCall(keyword, deleteKeywordAndShowKeywords)">
+                    delete
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'byTagUUID', filterBy: keyword.uuid}">
+            <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
+              <div ng-if="note.content" class="teaser">
+                <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
+              </div>
+            </div>
+            <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
+              <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+            </div>
+            <div ng-if="!note.content" class="teaser-empty"></div>
+          </div>
+          <div ng-include="'static/app/notes/addNote.html'" include-replace></div>
+        </div>
+        <div ng-if="!keyword" class="inner-page-content" scroll-to accordion>
+          <h3>no keywords</h3>
+          <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'unsorted'}">
+            <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
+              <div ng-if="note.content" class="teaser">
+                <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
+              </div>
+            </div>
+            <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
+              <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+            </div>
+            <div ng-if="!note.content" class="teaser-empty"></div>
+          </div>
+          <div ng-include="'static/app/notes/addNote.html'" include-replace></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="column">
+    TODO
+  </aside>
+</section>

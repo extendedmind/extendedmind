@@ -164,15 +164,24 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
   };
 
   // Navigation
+
   $scope.context = undefined;
   $scope.showContextDetails = function(selectedContext) {
     $scope.context = selectedContext;
+    $scope.subtask = {relationships: {context: $scope.context.uuid}};
     SwiperService.swipeTo('tasks/details');
   };
   $scope.showNoContextDetails = function() {
     $scope.context = undefined;
+    $scope.subtask = {};
     SwiperService.swipeTo('tasks/details');
   };
+
+  $scope.deleteContextAndShowContexts = function(context) {
+    SwiperService.swipeTo('tasks/contexts');
+    $scope.deleteContext(context);
+    $scope.context = undefined;
+  }
 }
 
 TasksController['$inject'] = ['$scope', 'DateService', 'SwiperService', 'UISessionService', 'TasksService', 'AnalyticsService'];

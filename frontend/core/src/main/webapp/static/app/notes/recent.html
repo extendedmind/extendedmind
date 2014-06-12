@@ -1,9 +1,11 @@
-<section id="notes-unsorted" class="two-column-grid page">
+<section id="notes-recent" class="two-column-grid page">
   <div class="column">
     <div ng-hide="omnibarVisible && isActiveSlide('home')" class="content-container page-content-container no-heading-content-container">
       <div class="inner-page-content-container" swiper-prevent>
-        <div class="inner-page-content" scroll-to accordion>
-          <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'unsorted'}" ng-init="newNote = {}">
+        <div infinite-scroll="addMoreRecent()" infinite-scroll-parent scroll-to accordion>
+          <h3>recent</h3>
+          <div ng-include="'static/app/notes/addNote.html'"></div>
+          <div ng-if="showContent('notes')" ng-repeat="note in allNotes | orderBy:'modified':true | limitTo: getRecentNotesLimit()" ng-init="newNote = {}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
               <div ng-if="note.content" class="teaser">
                 <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
@@ -14,7 +16,6 @@
             </div>
             <div ng-if="!note.content" class="teaser-empty"></div>
           </div>
-          <div ng-include="'static/app/notes/addNote.html'"></div>
         </div>
       </div>
     </div>

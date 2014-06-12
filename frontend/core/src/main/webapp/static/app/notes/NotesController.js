@@ -1,6 +1,6 @@
 'use strict';
 
-function NotesController($filter, $q, $scope, UISessionService, UUIDService, NotesService, ListsService, TagsService, AnalyticsService) {
+function NotesController($filter, $q, $scope, UISessionService, UUIDService, NotesService, ListsService, TagsService, AnalyticsService, SwiperService) {
 
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/){
     if (name === 'noteEdit') {
@@ -110,10 +110,16 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
   $scope.addNote = function(newNote) {
     if (!newNote.title || newNote.title.length === 0) return false;
     var newNoteToSave = {title: newNote.title};
-    if (newNote.relationships && newNote.relationships.list){
-      newNoteToSave.relationships = {
-        list: newNote.relationships.list
-      };
+    if (newNote.relationships){
+      if (newNote.relationships.list){
+        newNoteToSave.relationships = {
+          list: newNote.relationships.list
+        };
+      }
+      if(newNote.relationships.tags && newNote.relationships.tags.length) {
+        if (!newNoteToSave.relationships) newNoteToSave.relationships = {};
+        newNoteToSave.relationships.tags = newNote.relationships.tags.slice(0);
+      }
     }
     delete newNote.title;
 
@@ -263,10 +269,56 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
   $scope.clearSelectedOmnibarKeywords = function clearSelectedOmnibarKeywords() {
     selectedOmnibarKeywords = [];
   };
+
+
+  // INFINITE SCROLL
+  $scope.recentNotesLimit = 0;
+  function setAllNotesLimit(allNotesSize){
+    if (allNotesSize < 25){
+      $scope.recentNotesLimit = allNotesSize;
+    }
+  }
+  $scope.registerAllNotesUpdatedCallback(setAllNotesLimit, 'NotesController');
+
+  $scope.getRecentNotesLimit = function(){
+    return $scope.recentNotesLimit;
+  };
+
+  $scope.addMoreRecent = function(){
+    if ($scope.recentNotesLimit !== $scope.allNotes.length){
+      // There is still more to add, add in batches of 25
+      if ($scope.recentNotesLimit + 25 < $scope.allNotes.length){
+        $scope.recentNotesLimit += 25;
+      }else{
+        $scope.recentNotesLimit = $scope.allNotes.length;
+      }
+    }
+  };
+
+  // Navigation
+
+  $scope.keyword = undefined;
+  $scope.showKeywordDetails = function(selectedKeyword) {
+    $scope.keyword = selectedKeyword;
+    $scope.newNote = {relationships: {tags: [$scope.keyword.uuid]}};
+    SwiperService.swipeTo('notes/details');
+  };
+  $scope.showNoKeywordDetails = function() {
+    $scope.keyword = undefined;
+    $scope.newNote = {};
+    SwiperService.swipeTo('notes/details');
+  };
+
+  $scope.deleteKeywordAndShowKeywords = function(keyword) {
+    SwiperService.swipeTo('notes/keywords');
+    $scope.deleteKeyword(keyword);
+    $scope.keyword = undefined;
+  }
+
 }
 
 NotesController['$inject'] = [
 '$filter', '$q', '$scope',
 'UISessionService', 'UUIDService', 'NotesService', 'ListsService', 'TagsService',
-'AnalyticsService'];
+'AnalyticsService', 'SwiperService'];
 angular.module('em.app').controller('NotesController', NotesController);
