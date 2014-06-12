@@ -3,7 +3,6 @@
     <div class="column">
       <div ng-hide="omnibarVisible" class="content-container page-content-container">
         <div class="inner-page-content-container" swiper-prevent>
-          <h3>lists</h3>
           <ul class="list-arrow-right">
             <li ng-if="lists && lists.length" ng-class="selected" ng-repeat="list in lists">
               <a class="text-muted click-to-slide" href swiper-click="gotoList(list)">
