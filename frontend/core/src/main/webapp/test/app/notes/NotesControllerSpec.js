@@ -25,6 +25,10 @@ describe('NotesController', function() {
 
     inject(function($controller, $rootScope) {
       $scope = $rootScope.$new();
+      $scope.registerAllNotesUpdatedCallback = function registerAllNotesUpdatedCallback() {
+        return;
+      };
+
       NotesController = $controller('NotesController', {
         $scope: $scope
       });
@@ -47,7 +51,7 @@ describe('NotesController', function() {
     expect(MockNotesService.getNotes().length).toEqual(0);
     MockNotesService.saveNote(note);
     expect(MockNotesService.getNotes().length).toEqual(1);
-    
+
     $scope.deleteNote(note);
     expect(MockNotesService.getNotes().length).toEqual(0);
   });
