@@ -2,20 +2,6 @@
 
 function TasksController($scope, DateService, SwiperService, UISessionService, TasksService, AnalyticsService) {
 
-  var featureChangedCallback = function featureChangedCallback(name, data/*, state*/){
-    if (name === 'taskEdit'){
-      if (data){
-        $scope.task = data;
-      }else{
-        $scope.task = {
-          relationships: {}
-        };
-      }
-      $scope.initializeTask($scope.task);
-    }
-  };
-  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'TasksController');
-
   $scope.initializeTask = function(task){
     if (task.due) $scope.showDateInput = true;
     else $scope.showDateInput = false;
@@ -79,7 +65,7 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
   };
 
   $scope.editTask = function(task) {
-    UISessionService.changeFeature('taskEdit', task);
+    $scope.editItemInOmnibar(task, 'task');
   };
 
   $scope.taskChecked = function(task) {
@@ -181,7 +167,7 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     SwiperService.swipeTo('tasks/contexts');
     $scope.deleteContext(context);
     $scope.context = undefined;
-  }
+  };
 }
 
 TasksController['$inject'] = ['$scope', 'DateService', 'SwiperService', 'UISessionService', 'TasksService', 'AnalyticsService'];

@@ -1,102 +1,171 @@
-<div ng-init="omnibarKeywords = {isVisible: false}" class="omnibar-container swiper-no-swiping">
-  <form id="omnibar" role="form" name="add-omni-item" ng-submit="saveOmnibarText(omnibarText)" autocapitalize="none" autocorrect="off">
+<div class="omnibar-container swiper-no-swiping">
+
+  <form id="omnibar" role="form" name="addOmniItem" ng-submit="saveOmnibarText()" autocapitalize="none" autocorrect="off">
     <div class="form-group">
-      <div class="left-input-wrapper">
-        <input type="text" id="omnibar-input" class="simple-input form-control omnibar-input" ng-model="omnibarText.title" placeholder="store / recall" ng-click="clickOmnibar()" ng-keydown="omnibarKeyDown($event)" maxlength="128" required>
+      <div ng-class="{'left-input-wrapper' : omnibarHasText() && !isItemEditMode}">
+        <input type="text" id="omnibar-input" class="simple-input form-control omnibar-input" ng-model="omnibarText.title" ng-keydown="omnibarKeyDown($event)" omnibar-input placeholder="{{getOmnibarInputPlaceholder()}}" maxlength="128" required>
       </div>
-      <div ng-show="omnibarHasText()" class="right-button-wrapper">
-        <button id="omnibarX" class="button" type="button" ng-click="omnibarText.title=''"><span class="icon-x"></span>
+      <div ng-show="omnibarHasText() && !isItemEditMode" class="right-button-wrapper">
+        <button id="omnibarX" class="button" type="button" ng-click="clearOmnibar()"><span class="icon-x"></span>
         </button>
       </div>
     </div>
   </form>
-  <div ng-if="omnibarVisible" class="omnibar-actions omnibar-animation">
+
+  <div ng-if="!isItemEditMode" class="omnibar-actions">
     <ul class="button-row">
-      <li class="button-container left-of-four border-right">
-        <button type="button" class="normal-button" ng-click="saveOmnibarText(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
-          <span class="button-text">inbox</span>
+      <li class="button-container left-of-three border-right">
+        <button type="button" class="tab-button" ng-click="setOmnibarFeatureActive('search')" ng-disabled="isOmnibarFeatureActive('search')">
+          <span class="button-text">search</span>
         </button>
       </li>
-      <li class="button-container center-of-four">
-        <button type="button" class="default-button" ng-click="editAsTask(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
+      <li class="button-container center-of-three">
+        <button type="button" class="tab-button" ng-click="setOmnibarFeatureActive('task')" ng-disabled="isOmnibarFeatureActive('task')">
           <span class="button-text">task</span>
         </button>
       </li>
-      <li class="button-container center-of-four">
-        <button type="button" class="default-button" ng-click="editAsNote(omnibarText)" ng-disabled="!omnibarHasText() || isLoading">
+      <li class="button-container right-of-three">
+        <button type="button" class="tab-button" ng-click="setOmnibarFeatureActive('note')" ng-disabled="isOmnibarFeatureActive('note')">
           <span class="button-text">note</span>
-        </button>
-      </li>
-      <li class="button-container right-of-four">
-        <button type="button" class="default-button" ng-click="clearOmnibar()">
-          <span class="button-text">cancel</span>
         </button>
       </li>
     </ul>
 
-    <button ng-if="keywords.length" class="small-font button" ng-class="omnibarKeywords.isVisible ? 'selected-keyword' : 'keyword'" ng-click="omnibarKeywords.isVisible = !omnibarKeywords.isVisible; clearSelectedOmnibarKeywords()">
-      <span ng-bind="omnibarKeywords.isVisible ? 'hide' : 'show'"></span> keywords <strong ng-bind="omnibarKeywords.isVisible ? 'x' : '+'"></strong>
-    </button>
+  </div>
 
-    <div ng-if="omnibarKeywords.isVisible" class="keywords-container">
-      <button ng-init="isKeywordSelected = false" ng-repeat="keyword in getSelectedAndFilterUnselectedKeywords()" ng-click="isKeywordSelected = !isKeywordSelected; toggleKeywordSelected(keyword);" class="button small-font keyword" ng-class="isKeywordSelected ? 'selected-keyword' : 'keyword'">
-        {{keyword.title}} <strong ng-bind="isKeywordSelected ? 'x' : '+'"></strong>
+  <div ng-switch="getActiveOmnibarFeature()" ng-style="{height: getOmnibarFeatureHeight()}" class="swiper-no-swiping omnibar-feature" data-snap-ignore="true" scroll-to>
+
+    <div ng-switch-when="search" style="height: 100%;">
+
+      <button ng-if="keywords.length" class="small-font button" ng-class="omnibarKeywords.isVisible ? 'selected-keyword' : 'keyword'" ng-click="toggleOmnibarKeywordsVisible()">
+        keywords <strong ng-bind="omnibarKeywords.isVisible ? 'x' : '+'"></strong>
       </button>
+
+      <div ng-if="omnibarKeywords.isVisible" class="keywords-container">
+        <button ng-init="isKeywordSelected = false" ng-repeat="keyword in getSelectedAndFilterUnselectedKeywords()" ng-click="isKeywordSelected = !isKeywordSelected; toggleKeywordSelected(keyword);" class="button small-font keyword" ng-class="isKeywordSelected ? 'selected-keyword' : 'keyword'">
+          {{keyword.title}} <strong ng-bind="isKeywordSelected ? 'x' : '+'"></strong>
+        </button>
+      </div>
+
+      <div ng-if="omnibarKeywords.isVisible && !isLoading">
+        <div ng-show="filteredNotes.length" class="filtered-items">
+          <h3><a href ng-click="gotoNotes()">notes</a></h3>
+          <div class="inner-page-content-container" accordion>
+            <div ng-repeat="note in filteredNotes = getFilteredOmnibarNotes()">
+              <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete></div>
+              <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
+                <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div ng-if="isSearchActive() && !omnibarKeywords.isVisible && !isLoading">
+        <div ng-show="filteredItems.length" class="filtered-items">
+          <h3 ><a href ng-click="gotoInbox()">inbox</a></h3>
+          <div class="inner-page-content-container" accordion>
+            <div ng-repeat="item in filteredItems = (items | filter:{title:searchText.delayed} | limitTo:10)">
+              <div accordion-title="item" edit-item="editItem(item)" edit-item-inline="true" edit-item-fields="editItemFields(item)" toggle-complete="false"></div>
+              <div ng-if="isOpen(item)" class="accordion-body" editable-field-container="auto">
+                <div item-core-fields="item" item-core-fields-details="itemDetails"></div>
+                <div ng-include="'static/app/main/itemActions.html'"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div ng-show="filteredTasks.length" class="filtered-items">
+          <h3><a href ng-click="gotoTasks()">tasks</a></h3>
+          <div class="inner-page-content-container" accordion>
+            <div ng-repeat="task in filteredTasks = (allActiveTasks | filter:{title:searchText.delayed} | limitTo:10)">
+              <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
+              <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
+                <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div ng-show="filteredNotes.length" class="filtered-items">
+          <h3><a href ng-click="gotoNotes()">notes</a></h3>
+          <div class="inner-page-content-container" accordion>
+            <div ng-repeat="note in filteredNotes = (allNotes | filter:{title:searchText.delayed} | limitTo:10)">
+              <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete></div>
+              <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
+                <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div ng-switch-when="task">
+
+      <form class="form-horizontal" role="form" name="taskEdit" editable-field-container>
+        <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
+        <div ng-if="task.date" class="form-group">
+          <label class="sr-only" for="taskRepeat">repeating</label>
+          <select id="taskRepeat" class="simple-input swiper-no-swiping" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes" editable-field>
+            <option value="">select repeating...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="sr-only" for="taskLink">url</label>
+          <input type="text" id="taskLink" class="simple-input" ng-model="task.link" placeholder="url..." editable-field>
+        </div>
+        <div class="form-group" ng-style="{maxHeight: getEditTaskDescriptionMaxHeight()}" >
+          <label class="sr-only" for="taskDescription">description</label>
+          <textarea id="taskDescription" class="simple-input" ng-style="{maxHeight: getEditTaskDescriptionMaxHeight()}" ng-model="task.description" placeholder="description..." maxlength="1024" expanding-textarea editable-field></textarea>
+        </div>
+      </form>
+
+    </div>
+
+    <div ng-switch-when="note">
+
+      <form role="form" name="noteEdit" editable-field-container>
+
+        <div class="form-group">
+          <label class="sr-only" for="noteKeywords">keywords</label>
+          <input type="text" class="simple-input" id="noteKeywords" ng-model="newKeyword.title" placeholder="keywords..." maxlength="128" editable-field autocapitalize="none"/>
+        </div>
+
+        <div ng-switch="showKeywords()">
+          <div class="keywords-container">
+            <span ng-if="showKeywords()" id="new-keyword">
+              <button class="small-font button keyword" ng-disabled="isSelectedKeyword()" ng-click="selectNewKeyword()">
+                {{newKeyword.title}} <strong>+</strong>
+              </button>
+            </span>
+
+            <span ng-if="noteHasKeywords()">
+              <button type="button" class="button small-font selected-keyword" ng-repeat="keyword in noteKeywords()" ng-click="unSelectKeyword(keyword)">{{keyword.title}} <strong>x</strong></button>
+            </span>
+          </div>
+
+          <div ng-switch-default class="form-group" ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
+            <label class="sr-only" for="noteContent">content</label>
+            <textarea class="simple-input" ng-style="{maxHeight: getEditNoteContentMaxHeight()}" id="noteContent" ng-model="note.content" placeholder="content..." expanding-textarea editable-field></textarea>
+          </div>
+
+          <div ng-switch-when="true" class="keywords-container">
+            <button ng-hide="isNewKeyword(keyword)" ng-repeat="keyword in otherThanNoteKeywords() | filter: {title: newKeyword.title}" ng-click="selectExistingKeyword(keyword)" class="button small-font keyword">
+              {{keyword.title}} <strong>+</strong>
+            </button>
+          </div>
+        </div>
+
+      </form>
+
     </div>
 
   </div>
-  <div ng-if="omnibarVisible" id="omnibar-results" class="swiper-no-swiping" ng-style="{height: getOmnibarSearchResultsHeight()}" data-snap-ignore="true" scroll-to>
 
-    <div ng-if="omnibarKeywords.isVisible && !isLoading">
-      <div ng-show="filteredNotes.length" class="filtered-items">
-        <h3><a href ng-click="gotoNotes()">notes</a></h3>
-        <div class="inner-page-content-container" accordion>
-          <div ng-repeat="note in filteredNotes = getFilteredOmnibarNotes()">
-            <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete></div>
-            <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
-              <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div ng-if="!isSearchActive() || isLoading" id="filtered-items-placeholder" ng-style="{width: getColumnWidth()}" ng-click="clearOmnibar(heading)">&nbsp;</div>
-    <div ng-if="isSearchActive() && !omnibarKeywords.isVisible && !isLoading" id="filtered-items-container">
-      <div ng-show="filteredItems.length" class="filtered-items">
-        <h3 ><a href ng-click="gotoInbox()">inbox</a></h3>
-        <div class="inner-page-content-container" accordion>
-          <div ng-repeat="item in filteredItems = (items | filter:{title:searchText.delayed} | limitTo:10)">
-            <div accordion-title="item" edit-item="editItem(item)" edit-item-inline="true" edit-item-fields="editItemFields(item)" toggle-complete="false"></div>
-            <div ng-if="isOpen(item)" class="accordion-body" editable-field-container="auto">
-              <div item-core-fields="item" item-core-fields-details="itemDetails"></div>
-              <div ng-include="'static/app/main/itemActions.html'"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div ng-show="filteredTasks.length" class="filtered-items">
-        <h3><a href ng-click="gotoTasks()">tasks</a></h3>
-        <div class="inner-page-content-container" accordion>
-          <div ng-repeat="task in filteredTasks = (allActiveTasks | filter:{title:searchText.delayed} | limitTo:10)">
-            <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-            <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
-              <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div ng-show="filteredNotes.length" class="filtered-items">
-        <h3><a href ng-click="gotoNotes()">notes</a></h3>
-        <div class="inner-page-content-container" accordion>
-          <div ng-repeat="note in filteredNotes = (allNotes | filter:{title:searchText.delayed} | limitTo:10)">
-            <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete></div>
-            <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
-              <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div style="height: 44px;">
+    <button type="button" class="button transparent-button" style="float: left;" ng-click="clearAndHideOmnibar()">cancel</button>
+    <button type="submit" class="button transparent-button" style="float: right;" ng-click="saveOmnibarText()" ng-disabled="!addOmniItem.$valid" ng-bind="getOmnibarFooterSaveText()"></button>
   </div>
+
 </div>

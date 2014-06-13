@@ -1,22 +1,13 @@
 'use strict';
 
 function NotesController($filter, $q, $scope, UISessionService, UUIDService, NotesService, ListsService, TagsService, AnalyticsService, SwiperService) {
+  $scope.newKeyword = {};
 
-  var featureChangedCallback = function featureChangedCallback(name, data/*, state*/){
-    if (name === 'noteEdit') {
-      if (data) {
-        $scope.note = data;
-      } else {
-        $scope.note = {
-          relationships: {}
-        };
-      }
-      $scope.clearKeyword();
-    }
+  $scope.initializeOmnibarNote = function initializeOmnibarNote(omnibarText) {
+    $scope.note = omnibarText ? omnibarText : {};
   };
-  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'NotesController');
 
-  $scope.saveNote = function(note) {
+  $scope.saveNote = function() {
 
     // Save keywords first because saveTag requires network connection.
     function saveKeywords() {
@@ -73,19 +64,15 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
       return deferredSaveKeywordsSave.promise;
     }
 
-    if (note.uuid) {
+    if ($scope.note.uuid) {
       AnalyticsService.do('saveNote', 'new');
     } else {
       AnalyticsService.do('saveNote', 'existing');
     }
 
-    saveKeywords().then(function() {
-      NotesService.saveNote(note, UISessionService.getActiveUUID());
+    return saveKeywords().then(function() {
+      return NotesService.saveNote($scope.note, UISessionService.getActiveUUID());
     });
-
-    if (!$scope.isFeatureActive('notes')) {
-      UISessionService.changeFeature('notes', note);
-    }
   };
 
   $scope.noteQuickEditDone = function(note) {
@@ -99,7 +86,7 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
   };
 
   $scope.editNote = function(note) {
-    UISessionService.changeFeature('noteEdit', note);
+    $scope.editItemInOmnibar(note, 'note');
   };
 
   $scope.deleteNote = function(note) {
@@ -227,49 +214,6 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
     };
   };
 
-  var selectedOmnibarKeywords = [];
-
-  $scope.getSelectedAndFilterUnselectedKeywords = function getSelectedAndFilterUnselectedKeywords() {
-    if ($scope.searchText.delayed) {
-      return $scope.keywords.filter(function(keyword) {
-        return selectedOmnibarKeywords.indexOf(keyword) !== -1 || keyword.title.indexOf($scope.searchText.delayed) !== -1;
-      });
-    } else {
-      return $scope.keywords;
-    }
-  };
-
-  $scope.getFilteredOmnibarNotes = function getFilteredOmnibarNotes() {
-    // show nothing if no keywords selected
-    if (selectedOmnibarKeywords.length) {
-      var filteredNotes = [];
-
-      $scope.notes.forEach(function(note) {
-        if (note.relationships && note.relationships.tags) {
-          if (selectedOmnibarKeywords.every(function(keyword) {
-            return (note.relationships.tags.indexOf(keyword.uuid) !== -1);
-          })) {
-            filteredNotes.push(note);
-          }
-        }
-      });
-      return filteredNotes;
-    }
-  };
-
-  $scope.toggleKeywordSelected = function toggleKeywordSelected(keyword) {
-    var toggledKeywordIndex = selectedOmnibarKeywords.indexOf(keyword);
-    if (toggledKeywordIndex === -1) {
-      selectedOmnibarKeywords.push(keyword);
-    } else {
-      selectedOmnibarKeywords.splice(toggledKeywordIndex, 1);
-    }
-  };
-
-  $scope.clearSelectedOmnibarKeywords = function clearSelectedOmnibarKeywords() {
-    selectedOmnibarKeywords = [];
-  };
-
 
   // INFINITE SCROLL
   $scope.recentNotesLimit = 0;
@@ -313,7 +257,7 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
     SwiperService.swipeTo('notes/keywords');
     $scope.deleteKeyword(keyword);
     $scope.keyword = undefined;
-  }
+  };
 
 }
 

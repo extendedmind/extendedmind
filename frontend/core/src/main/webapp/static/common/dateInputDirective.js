@@ -5,13 +5,16 @@ function dateInputDirective() {
     restrict: 'A',
     link: function(scope, element, attrs) {
 
+      // TODO set showDateInput false after save
+
       // http://ruoyusun.com/2013/08/24/a-glimpse-of-angularjs-scope-via-example.html
       scope.$watch(attrs.dateInput, function(newValue) {
         if (newValue) {
           if (!scope.task.date) {
+            scope.task.date = new Date().toISOString().substring(0, 10);
+            element[0].value = new Date().toISOString().substring(0, 10);
             scope.$evalAsync(function() {
               element[0].focus();
-              element[0].value = new Date().toISOString().substring(0, 10);
             });
           } else if (attrs.dateInputSetFocus) {
             scope.$evalAsync(function() {
@@ -34,6 +37,9 @@ function dateInputDirective() {
           scope.hideDate();
         }
       };
+      scope.$on('$destroy', function() {
+        scope.hideDate();
+      });
     }
   };
 }

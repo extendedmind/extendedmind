@@ -353,6 +353,21 @@ button.transparent-button {
   }
 }
 
+button.tab-button {
+  color: white;
+    background-color: @tab-button;
+  &:hover {
+    background-color: @tab-button-hover;
+  }
+  &:active {
+    background-color: @tab-button-pressed;
+  }
+  &[disabled] {
+    color: black;
+    background-color: white;
+  }
+}
+
 // CHECKBOXES
 
 // Make labels clickable

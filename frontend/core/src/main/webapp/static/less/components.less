@@ -192,6 +192,12 @@ header.static-page-header {
     padding: 17px @horizontal-grid 17px 20px; // increased clicking area
     span {
       font-size: 16px;
+      &:hover {
+        color: @highlighted-element-hover;
+      }
+      &:active {
+        color: @highlighted-element-pressed;
+      }
     }
   }
 }
@@ -228,13 +234,14 @@ footer {
   form, .form-group, input {
     height: inherit;
   }
-  #omnibar-results {
+  .omnibar-feature {
+    width: 100%;
     margin-top: 12px;
     float: left;
     overflow-y: auto;
     // height set with javascript
 
-    #filtered-items-placeholder {
+    .filtered-items-placeholder {
       height: 100%;
       // width set with javascript
     }
@@ -247,6 +254,9 @@ footer {
     span {
       font-size: 18px;
     }
+  }
+  .omnibar-input {
+    font-size: @large-font-size;
   }
 }
 
@@ -297,7 +307,7 @@ footer {
       font-size: @small-font-size;
       .font-bold;
     }
-    a.feature-link, a.lists-link{
+    a.feature-link, a.lists-link {
       font-size: 1.17em;  // http://www.w3.org/TR/CSS2/sample.html
     }
     li.last-feature { // padding-bottom for li with last a.feature-link
@@ -330,11 +340,11 @@ footer {
         padding-left: 40px;
       }
     }
-    .list-last{
+    .list-last {
       margin-bottom: @vertical-grid-half;
     }
-    .lists-heading-container{
-      display:table;
+    .lists-heading-container {
+      display: table;
       .feature-link {
         display: table-cell;
         width: 90%;
@@ -448,7 +458,7 @@ li.datepicker-date {
 
 // FORMS
 
-.inline-form-fields{
+.inline-form-fields {
   padding-bottom: 10px;
 }
 

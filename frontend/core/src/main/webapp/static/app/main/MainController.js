@@ -80,7 +80,7 @@ function MainController(
   }
   $scope.registerAllNotesUpdatedCallback = function(callback, id){
     allNotesUpdatedCallbacks[id] = callback;
-  }
+  };
 
   $scope.$watch('notes.length', function(/*newValue, oldValue*/) {
     combineNotesArrays();
@@ -99,9 +99,9 @@ function MainController(
       i++;
     }
     $scope.allActiveTasks =
-        ArrayService.combineArrays(
-          activeArchivedTasks,
-          $scope.tasks, 'created', true);
+    ArrayService.combineArrays(
+      activeArchivedTasks,
+      $scope.tasks, 'created', true);
   }
 
   $scope.$watch('tasks.length', function(/*newValue, oldValue*/) {
@@ -124,10 +124,9 @@ function MainController(
         }
         i++;
       }
-      $scope.fullCompletedTasks =
-        ArrayService.combineArrays(
-          completedArchivedTasks,
-          $scope.completedTasks, 'completed', true);
+      $scope.fullCompletedTasks = ArrayService.combineArrays(
+        completedArchivedTasks,
+        $scope.completedTasks, 'completed', true);
 
       for (var id in completedArrayCallbacks) {
         completedArrayCallbacks[id]($scope.fullCompletedTasks.length);
@@ -145,7 +144,7 @@ function MainController(
         combineCompletedTasksArrays();
       });
     }
-  }
+  };
 
   $scope.ownerPrefix = UISessionService.getOwnerPrefix();
 
@@ -279,6 +278,7 @@ function MainController(
   $controller('KeywordsController',{$scope: $scope});
   $controller('NotesController',{$scope: $scope});
   $controller('ItemsController',{$scope: $scope});
+  $controller('OmnibarController',{$scope: $scope});
 }
 
 MainController.$inject = [

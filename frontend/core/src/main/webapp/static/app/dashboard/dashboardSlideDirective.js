@@ -9,7 +9,6 @@ function dashboardSlideDirective() {
       scope.slideIndex = attrs.slideIndex;
       scope.dashboardSlide = attrs.dashboardSlide;
       scope.heading = attrs.dashboardSlide;
-      scope.omnibarFeature = 'dashboard';
     }
   };
 }
