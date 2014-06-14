@@ -10,12 +10,17 @@
                 <div class="accordion-inner">
                   <div item-core-fields="list" item-core-fields-details="listDetails"></div>
                   <ul class="button-row swiper-no-swiping" data-snap-ignore="true">
-                    <li class="button-container left-of-two">
+                    <li class="button-container left-of-three">
+                      <button class="normal-button" type="button" ng-click="closeAndCall(list, gotoList)">
+                        view
+                      </button>
+                    </li>
+                    <li class="button-container center-of-three">
                       <button class="default-button" type="button" ng-click="closeAndCall(list, archiveListAndMoveInbox)">
                         archive
                       </button>
                     </li>
-                    <li class="button-container right-of-two">
+                    <li class="button-container right-of-three">
                       <button class="delete-button" type="button" ng-click="closeAndCall(list, deleteListAndMoveToInbox)">
                         delete
                       </button>
