@@ -58,6 +58,11 @@ function MenuController($location, $scope, AuthenticationService, UISessionServi
       return 'active';
     }
   };
+  $scope.getEditListsClass = function getEditListsClass(list) {
+    if (UISessionService.getCurrentFeatureName() === 'editLists') {
+      return 'active';
+    }
+  };
 
   $scope.gotoList = function(list){
     if (UISessionService.getCurrentFeatureName() !== 'list' ||

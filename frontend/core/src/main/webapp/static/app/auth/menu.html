@@ -21,9 +21,13 @@
         </a>
       </div>
       <ul class="lists" ng-if="listsVisible">
-        <li class="list" ng-repeat="list in lists" ng-class="$last && 'list-last'">
+        <li class="list" ng-repeat="list in lists">
           <span class="left-margin"></span>
           <a href class="list-link" ng-class="getListClass(list)" ng-click="gotoList(list)">{{getListTitleText(list)}}</a>
+        </li>
+        <li class="list list-last">
+          <span class="left-margin"></span>
+          <a href class="list-link edit-list-link" ng-class="getEditListsClass()" ng-click="gotoFeature('editLists')">edit lists...</a>
         </li>
       </ul>
     </li>

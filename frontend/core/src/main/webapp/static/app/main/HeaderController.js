@@ -33,6 +33,8 @@ function HeaderController($scope, $rootScope, UISessionService) {
           $scope.overrideHeading = data.title;
         }
       }
+    }else if (name === 'editLists'){
+      $scope.overrideHeading = 'edit lists';
     }else{
       $scope.overrideHeading = undefined;
     }
@@ -75,6 +77,17 @@ function HeaderController($scope, $rootScope, UISessionService) {
       UISessionService.changeFeature('archive');
     }else if (activeFeature === 'archive'){
       UISessionService.changeFeature('inbox');
+    }else if (activeFeature === 'list'){
+      var newIndex = $scope.lists.indexOf(UISessionService.getFeatureData('list')) + 1;
+      if (newIndex === $scope.lists.length){
+        UISessionService.changeFeature('editLists');
+      }else{
+        UISessionService.changeFeature('list', $scope.lists[newIndex]);
+      }
+    }else if (activeFeature === 'editLists'){
+      if ($scope.lists.length){
+        UISessionService.changeFeature('list', $scope.lists[0]);
+      }
     }
   };
 }
