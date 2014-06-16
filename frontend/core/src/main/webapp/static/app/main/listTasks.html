@@ -3,6 +3,7 @@
     <div ng-hide="omnibarVisible" class="content-container page-content-container">
       <div class="inner-page-content-container" swiper-prevent>
         <div scroll-to accordion>
+          <h3>tasks</h3>
           <div ng-repeat="task in tasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-title="editTaskTitle(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
             <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">

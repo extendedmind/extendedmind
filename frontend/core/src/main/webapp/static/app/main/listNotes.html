@@ -3,6 +3,7 @@
     <div ng-hide="omnibarVisible" class="content-container page-content-container">
       <div class="inner-page-content-container" swiper-prevent>
         <div scroll-to accordion>
+          <h3>notes</h3>
           <div ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
               <div ng-if="note.content" class="teaser">
