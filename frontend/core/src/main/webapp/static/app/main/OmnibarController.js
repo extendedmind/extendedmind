@@ -54,6 +54,9 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     }
   });
 
+  $scope.getOmnibarVisibilityClass = function getOmnibarVisibilityClass() {
+    return $scope.omnibarVisible ? 'omnibar-visible' : 'omnibar-hidden';
+  };
 
   $scope.closeOmnibar = function closeOmnibar() {
     if ($scope.omnibarVisible) $scope.omnibarVisible = false;

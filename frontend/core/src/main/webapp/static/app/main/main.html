@@ -1,19 +1,19 @@
 <div id="menu" ng-include="'static/app/auth/menu.html'" class="snap-drawer snap-drawer-left" scrollable></div>
 <div id="feature-container-wrapper">
-  <div id="feature-container" feature-container ng-controller="MainController" ng-class="(omnibarVisible && 'omnibar-visible') || (!omnibarVisible && 'omnibar-hidden')">
-    <header class="static-page-header" ng-hide="omnibarVisible" ng-include="'static/app/main/staticPageHeader.html'"></header>
-    <div ng-if="omnibarVisible" class="omnibar-animation" omnibar></div>
-    <div ng-if="isFeatureActive('account') && !isContentFeatureActive()" ng-include="'static/app/account/account.html'" include-replace></div>
-    <div ng-if="isContentFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>
-    <div ng-if="isContentFeatureActive('tasks')" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>
-    <div ng-if="isContentFeatureActive('notes')" ng-include="'static/app/notes/notesSlides.html'" include-replace></div>
-    <div ng-if="isFeatureActive('lists')" ng-include="'static/app/base/lists.html'" include-replace></div>
-    <div ng-if="isFeatureActive('list')" ng-include="'static/app/main/listSlides.html'" include-replace></div>
-    <div ng-if="isFeatureActive('editLists')" ng-include="'static/app/base/editLists.html'" include-replace></div>
-    <div ng-if="isFeatureActive('archive')" ng-include="'static/app/archive/archiveSlides.html'" include-replace></div>
-    <div ng-if="isFeatureActive('dashboard')" ng-include="'static/app/dashboard/dashboardSlides.html'" include-replace></div>
-    <div ng-if="isFeatureActive('settings') && !isContentFeatureActive()" ng-include="'static/app/account/settings.html'" include-replace></div>
+    <div id="feature-container" feature-container ng-controller="MainController" ng-class="[getOmnibarVisibilityClass(), getFooterVisibilityClass()]">
+        <header class="static-page-header" ng-hide="omnibarVisible" ng-include="'static/app/main/staticPageHeader.html'"></header>
+        <div ng-if="omnibarVisible" class="omnibar-animation" omnibar></div>
+        <div ng-if="isFeatureActive('account') && !isContentFeatureActive()" ng-include="'static/app/account/account.html'" include-replace></div>
+        <div ng-if="isContentFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>
+        <div ng-if="isContentFeatureActive('tasks')" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>
+        <div ng-if="isContentFeatureActive('notes')" ng-include="'static/app/notes/notesSlides.html'" include-replace></div>
+        <div ng-if="isFeatureActive('lists')" ng-include="'static/app/base/lists.html'" include-replace></div>
+        <div ng-if="isFeatureActive('list')" ng-include="'static/app/main/listSlides.html'" include-replace></div>
+        <div ng-if="isFeatureActive('editLists')" ng-include="'static/app/base/editLists.html'" include-replace></div>
+        <div ng-if="isFeatureActive('archive')" ng-include="'static/app/archive/archiveSlides.html'" include-replace></div>
+        <div ng-if="isFeatureActive('dashboard')" ng-include="'static/app/dashboard/dashboardSlides.html'" include-replace></div>
+        <div ng-if="isFeatureActive('settings') && !isContentFeatureActive()" ng-include="'static/app/account/settings.html'" include-replace></div>
 
-    <footer ng-hide="omnibarVisible" ng-include="'static/app/main/footer.html'"></footer>
-</div>
+        <footer ng-hide="omnibarVisible" ng-include="'static/app/main/footer.html'"></footer>
+    </div>
 </div>

@@ -167,20 +167,6 @@ header {
   }
 }
 
-.show-footer.single-page-container {
-  margin-bottom: -60px;
-}
-
-.hide-footer {
-  .single-page-content-container {
-    padding-bottom: @vertical-grid-half;
-  }
-}
-
-.hide-footer .page-content-container {
-  padding-bottom: @vertical-grid-half;
-}
-
 .simple-content-container {
   height: inherit;
   padding-bottom: @heading-header-height + @vertical-grid-half;
@@ -243,8 +229,16 @@ footer {
   margin-bottom: -@footer-height;
 }
 
-.hide-footer .swiper-container.main-slides {
+.single-page-container {
+  margin-bottom: -@footer-height;
+}
+
+.hide-footer .swiper-container.main-slides, .hide-footer .single-page-container {
   margin-bottom: 0;
+}
+
+.hide-footer .page-content-container {
+  padding-bottom: @vertical-grid-half;
 }
 
 // NO SWIPER

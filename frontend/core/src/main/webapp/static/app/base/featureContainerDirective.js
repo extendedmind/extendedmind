@@ -42,7 +42,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         activeContentFeatures[feature] = false;
       };
 
-      $scope.featureHasFooter = function featureHasFooter() {
+      $scope.hasFeatureFooter = function hasFeatureFooter() {
         if ($scope.isFeatureActive('tasks') ||
           $scope.isFeatureActive('notes') ||
           $scope.isFeatureActive('dashboard') ||
@@ -51,10 +51,8 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
 
           if (UserSessionService.getUIPreference('hideFooter') &&
             ($rootScope.packaging.endsWith('cordova') || $rootScope.packaging === 'devel')) {
-            $element[0].classList.toggle('hide-footer', !$scope.isFooterVisible);
             return false;
           } else{
-            $element[0].classList.toggle('hide-footer', false);
             return true;
           }
         } else {
@@ -62,8 +60,12 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         }
       };
 
-      $scope.setFooterVisible = function setFooterVisible(visible) {
-        $scope.isFooterVisible = visible;
+      $scope.setToasterVisible = function setToasterVisible(visible) {
+        $scope.isToasterVisible = visible;
+      };
+
+      $scope.getFooterVisibilityClass = function getFooterVisibilityClass() {
+        return ($scope.hasFeatureFooter() || $scope.isToasterVisible) ? 'show-footer' : 'hide-footer';
       };
 
       // UI SESSION SERVICE HOOKS

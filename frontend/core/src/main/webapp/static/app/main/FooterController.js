@@ -64,12 +64,12 @@ function FooterController($scope, $timeout, SwiperService, UISessionService) {
     if (!$scope.toasterNotification) {
       $scope.toasterNotification = UISessionService.getToasterNotification();
       if ($scope.toasterNotification) {
-        $scope.setFooterVisible(true);
+        $scope.setToasterVisible(true);
         $scope.toasterNotification.displayed = true;
 
         toasterNotificationTimer = $timeout(function() {
           $scope.toasterNotification = undefined;
-          $scope.setFooterVisible(false);
+          $scope.setToasterVisible(false);
         }, toasterNotificationVisibleInMilliseconds);
 
         return true;
@@ -79,15 +79,15 @@ function FooterController($scope, $timeout, SwiperService, UISessionService) {
     }
   };
 
-  $scope.hideOmnibarToasterNotification = function hideOmnibarToasterNotification() {
+  $scope.hideToasterNotification = function hideToasterNotification() {
     if (angular.isDefined(toasterNotificationTimer)) {
       $timeout.cancel(toasterNotificationTimer);
       $scope.toasterNotification = undefined;
-      $scope.setFooterVisible(false);
+      $scope.setToasterVisible(false);
     }
   };
 
-  $scope.gotoOmnibarSavedToFeatureAndCall = function gotoOmnibarSavedToFeatureAndCall(feature, closeToaster) {
+  $scope.gotoToasterLocationAndCall = function gotoToasterLocationAndCall(feature, closeToaster) {
     UISessionService.changeFeature(feature);
     closeToaster();
   };

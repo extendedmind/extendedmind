@@ -1,18 +1,18 @@
-<nav id="{{getActiveFeature()}}-footer" class="swiper-no-swiping" role="navigation" ng-controller="FooterController">
+<nav class="swiper-no-swiping" role="navigation" ng-controller="FooterController">
 
   <ul ng-if="hasVisibleToasterNotification()" class="horizontally-justified omnibar-toast-notification">
     <li id="left-slide-link" class="justified-element">
       <span>saved to </span>
-      <a href ng-click="gotoOmnibarSavedToFeatureAndCall(toasterNotification.location, hideOmnibarToasterNotification)">{{toasterNotification.location}}</a>
+      <a href ng-click="gotoToasterLocationAndCall(toasterNotification.location, hideToasterNotification)">{{toasterNotification.location}}</a>
     </li>
 
     <li id="right-slide-link" class="justified-element">
-      <a href class="toaster-x-mark" ng-click="hideOmnibarToasterNotification()">&#x2716</a>
+      <a href class="toaster-x-mark" ng-click="hideToasterNotification()">&#x2716</a>
     </li>
     <li id="stretch"></li>
   </ul>
 
-  <ul ng-if="featureHasFooter()" class="horizontally-justified">
+  <ul ng-if="hasFeatureFooter()" class="horizontally-justified">
     <li id="left-slide-link" class="justified-element">
       <a href ng-class="isActiveSlide(getLeftSlideName()) && 'active-slide'" ng-click="gotoLeftSlide()">
         <span ng-bind="getLeftSlideHeading()"></span>
