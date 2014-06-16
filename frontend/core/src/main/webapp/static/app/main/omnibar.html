@@ -161,6 +161,11 @@
 
     </div>
 
+
+  </div>
+
+  <div ng-if="isOmnibarToastNotificationVisible" class="omnibar-toast-notification" ng-style="{bottom: -getOmnibarFeatureHeight() + 44}">
+    <span class="small-font">{{savedItem.title}} saved to {{savedItem.saveLocation}}!</span>
   </div>
 
   <div style="height: 44px;">

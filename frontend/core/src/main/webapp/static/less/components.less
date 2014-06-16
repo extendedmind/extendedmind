@@ -224,6 +224,7 @@ footer {
 // OMNIBAR
 
 .omnibar-container {
+  width: 100%;
   .one-column-grid;
   position: relative;
 
@@ -265,9 +266,8 @@ footer {
 }
 
 .omnibar-animation.ng-enter, .omnibar-animation.ng-leave {
-  position: absolute;
-  left: 0;
-  right: 0;
+  left: @horizontal-grid;
+  right: @horizontal-grid;
 }
 
 .omnibar-animation.ng-enter {
@@ -275,12 +275,6 @@ footer {
   -moz-animation: .3s fade-in;
   -o-animation: .3s fade-in;
   animation: .3s fade-in;
-
-  display: none;  // https://github.com/angular/angular.js/issues/4225
-}
-
-.omnibar-animation.ng-enter.ng-enter-active {
-  display: block; // https://github.com/angular/angular.js/issues/4225
 }
 
 .omnibar-animation.ng-leave {
@@ -584,4 +578,30 @@ li.datepicker-date {
 
 .editable-field.active, .editable-field-container.active {
   background-color: white;
+}
+
+// OMNIBAR TOAST NOTIFICATION
+
+.omnibar-toast-notification {
+  position: absolute;
+  height: 44px;
+  width: 80%;
+  left: 10%;
+  background-color: @normal-button-disabled;
+  text-align: center;
+}
+
+.omnibar-toast-notification.ng-enter, .omnibar-toast-notification.ng-leave {
+  -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.3s;
+  transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.3s;
+}
+
+.omnibar-toast-notification.ng-enter,
+.omnibar-toast-notification.ng-leave.ng-leave-active {
+  opacity: 0;
+}
+
+.omnibar-toast-notification.ng-leave,
+.omnibar-toast-notification.ng-enter.ng-enter-active {
+  opacity: 1;
 }

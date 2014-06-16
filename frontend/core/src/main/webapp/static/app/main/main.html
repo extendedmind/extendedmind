@@ -2,7 +2,7 @@
 <div id="feature-container-wrapper">
   <div id="feature-container" feature-container ng-controller="MainController" ng-class="(omnibarVisible && 'omnibar-visible') || (!omnibarVisible && 'omnibar-hidden')">
     <header class="static-page-header" ng-hide="omnibarVisible" ng-include="'static/app/main/staticPageHeader.html'"></header>
-    <div ng-if="omnibarVisible" class="omnibar-animation" ng-include="'static/app/main/omnibar.html'"></div>
+    <div ng-if="omnibarVisible" class="omnibar-animation" omnibar></div>
     <div ng-if="isFeatureActive('account') && !isContentFeatureActive()" ng-include="'static/app/account/account.html'" include-replace></div>
     <div ng-if="isContentFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>
     <div ng-if="isContentFeatureActive('tasks')" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>

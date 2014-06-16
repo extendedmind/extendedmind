@@ -8,12 +8,15 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
   $scope.omnibarKeywords = {isVisible: false};
   $scope.isItemEditMode = false;
 
+  $scope.isOmnibarToastNotificationVisible = false;
+
   var omnibarInputFocusCallbackFunction;
 
   var omnibarFeatures = {
     search: {
       inputPlaceholder: 'save / recall',
       footerSaveText: 'save to inbox',
+      toasterNotificationText: 'inbox',
       getItemSaveMethod: function() {
         return ItemsService.saveItem.bind(ItemsService);
       },
@@ -22,6 +25,7 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     task: {
       inputPlaceholder: 'add task',
       footerSaveText: 'save',
+      toasterNotificationText: 'tasks',
       getItemSaveMethod: function() {
         return TasksService.saveTask.bind(TasksService);
       }
@@ -29,6 +33,7 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     note: {
       inputPlaceholder: 'add note',
       footerSaveText: 'save',
+      toasterNotificationText: 'notes',
       getItemSaveMethod: function() {
         return $scope.saveNote;
       },
@@ -91,10 +96,31 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     if (!$scope.isSearchActive()) $scope.clearAndHideOmnibar();
   };
 
+  var toasterNotificationTimer, toasterNotificationVisibleInMilliseconds = 2000;
+
+  $scope.displayOmnibarToastNotification = function displayOmnibarToastNotification(activeOmnibarFeature) {
+    if (angular.isDefined(toasterNotificationTimer)) {
+      $timeout.cancel(toasterNotificationTimer);
+    }
+    $scope.savedItem = {
+      title: $scope.omnibarText.title,
+      saveLocation: omnibarFeatures[activeOmnibarFeature].toasterNotificationText
+    };
+    $scope.isOmnibarToastNotificationVisible = true;
+    toasterNotificationTimer = $timeout(function() {
+      $scope.isOmnibarToastNotificationVisible = false;
+    }, toasterNotificationVisibleInMilliseconds);
+  };
+
+  $scope.hideOmnibarToastNotification = function hideOmnibarToastNotification() {
+    $scope.isOmnibarToastNotificationVisible = false;
+  };
+
   $scope.saveOmnibarText = function saveOmnibarText() {
     var activeOmnibarFeature;
     if ($scope.omnibarHasText() && !$scope.isLoading) {
       activeOmnibarFeature = $scope.getActiveOmnibarFeature();
+      $scope.displayOmnibarToastNotification(activeOmnibarFeature);
       saveItem(omnibarFeatures[activeOmnibarFeature].getItemSaveMethod(), $scope[activeOmnibarFeature]).then(function() {
         initializeNewItemFromOmnibarText(activeOmnibarFeature);
       });
