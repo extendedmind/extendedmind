@@ -101,13 +101,26 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
             // from last authentication
             if (!retryingExecution && status === 403){
               retryingExecution = true;
+              HttpRequestQueueService.releaseLock();
               executeRequests();
             }else {
               retryingExecution = false;
-              // Emit error to root scope, so that
-              // it can be listened on at by the application
-              HttpRequestQueueService.releaseLock();
-              $rootScope.$emit('emException', {type: 'http', status: status, data: data, url: config.url});
+              if (headRequest.errorStatus !== undefined && headRequest.errorStatus === status){
+                // This error was already thrown and error emitted, the best thing
+                // now is to remove the request and continue with the next request in the
+                // queue to prevent endless error loop. NOTE: This leaves the transient model
+                // unchanged, so it looks like something is stored even though it isn't. It
+                // is still a better alternative than endless looping.
+                HttpRequestQueueService.remove(headRequest);
+                executeRequests();
+              }else{
+                // Emit error to root scope, so that
+                // it can be listened on at by the application
+                headRequest.errorStatus = status;
+                HttpRequestQueueService.saveQueue();
+                HttpRequestQueueService.releaseLock();
+                $rootScope.$emit('emException', {type: 'http', status: status, data: data, url: config.url});
+              }
             }
           }
         });
