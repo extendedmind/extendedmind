@@ -95,8 +95,7 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
   };
 
   $scope.addNote = function(newNote) {
-    if (!newNote.title || newNote.title.length === 0) return false;
-    var newNoteToSave = {title: newNote.title};
+    var newNoteToSave = {title: undefined};
     if (newNote.relationships){
       if (newNote.relationships.list){
         newNoteToSave.relationships = {
@@ -111,7 +110,7 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
     delete newNote.title;
 
     AnalyticsService.do('addNote');
-    NotesService.saveNote(newNoteToSave, UISessionService.getActiveUUID());
+    $scope.editItemInOmnibar(newNoteToSave, 'note');
   };
 
   $scope.getNoteContentTeaser = function(note) {

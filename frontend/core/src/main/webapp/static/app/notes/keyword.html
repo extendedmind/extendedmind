@@ -32,7 +32,7 @@
             </div>
             <div ng-if="!note.content" class="teaser-empty"></div>
           </div>
-          <div ng-include="'static/app/notes/addNote.html'" include-replace></div>
+          <button class="add-button" ng-click="addNote(newNote)">add note...</button>
         </div>
         <div ng-if="!keyword" scroll-to accordion>
           <h3>no keywords</h3>
@@ -47,7 +47,7 @@
             </div>
             <div ng-if="!note.content" class="teaser-empty"></div>
           </div>
-          <div ng-include="'static/app/notes/addNote.html'" include-replace></div>
+          <button class="add-button" ng-click="addNote(newNote)">add note...</button>
         </div>
       </div>
     </div>

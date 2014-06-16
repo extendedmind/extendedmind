@@ -1,8 +1,0 @@
-<form class="add-element" role="form" name="addNoteForm" ng-submit="callAndRefresh(addNote, newNote)" add-item data-snap-ignore="{{ignoreSnap}}">
-  <div class="form-group" editable-field-container="disable">
-    <label class="sr-only" for="noteTitle">title</label>
-    <div>
-      <input type="text" id="noteTitle" class="simple-input" ng-model="newNote.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" placeholder="add note..." autocapitalize="none" maxlength="128" autocorrect="off" editable-field/>
-    </div>
-  </div>
-</form>
