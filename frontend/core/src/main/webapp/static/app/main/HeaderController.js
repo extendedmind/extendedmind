@@ -2,10 +2,31 @@
 
 function HeaderController($scope, $rootScope, UISessionService) {
 
+  function calculateHeadingWidth() {
+    if ($rootScope.currentWidth >= 568){
+      // Maximum width for column
+      return 306;
+    }else {
+      // Smaller, calculate as percentage
+      return $rootScope.currentWidth * 0.54;
+    }
+  };
+
+  function calculateMaximumHeadingLength() {
+    var headingWidth = calculateHeadingWidth();
+    if (headingWidth > 250){
+      return headingWidth * 0.25;
+    }else if (headingWidth > 200) {
+      return headingWidth * 0.2;
+    }else {
+      return headingWidth * 0.1744;
+    }
+  };
+
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/){
     if (name === 'list'){
       if (data){
-        var maximumHeadingLength = 30;
+        var maximumHeadingLength = calculateMaximumHeadingLength();
         if (data.title.length > maximumHeadingLength){
           $scope.overrideHeading = data.title.substring(0, maximumHeadingLength-2) + '...';
         }else{
@@ -33,9 +54,10 @@ function HeaderController($scope, $rootScope, UISessionService) {
 
   $scope.getHeadingClass = function getHeadingClass() {
     if ($scope.overrideHeading){
-      if ($scope.overrideHeading.length > 9 && $scope.overrideHeading.length <= 15) {
+      var maximumHeadingLength = calculateMaximumHeadingLength();
+      if ($scope.overrideHeading.length > (maximumHeadingLength*0.3) && $scope.overrideHeading.length <= (maximumHeadingLength*0.5)) {
         return 'medium-heading';
-      }else if ($scope.overrideHeading.length > 15){
+      }else if ($scope.overrideHeading.length > (maximumHeadingLength*0.5)){
         return 'long-heading';
       }
     }
