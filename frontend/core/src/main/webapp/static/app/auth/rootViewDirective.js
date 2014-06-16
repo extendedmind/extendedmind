@@ -185,10 +185,31 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
 
       angular.element($window).bind('resize', windowResized);
 
+
+
+      // CORDOVA SPECIFIC EVENTS
+      $rootScope.softKeyboard = {};
+      function cordovaKeyboardShow(event){
+        $rootScope.softKeyboard.height = event.keyboardHeight;
+        if (!$scope.$$phase) $scope.$apply();
+      }
+      function cordovaKeyboardHide(event){
+        $rootScope.softKeyboard.height = undefined;
+        if (!$scope.$$phase) $scope.$apply();
+      }
+      if ($rootScope.packaging.endsWith('cordova')){
+        window.addEventListener('native.keyboardshow', cordovaKeyboardShow);
+        window.addEventListener('native.keyboardhide', cordovaKeyboardHide);
+      }
+
       // CLEANUP
 
       $scope.$on('$destroy', function() {
         angular.element($window).unbind('resize', windowResized);
+        if ($rootScope.packaging.endsWith('cordova')){
+          window.removeEventListener('native.keyboardshow', cordovaKeyboardShow);
+          window.removeEventListener('native.keyboardhide', cordovaKeyboardHide);
+        }
       });
     }
   };

@@ -36,13 +36,24 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
   };
 
   var marginTopHeight = 12, omnibarActionsHeight = 44, unknownHeight = 142;
-
+  var keyboardHeight = 0;
   $scope.getOmnibarFeatureHeight = function getOmnibarFeatureHeight() {
     if ($scope.currentHeight <= 810) {
-      return $scope.currentHeight - unknownHeight - marginTopHeight + ($scope.isItemEditMode ? omnibarActionsHeight : 0);
+      return $scope.currentHeight - unknownHeight - marginTopHeight + ($scope.isItemEditMode ? omnibarActionsHeight : 0) - keyboardHeight;
     }
-    return 648; // INCORRECT!
+
+    // 648 is INCORRECT!
+    return 648 - keyboardHeight;
   };
+
+  $scope.$watch('softKeyboard.height', function(newValue){
+    if (newValue){
+      keyboardHeight = newValue;
+    } else {
+      keyboardHeight = 0;
+    }
+  });
+
 
   $scope.closeOmnibar = function closeOmnibar() {
     if ($scope.omnibarVisible) $scope.omnibarVisible = false;
