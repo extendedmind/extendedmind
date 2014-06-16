@@ -1,4 +1,4 @@
-<div ng-show="isFeatureActive('tasks')" class="swiper-container main-slides" swiper-container="tasks" swiper-type="main" expected-slides="(isLoading && 1) || (!isLoading && 3)">
+<div ng-show="isFeatureActive('tasks')" class="swiper-container main-slides" swiper-container="tasks" swiper-type="main" expected-slides="(isLoading && 1) || (!isLoading && 3)">
   <div class="swiper-wrapper">
     <div class="swiper-slide" swiper-slide="tasks/home" slide-index=0 ng-include="'static/app/tasks/timeline.html'" snap-drawer-drag="tasks"></div>
     <div ng-if="!isLoading" class="swiper-slide" swiper-slide="tasks/contexts" slide-index=1 ng-include="'static/app/tasks/contexts.html'"></div>

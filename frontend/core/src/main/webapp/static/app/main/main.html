@@ -14,6 +14,6 @@
     <div ng-if="isFeatureActive('dashboard')" ng-include="'static/app/dashboard/dashboardSlides.html'" include-replace></div>
     <div ng-if="isFeatureActive('settings') && !isContentFeatureActive()" ng-include="'static/app/account/settings.html'" include-replace></div>
 
-    <footer ng-if="featureHasFooter()" ng-hide="omnibarVisible" ng-include="'static/app/main/footer.html'"></footer>
+    <footer ng-hide="omnibarVisible" ng-include="'static/app/main/footer.html'"></footer>
 </div>
 </div>

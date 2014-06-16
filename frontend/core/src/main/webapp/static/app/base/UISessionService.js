@@ -1,4 +1,4 @@
-/* global angular, useOfflineBuffer */
+/* global angular */
 'use strict';
 
 function UISessionService($rootScope, LocalStorageService, SessionStorageService) {
@@ -7,6 +7,7 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
   var featureMap = {};
   // List containing history of features per owner
   var featureHistory = {};
+  var toasterNotificationMap = {};
   var featureChangedCallbacks = [];
 
   var ownerPrefix = 'my'; // default owner
@@ -36,7 +37,7 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
     getActiveUUID: function() {
       if (!SessionStorageService.getActiveUUID()) {
         if (LocalStorageService.getUserUUID()){
-          SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID())
+          SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
         }else{
           // There is no way to get the active UUID
           $rootScope.$emit('emException', {type: 'session', description: 'active UUID not available'});
@@ -109,6 +110,24 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
       featureChangedCallbacks.push({
         callback: callback,
         id: id});
+    },
+    setToasterNotification: function(notificationLocation) {
+      var notification = {
+        location: notificationLocation,
+        displayed: false
+      };
+      var uuid = this.getActiveUUID();
+      if (!toasterNotificationMap[uuid]) toasterNotificationMap[uuid] = [];
+      toasterNotificationMap[uuid].push(notification);
+    },
+    getToasterNotification: function() {
+      var uuid = this.getActiveUUID();
+      if (toasterNotificationMap[uuid] && toasterNotificationMap[uuid].length > 0) {
+        var lastNotification = toasterNotificationMap[uuid][toasterNotificationMap[uuid].length - 1];
+        if (!lastNotification.displayed) {
+          return lastNotification;
+        }
+      }
     }
   };
 }

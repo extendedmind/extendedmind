@@ -1,6 +1,6 @@
 'use strict';
 
-function FooterController($scope, SwiperService) {
+function FooterController($scope, $timeout, SwiperService, UISessionService) {
 
   var slides = {
     notes: {
@@ -58,6 +58,40 @@ function FooterController($scope, SwiperService) {
     }
   }
 
+  var toasterNotificationTimer, toasterNotificationVisibleInMilliseconds = 30000;
+
+  $scope.hasVisibleToasterNotification = function hasVisibleToasterNotification() {
+    if (!$scope.toasterNotification) {
+      $scope.toasterNotification = UISessionService.getToasterNotification();
+      if ($scope.toasterNotification) {
+        $scope.setFooterVisible(true);
+        $scope.toasterNotification.displayed = true;
+
+        toasterNotificationTimer = $timeout(function() {
+          $scope.toasterNotification = undefined;
+          $scope.setFooterVisible(false);
+        }, toasterNotificationVisibleInMilliseconds);
+
+        return true;
+      }
+    } else {
+      return true;
+    }
+  };
+
+  $scope.hideOmnibarToastNotification = function hideOmnibarToastNotification() {
+    if (angular.isDefined(toasterNotificationTimer)) {
+      $timeout.cancel(toasterNotificationTimer);
+      $scope.toasterNotification = undefined;
+      $scope.setFooterVisible(false);
+    }
+  };
+
+  $scope.gotoOmnibarSavedToFeatureAndCall = function gotoOmnibarSavedToFeatureAndCall(feature, closeToaster) {
+    UISessionService.changeFeature(feature);
+    closeToaster();
+  };
+
   $scope.gotoLeftSlide = function gotoLeftSlide() {
     gotoSlide('leftSlide');
   };
@@ -75,7 +109,7 @@ function FooterController($scope, SwiperService) {
     if (feature && slides[feature] && slides[feature].center) {
       return true;
     }
-  }
+  };
 
   $scope.getLeftSlideName = function getLeftSlideName() {
     return getSlideInfoByPosition('leftSlide');
@@ -102,5 +136,5 @@ function FooterController($scope, SwiperService) {
   };
 }
 
-FooterController.$inject = ['$scope', 'SwiperService'];
+FooterController.$inject = ['$scope', '$timeout', 'SwiperService', 'UISessionService'];
 angular.module('em.app').controller('FooterController', FooterController);

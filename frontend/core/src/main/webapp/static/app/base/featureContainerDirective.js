@@ -43,22 +43,27 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       };
 
       $scope.featureHasFooter = function featureHasFooter() {
-        if ($scope.isFeatureActive('tasks')
-            || $scope.isFeatureActive('notes')
-            || $scope.isFeatureActive('dashboard')
-            || $scope.isFeatureActive('archive')
-            || $scope.isFeatureActive('list')){
-          if (UserSessionService.getUIPreference('hideFooter')
-              && ($rootScope.packaging.endsWith('cordova') || $rootScope.packaging === 'devel')){
-            $element[0].classList.toggle('hide-footer', true);
+        if ($scope.isFeatureActive('tasks') ||
+          $scope.isFeatureActive('notes') ||
+          $scope.isFeatureActive('dashboard') ||
+          $scope.isFeatureActive('archive') ||
+          $scope.isFeatureActive('list')) {
+
+          if (UserSessionService.getUIPreference('hideFooter') &&
+            ($rootScope.packaging.endsWith('cordova') || $rootScope.packaging === 'devel')) {
+            $element[0].classList.toggle('hide-footer', !$scope.isFooterVisible);
             return false;
-          }else{
+          } else{
             $element[0].classList.toggle('hide-footer', false);
             return true;
           }
-        }else{
+        } else {
           return false;
         }
+      };
+
+      $scope.setFooterVisible = function setFooterVisible(visible) {
+        $scope.isFooterVisible = visible;
       };
 
       // UI SESSION SERVICE HOOKS
@@ -118,28 +123,28 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       // https://developer.mozilla.org/en-US/docs/Web/API/Element.classList
       function setFeatureContainerClass(feature) {
         if (feature === 'tasks' ||
-            feature === 'notes' ||
-            feature === 'dashboard' ||
-            feature === 'archive' ||
-            feature === 'list') {
+          feature === 'notes' ||
+          feature === 'dashboard' ||
+          feature === 'archive' ||
+          feature === 'list') {
           $element[0].classList.toggle('no-slides-container', false);
-          $element[0].classList.toggle('slides-container', true);
-        } else {
-          $element[0].classList.toggle('no-slides-container', true);
-          $element[0].classList.toggle('slides-container', false);
-        }
+        $element[0].classList.toggle('slides-container', true);
+      } else {
+        $element[0].classList.toggle('no-slides-container', true);
+        $element[0].classList.toggle('slides-container', false);
       }
+    }
 
-    },
-    link: function(scope, element) {
+  },
+  link: function(scope, element) {
 
-      function initializeSnapper() {
-        SnapService.createSnapper(element[0].parentNode);
+    function initializeSnapper() {
+      SnapService.createSnapper(element[0].parentNode);
 
-        SnapService.registerAnimatedCallback(snapperAnimated);
-        SnapService.registerEndCallback(snapperPaneReleased);
-        SnapService.registerCloseCallback(snapperClosed);
-      }
+      SnapService.registerAnimatedCallback(snapperAnimated);
+      SnapService.registerEndCallback(snapperPaneReleased);
+      SnapService.registerCloseCallback(snapperClosed);
+    }
 
       // No clicking/tapping when drawer is open.
       function drawerContentClicked(event) {

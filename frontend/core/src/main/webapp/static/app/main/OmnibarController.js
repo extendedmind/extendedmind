@@ -16,27 +16,21 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     search: {
       inputPlaceholder: 'save / recall',
       footerSaveText: 'save to inbox',
-      toasterNotificationText: 'inbox',
-      getItemSaveMethod: function() {
-        return ItemsService.saveItem.bind(ItemsService);
-      },
+      saveItemLocation: 'inbox',
+      itemSaveMethod: ItemsService.saveItem.bind(ItemsService),
       isActive: true  // default feature
     },
     task: {
       inputPlaceholder: 'add task',
       footerSaveText: 'save',
-      toasterNotificationText: 'tasks',
-      getItemSaveMethod: function() {
-        return TasksService.saveTask.bind(TasksService);
-      }
+      saveItemLocation: 'tasks',
+      itemSaveMethod: TasksService.saveTask.bind(TasksService),
     },
     note: {
       inputPlaceholder: 'add note',
       footerSaveText: 'save',
-      toasterNotificationText: 'notes',
-      getItemSaveMethod: function() {
-        return $scope.saveNote;
-      },
+      saveItemLocation: 'notes',
+      itemSaveMethod: $scope.saveNote,
       initializeItemFuncion: $scope.initializeOmnibarNote
     }
   };
@@ -47,7 +41,7 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     if ($scope.currentHeight <= 810) {
       return $scope.currentHeight - unknownHeight - marginTopHeight + ($scope.isItemEditMode ? omnibarActionsHeight : 0);
     }
-    return 648;
+    return 648; // INCORRECT!
   };
 
   $scope.closeOmnibar = function closeOmnibar() {
@@ -96,39 +90,16 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     if (!$scope.isSearchActive()) $scope.clearAndHideOmnibar();
   };
 
-  var toasterNotificationTimer, toasterNotificationVisibleInMilliseconds = 2000;
-
-  $scope.displayOmnibarToastNotification = function displayOmnibarToastNotification(activeOmnibarFeature) {
-    if (angular.isDefined(toasterNotificationTimer)) {
-      $timeout.cancel(toasterNotificationTimer);
-    }
-    $scope.savedItem = {
-      title: $scope.omnibarText.title,
-      saveLocation: omnibarFeatures[activeOmnibarFeature].toasterNotificationText
-    };
-    $scope.isOmnibarToastNotificationVisible = true;
-    toasterNotificationTimer = $timeout(function() {
-      $scope.isOmnibarToastNotificationVisible = false;
-    }, toasterNotificationVisibleInMilliseconds);
-  };
-
-  $scope.hideOmnibarToastNotification = function hideOmnibarToastNotification() {
-    $scope.isOmnibarToastNotificationVisible = false;
-  };
-
   $scope.saveOmnibarText = function saveOmnibarText() {
     var activeOmnibarFeature;
     if ($scope.omnibarHasText() && !$scope.isLoading) {
       activeOmnibarFeature = $scope.getActiveOmnibarFeature();
-      $scope.displayOmnibarToastNotification(activeOmnibarFeature);
-      saveItem(omnibarFeatures[activeOmnibarFeature].getItemSaveMethod(), $scope[activeOmnibarFeature]).then(function() {
-        initializeNewItemFromOmnibarText(activeOmnibarFeature);
+      omnibarFeatures[activeOmnibarFeature].itemSaveMethod($scope[activeOmnibarFeature], UISessionService.getActiveUUID()).then(function() {
+        $scope.clearAndHideOmnibar();
+        UISessionService.setToasterNotification(omnibarFeatures[activeOmnibarFeature].saveItemLocation);
       });
     }
   };
-  function saveItem(saveItemFunction, item) {
-    return saveItemFunction(item, UISessionService.getActiveUUID()).then($scope.isItemEditMode ? $scope.clearAndHideOmnibar : $scope.clearOmnibar);
-  }
 
   $scope.isOmnibarFeatureActive = function isOmnibarFeatureActive(feature) {
     return omnibarFeatures[feature].isActive;

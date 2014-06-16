@@ -584,12 +584,20 @@ li.datepicker-date {
 // OMNIBAR TOAST NOTIFICATION
 
 .omnibar-toast-notification {
+  z-index: 100;
   position: absolute;
+  // bottom: 16px;
   height: 44px;
-  width: 80%;
-  left: 10%;
+  left: 30px;
+  right: 30px;
   background-color: @normal-button-disabled;
-  text-align: center;
+  padding-left: 15px;
+  span, a {
+    padding: 0;
+  }
+  a.toaster-x-mark {
+    padding-right: 15px;
+  }
 }
 
 .omnibar-toast-notification.ng-enter, .omnibar-toast-notification.ng-leave {
