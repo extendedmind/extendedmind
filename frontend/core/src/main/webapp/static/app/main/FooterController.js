@@ -58,7 +58,7 @@ function FooterController($scope, $timeout, SwiperService, UISessionService) {
     }
   }
 
-  var toasterNotificationTimer, toasterNotificationVisibleInMilliseconds = 30000;
+  var toasterNotificationTimer, toasterNotificationVisibleInMilliseconds = 3000;
 
   $scope.hasVisibleToasterNotification = function hasVisibleToasterNotification() {
     if (!$scope.toasterNotification) {
@@ -79,7 +79,7 @@ function FooterController($scope, $timeout, SwiperService, UISessionService) {
     }
   };
 
-  $scope.hideOmnibarToastNotification = function hideOmnibarToastNotification() {
+  $scope.hideOmnibarToasterNotification = function hideOmnibarToasterNotification() {
     if (angular.isDefined(toasterNotificationTimer)) {
       $timeout.cancel(toasterNotificationTimer);
       $scope.toasterNotification = undefined;
