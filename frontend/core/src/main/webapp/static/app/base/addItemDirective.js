@@ -28,7 +28,12 @@ function addItemDirective() {
 
       scope.callAndRefresh = function callAndRefresh(itemAction, parameter) {
         itemAction(parameter);
-        scrollToAddItem = true;
+        if (angular.isFunction(scope.registerLastCallback)){
+          scrollToAddItem = true;
+        }else if (angular.isFunction(scope.scrollToElement)){
+          // No accordion present, scroll immediately
+          scope.scrollToElement(element);
+        }
       };
     }
   };

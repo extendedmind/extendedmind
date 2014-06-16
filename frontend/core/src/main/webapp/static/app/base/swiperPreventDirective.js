@@ -19,6 +19,7 @@ function swiperPreventDirective($window, $rootScope) {
       var swipeStartX, swipeStartY, swipeDistX, swipeDistY;
 
       function slideTouchStart(event) {
+        $rootScope.innerSwiping = false;
         if (event.type === 'touchstart') {
           swipeStartX = event.targetTouches[0].pageX;
           swipeStartY = event.targetTouches[0].pageY;
@@ -44,6 +45,7 @@ function swiperPreventDirective($window, $rootScope) {
           // Swiping up or down, prevent event from reaching Swiper
           event.stopPropagation();
           event.stopImmediatePropagation();
+          $rootScope.innerSwiping = true;
         }
       }
 

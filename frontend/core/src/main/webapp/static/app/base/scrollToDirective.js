@@ -8,9 +8,9 @@ function scrollToDirective() {
       var scrollToContainer = element;
 
       // http://stackoverflow.com/a/2906009
-      scope.scrollToElement = function scrollToElement(element) {
+      scope.scrollToElement = function scrollToElement(targetElement) {
         scrollToContainer.animate({
-          scrollTop: element.offset().top - scrollToContainer.offset().top + scrollToContainer.scrollTop()
+          scrollTop: targetElement.offset().top - scrollToContainer.offset().top + scrollToContainer.scrollTop()
         }, 450);
       };
     }
