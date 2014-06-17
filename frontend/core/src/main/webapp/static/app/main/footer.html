@@ -1,6 +1,6 @@
 <nav class="swiper-no-swiping" role="navigation" ng-controller="FooterController">
 
-  <ul ng-if="hasVisibleToasterNotification()" class="horizontally-justified toaster-notification">
+  <ul ng-if="hasVisibleToasterNotification()" class="horizontally-justified toaster-notification" ng-mouseover="pauseToasterTimer()" ng-mouseleave="resumeToasterTimer()">
     <li class="justified-element left-slide-link">
       <span>saved to </span>
       <a href ng-click="gotoToasterLocationAndCall(toasterNotification.location, hideToasterNotification)">{{toasterNotification.location}}</a>

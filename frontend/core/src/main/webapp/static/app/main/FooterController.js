@@ -84,6 +84,18 @@ function FooterController($scope, $timeout, SwiperService, UISessionService) {
     }
   };
 
+  $scope.pauseToasterTimer = function pauseToasterTimer() {
+    if (angular.isDefined(toasterNotificationTimer)) {
+      $timeout.cancel(toasterNotificationTimer);
+    }
+  };
+
+  $scope.resumeToasterTimer = function resumeToasterTimer() {
+    toasterNotificationTimer = $timeout(function() {
+      $scope.toasterNotification = undefined;
+    }, toasterNotificationVisibleInMilliseconds);
+  };
+
   $scope.gotoToasterLocationAndCall = function gotoToasterLocationAndCall(feature, closeToaster) {
     UISessionService.changeFeature(feature);
     closeToaster();
