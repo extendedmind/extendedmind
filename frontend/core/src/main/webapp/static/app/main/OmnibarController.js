@@ -1,6 +1,6 @@
 'use strict';
 
-function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService, NotesService, TasksService/*, AnalyticsService*/) {
+function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, ItemsService, NotesService, TasksService/*, AnalyticsService*/) {
 
   $scope.omnibarText = {};
   $scope.omnibarVisible = false;
@@ -240,6 +240,39 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     if ($scope.omnibarKeywords.isVisible) selectedOmnibarKeywords = [];
   };
 
+  var currentOmnibarStyle;
+  $scope.getOmnibarClass = function getOmnibarClass(){
+    if ($scope.omnibarText.title){
+      var omnibarWidth;
+      if ($rootScope.currentWidth >= 568){
+        // Maximum width for column
+        omnibarWidth = 470;
+      }else {
+        omnibarWidth = $rootScope.currentWidth - 98;
+      }
+      if ($scope.omnibarText.title.length > omnibarWidth * 0.4){
+        if (currentOmnibarStyle !== 'omnibar-input-very-long'){
+          $rootScope.$broadcast('elastic:adjust');
+          currentOmnibarStyle = 'omnibar-input-very-long';
+        }
+      }
+      else if ($scope.omnibarText.title.length > omnibarWidth * 0.25){
+        if (currentOmnibarStyle !== 'omnibar-input-long'){
+          $rootScope.$broadcast('elastic:adjust');
+          currentOmnibarStyle = 'omnibar-input-long';
+        }
+      }else if ($scope.omnibarText.title.length > omnibarWidth * 0.13){
+        if (currentOmnibarStyle !== 'omnibar-input-medium'){
+          $rootScope.$broadcast('elastic:adjust');
+          currentOmnibarStyle = 'omnibar-input-medium';
+        }
+      }else {
+        currentOmnibarStyle = undefined;
+      }
+      return currentOmnibarStyle;
+    }
+  }
+
   // TEARDOWN
 
   $scope.clearOmnibar = function clearOmnibar() {
@@ -255,5 +288,5 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
   };
 }
 
-OmnibarController.$inject = ['$q', '$scope', '$timeout', 'UISessionService', 'ItemsService', 'NotesService', 'TasksService'/*, 'AnalyticsService'*/];
+OmnibarController.$inject = ['$q', '$scope', '$timeout', '$rootScope', 'UISessionService', 'ItemsService', 'NotesService', 'TasksService'/*, 'AnalyticsService'*/];
 angular.module('em.app').controller('OmnibarController', OmnibarController);

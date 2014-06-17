@@ -135,7 +135,6 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
       state[key] = value;
       SessionStorageService.setState(state);
       if (LocalStorageService.getReplaceable() !== null) {
-        console.log(state)
         LocalStorageService.setState(state);
       }
     },
