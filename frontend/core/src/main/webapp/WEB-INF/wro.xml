@@ -8,6 +8,7 @@
     <js>/src/main/webapp/static/lib/angularjs/angular-route.min.js</js>
     <js>/src/main/webapp/static/lib/angularjs/ngInfiniteScroll.min.js</js>
   	<js>/src/main/webapp/static/lib/base64.js</js>
+    <js>/src/main/webapp/static/lib/elastic.js</js>
     <js>/src/main/webapp/static/lib/fastclick.js</js>
     <js>/src/main/webapp/static/lib/snap.js</js>
     <js>/src/main/webapp/static/app/app.js</js>
