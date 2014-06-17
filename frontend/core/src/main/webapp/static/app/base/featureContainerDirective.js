@@ -52,7 +52,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
           if (UserSessionService.getUIPreference('hideFooter') &&
             ($rootScope.packaging.endsWith('cordova') || $rootScope.packaging === 'devel')) {
             return false;
-          } else{
+          } else {
             return true;
           }
         } else {
@@ -60,12 +60,8 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         }
       };
 
-      $scope.setToasterVisible = function setToasterVisible(visible) {
-        $scope.isToasterVisible = visible;
-      };
-
       $scope.getFooterVisibilityClass = function getFooterVisibilityClass() {
-        return ($scope.hasFeatureFooter() || $scope.isToasterVisible) ? 'show-footer' : 'hide-footer';
+        if (!$scope.hasFeatureFooter()) return 'hide-footer';
       };
 
       // UI SESSION SERVICE HOOKS

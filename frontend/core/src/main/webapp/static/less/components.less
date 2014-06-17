@@ -219,6 +219,19 @@ footer {
   }
 }
 
+.feature-footer {
+  li.left-slide-link {
+    a {
+      padding-right: @horizontal-grid - 10px; // make room for long names
+    }
+  }
+  li.right-slide-link {
+    a {
+      padding-left: @horizontal-grid - 10px; // make room for long names
+    }
+  }
+}
+
 // OMNIBAR
 
 .omnibar-container {
@@ -583,11 +596,14 @@ li.datepicker-date {
 
 // OMNIBAR TOAST NOTIFICATION
 
-.omnibar-toast-notification {
-  position: absolute;
-  height: 44px;
-  left: 30px;
-  right: 30px;
+.toaster-notification {
+  max-width: @one-column-grid-width;
+  margin: auto;
+  position: fixed;
+  bottom: @vertical-grid-half;
+  height: @vertical-grid;
+  left: @horizontal-grid;
+  right: @horizontal-grid;
   background-color: @normal-button-disabled;
   padding-left: 15px;
   span, a {
@@ -598,17 +614,17 @@ li.datepicker-date {
   }
 }
 
-.omnibar-toast-notification.ng-enter, .omnibar-toast-notification.ng-leave {
+.toaster-notification.ng-enter, .toaster-notification.ng-leave {
   -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.3s;
   transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.3s;
 }
 
-.omnibar-toast-notification.ng-enter,
-.omnibar-toast-notification.ng-leave.ng-leave-active {
+.toaster-notification.ng-enter,
+.toaster-notification.ng-leave.ng-leave-active {
   opacity: 0;
 }
 
-.omnibar-toast-notification.ng-leave,
-.omnibar-toast-notification.ng-enter.ng-enter-active {
+.toaster-notification.ng-leave,
+.toaster-notification.ng-enter.ng-enter-active {
   opacity: 1;
 }
