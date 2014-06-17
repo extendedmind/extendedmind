@@ -51,7 +51,6 @@ function MenuController($location, $scope, AuthenticationService, UISessionServi
     if ($scope.refreshScroller) $scope.refreshScroller();
   });
 
-  $scope.listsVisible = true;
   $scope.getListClass = function getListClass(list) {
     if (UISessionService.getCurrentFeatureName() === 'list' &&
         UISessionService.getFeatureData('list') === list) {
@@ -74,9 +73,22 @@ function MenuController($location, $scope, AuthenticationService, UISessionServi
   }
 
   $scope.toggleLists = function(){
-    $scope.listsVisible = !$scope.listsVisible;
+    var state = UISessionService.getUIState();
+    UISessionService.setUIStateParameter('listsVisible',
+      !state['listsVisible']);
     if ($scope.refreshScroller) $scope.refreshScroller();
   }
+
+  $scope.isListsVisible = function(){
+    var state = UISessionService.getUIState();
+    if (state){
+      return state.listsVisible;
+    }else{
+      // Default to true
+      UISessionService.setUIStateParameter('listsVisible', true);
+      return true;
+    }
+  };
 
   $scope.getListTitleText = function(list){
     var maximumListNameLength = 35;

@@ -35,6 +35,11 @@ function LocalStorageService() {
         localStorage.setItem('preferences', JSON.stringify(preferences));
       }
     },
+    setState: function(state) {
+      if (state) {
+        localStorage.setItem('state', JSON.stringify(state));
+      }
+    },
 
     // getters
     getCollectives: function() {
@@ -68,6 +73,11 @@ function LocalStorageService() {
         return JSON.parse(localStorage.getItem('preferences'));
       }
     },
+    getState: function() {
+      if (localStorage.getItem('state')) {
+        return JSON.parse(localStorage.getItem('state'));
+      }
+    },
 
     clearUser: function() {
       localStorage.removeItem('collectives');
@@ -79,6 +89,7 @@ function LocalStorageService() {
       localStorage.removeItem('userUUID');
       localStorage.removeItem('cohort');
       localStorage.removeItem('preferences');
+      localStorage.removeItem('state');
 
       // Also clear offline queue
       if (localStorage.getItem('primaryRequest')){

@@ -128,6 +128,27 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
           return lastNotification;
         }
       }
+    },
+    setUIStateParameter: function (key, value) {
+      var state = this.getUIState();
+      if (!state) state = {};
+      state[key] = value;
+      SessionStorageService.setState(state);
+      if (LocalStorageService.getReplaceable() !== null) {
+        console.log(state)
+        LocalStorageService.setState(state);
+      }
+    },
+    getUIState: function() {
+      var state = SessionStorageService.getState();
+      if (!state){
+        state = LocalStorageService.getState();
+        if (state){
+          SessionStorageService.setState(state);
+        }
+      }
+      return state;
+
     }
   };
 }
