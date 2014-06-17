@@ -27,7 +27,7 @@ function accordionTitleDirective() {
       if ($scope.$parent.$first) accordionCtrl.notifyFirst();
       if ($scope.$parent.$last) accordionCtrl.notifyLast();
 
-      $scope.isOpen = false;
+      $scope.titleOpen = false;
 
       function cacheFields(){
         $scope.oldTitle = $scope.item.title;
@@ -37,28 +37,28 @@ function accordionTitleDirective() {
       cacheFields();
 
       $scope.openItem = function openItem(skipScroll) {
-        if (!$scope.isOpen){
-          $scope.isOpen = true;
+        if (!$scope.titleOpen){
+          $scope.titleOpen = true;
           $element.parent().addClass('accordion-item-active');
           if (!skipScroll) {
             accordionCtrl.scrollToElement($element.parent());
           }
         }
-        return $scope.isOpen;
+        return $scope.titleOpen;
       };
 
       $scope.closeItem = function(skipSave) {
-        if ($scope.isOpen){
+        if ($scope.titleOpen){
           $scope.endFieldsEdit(skipSave);
           $element.parent().removeClass('accordion-item-active');
-          $scope.isOpen = false;
+          $scope.titleOpen = false;
           return true;
         }
         return false;
       };
 
       $scope.clickTitle = function() {
-        if (!$scope.isOpen) {
+        if (!$scope.titleOpen) {
           // Not open, don't open unless nothing else was closed
           if (!accordionCtrl.closeOthers($scope, $element)){
             $scope.openItem();

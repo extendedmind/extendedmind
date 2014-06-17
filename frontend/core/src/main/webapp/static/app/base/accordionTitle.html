@@ -1,4 +1,4 @@
-<div class="accordion-title" ng-switch="isOpen">
+<div class="accordion-title" ng-switch="titleOpen">
   <div ng-switch-when="false" id="closedAccordionTitleWrapper">
     <div ng-if="hasComplete" class="table-wrapper" >
       <input type="checkbox" class="left-checkbox-wrapper" id="{{item.uuid}}" name="checkbox" class="input-checkbox" ng-checked="item.completed" swiper-click="itemChecked()" />
@@ -30,5 +30,5 @@
       </button>
     </div>
   </form>
-  <div ng-transclude ng-class="isOpen && 'editable-field-container active'"></div>
+  <div ng-transclude ng-class="titleOpen && 'editable-field-container active'"></div>
 </div>
