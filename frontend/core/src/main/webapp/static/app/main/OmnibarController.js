@@ -16,6 +16,7 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
       footerSaveText: 'save to inbox',
       saveItemLocation: 'inbox',
       itemSaveMethod: ItemsService.saveItem.bind(ItemsService),
+      persistentItemValues: ['title'],
       isActive: true  // default feature
     },
     task: {
@@ -23,13 +24,15 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
       footerSaveText: 'save',
       saveItemLocation: 'tasks',
       itemSaveMethod: TasksService.saveTask.bind(TasksService),
+      persistentItemValues: ['title', 'description']
     },
     note: {
       inputPlaceholder: 'add note',
       footerSaveText: 'save',
       saveItemLocation: 'notes',
       itemSaveMethod: $scope.saveNote,
-      initializeItemFuncion: $scope.initializeOmnibarNote
+      initializeItemFuncion: $scope.initializeOmnibarNote,
+      persistentItemValues: ['title', 'content']
     }
   };
 
@@ -119,30 +122,38 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     return omnibarFeatures[feature].isActive;
   };
 
-  $scope.setOmnibarFeatureActive = function setOmnibarFeatureActive(activeFeature) {
+  $scope.setOmnibarFeatureActive = function setOmnibarFeatureActive(newActiveFeature) {
+    var oldActiveFeature = $scope.getActiveOmnibarFeature();
+
     for (var omnibarFeature in omnibarFeatures) {
       if (omnibarFeatures.hasOwnProperty(omnibarFeature)) {
-        if (omnibarFeature === activeFeature) {
-          omnibarFeatures[omnibarFeature].isActive = true;
-        } else {
-          omnibarFeatures[omnibarFeature].isActive = false;
-          delete $scope[omnibarFeature];
-        }
+        omnibarFeatures[omnibarFeature].isActive = omnibarFeature === newActiveFeature;
       }
     }
     if (!$scope.isItemEditMode) {
-      deleteOmnibarItemContent();
-      initializeNewItemFromOmnibarText(activeFeature);
+      convertOmnibarItemContent(oldActiveFeature, newActiveFeature);
+      initializeNewItemFromOmnibarText(newActiveFeature);
     }
     setFocusOnEmptyOmnibarInput();
   };
 
-  function deleteOmnibarItemContent() {
+  function convertOmnibarItemContent(oldActiveFeature, newActiveFeature) {
+    var persistentItemValues = omnibarFeatures[newActiveFeature].persistentItemValues;
+
+    if (oldActiveFeature === 'task' && newActiveFeature === 'note') {
+      if ($scope.omnibarText.description) $scope.omnibarText.content = $scope.omnibarText.description;
+    } else if (oldActiveFeature === 'note' && newActiveFeature === 'task') {
+      if ($scope.omnibarText.content) $scope.omnibarText.description = $scope.omnibarText.content;
+    }
+
+    function isPersitent(value) {
+      return persistentItemValues.some(function(itemValue) {
+        return itemValue === value;
+      });
+    }
     for (var itemValue in $scope.omnibarText) {
       if ($scope.omnibarText.hasOwnProperty(itemValue)) {
-        if (itemValue !== 'title') {
-          delete $scope.omnibarText[itemValue];
-        }
+        if (!isPersitent(itemValue)) delete $scope.omnibarText[itemValue];
       }
     }
   }
