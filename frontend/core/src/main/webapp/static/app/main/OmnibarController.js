@@ -8,8 +8,6 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
   $scope.omnibarKeywords = {isVisible: false};
   $scope.isItemEditMode = false;
 
-  $scope.isOmnibarToastNotificationVisible = false;
-
   var omnibarInputFocusCallbackFunction;
 
   var omnibarFeatures = {
@@ -35,15 +33,16 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     }
   };
 
-  var marginTopHeight = 12, omnibarActionsHeight = 44, unknownHeight = 142;
-  var keyboardHeight = 0;
-  $scope.getOmnibarFeatureHeight = function getOmnibarFeatureHeight() {
-    if ($scope.currentHeight <= 810) {
-      return $scope.currentHeight - unknownHeight - marginTopHeight + ($scope.isItemEditMode ? omnibarActionsHeight : 0) - keyboardHeight;
-    }
+  var omnibarActionsHeight = 44, omnibarContainerHeight = 140, keyboardHeight = 0;
+  function getOmnibarStaticContentHeight() {
+    return omnibarContainerHeight - ($scope.isItemEditMode ? omnibarActionsHeight : 0);
+  }
 
-    // 648 is INCORRECT!
-    return 648 - keyboardHeight;
+  $scope.getOmnibarFeatureHeight = function getOmnibarFeatureHeight() {
+    if ($scope.currentHeight <= 769 || $scope.currentWidth <= 1025) {
+      return $scope.currentHeight - getOmnibarStaticContentHeight() - keyboardHeight;
+    }
+    return 770 - getOmnibarStaticContentHeight() - keyboardHeight;
   };
 
   $scope.$watch('softKeyboard.height', function(newValue){
@@ -109,8 +108,8 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     if ($scope.omnibarHasText() && !$scope.isLoading) {
       activeOmnibarFeature = $scope.getActiveOmnibarFeature();
       omnibarFeatures[activeOmnibarFeature].itemSaveMethod($scope[activeOmnibarFeature], UISessionService.getActiveUUID()).then(function() {
+        if (!$scope.isItemEditMode) UISessionService.setToasterNotification(omnibarFeatures[activeOmnibarFeature].saveItemLocation);
         $scope.clearAndHideOmnibar();
-        UISessionService.setToasterNotification(omnibarFeatures[activeOmnibarFeature].saveItemLocation);
       });
     }
   };

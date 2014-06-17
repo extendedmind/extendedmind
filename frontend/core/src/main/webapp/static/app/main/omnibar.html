@@ -6,7 +6,7 @@
         <input type="text" id="omnibar-input" class="simple-input form-control omnibar-input" ng-model="omnibarText.title" ng-keydown="omnibarKeyDown($event)" omnibar-input dynamic-placeholder="{{getOmnibarInputPlaceholder()}}" maxlength="128" required>
       </div>
       <div ng-show="omnibarHasText() && !isItemEditMode" class="right-button-wrapper">
-        <button id="omnibarX" class="button" type="button" ng-click="clearOmnibar()"><span class="icon-x"></span>
+        <button class="button omnibar-x-icon" type="button" ng-click="clearOmnibar()"><span class="icon-x"></span>
         </button>
       </div>
     </div>
@@ -35,7 +35,7 @@
 
   <div ng-switch="getActiveOmnibarFeature()" ng-style="{height: getOmnibarFeatureHeight()}" class="swiper-no-swiping omnibar-feature" data-snap-ignore="true" scroll-to>
 
-    <div ng-switch-when="search" style="height: 100%;">
+    <div ng-switch-when="search">
 
       <button ng-if="keywords.length" class="small-font button" ng-class="omnibarKeywords.isVisible ? 'selected-keyword' : 'keyword'" ng-click="toggleOmnibarKeywordsVisible()">
         keywords <strong ng-bind="omnibarKeywords.isVisible ? 'x' : '+'"></strong>
@@ -164,9 +164,9 @@
 
   </div>
 
-  <div style="height: 44px;">
-    <button type="button" class="button transparent-button" style="float: left;" ng-click="clearAndHideOmnibar()">cancel</button>
-    <button type="submit" class="button transparent-button" style="float: right;" ng-click="saveOmnibarText()" ng-disabled="!addOmniItem.$valid" ng-bind="getOmnibarFooterSaveText()"></button>
-  </div>
+  <footer class="omnibar-footer">
+    <button type="button" class="button transparent-button omnibar-footer-button-left" ng-click="clearAndHideOmnibar()">cancel</button>
+    <button type="submit" class="button transparent-button omnibar-footer-button-right" ng-click="saveOmnibarText()" ng-disabled="!addOmniItem.$valid" ng-bind="getOmnibarFooterSaveText()"></button>
+  </footer>
 
 </div>

@@ -238,17 +238,18 @@ footer {
   width: 100%;
   .one-column-grid;
   position: relative;
-
-  // Push omnibar under page header
-  min-height: @page-header-height;
-
   padding-top: 10px;
-  form, .form-group, input {
-    height: inherit;
+  .omnibar-x-icon {
+    span {
+      font-size: 18px;
+    }
+  }
+  .omnibar-input {
+    font-size: @large-font-size;
   }
   .omnibar-feature {
     width: 100%;
-    margin-top: 12px;
+    // margin-top: 12px;
     float: left;
     overflow-y: auto;
     // height set with javascript
@@ -261,14 +262,14 @@ footer {
       padding-top: @vertical-grid-half;
     }
   }
-  #omnibarX {
-    //padding-bottom: 6px;
-    span {
-      font-size: 18px;
+  .omnibar-footer {
+    height: 44px;
+    .omnibar-footer-button-left {
+      float: left;
     }
-  }
-  .omnibar-input {
-    font-size: @large-font-size;
+    .omnibar-footer-button-right {
+      float: right;
+    }
   }
 }
 
