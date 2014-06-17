@@ -35,7 +35,7 @@
 
   <div ng-switch="getActiveOmnibarFeature()" ng-style="{height: getOmnibarFeatureHeight()}" class="swiper-no-swiping omnibar-feature" data-snap-ignore="true" scroll-to>
 
-    <div ng-switch-when="search">
+    <div ng-switch-when="search" class="omnibar-search">
 
       <button ng-if="keywords.length" class="small-font button" ng-class="omnibarKeywords.isVisible ? 'selected-keyword' : 'keyword'" ng-click="toggleOmnibarKeywordsVisible()">
         keywords <strong ng-bind="omnibarKeywords.isVisible ? 'x' : '+'"></strong>
@@ -60,6 +60,8 @@
           </div>
         </div>
       </div>
+
+      <div ng-if="!isSearchActive() && !omnibarKeywords.isVisible" class="omnibar-empty-search-placeholder" ng-click="hideEmptyOmnibar()"></div>
 
       <div ng-if="isSearchActive() && !omnibarKeywords.isVisible && !isLoading">
         <div ng-show="filteredItems.length" class="filtered-items">
@@ -99,10 +101,10 @@
           </div>
         </div>
       </div>
+
     </div>
 
     <div ng-switch-when="task">
-
       <form class="form-horizontal" role="form" name="taskEdit" editable-field-container>
         <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
         <div ng-if="task.date" class="form-group">
@@ -120,7 +122,6 @@
           <textarea id="taskDescription" class="simple-input" ng-style="{maxHeight: getEditTaskDescriptionMaxHeight()}" ng-model="task.description" placeholder="description..." maxlength="1024" expanding-textarea editable-field></textarea>
         </div>
       </form>
-
     </div>
 
     <div ng-switch-when="note">
@@ -158,15 +159,12 @@
         </div>
 
       </form>
-
     </div>
-
-
   </div>
 
-  <footer class="omnibar-footer">
+  <div class="omnibar-footer small-font">
     <button type="button" class="button transparent-button omnibar-footer-button-left" ng-click="clearAndHideOmnibar()">cancel</button>
     <button type="submit" class="button transparent-button omnibar-footer-button-right" ng-click="saveOmnibarText()" ng-disabled="!addOmniItem.$valid" ng-bind="getOmnibarFooterSaveText()"></button>
-  </footer>
+  </div>
 
 </div>

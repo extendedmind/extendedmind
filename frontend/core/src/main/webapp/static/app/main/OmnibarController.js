@@ -99,8 +99,9 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     if (event.keyCode === 27) $scope.clearAndHideOmnibar();
   };
 
+  // For empty omnibar search placeholder
   $scope.hideEmptyOmnibar = function hideEmptyOmnibar() {
-    if (!$scope.isSearchActive()) $scope.clearAndHideOmnibar();
+    $scope.clearAndHideOmnibar();
   };
 
   $scope.saveOmnibarText = function saveOmnibarText() {
