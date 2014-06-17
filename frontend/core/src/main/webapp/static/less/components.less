@@ -169,6 +169,14 @@ header.static-page-header {
     font-weight: 700;
     font-size: @large-font-size;
   }
+  a.heading, .omni-button span {
+    &:hover {
+      color: @highlighted-element-hover;
+    }
+    &:active {
+      color: @highlighted-element-pressed;
+    }
+  }
 
   .long-heading, .medium-heading {
     display: table;
@@ -190,12 +198,6 @@ header.static-page-header {
     padding: 17px @horizontal-grid 17px 11px; // increased clicking area
     span {
       font-size: 16px;
-      &:hover {
-        color: @highlighted-element-hover;
-      }
-      &:active {
-        color: @highlighted-element-pressed;
-      }
     }
   }
 }
