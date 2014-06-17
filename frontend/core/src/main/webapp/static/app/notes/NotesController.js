@@ -32,10 +32,10 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
       // Keyword is added with fake UUID and isNew key, which are removed before save.
       // Keyword is associated with UUID so it needs to be removed from lists also.
       function removeFromMemoryAndReturnSavePromise(keyword) {
+        $scope.keywords.splice($scope.keywords.indexOf(keyword), 1);
+        $scope.note.relationships.tags.splice($scope.note.relationships.tags.indexOf(keyword.uuid), 1);
         delete keyword.uuid;
         delete keyword.isNew;
-        $scope.keywords.splice($scope.keywords.indexOf(keyword), 1);
-        $scope.note.relationships.tags.splice($scope.note.relationships.tags.indexOf(keyword), 1);
 
         return TagsService.saveTag(keyword, UISessionService.getActiveUUID());
       }
