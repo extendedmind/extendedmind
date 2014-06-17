@@ -10,7 +10,7 @@ function HeaderController($scope, $rootScope, UISessionService) {
       // Smaller, calculate as percentage
       return $rootScope.currentWidth * 0.54;
     }
-  };
+  }
 
   function calculateMaximumHeadingLength() {
     var headingWidth = calculateHeadingWidth();
@@ -21,7 +21,7 @@ function HeaderController($scope, $rootScope, UISessionService) {
     }else {
       return headingWidth * 0.1744;
     }
-  };
+  }
 
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/){
     if (name === 'list'){
@@ -52,7 +52,7 @@ function HeaderController($scope, $rootScope, UISessionService) {
       currentHeading += '*';
     }
     return currentHeading;
-  }
+  };
 
   $scope.getHeadingClass = function getHeadingClass() {
     if ($scope.overrideHeading){
@@ -63,7 +63,7 @@ function HeaderController($scope, $rootScope, UISessionService) {
         return 'long-heading';
       }
     }
-  }
+  };
 
   $scope.switchFeature = function(){
     var activeFeature = $scope.getActiveFeature();
