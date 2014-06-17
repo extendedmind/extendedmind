@@ -197,7 +197,7 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
         $rootScope.softKeyboard.height = undefined;
         if (!$scope.$$phase) $scope.$apply();
       }
-      if ($rootScope.packaging.endsWith('cordova')){
+      if ($rootScope.packaging === 'ios-cordova'){
         window.addEventListener('native.keyboardshow', cordovaKeyboardShow);
         window.addEventListener('native.keyboardhide', cordovaKeyboardHide);
       }
@@ -206,7 +206,7 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
 
       $scope.$on('$destroy', function() {
         angular.element($window).unbind('resize', windowResized);
-        if ($rootScope.packaging.endsWith('cordova')){
+        if ($rootScope.packaging === 'ios-cordova'){
           window.removeEventListener('native.keyboardshow', cordovaKeyboardShow);
           window.removeEventListener('native.keyboardhide', cordovaKeyboardHide);
         }
