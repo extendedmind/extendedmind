@@ -3,7 +3,7 @@
     <div ng-hide="omnibarVisible && isActiveSlide('details')" class="content-container page-content-container">
       <div class="inner-page-content-container" swiper-prevent>
         <div ng-if="keyword" scroll-to accordion>
-          <div accordion-title="keyword" edit-item="editKeyword(keyword)" edit-item-inline="true" edit-item-fields="editKeywordFields(keyword)" bold-title="true" title-prefix="'@'" has-complete="false" toggle-complete></div>
+          <div accordion-title="keyword" edit-item="editKeyword(keyword)" edit-item-inline="true" edit-item-fields="editKeywordFields(keyword)" bold-title="true" has-complete="false" toggle-complete></div>
           <div ng-if="isOpen(keyword)" class="accordion-body swiper-no-swiping" editable-field-container="auto">
             <div class="accordion-inner">
               <div item-core-fields="keyword" item-core-fields-details="keywordDetails"></div>
