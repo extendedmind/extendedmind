@@ -35,15 +35,6 @@ describe('NotesController', function() {
     });
   });
 
-  it('should add note', function() {
-    var note = {
-      title: 'note'
-    };
-    expect(MockNotesService.getNotes().length).toEqual(0);
-    $scope.addNote(note);
-    expect(MockNotesService.getNotes().length).toEqual(1);
-  });
-
   it('should delete note', function() {
     var note = {
       title: 'note'
