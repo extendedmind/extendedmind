@@ -33,7 +33,7 @@ function OmnibarController($q, $scope, $timeout, UISessionService, ItemsService,
     }
   };
 
-  var omnibarActionsHeight = 44, omnibarContainerHeight = 140, keyboardHeight = 0;
+  var omnibarActionsHeight = 44, omnibarContainerHeight = 156, keyboardHeight = 0;
   function getOmnibarStaticContentHeight() {
     return omnibarContainerHeight - ($scope.isItemEditMode ? omnibarActionsHeight : 0);
   }
