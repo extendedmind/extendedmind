@@ -5,15 +5,6 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
     restrict: 'A',
     controller: function($scope, $element) {
 
-      // FEATURE DEFAULT VALUES AND ARRAYS
-
-      var contentFeatures = ['tasks', 'notes', 'inbox', 'dashboard', 'archive'];
-      var activeContentFeatures = {tasks: true};
-      var helperFeatures = {
-        taskEdit: 'tasks',
-        noteEdit: 'notes'
-      };
-      var systemFeatures = ['account', 'about', 'admin'];
       var featureElements = {};
 
       // COMMON FEATURE METHODS IN SCOPE
@@ -24,22 +15,6 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
 
       $scope.isFeatureActive = function isFeatureActive(feature) {
         return $scope.getActiveFeature() === feature;
-      };
-
-      $scope.isContentFeatureActive = function isContentFeatureActive(feature) {
-        if (feature){
-          return activeContentFeatures[feature] || activeContentFeatures[helperFeatures[feature]];
-        }else{
-          return (contentFeatures.indexOf($scope.getActiveFeature()) > -1);
-        }
-      };
-
-      $scope.isSystemFeatureActive = function isSystemFeatureActive() {
-        return (systemFeatures.indexOf($scope.getActiveFeature()) > -1);
-      };
-
-      $scope.refreshContentFeature = function refreshContentFeature(feature) {
-        activeContentFeatures[feature] = false;
       };
 
       $scope.hasFeatureFooter = function hasFeatureFooter() {
@@ -68,13 +43,8 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
 
       var featureChangedCallback = function featureChangedCallback(name, data, state){
         setFeatureContainerClass(name);
-        if (contentFeatures.indexOf(name) > -1){
-          activeContentFeatures[name] = true;
-          if ($scope.isContentFeatureActive(name)) {
-            if (featureElements[name]) {
-              SnapService.setDraggerElement(featureElements[name].dragElement);
-            }
-          }
+        if (featureElements[name]) {
+          SnapService.setDraggerElement(featureElements[name].dragElement);
         }
 
         if (!state) state = UISessionService.getFeatureState(name);

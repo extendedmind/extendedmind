@@ -3,7 +3,7 @@
     <div ng-if="!isCompletedLoading" ng-hide="omnibarVisible && isActiveSlide({{'completed'}})" class="content-container page-content-container" >
       <div class="inner-page-content-container" swiper-prevent>
         <div infinite-scroll="addMoreCompleted()" infinite-scroll-parent scroll-to accordion>
-          <div ng-if="showContent('archive')" ng-repeat="task in fullCompletedTasks | limitTo: getCompletedTasksLimit()">
+          <div ng-repeat="task in fullCompletedTasks | limitTo: getCompletedTasksLimit()">
             <div ng-if="showToday(task, $first)" ng-class="getFirstShown() !== 'today' && 'subheading'"><h3>today</h3></div>
             <div ng-if="showYesterday(task, $first)" ng-class="getFirstShown() !== 'yesterday' && 'subheading'"><h3>yesterday</h3></div>
             <div ng-if="showThisWeek(task, $first)" ng-class="getFirstShown() !== 'thisWeek' && 'subheading'"><h3>this week</h3></div>

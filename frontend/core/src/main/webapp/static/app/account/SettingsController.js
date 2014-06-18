@@ -44,12 +44,7 @@ function SettingsController($http, $q, $rootScope, $scope, $window, AccountServi
 
   $scope.hideFooter = function() {
     updateHideSetting('hideFooter', $scope.settings.hideFooter);
-    $scope.refreshContentFeature('tasks');
-    $scope.refreshContentFeature('notes');
-    $scope.refreshContentFeature('dashboard');
-    $scope.refreshContentFeature('archive');
   };
-
 
   var policyModalElement, contentHeight, footerHeight;
   $scope.openTermsOfServiceModal = function openTermsOfServiceModal() {

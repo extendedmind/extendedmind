@@ -5,7 +5,7 @@
         <div infinite-scroll="addMoreRecent()" infinite-scroll-parent scroll-to accordion>
           <h3>recent</h3>
           <button class="add-button" ng-click="addNote({})">add note...</button>
-          <div ng-if="showContent('notes')" ng-repeat="note in allNotes | orderBy:'modified':true | limitTo: getRecentNotesLimit()" ng-init="newNote = {}">
+          <div ng-repeat="note in allNotes | orderBy:'modified':true | limitTo: getRecentNotesLimit()" ng-init="newNote = {}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
               <div ng-if="note.content" class="teaser">
                 <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>

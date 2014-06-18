@@ -253,10 +253,6 @@ function MainController(
     }
   };
 
-  $scope.showContent = function showContent(feature) {
-    return $scope.isFeatureActive(feature);
-  };
-
   // Layout for expanding text areas require a max height
   // that needs to be defined programmatically
 

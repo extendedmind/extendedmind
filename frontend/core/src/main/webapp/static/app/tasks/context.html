@@ -21,7 +21,7 @@
               </ul>
             </div>
           </div>
-          <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'byTagUUID', filterBy: context.uuid}">
+          <div ng-repeat="task in tasks | itemsFilter:{name:'byTagUUID', filterBy: context.uuid}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
             <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
               <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
@@ -31,7 +31,7 @@
         </div>
         <div ng-if="!context" scroll-to accordion>
           <h3>no context</h3>
-          <div ng-if="showContent('tasks')" ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}">
+          <div ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
             <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
               <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>

@@ -21,7 +21,7 @@
               </ul>
             </div>
           </div>
-          <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'byTagUUID', filterBy: keyword.uuid}">
+          <div ng-repeat="note in notes | itemsFilter:{name:'byTagUUID', filterBy: keyword.uuid}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
               <div ng-if="note.content" class="teaser">
                 <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
@@ -36,7 +36,7 @@
         </div>
         <div ng-if="!keyword" scroll-to accordion>
           <h3>no keywords</h3>
-          <div ng-if="showContent('notes')" ng-repeat="note in notes | itemsFilter:{name:'unsorted'}">
+          <div ng-repeat="note in notes | itemsFilter:{name:'unsorted'}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
               <div ng-if="note.content" class="teaser">
                 <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>

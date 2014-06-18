@@ -1,11 +1,11 @@
-<div ng-show="isFeatureActive('inbox')" class="single-page-container" ng-controller="InboxController">
+<div ng-show="isFeatureActive('inbox')" class="single-page-container" ng-controller="InboxController" data-snap-ignore="{{onboardingInProgress ? true : undefined}}">
   <section id="inbox" class="two-column-grid single-page page" snap-drawer-drag="inbox">
     <div class="column">
       <div ng-if="!isLoading" ng-hide="omnibarVisible" class="content-container page-content-container single-page-content-container">
         <div class="scroll-container" scroll-to>
           <div class="accordion-wrapper">
             <div class="inner-page-content-container" accordion>
-              <div ng-if="showContent('inbox')" ng-repeat="item in items">
+              <div ng-repeat="item in items">
                 <div accordion-title="item" edit-item="editItem(item)" edit-item-inline="true" edit-item-fields="editItemFields(item)" has-complete="false" toggle-complete></div>
                 <div ng-if="isOpen(item) || isInboxSorting(item)" class="accordion-body" editable-field-container="auto">
                   <div item-core-fields="item" item-core-fields-details="itemDetails"></div>
@@ -29,7 +29,7 @@
           </div>
           <div ng-if="getOnboardingPhase() === 'itemAdded'" class="instruction-text">
             <p class="instruction-text-chapter">use <b>omnibar</b> <span class="icon-logo-only"></span><br/>for quick save and recall</p>
-            <p class="instruction-text-chapter">use <b>sort inbox</b> to sort your items into <b>tasks</b>, <b>notes</b> and <b>lists</b></p>
+            <p class="instruction-text-chapter">use <b>sort inbox</b> to sort your items into <b>tasks</b>, <b>notes</b> and <b>lists</b><br/></p>
           </div>
           <footer ng-if="(items.length > 0 && sortingItem === undefined)">
             <nav id="inbox-footer" class="swiper-no-swiping item-actions" role="navigation">
