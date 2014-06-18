@@ -109,7 +109,14 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
   };
 
   $scope.omnibarKeyDown = function omnibarKeyDown(event) {
-    if (event.keyCode === 27) $scope.clearAndHideOmnibar();
+    if (event.keyCode === 27){
+      $scope.clearAndHideOmnibar();
+    }else if (event.keyCode === 13){
+      // Enter in omnibar saves, no line breaks allowed
+      event.preventDefault();
+      event.stopPropagation();
+      $scope.saveOmnibarText();
+    }
   };
 
   // For empty omnibar search placeholder
