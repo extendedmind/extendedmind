@@ -1,4 +1,4 @@
-<div class="omnibar-container swiper-no-swiping">
+<div class="omnibar-container swiper-no-swiping" data-snap-ignore="true">
 
   <form id="omnibar" role="form" name="addOmniItem" ng-submit="saveOmnibarText()" autocapitalize="none" autocorrect="off">
     <div class="form-group">
@@ -33,7 +33,7 @@
 
   </div>
 
-  <div ng-switch="getActiveOmnibarFeature()" ng-style="{height: getOmnibarFeatureHeight()}" class="swiper-no-swiping omnibar-feature" data-snap-ignore="true" scroll-to>
+  <div ng-switch="getActiveOmnibarFeature()" style="overflow: hidden" ng-style="{height: getOmnibarFeatureHeight()}" class="swiper-no-swiping omnibar-feature" data-snap-ignore="true" scroll-to>
 
     <div ng-switch-when="search" class="omnibar-search">
 
