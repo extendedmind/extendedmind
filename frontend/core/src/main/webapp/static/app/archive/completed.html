@@ -17,6 +17,11 @@
               <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
+          <div ng-if="fullCompletedTasks.length === 0">
+            <div class="instruction-text">
+              <p class="instruction-text-chapter"><b>completing</b> a task<br/>will move it here</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
