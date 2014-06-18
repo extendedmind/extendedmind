@@ -9,17 +9,34 @@
 function MainController(
   $controller, $filter, $rootScope, $scope, $timeout, $window,
   AccountService, UISessionService, UserSessionService, ItemsService, ListsService,
-  TagsService, TasksService, NotesService, SynchronizeService, OnboardingService,
-  SwiperService, ArrayService, UUIDService) {
+  TagsService, TasksService, NotesService, SynchronizeService,
+  SwiperService, ArrayService, UUIDService, AnalyticsService) {
 
   // ONBOARDING
+
+  $scope.onboardingInProgress = false;
+  var onboardingPhase;
   var userPreferences = UserSessionService.getPreferences();
   if (!userPreferences || (userPreferences && !userPreferences.onboarded)) {
-    OnboardingService.launchOnboarding(onboardingSuccessCallback);
+    $scope.onboardingInProgress = true;
+    onboardingPhase = 'new';
   }
-  function onboardingSuccessCallback() {
-    UserSessionService.setPreference('onboarded', $rootScope.packaging);
-    AccountService.updateAccountPreferences();
+  $scope.setOnboardingPhase = function setOnboardingPhase(phase) {
+    onboardingPhase = phase;
+    if (onboardingPhase === 'itemAdded'){
+      // End right after first item added
+      UserSessionService.setPreference('onboarded', $rootScope.packaging);
+      AccountService.updateAccountPreferences();
+      $scope.onboardingInProgress = false;
+      AnalyticsService.do('firstItemAdded');
+    }else if (onboardingPhase === 'secondItemAdded'){
+      AnalyticsService.do('secondItemAdded');
+    }else if (onboardingPhase === 'sortingStarted'){
+      AnalyticsService.do('sortingStarted');
+    }
+  }
+  $scope.getOnboardingPhase = function getOnboardingPhase() {
+    return onboardingPhase;
   }
 
   // DATA ARRAYS
@@ -284,7 +301,7 @@ function MainController(
 MainController.$inject = [
 '$controller', '$filter', '$rootScope', '$scope', '$timeout', '$window',
 'AccountService', 'UISessionService', 'UserSessionService', 'ItemsService', 'ListsService',
-'TagsService', 'TasksService', 'NotesService', 'SynchronizeService', 'OnboardingService',
-'SwiperService', 'ArrayService', 'UUIDService'
+'TagsService', 'TasksService', 'NotesService', 'SynchronizeService',
+'SwiperService', 'ArrayService', 'UUIDService', 'AnalyticsService'
 ];
 angular.module('em.app').controller('MainController', MainController);

@@ -58,8 +58,12 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
               }
             }
           }
-          var itemsResponse = getJSONFixture('itemsResponse.json');
-          return expectResponse(method, url, data, headers, itemsResponse);
+
+          if (headers.Authorization === 'Basic dG9rZW46VEVTVA=='){
+            // Token 'TEST' returned for jp@ext.md
+            return expectResponse(method, url, data, headers, {});
+          };
+          return expectResponse(method, url, data, headers, getJSONFixture('itemsResponse.json'));
         }
       });
   }

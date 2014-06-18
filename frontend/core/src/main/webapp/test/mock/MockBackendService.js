@@ -14,6 +14,8 @@ function MockBackendService(MockListsBackendService, MockTagsBackendService, Moc
         if (userNamePass === 'timo@ext.md:timopwd' || userNamePass === 'timo@ext.md:timopwdnew') {
           response = [200, responseData];
         } else if (userNamePass === 'jp@ext.md:jiipeepwd') {
+          if (responseData.preferences) delete responseData.preferences;
+          if (responseData.token) responseData.token = 'TEST';
           response = [200, responseData];
         } else if (userName === 'token') {
           response = [200, responseData];

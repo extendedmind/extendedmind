@@ -587,10 +587,22 @@ li.datepicker-date {
   transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
 }
 
+.onboarding-bubble:after {
+  -webkit-transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -moz-transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -o-transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -ms-transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+}
+
 .editable-field-backdrop.active {
   background-color: #f6f6f6 !important;
   &.backdrop-disable * {
     pointer-events: none;
+  }
+
+  .onboarding-bubble:after {
+    border-bottom-color: #f6f6f6 !important;
   }
 }
 
@@ -598,7 +610,10 @@ li.datepicker-date {
   #omnibar-label-wrapper, .ellipsis:after {
     background-image: none !important;
   }
-  #active-action-wrapper, #plus-button-wrapper, #feature-container-wrapper, #feature-container, .border-button, .add-button, .static-page-header {
+  #active-action-wrapper, #plus-button-wrapper,
+  #feature-container-wrapper, #feature-container,
+  .border-button, .add-button,
+  .static-page-header {
     background-color: inherit;
   }
 }

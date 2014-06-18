@@ -16,8 +16,8 @@
               <a class="highlighted-link" href="mailto:support@ext.md"> support@ext.md</a>
             </small>
           </li>
-          <li>
-            <input class="input-checkbox" type="checkbox" name="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="showOnboardingChecked(settings.showOnboarding)"/>
+          <li ng-if="showOnboardingCheckbox()">
+            <input class="input-checkbox" type="checkbox" name="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="onboardingChecked(settings.showOnboarding)"/>
             <label class="default-element small-font" for="showOnboarding">show onboarding on next login</label>
           </li>
           <li>

@@ -66,27 +66,29 @@ function HeaderController($scope, $rootScope, UISessionService) {
   };
 
   $scope.switchFeature = function(){
-    var activeFeature = $scope.getActiveFeature();
-    if (activeFeature === 'inbox'){
-      UISessionService.changeFeature('tasks');
-    }else if (activeFeature === 'tasks'){
-      UISessionService.changeFeature('notes');
-    }else if (activeFeature === 'notes'){
-      UISessionService.changeFeature('lists');
-    }else if (activeFeature === 'lists'){
-      UISessionService.changeFeature('archive');
-    }else if (activeFeature === 'archive'){
-      UISessionService.changeFeature('inbox');
-    }else if (activeFeature === 'list'){
-      var newIndex = $scope.lists.indexOf(UISessionService.getFeatureData('list')) + 1;
-      if (newIndex === $scope.lists.length){
-        UISessionService.changeFeature('editLists');
-      }else{
-        UISessionService.changeFeature('list', $scope.lists[newIndex]);
-      }
-    }else if (activeFeature === 'editLists'){
-      if ($scope.lists.length){
-        UISessionService.changeFeature('list', $scope.lists[0]);
+    if (!$scope.onboardingInProgress){
+      var activeFeature = $scope.getActiveFeature();
+      if (activeFeature === 'inbox'){
+        UISessionService.changeFeature('tasks');
+      }else if (activeFeature === 'tasks'){
+        UISessionService.changeFeature('notes');
+      }else if (activeFeature === 'notes'){
+        UISessionService.changeFeature('lists');
+      }else if (activeFeature === 'lists'){
+        UISessionService.changeFeature('archive');
+      }else if (activeFeature === 'archive'){
+        UISessionService.changeFeature('inbox');
+      }else if (activeFeature === 'list'){
+        var newIndex = $scope.lists.indexOf(UISessionService.getFeatureData('list')) + 1;
+        if (newIndex === $scope.lists.length){
+          UISessionService.changeFeature('editLists');
+        }else{
+          UISessionService.changeFeature('list', $scope.lists[newIndex]);
+        }
+      }else if (activeFeature === 'editLists'){
+        if ($scope.lists.length){
+          UISessionService.changeFeature('list', $scope.lists[0]);
+        }
       }
     }
   };

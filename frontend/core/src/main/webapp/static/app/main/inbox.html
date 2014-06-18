@@ -1,7 +1,7 @@
 <div ng-show="isFeatureActive('inbox')" class="single-page-container" ng-controller="InboxController">
   <section id="inbox" class="two-column-grid single-page page" snap-drawer-drag="inbox">
     <div class="column">
-      <div ng-hide="omnibarVisible" class="content-container page-content-container single-page-content-container">
+      <div ng-if="!isLoading" ng-hide="omnibarVisible" class="content-container page-content-container single-page-content-container">
         <div class="scroll-container" scroll-to>
           <div class="accordion-wrapper">
             <div class="inner-page-content-container" accordion>
@@ -22,6 +22,15 @@
               </div>
             </div>
           </form>
+          <div ng-if="getOnboardingPhase() === 'new'" class="onboarding-bubble">
+            <div class="instruction-text">
+              <p>type here what you want to <b>remember</b>, we'll take care of the rest</p>
+            </div>
+          </div>
+          <div ng-if="getOnboardingPhase() === 'itemAdded'" class="instruction-text">
+            <p class="instruction-text-chapter">use <b>omnibar</b> <span class="icon-logo-only"></span> for quick store and recall</p>
+            <p class="instruction-text-chapter">use <b>sort inbox</b> to sort your items into <b>tasks</b>, <b>notes</b> and <b>lists</b></p>
+          </div>
           <footer ng-if="(items.length > 0 && sortingItem === undefined)">
             <nav id="inbox-footer" class="swiper-no-swiping item-actions" role="navigation">
               <button id="scroll-to-element" class="wide-button border-button" ng-click="sortInbox()">
@@ -31,6 +40,7 @@
           </footer>
         </div>
       </div>
+      <div ng-if="isLoading" class="loading-animation" loading-animation></div>
     </div>
     <aside class="column">
       TODO

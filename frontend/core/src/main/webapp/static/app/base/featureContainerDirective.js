@@ -81,7 +81,11 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
       };
       UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'featureContainerDirective');
       if (!UISessionService.getCurrentFeatureName()){
-        UISessionService.changeFeature('tasks');
+        if ($scope.onboardingInProgress){
+          UISessionService.changeFeature('inbox');
+        }else{
+          UISessionService.changeFeature('tasks');
+        }
       }else{
         // Need to explicitly call feature change
         featureChangedCallback(UISessionService.getCurrentFeatureName());
@@ -95,14 +99,14 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         if (!UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()) ||
           !UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()).startsWith(activeSlidePath)){
           UISessionService.setCurrentFeatureState(activeSlidePath);
-      }
-    };
+        }
+      };
 
-    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'featureContainerDirective');
-    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/home', 'featureContainerDirective');
-    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'featureContainerDirective');
-    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'dashboard', 'featureContainerDirective');
-    SwiperService.registerSlideChangeCallback(slideChangedCallback, 'archive', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/home', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'dashboard', 'featureContainerDirective');
+      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'archive', 'featureContainerDirective');
 
       // CALLBACK REGISTRATION
 

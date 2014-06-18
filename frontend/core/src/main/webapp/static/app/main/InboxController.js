@@ -20,6 +20,9 @@ function InboxController($scope) {
   $scope.sortInbox = function sortInbox(){
     if (openFirstElementCallback){
       $scope.sortingItem = openFirstElementCallback($scope.sortingItem);
+      if ($scope.getOnboardingPhase() === 'itemAdded' || $scope.getOnboardingPhase() === 'secondItemAdded'){
+        $scope.setOnboardingPhase('sortingStarted');
+      }
     }
   };
 

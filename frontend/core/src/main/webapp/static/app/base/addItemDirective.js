@@ -28,11 +28,22 @@ function addItemDirective() {
 
       scope.callAndRefresh = function callAndRefresh(itemAction, parameter) {
         itemAction(parameter);
-        if (angular.isFunction(scope.registerLastCallback)){
-          scrollToAddItem = true;
-        }else if (angular.isFunction(scope.scrollToElement)){
-          // No accordion present, scroll immediately
-          scope.scrollToElement(element);
+        if (scope.getOnboardingPhase() === 'new'){
+          scope.setOnboardingPhase('itemAdded');
+          var inputField = element.find('input');
+          setTimeout(function(){
+            inputField.blur();
+          });
+        }else{
+          if (angular.isFunction(scope.registerLastCallback)){
+            scrollToAddItem = true;
+          }else if (angular.isFunction(scope.scrollToElement)){
+            // No accordion present, scroll immediately
+            scope.scrollToElement(element);
+          }
+          if (scope.getOnboardingPhase() === 'itemAdded' || scope.getOnboardingPhase() === 'sortingStarted'){
+            scope.setOnboardingPhase('secondItemAdded');
+          }
         }
       };
     }

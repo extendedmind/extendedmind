@@ -523,9 +523,8 @@ span.icon-i:active, span.icon-plus:active, span.icon-logo-only:active {
 }
 
 .onboarding-bubble {
-  margin-top: 40px;
   position: relative;
-  border: 1px solid @separator;
+  border: 1px solid @instruction;
   .rounded-corners;
   padding: 20px 10px;
   text-align: center;
@@ -537,7 +536,7 @@ span.icon-i:active, span.icon-plus:active, span.icon-logo-only:active {
 
 .onboarding-bubble:after, .onboarding-bubble:before {
   bottom: 100%;
-  left: 50%;
+  left: 15%;
   border: solid transparent;
   content: " ";
   height: 0;
@@ -553,7 +552,7 @@ span.icon-i:active, span.icon-plus:active, span.icon-logo-only:active {
 }
 .onboarding-bubble:before {
   border-color: rgba(255, 255, 255, 0);
-  border-bottom-color: @separator;
+  border-bottom-color: @instruction;
   border-width: 16px;
   margin-left: -16px;
 }
@@ -576,6 +575,12 @@ a.content:active {
   display: block;
   text-align: center;
   line-height: 19px;
+  .icon-logo-only{
+    font-size: @small-font-size;
+  }
+  .instruction-text-chapter {
+    padding-bottom: @vertical-grid;
+  }
 }
 
 .subheading {
@@ -583,19 +588,6 @@ a.content:active {
 }
 
 // MODALS
-
-#onboarding-modal.small-modal {
-  .modal-dialog {
-    width: 90%;
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    .modal-body {
-      overflow-y: auto;
-    }
-  }
-}
 
 #policy-modal {
   .modal-dialog {

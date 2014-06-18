@@ -1,12 +1,13 @@
 'use strict';
 
-function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, ItemsService, NotesService, TasksService/*, AnalyticsService*/) {
+function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, ItemsService, NotesService, TasksService, AnalyticsService) {
 
   $scope.omnibarText = {};
   $scope.omnibarVisible = false;
   $scope.searchText = {};
   $scope.omnibarKeywords = {isVisible: false};
   $scope.isItemEditMode = false;
+  $scope.isItemAddMode = false;
 
   var omnibarInputFocusCallbackFunction;
 
@@ -38,7 +39,7 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
 
   var omnibarActionsHeight = 44, omnibarContainerHeight = 156, keyboardHeight = 0;
   function getOmnibarStaticContentHeight() {
-    return omnibarContainerHeight - ($scope.isItemEditMode ? omnibarActionsHeight : 0);
+    return omnibarContainerHeight - ($scope.isItemEditMode || $scope.isItemAddMode ? omnibarActionsHeight : 0);
   }
 
   $scope.getOmnibarFeatureHeight = function getOmnibarFeatureHeight() {
@@ -87,13 +88,22 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
 
   // TODO analytics visit omnibar
   $scope.openOmnibar = function openOmnibar(feature) {
-    initializeNewItemFromOmnibarText(feature);
-    $scope.setOmnibarFeatureActive(feature);
-    $scope.omnibarVisible = true;
+    if (!$scope.onboardingInProgress){
+      AnalyticsService.visit('omnibar');
+      initializeNewItemFromOmnibarText(feature);
+      $scope.setOmnibarFeatureActive(feature);
+      $scope.omnibarVisible = true;
+    }
   };
 
   $scope.editItemInOmnibar = function editItemInOmnibar(item, feature) {
     $scope.isItemEditMode = true;
+    $scope.omnibarText = item;
+    $scope.openOmnibar(feature);
+  };
+
+  $scope.addItemInOmnibar = function addItemInOmnibar(item, feature) {
+    $scope.isItemAddMode = true;
     $scope.omnibarText = item;
     $scope.openOmnibar(feature);
   };
@@ -112,7 +122,14 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
     if ($scope.omnibarHasText() && !$scope.isLoading) {
       activeOmnibarFeature = $scope.getActiveOmnibarFeature();
       omnibarFeatures[activeOmnibarFeature].itemSaveMethod($scope[activeOmnibarFeature], UISessionService.getActiveUUID()).then(function() {
-        if (!$scope.isItemEditMode) UISessionService.setToasterNotification(omnibarFeatures[activeOmnibarFeature].saveItemLocation);
+        if (!$scope.isItemEditMode && !$scope.isItemAddMode){
+          UISessionService.setToasterNotification(omnibarFeatures[activeOmnibarFeature].saveItemLocation);
+        }
+        if (!$scope.isItemEditMode || $scope.isItemAddMode){
+          if ($scope.getOnboardingPhase() === 'itemAdded' || $scope.getOnboardingPhase() === 'sortingStarted'){
+            $scope.setOnboardingPhase('secondItemAdded');
+          }
+        }
         $scope.clearAndHideOmnibar();
       });
     }
@@ -130,7 +147,7 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
         omnibarFeatures[omnibarFeature].isActive = omnibarFeature === newActiveFeature;
       }
     }
-    if (!$scope.isItemEditMode) {
+    if (!$scope.isItemEditMode && !$scope.isItemAddMode) {
       convertOmnibarItemContent(oldActiveFeature, newActiveFeature);
       initializeNewItemFromOmnibarText(newActiveFeature);
     }
@@ -283,10 +300,11 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
     $scope.clearOmnibar();
     $scope.omnibarVisible = false;
     $scope.isItemEditMode = false;
+    $scope.isItemAddMode = false;
     $scope.omnibarKeywords.isVisible = false;
     selectedOmnibarKeywords = [];
   };
 }
 
-OmnibarController.$inject = ['$q', '$scope', '$timeout', '$rootScope', 'UISessionService', 'ItemsService', 'NotesService', 'TasksService'/*, 'AnalyticsService'*/];
+OmnibarController.$inject = ['$q', '$scope', '$timeout', '$rootScope', 'UISessionService', 'ItemsService', 'NotesService', 'TasksService', 'AnalyticsService'];
 angular.module('em.app').controller('OmnibarController', OmnibarController);

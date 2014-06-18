@@ -16,7 +16,7 @@ function SettingsController($http, $q, $rootScope, $scope, $window, AccountServi
     }
   });
 
-  $scope.showOnboardingChecked = function() {
+  $scope.onboardingChecked = function() {
     var userPreferences = UserSessionService.getPreferences();
     if ($scope.settings.showOnboarding){
       UserSessionService.setPreference('onboarded', undefined);
@@ -25,6 +25,10 @@ function SettingsController($http, $q, $rootScope, $scope, $window, AccountServi
     }
     AccountService.updateAccountPreferences();
   };
+
+  $scope.showOnboardingCheckbox = function(){
+    return UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1;
+  }
 
   function updateHideSetting(name, hideValue){
     var userPreferences = UserSessionService.getPreferences();

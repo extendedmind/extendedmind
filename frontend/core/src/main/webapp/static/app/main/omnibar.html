@@ -2,17 +2,17 @@
 
   <form id="omnibar" role="form" name="addOmniItem" ng-submit="saveOmnibarText()" autocapitalize="none" autocorrect="off">
     <div class="form-group">
-      <div ng-class="{'left-input-wrapper' : omnibarHasText() && !isItemEditMode}">
+      <div ng-class="{'left-input-wrapper' : omnibarHasText() && !isItemEditMode && !isItemAddMode}">
         <textarea type="text" id="omnibar-input" class="simple-input form-control omnibar-input" ng-model="omnibarText.title" ng-keydown="omnibarKeyDown($event)" omnibar-input dynamic-placeholder="{{getOmnibarInputPlaceholder()}}" maxlength="128" required msd-elastic ng-class="getOmnibarClass()"></textarea>
       </div>
-      <div ng-show="omnibarHasText() && !isItemEditMode" class="right-button-wrapper">
+      <div ng-show="omnibarHasText() && !isItemEditMode && !isItemAddMode" class="right-button-wrapper">
         <button class="button omnibar-x-icon" type="button" ng-click="clearOmnibar()"><span class="icon-x"></span>
         </button>
       </div>
     </div>
   </form>
 
-  <div ng-if="!isItemEditMode" class="omnibar-actions">
+  <div ng-if="!isItemEditMode && !isItemAddMode" class="omnibar-actions">
     <ul class="button-row">
       <li class="button-container left-of-three border-right">
         <button type="button" class="tab-button" ng-click="setOmnibarFeatureActive('search')" ng-disabled="isOmnibarFeatureActive('search')">

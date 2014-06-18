@@ -1,12 +1,12 @@
 <nav id="page-header" class="swiper-no-swiping" role="navigation" ng-controller="HeaderController">
   <div class="active-item-container">
-    <button ng-if="!isDatepickerVisible" id="menu-button" type="button" ng-click="toggleMenu()" alt="menu">
+    <button ng-if="!isDatepickerVisible" id="menu-button" type="button" ng-click="toggleMenu()" alt="menu" ng-disabled="onboardingInProgress">
       <span class="icon-menu"></span>
     </button>
     <a href ng-if="isDatepickerVisible" id="today-link" ng-class="{'today-link-active': isTodayActive}">today</a>
   </div>
   <div class="heading-container" ng-class="getHeadingClass()">
-    <a href class="heading" ng-click="switchFeature()">{{getCurrentHeading()}}</a>
+    <a href class="heading" ng-click="switchFeature()" ng-bind="getCurrentHeading()"></a>
   </div>
   <div class="omni-button-container">
     <a href class="omni-button" ng-click="openOmnibar('search')">

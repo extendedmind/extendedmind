@@ -110,7 +110,7 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
     delete newNote.title;
 
     AnalyticsService.do('addNote');
-    $scope.editItemInOmnibar(newNoteToSave, 'note');
+    $scope.addItemInOmnibar(newNoteToSave, 'note');
   };
 
   $scope.getNoteContentTeaser = function(note) {
