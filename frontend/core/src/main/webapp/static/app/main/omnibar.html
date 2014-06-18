@@ -33,7 +33,7 @@
 
   </div>
 
-  <div ng-switch="getActiveOmnibarFeature()" class="swiper-no-swiping omnibar-feature" scroll-to>
+  <div ng-switch="getActiveOmnibarFeature()" ng-style="{height: getOmnibarFeatureHeight()}" class="swiper-no-swiping omnibar-feature" scroll-to>
 
     <div ng-switch-when="search" class="omnibar-search">
 
