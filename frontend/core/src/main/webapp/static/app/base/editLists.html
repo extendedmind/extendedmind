@@ -21,7 +21,7 @@
                       </button>
                     </li>
                     <li class="button-container right-of-three">
-                      <button class="delete-button" type="button" ng-click="closeAndCall(list, deleteListAndMoveToInbox)">
+                      <button class="delete-button" type="button" ng-click="closeAndCall(list, deleteList)">
                         delete
                       </button>
                     </li>
@@ -35,6 +35,11 @@
                 <input type="text" id="listTitle" class="simple-input" ng-model="newList.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" placeholder="add list..." editable-field/>
               </div>
             </form>
+            <div ng-if="lists.length === 0">
+              <div class="instruction-text">
+                <p class="instruction-text-chapter">lists are <b>collections of<br>tasks and notes</b></p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

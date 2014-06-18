@@ -20,7 +20,7 @@
           <span ng-if="lists.length && !isListsVisible()">+</span>
         </a>
       </div>
-      <ul class="lists" ng-if="isListsVisible()">
+      <ul class="lists" ng-if="isListsVisible() && lists.length > 0">
         <li class="list" ng-repeat="list in lists">
           <span class="left-margin"></span>
           <a href class="list-link" ng-class="getListClass(list)" ng-click="gotoList(list)">{{getListTitleText(list)}}</a>
