@@ -202,6 +202,21 @@ function ArchiveController($scope, ListsService, NotesService, SwiperService, Ta
     });
   }
   SwiperService.registerSwiperCreatedCallback(swiperCreatedCallback, 'archive', 'ArchiveController');
+
+  // Navigation
+
+  $scope.showArchivedListDetails = function(selectedList) {
+    $scope.archivedList = selectedList;
+    SwiperService.swipeTo('archive/details');
+  };
+
+  $scope.deleteListAndShowArchivedLists = function(list) {
+    SwiperService.swipeTo('archive/lists');
+    $scope.deleteList(list);
+    $scope.archivedList = undefined;
+  };
+
+
 }
 
 ArchiveController['$inject'] = ['$scope', 'ListsService', 'NotesService', 'SwiperService', 'TasksService', 'SynchronizeService', 'UISessionService'];
