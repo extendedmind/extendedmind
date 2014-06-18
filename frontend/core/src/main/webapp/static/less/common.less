@@ -86,7 +86,6 @@ Only universal code that would work by itself in any web page.
   }
   .justified-element {
     display: inline-block;
-    *display: inline;
   }
   #stretch {
     width: 100%;
@@ -186,10 +185,10 @@ Only universal code that would work by itself in any web page.
 .right-button-wrapper, .left-checkbox-wrapper {
   line-height: 100%;
   button {
-   // Quick fix to center the plus button
-   // NOTE! Tested with application font!
-   padding-top: 5px;
- }
+    // Quick fix to center the plus button
+    // NOTE! Tested with application font!
+    padding-top: 5px;
+  }
 }
 .left-checkbox-wrapper {
   width: @icon-button-width + 8px;
