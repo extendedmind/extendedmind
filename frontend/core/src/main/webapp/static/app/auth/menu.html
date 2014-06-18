@@ -30,9 +30,11 @@
     <li class="last-feature">
       <a href class="feature-link" ng-class="getFeatureClass('archive')" ng-click="gotoFeature('archive')">archive</a>
     </li>
-
     <li>
       <a href class="system-link" ng-class="getFeatureClass('dashboard')" ng-click="gotoFeature('dashboard')">dashboard</a>
+    </li>
+    <li ng-if="isAdmin()">
+      <a href class="system-link" ng-class="getFeatureClass('admin')" ng-click="gotoFeature('admin')">admin</a>
     </li>
     <li class="menu-last">
       <a href class="system-link" ng-class="getFeatureClass('settings')" ng-click="gotoFeature('settings')">settings</a>

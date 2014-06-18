@@ -161,6 +161,7 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
           var rightEdgeTouchRatio = 0.2;
           SwiperService.setEdgeTouchRatios('tasks', leftEdgeTouchRatio, rightEdgeTouchRatio);
           SwiperService.setEdgeTouchRatios('notes', leftEdgeTouchRatio, rightEdgeTouchRatio);
+          SwiperService.setEdgeTouchRatios('list', leftEdgeTouchRatio, rightEdgeTouchRatio);
           SwiperService.setEdgeTouchRatios('dashboard', leftEdgeTouchRatio, rightEdgeTouchRatio);
           SwiperService.setEdgeTouchRatios('archive', leftEdgeTouchRatio, rightEdgeTouchRatio);
 
@@ -171,6 +172,7 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
           // Swiper override parameters.
           SwiperService.setEdgeTouchRatios('tasks');
           SwiperService.setEdgeTouchRatios('notes');
+          SwiperService.setEdgeTouchRatios('list');
           SwiperService.setEdgeTouchRatios('dashboard');
           SwiperService.setEdgeTouchRatios('archive');
         }
