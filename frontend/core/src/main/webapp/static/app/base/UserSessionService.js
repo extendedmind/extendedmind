@@ -214,7 +214,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     getUIPreference: function(key) {
       syncWebStorages();
       var preferences = SessionStorageService.getPreferences();
-      if (preferences.ui){
+      if (preferences && preferences.ui){
         return preferences.ui[key];
       }
     },
