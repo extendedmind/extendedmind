@@ -8,6 +8,7 @@ function InboxController($scope) {
 
   $scope.accordionClosed = function accordionClosed(){
     $scope.sortingItem = undefined;
+    if ($scope.resetInboxEdit) $scope.resetInboxEdit();
   };
 
   $scope.itemRemoved = function itemRemoved(item){

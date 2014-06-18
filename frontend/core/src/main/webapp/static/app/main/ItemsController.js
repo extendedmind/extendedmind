@@ -2,7 +2,7 @@
 
 function ItemsController($scope, $timeout, UISessionService, ItemsService, AnalyticsService) {
 
-  var resetInboxEdit = function(){
+  $scope.resetInboxEdit = function(){
     $scope.itemType = 'item';
   };
 
@@ -29,7 +29,7 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
   $scope.editItemFields = function(item) {
     AnalyticsService.do('editItemFields');
     ItemsService.saveItem(item, UISessionService.getActiveUUID());
-    resetInboxEdit();
+    $scope.resetInboxEdit();
   };
 
   $scope.itemDetails = {visible: false};
@@ -40,7 +40,7 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
   $scope.deleteItem = function(item) {
     AnalyticsService.do('deleteItem');
     ItemsService.deleteItem(item, UISessionService.getActiveUUID());
-    resetInboxEdit();
+    $scope.resetInboxEdit();
   };
 
   $scope.itemToTask = function(item) {
@@ -51,7 +51,7 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
   $scope.taskEditDone = function(task) {
     AnalyticsService.do('itemToTaskDone');
     ItemsService.itemToTask(task, UISessionService.getActiveUUID());
-    resetInboxEdit();
+    $scope.resetInboxEdit();
   };
 
   $scope.itemToNote = function(item) {
@@ -62,13 +62,13 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
   $scope.itemToList = function(item) {
     AnalyticsService.do('itemToList');
     ItemsService.itemToList(item, UISessionService.getActiveUUID());
-    resetInboxEdit();
+    $scope.resetInboxEdit();
   };
 
   $scope.noteEditDone = function(note) {
     AnalyticsService.do('itemToNoteDone');
     ItemsService.itemToNote(note, UISessionService.getActiveUUID());
-    resetInboxEdit();
+    $scope.resetInboxEdit();
   };
 }
 
