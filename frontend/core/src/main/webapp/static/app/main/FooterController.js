@@ -27,7 +27,8 @@ function FooterController($scope, $timeout, SwiperService, UISessionService) {
     list: {
       leftSlide: 'tasks',
       leftHeading: 'tasks',
-      right: 'notes'
+      center: 'notes',
+      right: 'properties'
     }
   };
 

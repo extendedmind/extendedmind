@@ -59,14 +59,19 @@ function ListsController($scope, UISessionService, ListsService, AnalyticsServic
     }
   }
 
-  $scope.archiveListAndMoveInbox = function(list){
+  $scope.archiveListAndMoveToLists = function(list){
     $scope.archiveList(list);
-    UISessionService.changeFeature('inbox');
+    UISessionService.changeFeature('lists');
   }
 
-  $scope.deleteListAndMoveToInbox = function(list){
+  $scope.deleteListAndMoveToLists = function(list){
     $scope.deleteList(list);
-    UISessionService.changeFeature('inbox');
+    UISessionService.changeFeature('lists');
+  }
+
+  $scope.saveListAndMoveToLists = function(list){
+    $scope.editListFields(list);
+    UISessionService.changeFeature('lists');
   }
 
 }
