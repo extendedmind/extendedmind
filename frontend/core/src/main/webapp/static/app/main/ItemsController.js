@@ -4,6 +4,8 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
 
   $scope.resetInboxEdit = function(){
     $scope.itemType = 'item';
+    if ($scope.task) $scope.task = undefined;
+    if ($scope.note) $scope.note = undefined;
   };
 
   $scope.saveItem = function(item) {

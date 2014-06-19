@@ -33,7 +33,7 @@
 
   </div>
 
-  <div ng-switch="getActiveOmnibarFeature()" ng-style="{height: getOmnibarFeatureHeight()}" class="swiper-no-swiping omnibar-feature" scroll-to>
+  <div ng-switch="getActiveOmnibarFeature()" ng-style="{height: getOmnibarFeatureHeight()}" class="omnibar-feature" scroll-to>
 
     <div ng-switch-when="search" class="omnibar-search">
 
@@ -106,10 +106,19 @@
 
     <div ng-switch-when="task">
       <form class="form-horizontal" role="form" name="taskEdit" editable-field-container>
+        <div class="form-group">
+          <div ng-if="showDateInput">
+            <label for="taskDue" class="sr-only">select date...</label>
+            <input type="date" id="taskDue" class="simple-input" date-input-blur="hideDate" ng-model="task.date" date-input="task" date-input-set-focus="showDateInput">
+          </div>
+          <div ng-if="!showDateInput" class="item-actions">
+            <span class="simple-input default-element date-input-placeholder" ng-click="focusDate()">select date...</span>
+          </div>
+        </div>
         <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
         <div ng-if="task.date" class="form-group">
           <label class="sr-only" for="taskRepeat">repeating</label>
-          <select id="taskRepeat" class="simple-input swiper-no-swiping" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes" editable-field>
+          <select id="taskRepeat" class="simple-input" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes" editable-field>
             <option value="">select repeating...</option>
           </select>
         </div>

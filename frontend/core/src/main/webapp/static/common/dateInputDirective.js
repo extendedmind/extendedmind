@@ -3,42 +3,41 @@
 function dateInputDirective() {
   return {
     restrict: 'A',
-    link: function(scope, element, attrs) {
+    scope: {
+      task: '=dateInput',
+      saveDateFn: '=dateInputDestroy',
+      isFocused: '=dateInputSetFocus',
+      blurDateFn: '=dateInputBlur'
+    },
+    link: function(scope, element) {
+      var initialDate = scope.task.date;
 
-      // TODO set showDateInput false after save
+      function dateInputBlurred() {
+        if (!scope.task.date) {
+          scope.$evalAsync(function() {
+            if (angular.isFunction(scope.blurDateFn)) scope.blurDateFn();
+            else scope.isFocused = false;
+          });
+        }
+      }
+      element.bind('blur', dateInputBlurred);
 
       // http://ruoyusun.com/2013/08/24/a-glimpse-of-angularjs-scope-via-example.html
-      scope.$watch(attrs.dateInput, function(newValue) {
+      scope.$watch('isFocused', function(newValue) {
         if (newValue) {
           if (!scope.task.date) {
             scope.task.date = new Date().toISOString().substring(0, 10);
             element[0].value = new Date().toISOString().substring(0, 10);
-            scope.$evalAsync(function() {
-              element[0].focus();
-            });
-          } else if (attrs.dateInputSetFocus) {
-            scope.$evalAsync(function() {
-              element[0].focus();
-            });
           }
+
+          scope.$evalAsync(function() {
+            element[0].focus();
+          });
         }
       });
 
-      var initialDate = scope.task.date;
-
-      scope.hideDateInput = function hideDateInput() {
-        if (attrs.dateInputSetFocus) {
-          scope.openSnooze.showPickDate = false;
-          if (initialDate !== scope.task.date) {
-            scope.closeAndCall(scope.task, scope.taskQuickEditDone);
-          }
-        }
-        else if (!scope.task.date) {
-          scope.hideDate();
-        }
-      };
       scope.$on('$destroy', function() {
-        scope.hideDate();
+        if (initialDate !== scope.task.date && angular.isFunction(scope.saveDateFn)) scope.saveDateFn(scope.task);
       });
     }
   };

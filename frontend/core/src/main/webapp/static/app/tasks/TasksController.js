@@ -3,7 +3,7 @@
 function TasksController($scope, DateService, SwiperService, UISessionService, TasksService, AnalyticsService) {
 
   $scope.initializeTask = function(task){
-    if (task.due) $scope.showDateInput = true;
+    if (task.due || task.date) $scope.showDateInput = true;
     else $scope.showDateInput = false;
   };
 
@@ -105,48 +105,9 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     });
   };
 
-  function setTaskDateAndSave(task, dateSetterFn) {
-    var startingDate = DateService.getDateTodayOrFromLaterYYYYMMDD(task.date);
-    task.date = dateSetterFn(startingDate).getYYYYMMDD(startingDate);
-    $scope.taskQuickEditDone(task);
-  }
-
   $scope.taskQuickEditDone = function(task) {
     AnalyticsService.do('taskQuickEditDone');
     TasksService.saveTask(task, UISessionService.getActiveUUID());
-  };
-
-  $scope.setDateToday = function setDateToday(task) {
-    task.date = DateService.getTodayYYYYMMDD();
-    $scope.taskQuickEditDone(task);
-  };
-  $scope.setDateTomorrow = function setDateTomorrow(task) {
-    task.date = DateService.getTomorrowYYYYMMDD();
-    $scope.taskQuickEditDone(task);
-  };
-  $scope.setDateNextDay = function setDateNextDay(task) {
-    setTaskDateAndSave(task, DateService.setOffsetDate.bind(DateService, 1));
-  };
-  $scope.setDateTwoDaysLater = function setDateTwoDaysLater(task) {
-    setTaskDateAndSave(task, DateService.setOffsetDate.bind(DateService, 2));
-  };
-  $scope.setDateWeekend = function setDateWeekend(task) {
-    setTaskDateAndSave(task, DateService.setReferenceDate.bind(DateService, 'saturday'));
-  };
-  $scope.setDateFirstDayOfNextWeek = function setDateFirstDayOfNextWeek(task) {
-    setTaskDateAndSave(task, DateService.setReferenceDate.bind(DateService, 'monday'));
-  };
-  $scope.setDateFirstDayOfNextMonth = function setDateFirstDayOfNextMonth(task) {
-    setTaskDateAndSave(task, DateService.setDateToFirstDayOfNextMonth.bind(DateService));
-  };
-
-  $scope.isTaskDateTodayOrLess = function isTaskDateTodayOrLess(task) {
-    if (!task.date) return; // set date/snooze ng-swith-default value
-    return task.date <= DateService.getTodayYYYYMMDD();
-  };
-
-  $scope.taskHasDate = function taskHasDate(task) {
-    return task.date;
   };
 
   // Navigation

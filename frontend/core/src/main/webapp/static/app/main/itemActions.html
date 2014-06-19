@@ -25,7 +25,19 @@
   </div>
 
   <div ng-switch-when="task">
-    <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskCoreFields.html'"></div>
+    <div class="swiper-no-swiping" data-snap-ignore="true" ng-init="openSnooze = {isOpen: false}">
+      <div ng-if="openSnooze.isOpen === false" class="form-group">
+        <div ng-if="showDateInput">
+          <label for="taskDue" class="sr-only">select date...</label>
+          <input type="date" id="taskDue" class="swiper-no-swiping simple-input" ng-model="task.date" date-input="showDateInput" editable-field>
+        </div>
+        <div ng-if="!showDateInput" class="item-actions">
+          <span class="simple-input default-element date-input-placeholder" ng-click="openSnooze.isOpen = true">select date...</span>
+        </div>
+      </div>
+      <div ng-if="openSnooze.isOpen === true" class="item-actions small-font" snooze="task" snooze-selected="initializeTask" snooze-open="openSnooze" snooze-close="false"></div>
+      <div ng-if="openSnooze.isOpen === false" ng-include="'static/app/tasks/taskCoreFields.html'"></div>
+    </div>
     <div class="item-actions">
       <button class="wide-button normal-button" type="button" ng-click="closeAndCall(task, taskEditDone)">
         <span class="button-text">done</span>

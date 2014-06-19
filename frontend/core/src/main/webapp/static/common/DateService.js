@@ -309,7 +309,11 @@ function DateService($timeout) {
       return yyyymmdd(tomorrow);
     },
     getDateTodayOrFromLaterYYYYMMDD: function(dateYYYYMMDD) {
-      return (dateYYYYMMDD < today.yyyymmdd) ? new Date() : new Date(dateYYYYMMDD);
+      if (dateYYYYMMDD && (dateYYYYMMDD > today.yyyymmdd)){
+        return new Date(dateYYYYMMDD)
+      }else {
+        return new Date();
+      }
     },
 
     // setters
