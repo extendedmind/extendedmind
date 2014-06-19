@@ -23,7 +23,7 @@
     <div class="form-group">
       <div ng-if="openSnooze.showPickDate === true">
         <label for="taskDue" class="sr-only">pick date</label>
-        <input type="date" id="taskDue" class="swiper-no-swiping highlighted-link" ng-model="task.date" date-input="task" date-input-set-focus="openSnooze.showPickDate" date-input-destroy="saveTask">
+        <input type="date" id="taskDue" class="swiper-no-swiping highlighted-link" ng-model="task.date" date-input="task" date-input-set-focus="openSnooze.showPickDate" date-input-destroy="selectedFn">
       </div>
       <div ng-if="openSnooze.showPickDate === false" class="item-actions">
         <span class="simple-input highlighted-link" ng-click="openSnooze.showPickDate = true">set date</span>
