@@ -18,7 +18,7 @@ function HeaderController($scope, $rootScope, UISessionService) {
       return headingWidth * 0.25;
     }else if (headingWidth > 200) {
       return headingWidth * 0.2;
-    }else {
+    }else {
       return headingWidth * 0.1744;
     }
   }

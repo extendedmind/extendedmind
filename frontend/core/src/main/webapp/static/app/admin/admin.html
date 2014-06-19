@@ -24,7 +24,7 @@
           <li>
             <a href ng-click="gotoStatistics()" class="highlighted-link">back</a>
           </li>
-          <li class="simple-content" ng-repeat="user in users | orderBy:'created':true">
+          <li class="simple-content" ng-repeat="user in users | orderBy:'created':true">
             <a ng-href="mailto:{{user.email}}" ng-bind="user.email"></a> since: {{getDateString(user.created)}}
           </li>
         </ul>
@@ -32,7 +32,7 @@
           <li>
             <a href ng-click="gotoStatistics()" class="highlighted-link">back</a>
           </li>
-          <li class="simple-content" ng-repeat="invite in invites | orderBy:'accepted':true">
+          <li class="simple-content" ng-repeat="invite in invites | orderBy:'accepted':true">
             <a ng-href="mailto:{{invite.email}}" ng-bind="invite.email"></a> modified: {{getDateString(invite.modified)}}
             <div ng-if="invite.accepted">accepted: {{getDateString(invite.accepted)}}</div>
             <div ng-if="!invite.accepted && !invite.resent">

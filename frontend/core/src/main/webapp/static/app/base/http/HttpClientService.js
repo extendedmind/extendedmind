@@ -14,7 +14,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     }
   }
 
-  function emitException(error, skipLogStatuses) {
+  function emitException(error, skipLogStatuses) {
     var exceptionType = 'http';
     if (error && isOffline(error.status)){
       online = false;
@@ -23,7 +23,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
       }
       exceptionType = 'onlineRequired';
     }
-    if (!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1){
+    if (!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1){
       $rootScope.$emit('emException', {type: exceptionType, status: error.status, data: error.data});
     }
   }
@@ -189,7 +189,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
         onlineCallback(online);
       }
       return success;
-    }, function(error) {
+    }, function(error) {
       emitException(error, skipLogStatuses);
       return $q.reject(error);
     });
@@ -198,7 +198,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   methods.putOnline = function(url, data) {
     return $http({method: 'put', url: url, data: data}).then(function(success) {
       return success;
-    }, function(error) {
+    }, function(error) {
       emitException(error);
       return $q.reject(error);
     });
@@ -222,14 +222,14 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   methods.deleteOnline = function(url) {
     return $http({method: 'delete', url: url}).then(function(success) {
       return success;
-    }, function(error) {
+    }, function(error) {
       emitException(error);
       return $q.reject(error);
     });
   };
 
   // Custom method for a primary POST, i.e. authentication
-  methods.postPrimary = function (url, data) {
+  methods.postPrimary = function (url, data) {
     processPrimaryRequest(url, data);
     executeRequests();
   };

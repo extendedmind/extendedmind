@@ -105,7 +105,7 @@ function accordionDirective($document) {
         });
       };
 
-      $scope.closeAndCall = function closeInFn(item, itemAction) {
+      $scope.closeAndCall = function closeInFn(item, itemAction) {
         $scope.close(item, true);
         itemAction(item);
       };

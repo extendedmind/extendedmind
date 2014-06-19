@@ -84,7 +84,7 @@ function HttpRequestQueueService() {
   }
 
   var service = {
-    push: function(request) {
+    push: function(request) {
       if (request.primary){
         if (!primary || primary.offline){
           primary = request;

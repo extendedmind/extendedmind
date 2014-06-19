@@ -57,7 +57,7 @@ function accordionTitleDirective() {
         return false;
       };
 
-      $scope.clickTitle = function() {
+      $scope.clickTitle = function() {
         if (!$scope.titleOpen) {
           // Not open, don't open unless nothing else was closed
           if (!accordionCtrl.closeOthers($scope, $element)){
@@ -103,7 +103,7 @@ function accordionTitleDirective() {
         event.stopPropagation();
       };
 
-      $scope.evaluateKeyPress = function(event) {
+      $scope.evaluateKeyPress = function(event) {
         // Enter key
         if(event.which === 13) {
           $scope.endFieldsEdit();

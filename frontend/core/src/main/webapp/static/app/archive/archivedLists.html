@@ -1,26 +1,24 @@
 <section id="archive-lists" class="two-column-grid page">
   <div class="column">
     <div ng-hide="omnibarVisible && isActiveSlide('lists')" class="content-container page-content-container">
-      <div class="inner-page-content-container">
-        <section>
-          <h3><a href class="page-header">archived lists</a></h3>
-          <ul>
-            <li ng-class="selected" ng-repeat="list in archivedLists | orderBy:'archived':true">
-              <a class="text-muted click-to-slide" href ng-click="showArchivedListDetails(list)">
-                <span class="link-title">{{list.title}}</span>
-                <span class="icon-arrow-right"></span>
-              </a>
-            </li>
-            <li ng-if="archivedLists.length === 0">
-              <div class="instruction-text">
-                <p class="instruction-text-chapter">pressing the <b>archive</b> button<br/>will move the list here</p>
-              </div>
-            </li>
-          </ul>
-        </section>
+      <div class="inner-page-content-container" swiper-prevent>
+        <h3><a href class="page-header">archived lists</a></h3>
+        <ul>
+          <li ng-class="selected" ng-repeat="list in archivedLists | orderBy:'archived':true">
+            <a class="text-muted click-to-slide" href swiper-click="showArchivedListDetails(list)">
+              <span class="link-title">{{list.title}}</span>
+              <span class="icon-arrow-right"></span>
+            </a>
+          </li>
+          <li ng-if="archivedLists.length === 0">
+            <div class="instruction-text">
+              <p class="instruction-text-chapter">pressing the <b>archive</b> button<br/>will move the list here</p>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
- </div>
+  </div>
   <aside class="column">
     TODO
   </aside>

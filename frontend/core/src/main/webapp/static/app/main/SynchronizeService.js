@@ -231,7 +231,7 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
     });
   };
 
-  var synchronize = function(ownerUUID) {
+  var synchronize = function(ownerUUID) {
     var deferred = $q.defer();
     var latestModified = UserSessionService.getLatestModified(ownerUUID);
     var url = '/api/' + ownerUUID + '/items';

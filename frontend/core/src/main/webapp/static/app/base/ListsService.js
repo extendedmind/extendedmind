@@ -216,7 +216,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
     registerListDeletedCallback: function (listDeletedCallback, id) {
       listDeletedCallbacks[id] = listDeletedCallback;
     },
-    removeDeletedListFromItems: function(items, deletedList) {
+    removeDeletedListFromItems: function(items, deletedList) {
       for (var i=0, len=items.length; i<len; i++) {
         if (items[i].relationships){
           if (items[i].relationships.parent === deletedList.uuid){

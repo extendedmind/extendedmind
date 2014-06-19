@@ -112,7 +112,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
   }
 
   // Register authentication create callback
-  var createAuthenticationRequest = function() {
+  var createAuthenticationRequest = function() {
     if (UserSessionService.isAuthenticated() &&
         !UserSessionService.isAuthenticateValid() &&
         UserSessionService.isAuthenticateReplaceable()) {

@@ -30,6 +30,9 @@ function swiperClickDirective($parse, $rootScope) {
             });
           } else {
             event.preventDefault();
+            $rootScope.outerSwiping = false;
+            $rootScope.innerSwiping = false;
+            $rootScope.scrolling = false;
           }
         });
       };

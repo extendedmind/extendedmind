@@ -163,7 +163,7 @@ function TagsService($q, BackendClientService, ArrayService){
     registerTagDeletedCallback: function (tagDeletedCallback, id) {
       tagDeletedCallbacks[id] = tagDeletedCallback;
     },
-    removeDeletedTagFromItems: function(items, deletedTag) {
+    removeDeletedTagFromItems: function(items, deletedTag) {
       for (var i=0, len=items.length; i<len; i++) {
         if (items[i].relationships){
           if (items[i].relationships.tags){

@@ -89,7 +89,7 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
               ModalService.createDialog('static/app/auth/errorMessage.html', modalOptions);
             }
           }
-        }else if (exception.type === 'http' && exception.status === 403) {
+        }else if (exception.type === 'http' && exception.status === 403) {
           // Redirect thrown 403 Forbidden exception to the login page
           AnalyticsService.error('forbidden', JSON.stringify(exception));
           redirectToLogin();

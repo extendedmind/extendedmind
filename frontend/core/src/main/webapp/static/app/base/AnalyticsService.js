@@ -546,7 +546,7 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
   };
 
   return {
-    visitEntry: function(location) {
+    visitEntry: function(location) {
       if ($rootScope.collectAnalytics){
         var payload = getPayload("visit_" + location, undefined, undefined, true);
         return postAnalytics(payload, true);

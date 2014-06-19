@@ -211,7 +211,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       syncWebStorages();
       return SessionStorageService.getPreferences();
     },
-    getUIPreference: function(key) {
+    getUIPreference: function(key) {
       syncWebStorages();
       var preferences = SessionStorageService.getPreferences();
       if (preferences && preferences.ui){
@@ -221,7 +221,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     getRememberByDefault: function() {
       return offlineBufferEnabled;
     },
-    getUser: function() {
+    getUser: function() {
       syncWebStorages();
       if (SessionStorageService.getUserUUID()){
         var user = {
