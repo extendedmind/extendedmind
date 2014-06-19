@@ -46,6 +46,8 @@ function swiperPreventDirective($window, $rootScope) {
           event.stopPropagation();
           event.stopImmediatePropagation();
           $rootScope.innerSwiping = true;
+          // FIXME: innerswiping isn't set back to false anywhere, might cause problems,
+          //        and then using setTimeout as below will help!
         }
       }
 
@@ -62,6 +64,8 @@ function swiperPreventDirective($window, $rootScope) {
       }
 
       scope.$on('$destroy', function() {
+        $rootScope.scrolling = false;
+        $rootScope.innerSwiping = false;
         element[0].removeEventListener('touchstart', slideTouchStart, false);
         element[0].removeEventListener('touchmove', slideTouchMove, false);
         element[0].removeEventListener('scroll', slideScroll, false);

@@ -352,6 +352,8 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         // Page swiper (vertical) slide is swiping up or down.
         if (swipePageSlideDown || swipePageSlideUp) {
           $rootScope.innerSwiping = true;
+          // FIXME: innerswiping isn't set back to false anywhere, might cause problems,
+          //        Using setTimeout as below in scrolling might do the trick!
         }
 
         // Fire pull to refresh callbacks
@@ -384,6 +386,9 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
 
       // Unbind all listeners
       $scope.$on('$destroy', function() {
+        $rootScope.innerSwiping = false;
+        $rootScope.outerSwiping = false;
+        $rootScope.scrolling = false;
         $element[0].removeEventListener('touchstart', mainSwiperTouchStart, false);
         $element[0].removeEventListener('touchmove', mainSwiperTouchMove, false);
         $element[0].removeEventListener('touchend', mainSwiperTouchEnd, false);
