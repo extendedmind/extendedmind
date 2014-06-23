@@ -483,6 +483,15 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
         tasks[ownerUUID].activeTasks.splice(index, 1);
       }
     },
+    resetTask: function(task, ownerUUID) {
+      var tasksArray = [task];
+      if (task.relationships && task.relationships.context) delete task.relationships.context;
+      addContextToTasks(tasksArray, ownerUUID);
+      if (task.relationships && task.relationships.list) delete task.relationships.list;
+      addListToTasks(tasksArray);
+      if (task.date) delete task.date;
+      addDateToTasks(tasksArray);
+    },
     // Regular expressions for task requests
     putNewTaskRegex :
         new RegExp(BackendClientService.apiPrefixRegex.source +

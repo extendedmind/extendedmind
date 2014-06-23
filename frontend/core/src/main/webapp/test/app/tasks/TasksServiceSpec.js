@@ -227,4 +227,19 @@ describe('TasksService', function() {
     expect(ListsService.getLists(testOwnerUUID).length)
       .toBe(1);
   });
+
+  it('should reset task', function () {
+    var printTickets = TasksService.getTaskByUUID('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID);
+
+    // Change transient values
+    printTickets.date = '3014-01-02';
+    printTickets.relationships.list = 'ebff4507-927d-4f99-940a-ee0cfcf6e84c'
+
+    // Reset task
+    TasksService.resetTask(printTickets, testOwnerUUID);
+
+    // Values should be back to their original values
+    expect(printTickets.date).toBe('2014-01-02');
+    expect(printTickets.relationships.list).toBe('dbff4507-927d-4f99-940a-ee0cfcf6e84c');
+  });
 });
