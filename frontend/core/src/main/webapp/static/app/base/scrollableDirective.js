@@ -16,9 +16,10 @@ function scrollableDirective($timeout) {
       }
       scope.refreshScroller = function(){
         delayedRefreshScroller();
-      }
+      };
       scroller = new IScroll(element[0], {
-        deceleration: 0.006
+        deceleration: 0.006,
+        mouseWheel: true
       });
       delayedRefreshScroller();
 

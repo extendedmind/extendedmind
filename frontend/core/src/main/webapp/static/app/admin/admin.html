@@ -1,8 +1,8 @@
 <div class="single-page-container" ng-controller="AdminController">
   <section id="admin" class="one-column-grid single-page page" snap-drawer-drag="admin">
     <div class="column">
-      <div ng-hide="omnibarVisible" class="content-container page-content-container" ng-switch on="adminMode">
-        <ul ng-switch-default>
+      <div ng-hide="omnibarVisible" class="content-container page-content-container single-page-content-container" ng-switch on="adminMode">
+        <ul ng-switch-default class="scroll-container">
           <li class="simple-content">
             <h3>users</h3>
             <a href ng-click="gotoUsers()" ng-bind="userCount"></a>
@@ -20,7 +20,7 @@
             <span>{{itemCount}}</span>
           </li>
         </ul>
-        <ul ng-switch-when="users">
+        <ul ng-switch-when="users" class="scroll-container">
           <li>
             <a href ng-click="gotoStatistics()" class="highlighted-link">back</a>
           </li>
@@ -43,7 +43,7 @@
             </div>
           </li>
         </ul>
-        <ul ng-switch-when="inviteRequests">
+        <ul ng-switch-when="inviteRequests" class="scroll-container">
           <li>
             <a href ng-click="gotoStatistics()" class="highlighted-link">back</a>
           </li>

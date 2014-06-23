@@ -249,13 +249,13 @@ footer {
   .omnibar-input {
     font-size: @large-font-size;
     max-height: @vertical-grid;
-    &.omnibar-input-medium{
+    &.omnibar-input-medium {
       font-size: @default-font-size;
     }
-    &.omnibar-input-long{
+    &.omnibar-input-long {
       font-size: @small-font-size;
     }
-    &.omnibar-input-very-long{
+    &.omnibar-input-very-long {
       font-size: @smallest-font-size;
     }
   }
@@ -321,7 +321,7 @@ footer {
   position: absolute;
   width: 260px;
   height: 100%;
-  overflow-y: auto;
+  overflow-y: hidden; // scroll with iScroll
   #menu-content {
     li.account-link {
       padding-top: 8px;
