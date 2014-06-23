@@ -25,6 +25,7 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
       footerSaveText: 'save',
       saveItemLocation: 'tasks',
       itemSaveMethod: TasksService.saveTask.bind(TasksService),
+      itemResetFunction: TasksService.resetTask.bind(TasksService),
       persistentItemValues: ['title', 'description']
     },
     note: {
@@ -33,6 +34,7 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
       saveItemLocation: 'notes',
       itemSaveMethod: $scope.saveNote,
       initializeItemFuncion: $scope.initializeOmnibarNote,
+      itemResetFunction: NotesService.resetNote.bind(NotesService),
       persistentItemValues: ['title', 'content']
     }
   };
@@ -90,21 +92,25 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
   $scope.openOmnibar = function openOmnibar(feature) {
     if (!$scope.onboardingInProgress){
       AnalyticsService.visit('omnibar');
-      initializeNewItemFromOmnibarText(feature);
       $scope.setOmnibarFeatureActive(feature);
       $scope.omnibarVisible = true;
     }
   };
 
+  function initializeOmnibarItem(item, feature) {
+    $scope.omnibarText.title = item.title;
+    $scope[feature] = item;
+  }
+
   $scope.editItemInOmnibar = function editItemInOmnibar(item, feature) {
     $scope.isItemEditMode = true;
-    $scope.omnibarText = item;
+    initializeOmnibarItem(item, feature);
     $scope.openOmnibar(feature);
   };
 
   $scope.addItemInOmnibar = function addItemInOmnibar(item, feature) {
     $scope.isItemAddMode = true;
-    $scope.omnibarText = item;
+    initializeOmnibarItem(item, feature);
     $scope.openOmnibar(feature);
   };
 
@@ -128,6 +134,7 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
     var activeOmnibarFeature;
     if ($scope.omnibarHasText() && !$scope.isLoading) {
       activeOmnibarFeature = $scope.getActiveOmnibarFeature();
+      $scope[activeOmnibarFeature].title = $scope.omnibarText.title;
       omnibarFeatures[activeOmnibarFeature].itemSaveMethod($scope[activeOmnibarFeature], UISessionService.getActiveUUID()).then(function() {
         if (!$scope.isItemEditMode && !$scope.isItemAddMode){
           UISessionService.setToasterNotification(omnibarFeatures[activeOmnibarFeature].saveItemLocation);
@@ -295,7 +302,7 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
       }
       return currentOmnibarStyle;
     }
-  }
+  };
 
   // TEARDOWN
 
@@ -310,6 +317,15 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
     $scope.isItemAddMode = false;
     $scope.omnibarKeywords.isVisible = false;
     selectedOmnibarKeywords = [];
+  };
+
+  // Reset item transcend values, then clear and hide omnibar
+  $scope.cancelOmnibarEdit = function cancelOmnibarEdit() {
+    if ($scope.isItemEditMode || $scope.isItemAddMode) {
+      var activeOmnibarFeature = $scope.getActiveOmnibarFeature();
+      omnibarFeatures[activeOmnibarFeature].itemResetFunction($scope[activeOmnibarFeature], UISessionService.getActiveUUID());
+    }
+    $scope.clearAndHideOmnibar();
   };
 }
 
