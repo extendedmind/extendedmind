@@ -12,11 +12,15 @@ function dateInputDirective() {
     link: function(scope, element) {
       var initialDate = scope.task.date;
 
+      function unfocusDate() {
+        if (angular.isFunction(scope.blurDateFn)) scope.blurDateFn();
+        else scope.isFocused = false;
+      }
+
       function dateInputBlurred() {
         if (!scope.task.date) {
           scope.$evalAsync(function() {
-            if (angular.isFunction(scope.blurDateFn)) scope.blurDateFn();
-            else scope.isFocused = false;
+            unfocusDate();
           });
         }
       }
@@ -37,6 +41,7 @@ function dateInputDirective() {
       });
 
       scope.$on('$destroy', function() {
+        unfocusDate();
         if (initialDate !== scope.task.date && angular.isFunction(scope.saveDateFn)) scope.saveDateFn(scope.task);
       });
     }

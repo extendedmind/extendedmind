@@ -3,16 +3,24 @@
 function TasksController($scope, DateService, SwiperService, UISessionService, TasksService, AnalyticsService) {
 
   $scope.initializeTask = function(task){
-    if (task.due || task.date) $scope.showDateInput = true;
-    else $scope.showDateInput = false;
+    if (task.due || task.date) {
+      $scope.showDateInput = true;
+      $scope.focusDateInput = false;
+    }
+    else {
+      $scope.showDateInput = false;
+      $scope.focusDateInput = false;
+    }
   };
 
   $scope.focusDate = function() {
     $scope.showDateInput = true;
+    $scope.focusDateInput = true;
   };
 
   $scope.hideDate = function() {
     $scope.showDateInput = false;
+    $scope.focusDateInput = false;
   };
 
   $scope.repeatTypes = ['daily', 'weekly', 'monthly', 'yearly'];

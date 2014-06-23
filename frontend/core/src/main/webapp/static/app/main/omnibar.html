@@ -109,7 +109,7 @@
         <div class="form-group">
           <div ng-if="showDateInput">
             <label for="taskDue" class="sr-only">select date...</label>
-            <input type="date" id="taskDue" class="simple-input" date-input-blur="hideDate" ng-model="task.date" date-input="task" date-input-set-focus="showDateInput">
+            <input type="date" id="taskDue" class="simple-input" date-input-blur="hideDate" ng-model="task.date" date-input="task" date-input-set-focus="focusDateInput">
           </div>
           <div ng-if="!showDateInput" class="item-actions">
             <span class="simple-input default-element date-input-placeholder" ng-click="focusDate()">select date...</span>
