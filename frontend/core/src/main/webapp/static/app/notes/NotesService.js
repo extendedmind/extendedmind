@@ -269,6 +269,12 @@ function NotesService(UUIDService, UserSessionService, BackendClientService, Arr
         });
       }
     },
+    resetNote: function(note, ownerUUID) {
+      var notesArray = [note];
+      if (note.relationships && note.relationships.list) delete note.relationships.list;
+      addListToNotes(notesArray);
+      // TODO: Create note.relationships.keywords and then reset them here!
+    },
     // Regular expressions for note requests
     putNewNoteRegex :
         new RegExp(BackendClientService.apiPrefixRegex.source +
