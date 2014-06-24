@@ -1,23 +1,11 @@
 'use strict';
 
-function addItemDirective() {
+function addItemDirective($rootScope) {
   return {
     restrict: 'A',
     link: function postLink(scope, element/*, attrs, scrollToController*/) {
 
-      scope.focusedAddItemElement = function focusedAddItemElement() {
-        scope.ignoreSnap = true;
-        element[0].classList.toggle('swiper-no-swiping', true);
-      };
-
-      scope.blurredAddItemElement = function blurredAddItemElement() {
-        // data-snap-ignore can not have any value, so setting it to false is not enough
-        scope.ignoreSnap = undefined;
-        element[0].classList.toggle('swiper-no-swiping', false);
-      };
-
       var scrollToAddItem = false;
-
       function accordionLastElementCallback() {
         if (scrollToAddItem && angular.isFunction(scope.scrollToElement)) {
           scope.scrollToElement(element);
@@ -25,6 +13,29 @@ function addItemDirective() {
         }
       }
       if (angular.isFunction(scope.registerLastCallback)) scope.registerLastCallback(accordionLastElementCallback);
+
+      var elementHasFocus = false;
+      scope.focusedAddItemElement = function focusedAddItemElement() {
+        elementHasFocus = true;
+        scope.ignoreSnap = true;
+        element[0].classList.toggle('swiper-no-swiping', true);
+      };
+
+      scope.blurredAddItemElement = function blurredAddItemElement() {
+        elementHasFocus = false;
+        // data-snap-ignore can not have any value, so setting it to false is not enough
+        scope.ignoreSnap = undefined;
+        element[0].classList.toggle('swiper-no-swiping', false);
+      };
+
+      // In Android, scrolling needs to be done after keyboard is shown
+      if ($rootScope.packaging === 'android-cordova' && angular.isFunction(scope.scrollToElement)){
+        scope.$watch('softKeyboard.height', function(newValue){
+          if (newValue && elementHasFocus){
+            scope.scrollToElement(element);
+          }
+        });
+      }
 
       scope.callAndRefresh = function callAndRefresh(itemAction, parameter) {
         itemAction(parameter);
@@ -49,5 +60,5 @@ function addItemDirective() {
     }
   };
 }
-addItemDirective.$inject = [];
+addItemDirective.$inject = ['$rootScope'];
 angular.module('em.directives').directive('addItem', addItemDirective);

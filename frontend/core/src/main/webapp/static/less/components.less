@@ -568,6 +568,13 @@ li.datepicker-date {
     pointer-events: none;
   }
 
+  // In Android, scrolling is not possible form pointer-events:none, even though in iOS it is
+  // TODO: The latter is for timeline.html where the section below inner-slide-content-container
+  //       is the one with scrolling. This could be nicer.
+  &.backdrop-disable .inner-page-content-container, &.backdrop-disable .inner-slide-content-container section {
+    pointer-events: auto;
+  }
+
   .onboarding-bubble:after {
     border-bottom-color: #f6f6f6 !important;
   }

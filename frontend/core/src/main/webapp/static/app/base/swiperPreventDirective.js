@@ -31,6 +31,11 @@ function swiperPreventDirective($window, $rootScope) {
 
       function slideTouchMove(event) {
         /*jshint validthis: true */
+        if ($rootScope.backdropActive){
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          return;
+        }
 
         if (event.type === 'touchmove') {
           swipeDistX = event.targetTouches[0].pageX - swipeStartX;

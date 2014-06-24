@@ -51,13 +51,15 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
     return 770 - getOmnibarStaticContentHeight() - keyboardHeight;
   };
 
-  $scope.$watch('softKeyboard.height', function(newValue){
-    if (newValue){
-      keyboardHeight = newValue;
-    } else {
-      keyboardHeight = 0;
-    }
-  });
+  if ($rootScope.packaging === 'ios-cordova'){
+    $scope.$watch('softKeyboard.height', function(newValue){
+      if (newValue){
+        keyboardHeight = newValue;
+      } else {
+        keyboardHeight = 0;
+      }
+    });
+  }
 
   $scope.getOmnibarVisibilityClass = function getOmnibarVisibilityClass() {
     return $scope.omnibarVisible ? 'omnibar-visible' : 'omnibar-hidden';

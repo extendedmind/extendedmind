@@ -1,8 +1,8 @@
 <section id="notes-keyword" class="two-column-grid page">
   <div class="column">
     <div ng-hide="omnibarVisible && isActiveSlide('details')" class="content-container page-content-container">
-      <div class="inner-page-content-container" swiper-prevent>
-        <div ng-if="keyword" scroll-to accordion>
+      <div class="inner-page-content-container" scroll-to swiper-prevent>
+        <div ng-if="keyword" accordion>
           <div accordion-title="keyword" edit-item="editKeyword(keyword)" edit-item-inline="true" edit-item-fields="editKeywordFields(keyword)" bold-title="true" has-complete="false" toggle-complete></div>
           <div ng-if="isOpen(keyword)" class="accordion-body swiper-no-swiping" editable-field-container="auto">
             <div class="accordion-inner">
@@ -34,7 +34,7 @@
           </div>
           <button class="add-button" ng-click="addNote(newNote)">add note...</button>
         </div>
-        <div ng-if="!keyword" scroll-to accordion>
+        <div ng-if="!keyword" accordion>
           <h3>no keywords</h3>
           <div ng-repeat="note in notes | itemsFilter:{name:'unsorted'}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>

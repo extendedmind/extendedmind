@@ -199,7 +199,7 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
         $rootScope.softKeyboard.height = undefined;
         if (!$scope.$$phase) $scope.$apply();
       }
-      if ($rootScope.packaging === 'ios-cordova'){
+      if ($rootScope.packaging.endsWith('cordova')){
         window.addEventListener('native.keyboardshow', cordovaKeyboardShow);
         window.addEventListener('native.keyboardhide', cordovaKeyboardHide);
       }

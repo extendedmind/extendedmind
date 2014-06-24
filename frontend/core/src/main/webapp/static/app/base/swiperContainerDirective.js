@@ -187,6 +187,13 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
       function mainSwiperTouchMove(event) {
         /*jshint validthis: true */
 
+        // If backdrop is active, stop propagation to any swipers
+        if ($rootScope.backdropActive){
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          return;
+        }
+
         if (event.type === 'touchmove') {
           swipeDistanceX = event.targetTouches[0].pageX - swipeStartX;
           swipeDistanceY = event.targetTouches[0].pageY - swipeStartY;
@@ -288,6 +295,13 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
       // Otherwise do a regular scroll inside the slide.
       function pageSwiperSlideTouchMove(event) {
         /*jshint validthis: true */
+
+        // If backdrop is active, stop propagation to any swipers
+        if ($rootScope.backdropActive){
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          return;
+        }
 
         if (event.type === 'touchmove') {
           swipePageSlideDistX = event.targetTouches[0].pageX - swipePageSlideStartX;

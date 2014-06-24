@@ -1,6 +1,6 @@
 'use strict';
 
-function editableFieldBackdropDirective() {
+function editableFieldBackdropDirective($rootScope) {
   return {
     restrict: 'A',
     controller: function($scope, $element) {
@@ -16,10 +16,12 @@ function editableFieldBackdropDirective() {
         }
       };
       $scope.showBackdrop = function(){
-        $element.addClass('active');
+        $rootScope.backdropActive = true;
+        $element.addClass('active swiper-no-swiping');
       };
       $scope.hideBackdrop = function(){
-        $element.removeClass('active');
+        $rootScope.backdropActive = false;
+        $element.removeClass('active swiper-no-swiping');
         $element.addClass('animating');
       };
 
@@ -31,11 +33,12 @@ function editableFieldBackdropDirective() {
       angular.element($element).bind(
         'webkitTransitionend oTransitionend msTransitionend transitionend',transitionEndCallback);
       $scope.$on('$destroy', function(){
+        $rootScope.backdropActive = false;
         angular.element($element).unbind(
           'webkitTransitionend oTransitionend msTransitionend transitionend', transitionEndCallback);
       });
     }
   };
 }
-editableFieldBackdropDirective['$inject'] = ['$document'];
+editableFieldBackdropDirective['$inject'] = ['$rootScope'];
 angular.module('common').directive('editableFieldBackdrop', editableFieldBackdropDirective);

@@ -1,8 +1,8 @@
 <section id="archive-list" class="two-column-grid page">
   <div class="column">
     <div ng-hide="omnibarVisible && isActiveSlide('details')" class="content-container page-content-container">
-      <div class="inner-page-content-container" swiper-prevent>
-        <div ng-if="archivedList" scroll-to accordion>
+      <div class="inner-page-content-container" scroll-to swiper-prevent>
+        <div ng-if="archivedList" accordion>
           <div accordion-title="archivedList" edit-item="editList(archivedList)" edit-item-inline="true" edit-item-fields="editListFields(archivedList)" bold-title="true" has-complete="false" toggle-complete></div>
           <div ng-if="isOpen(archivedList)" class="accordion-body" editable-field-container="auto">
             <div class="accordion-inner">
