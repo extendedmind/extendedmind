@@ -265,20 +265,8 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
     return deferred.promise;
   };
 
-
-  var getAllCompletedOnline = function getAllCompletedOnline(ownerUUID){
-    return BackendClientService.getSecondary('/api/' + ownerUUID + '/items?completed=true&active=false', getItemsRegex, undefined, true).then(function(result) {
-      if (result.data){
-        // Update task arrays
-        TasksService.updateTasks(result.data.tasks, ownerUUID);
-        UserSessionService.setCompletedSynchronized(ownerUUID);
-      }
-      return result;
-    });
-  };
-
-  var getAllArchivedOnline = function getAllArchivedOnline(ownerUUID){
-    return BackendClientService.getSecondary('/api/' + ownerUUID + '/items?archived=true&active=false', getItemsRegex, undefined, true).then(function(result) {
+  var getAllArchivedAndCompletedOnline = function getAllArchivedOnline(ownerUUID){
+    return BackendClientService.getSecondary('/api/' + ownerUUID + '/items?archived=true&completed=true&active=false', getItemsRegex, undefined, true).then(function(result) {
       if (result.data){
         // Update all arrays with archived values
         TagsService.updateTags(result.data.tags, ownerUUID);
@@ -297,19 +285,10 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
     synchronize: function(ownerUUID) {
       return synchronize(ownerUUID);
     },
-    synchronizeCompleted: function(ownerUUID) {
-      var deferred = $q.defer();
-      if (!UserSessionService.getCompletedSynchronized()){
-        getAllOnline(ownerUUID, getAllCompletedOnline, deferred);
-      }else {
-        deferred.resolve();
-      }
-      return deferred.promise;
-    },
-    synchronizeArchived: function(ownerUUID) {
+    synchronizeCompletedAndArchived: function(ownerUUID) {
       var deferred = $q.defer();
       if (!UserSessionService.getArchivedSynchronized()){
-        getAllOnline(ownerUUID, getAllArchivedOnline, deferred);
+        getAllOnline(ownerUUID, getAllArchivedAndCompletedOnline, deferred);
       }else {
         deferred.resolve();
       }

@@ -1,6 +1,6 @@
 <section id="dashboard-{{dashboardSlide}}" class="two-column-grid page">
   <div class="column">
-    <div ng-if="!isCompletedLoading && !isArchivedLoading" ng-hide="omnibarVisible && isActiveSlide({{dashboardSlide}})" class="content-container page-content-container">
+    <div ng-if="!isCompletedAndArchivedLoading" ng-hide="omnibarVisible && isActiveSlide({{dashboardSlide}})" class="content-container page-content-container">
       <div class="inner-page-content-container">
         <ul>
           <li class="simple-content dashboard-info" ng-repeat="message in dashboardSlides[slideIndex].messages">
@@ -10,7 +10,7 @@
         </ul>
       </div>
     </div>
-    <div ng-if="isCompletedLoading || isArchivedLoading" class="loading-animation" loading-animation></div>
+    <div ng-if="isCompletedAndArchivedLoading" class="loading-animation" loading-animation></div>
   </div>
   <aside class="column">
     TODO

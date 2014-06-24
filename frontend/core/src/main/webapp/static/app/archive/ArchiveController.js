@@ -28,12 +28,11 @@ function ArchiveController($scope, ListsService, NotesService, SwiperService, Ta
   $scope.archiveSlides.push($scope.slides.leftSlide);
 
   // synchronize completed right away
-  $scope.isCompletedLoading = true;
+  $scope.isCompletedAndArchivedLoading = true;
   $scope.completedTasksLimit = 0;
-  $scope.isArchivedLoading = true;
 
-  SynchronizeService.synchronizeCompleted(UISessionService.getActiveUUID()).then(function(){
-    $scope.isCompletedLoading = false;
+  SynchronizeService.synchronizeCompletedAndArchived(UISessionService.getActiveUUID()).then(function(){
+    $scope.isCompletedAndArchivedLoading = false;
   });
 
   $scope.getCompletedTasksLimit = function(){
@@ -195,11 +194,6 @@ function ArchiveController($scope, ListsService, NotesService, SwiperService, Ta
         }
       }
     }
-
-    // synchronize archived after completed has been loaded
-    SynchronizeService.synchronizeArchived(UISessionService.getActiveUUID()).then(function(){
-      $scope.isArchivedLoading = false;
-    });
   }
   SwiperService.registerSwiperCreatedCallback(swiperCreatedCallback, 'archive', 'ArchiveController');
 

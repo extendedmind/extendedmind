@@ -7,8 +7,7 @@ function DashboardController($scope, DateService, ListsService, NotesService, Sw
   // Use MainController
   $scope.createFullCompletedTasks();
 
-  $scope.isCompletedLoading = true;
-  $scope.isArchivedLoading = true;
+  $scope.isCompletedAndArchivedLoading = true;
 
   function initializeDashboardSlideInfo(slideName) {
     var dashboardSlide = {
@@ -30,15 +29,12 @@ function DashboardController($scope, DateService, ListsService, NotesService, Sw
     $scope.dashboardSlides.push(dashboardSlide);
   }
 
-  SynchronizeService.synchronizeCompleted(UISessionService.getActiveUUID()).then(function(){
-    $scope.isCompletedLoading = false;
-    SynchronizeService.synchronizeArchived(UISessionService.getActiveUUID()).then(function(){
-      $scope.isArchivedLoading = false;
-      createdNotes = $scope.notes.concat($scope.archivedNotes);
-      initializeDashboardSlideInfo('daily');
-      initializeDashboardSlideInfo('weekly');
-      initializeDashboardSlideInfo('monthly');
-    });
+  SynchronizeService.synchronizeCompletedAndArchived(UISessionService.getActiveUUID()).then(function(){
+    $scope.isCompletedAndArchivedLoading = false;
+    createdNotes = $scope.notes.concat($scope.archivedNotes);
+    initializeDashboardSlideInfo('daily');
+    initializeDashboardSlideInfo('weekly');
+    initializeDashboardSlideInfo('monthly');
   });
 
 
