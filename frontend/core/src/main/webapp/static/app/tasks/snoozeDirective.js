@@ -8,9 +8,16 @@ function snoozeDirective(DateService) {
       task: '=snooze',
       openSnooze: '=snoozeOpen',
       selectedFn: '=snoozeSelected',
-      closeAndCall: '=snoozeClose'
+      closeAndCall: '=snoozeClose',
+      pikadayHasDoneButton: '=snoozePikadayHasDoneButton'
     },
     link: function(scope) {
+
+      scope.openSnooze.pikaday = {
+        isVisible: false,
+        hasDoneButton: scope.pikadayHasDoneButton
+      };
+
       function processClose(task){
         if (angular.isFunction(scope.closeAndCall)){
           scope.closeAndCall(task, scope.selectedFn);
@@ -26,8 +33,8 @@ function snoozeDirective(DateService) {
         processClose(task);
       }
 
-      scope.saveTask = function saveTask(task) {
-        scope.selectedFn(task);
+      scope.savePikaday = function savePikaday(task) {
+        processClose(task);
       };
 
       scope.setDateToday = function setDateToday(task) {
@@ -62,7 +69,6 @@ function snoozeDirective(DateService) {
       scope.taskHasDate = function taskHasDate(task) {
         return task.date;
       };
-
     }
   };
 }

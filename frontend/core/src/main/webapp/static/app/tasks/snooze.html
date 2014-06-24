@@ -1,33 +1,37 @@
-<ul class="button-row" ng-init="openSnooze.showPickDate = false">
-  <li ng-switch="isTaskDateTodayOrLess(task)" class="button-container left-of-three">
-    <button ng-switch-when="true" type="button" class="highlighted-button" ng-click="setDateTomorrow(task)">tomorrow</button>
-    <button ng-switch-when="false" type="button" class="highlighted-button" ng-click="setDateNextDay(task)">next day</button>
-    <button ng-switch-default type="button" class="highlighted-button" ng-click="setDateToday(task)">today</button>
-  </li>
-  <li class="button-container center-of-three">
-    <button ng-if="!taskHasDate(task)" type="button" class="highlighted-button" ng-click="setDateTomorrow(task)">tomorrow</button>
-    <button ng-if="taskHasDate(task)" type="button" class="highlighted-button" ng-click="setDateTwoDaysLater(task)">2 days later</button>
-  </li>
-  <li class="button-container right-of-three">
-    <button type="button" class="highlighted-button" ng-click="setDateWeekend(task)">weekend</button>
-  </li>
-</ul>
-<ul class="button-row">
-  <li class="button-container left-of-three">
-    <button type="button" class="highlighted-button" ng-click="setDateFirstDayOfNextWeek(task)">next week</button>
-  </li>
-  <li class="button-container center-of-three">
-    <button type="button" class="highlighted-button" ng-click="setDateFirstDayOfNextMonth(task)">next month</button>
-  </li>
-  <li class="button-container right-of-three">
-    <div class="form-group">
-      <div ng-if="openSnooze.showPickDate === true">
-        <label for="taskDue" class="sr-only">pick date</label>
-        <input type="date" id="taskDue" class="swiper-no-swiping highlighted-link" ng-model="task.date" date-input="task" date-input-set-focus="openSnooze.showPickDate" date-input-destroy="selectedFn">
-      </div>
-      <div ng-if="openSnooze.showPickDate === false" class="item-actions">
-        <span class="simple-input highlighted-link" ng-click="openSnooze.showPickDate = true">set date</span>
-      </div>
-    </div>
-  </li>
-</ul>
+<div>
+  <div ng-if="!openSnooze.pikaday.isVisible" class="small-font">
+    <ul class="button-row">
+      <li ng-switch="isTaskDateTodayOrLess(task)" class="button-container left-of-three">
+        <button ng-switch-when="true" type="button" class="highlighted-button" ng-click="setDateTomorrow(task)">tomorrow</button>
+        <button ng-switch-when="false" type="button" class="highlighted-button" ng-click="setDateNextDay(task)">next day</button>
+        <button ng-switch-default type="button" class="highlighted-button" ng-click="setDateToday(task)">today</button>
+      </li>
+      <li class="button-container center-of-three">
+        <button ng-if="!taskHasDate(task)" type="button" class="highlighted-button" ng-click="setDateTomorrow(task)">tomorrow</button>
+        <button ng-if="taskHasDate(task)" type="button" class="highlighted-button" ng-click="setDateTwoDaysLater(task)">2 days later</button>
+      </li>
+      <li class="button-container right-of-three">
+        <button type="button" class="highlighted-button" ng-click="setDateWeekend(task)">weekend</button>
+      </li>
+    </ul>
+    <ul class="button-row">
+      <li class="button-container left-of-three">
+        <button type="button" class="highlighted-button" ng-click="setDateFirstDayOfNextWeek(task)">next week</button>
+      </li>
+      <li class="button-container center-of-three">
+        <button type="button" class="highlighted-button" ng-click="setDateFirstDayOfNextMonth(task)">next month</button>
+      </li>
+      <li class="button-container right-of-three item-actions">
+        <div class="form-group">
+          <a href class="highlighted-link" ng-click="openSnooze.pikaday.isVisible = true">set date</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div ng-if="openSnooze.pikaday.isVisible" class="item-actions pikaday-animation">
+    <div class="pikaday-embedded" pikaday bound="false" default-date="{{task.date}}" set-default-date="true"></div>
+    <button ng-if="openSnooze.pikaday.hasDoneButton" type="button" class="wide-button normal-button" ng-click="pikadayEditDone()">
+      <span class="button-text">done</span>
+    </button>
+  </div>
+</div>

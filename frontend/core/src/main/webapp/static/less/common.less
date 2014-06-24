@@ -123,10 +123,12 @@ Only universal code that would work by itself in any web page.
 
 .highlighted-link {
   color: @highlighted-element;
-}
-
-.highlighted-link:active {
-  color: @highlighted-element-pressed;
+  &:hover {
+    color: @highlighted-element-hover;
+  }
+  &:active {
+    color: @highlighted-element-pressed;
+  }
 }
 
 .warning-link {
@@ -490,16 +492,6 @@ select {
   margin-bottom: @vertical-grid-half;
 }
 
-// Multirow item indent fixed
-.single-lineheight {
-  table {
-    max-width: 100%;
-    td {
-      padding-right: 0.5em;
-    }
-  }
-}
-
 // FORMS
 
 .form-group, .input-group {
@@ -574,7 +566,7 @@ a.content:active {
   display: block;
   text-align: center;
   line-height: 19px;
-  .icon-logo-only{
+  .icon-logo-only {
     font-size: @small-font-size;
   }
   .instruction-text-chapter {

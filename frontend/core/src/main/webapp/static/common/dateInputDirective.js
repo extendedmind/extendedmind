@@ -5,13 +5,10 @@ function dateInputDirective() {
     restrict: 'A',
     scope: {
       task: '=dateInput',
-      saveDateFn: '=dateInputDestroy',
       isFocused: '=dateInputSetFocus',
       blurDateFn: '=dateInputBlur'
     },
     link: function(scope, element) {
-      var initialDate = scope.task.date;
-
       function unfocusDate() {
         if (angular.isFunction(scope.blurDateFn)) scope.blurDateFn();
         else scope.isFocused = false;
@@ -40,10 +37,7 @@ function dateInputDirective() {
         }
       });
 
-      scope.$on('$destroy', function() {
-        unfocusDate();
-        if (initialDate !== scope.task.date && angular.isFunction(scope.saveDateFn)) scope.saveDateFn(scope.task);
-      });
+      scope.$on('$destroy', unfocusDate);
     }
   };
 }

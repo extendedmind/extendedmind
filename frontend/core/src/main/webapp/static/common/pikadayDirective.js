@@ -1,49 +1,46 @@
 /* global Pikaday */
 
 'use strict';
-function pikadayDirective() {
+function pikadayDirective(DateService) {
   return {
     restrict: 'A',
-    scope: {
-      pikaday: '=',
-    },
     link: function (scope, elem, attrs) {
+      var startingDate;
+      if (attrs.defaultDate) startingDate = DateService.getDateTodayOrFromLaterYYYYMMDD(attrs.defaultDate);
 
-      var picker = new Pikaday({
+      function getPikadayDateAndSetToTaskDate() {
+        var date = pikaday.getDate();
+        scope.task.date = DateService.getYYYYMMDD(date);
+      }
 
+      var pikaday = new Pikaday({
         field: elem[0],
-        trigger: document.getElementById(attrs.triggerId),
+        container: elem[0],
         bound: attrs.bound !== 'false',
-        position: attrs.position || '',
-        format: attrs.format || 'ddd MMM D YYYY', // Requires Moment.js for custom formatting
-        defaultDate: new Date(attrs.defaultDate),
+        format: attrs.format || 'ddd MMM D YYYY',
+        defaultDate: startingDate,
         setDefaultDate: attrs.setDefaultDate === 'true',
-        firstDay: attrs.firstDay ? parseInt(attrs.firstDay) : 0,
-        minDate: new Date(attrs.minDate),
-        maxDate: new Date(attrs.maxDate),
-        yearRange: attrs.yearRange ? JSON.parse(attrs.yearRange) : 10, // Accepts int (10) or 2 elem array ([1992, 1998]) as strings
+        firstDay: attrs.firstDay ? parseInt(attrs.firstDay) : 1,
+        yearRange: attrs.yearRange ? JSON.parse(attrs.yearRange) : 10,
         isRTL: attrs.isRTL === 'true',
         i18n: {
-          previousMonth : 'Previous Month',
-          nextMonth     : 'Next Month',
-          months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
-          weekdays      : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-          weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+          previousMonth : '',
+          nextMonth     : '',
+          months        : DateService.getMonthNames(),
+          weekdays      : DateService.getWeekdayNames(),
+          weekdaysShort : ['sun','mon','tue','wed','thu','fri','sat']
         },
         yearSuffix: attrs.yearSuffix || '',
         showMonthAfterYear: attrs.showMonthAfterYear === 'true',
-
-        onSelect: function () {
-          console.log('asd');
-          setTimeout(function(){
-            scope.$apply();
-          });
-        }
+        onSelect: scope.openSnooze.pikaday.hasDoneButton ? undefined : getPikadayDateAndSetToTaskDate
       });
 
-scope.pikaday = picker;
-console.log(scope.pikaday);
+      scope.pikadayEditDone = function pikadayEditDone() {
+        getPikadayDateAndSetToTaskDate();
+        scope.savePikaday(scope.task);
+      };
+    }
+  };
 }
-};
-}
+pikadayDirective['$inject'] = ['DateService'];
 angular.module('common').directive('pikaday', pikadayDirective);

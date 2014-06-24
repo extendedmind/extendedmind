@@ -310,10 +310,16 @@ function DateService($timeout) {
     },
     getDateTodayOrFromLaterYYYYMMDD: function(dateYYYYMMDD) {
       if (dateYYYYMMDD && (dateYYYYMMDD > today.yyyymmdd)){
-        return new Date(dateYYYYMMDD)
-      }else {
+        return new Date(dateYYYYMMDD);
+      } else {
         return new Date();
       }
+    },
+    getWeekdayNames: function() {
+      return weekdays;
+    },
+    getMonthNames: function() {
+      return monthNames;
     },
 
     // setters
