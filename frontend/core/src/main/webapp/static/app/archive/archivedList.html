@@ -21,7 +21,7 @@
               </ul>
             </div>
           </div>
-          <div ng-show="(filteredArchivedTasks && filteredArchivedTasks.length)">
+          <div ng-show="(filteredArchivedTasks && filteredArchivedTasks.length)" class="tasks-notes-container">
             <h4>tasks</h4>
             <div ng-repeat="task in filteredArchivedTasks = (archivedTasks | itemsFilter:{name:'byListUUID', filterBy: archivedList.uuid} | orderBy:'created')">
               <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
@@ -30,7 +30,7 @@
               </div>
             </div>
           </div>
-          <div ng-show="filteredArchivedNotes && filteredArchivedNotes.length">
+          <div ng-show="filteredArchivedNotes && filteredArchivedNotes.length" class="tasks-notes-container">
             <h4>notes</h4>
             <div ng-repeat="note in filteredArchivedNotes = (archivedNotes | itemsFilter:{name:'byListUUID', filterBy: archivedList.uuid} | orderBy:'created')">
               <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
