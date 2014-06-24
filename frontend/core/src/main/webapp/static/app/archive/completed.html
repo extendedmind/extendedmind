@@ -1,8 +1,8 @@
 <section id="archive-completed" class="two-column-grid page">
   <div class="column">
     <div ng-if="!isCompletedLoading" ng-hide="omnibarVisible && isActiveSlide({{'completed'}})" class="content-container page-content-container" >
-      <div class="inner-page-content-container" swiper-prevent>
-        <div infinite-scroll="addMoreCompleted()" infinite-scroll-parent scroll-to accordion>
+      <div class="inner-page-content-container" scroll-to swiper-prevent>
+        <div infinite-scroll="addMoreCompleted()" infinite-scroll-parent accordion>
           <div ng-repeat="task in fullCompletedTasks | limitTo: getCompletedTasksLimit()">
             <div ng-if="showToday(task, $first)" ng-class="getFirstShown() !== 'today' && 'subheading'"><h3>today</h3></div>
             <div ng-if="showYesterday(task, $first)" ng-class="getFirstShown() !== 'yesterday' && 'subheading'"><h3>yesterday</h3></div>
