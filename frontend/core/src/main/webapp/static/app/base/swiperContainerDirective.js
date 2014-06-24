@@ -281,10 +281,10 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         // we need to use speed as well
 
         if (((this.scrollHeight - this.scrollTop) <= this.clientHeight) ||
-           (((this.scrollHeight - this.scrollTop) <= this.clientHeight + 200) && swipePageSlideYSpeed && swipePageSlideYSpeed < 30)) {
+           (((this.scrollHeight - this.scrollTop) <= this.clientHeight + 200) && swipePageSlideYSpeed !== undefined && swipePageSlideYSpeed < -30)) {
           swipePageSlideBottom = true;
         }
-        if (this.scrollTop <= 0 || (this.scrollTop <= 200 && swipePageSlideYSpeed && swipePageSlideYSpeed > 30)){
+        if (this.scrollTop <= 0 || (this.scrollTop <= 200 && swipePageSlideYSpeed !== undefined && swipePageSlideYSpeed > 30)){
           swipePageSlideTop = true;
         }
         swipePageSlideYSpeed = swipePageSlideYSpeedStart = undefined;
