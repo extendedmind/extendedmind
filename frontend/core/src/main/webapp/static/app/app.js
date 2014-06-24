@@ -83,6 +83,10 @@ angular.module('em.app').config(['$locationProvider', '$routeProvider',
       }
     });
 
+    $routeProvider.when('/signup', {
+      templateUrl: 'static/app/auth/signup.html'
+    });
+
     $routeProvider.when('/forgot', {
       templateUrl: 'static/app/auth/forgot.html'
     });

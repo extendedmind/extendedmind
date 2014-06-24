@@ -47,13 +47,16 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       }
       // Invite request
       else if (parsedData.email === 'example@example.com') {
-        inviteRequestResponse.resultType = 'inviteRequest';
+        inviteRequestResponse = {resultType: 'signUp'};
       }
       else if (parsedData.email === 'coupon@example.com') {
         inviteRequestResponse.resultType = 'inviteCoupon';
       }
       else if (parsedData.email === 'automatic@example.com') {
         inviteRequestResponse.resultType = 'inviteAutomatic';
+      }
+      else if (parsedData.email === 'test@ext.md') {
+        inviteRequestResponse.resultType = 'inviteRequest';
       }
       // New invite
       else {
@@ -114,6 +117,13 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
     });
   }
 
+  function mockPostSignUp() {
+    $httpBackend.whenPOST(AuthenticationService.postSignUpRegex).respond(function(method, url, data, headers) {
+      var signUpResponse = getJSONFixture('signUpResponse.json');
+      return [200, signUpResponse];
+    });
+  }
+
   function mockPutChangePassword(expectResponse) {
     $httpBackend.whenPUT(AuthenticationService.putChangePasswordRegex).respond(function(method, url, data, headers) {
       var changePasswordResponse = getJSONFixture('passwordResponse.json');
@@ -133,6 +143,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       mockGetPasswordResetExpires(expectResponse);
       mockPostResetPassword(expectResponse);
       mockPostVerifyEmail();
+      mockPostSignUp();
       mockPutChangePassword(expectResponse);
     }
   };

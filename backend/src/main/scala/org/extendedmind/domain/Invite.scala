@@ -11,6 +11,7 @@ case object INVITE_REQUEST_RESULT extends InviteRequestResultType
 case object INVITE_RESULT extends InviteRequestResultType
 case object INVITE_COUPON_RESULT extends InviteRequestResultType
 case object INVITE_AUTOMATIC_RESULT extends InviteRequestResultType
+case object SIGNUP_RESULT extends InviteRequestResultType
 case object USER_RESULT extends InviteRequestResultType
 
 case class InviteRequest(uuid: Option[UUID], email: String, emailId: Option[String], bypass: Option[Boolean], modified: Option[Long]) {

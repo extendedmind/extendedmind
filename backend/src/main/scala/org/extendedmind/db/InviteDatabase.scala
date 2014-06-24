@@ -28,11 +28,13 @@ trait InviteDatabase extends UserDatabase {
     for {
       info <- createInviteRequestInformation(inviteRequest).right
       queueNumber <- updateInviteRequestIndex(info._1, info._2).right
-      setResult <- Right(getSetResult(info._2, true)).right
+      setResult <- Right(
+          if (info._1 == USER_RESULT || info._1 == SIGNUP_RESULT) None 
+          else Some(getSetResult(info._2.get, true))).right
       inviteRequestResult <- Right(
           InviteRequestResult(
               info._1,
-              if (info._1 == USER_RESULT) None else Some(setResult), 
+              setResult, 
               queueNumber
           )).right
     } yield inviteRequestResult
@@ -215,21 +217,24 @@ trait InviteDatabase extends UserDatabase {
 
   // PRIVATE
 
-  protected def createInviteRequestInformation(inviteRequest: InviteRequest): Response[(InviteRequestResultType, Node)] = {
+  protected def createInviteRequestInformation(inviteRequest: InviteRequest): Response[(InviteRequestResultType, Option[Node])] = {
     withTx {
       implicit neo =>
         // First check if user
         val userNodeList = findNodesByLabelAndProperty(OwnerLabel.USER, "email", inviteRequest.email).toList
         if (!userNodeList.isEmpty) {
-          return Right(USER_RESULT, userNodeList(0))
+          return Right(USER_RESULT, Some(userNodeList(0)))
         }
         val inviteNodeList = findNodesByLabelAndProperty(MainLabel.INVITE, "email", inviteRequest.email).toList
         if (!inviteNodeList.isEmpty) {
-          return Right(INVITE_RESULT, inviteNodeList(0))
+          return Right(INVITE_RESULT, Some(inviteNodeList(0)))
         }
         val requestNodeList = findNodesByLabelAndProperty(MainLabel.REQUEST, "email", inviteRequest.email).toList
         if (!requestNodeList.isEmpty) {
-          return Right((INVITE_REQUEST_RESULT, requestNodeList(0)))
+          return Right((INVITE_REQUEST_RESULT, Some(requestNodeList(0))))
+        }
+        if (inviteRequest.bypass.isDefined && inviteRequest.bypass.get && settings.signUpMethod == SIGNUP_ON){
+          return Right((SIGNUP_RESULT, None))
         }
 
         // Need to create a new invite request
@@ -239,25 +244,26 @@ trait InviteDatabase extends UserDatabase {
           val inviteRequestQueueNumberResponse = getInviteRequestQueueNumber(inviteRequestResponse.right.get)
           if (inviteRequestQueueNumberResponse.isLeft) Left(inviteRequestQueueNumberResponse.left.get)
           else Right((NEW_INVITE_REQUEST_RESULT,
-            inviteRequestResponse.right.get))
+            Some(inviteRequestResponse.right.get)))
         }
     }
   }
   
-  protected def updateInviteRequestIndex(resultType: InviteRequestResultType, node: Node): Response[Option[Int]] = {
+  protected def updateInviteRequestIndex(resultType: InviteRequestResultType, node: Option[Node]): Response[Option[Int]] = {
     withTx {
       implicit neo =>
         val queueNumber: Option[Int] = resultType match {
           case USER_RESULT => None
+          case SIGNUP_RESULT => None
           case INVITE_RESULT => None
           case INVITE_REQUEST_RESULT => {
-            val result = getInviteRequestQueueNumber(node)
+            val result = getInviteRequestQueueNumber(node.get)
             if (result.isLeft) return Left(result.left.get)
             else Some(result.right.get.queueNumber)
           }
           case NEW_INVITE_REQUEST_RESULT => {
-            createInviteRequestModifiedIndex(node)
-            val result = getInviteRequestQueueNumber(node)
+            createInviteRequestModifiedIndex(node.get)
+            val result = getInviteRequestQueueNumber(node.get)
             if (result.isLeft) return Left(result.left.get)
             else Some(result.right.get.queueNumber)
           }

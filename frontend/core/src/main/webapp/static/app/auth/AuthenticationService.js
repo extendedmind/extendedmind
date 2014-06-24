@@ -17,6 +17,12 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     acceptRegex.source +
     /$/.source
     ),
+  signUpRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    /signup/.source +
+    /$/.source
+    ),
   getInviteRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
@@ -242,6 +248,9 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
       }, function(/*error*/){
         return false;
       });
+    // Redirect user to sign up
+    }else if (inviteRequestResponse.data.resultType === 'signUp') {
+      $location.path('/signup');
     }
     function redirectToInviteWaitingPage() {
       $location.path('/waiting');
@@ -335,6 +344,10 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',
         acceptInviteRegexp, data, true, [0, 400, 404, 502]);
     },
+    signUp: function(data) {
+      return BackendClientService.postOnline('/api/signup',
+        signUpRegexp, data, true, [0, 400, 404, 502]);
+    },
     postForgotPassword: function(email) {
       return BackendClientService.postOnline(
         '/api/password/forgot',
@@ -370,6 +383,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     },
     // Regular expressions for account requests
     acceptInviteRegex: acceptInviteRegexp,
+    signUpRegex: signUpRegexp,
     getInviteRegex: getInviteRegexp,
     postAuthenticateRegex: postAuthenticateRegexp,
     postInviteRequestRegex: postInviteRequestRegexp,

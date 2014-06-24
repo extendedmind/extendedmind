@@ -1,26 +1,32 @@
 'use strict';
 
-function SignupController($location, $rootScope, $routeParams, $scope, $window, AuthenticationService, AnalyticsService, BackendClientService) {
+function SignupController($location, $rootScope, $routeParams, $scope, $window, AuthenticationService, AnalyticsService, BackendClientService, UserSessionService) {
 
   AnalyticsService.visitEntry('signup');
 
   $scope.user = {};
   var inviteResponseCode = $routeParams.hex_code;
 
-  AuthenticationService.getInvite(inviteResponseCode, $routeParams.email).then(function(inviteResponse) {
-    if (inviteResponse.data.accepted) {
-      $location.url($location.path());
-      if ($rootScope.packaging.endsWith('cordova')){
-        $location.path('/login');
-      }else {
-        // Direct user to the welcome page so that it is possible to load app
-        // from the invite link, when used from the web
-        $location.path('/welcome');
+  if (inviteResponseCode){
+    AuthenticationService.getInvite(inviteResponseCode, $routeParams.email).then(function(inviteResponse) {
+      if (inviteResponse.data.accepted) {
+        $location.url($location.path());
+        if ($rootScope.packaging.endsWith('cordova')){
+          $location.path('/login');
+        }else {
+          // Direct user to the welcome page so that it is possible to load app
+          // from the invite link, when used from the web
+          $location.path('/welcome');
+        }
+      } else {
+        $scope.user.username = inviteResponse.data.email;
       }
-    } else {
-      $scope.user.username = inviteResponse.data.email;
-    }
-  });
+    });
+  }else{
+    // No hex_code, do a normal signup
+    $scope.signUpDirectly = true;
+    $scope.user.username = UserSessionService.getEmail();
+  }
 
   $scope.signUp = function() {
     $scope.signupFailed = false;
@@ -35,22 +41,42 @@ function SignupController($location, $rootScope, $routeParams, $scope, $window, 
       payload.bypass = true;
     }
 
-    AuthenticationService.acceptInvite(inviteResponseCode, payload).
-    then(function() {
-      AnalyticsService.do('acceptInvite');
-      if ($rootScope.packaging.endsWith('cordova')){
-        // In apps, don't go to welcome page
-        loginUser(false);
-      }else{
-        loginUser(true);
-      }
-    }, function(error) {
-      if (BackendClientService.isOffline(error.status)){
-        $scope.signupOffline = true;
-      }else if(error.status === 400){
-        $scope.signupFailed = true;
-      }
-    });
+    if ($scope.signUpDirectly){
+      AuthenticationService.signUp(payload).
+      then(function() {
+        AnalyticsService.do('signUp');
+        if ($rootScope.packaging.endsWith('cordova')){
+          // In apps, don't go to welcome page
+          loginUser(false);
+        }else{
+          loginUser(true);
+        }
+      }, function(error) {
+        if (BackendClientService.isOffline(error.status)){
+          $scope.signupOffline = true;
+        }else if(error.status === 400){
+          $scope.signupFailed = true;
+        }
+      });
+
+    }else{
+      AuthenticationService.acceptInvite(inviteResponseCode, payload).
+      then(function() {
+        AnalyticsService.do('acceptInvite');
+        if ($rootScope.packaging.endsWith('cordova')){
+          // In apps, don't go to welcome page
+          loginUser(false);
+        }else{
+          loginUser(true);
+        }
+      }, function(error) {
+        if (BackendClientService.isOffline(error.status)){
+          $scope.signupOffline = true;
+        }else if(error.status === 400){
+          $scope.signupFailed = true;
+        }
+      });
+    }
   };
 
   function loginUser(gotoWelcomePage) {
@@ -90,5 +116,5 @@ function SignupController($location, $rootScope, $routeParams, $scope, $window, 
   };
 }
 
-SignupController['$inject'] = ['$location', '$rootScope', '$routeParams', '$scope', '$window', 'AuthenticationService', 'AnalyticsService', 'BackendClientService'];
+SignupController['$inject'] = ['$location', '$rootScope', '$routeParams', '$scope', '$window', 'AuthenticationService', 'AnalyticsService', 'BackendClientService', 'UserSessionService'];
 angular.module('em.app').controller('SignupController', SignupController);

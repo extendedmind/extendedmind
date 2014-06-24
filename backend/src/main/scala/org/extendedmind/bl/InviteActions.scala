@@ -52,7 +52,10 @@ trait InviteActions {
             log.error("Could not send invite request confirmation email to {}", inviteRequest.email)
         }
       }
-      if (inviteRequest.bypass.isDefined && inviteRequest.bypass.get && inviteRequestResult.right.get.resultType != INVITE_RESULT && inviteRequestResult.right.get.resultType != USER_RESULT) {
+      
+      if (inviteRequest.bypass.isDefined && inviteRequest.bypass.get && 
+          (inviteRequestResult.right.get.resultType == NEW_INVITE_REQUEST_RESULT 
+           || inviteRequestResult.right.get.resultType == INVITE_REQUEST_RESULT)) {
         // Bypass logic
         if (settings.signUpMethod == SIGNUP_INVITE_AUTOMATIC) {
           return Right(inviteRequestResult.right.get.copy(resultType = INVITE_AUTOMATIC_RESULT))

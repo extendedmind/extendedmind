@@ -43,6 +43,7 @@ object JsonImplicits extends DefaultJsonProtocol {
           case INVITE_RESULT => "invite"
           case INVITE_COUPON_RESULT => "inviteCoupon"
           case INVITE_AUTOMATIC_RESULT => "inviteAutomatic"
+          case SIGNUP_RESULT => "signUp"
           case USER_RESULT => "user"
         })
     def read(value: JsValue) = value match {
@@ -52,9 +53,10 @@ object JsonImplicits extends DefaultJsonProtocol {
         else if (x == "invite") INVITE_RESULT 
         else if (x == "inviteCoupon") INVITE_COUPON_RESULT 
         else if (x == "inviteAutomatic") INVITE_AUTOMATIC_RESULT 
+        else if (x == "signUp") SIGNUP_RESULT
         else if (x == "user") USER_RESULT 
 
-        else deserializationError("Expected 'context', 'keyword' or 'history' but got " + x)
+        else deserializationError("Expected 'newInviteRequest', 'inviteRequest', 'invite', 'inviteCoupon', 'inviteAutomatic', 'signUp' or 'user' but got " + x)
       }
       case x => deserializationError("Expected TagType as JsString, but got " + x)
     }
