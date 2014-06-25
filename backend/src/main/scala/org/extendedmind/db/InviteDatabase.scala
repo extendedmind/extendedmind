@@ -214,6 +214,14 @@ trait InviteDatabase extends UserDatabase {
         Right(CountResult(count))
     }
   }
+  
+  def upgradeInvites: Response[CountResult] = {
+    for {
+      inviteRequestUUIDs <- getInviteUUIDs(MainLabel.REQUEST).right
+      inviteUUIDs <- getInviteUUIDs(MainLabel.INVITE).right
+      count <- upgradeInvites(inviteRequestUUIDs, inviteUUIDs).right
+    } yield count
+  }
 
   // PRIVATE
 
@@ -389,6 +397,57 @@ trait InviteDatabase extends UserDatabase {
   protected def linkInviteAndUser(inviteNode: Node, userNode: Node, currentTime: Long)(implicit neo4j: DatabaseService): Relationship = {
     inviteNode.setProperty("accepted", currentTime)
     inviteNode --> SecurityRelationship.IS_ORIGIN --> userNode <
+  }
+  
+  protected def getInviteUUIDs(label: Label): Response[scala.List[UUID]] = {
+    withTx {
+      implicit neo4j =>
+        val inviteNodeList = findNodesByLabel(label).toList
+        val inviteUUIDList = inviteNodeList.map(inviteNode => {
+          getUUID(inviteNode)
+        })
+        Right(inviteUUIDList)
+    }
+  }
+  
+  protected def upgradeInvites(inviteRequestUUIDs: scala.List[UUID], inviteUUIDs: scala.List[UUID]): Response[CountResult] = {
+    var count = 0;
+    inviteRequestUUIDs.foreach(inviteRequestUUID => {
+      val upgradeResult = upgradeInviteNode(inviteRequestUUID, MainLabel.REQUEST)
+      if (upgradeResult.isLeft) {
+        return Left(upgradeResult.left.get)
+      }else if (upgradeResult.right.get){
+        count += 1;
+      }
+    })
+    
+    inviteUUIDs.foreach(inviteUUID => {
+      val upgradeResult = upgradeInviteNode(inviteUUID, MainLabel.INVITE)
+      if (upgradeResult.isLeft) {
+        return Left(upgradeResult.left.get)
+      }else if (upgradeResult.right.get){
+        count += 1;
+      }
+    })
+    Right(CountResult(count))
+  }
+
+  protected def upgradeInviteNode(uuid: UUID, label: Label): Response[Boolean] = {
+    withTx {
+      implicit neo4j =>
+        val nodeResponse = getNode(uuid, label)
+        if (nodeResponse.isLeft)
+          Left(nodeResponse.left.get)
+        else {
+          val node = nodeResponse.right.get
+          if (node.hasProperty("created")) {
+            Right(false)
+          } else {
+            node.setProperty("created", node.getProperty("modified").asInstanceOf[Long])
+            Right(true)
+          }
+        }
+    }
   }
 
 }

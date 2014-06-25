@@ -350,6 +350,21 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
+      upgradeInvites { url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[CountResult] {
+                setLogContext(securityContext)
+                adminActions.upgradeInvites match {
+                  case Right(result) => processResult(result)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
       rebuildInviteRequestsIndex { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
