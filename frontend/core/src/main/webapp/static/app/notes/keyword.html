@@ -34,9 +34,24 @@
           </div>
           <button class="add-button" ng-click="addNote(newNote)">add note...</button>
         </div>
-        <div ng-if="!keyword" accordion>
+        <div ng-if="keyword === undefined" accordion>
           <h3>no keywords</h3>
           <div ng-repeat="note in notes | itemsFilter:{name:'unsorted'}">
+            <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
+              <div ng-if="note.content" class="teaser">
+                <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
+              </div>
+            </div>
+            <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
+              <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+            </div>
+            <div ng-if="!note.content" class="teaser-empty"></div>
+          </div>
+          <button class="add-button" ng-click="addNote(newNote)">add note...</button>
+        </div>
+        <div ng-if="keyword === null" accordion>
+          <h3>no list</h3>
+          <div ng-repeat="note in notes | itemsFilter:{name:'noList'}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
               <div ng-if="note.content" class="teaser">
                 <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>

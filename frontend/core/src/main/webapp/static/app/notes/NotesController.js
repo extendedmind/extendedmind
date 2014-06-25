@@ -251,6 +251,11 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
     $scope.newNote = {};
     SwiperService.swipeTo('notes/details');
   };
+  $scope.showNoListNotesDetails = function() {
+    $scope.keyword = null;
+    $scope.newNote = {};
+    SwiperService.swipeTo('notes/details');
+  };
 
   $scope.deleteKeywordAndShowKeywords = function(keyword) {
     SwiperService.swipeTo('notes/keywords');
