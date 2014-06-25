@@ -155,6 +155,13 @@
             </span>
           </div>
 
+          <div class="form-group">
+            <label class="sr-only" for="noteList">list</label>
+            <select id="noteList" class="simple-input swiper-no-swiping" ng-model="note.relationships.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
+              <option value="">select list...</option>
+            </select>
+          </div>
+
           <div ng-switch-default class="form-group" ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
             <label class="sr-only" for="noteContent">content</label>
             <textarea class="simple-input" ng-style="{maxHeight: getEditNoteContentMaxHeight()}" id="noteContent" ng-model="note.content" placeholder="content..." msd-elastic editable-field></textarea>
