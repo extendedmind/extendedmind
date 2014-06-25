@@ -29,7 +29,7 @@
       <div ng-if="openSnooze.isOpen === false" class="form-group item-actions">
         <a href class="simple-input default-element" ng-click="openSnooze.isOpen = true">select date...</a>
       </div>
-      <div ng-if="openSnooze.isOpen === true" class="item-actions" snooze="task" snooze-selected="initializeTask" snooze-open="openSnooze" snooze-close="false"></div>
+      <div ng-if="openSnooze.isOpen === true" class="item-actions" snooze="task" snooze-selected="initializeTask" snooze-open="openSnooze" snooze-close="false" snooze-scroll-to-element="scrollToOpenTitle"></div>
       <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
     </div>
     <div class="item-actions">

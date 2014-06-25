@@ -45,6 +45,7 @@ function accordionDirective($document) {
         });
         $scope.openTitle = {
           item: activeScope.item,
+          element: activeScope.getElement()
         };
 
         // This is called when accordion title is opened
@@ -77,6 +78,10 @@ function accordionDirective($document) {
         if (angular.isFunction($scope.scrollToElement)) {
           $scope.scrollToElement(element);
         }
+      };
+
+      $scope.scrollToOpenTitle = function scrollToOpenTitle() {
+        if ($scope.openTitle) $scope.thisController.scrollToElement($scope.openTitle.element);
       };
 
       $scope.registerLastCallback = function registerLastCallback(callback) {

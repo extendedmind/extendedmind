@@ -9,7 +9,8 @@ function snoozeDirective(DateService) {
       openSnooze: '=snoozeOpen',
       selectedFn: '=snoozeSelected',
       closeAndCall: '=snoozeClose',
-      pikadayHasDoneButton: '=snoozePikadayHasDoneButton'
+      pikadayHasDoneButton: '=snoozePikadayHasDoneButton',
+      scrollToElementFn: '=snoozeScrollToElement'
     },
     link: function(scope) {
 
@@ -69,8 +70,14 @@ function snoozeDirective(DateService) {
       scope.taskHasDate = function taskHasDate(task) {
         return task.date;
       };
-    }
-  };
+
+      scope.openPikaDayAndScroll = function openPikaDayAndScroll() {
+       scope.openSnooze.pikaday.isVisible = true;
+       if (angular.isFunction(scope.scrollToElementFn)) scope.scrollToElementFn();
+     };
+
+   }
+ };
 }
 snoozeDirective['$inject'] = ['DateService'];
 angular.module('em.directives').directive('snooze', snoozeDirective);

@@ -36,6 +36,10 @@ function accordionTitleDirective() {
       }
       cacheFields();
 
+      $scope.getElement = function getElement() {
+        return $element;
+      };
+
       $scope.openItem = function openItem(skipScroll) {
         if (!$scope.titleOpen){
           $scope.titleOpen = true;
