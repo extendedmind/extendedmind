@@ -20,6 +20,7 @@
 
 body {
 	line-height: 2em;
+  -webkit-overflow-scrolling: touch;
 }
 
 p {
@@ -95,7 +96,7 @@ a.button:hover {
 }
 
 .separator {
-  min-height: 88px;
+  min-height: 132px;
 }
 
 .separator-small {
