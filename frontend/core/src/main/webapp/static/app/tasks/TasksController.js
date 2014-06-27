@@ -31,40 +31,7 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     } else {
       AnalyticsService.do('saveTask', 'existing');
     }
-    TasksService.saveTask(task, UISessionService.getActiveUUID()).then(gotoTask);
-
-    function gotoTask(savedTask) {
-      var mainSlidePath, pageSlidePath;
-
-      // date
-      if (savedTask.due) {
-        mainSlidePath = 'tasks/home';
-        DateService.constructActiveWeekByDate(new Date(savedTask.due));
-        DateService.constructDatePickerWeeksByDate(new Date(savedTask.due));
-        var weekDay = DateService.getWeekday(new Date(savedTask.due));
-        pageSlidePath = mainSlidePath + '/' + weekDay;
-      }
-      // list
-      else if (savedTask.relationships && savedTask.relationships.parent) {
-        mainSlidePath = 'tasks/details';
-        pageSlidePath = mainSlidePath + '/' + savedTask.relationships.parent;
-      }
-      // context
-      else if (savedTask.relationships && savedTask.relationships.tags && savedTask.relationships.tags[0]) {
-        mainSlidePath = 'tasks/details';
-        pageSlidePath = mainSlidePath + '/' + savedTask.relationships.tags[0];
-      }
-      // unsorted
-      else {
-        mainSlidePath = 'tasks/details';
-        pageSlidePath = mainSlidePath + '/unsorted';
-      }
-
-      if (!$scope.isFeatureActive('tasks')) {
-        UISessionService.changeFeature('tasks', savedTask, mainSlidePath);
-      }
-      SwiperService.swipeToWithCallback(pageSlidePath);
-    }
+    return TasksService.saveTask(task, UISessionService.getActiveUUID());
   };
 
   $scope.editTaskFields = function(task) {
@@ -135,12 +102,12 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     $scope.context = null;
     $scope.subtask = {};
     SwiperService.swipeTo('tasks/details');
-  }
+  };
   $scope.showNoDateTasksDetails = function() {
     $scope.context = 0;
     $scope.subtask = {};
     SwiperService.swipeTo('tasks/details');
-  }
+  };
 
   $scope.deleteContextAndShowContexts = function(context) {
     SwiperService.swipeTo('tasks/contexts');

@@ -174,14 +174,14 @@ function accordionDirective($document) {
               $scope.openTitle = undefined;
               $scope.unbindElsewhereEvents();
             });
-          }
         }
-      };
-    },
-    link: function(scope, element) {
-      element.addClass('accordion');
-    }
-  };
+      }
+    };
+  },
+  link: function(scope, element) {
+    element.addClass('accordion');
+  }
+};
 }
 accordionDirective.$inject = ['$document'];
 angular.module('em.directives').directive('accordion', accordionDirective);

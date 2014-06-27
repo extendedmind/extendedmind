@@ -77,7 +77,9 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
 
   $scope.noteQuickEditDone = function(note) {
     AnalyticsService.do('noteQuickEditDone');
-    NotesService.saveNote(note, UISessionService.getActiveUUID());
+    $scope.saveUnsavedListAndLinkToItem(note).then(function() {
+      NotesService.saveNote(note, UISessionService.getActiveUUID());
+    });
   };
 
   $scope.editNoteFields = function(note) {

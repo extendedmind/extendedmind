@@ -1,8 +1,18 @@
 <div id="noteCoreFields" class="swiper-no-swiping" data-snap-ignore="true">
-  <div class="form-group">
-    <label class="sr-only" for="noteParent">parent</label>
-    <select class="simple-input swiper-no-swiping" id="noteParent" ng-model="note.relationships.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
-      <option value="">select list...</option>
-    </select>
+  <div lists-select-options>
+    <div ng-if="!addNewListVisible" class="form-group select-list-visible-animation">
+      <label class="sr-only" for="noteParent">parent</label>
+      <select class="simple-input swiper-no-swiping" id="noteParent" ng-model="note.relationships.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
+        <option value="">select list...</option>
+      </select>
+    </div>
+    <div ng-if="addNewListVisible" class="form-group select-list-visible-animation">
+      <div class="left-input-wrapper">
+        <input type="text" class="simple-input" ng-model="newList.title" placeholder="add list..."/>
+      </div>
+      <div class="right-button-wrapper item-actions">
+        <a href class="smallest-font add-new-list-item-cancel" ng-click="setAddNewListHidden()">cancel</a>
+      </div>
+    </div>
   </div>
 </div>

@@ -52,7 +52,9 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
 
   $scope.taskEditDone = function(task) {
     AnalyticsService.do('itemToTaskDone');
-    ItemsService.itemToTask(task, UISessionService.getActiveUUID());
+    $scope.saveUnsavedListAndLinkToItem(task).then(function() {
+      ItemsService.itemToTask(task, UISessionService.getActiveUUID());
+    });
     $scope.resetInboxEdit();
   };
 
@@ -69,7 +71,9 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
 
   $scope.noteEditDone = function(note) {
     AnalyticsService.do('itemToNoteDone');
-    ItemsService.itemToNote(note, UISessionService.getActiveUUID());
+    $scope.saveUnsavedListAndLinkToItem(note).then(function() {
+      ItemsService.itemToNote(note, UISessionService.getActiveUUID());
+    });
     $scope.resetInboxEdit();
   };
 }

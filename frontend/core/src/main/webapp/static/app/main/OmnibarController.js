@@ -211,21 +211,28 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
   };
 
   $scope.saveOmnibarText = function saveOmnibarText() {
+
+    function saveItem() {
+      return omnibarFeatures[activeOmnibarFeature].itemSaveMethod($scope[activeOmnibarFeature], UISessionService.getActiveUUID());
+    }
+
+    function performTearDown() {
+      if (!$scope.isItemEditMode && !$scope.isItemAddMode){
+        UISessionService.setToasterNotification(omnibarFeatures[activeOmnibarFeature].saveItemLocation);
+      }
+      if (!$scope.isItemEditMode || $scope.isItemAddMode){
+        if ($scope.getOnboardingPhase() === 'itemAdded' || $scope.getOnboardingPhase() === 'sortingStarted'){
+          $scope.setOnboardingPhase('secondItemAdded');
+        }
+      }
+      $scope.clearAndHideOmnibar();
+    }
+
     var activeOmnibarFeature;
     if ($scope.omnibarHasText() && !$rootScope.isLoading) {
       activeOmnibarFeature = $scope.getActiveOmnibarFeature();
       $scope[activeOmnibarFeature].title = $scope.omnibarText.title;
-      omnibarFeatures[activeOmnibarFeature].itemSaveMethod($scope[activeOmnibarFeature], UISessionService.getActiveUUID()).then(function() {
-        if (!$scope.isItemEditMode && !$scope.isItemAddMode){
-          UISessionService.setToasterNotification(omnibarFeatures[activeOmnibarFeature].saveItemLocation);
-        }
-        if (!$scope.isItemEditMode || $scope.isItemAddMode){
-          if ($scope.getOnboardingPhase() === 'itemAdded' || $scope.getOnboardingPhase() === 'sortingStarted'){
-            $scope.setOnboardingPhase('secondItemAdded');
-          }
-        }
-        $scope.clearAndHideOmnibar();
-      });
+      $scope.saveUnsavedListAndLinkToItem($scope[activeOmnibarFeature]).then(saveItem).then(performTearDown);
     }
   };
 
@@ -431,7 +438,7 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
     selectedOmnibarKeywords = [];
   };
 
-  // Reset item transcend values, then clear and hide omnibar
+  // Reset item transient values, then clear and hide omnibar
   $scope.cancelOmnibarEdit = function cancelOmnibarEdit() {
     if ($scope.isItemEditMode || $scope.isItemAddMode) {
       var activeOmnibarFeature = $scope.getActiveOmnibarFeature();
