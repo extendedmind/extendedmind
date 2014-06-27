@@ -12,7 +12,7 @@ Default installation location on OS X is `/usr/local/etc/nginx/nginx.conf`
 	location / {
     root  [extendedmind_home]/frontend/core/src/main/webapp;
     index  index_devel.html;
-    rewrite ^/(?!(static|api|collect|evaluate|landing|test)) /index_devel.html break;
+    rewrite ^/(?!(static|api|collect|evaluate|landing|test|styleguide)) /index_devel.html break;
   }
 ```
 After starting Nginx, the development version of extended mind should be running on 'localhost'. To add support for collecting analytics to Cube, also add
