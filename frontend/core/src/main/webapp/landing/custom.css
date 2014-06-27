@@ -58,6 +58,10 @@ p {
   }
 }
 
+.links a {
+  color: #0f82fe;
+}
+
 a.button {
   height: 44px;
   max-width: 300px;
