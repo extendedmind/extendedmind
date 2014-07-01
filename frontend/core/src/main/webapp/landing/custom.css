@@ -1,7 +1,7 @@
 /* Customize container */
 @media (min-width: 768px) {
   .container {
-    max-width: 880px;
+    max-width: 780px;
   }
 }
 
@@ -106,8 +106,4 @@ a.button:hover {
   font-size: 12px;
   font-style:italic;
   color: gray;
-}
-
-.column-right {
-  padding-left: 60px;
 }
