@@ -75,6 +75,21 @@ angular.module('em.filters').filter('itemsFilter', [
         }
         return filteredValues;
       };
+      itemsFilter.noDate = function(items) {
+
+        var filteredValues, i, sortedTask;
+        filteredValues = [];
+        i = 0;
+
+        while (items[i]) {
+          sortedTask = false;
+          if (!items[i].due) {
+            filteredValues.push(items[i]);
+          }
+          i++;
+        }
+        return filteredValues;
+      };
 
       if (filterValue) {
         return itemsFilter[filterValue.name](items, filterValue.filterBy);

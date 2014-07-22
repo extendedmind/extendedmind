@@ -136,6 +136,11 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     $scope.subtask = {};
     SwiperService.swipeTo('tasks/details');
   }
+  $scope.showNoDateTasksDetails = function() {
+    $scope.context = 0;
+    $scope.subtask = {};
+    SwiperService.swipeTo('tasks/details');
+  }
 
   $scope.deleteContextAndShowContexts = function(context) {
     SwiperService.swipeTo('tasks/contexts');
