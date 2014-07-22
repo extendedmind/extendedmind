@@ -253,32 +253,6 @@ function MainController(
     }
   };
 
-  // Layout for expanding text areas require a max height
-  // that needs to be defined programmatically
-
-  $scope.getEditTaskDescriptionMaxHeight = function() {
-    if ($scope.currentHeight <= 810){
-      return $scope.currentHeight - 320;
-    }else{
-      return 490;
-    }
-  };
-
-  $scope.getEditNoteContentMaxHeight = function() {
-    if ($scope.currentHeight <= 810){
-      return $scope.currentHeight - 150;
-    }else{
-      return 660;
-    }
-  };
-
-  $scope.getEditSimpleDescriptionMaxHeight = function() {
-    if ($scope.currentHeight <= 810){
-      return $scope.currentHeight - 180;
-    }else{
-      return 630;
-    }
-  };
 
   // INJECT OTHER CONTENT CONTROLLERS HERE
   // This is done because editX.html and xSlides.html

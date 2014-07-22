@@ -268,14 +268,14 @@ footer {
     float: left;
     overflow-y: auto;
     // height set with javascript
-    .omnibar-search {
+    .omnibar-search, .omnibar-empty-search-placeholder, .omnibar-task, .omnibar-note {
       height: 100%;
-      .omnibar-empty-search-placeholder {
-        height: 100%;
-      }
-      .filtered-items {
-        padding-top: @vertical-grid-half;
-      }
+    }
+    .omnibar-search .filtered-items {
+      padding-top: @vertical-grid-half;
+    }
+    .omnibar-scroll-container {
+      overflow-y: auto;
     }
   }
   .omnibar-footer {

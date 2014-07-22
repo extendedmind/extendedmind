@@ -39,16 +39,18 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
     }
   };
 
+  var MAX_CONTAINER_HEIGHT = 769;
   var omnibarActionsHeight = 44, omnibarContainerHeight = 156, keyboardHeight = 0;
   function getOmnibarStaticContentHeight() {
     return omnibarContainerHeight - ($scope.isItemEditMode || $scope.isItemAddMode ? omnibarActionsHeight : 0);
   }
 
   $scope.getOmnibarFeatureHeight = function getOmnibarFeatureHeight() {
-    if ($scope.currentHeight <= 769 || $scope.currentWidth <= 1025) {
+    if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
       return $scope.currentHeight - getOmnibarStaticContentHeight() - keyboardHeight;
+    }else {
+      return MAX_CONTAINER_HEIGHT - getOmnibarStaticContentHeight() - keyboardHeight;
     }
-    return 770 - getOmnibarStaticContentHeight() - keyboardHeight;
   };
 
   if ($rootScope.packaging === 'ios-cordova'){
@@ -59,6 +61,85 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
         keyboardHeight = 0;
       }
     });
+  }
+
+  // Layout for expanding text areas require a max height
+  // that needs to be defined programmatically
+
+  var taskDescriptionHasFocus = false;
+  var noteContentHasFocus = false;
+
+  $scope.getEditTaskDescriptionMaxHeight = function() {
+    var usedHeight = $scope.isItemEditMode || $scope.isItemAddMode ? 0 : omnibarActionsHeight;
+    if (taskDescriptionHasFocus){
+      usedHeight += 160;
+    }else{
+      usedHeight += 290;
+      if ($scope.task && $scope.task.date){
+        usedHeight += 44;
+      }
+    }
+
+    if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
+      var calculatedHeight = $scope.currentHeight - usedHeight - keyboardHeight;
+      return (calculatedHeight < 44 ? 44 : calculatedHeight);
+    }else{
+      return MAX_CONTAINER_HEIGHT - usedHeight - keyboardHeight;
+    }
+  };
+
+  $scope.getEditNoteContentMaxHeight = function() {
+    var usedHeight = $scope.isItemEditMode || $scope.isItemAddMode ? 0 : omnibarActionsHeight;
+    if (noteContentHasFocus)
+      usedHeight += 160;
+    else
+      usedHeight += $scope.noteHasKeywords() ? 240 : 204;
+    if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
+      var calculatedHeight = $scope.currentHeight - usedHeight - keyboardHeight;
+      return (calculatedHeight < 44 ? 44 : calculatedHeight);
+    }else{
+      return MAX_CONTAINER_HEIGHT - usedHeight - keyboardHeight;
+    }
+  };
+
+  $scope.getSearchPlaceholderMaxHeight = function() {
+    var usedHeight = 44 + getOmnibarStaticContentHeight();
+    if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
+      return $scope.currentHeight - usedHeight - keyboardHeight;
+    }else{
+      return MAX_CONTAINER_HEIGHT - usedHeight - keyboardHeight;
+    }
+  }
+
+  function scrollToBottom(id){
+    if ($rootScope.packaging === 'ios-cordova'){
+      // Scroll programmatically to the end as scrolling is disabled in keyboard
+      var noteContentContainer = document.getElementById(id);
+      noteContentContainer.scrollTop = noteContentContainer.scrollHeight;
+    }
+  }
+
+  $scope.noteContentFocus = function() {
+    noteContentHasFocus = true;
+    scrollToBottom('note-content-container');
+  }
+  $scope.noteContentBlur = function() {
+    noteContentHasFocus = false;
+  }
+  $scope.hideNoteProperties = function() {
+    return noteContentHasFocus;
+  }
+
+  $scope.taskDescriptionFocus = function() {
+    taskDescriptionHasFocus = true;
+    scrollToBottom('task-description-container');
+  }
+  $scope.taskDescriptionBlur = function() {
+    taskDescriptionHasFocus = false;
+  }
+
+  $scope.hideTaskProperties = function() {
+    return taskDescriptionHasFocus;
   }
 
   $scope.getOmnibarVisibilityClass = function getOmnibarVisibilityClass() {
