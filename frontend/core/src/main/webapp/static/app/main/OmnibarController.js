@@ -111,17 +111,8 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
     }
   }
 
-  function scrollToBottom(id){
-    if ($rootScope.packaging === 'ios-cordova'){
-      // Scroll programmatically to the end as scrolling is disabled in keyboard
-      var noteContentContainer = document.getElementById(id);
-      noteContentContainer.scrollTop = noteContentContainer.scrollHeight;
-    }
-  }
-
   $scope.noteContentFocus = function() {
     noteContentHasFocus = true;
-    scrollToBottom('note-content-container');
   }
   $scope.noteContentBlur = function() {
     noteContentHasFocus = false;
@@ -129,10 +120,8 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
   $scope.hideNoteProperties = function() {
     return noteContentHasFocus;
   }
-
   $scope.taskDescriptionFocus = function() {
     taskDescriptionHasFocus = true;
-    scrollToBottom('task-description-container');
   }
   $scope.taskDescriptionBlur = function() {
     taskDescriptionHasFocus = false;
