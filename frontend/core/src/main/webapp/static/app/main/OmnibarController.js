@@ -204,7 +204,7 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
 
   $scope.saveOmnibarText = function saveOmnibarText() {
     var activeOmnibarFeature;
-    if ($scope.omnibarHasText() && !$scope.isLoading) {
+    if ($scope.omnibarHasText() && !$rootScope.isLoading) {
       activeOmnibarFeature = $scope.getActiveOmnibarFeature();
       $scope[activeOmnibarFeature].title = $scope.omnibarText.title;
       omnibarFeatures[activeOmnibarFeature].itemSaveMethod($scope[activeOmnibarFeature], UISessionService.getActiveUUID()).then(function() {

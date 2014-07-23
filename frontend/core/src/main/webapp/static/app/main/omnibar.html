@@ -183,7 +183,7 @@
 
   <div class="omnibar-footer small-font">
     <button type="button" class="button transparent-button omnibar-footer-button-left" ng-click="cancelOmnibarEdit()">cancel</button>
-    <button type="submit" class="button transparent-button omnibar-footer-button-right" ng-click="saveOmnibarText()" ng-disabled="!addOmniItem.$valid" ng-bind="getOmnibarFooterSaveText()"></button>
+    <button type="submit" class="button transparent-button omnibar-footer-button-right" ng-click="saveOmnibarText()" ng-disabled="!addOmniItem.$valid || isLoading" ng-bind="getOmnibarFooterSaveText()"></button>
   </div>
 
 </div>
