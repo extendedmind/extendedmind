@@ -27,4 +27,4 @@ case class InviteBypass(inviteCoupon: Option[String])
 case class Invite(uuid: Option[UUID], email: String, code: Long, accepted: Option[Long], message: Option[String], emailId: Option[String], modified: Option[Long])
 case class InviteResult(email: String, code: String, accepted: Option[Long], message: Option[String], emailId: Option[String])
 
-case class InviteRequestResult(resultType: InviteRequestResultType, result: Option[SetResult], queueNumber: Option[Int])
+case class InviteRequestResult(resultType: InviteRequestResultType, result: Option[SetResult], queueNumber: Option[Int], code: Option[String])

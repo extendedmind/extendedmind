@@ -70,7 +70,7 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implNewPassword = jsonFormat1(NewPassword.apply)
   implicit val implCountResult = jsonFormat1(CountResult.apply)
   implicit val implInviteRequest = jsonFormat5(InviteRequest.apply)
-  implicit val implInviteRequestResult = jsonFormat3(InviteRequestResult.apply)
+  implicit val implInviteRequestResult = jsonFormat4(InviteRequestResult.apply)
   implicit val implInviteBypass = jsonFormat1(InviteBypass.apply)
   implicit val implInviteRequests = jsonFormat1(InviteRequests.apply)
   implicit val implInviteRequestQueueNumber = jsonFormat1(InviteRequestQueueNumber.apply)

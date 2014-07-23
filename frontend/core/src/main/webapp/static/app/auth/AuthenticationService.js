@@ -218,14 +218,23 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     else if (inviteRequestResponse.data.resultType === 'inviteRequest') {
       redirectToInviteWaitingPage();
     }
-    // Redirect invited user to waiting page, then show info text
+    // Redirect invited user either to sign up page or to to waiting page
     else if (inviteRequestResponse.data.resultType === 'invite') {
-      $location.path('/waiting');
-      $location.search({
-        uuid: inviteRequestResponse.data.result.uuid,
-        email: user.email,
-        invite: true
-      });
+      if (inviteRequestResponse.data.code){
+        // Code given directly, go to sign up
+        $location.path('/accept/' + inviteRequestResponse.data.code);
+          $location.search({
+            email: user.email,
+            bypass: true
+          });
+      }else {
+        $location.path('/waiting');
+        $location.search({
+          uuid: inviteRequestResponse.data.result.uuid,
+          email: user.email,
+          invite: true
+        });
+      }
     }
     // Redirect existing user to front page.
     else if (inviteRequestResponse.data.resultType === 'user') {
