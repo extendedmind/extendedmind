@@ -145,6 +145,11 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
     });
   }
 
+  function sanitizeEmail(email){
+    if (email){
+      return email.toLowerCase();
+    }
+  }
 
   function authenticate(remember) {
     return BackendClientService.postOnline('/api/authenticate', postAuthenticateRegexp,
@@ -204,6 +209,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
   }
 
   function checkEmailStatus(inviteRequestResponse, user) {
+    user.email = sanitizeEmail(user.email);
     // Redirect user with new invite request to waiting page, then show queue.
     if (inviteRequestResponse.data.resultType === 'newInviteRequest') {
       redirectToInviteWaitingPage();
@@ -264,7 +270,7 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
   }
 
   function postInviteRequestBypass(uuid, email, coupon) {
-    var payload = {email: email};
+    var payload = {email: sanitizeEmail(email)};
     if (coupon){
       payload.inviteCoupon = coupon;
     }
@@ -296,11 +302,11 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
         BackendClientService.postOnline(
           '/api/invite/request',
           postInviteRequestRegexp,
-          {email: UserSessionService.getEmail(),
+          {email: sanitizeEmail(UserSessionService.getEmail()),
            bypass: true},
           true)
         .then(function(response) {
-          checkEmailStatus(response, {email: UserSessionService.getEmail()});
+          checkEmailStatus(response, {email: sanitizeEmail(UserSessionService.getEmail())});
         });
       } else {
         $location.path('/launch');
@@ -317,28 +323,28 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
       });
     },
     getInvite: function(inviteResponseCode, email) {
-      return BackendClientService.get('/api/invite/' + inviteResponseCode + '?email=' + email,
+      return BackendClientService.get('/api/invite/' + inviteResponseCode + '?email=' + sanitizeEmail(email),
         getInviteRegexp, true);
     },
     postInviteRequest: function(email) {
       return BackendClientService.postOnline(
         '/api/invite/request',
         postInviteRequestRegexp,
-        {email: email,
+        {email: sanitizeEmail(email),
          bypass: true},
         true,
         [0, 400, 404, 502])
       .then(function(inviteRequestResponse) {
-        UserSessionService.setEmail(email);
+        UserSessionService.setEmail(sanitizeEmail(email));
         return inviteRequestResponse;
       });
     },
     postInviteRequestBypass: function(uuid, email, coupon) {
-      return postInviteRequestBypass(uuid, email, coupon);
+      return postInviteRequestBypass(uuid, sanitizeEmail(email), coupon);
     },
     resendInvite: function(uuid, email) {
       return BackendClientService.postOnline('/api/invite/' + uuid + '/resend',
-        resendInviteRegexp, {email: email}, true);
+        resendInviteRegexp, {email: sanitizeEmail(email)}, true);
     },
     acceptInvite: function(inviteResponseCode, data) {
       return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',
@@ -352,33 +358,33 @@ function AuthenticationService($rootScope, $location, $q, BackendClientService, 
       return BackendClientService.postOnline(
         '/api/password/forgot',
         postForgotPasswordRegexp,
-        {email: email}, true);
+        {email: sanitizeEmail(email)}, true);
     },
     getPasswordResetExpires: function(resetCode, email) {
       return BackendClientService.get(
-        '/api/password/' + resetCode + '?email=' + email,
+        '/api/password/' + resetCode + '?email=' + sanitizeEmail(email),
         getPasswordResetExpiresRegexp,
-        {email: email});
+        {email: sanitizeEmail(email)});
     },
     postResetPassword: function(resetCode, email, password) {
       return BackendClientService.postOnline(
         '/api/password/' + resetCode + '/reset',
         postResetPasswordRegexp,
-        {email: email,
+        {email: sanitizeEmail(email),
          password: password}, true);
     },
     postVerifyEmail: function(resetCode, email) {
       return BackendClientService.postOnline(
         '/api/email/' + resetCode + '/verify',
         postVerifyEmailRegexp,
-        {email: email}, true);
+        {email: sanitizeEmail(email)}, true);
     },
     putChangePassword: function(email, currentPassword, newPassword) {
       return BackendClientService.putOnlineWithUsernamePassword(
         '/api/password',
         this.putChangePasswordRegex,
         {password: newPassword},
-        email,
+        sanitizeEmail(email),
         currentPassword);
     },
     // Regular expressions for account requests
