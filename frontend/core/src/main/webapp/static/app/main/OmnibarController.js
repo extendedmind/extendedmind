@@ -136,7 +136,12 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
   };
 
   $scope.closeOmnibar = function closeOmnibar() {
-    if ($scope.omnibarVisible) $scope.omnibarVisible = false;
+    if ($scope.omnibarVisible){
+      $scope.omnibarVisible = false;
+      if ($rootScope.packaging === 'ios-cordova'){
+        cordova.plugins.Keyboard.disableScroll(false);
+      }
+    }
   };
 
   $scope.omnibarHasText = function omnibarHasText() {
@@ -163,6 +168,9 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
   // TODO analytics visit omnibar
   $scope.openOmnibar = function openOmnibar(feature) {
     if (!$scope.onboardingInProgress){
+      if ($rootScope.packaging === 'ios-cordova'){
+        cordova.plugins.Keyboard.disableScroll(true);
+      }
       AnalyticsService.visit('omnibar');
       $scope.setOmnibarFeatureActive(feature);
       $scope.omnibarVisible = true;
@@ -416,7 +424,7 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
 
   $scope.clearAndHideOmnibar = function clearAndHideOmnibar() {
     $scope.clearOmnibar();
-    $scope.omnibarVisible = false;
+    $scope.closeOmnibar();
     $scope.isItemEditMode = false;
     $scope.isItemAddMode = false;
     $scope.omnibarKeywords.isVisible = false;
