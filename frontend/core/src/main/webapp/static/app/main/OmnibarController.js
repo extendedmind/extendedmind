@@ -411,6 +411,7 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
 
   $scope.clearOmnibar = function clearOmnibar() {
     $scope.omnibarText = {};
+    currentOmnibarStyle = undefined;
   };
 
   $scope.clearAndHideOmnibar = function clearAndHideOmnibar() {
