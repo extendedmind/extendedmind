@@ -363,7 +363,7 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
 
   var currentOmnibarStyle;
   $scope.getOmnibarClass = function getOmnibarClass(){
-    if ($scope.omnibarText.title && $scope.omnibarText.title.length > 15){
+    if ($scope.omnibarText.title && $scope.omnibarText.title.length > 10){
       var omnibarWidth;
       if ($rootScope.currentWidth >= 568){
         // Maximum width for column
@@ -382,13 +382,13 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
       }
 
       var currentTextWidth = getTextWidth($scope.omnibarText.title, fontSize + " sans-serif");
-      if (currentOmnibarStyle === 'omnibar-input-very-long' || (currentTextWidth / 2 + 10) > omnibarWidth){
+      if (currentOmnibarStyle === 'omnibar-input-very-long' || (currentTextWidth / 2 + 25) > omnibarWidth){
         if (currentOmnibarStyle !== 'omnibar-input-very-long'){
           $rootScope.$broadcast('elastic:adjust');
           currentOmnibarStyle = 'omnibar-input-very-long';
         }
       }
-      else if (currentOmnibarStyle === 'omnibar-input-long' || (currentTextWidth / 2 + 30) > omnibarWidth){
+      else if (currentOmnibarStyle === 'omnibar-input-long' || (currentTextWidth / 2 + 35) > omnibarWidth){
         if (currentOmnibarStyle !== 'omnibar-input-long'){
           $rootScope.$broadcast('elastic:adjust');
           currentOmnibarStyle = 'omnibar-input-long';
