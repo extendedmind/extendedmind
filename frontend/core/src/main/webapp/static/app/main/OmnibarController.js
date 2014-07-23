@@ -343,9 +343,27 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
     if ($scope.omnibarKeywords.isVisible) selectedOmnibarKeywords = [];
   };
 
+  /**
+  * Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
+  *
+  * @param {String} text The text to be rendered.
+  * @param {String} font The css font descriptor that text is to be rendered with (e.g. "bold 14px verdana").
+  *
+  * @see http://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
+  */
+  function getTextWidth(text, font) {
+    // re-use canvas object for better performance
+    var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
+    var context = canvas.getContext("2d");
+    context.font = font;
+    var metrics = context.measureText(text);
+    return metrics.width;
+  };
+
+
   var currentOmnibarStyle;
   $scope.getOmnibarClass = function getOmnibarClass(){
-    if ($scope.omnibarText.title){
+    if ($scope.omnibarText.title && $scope.omnibarText.title.length > 15){
       var omnibarWidth;
       if ($rootScope.currentWidth >= 568){
         // Maximum width for column
@@ -353,18 +371,29 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
       }else {
         omnibarWidth = $rootScope.currentWidth - 98;
       }
-      if ($scope.omnibarText.title.length > omnibarWidth * 0.4){
+
+      var fontSize = '21px';
+      if (currentOmnibarStyle === 'omnibar-input-very-long'){
+        fontSize = '12px';
+      }else if (currentOmnibarStyle === 'omnibar-input-long'){
+        fontSize = '15px';
+      }else if (currentOmnibarStyle === 'omnibar-input-medium'){
+        fontSize = '18px';
+      }
+
+      var currentTextWidth = getTextWidth($scope.omnibarText.title, fontSize + " sans-serif");
+      if (currentOmnibarStyle === 'omnibar-input-very-long' || (currentTextWidth / 2 + 10) > omnibarWidth){
         if (currentOmnibarStyle !== 'omnibar-input-very-long'){
           $rootScope.$broadcast('elastic:adjust');
           currentOmnibarStyle = 'omnibar-input-very-long';
         }
       }
-      else if ($scope.omnibarText.title.length > omnibarWidth * 0.25){
+      else if (currentOmnibarStyle === 'omnibar-input-long' || (currentTextWidth / 2 + 30) > omnibarWidth){
         if (currentOmnibarStyle !== 'omnibar-input-long'){
           $rootScope.$broadcast('elastic:adjust');
           currentOmnibarStyle = 'omnibar-input-long';
         }
-      }else if ($scope.omnibarText.title.length > omnibarWidth * 0.13){
+      }else if (currentOmnibarStyle === 'omnibar-input-medium' || (currentTextWidth + 20) > omnibarWidth){
         if (currentOmnibarStyle !== 'omnibar-input-medium'){
           $rootScope.$broadcast('elastic:adjust');
           currentOmnibarStyle = 'omnibar-input-medium';
@@ -373,6 +402,8 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
         currentOmnibarStyle = undefined;
       }
       return currentOmnibarStyle;
+    }else {
+      currentOmnibarStyle = undefined;
     }
   };
 
