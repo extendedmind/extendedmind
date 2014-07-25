@@ -11,7 +11,7 @@ Default installation location on OS X is `/usr/local/etc/nginx/nginx.conf`
 ```
 	location / {
     root  [extendedmind_home]/frontend/core/src/main/webapp;
-    index  index_devel.html;
+    index  index_devel.html index.html;
     rewrite ^/(?!(static|api|collect|evaluate|landing|test|styleguide)) /index_devel.html break;
   }
 ```
