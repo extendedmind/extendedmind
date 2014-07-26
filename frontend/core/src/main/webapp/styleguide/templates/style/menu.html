@@ -1,0 +1,16 @@
+<ul class="phytoplankton-menu__list phytoplankton-menu__list--first">
+	<% _.each(menus, function (menu) { %>
+		<li class="phytoplankton-menu__list__item">
+			<%= menu.category %>
+			<ul class="phytoplankton-menu__list">
+				<% _.each(menu.sheets, function (sheet) { %>
+					<li class="phytoplankton-menu__list__item has-triangle" data-sheet="<%= sheet %>">
+						<a class="phytoplankton-menu__list__item__link" href="#/<%= sheet %>">
+							<%= sheet %>
+						</a>
+					</li>
+				<% }); %>
+			</ul>
+		</li>
+	<% }); %>
+</ul>

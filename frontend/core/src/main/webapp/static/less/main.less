@@ -2,6 +2,10 @@
 Fundamentals that affect the whole app.
 */
 
+@import "normalize.less";
+@import "variables.less";
+@import "common.less";
+
 * {
   // Use the same font throughout
   font-family: @font;
@@ -21,20 +25,6 @@ Fundamentals that affect the whole app.
   // Default to no background repeat
   background-repeat: no-repeat;
 }
-
-.font-bold {
-  font-family: @font-bold;
-  font-weight: 700;
-}
-
-.small-font {
-  font-size: @small-font-size;
-}
-
-.smallest-font {
-  font-size: @smallest-font-size;
-}
-
 
 html {
   // There is never any full page scrolling

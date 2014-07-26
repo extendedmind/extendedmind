@@ -2,6 +2,10 @@
 Only universal code that would work by itself in any web page.
 */
 
+@import "normalize.less";
+@import "variables.less";
+@import "icon.less";
+
 // ABSOLUTE CENTER
 
 .center-container {
@@ -104,6 +108,21 @@ Only universal code that would work by itself in any web page.
   transition: @fade-time linear;
 }
 
+// TYPOGRAPHY
+
+.font-bold {
+  font-family: @font-bold;
+  font-weight: 700;
+}
+
+.small-font {
+  font-size: @small-font-size;
+}
+
+.smallest-font {
+  font-size: @smallest-font-size;
+}
+
 // FORMS
 
 .form-group {
@@ -142,7 +161,21 @@ Only universal code that would work by itself in any web page.
   text-align: center;
 }
 
-// INPUTS
+/*
+
+# Inputs
+
+Add `.simple-input` to any of the following HTML tags to create minimalist inputs:
+
+* `<input>`
+* `<textarea>`
+
+```markup
+<!-- Default input -->
+<input type="text" class="simple-input" value="simple input"/>
+<textarea class="simple-input">simple textarea</textarea>
+```
+*/
 
 .simple-input {
   outline: none;
