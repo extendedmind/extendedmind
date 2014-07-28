@@ -1,0 +1,6 @@
+# Authors ordered by first contribution.
+
+Timo Tiuraniemi <timo.tiuraniemi@iki.fi>
+JP Salo <jukapeka@gmail.com>
+Tuomas Saarela <tuomas.saarela@iki.fi>
+Joonas Jokela <joonas.jokela@meshtactics.com>

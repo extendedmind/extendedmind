@@ -1,20 +1,18 @@
-
-NOTICE
-
 This package contains software licensed under different
 licenses, please refer to the NOTICE.txt file for further
-information and LICENSES.txt for full license texts.
+information.
 
-Parts of the software ("Software") is licensed under the GNU AFFERO
-GENERAL PUBLIC LICENSE Version 3 to all third parties and that license is
-included below.
+Parts of the software ("Software") is licensed under the GNU 
+AFFERO GENERAL PUBLIC LICENSE Version 3 to all third parties and 
+that license is included below.
 
-Other parts of the software ("Software") is licensed under the Apache
-License Version 2.0 to all third parties and that license is
-included below.
+Other parts of the software ("Software") is licensed 
+under the Apache License Version 2.0 to all third parties and that 
+license is included below.
 
-See the corresponding pom.xml to verify which licence applies to
-which parts.
+Each directory has a pom.xml which also explicitly states the 
+licence that applies to the Extended Mind source code under that
+directory.
 
 ********************************************************************
 

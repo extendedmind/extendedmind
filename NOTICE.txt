@@ -1,26 +1,29 @@
 Extended Mind
 -------------
 
-Copyright (c) 2013 Extended Mind Technologies Oy.
+Copyright (c) 2013-2014 Extended Mind Technologies Oy.
 
 This product includes software ("Software") developed by Extended Mind
 Technologies Oy and its contributors.
 
-Parts of the software ("Software") is licensed under the GNU AFFERO GENERAL
-PUBLIC LICENSE Version 3 to all third parties and that license is
-included below.
+Parts of the software ("Software") - specifically source code under
+the "backend" and "e2e" directories - is licensed under the GNU
+AFFERO GENERAL PUBLIC LICENSE Version 3 to all third parties and
+that license is included below.
 
-Other parts of the software ("Software") is licensed under the Apache
-License Version 2.0, January 2004 to all third parties and that
+Other parts of the software ("Software") - specifically Extended
+Mind source code found under the "frontend" directory - is licensed
+under the Apache License Version 2.0 to all third parties and that
 license is included below.
 
-See the corresponding pom.xml to verify which licence applies to
-which parts.
+Each top level directory has a pom.xml which also explicitly states the
+licence that applies to the Extended Mind source code under that
+directory.
 
-The licenses, as required by the AGPL are included in the LICENSE.txt file.
+The licenses, as required by the AGPL are included in the LICENSE file.
 
-Third party libraries
+Third Party Libraries
 ---------------------
 
-See the NOTICE.txt and LICENSES.txt files in the subdirectories for
-information on included third party software.
+See the file THIRD-PARTY.txt for information on included third party
+software.
