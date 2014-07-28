@@ -1,6 +1,20 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 'use strict';
 
-function AccountController($rootScope, $location, $scope, AccountService, AnalyticsService, UserSessionService, UISessionService) {
+ function AccountController($location, $rootScope, $scope, AccountService, AnalyticsService, UISessionService, UserSessionService) {
 
   $scope.isUserVerified = false;
   AnalyticsService.visit('account');
@@ -27,7 +41,7 @@ function AccountController($rootScope, $location, $scope, AccountService, Analyt
       UISessionService.setMyActive();
       UISessionService.changeFeature('tasks');
       $location.path('/my');
-    }else{
+    } else {
       $scope.toggleMenu();
     }
   };
@@ -37,7 +51,7 @@ function AccountController($rootScope, $location, $scope, AccountService, Analyt
       UISessionService.setCollectiveActive(uuid);
       UISessionService.changeFeature('tasks');
       $location.path('/collective/' + uuid);
-    }else{
+    } else {
       $scope.toggleMenu();
     }
   };
@@ -45,7 +59,7 @@ function AccountController($rootScope, $location, $scope, AccountService, Analyt
   $scope.getMyClass = function getMyClass() {
     if (UISessionService.getOwnerPrefix() === 'my') {
       return 'active';
-    }else{
+    } else {
       return 'highlighted-link';
     }
   };
@@ -53,7 +67,7 @@ function AccountController($rootScope, $location, $scope, AccountService, Analyt
   $scope.getCollectiveClass = function getCollectiveClass(uuid) {
     if (UISessionService.getOwnerPrefix() === 'collective/' + uuid) {
       return 'active';
-    }else{
+    } else {
       return 'highlighted-link';
     }
   };
@@ -67,5 +81,5 @@ function AccountController($rootScope, $location, $scope, AccountService, Analyt
   };
 }
 
-AccountController['$inject'] = ['$rootScope', '$location', '$scope', 'AccountService', 'AnalyticsService', 'UserSessionService', 'UISessionService'];
+AccountController['$inject'] = ['$location', '$rootScope', '$scope', 'AccountService', 'AnalyticsService', 'UISessionService', 'UserSessionService'];
 angular.module('em.app').controller('AccountController', AccountController);
