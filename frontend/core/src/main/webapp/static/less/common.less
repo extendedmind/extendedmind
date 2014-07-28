@@ -6,15 +6,13 @@ Only universal code that would work by itself in any web page.
 @import "variables.less";
 @import "icon.less";
 
-// http://coding.smashingmagazine.com/2013/08/09/absolute-horizontal-vertical-centering-css/
-.absolute-center {
-  width: 50%;
-  height: 50%;
-  overflow: auto;
-  margin: auto;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-}
+/*
+
+# Positioning
+
+`.center-horizontally` centers the container by making the browser to calculate left and right margins automatically.
+
+*/
 
 .center-horizontally {
   margin-left: auto;
