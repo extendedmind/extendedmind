@@ -3,19 +3,19 @@
 function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
   $scope.activeDay = {};
   $scope.weekdays = DateService.activeWeek();
-  $scope.datepickerWeeks = DateService.datepickerWeeks();
+  $scope.datepickerWeeks = DateService.getDatepickerWeeks();
   $rootScope.isDatepickerVisible = false;
 
-  DateService.registerDayChangeCallback(dayChangeCallback);
+  DateService.registerDayChangedCallback(dayChangeCallback);
   function dayChangeCallback(weekChanged) {
     if (weekChanged) {
       $scope.weekdays = DateService.activeWeek();
-      $scope.datepickerWeeks = DateService.datepickerWeeks();
+      $scope.datepickerWeeks = DateService.getDatepickerWeeks();
     }
     swipeToStartingDay();
   }
   $scope.$on('$destroy', function() {
-    DateService.removeDayChangeCallback();
+    DateService.removeDayChangedCallback();
   });
 
   function getDateSlidePath(activeDay){
@@ -28,9 +28,9 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
     $scope.datepickerWeeks = DateService.changeDatePickerWeeks(direction);
     cb().then($scope.$digest()).then(function() {
       if (direction === 'prev') {
-        $scope.weekdays = DateService.previousWeek();
+        $scope.weekdays = DateService.generateAndReturnPreviousWeek();
       } else if (direction === 'next') {
-        $scope.weekdays = DateService.nextWeek();
+        $scope.weekdays = DateService.generateAndReturnNextWeek();
       }
       var newActiveDay = $scope.weekdays[weekdayIndex];
       swipeToStartingDay(newActiveDay);
@@ -48,13 +48,13 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
     DatesController);
 
   function negativeResistancePullToRefreshCallback() {
-    $scope.weekdays = DateService.previousWeek();
+    $scope.weekdays = DateService.generateAndReturnPreviousWeek();
     $scope.datepickerWeeks = DateService.changeDatePickerWeeks('prev');
     var newActiveDay = $scope.weekdays[6];
     swipeToStartingDay(newActiveDay);
   }
   function positiveResistancePullToRefreshCallback() {
-    $scope.weekdays = DateService.nextWeek();
+    $scope.weekdays = DateService.generateAndReturnNextWeek();
     $scope.datepickerWeeks = DateService.changeDatePickerWeeks('next');
     var newActiveDay = $scope.weekdays[0];
     swipeToStartingDay(newActiveDay);
@@ -94,7 +94,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
 
   $scope.previousWeek = function() {
     var weekdayIndex = $scope.activeDay.weekdayIndex;
-    $scope.weekdays = DateService.previousWeek();
+    $scope.weekdays = DateService.generateAndReturnPreviousWeek();
     $scope.datepickerWeeks = DateService.changeDatePickerWeeks('prev');
     var newActiveDay = $scope.weekdays[weekdayIndex];
     swipeToStartingDay(newActiveDay);
@@ -102,7 +102,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
 
   $scope.nextWeek = function() {
     var weekdayIndex = $scope.activeDay.weekdayIndex;
-    $scope.weekdays = DateService.nextWeek();
+    $scope.weekdays = DateService.generateAndReturnNextWeek();
     $scope.datepickerWeeks = DateService.changeDatePickerWeeks('next');
     var newActiveDay = $scope.weekdays[weekdayIndex];
     swipeToStartingDay(newActiveDay);
@@ -164,7 +164,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
 
   function gotoToday() {
     if (!DateService.getTodayDate()) {
-      $scope.weekdays = DateService.setCurrentWeekActive();
+      $scope.weekdays = DateService.generateAndSetCurrentWeekActive();
     }
     swipeToStartingDay();
   }
