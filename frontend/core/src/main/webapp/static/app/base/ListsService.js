@@ -198,30 +198,30 @@
     // Regular expressions for list requests
     putNewListRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     listRegex.source),
+      BackendClientService.uuidRegex.source +
+      listRegex.source),
     putExistingListRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     listSlashRegex.source +
-     BackendClientService.uuidRegex.source),
+      BackendClientService.uuidRegex.source +
+      listSlashRegex.source +
+      BackendClientService.uuidRegex.source),
     deleteListRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     listSlashRegex.source +
-     BackendClientService.uuidRegex.source),
+      BackendClientService.uuidRegex.source +
+      listSlashRegex.source +
+      BackendClientService.uuidRegex.source),
     undeleteListRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     listSlashRegex.source +
-     BackendClientService.uuidRegex.source  +
-     BackendClientService.undeleteRegex.source),
+      BackendClientService.uuidRegex.source +
+      listSlashRegex.source +
+      BackendClientService.uuidRegex.source  +
+      BackendClientService.undeleteRegex.source),
     archiveListRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     listSlashRegex.source +
-     BackendClientService.uuidRegex.source  +
-     archiveRegex.source),
+      BackendClientService.uuidRegex.source +
+      listSlashRegex.source +
+      BackendClientService.uuidRegex.source  +
+      archiveRegex.source),
     // Register callbacks that are fired for implicit archiving of
     // elements. Callback must return the latest modified value it
     // stores to its arrays.
