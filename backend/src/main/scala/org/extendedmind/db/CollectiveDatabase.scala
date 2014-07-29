@@ -145,7 +145,7 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     if (collectiveNode.isLeft) return collectiveNode
         
     val founderFromCollective: TraversalDescription = {
-        Traversal.description()
+        neo4j.gds.traversalDescription()
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_FOUNDER.name),
             Direction.INCOMING)
           .depthFirst()

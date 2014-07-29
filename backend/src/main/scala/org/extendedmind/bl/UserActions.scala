@@ -93,6 +93,16 @@ trait UserActions {
     db.putExistingUser(userUUID, user)
   }
   
+  def deleteUser(userUUID: UUID)(implicit log: LoggingAdapter): Response[DeleteItemResult] = {
+    log.info("deleteUser")
+    val destroyTokensResult = db.destroyTokens(userUUID)
+    if (destroyTokensResult.isLeft){
+      Left(destroyTokensResult.left.get)
+    }else{
+      db.deleteUser(userUUID)
+    }
+  }
+  
   def putEmail(userUUID: UUID, email: UserEmail)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putEmail")
     db.changeUserEmail(userUUID, email.email) match {

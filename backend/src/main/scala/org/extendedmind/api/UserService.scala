@@ -88,6 +88,19 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
+      deleteAccount { url =>
+        authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
+          complete {
+            Future[DeleteItemResult] {
+              setLogContext(securityContext)
+              userActions.deleteUser(securityContext.userUUID) match {
+                case Right(dr) => processResult(dr)
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      } ~
       putEmail { url =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           entity(as[UserEmail]) { email =>

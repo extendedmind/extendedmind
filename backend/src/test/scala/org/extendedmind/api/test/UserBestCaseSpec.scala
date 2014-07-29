@@ -44,6 +44,7 @@ import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
+import spray.http.StatusCodes._
 
 /**
  * Best case test for user routes. Also generates .json files.
@@ -145,6 +146,51 @@ class UserBestCaseSpec extends ServiceSpecBase {
       }
       val newEmailAuthenticateResponse = emailPasswordAuthenticate(newEmail.email, LAURI_PASSWORD)
       newEmailAuthenticateResponse.userUUID should not be None
+    }
+    it("should successfully delete user with DELETE to /account "
+      + "and resurrect user with new authenticate") {
+      val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      val authenticateResponse2 = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+
+      Delete("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD)) ~> route ~> check {
+        writeJsonOutput("deleteAccountResponse", responseAs[String])
+        val deleteAccountResponse = responseAs[DeleteItemResult]
+        deleteAccountResponse.result.modified should not be None
+        
+        // Should not be able to do anything else with any previous login
+        Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          status should be (Forbidden)
+          val failure = responseAs[String]
+          failure should startWith("Authentication failed")
+        }
+        Get("/" + authenticateResponse2.userUUID + "/items") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse2.token.get)) ~> route ~> check {
+          status should be (Forbidden)
+          val failure = responseAs[String]
+          failure should startWith("Authentication failed")
+        }
+      }
+      val adminAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      
+      Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", adminAuthenticateResponse.token.get)) ~> route ~> check {
+        val users = responseAs[Users]
+        val lauri = users.users.filter(user => {
+          if (user.email == LAURI_EMAIL) true
+          else false
+        })
+        lauri(0).deleted should not be None
+      }
+      
+      // Resurrect with new authenticate
+      val reauthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", adminAuthenticateResponse.token.get)) ~> route ~> check {
+        val users = responseAs[Users]
+        val lauri = users.users.filter(user => {
+          if (user.email == LAURI_EMAIL) true
+          else false
+        })
+        lauri(0).deleted should be(None)
+      }
+      
     }
   }
 

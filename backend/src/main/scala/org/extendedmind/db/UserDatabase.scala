@@ -132,6 +132,13 @@ trait UserDatabase extends AbstractGraphDatabase {
     } yield count
   }
 
+  def deleteUser(userUUID: UUID): Response[DeleteItemResult] = {
+    for {
+      deletedUserNode <- deleteUserNode(userUUID).right
+      result <- Right(getDeleteItemResult(deletedUserNode._1, deletedUserNode._2)).right
+    } yield result
+  }
+
   def destroyUser(userUUID: UUID): Response[DestroyResult] = {
     withTx {
       implicit neo4j =>
@@ -280,7 +287,7 @@ trait UserDatabase extends AbstractGraphDatabase {
 
   protected def getUserNode(tokenNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
     val userFromToken: TraversalDescription =
-      Traversal.description()
+      neo4j.gds.traversalDescription()
         .relationships(DynamicRelationshipType.withName(SecurityRelationship.IDS.name),
           Direction.OUTGOING)
         .depthFirst()
@@ -348,6 +355,26 @@ trait UserDatabase extends AbstractGraphDatabase {
         })
         Right(ownerUUIDList)
     }
+  }
+
+  protected def deleteUserNode(userUUID: UUID): Response[Tuple2[Node, Long]] = {
+    withTx {
+      implicit neo =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          deletable <- validateUserDeletable(userNode).right
+          deleted <- Right(deleteItem(userNode)).right
+        } yield (userNode, deleted)
+    }
+  }
+
+  protected def validateUserDeletable(userNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
+    userNode.getRelationships().foreach(relationship => {
+      if (relationship.getType().name == SecurityRelationship.IS_FOUNDER.name()) {
+        return fail(INVALID_PARAMETER, "Can't delete a user that has founded collections")
+      }
+    })
+    Right(true)
   }
 
   protected def upgradeOwners(ownerUUIDs: scala.List[UUID]): Response[CountResult] = {

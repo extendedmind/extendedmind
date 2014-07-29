@@ -224,8 +224,8 @@ trait ItemDatabase extends AbstractGraphDatabase {
     }
   }
 
-  protected def itemsTraversal(): TraversalDescription = {
-    Traversal.description()
+  protected def itemsTraversal(implicit neo4j: DatabaseService): TraversalDescription = {
+    neo4j.gds.traversalDescription()
       .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
         Direction.OUTGOING)
       .depthFirst()
@@ -411,7 +411,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
 
   protected def getChildren(itemNode: Node, label: Option[Label], includeDeleted: Boolean = false)(implicit neo4j: DatabaseService): scala.List[Node] = {
     val itemsFromParentSkeleton: TraversalDescription =
-      Traversal.description()
+      neo4j.gds.traversalDescription()
         .depthFirst()
         .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_PARENT.name), Direction.INCOMING)
         .evaluator(Evaluators.excludeStartPosition())
@@ -469,7 +469,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     endNodeLabel: Label,
     direction: Direction = Direction.OUTGOING)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
     val relatedNodeFromItem: TraversalDescription =
-      Traversal.description()
+      neo4j.gds.traversalDescription()
         .depthFirst()
         .expand(new OrderedByTypeExpander()
           .add(DynamicRelationshipType.withName(relationshipType.name), direction)
@@ -540,7 +540,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
     if (tagNodes.isRight) {
       // Check that owner has access to all tags
       val ownerFromTag: TraversalDescription =
-        Traversal.description()
+        neo4j.gds.traversalDescription()
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
             Direction.INCOMING)
           .depthFirst()
@@ -586,7 +586,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
 
   protected def getTagRelationships(itemNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
     val tagNodesFromItem: TraversalDescription =
-      Traversal.description()
+      neo4j.gds.traversalDescription()
         .depthFirst()
         .expand(new OrderedByTypeExpander()
           .add(DynamicRelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.OUTGOING)
@@ -622,7 +622,7 @@ trait ItemDatabase extends AbstractGraphDatabase {
   protected def getTagRelationships(itemNode: Node, tagNodes: scala.List[Node])(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
     if (tagNodes.isEmpty) return Right(None)
     val tagNodesFromItem: TraversalDescription =
-      Traversal.description()
+      neo4j.gds.traversalDescription()
         .depthFirst()
         .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.OUTGOING)
         .evaluator(Evaluators.excludeStartPosition())
@@ -664,29 +664,9 @@ trait ItemDatabase extends AbstractGraphDatabase {
     }
   }
 
-  protected def deleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Long = {
-
-    val deleted = System.currentTimeMillis()
-    itemNode.setProperty("deleted", deleted)
-    deleted
-  }
-
-  protected def undeleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Unit = {
-    if (itemNode.hasProperty("deleted")) {
-      itemNode.removeProperty("deleted")
-    }
-  }
-
-  protected def getDeleteItemResult(item: Node, deleted: Long): DeleteItemResult = {
-    withTx {
-      implicit neo4j =>
-        DeleteItemResult(deleted, getSetResult(item, false))
-    }
-  }
-
   protected def destroyDeletedItems(ownerNodes: OwnerNodes)(implicit neo4j: DatabaseService): CountResult = {
     val deletedItemsFromOwner: TraversalDescription =
-      Traversal.description()
+      neo4j.gds.traversalDescription()
         .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
           Direction.OUTGOING)
         .depthFirst()

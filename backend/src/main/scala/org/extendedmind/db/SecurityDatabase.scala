@@ -61,6 +61,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       implicit neo =>
         for {
           scWithoutToken <- authenticate(email, attemptedPassword).right
+          unit <- Right(undeleteItem(scWithoutToken.user)).right // Resurrect deleted user with authenticate
           token <- Right(Token(scWithoutToken.userUUID)).right
           tokenInfo <- Right(saveToken(scWithoutToken.user, token, payload)).right
           sc <- Right(scWithoutToken.copy(
@@ -252,7 +253,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     } else fail(INTERNAL_SERVER_ERROR, "Token " + tokenNode.getId() + " is missing expired property")
   }
   
-  protected def validateTokenReplacable(tokenNode: Node, currentTime: Long): Response[Unit] = {
+  protected def validateTokenReplacable(tokenNode: Node, currentTime: Long)(implicit neo4j: DatabaseService): Response[Unit] = {
     if (tokenNode.hasProperty("replaceable")) {
       val replaceable = tokenNode.getProperty("replaceable").asInstanceOf[Long];
       if (currentTime < replaceable) {
@@ -277,33 +278,27 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       sc.preferences)
   }
 
-  protected def saveToken(userNode: Node, token: Token, payload: Option[AuthenticatePayload]): (Long, Long, Option[Long]) = {
-    withTx {
-      implicit neo =>
-        val tokenNode = createNode(MainLabel.TOKEN)
-        val tokenInfo = setTokenProperties(tokenNode, token, payload);
-        tokenNode --> SecurityRelationship.IDS --> userNode
-        tokenInfo
-    }
+  protected def saveToken(userNode: Node, token: Token, payload: Option[AuthenticatePayload])(implicit neo4j: DatabaseService): (Long, Long, Option[Long]) = {
+    val tokenNode = createNode(MainLabel.TOKEN)
+    val tokenInfo = setTokenProperties(tokenNode, token, payload);
+    tokenNode --> SecurityRelationship.IDS --> userNode
+    tokenInfo
   }
   
-  def destroyTokens(userNode: Node): Response[CountResult] = {
-    withTx{
-      implicit neo4j => 
-        val tokenTraversal = Traversal.description()
-          .breadthFirst()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IDS.name), Direction.INCOMING)
-          .evaluator(Evaluators.excludeStartPosition())
-          .evaluator(LabelEvaluator(List(MainLabel.TOKEN)))
-          .evaluator(Evaluators.toDepth(1))
-          .traverse(userNode)
-        val tokenList = tokenTraversal.nodes().toList
-        val deleteCount = tokenList.size
-        tokenList.foreach(tokenNode => {
-          destroyToken(tokenNode)
-        })
-        Right(CountResult(deleteCount))
-    }
+  protected def destroyTokens(userNode: Node)(implicit neo4j: DatabaseService): Response[CountResult] = {
+    val tokenTraversal = neo4j.gds.traversalDescription()
+      .breadthFirst()
+      .relationships(DynamicRelationshipType.withName(SecurityRelationship.IDS.name), Direction.INCOMING)
+      .evaluator(Evaluators.excludeStartPosition())
+      .evaluator(LabelEvaluator(List(MainLabel.TOKEN)))
+      .evaluator(Evaluators.toDepth(1))
+      .traverse(userNode)
+    val tokenList = tokenTraversal.nodes().toList
+    val deleteCount = tokenList.size
+    tokenList.foreach(tokenNode => {
+      destroyToken(tokenNode)
+    })
+    Right(CountResult(deleteCount))
   }
   
   protected def destroyToken(tokenNode: Node)(implicit neo4j: DatabaseService) {
@@ -463,8 +458,8 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     )
   }
   
-  private def collectivesTraversalDescription: TraversalDescription = {
-    Traversal.description()
+  private def collectivesTraversalDescription(implicit neo4j: DatabaseService): TraversalDescription = {
+    neo4j.gds.traversalDescription()
           .depthFirst()
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_FOUNDER.name), Direction.OUTGOING)
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ.name), Direction.OUTGOING)

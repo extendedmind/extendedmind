@@ -302,5 +302,24 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     if (ownerNodes.collective.isDefined) ownerNodes.collective.get
     else ownerNodes.user
   }
+  
+  protected def deleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Long = {
+    val deleted = System.currentTimeMillis()
+    itemNode.setProperty("deleted", deleted)
+    deleted
+  }
 
+  protected def undeleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Unit = {
+    if (itemNode.hasProperty("deleted")) {
+      itemNode.removeProperty("deleted")
+    }
+  }
+
+  protected def getDeleteItemResult(item: Node, deleted: Long): DeleteItemResult = {
+    withTx {
+      implicit neo4j =>
+        DeleteItemResult(deleted, getSetResult(item, false))
+    }
+  }
+  
 }
