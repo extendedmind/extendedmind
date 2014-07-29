@@ -1,6 +1,20 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 'use strict';
 
-function rootViewDirective($injector, $rootScope, $window, ModalService, BackendClientService, UserSessionService, SnapService, SwiperService, AnalyticsService, UUIDService) {
+ function rootViewDirective($injector, $rootScope, $window, AnalyticsService, BackendClientService, ModalService, SnapService, SwiperService, UUIDService, UserSessionService) {
 
   return {
     restrict: 'A',
@@ -8,36 +22,36 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
     templateUrl: 'static/app/auth/root.html',
     controller: function($scope) {
       // Back function globally available
-      $scope.gotoPreviousPage = function() {
+      $scope.gotoPreviousPage = function gotoPreviousPage() {
         $window.history.back();
       };
 
       // Online/offline status, optimistic default
       $scope.online = true;
-      var onlineStatusCallback = function(online){
+      var onlineStatusCallback = function(online) {
         $scope.online = online;
       };
       BackendClientService.registerOnlineStatusCallback(onlineStatusCallback);
 
       $scope.retrying = false;
-      var onlineRequiredRetryCallback = function(modalScope, modalClose, retryFunction, retryFunctionParam, promise){
+      var onlineRequiredRetryCallback = function(modalScope, modalClose, retryFunction, retryFunctionParam, promise) {
         $scope.retrying = true;
         modalScope.modalSuccessText = 'retrying...';
         modalScope.modalSuccessDisabled = true;
-        retryFunction(retryFunctionParam).then(function(){
+        retryFunction(retryFunctionParam).then(function() {
           $scope.retrying = false;
           modalClose();
-          if (promise){
+          if (promise) {
             promise.resolve();
           }
-        },function(error){
+        },function(error) {
           $scope.retrying = false;
-          if (error.status === 403){
+          if (error.status === 403) {
             modalClose();
-            if (promise){
+            if (promise) {
               promise.resolve();
             }
-          }else{
+          } else {
             modalScope.modalSuccessText = 'retry';
             modalScope.modalSuccessDisabled = false;
           }
@@ -45,7 +59,7 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
       };
 
       var exiting = false;
-      function redirectToLogin(){
+      function redirectToLogin() {
         exiting = true;
         var email = UserSessionService.getEmail();
         UserSessionService.clearUser();
@@ -67,10 +81,10 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
           modalClass: 'modal small-modal'
         };
 
-        if (exception.type === 'onlineRequired'){
-          if (!$scope.retrying){
+        if (exception.type === 'onlineRequired') {
+          if (!$scope.retrying) {
             $scope.errorMessageHeading = 'no online connection';
-            if (exception.retry){
+            if (exception.retry) {
               $scope.errorMessageText = 'please connect to the internet and press retry to access your information';
               $scope.modalSuccessText = 'retry';
               modalOptions.allowBackdropDismiss = false;
@@ -82,24 +96,24 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
                 fnPromise: exception.promise
               };
               ModalService.createDialog('static/app/auth/errorMessage.html', modalOptions);
-            }else{
+            } else {
               // No retry possibility
               $scope.modalSuccessText = 'close';
               $scope.errorMessageText = 'you need to be online to complete this action';
               ModalService.createDialog('static/app/auth/errorMessage.html', modalOptions);
             }
           }
-        }else if (exception.type === 'http' && exception.status === 403) {
+        } else if (exception.type === 'http' && exception.status === 403) {
           // Redirect thrown 403 Forbidden exception to the login page
           AnalyticsService.error('forbidden', JSON.stringify(exception));
           redirectToLogin();
-        }else if (exception.type === 'session') {
-          if (!exiting){
+        } else if (exception.type === 'session') {
+          if (!exiting) {
             // Redirect session errors to the login page
             AnalyticsService.error('session', exception.description);
             redirectToLogin();
           }
-        }else{
+        } else {
           AnalyticsService.error('unexpected', JSON.stringify(exception));
           $scope.errorMessageHeading = 'something unexpected happened, sorry!';
           $scope.errorMessageText = JSON.stringify(exception, null, 4);
@@ -118,21 +132,21 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
       // Clean up listening by executing the variable
       $scope.$on('$destroy', unbindEmException);
     },
-    link: function($scope){
+    link: function(scope) {
 
       // SESSION MANAGEMENT
 
       var currentSessionId, currentSessionStartTime, currentSessionLatestActivity;
-      $scope.registerActivity = function() {
-        if (!currentSessionId){
+      scope.registerActivity = function registerActivity() {
+        if (!currentSessionId) {
           startNewSession();
-        }else{
+        } else {
           var now = Date.now();
           // If 20 seconds has passed since last activity, consider this a new session
-          if (currentSessionLatestActivity && (currentSessionLatestActivity < (now - 20000))){
+          if (currentSessionLatestActivity && (currentSessionLatestActivity < (now - 20000))) {
             AnalyticsService.stopSession(currentSessionId, currentSessionStartTime);
             startNewSession();
-          }else {
+          } else {
             currentSessionLatestActivity = now;
           }
         }
@@ -145,7 +159,7 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
       }
 
       // Collectives are globally visible
-      $scope.collectives = UserSessionService.getCollectives();
+      scope.collectives = UserSessionService.getCollectives();
 
       // WINDOW RESIZING
 
@@ -180,7 +194,7 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
       setDimensions($window.innerWidth, $window.innerHeight);
 
       function windowResized() {
-        $scope.$apply(function(){
+        scope.$apply(function() {
           setDimensions($window.innerWidth, $window.innerHeight);
         });
       }
@@ -191,24 +205,24 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
 
       // CORDOVA SPECIFIC EVENTS
       $rootScope.softKeyboard = {};
-      function cordovaKeyboardShow(event){
+      function cordovaKeyboardShow(event) {
         $rootScope.softKeyboard.height = event.keyboardHeight;
-        if (!$scope.$$phase) $scope.$apply();
+        if (!scope.$$phase) scope.$apply();
       }
-      function cordovaKeyboardHide(event){
+      function cordovaKeyboardHide(/*event*/) {
         $rootScope.softKeyboard.height = undefined;
-        if (!$scope.$$phase) $scope.$apply();
+        if (!scope.$$phase) scope.$apply();
       }
-      if ($rootScope.packaging.endsWith('cordova')){
+      if ($rootScope.packaging.endsWith('cordova')) {
         window.addEventListener('native.keyboardshow', cordovaKeyboardShow);
         window.addEventListener('native.keyboardhide', cordovaKeyboardHide);
       }
 
       // CLEANUP
 
-      $scope.$on('$destroy', function() {
+      scope.$on('$destroy', function() {
         angular.element($window).unbind('resize', windowResized);
-        if ($rootScope.packaging === 'ios-cordova'){
+        if ($rootScope.packaging === 'ios-cordova') {
           window.removeEventListener('native.keyboardshow', cordovaKeyboardShow);
           window.removeEventListener('native.keyboardhide', cordovaKeyboardHide);
         }
@@ -218,5 +232,5 @@ function rootViewDirective($injector, $rootScope, $window, ModalService, Backend
 }
 
 rootViewDirective.$inject = ['$injector', '$rootScope', '$window',
-'ModalService', 'BackendClientService', 'UserSessionService', 'SnapService', 'SwiperService', 'AnalyticsService', 'UUIDService'];
+'AnalyticsService', 'BackendClientService', 'ModalService', 'SnapService', 'SwiperService', 'UUIDService', 'UserSessionService'];
 angular.module('em.directives').directive('rootView', rootViewDirective);

@@ -1,19 +1,33 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 'use strict';
 
-function SignupController($location, $rootScope, $routeParams, $scope, $window, AuthenticationService, AnalyticsService, BackendClientService, UserSessionService) {
+ function SignupController($location, $rootScope, $routeParams, $scope, $window, AuthenticationService, AnalyticsService, BackendClientService, UserSessionService) {
 
   AnalyticsService.visitEntry('signup');
 
   $scope.user = {};
   var inviteResponseCode = $routeParams.hex_code;
 
-  if (inviteResponseCode){
+  if (inviteResponseCode) {
     AuthenticationService.getInvite(inviteResponseCode, $routeParams.email).then(function(inviteResponse) {
       if (inviteResponse.data.accepted) {
         $location.url($location.path());
-        if ($rootScope.packaging.endsWith('cordova')){
+        if ($rootScope.packaging.endsWith('cordova')) {
           $location.path('/login');
-        }else {
+        } else {
           // Direct user to the welcome page so that it is possible to load app
           // from the invite link, when used from the web
           $location.path('/welcome');
@@ -22,13 +36,13 @@ function SignupController($location, $rootScope, $routeParams, $scope, $window, 
         $scope.user.username = inviteResponse.data.email;
       }
     });
-  }else{
+  } else {
     // No hex_code, do a normal signup
     $scope.signUpDirectly = true;
     $scope.user.username = UserSessionService.getEmail();
   }
 
-  $scope.signUp = function() {
+  $scope.signUp = function signUp() {
     $scope.signupFailed = false;
     $scope.signupOffline = false;
     $scope.loginFailed = false;
@@ -37,42 +51,42 @@ function SignupController($location, $rootScope, $routeParams, $scope, $window, 
     var payload = {email: $scope.user.username,
      password: $scope.user.password,
      cohort: randomCohort};
-     if ($routeParams.bypass){
+     if ($routeParams.bypass) {
       payload.bypass = true;
     }
 
-    if ($scope.signUpDirectly){
+    if ($scope.signUpDirectly) {
       AuthenticationService.signUp(payload).
       then(function(response) {
         AnalyticsService.doWithUuid('signUp', undefined, response.data.uuid);
-        if ($rootScope.packaging.endsWith('cordova')){
+        if ($rootScope.packaging.endsWith('cordova')) {
           // In apps, don't go to welcome page
           loginUser(false);
-        }else{
+        } else {
           loginUser(true);
         }
       }, function(error) {
-        if (BackendClientService.isOffline(error.status)){
+        if (BackendClientService.isOffline(error.status)) {
           $scope.signupOffline = true;
-        }else if(error.status === 400){
+        } else if (error.status === 400) {
           $scope.signupFailed = true;
         }
       });
 
-    }else{
+    } else {
       AuthenticationService.acceptInvite(inviteResponseCode, payload).
       then(function(response) {
         AnalyticsService.doWithUuid('acceptInvite', undefined, response.data.uuid);
-        if ($rootScope.packaging.endsWith('cordova')){
+        if ($rootScope.packaging.endsWith('cordova')) {
           // In apps, don't go to welcome page
           loginUser(false);
-        }else{
+        } else {
           loginUser(true);
         }
       }, function(error) {
-        if (BackendClientService.isOffline(error.status)){
+        if (BackendClientService.isOffline(error.status)) {
           $scope.signupOffline = true;
-        }else if(error.status === 400){
+        } else if (error.status === 400) {
           $scope.signupFailed = true;
         }
       });
@@ -98,19 +112,19 @@ function SignupController($location, $rootScope, $routeParams, $scope, $window, 
   }
 
   function loginError(authenticateResponse) {
-    if (BackendClientService.isOffline(authenticateResponse.status)){
+    if (BackendClientService.isOffline(authenticateResponse.status)) {
       $scope.signupOffline = true;
-    }else if(authenticateResponse.status === 403){
+    } else if (authenticateResponse.status === 403) {
       $scope.loginFailed = true;
     }
   }
 
-  $scope.gotoTermsOfService = function() {
+  $scope.gotoTermsOfService = function gotoTermsOfService() {
     AnalyticsService.visit('terms');
     $window.open('http://ext.md/terms.html', '_system');
   };
 
-  $scope.gotoPrivacyPolicy = function() {
+  $scope.gotoPrivacyPolicy = function gotoPrivacyPolicy() {
     AnalyticsService.visit('privacy');
     $window.open('http://ext.md/privacy.html', '_system');
   };
