@@ -97,5 +97,5 @@
     deleteInviteRequestsRegex: deleteInviteRequestsRegexp
   };
 }
-AdminService.$inject = ['BackendClientService'];
+AdminService['$inject'] = ['BackendClientService'];
 angular.module('em.services').factory('AdminService', AdminService);

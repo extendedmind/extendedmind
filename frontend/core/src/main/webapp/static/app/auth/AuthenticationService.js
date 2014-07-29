@@ -122,9 +122,9 @@
   };
   BackendClientService.registerPrimaryPostResultCallback(swapTokenCallback);
 
-  function getAuthenticatePayload(remember){
+  function getAuthenticatePayload(remember) {
     var payload = {rememberMe: remember};
-    if (remember && $rootScope.packaging.endsWith('cordova')){
+    if (remember && $rootScope.packaging.endsWith('cordova')) {
       // In apps use extended 90 day replaceable authentication
       payload.extended = true;
     }
@@ -150,7 +150,7 @@
       var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse.data);
       // Update backend client with new token
       BackendClientService.setCredentials(encodedCredentials);
-      if (UserSessionService.isOfflineEnabled()){
+      if (UserSessionService.isOfflineEnabled()) {
         // As offline is still enabled, we want to remove possible duplicate swap token
         // calls from the backend client
         BackendClientService.clearPrimary();
@@ -159,8 +159,8 @@
     });
   }
 
-  function sanitizeEmail(email){
-    if (email){
+  function sanitizeEmail(email) {
+    if (email) {
       return email.toLowerCase();
     }
   }
@@ -171,7 +171,7 @@
       true, [0, 403, 404, 502]);
   }
 
-  function verifyAndUpdateAuthentication(online){
+  function verifyAndUpdateAuthentication(online) {
     var deferredAuthentication = $q.defer();
     function validateAuthentication() {
       deferredAuthentication.resolve();
@@ -184,18 +184,18 @@
         if (UserSessionService.isAuthenticateReplaceable()) {
           // Make sure the latest credentials are in use
           BackendClientService.setCredentials(UserSessionService.getCredentials());
-          if (UserSessionService.isOfflineEnabled() && !online){
+          if (UserSessionService.isOfflineEnabled() && !online) {
             // Push token swap to be the first thing that is done
             // when online connection is up
             BackendClientService.postPrimary('/api/authenticate', postAuthenticateRegexp, getAuthenticatePayload(true));
             validateAuthentication();
-          }else{
+          } else {
             // Online
-            swapTokenAndAuthenticate().then(function(){
+            swapTokenAndAuthenticate().then(function() {
               validateAuthentication();
-            },function(error){
+            },function(error) {
               // Error branch, emit onlineRequired
-              if (BackendClientService.isOffline(error.status)){
+              if (BackendClientService.isOffline(error.status)) {
                 // Emit online required exception
                 $rootScope.$emit('emException', {
                   type: 'onlineRequired',
@@ -234,14 +234,14 @@
     }
     // Redirect invited user either to sign up page or to to waiting page
     else if (inviteRequestResponse.data.resultType === 'invite') {
-      if (inviteRequestResponse.data.code){
+      if (inviteRequestResponse.data.code) {
         // Code given directly, go to sign up
         $location.path('/accept/' + inviteRequestResponse.data.code);
         $location.search({
           email: user.email,
           bypass: true
         });
-      }else {
+      } else {
         $location.path('/waiting');
         $location.search({
           uuid: inviteRequestResponse.data.result.uuid,
@@ -254,7 +254,7 @@
     else if (inviteRequestResponse.data.resultType === 'user') {
       $location.path('/login');
     // Redirect coupon to waiting page with possibility to give coupon
-  }else if (inviteRequestResponse.data.resultType === 'inviteCoupon') {
+  } else if (inviteRequestResponse.data.resultType === 'inviteCoupon') {
     $location.path('/waiting');
     $location.search({
       uuid: inviteRequestResponse.data.result.uuid,
@@ -266,19 +266,19 @@
     // Accept invite directly by bypassing queue
     else if (inviteRequestResponse.data.resultType === 'inviteAutomatic') {
       postInviteRequestBypass(inviteRequestResponse.data.result.uuid, user.email).then(
-        function(inviteResponse){
-          if (inviteResponse.data){
+        function(inviteResponse) {
+          if (inviteResponse.data) {
             $location.path('/accept/' + inviteResponse.data.code);
             $location.search({
               email: user.email,
               bypass: true
             });
           }
-        }, function(/*error*/){
+        }, function(/*error*/) {
           return false;
         });
     // Redirect user to sign up
-  }else if (inviteRequestResponse.data.resultType === 'signUp') {
+  } else if (inviteRequestResponse.data.resultType === 'signUp') {
     $location.path('/signup');
   }
   function redirectToInviteWaitingPage() {
@@ -294,7 +294,7 @@
 
 function postInviteRequestBypass(uuid, email, coupon) {
   var payload = {email: sanitizeEmail(email)};
-  if (coupon){
+  if (coupon) {
     payload.inviteCoupon = coupon;
   }
   return BackendClientService.postOnline(
@@ -307,9 +307,9 @@ function postInviteRequestBypass(uuid, email, coupon) {
 
 return {
   verifyAndUpdateAuthentication: function() {
-    if (UserSessionService.getLatestModified(UserSessionService.getUserUUID()) !== undefined){
+    if (UserSessionService.getLatestModified(UserSessionService.getUserUUID()) !== undefined) {
       return verifyAndUpdateAuthentication();
-    }else{
+    } else {
         // When there is no data in-memory, this needs to be done online
         return verifyAndUpdateAuthentication(true);
       }

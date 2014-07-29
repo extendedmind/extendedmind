@@ -29,18 +29,18 @@
       AuthenticationService.login({username: email, password: $scope.user.newPassword}).then(
         function(/*authenticationResponse*/) {
           $scope.gotoPreviousPage();
-        }, function(error){
-          if (BackendClientService.isOffline(error.status)){
+        }, function(error) {
+          if (BackendClientService.isOffline(error.status)) {
             $scope.changePasswordOffline = true;
-          }else {
+          } else {
             $scope.loginFailed = true;
           }
         });
-    }, function(error){
-      if (BackendClientService.isOffline(error.status)){
+    }, function(error) {
+      if (BackendClientService.isOffline(error.status)) {
         AnalyticsService.error('changePassword', 'offline');
         $scope.changePasswordOffline = true;
-      }else {
+      } else {
         AnalyticsService.error('changePassword', 'failed');
         $scope.changePasswordFailed = true;
       }

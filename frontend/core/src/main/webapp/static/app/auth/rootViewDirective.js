@@ -132,7 +132,7 @@
       // Clean up listening by executing the variable
       $scope.$on('$destroy', unbindEmException);
     },
-    link: function(scope) {
+    link: function postLink(scope) {
 
       // SESSION MANAGEMENT
 
@@ -231,6 +231,6 @@
   };
 }
 
-rootViewDirective.$inject = ['$injector', '$rootScope', '$window',
+rootViewDirective['$inject'] = ['$injector', '$rootScope', '$window',
 'AnalyticsService', 'BackendClientService', 'ModalService', 'SnapService', 'SwiperService', 'UUIDService', 'UserSessionService'];
 angular.module('em.directives').directive('rootView', rootViewDirective);

@@ -24,8 +24,8 @@
     $scope.launchFailed = false;
     $scope.launchOffline = false;
     AuthenticationService.postInviteRequest($scope.user.email).then(
-      function(response){
-        if (!AuthenticationService.checkEmailStatus(response, $scope.user)){
+      function(response) {
+        if (!AuthenticationService.checkEmailStatus(response, $scope.user)) {
           $scope.launchFailed = true;
         }
       },
