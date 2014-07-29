@@ -124,6 +124,7 @@ trait API extends HttpService {
   val deleteInviteRequest = delete & path("admin" / "invite" / "request" / JavaUUID)
   val postInviteRequestAccept = post & path("admin" / "invite" / "request" / JavaUUID / "accept")
   val getInvites = get & path("admin" / "invites".r)
+  val deleteInvite = delete & path("admin" / "invite" / JavaUUID)
   // Security
   val resetTokens = post & path("admin" / "tokens" / "reset".r)
 

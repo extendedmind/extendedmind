@@ -147,7 +147,6 @@ trait AdminService extends ServiceBase {
       } ~
       deleteInviteRequest { inviteRequestUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          // Only admins can destroy invite requests
           authorize(adminAccess(securityContext)) {
             complete {
               Future[DestroyResult] {
@@ -202,6 +201,21 @@ trait AdminService extends ServiceBase {
                 setLogContext(securityContext)
                 inviteActions.getInvites match {
                   case Right(invites) => processResult(invites)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
+      deleteInvite { inviteUUID =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[DestroyResult] {
+                setLogContext(securityContext)
+                 inviteActions.destroyInvite(inviteUUID) match {
+                  case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }
               }

@@ -58,7 +58,7 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
-  
+
   before {
     db.insertTestData()
   }
@@ -82,147 +82,178 @@ class InviteBestCaseSpec extends ImpermanentGraphDatabaseSpecBase {
       val testInviteRequest2 = InviteRequest(None, testEmail2, None, None, None)
       val testEmail3 = "example3@example.com"
       val testInviteRequest3 = InviteRequest(None, testEmail3, None, None, None)
-
+      val testEmail4 = "example4@example.com"
+      val testInviteRequest4 = InviteRequest(None, testEmail4, None, None, None)
+      
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "1234") })
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail2), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "12345") })
       stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail3), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "123456") })
-      stub(mockMailgunClient.sendInvite(anyObject())).toReturn(
+      stub(mockMailgunClient.sendRequestInviteConfirmation(mockEq(testEmail4), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "1234567") })
+      stub(mockMailgunClient.sendInvite(anyObject())).toReturn(
+        Future { SendEmailResponse("OK", "12345678") })
+        
       Post("/invite/request",
         marshal(testInviteRequest).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
           writeJsonOutput("inviteRequestResponse", responseAs[String])
           val inviteRequestResponse = responseAs[InviteRequestResult]
-          inviteRequestResponse.resultType should be (NEW_INVITE_REQUEST_RESULT)
+          inviteRequestResponse.resultType should be(NEW_INVITE_REQUEST_RESULT)
           inviteRequestResponse.result.get.uuid should not be None
           inviteRequestResponse.result.get.modified should not be None
-          inviteRequestResponse.queueNumber.get should be (1)
+          inviteRequestResponse.queueNumber.get should be(1)
 
           Post("/invite/request",
             marshal(testInviteRequest2).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val inviteRequestResponse2 = responseAs[InviteRequestResult]
-              inviteRequestResponse2.queueNumber.get should be (2)
+              inviteRequestResponse2.queueNumber.get should be(2)
               Post("/invite/request",
                 marshal(testInviteRequest3).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                   val inviteRequestResponse3 = responseAs[InviteRequestResult]
-                  inviteRequestResponse3.queueNumber.get should be (3)
+                  inviteRequestResponse3.queueNumber.get should be(3)
 
-                  verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail, inviteRequestResponse.result.get.uuid.get)
-                  verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail2, inviteRequestResponse2.result.get.uuid.get)
-                  verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail3, inviteRequestResponse3.result.get.uuid.get)
-                  // Get the request back
-                  val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-                  Get("/admin/invite/requests") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                    val inviteRequests = responseAs[InviteRequests]
-                    writeJsonOutput("inviteRequestsResponse", responseAs[String])
-                    inviteRequests.inviteRequests(0).email should be(testEmail)
-                    inviteRequests.inviteRequests(1).email should be(testEmail2)
-                    inviteRequests.inviteRequests(2).email should be(testEmail3)
-                    // Get order number for invites
-                    Get("/invite/request/" + inviteRequestResponse.result.get.uuid.get) ~> route ~> check {
-                      responseAs[InviteRequestQueueNumber].queueNumber should be(1)
-                    }
-                    Get("/invite/request/" + inviteRequestResponse2.result.get.uuid.get) ~> route ~> check {
-                      responseAs[InviteRequestQueueNumber].queueNumber should be(2)
-                    }
-                    Get("/invite/request/" + inviteRequestResponse3.result.get.uuid.get) ~> route ~> check {
-                      responseAs[InviteRequestQueueNumber].queueNumber should be(3)
-                    }
+                  Post("/invite/request",
+                    marshal(testInviteRequest4).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                      val inviteRequestResponse4 = responseAs[InviteRequestResult]
+                      inviteRequestResponse4.queueNumber.get should be(4)
+                  
+                      verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail, inviteRequestResponse.result.get.uuid.get)
+                      verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail2, inviteRequestResponse2.result.get.uuid.get)
+                      verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail3, inviteRequestResponse3.result.get.uuid.get)
+                      verify(mockMailgunClient).sendRequestInviteConfirmation(testEmail4, inviteRequestResponse4.result.get.uuid.get)
+      
+                      // Get the request back
+                      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+                      Get("/admin/invite/requests") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                        val inviteRequests = responseAs[InviteRequests]
+                        writeJsonOutput("inviteRequestsResponse", responseAs[String])
+                        inviteRequests.inviteRequests(0).email should be(testEmail)
+                        inviteRequests.inviteRequests(1).email should be(testEmail2)
+                        inviteRequests.inviteRequests(2).email should be(testEmail3)
+                        inviteRequests.inviteRequests(3).email should be(testEmail4)
 
-                    // Delete the middle invite request
-                    Delete("/admin/invite/request/" + inviteRequestResponse2.result.get.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                      val deleteInviteRequestResponse = responseAs[DestroyResult]
-                      writeJsonOutput("deleteInviteRequestResponse", responseAs[String])
-                      deleteInviteRequestResponse.destroyed.size should be(1)
-                    }
-                    // Verify that the last one is now number 2 
-                    Get("/invite/request/" + inviteRequestResponse3.result.get.uuid.get) ~> route ~> check {
-                      responseAs[InviteRequestQueueNumber].queueNumber should be(2)
-                    }
-                    
-                    // Accept invite request  
-                    Post("/admin/invite/request/" + inviteRequestResponse.result.get.uuid.get + "/accept") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                      val acceptInviteRequestResponse = responseAs[SetResult]
-                      writeJsonOutput("acceptInviteRequestResponse", responseAs[String])
-                      acceptInviteRequestResponse.uuid should not be None
-
-                      // Should be able to resend invite
-                      Post("/invite/" + acceptInviteRequestResponse.uuid.get + "/resend",
-                        marshal(UserEmail(testInviteRequest.email)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-                          val resendInviteResponse = responseAs[CountResult]
-                          writeJsonOutput("resendInviteResponse", responseAs[String])
-                          resendInviteResponse.count should be(1)
-                      }
-                    }
-                    verify(mockMailgunClient, times(2)).sendInvite(anyObject())
-                    
-                    // Verify that the last one is now number 1 
-                    Get("/invite/request/" + inviteRequestResponse3.result.get.uuid.get) ~> route ~> check {
-                      responseAs[InviteRequestQueueNumber].queueNumber should be(1)
-                    }
-
-                    // Get the invites
-                    Get("/admin/invites") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                      val invites = responseAs[Invites]
-                      writeJsonOutput("invitesResponse", responseAs[String])
-                      assert(invites.invites.size === 1)
-                      // Get invite
-                      Get("/invite/" + invites.invites(0).code.toHexString + "?email=" + invites.invites(0).email) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-                        val inviteResponse = responseAs[InviteResult]
-                        writeJsonOutput("inviteResponse", responseAs[String])
-                        inviteResponse.email should be(invites.invites(0).email)
-                        inviteResponse.accepted should be(None)
-                      }
-                      // Accept invite
-                      val testPassword = "testPassword"
-                      Post("/invite/" + invites.invites(0).code.toHexString + "/accept",
-                        marshal(SignUp(invites.invites(0).email, testPassword, Some(1), None)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-                          val acceptInviteResponse = responseAs[SetResult]
-                          writeJsonOutput("acceptInviteResponse", responseAs[String])
-                          acceptInviteResponse.uuid should not be None
-                          // Should be possible to authenticate with the new email/password
-                          val newUserAuthenticateResponse =
-                            emailPasswordAuthenticate(invites.invites(0).email, testPassword)
-
-                          // Should create admin because of signUpMode="ALFA" setting in application.conf
-                          newUserAuthenticateResponse.userType should equal(Token.ADMIN)
-
-                          // When getting account, emailConfirmed should not be none
-                          Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newUserAuthenticateResponse.token.get)) ~> route ~> check {
-                            writeJsonOutput("emailVerifiedAccountResponse", responseAs[String])
-                            val accountResponse = responseAs[User]
-                            accountResponse.emailVerified should not be None
-                          }
-
-                          // Should return accepted when getting invite again
-                          Get("/invite/" + invites.invites(0).code.toHexString + "?email=" + invites.invites(0).email) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-                            val acceptedInviteResponse = responseAs[InviteResult]
-                            writeJsonOutput("acceptedInviteResponse", responseAs[String])
-                            acceptedInviteResponse.email should be(invites.invites(0).email)
-                            acceptedInviteResponse.accepted should not be None
-                          }
+                        // Get order number for invites
+                        Get("/invite/request/" + inviteRequestResponse.result.get.uuid.get) ~> route ~> check {
+                          responseAs[InviteRequestQueueNumber].queueNumber should be(1)
                         }
-				    }
-                    // Try post accepted invite request again, and verify that user
-	                Post("/invite/request",
-				      marshal(testInviteRequest).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-				        val repostedInviteRequestResult = responseAs[InviteRequestResult]
-				        repostedInviteRequestResult.resultType should be (USER_RESULT)
-				        repostedInviteRequestResult.queueNumber should be (None)
-				        repostedInviteRequestResult.result should be (None)
-				    }
-				    // Try post existing invite request again, and verify that right queue number is received
-	                Post("/invite/request",
-				      marshal(testInviteRequest3).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-				        val repostedInviteRequestResult3 = responseAs[InviteRequestResult]
-				        repostedInviteRequestResult3.resultType should be (INVITE_REQUEST_RESULT)
-				        repostedInviteRequestResult3.queueNumber.get should be (1)
-				        repostedInviteRequestResult3.result.get.uuid should not be (None)
-				        repostedInviteRequestResult3.result.get.modified should not be (None)
-				    }
-                  }
+                        Get("/invite/request/" + inviteRequestResponse2.result.get.uuid.get) ~> route ~> check {
+                          responseAs[InviteRequestQueueNumber].queueNumber should be(2)
+                        }
+                        Get("/invite/request/" + inviteRequestResponse3.result.get.uuid.get) ~> route ~> check {
+                          responseAs[InviteRequestQueueNumber].queueNumber should be(3)
+                        }
+                        Get("/invite/request/" + inviteRequestResponse4.result.get.uuid.get) ~> route ~> check {
+                          responseAs[InviteRequestQueueNumber].queueNumber should be(4)
+                        }
+      
+                        // Delete the second invite request
+                        Delete("/admin/invite/request/" + inviteRequestResponse2.result.get.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                          val deleteInviteRequestResponse = responseAs[DestroyResult]
+                          writeJsonOutput("deleteInviteRequestResponse", responseAs[String])
+                          deleteInviteRequestResponse.destroyed.size should be(1)
+                        }
+                        // Verify that the third one is now number 2 
+                        Get("/invite/request/" + inviteRequestResponse3.result.get.uuid.get) ~> route ~> check {
+                          responseAs[InviteRequestQueueNumber].queueNumber should be(2)
+                        }
+      
+                        // Accept invite request  
+                        Post("/admin/invite/request/" + inviteRequestResponse.result.get.uuid.get + "/accept") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                          val acceptInviteRequestResponse = responseAs[SetResult]
+                          writeJsonOutput("acceptInviteRequestResponse", responseAs[String])
+                          acceptInviteRequestResponse.uuid should not be None
+      
+                          // Should be able to resend invite
+                          Post("/invite/" + acceptInviteRequestResponse.uuid.get + "/resend",
+                            marshal(UserEmail(testInviteRequest.email)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                              val resendInviteResponse = responseAs[CountResult]
+                              writeJsonOutput("resendInviteResponse", responseAs[String])
+                              resendInviteResponse.count should be(1)
+                            }
+                        }
+                        verify(mockMailgunClient, times(2)).sendInvite(anyObject())
+      
+                        // Verify that the third one is now number 1 
+                        Get("/invite/request/" + inviteRequestResponse3.result.get.uuid.get) ~> route ~> check {
+                          responseAs[InviteRequestQueueNumber].queueNumber should be(1)
+                        }
+      
+                        // Accept also the last invite request
+                        Post("/admin/invite/request/" + inviteRequestResponse4.result.get.uuid.get + "/accept") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                          val acceptInviteRequestResponse = responseAs[SetResult]
+                          acceptInviteRequestResponse.uuid should not be None
+                        }
+                        verify(mockMailgunClient, times(3)).sendInvite(anyObject())
+      
+                        // Get the invites
+                        Get("/admin/invites") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                          val invites = responseAs[Invites]
+                          writeJsonOutput("invitesResponse", responseAs[String])
+                          invites.invites.size should be(2)
+                          // Delete the latter invite
+                          Delete("/admin/invite/" + invites.invites(1).uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                            val deleteInviteResponse = responseAs[DestroyResult]
+                            writeJsonOutput("deleteInviteResponse", responseAs[String])
+                            deleteInviteResponse.destroyed.size should be (2)
+                          }
+                          // Get invite
+                          Get("/invite/" + invites.invites(0).code.toHexString + "?email=" + invites.invites(0).email) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                            val inviteResponse = responseAs[InviteResult]
+                            writeJsonOutput("inviteResponse", responseAs[String])
+                            inviteResponse.email should be(invites.invites(0).email)
+                            inviteResponse.accepted should be(None)
+                          }
+                          // Accept invite
+                          val testPassword = "testPassword"
+                          Post("/invite/" + invites.invites(0).code.toHexString + "/accept",
+                            marshal(SignUp(invites.invites(0).email, testPassword, Some(1), None)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                              val acceptInviteResponse = responseAs[SetResult]
+                              writeJsonOutput("acceptInviteResponse", responseAs[String])
+                              acceptInviteResponse.uuid should not be None
+                              // Should be possible to authenticate with the new email/password
+                              val newUserAuthenticateResponse =
+                                emailPasswordAuthenticate(invites.invites(0).email, testPassword)
+      
+                              // Should create admin because of signUpMode="ALFA" setting in application.conf
+                              newUserAuthenticateResponse.userType should equal(Token.ADMIN)
+      
+                              // When getting account, emailConfirmed should not be none
+                              Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newUserAuthenticateResponse.token.get)) ~> route ~> check {
+                                writeJsonOutput("emailVerifiedAccountResponse", responseAs[String])
+                                val accountResponse = responseAs[User]
+                                accountResponse.emailVerified should not be None
+                              }
+      
+                              // Should return accepted when getting invite again
+                              Get("/invite/" + invites.invites(0).code.toHexString + "?email=" + invites.invites(0).email) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                                val acceptedInviteResponse = responseAs[InviteResult]
+                                writeJsonOutput("acceptedInviteResponse", responseAs[String])
+                                acceptedInviteResponse.email should be(invites.invites(0).email)
+                                acceptedInviteResponse.accepted should not be None
+                              }
+                            }
+                        }
+                        // Try post accepted invite request again, and verify that user
+                        Post("/invite/request",
+                          marshal(testInviteRequest).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                            val repostedInviteRequestResult = responseAs[InviteRequestResult]
+                            repostedInviteRequestResult.resultType should be(USER_RESULT)
+                            repostedInviteRequestResult.queueNumber should be(None)
+                            repostedInviteRequestResult.result should be(None)
+                          }
+                        // Try post existing invite request again, and verify that right queue number is received
+                        Post("/invite/request",
+                          marshal(testInviteRequest3).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                            val repostedInviteRequestResult3 = responseAs[InviteRequestResult]
+                            repostedInviteRequestResult3.resultType should be(INVITE_REQUEST_RESULT)
+                            repostedInviteRequestResult3.queueNumber.get should be(1)
+                            repostedInviteRequestResult3.result.get.uuid should not be (None)
+                            repostedInviteRequestResult3.result.get.modified should not be (None)
+                          }
+                      }
+                    }
                 }
             }
         }

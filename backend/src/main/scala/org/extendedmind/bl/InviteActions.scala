@@ -211,6 +211,12 @@ trait InviteActions {
     log.info("destroyInviteRequest: request {}", inviteRequstUUID)
     db.destroyInviteRequest(inviteRequstUUID)
   }
+  
+  def destroyInvite(inviteUUID: UUID)(implicit log: LoggingAdapter): Response[DestroyResult] = {
+    log.info("destroyInvite: invite {}", inviteUUID)
+    db.destroyInvite(inviteUUID)
+  }
+  
 }
 
 class InviteActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector,
