@@ -112,5 +112,4 @@
 
   return filter;
 }
-
 angular.module('em.filters').filter('itemsFilter', itemsFilter);
