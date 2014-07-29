@@ -542,7 +542,7 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
   }
 
   function sendAnalytics(type, description){
-    postAnalytics(getPayload(type, description));
+    return postAnalytics(getPayload(type, description));
   };
 
   return {
@@ -560,6 +560,17 @@ function AnalyticsService($q, $timeout, $rootScope, UserSessionService, HttpClie
     do: function(action, description) {
       if ($rootScope.collectAnalytics){
         return sendAnalytics(action, description);
+      }
+    },
+    doWithUuid: function(action, description, uuid) {
+      if ($rootScope.collectAnalytics){
+        var payload = getPayload(action, description)
+        if (!payload[0].data.user){
+          payload[0].data.user = {uuid: uuid};
+        }else{
+          payload[0].data.user.uuid = uuid;
+        }
+        return postAnalytics(payload);
       }
     },
     error: function(location, errorType) {

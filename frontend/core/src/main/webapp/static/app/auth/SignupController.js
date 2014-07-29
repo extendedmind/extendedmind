@@ -43,8 +43,8 @@ function SignupController($location, $rootScope, $routeParams, $scope, $window, 
 
     if ($scope.signUpDirectly){
       AuthenticationService.signUp(payload).
-      then(function() {
-        AnalyticsService.do('signUp');
+      then(function(response) {
+        AnalyticsService.doWithUuid('signUp', undefined, response.data.uuid);
         if ($rootScope.packaging.endsWith('cordova')){
           // In apps, don't go to welcome page
           loginUser(false);
@@ -61,8 +61,8 @@ function SignupController($location, $rootScope, $routeParams, $scope, $window, 
 
     }else{
       AuthenticationService.acceptInvite(inviteResponseCode, payload).
-      then(function() {
-        AnalyticsService.do('acceptInvite');
+      then(function(response) {
+        AnalyticsService.doWithUuid('acceptInvite', undefined, response.data.uuid);
         if ($rootScope.packaging.endsWith('cordova')){
           // In apps, don't go to welcome page
           loginUser(false);
