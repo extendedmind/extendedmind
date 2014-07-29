@@ -1,6 +1,20 @@
-/* global bindToFocusEvent */
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-'use strict';
+ /* global bindToFocusEvent */
+ 'use strict';
 
 // Controller for all main slides
 // Holds a reference to all the item arrays. There is no sense in limiting
@@ -8,9 +22,9 @@
 // which are part of every main slide collection.
 function MainController(
   $controller, $filter, $rootScope, $scope, $timeout, $window,
-  AccountService, UISessionService, UserSessionService, ItemsService, ListsService,
-  TagsService, TasksService, NotesService, SynchronizeService,
-  SwiperService, ArrayService, UUIDService, AnalyticsService) {
+  AccountService, AnalyticsService, ArrayService, ItemsService, ListsService,
+  NotesService, SwiperService, SynchronizeService, TagsService, TasksService,
+  UISessionService, UserSessionService, UUIDService) {
 
   // ONBOARDING
 
@@ -23,15 +37,15 @@ function MainController(
   }
   $scope.setOnboardingPhase = function setOnboardingPhase(phase) {
     onboardingPhase = phase;
-    if (onboardingPhase === 'itemAdded'){
+    if (onboardingPhase === 'itemAdded') {
       // End right after first item added
       UserSessionService.setPreference('onboarded', $rootScope.packaging);
       AccountService.updateAccountPreferences();
       $scope.onboardingInProgress = false;
       AnalyticsService.do('firstItemAdded');
-    }else if (onboardingPhase === 'secondItemAdded'){
+    } else if (onboardingPhase === 'secondItemAdded') {
       AnalyticsService.do('secondItemAdded');
-    }else if (onboardingPhase === 'sortingStarted'){
+    } else if (onboardingPhase === 'sortingStarted') {
       AnalyticsService.do('sortingStarted');
     }
   };
@@ -56,17 +70,17 @@ function MainController(
   });
 
 
-  function combineListsArrays(){
-    if ($scope.archivedLists.length && $scope.lists.length){
+  function combineListsArrays() {
+    if ($scope.archivedLists.length && $scope.lists.length) {
       $scope.listsSelectOptions = $scope.lists.slice(0);  // http://davidwalsh.name/javascript-clone-array
       // Push a fake list as archived list delimiter
       $scope.listsSelectOptions.push({uuid: UUIDService.generateFakeUUID(), title: '--------', delimiter: true});
       $scope.listsSelectOptions = $scope.listsSelectOptions.concat($scope.archivedLists);
-    }else if ($scope.lists.length && !$scope.archivedLists.length){
+    } else if ($scope.lists.length && !$scope.archivedLists.length) {
       $scope.listsSelectOptions = $scope.lists.slice(0);  // http://davidwalsh.name/javascript-clone-array
-    }else if ($scope.archivedLists.length && !$scope.lists.length){
+    } else if ($scope.archivedLists.length && !$scope.lists.length) {
       $scope.listsSelectOptions = $scope.archivedLists;
-    }else{
+    } else {
       $scope.listsSelectOptions = [];
     }
     $scope.listsSelectOptions.unshift({
@@ -84,14 +98,14 @@ function MainController(
   });
 
   var allNotesUpdatedCallbacks = {};
-  function combineNotesArrays(){
-    if ($scope.notes.length && $scope.archivedNotes.length){
+  function combineNotesArrays() {
+    if ($scope.notes.length && $scope.archivedNotes.length) {
       $scope.allNotes = $scope.notes.concat($scope.archivedNotes);
-    }else if ($scope.notes.length && !$scope.archivedNotes.length){
+    } else if ($scope.notes.length && !$scope.archivedNotes.length) {
       $scope.allNotes = $scope.notes;
-    }else if ($scope.archivedNotes.length && !$scope.notes.length){
+    } else if ($scope.archivedNotes.length && !$scope.notes.length) {
       $scope.allNotes = $scope.archivedNotes;
-    }else{
+    } else {
       $scope.allNotes = [];
     }
 
@@ -99,7 +113,7 @@ function MainController(
       allNotesUpdatedCallbacks[id]($scope.allNotes.length);
     }
   }
-  $scope.registerAllNotesUpdatedCallback = function(callback, id){
+  $scope.registerAllNotesUpdatedCallback = function registerAllNotesUpdatedCallback(callback, id) {
     allNotesUpdatedCallbacks[id] = callback;
   };
 
@@ -110,11 +124,11 @@ function MainController(
     combineNotesArrays();
   });
 
-  function combineTasksArrays(){
+  function combineTasksArrays() {
     var activeArchivedTasks = [];
     var i = 0;
     while ($scope.archivedTasks[i]) {
-      if ($scope.archivedTasks[i].completed === undefined){
+      if ($scope.archivedTasks[i].completed === undefined) {
         activeArchivedTasks.push($scope.archivedTasks[i]);
       }
       i++;
@@ -135,12 +149,12 @@ function MainController(
 
   var completedArrayCallbacks = {};
   var watchingFullCompleted = false;
-  $scope.createFullCompletedTasks = function createFullCompletedTasks(callback, id){
-    function combineCompletedTasksArrays(){
+  $scope.createFullCompletedTasks = function createFullCompletedTasks(callback, id) {
+    function combineCompletedTasksArrays() {
       var completedArchivedTasks = [];
       var i = 0;
       while ($scope.archivedTasks[i]) {
-        if ($scope.archivedTasks[i].completed !== undefined){
+        if ($scope.archivedTasks[i].completed !== undefined) {
           completedArchivedTasks.push($scope.archivedTasks[i]);
         }
         i++;
@@ -156,7 +170,7 @@ function MainController(
 
     if (callback) completedArrayCallbacks[id] = callback;
 
-    if (!watchingFullCompleted){
+    if (!watchingFullCompleted) {
       watchingFullCompleted = true;
       $scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
         combineCompletedTasksArrays();
@@ -213,7 +227,7 @@ function MainController(
     if (activeUUID) {
       var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
       if (isNaN(sinceLastItemsSynchronized) || sinceLastItemsSynchronized > itemsSynchronizedThreshold) {
-        if (UserSessionService.getLatestModified(activeUUID) === undefined){
+        if (UserSessionService.getLatestModified(activeUUID) === undefined) {
           // This is the first load for the user, set loading variable
           $scope.$evalAsync(function() {
             $rootScope.isLoading = true;
@@ -241,7 +255,7 @@ function MainController(
 
   // GENERAL
 
-  $scope.cancelEdit = function() {
+  $scope.cancelEdit = function cancelEdit() {
     UISessionService.changeFeature(UISessionService.getPreviousFeatureName());
   };
 
@@ -272,10 +286,10 @@ function MainController(
   $controller('OmnibarController',{$scope: $scope});
 }
 
-MainController.$inject = [
+MainController['$inject'] = [
 '$controller', '$filter', '$rootScope', '$scope', '$timeout', '$window',
-'AccountService', 'UISessionService', 'UserSessionService', 'ItemsService', 'ListsService',
-'TagsService', 'TasksService', 'NotesService', 'SynchronizeService',
-'SwiperService', 'ArrayService', 'UUIDService', 'AnalyticsService'
+'AccountService', 'AnalyticsService', 'ArrayService', 'ItemsService', 'ListsService',
+'NotesService', 'SwiperService', 'SynchronizeService','TagsService', 'TasksService',
+'UISessionService', 'UserSessionService', 'UUIDService'
 ];
 angular.module('em.app').controller('MainController', MainController);

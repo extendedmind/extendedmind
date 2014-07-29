@@ -1,6 +1,22 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, ItemsService, NotesService, TasksService, AnalyticsService) {
+ /* global cordova */
+ 'use strict';
+
+ function OmnibarController($q, $rootScope, $scope, $timeout, AnalyticsService, ItemsService, NotesService, TasksService, UISessionService) {
 
   $scope.omnibarText = {};
   $scope.omnibarVisible = false;
@@ -109,27 +125,27 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
     }else{
       return MAX_CONTAINER_HEIGHT - usedHeight - keyboardHeight;
     }
-  }
+  };
 
   $scope.noteContentFocus = function() {
     noteContentHasFocus = true;
-  }
+  };
   $scope.noteContentBlur = function() {
     noteContentHasFocus = false;
-  }
+  };
   $scope.hideNoteProperties = function() {
     return noteContentHasFocus;
-  }
+  };
   $scope.taskDescriptionFocus = function() {
     taskDescriptionHasFocus = true;
-  }
+  };
   $scope.taskDescriptionBlur = function() {
     taskDescriptionHasFocus = false;
-  }
+  };
 
   $scope.hideTaskProperties = function() {
     return taskDescriptionHasFocus;
-  }
+  };
 
   $scope.getOmnibarVisibilityClass = function getOmnibarVisibilityClass() {
     return $scope.omnibarVisible ? 'omnibar-visible' : 'omnibar-hidden';
@@ -368,13 +384,12 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
   */
   function getTextWidth(text, font) {
     // re-use canvas object for better performance
-    var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
-    var context = canvas.getContext("2d");
+    var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'));
+    var context = canvas.getContext('2d');
     context.font = font;
     var metrics = context.measureText(text);
     return metrics.width;
-  };
-
+  }
 
   var currentOmnibarStyle;
   $scope.getOmnibarClass = function getOmnibarClass(){
@@ -396,7 +411,7 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
         fontSize = '18px';
       }
 
-      var currentTextWidth = getTextWidth($scope.omnibarText.title, fontSize + " sans-serif");
+      var currentTextWidth = getTextWidth($scope.omnibarText.title, fontSize + ' sans-serif');
       if (currentOmnibarStyle === 'omnibar-input-very-long' || (currentTextWidth / 2 + 25) > omnibarWidth){
         if (currentOmnibarStyle !== 'omnibar-input-very-long'){
           $rootScope.$broadcast('elastic:adjust');
@@ -448,5 +463,5 @@ function OmnibarController($q, $scope, $timeout, $rootScope, UISessionService, I
   };
 }
 
-OmnibarController.$inject = ['$q', '$scope', '$timeout', '$rootScope', 'UISessionService', 'ItemsService', 'NotesService', 'TasksService', 'AnalyticsService'];
+OmnibarController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'AnalyticsService', 'ItemsService', 'NotesService', 'TasksService', 'UISessionService'];
 angular.module('em.app').controller('OmnibarController', OmnibarController);

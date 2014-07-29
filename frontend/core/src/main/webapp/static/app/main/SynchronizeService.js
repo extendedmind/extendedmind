@@ -1,14 +1,29 @@
-/* global angular, jQuery */
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-function SynchronizeService($q, $rootScope, BackendClientService, UserSessionService, TagsService, ListsService, TasksService, NotesService, ItemsService){
+ /* global angular, jQuery */
+ 'use strict';
+
+ function SynchronizeService($q, $rootScope, BackendClientService, ItemsService, ListsService, NotesService, TagsService, TasksService, UserSessionService) {
 
   var itemsRegex = /\/items/;
   var getItemsRegex = new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   itemsRegex.source);
+   BackendClientService.uuidRegex.source +
+   itemsRegex.source);
 
-  function getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem){
+  function getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem) {
     return Math.max(
       isNaN(latestTag) ? -Infinity : latestTag,
       isNaN(latestList) ? -Infinity : latestList,
@@ -24,7 +39,7 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
     var latestNote = NotesService.updateNotes(response.notes, ownerUUID);
     var latestItem = ItemsService.updateItems(response.items, ownerUUID);
     var latestModified = null;
-    if (latestTag || latestList || latestTask || latestNote || latestItem){
+    if (latestTag || latestList || latestTask || latestNote || latestItem) {
       // Set latest modified
       latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
     }
@@ -33,7 +48,7 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
 
   // Register callbacks to BackendClientService
   var synchronizeCallback = function(request, response /*, queue*/) {
-    if (!jQuery.isEmptyObject(response)){
+    if (!jQuery.isEmptyObject(response)) {
       // TODO: The entire offline queue should be evaluated to see, if
       //       something will fail. I.e. delete task on desktop, and try to
       //       complete it on offline mobile.
@@ -48,41 +63,41 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
     // ****
     // POST
     // ****
-    if (request.content.method === 'post'){
-      if (request.params.type === 'item'){
-        if (request.content.url.endsWith('/undelete')){
+    if (request.content.method === 'post') {
+      if (request.params.type === 'item') {
+        if (request.content.url.endsWith('/undelete')) {
           // Undelete
           properties = {modified: response.modified};
-          if (!ItemsService.updateItemProperties(request.params.uuid, properties, request.params.owner)){
+          if (!ItemsService.updateItemProperties(request.params.uuid, properties, request.params.owner)) {
             // The item might have moved to either notes or tasks
-            if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)){
-              if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)){
+            if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {
+              if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
                 $rootScope.$emit('emException', {type: 'response', response: response,
-                          description: 'Could not update undeleted item with values from server'});
+                  description: 'Could not update undeleted item with values from server'});
                 return;
               }
             }
           }
         }
-      }else if (request.params.type === 'task'){
-        if (request.content.url.endsWith('/undelete') || request.content.url.endsWith('/uncomplete')){
+      } else if (request.params.type === 'task') {
+        if (request.content.url.endsWith('/undelete') || request.content.url.endsWith('/uncomplete')) {
           // Undelete or uncomplete: only modified changes
           properties = {modified: response.modified};
-        }else if (request.content.url.endsWith('/complete')){
+        } else if (request.content.url.endsWith('/complete')) {
           // Complete
           properties = {completed: response.completed, modified: response.result.modified};
         }
-        if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)){
+        if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {
           $rootScope.$emit('emException', {type: 'response', response: response,
-                    description: 'Could not update modified task with values from server'});
+            description: 'Could not update modified task with values from server'});
           return;
         }
-      }else if (request.params.type === 'note'){
-        if (request.content.url.endsWith('/undelete')){
+      } else if (request.params.type === 'note') {
+        if (request.content.url.endsWith('/undelete')) {
           properties = {modified: response.modified};
-          if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)){
+          if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
             $rootScope.$emit('emException', {type: 'response', response: response,
-                      description: 'Could not update undeleted note with values from server'});
+              description: 'Could not update undeleted note with values from server'});
             return;
           }
         }
@@ -90,7 +105,7 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
     // ***
     // PUT
     // ***
-    }else if (request.content.method === 'put'){
+  } else if (request.content.method === 'put') {
       // TODO: Make this better by not replacing the UUID and modified values
       //       right away but instead creating a realUuid and realModified values
       //       that can be traded for the real ones on synchronize callback. That
@@ -98,23 +113,23 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
       //       and also (if using 'track by' with uuid+modified key in lists) no
       //       unnecessary rendering would take place after online => faster UX.
       var uuid, oldUuid;
-      if (request.params.uuid){
+      if (request.params.uuid) {
         // Put existing
         oldUuid = request.params.uuid;
         uuid = oldUuid;
-      }else{
+      } else {
         // New, there should be an uuid in the response and a fake one in the request
-        if (!response.uuid){
+        if (!response.uuid) {
           $rootScope.$emit('emException', {type: 'response', response: response, description: 'No uuid from server'});
           return;
-        }else{
+        } else {
           oldUuid = request.params.fakeUUID;
           uuid = response.uuid;
 
           // Also update queue to replace all calls with the old fake uuid with the new one
-          if (queue && queue.length > 0){
+          if (queue && queue.length > 0) {
             for (var i=0, len=queue.length; i<len; i++) {
-              if (queue[i].params.uuid === oldUuid){
+              if (queue[i].params.uuid === oldUuid) {
                 queue[i].params.uuid = uuid;
                 queue[i].content.url = queue[i].content.url.replace(oldUuid,uuid);
               }
@@ -124,60 +139,60 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
       }
 
       properties = {uuid: uuid, modified: response.modified};
-      if (request.params.type === 'item'){
-        if (!ItemsService.updateItemProperties(oldUuid, properties, request.params.owner)){
+      if (request.params.type === 'item') {
+        if (!ItemsService.updateItemProperties(oldUuid, properties, request.params.owner)) {
           // The item might have moved to either notes or tasks
-          if (!TasksService.updateTaskProperties(oldUuid, properties, request.params.owner)){
-            if (!NotesService.updateNoteProperties(oldUuid, properties, request.params.owner)){
+          if (!TasksService.updateTaskProperties(oldUuid, properties, request.params.owner)) {
+            if (!NotesService.updateNoteProperties(oldUuid, properties, request.params.owner)) {
               $rootScope.$emit('emException', {type: 'response', response: response,
-                              description: 'Could not update item with values from server'});
+                description: 'Could not update item with values from server'});
               return;
             }
           }
         }
-      }else if (request.params.type === 'task'){
-        if (!TasksService.updateTaskProperties(oldUuid, properties, request.params.owner)){
+      } else if (request.params.type === 'task') {
+        if (!TasksService.updateTaskProperties(oldUuid, properties, request.params.owner)) {
           $rootScope.$emit('emException',
-                {type: 'response',
-                response: response,
-                description: 'Could not update task with values from server'});
+            {type: 'response',
+            response: response,
+            description: 'Could not update task with values from server'});
           return;
         }
-      }else if (request.params.type === 'note'){
-        if (!NotesService.updateNoteProperties(oldUuid, properties, request.params.owner)){
+      } else if (request.params.type === 'note') {
+        if (!NotesService.updateNoteProperties(oldUuid, properties, request.params.owner)) {
           $rootScope.$emit('emException',
-                {type: 'response',
-                response: response,
-                description: 'Could not update note with values from server'});
+            {type: 'response',
+            response: response,
+            description: 'Could not update note with values from server'});
           return;
         }
       }
     // ******
     // DELETE
     // ******
-    }else if (request.content.method === 'delete'){
-      properties = {deleted: response.deleted, modified: response.result.modified};
-      if (request.params.type === 'item'){
-        if (!ItemsService.updateItemProperties(request.params.uuid, properties, request.params.owner)){
+  } else if (request.content.method === 'delete') {
+    properties = {deleted: response.deleted, modified: response.result.modified};
+    if (request.params.type === 'item') {
+      if (!ItemsService.updateItemProperties(request.params.uuid, properties, request.params.owner)) {
           // The item might have moved to either notes or tasks
-          if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)){
-            if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)){
+          if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {
+            if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
               $rootScope.$emit('emException', {type: 'response', response: response,
-                        description: 'Could not update deleted item with values from server'});
+                description: 'Could not update deleted item with values from server'});
               return;
             }
           }
         }
-      }else if (request.params.type === 'task'){
-        if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)){
+      } else if (request.params.type === 'task') {
+        if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {
           $rootScope.$emit('emException', {type: 'response', response: response,
-                    description: 'Could not update deleted task with values from server'});
+            description: 'Could not update deleted task with values from server'});
           return;
         }
-      }else if (request.params.type === 'note'){
-        if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)){
+      } else if (request.params.type === 'note') {
+        if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
           $rootScope.$emit('emException', {type: 'response', response: response,
-                    description: 'Could not update deleted note with values from server'});
+            description: 'Could not update deleted note with values from server'});
           return;
         }
       }
@@ -186,14 +201,14 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
   BackendClientService.registerSecondaryGetCallback(synchronizeCallback);
   BackendClientService.registerDefaultCallback(defaultCallback);
 
-  var getAllOnline = function getAllOnline(ownerUUID, getAllMethod, deferred){
+  var getAllOnline = function getAllOnline(ownerUUID, getAllMethod, deferred) {
     getAllMethod(ownerUUID).then(
-      function(result){
+      function(result) {
         deferred.resolve();
         return result;
       },
       function(error) {
-        if (BackendClientService.isOffline(error.status)){
+        if (BackendClientService.isOffline(error.status)) {
           // Emit online required exception
           $rootScope.$emit('emException', {
             type: 'onlineRequired',
@@ -203,7 +218,7 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
             retryParam: ownerUUID,
             promise: deferred
           });
-        }else if (error.status === 403){
+        } else if (error.status === 403) {
           // Got 403, need to go to login
           $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
         }
@@ -212,7 +227,7 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
 
   var getAllItemsOnline = function getAllItemsOnline(ownerUUID) {
     return BackendClientService.getSecondary('/api/' + ownerUUID + '/items', getItemsRegex, undefined, true).then(function(result) {
-      if (result.data){
+      if (result.data) {
         var latestTag, latestList, latestTask, latestItem, latestNote;
         // Reset all arrays
         latestTag = TagsService.setTags(result.data.tags, ownerUUID);
@@ -221,7 +236,7 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
         latestNote = NotesService.setNotes(result.data.notes, ownerUUID);
         latestItem = ItemsService.setItems(result.data.items, ownerUUID);
         var latestModified = null;
-        if (latestTag || latestList || latestTask || latestNote || latestItem){
+        if (latestTag || latestList || latestTask || latestNote || latestItem) {
           // Set latest modified
           latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
         }
@@ -235,39 +250,39 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
     var deferred = $q.defer();
     var latestModified = UserSessionService.getLatestModified(ownerUUID);
     var url = '/api/' + ownerUUID + '/items';
-    if (latestModified !== undefined){
-      if (latestModified){
+    if (latestModified !== undefined) {
+      if (latestModified) {
         url += '?modified=' + latestModified + '&deleted=true&archived=true&completed=true';
       }
-      if (UserSessionService.isOfflineEnabled()){
+      if (UserSessionService.isOfflineEnabled()) {
         // Push request to offline buffer
         BackendClientService.getSecondary(url, getItemsRegex, {owner: ownerUUID});
         deferred.resolve();
-      }else{
+      } else {
         BackendClientService.get(url, getItemsRegex).then(function(result) {
-          if (result.data){
+          if (result.data) {
             processSynchronizeUpdateResult(ownerUUID, result.data);
           }
           deferred.resolve();
-        }, function(error){
-          if (error.status === 403){
+        }, function(error) {
+          if (error.status === 403) {
             // Got 403, need to go to login
             $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
-          }else{
+          } else {
             // just resolve, because this command does not need to always succeed
             deferred.resolve();
           }
         });
       }
-    }else {
+    } else {
       getAllOnline(ownerUUID, getAllItemsOnline, deferred);
     }
     return deferred.promise;
   };
 
-  var getAllArchivedAndCompletedOnline = function getAllArchivedOnline(ownerUUID){
+  var getAllArchivedAndCompletedOnline = function getAllArchivedOnline(ownerUUID) {
     return BackendClientService.getSecondary('/api/' + ownerUUID + '/items?archived=true&completed=true&active=false', getItemsRegex, undefined, true).then(function(result) {
-      if (result.data){
+      if (result.data) {
         // Update all arrays with archived values
         TagsService.updateTags(result.data.tags, ownerUUID);
         ListsService.updateLists(result.data.lists, ownerUUID);
@@ -287,9 +302,9 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
     },
     synchronizeCompletedAndArchived: function(ownerUUID) {
       var deferred = $q.defer();
-      if (!UserSessionService.getArchivedSynchronized()){
+      if (!UserSessionService.getArchivedSynchronized()) {
         getAllOnline(ownerUUID, getAllArchivedAndCompletedOnline, deferred);
-      }else {
+      } else {
         deferred.resolve();
       }
       return deferred.promise;
@@ -299,6 +314,6 @@ function SynchronizeService($q, $rootScope, BackendClientService, UserSessionSer
   };
 }
 
-SynchronizeService.$inject = ['$q', '$rootScope', 'BackendClientService', 'UserSessionService',
-                           'TagsService', 'ListsService', 'TasksService', 'NotesService', 'ItemsService'];
+SynchronizeService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'ItemsService',
+'ListsService', 'NotesService', 'TagsService', 'TasksService', 'UserSessionService'];
 angular.module('em.services').factory('SynchronizeService', SynchronizeService);

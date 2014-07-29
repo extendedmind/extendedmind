@@ -1,26 +1,28 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 'use strict';
 
-function ItemsController($scope, $timeout, UISessionService, ItemsService, AnalyticsService) {
+ function ItemsController($scope, $timeout, AnalyticsService, ItemsService, UISessionService) {
 
-  $scope.resetInboxEdit = function(){
+  $scope.resetInboxEdit = function resetInboxEdit() {
     $scope.itemType = 'item';
     if ($scope.task) $scope.task = undefined;
     if ($scope.note) $scope.note = undefined;
   };
 
-  $scope.saveItem = function(item) {
-    if (item.uuid){
-      AnalyticsService.do('saveItem', 'new');
-    }else{
-      AnalyticsService.do('saveItem', 'existing');
-    }
-    ItemsService.saveItem(item, UISessionService.getActiveUUID());
-    if (!$scope.isFeatureActive('inbox')) {
-      UISessionService.changeFeature('inbox', item);
-    }
-  };
-
-  $scope.addNewItem = function addNewItem(newItem) {
+  $scope.addNewItem = function(newItem) {
     if (newItem.title && newItem.title.length > 0) {
       var newItemToSave = {title: newItem.title};
       delete newItem.title;
@@ -78,5 +80,5 @@ function ItemsController($scope, $timeout, UISessionService, ItemsService, Analy
   };
 }
 
-ItemsController.$inject = ['$scope', '$timeout', 'UISessionService', 'ItemsService', 'AnalyticsService'];
+ItemsController['$inject'] = ['$scope', '$timeout', 'AnalyticsService', 'ItemsService', 'UISessionService'];
 angular.module('em.app').controller('ItemsController', ItemsController);
