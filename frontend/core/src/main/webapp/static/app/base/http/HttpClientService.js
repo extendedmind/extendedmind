@@ -1,7 +1,22 @@
-/* global $ */
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
+ /* global $, console */
+ 'use strict';
+
+ function HttpClientService($http, $q, $rootScope, HttpRequestQueueService) {
 
   var methods = {};
   var credentials;
@@ -9,26 +24,26 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
 
   // Offline checker for the entire application
   function isOffline(status) {
-    if (status === 0 || status === 404 || status === 502){
+    if (status === 0 || status === 404 || status === 502) {
       return true;
     }
   }
 
   function emitException(error, skipLogStatuses) {
     var exceptionType = 'http';
-    if (error && isOffline(error.status)){
+    if (error && isOffline(error.status)) {
       online = false;
       if (onlineCallback) {
         onlineCallback(online);
       }
       exceptionType = 'onlineRequired';
     }
-    if (!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1){
+    if (!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1) {
       $rootScope.$emit('emException', {type: exceptionType, status: error.status, data: error.data});
     }
   }
 
-  function getRequest(method, url, params, data){
+  function getRequest(method, url, params, data) {
     var request = {
       content: {
         method: method,
@@ -36,7 +51,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
       },
       params: params
     };
-    if (data){
+    if (data) {
       request.content.data = data;
     }
     return request;
@@ -51,42 +66,42 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   function executeRequests() {
     // First always check if primary should be created first
     // to avoid errors with authentication
-    if (!HttpRequestQueueService.isPrimaryHead() && primaryCreateCallback){
+    if (!HttpRequestQueueService.isPrimaryHead() && primaryCreateCallback) {
       var primaryRequestInfo = primaryCreateCallback();
-      if (primaryRequestInfo){
+      if (primaryRequestInfo) {
         processPrimaryRequest(primaryRequestInfo.url, primaryRequestInfo.data);
       }
     }
     var headRequest = HttpRequestQueueService.getHead();
-    if (headRequest){
-      if (!headRequest.last){
+    if (headRequest) {
+      if (!headRequest.last) {
         $http(headRequest.content).
         success(function(data /*, status, headers, config*/) {
-            retryingExecution = false;
-            // First, execute callback
-            if (headRequest.primary && primaryResultCallback){
-              primaryResultCallback(headRequest, data);
-            }else if (headRequest.secondary && secondaryCallback){
-              secondaryCallback(headRequest, data, HttpRequestQueueService.getQueue());
-              HttpRequestQueueService.saveQueue();
-            }else if (defaultCallback){
-              defaultCallback(headRequest, data, HttpRequestQueueService.getQueue());
-              HttpRequestQueueService.saveQueue();
-            }
-            // Then remove the request from queue and release lock
-            HttpRequestQueueService.remove(headRequest);
+          retryingExecution = false;
+          // First, execute callback
+          if (headRequest.primary && primaryResultCallback) {
+            primaryResultCallback(headRequest, data);
+          } else if (headRequest.secondary && secondaryCallback) {
+            secondaryCallback(headRequest, data, HttpRequestQueueService.getQueue());
+            HttpRequestQueueService.saveQueue();
+          } else if (defaultCallback) {
+            defaultCallback(headRequest, data, HttpRequestQueueService.getQueue());
+            HttpRequestQueueService.saveQueue();
+          }
+          // Then remove the request from queue and release lock
+          HttpRequestQueueService.remove(headRequest);
 
-            // Execute online callback
-            online = true;
-            if (onlineCallback) {
-              onlineCallback(online);
-            }
+          // Execute online callback
+          online = true;
+          if (onlineCallback) {
+            onlineCallback(online);
+          }
 
-            // Try to execute the next request in the queue
-            executeRequests();
-          }).
-        error(function(data, status, headers, config) {
-          if (isOffline(status)){
+          // Try to execute the next request in the queue
+          executeRequests();
+        })
+        .error(function(data, status, headers, config) {
+          if (isOffline(status)) {
             retryingExecution = false;
             // Seems to be offline, stop processing
             HttpRequestQueueService.setOffline(headRequest);
@@ -95,17 +110,17 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
             if (onlineCallback) {
               onlineCallback(online);
             }
-          }else {
+          } else {
             // Add retrying to 403 Forbidden which may have to do with
             // an old request being run on refocus to app after 12 hours
             // from last authentication
-            if (!retryingExecution && status === 403){
+            if (!retryingExecution && status === 403) {
               retryingExecution = true;
               HttpRequestQueueService.releaseLock();
               executeRequests();
-            }else {
+            } else {
               retryingExecution = false;
-              if (headRequest.errorStatus !== undefined && headRequest.errorStatus === status){
+              if (headRequest.errorStatus !== undefined && headRequest.errorStatus === status) {
                 // This error was already thrown and error emitted, the best thing
                 // now is to remove the request and continue with the next request in the
                 // queue to prevent endless error loop. NOTE: This leaves the transient model
@@ -113,7 +128,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
                 // is still a better alternative than endless looping.
                 HttpRequestQueueService.remove(headRequest);
                 executeRequests();
-              }else{
+              } else {
                 // Emit error to root scope, so that
                 // it can be listened on at by the application
                 headRequest.errorStatus = status;
@@ -124,14 +139,14 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
             }
           }
         });
-      }else{
         // Last is executed without any expectations of a result
+      } else {
         $.ajax({
           type: headRequest.content.method.toUpperCase(),
           url: headRequest.content.url,
           data: JSON.stringify(headRequest.content.data),
-          contentType: "application/json",
-          dataType: "json",
+          contentType: 'application/json',
+          dataType: 'json',
           success: function () {
             // Then remove the request and release lock
             HttpRequestQueueService.remove(headRequest);
@@ -144,7 +159,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     }
   }
 
-  function processPrimaryRequest(url, data){
+  function processPrimaryRequest(url, data) {
     var request = getRequest('post', url, undefined, data);
     request.primary = true;
     HttpRequestQueueService.push(request);
@@ -169,8 +184,8 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
           onlineCallback(online);
         }
         return success;
-      }, function(error){
-        if (error && isOffline(error.status)){
+      }, function(error) {
+        if (error && isOffline(error.status)) {
           online = false;
           if (onlineCallback) {
             onlineCallback(online);
@@ -229,7 +244,7 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
   };
 
   // Custom method for a primary POST, i.e. authentication
-  methods.postPrimary = function (url, data) {
+  methods.postPrimary = function(url, data) {
     processPrimaryRequest(url, data);
     executeRequests();
   };
@@ -252,23 +267,23 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
     request.last = true;
     HttpRequestQueueService.concatLastContentDataArray(request);
     // Don't execute requests, last is sent only after something else
-  }
+  };
   methods.postLastOnline = function(url, data) {
     $.ajax({
       type: 'POST',
       url: url,
       data: JSON.stringify(data),
-      contentType: "application/json",
-      dataType: "json",
+      contentType: 'application/json',
+      dataType: 'json',
       success: function () {
         // Don't do anything
       },
-      failure: function (data) {
+      failure: function (/*data*/) {
         // Only log failure of analytics
-        console.log("postLastOnline failed")
+        console.log('postLastOnline failed');
       }
     });
-  }
+  };
 
   // DELETE, POST and PUT are methods which utilize
   // the offline request queue
@@ -294,27 +309,25 @@ function HttpClientService($q, $http, $rootScope, HttpRequestQueueService) {
 
   methods.isOffline = function(status) {
     return isOffline(status);
-  }
+  };
 
   // Methods to register callbacks when
-  methods.registerCallback = function(type, callback){
-    if (type === 'primaryResult'){
+  methods.registerCallback = function(type, callback) {
+    if (type === 'primaryResult') {
       primaryResultCallback = callback;
-    }else if (type === 'primaryCreate'){
+    } else if (type === 'primaryCreate') {
       primaryCreateCallback = callback;
-    }else if (type === 'secondary'){
+    } else if (type === 'secondary') {
       secondaryCallback = callback;
-    }else if (type === 'default'){
+    } else if (type === 'default') {
       defaultCallback = callback;
-    }else if (type === 'online'){
+    } else if (type === 'online') {
       onlineCallback = callback;
     }
   };
 
-
-
   return methods;
 }
 
-HttpClientService.$inject = ['$q', '$http', '$rootScope', 'HttpRequestQueueService'];
+HttpClientService['$inject'] = ['$http', '$q', '$rootScope', 'HttpRequestQueueService'];
 angular.module('em.services').factory('HttpClientService', HttpClientService);
