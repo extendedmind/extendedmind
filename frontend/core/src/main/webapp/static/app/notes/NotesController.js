@@ -1,13 +1,27 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 'use strict';
 
-function NotesController($filter, $q, $scope, UISessionService, UUIDService, NotesService, ListsService, TagsService, AnalyticsService, SwiperService) {
+ function NotesController($filter, $q, $scope, AnalyticsService, NotesService, ListsService, TagsService, SwiperService, UISessionService, UUIDService) {
   $scope.newKeyword = {};
 
   $scope.initializeOmnibarNote = function initializeOmnibarNote(omnibarText) {
     $scope.note = omnibarText ? omnibarText : {};
   };
 
-  $scope.saveNote = function() {
+  $scope.saveNote = function saveNote() {
 
     // Save keywords first because saveTag requires network connection.
     function saveKeywords() {
@@ -75,31 +89,31 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
     });
   };
 
-  $scope.noteQuickEditDone = function(note) {
+  $scope.noteQuickEditDone = function noteQuickEditDone(note) {
     AnalyticsService.do('noteQuickEditDone');
     $scope.saveUnsavedListAndLinkToItem(note).then(function() {
       NotesService.saveNote(note, UISessionService.getActiveUUID());
     });
   };
 
-  $scope.editNoteFields = function(note) {
+  $scope.editNoteFields = function editNoteFields(note) {
     AnalyticsService.do('editNoteFields');
     NotesService.saveNote(note, UISessionService.getActiveUUID());
   };
 
-  $scope.editNote = function(note) {
+  $scope.editNote = function editNote(note) {
     $scope.editItemInOmnibar(note, 'note');
   };
 
-  $scope.deleteNote = function(note) {
+  $scope.deleteNote = function deleteNote(note) {
     AnalyticsService.do('deleteNote');
     NotesService.deleteNote(note, UISessionService.getActiveUUID());
   };
 
-  $scope.addNote = function(newNote) {
+  $scope.addNote = function addNote(newNote) {
     var newNoteToSave = {title: undefined};
-    if (newNote.relationships){
-      if (newNote.relationships.list){
+    if (newNote.relationships) {
+      if (newNote.relationships.list) {
         newNoteToSave.relationships = {
           list: newNote.relationships.list
         };
@@ -115,12 +129,12 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
     $scope.addItemInOmnibar(newNoteToSave, 'note');
   };
 
-  $scope.getNoteContentTeaser = function(note) {
-    if (note.content){
+  $scope.getNoteContentTeaser = function getNoteContentTeaser(note) {
+    if (note.content) {
       var maximumTeaserLength = 80;
-      if (note.content.length <= maximumTeaserLength){
+      if (note.content.length <= maximumTeaserLength) {
         return note.content;
-      } else{
+      } else {
         return note.content.substring(0, maximumTeaserLength) + '...';
       }
     }
@@ -218,23 +232,23 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
 
   // INFINITE SCROLL
   $scope.recentNotesLimit = 0;
-  function setAllNotesLimit(allNotesSize){
-    if (allNotesSize < 25){
+  function setAllNotesLimit(allNotesSize) {
+    if (allNotesSize < 25) {
       $scope.recentNotesLimit = allNotesSize;
     }
   }
   $scope.registerAllNotesUpdatedCallback(setAllNotesLimit, 'NotesController');
 
-  $scope.getRecentNotesLimit = function(){
+  $scope.getRecentNotesLimit = function getRecentNotesLimit() {
     return $scope.recentNotesLimit;
   };
 
-  $scope.addMoreRecent = function(){
-    if ($scope.recentNotesLimit !== $scope.allNotes.length){
+  $scope.addMoreRecent = function addMoreRecent() {
+    if ($scope.recentNotesLimit !== $scope.allNotes.length) {
       // There is still more to add, add in batches of 25
-      if ($scope.recentNotesLimit + 25 < $scope.allNotes.length){
+      if ($scope.recentNotesLimit + 25 < $scope.allNotes.length) {
         $scope.recentNotesLimit += 25;
-      }else{
+      } else {
         $scope.recentNotesLimit = $scope.allNotes.length;
       }
     }
@@ -243,23 +257,23 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
   // Navigation
 
   $scope.keyword = undefined;
-  $scope.showKeywordDetails = function(selectedKeyword) {
+  $scope.showKeywordDetails = function showKeywordDetails(selectedKeyword) {
     $scope.keyword = selectedKeyword;
     $scope.newNote = {relationships: {tags: [$scope.keyword.uuid]}};
     SwiperService.swipeTo('notes/details');
   };
-  $scope.showNoKeywordDetails = function() {
+  $scope.showNoKeywordDetails = function showNoKeywordDetails() {
     $scope.keyword = undefined;
     $scope.newNote = {};
     SwiperService.swipeTo('notes/details');
   };
-  $scope.showNoListNotesDetails = function() {
+  $scope.showNoListNotesDetails = function showNoListNotesDetails() {
     $scope.keyword = null;
     $scope.newNote = {};
     SwiperService.swipeTo('notes/details');
   };
 
-  $scope.deleteKeywordAndShowKeywords = function(keyword) {
+  $scope.deleteKeywordAndShowKeywords = function deleteKeywordAndShowKeywords(keyword) {
     SwiperService.swipeTo('notes/keywords');
     $scope.deleteKeyword(keyword);
     $scope.keyword = undefined;
@@ -269,6 +283,6 @@ function NotesController($filter, $q, $scope, UISessionService, UUIDService, Not
 
 NotesController['$inject'] = [
 '$filter', '$q', '$scope',
-'UISessionService', 'UUIDService', 'NotesService', 'ListsService', 'TagsService',
-'AnalyticsService', 'SwiperService'];
+'AnalyticsService', 'ListsService', 'NotesService', 'TagsService',
+'SwiperService', 'UISessionService', 'UUIDService'];
 angular.module('em.app').controller('NotesController', NotesController);
