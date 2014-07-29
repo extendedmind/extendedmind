@@ -7,32 +7,30 @@ Only universal code that would work by itself in any web page.
 @import "icon.less";
 
 /*
-
 # Positioning
-
-`.center-horizontally` centers the container by making the browser to calculate left and right margins automatically.
-
 */
 
+
+/*
+`.center-horizontally` centers the container by making the browser to calculate left and right margins automatically.
+
+```markup
+<div class="center-horizontally" style="background:gray;max-width:100px;">&nbsp;</div>
+```
+*/
 .center-horizontally {
   margin-left: auto;
   margin-right: auto;
 }
 
-// TRANSPARENCY
+/*
+Use `.left-of-two` and `.right-of-two` to divide the horizontal space in two sections, separated by a white border.
 
-.transparent-background {
-  /* Fallback for web browsers that doesn't support RGBa */
-  background: rgb(0, 0, 0);
-  /* RGBa with 0.6 opacity */
-  background: rgba(0, 0, 0, 0.6);
-  /* For IE 8*/
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
-}
-
-// HORIZONTAL LAYOUT
-
-// two in a row
+```markup
+<div class="left-of-two" style="background:gray;">&nbsp;</div>
+<div class="right-of-two" style="background:gray;">&nbsp;</div>
+```
+*/
 .left-of-two {
   float: left;
   width: 50%;
@@ -43,7 +41,19 @@ Only universal code that would work by itself in any web page.
   width: 50%;
 }
 
-// three in a row
+/*
+Similarly, use the following to divide to three sections:
+
+* `left-of-three`
+* `center-of-three`
+* `right-of-three`
+
+```markup
+<div class="left-of-three" style="background:gray;">&nbsp;</div>
+<div class="center-of-three" style="background:gray;">&nbsp;</div>
+<div class="right-of-three" style="background:gray;">&nbsp;</div>
+```
+*/
 .left-of-three {
   float: left;
   width: 33%;
@@ -59,7 +69,21 @@ Only universal code that would work by itself in any web page.
   width: 33%;
 }
 
-// four in a row
+/*
+And to four sections:
+
+* `left-of-four`
+* `center-of-four`
+* `center-of-four`
+* `right-of-four`
+
+```markup
+<div class="left-of-four" style="background:gray;">&nbsp;</div>
+<div class="center-of-four" style="background:gray;">&nbsp;</div>
+<div class="center-of-four" style="background:gray;">&nbsp;</div>
+<div class="right-of-four" style="background:gray;">&nbsp;</div>
+```
+*/
 .left-of-four {
   float: left;
   width: 25%;
@@ -75,6 +99,13 @@ Only universal code that would work by itself in any web page.
   width: 25%;
 }
 
+/*
+`.horizontally-justified` justifies text horizontally.
+
+```markup
+<div class="horizontally-justified">Extended Mind is not just a nice brand name for a task manager or another note taking app. We are very serious about the fact that certain mental operations such as workflow management and declarative memory can be externalized. This will change the way you think.</div>
+```
+*/
 .horizontally-justified {
   text-align: justify;
   * {
@@ -91,6 +122,15 @@ Only universal code that would work by itself in any web page.
   }
 }
 
+/*
+`.fade-color(SECONDS)` slows down the color change by SECONDS.
+
+```markup
+<div style=":hover{
+.fade-color(1);color: red;
+}">Hover over me.</div>
+```
+*/
 .fade-color(@fade-time) {
   -o-transition: @fade-time linear;
   -moz-transition: @fade-time linear;
