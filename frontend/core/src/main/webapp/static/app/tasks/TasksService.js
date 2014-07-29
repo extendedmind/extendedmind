@@ -1,7 +1,22 @@
-/*global angular */
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendClientService, ArrayService, ListsService, TagsService){
+ /*global angular */
+ 'use strict';
+
+ function TasksService($q, $rootScope, ArrayService, BackendClientService, ListsService, TagsService, UserSessionService, UUIDService) {
   var tasks = {};
 
   var taskRegex = /\/task/;
@@ -9,8 +24,8 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
   var completeRegex = /\/complete/;
   var uncompleteRegex = /\/uncomplete/;
 
-  function initializeArrays(ownerUUID){
-    if (!tasks[ownerUUID]){
+  function initializeArrays(ownerUUID) {
+    if (!tasks[ownerUUID]) {
       tasks[ownerUUID] = {
         activeTasks: [],
         deletedTasks: [],
@@ -21,19 +36,19 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
     }
   }
 
-  function getOtherArrays(ownerUUID){
+  function getOtherArrays(ownerUUID) {
     return [{array: tasks[ownerUUID].archivedTasks, id: 'archived'},
-            {array: tasks[ownerUUID].completedTasks, id: 'completed', reverse: true}];
+    {array: tasks[ownerUUID].completedTasks, id: 'completed', reverse: true}];
   }
 
   function updateTask(task, ownerUUID) {
     return ArrayService.updateItem(task,
-              tasks[ownerUUID].activeTasks,
-              tasks[ownerUUID].deletedTasks,
-              getOtherArrays(ownerUUID));
+      tasks[ownerUUID].activeTasks,
+      tasks[ownerUUID].deletedTasks,
+      getOtherArrays(ownerUUID));
   }
 
-  function setTask(task, ownerUUID){
+  function setTask(task, ownerUUID) {
     initializeArrays(ownerUUID);
     ArrayService.setItem(task,
       tasks[ownerUUID].activeTasks,
@@ -42,30 +57,30 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
   }
 
   // Setup callback to ListsService
-  var itemArchiveCallback = function(children, archived, ownerUUID){
+  var itemArchiveCallback = function(children, archived, ownerUUID) {
     cleanRecentlyCompletedTasks(ownerUUID);
-    if (tasks[ownerUUID] && children){
+    if (tasks[ownerUUID] && children) {
       for (var i=0, len=children.length; i<len; i++) {
         var activeTask = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
-        if (activeTask){
+        if (activeTask) {
           activeTask.archived = archived;
           activeTask.modified = children[i].modified;
           updateTask(activeTask, ownerUUID);
-        }else{
+        } else {
           var deletedTask = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
-          if (deletedTask){
+          if (deletedTask) {
             deletedTask.archived = archived;
             deletedTask.modified = children[i].modified;
             updateTask(deletedTask, ownerUUID);
-          }else{
+          } else {
             var completedTask = tasks[ownerUUID].completedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
-            if (completedTask){
+            if (completedTask) {
               completedTask.archived = archived;
               completedTask.modified = children[i].modified;
               updateTask(completedTask, ownerUUID);
-            }else{
+            } else {
               var archivedTask = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
-              if (archivedTask){
+              if (archivedTask) {
                 archivedTask.archived = archived;
                 archivedTask.modified = children[i].modified;
                 updateTask(archivedTask, ownerUUID);
@@ -79,8 +94,8 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
   ListsService.registerItemArchiveCallback(itemArchiveCallback, 'TasksService');
 
   // Setup callback for tags
-  var tagDeletedCallback = function(deletedTag, ownerUUID){
-    if (tasks[ownerUUID] && deletedTag){
+  var tagDeletedCallback = function(deletedTag, ownerUUID) {
+    if (tasks[ownerUUID] && deletedTag) {
       // Remove tags from existing parents
       TagsService.removeDeletedTagFromItems(tasks[ownerUUID].activeTasks, deletedTag);
       TagsService.removeDeletedTagFromItems(tasks[ownerUUID].deletedTasks, deletedTag);
@@ -91,8 +106,8 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
   TagsService.registerTagDeletedCallback(tagDeletedCallback, 'TasksService');
 
   // Setup callback for lists
-  var listDeletedCallback = function(deletedList, ownerUUID){
-    if (tasks[ownerUUID] && deletedList){
+  var listDeletedCallback = function(deletedList, ownerUUID) {
+    if (tasks[ownerUUID] && deletedList) {
       // Remove list from existing parents
       ListsService.removeDeletedListFromItems(tasks[ownerUUID].activeTasks, deletedList);
       ListsService.removeDeletedListFromItems(tasks[ownerUUID].deletedTasks, deletedList);
@@ -102,12 +117,12 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
   };
   ListsService.registerListDeletedCallback(listDeletedCallback, 'TasksService');
 
-  function cleanRecentlyCompletedTasks(ownerUUID){
-    if (tasks[ownerUUID]){
+  function cleanRecentlyCompletedTasks(ownerUUID) {
+    if (tasks[ownerUUID]) {
       // Loop through recently completed tasks and delete them from the activeTasks array
       for (var i=0, len=tasks[ownerUUID].recentlyCompletedTasks.length; i<len; i++) {
         var recentlyCompletedTaskIndex = tasks[ownerUUID].activeTasks.findFirstIndexByKeyValue('uuid', tasks[ownerUUID].recentlyCompletedTasks[i].uuid);
-        if (recentlyCompletedTaskIndex !== undefined){
+        if (recentlyCompletedTaskIndex !== undefined) {
           tasks[ownerUUID].activeTasks.splice(recentlyCompletedTaskIndex, 1);
         }
       }
@@ -115,13 +130,13 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
     }
   }
 
-  function addContextToTasks(tasksResponse, ownerUUID){
-    if (tasksResponse){
+  function addContextToTasks(tasksResponse, ownerUUID) {
+    if (tasksResponse) {
       for (var i=0, len=tasksResponse.length; i<len; i++) {
-        if (tasksResponse[i].relationships && tasksResponse[i].relationships.tags){
+        if (tasksResponse[i].relationships && tasksResponse[i].relationships.tags) {
           for (var j=0, jlen=tasksResponse[i].relationships.tags.length; j<jlen; j++) {
             var tag = TagsService.getTagByUUID(tasksResponse[i].relationships.tags[j], ownerUUID);
-            if (tag && tag.tagType === 'context'){
+            if (tag && tag.tagType === 'context') {
               tasksResponse[i].relationships.context = tag.uuid;
               return;
             }
@@ -131,85 +146,85 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
     }
   }
 
-  function addListToTasks(tasksResponse){
-    if (tasksResponse){
+  function addListToTasks(tasksResponse) {
+    if (tasksResponse) {
       for (var i=0, len=tasksResponse.length; i<len; i++) {
-        if (tasksResponse[i].relationships && tasksResponse[i].relationships.parent){
+        if (tasksResponse[i].relationships && tasksResponse[i].relationships.parent) {
           tasksResponse[i].relationships.list = tasksResponse[i].relationships.parent;
         }
       }
     }
   }
 
-  function addDateToTasks(tasksResponse){
-    if (tasksResponse){
+  function addDateToTasks(tasksResponse) {
+    if (tasksResponse) {
       for (var i=0, len=tasksResponse.length; i<len; i++) {
-        if (tasksResponse[i].due){
+        if (tasksResponse[i].due) {
           tasksResponse[i].date = tasksResponse[i].due;
         }
       }
     }
   }
 
-  function moveContextToTags(task, ownerUUID){
-    if (task.relationships){
+  function moveContextToTags(task, ownerUUID) {
+    if (task.relationships) {
       var context = task.relationships.context;
-      if (task.relationships.tags){
+      if (task.relationships.tags) {
         var foundCurrent = false;
         var previousContextIndex;
         for (var i=0, len=task.relationships.tags.length; i<len; i++) {
           var tag = TagsService.getTagByUUID(task.relationships.tags[i], ownerUUID);
-          if (tag && tag.tagType === 'context'){
-            if (context && tag.uuid === context){
+          if (tag && tag.tagType === 'context') {
+            if (context && tag.uuid === context) {
               foundCurrent = true;
-            }else{
+            } else {
               previousContextIndex = i;
             }
           }
         }
-        if (previousContextIndex !== undefined){
+        if (previousContextIndex !== undefined) {
           // Remove old
           task.relationships.tags.splice(previousContextIndex, 1);
         }
-        if (!foundCurrent && context){
+        if (!foundCurrent && context) {
           // Add new
           task.relationships.tags.push(context);
         }
-      }else if (context){
+      } else if (context) {
         task.relationships.tags = [context];
       }
 
-      if (task.relationships.hasOwnProperty('context')){
+      if (task.relationships.hasOwnProperty('context')) {
         delete task.relationships.context;
       }
       return context;
     }
   }
 
-  function moveListToParent(task){
-    if (task.relationships){
+  function moveListToParent(task) {
+    if (task.relationships) {
       var list = task.relationships.list;
-      if (list){
+      if (list) {
         task.relationships.parent = list;
-      }else if (task.relationships.hasOwnProperty('parent')){
+      } else if (task.relationships.hasOwnProperty('parent')) {
         delete task.relationships.parent;
       }
-      if (task.relationships.hasOwnProperty('list')){
+      if (task.relationships.hasOwnProperty('list')) {
         delete task.relationships.list;
       }
       return list;
     }
   }
 
-  function moveDateToDue(task){
-    if (task.date){
+  function moveDateToDue(task) {
+    if (task.date) {
       task.due = task.date;
       delete task.date;
       return task.due;
     }
   }
 
-  function processCompletedTask(task, ownerUUID){
+  function processCompletedTask(task, ownerUUID) {
     // Don't change modified on complete to prevent
     // task from moving down in the list on uncomplete.
     //task.modified = result.data.result.modified;
@@ -230,10 +245,10 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       addListToTasks(tasksResponse);
       addDateToTasks(tasksResponse);
       return ArrayService.setArrays(
-          tasksResponse,
-          tasks[ownerUUID].activeTasks,
-          tasks[ownerUUID].deletedTasks,
-          getOtherArrays(ownerUUID));
+        tasksResponse,
+        tasks[ownerUUID].activeTasks,
+        tasks[ownerUUID].deletedTasks,
+        getOtherArrays(ownerUUID));
     },
     updateTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
@@ -242,18 +257,18 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       addListToTasks(tasksResponse);
       addDateToTasks(tasksResponse);
       return ArrayService.updateArrays(
-          tasksResponse,
-          tasks[ownerUUID].activeTasks,
-          tasks[ownerUUID].deletedTasks,
-          getOtherArrays(ownerUUID));
+        tasksResponse,
+        tasks[ownerUUID].activeTasks,
+        tasks[ownerUUID].deletedTasks,
+        getOtherArrays(ownerUUID));
     },
     updateTaskProperties: function(uuid, properties, ownerUUID) {
       return ArrayService.updateItemProperties(
-                uuid,
-                properties,
-                tasks[ownerUUID].activeTasks,
-                tasks[ownerUUID].deletedTasks,
-                getOtherArrays(ownerUUID));
+        uuid,
+        properties,
+        tasks[ownerUUID].activeTasks,
+        tasks[ownerUUID].deletedTasks,
+        getOtherArrays(ownerUUID));
     },
     getTasks: function(ownerUUID) {
       initializeArrays(ownerUUID);
@@ -271,57 +286,57 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       return tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveTask: function(task, ownerUUID) {
-      function updateTransientProperties(context, list, due){
-        if (context){
+      function updateTransientProperties(context, list, due) {
+        if (context) {
           task.relationships.context = context;
         }
-        if (list){
+        if (list) {
           task.relationships.list = list;
         }
-        if (due){
+        if (due) {
           task.date = due;
         }
       }
       initializeArrays(ownerUUID);
       var deferred = $q.defer();
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
         deferred.reject(task);
-      }else{
+      } else {
         cleanRecentlyCompletedTasks(ownerUUID);
         var context = moveContextToTags(task, ownerUUID);
         var list = moveListToParent(task);
         var due = moveDateToDue(task);
-        if (task.uuid){
+        if (task.uuid) {
           // Existing task
-          if (UserSessionService.isOfflineEnabled()){
+          if (UserSessionService.isOfflineEnabled()) {
             // Push to offline buffer
             params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
             BackendClientService.put('/api/' + params.owner + '/task/' + task.uuid,
-                     this.putExistingTaskRegex, params, task);
+             this.putExistingTaskRegex, params, task);
             task.modified = (new Date()).getTime() + 1000000;
             updateTransientProperties(context, list, due);
             updateTask(task, ownerUUID);
             deferred.resolve(task);
-          }else{
+          } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/task/' + task.uuid,
-                     this.putExistingTaskRegex, task).then(function(result) {
-              if (result.data){
+             this.putExistingTaskRegex, task).then(function(result) {
+              if (result.data) {
                 task.modified = result.data.modified;
                 updateTransientProperties(context, list, due);
                 updateTask(task, ownerUUID);
                 deferred.resolve(task);
               }
             });
-          }
-        }else{
+           }
+         } else {
           // New task
-          if (UserSessionService.isOfflineEnabled()){
+          if (UserSessionService.isOfflineEnabled()) {
             // Push to offline queue with fake UUID
             var fakeUUID = UUIDService.generateFakeUUID();
             var params = {type: 'task', owner: ownerUUID, fakeUUID: fakeUUID};
             BackendClientService.put('/api/' + params.owner + '/task',
-                     this.putNewTaskRegex, params, task);
+             this.putNewTaskRegex, params, task);
             task.uuid = fakeUUID;
             // Use a fake modified that is far enough in the to make
             // it to the end of the list
@@ -329,11 +344,11 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
             updateTransientProperties(context, list, due);
             setTask(task, ownerUUID);
             deferred.resolve(task);
-          } else{
+          } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/task',
-                   this.putNewTaskRegex, task).then(function(result) {
-              if (result.data){
+             this.putNewTaskRegex, task).then(function(result) {
+              if (result.data) {
                 task.uuid = result.data.uuid;
                 task.created = result.data.created;
                 task.modified = result.data.modified;
@@ -342,121 +357,121 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
                 deferred.resolve(task);
               }
             });
-          }
-        }
-      }
-      return deferred.promise;
-    },
-    deleteTask: function(task, ownerUUID) {
+           }
+         }
+       }
+       return deferred.promise;
+     },
+     deleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check if task has already been deleted
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
         return;
       }
       cleanRecentlyCompletedTasks(ownerUUID);
-      if (UserSessionService.isOfflineEnabled()){
+      if (UserSessionService.isOfflineEnabled()) {
         // Offline
         var params = {type: 'task', owner: ownerUUID, uuid: task.uuid,
-                      reverse: {
-                        method: 'post',
-                        url: '/api/' + ownerUUID + '/task/' + task.uuid + '/undelete'
-                      }};
+        reverse: {
+          method: 'post',
+          url: '/api/' + ownerUUID + '/task/' + task.uuid + '/undelete'
+        }};
         BackendClientService.deleteOffline('/api/' + ownerUUID + '/task/' + task.uuid,
-                 this.deleteTaskRegex, params);
+         this.deleteTaskRegex, params);
         var fakeTimestamp = (new Date()).getTime() + 1000000;
         task.deleted = fakeTimestamp;
         task.modified = fakeTimestamp;
         updateTask(task, ownerUUID);
-      }else{
+      } else {
         // Online
         BackendClientService.deleteOnline('/api/' + ownerUUID + '/task/' + task.uuid,
-                 this.deleteTaskRegex).then(function(result) {
-          if (result.data){
+         this.deleteTaskRegex).then(function(result) {
+          if (result.data) {
             task.deleted = result.data.deleted;
             task.modified = result.data.result.modified;
             updateTask(task, ownerUUID);
           }
         });
-      }
-    },
-    undeleteTask: function(task, ownerUUID) {
+       }
+     },
+     undeleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that task is deleted before trying to undelete
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) === -1){
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) === -1) {
         return;
       }
       cleanRecentlyCompletedTasks(ownerUUID);
-      if (UserSessionService.isOfflineEnabled()){
+      if (UserSessionService.isOfflineEnabled()) {
         // Offline
         var params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
-                 this.undeleteTaskRegex, params);
+         this.undeleteTaskRegex, params);
         delete task.deleted;
         updateTask(task, ownerUUID);
-      }else{
+      } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
-                 this.undeleteTaskRegex).then(function(result) {
-          if (result.data){
+         this.undeleteTaskRegex).then(function(result) {
+          if (result.data) {
             delete task.deleted;
             task.modified = result.data.modified;
             updateTask(task, ownerUUID);          }
-        });
-      }
-    },
-    completeTask: function(task, ownerUUID) {
+          });
+       }
+     },
+     completeTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to complete
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
         return;
       }
 
       cleanRecentlyCompletedTasks(ownerUUID);
-      if (UserSessionService.isOfflineEnabled()){
+      if (UserSessionService.isOfflineEnabled()) {
         // Offline
         var params = {type: 'task', owner: ownerUUID, uuid: task.uuid,
-                      reverse: {
-                        method: 'post',
-                        url: '/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete'
-                      }};
+        reverse: {
+          method: 'post',
+          url: '/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete'
+        }};
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
-                 this.completeTaskRegex, params);
+         this.completeTaskRegex, params);
         task.completed = (new Date()).getTime() + 1000000;
         processCompletedTask(task, ownerUUID);
-      }else{
+      } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
-                 this.completeTaskRegex).then(function(result) {
-          if (result.data){
+         this.completeTaskRegex).then(function(result) {
+          if (result.data) {
             task.completed = result.data.completed;
             processCompletedTask(task, ownerUUID);
           }
         });
-      }
-    },
-    uncompleteTask: function(task, ownerUUID) {
+       }
+     },
+     uncompleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to uncomplete
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
         return;
       }
 
-      if (UserSessionService.isOfflineEnabled()){
+      if (UserSessionService.isOfflineEnabled()) {
         var params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
         // Offline
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
-                 this.uncompleteTaskRegex, params);
+         this.uncompleteTaskRegex, params);
         delete task.completed;
         // Don't change modified on uncomplete to prevent
         // task from moving down in the list when clicking on/off.
         //task.modified = result.data.modified;
         cleanRecentlyCompletedTasks(ownerUUID);
         updateTask(task, ownerUUID);
-      }else{
+      } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
-                 this.uncompleteTaskRegex).then(function(result) {
-          if (result.data){
+         this.uncompleteTaskRegex).then(function(result) {
+          if (result.data) {
             delete task.completed;
             // Don't change modified on uncomplete to prevent
             // task from moving down in the list when clicking on/off.
@@ -465,13 +480,13 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
             updateTask(task, ownerUUID);
           }
         });
-      }
+       }
 
-    },
-    taskToList: function(task, ownerUUID) {
+     },
+     taskToList: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to turn it into a list
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1){
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
         return;
       }
 
@@ -493,40 +508,40 @@ function TasksService($q, $rootScope, UUIDService, UserSessionService, BackendCl
       addDateToTasks(tasksArray);
     },
     // Regular expressions for task requests
-    putNewTaskRegex :
-        new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   taskRegex.source),
+    putNewTaskRegex:
+    new RegExp(BackendClientService.apiPrefixRegex.source +
+      BackendClientService.uuidRegex.source +
+      taskRegex.source),
     putExistingTaskRegex:
-        new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   taskSlashRegex.source +
-                   BackendClientService.uuidRegex.source),
+    new RegExp(BackendClientService.apiPrefixRegex.source +
+      BackendClientService.uuidRegex.source +
+      taskSlashRegex.source +
+      BackendClientService.uuidRegex.source),
     deleteTaskRegex:
-        new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   taskSlashRegex.source +
-                   BackendClientService.uuidRegex.source),
+    new RegExp(BackendClientService.apiPrefixRegex.source +
+      BackendClientService.uuidRegex.source +
+      taskSlashRegex.source +
+      BackendClientService.uuidRegex.source),
     undeleteTaskRegex:
-        new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   taskSlashRegex.source +
-                   BackendClientService.uuidRegex.source  +
-                   BackendClientService.undeleteRegex.source),
+    new RegExp(BackendClientService.apiPrefixRegex.source +
+      BackendClientService.uuidRegex.source +
+      taskSlashRegex.source +
+      BackendClientService.uuidRegex.source  +
+      BackendClientService.undeleteRegex.source),
     completeTaskRegex:
-        new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   taskSlashRegex.source +
-                   BackendClientService.uuidRegex.source  +
-                   completeRegex.source),
+    new RegExp(BackendClientService.apiPrefixRegex.source +
+      BackendClientService.uuidRegex.source +
+      taskSlashRegex.source +
+      BackendClientService.uuidRegex.source  +
+      completeRegex.source),
     uncompleteTaskRegex:
-        new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   taskSlashRegex.source +
-                   BackendClientService.uuidRegex.source  +
-                   uncompleteRegex.source),
+    new RegExp(BackendClientService.apiPrefixRegex.source +
+      BackendClientService.uuidRegex.source +
+      taskSlashRegex.source +
+      BackendClientService.uuidRegex.source  +
+      uncompleteRegex.source),
   };
 }
 
-TasksService.$inject = ['$q', '$rootScope', 'UUIDService', 'UserSessionService', 'BackendClientService', 'ArrayService', 'ListsService', 'TagsService'];
+TasksService['$inject'] = ['$q', '$rootScope', 'ArrayService', 'BackendClientService', 'ListsService', 'TagsService', 'UserSessionService', 'UUIDService'];
 angular.module('em.services').factory('TasksService', TasksService);

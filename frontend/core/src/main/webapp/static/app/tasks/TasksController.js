@@ -1,8 +1,22 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 'use strict';
 
-function TasksController($scope, DateService, SwiperService, UISessionService, TasksService, AnalyticsService) {
+ function TasksController($scope, AnalyticsService, DateService, SwiperService, TasksService, UISessionService) {
 
-  $scope.initializeTask = function(task){
+  $scope.initializeTask = function initializeTask(task) {
     if (task.due || task.date) {
       $scope.showDateInput = true;
       $scope.focusDateInput = false;
@@ -13,37 +27,28 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     }
   };
 
-  $scope.focusDate = function() {
+  $scope.focusDate = function focusDate() {
     $scope.showDateInput = true;
     $scope.focusDateInput = true;
   };
 
-  $scope.hideDate = function() {
+  $scope.hideDate = function hideDate() {
     $scope.showDateInput = false;
     $scope.focusDateInput = false;
   };
 
   $scope.repeatTypes = ['daily', 'weekly', 'monthly', 'yearly'];
 
-  $scope.saveTask = function(task) {
-    if (task.uuid) {
-      AnalyticsService.do('saveTask', 'new');
-    } else {
-      AnalyticsService.do('saveTask', 'existing');
-    }
-    return TasksService.saveTask(task, UISessionService.getActiveUUID());
-  };
-
-  $scope.editTaskFields = function(task) {
+  $scope.editTaskFields = function editTaskFields(task) {
     AnalyticsService.do('editTaskFields');
     TasksService.saveTask(task, UISessionService.getActiveUUID());
   };
 
-  $scope.editTask = function(task) {
+  $scope.editTask = function editTask(task) {
     $scope.editItemInOmnibar(task, 'task');
   };
 
-  $scope.taskChecked = function(task) {
+  $scope.taskChecked = function taskChecked(task) {
     if (task.completed) {
       AnalyticsService.do('uncompleteTask');
       TasksService.uncompleteTask(task, UISessionService.getActiveUUID());
@@ -53,12 +58,12 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     }
   };
 
-  $scope.deleteTask = function(task) {
+  $scope.deleteTask = function deleteTask(task) {
     AnalyticsService.do('deleteTask');
     TasksService.deleteTask(task, UISessionService.getActiveUUID());
   };
 
-  $scope.addSubtask = function(subtask) {
+  $scope.addSubtask = function addSubtask(subtask) {
     if (!subtask.title  || subtask.title.length === 0) return false;
     var subtaskToSave = {title: subtask.title};
     if (subtask.date) {
@@ -66,10 +71,10 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     }
     if (subtask.relationships) {
       subtaskToSave.relationships = {};
-      if(subtask.relationships.list) {
+      if (subtask.relationships.list) {
         subtaskToSave.relationships.list = subtask.relationships.list;
       }
-      if(subtask.relationships.context) {
+      if (subtask.relationships.context) {
         subtaskToSave.relationships.context = subtask.relationships.context;
       }
     }
@@ -80,7 +85,7 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
     });
   };
 
-  $scope.taskQuickEditDone = function(task) {
+  $scope.taskQuickEditDone = function addSubtask(task) {
     AnalyticsService.do('taskQuickEditDone');
     TasksService.saveTask(task, UISessionService.getActiveUUID());
   };
@@ -88,33 +93,33 @@ function TasksController($scope, DateService, SwiperService, UISessionService, T
   // Navigation
 
   $scope.context = undefined;
-  $scope.showContextDetails = function(selectedContext) {
+  $scope.showContextDetails = function showContextDetails(selectedContext) {
     $scope.context = selectedContext;
     $scope.subtask = {relationships: {context: $scope.context.uuid}};
     SwiperService.swipeTo('tasks/details');
   };
-  $scope.showNoContextDetails = function() {
+  $scope.showNoContextDetails = function showNoContextDetails() {
     $scope.context = undefined;
     $scope.subtask = {};
     SwiperService.swipeTo('tasks/details');
   };
-  $scope.showNoListTasksDetails = function() {
+  $scope.showNoListTasksDetails = function showNoListTasksDetails() {
     $scope.context = null;
     $scope.subtask = {};
     SwiperService.swipeTo('tasks/details');
   };
-  $scope.showNoDateTasksDetails = function() {
+  $scope.showNoDateTasksDetails = function showNoDateTasksDetails() {
     $scope.context = 0;
     $scope.subtask = {};
     SwiperService.swipeTo('tasks/details');
   };
 
-  $scope.deleteContextAndShowContexts = function(context) {
+  $scope.deleteContextAndShowContexts = function deleteContextAndShowContexts(context) {
     SwiperService.swipeTo('tasks/contexts');
     $scope.deleteContext(context);
     $scope.context = undefined;
   };
 }
 
-TasksController['$inject'] = ['$scope', 'DateService', 'SwiperService', 'UISessionService', 'TasksService', 'AnalyticsService'];
+TasksController['$inject'] = ['$scope', 'AnalyticsService', 'DateService', 'SwiperService', 'TasksService', 'UISessionService'];
 angular.module('em.app').controller('TasksController', TasksController);

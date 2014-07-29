@@ -1,6 +1,20 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 'use strict';
 
-function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
+ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
   $scope.activeDay = {};
   $scope.weekdays = DateService.activeWeek();
   $scope.datepickerWeeks = DateService.getDatepickerWeeks();
@@ -18,7 +32,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
     DateService.removeDayChangedCallback();
   });
 
-  function getDateSlidePath(activeDay){
+  function getDateSlidePath(activeDay) {
     return 'tasks/home/' + activeDay.weekday;
   }
 
@@ -63,12 +77,12 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
   // Register a slide change callback to swiper service
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks/home', 'DatesController');
   function slideChangeCallback(activeSlidePath) {
-    if (!activeSlidePath.endsWith($scope.activeDay.weekday)){
+    if (!activeSlidePath.endsWith($scope.activeDay.weekday)) {
       for (var i = 0, len = $scope.weekdays.length; i < len; i++) {
-        if (activeSlidePath.endsWith($scope.weekdays[i].weekday)){
+        if (activeSlidePath.endsWith($scope.weekdays[i].weekday)) {
           $scope.activeDay = $scope.weekdays[i];
           // Run digest to change only date picker when swiping to new location
-          if(!$scope.$$phase) $scope.$digest();
+          if (!$scope.$$phase) $scope.$digest();
           return;
         }
       }
@@ -83,7 +97,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
       SwiperService.setInitialSlidePath(
         'tasks/home',
         getDateSlidePath($scope.activeDay)))
-    .then(function(){
+    .then(function() {
       if (!init) {
         // Need additional swiping if setting initial slide path fails to work
         SwiperService.swipeTo(getDateSlidePath($scope.activeDay));
@@ -92,7 +106,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
   }
   swipeToStartingDay(DateService.getInitialDate(), true);
 
-  $scope.previousWeek = function() {
+  $scope.previousWeek = function previousWeek() {
     var weekdayIndex = $scope.activeDay.weekdayIndex;
     $scope.weekdays = DateService.generateAndReturnPreviousWeek();
     $scope.datepickerWeeks = DateService.changeDatePickerWeeks('prev');
@@ -100,7 +114,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
     swipeToStartingDay(newActiveDay);
   };
 
-  $scope.nextWeek = function() {
+  $scope.nextWeek = function nextWeek() {
     var weekdayIndex = $scope.activeDay.weekdayIndex;
     $scope.weekdays = DateService.generateAndReturnNextWeek();
     $scope.datepickerWeeks = DateService.changeDatePickerWeeks('next');
@@ -108,7 +122,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
     swipeToStartingDay(newActiveDay);
   };
 
-  $scope.dateClicked = function(date) {
+  $scope.dateClicked = function dateClicked(date) {
     $scope.activeDay = date;
     SwiperService.swipeTo(getDateSlidePath(date));
   };
@@ -129,7 +143,7 @@ function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
     return status;
   };
 
-  $scope.visibleDateFormat = function(date) {
+  $scope.visibleDateFormat = function visibleDateFormat(date) {
     return (date.yyyymmdd === $scope.activeDay.yyyymmdd) ? date.monthName : date.weekday.substring(0,1);
   };
 
