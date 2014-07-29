@@ -318,5 +318,5 @@
   };
 }
 
-NotesService['$inject'] = ['ArrayService', 'BackendClientService', 'ListsService', 'TagsService', 'UUIDService', 'UserSessionService'];
+NotesService['$inject'] = ['ArrayService', 'BackendClientService', 'ListsService', 'TagsService', 'UserSessionService', 'UUIDService'];
 angular.module('em.services').factory('NotesService', NotesService);

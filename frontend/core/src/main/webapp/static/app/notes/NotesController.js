@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function NotesController($filter, $q, $scope, AnalyticsService, NotesService, ListsService, TagsService, SwiperService, UISessionService, UUIDService) {
+ function NotesController($filter, $q, $scope, AnalyticsService, ListsService, NotesService, TagsService, SwiperService, UISessionService, UUIDService) {
   $scope.newKeyword = {};
 
   $scope.initializeOmnibarNote = function initializeOmnibarNote(omnibarText) {
