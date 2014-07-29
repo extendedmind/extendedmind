@@ -123,21 +123,34 @@ And to four sections:
 }
 
 /*
-`.fade-color(SECONDS)` slows down the color change by SECONDS.
+`.fade-color` fades to new color in one second. Use the .fade-color mixin instead of the extracted code below.
 
 ```markup
-<div style=":hover{
-.fade-color(1);color: red;
-}">Hover over me.</div>
-```
-*/
-.fade-color {
+<div style=":hover {
+  color: red;
   -o-transition: 1 linear;
   -moz-transition: 1 linear;
   -khtml-transition: 1 linear;
   -webkit-transition: 1 linear;
   -ms-transition: 1 linear;
   transition: 1 linear;
+  }
+">Hover over me.</div>
+
+input[type="checkbox"]:checked ~ a {
+  color: red;
+  .fade-color;
+  }
+
+```
+*/
+.fade-color {
+  -o-transition: 0.2 linear;
+  -moz-transition: 0.2 linear;
+  -khtml-transition: 0.2 linear;
+  -webkit-transition: 0.2 linear;
+  -ms-transition: 0.2 linear;
+  transition: 0.2 linear;
 }
 
 // TYPOGRAPHY
