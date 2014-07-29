@@ -1,6 +1,20 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 'use strict';
 
-function swiperContainerDirective($rootScope, $window, SwiperService) {
+ function swiperContainerDirective($rootScope, $window, SwiperService) {
 
   return {
     restrict: 'A',
@@ -91,7 +105,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
 
       // Registers the path of the slide to the swiper
       // and sets up listeners for element, if needed
-      this.registerSlide = function(path, element, index) {
+      this.registerSlide = function registerSlide(path, element, index) {
 
         // For vertical page outerSwiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal
@@ -135,7 +149,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         updateSwiper();
       };
 
-      this.unregisterSlide = function(path) {
+      this.unregisterSlide = function unregisterSlide(path) {
         var slideInfosIndex = getSlideInfosIndex(path);
         if (slideInfosIndex !== undefined) {
           swiperSlideInfos.splice(slideInfosIndex, 1);
@@ -188,7 +202,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         /*jshint validthis: true */
 
         // If backdrop is active, stop propagation to any swipers
-        if ($rootScope.backdropActive){
+        if ($rootScope.backdropActive) {
           event.stopPropagation();
           event.stopImmediatePropagation();
           return;
@@ -257,6 +271,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
       var isPullToNextWeekLoaderActive = false;
 
       function pageSwiperSlideTouchStart(event) {
+        /*jshint validthis: true */
         // Reset variables
         $rootScope.innerSwiping = false;
         swipePageSlideDown = false;
@@ -281,10 +296,13 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         // we need to use speed as well
 
         if (((this.scrollHeight - this.scrollTop) <= this.clientHeight) ||
-           (((this.scrollHeight - this.scrollTop) <= this.clientHeight + 200) && swipePageSlideYSpeed !== undefined && swipePageSlideYSpeed < -30)) {
+         (((this.scrollHeight - this.scrollTop) <= this.clientHeight + 200) && swipePageSlideYSpeed !== undefined && swipePageSlideYSpeed < -30))
+        {
           swipePageSlideBottom = true;
         }
-        if (this.scrollTop <= 0 || (this.scrollTop <= 200 && swipePageSlideYSpeed !== undefined && swipePageSlideYSpeed > 30)){
+        if (this.scrollTop <= 0 ||
+          (this.scrollTop <= 200 && swipePageSlideYSpeed !== undefined && swipePageSlideYSpeed > 30))
+        {
           swipePageSlideTop = true;
         }
         swipePageSlideYSpeed = swipePageSlideYSpeedStart = undefined;
@@ -297,7 +315,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         /*jshint validthis: true */
 
         // If backdrop is active, stop propagation to any swipers
-        if ($rootScope.backdropActive){
+        if ($rootScope.backdropActive) {
           event.stopPropagation();
           event.stopImmediatePropagation();
           return;
@@ -312,7 +330,7 @@ function swiperContainerDirective($rootScope, $window, SwiperService) {
         }
 
 
-        if (swipePageSlideYSpeedStart !== undefined){
+        if (swipePageSlideYSpeedStart !== undefined) {
           swipePageSlideYSpeed = swipePageSlideYSpeedStart - this.scrollTop;
         }
         swipePageSlideYSpeedStart = this.scrollTop;

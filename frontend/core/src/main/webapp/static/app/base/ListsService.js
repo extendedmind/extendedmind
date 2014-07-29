@@ -1,7 +1,22 @@
-/*global angular */
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-function ListsService($q, BackendClientService, ArrayService, TagsService){
+ /*global angular */
+ 'use strict';
+
+ function ListsService($q, ArrayService, BackendClientService, TagsService) {
 
   // An object containing lists for every owner
   var lists = {};
@@ -13,8 +28,8 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
   var itemArchiveCallbacks = {};
   var listDeletedCallbacks = {};
 
-  function initializeArrays(ownerUUID){
-    if (!lists[ownerUUID]){
+  function initializeArrays(ownerUUID) {
+    if (!lists[ownerUUID]) {
       lists[ownerUUID] = {
         activeLists: [],
         deletedLists: [],
@@ -23,7 +38,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
     }
   }
 
-  function getOtherArrays(ownerUUID){
+  function getOtherArrays(ownerUUID) {
     return [{array: lists[ownerUUID].archivedLists, id: 'archived'}];
   }
 
@@ -45,16 +60,16 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
         lists[ownerUUID].deletedLists,
         getOtherArrays(ownerUUID));
 
-      if (latestModified){
+      if (latestModified) {
         // Go through response to see if something was deleted
         for (var i=0, len=listsResponse.length; i<len; i++) {
-          if (listsResponse[i].deleted){
+          if (listsResponse[i].deleted) {
             for (var id in listDeletedCallbacks) {
               listDeletedCallbacks[id](listsResponse[i], ownerUUID);
             }
           }
         }
-     }
+      }
       return latestModified;
     },
     getLists: function(ownerUUID) {
@@ -72,13 +87,13 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
       initializeArrays(ownerUUID);
       var deferred = $q.defer();
       // Check that list is not deleted before trying to save
-      if (lists[ownerUUID].deletedLists.indexOf(list) > -1){
+      if (lists[ownerUUID].deletedLists.indexOf(list) > -1) {
         deferred.reject(list);
-      }else if (list.uuid){
+      } else if (list.uuid) {
         // Existing list
         BackendClientService.putOnline('/api/' + ownerUUID + '/list/' + list.uuid,
-                 this.putExistingListRegex, list).then(function(result) {
-          if (result.data){
+         this.putExistingListRegex, list).then(function(result) {
+          if (result.data) {
             list.modified = result.data.modified;
             ArrayService.updateItem(
               list,
@@ -88,11 +103,11 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
             deferred.resolve(list);
           }
         });
-      }else{
+       } else {
         // New list
         BackendClientService.putOnline('/api/' + ownerUUID + '/list',
-                 this.putNewListRegex, list).then(function(result) {
-          if (result.data){
+         this.putNewListRegex, list).then(function(result) {
+          if (result.data) {
             list.uuid = result.data.uuid;
             list.created = result.data.created;
             list.modified = result.data.modified;
@@ -104,18 +119,18 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
             deferred.resolve(list);
           }
         });
-      }
-      return deferred.promise;
-    },
-    deleteList: function(list, ownerUUID) {
+       }
+       return deferred.promise;
+     },
+     deleteList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check if list has already been deleted
-      if (lists[ownerUUID].deletedLists.indexOf(list) > -1){
+      if (lists[ownerUUID].deletedLists.indexOf(list) > -1) {
         return;
       }
       BackendClientService.deleteOnline('/api/' + ownerUUID + '/list/' + list.uuid,
-               this.deleteListRegex).then(function(result) {
-        if (result.data){
+       this.deleteListRegex).then(function(result) {
+        if (result.data) {
           list.deleted = result.data.deleted;
           list.modified = result.data.result.modified;
           ArrayService.updateItem(
@@ -129,16 +144,16 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
           }
         }
       });
-    },
-    undeleteList: function(list, ownerUUID) {
+     },
+     undeleteList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that list is deleted before trying to undelete
-      if (lists[ownerUUID].deletedLists.indexOf(list) === -1){
+      if (lists[ownerUUID].deletedLists.indexOf(list) === -1) {
         return;
       }
       BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/undelete',
-               this.deleteListRegex).then(function(result) {
-        if (result.data){
+       this.deleteListRegex).then(function(result) {
+        if (result.data) {
           delete list.deleted;
           list.modified = result.data.modified;
           ArrayService.updateItem(
@@ -148,16 +163,16 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
             getOtherArrays(ownerUUID));
         }
       });
-    },
-    archiveList: function(list, ownerUUID) {
+     },
+     archiveList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that list is active before trying to archive
-      if (lists[ownerUUID].activeLists.indexOf(list) === -1){
+      if (lists[ownerUUID].activeLists.indexOf(list) === -1) {
         return;
       }
       BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/archive',
-               this.deleteListRegex).then(function(result) {
-        if (result.data){
+       this.deleteListRegex).then(function(result) {
+        if (result.data) {
           list.archived = result.data.archived;
           list.modified = result.data.result.modified;
           ArrayService.updateItem(
@@ -171,7 +186,7 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
           var tagModified = TagsService.setGeneratedTag(result.data.history, ownerUUID);
           if (tagModified > latestModified) latestModified = tagModified;
           // Call child callbacks
-          if (result.data.children){
+          if (result.data.children) {
             for (var id in itemArchiveCallbacks) {
               var itemModified = itemArchiveCallbacks[id](result.data.children, result.data.archived, ownerUUID);
               if (itemModified && itemModified > latestModified) latestModified = itemModified;
@@ -179,50 +194,50 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
           }
         }
       });
-    },
+     },
     // Regular expressions for list requests
-    putNewListRegex :
-        new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   listRegex.source),
+    putNewListRegex:
+    new RegExp(BackendClientService.apiPrefixRegex.source +
+     BackendClientService.uuidRegex.source +
+     listRegex.source),
     putExistingListRegex:
-        new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   listSlashRegex.source +
-                   BackendClientService.uuidRegex.source),
+    new RegExp(BackendClientService.apiPrefixRegex.source +
+     BackendClientService.uuidRegex.source +
+     listSlashRegex.source +
+     BackendClientService.uuidRegex.source),
     deleteListRegex:
-        new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   listSlashRegex.source +
-                   BackendClientService.uuidRegex.source),
+    new RegExp(BackendClientService.apiPrefixRegex.source +
+     BackendClientService.uuidRegex.source +
+     listSlashRegex.source +
+     BackendClientService.uuidRegex.source),
     undeleteListRegex:
-        new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   listSlashRegex.source +
-                   BackendClientService.uuidRegex.source  +
-                   BackendClientService.undeleteRegex.source),
+    new RegExp(BackendClientService.apiPrefixRegex.source +
+     BackendClientService.uuidRegex.source +
+     listSlashRegex.source +
+     BackendClientService.uuidRegex.source  +
+     BackendClientService.undeleteRegex.source),
     archiveListRegex:
-        new RegExp(BackendClientService.apiPrefixRegex.source +
-                   BackendClientService.uuidRegex.source +
-                   listSlashRegex.source +
-                   BackendClientService.uuidRegex.source  +
-                   archiveRegex.source),
+    new RegExp(BackendClientService.apiPrefixRegex.source +
+     BackendClientService.uuidRegex.source +
+     listSlashRegex.source +
+     BackendClientService.uuidRegex.source  +
+     archiveRegex.source),
     // Register callbacks that are fired for implicit archiving of
     // elements. Callback must return the latest modified value it
     // stores to its arrays.
-    registerItemArchiveCallback: function (itemArchiveCallback, id) {
+    registerItemArchiveCallback: function(itemArchiveCallback, id) {
       itemArchiveCallbacks[id] = itemArchiveCallback;
     },
-    registerListDeletedCallback: function (listDeletedCallback, id) {
+    registerListDeletedCallback: function(listDeletedCallback, id) {
       listDeletedCallbacks[id] = listDeletedCallback;
     },
     removeDeletedListFromItems: function(items, deletedList) {
-      for (var i=0, len=items.length; i<len; i++) {
-        if (items[i].relationships){
-          if (items[i].relationships.parent === deletedList.uuid){
+      for (var i = 0, len = items.length; i < len; i++) {
+        if (items[i].relationships) {
+          if (items[i].relationships.parent === deletedList.uuid) {
             delete items[i].relationships.parent;
           }
-          if (items[i].relationships.list === deletedList.uuid){
+          if (items[i].relationships.list === deletedList.uuid) {
             delete items[i].relationships.list;
           }
         }
@@ -231,5 +246,5 @@ function ListsService($q, BackendClientService, ArrayService, TagsService){
   };
 }
 
-ListsService.$inject = ['$q', 'BackendClientService', 'ArrayService', 'TagsService'];
+ListsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'TagsService'];
 angular.module('em.services').factory('ListsService', ListsService);

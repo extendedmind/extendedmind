@@ -54,11 +54,11 @@ function HttpRequestQueueService() {
       if (queue[i].params && queue[i].params.reverse &&
         request.content.url === queue[i].params.reverse.url &&
         request.content.method === queue[i].params.reverse.method) {
-        // Found a reverse of the request in the queue
-      return i;
+          // Found a reverse of the request in the queue
+        return i;
+      }
     }
   }
-}
 
   // Find index of request with same uuid as given request
   function findRequestIndex(request) {
@@ -116,93 +116,93 @@ function HttpRequestQueueService() {
         var reverseRequestIndex = findReverseRequestIndex(request);
         if (reverseRequestIndex !== undefined &&
           (getHead() !== queue[reverseRequestIndex] || queue[reverseRequestIndex].offline)) {
-          // Found reverse method that is either not the head or is the head but has been set offline
-        removeFromQueue(reverseRequestIndex);
-        return false;
-      } else {
-        pushToQueue(request);
+            // Found reverse method that is either not the head or is the head but has been set offline
+          removeFromQueue(reverseRequestIndex);
+          return false;
+        } else {
+          pushToQueue(request);
+        }
       }
-    }
-    return true;
-  },
-  concatLastContentDataArray: function(request) {
-    if (!last) {
-      last = request;
-    } else {
-      // last already exists, concat the data from this request to
-      // the end of the data array in the last request
-      last.content.data = last.content.data.concat(request.content.data);
-    }
-    localStorage.setItem('lastRequest', JSON.stringify(last));
-  },
-  remove: function(request) {
-    if (request.primary) {
-      primary = undefined;
-      localStorage.removeItem('primaryRequest');
-    } else if (request.secondary) {
-      secondary = undefined;
-      localStorage.removeItem('secondaryRequest');
-    } else if (request.last) {
-      last = undefined;
-      localStorage.removeItem('lastRequest');
-    } else {
-      var requestIndex = findRequestIndex(request);
-      if (requestIndex !== undefined) {
-        removeFromQueue(requestIndex);
-      }
-    }
-    // Release lock
-    processing = false;
-  },
-  setOffline: function (request) {
-    if (request.primary) {
-      primary.offline = true;
-      localStorage.setItem('primaryRequest', JSON.stringify(primary));
-    } else if (request.secondary) {
-      secondary.offline = true;
-      localStorage.setItem('secondaryRequest', JSON.stringify(secondary));
-    } else {
-      var requestIndex = findRequestIndex(request);
-      if (requestIndex !== undefined) {
-        queue[requestIndex].offline = true;
-        localStorage.setItem('requestQueue', JSON.stringify(queue));
+      return true;
+    },
+    concatLastContentDataArray: function(request) {
+      if (!last) {
+        last = request;
       } else {
+        // last already exists, concat the data from this request to
+        // the end of the data array in the last request
+        last.content.data = last.content.data.concat(request.content.data);
+      }
+      localStorage.setItem('lastRequest', JSON.stringify(last));
+    },
+    remove: function(request) {
+      if (request.primary) {
+        primary = undefined;
+        localStorage.removeItem('primaryRequest');
+      } else if (request.secondary) {
+        secondary = undefined;
+        localStorage.removeItem('secondaryRequest');
+      } else if (request.last) {
+        last = undefined;
+        localStorage.removeItem('lastRequest');
+      } else {
+        var requestIndex = findRequestIndex(request);
+        if (requestIndex !== undefined) {
+          removeFromQueue(requestIndex);
+        }
+      }
+      // Release lock
+      processing = false;
+    },
+    setOffline: function(request) {
+      if (request.primary) {
+        primary.offline = true;
+        localStorage.setItem('primaryRequest', JSON.stringify(primary));
+      } else if (request.secondary) {
+        secondary.offline = true;
+        localStorage.setItem('secondaryRequest', JSON.stringify(secondary));
+      } else {
+        var requestIndex = findRequestIndex(request);
+        if (requestIndex !== undefined) {
+          queue[requestIndex].offline = true;
+          localStorage.setItem('requestQueue', JSON.stringify(queue));
+        } else {
           // This shouldn't happen, but if it does, I guess we want to retry
           request.offline = true;
           pushToQueue(request);
         }
       }
-    // Release lock
-    processing = false;
-  },
-  releaseLock: function () {
-    processing = false;
-  },
-  getHead: function () {
-    if (!processing) {
-      var headRequest = getHead();
-      if (headRequest) {
-        processing = true;
-        return getHead();
+      // Release lock
+      processing = false;
+    },
+    releaseLock: function() {
+      processing = false;
+    },
+    getHead: function() {
+      if (!processing) {
+        var headRequest = getHead();
+        if (headRequest) {
+          processing = true;
+          return getHead();
+        }
+      }
+    },
+    isPrimaryHead: function() {
+      if (primary) return true;
+    },
+    getQueue: function() {
+      return queue;
+    },
+    saveQueue: function() {
+      persistQueue();
+    },
+    clearPrimary: function() {
+      if (!processing && primary) {
+        primary = undefined;
+        localStorage.removeItem('primaryRequest');
       }
     }
-  },
-  isPrimaryHead: function() {
-    if (primary) return true;
-  },
-  getQueue: function() {
-    return queue;
-  },
-  saveQueue: function() {
-    persistQueue();
-  },
-  clearPrimary: function() {
-    if (!processing && primary) {
-      primary = undefined;
-      localStorage.removeItem('primaryRequest');
-    }
-  }
-};
-return service;
+  };
+  return service;
 }
 angular.module('em.services').factory('HttpRequestQueueService', HttpRequestQueueService);

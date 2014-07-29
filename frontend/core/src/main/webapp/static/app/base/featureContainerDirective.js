@@ -1,6 +1,20 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 'use strict';
 
-function featureContainerDirective($rootScope, $timeout, SnapService, SwiperService, UISessionService, UserSessionService) {
+ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperService, UISessionService, UserSessionService) {
   return {
     restrict: 'A',
     controller: function($scope, $element) {
@@ -9,7 +23,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
 
       // COMMON FEATURE METHODS IN SCOPE
 
-      $scope.getActiveFeature = function getActiveFeature(){
+      $scope.getActiveFeature = function getActiveFeature() {
         return UISessionService.getCurrentFeatureName();
       };
 
@@ -22,10 +36,11 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
           $scope.isFeatureActive('notes') ||
           $scope.isFeatureActive('dashboard') ||
           $scope.isFeatureActive('archive') ||
-          $scope.isFeatureActive('list')) {
-
+          $scope.isFeatureActive('list'))
+        {
           if (UserSessionService.getUIPreference('hideFooter') &&
-            ($rootScope.packaging.endsWith('cordova') || $rootScope.packaging === 'devel')) {
+            ($rootScope.packaging.endsWith('cordova') || $rootScope.packaging === 'devel'))
+          {
             return false;
           } else {
             return true;
@@ -41,7 +56,7 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
 
       // UI SESSION SERVICE HOOKS
 
-      var featureChangedCallback = function featureChangedCallback(name, data, state){
+      var featureChangedCallback = function featureChangedCallback(name, data, state) {
         setFeatureContainerClass(name);
         if (featureElements[name]) {
           SnapService.setDraggerElement(featureElements[name].dragElement);
@@ -50,24 +65,25 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         if (!state) state = UISessionService.getFeatureState(name);
       };
       UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'featureContainerDirective');
-      if (!UISessionService.getCurrentFeatureName()){
-        if ($scope.onboardingInProgress){
+      if (!UISessionService.getCurrentFeatureName()) {
+        if ($scope.onboardingInProgress) {
           UISessionService.changeFeature('inbox');
-        }else{
+        } else {
           UISessionService.changeFeature('tasks');
         }
-      }else{
+      } else {
         // Need to explicitly call feature change
         featureChangedCallback(UISessionService.getCurrentFeatureName());
       }
 
       // SWIPER SERVICE HOOKS
 
-      var slideChangedCallback = function slideChangedCallback(activeSlidePath){
+      var slideChangedCallback = function slideChangedCallback(activeSlidePath) {
 
         // Don't set to main slide path, if page slide path is already set
         if (!UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()) ||
-          !UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()).startsWith(activeSlidePath)){
+          !UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()).startsWith(activeSlidePath))
+        {
           UISessionService.setCurrentFeatureState(activeSlidePath);
         }
       };
@@ -98,25 +114,25 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
           feature === 'notes' ||
           feature === 'dashboard' ||
           feature === 'archive' ||
-          feature === 'list') {
+          feature === 'list')
+        {
           $element[0].classList.toggle('no-slides-container', false);
-        $element[0].classList.toggle('slides-container', true);
-      } else {
-        $element[0].classList.toggle('no-slides-container', true);
-        $element[0].classList.toggle('slides-container', false);
+          $element[0].classList.toggle('slides-container', true);
+        } else {
+          $element[0].classList.toggle('no-slides-container', true);
+          $element[0].classList.toggle('slides-container', false);
+        }
       }
-    }
+    },
+    link: function postLink(scope, element) {
 
-  },
-  link: function(scope, element) {
+      function initializeSnapper() {
+        SnapService.createSnapper(element[0].parentNode);
 
-    function initializeSnapper() {
-      SnapService.createSnapper(element[0].parentNode);
-
-      SnapService.registerAnimatedCallback(snapperAnimated);
-      SnapService.registerEndCallback(snapperPaneReleased);
-      SnapService.registerCloseCallback(snapperClosed);
-    }
+        SnapService.registerAnimatedCallback(snapperAnimated);
+        SnapService.registerEndCallback(snapperPaneReleased);
+        SnapService.registerCloseCallback(snapperClosed);
+      }
 
       // No clicking/tapping when drawer is open.
       function drawerContentClicked(event) {
@@ -174,9 +190,8 @@ function featureContainerDirective($rootScope, $timeout, SnapService, SwiperServ
         SnapService.deleteSnapper();
         angular.element(element).unbind('touchstart', drawerContentClicked);
       });
-
     }
   };
 }
-featureContainerDirective.$inject = ['$rootScope', '$timeout', 'SnapService', 'SwiperService', 'UISessionService', 'UserSessionService'];
+featureContainerDirective['$inject'] = ['$rootScope', '$timeout', 'SnapService', 'SwiperService', 'UISessionService', 'UserSessionService'];
 angular.module('em.directives').directive('featureContainer', featureContainerDirective);

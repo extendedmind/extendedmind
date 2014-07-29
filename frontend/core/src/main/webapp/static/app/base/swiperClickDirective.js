@@ -1,4 +1,19 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 'use strict';
+
 /**
  * @name
  * em.directives:swiperClick
@@ -17,7 +32,7 @@
  * This is needed because it seems that there is no way call e.g. event.preventClick()
  * and event.preventDefault() during swipe would also prevent scrolling and other important browser functions.
  */
-function swiperClickDirective($parse, $rootScope) {
+ function swiperClickDirective($parse, $rootScope) {
   return {
     restrict: 'A',
     compile: function(element, attr) {

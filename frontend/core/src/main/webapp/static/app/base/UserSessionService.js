@@ -1,7 +1,22 @@
-/* global angular, useOfflineBuffer */
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-function UserSessionService(base64, LocalStorageService, SessionStorageService) {
+ /* global angular, useOfflineBuffer */
+ 'use strict';
+
+ function UserSessionService(base64, LocalStorageService, SessionStorageService) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   var latestModified = {};
   var itemsSynchronize = {};
@@ -37,24 +52,24 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     }
   }
 
-  function migrateTransportPreferences(transportPreferences){
-    if (transportPreferences){
+  function migrateTransportPreferences(transportPreferences) {
+    if (transportPreferences) {
       var preferences = {
         onboarded: transportPreferences.onboarded
       };
-      if (transportPreferences.ui){
+      if (transportPreferences.ui) {
         preferences.ui = JSON.parse(transportPreferences.ui);
       }
       return preferences;
-    }else{
+    } else {
       return {};
     }
   }
 
-  function cacheCollectives(currentCollectives){
+  function cacheCollectives(currentCollectives) {
     for (var uuid in collectives) delete collectives[uuid];
-    for (var uuid in currentCollectives) collectives[uuid] = currentCollectives[uuid];
-  }
+      for (var uuid in currentCollectives) collectives[uuid] = currentCollectives[uuid];
+    }
 
   return {
     isAuthenticated: function() {
@@ -128,7 +143,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
       var preferences = this.getPreferences() || {};
       if (value !== undefined) {
         preferences[name] = value;
-      }else if (preferences[name] !== undefined){
+      } else if (preferences[name] !== undefined) {
         delete preferences[name];
       }
       this.setPreferences(preferences);
@@ -144,7 +159,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     },
     setLatestModified: function(modified, ownerUUID) {
       // Only set if given value is larger than set value
-      if (!latestModified[ownerUUID] || (modified && latestModified[ownerUUID] < modified)){
+      if (!latestModified[ownerUUID] || (modified && latestModified[ownerUUID] < modified)) {
         latestModified[ownerUUID] = modified;
       }
     },
@@ -202,7 +217,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     getTransportPreferences: function() {
       syncWebStorages();
       var preferences = SessionStorageService.getPreferences();
-      if (preferences.ui){
+      if (preferences.ui) {
         preferences.ui = JSON.stringify(preferences.ui);
       }
       return preferences;
@@ -214,7 +229,7 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     getUIPreference: function(key) {
       syncWebStorages();
       var preferences = SessionStorageService.getPreferences();
-      if (preferences && preferences.ui){
+      if (preferences && preferences.ui) {
         return preferences.ui[key];
       }
     },
@@ -223,12 +238,12 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     },
     getUser: function() {
       syncWebStorages();
-      if (SessionStorageService.getUserUUID()){
+      if (SessionStorageService.getUserUUID()) {
         var user = {
           uuid: SessionStorageService.getUserUUID(),
           type: parseInt(SessionStorageService.getUserType())
         };
-        if (SessionStorageService.getCohort()){
+        if (SessionStorageService.getCohort()) {
           user.cohort = parseInt(SessionStorageService.getCohort());
         }
         return user;
@@ -239,5 +254,5 @@ function UserSessionService(base64, LocalStorageService, SessionStorageService) 
     }
   };
 }
-UserSessionService.$inject = ['base64', 'LocalStorageService', 'SessionStorageService'];
+UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'SessionStorageService'];
 angular.module('em.services').factory('UserSessionService', UserSessionService);

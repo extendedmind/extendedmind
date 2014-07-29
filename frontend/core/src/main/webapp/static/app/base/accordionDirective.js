@@ -1,5 +1,20 @@
-/* global $ */
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ /* global $ */
+ 'use strict';
 
 // From:
 // https://github.com/angular-app/Samples/tree/master/1820EN_10_Code/03_basic_accordion_directive
@@ -18,27 +33,27 @@ function accordionDirective($document) {
       $scope.thisController = this;
 
       // Optional first element open method
-      function openFirstElement(previousFirstItem){
-        if ($scope.thisController.titleScopes && $scope.thisController.titleScopes.length > 0){
+      function openFirstElement(previousFirstItem) {
+        if ($scope.thisController.titleScopes && $scope.thisController.titleScopes.length > 0) {
           $scope.thisController.titleScopes[0].openItem(previousFirstItem);
-          if (!$scope.eventsBound){
-            $scope.bindElsewhereEvents();
+          if (!$scope.eventsBound) {
+            bindElsewhereEvents();
           }
           return $scope.thisController.titleScopes[0].item;
         }
       }
 
-      if ($scope.registerOpenFirstElementCallback){
+      if ($scope.registerOpenFirstElementCallback) {
         $scope.registerOpenFirstElementCallback(openFirstElement);
       }
 
       // Ensure that all the items in this accordion are closed
       $scope.closedOtherItems = false;
-      this.closeOthers = function(activeScope) {
+      this.closeOthers = function closeOthers(activeScope) {
         $scope.closedOtherItems = false;
-        angular.forEach(this.titleScopes, function (titleScope) {
+        angular.forEach(this.titleScopes, function(titleScope) {
           if ( titleScope !== activeScope ) {
-            if (titleScope.closeItem()){
+            if (titleScope.closeItem()) {
               $scope.closedOtherItems = true;
             }
           }
@@ -51,15 +66,15 @@ function accordionDirective($document) {
         // This is called when accordion title is opened
         // so it's a good place to bind to start listening
         // on clicking elsewhere
-        if (!$scope.eventsBound){
-          $scope.bindElsewhereEvents();
+        if (!$scope.eventsBound) {
+          bindElsewhereEvents();
         }
         return $scope.closedOtherItems;
       };
 
-      $scope.isOpen = function(item) {
-        if ($scope.openTitle){
-          if ($scope.openTitle.item.uuid === item.uuid){
+      $scope.isOpen = function isOpen(item) {
+        if ($scope.openTitle) {
+          if ($scope.openTitle.item.uuid === item.uuid) {
             return true;
           }
         }
@@ -91,32 +106,32 @@ function accordionDirective($document) {
       // TITLE LINK HANDLING
       // Getting innerWidth is expensive so use this as a cache
       var titleLinkElementWidth;
-      this.setTitleLinkElementWidth = function(width) {
+      this.setTitleLinkElementWidth = function setTitleLinkElementWidth(width) {
         titleLinkElementWidth = width;
       };
-      this.getTitleLinkElementWidth = function(){
+      this.getTitleLinkElementWidth = function getTitleLinkElementWidth() {
         return titleLinkElementWidth;
       };
 
       // ACCORDION MANIPULATION
 
-      $scope.close = function(item, skipSave) {
-        angular.forEach($scope.thisController.titleScopes, function (titleScope) {
-          if (titleScope.item === item){
+      function close(item, skipSave) {
+        angular.forEach($scope.thisController.titleScopes, function(titleScope) {
+          if (titleScope.item === item) {
             titleScope.closeItem(skipSave);
             $scope.openTitle = undefined;
             return;
           }
         });
-      };
+      }
 
       $scope.closeAndCall = function closeInFn(item, itemAction) {
-        $scope.close(item, true);
+        close(item, true);
         itemAction(item);
       };
 
       // This is called from the accordion-title directive to add itself to the accordion
-      this.addItem = function(itemScope) {
+      this.addItem = function addItem(itemScope) {
         var that = this;
         $scope.thisController.titleScopes.push(itemScope);
 
@@ -126,32 +141,32 @@ function accordionDirective($document) {
       };
 
       // This is called from the accordion-title directive when to remove itself
-      this.removeItem = function(titleScope) {
+      this.removeItem = function removeItem(titleScope) {
         var index = this.titleScopes.indexOf(titleScope);
-        if ( index !== -1 ) {
+        if (index !== -1) {
           this.titleScopes.splice(this.titleScopes.indexOf(titleScope), 1);
         }
         if ($scope.itemRemoved) $scope.itemRemoved(titleScope.item);
       };
 
       $scope.$on('$destroy', function() {
-        $scope.unbindElsewhereEvents();
+        unbindElsewhereEvents();
       });
 
       // "Click elsewhere to close accordion"
 
       $scope.eventsBound = false;
-      $scope.unbindElsewhereEvents = function() {
-        if ($scope.eventsBound){
+      function unbindElsewhereEvents() {
+        if ($scope.eventsBound) {
           $document.unbind('click', $scope.elsewhereCallback);
         }
         $scope.eventsBound = false;
-      };
+      }
 
-      $scope.bindElsewhereEvents = function () {
+      function bindElsewhereEvents() {
         $document.bind('click', $scope.elsewhereCallback);
         $scope.eventsBound = true;
-      };
+      }
 
       $scope.elsewhereCallback = function(event) {
         // First rule out clicking on link with a closed accordion
@@ -163,25 +178,26 @@ function accordionDirective($document) {
           if (($scope.closedOtherItems && (event.target.id === 'accordionTitleLink' ||
            event.target.id === 'accordionTitleLinkContent')) ||
            (!$(event.target).parents('.accordion-item-active').length &&
-            !$(event.target).parents('.item-actions').length)) {
+            !$(event.target).parents('.item-actions').length))
+          {
 
             $scope.$apply(function() {
-              angular.forEach($scope.thisController.titleScopes, function (titleScope) {
+              angular.forEach($scope.thisController.titleScopes, function(titleScope) {
                 titleScope.closeItem();
               });
               if ($scope.accordionClosed) $scope.accordionClosed();
 
               $scope.openTitle = undefined;
-              $scope.unbindElsewhereEvents();
+              unbindElsewhereEvents();
             });
+          }
         }
-      }
-    };
-  },
-  link: function(scope, element) {
-    element.addClass('accordion');
-  }
-};
+      };
+    },
+    link: function postLink(scope, element) {
+      element.addClass('accordion');
+    }
+  };
 }
-accordionDirective.$inject = ['$document'];
+accordionDirective['$inject'] = ['$document'];
 angular.module('em.directives').directive('accordion', accordionDirective);

@@ -1,4 +1,18 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 'use strict';
 
 // iDangero.us Swiper Service
 // http://www.idangero.us/sliders/swiper/api.php
@@ -45,15 +59,15 @@ function SwiperService($q) {
 
   function getInitialSlideIndex(swiperPath, swiperSlidesPaths) {
     var overrideSlideIndex = useOverrideSlideIndex(swiperPath, swiperSlidesPaths);
-    if (overrideSlideIndex !== undefined){
+    if (overrideSlideIndex !== undefined) {
       return overrideSlideIndex;
-    }else{
+    } else {
       // Default to first slide
       return 0;
     }
   }
 
-  function useOverrideSlideIndex(swiperPath, swiperSlidesPaths){
+  function useOverrideSlideIndex(swiperPath, swiperSlidesPaths) {
     if (overrideSwiperParams[swiperPath] && overrideSwiperParams[swiperPath].initialSlidePath) {
       var slideIndex = getSlideIndexBySlidePath(overrideSwiperParams[swiperPath].initialSlidePath, swiperSlidesPaths);
       if (slideIndex !== undefined) {
@@ -160,14 +174,14 @@ function SwiperService($q) {
         // Set initial slide path
         var initialSlideIndex = 0;
         var overrideSlideIndex = useOverrideSlideIndex(swiperPath, swiperSlidesPaths);
-        if (overrideSlideIndex !== undefined){
+        if (overrideSlideIndex !== undefined) {
           initialSlideIndex = overrideSlideIndex;
         }
         swipers[swiperPath].swiper.params.initialSlide = initialSlideIndex;
         swipers[swiperPath].slidesPaths = swiperSlidesPaths;
         $q.when(swipers[swiperPath].swiper.reInit()).then(function() {
           setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
-          if ((overrideSlideIndex !== undefined) && (swipers[swiperPath].swiper.activeIndex !== overrideSlideIndex) ){
+          if ((overrideSlideIndex !== undefined) && (swipers[swiperPath].swiper.activeIndex !== overrideSlideIndex) ) {
             // Re-init did not work, still wrong slide, need to swipe there
             // NOTE: Adding a 0 after this call would make swiping instant, but the animation might
             //       be helpful in understanding where this is transitioning
@@ -180,17 +194,11 @@ function SwiperService($q) {
       if (swipers[swiperPath]) {
         this.refreshSwiper(swiperPath, swipers[swiperPath].slidesPaths);
         var thisService = this;
-        swipers[swiperPath].slidesPaths.forEach(function(slidePath){
-          if (swipers[slidePath]){
+        swipers[swiperPath].slidesPaths.forEach(function(slidePath) {
+          if (swipers[slidePath]) {
             thisService.refreshSwiper(slidePath, swipers[slidePath].slidesPaths);
           }
         });
-      }
-
-      function refreshChildSwiper(slidePath, slideIndex, parentSwiper) {
-        if (swipers[parentSwiper[slideIndex]]) {
-          this.refreshSwiper(parentSwiper[slideIndex], swipers[parentSwiper[slideIndex]].slidesPaths);
-        }
       }
     },
     onSwiperCreated: function(scope, swiperPath) {
@@ -254,7 +262,7 @@ function SwiperService($q) {
     },
     swipeToWithCallback: function(slidePath) {
       var swiperInfos = this.swipeTo(slidePath);
-      if (swiperInfos.pagePath){
+      if (swiperInfos.pagePath) {
         executeSlideChangeCallbacks(swiperInfos.pagePath, slidePath);
       }
     },
@@ -286,7 +294,7 @@ function SwiperService($q) {
         }
       }
     },
-    getMainSwiperSlide: function(slidePath){
+    getMainSwiperSlide: function(slidePath) {
       var swiperInfos = getSwiperInfosBySlidePath(slidePath);
       if (swiperInfos.main) {
         var mainSwiperIndex = getSlideIndexBySlidePath(slidePath, swiperInfos.main.slidesPaths);

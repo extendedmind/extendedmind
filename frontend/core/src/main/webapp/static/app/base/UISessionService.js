@@ -1,7 +1,22 @@
-/* global angular */
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-function UISessionService($rootScope, LocalStorageService, SessionStorageService) {
+ /* global angular */
+ 'use strict';
+
+ function UISessionService($rootScope, LocalStorageService, SessionStorageService) {
 
   // Map containing states and datas of features per owner
   var featureMap = {};
@@ -25,20 +40,20 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
     },
     setMyActive: function() {
       var userUUID = SessionStorageService.getUserUUID();
-      if (userUUID){
+      if (userUUID) {
         SessionStorageService.setActiveUUID(userUUID);
         if (!featureMap[userUUID]) featureMap[userUUID] = {};
         ownerPrefix = 'my';
-      }else{
+      } else {
         // User's UUID not known
         $rootScope.$emit('emException', {type: 'session', description: 'user UUID not available'});
       }
     },
     getActiveUUID: function() {
       if (!SessionStorageService.getActiveUUID()) {
-        if (LocalStorageService.getUserUUID()){
+        if (LocalStorageService.getUserUUID()) {
           SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
-        }else{
+        } else {
           // There is no way to get the active UUID
           $rootScope.$emit('emException', {type: 'session', description: 'active UUID not available'});
         }
@@ -47,17 +62,17 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
     },
 
     // Feature history
-    changeFeature: function(name, data, state){
+    changeFeature: function(name, data, state) {
       var uuid = this.getActiveUUID();
-      if (!featureMap[uuid][name]){
+      if (!featureMap[uuid][name]) {
         featureMap[uuid][name] = {
           data: data,
           state: state
         };
-      }else{
+      } else {
         featureMap[uuid][name].data = data;
         // Don't overwrite existing data with undefined
-        if(state){
+        if (state) {
           featureMap[uuid][name].state = state;
         }
       }
@@ -69,33 +84,33 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
         featureChangedCallbacks[i].callback(name, data, state);
       }
     },
-    getPreviousFeatureName: function(){
+    getPreviousFeatureName: function() {
       var uuid = this.getActiveUUID();
-      if (featureHistory[uuid] && featureHistory[uuid].length > 1){
+      if (featureHistory[uuid] && featureHistory[uuid].length > 1) {
         return featureHistory[uuid][featureHistory[uuid].length-2];
       }
     },
-    getCurrentFeatureName: function(){
+    getCurrentFeatureName: function() {
       var uuid = this.getActiveUUID();
-      if (featureHistory[uuid] && featureHistory[uuid].length > 0){
+      if (featureHistory[uuid] && featureHistory[uuid].length > 0) {
         return featureHistory[uuid][featureHistory[uuid].length-1];
       }
     },
-    setCurrentFeatureState: function(state){
+    setCurrentFeatureState: function(state) {
       var uuid = this.getActiveUUID();
-      if (featureHistory[uuid] && featureHistory[uuid].length > 0){
+      if (featureHistory[uuid] && featureHistory[uuid].length > 0) {
         featureMap[uuid][featureHistory[uuid][featureHistory[uuid].length-1]].state = state;
       }
     },
-    getFeatureState: function(featureName){
+    getFeatureState: function(featureName) {
       var uuid = this.getActiveUUID();
-      if (featureHistory[uuid] && featureMap[uuid][featureName]){
+      if (featureHistory[uuid] && featureMap[uuid][featureName]) {
         return featureMap[uuid][featureName].state;
       }
     },
-    getFeatureData: function(featureName){
+    getFeatureData: function(featureName) {
       var uuid = this.getActiveUUID();
-      if (featureHistory[uuid] && featureMap[uuid][featureName]){
+      if (featureHistory[uuid] && featureMap[uuid][featureName]) {
         return featureMap[uuid][featureName].data;
       }
     },
@@ -129,7 +144,7 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
         }
       }
     },
-    setUIStateParameter: function (key, value) {
+    setUIStateParameter: function(key, value) {
       var state = this.getUIState();
       if (!state) state = {};
       state[key] = value;
@@ -140,16 +155,15 @@ function UISessionService($rootScope, LocalStorageService, SessionStorageService
     },
     getUIState: function() {
       var state = SessionStorageService.getState();
-      if (!state){
+      if (!state) {
         state = LocalStorageService.getState();
-        if (state){
+        if (state) {
           SessionStorageService.setState(state);
         }
       }
       return state;
-
     }
   };
 }
-UISessionService.$inject = ['$rootScope', 'LocalStorageService', 'SessionStorageService'];
+UISessionService['$inject'] = ['$rootScope', 'LocalStorageService', 'SessionStorageService'];
 angular.module('em.services').factory('UISessionService', UISessionService);

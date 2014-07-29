@@ -1,10 +1,25 @@
-/*global angular */
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ /*global angular */
+ 'use strict';
 
 /**
 * Helper service for array manipulation.
 */
-function ArrayService(){
+function ArrayService() {
 
   // Modified from:
   // http://stackoverflow.com/questions/1344500/efficient-way-to-insert-a-number-into-a-sorted-array-of-numbers
@@ -18,10 +33,10 @@ function ArrayService(){
     end = end || array.length;
 
     var pivot = parseInt(start + (end - start) / 2, 10);
-    if (end - start <= 1){
-      if (reverse){
+    if (end - start <= 1) {
+      if (reverse) {
         return (array[pivot] && (array[pivot][field] < element[field])) ? pivot - 1 : pivot;
-      }else{
+      } else {
         return (array[pivot] && (array[pivot][field] > element[field])) ? pivot - 1 : pivot;
       }
     }
@@ -32,21 +47,21 @@ function ArrayService(){
     }
   }
 
-  function getFirstMatchingArrayInfoByProperty(item, otherArrays){
-    if (otherArrays){
+  function getFirstMatchingArrayInfoByProperty(item, otherArrays) {
+    if (otherArrays) {
       for (var i=0, len=otherArrays.length; i<len; i++) {
-        if (item[otherArrays[i].id]){
+        if (item[otherArrays[i].id]) {
           return otherArrays[i];
         }
       }
     }
   }
 
-  function getFirstMatchingArrayInfoByUUID(uuid, otherArrays){
-    if (otherArrays){
+  function getFirstMatchingArrayInfoByUUID(uuid, otherArrays) {
+    if (otherArrays) {
       for (var i=0, len=otherArrays.length; i<len; i++) {
         var itemInOtherArray = otherArrays[i].array.findFirstObjectByKeyValue('uuid', uuid);
-        if (itemInOtherArray){
+        if (itemInOtherArray) {
           return otherArrays[i];
         }
       }
@@ -57,11 +72,11 @@ function ArrayService(){
     // Based on given backend response, sets active array, deleted array
     // and optionally other arrays, which are objects of type {array: [], id: ''}.
     // Returns the latest (biggest) modified value.
-    setArrays: function(response, activeArray, deletedArray, otherArrays){
+    setArrays: function(response, activeArray, deletedArray, otherArrays) {
       // First clear existing arrays..
       activeArray.length = 0;
       deletedArray.length = 0;
-      if (otherArrays){
+      if (otherArrays) {
         for (var i=0, len=otherArrays.length; i<len; i++) {
           otherArrays[i].array.length = 0;
         }
@@ -72,7 +87,7 @@ function ArrayService(){
         var latestModified;
         while (response[index]) {
           var modified = this.setItem(response[index], activeArray, deletedArray, otherArrays);
-          if (!latestModified || latestModified < modified){
+          if (!latestModified || latestModified < modified) {
             latestModified = modified;
           }
           index++;
@@ -88,7 +103,7 @@ function ArrayService(){
         var latestModified;
         while (response[i]) {
           var modified = this.updateItem(response[i], activeArray, deletedArray, otherArrays);
-          if (!latestModified || latestModified < response[i].modified){
+          if (!latestModified || latestModified < response[i].modified) {
             latestModified = modified;
           }
           i++;
@@ -99,11 +114,11 @@ function ArrayService(){
     // item and activeArray are mandatory, rest are optional
     setItem: function(item, activeArray, deletedArray, otherArrays) {
       var otherArrayInfo = getFirstMatchingArrayInfoByProperty(item, otherArrays);
-      if (deletedArray && item.deleted){
+      if (deletedArray && item.deleted) {
         insertItemToArray(item, deletedArray, 'deleted');
-      }else if (otherArrayInfo) {
+      } else if (otherArrayInfo) {
         insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
-      }else{
+      } else {
         insertItemToArray(item, activeArray, 'created');
       }
       return item.modified;
@@ -117,48 +132,48 @@ function ArrayService(){
       activeItemId = activeArray.findFirstIndexByKeyValue('uuid', item.uuid);
       if (activeItemId === undefined && deletedArray) {
         deletedItemId = deletedArray.findFirstIndexByKeyValue('uuid', item.uuid);
-        if (otherArrayWithItemInfo && deletedItemId === undefined){
+        if (otherArrayWithItemInfo && deletedItemId === undefined) {
           otherArrayItemId = otherArrayWithItemInfo.array.findFirstIndexByKeyValue('uuid', item.uuid);
         }
       }
 
-      if (activeItemId !== undefined){
+      if (activeItemId !== undefined) {
         activeArray.splice(activeItemId, 1);
-        if (item.deleted){
+        if (item.deleted) {
           insertItemToArray(item, deletedArray, 'deleted');
-        }else if (otherArrayInfo && item[otherArrayInfo.id]){
+        } else if (otherArrayInfo && item[otherArrayInfo.id]) {
           insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
-        }else{
+        } else {
           insertItemToArray(item, activeArray, 'created');
         }
-      }else if (deletedItemId !== undefined) {
+      } else if (deletedItemId !== undefined) {
         deletedArray.splice(deletedItemId, 1);
-        if (!item.deleted){
-          if (otherArrayInfo && item[otherArrayInfo.id]){
+        if (!item.deleted) {
+          if (otherArrayInfo && item[otherArrayInfo.id]) {
             insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
-          }else {
+          } else {
             insertItemToArray(item, activeArray, 'created');
           }
-        }else{
+        } else {
           insertItemToArray(item, deletedArray, 'deleted');
         }
-      }else if (otherArrayItemId !== undefined) {
+      } else if (otherArrayItemId !== undefined) {
         otherArrayWithItemInfo.array.splice(otherArrayItemId, 1);
-        if (item.deleted){
+        if (item.deleted) {
           insertItemToArray(item, deletedArray, 'deleted');
-        }else if (!otherArrayInfo &&
-                 (!otherArrayWithItemInfo || !item[otherArrayWithItemInfo.id])){
+        } else if (!otherArrayInfo &&
+         (!otherArrayWithItemInfo || !item[otherArrayWithItemInfo.id])) {
           // Item does not belong to a new other array, nor anymore to the other array
           // it used to belong to => it is active again.
           insertItemToArray(item, activeArray, 'created');
-        }else if (otherArrayInfo && (otherArrayInfo.id !== otherArrayWithItemInfo.id)) {
+        } else if (otherArrayInfo && (otherArrayInfo.id !== otherArrayWithItemInfo.id)) {
           // Should be placed in another other array
           insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
-        }else{
+        } else {
           // Just updating modified in current other array
           insertItemToArray(item, otherArrayWithItemInfo.array, otherArrayWithItemInfo.id, otherArrayInfo.reverse);
         }
-      }else {
+      } else {
         this.setItem(item, activeArray, deletedArray, otherArrays);
       }
 
@@ -167,30 +182,30 @@ function ArrayService(){
     // uuid, properties and activeArray are mandatory, rest are optional
     updateItemProperties: function(uuid, properties, activeArray, deletedArray, otherArrays) {
       var activeItemId = activeArray.findFirstIndexByKeyValue('uuid', uuid);
-      function updateProperties(item, properties){
+      function updateProperties(item, properties) {
         for (var property in properties) {
-          if(properties.hasOwnProperty(property)){
+          if (properties.hasOwnProperty(property)) {
             item[property] = properties[property];
           }
         }
       }
-      if (activeItemId !== undefined){
+      if (activeItemId !== undefined) {
         updateProperties(activeArray[activeItemId], properties);
-      }else if (deletedArray) {
+      } else if (deletedArray) {
         var deletedItemId = deletedArray.findFirstIndexByKeyValue('uuid', uuid);
-        if (deletedItemId !== undefined){
+        if (deletedItemId !== undefined) {
           updateProperties(deletedArray[deletedItemId], properties);
-        }else{
+        } else {
           // Try other arrays
           var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(uuid, otherArrays);
-          if (otherArrayWithItemInfo){
+          if (otherArrayWithItemInfo) {
             var otherArrayItemId = otherArrayWithItemInfo.array.findFirstIndexByKeyValue('uuid', uuid);
-            if (otherArrayItemId !== undefined){
+            if (otherArrayItemId !== undefined) {
               updateProperties(otherArrayWithItemInfo.array[otherArrayItemId], properties);
-            }else{
+            } else {
               return false;
             }
-          }else {
+          } else {
             return false;
           }
         }
@@ -198,18 +213,18 @@ function ArrayService(){
       return true;
     },
     combineArrays: function(firstArray, secondArray, id, reverse) {
-      function compareById(firstItem, secondItem){
+      function compareById(firstItem, secondItem) {
 
-        if (reverse){
-          if (firstItem[id] > secondItem[id]){
+        if (reverse) {
+          if (firstItem[id] > secondItem[id]) {
             return -1;
-          }else if (firstItem[id] < secondItem[id]){
+          } else if (firstItem[id] < secondItem[id]) {
             return 1;
           }
-        }else{
-          if (firstItem[id] < secondItem[id]){
+        } else {
+          if (firstItem[id] < secondItem[id]) {
             return -1;
-          }else if (firstItem[id] > secondItem[id]){
+          } else if (firstItem[id] > secondItem[id]) {
             return 1;
           }
         }
@@ -223,7 +238,7 @@ function ArrayService(){
       // Sort combined array
       return combinedArray.sort(compareById);
     }
- };
+  };
 }
 
 angular.module('em.services').factory('ArrayService', ArrayService);

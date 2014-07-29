@@ -1,6 +1,20 @@
-'use strict';
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 'use strict';
 
-function accordionTitleLinkDirective($rootScope) {
+ function accordionTitleLinkDirective($rootScope) {
   return {
     require: '^accordion',        // We need this directive to be inside an accordion
     restrict: 'A',                // It will be an attribute
@@ -8,46 +22,46 @@ function accordionTitleLinkDirective($rootScope) {
       titleLength: '=accordionTitleLink',
       boldTitle: '=accordionTitleLinkBold'
     },
-    link: function($scope, $element, $attrs, accordionCtrl) {
+    link: function postLink(scope, element, attrs, accordionCtrl) {
 
       var accordionTitleLinkWidth;
-      if (!$scope.boldTitle){
+      if (!scope.boldTitle) {
         accordionTitleLinkWidth = accordionCtrl.getTitleLinkElementWidth();
-        if (!accordionTitleLinkWidth){
-          $scope.$evalAsync(function(){
-            accordionTitleLinkWidth = $element.parent().innerWidth();
+        if (!accordionTitleLinkWidth) {
+          scope.$evalAsync(function() {
+            accordionTitleLinkWidth = element.parent().innerWidth();
             accordionCtrl.getTitleLinkElementWidth(accordionTitleLinkWidth);
             addClasses();
           });
         }
-      }else{
+      } else {
         // Can't use cached value for bold titles
-        $scope.$evalAsync(function(){
-          accordionTitleLinkWidth = $element.parent().innerWidth();
+        scope.$evalAsync(function() {
+          accordionTitleLinkWidth = element.parent().innerWidth();
           addClasses();
         });
       }
 
       function addClasses() {
-        if (isTitleOnTwoLines(accordionTitleLinkWidth)){
+        if (isTitleOnTwoLines(accordionTitleLinkWidth)) {
           var classes = 'ellipsis';
-          if ($rootScope.packaging === 'ios-cordova'){
+          if ($rootScope.packaging === 'ios-cordova') {
             classes += ' needsSmallPadding';
-          }else {
+          } else {
             classes += ' needsBigPadding';
           }
-          $element.parent().addClass(classes);
+          element.parent().addClass(classes);
         }
       }
 
       function isTitleOnTwoLines(width) {
-        if (!$scope.boldTitle){
-          if ($scope.titleLength * 5.4 > width){
+        if (!scope.boldTitle) {
+          if (scope.titleLength * 5.4 > width) {
             return true;
           }
-        }else{
+        } else {
           // Bold titles
-          if ($scope.titleLength * 8 > width){
+          if (scope.titleLength * 8 > width) {
             return true;
           }
         }
@@ -56,5 +70,5 @@ function accordionTitleLinkDirective($rootScope) {
     }
   };
 }
-accordionTitleLinkDirective.$inject = ['$rootScope'];
+accordionTitleLinkDirective['$inject'] = ['$rootScope'];
 angular.module('em.directives').directive('accordionTitleLink', accordionTitleLinkDirective);

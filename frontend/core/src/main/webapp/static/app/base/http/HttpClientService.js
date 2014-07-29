@@ -147,11 +147,11 @@
           data: JSON.stringify(headRequest.content.data),
           contentType: 'application/json',
           dataType: 'json',
-          success: function () {
+          success: function() {
             // Then remove the request and release lock
             HttpRequestQueueService.remove(headRequest);
           },
-          error: function () {
+          error: function() {
             HttpRequestQueueService.releaseLock();
           }
         });
@@ -275,10 +275,10 @@
       data: JSON.stringify(data),
       contentType: 'application/json',
       dataType: 'json',
-      success: function () {
+      success: function() {
         // Don't do anything
       },
-      failure: function (/*data*/) {
+      failure: function(/*data*/) {
         // Only log failure of analytics
         console.log('postLastOnline failed');
       }
