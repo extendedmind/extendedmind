@@ -162,6 +162,13 @@
         }
       }
       return state;
+    },
+    reset: function() {
+      featureMap = {};
+      featureHistory = {};
+      toasterNotificationMap = {};
+      featureChangedCallbacks = [];
+      ownerPrefix = 'my';
     }
   };
 }

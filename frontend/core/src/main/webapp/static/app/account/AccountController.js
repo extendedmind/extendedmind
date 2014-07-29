@@ -77,6 +77,7 @@
     AccountService.logout().then(function() {
       $location.path('/login');
       UserSessionService.clearUser();
+      UISessionService.reset();
     });
   };
 }
