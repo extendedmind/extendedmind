@@ -81,6 +81,15 @@ trait AdminActions {
     log.info("rebuildItemsIndex")
     db.rebuildItemsIndex(ownerUUID)
   }
+  
+  def rebuildItemsIndexes(implicit log: LoggingAdapter): Response[CountResult] = {
+    log.info("rebuildItemsIndexes")
+    val result = db.rebuildItemsIndexes
+    if (result.isRight){
+      log.info("rebuilt " + result.right.get.count + " items indexes")
+    }
+    result
+  }
 
   def loadDatabase(implicit log: LoggingAdapter): Boolean = {
     log.info("loadDatabase")

@@ -323,6 +323,21 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
+      rebuildItemsIndexes { url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[CountResult] {
+                setLogContext(securityContext)
+                adminActions.rebuildItemsIndexes match {
+                  case Right(result) => processResult(result)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }        
+      } ~
       rebuildUserIndexes { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {

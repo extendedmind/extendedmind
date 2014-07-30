@@ -49,7 +49,7 @@ import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.BooleanClause
 import spray.util.LoggingContext
 
-trait ItemDatabase extends AbstractGraphDatabase {
+trait ItemDatabase extends UserDatabase {
 
   // Item stays deleted for 30 days before it is destroyed
   val DESTROY_TRESHOLD: Long = 2592000000l
@@ -127,6 +127,13 @@ trait ItemDatabase extends AbstractGraphDatabase {
           result <- rebuildItemsIndex(ownerNode).right
         } yield result
     }
+  }
+  
+  def rebuildItemsIndexes: Response[CountResult] = {
+    for {
+      ownerUUIDs <- getOwnerUUIDs.right
+      count <- rebuildItemsIndexes(ownerUUIDs).right
+    } yield count
   }
 
   // PRIVATE
@@ -729,6 +736,16 @@ trait ItemDatabase extends AbstractGraphDatabase {
 
   protected def addModifiedIndex(index: Index[Node], node: Node, modified: Long)(implicit neo4j: DatabaseService): Unit = {
     index.add(node, "modified", new ValueContext(node.getProperty("modified").asInstanceOf[Long]).indexNumeric())
+  }
+  
+  protected def rebuildItemsIndexes(ownerUUIDs: scala.List[UUID]): Response[CountResult] = {
+    ownerUUIDs.foreach(ownerUUID => {
+      val rebuildResult = rebuildItemsIndex(ownerUUID)
+      if (rebuildResult.isLeft) {
+        return Left(rebuildResult.left.get)
+      }
+    })
+    Right(CountResult(ownerUUIDs.size))
   }
 
   protected def rebuildItemsIndex(ownerNode: Node)(implicit neo4j: DatabaseService): Response[CountResult] = {

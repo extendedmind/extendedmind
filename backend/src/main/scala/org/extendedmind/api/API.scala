@@ -112,6 +112,7 @@ trait API extends HttpService {
   val getUsers = get & path("admin" / "users".r)
   val postChangeUserType = post & path("admin" / "user" / JavaUUID / "type" / IntNumber)
   val rebuildUserItemsIndex = post & path("admin" / "user" / JavaUUID / "items" / "rebuild")
+  val rebuildItemsIndexes = post & path("admin" / "items" / "rebuild".r)
   val rebuildUserIndexes = post & path("admin" / "users" / "rebuild".r)
   val upgradeOwners = post & path("admin" / "owners" / "upgrade".r)
   val upgradeOwner = post & path("admin" / "owner" / JavaUUID / "upgrade")
