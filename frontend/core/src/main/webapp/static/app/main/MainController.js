@@ -79,7 +79,7 @@ function MainController(
     } else if ($scope.lists.length && !$scope.archivedLists.length) {
       $scope.listsSelectOptions = $scope.lists.slice(0);  // http://davidwalsh.name/javascript-clone-array
     } else if ($scope.archivedLists.length && !$scope.lists.length) {
-      $scope.listsSelectOptions = $scope.archivedLists;
+      $scope.listsSelectOptions = $scope.archivedLists.slice(0);
     } else {
       $scope.listsSelectOptions = [];
     }
