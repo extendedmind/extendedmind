@@ -13,7 +13,7 @@
   }
 }
 
-.form-group, .input-group {
+.form-group {
   width: 100%;
 }
 
@@ -21,10 +21,10 @@ a.click-to-slide {
   color: @default-element;
 }
 
-span.icon-i, span.icon-plus, span.icon-logo-only {
+span.icon-i, span.icon-logo-only {
   color: @highlighted-element;
 }
-span.icon-i:active, span.icon-plus:active, span.icon-logo-only:active {
+span.icon-i:active, span.icon-logo-only:active {
   color: @highlighted-element-pressed;
 }
 
@@ -61,11 +61,6 @@ Add `.simple-input` to any of the following HTML tags to create minimalist input
     display: table-cell;
     line-height: normal;
     color: @content;
-  }
-  span.slide-indicator {
-    display: table-cell;
-    width: @slide-indicator-width;
-    color: @default-element;
   }
 }
 
@@ -142,15 +137,6 @@ Add `.simple-input` to any of the following HTML tags to create minimalist input
       width: 100%;
       height: @vertical-grid;
     }
-  }
-  .small-border-right:after {
-    float: right;
-    height: 25px;
-    background: white;
-    width: 1px;
-    content: "";
-    position: absolute;
-    text-align: right;
   }
 }
 
@@ -238,13 +224,6 @@ button.delete-button {
   }
   &:active {
     background-color: @delete-button-pressed;
-  }
-}
-
-button.enabled-button {
-  color: white;
-  & {
-    background-color: white;
   }
 }
 
