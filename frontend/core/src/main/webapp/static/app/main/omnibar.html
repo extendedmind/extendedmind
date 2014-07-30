@@ -37,12 +37,12 @@
 
     <div ng-switch-when="search" class="omnibar-search">
 
-      <button ng-if="keywords.length" class="small-font button" ng-class="omnibarKeywords.isVisible ? 'selected-keyword' : 'keyword'" ng-click="toggleOmnibarKeywordsVisible()">
+      <button ng-if="keywords.length" class="font-small button" ng-class="omnibarKeywords.isVisible ? 'selected-keyword' : 'keyword'" ng-click="toggleOmnibarKeywordsVisible()">
         keywords <strong ng-bind="omnibarKeywords.isVisible ? 'x' : '+'"></strong>
       </button>
 
       <div ng-if="omnibarKeywords.isVisible" class="keywords-container">
-        <button ng-init="isKeywordSelected = false" ng-repeat="keyword in getSelectedAndFilterUnselectedKeywords()" ng-click="isKeywordSelected = !isKeywordSelected; toggleKeywordSelected(keyword);" class="button small-font keyword" ng-class="isKeywordSelected ? 'selected-keyword' : 'keyword'">
+        <button ng-init="isKeywordSelected = false" ng-repeat="keyword in getSelectedAndFilterUnselectedKeywords()" ng-click="isKeywordSelected = !isKeywordSelected; toggleKeywordSelected(keyword);" class="button font-small keyword" ng-class="isKeywordSelected ? 'selected-keyword' : 'keyword'">
           {{keyword.title}} <strong ng-bind="isKeywordSelected ? 'x' : '+'"></strong>
         </button>
       </div>
@@ -150,18 +150,18 @@
           </div>
           <div class="keywords-container">
             <span ng-if="showKeywords()" id="new-keyword">
-              <button class="small-font button keyword" ng-disabled="isSelectedKeyword()" ng-click="selectNewKeyword()">
+              <button class="font-small button keyword" ng-disabled="isSelectedKeyword()" ng-click="selectNewKeyword()">
                 {{newKeyword.title}} <strong>+</strong>
               </button>
             </span>
 
             <span ng-if="noteHasKeywords()">
-              <button type="button" class="button small-font selected-keyword" ng-repeat="keyword in noteKeywords()" ng-click="unSelectKeyword(keyword)">{{keyword.title}} <strong>x</strong></button>
+              <button type="button" class="button font-small selected-keyword" ng-repeat="keyword in noteKeywords()" ng-click="unSelectKeyword(keyword)">{{keyword.title}} <strong>x</strong></button>
             </span>
           </div>
 
           <div ng-if="showKeywords()" class="keywords-container">
-            <button ng-hide="isNewKeyword(keyword)" ng-repeat="keyword in otherThanNoteKeywords() | filter: {title: newKeyword.title}" ng-click="selectExistingKeyword(keyword)" class="button small-font keyword">
+            <button ng-hide="isNewKeyword(keyword)" ng-repeat="keyword in otherThanNoteKeywords() | filter: {title: newKeyword.title}" ng-click="selectExistingKeyword(keyword)" class="button font-small keyword">
               {{keyword.title}} <strong>+</strong>
             </button>
           </div>
@@ -192,7 +192,7 @@
     </div>
   </div>
 
-  <div class="omnibar-footer small-font">
+  <div class="omnibar-footer font-small">
     <button type="button" class="button transparent-button omnibar-footer-button-left" ng-click="cancelOmnibarEdit()">cancel</button>
     <button type="submit" class="button transparent-button omnibar-footer-button-right" ng-click="saveOmnibarText()" ng-disabled="!addOmniItem.$valid || isLoading" ng-bind="getOmnibarFooterSaveText()"></button>
   </div>

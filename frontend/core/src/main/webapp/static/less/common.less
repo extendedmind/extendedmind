@@ -152,7 +152,7 @@ The following can be used to control font:
 
 ```markup
 <p class="font-bold">font-bold</p>
-<p class="small-font">small font</p>
+<p class="font-small">small font</p>
 <p class="font-bold">font-bold</p>
 
 ```
@@ -162,8 +162,8 @@ The following can be used to control font:
   font-weight: 700;
 }
 
-.small-font {
-  font-size: @small-font-size;
+.font-small {
+  font-size: @font-small-size;
 }
 
 .smallest-font {
@@ -303,13 +303,13 @@ a.content:active {
   text-align: center;
   line-height: 19px;
   .icon-logo-only {
-    font-size: @small-font-size;
+    font-size: @font-small-size;
   }
   .instruction-text-chapter {
     padding-bottom: @vertical-grid;
   }
   .instruction-text-chapter-details {
-    font-size: @small-font-size;
+    font-size: @font-small-size;
     padding-bottom: @vertical-grid;
   }
 }
