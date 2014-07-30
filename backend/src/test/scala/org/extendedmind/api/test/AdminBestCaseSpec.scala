@@ -227,6 +227,21 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         writeJsonOutput("usersResponse", responseAs[String])
       }
     }
+    it("should successfully delete a user with DELETE to /admin/user/[userUUID]") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val users = responseAs[Users]
+        val lauriUser = users.users.filter(user => if (user.email == LAURI_EMAIL) true else false)(0)
+        Delete("/admin/user/" + lauriUser.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          writeJsonOutput("deleteUserResponse", responseAs[String])
+          val deleteUserResponse = responseAs[DestroyResult]
+          deleteUserResponse.destroyed(0) should be (lauriUser.uuid.get)
+          Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            responseAs[Users].users.filter(user => if (user.email == LAURI_EMAIL) true else false).size should be(0)
+          }
+        }
+      }
+    }
   }
 
 }

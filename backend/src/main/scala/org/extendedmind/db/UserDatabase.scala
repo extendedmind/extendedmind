@@ -142,29 +142,11 @@ trait UserDatabase extends AbstractGraphDatabase {
   def destroyUser(userUUID: UUID): Response[DestroyResult] = {
     withTx {
       implicit neo4j =>
-        val user = getNode(userUUID, OwnerLabel.USER)
-        if (user.isLeft) Left(user.left.get)
-        else {
-          val relationships = user.right.get.getRelationships().toList
-          if (relationships.size > 0) {
-            // The minimum is invite and
-            if (relationships.size > 2) {
-              return fail(INVALID_PARAMETER, "Can't destroy user that has more than two relationships, has " + relationships.size)
-            }
-            relationships.foreach(relationship => {
-              if (relationship.getType.name != SecurityRelationship.IS_ORIGIN.name
-                && relationship.getType.name != SecurityRelationship.CAN_READ.name
-                && relationship.getType.name != SecurityRelationship.CAN_READ_WRITE.name) {
-                return fail(INVALID_PARAMETER, "Can't delete relationship of type " + relationship.getType.name)
-              } else {
-                relationship.delete()
-              }
-            })
-          }
-          // Delete it completely
-          user.right.get.delete()
-          Right(DestroyResult(scala.List(userUUID)))
-        }
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          deletable <- validateUserDeletable(userNode).right
+          result <- destroyUserNode(userNode).right
+        } yield result
     }
   }
 
@@ -356,6 +338,47 @@ trait UserDatabase extends AbstractGraphDatabase {
         Right(ownerUUIDList)
     }
   }
+  
+  protected def destroyInviteNode(inviteNode: Node)(implicit neo4j: DatabaseService): Response[DestroyResult];
+  protected def destroyItem(deletedItem: Node)(implicit neo4j: DatabaseService);
+  
+  protected def destroyUserNode(userNode: Node)(implicit neo4j: DatabaseService): Response[DestroyResult] = {
+    val relationships = userNode.getRelationships().toList
+    val inviteRelationships = relationships.filter(relationship => {
+      if (relationship.getType.name != SecurityRelationship.IS_ORIGIN.name()) true
+      else false
+    })
+    val inviteNode = if (inviteRelationships.size == 1){
+      Some(inviteRelationships(0).getStartNode())
+    }else None
+    val userUUID = getUUID(userNode)
+    
+    // Delete all relationships and also destroy items that the user owns
+    relationships.foreach(relationship => {
+      if (relationship.getType.name == SecurityRelationship.OWNS.name()){
+        destroyItem(relationship.getEndNode())
+      }
+      relationship.delete()
+    })
+    
+    // Delete user
+    userNode.delete()
+    val destroyResultList = scala.List(userUUID)
+    
+    // Delete invite as well
+    if (inviteNode.isDefined){
+      val destroyInviteResult = destroyInviteNode(inviteNode.get)
+      if (destroyInviteResult.isLeft){
+        Left(destroyInviteResult.left.get)
+      }else{
+        val joinedList = destroyResultList ++ destroyInviteResult.right.get.destroyed
+        Right(DestroyResult(joinedList))
+      }
+    }else{
+      Right(DestroyResult(destroyResultList))
+    }
+  }
+  
 
   protected def deleteUserNode(userUUID: UUID): Response[Tuple2[Node, Long]] = {
     withTx {
@@ -372,6 +395,8 @@ trait UserDatabase extends AbstractGraphDatabase {
     userNode.getRelationships().foreach(relationship => {
       if (relationship.getType().name == SecurityRelationship.IS_FOUNDER.name()) {
         return fail(INVALID_PARAMETER, "Can't delete a user that has founded collections")
+      }else if (relationship.getType().name == SecurityRelationship.IS_ACCEPTER.name()){
+        return fail(INVALID_PARAMETER, "Can't delete a user that has accepted invites")        
       }
     })
     Right(true)
