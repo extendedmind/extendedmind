@@ -76,6 +76,21 @@
     });
   };
 
+  $scope.deleteInvite = function deleteInvite(invite) {
+    AdminService.deleteInvite(invite).then(function() {
+      removeInvite(invite);
+    });
+  };
+
+  function removeInvite(invite) {
+    var index = $scope.invites.indexOf(invite);
+    if (index > -1) {
+      $scope.invites.splice(index, 1);
+      $scope.inviteCount -= 1;
+      return true;
+    }
+  }
+
   function removeInviteRequest(inviteRequest) {
     var index = $scope.inviteRequests.indexOf(inviteRequest);
     if (index > -1) {
@@ -93,6 +108,23 @@
   $scope.gotoStatistics = function gotoStatistics() {
     $scope.adminMode = undefined;
   };
+
+  $scope.destroyUser = function destroyUser(user) {
+    if (user.destroy === 'destroy ' + user.email){
+      AdminService.destroyUser(user).then(function() {
+        removeUser(user);
+      });
+    }
+  }
+
+  function removeUser(user) {
+    var index = $scope.users.indexOf(user);
+    if (index > -1) {
+      $scope.users.splice(index, 1);
+      $scope.userCount -= 1;
+      return true;
+    }
+  }
 }
 
 AdminController['$inject'] = ['$scope', 'AdminService', 'AuthenticationService', 'AnalyticsService', 'DateService'];

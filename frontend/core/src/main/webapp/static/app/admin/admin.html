@@ -26,6 +26,9 @@
           </li>
           <li class="simple-content" ng-repeat="user in users | orderBy:'created':true">
             <a ng-href="mailto:{{user.email}}" ng-bind="user.email"></a> since: {{getDateString(user.created)}}
+            <form role="form" name="destroyUserForm" ng-submit="destroyUser(user)">
+              <input type="text" name="destroy" class="simple-input font-small" ng-model="user.destroy" placeholder="write 'destroy [email]' to destroy the user..."/>
+            </form>
           </li>
         </ul>
         <ul ng-switch-when="invites">
@@ -37,6 +40,7 @@
             <div ng-if="invite.accepted">accepted: {{getDateString(invite.accepted)}}</div>
             <div ng-if="!invite.accepted && !invite.resent">
               <a href ng-click="resendInvite(invite)" class="highlighted-link">resend</a>
+              <a href ng-click="deleteInvite(invite)" class="warning-link">delete</a>
             </div>
             <div ng-if="!invite.accepted && invite.resent">
               resent

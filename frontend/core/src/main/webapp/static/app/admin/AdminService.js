@@ -45,7 +45,7 @@
     /invite\/requests$/.source
     );
 
-  var acceptInviteRequestsRegexp = new RegExp(
+  var acceptInviteRequestRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
     adminRegex.source +
@@ -54,11 +54,26 @@
     /\/accept$/.source
     );
 
-  var deleteInviteRequestsRegexp = new RegExp(
+  var deleteInviteRequestRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
     adminRegex.source +
     /invite\/request\//.source +
+    BackendClientService.uuidRegex.source
+    );
+
+  var deleteInviteRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    adminRegex.source +
+    /invite\//.source +
+    BackendClientService.uuidRegex.source
+    );
+
+  var destroyUserRegexp = new RegExp(/^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    adminRegex.source +
+    /user\//.source +
     BackendClientService.uuidRegex.source
     );
 
@@ -81,11 +96,19 @@
     },
     acceptInviteRequest: function(inviteRequest) {
       return BackendClientService.postOnline('/api/admin/invite/request/' + inviteRequest.uuid + '/accept',
-        acceptInviteRequestsRegexp, {}, true);
+        acceptInviteRequestRegexp, {}, true);
     },
     deleteInviteRequest: function(inviteRequest) {
       return BackendClientService.deleteOnline('/api/admin/invite/request/' + inviteRequest.uuid,
-        deleteInviteRequestsRegexp, true);
+        deleteInviteRequestRegex, true);
+    },
+    deleteInvite: function(invite) {
+      return BackendClientService.deleteOnline('/api/admin/invite/' + invite.uuid,
+        deleteInviteRegexp, true);
+    },
+    destroyUser: function(user){
+      return BackendClientService.deleteOnline('/api/admin/user/' + user.uuid,
+        destroyUserRegexp, true);
     },
 
     // Regular expressions for admin requests
@@ -93,8 +116,10 @@
     usersRegex: usersRegexp,
     invitesRegex: invitesRegexp,
     inviteRequestsRegex: inviteRequestsRegexp,
-    acceptInviteRequestsRegex: acceptInviteRequestsRegexp,
-    deleteInviteRequestsRegex: deleteInviteRequestsRegexp
+    acceptInviteRequestRegex: acceptInviteRequestRegexp,
+    deleteInviteRequestRegex: deleteInviteRequestRegexp,
+    deleteInviteRegex: deleteInviteRegexp,
+    destroyUserRegex: destroyUserRegexp
   };
 }
 AdminService['$inject'] = ['BackendClientService'];

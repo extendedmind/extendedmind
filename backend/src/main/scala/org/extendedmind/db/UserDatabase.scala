@@ -341,11 +341,17 @@ trait UserDatabase extends AbstractGraphDatabase {
   
   protected def destroyInviteNode(inviteNode: Node)(implicit neo4j: DatabaseService): Response[DestroyResult];
   protected def destroyItem(deletedItem: Node)(implicit neo4j: DatabaseService);
+  protected def destroyTokens(userNode: Node)(implicit neo4j: DatabaseService): Response[CountResult];
   
   protected def destroyUserNode(userNode: Node)(implicit neo4j: DatabaseService): Response[DestroyResult] = {
+    // First delete tokens
+    val destroyTokensResponse = destroyTokens(userNode)
+    if (destroyTokensResponse.isLeft) return Left(destroyTokensResponse.left.get)
+    
+    // Then process relationships
     val relationships = userNode.getRelationships().toList
     val inviteRelationships = relationships.filter(relationship => {
-      if (relationship.getType.name != SecurityRelationship.IS_ORIGIN.name()) true
+      if (relationship.getType.name == SecurityRelationship.IS_ORIGIN.name()) true
       else false
     })
     val inviteNode = if (inviteRelationships.size == 1){
@@ -357,8 +363,9 @@ trait UserDatabase extends AbstractGraphDatabase {
     relationships.foreach(relationship => {
       if (relationship.getType.name == SecurityRelationship.OWNS.name()){
         destroyItem(relationship.getEndNode())
+      }else{
+        relationship.delete()
       }
-      relationship.delete()
     })
     
     // Delete user

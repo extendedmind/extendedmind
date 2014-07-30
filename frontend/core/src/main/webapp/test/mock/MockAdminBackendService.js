@@ -62,6 +62,22 @@ function MockAdminBackendService($httpBackend, AdminService) {
       });
   }
 
+  function mockDeleteInvite(){
+    $httpBackend.whenDELETE(AdminService.deleteInviteRegex)
+      .respond(function() {
+        var deleteInviteResponse = getJSONFixture('deleteInviteResponse.json');
+        return [200, deleteInviteResponse];
+      });
+  }
+
+  function mockDestroyUser(){
+    $httpBackend.whenDELETE(AdminService.destroyUserRegex)
+      .respond(function() {
+        var destroyUserResponse = getJSONFixture('deleteUserResponse.json');
+        return [200, destroyUserResponse];
+      });
+  }
+
   return {
     mockAdminBackend: function(expectResponse) {
       mockGetStatistics();
@@ -70,6 +86,8 @@ function MockAdminBackendService($httpBackend, AdminService) {
       mockGetInviteRequests();
       mockAcceptInviteRequest(expectResponse);
       mockDeleteInviteRequest();
+      mockDeleteInvite();
+      mockDestroyUser();
     }
   };
 }

@@ -691,7 +691,12 @@ trait ItemDatabase extends AbstractGraphDatabase {
     // Remove all relationships
     val relationshipList = deletedItem.getRelationships().toList
     relationshipList.foreach(relationship => relationship.delete())
-    // Delete token itself
+    
+    // Remove from items index
+    val itemsIndex = neo4j.gds.index().forNodes("items")
+    itemsIndex.remove(deletedItem)
+    
+    // Delete item itself
     deletedItem.delete()
   }
 
