@@ -33,15 +33,15 @@ button.keyword {
   margin-right: 4px;
 }
 
+button.keyword:disabled {
+  opacity: .5;
+}
+
 button.selected-keyword {
   background-color: #0f82fe;
   color: white;
   padding: 3px 6px;
   margin-right: 4px;
-}
-
-button.keyword:disabled {
-  opacity: .5;
 }
 
 input[type="checkbox"]:checked ~ a#accordionTitleLink {
@@ -104,14 +104,6 @@ div#closedAccordionTitleWrapper {
 
 .teaser, .teaser-empty {
   padding-bottom: @vertical-grid-half;
-}
-
-// OFFLINE
-
-.offline-indicator {
-  display: inline;
-  vertical-align: top;
-  font-size: @font-small-size;
 }
 
 // ERRORS
@@ -211,12 +203,6 @@ header.static-page-header {
   }
 }
 
-nav#edit-header {
-  button {
-    font-size: @font-small-size;
-  }
-}
-
 // FOOTER
 
 footer {
@@ -292,9 +278,6 @@ footer {
     .omnibar-footer-button-right {
       float: right;
       padding: 15px 0px 15px 15px;
-    }
-    .button {
-
     }
   }
 }
@@ -372,9 +355,6 @@ footer {
         vertical-align: middle;
         padding-left: 40px;
       }
-    }
-    .edit-lists-link {
-      color: @default-element;
     }
     .lists-heading-container {
       display: table;
@@ -590,10 +570,9 @@ li.datepicker-date {
 }
 
 .editable-field-backdrop.active, .editable-field-backdrop.animating {
-  #omnibar-label-wrapper, .ellipsis:after {
+  .ellipsis:after {
     background-image: none !important;
   }
-  #active-action-wrapper, #plus-button-wrapper,
   #feature-container-wrapper, #feature-container,
   .border-button, .add-button,
   .static-page-header {
