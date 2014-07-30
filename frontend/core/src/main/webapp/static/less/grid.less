@@ -1,13 +1,4 @@
 
-.indent {
-  padding-left: @horizontal-grid;
-}
-
-ul.indent {
-  // TODO: Remove this when taskActions are printed better
-  padding-left: @horizontal-grid + 10px;
-}
-
 div#root {
   line-height: @vertical-grid;
   max-height: @maximum-height;
@@ -89,9 +80,6 @@ header {
       height: @page-header-height;
       float: right;
       text-align: right;
-      label {
-        display: block;
-      }
     }
   }
 }
@@ -105,40 +93,7 @@ header {
   }
 }
 
-.edit-header {
-  height: @heading-header-height;
-  nav {
-    height: @heading-header-height;
-    max-width: @one-column-grid-width;
-    margin-left: auto;
-    margin-right: auto;
-    ul {
-      li {
-        display: table;
-        height: @heading-header-height;
-        * {
-          height: inherit;
-          display: table-cell;
-          vertical-align: middle;
-        }
-        button#edit-cancel-button {
-          padding-right: 6px;
-          padding-left: @horizontal-grid;
-        }
-        button#edit-save-button {
-          padding-right: @horizontal-grid;
-          padding-left: 6px;
-        }
-      }
-    }
-  }
-}
-
 // CONTENT
-
-.page-heading {
-  min-height: @page-header-height;
-}
 
 .page-content-container {
   height: 100%;
