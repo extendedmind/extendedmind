@@ -123,23 +123,18 @@ And to four sections:
 }
 
 /*
-`.fade-color` fades to new color. Use the .fade-color mixin instead of the extracted code below.
-
-* EXAMPLE NOT WORKING (probably :hover doesn't work with the styleguide)
+`.fade-color` fades to new setting in 0.25 seconds.
 
 ```markup
 <style>
-  div:hover {
-  color: red;
-  -o-transition: 1 linear;
-  -moz-transition: 1 linear;
-  -khtml-transition: 1 linear;
-  -webkit-transition: 1 linear;
-  -ms-transition: 1 linear;
-  transition: 1 linear;
+  .fade-color {
+  opacity: 1;
+  }
+  .fade-color:hover {
+   opacity: 0.5;
   }
 </style>
-<div>Hover over me.</div>
+<div class="fade-color">Hover over me.</div>
 ```
 */
 .fade-color {
@@ -148,8 +143,20 @@ And to four sections:
   -webkit-transition: opacity .25s ease-in-out;
 }
 
-// TYPOGRAPHY
+/*
+# TYPOGRAPHY
+*/
 
+/*
+The following can be used to control font:
+
+```markup
+<p class="font-bold">font-bold</p>
+<p class="small-font">small font</p>
+<p class="font-bold">font-bold</p>
+
+```
+*/
 .font-bold {
   font-family: @font-bold;
   font-weight: 700;
