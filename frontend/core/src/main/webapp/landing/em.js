@@ -1,4 +1,18 @@
-$.fn.formToJSON = function() {
+/* Copyright 2013-2014 Extended Mind Technologies Oy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ $.fn.formToJSON = function() {
   var objectGraph = {};
 
   function add(objectGraph, name, value) {
@@ -52,9 +66,9 @@ var postRequest = function(formId, resultId, emailId) {
       }else if (data.resultType === 'inviteRequest'){
         responseText = 'you are already on the beta waiting list';
       }else if (data.resultType === 'invite'){
-        responseText = 'we have sent you an email to join extended mind';        
+        responseText = 'we have sent you an email to join extended mind';
       }else if (data.resultType === 'user'){
-        responseText = 'you are already an extended mind user';        
+        responseText = 'you are already an extended mind user';
       }
       $('div#' + resultId).html('<div class="alert">' + responseText + '</div>');
       $('input#' + emailId).val('');
