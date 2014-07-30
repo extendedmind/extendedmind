@@ -123,24 +123,26 @@ And to four sections:
 }
 
 /*
-`.fade-color` fades to new setting in 0.25 seconds.
+`.fade-fast` fades to new color in 0.25 seconds.
 
 ```markup
 <style>
-  .fade-color {
-  opacity: 1;
+  .fade-fast {
   }
-  .fade-color:hover {
-   opacity: 0.5;
+  .fade-fast:hover {
+   color: red;
   }
 </style>
-<div class="fade-color">Hover over me.</div>
+<div class="fade-fast">Hover over me.</div>
 ```
 */
-.fade-color {
-  transition: opacity .25s ease-in-out;
-  -moz-transition: opacity .25s ease-in-out;
-  -webkit-transition: opacity .25s ease-in-out;
+.fade-fast {
+  -o-transition: 0.25 ease-in-out;
+  -moz-transition: 0.25 ease-in-out;
+  -khtml-transition: 0.25 ease-in-out;
+  -webkit-transition: 0.25 ease-in-out;
+  -ms-transition: 0.25 ease-in-out;
+  transition: 0.25 ease-in-out;
 }
 
 /*
@@ -195,15 +197,6 @@ The following can be used to control font:
   display: inherit;
   .center-horizontally;
   text-align: center;
-}
-
-
-// BORDERS
-
-.top-bottom-borders {
-  border-top: solid 1px @default-element;
-  border-bottom: solid 1px @default-element;
-  border-color: @separator;
 }
 
 // SCREEN READERS
