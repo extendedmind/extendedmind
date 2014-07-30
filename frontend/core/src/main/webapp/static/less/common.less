@@ -1,5 +1,5 @@
 /*
-Only universal code that would work by itself in any web page.
+Common.less includes only universal code that would work by itself in any web page.
 */
 
 @import "normalize.less";
@@ -128,25 +128,24 @@ And to four sections:
 * EXAMPLE NOT WORKING (probably :hover doesn't work with the styleguide)
 
 ```markup
-<div style=":hover {
+<style>
+  div:hover {
   color: red;
-  -o-transition: 0.2 linear;
-  -moz-transition: 0.2 linear;
-  -khtml-transition: 0.2 linear;
-  -webkit-transition: 0.2 linear;
-  -ms-transition: 0.2 linear;
-  transition: 0.2 linear;
+  -o-transition: 1 linear;
+  -moz-transition: 1 linear;
+  -khtml-transition: 1 linear;
+  -webkit-transition: 1 linear;
+  -ms-transition: 1 linear;
+  transition: 1 linear;
   }
-">Hover over me.</div>
+</style>
+<div>Hover over me.</div>
 ```
 */
 .fade-color {
-  -o-transition: 0.2 linear;
-  -moz-transition: 0.2 linear;
-  -khtml-transition: 0.2 linear;
-  -webkit-transition: 0.2 linear;
-  -ms-transition: 0.2 linear;
-  transition: 0.2 linear;
+  transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out;
 }
 
 // TYPOGRAPHY
