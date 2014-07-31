@@ -1,7 +1,7 @@
 <div class="single-page-container">
-  <section id="settings" class="one-column-grid single-page page" ng-controller="SettingsController" snap-drawer-drag="settings">
+  <section class="one-column-grid single-page page" ng-controller="SettingsController" snap-drawer-drag="settings">
     <div class="column">
-      <div ng-hide="omnibarVisible" class="content-container page-content-container single-page-content-container">
+      <div ng-hide="omnibarVisible" class="page-content-container single-page-content-container">
         <ul class="scroll-container">
           <li class="simple-content">
             <h3>version</h3>
@@ -13,16 +13,16 @@
           </li>
           <li id="about-help" class="simple-content">
             <small>in case you need any help, email
-              <a class="highlighted-link" href="mailto:support@ext.md"> support@ext.md</a>
+              <a href="mailto:support@ext.md" class="highlighted-link"> support@ext.md</a>
             </small>
           </li>
           <li ng-if="showOnboardingCheckbox()">
-            <input class="input-checkbox" type="checkbox" name="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="onboardingChecked(settings.showOnboarding)"/>
-            <label class="default-element font-small" for="showOnboarding">show onboarding on next login</label>
+            <input type="checkbox" name="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="onboardingChecked(settings.showOnboarding)"/>
+            <label for="showOnboarding" class="default-element font-small">show onboarding on next login</label>
           </li>
           <li>
-            <input class="input-checkbox" type="checkbox" name="checkbox" id="hideFooter" ng-model="settings.hideFooter" ng-change="hideFooter(settings.hideFooter)"/>
-            <label class="default-element font-small" for="hideFooter">hide footer on mobile</label>
+            <input type="checkbox" name="checkbox" id="hideFooter" ng-model="settings.hideFooter" ng-change="hideFooter(settings.hideFooter)"/>
+            <label for="hideFooter" class="default-element font-small">hide footer on mobile</label>
           </li>
         </ul>
       </div>

@@ -1,7 +1,7 @@
 <div class="single-page-container">
-  <section id="account" class="one-column-grid single-page page" ng-controller="AccountController" snap-drawer-drag="account">
+  <section class="one-column-grid single-page page" ng-controller="AccountController" snap-drawer-drag="account">
     <div class="column">
-      <div ng-hide="omnibarVisible" class="content-container page-content-container single-page-content-container">
+      <div ng-hide="omnibarVisible" class="page-content-container single-page-content-container">
         <ul>
           <li class="simple-content">
             <h3>user</h3>
@@ -20,7 +20,7 @@
               <a href class="highlighted-link" ng-click="gotoAdmin()">admin</a>
             </div>
           </li>
-          <li ng-if="useCollectives()"class="simple-content">
+          <li ng-if="useCollectives()" class="simple-content">
             <h3>collectives</h3>
             <ul>
               <li ng-repeat="(key, value) in collectives">
