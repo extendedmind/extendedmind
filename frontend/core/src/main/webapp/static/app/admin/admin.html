@@ -1,7 +1,7 @@
 <div class="single-page-container" ng-controller="AdminController">
-  <section id="admin" class="one-column-grid single-page page" snap-drawer-drag="admin">
+  <section class="one-column-grid single-page page" snap-drawer-drag="admin">
     <div class="column">
-      <div ng-hide="omnibarVisible" class="content-container page-content-container single-page-content-container" ng-switch on="adminMode">
+      <div ng-hide="omnibarVisible" class="page-content-container single-page-content-container" ng-switch on="adminMode">
         <ul ng-switch-default class="scroll-container">
           <li class="simple-content">
             <h3>users</h3>
@@ -22,7 +22,7 @@
         </ul>
         <ul ng-switch-when="users" class="scroll-container">
           <li>
-            <a href ng-click="gotoStatistics()" class="highlighted-link">back</a>
+            <a href class="highlighted-link" ng-click="gotoStatistics()">back</a>
           </li>
           <li class="simple-content" ng-repeat="user in users | orderBy:'created':true">
             <a ng-href="mailto:{{user.email}}" ng-bind="user.email"></a> since: {{getDateString(user.created)}}
@@ -33,14 +33,14 @@
         </ul>
         <ul ng-switch-when="invites">
           <li>
-            <a href ng-click="gotoStatistics()" class="highlighted-link">back</a>
+            <a href class="highlighted-link" ng-click="gotoStatistics()">back</a>
           </li>
           <li class="simple-content" ng-repeat="invite in invites | orderBy:'accepted':true">
             <a ng-href="mailto:{{invite.email}}" ng-bind="invite.email"></a> modified: {{getDateString(invite.modified)}}
             <div ng-if="invite.accepted">accepted: {{getDateString(invite.accepted)}}</div>
             <div ng-if="!invite.accepted && !invite.resent">
-              <a href ng-click="resendInvite(invite)" class="highlighted-link">resend</a>
-              <a href ng-click="deleteInvite(invite)" class="warning-link">delete</a>
+              <a href class="highlighted-link" ng-click="resendInvite(invite)">resend</a>
+              <a href class="warning-link" ng-click="deleteInvite(invite)">delete</a>
             </div>
             <div ng-if="!invite.accepted && invite.resent">
               resent
@@ -49,11 +49,11 @@
         </ul>
         <ul ng-switch-when="inviteRequests" class="scroll-container">
           <li>
-            <a href ng-click="gotoStatistics()" class="highlighted-link">back</a>
+            <a href class="highlighted-link" ng-click="gotoStatistics()">back</a>
           </li>
           <li class="simple-content" ng-repeat="inviteRequest in inviteRequests">
-            <a ng-href="mailto:{{inviteRequest.email}}" ng-bind="inviteRequest.email"></a> modified: {{getDateString(inviteRequest.modified)}}<br/><a href ng-click="acceptInviteRequest(inviteRequest)" class="highlighted-link">accept</a>
-            <a href ng-click="deleteInviteRequest(inviteRequest)" class="warning-link">delete</a>
+            <a ng-href="mailto:{{inviteRequest.email}}" ng-bind="inviteRequest.email"></a> modified: {{getDateString(inviteRequest.modified)}}<br/><a href class="highlighted-link" ng-click="acceptInviteRequest(inviteRequest)">accept</a>
+            <a href class="warning-link" ng-click="deleteInviteRequest(inviteRequest)">delete</a>
           </li>
         </ul>
       </div>
