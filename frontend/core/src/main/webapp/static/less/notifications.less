@@ -49,6 +49,31 @@
 # Modals
 */
 
+#policy-modal {
+  .modal-dialog {
+    width: 90%;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    .modal-content {
+      .modal-body {
+        overflow-y: auto;
+      }
+      .modal-footer {
+        padding: 15px 0 0 0;
+        button {
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+.modal-dialog {
+  max-width: @max-modal-width;
+}
+
 // #############################
 // from Bootstrap variables.less
 

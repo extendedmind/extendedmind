@@ -2,10 +2,10 @@
 # extended mind - living style guide
 */
 @import url("../static/less/variables.less");
-@import url("../static/less/common.less");
 @import url("../static/less/main.less");
 
 @import url("../static/less/em.less");
+@import url("../static/less/foundation.less");
 @import url("../static/less/icons.less");
 @import url("../static/less/inputs.less");
 @import url("../static/less/typography.less");
