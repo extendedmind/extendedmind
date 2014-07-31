@@ -1,11 +1,11 @@
-<section id="archive-lists" class="two-column-grid page">
+<section class="two-column-grid page">
   <div class="column">
-    <div ng-hide="omnibarVisible && isActiveSlide('lists')" class="content-container page-content-container">
+    <div ng-hide="omnibarVisible && isActiveSlide('lists')" class="page-content-container">
       <div class="inner-page-content-container" swiper-prevent>
         <h3><a href class="page-header">archived lists</a></h3>
         <ul>
-          <li ng-class="selected" ng-repeat="list in archivedLists | orderBy:'archived':true">
-            <a class="text-muted click-to-slide" href swiper-click="showArchivedListDetails(list)">
+          <li ng-repeat="list in archivedLists | orderBy:'archived':true">
+            <a href class="click-to-slide" swiper-click="showArchivedListDetails(list)">
               <span class="link-title">{{list.title}}</span>
               <span class="icon-arrow-right"></span>
             </a>

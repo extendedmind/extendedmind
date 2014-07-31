@@ -1,6 +1,6 @@
-<section id="archive-completed" class="two-column-grid page">
+<section class="two-column-grid page">
   <div class="column">
-    <div ng-if="!isCompletedAndArchivedLoading" ng-hide="omnibarVisible && isActiveSlide({{'completed'}})" class="content-container page-content-container" >
+    <div ng-if="!isCompletedAndArchivedLoading" ng-hide="omnibarVisible && isActiveSlide({{'completed'}})" class="page-content-container" >
       <div class="inner-page-content-container" scroll-to swiper-prevent>
         <div infinite-scroll="addMoreCompleted()" infinite-scroll-parent accordion>
           <div ng-repeat="task in fullCompletedTasks | limitTo: getCompletedTasksLimit()">
@@ -13,8 +13,8 @@
             <div ng-if="showLastYear(task, $first)" ng-class="getFirstShown() !== 'lastYear' && 'subheading'"><h3>last year or before</h3></div>
 
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-            <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
-              <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
+            <div ng-if="isOpen(task)" editable-field-container="auto">
+              <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
           <div ng-if="fullCompletedTasks.length === 0">
