@@ -20,9 +20,6 @@
 	/* Better Font Rendering =========== */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-
-	font-size: @icon-size;
-  color: @icon;
 }
 
 .icon-pencil:before {
@@ -53,12 +50,9 @@
 }
 .icon-logo-with-text:before {
 	content: "\e606";
-	color: @logo;
-  font-size: @banner-logo-size;
 }
 .icon-logo-only:before{
 	content: "\e607";
-	color: @logo;
 }
 .icon-inbox:before {
 	content: "\e608";
@@ -71,12 +65,26 @@
 }
 .icon-arrow-right:before {
 	content: "\e60b";
-	font-size: @slide-indicator-width;
 }
 
 .icon-arrow-left:before {
 	content: "\e60c";
-	font-size: @slide-indicator-width;
+}
+
+
+// ICOMOON TWEAKS
+[class^="icon-"], [class*=" icon-"] {
+  font-size: @icon-size;
+  color: @icon;
+}
+
+.icon-arrow-right {
+  font-size: @slide-indicator-width;
+}
+
+.icon-logo-with-text {
+  color: @logo;
+  font-size: @banner-logo-size;
 }
 
 // beta text
@@ -85,4 +93,12 @@
   font-size: 10px;
   position: absolute;
   margin-left: -20px;
+}
+
+.icon-logo-only {
+  color: @logo;
+}
+
+.icon-arrow-left {
+  font-size: @slide-indicator-width;
 }
