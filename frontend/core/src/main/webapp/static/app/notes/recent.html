@@ -11,8 +11,8 @@
                 <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
               </div>
             </div>
-            <div ng-if="isOpen(note)" class="accordion-body" editable-field-container="auto">
-              <div class="accordion-inner" ng-include="'static/app/notes/noteActions.html'"></div>
+            <div ng-if="isOpen(note)" editable-field-container="auto">
+              <div ng-include="'static/app/notes/noteActions.html'"></div>
             </div>
             <div ng-if="!note.content" class="teaser-empty"></div>
           </div>

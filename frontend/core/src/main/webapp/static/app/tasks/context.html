@@ -4,8 +4,8 @@
       <div class="inner-page-content-container" scroll-to swiper-prevent>
         <div ng-if="context" accordion>
           <div accordion-title="context" edit-item="editContext(context)" edit-item-inline="true" edit-item-fields="editContextFields(context)" bold-title="true" title-prefix="'@'" has-complete="false" toggle-complete></div>
-          <div ng-if="isOpen(context)" class="accordion-body swiper-no-swiping" editable-field-container="auto">
-            <div class="accordion-inner">
+          <div ng-if="isOpen(context)" class="swiper-no-swiping" editable-field-container="auto">
+            <div>
               <div item-core-fields="context" item-core-fields-details="contextDetails"></div>
               <ul class="button-row">
                 <li class="button-container left-of-two border-right">
@@ -23,8 +23,8 @@
           </div>
           <div ng-repeat="task in tasks | itemsFilter:{name:'byTagUUID', filterBy: context.uuid}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-            <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
-              <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
+            <div ng-if="isOpen(task)" editable-field-container="auto">
+              <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
           <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
@@ -33,8 +33,8 @@
           <h3>no context</h3>
           <div ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-            <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
-              <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
+            <div ng-if="isOpen(task)" editable-field-container="auto">
+              <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
           <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
@@ -43,8 +43,8 @@
           <h3>no list</h3>
           <div ng-repeat="task in tasks | itemsFilter:{name:'noList'}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-            <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
-              <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
+            <div ng-if="isOpen(task)" editable-field-container="auto">
+              <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
           <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
@@ -53,8 +53,8 @@
           <h3>no date</h3>
           <div ng-repeat="task in tasks | itemsFilter:{name:'noDate'}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-            <div ng-if="isOpen(task)" class="accordion-body" editable-field-container="auto">
-              <div class="accordion-inner" ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
+            <div ng-if="isOpen(task)" editable-field-container="auto">
+              <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
           <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
