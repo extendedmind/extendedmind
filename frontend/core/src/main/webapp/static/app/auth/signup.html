@@ -5,30 +5,30 @@
         <span class="icon-logo-with-text"></span>
       </div>
       <div class="content">
-        <form role="form" id="signupForm" name="signupForm">
+        <form role="form" name="signupForm">
           <div id="email" class="form-group">
             <label for="email" class="sr-only">email</label>
-            <input type="email" name="email" class="simple-input" id="input-email" ng-model="user.username" readonly placeholder="enter email..." ng-blur="emailAttempted=true" required />
+            <input type="email" name="email" class="simple-input" ng-model="user.username" readonly ng-blur="emailAttempted=true" placeholder="enter email..." required />
             <p ng-show="signupForm.email.$invalid && !signupForm.email.$pristine && emailAttempted" class="validation-error">not a valid email address</p>
           </div>
           <div id="password" class="form-group">
             <label for="password" class="sr-only">password</label>
-            <input type="password" name="password" class="form-control simple-input" id="input-password" ng-model="user.password" placeholder="enter password..." ng-blur="passwordAttempted=true" required ng-minlength="7" />
+            <input type="password" name="password" class="simple-input" ng-model="user.password" ng-blur="passwordAttempted=true" ng-minlength="7" placeholder="enter password..." required />
             <p ng-show="signupForm.password.$invalid && !signupForm.password.$pristine && passwordAttempted" class="validation-error">password must be 7 characters or more</p>
           </div>
           <div id="passwordReEnter" class="form-group">
             <label for="passwordReEnter" class="sr-only">password again</label>
-            <input type="password" name="passwordReEnter" class="form-control simple-input" id="input-password-again" ng-model="user.reEnteredPassword" ng-blur="reEnterAttempted=true" placeholder="re-enter password..." password-match="user.password"  required ng-minlength="7"/>
+            <input type="password" name="passwordReEnter" class="simple-input" ng-model="user.reEnteredPassword" ng-blur="reEnterAttempted=true" password-match="user.password" ng-minlength="7" placeholder="re-enter password..." required />
             <p ng-show="signupForm.passwordReEnter.$invalid && !signupForm.passwordReEnter.$pristine && reEnterAttempted" class="validation-error">passwords don't match</p>
           </div>
           <div class="form-group table-wrapper">
-            <input class="left-checkbox-wrapper" type="checkbox" name="agree" id="agree" ng-model="user.agree" ng-true-value="true" />
-            <label class="checkbox swiper-no-swiping" for="agree"></label>
+            <input type="checkbox" name="agree" id="agree" class="left-checkbox-wrapper" ng-model="user.agree" ng-true-value="true" />
+            <label for="agree" class="checkbox swiper-no-swiping"></label>
             <span id="agreeText" class="center-input-wrapper">I have read and agree to the <a href ng-click="gotoTermsOfService()">terms of service</a> and <a href ng-click="gotoPrivacyPolicy()">privacy policy</a></span>
           </div>
           <div class="form-group button-container">
-            <button type="submit" id="login-button" class="wide-button normal-button" ng-disabled="!signupForm.$valid || user.agree !== 'true'" ng-click="signUp()">
-              <span class="button-text">sign up</span>
+            <button type="submit" class="wide-button normal-button" ng-disabled="!signupForm.$valid || user.agree !== 'true'" ng-click="signUp()">
+              <span>sign up</span>
             </button>
             <p ng-show="signupFailed" class="validation-error">could not sign up, please try again later</p>
             <p ng-show="signupOffline" class="validation-error">can't connect to server. are you online?</p>

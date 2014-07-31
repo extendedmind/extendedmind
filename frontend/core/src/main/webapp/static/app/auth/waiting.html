@@ -12,10 +12,10 @@
             if you have not received an invitation email, click on the button below.
           </span>
           <button ng-if="!resent" type="submit" id="resend-button" class="wide-button normal-button" ng-click="resendInvite()">
-            <span class="button-text">resend invitation</span>
+            <span>resend invitation</span>
           </button>
           <button ng-if="resent" type="submit" id="resend-button" disabled class="wide-button normal-button" ng-click="resendInvite()">
-            <span class="button-text">invitation resent</span>
+            <span>invitation resent</span>
           </button>
         </div>
         <div ng-if="request" id="request">
@@ -25,7 +25,7 @@
             people before you on the extended mind waiting list
           </span>
           <button type="submit" id="waiting-button" class="wide-button normal-button" ng-click="openEMBlogInNewWindow()">
-            <span class="button-text">visit blog</span>
+            <span>visit blog</span>
           </button>
         </div>
         <div ng-if="coupon" id="coupon">
@@ -41,7 +41,7 @@
             </div>
             <div class="button-container form-group">
               <button type="submit" id="waiting-button" class="wide-button normal-button" ng-click="useCoupon()" ng-disabled="!couponForm.$valid">
-                <span class="button-text">submit code</span>
+                <span>submit code</span>
               </button>
               <p ng-show="invalidCoupon" class="validation-error">invalid code</p>
             </div>

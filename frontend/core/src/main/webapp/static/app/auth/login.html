@@ -5,26 +5,26 @@
         <span class="icon-logo-with-text"></span>
       </div>
       <div class="content">
-        <form role="form" id="login-form" name="loginForm" novalidate>
+        <form role="form" name="loginForm" novalidate>
           <div id="email" class="form-group">
             <label for="email" class="sr-only">email</label>
-            <input type="email" name="email" class="simple-input" id="input-email" ng-model="user.username" ng-readonly="isUserEmailEditable" placeholder="enter email..." ng-blur="emailAttempted=true" required />
+            <input type="email" name="email" class="simple-input" ng-model="user.username" ng-readonly="isUserEmailEditable" ng-blur="emailAttempted=true" placeholder="enter email..." required />
             <p ng-show="loginForm.email.$invalid && !loginForm.email.$pristine && emailAttempted" class="validation-error">not a valid email address</p>
           </div>
-          <div id="password" class="form-group">
+          <div class="form-group">
             <label for="input-password" class="sr-only">password</label>
-            <input type="password" name="password" class="simple-input" id="input-password" ng-model="user.password" placeholder="enter password..." ng-minlength="7" ng-blur="passwordAttempted=true" required />
+            <input type="password" name="password" id="input-password" class="simple-input" ng-model="user.password" ng-minlength="7" ng-blur="passwordAttempted=true" placeholder="enter password..." required />
             <p ng-show="loginForm.password.$invalid && !loginForm.password.$pristine && passwordAttempted" class="validation-error">password must be 7 characters or more</p>
           </div>
           <div ng-hide="rememberByDefault()" class="form-group">
             <input type="checkbox" name="checkbox" id="remember" ng-model="user.remember" checked="checked" />
-            <label class="default-element" id="remember" for="remember">remember</label>
+            <label class="default-element" for="remember">remember</label>
           </div>
           <div class="form-group button-container">
-            <button type="submit" id="login-button" class="wide-button normal-button" ng-disabled="!loginForm.$valid" ng-click="userLogin()">
-              <span class="button-text">log in</span>
+            <button type="submit" class="wide-button normal-button" ng-disabled="!loginForm.$valid" ng-click="userLogin()">
+              <span>log in</span>
             </button>
-            <p ng-show="loginFailed" class="validation-error">invalid username or password. <a class="text-link" href ng-click="gotoForgot()">forgot</a>?</p>
+            <p ng-show="loginFailed" class="validation-error">invalid username or password. <a href class="text-link" ng-click="gotoForgot()">forgot</a>?</p>
             <p ng-show="loginOffline" class="validation-error">can't connect to server. are you online?</p>
           </div>
         </form>

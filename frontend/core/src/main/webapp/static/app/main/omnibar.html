@@ -3,7 +3,7 @@
   <form id="omnibar" role="form" name="addOmniItem" ng-submit="saveOmnibarText()" autocapitalize="none" autocorrect="off">
     <div class="form-group">
       <div ng-class="{'left-input-wrapper' : omnibarHasText() && !isItemEditMode && !isItemAddMode}">
-        <textarea type="text" id="omnibar-input" class="simple-input form-control omnibar-input" ng-model="omnibarText.title" ng-keydown="omnibarKeyDown($event)" omnibar-input dynamic-placeholder="{{getOmnibarInputPlaceholder()}}" maxlength="128" required msd-elastic ng-class="getOmnibarClass()"></textarea>
+        <textarea type="text" id="omnibar-input" class="simple-input omnibar-input" ng-model="omnibarText.title" ng-keydown="omnibarKeyDown($event)" omnibar-input dynamic-placeholder="{{getOmnibarInputPlaceholder()}}" maxlength="128" required msd-elastic ng-class="getOmnibarClass()"></textarea>
       </div>
       <div ng-show="omnibarHasText() && !isItemEditMode && !isItemAddMode" class="right-button-wrapper">
         <button class="button omnibar-x-icon" type="button" ng-click="clearOmnibar()"><span class="icon-x"></span>
@@ -16,17 +16,17 @@
     <ul class="button-row">
       <li class="button-container left-of-three border-right">
         <button type="button" class="tab-button" ng-click="setOmnibarFeatureActive('search')" ng-disabled="isOmnibarFeatureActive('search')">
-          <span class="button-text">search</span>
+          <span>search</span>
         </button>
       </li>
       <li class="button-container center-of-three">
         <button type="button" class="tab-button" ng-click="setOmnibarFeatureActive('task')" ng-disabled="isOmnibarFeatureActive('task')">
-          <span class="button-text">task</span>
+          <span>task</span>
         </button>
       </li>
       <li class="button-container right-of-three">
         <button type="button" class="tab-button" ng-click="setOmnibarFeatureActive('note')" ng-disabled="isOmnibarFeatureActive('note')">
-          <span class="button-text">note</span>
+          <span>note</span>
         </button>
       </li>
     </ul>

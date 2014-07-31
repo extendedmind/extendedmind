@@ -3,22 +3,22 @@
     <ul class="button-row">
       <li class="button-container left-of-four">
         <button class="default-button" type="button" ng-click="itemToTask(item)">
-          <span class="button-text">task</span>
+          <span>task</span>
         </button>
       </li>
       <li class="button-container center-of-four">
         <button class="default-button" type="button" ng-click="itemToNote(item)">
-          <span class="button-text">note</span>
+          <span>note</span>
         </button>
       </li>
       <li class="button-container center-of-four">
         <button class="default-button" type="button" ng-click="itemToList(item)">
-          <span class="button-text">list</span>
+          <span>list</span>
         </button>
       </li>
       <li class="button-container right-of-four">
         <button class="delete-button" type="button" ng-click="deleteItem(item)">
-          <span class="button-text">delete</span>
+          <span>delete</span>
         </button>
       </li>
     </ul>
@@ -40,7 +40,7 @@
     </div>
     <div class="item-actions">
       <button class="wide-button normal-button" type="button" ng-click="closeAndCall(task, taskEditDone)">
-        <span class="button-text">done</span>
+        <span>done</span>
       </button>
     </div>
   </div>
@@ -49,7 +49,7 @@
     <div ng-include="'static/app/notes/noteCoreFields.html'"></div>
     <div class="item-actions">
       <button class="wide-button normal-button" type="button" ng-click="closeAndCall(note, noteEditDone)">
-        <span class="button-text">done</span>
+        <span>done</span>
       </button>
     </div>
   </div>
