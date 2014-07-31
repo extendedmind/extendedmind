@@ -1,8 +1,6 @@
 @import "normalize.less";
 @import "variables.less";
 
-
-
 // SCREEN READERS
 
 .sr-only {
@@ -22,11 +20,6 @@
   display: none;
 }
 
-// Temporary classes (to be refactored)
-.default-element {
-  color: @default-element;
-}
-
 // LISTS
 
 .click-to-slide {
@@ -41,18 +34,10 @@
   margin-bottom: @vertical-grid-half;
 }
 
-.arrow-link {
-  line-height: @vertical-grid;
-}
-
-.rounded-corners {
-  border-radius: @rounded-corner-radius;
-}
-
 .onboarding-bubble {
   position: relative;
   border: 1px solid @instruction;
-  .rounded-corners;
+  border-radius: @rounded-corner-radius;
   padding: 20px 10px;
   text-align: center;
   line-height: normal;
