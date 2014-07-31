@@ -1,6 +1,5 @@
 @import "foundation.less";
 @import "normalize.less";
-@import "variables.less";
 @import "icons.less";
 
 /*
@@ -15,6 +14,27 @@
 @font-small-size: 15px;
 @font-smallest-size: 12px;
 @slide-indicator-width: 0.5em;
+
+h1, h2, h3, h4, h5, h6 {
+  .font-bold;
+  margin: 0;
+  color: @content-heading;
+  line-height: normal;
+}
+
+h3, .bold-title {
+  min-height: @content-heading-height;
+  a&, input, a {
+    .font-bold;
+    color: @content-heading;
+  }
+  a&, input {
+    font-size: @large-font-size;
+  }
+  a&:active, input:active, a:active {
+    color: @content-heading-pressed;
+  }
+}
 
 /*
 The following can be used to control font:
@@ -61,4 +81,11 @@ The following can be used to control font:
 
 .subheading {
   padding-top: @vertical-grid-half;
+}
+
+// Lists
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }

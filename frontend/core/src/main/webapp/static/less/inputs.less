@@ -1,6 +1,5 @@
 @import "foundation.less";
 @import "normalize.less";
-@import "variables.less";
 @import "icons.less";
 
 @plus-button-width: 27px;
@@ -338,4 +337,41 @@ select {
   option:first-child {
     color: @default-element;
   }
+}
+
+// INPUTS
+input, select, textarea {
+  width: 100%;
+  background-color: inherit;
+}
+
+textarea {
+  min-height: @vertical-grid / 2;
+  height: @vertical-grid / 2;
+  vertical-align: middle;
+  .break-words;
+}
+
+::-webkit-resizer {
+  display: none;
+}
+
+button {
+  padding: 0;
+  margin: 0;
+}
+
+// PLACEHOLDER TWEAK
+
+::-webkit-input-placeholder { /* WebKit browsers */
+  color: @default-element;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+  color: @default-element;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+  color: @default-element;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+  color: @default-element;
 }

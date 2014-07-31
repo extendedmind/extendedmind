@@ -1,8 +1,42 @@
 @import "normalize.less";
-@import "variables.less";
+
+* {
+  // Use the same font throughout
+  font-family: @font;
+
+  // Use border box everywhere
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+
+  // Remove pressed element's gray background
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-tap-highlight-color: transparent;
+
+  // Disable showing popup during touch and hold a target in Safari
+  -webkit-touch-callout: none;
+
+  // Default to no background repeat
+  background-repeat: no-repeat;
+}
+
+html {
+  // There is never any full page scrolling
+  height: 100%;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+  body, div#root-container, div#root, div#feature-container-wrapper, .no-slides-container, .slides-container, section.one-column-grid, section.two-column-grid, .column {
+    height: inherit;
+    overflow: hidden;
+  }
+  div#root {
+    // Default to white background
+    background-color: white;
+  }
+  font-size: @default-font-size;
+}
 
 // SCREEN READERS
-
 .sr-only {
   position: absolute;
   width: 1px;
