@@ -1,10 +1,10 @@
-<div ng-show="showCoreFields()" id="itemCoreFields" class="swiper-no-swiping inline-form-fields" data-snap-ignore="true">
+<div ng-show="showCoreFields()" class="swiper-no-swiping inline-form-fields" data-snap-ignore="true">
   <div ng-show="showUrl()" class="form-group">
-    <label class="sr-only" for="itemLink">url</label>
-    <input type="text" id="itemLink" class="simple-input" ng-model="item.link" placeholder="url..." editable-field>
+    <label for="itemLink" class="sr-only">url</label>
+    <input type="text" id="itemLink" class="simple-input" ng-model="item.link" editable-field placeholder="url...">
   </div>
   <div ng-show="showDescription()" class="form-group">
-    <label class="sr-only" for="itemDescription">description</label>
-    <textarea id="itemDescription" class="simple-input" ng-model="item.description" placeholder="description..." maxlength="1024" msd-elastic editable-field></textarea>
+    <label for="itemDescription" class="sr-only">description</label>
+    <textarea id="itemDescription" class="simple-input" ng-model="item.description" msd-elastic editable-field placeholder="description..." maxlength="1024"></textarea>
   </div>
 </div>

@@ -1,5 +1,5 @@
 <div class="single-page-container">
-  <section id="lists" class="one-column-grid single-page page" snap-drawer-drag="lists" ng-init="newList = {};">
+  <section class="one-column-grid single-page page" snap-drawer-drag="lists" ng-init="newList = {};">
     <div class="column">
       <div ng-hide="omnibarVisible" class="page-content-container">
         <div class="inner-page-content-container" scroll-to swiper-prevent>
@@ -10,10 +10,10 @@
               </a>
             </li>
             <li>
-              <form class="add-element" role="form" name="addListForm" ng-submit="callAndRefresh(addList, newList)" autocapitalize="none" autocorrect="off" add-item>
+              <form role="form" name="addListForm" class="add-element" ng-submit="callAndRefresh(addList, newList)" add-item autocapitalize="none" autocorrect="off">
                 <div class="form-group" editable-field-container="disable">
-                  <label class="sr-only" for="listTitle">title</label>
-                  <input type="text" id="listTitle" class="simple-input" ng-model="newList.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" placeholder="add list..." editable-field/>
+                  <label for="listTitle" class="sr-only">title</label>
+                  <input type="text" id="listTitle" class="simple-input" ng-model="newList.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" editable-field placeholder="add list..."/>
                 </div>
               </form>
             </li>
