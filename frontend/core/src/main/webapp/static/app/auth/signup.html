@@ -22,7 +22,7 @@
             <p ng-show="signupForm.passwordReEnter.$invalid && !signupForm.passwordReEnter.$pristine && reEnterAttempted" class="validation-error">passwords don't match</p>
           </div>
           <div class="form-group table-wrapper">
-            <input class="input-checkbox left-checkbox-wrapper" type="checkbox" name="agree" id="agree" ng-model="user.agree" ng-true-value="true" />
+            <input class="left-checkbox-wrapper" type="checkbox" name="agree" id="agree" ng-model="user.agree" ng-true-value="true" />
             <label class="checkbox swiper-no-swiping" for="agree"></label>
             <span id="agreeText" class="center-input-wrapper">I have read and agree to the <a href ng-click="gotoTermsOfService()">terms of service</a> and <a href ng-click="gotoPrivacyPolicy()">privacy policy</a></span>
           </div>

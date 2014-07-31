@@ -17,7 +17,7 @@
             <p ng-show="loginForm.password.$invalid && !loginForm.password.$pristine && passwordAttempted" class="validation-error">password must be 7 characters or more</p>
           </div>
           <div ng-hide="rememberByDefault()" class="form-group">
-            <input class="input-checkbox" type="checkbox" name="checkbox" id="remember" ng-model="user.remember" checked="checked" />
+            <input type="checkbox" name="checkbox" id="remember" ng-model="user.remember" checked="checked" />
             <label class="default-element" id="remember" for="remember">remember</label>
           </div>
           <div class="form-group button-container">
