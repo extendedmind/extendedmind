@@ -20,67 +20,7 @@
   display: none;
 }
 
-// LISTS
-
-.click-to-slide {
-  span.icon-arrow-right {
-    // Add small margin to prevent arrow from touching scrollbar
-    // on desktop
-    margin-right: 5px;
-  }
-}
-
-.list-last {
-  margin-bottom: @vertical-grid-half;
-}
-
-.onboarding-bubble {
-  position: relative;
-  border: 1px solid @instruction;
-  border-radius: @rounded-corner-radius;
-  padding: 20px 10px;
-  text-align: center;
-  line-height: normal;
-  span {
-    color: @instruction;
-  }
-}
-
-.onboarding-bubble:after, .onboarding-bubble:before {
-  bottom: 100%;
-  left: 15%;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-}
-
-.onboarding-bubble:after {
-  border-color: rgba(255, 255, 255, 0);
-  border-bottom-color: white;
-  border-width: 15px;
-  margin-left: -15px;
-}
-.onboarding-bubble:before {
-  border-color: rgba(255, 255, 255, 0);
-  border-bottom-color: @instruction;
-  border-width: 16px;
-  margin-left: -16px;
-}
-
-.danger-heading {
-  color: @danger-text;
-}
-
 // CONTENT
-
-.content {
-  color: @content;
-}
-a.content:active {
-  color: @content-pressed;
-}
 
 .instruction-text {
   color: @instruction;

@@ -1,18 +1,20 @@
 /*
 # extended mind - living style guide
 */
-@import url("../static/less/em.less");
-@import url("../static/less/icons.less");
 @import url("../static/less/variables.less");
 @import url("../static/less/common.less");
 @import url("../static/less/main.less");
+
+@import url("../static/less/em.less");
+@import url("../static/less/icons.less");
 @import url("../static/less/inputs.less");
 @import url("../static/less/typography.less");
 @import url("../static/less/layout.less");
 @import url("../static/less/colors.less");
 @import url("../static/less/animations.less");
 @import url("../static/less/links.less");
+@import url("../static/less/notifications.less");
 
 /*
-@import url("../static/less/modal.less");
+@import url("../static/less/notifications.less");
 */
