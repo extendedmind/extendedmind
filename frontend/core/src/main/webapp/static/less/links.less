@@ -1,0 +1,35 @@
+@import "normalize.less";
+@import "variables.less";
+
+
+.highlighted-link {
+  color: @highlighted-element;
+  &:hover {
+    color: @highlighted-element-hover;
+  }
+  &:active {
+    color: @highlighted-element-pressed;
+  }
+}
+
+.warning-link {
+  color: @warning;
+}
+
+.show-more {
+  .font-smallest;
+  display: inherit;
+  .center-horizontally;
+  text-align: center;
+}
+
+.arrow-link {
+  line-height: @vertical-grid;
+}
+
+// Add small margin to prevent arrow from touching scrollbar on desktop
+.click-to-slide {
+  span.icon-arrow-right {
+    margin-right: 5px;
+  }
+}

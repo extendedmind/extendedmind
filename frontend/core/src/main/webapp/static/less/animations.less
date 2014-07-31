@@ -1,0 +1,27 @@
+@import "normalize.less";
+@import "variables.less";
+
+/*
+`.fade-fast` fades to new color in 0.25 seconds.
+
+```markup
+<style>
+  .fade-fast {
+  }
+  .fade-fast:hover {
+   color: red;
+  }
+</style>
+<div class="fade-fast">Hover over me.</div>
+```
+*/
+
+.fade-fast {
+  -o-transition: 0.25s ease-in-out;
+  -moz-transition: 0.25s ease-in-out;
+  -khtml-transition: 0.25s ease-in-out;
+  -webkit-transition: 0.25s ease-in-out;
+  -ms-transition: 0.25s ease-in-out;
+  transition: 0.25s ease-in-out;
+}
+
