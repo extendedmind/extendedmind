@@ -1,5 +1,33 @@
+@import "foundation.less";
 @import "normalize.less";
 @import "variables.less";
+@import "icons.less";
+
+
+// Baseline
+@horizontal-grid: 30px;
+@vertical-grid: 44px;
+@vertical-grid-half: 19px;
+
+// Columns
+@one-column-grid-width: 568px; // iPhone 5 landscape is still one column
+@two-column-grid-width: 720px;
+@two-column-grid-main-width: 66.66%;
+@two-column-grid-aside-width: 33.33%;
+
+// iPad specifies the maximum width and height of the content area
+@maximum-width: 1025px;
+@maximum-height: 1025px;
+@maximum-landscape-height: 769px;
+@fixed-page-height: 500px;
+
+// Headers
+@page-header-height: 60px;
+@heading-header-height: 60px;
+@content-heading-height: 34px;
+
+// Footer
+@footer-height: 60px;
 
 /*
 `.center-horizontally` centers the container by making the browser to calculate left and right margins automatically.
@@ -115,3 +143,4 @@ And to four sections:
 .list-last {
   margin-bottom: @vertical-grid-half;
 }
+
