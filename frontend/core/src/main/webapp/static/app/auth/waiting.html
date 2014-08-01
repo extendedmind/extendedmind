@@ -28,7 +28,7 @@
             <span>visit blog</span>
           </button>
         </div>
-        <div ng-if="coupon" id="coupon">
+        <div ng-if="coupon">
           <span class="instruction-text">
             there are currently</br>
             <h1>{{user.inviteQueueNumber}}</h1>
@@ -36,7 +36,7 @@
           </span>
           <form role="form" id="coupon-form" name="couponForm" submit="useCoupon()">
             <div id="email" class="form-group">
-              <label for="coupon" class="sr-only">coupon</label>
+              <label for="input-coupon" class="sr-only">coupon</label>
               <input type="text" name="coupon" class="simple-input" id="input-coupon" ng-model="user.coupon" placeholder="enter code..." required maxlength="16" autocapitalize="none"/>
             </div>
             <div class="button-container form-group">

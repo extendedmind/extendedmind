@@ -37,14 +37,14 @@
         </span>
         <form role="form" name="resetForm" novalidate>
           <div class="form-group button-container vertical-buttons">
-            <div id="password" class="form-group">
+            <div class="form-group">
               <label for="password" class="sr-only">password</label>
-              <input type="password" name="password" class="simple-input" ng-model="user.password" ng-blur="passwordAttempted=true" ng-minlength="7" placeholder="enter new password..." required/>
+              <input type="password" name="password" id="password" class="simple-input" ng-model="user.password" ng-blur="passwordAttempted=true" ng-minlength="7" placeholder="enter new password..." required/>
               <p ng-show="resetForm.password.$invalid && !resetForm.password.$pristine && passwordAttempted" class="validation-error">password must be 7 characters or more</p>
             </div>
-            <div id="passwordReEnter" class="form-group">
+            <div class="form-group">
               <label for="passwordReEnter" class="sr-only">password again</label>
-              <input type="password" name="passwordReEnter" class="simple-input" ng-model="user.reEnteredPassword" ng-blur="reEnterAttempted=true" password-match="user.password" ng-minlength="7" placeholder="re-enter new password..." required/>
+              <input type="password" name="passwordReEnter" id="passwordReEnter" class="simple-input" ng-model="user.reEnteredPassword" ng-blur="reEnterAttempted=true" password-match="user.password" ng-minlength="7" placeholder="re-enter new password..." required/>
               <p ng-show="resetForm.passwordReEnter.$invalid && !resetForm.passwordReEnter.$pristine && reEnterAttempted" class="validation-error">passwords don't match</p>
             </div>
             <button type="submit" class="wide-button normal-button" ng-disabled="!resetForm.$valid" ng-click="resetPassword()">

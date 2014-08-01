@@ -7,9 +7,9 @@
       <div class="content">
         <form role="form" name="launchForm" novalidate>
           <div id="email" class="form-group">
-            <label for="email" class="sr-only">email</label>
-            <input type="email" name="email" class="simple-input" ng-model="user.email" placeholder="enter email..." ng-blur="emailAttempted=true" required />
-            <p ng-show="launchForm.email.$invalid && !launchForm.email.$pristine && emailAttempted" class="validation-error">not a valid email address</p>
+            <label for="userEmail" class="sr-only">email</label>
+            <input type="email" name="email" id="userEmail" class="simple-input" ng-model="user.email" placeholder="enter email..." ng-blur="emailAttempted=true" required />
+            <p ng-show="launchForm.userEmail.$invalid && !launchForm.userEmail.$pristine && emailAttempted" class="validation-error">not a valid email address</p>
           </div>
           <div class="form-group button-container">
             <button type="submit" class="wide-button normal-button" ng-disabled="!launchForm.$valid" ng-click="launchUser()">
