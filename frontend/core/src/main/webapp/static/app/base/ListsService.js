@@ -214,13 +214,13 @@
     new RegExp(BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       listSlashRegex.source +
-      BackendClientService.uuidRegex.source  +
+      BackendClientService.uuidRegex.source +
       BackendClientService.undeleteRegex.source),
     archiveListRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       listSlashRegex.source +
-      BackendClientService.uuidRegex.source  +
+      BackendClientService.uuidRegex.source +
       archiveRegex.source),
     // Register callbacks that are fired for implicit archiving of
     // elements. Callback must return the latest modified value it

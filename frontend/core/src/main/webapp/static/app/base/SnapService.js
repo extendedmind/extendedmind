@@ -25,7 +25,7 @@
       } else {
         snapper = new Snap({
           element: element,
-          disable: 'right',  // use left only
+          disable: 'right', // use left only
           transitionSpeed: 0.2,
           minDragDistance: 0,
           addBodyClasses: false

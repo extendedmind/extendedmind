@@ -64,7 +64,7 @@
   };
 
   $scope.addSubtask = function addSubtask(subtask) {
-    if (!subtask.title  || subtask.title.length === 0) return false;
+    if (!subtask.title || subtask.title.length === 0) return false;
     var subtaskToSave = {title: subtask.title};
     if (subtask.date) {
       subtaskToSave.date = subtask.date;

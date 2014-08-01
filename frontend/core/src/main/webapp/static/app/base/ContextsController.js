@@ -36,7 +36,7 @@
   };
 
   $scope.addContext = function addContext(newContext) {
-    if (!newContext.title  || newContext.title.length === 0) return false;
+    if (!newContext.title || newContext.title.length === 0) return false;
 
     var contextToSave = {title: newContext.title, tagType: newContext.tagType};
     delete newContext.title;

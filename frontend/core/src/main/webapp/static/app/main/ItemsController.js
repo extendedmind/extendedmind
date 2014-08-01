@@ -37,7 +37,7 @@
   };
 
   $scope.itemDetails = {visible: false};
-  $scope.editItem  = function(/*item*/) {
+  $scope.editItem = function(/*item*/) {
     $scope.itemDetails.visible = !$scope.itemDetails.visible;
   };
 

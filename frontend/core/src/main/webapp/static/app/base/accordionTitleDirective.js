@@ -20,10 +20,10 @@
 // The accordion-title directive indicates the title of a block of html that will expand and collapse in an accordion
 function accordionTitleDirective() {
   return {
-    require: '^accordion',        // We need this directive to be inside an accordion
-    restrict: 'A',                // It will be an attribute
-    transclude: true,             // Transcludes teaser below title
-    replace: true,                // The element containing the directive will be replaced with the template
+    require: '^accordion',  // We need this directive to be inside an accordion
+    restrict: 'A',          // It will be an attribute
+    transclude: true,       // Transcludes teaser below title
+    replace: true,          // The element containing the directive will be replaced with the template
     templateUrl: 'static/app/base/accordionTitle.html',
     scope: {
       item: '=accordionTitle',

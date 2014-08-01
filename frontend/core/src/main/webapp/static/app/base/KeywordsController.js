@@ -36,7 +36,7 @@
   };
 
   $scope.addKeyword = function addKeyword(newKeyword) {
-    if (!newKeyword.title  || newKeyword.title.length === 0) return false;
+    if (!newKeyword.title || newKeyword.title.length === 0) return false;
 
     var keywordToSave = {title: newKeyword.title, tagType: newKeyword.tagType};
     delete newKeyword.title;

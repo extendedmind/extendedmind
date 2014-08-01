@@ -16,8 +16,8 @@
 
  function accordionTitleLinkDirective($rootScope) {
   return {
-    require: '^accordion',        // We need this directive to be inside an accordion
-    restrict: 'A',                // It will be an attribute
+    require: '^accordion',  // We need this directive to be inside an accordion
+    restrict: 'A',          // It will be an attribute
     scope: {
       titleLength: '=accordionTitleLink',
       boldTitle: '=accordionTitleLinkBold'

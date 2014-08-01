@@ -225,24 +225,24 @@
     // Regular expressions for item requests
     putNewItemRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     itemRegex.source),
+      BackendClientService.uuidRegex.source +
+      itemRegex.source),
     putExistingItemRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     itemSlashRegex.source +
-     BackendClientService.uuidRegex.source),
+      BackendClientService.uuidRegex.source +
+      itemSlashRegex.source +
+      BackendClientService.uuidRegex.source),
     deleteItemRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     itemSlashRegex.source +
-     BackendClientService.uuidRegex.source),
+      BackendClientService.uuidRegex.source +
+      itemSlashRegex.source +
+      BackendClientService.uuidRegex.source),
     undeleteItemRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     itemSlashRegex.source +
-     BackendClientService.uuidRegex.source  +
-     BackendClientService.undeleteRegex.source),
+      BackendClientService.uuidRegex.source +
+      itemSlashRegex.source +
+      BackendClientService.uuidRegex.source +
+      BackendClientService.undeleteRegex.source),
   };
 }
 

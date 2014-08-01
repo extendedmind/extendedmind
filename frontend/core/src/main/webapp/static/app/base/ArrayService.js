@@ -40,7 +40,7 @@ function ArrayService() {
         return (array[pivot] && (array[pivot][field] > element[field])) ? pivot - 1 : pivot;
       }
     }
-    if ((!reverse && array[pivot][field] < element[field]) || (reverse && array[pivot][field] > element[field]))  {
+    if ((!reverse && array[pivot][field] < element[field]) || (reverse && array[pivot][field] > element[field])) {
       return locationOfItemInArray(element, array, field, reverse, pivot, end);
     } else {
       return locationOfItemInArray(element, array, field, reverse, start, pivot);

@@ -147,24 +147,24 @@
     // Regular expressions for tag requests
     putNewTagRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     tagRegex.source),
+      BackendClientService.uuidRegex.source +
+      tagRegex.source),
     putExistingTagRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     tagSlashRegex.source +
-     BackendClientService.uuidRegex.source),
+      BackendClientService.uuidRegex.source +
+      tagSlashRegex.source +
+      BackendClientService.uuidRegex.source),
     deleteTagRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     tagSlashRegex.source +
-     BackendClientService.uuidRegex.source),
+      BackendClientService.uuidRegex.source +
+      tagSlashRegex.source +
+      BackendClientService.uuidRegex.source),
     undeleteTagRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-     BackendClientService.uuidRegex.source +
-     tagSlashRegex.source +
-     BackendClientService.uuidRegex.source  +
-     BackendClientService.undeleteRegex.source),
+      BackendClientService.uuidRegex.source +
+      tagSlashRegex.source +
+      BackendClientService.uuidRegex.source +
+      BackendClientService.undeleteRegex.source),
     // Special method used by ListsService to insert a generated
     // history tag to the tags array
     setGeneratedTag: function(tag, ownerUUID) {

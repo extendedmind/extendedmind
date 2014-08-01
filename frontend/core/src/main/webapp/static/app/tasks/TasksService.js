@@ -526,19 +526,19 @@
     new RegExp(BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       taskSlashRegex.source +
-      BackendClientService.uuidRegex.source  +
+      BackendClientService.uuidRegex.source +
       BackendClientService.undeleteRegex.source),
     completeTaskRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       taskSlashRegex.source +
-      BackendClientService.uuidRegex.source  +
+      BackendClientService.uuidRegex.source +
       completeRegex.source),
     uncompleteTaskRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       taskSlashRegex.source +
-      BackendClientService.uuidRegex.source  +
+      BackendClientService.uuidRegex.source +
       uncompleteRegex.source),
   };
 }
