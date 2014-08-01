@@ -15,17 +15,17 @@
   <div ng-if="!isItemEditMode && !isItemAddMode">
     <ul class="button-row">
       <li class="button-container left-of-three">
-        <button type="button" class="tab-button" ng-click="setOmnibarFeatureActive('search')" ng-disabled="isOmnibarFeatureActive('search')">
+        <button type="button" class="tab-button" ng-disabled="isOmnibarFeatureActive('search')" ng-click="setOmnibarFeatureActive('search')">
           <span>search</span>
         </button>
       </li>
       <li class="button-container center-of-three">
-        <button type="button" class="tab-button" ng-click="setOmnibarFeatureActive('task')" ng-disabled="isOmnibarFeatureActive('task')">
+        <button type="button" class="tab-button" ng-disabled="isOmnibarFeatureActive('task')" ng-click="setOmnibarFeatureActive('task')">
           <span>task</span>
         </button>
       </li>
       <li class="button-container right-of-three">
-        <button type="button" class="tab-button" ng-click="setOmnibarFeatureActive('note')" ng-disabled="isOmnibarFeatureActive('note')">
+        <button type="button" class="tab-button" ng-disabled="isOmnibarFeatureActive('note')" ng-click="setOmnibarFeatureActive('note')">
           <span>note</span>
         </button>
       </li>
@@ -37,12 +37,12 @@
 
     <div ng-switch-when="search" class="omnibar-search">
 
-      <button ng-if="keywords.length" class="font-small button" ng-class="omnibarKeywords.isVisible ? 'selected-keyword' : 'keyword'" ng-click="toggleOmnibarKeywordsVisible()">
+      <button ng-if="keywords.length" type="button" class="font-small button" ng-class="omnibarKeywords.isVisible ? 'selected-keyword' : 'keyword'" ng-click="toggleOmnibarKeywordsVisible()">
         keywords <strong ng-bind="omnibarKeywords.isVisible ? 'x' : '+'"></strong>
       </button>
 
       <div ng-if="omnibarKeywords.isVisible" class="keywords-container">
-        <button ng-init="isKeywordSelected = false" ng-repeat="keyword in getSelectedAndFilterUnselectedKeywords()" ng-click="isKeywordSelected = !isKeywordSelected; toggleKeywordSelected(keyword);" class="button font-small keyword" ng-class="isKeywordSelected ? 'selected-keyword' : 'keyword'">
+        <button ng-init="isKeywordSelected = false" ng-repeat="keyword in getSelectedAndFilterUnselectedKeywords()" type="button" class="button font-small keyword" ng-class="isKeywordSelected ? 'selected-keyword' : 'keyword'" ng-click="isKeywordSelected = !isKeywordSelected; toggleKeywordSelected(keyword);">
           {{keyword.title}} <strong ng-bind="isKeywordSelected ? 'x' : '+'"></strong>
         </button>
       </div>
@@ -150,18 +150,18 @@
           </div>
           <div class="keywords-container">
             <span ng-if="showKeywords()" id="new-keyword">
-              <button class="font-small button keyword" ng-disabled="isSelectedKeyword()" ng-click="selectNewKeyword()">
+              <button type="button" class="font-small button keyword" ng-disabled="isSelectedKeyword()" ng-click="selectNewKeyword()">
                 {{newKeyword.title}} <strong>+</strong>
               </button>
             </span>
 
             <span ng-if="noteHasKeywords()">
-              <button type="button" class="button font-small selected-keyword" ng-repeat="keyword in noteKeywords()" ng-click="unSelectKeyword(keyword)">{{keyword.title}} <strong>x</strong></button>
+              <button ng-repeat="keyword in noteKeywords()" type="button" class="button font-small selected-keyword" ng-click="unSelectKeyword(keyword)">{{keyword.title}} <strong>x</strong></button>
             </span>
           </div>
 
           <div ng-if="showKeywords()" class="keywords-container">
-            <button ng-hide="isNewKeyword(keyword)" ng-repeat="keyword in otherThanNoteKeywords() | filter: {title: newKeyword.title}" ng-click="selectExistingKeyword(keyword)" class="button font-small keyword">
+            <button ng-hide="isNewKeyword(keyword)" ng-repeat="keyword in otherThanNoteKeywords() | filter: {title: newKeyword.title}" type="button" class="button font-small keyword" ng-click="selectExistingKeyword(keyword)">
               {{keyword.title}} <strong>+</strong>
             </button>
           </div>
