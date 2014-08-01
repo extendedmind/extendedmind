@@ -1,6 +1,6 @@
-<div id="menu" ng-include="'static/app/auth/menu.html'" class="snap-drawer snap-drawer-left" scrollable></div>
+<div id="menu" ng-include="'static/app/auth/menu.html'" scrollable></div>
 <div id="feature-container-wrapper">
-    <div id="feature-container" feature-container ng-controller="MainController" ng-class="[getOmnibarVisibilityClass(), getFooterVisibilityClass()]">
+    <div id="feature-container" ng-class="[getOmnibarVisibilityClass(), getFooterVisibilityClass()]" ng-controller="MainController" feature-container>
         <header class="static-page-header" ng-hide="omnibarVisible" ng-include="'static/app/main/staticPageHeader.html'"></header>
         <div ng-if="omnibarVisible" class="omnibar-animation" omnibar></div>
         <div ng-if="isFeatureActive('account')" ng-include="'static/app/account/account.html'" include-replace></div>
@@ -13,7 +13,6 @@
         <div ng-if="isFeatureActive('dashboard')" ng-include="'static/app/dashboard/dashboardSlides.html'" include-replace></div>
         <div ng-if="isFeatureActive('admin')" ng-include="'static/app/admin/admin.html'" include-replace></div>
         <div ng-if="isFeatureActive('settings')" ng-include="'static/app/account/settings.html'" include-replace></div>
-
         <footer ng-hide="omnibarVisible" ng-include="'static/app/main/footer.html'"></footer>
     </div>
 </div>

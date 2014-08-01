@@ -1,20 +1,20 @@
 <div class="omnibar-container swiper-no-swiping" data-snap-ignore="true">
 
-  <form id="omnibar" role="form" name="addOmniItem" ng-submit="saveOmnibarText()" autocapitalize="none" autocorrect="off">
+  <form role="form" name="addOmniItem" ng-submit="saveOmnibarText()" autocapitalize="none" autocorrect="off">
     <div class="form-group">
       <div ng-class="{'left-input-wrapper' : omnibarHasText() && !isItemEditMode && !isItemAddMode}">
-        <textarea type="text" id="omnibar-input" class="simple-input omnibar-input" ng-model="omnibarText.title" ng-keydown="omnibarKeyDown($event)" omnibar-input dynamic-placeholder="{{getOmnibarInputPlaceholder()}}" maxlength="128" required msd-elastic ng-class="getOmnibarClass()"></textarea>
+        <textarea type="text" class="simple-input omnibar-input" ng-class="getOmnibarClass()" ng-model="omnibarText.title" ng-keydown="omnibarKeyDown($event)" omnibar-input msd-elastic dynamic-placeholder="{{getOmnibarInputPlaceholder()}}" maxlength="128" required ></textarea>
       </div>
       <div ng-show="omnibarHasText() && !isItemEditMode && !isItemAddMode" class="right-button-wrapper">
-        <button class="button omnibar-x-icon" type="button" ng-click="clearOmnibar()"><span class="icon-x"></span>
+        <button type="button" class="button omnibar-x-icon" ng-click="clearOmnibar()"><span class="icon-x"></span>
         </button>
       </div>
     </div>
   </form>
 
-  <div ng-if="!isItemEditMode && !isItemAddMode" class="omnibar-actions">
+  <div ng-if="!isItemEditMode && !isItemAddMode">
     <ul class="button-row">
-      <li class="button-container left-of-three border-right">
+      <li class="button-container left-of-three">
         <button type="button" class="tab-button" ng-click="setOmnibarFeatureActive('search')" ng-disabled="isOmnibarFeatureActive('search')">
           <span>search</span>
         </button>
@@ -33,7 +33,7 @@
 
   </div>
 
-  <div ng-switch="getActiveOmnibarFeature()" ng-style="{height: getOmnibarFeatureHeight()}" class="omnibar-feature" scroll-to>
+  <div ng-switch="getActiveOmnibarFeature()" class="omnibar-feature" ng-style="{height: getOmnibarFeatureHeight()}" scroll-to>
 
     <div ng-switch-when="search" class="omnibar-search">
 
@@ -61,7 +61,7 @@
         </div>
       </div>
 
-      <div ng-if="!isSearchActive() && !omnibarKeywords.isVisible" class="omnibar-empty-search-placeholder" ng-click="hideEmptyOmnibar()" ng-style="{maxHeight: getSearchPlaceholderMaxHeight()}"></div>
+      <div ng-if="!isSearchActive() && !omnibarKeywords.isVisible" class="omnibar-empty-search-placeholder" ng-style="{maxHeight: getSearchPlaceholderMaxHeight()}" ng-click="hideEmptyOmnibar()"></div>
 
       <div ng-if="isSearchActive() && !omnibarKeywords.isVisible && !isLoading">
         <div ng-show="filteredItems.length" class="filtered-items">
@@ -120,19 +120,19 @@
           </div>
           <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
           <div ng-if="task.date" class="form-group">
-            <label class="sr-only" for="taskRepeat">repeating</label>
+            <label for="taskRepeat" class="sr-only">repeating</label>
             <select id="taskRepeat" class="simple-input" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes" editable-field>
               <option value="">select repeating...</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="sr-only" for="taskLink">url</label>
-            <input type="text" id="taskLink" class="simple-input" ng-model="task.link" placeholder="url..." editable-field>
+            <label for="taskLink" class="sr-only">url</label>
+            <input type="text" id="taskLink" class="simple-input" ng-model="task.link" editable-field placeholder="url...">
           </div>
         </div>
-        <div id="task-description-container" class="form-group omnibar-scroll-container" ng-style="{maxHeight: getEditTaskDescriptionMaxHeight()}" >
-          <label class="sr-only" for="taskDescription">description</label>
-          <textarea id="taskDescription" class="simple-input" ng-model="task.description" placeholder="description..." maxlength="1024" msd-elastic editable-field ng-focus="taskDescriptionFocus()" ng-blur="taskDescriptionBlur()"></textarea>
+        <div class="form-group omnibar-scroll-container" ng-style="{maxHeight: getEditTaskDescriptionMaxHeight()}" >
+          <label for="taskDescription" class="sr-only">description</label>
+          <textarea id="taskDescription" class="simple-input" ng-model="task.description" ng-focus="taskDescriptionFocus()" ng-blur="taskDescriptionBlur()" msd-elastic editable-field placeholder="description..." maxlength="1024"></textarea>
         </div>
       </form>
     </div>
@@ -145,8 +145,8 @@
 
         <div ng-hide="hideNoteProperties()">
           <div class="form-group">
-            <label class="sr-only" for="noteKeywords">keywords</label>
-            <input type="text" class="simple-input" id="noteKeywords" ng-model="newKeyword.title" placeholder="keywords..." maxlength="128" editable-field autocapitalize="none"/>
+            <label for="noteKeywords" class="sr-only">keywords</label>
+            <input type="text" id="noteKeywords" class="simple-input" ng-model="newKeyword.title" editable-field placeholder="keywords..." maxlength="128" autocapitalize="none"/>
           </div>
           <div class="keywords-container">
             <span ng-if="showKeywords()" id="new-keyword">
@@ -168,7 +168,7 @@
 
           <div lists-select-options>
             <div ng-if="!addNewListVisible" class="form-group select-list-visible-animation">
-              <label class="sr-only" for="noteList">list</label>
+              <label for="noteList" class="sr-only">list</label>
               <select id="noteList" class="simple-input swiper-no-swiping" ng-model="note.relationships.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
                 <option value="">select list...</option>
               </select>
@@ -184,9 +184,9 @@
             </div>
           </div>
         </div>
-        <div ng-if="!showKeywords()" id="note-content-container" class="form-group omnibar-scroll-container" ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
-          <label class="sr-only" for="noteContent">content</label>
-          <textarea class="simple-input" id="noteContent" ng-model="note.content" placeholder="content..." msd-elastic editable-field ng-focus="noteContentFocus()" ng-blur="noteContentBlur()"></textarea>
+        <div ng-if="!showKeywords()" class="form-group omnibar-scroll-container" ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
+          <label for="noteContent" class="sr-only">content</label>
+          <textarea id="noteContent" class="simple-input" ng-model="note.content" ng-focus="noteContentFocus()" ng-blur="noteContentBlur()" msd-elastic editable-field placeholder="content..."></textarea>
         </div>
       </form>
     </div>

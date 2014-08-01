@@ -8,7 +8,7 @@
             <div>
               <div item-core-fields="keyword" item-core-fields-details="keywordDetails"></div>
               <ul class="button-row">
-                <li class="button-container left-of-two border-right">
+                <li class="button-container left-of-two">
                   <button class="normal-button" type="button" ng-click="closeAndCall(keyword, keywordQuickEditDone)">
                     done
                   </button>
@@ -24,7 +24,7 @@
           <div ng-repeat="note in notes | itemsFilter:{name:'byTagUUID', filterBy: keyword.uuid}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
               <div ng-if="note.content" class="teaser">
-                <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
+                <a href ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
               </div>
             </div>
             <div ng-if="isOpen(note)" editable-field-container="auto">
@@ -39,7 +39,7 @@
           <div ng-repeat="note in notes | itemsFilter:{name:'unsorted'}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
               <div ng-if="note.content" class="teaser">
-                <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
+                <a href ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
               </div>
             </div>
             <div ng-if="isOpen(note)" editable-field-container="auto">
@@ -54,7 +54,7 @@
           <div ng-repeat="note in notes | itemsFilter:{name:'noList'}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
               <div ng-if="note.content" class="teaser">
-                <a href id="note-teaser" ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
+                <a href ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
               </div>
             </div>
             <div ng-if="isOpen(note)" editable-field-container="auto">
