@@ -1,4 +1,4 @@
-<section id="tasks-context" class="two-column-grid page">
+<section class="two-column-grid page">
   <div class="column">
     <div ng-hide="omnibarVisible && isActiveSlide('details')" class="page-content-container">
       <div class="inner-page-content-container" scroll-to swiper-prevent>
@@ -9,12 +9,12 @@
               <div item-core-fields="context" item-core-fields-details="contextDetails"></div>
               <ul class="button-row">
                 <li class="button-container left-of-two">
-                  <button class="normal-button" type="button" ng-click="closeAndCall(context, contextQuickEditDone)">
+                  <button type="button" class="normal-button" ng-click="closeAndCall(context, contextQuickEditDone)">
                     done
                   </button>
                 </li>
                 <li class="button-container right-of-two">
-                  <button class="delete-button" type="button" ng-click="closeAndCall(context, deleteContextAndShowContexts)">
+                  <button type="button" class="delete-button" ng-click="closeAndCall(context, deleteContextAndShowContexts)">
                     delete
                   </button>
                 </li>

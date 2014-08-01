@@ -3,7 +3,7 @@
     <nav ng-repeat="week in datepickerWeeks" role="navigation" class="slide">
       <ul class="horizontally-justified">
 
-        <li id="datepicker-arrow-previous" class="justified-element" ng-if="isDesktop">
+        <li ng-if="isDesktop" id="datepicker-arrow-previous" class="justified-element">
           <a href ng-click="previousWeek()">
             <span class="icon-arrow-left"></span>
           </a>
@@ -12,9 +12,7 @@
         <li class="justified-element datepicker-date">
           <a ng-class="getDateClass(week[0])" href ng-click="dateClicked(week[0])">
             <span>{{visibleDateFormat(week[0])}}</span>
-            <div "date-wrapper">
-              <span class="day-date">{{week[0].date}}</span>
-            </div>
+            <span class="day-date">{{week[0].date}}</span>
           </a>
         </li>
 
@@ -60,12 +58,12 @@
           </a>
         </li>
 
-        <li id="datepicker-arrow-next" class="justified-element" ng-if="isDesktop">
+        <li ng-if="isDesktop" id="datepicker-arrow-next" class="justified-element">
           <a href ng-click="nextWeek()">
             <span class="icon-arrow-right"></span>
           </a>
         </li>
-        
+
         <li id="stretch"></li>
 
       </ul>

@@ -1,8 +1,8 @@
-<form class="add-element" role="form" name="addTaskForm" ng-submit="callAndRefresh(addSubtask, subtask)" autocapitalize="none" autocorrect="off" add-item data-snap-ignore="{{ignoreSnap}}">
+<form role="form" name="addTaskForm" class="add-element" ng-submit="callAndRefresh(addSubtask, subtask)" add-item data-snap-ignore="{{ignoreSnap}}" autocapitalize="none" autocorrect="off">
   <div class="form-group" editable-field-container="disable">
-    <label class="sr-only" for="taskTitle">title</label>
+    <label for="taskTitle" class="sr-only">title</label>
     <div>
-      <input type="text" id="taskTitle" class="simple-input" ng-model="subtask.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" placeholder="add task..." maxlength="128" editable-field/>
+      <input type="text" id="taskTitle" class="simple-input" ng-model="subtask.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" editable-field placeholder="add task..." maxlength="128"/>
     </div>
   </div>
 </form>

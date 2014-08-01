@@ -1,4 +1,4 @@
-<section id="tasks-contexts" class="two-column-grid page">
+<section class="two-column-grid page">
   <div class="column">
     <div ng-hide="omnibarVisible && isActiveSlide('contexts')" class="page-content-container">
       <div class="inner-page-content-container" scroll-to swiper-prevent>
@@ -11,10 +11,10 @@
               </a>
             </li>
             <li>
-              <form class="add-element" role="form" name="addContextForm" ng-submit="callAndRefresh(addContext, newContext)" autocapitalize="none" autocorrect="off" add-item>
+              <form role="form" name="addContextForm" class="add-element" ng-submit="callAndRefresh(addContext, newContext)" add-item autocapitalize="none" autocorrect="off">
                 <div class="form-group" editable-field-container="disable">
-                  <label class="sr-only" for="contextTitle">title</label>
-                  <input type="text" id="contextTitle" class="simple-input" ng-model="newContext.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" placeholder="add context..." editable-field/>
+                  <label for="contextTitle" class="sr-only">title</label>
+                  <input type="text" id="contextTitle" class="simple-input" ng-model="newContext.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" editable-field placeholder="add context..."/>
                 </div>
               </form>
             </li>
