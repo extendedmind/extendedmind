@@ -107,7 +107,7 @@
     <div ng-switch-when="task" class="omnibar-task">
       <span ng-if="hideTaskProperties()" class="show-more">more</span>
 
-      <form role="form" name="taskEdit" editable-field-container>
+      <form role="form" editable-field-container>
         <div ng-hide="hideTaskProperties()">
           <div class="form-group">
             <div ng-if="showDateInput">
@@ -141,7 +141,7 @@
 
       <span ng-if="hideNoteProperties()" class="show-more">more</span>
 
-      <form role="form" name="noteEdit" editable-field-container>
+      <form role="form" editable-field-container>
 
         <div ng-hide="hideNoteProperties()">
           <div class="form-group">

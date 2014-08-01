@@ -17,11 +17,11 @@
             </small>
           </li>
           <li ng-if="showOnboardingCheckbox()">
-            <input type="checkbox" name="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="onboardingChecked(settings.showOnboarding)"/>
+            <input type="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="onboardingChecked(settings.showOnboarding)"/>
             <label for="showOnboarding" class="default-element font-small">show onboarding on next login</label>
           </li>
           <li>
-            <input type="checkbox" name="checkbox" id="hideFooter" ng-model="settings.hideFooter" ng-change="hideFooter(settings.hideFooter)"/>
+            <input type="checkbox" id="hideFooter" ng-model="settings.hideFooter" ng-change="hideFooter(settings.hideFooter)"/>
             <label for="hideFooter" class="default-element font-small">hide footer on mobile</label>
           </li>
         </ul>

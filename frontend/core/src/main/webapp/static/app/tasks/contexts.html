@@ -11,7 +11,7 @@
               </a>
             </li>
             <li>
-              <form role="form" name="addContextForm" class="add-element" ng-submit="callAndRefresh(addContext, newContext)" add-item autocapitalize="none" autocorrect="off">
+              <form role="form" class="add-element" ng-submit="callAndRefresh(addContext, newContext)" add-item autocapitalize="none" autocorrect="off">
                 <div class="form-group" editable-field-container="disable">
                   <label for="contextTitle" class="sr-only">title</label>
                   <input type="text" id="contextTitle" class="simple-input" ng-model="newContext.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" editable-field placeholder="add context..."/>

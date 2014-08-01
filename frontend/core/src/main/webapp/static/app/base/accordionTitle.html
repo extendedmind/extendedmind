@@ -1,7 +1,7 @@
 <div ng-switch="titleOpen">
   <div ng-switch-when="false" id="closedAccordionTitleWrapper">
     <div ng-if="hasComplete" class="table-wrapper">
-      <input type="checkbox" name="checkbox" id="{{item.uuid}}" class="left-checkbox-wrapper" ng-checked="item.completed" swiper-click="itemChecked()" />
+      <input type="checkbox" id="{{item.uuid}}" class="left-checkbox-wrapper" ng-checked="item.completed" swiper-click="itemChecked()" />
       <label for="{{item.uuid}}" class="swiper-no-swiping"></label>
       <a href id="accordionTitleLink" ng-class="getTitleClasses()" swiper-click="clickTitle()">
         <span id="accordionTitleLinkContent" accordion-title-link="item.title.length" accordion-title-link-bold="boldTitle">
@@ -16,9 +16,9 @@
       </a>
     </div>
   </div>
-  <form ng-switch-when="true" role="form" name="itemTitleEdit" class="table-wrapper accordion-title-open" ng-class="!hasComplete && 'no-checkbox'" editable-field-container="auto" data-snap-ignore="true">
+  <form ng-switch-when="true" role="form" class="table-wrapper accordion-title-open" ng-class="!hasComplete && 'no-checkbox'" editable-field-container="auto" data-snap-ignore="true">
     <div ng-if="hasComplete" class="left-checkbox-wrapper">
-      <input type="checkbox" name="checkbox" id="{{item.uuid}}" ng-checked="item.completed" ng-click="itemChecked()" editable-field />
+      <input type="checkbox" id="{{item.uuid}}" ng-checked="item.completed" ng-click="itemChecked()" editable-field />
       <label for="{{item.uuid}}" class="swiper-no-swiping"></label>
     </div>
     <div ng-class="getTitleClasses()">

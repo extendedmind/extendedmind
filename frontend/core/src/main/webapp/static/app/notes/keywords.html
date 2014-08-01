@@ -11,7 +11,7 @@
               </a>
             </li>
             <li>
-              <form role="form" name="addKeywordsForm" class="add-element" ng-submit="callAndRefresh(addKeyword, newKeyword)" add-item autocapitalize="none" autocorrect="off">
+              <form role="form" class="add-element" ng-submit="callAndRefresh(addKeyword, newKeyword)" add-item autocapitalize="none" autocorrect="off">
                 <div class="form-group" editable-field-container="disable">
                   <label for="keywordTitle" class="sr-only">title</label>
                   <input type="text" id="keywordTitle" class="simple-input" ng-model="newKeyword.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" editable-field placeholder="add keyword..."/>
