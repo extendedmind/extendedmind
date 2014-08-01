@@ -64,7 +64,7 @@
   $scope.getOmnibarFeatureHeight = function getOmnibarFeatureHeight() {
     if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
       return $scope.currentHeight - getOmnibarStaticContentHeight() - keyboardHeight;
-    }else {
+    } else {
       return MAX_CONTAINER_HEIGHT - getOmnibarStaticContentHeight() - keyboardHeight;
     }
   };
@@ -89,7 +89,7 @@
     var usedHeight = $scope.isItemEditMode || $scope.isItemAddMode ? 0 : omnibarActionsHeight;
     if (taskDescriptionHasFocus){
       usedHeight += 160;
-    }else{
+    } else {
       usedHeight += 290;
       if ($scope.task && $scope.task.date){
         usedHeight += 44;
@@ -99,7 +99,7 @@
     if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
       var calculatedHeight = $scope.currentHeight - usedHeight - keyboardHeight;
       return (calculatedHeight < 44 ? 44 : calculatedHeight);
-    }else{
+    } else {
       return MAX_CONTAINER_HEIGHT - usedHeight - keyboardHeight;
     }
   };
@@ -113,7 +113,7 @@
     if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
       var calculatedHeight = $scope.currentHeight - usedHeight - keyboardHeight;
       return (calculatedHeight < 44 ? 44 : calculatedHeight);
-    }else{
+    } else {
       return MAX_CONTAINER_HEIGHT - usedHeight - keyboardHeight;
     }
   };
@@ -122,7 +122,7 @@
     var usedHeight = 44 + getOmnibarStaticContentHeight();
     if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
       return $scope.currentHeight - usedHeight - keyboardHeight;
-    }else{
+    } else {
       return MAX_CONTAINER_HEIGHT - usedHeight - keyboardHeight;
     }
   };
@@ -213,7 +213,7 @@
   $scope.omnibarKeyDown = function omnibarKeyDown(event) {
     if (event.keyCode === 27){
       $scope.clearAndHideOmnibar();
-    }else if (event.keyCode === 13){
+    } else if (event.keyCode === 13){
       // Enter in omnibar saves, no line breaks allowed
       event.preventDefault();
       event.stopPropagation();
@@ -398,16 +398,16 @@
       if ($rootScope.currentWidth >= 568){
         // Maximum width for column
         omnibarWidth = 470;
-      }else {
+      } else {
         omnibarWidth = $rootScope.currentWidth - 98;
       }
 
       var fontSize = '21px';
       if (currentOmnibarStyle === 'omnibar-input-very-long'){
         fontSize = '12px';
-      }else if (currentOmnibarStyle === 'omnibar-input-long'){
+      } else if (currentOmnibarStyle === 'omnibar-input-long'){
         fontSize = '15px';
-      }else if (currentOmnibarStyle === 'omnibar-input-medium'){
+      } else if (currentOmnibarStyle === 'omnibar-input-medium'){
         fontSize = '18px';
       }
 
@@ -423,16 +423,16 @@
           $rootScope.$broadcast('elastic:adjust');
           currentOmnibarStyle = 'omnibar-input-long';
         }
-      }else if (currentOmnibarStyle === 'omnibar-input-medium' || (currentTextWidth + 20) > omnibarWidth){
+      } else if (currentOmnibarStyle === 'omnibar-input-medium' || (currentTextWidth + 20) > omnibarWidth){
         if (currentOmnibarStyle !== 'omnibar-input-medium'){
           $rootScope.$broadcast('elastic:adjust');
           currentOmnibarStyle = 'omnibar-input-medium';
         }
-      }else {
+      } else {
         currentOmnibarStyle = undefined;
       }
       return currentOmnibarStyle;
-    }else {
+    } else {
       currentOmnibarStyle = undefined;
     }
   };
