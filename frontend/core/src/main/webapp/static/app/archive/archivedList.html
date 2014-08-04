@@ -34,13 +34,13 @@
             <h4>notes</h4>
             <div ng-repeat="note in filteredArchivedNotes = (archivedNotes | itemsFilter:{name:'byListUUID', filterBy: archivedList.uuid} | orderBy:'created')">
               <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
-                <div ng-if="note.content" class="teaser">
+                <div ng-if="note.content" class="excerpt">
                   <a href ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
                 </div>
                 <div ng-if="isOpen(note)" editable-field-container="auto">
                   <div ng-include="'static/app/notes/noteActions.html'"></div>
                 </div>
-                <div ng-if="!note.content" class="teaser-empty"></div>
+                <div ng-if="!note.content" class="excerpt-empty"></div>
               </div>
             </div>
           </div>

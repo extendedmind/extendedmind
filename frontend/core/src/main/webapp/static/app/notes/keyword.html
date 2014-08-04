@@ -23,14 +23,14 @@
           </div>
           <div ng-repeat="note in notes | itemsFilter:{name:'byTagUUID', filterBy: keyword.uuid}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
-              <div ng-if="note.content" class="teaser">
+              <div ng-if="note.content" class="excerpt">
                 <a href ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
               </div>
             </div>
             <div ng-if="isOpen(note)" editable-field-container="auto">
               <div ng-include="'static/app/notes/noteActions.html'"></div>
             </div>
-            <div ng-if="!note.content" class="teaser-empty"></div>
+            <div ng-if="!note.content" class="excerpt-empty"></div>
           </div>
           <button type="button" class="add-button" ng-click="addNote(newNote)">add note...</button>
         </div>
@@ -38,14 +38,14 @@
           <h3>no keywords</h3>
           <div ng-repeat="note in notes | itemsFilter:{name:'unsorted'}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
-              <div ng-if="note.content" class="teaser">
+              <div ng-if="note.content" class="excerpt">
                 <a href ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
               </div>
             </div>
             <div ng-if="isOpen(note)" editable-field-container="auto">
               <div ng-include="'static/app/notes/noteActions.html'"></div>
             </div>
-            <div ng-if="!note.content" class="teaser-empty"></div>
+            <div ng-if="!note.content" class="excerpt-empty"></div>
           </div>
           <button type="button" class="add-button" ng-click="addNote(newNote)">add note...</button>
         </div>
@@ -53,14 +53,14 @@
           <h3>no list</h3>
           <div ng-repeat="note in notes | itemsFilter:{name:'noList'}">
             <div accordion-title="note" edit-item="editNote(note)" edit-item-fields="editNoteFields(note)" has-complete="false" toggle-complete>
-              <div ng-if="note.content" class="teaser">
+              <div ng-if="note.content" class="excerpt">
                 <a href ng-bind="getNoteContentTeaser(note)" ng-click="editNote(note)"></a>
               </div>
             </div>
             <div ng-if="isOpen(note)" editable-field-container="auto">
               <div ng-include="'static/app/notes/noteActions.html'"></div>
             </div>
-            <div ng-if="!note.content" class="teaser-empty"></div>
+            <div ng-if="!note.content" class="excerpt-empty"></div>
           </div>
           <button type="button" class="add-button" ng-click="addNote(newNote)">add note...</button>
         </div>
