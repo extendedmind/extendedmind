@@ -558,7 +558,41 @@ section#tasks-timeline {
 }
 
 // ABOUT PAGE
-
 #about-help {
   line-height: @vertical-grid-half;
+}
+
+// SIMPLE CONTENT
+
+.simple-content {
+  padding-bottom: @vertical-grid;
+}
+
+.simple-content:last-child {
+  padding-bottom: 0;
+}
+
+#email-verification-status {
+  font-size: @font-smallest-size;
+  display: block;
+  line-height: @vertical-grid-half;
+}
+
+
+.tasks-notes-container {
+  padding-top: @vertical-grid-half;
+}
+
+// ERRORS
+#errorMessage {
+  h3 {
+    text-align: center;
+    padding-bottom: @vertical-grid;
+  }
+}
+
+
+.add-element {
+  // Add @vertical grid to make room for 'add [item]...' input
+  padding-bottom: @vertical-grid-half;
 }

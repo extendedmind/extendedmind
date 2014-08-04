@@ -65,3 +65,113 @@
   /* W3C Markup, IE10 Release Preview */
   background-image: linear-gradient(to right, #FFFFFF 0%, rgba(255, 255, 255, 0) 25%);
 }
+
+.loading-animation {
+  position: relative;
+  height: inherit;
+  padding-top: @vertical-grid * 3;
+  color: @default-element;
+  text-align: center;
+}
+
+// FADE OUT TOO LONG TEXT ELLIPSIS
+// From: http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/
+
+.ellipsis {
+  overflow: hidden;
+  height: @vertical-grid;
+  line-height: 22px;
+}
+
+.ellipsis:before {
+  content: "";
+  float: left;
+  width: 5px;
+  height: @vertical-grid;
+}
+
+.ellipsis > span {
+  float: right;
+  width: 100%;
+  margin-left: -5px;
+}
+
+.ellipsis:after {
+  content: "\00a0";
+
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+
+  float: right;
+  position: relative;
+  top: -24px;
+  left: 100%;
+  width: 7em;
+  margin-left: -7em;
+  padding-right: 5px;
+  text-align: right;
+  background: -webkit-gradient(linear, left top, right top,
+    from(rgba(255, 255, 255, 0)), to(white), color-stop(75%, white));
+  background: -moz-linear-gradient(to right, rgba(255, 255, 255, 0), white 75%, white);
+  background: -o-linear-gradient(to right, rgba(255, 255, 255, 0), white 75%, white);
+  background: -ms-linear-gradient(to right, rgba(255, 255, 255, 0), white 75%, white);
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), white 75%, white);
+}
+
+// EDITABLE FIELD
+
+.editable-field-backdrop {
+  -webkit-transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -moz-transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -o-transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -ms-transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+}
+
+.onboarding-bubble:after {
+  -webkit-transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -moz-transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -o-transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -ms-transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+}
+
+.editable-field-backdrop.active {
+  background-color: #f6f6f6 !important;
+  &.backdrop-disable * {
+    pointer-events: none;
+  }
+
+  // In Android, scrolling is not possible form pointer-events:none, even though in iOS it is
+  // TODO: The latter is for timeline.html where the section below inner-slide-content-container
+  //       is the one with scrolling. This could be nicer.
+  &.backdrop-disable .inner-page-content-container, &.backdrop-disable .inner-slide-content-container section {
+    pointer-events: auto;
+  }
+
+  .onboarding-bubble:after {
+    border-bottom-color: #f6f6f6 !important;
+  }
+}
+
+.editable-field-backdrop.active, .editable-field-backdrop.animating {
+  .ellipsis:after {
+    background-image: none !important;
+  }
+  #feature-container-wrapper, #feature-container,
+  .border-button, .add-button,
+  .static-page-header {
+    background-color: inherit;
+  }
+}
+
+.backdrop-disable .editable-field-container.active {
+  * {
+    pointer-events: auto !important;
+  }
+}
+
+.editable-field.active, .editable-field-container.active {
+  background-color: white;
+}
