@@ -24,6 +24,7 @@ import org.extendedmind.test.TestGraphDatabase._
 import org.extendedmind.domain._
 import org.extendedmind.security.SecurityContext
 import java.util.UUID
+import org.extendedmind.security.AuthenticatePayload
 
 class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
 	
@@ -162,7 +163,27 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
         }
       }
     }
-    
+    it("should be consistently be able to store and get token"){
+      
+      db.rebuildUserIndexes
+      
+      1 to 100 foreach { _ => {
+        db.generateToken(TIMO_EMAIL, TIMO_PASSWORD, Some(AuthenticatePayload(true, None))) match {
+          case Right(securityContext) => {
+            db.swapToken(securityContext.token.get, None) match {
+              case Right(newSecurityContext) => {
+                newSecurityContext.token should not be None
+              }
+              case _ => {
+                fail("Error swapping token")
+              }
+            }
+          }
+          case _ => {
+            fail("Error generating token")
+          }
+        }
+      }}
+    }
   }
-
 }
