@@ -15,7 +15,7 @@
   <div ng-if="!isItemEditMode && !isItemAddMode">
     <ul class="button-row">
       <li class="button-container left-of-three">
-        <button type="button" class="tab-button" ng-disabled="isOmnibarFeatureActive('search')" ng-click="setOmnibarFeatureActive('search')">
+        <button type="button" class="tab-button search-tab-button" ng-disabled="isOmnibarFeatureActive('search')" ng-click="setOmnibarFeatureActive('search')">
           <span>search</span>
         </button>
       </li>
@@ -83,6 +83,7 @@
             <div ng-repeat="task in filteredTasks = (allActiveTasks | filter:{title:searchText.delayed} | limitTo:10)">
               <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
               <div ng-if="isOpen(task)" editable-field-container="auto">
+                <div item-core-fields="task" item-core-fields-details="itemDetails"></div>
                 <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
               </div>
             </div>

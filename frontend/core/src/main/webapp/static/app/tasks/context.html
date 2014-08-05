@@ -24,6 +24,7 @@
           <div ng-repeat="task in tasks | itemsFilter:{name:'byTagUUID', filterBy: context.uuid}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
             <div ng-if="isOpen(task)" editable-field-container="auto">
+              <div item-core-fields="task" item-core-fields-details="itemDetails"></div>
               <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
@@ -34,6 +35,7 @@
           <div ng-repeat="task in tasks | itemsFilter:{name:'unsorted'}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
             <div ng-if="isOpen(task)" editable-field-container="auto">
+              <div item-core-fields="task" item-core-fields-details="itemDetails"></div>
               <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
@@ -44,6 +46,7 @@
           <div ng-repeat="task in tasks | itemsFilter:{name:'noList'}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
             <div ng-if="isOpen(task)" editable-field-container="auto">
+              <div item-core-fields="task" item-core-fields-details="itemDetails"></div>
               <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
@@ -54,6 +57,7 @@
           <div ng-repeat="task in tasks | itemsFilter:{name:'noDate'}">
             <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
             <div ng-if="isOpen(task)" editable-field-container="auto">
+              <div item-core-fields="task" item-core-fields-details="itemDetails"></div>
               <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
             </div>
           </div>
