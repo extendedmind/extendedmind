@@ -138,7 +138,7 @@
             var tag = TagsService.getTagByUUID(tasksResponse[i].relationships.tags[j], ownerUUID);
             if (tag && tag.tagType === 'context') {
               tasksResponse[i].relationships.context = tag.uuid;
-              return;
+              break;
             }
           }
         }
