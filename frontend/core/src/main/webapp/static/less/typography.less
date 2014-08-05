@@ -3,10 +3,8 @@
 
 /*
 # Typography
-*/
 
-/*
-Following fonts are used:
+Fonts in use:
 * HelveticaNeue-Light
 * Helvetica Neue Light
 * HelveticaNeueLTStd-Lt
@@ -25,7 +23,6 @@ Following fonts are used:
 @default-font-size: 18px;
 @font-small-size: 15px;
 @font-smallest-size: 12px;
-@slide-indicator-width: 0.5em;
 
 * {
   font-family: @font;
@@ -35,21 +32,37 @@ html {
 }
 
 /*
-All headings are same:
+## Headings
+```markup
 <h1>h1</h1>
 <h2>h2</h2>
 <h3>h3</h3>
 <h4>h4</h4>
-<h5>h5</h5>
-<h6>h6</h6>
+<p class="subheading">.subheading</a>
+```
 */
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4 {
   .font-bold;
   margin: 0;
   color: @content-heading;
   line-height: normal;
 }
 
+.subheading {
+  padding-top: @vertical-grid-half;
+}
+
+/*
+## Inputs & links
+
+```markup
+<a class="bold-title">.bold-title</a> <br/>
+<a>normal a</a> <br/>
+<input></input>
+```
+*/
+
+// TODO: Could be separated and simplified
 h3, .bold-title {
   min-height: @content-heading-height;
   a&, input, a {
@@ -65,18 +78,11 @@ h3, .bold-title {
 }
 
 /*
-The following can be used to control font:
-
-* `.font-bold`
-* `.font-small`
-* `.font-smallest`
-
-
+Inline font control:
 ```markup
-<p class="font-bold">font-bold</p>
-<p class="font-small">font-small</p>
-<p class="font-smallest">font-smallest</p>
-
+<p class="font-bold">.font-bold</p>
+<p class="font-small">.font-small</p>
+<p class="font-smallest">.font-smallest</p>
 ```
 */
 .font-bold {
@@ -89,6 +95,12 @@ The following can be used to control font:
 .font-smallest {
   font-size: @font-smallest-size;
 }
+/*
+Font control with alignment:
+```markup
+<p class="instruction-text">.instruction-text</p>
+```
+*/
 
 .instruction-text {
   color: @instruction;
@@ -107,9 +119,6 @@ The following can be used to control font:
   }
 }
 
-.subheading {
-  padding-top: @vertical-grid-half;
-}
 
 // Lists
 ul {
