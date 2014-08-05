@@ -1,4 +1,4 @@
-@import "typography.less";
+@import "foundation.less";
 
 // Columns
 @one-column-grid-width: 568px; // iPhone 5 landscape is still one column
@@ -265,32 +265,6 @@ header {
   }
 }
 
-// FOOTER
-
-footer {
-  position: relative;
-  height: @footer-height;
-  width: inherit;
-  text-align: justify;
-  -ms-text-justify: distribute-all-lines;
-  text-justify: distribute-all-lines;
-  .center-horizontally;
-  font-size: @font-smallest-size;
-  nav {
-    padding-top: 5px;
-    ul {
-      li {
-        text-align: center;
-        a {
-          padding-right: @horizontal-grid;
-          padding-left: @horizontal-grid;
-          display: inline-block !important;
-        }
-      }
-    }
-  }
-}
-
 // SWIPER
 
 .swiper-container, .swiper-wrapper, .swiper-slide {
@@ -444,36 +418,6 @@ section#launch {
   }
 }
 
-section#welcome {
-  max-width: 350px;
-  .column {
-    overflow-y: auto;
-    .banner {
-      padding-bottom: @vertical-grid;
-      span {
-        width: 200px;
-        display: block;
-        text-align: center;
-        .center-horizontally;
-      }
-      padding-top: @vertical-grid * 1.5;
-    }
-    .content {
-      text-align: center;
-      line-height: @vertical-grid-half;
-      #welcome-instructions {
-        padding-bottom: @vertical-grid;
-      }
-      #welcome-store-buttons {
-        padding-bottom: @vertical-grid;
-      }
-      #welcome-continue-link {
-        font-size: @font-small-size;
-      }
-    }
-  }
-}
-
 section#forgot, section#verify {
   .column {
     .banner {
@@ -495,55 +439,6 @@ section#forgot, section#verify {
   }
 }
 
-section#signup {
-  .column {
-    .banner {
-      margin-bottom: -@vertical-grid * 7;
-    }
-    .banner:after {
-      height: @vertical-grid * 7;
-    }
-    .content {
-      height: @vertical-grid * 7;
-      span#agreeText {
-        font-size: @font-small-size;
-        color: @content;
-        line-height: 19px;
-        a {
-          color: @highlighted-element;
-        }
-        a:active {
-          color: @highlighted-element-pressed;
-        }
-      }
-    }
-  }
-}
-
-// TASKS TIMELINE
-
-section#tasks-timeline {
-  .date-heading {
-    position: relative;
-  }
-  #pull-to-previous, #pull-to-next {
-    text-align: center;
-    line-height: 200px;
-    height: 200px;
-    width: 100%;
-  }
-  #pull-to-previous {
-    position: absolute;
-    top: -200px;
-  }
-  .loader {
-    color: @default-element;
-  }
-  .loader-active {
-    color: @highlighted-element;
-  }
-}
-
 // ABOUT PAGE
 #about-help {
   line-height: @vertical-grid-half;
@@ -559,13 +454,6 @@ section#tasks-timeline {
   padding-bottom: 0;
 }
 
-#email-verification-status {
-  font-size: @font-smallest-size;
-  display: block;
-  line-height: @vertical-grid-half;
-}
-
-
 .tasks-notes-container {
   padding-top: @vertical-grid-half;
 }
@@ -577,7 +465,6 @@ section#tasks-timeline {
     padding-bottom: @vertical-grid;
   }
 }
-
 
 .add-element {
   // Add @vertical grid to make room for 'add [item]...' input
