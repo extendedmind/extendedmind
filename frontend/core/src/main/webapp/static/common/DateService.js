@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function DateService($timeout) {
+ function DateService() {
 
   var monthNames = [
   'jan', 'feb', 'mar', 'apr',
@@ -24,84 +24,8 @@
   var weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
   var activeWeek;
-  var initialDate;
   var daysFromActiveWeekToNext = 7;
   var daysFromActiveWeekToPrevious = -daysFromActiveWeekToNext;
-
-  var dayChangeCallback;
-  var today = new Today();
-
-  function Today() {
-    this.date = new Date();
-    this.yyyymmdd = yyyymmdd(this.date);
-    setNextDayTimer(this.date);
-  }
-
-  // Start timer for tomorrow.
-  // http://stackoverflow.com/a/5294766
-  var nextDayTimer;
-  function setNextDayTimer(date) {
-    stopNextDayTimer();
-    var tomorrow = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-
-    nextDayTimer = $timeout(function() {
-      dayChanged();
-    }, tomorrow - date);
-  }
-
-  // Update today. Change week if today is Monday.
-  // This function is executed after timeout or interval for next day has reached its delay.
-  function dayChanged() {
-    today = new Today();
-    var weekChanged = false;
-    if (today.date.getDay() === 1) {  // Monday
-      activeWeek = weekDaysStartingFrom(new Date());
-      datepickerWeeks = [];
-      initializeDatepickerWeeks();
-      weekChanged = true;
-    } else {
-      for (var i = 0, len = activeWeek.length; i < len; i++) {
-        if (activeWeek[i].yyyymmdd === today.yyyymmdd) {
-          var yesterday = activeWeek[i-1];
-          yesterday.displayDate = yesterday.month.name + ' ' + yesterday.date;
-          activeWeek[i].displayDate = 'today';
-        }
-      }
-    }
-    if (dayChangeCallback) {
-      dayChangeCallback(weekChanged);
-    }
-  }
-
-  function stopNextDayTimer() {
-    if (angular.isDefined(nextDayTimer)) {
-      $timeout.cancel(nextDayTimer);
-    }
-  }
-
-  var datepickerWeeks = [];
-  function initializeDatepickerWeeks(initialDate) {
-    var firstDayOfCurrentWeek = getFirstDateOfTheWeek(initialDate || new Date());
-
-    var firstDayOfPreviousWeek = new Date(
-      firstDayOfCurrentWeek.getFullYear(),
-      firstDayOfCurrentWeek.getMonth(),
-      firstDayOfCurrentWeek.getDate() - 7);
-
-    var firstDayOfNextWeek = new Date(
-      firstDayOfCurrentWeek.getFullYear(),
-      firstDayOfCurrentWeek.getMonth(),
-      firstDayOfCurrentWeek.getDate() + 7);
-
-    var previous = datepickerWeekStartingFrom(firstDayOfPreviousWeek);
-    var active = datepickerWeekStartingFrom(firstDayOfCurrentWeek);
-    var next = datepickerWeekStartingFrom(firstDayOfNextWeek);
-
-    datepickerWeeks.push(previous);
-    datepickerWeeks.push(active);
-    datepickerWeeks.push(next);
-  }
-  initializeDatepickerWeeks();
 
   // http://stackoverflow.com/a/3067896
   function yyyymmdd(date) {
@@ -122,41 +46,27 @@
 
     return date;
   }
+
   /**
    * @description
    *
    * Constructs a week with date objects in a following format:
-   *  date:         '18'
-   *  monthName:    'mar'
-   *  weekday:      'tuesday'
-   *  weekdayIndex: '1'
-   *  yyyyymmdd:    '2014-03-18'
+   *  date:             '18'
+   *  weekday:          'tuesday'
+   *  weekdayIndex:     '1'
+   *  month.name:       'mar'
+   *  year:             '2014'
+   *  yyyyymmdd:        '2014-03-18'
+   *  displayDate:      'mar 18' or 'today'
+   *  displayDateShort  '18'
    *
-   * @param {Date} date First day of the week.
-   * @returns {Array} Week with datepicker dates.
+   * @param {Date} date Day of the week.
+   * @returns {Array} Weekdays.
    */
-   function datepickerWeekStartingFrom(date) {
-    var week = [];
-    var day;
-
-    for (var i = 0, len = weekdays.length; i < len; i++) {
-      var dayIndex = (date.getDay() === 0) ? 6 : date.getDay() - 1;
-      day = {};
-      day.date = date.getDate();
-      day.weekday = weekdays[date.getDay()];
-      day.weekdayIndex = dayIndex;
-      day.monthName = monthNames[date.getMonth()];
-      day.yyyymmdd = yyyymmdd(date);
-
-      week.push(day);
-      date.setDate(date.getDate() + 1);
-    }
-    return week;
-  }
-
-  function weekDaysStartingFrom(date) {
+   function weekDaysStartingFrom(date) {
     var day;
     var week = [];
+    var today = new Date();
 
     for (var i = 0, len = weekdays.length; i < len; i++) {
       var dayIndex = (date.getDay() === 0) ? 6 : date.getDay() - 1;
@@ -171,7 +81,7 @@
 
       // show today or month + date
       // http://stackoverflow.com/a/9300653
-      day.displayDate = (date.toDateString() === today.date.toDateString() ? 'today' : day.month.name + ' ' + day.date);
+      day.displayDate = (date.toDateString() === today.toDateString() ? 'today' : day.month.name + ' ' + day.date);
       day.displayDateShort = day.date;
 
       week.push(day);
@@ -181,96 +91,33 @@
     return week;
   }
 
-  function getWeekWithOffset(offsetDays) {
-    var activeMonday = (activeWeek) ? new Date(activeWeek[0].yyyymmdd) : getFirstDateOfTheWeek(new Date());
-    activeMonday.setDate(activeMonday.getDate() + offsetDays);
-
-    return weekDaysStartingFrom(activeMonday);
-  }
-
   return {
-    getDatepickerWeeks: function() {
-      return datepickerWeeks;
+    generateAndReturnCurrentWeek: function(date) {
+      date = getFirstDateOfTheWeek(date);
+      return weekDaysStartingFrom(date);
+    },
+    generateAndReturnPreviousWeek: function(week) {
+      var date = new Date(week[0].yyyymmdd);
+      date.setDate(date.getDate() + daysFromActiveWeekToPrevious);
+      return weekDaysStartingFrom(date);
+    },
+    generateAndReturnNextWeek: function(week) {
+      var date = new Date(week[0].yyyymmdd);
+      date.setDate(date.getDate() + daysFromActiveWeekToNext);
+      return weekDaysStartingFrom(date);
     },
     /**
-     * @description
-     * Previous, current and next week with datepicker dates.
-     *
-     * Either adds previous week to first and removes last week
-     * or adds next week to last and removes first week.
-     *
-     * @param {string} direction Previous or next week.
-     * @returns {Array} Datepicker weeks.
-     */
-     changeDatePickerWeeks: function(direction) {
-      if (direction === 'prev') {
-        var datepickerFirstMonday = new Date(datepickerWeeks[0][0].yyyymmdd);
-        datepickerFirstMonday.setDate(datepickerFirstMonday.getDate() - 7);
-
-        var previousWeek = datepickerWeekStartingFrom(datepickerFirstMonday);
-
-        datepickerWeeks.splice((datepickerWeeks.length - 1), 1);
-        datepickerWeeks.unshift(previousWeek);
-
-      } else if (direction === 'next') {
-        var datepickerLastMonday = new Date(datepickerWeeks[datepickerWeeks.length - 1][0].yyyymmdd);
-        datepickerLastMonday.setDate(datepickerLastMonday.getDate() + 7);
-
-        var nextWeek = datepickerWeekStartingFrom(datepickerLastMonday);
-
-        datepickerWeeks.splice(0, 1);
-        datepickerWeeks.push(nextWeek);
+    * @description
+    * Check if week is current week and that today is in the right day.
+    */
+    isWeekValid: function(week) {
+      var todayYYYYMMDD = this.getTodayYYYYMMDD(new Date());
+      for (var i = 0, len = week.length; i < len; i++) {
+        if (week[i].yyyymmdd === todayYYYYMMDD) {
+          return week[i].displayDate === 'today';
+        }
       }
-      return datepickerWeeks;
-    },
-    /**
-     * @description
-     * Active week object.
-     *
-     * Either returns existing active week
-     * or constructs new active week object from current day.
-     *
-     * @returns {Array} Datepicker weeks.
-     */
-     activeWeek: function() {
-      return activeWeek || (function() {
-        var date = getFirstDateOfTheWeek(new Date());
-
-        activeWeek = weekDaysStartingFrom(date);
-        return activeWeek;
-      })();
-    },
-    generateAndReturnNextWeek: function() {
-      activeWeek = getWeekWithOffset(daysFromActiveWeekToNext);
-      return activeWeek;
-    },
-    generateAndReturnPreviousWeek: function() {
-      activeWeek = getWeekWithOffset(daysFromActiveWeekToPrevious);
-      return activeWeek;
-    },
-    /**
-     * @description
-     * Active week object.
-     *
-     * Constructs new active week object from current day and initializes datepicker weeks.
-     *
-     * @returns {Array} Datepicker weeks.
-     */
-     generateAndSetCurrentWeekActive: function() {
-      var date = getFirstDateOfTheWeek(new Date());
-
-      activeWeek = weekDaysStartingFrom(date);
-      if (datepickerWeeks) {
-        datepickerWeeks.length = 0;
-      }
-      initializeDatepickerWeeks();
-      return activeWeek;
-    },
-    registerDayChangedCallback: function(dayChangeCB) {
-      dayChangeCallback = dayChangeCB;
-    },
-    removeDayChangedCallback: function() {
-      dayChangeCallback = null;
+      return true;
     },
     isDateBeforeCurrentWeek: function(date) {
       var firstDayOfCurrentWeek = getFirstDateOfTheWeek(new Date());
@@ -278,17 +125,6 @@
     },
 
     // getters
-    getInitialDate: function() {
-      if (initialDate) {
-        var initialDateYYYYMMDD = yyyymmdd(initialDate);
-        for (var i = 0, len = activeWeek.length; i < len; i++) {
-          if (activeWeek[i].yyyymmdd === initialDateYYYYMMDD) {
-            initialDate = undefined;
-            return activeWeek[i];
-          }
-        }
-      }
-    },
     getMondayDate: function() {
       return (activeWeek) ? activeWeek[0] : (function() {
         var date = getFirstDateOfTheWeek(new Date());
@@ -296,12 +132,11 @@
         return activeWeek[0];
       })();
     },
-    getTodayDate: function() {
-      if (activeWeek) {
-        for (var i = 0, len = activeWeek.length; i < len; i++) {
-          if (activeWeek[i].yyyymmdd === today.yyyymmdd) {
-            return activeWeek[i];
-          }
+    getTodayDate: function(currentWeek) {
+      var today = new Date();
+      for (var i = 0, len = currentWeek.length; i < len; i++) {
+        if (currentWeek[i].yyyymmdd === yyyymmdd(today)) {
+          return currentWeek[i];
         }
       }
     },
@@ -315,7 +150,7 @@
       return new Date(date.getFullYear(), date.getMonth(), 1);
     },
     getTodayYYYYMMDD: function() {
-      return today.yyyymmdd;
+      return yyyymmdd(new Date());
     },
     getTomorrowYYYYMMDD: function() {
       var tomorrow = new Date();
@@ -323,7 +158,7 @@
       return yyyymmdd(tomorrow);
     },
     getDateTodayOrFromLaterYYYYMMDD: function(dateYYYYMMDD) {
-      if (dateYYYYMMDD && (dateYYYYMMDD > today.yyyymmdd)){
+      if (dateYYYYMMDD && (dateYYYYMMDD > yyyymmdd(new Date()))) {
         return new Date(dateYYYYMMDD);
       } else {
         return new Date();
@@ -356,5 +191,4 @@
   };
 }
 
-DateService.$inject = ['$timeout'];
 angular.module('common').factory('DateService', DateService);

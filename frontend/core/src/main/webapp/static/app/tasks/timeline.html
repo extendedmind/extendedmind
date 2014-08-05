@@ -2,12 +2,12 @@
   <div class="column">
     <div ng-if="!isLoading" ng-hide="omnibarVisible && isActiveSlide('home')" class="page-content-container omnibar-animation">
       <div ng-if="isDatepickerVisible" class="swiper-no-swiping" data-snap-ignore="true" datepicker></div>
-      <div class="swiper-container" swiper-container="tasks/home" swiper-type="page" expected-slides="weekdays.length">
+      <div class="swiper-container" swiper-container="tasks/home" swiper-type="page" expected-slides="7">
         <div class="swiper-wrapper">
           <div id="pull-to-previous" class="loader">
             <span>previous week...</span>
           </div>
-          <div class="swiper-slide" ng-repeat="date in weekdays track by date.weekdayIndex" swiper-slide="tasks/home/{{date.weekday}}" slide-index="$index">
+          <div class="swiper-slide" ng-repeat="date in detectDayChangeAndReturnWeekdays() track by date.weekdayIndex" swiper-slide="tasks/home/{{date.weekday}}" slide-index="$index">
             <div class="inner-slide-content-container">
               <section scroll-to>
                 <h3 ng-hide="isDatepickerVisible" class="date-heading" ng-click="setDatepickerVisible()">{{date.displayDate}}</h3>

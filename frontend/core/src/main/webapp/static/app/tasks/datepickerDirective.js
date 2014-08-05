@@ -32,7 +32,7 @@
       scroller.on('scrollEnd', scrollEnd);
       function scrollEnd() {
         if (scroller.currentPage.pageX === 0) {
-          scope.changeActiveWeek('prev', goToMiddlePage);
+          scope.changeActiveWeek('previous', goToMiddlePage);
         }
         else if (scroller.currentPage.pageX === scroller.pages.length - 1) {
           scope.changeActiveWeek('next', goToMiddlePage);
