@@ -218,8 +218,7 @@
             retryParam: ownerUUID,
             promise: deferred
           });
-        } else if (error.status === 403) {
-          // Got 403, need to go to login
+        } else {
           $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
         }
       });
@@ -265,7 +264,7 @@
           }
           deferred.resolve();
         }, function(error) {
-          if (error.status === 403) {
+          if (error && error.status === 403) {
             // Got 403, need to go to login
             $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
           } else {

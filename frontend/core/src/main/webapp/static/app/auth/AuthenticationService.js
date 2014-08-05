@@ -205,6 +205,8 @@
                   redirectUrl: '/',
                   promise: deferredAuthentication
                 });
+              }else {
+                $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
               }
             });
           }
