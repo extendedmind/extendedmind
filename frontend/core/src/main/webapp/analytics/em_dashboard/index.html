@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>em dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+
+    .bar {
+      fill: steelblue;
+    }
+
+    .bar:hover {
+      fill: lightblue;
+    }
+
+    .axis {
+      font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .x.axis path {
+      display: none;
+    }
+
+    </style>
+</head>
+<body>
+<div class="container" role="main">
+    <h1>extended mind dashboard</h1>
+
+    <h3>Daily sessions</h3>
+    <p>Does not include admin or beta users.</p>
+    <code>https://ext.md/evaluate/1.0/metric?expression=sum(session.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5
+</code>
+    <div id="chart1"></div>
+
+    <h3>Daily unique users (sessions)</h3>
+    <p>Unique users who have session. Does not include admin or beta users.</p>
+    <code>https://ext.md/evaluate/1.0/metric?expression=distinct(session(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <div id="chart2"></div>
+
+    <h3>Unique users creating tasks</h3>
+    <p>Does not include admin or beta users.</p>
+    <code>https://ext.md/evaluate/1.0/metric?expression=distinct(addTask(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <div id="chart4"></div>
+
+    <h3>Unique users creating notes</h3>
+    <p>Does not include admin or beta users.</p>
+    <code>https://ext.md/evaluate/1.0/metric?expression=distinct(addNote(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <div id="chart5"></div>
+
+    <h3>Unique users visiting omnibar</h3>
+    <p>Does not include admin or beta users.</p>
+    <code>https://ext.md/evaluate/1.0/metric?expression=distinct(visit_omnibar(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <div id="chart6"></div>
+
+    <h3>First item added</h3>
+    <p>Is this buggy? Numbers don't make sense with the rest of the data. Does not include admin or beta users.</p>
+    <code>https://ext.md/evaluate/1.0/metric?expression=sum(firstItemAdded.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <div id="chart7"></div>
+
+    <hr>
+
+    <h3>Visit signup</h3>
+    <p>Does not include admin or beta users.</p>
+    <code>https://ext.md/evaluate/1.0/metric?expression=sum(visit_signup.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <div id="chart8"></div>
+
+    <h3>AcceptInvite</h3>
+    <p>Does not include admin or beta users.</p>
+    <code>https://ext.md/evaluate/1.0/metric?expression=sum(visit_signup.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <div id="chart9"></div>
+
+    <h3>SignUp</h3>
+    <p>Does not include admin or beta users.</p>
+    <code>https://ext.md/evaluate/1.0/metric?expression=sum(visit_signup.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <div id="chart10"></div>
+
+</div>
+
+<script src="js/jquery-2.1.1.js"></script>
+<script src="js/autodate.js"></script>
+<script src="js/d3/d3.js"></script>
+<script src="js/barchart.js"></script>
+<script>
+    var dataUrl = "https://ext.md/evaluate/1.0/metric?expression=sum(session.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5";
+
+    combinedItems = [];
+    combinations = 2;
+
+    // combine data
+    $.getJSON( "data/acceptInvite.json", function( data ) {
+        var items = [];
+        $.each( data, function( key, val ) {
+            combineJsonData(key,val);
+        });
+        combinationComplete();
+    });
+
+    $.getJSON( "data/signup.json", function( data ) {
+        var items = [];
+        $.each( data, function( key, val ) {
+            combineJsonData(key,val);
+        });
+        combinationComplete();
+    });
+
+    function combinationComplete() {
+        combinations -= 1;
+        if (combinations == 0) {
+            console.log("successfully combined");
+            console.log(combinedItems);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function isCombined() {
+        if (combinations == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // merges data from two json files into one json string
+    function combineJsonData (i, data) {
+        if (isCombined) {
+            // exists
+            combinedItems[i].value += data.value;
+        } else {
+            // first run
+            combinedItems[i] = data;
+        }
+    }
+
+    function combinationComplete () {
+        console.log(combinedItems);
+    }
+
+    initChartToElement("#chart1","data/sessions.json");
+    initChartToElement("#chart2","data/unique_users_sessions.json");
+    initChartToElement("#chart3","data/visit_signup.json");
+    initChartToElement("#chart4","data/unique_users_addtask.json");
+    initChartToElement("#chart5","data/unique_users_addnote.json");
+    initChartToElement("#chart6","data/unique_users_omnibar.json");
+    initChartToElement("#chart7","data/firstitemadded.json");
+    initChartToElement("#chart8","data/visit_signup.json");
+    initChartToElement("#chart9","data/acceptInvite.json");
+    initChartToElement("#chart10","data/signup.json");
+</script>
+</body>
