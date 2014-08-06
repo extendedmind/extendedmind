@@ -259,9 +259,11 @@
   padding-top: 1em;
 }
 
+/* Used to separate styleguide <h1> headings of the markdown # Headings, which are also included in the left panel.*/
 .main-heading {
   font-size: 2em;
 }
+
 /**
  * Address styling not present in IE 8/9.
  */
