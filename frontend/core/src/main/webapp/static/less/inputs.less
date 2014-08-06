@@ -20,7 +20,7 @@ All forms and buttons used in extended mind UI. Imports following less libraries
 /*
 # Forms
 
-Inline form fields have wider bottom padding (used mainly when viewing item details):
+Inline form fields have wider bottom padding (used mainly when viewing item details).
 ```markup
 <div class="inline-form-fields">select context...</div>
 <div class="inline-form-fields">select repeating...</div>
@@ -31,6 +31,15 @@ Inline form fields have wider bottom padding (used mainly when viewing item deta
   padding-bottom: 10px;
 }
 
+/*
+`.form-group is used to control inline 
+```markup
+  <div class="form-group">
+    <label for="currentPassword" class="sr-only">old password</label>
+    <input type="password" name="currentPassword" id="currentPassword" class="simple-input" ng-model="user.currentPassword" placeholder="enter old password..." ng-minlength="7" ng-blur="currentPasswordAttempted=true" required />
+  </div>
+```
+*/
 .form-group {
   p.validation-error {
     display: inline;
