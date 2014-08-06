@@ -83,7 +83,6 @@
   // that needs to be defined programmatically
 
   var taskDescriptionHasFocus = false;
-  var noteContentHasFocus = false;
 
   $scope.getEditTaskDescriptionMaxHeight = function() {
     var usedHeight = $scope.isItemEditMode || $scope.isItemAddMode ? 0 : omnibarActionsHeight;
@@ -106,10 +105,7 @@
 
   $scope.getEditNoteContentMaxHeight = function() {
     var usedHeight = $scope.isItemEditMode || $scope.isItemAddMode ? 0 : omnibarActionsHeight;
-    if (noteContentHasFocus)
-      usedHeight += 160;
-    else
-      usedHeight += $scope.noteHasKeywords() ? 240 : 204;
+    usedHeight += 112;  // reduce by this much to fit content into view
     if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
       var calculatedHeight = $scope.currentHeight - usedHeight - keyboardHeight;
       return (calculatedHeight < 44 ? 44 : calculatedHeight);
@@ -127,15 +123,6 @@
     }
   };
 
-  $scope.noteContentFocus = function() {
-    noteContentHasFocus = true;
-  };
-  $scope.noteContentBlur = function() {
-    noteContentHasFocus = false;
-  };
-  $scope.hideNoteProperties = function() {
-    return noteContentHasFocus;
-  };
   $scope.taskDescriptionFocus = function() {
     taskDescriptionHasFocus = true;
   };

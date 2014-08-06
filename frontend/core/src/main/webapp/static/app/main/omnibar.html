@@ -146,58 +146,61 @@
       </div>
     </div>
 
-    <div ng-switch-when="note" class="omnibar-note">
+    <div ng-switch-when="note" class="omnibar-note omnibar-edit-item-scroller-wrapper" omnibar-edit-item-scroller>
+      <div class="omnibar-edit-item-scroller">
+        <form role="form">
 
-      <span ng-if="hideNoteProperties()" class="show-more">more</span>
+          <li editable-field-container ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
+            <div class="form-group omnibar-scroll-container">
+              <label for="noteContent" class="sr-only">content</label>
+              <textarea id="noteContent" class="simple-input" ng-model="note.content" msd-elastic editable-field placeholder="content..."></textarea>
+            </div>
+          </li>
 
-      <form role="form" editable-field-container>
+          <li editable-field-container>
+            <div class="form-group">
+              <label for="noteKeywords" class="sr-only">keywords</label>
+              <input type="text" id="noteKeywords" class="simple-input" ng-model="newKeyword.title" editable-field placeholder="keywords..." maxlength="128" autocapitalize="none"/>
+            </div>
+            <div class="keywords-container">
+              <span ng-if="showKeywords()" id="new-keyword">
+                <button type="button" class="font-small button keyword" ng-disabled="isSelectedKeyword()" ng-click="selectNewKeyword()">
+                  {{newKeyword.title}} <strong>+</strong>
+                </button>
+              </span>
 
-        <div ng-hide="hideNoteProperties()">
-          <div class="form-group">
-            <label for="noteKeywords" class="sr-only">keywords</label>
-            <input type="text" id="noteKeywords" class="simple-input" ng-model="newKeyword.title" editable-field placeholder="keywords..." maxlength="128" autocapitalize="none"/>
-          </div>
-          <div class="keywords-container">
-            <span ng-if="showKeywords()" id="new-keyword">
-              <button type="button" class="font-small button keyword" ng-disabled="isSelectedKeyword()" ng-click="selectNewKeyword()">
-                {{newKeyword.title}} <strong>+</strong>
+              <span ng-if="noteHasKeywords()">
+                <button ng-repeat="keyword in noteKeywords()" type="button" class="button font-small selected-keyword" ng-click="unSelectKeyword(keyword)">{{keyword.title}} <strong>x</strong></button>
+              </span>
+            </div>
+
+            <div ng-if="showKeywords()" class="keywords-container">
+              <button ng-hide="isNewKeyword(keyword)" ng-repeat="keyword in otherThanNoteKeywords() | filter: {title: newKeyword.title}" type="button" class="button font-small keyword" ng-click="selectExistingKeyword(keyword)">
+                {{keyword.title}} <strong>+</strong>
               </button>
-            </span>
-
-            <span ng-if="noteHasKeywords()">
-              <button ng-repeat="keyword in noteKeywords()" type="button" class="button font-small selected-keyword" ng-click="unSelectKeyword(keyword)">{{keyword.title}} <strong>x</strong></button>
-            </span>
-          </div>
-
-          <div ng-if="showKeywords()" class="keywords-container">
-            <button ng-hide="isNewKeyword(keyword)" ng-repeat="keyword in otherThanNoteKeywords() | filter: {title: newKeyword.title}" type="button" class="button font-small keyword" ng-click="selectExistingKeyword(keyword)">
-              {{keyword.title}} <strong>+</strong>
-            </button>
-          </div>
-
-          <div lists-select-options>
-            <div ng-if="!addNewListVisible" class="form-group select-list-visible-animation">
-              <label for="noteList" class="sr-only">list</label>
-              <select id="noteList" class="simple-input swiper-no-swiping" ng-model="note.relationships.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
-                <option value="">select list...</option>
-              </select>
             </div>
 
-            <div ng-if="addNewListVisible" class="form-group select-list-visible-animation">
-              <div class="left-input-wrapper">
-                <input type="text" class="simple-input" ng-model="newList.title" placeholder="add list..."/>
+            <div lists-select-options>
+              <div ng-if="!addNewListVisible" class="form-group select-list-visible-animation">
+                <label for="noteList" class="sr-only">list</label>
+                <select id="noteList" class="simple-input swiper-no-swiping" ng-model="note.relationships.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
+                  <option value="">select list...</option>
+                </select>
               </div>
-              <div class="right-button-wrapper item-actions">
-                <a href class="font-smallest add-new-list-item-cancel" ng-click="setAddNewListHidden()">cancel</a>
+
+              <div ng-if="addNewListVisible" class="form-group select-list-visible-animation">
+                <div class="left-input-wrapper">
+                  <input type="text" class="simple-input" ng-model="newList.title" placeholder="add list..."/>
+                </div>
+                <div class="right-button-wrapper item-actions">
+                  <a href class="font-smallest add-new-list-item-cancel" ng-click="setAddNewListHidden()">cancel</a>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div ng-if="!showKeywords()" class="form-group omnibar-scroll-container" ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
-          <label for="noteContent" class="sr-only">content</label>
-          <textarea id="noteContent" class="simple-input" ng-model="note.content" ng-focus="noteContentFocus()" ng-blur="noteContentBlur()" msd-elastic editable-field placeholder="content..."></textarea>
-        </div>
-      </form>
+          </li>
+
+        </form>
+      </div>
     </div>
   </div>
 
