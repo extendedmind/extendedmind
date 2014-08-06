@@ -154,7 +154,7 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.11</version>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>org.zeroturnaround</groupId>
         <artifactId>zt-zip</artifactId>
@@ -214,7 +214,7 @@
           <configuration>
           <tag>${project.version}</tag>
         </configuration>
-      </plugin>      
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -271,8 +271,8 @@
         <plugin>
           <groupId>org.scalatest</groupId>
           <artifactId>scalatest-maven-plugin</artifactId>
-          <version>1.0-RC2</version>
-        </plugin>      
+          <version>1.0</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
