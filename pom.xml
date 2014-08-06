@@ -101,6 +101,11 @@
       <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
       <layout>default</layout>
     </pluginRepository>
+    <pluginRepository>
+      <id>extendedmind-releases</id>
+      <name>Extended Mind Releases</name>
+      <url>https://ci.ext.md/nexus/content/repositories/releases</url>
+    </pluginRepository>
   </pluginRepositories>
 
   <dependencyManagement>
