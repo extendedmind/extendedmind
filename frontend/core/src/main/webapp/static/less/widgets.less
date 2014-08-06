@@ -394,7 +394,7 @@ footer {
       padding-right: 30px;
       padding-left: 30px;
     }
-    a.active, a.lists-link.active + a.hide-expand-link {
+    a.active, a.lists-link.active + a.hide-expand-link, a:active, a:active + a.hide-expand-link {
       background-color: white;
       color: black;
     }
@@ -406,8 +406,8 @@ footer {
       display: table;
       line-height: @vertical-grid-half;
       height: @vertical-grid;
+      width: 100%;
       .list-link {
-        width: 100%;
         display: table-cell;
         vertical-align: middle;
         padding-left: 40px;
