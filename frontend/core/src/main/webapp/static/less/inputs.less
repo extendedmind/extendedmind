@@ -3,11 +3,30 @@
 @import "typography.less";
 @import "layout.less";
 
+/*
+<h1>Inputs</h1>
+
+All forms and buttons used in extended mind UI. Imports following less libraries:
+
+* foundation.less
+* icons.less
+* typography.less
+* layout.less
+*/
+
 @plus-button-width: 27px;
 @icon-button-width: @plus-button-width;
 
-// FORMS
+/*
+# Forms
 
+Inline form fields have wider bottom padding (used mainly when viewing item details):
+```markup
+<div class="inline-form-fields">select context...</div>
+<div class="inline-form-fields">select repeating...</div>
+<div class="inline-form-fields">description...</div>
+```
+*/
 .inline-form-fields {
   padding-bottom: 10px;
 }
@@ -41,8 +60,6 @@ span.icon-i:active, span.icon-logo-only:active {
 }
 
 /*
-
-# Inputs
 
 Add `.simple-input` to any of the following HTML tags to create minimalist inputs:
 
