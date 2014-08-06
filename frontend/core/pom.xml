@@ -191,7 +191,7 @@
       <plugin>
         <groupId>org.lesscss</groupId>
         <artifactId>lesscss-maven-plugin</artifactId>
-        <version>1.3.3</version>
+        <version>1.7.4.1.0</version>
         <executions>
           <execution>
             <id>lesscss</id>
@@ -207,7 +207,6 @@
           <includes>
             <include>less/em.less</include>
           </includes>
-          <lessJs>${project.basedir}/src/main/webapp/static/lib/less/less-min.js</lessJs>
         </configuration>
       </plugin>
       <plugin>

@@ -1,5 +1,5 @@
 /*!
- * Less - Leaner CSS v1.7.3
+ * Less - Leaner CSS v1.7.4
  * http://lesscss.org
  *
  * Copyright (c) 2009-2014, Alexis Sellier <self@cloudhead.net>
@@ -252,7 +252,7 @@ less.Parser = function Parser(env) {
         return oldi !== i || oldj !== j;
     }
 
-    function expect(arg, msg) {
+    function expect(arg, msg, index) {
         // some older browsers return typeof 'function' for RegExp
         var result = (Object.prototype.toString.call(arg) === '[object Function]') ? arg.call(parsers) : $(arg);
         if (result) {
@@ -1093,7 +1093,8 @@ less.Parser = function Parser(env) {
                     }
 
                     option = option && option[1];
-
+                    if (!elements)
+                        error("Missing target selector for :extend().");
                     extend = new(tree.Extend)(new(tree.Selector)(elements), option, index);
                     if (extendList) { extendList.push(extend); } else { extendList = [ extend ]; }
 
@@ -1637,7 +1638,7 @@ less.Parser = function Parser(env) {
             //
             //     @import "lib";
             //
-            // Depending on our environemnt, importing is done differently:
+            // Depending on our environment, importing is done differently:
             // In the browser, it's an XHR request, in Node, it would be a
             // file-system operation. The function used for importing is
             // stored in `import`, which we pass to the Import constructor.
@@ -1645,22 +1646,27 @@ less.Parser = function Parser(env) {
             "import": function () {
                 var path, features, index = i;
 
-                save();
-
                 var dir = $re(/^@import?\s+/);
 
-                var options = (dir ? this.importOptions() : null) || {};
+                if (dir) {
+                    var options = (dir ? this.importOptions() : null) || {};
 
-                if (dir && (path = this.entities.quoted() || this.entities.url())) {
-                    features = this.mediaFeatures();
-                    if ($char(';')) {
-                        forget();
+                    if ((path = this.entities.quoted() || this.entities.url())) {
+                        features = this.mediaFeatures();
+
+                        if (!$(';')) {
+                            i = index;
+                            error("missing semi-colon or unrecognised media features on import");
+                        }
                         features = features && new(tree.Value)(features);
                         return new(tree.Import)(path, features, options, index, env.currentFileInfo);
                     }
+                    else
+                    {
+                        i = index;
+                        error("malformed import statement");
+                    }
                 }
-
-                restore();
             },
 
             importOptions: function() {
@@ -3150,16 +3156,17 @@ tree.Alpha.prototype = {
 
 (function (tree) {
 
-tree.Anonymous = function (value, index, currentFileInfo, mapLines) {
+tree.Anonymous = function (value, index, currentFileInfo, mapLines, rulesetLike) {
     this.value = value;
     this.index = index;
     this.mapLines = mapLines;
     this.currentFileInfo = currentFileInfo;
+    this.rulesetLike = (typeof rulesetLike === 'undefined')? false : rulesetLike;
 };
 tree.Anonymous.prototype = {
     type: "Anonymous",
     eval: function () {
-        return new tree.Anonymous(this.value, this.index, this.currentFileInfo, this.mapLines);
+        return new tree.Anonymous(this.value, this.index, this.currentFileInfo, this.mapLines, this.rulesetLike);
     },
     compare: function (x) {
         if (!x.toCSS) {
@@ -3174,6 +3181,9 @@ tree.Anonymous.prototype = {
         }
 
         return left < right ? -1 : 1;
+    },
+    isRulesetLike: function() {
+        return this.rulesetLike;
     },
     genCSS: function (env, output) {
         output.add(this.value, this.currentFileInfo, this.index, this.mapLines);
@@ -3925,6 +3935,9 @@ tree.Directive.prototype = {
             value = visitor.visit(value);
         }
     },
+    isRulesetLike: function() {
+        return "@charset" !== this.name;
+    },
     genCSS: function (env, output) {
         var value = this.value, rules = this.rules;
         output.add(this.name, this.currentFileInfo, this.index);
@@ -4293,7 +4306,7 @@ tree.Import.prototype = {
 
         if (this.options.inline) {
             //todo needs to reference css file not import
-            var contents = new(tree.Anonymous)(this.root, 0, {filename: this.importedFilename}, true);
+            var contents = new(tree.Anonymous)(this.root, 0, {filename: this.importedFilename}, true, true);
             return this.features ? new(tree.Media)([contents], this.features.value) : [contents];
         } else if (this.css) {
             var newImport = new(tree.Import)(this.evalPath(env), features, this.options, this.index);
@@ -5429,9 +5442,27 @@ tree.Ruleset.prototype = {
             tabSetStr = env.compress ? '' : Array(env.tabLevel).join("  "),
             sep;
 
+        function isRulesetLikeNode(rule, root) {
+             // if it has nested rules, then it should be treated like a ruleset
+             if (rule.rules)
+                 return true;
+
+             // medias and comments do not have nested rules, but should be treated like rulesets anyway
+             if ( (rule instanceof tree.Media) || (root && rule instanceof tree.Comment))
+                 return true;
+
+             // some directives and anonumoust nodes are ruleset like, others are not
+             if ((rule instanceof tree.Directive) || (rule instanceof tree.Anonymous)) {
+                 return rule.isRulesetLike();
+             }
+
+             //anything else is assumed to be a rule
+             return false;
+        }
+
         for (i = 0; i < this.rules.length; i++) {
             rule = this.rules[i];
-            if (rule.rules || (rule instanceof tree.Media) || rule instanceof tree.Directive || (this.root && rule instanceof tree.Comment)) {
+            if (isRulesetLikeNode(rule, this.root)) {
                 rulesetNodes.push(rule);
             } else {
                 ruleNodes.push(rule);
@@ -6327,10 +6358,13 @@ tree.Variable.prototype = {
                     }
 
                     this._importer.push(importNode.getPath(), importNode.currentFileInfo, importNode.options, function (e, root, importedAtRoot, fullPath) {
-                        if (e && !e.filename) { e.index = importNode.index; e.filename = importNode.currentFileInfo.filename; }
+                        if (e && !e.filename) {
+                            e.index = importNode.index; e.filename = importNode.currentFileInfo.filename;
+                        }
 
+                        var duplicateImport = importedAtRoot || fullPath in importVisitor.recursionDetector;
                         if (!env.importMultiple) {
-                            if (importedAtRoot) {
+                            if (duplicateImport) {
                                 importNode.skip = true;
                             } else {
                                 importNode.skip = function() {
@@ -6354,7 +6388,6 @@ tree.Variable.prototype = {
                         if (root) {
                             importNode.root = root;
                             importNode.importedFilename = fullPath;
-                            var duplicateImport = importedAtRoot || fullPath in importVisitor.recursionDetector;
 
                             if (!inlineCSS && (env.importMultiple || !duplicateImport)) {
                                 importVisitor.recursionDetector[fullPath] = true;
@@ -6406,6 +6439,7 @@ tree.Variable.prototype = {
     };
 
 })(require('./tree'));
+
 (function (tree) {
     tree.joinSelectorVisitor = function() {
         this.contexts = [[]];
@@ -6514,6 +6548,9 @@ tree.Variable.prototype = {
                     return [];
                 }
                 this.charset = true;
+            }
+            if (directiveNode.rules && directiveNode.rules.rules) {
+                this._mergeRules(directiveNode.rules.rules);
             }
             return directiveNode;
         },
@@ -7720,7 +7757,7 @@ function doXHR(url, type, callback, errback) {
 
 function loadFile(originalHref, currentFileInfo, callback, env, modifyVars) {
 
-    if (currentFileInfo && currentFileInfo.currentDirectory && !/^([a-z-]+:)?\//.test(originalHref)) {
+    if (currentFileInfo && currentFileInfo.currentDirectory && !/^([A-Za-z-]+:)?\//.test(originalHref)) {
         originalHref = currentFileInfo.currentDirectory + originalHref;
     }
 
