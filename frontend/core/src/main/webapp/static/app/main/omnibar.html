@@ -105,37 +105,45 @@
 
     </div>
 
-    <div ng-switch-when="task" class="omnibar-task">
-      <span ng-if="hideTaskProperties()" class="show-more">more</span>
+    <div ng-switch-when="task" class="omnibar-task omnibar-edit-item-scroller-wrapper" omnibar-edit-item-scroller>
+      <div class="omnibar-edit-item-scroller">
+        <form role="form">
 
-      <form role="form" editable-field-container>
-        <div ng-hide="hideTaskProperties()">
-          <div class="form-group">
-            <div ng-if="showDateInput">
-              <label for="taskDue" class="sr-only">select date...</label>
-              <input type="date" id="taskDue" class="simple-input" date-input-blur="hideDate" ng-model="task.date" date-input="task" date-input-set-focus="focusDateInput">
+          <li editable-field-container>
+            <span ng-if="hideTaskProperties()" class="show-more">more</span>
+            <div ng-hide="hideTaskProperties()">
+              <div class="form-group">
+                <div ng-if="showDateInput">
+                  <label for="taskDue" class="sr-only">select date...</label>
+                  <input type="date" id="taskDue" class="simple-input" date-input-blur="hideDate" ng-model="task.date" date-input="task" date-input-set-focus="focusDateInput">
+                </div>
+                <div ng-if="!showDateInput" class="item-actions">
+                  <span class="simple-input default-element date-input-placeholder" ng-click="focusDate()">select date...</span>
+                </div>
+              </div>
+              <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
             </div>
-            <div ng-if="!showDateInput" class="item-actions">
-              <span class="simple-input default-element date-input-placeholder" ng-click="focusDate()">select date...</span>
+            <div class="form-group omnibar-scroll-container" ng-style="{maxHeight: getEditTaskDescriptionMaxHeight()}" >
+              <label for="taskDescription" class="sr-only">description</label>
+              <textarea id="taskDescription" class="simple-input" ng-model="task.description" ng-focus="taskDescriptionFocus()" ng-blur="taskDescriptionBlur()" msd-elastic editable-field placeholder="description..." maxlength="1024"></textarea>
             </div>
-          </div>
-          <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
-          <div ng-if="task.date" class="form-group">
-            <label for="taskRepeat" class="sr-only">repeating</label>
-            <select id="taskRepeat" class="simple-input" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes" editable-field>
-              <option value="">select repeating...</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="taskLink" class="sr-only">url</label>
-            <input type="text" id="taskLink" class="simple-input" ng-model="task.link" editable-field placeholder="url...">
-          </div>
-        </div>
-        <div class="form-group omnibar-scroll-container" ng-style="{maxHeight: getEditTaskDescriptionMaxHeight()}" >
-          <label for="taskDescription" class="sr-only">description</label>
-          <textarea id="taskDescription" class="simple-input" ng-model="task.description" ng-focus="taskDescriptionFocus()" ng-blur="taskDescriptionBlur()" msd-elastic editable-field placeholder="description..." maxlength="1024"></textarea>
-        </div>
-      </form>
+          </li>
+
+          <li editable-field-container>
+            <div ng-if="task.date" class="form-group">
+              <label for="taskRepeat" class="sr-only">repeating</label>
+              <select id="taskRepeat" class="simple-input" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes" editable-field>
+                <option value="">select repeating...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="taskLink" class="sr-only">url</label>
+              <input type="text" id="taskLink" class="simple-input" ng-model="task.link" editable-field placeholder="url...">
+            </div>
+          </li>
+
+        </form>
+      </div>
     </div>
 
     <div ng-switch-when="note" class="omnibar-note">
@@ -195,6 +203,9 @@
 
   <div class="omnibar-footer font-small">
     <button type="button" class="button transparent-button omnibar-footer-button-left" ng-click="cancelOmnibarEdit()">cancel</button>
+    <div ng-show="showEditItemScrollerIndicators()" id="omnibar-edit-item-scroller-indicator" ng-style="{bottom: -getOmnibarFeatureHeight()}">
+      <div class="omnibar-edit-item-scroller-indicator-dot"></div>
+    </div>
     <button type="submit" class="button transparent-button omnibar-footer-button-right" ng-click="saveOmnibarText()" ng-disabled="!addOmniItem.$valid || isLoading" ng-bind="getOmnibarFooterSaveText()"></button>
   </div>
 

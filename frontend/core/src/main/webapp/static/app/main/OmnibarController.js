@@ -147,6 +147,16 @@
     return taskDescriptionHasFocus;
   };
 
+  var editItemHasScrollerIndicators = false;
+
+  $scope.showEditItemScrollerIndicators = function showEditItemScrollerIndicators() {
+    return editItemHasScrollerIndicators;
+  };
+
+  $scope.setEditItemHasScrollerIndicators = function setEditItemHasScrollerIndicators(hasIndicators) {
+    editItemHasScrollerIndicators = hasIndicators;
+  };
+
   $scope.getOmnibarVisibilityClass = function getOmnibarVisibilityClass() {
     return $scope.omnibarVisible ? 'omnibar-visible' : 'omnibar-hidden';
   };
