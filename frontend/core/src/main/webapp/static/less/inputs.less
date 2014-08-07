@@ -124,9 +124,14 @@ Date input gets formatted by `.date-input-placeholder`.
   display: block;
 }
 
-// TODO: Kuka ymmärtää?
 /*
-`.table-wrapper`:
+## Form wrapping
+Following are used to divide form items horizontally:
+* `.table-wrapper`
+* `.left-input-wrapper`
+* `.right-button-wrapper`
+* `.center-input-wrapper`
+* `.left-checkbox-wrapper`
 
 Input on the left and  button on the right OR
 Checkbox on the left, input in the center, and button on the right
@@ -136,7 +141,6 @@ Checkbox on the left, input in the center, and button on the right
   .center-horizontally;
   width: 100%;
 }
-
 .left-input-wrapper, .right-button-wrapper, .center-input-wrapper, .left-checkbox-wrapper {
   display: table-cell;
   vertical-align: middle;
@@ -145,7 +149,6 @@ Checkbox on the left, input in the center, and button on the right
 .left-input-wrapper, .center-input-wrapper {
   width: 100%;
 }
-
 .right-button-wrapper, .left-checkbox-wrapper {
   line-height: 100%;
   button {
@@ -157,7 +160,6 @@ Checkbox on the left, input in the center, and button on the right
 .left-checkbox-wrapper {
   width: @icon-button-width + 8px;
 }
-
 .right-button-wrapper {
   width: @icon-button-width + 8px;
   button {
