@@ -35,7 +35,8 @@
         eventPassthrough: true,
         scrollX: true,
         scrollY: false,
-        preventDefault: false
+        preventDefault: false,
+        disableMouse: true
       });
 
       omnibarEditItemScroller.on('scrollEnd', function() {
