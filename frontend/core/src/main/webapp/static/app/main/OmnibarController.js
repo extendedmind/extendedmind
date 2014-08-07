@@ -135,6 +135,8 @@
   };
 
   var editItemHasScrollerIndicators = false;
+  var editItemScrollerActiveSlideIndex = 0;
+  var gotoEditItemScrollerSlideFn;
 
   $scope.showEditItemScrollerIndicators = function showEditItemScrollerIndicators() {
     return editItemHasScrollerIndicators;
@@ -142,6 +144,27 @@
 
   $scope.setEditItemHasScrollerIndicators = function setEditItemHasScrollerIndicators(hasIndicators) {
     editItemHasScrollerIndicators = hasIndicators;
+  };
+
+  $scope.isEditItemScrollerSlideActive = function isEditItemScrollerSlideActive(slideName) {
+    return (slideName === 'left' && editItemScrollerActiveSlideIndex === 0) || (slideName === 'right' && editItemScrollerActiveSlideIndex === 1);
+  };
+
+  $scope.setActiveSlideIndex = function setActiveSlideIndex(slideIndex) {
+    editItemScrollerActiveSlideIndex = slideIndex;
+  };
+
+  $scope.registerGotoEditItemScrollerSlideFn = function registerGotoEditItemScrollerSlideFn(gotoSlideFn) {
+    gotoEditItemScrollerSlideFn = gotoSlideFn;
+  };
+
+  $scope.gotoEditItemScrollerSlide = function gotoEditItemScrollerSlide(slideName) {
+    var slideIndex;
+    if (slideName === 'left')
+      slideIndex = 0;
+    else if (slideName === 'right')
+      slideIndex = 1;
+    gotoEditItemScrollerSlideFn(slideIndex);
   };
 
   $scope.getOmnibarVisibilityClass = function getOmnibarVisibilityClass() {

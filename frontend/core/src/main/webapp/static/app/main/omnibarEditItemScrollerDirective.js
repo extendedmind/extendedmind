@@ -16,31 +16,39 @@
  /* global IScroll */
  'use strict';
 
- function omnibarEditItemScrollerDirective($timeout) {
+ function omnibarEditItemScrollerDirective($parse, $timeout) {
   return {
     restrict: 'A',
-    link: function postLink(scope, element) {
+    link: function postLink(scope, element, attrs) {
       var omnibarEditItemScroller, omnibarEditItemScrollerTimer;
+      var setActiveSlideFn = $parse(attrs.omnibarEditItemScroller);
+      var registerGotoEditItemScrollerSlideFn = $parse(attrs.omnibarEditItemScrollerGotoSlideFn);
+      var setEditItemHasScrollerHasIndicatorsFn = $parse(attrs.omnibarEditItemScrollerHasIndicatorsFn);
+
+      registerGotoEditItemScrollerSlideFn(scope, {gotoSlideFn: gotoSlide});
+      function gotoSlide(slideIndex) {
+        omnibarEditItemScroller.goToPage(slideIndex, 0);
+      }
 
       omnibarEditItemScroller = new IScroll(element[0], {
         snap: true,
         eventPassthrough: true,
         scrollX: true,
         scrollY: false,
-        preventDefault: false,
-        indicators: {
-          el: document.getElementById('omnibar-edit-item-scroller-indicator'),
-          resize: false
-        }
+        preventDefault: false
       });
-      scope.setEditItemHasScrollerIndicators(true);
 
-      omnibarEditItemScrollerTimer = $timeout(function() {
-        omnibarEditItemScroller.refresh();
-      }, 500);
+      omnibarEditItemScroller.on('scrollEnd', function() {
+        scope.$apply(function() {
+          setActiveSlideFn(scope, {slideIndex: omnibarEditItemScroller.currentPage.pageX});
+        });
+      });
+
+      setEditItemHasScrollerHasIndicatorsFn(scope, {hasIndicators: true});
 
       scope.$on('$destroy', function() {
-        scope.setEditItemHasScrollerIndicators(false);
+        setActiveSlideFn(scope, {slideIndex: 0});
+        setEditItemHasScrollerHasIndicatorsFn(scope, {hasIndicators: false});
         omnibarEditItemScroller.destroy();
         $timeout.cancel(omnibarEditItemScrollerTimer);
         omnibarEditItemScroller = null;
@@ -48,5 +56,5 @@
     }
   };
 }
-omnibarEditItemScrollerDirective['$inject'] = ['$timeout'];
+omnibarEditItemScrollerDirective['$inject'] = ['$parse', '$timeout'];
 angular.module('em.directives').directive('omnibarEditItemScroller', omnibarEditItemScrollerDirective);

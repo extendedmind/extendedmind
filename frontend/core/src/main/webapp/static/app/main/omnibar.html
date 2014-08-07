@@ -105,7 +105,7 @@
 
     </div>
 
-    <div ng-switch-when="task" class="omnibar-task omnibar-edit-item-scroller-wrapper" omnibar-edit-item-scroller>
+    <div ng-switch-when="task" class="omnibar-task omnibar-edit-item-scroller-wrapper" omnibar-edit-item-scroller="setActiveSlideIndex(slideIndex)" omnibar-edit-item-scroller-goto-slide-fn="registerGotoEditItemScrollerSlideFn(gotoSlideFn)" omnibar-edit-item-scroller-has-indicators-fn="setEditItemHasScrollerIndicators(hasIndicators)">
       <div class="omnibar-edit-item-scroller">
         <form role="form">
 
@@ -146,7 +146,7 @@
       </div>
     </div>
 
-    <div ng-switch-when="note" class="omnibar-note omnibar-edit-item-scroller-wrapper" omnibar-edit-item-scroller>
+    <div ng-switch-when="note" class="omnibar-note omnibar-edit-item-scroller-wrapper"  omnibar-edit-item-scroller="setActiveSlideIndex(slideIndex)" omnibar-edit-item-scroller-goto-slide-fn="registerGotoEditItemScrollerSlideFn(gotoSlideFn)" omnibar-edit-item-scroller-has-indicators-fn="setEditItemHasScrollerIndicators(hasIndicators)">
       <div class="omnibar-edit-item-scroller">
         <form role="form">
 
@@ -204,12 +204,34 @@
     </div>
   </div>
 
-  <div class="omnibar-footer font-small">
-    <button type="button" class="button transparent-button omnibar-footer-button-left" ng-click="cancelOmnibarEdit()">cancel</button>
-    <div ng-show="showEditItemScrollerIndicators()" id="omnibar-edit-item-scroller-indicator" ng-style="{bottom: -getOmnibarFeatureHeight()}">
-      <div class="omnibar-edit-item-scroller-indicator-dot"></div>
-    </div>
-    <button type="submit" class="button transparent-button omnibar-footer-button-right" ng-click="saveOmnibarText()" ng-disabled="!addOmniItem.$valid || isLoading" ng-bind="getOmnibarFooterSaveText()"></button>
-  </div>
+  <ul class="button-row font-small omnibar-footer">
+    <li class="button-container" ng-class="showEditItemScrollerIndicators() ? 'left-of-three' : 'left-of-two'" ng-click="cancelOmnibarEdit()">
+      <button type="button" class="button transparent-button" style="text-align: left;">
+        <span>cancel</span>
+      </button>
+    </li>
+
+    <li ng-if="showEditItemScrollerIndicators()" class="button-container center-of-three edit-item-scroller-indicators">
+      <ul class="button-row">
+        <li class="button-container left-of-two">
+          <button type="button" class="button edit-item-scroller-indicator-wrapper" ng-click="gotoEditItemScrollerSlide('left')">
+            <span class="edit-item-scroller-indicator-left" ng-class="isEditItemScrollerSlideActive('left') && 'edit-item-scroller-indicator-active'"></span>
+          </button>
+        </li>
+
+        <li class="button-container right-of-two">
+          <button type="button" class="button edit-item-scroller-indicator-wrapper" ng-click="gotoEditItemScrollerSlide('right')">
+            <span class="edit-item-scroller-indicator-right" ng-class="isEditItemScrollerSlideActive('right') && 'edit-item-scroller-indicator-active'"></span>
+          </button>
+        </li>
+      </ul>
+    </li>
+
+    <li class="button-container" ng-class="showEditItemScrollerIndicators() ? 'right-of-three' : 'right-of-two'" ng-click="saveOmnibarText()">
+      <button type="button" class="button transparent-button" style="text-align: right;" ng-disabled="!addOmniItem.$valid || isLoading" ng-bind="getOmnibarFooterSaveText()">
+        <span>save</span>
+      </button>
+    </li>
+  </ul>
 
 </div>
