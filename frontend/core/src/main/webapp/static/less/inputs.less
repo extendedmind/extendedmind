@@ -112,13 +112,25 @@ If you want to display the error right under an element, use `<a>` and `.text-li
   }
 }
 
+/*
+Date input gets formatted by `.date-input-placeholder`.
+```markup
+<div ng-if="showDateInput" class="ng-scope">
+  <input type="date" class="simple-input date-input-placeholder" placeholder="08/07/2014" />
+</div>
+```
+*/
 .date-input-placeholder {
   display: block;
 }
 
-// Input on the left and  button on the right OR
-// Checkbox on the left, input in the center, and button on the right
+// TODO: Kuka ymmärtää?
+/*
+`.table-wrapper`:
 
+Input on the left and  button on the right OR
+Checkbox on the left, input in the center, and button on the right
+*/
 .table-wrapper {
   display: table;
   .center-horizontally;
