@@ -83,7 +83,6 @@ Inline form fields have wider bottom padding (used mainly when viewing item deta
 To indicate errors inside `.form-group` and `<p>`, use `.validation-error`.
 ```markup
   <div class="form-group">
-    <label for="input-password">password</label>
     <input type="password" name="password" id="input-password" class="simple-input ng-dirty ng-valid-required ng-invalid ng-invalid-minlength" ng-model="user.password" ng-minlength="7" ng-blur="passwordAttempted=true" placeholder="enter password..." required="">
     <p ng-show="loginForm.password.$invalid &amp;&amp; !loginForm.password.$pristine &amp;&amp; passwordAttempted" class="validation-error">password must be 7 characters or more</p>
   </div>
@@ -99,6 +98,7 @@ If you want to display the error right under an element, use `<a>` and `.text-li
   </div>
 ```
 */
+// TODO: NEEDS REFACTORING
 .form-group {
   p.validation-error {
     display: inline;
@@ -111,7 +111,6 @@ If you want to display the error right under an element, use `<a>` and `.text-li
     }
   }
 }
-
 
 a.click-to-slide {
   color: @default-element;
