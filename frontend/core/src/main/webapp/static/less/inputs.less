@@ -17,9 +17,38 @@ All forms and buttons used in extended mind UI. Imports following less libraries
 @plus-button-width: 27px;
 @icon-button-width: @plus-button-width;
 
+input, select, textarea {
+  width: 100%;
+  background-color: inherit;
+}
+
+textarea {
+  min-height: @vertical-grid / 2;
+  height: @vertical-grid / 2;
+  vertical-align: middle;
+  .break-words;
+}
+
 /*
 # Forms
 
+Use `.simple-input` to create minimalist input fields.
+
+```markup
+<input type="text" class="simple-input" value="simple input"/>
+<textarea class="simple-input">simple textarea</textarea>
+```
+*/
+
+.simple-input {
+  outline: none;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0;
+  background-image: none;
+}
+
+/*
 Inline form fields have wider bottom padding (used mainly when viewing item details).
 ```markup
 <div class="inline-form-fields">select context...</div>
@@ -32,11 +61,34 @@ Inline form fields have wider bottom padding (used mainly when viewing item deta
 }
 
 /*
-`.form-group is used to control inline 
+`.form-group` is used to make inline forms width 100%.
 ```markup
   <div class="form-group">
-    <label for="currentPassword" class="sr-only">old password</label>
-    <input type="password" name="currentPassword" id="currentPassword" class="simple-input" ng-model="user.currentPassword" placeholder="enter old password..." ng-minlength="7" ng-blur="currentPasswordAttempted=true" required />
+    <input type="password" class="simple-input" placeholder="enter old password..." />
+  </div>
+```
+*/
+.form-group {
+  width: 100%;
+}
+
+/*
+To indicate errors inside `.form-group` and `<p>`, use `.validation-error`.
+```markup
+  <div class="form-group">
+    <label for="input-password">password</label>
+    <input type="password" name="password" id="input-password" class="simple-input ng-dirty ng-valid-required ng-invalid ng-invalid-minlength" ng-model="user.password" ng-minlength="7" ng-blur="passwordAttempted=true" placeholder="enter password..." required="">
+    <p ng-show="loginForm.password.$invalid &amp;&amp; !loginForm.password.$pristine &amp;&amp; passwordAttempted" class="validation-error">password must be 7 characters or more</p>
+  </div>
+```
+
+If you want to display the error right under an element, use `<a>` and `.text-link`.
+```markup
+  <div class="form-group button-container">
+    <button type="submit" class="wide-button normal-button" ng-disabled="!loginForm.$valid" ng-click="userLogin()">
+      <span>log in</span>
+    </button>
+    <p ng-show="loginFailed" class="validation-error">invalid username or password.</p>
   </div>
 ```
 */
@@ -53,9 +105,6 @@ Inline form fields have wider bottom padding (used mainly when viewing item deta
   }
 }
 
-.form-group {
-  width: 100%;
-}
 
 a.click-to-slide {
   color: @default-element;
@@ -68,27 +117,6 @@ span.icon-i:active, span.icon-logo-only:active {
   color: @highlighted-element-pressed;
 }
 
-/*
-
-Add `.simple-input` to any of the following HTML tags to create minimalist inputs:
-
-* `<input>`
-* `<textarea>`
-
-```markup
-<!-- Default input -->
-<input type="text" class="simple-input" value="simple input"/>
-<textarea class="simple-input">simple textarea</textarea>
-```
-*/
-
-.simple-input {
-  outline: none;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0;
-  background-image: none;
-}
 
 .click-to-slide {
   display: table;
@@ -368,19 +396,6 @@ select {
   option:first-child {
     color: @default-element;
   }
-}
-
-// INPUTS
-input, select, textarea {
-  width: 100%;
-  background-color: inherit;
-}
-
-textarea {
-  min-height: @vertical-grid / 2;
-  height: @vertical-grid / 2;
-  vertical-align: middle;
-  .break-words;
 }
 
 ::-webkit-resizer {
