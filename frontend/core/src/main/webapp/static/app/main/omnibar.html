@@ -109,7 +109,7 @@
       <div class="omnibar-edit-item-scroller">
         <form role="form">
 
-          <li editable-field-container>
+          <div class="omnibar-scroller-slide" editable-field-container>
             <span ng-if="hideTaskProperties()" class="show-more">more</span>
             <div ng-hide="hideTaskProperties()">
               <div class="form-group">
@@ -127,9 +127,9 @@
               <label for="taskDescription" class="sr-only">description</label>
               <textarea id="taskDescription" class="simple-input" ng-model="task.description" ng-focus="taskDescriptionFocus()" ng-blur="taskDescriptionBlur()" msd-elastic editable-field placeholder="description..." maxlength="1024"></textarea>
             </div>
-          </li>
+          </div>
 
-          <li editable-field-container>
+          <div class="omnibar-scroller-slide" editable-field-container>
             <div ng-if="task.date" class="form-group">
               <label for="taskRepeat" class="sr-only">repeating</label>
               <select id="taskRepeat" class="simple-input" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes" editable-field>
@@ -140,7 +140,7 @@
               <label for="taskLink" class="sr-only">url</label>
               <input type="text" id="taskLink" class="simple-input" ng-model="task.link" editable-field placeholder="url...">
             </div>
-          </li>
+          </div>
 
         </form>
       </div>
@@ -150,14 +150,14 @@
       <div class="omnibar-edit-item-scroller">
         <form role="form">
 
-          <li editable-field-container ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
+          <div class="omnibar-scroller-slide" editable-field-container ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
             <div class="form-group omnibar-scroll-container">
               <label for="noteContent" class="sr-only">content</label>
               <textarea id="noteContent" class="simple-input" ng-model="note.content" msd-elastic editable-field placeholder="content..."></textarea>
             </div>
-          </li>
+          </div>
 
-          <li editable-field-container>
+          <div class="omnibar-scroller-slide" editable-field-container>
             <div class="form-group">
               <label for="noteKeywords" class="sr-only">keywords</label>
               <input type="text" id="noteKeywords" class="simple-input" ng-model="newKeyword.title" editable-field placeholder="keywords..." maxlength="128" autocapitalize="none"/>
@@ -197,7 +197,7 @@
                 </div>
               </div>
             </div>
-          </li>
+          </div>
 
         </form>
       </div>

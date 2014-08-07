@@ -339,7 +339,7 @@ footer {
         height: 100%;
         overflow: hidden;
       }
-      .omnibar-edit-item-scroller li {
+      .omnibar-scroller-slide {
         width: 50%;
         height: 100%;
         float: left;
@@ -351,6 +351,10 @@ footer {
 
   .omnibar-footer {
     height: @footer-height;
+    .button-container, .button-row {
+      border-right:0;
+      border-left:0;
+    }
     .button-container.left-of-two button.transparent-button, .button-container.left-of-three button.transparent-button,
     .button-container.right-of-two button.transparent-button, .button-container.right-of-three button.transparent-button {
       width: auto;
