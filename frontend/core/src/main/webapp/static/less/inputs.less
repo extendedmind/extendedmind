@@ -17,6 +17,15 @@ All forms and buttons used in extended mind UI. Imports following less libraries
 @plus-button-width: 27px;
 @icon-button-width: @plus-button-width;
 
+/*
+# Forms
+*/
+
+/*
+* `<input>`, `<select>` and `<textarea>` use maximum width and inherit their background color.
+* `<textarea>` height is @vertical-grid / 2 and uses `.break-words` (foundation.less)
+
+*/
 input, select, textarea {
   width: 100%;
   background-color: inherit;
@@ -30,9 +39,7 @@ textarea {
 }
 
 /*
-# Forms
-
-Use `.simple-input` to create minimalist input fields.
+Use `.simple-input` to create minimalist input fields (no borders or shadows).
 
 ```markup
 <input type="text" class="simple-input" value="simple input"/>
