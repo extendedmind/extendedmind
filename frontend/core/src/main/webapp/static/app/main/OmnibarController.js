@@ -171,14 +171,14 @@
     return $scope.omnibarVisible ? 'omnibar-visible' : 'omnibar-hidden';
   };
 
-  $scope.closeOmnibar = function closeOmnibar() {
+  function closeOmnibar() {
     if ($scope.omnibarVisible){
       $scope.omnibarVisible = false;
       if ($rootScope.packaging === 'ios-cordova'){
         cordova.plugins.Keyboard.disableScroll(false);
       }
     }
-  };
+  }
 
   $scope.omnibarHasText = function omnibarHasText() {
     return $scope.omnibarText.title && $scope.omnibarText.title.length !== 0;
@@ -232,7 +232,7 @@
 
   $scope.omnibarKeyDown = function omnibarKeyDown(event) {
     if (event.keyCode === 27){
-      $scope.clearAndHideOmnibar();
+      clearAndHideOmnibar();
     } else if (event.keyCode === 13){
       // Enter in omnibar saves, no line breaks allowed
       event.preventDefault();
@@ -243,7 +243,7 @@
 
   // For empty omnibar search placeholder
   $scope.hideEmptyOmnibar = function hideEmptyOmnibar() {
-    $scope.clearAndHideOmnibar();
+    clearAndHideOmnibar();
   };
 
   $scope.saveOmnibarText = function saveOmnibarText() {
@@ -261,7 +261,7 @@
           $scope.setOnboardingPhase('secondItemAdded');
         }
       }
-      $scope.clearAndHideOmnibar();
+      clearAndHideOmnibar();
     }
 
     var activeOmnibarFeature;
@@ -464,14 +464,14 @@
     currentOmnibarStyle = undefined;
   };
 
-  $scope.clearAndHideOmnibar = function clearAndHideOmnibar() {
+  function clearAndHideOmnibar() {
     $scope.clearOmnibar();
-    $scope.closeOmnibar();
+    closeOmnibar();
     $scope.isItemEditMode = false;
     $scope.isItemAddMode = false;
     $scope.omnibarKeywords.isVisible = false;
     selectedOmnibarKeywords = [];
-  };
+  }
 
   // Reset item transient values, then clear and hide omnibar
   $scope.cancelOmnibarEdit = function cancelOmnibarEdit() {
@@ -479,7 +479,7 @@
       var activeOmnibarFeature = $scope.getActiveOmnibarFeature();
       omnibarFeatures[activeOmnibarFeature].itemResetFunction($scope[activeOmnibarFeature], UISessionService.getActiveUUID());
     }
-    $scope.clearAndHideOmnibar();
+    clearAndHideOmnibar();
   };
 }
 
