@@ -1,156 +1,155 @@
 <!doctype html>
 <html ng-app="em.appTest">
 <head>
-    <base href="/" />
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="msapplication-tap-highlight" content="no" />
-    <title ng-bind="pageTitle.getTitle()"></title>
-    <link rel="stylesheet/less" href="static/less/em.less"/>
-    <script src="static/lib/less/less-min.js"></script>
-    <link rel="shortcut icon" href="landing/favicon.ico"/>
+  <base href="/" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="msapplication-tap-highlight" content="no" />
+  <title ng-bind="pageTitle.getTitle()"></title>
+  <link rel="stylesheet/less" href="static/less/em.less"/>
+  <script src="static/lib/less/less-min.js"></script>
+  <link rel="shortcut icon" href="landing/favicon.ico"/>
 </head>
 <body>
 
-    <div class="web" root-view ng-controller="MockController"></div>
+  <div class="web" root-view ng-controller="MockController"></div>
 
-    <script src="static/lib/jquery/jquery.js"></script>
-    <script src="static/lib/jasmine/jasmine.js"></script>
-    <script src="static/lib/jasmine/jasmine-jquery.js"></script>
+  <script src="static/lib/jquery/jquery.js"></script>
+  <script src="static/lib/jasmine/jasmine.js"></script>
+  <script src="static/lib/jasmine/jasmine-jquery.js"></script>
 
-    <script>
-        jasmine.getJSONFixtures().fixturesPath = 'test/json';
-    </script>
+  <script>
+    jasmine.getJSONFixtures().fixturesPath = 'test/json';
+  </script>
 
-    <script src="static/lib/angularjs/angular.js"></script>
-    <script src="static/lib/angularjs/angular-animate.js"></script>
-    <script src="static/lib/angularjs/angular-mocks.js"></script>
-    <script src="static/lib/angularjs/angular-route.js"></script>
-    <script src="static/lib/angularjs/ngInfiniteScroll.js"></script>
+  <script src="static/lib/angularjs/angular.js"></script>
+  <script src="static/lib/angularjs/angular-animate.js"></script>
+  <script src="static/lib/angularjs/angular-mocks.js"></script>
+  <script src="static/lib/angularjs/angular-route.js"></script>
+  <script src="static/lib/angularjs/ngInfiniteScroll.js"></script>
 
-    <script src="static/lib/base64.js"></script>
-    <script src="static/lib/elastic.js"></script>
+  <script src="static/lib/base64.js"></script>
+  <script src="static/lib/elastic.js"></script>
 
-    <script src="static/common/common.js"></script>
-    <script src="static/common/DateService.js"></script>
-    <script src="static/common/UUIDService.js"></script>
-    <script src="static/common/dateInputDirective.js"></script>
-    <script src="static/common/dynamicPlaceholderDirective.js"></script>
-    <script src="static/common/editableFieldBackdropDirective.js"></script>
-    <script src="static/common/editableFieldContainerDirective.js"></script>
-    <script src="static/common/editableFieldDirective.js"></script>
-    <script src="static/common/includeReplaceDirective.js"></script>
-    <script src="static/common/pikadayDirective.js"></script>
-    <script src="static/common/iscroll-probe.js"></script>
-    <script src="static/common/loadingAnimationDirective.js"></script>
-    <script src="static/common/listsSelectOptionsDirective.js"></script>
-    <script src="static/common/optionsDisabledDirective.js"></script>
-    <script src="static/common/passwordMatchDirective.js"></script>
-    <script src="static/common/swiper.js"></script>
+  <script src="static/common/common.js"></script>
+  <script src="static/common/DateService.js"></script>
+  <script src="static/common/UUIDService.js"></script>
+  <script src="static/common/dateInputDirective.js"></script>
+  <script src="static/common/dynamicPlaceholderDirective.js"></script>
+  <script src="static/common/editableFieldBackdropDirective.js"></script>
+  <script src="static/common/editableFieldContainerDirective.js"></script>
+  <script src="static/common/editableFieldDirective.js"></script>
+  <script src="static/common/includeReplaceDirective.js"></script>
+  <script src="static/common/pikadayDirective.js"></script>
+  <script src="static/common/iscroll-probe.js"></script>
+  <script src="static/common/loadingAnimationDirective.js"></script>
+  <script src="static/common/listsSelectOptionsDirective.js"></script>
+  <script src="static/common/optionsDisabledDirective.js"></script>
+  <script src="static/common/passwordMatchDirective.js"></script>
+  <script src="static/common/swiper.js"></script>
 
-    <script src="static/app/app.js"></script>
+  <script src="static/app/app.js"></script>
 
-    <script src="static/app/base/http/HttpClientService.js"></script>
-    <script src="static/app/base/http/HttpRequestQueueService.js"></script>
-    <script src="static/app/base/storage/LocalStorageService.js"></script>
-    <script src="static/app/base/storage/SessionStorageService.js"></script>
-    <script src="static/app/base/AnalyticsService.js"></script>
-    <script src="static/app/base/ArrayService.js"></script>
-    <script src="static/app/base/BackendClientService.js"></script>
-    <script src="static/app/base/ContextsController.js"></script>
-    <script src="static/app/base/KeywordsController.js"></script>
-    <script src="static/app/base/ListsController.js"></script>
-    <script src="static/app/base/ListsService.js"></script>
-    <script src="static/app/base/ModalService.js"></script>
-    <script src="static/app/base/SnapService.js"></script>
-    <script src="static/app/base/SwiperService.js"></script>
-    <script src="static/app/base/swiperClickDirective.js"></script>
-    <script src="static/app/base/TagsService.js"></script>
-    <script src="static/app/base/UISessionService.js"></script>
-    <script src="static/app/base/UserSessionService.js"></script>
-    <script src="static/app/base/accordionDirective.js"></script>
-    <script src="static/app/base/addItemDirective.js"></script>
-    <script src="static/app/base/accordionTitleDirective.js"></script>
-    <script src="static/app/base/accordionTitleLinkDirective.js"></script>
-    <script src="static/app/base/itemCoreFieldsDirective.js"></script>
-    <script src="static/app/base/featureContainerDirective.js"></script>
-    <script src="static/app/base/snapDrawerDragDirective.js"></script>
-    <script src="static/app/base/scrollableDirective.js"></script>
-    <script src="static/app/base/scrollToDirective.js"></script>
-    <script src="static/app/base/swiperContainerDirective.js"></script>
-    <script src="static/app/base/swiperPreventDirective.js"></script>
-    <script src="static/app/base/swiperSlideDirective.js"></script>
+  <script src="static/app/base/http/HttpClientService.js"></script>
+  <script src="static/app/base/http/HttpRequestQueueService.js"></script>
+  <script src="static/app/base/storage/LocalStorageService.js"></script>
+  <script src="static/app/base/storage/SessionStorageService.js"></script>
+  <script src="static/app/base/AnalyticsService.js"></script>
+  <script src="static/app/base/ArrayService.js"></script>
+  <script src="static/app/base/BackendClientService.js"></script>
+  <script src="static/app/base/ContextsController.js"></script>
+  <script src="static/app/base/KeywordsController.js"></script>
+  <script src="static/app/base/ListsController.js"></script>
+  <script src="static/app/base/ListsService.js"></script>
+  <script src="static/app/base/ModalService.js"></script>
+  <script src="static/app/base/SnapService.js"></script>
+  <script src="static/app/base/SwiperService.js"></script>
+  <script src="static/app/base/swiperClickDirective.js"></script>
+  <script src="static/app/base/TagsService.js"></script>
+  <script src="static/app/base/UISessionService.js"></script>
+  <script src="static/app/base/UserSessionService.js"></script>
+  <script src="static/app/base/accordionDirective.js"></script>
+  <script src="static/app/base/addItemDirective.js"></script>
+  <script src="static/app/base/accordionTitleDirective.js"></script>
+  <script src="static/app/base/accordionTitleLinkDirective.js"></script>
+  <script src="static/app/base/itemCoreFieldsDirective.js"></script>
+  <script src="static/app/base/featureContainerDirective.js"></script>
+  <script src="static/app/base/snapDrawerDragDirective.js"></script>
+  <script src="static/app/base/scrollToDirective.js"></script>
+  <script src="static/app/base/swiperContainerDirective.js"></script>
+  <script src="static/app/base/swiperPreventDirective.js"></script>
+  <script src="static/app/base/swiperSlideDirective.js"></script>
 
-    <script src="static/app/auth/AuthenticationService.js"></script>
-    <script src="static/app/auth/ForgotController.js"></script>
-    <script src="static/app/auth/LaunchController.js"></script>
-    <script src="static/app/auth/WaitingController.js"></script>
-    <script src="static/app/auth/LoginController.js"></script>
-    <script src="static/app/auth/SignupController.js"></script>
-    <script src="static/app/auth/PasswordController.js"></script>
-    <script src="static/app/auth/rootViewDirective.js"></script>
-    <script src="static/app/auth/MenuController.js"></script>
-    <script src="static/app/auth/VerifyController.js"></script>
+  <script src="static/app/auth/AuthenticationService.js"></script>
+  <script src="static/app/auth/ForgotController.js"></script>
+  <script src="static/app/auth/LaunchController.js"></script>
+  <script src="static/app/auth/WaitingController.js"></script>
+  <script src="static/app/auth/LoginController.js"></script>
+  <script src="static/app/auth/SignupController.js"></script>
+  <script src="static/app/auth/PasswordController.js"></script>
+  <script src="static/app/auth/rootViewDirective.js"></script>
+  <script src="static/app/auth/MenuController.js"></script>
+  <script src="static/app/auth/VerifyController.js"></script>
 
-    <script src="static/app/account/AccountController.js"></script>
-    <script src="static/app/account/AccountService.js"></script>
-    <script src="static/app/account/SettingsController.js"></script>
+  <script src="static/app/account/AccountController.js"></script>
+  <script src="static/app/account/AccountService.js"></script>
+  <script src="static/app/account/SettingsController.js"></script>
 
-    <script src="static/app/tasks/TasksController.js"></script>
-    <script src="static/app/tasks/DatesController.js"></script>
-    <script src="static/app/tasks/datepickerDirective.js"></script>
-    <script src="static/app/tasks/TasksService.js"></script>
-    <script src="static/app/tasks/snoozeDirective.js"></script>
-    <script src="static/app/tasks/tasksByDateFilter.js"></script>
+  <script src="static/app/tasks/TasksController.js"></script>
+  <script src="static/app/tasks/DatesController.js"></script>
+  <script src="static/app/tasks/datepickerDirective.js"></script>
+  <script src="static/app/tasks/TasksService.js"></script>
+  <script src="static/app/tasks/snoozeDirective.js"></script>
+  <script src="static/app/tasks/tasksByDateFilter.js"></script>
 
-    <script src="static/app/notes/NotesController.js"></script>
-    <script src="static/app/notes/NotesService.js"></script>
+  <script src="static/app/notes/NotesController.js"></script>
+  <script src="static/app/notes/NotesService.js"></script>
 
-    <script src="static/app/main/HeaderController.js"></script>
-    <script src="static/app/main/InboxController.js"></script>
-    <script src="static/app/main/ItemsController.js"></script>
-    <script src="static/app/main/ItemsService.js"></script>
-    <script src="static/app/main/MainController.js"></script>
-    <script src="static/app/main/OmnibarController.js"></script>
-    <script src="static/app/main/omnibarDirective.js"></script>
-    <script src="static/app/main/omnibarInputDirective.js"></script>
-    <script src="static/app/main/omnibarEditItemScrollerDirective.js"></script>
-    <script src="static/app/main/FooterController.js"></script>
-    <script src="static/app/main/PageNotFoundController.js"></script>
-    <script src="static/app/main/SynchronizeService.js"></script>
-    <script src="static/app/main/itemsFilter.js"></script>
+  <script src="static/app/main/HeaderController.js"></script>
+  <script src="static/app/main/InboxController.js"></script>
+  <script src="static/app/main/ItemsController.js"></script>
+  <script src="static/app/main/ItemsService.js"></script>
+  <script src="static/app/main/MainController.js"></script>
+  <script src="static/app/main/OmnibarController.js"></script>
+  <script src="static/app/main/omnibarDirective.js"></script>
+  <script src="static/app/main/omnibarInputDirective.js"></script>
+  <script src="static/app/main/omnibarEditItemScrollerDirective.js"></script>
+  <script src="static/app/main/FooterController.js"></script>
+  <script src="static/app/main/PageNotFoundController.js"></script>
+  <script src="static/app/main/SynchronizeService.js"></script>
+  <script src="static/app/main/itemsFilter.js"></script>
 
-    <script src="static/app/admin/AdminController.js"></script>
-    <script src="static/app/admin/AdminService.js"></script>
+  <script src="static/app/admin/AdminController.js"></script>
+  <script src="static/app/admin/AdminService.js"></script>
 
-    <script src="static/app/archive/ArchiveController.js"></script>
+  <script src="static/app/archive/ArchiveController.js"></script>
 
-    <script src="static/app/dashboard/DashboardController.js"></script>
-    <script src="static/app/dashboard/dashboardSlideDirective.js"></script>
+  <script src="static/app/dashboard/DashboardController.js"></script>
+  <script src="static/app/dashboard/dashboardSlideDirective.js"></script>
 
-    <script src="static/lib/snap.js"></script>
-    <script src="static/lib/fastclick.js"></script>
-    <script src="static/lib/pikaday.js"></script>
+  <script src="static/lib/snap.js"></script>
+  <script src="static/lib/fastclick.js"></script>
+  <script src="static/lib/pikaday.js"></script>
 
-    <script src="test/AppTest.js"></script>
-    <script src="test/mock/MockBackendService.js"></script>
-    <script src="test/mock/MockAccountBackendService.js"></script>
-    <script src="test/mock/MockAdminBackendService.js"></script>
-    <script src="test/mock/MockAuthBackendService.js"></script>
-    <script src="test/mock/MockItemsBackendService.js"></script>
-    <script src="test/mock/MockListsBackendService.js"></script>
-    <script src="test/mock/MockNotesBackendService.js"></script>
-    <script src="test/mock/MockTagsBackendService.js"></script>
-    <script src="test/mock/MockTasksBackendService.js"></script>
-    <script>
-        function MockController(MockBackendService, SwiperService) {
-            MockBackendService.mockBackend();
-        }
+  <script src="test/AppTest.js"></script>
+  <script src="test/mock/MockBackendService.js"></script>
+  <script src="test/mock/MockAccountBackendService.js"></script>
+  <script src="test/mock/MockAdminBackendService.js"></script>
+  <script src="test/mock/MockAuthBackendService.js"></script>
+  <script src="test/mock/MockItemsBackendService.js"></script>
+  <script src="test/mock/MockListsBackendService.js"></script>
+  <script src="test/mock/MockNotesBackendService.js"></script>
+  <script src="test/mock/MockTagsBackendService.js"></script>
+  <script src="test/mock/MockTasksBackendService.js"></script>
+  <script>
+    function MockController(MockBackendService, SwiperService) {
+      MockBackendService.mockBackend();
+    }
 
-        MockController.$inject = ['MockBackendService', 'SwiperService'];
-        angular.module('em.appTest').factory('MockController', MockController);
-    </script>
+    MockController.$inject = ['MockBackendService', 'SwiperService'];
+    angular.module('em.appTest').factory('MockController', MockController);
+  </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <div ng-show="isFeatureActive('archive')" class="swiper-container main-slides" swiper-container="archive" swiper-type="main" expected-slides=archiveSlides.length ng-controller="ArchiveController">
-  <div class="swiper-wrapper">
+  <div class="swiper-wrapper" ng-class="getIsWebkitScrolling() ? 'webkit-scrolling' : 'no-webkit-scrolling'">
     <div class="swiper-slide" swiper-slide="archive/{{slides.leftSlide.slideName}}" slide-index=slides.leftSlide.slideIndex ng-include="'static/app/archive/completed.html'" snap-drawer-drag="archive"></div>
     <div ng-if="archiveSlides.length === 3" class="swiper-slide" swiper-slide="archive/{{slides.centerSlide.slideName}}" slide-index=slides.centerSlide.slideIndex ng-include="'static/app/archive/archivedLists.html'"></div>
     <div ng-if="archiveSlides.length === 3" class="swiper-slide" swiper-slide="archive/{{slides.rightSlide.slideName}}" slide-index=slides.rightSlide.slideIndex ng-include="'static/app/archive/archivedList.html'"></div>

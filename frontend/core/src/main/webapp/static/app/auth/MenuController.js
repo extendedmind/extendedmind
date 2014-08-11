@@ -61,10 +61,6 @@
 
   $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
 
-  $scope.$watch('lists.length', function(/*newValue, oldValue*/) {
-    if ($scope.refreshScroller) $scope.refreshScroller();
-  });
-
   $scope.getListClass = function getListClass(list) {
     if (UISessionService.getCurrentFeatureName() === 'list' && UISessionService.getFeatureData('list') === list) {
       return 'active';
@@ -83,7 +79,6 @@
     var state = UISessionService.getUIState();
     UISessionService.setUIStateParameter('listsVisible',
       !state['listsVisible']);
-    if ($scope.refreshScroller) $scope.refreshScroller();
   };
 
   $scope.isListsVisible = function isListsVisible() {

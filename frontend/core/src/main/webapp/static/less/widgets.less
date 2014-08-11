@@ -352,8 +352,8 @@ footer {
   .omnibar-footer {
     height: @footer-height;
     .button-container, .button-row {
-      border-right:0;
-      border-left:0;
+      border-right: 0;
+      border-left: 0;
     }
     .button-container.left-of-two button.transparent-button, .button-container.left-of-three button.transparent-button,
     .button-container.right-of-two button.transparent-button, .button-container.right-of-three button.transparent-button {
@@ -433,12 +433,20 @@ footer {
 
 /* # MENU */
 
+.no-webkit-scrolling {
+  -webkit-overflow-scrolling: auto;
+}
+
+.webkit-scrolling {
+  -webkit-overflow-scrolling: touch;
+}
+
 #menu {
   background-color: @menu;
   position: absolute;
   width: 260px;
   height: 100%;
-  overflow-y: hidden; // scroll with iScroll
+  overflow: auto;
   #menu-content {
     li.account-link {
       padding-top: 8px;
@@ -1163,7 +1171,7 @@ Pagination Styles
     margin: 30px auto;
   }
   .modal-content {
-    .box-shadow(0 5px 15px rgba(0,0,0,.5));
+    .box-shadow(0 5px 15px rgba(0, 0, 0, .5));
   }
 
   // Modal sizes

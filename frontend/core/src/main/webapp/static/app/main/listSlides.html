@@ -1,5 +1,5 @@
 <div ng-show="isFeatureActive('list')" class="swiper-container main-slides" swiper-container="list" swiper-type="main" expected-slides=3>
-  <div class="swiper-wrapper">
+  <div class="swiper-wrapper" ng-class="getIsWebkitScrolling() ? 'webkit-scrolling' : 'no-webkit-scrolling'">
     <div class="swiper-slide" swiper-slide="list/tasks" slide-index=0 ng-include="'static/app/main/listTasks.html'" snap-drawer-drag="list"></div>
     <div class="swiper-slide" swiper-slide="list/notes" slide-index=1 ng-include="'static/app/main/listNotes.html'"></div>
     <div class="swiper-slide" swiper-slide="list/properties" slide-index=2 ng-include="'static/app/main/listProperties.html'"></div>

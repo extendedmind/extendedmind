@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function featureContainerDirective($rootScope, $timeout, SnapService, SwiperService, UISessionService, UserSessionService) {
+ function featureContainerDirective($rootScope, SnapService, SwiperService, UISessionService, UserSessionService) {
   return {
     restrict: 'A',
     controller: function($scope, $element) {
@@ -149,6 +149,10 @@
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), true);
             SnapService.enableSliding();
+            // make following happen inside angularjs event loop
+            scope.$evalAsync(function() {
+              scope.setIsWebkitScrolling(true);
+            });
           }
         } else if (snapperState.state === 'left') {
           angular.element(element[0].parentNode).bind('touchstart', drawerContentClicked);
@@ -193,5 +197,5 @@
     }
   };
 }
-featureContainerDirective['$inject'] = ['$rootScope', '$timeout', 'SnapService', 'SwiperService', 'UISessionService', 'UserSessionService'];
+featureContainerDirective['$inject'] = ['$rootScope', 'SnapService', 'SwiperService', 'UISessionService', 'UserSessionService'];
 angular.module('em.directives').directive('featureContainer', featureContainerDirective);
