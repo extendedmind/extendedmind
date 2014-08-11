@@ -126,7 +126,7 @@ Date input gets formatted by `.date-input-placeholder`.
 }
 
 /*
-## Form wrapping
+## Form wrapping (horizontal positioning)
 Following are used to divide form items horizontally:
 * `.table-wrapper`
 * `.left-input-wrapper`
@@ -134,8 +134,17 @@ Following are used to divide form items horizontally:
 * `.center-input-wrapper`
 * `.left-checkbox-wrapper`
 
-Input on the left and  button on the right OR
-Checkbox on the left, input in the center, and button on the right
+Input on the left and button on the right OR checkbox on the left, input in the center, and button on the right.
+
+```markup
+<div class="table-wrapper">
+  <input type="checkbox" class="left-checkbox-wrapper" />
+    <label></label>
+    <a href="" class="center-input-wrapper">
+      book flight
+    </a>
+</div>
+```
 */
 .table-wrapper {
   display: table;
@@ -146,7 +155,6 @@ Checkbox on the left, input in the center, and button on the right
   display: table-cell;
   vertical-align: middle;
 }
-
 .left-input-wrapper, .center-input-wrapper {
   width: 100%;
 }
