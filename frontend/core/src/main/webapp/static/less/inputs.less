@@ -461,8 +461,17 @@ input[type=date] {
   padding-right: 0;
 }
 
-// SELECTIONS
+/*
+## Selections
 
+Basic select
+
+```markup
+ <select class="simple-input">
+  <option value="">select repeating...</option>
+</select>
+```
+*/
 select {
   &.simple-input {
     color: @default-element;
@@ -476,13 +485,10 @@ select {
     color: @default-element;
   }
 }
-
 ::-webkit-resizer {
   display: none;
 }
-
 // PLACEHOLDER TWEAK
-
 ::-webkit-input-placeholder { /* WebKit browsers */
   color: @default-element;
 }
