@@ -192,6 +192,10 @@ Basic buttons
 </div>
 ```
 */
+button {
+  padding: 0;
+  margin: 0;
+}
 button.normal-button {
   color: white;
   & {
@@ -444,6 +448,7 @@ input[type="checkbox"]:checked + label:before {
   padding-right: 15px;
 }
 
+// TODO Changes with pikaday?
 input[type=date] {
   &.simple-input {
     color: @default-element;
@@ -474,11 +479,6 @@ select {
 
 ::-webkit-resizer {
   display: none;
-}
-
-button {
-  padding: 0;
-  margin: 0;
 }
 
 // PLACEHOLDER TWEAK
