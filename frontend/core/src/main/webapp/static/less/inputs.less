@@ -241,6 +241,22 @@ Use `.wide-button` to make full width buttons.
   display: block;
 }
 
+/*
+Use `.vertical-buttons` to make buttons align in a vertical column.
+
+```markup
+ <div class="form-group button-container vertical-buttons">
+<button type="submit" class="wide-button normal-button" ng-disabled="!forgotForm.$valid" ng-click="sendInstructions()">
+  <span>send</span>
+</button>
+<p ng-show="sendFailed" class="validation-error">you are not an extended mind user</p>
+<p ng-show="sendOffline" class="validation-error">can't connect to server. are you online?</p>
+<button type="submit" class="wide-button cancel-button" ng-click="gotoLogin()">
+  <span>cancel</span>
+</button>
+</div>
+```
+*/
 .vertical-buttons {
   button {
     margin-top: @vertical-grid / 4;
