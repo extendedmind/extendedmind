@@ -176,8 +176,17 @@ Input on the left and button on the right OR checkbox on the left, input in the 
   }
 }
 
-// BUTTONS
+/*
+# Buttons
 
+Wrap buttons with `.button` for the basic look.
+
+```markup
+<button type="button" class="wide-button border-button" ng-click="sortInbox()">
+  <span ng-bind="getSortingText()" class="ng-binding">sort inbox</span>
+</button>
+```
+*/
 .button {
   background: none;
   cursor: pointer;
