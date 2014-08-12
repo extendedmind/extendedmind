@@ -227,12 +227,15 @@ Use `.button` minimalist look (no default button borders or shadings).
 
 /*
 TODO: SELKEÄMMIN ERI VÄRISET NAPIT
+TODO: Refactoring needed
+http://stackoverflow.com/a/12198561/2659424
+
 * `.default-button` gives the basic button coloring (pressed and disabled states)
 
 ```markup
 <ul class="button-row">
 <li class="button-container left-of-two">
-  <button type="button" class="default-button font-small">enabled</button>
+  <button type="button" class="default-button font-small highlighted-button">highlighted</button>
 </li>
 <li class="button-container right-of-two">
   <button type="button" class="default-button disabled="disabled" font-small">disabled</button>
@@ -250,6 +253,18 @@ button.default-button {
   }
   &[disabled] {
     background-color: @default-button-disabled;
+  }
+}
+button.highlighted-button {
+  background-color: white;
+  & {
+    color: @highlighted-button;
+  }
+  &:active {
+    color: @highlighted-button-pressed;
+  }
+  &[disabled] {
+    color: @highlighted-button-disabled;
   }
 }
 
@@ -313,19 +328,6 @@ button.cancel-button {
   }
   &:active {
     background-color: @cancel-button-pressed;
-  }
-}
-
-button.highlighted-button {
-  background-color: white;
-  & {
-    color: @highlighted-button;
-  }
-  &:active {
-    color: @highlighted-button-pressed;
-  }
-  &[disabled] {
-    color: @highlighted-button-disabled;
   }
 }
 
