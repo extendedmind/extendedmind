@@ -401,16 +401,19 @@ Use `.vertical-buttons` to make buttons align in a vertical column
 
 // CHECKBOXES
 
-// Make labels clickable
+/*
+Basic checkbox
+
+TODO: write example when icons are working with styleguide
+*/
+// Make labels also clickable
 label {
   cursor: pointer;
 }
-
- // Never show default checkbox
+ // Hide default HTML checkbox
  input[type=checkbox] {
   display: none;
 }
-
 input[type='checkbox'] + label:before {
   font-family: 'icomoon';
   font-size: @icon-size;
@@ -418,17 +421,6 @@ input[type='checkbox'] + label:before {
   vertical-align: middle;
   color: @default-button;
 }
-
-// Android hack: 10px padding caused redraw problems
-// on the checkbox while swiping, and no other CSS
-// solution fixed the problem. Something like this:
-// http://stackoverflow.com/a/16174338/2659424
-// might be the only proper solution to the repaint
-// problems with Android's WebKit.
-.android input[type='checkbox'] + label:before {
-  padding-right: 15px;
-}
-
 input[type="checkbox"] + label:before {
   .icon-selection-empty;
 }
@@ -440,6 +432,16 @@ input[type="checkbox"] + label.overdue:before {
 input[type="checkbox"]:checked + label:before {
   .icon-selection-checked;
   color: @highlighted-element;
+}
+
+// Android hack: 10px padding caused redraw problems
+// on the checkbox while swiping, and no other CSS
+// solution fixed the problem. Something like this:
+// http://stackoverflow.com/a/16174338/2659424
+// might be the only proper solution to the repaint
+// problems with Android's WebKit.
+.android input[type='checkbox'] + label:before {
+  padding-right: 15px;
 }
 
 input[type=date] {
