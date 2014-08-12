@@ -179,6 +179,100 @@ Input on the left and button on the right OR checkbox on the left, input in the 
 /*
 # Buttons
 
+Basic buttons
+```markup
+<div class="form-group button-container vertical-buttons">
+  <button type="submit" class="normal-button wide-button">normal button</button>
+  <button type="submit" class="cancel-button wide-button">cancel button</button>
+  <button type="submit" class="border-button wide-button">border button</button>
+  <button type="submit" class="delete-button wide-button">delete button</button>
+  <button type="submit" class="transparent-button wide-button">transparent button</button>
+  <button type="submit" class="tab-button wide-button">tab button</button>
+  <button type="submit" class="add-button wide-button">add button</button>
+</div>
+```
+*/
+button.normal-button {
+  color: white;
+  & {
+    background-color: @normal-button;
+  }
+  &:active {
+    background-color: @normal-button-pressed;
+  }
+  &[disabled] {
+    background-color: @normal-button-disabled;
+  }
+}
+button.cancel-button {
+  color: white;
+  & {
+    background-color: @cancel-button;
+  }
+  &:active {
+    background-color: @cancel-button-pressed;
+  }
+}
+button.border-button {
+  border-style: solid !important;
+  border-width: 2px !important;
+  background-color: white;
+  font-size: @default-font-size;
+  & {
+    color: @normal-button;
+    border-color: @normal-button;
+  }
+  &:active {
+    color: @normal-button-pressed;
+    border-color: @normal-button-pressed;
+  }
+  &[disabled] {
+    color: @normal-button-disabled;
+    border-color: @normal-button-disabled;
+  }
+}
+button.delete-button {
+  color: white;
+  & {
+    background-color: @delete-button;
+  }
+  &:active {
+    background-color: @delete-button-pressed;
+  }
+}
+button.transparent-button {
+  color: @normal-button;
+  &:hover {
+    color: @normal-button-hover;
+  }
+  &:active {
+    color: @normal-button-pressed;
+  }
+  &[disabled] {
+    color: @normal-button-disabled;
+  }
+}
+button.tab-button {
+  color: white;
+  background-color: @tab-button;
+  &:hover {
+    background-color: @tab-button-hover;
+  }
+  &:active {
+    background-color: @tab-button-pressed;
+  }
+  &[disabled] {
+    color: black;
+    background-color: white;
+  }
+}
+button.add-button {
+  .simple-input;
+  background-color: white;
+  color: @default-element;
+}
+
+/*
 Use `.button` minimalist look (no default button borders or shadings).
 
 ```markup
@@ -303,99 +397,6 @@ Use `.vertical-buttons` to make buttons align in a vertical column
     margin-top: @vertical-grid / 4;
     margin-bottom: @vertical-grid / 4;
   }
-}
-
-/* Basic buttons
-```markup
-<div class="form-group button-container vertical-buttons">
-  <button type="submit" class="normal-button wide-button">normal button</button>
-  <button type="submit" class="cancel-button wide-button">cancel button</button>
-  <button type="submit" class="border-button wide-button">border button</button>
-  <button type="submit" class="delete-button wide-button">delete button</button>
-  <button type="submit" class="transparent-button wide-button">transparent button</button>
-  <button type="submit" class="tab-button wide-button">tab button</button>
-  <button type="submit" class="add-button wide-button">add button</button>
-</div>
-```
-*/
-button.normal-button {
-  color: white;
-  & {
-    background-color: @normal-button;
-  }
-  &:active {
-    background-color: @normal-button-pressed;
-  }
-  &[disabled] {
-    background-color: @normal-button-disabled;
-  }
-}
-button.cancel-button {
-  color: white;
-  & {
-    background-color: @cancel-button;
-  }
-  &:active {
-    background-color: @cancel-button-pressed;
-  }
-}
-button.border-button {
-  border-style: solid !important;
-  border-width: 2px !important;
-  background-color: white;
-  font-size: @default-font-size;
-  & {
-    color: @normal-button;
-    border-color: @normal-button;
-  }
-  &:active {
-    color: @normal-button-pressed;
-    border-color: @normal-button-pressed;
-  }
-  &[disabled] {
-    color: @normal-button-disabled;
-    border-color: @normal-button-disabled;
-  }
-}
-button.delete-button {
-  color: white;
-  & {
-    background-color: @delete-button;
-  }
-  &:active {
-    background-color: @delete-button-pressed;
-  }
-}
-button.transparent-button {
-  color: @normal-button;
-  &:hover {
-    color: @normal-button-hover;
-  }
-  &:active {
-    color: @normal-button-pressed;
-  }
-  &[disabled] {
-    color: @normal-button-disabled;
-  }
-}
-button.tab-button {
-  color: white;
-  background-color: @tab-button;
-  &:hover {
-    background-color: @tab-button-hover;
-  }
-  &:active {
-    background-color: @tab-button-pressed;
-  }
-  &[disabled] {
-    color: black;
-    background-color: white;
-  }
-}
-button.add-button {
-  .simple-input;
-  background-color: white;
-  color: @default-element;
 }
 
 // CHECKBOXES
