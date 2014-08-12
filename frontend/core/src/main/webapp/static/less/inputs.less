@@ -194,7 +194,8 @@ Use `.button` minimalist look (no default button borders or shadings).
 }
 
 /*
-Use `.button-container` to center the button label. The parent must be wrapped with `.button-container`.
+* Use `.button-container` to center the button label
+* The parent must be wrapped with `.button-container`
 
 ```markup
 <ul class="button-row">
@@ -207,7 +208,7 @@ Use `.button-container` to center the button label. The parent must be wrapped w
 </ul>
 ```
 */
-// TODO: Maybe refactoring needed?
+// TODO: refactoring needed
 .button-row {
   width: 100%;
   height: @vertical-grid;
@@ -222,6 +223,34 @@ Use `.button-container` to center the button label. The parent must be wrapped w
 }
 .button-container {
   text-align: center;
+}
+
+/*
+TODO: SELKEÄMMIN ERI VÄRISET NAPIT
+* `.default-button` gives the basic button coloring (pressed and disabled states)
+
+```markup
+<ul class="button-row">
+<li class="button-container left-of-two">
+  <button type="button" class="default-button font-small">enabled</button>
+</li>
+<li class="button-container right-of-two">
+  <button type="button" class="default-button disabled="disabled" font-small">disabled</button>
+</li>
+</ul>
+```
+*/
+button.default-button {
+  color: white;
+  & {
+    background-color: @default-button;
+  }
+  &:active {
+    background-color: @default-button-pressed;
+  }
+  &[disabled] {
+    background-color: @default-button-disabled;
+  }
 }
 
 /*
@@ -242,16 +271,18 @@ Use `.wide-button` to make full width buttons.
 }
 
 /*
-Use `.vertical-buttons` to make buttons align in a vertical column.
+Use `.vertical-buttons` to make buttons align in a vertical column
+
+Following are used for button styling:
+* `.normal-button`
+* `.cancel-button`
 
 ```markup
  <div class="form-group button-container vertical-buttons">
-<button type="submit" class="wide-button normal-button" ng-disabled="!forgotForm.$valid" ng-click="sendInstructions()">
+<button type="submit" class="wide-button normal-button">
   <span>send</span>
 </button>
-<p ng-show="sendFailed" class="validation-error">you are not an extended mind user</p>
-<p ng-show="sendOffline" class="validation-error">can't connect to server. are you online?</p>
-<button type="submit" class="wide-button cancel-button" ng-click="gotoLogin()">
+<button type="submit" class="wide-button cancel-button">
   <span>cancel</span>
 </button>
 </div>
@@ -261,6 +292,27 @@ Use `.vertical-buttons` to make buttons align in a vertical column.
   button {
     margin-top: @vertical-grid / 4;
     margin-bottom: @vertical-grid / 4;
+  }
+}
+button.normal-button {
+  color: white;
+  & {
+    background-color: @normal-button;
+  }
+  &:active {
+    background-color: @normal-button-pressed;
+  }
+  &[disabled] {
+    background-color: @normal-button-disabled;
+  }
+}
+button.cancel-button {
+  color: white;
+  & {
+    background-color: @cancel-button;
+  }
+  &:active {
+    background-color: @cancel-button-pressed;
   }
 }
 
@@ -274,32 +326,6 @@ button.highlighted-button {
   }
   &[disabled] {
     color: @highlighted-button-disabled;
-  }
-}
-
-button.default-button {
-  color: white;
-  & {
-    background-color: @default-button;
-  }
-  &:active {
-    background-color: @default-button-pressed;
-  }
-  &[disabled] {
-    background-color: @default-button-disabled;
-  }
-}
-
-button.normal-button {
-  color: white;
-  & {
-    background-color: @normal-button;
-  }
-  &:active {
-    background-color: @normal-button-pressed;
-  }
-  &[disabled] {
-    background-color: @normal-button-disabled;
   }
 }
 
@@ -321,18 +347,6 @@ button.border-button {
     border-color: @normal-button-disabled;
   }
 }
-
-
-button.cancel-button {
-  color: white;
-  & {
-    background-color: @cancel-button;
-  }
-  &:active {
-    background-color: @cancel-button-pressed;
-  }
-}
-
 
 button.delete-button {
   color: white;
