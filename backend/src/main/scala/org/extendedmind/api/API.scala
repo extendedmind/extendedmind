@@ -79,6 +79,8 @@ trait API extends HttpService {
   val undeleteTask = post & path(JavaUUID / "task" / JavaUUID / "undelete")
   val completeTask = post & path(JavaUUID / "task" / JavaUUID / "complete")
   val uncompleteTask = post & path(JavaUUID / "task" / JavaUUID / "uncomplete")
+  val taskToList = post & path(JavaUUID / "task" / JavaUUID / "list")
+  // TODO:
   val assignTask = post & path(JavaUUID / "task" / JavaUUID / "assign")
 
   // NOTES

@@ -240,6 +240,7 @@ trait ItemDatabase extends UserDatabase {
       .evaluator(LabelEvaluator(scala.List(MainLabel.ITEM)))
   }
 
+  
   protected def createItem(owner: Owner, item: AnyRef,
     extraLabel: Option[Label] = None, extraSubLabel: Option[Label] = None): Response[Node] = {
     withTx {
@@ -346,14 +347,11 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem,
-    label: Label,
-    subLabel: Option[Label] = None,
-    subLabelAlternatives: Option[scala.List[Label]] = None): Response[Node] = {
+  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, label: Label): Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- updateItem(owner, itemUUID, extItem, Some(label), subLabel, subLabelAlternatives).right
+          itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None).right
           parentNode <- setParentNode(itemNode, owner, extItem).right
           tagNodes <- setTagNodes(itemNode, owner, extItem).right
         } yield itemNode

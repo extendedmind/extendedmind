@@ -28,7 +28,6 @@ case class List(
       title: String, 
       description: Option[String], 
       link: Option[String],
-      completable: Option[Boolean],
       due: Option[String],
       assignee: Option[UUID],
       assigner: Option[UUID],
@@ -44,11 +43,10 @@ case class List(
 object List{
   def apply(title: String, description: Option[String],
 		  	link: Option[String],
-		  	completable: Option[Boolean],
 		  	due: Option[String],
             relationships: Option[ExtendedItemRelationships]) 
         = new List(None, None, None, None, None,  title, description, 
-                   link, completable, due, None, None, None, relationships)
+                   link, due, None, None, None, relationships)
 }
 
 case class ArchiveListResult(archived: Long, children: Option[scala.List[SetResult]], history: Tag, result: SetResult)

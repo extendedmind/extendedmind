@@ -89,6 +89,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(updateItemsIndex(taskNode, result)).right
     } yield result
   }
+  
+  def taskToList(owner: Owner, taskUUID: UUID, task: Task): Response[List] = {
+    for {
+      convertResult <- convertTaskToList(owner, taskUUID, task).right
+      result <- Right(getSetResult(convertResult._1, false)).right
+      unit <- Right(updateItemsIndex(convertResult._1, result)).right
+    } yield convertResult._2
+  }
 
   // PRIVATE
 
@@ -136,10 +144,10 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   
   protected def markTaskNodeComplete(owner: Owner, taskNode: Node)(implicit neo4j: DatabaseService): Response[Long] = {
     withTx {
-      implicit neo =>
-	    val currentTime = System.currentTimeMillis()
-	    taskNode.setProperty("completed", currentTime)
-	    Right(currentTime)
+      implicit neo4j =>
+  	    val currentTime = System.currentTimeMillis()
+  	    taskNode.setProperty("completed", currentTime)
+  	    Right(currentTime)
     }
   }
 
@@ -240,6 +248,18 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
           itemNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)
+    }
+  }
+  
+  protected def convertTaskToList(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, List)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          taskNode <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
+          listNode <- Right(setLabel(taskNode, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.TASK)))).right
+          listNode <- updateNode(listNode, task).right
+          list <- toList(listNode, owner).right
+        } yield (taskNode, list)
     }
   }
 

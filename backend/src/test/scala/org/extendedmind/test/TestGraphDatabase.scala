@@ -146,11 +146,11 @@ trait TestGraphDatabase extends GraphDatabase {
 
     // Store lists for user
     val extendedMindTechnologiesList = putNewList(Owner(timoUUID, None),
-      List("extended mind technologies", None, Some("http://ext.md"), None, None, None)).right.get
+      List("extended mind technologies", None, Some("http://ext.md"), None, None)).right.get
     val tripList = putNewList(Owner(timoUUID, None),
-      List("trip to Dublin", None, None, Some(true), Some("2013-10-31"), None)).right.get
+      List("trip to Dublin", None, None, Some("2013-10-31"), None)).right.get
     val essayList = putNewList(Owner(timoUUID, None),
-      List("write essay on cognitive biases", None, None, Some(true), None, None)).right.get
+      List("write essay on cognitive biases", None, None, None, None)).right.get
 
     // Store tasks for user
     putNewTask(Owner(timoUUID, None),

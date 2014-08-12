@@ -66,6 +66,11 @@ trait TaskActions {
     log.info("uncompleteTask")
     db.uncompleteTask(owner, taskUUID)
   }
+  
+  def taskToList(owner: Owner, taskUUID: UUID, task: Task)(implicit log: LoggingAdapter): Response[List] = {
+    log.info("taskToList")
+    db.taskToList(owner, taskUUID, task)
+  }
 
 }
 

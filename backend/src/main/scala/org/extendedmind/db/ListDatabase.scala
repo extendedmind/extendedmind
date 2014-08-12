@@ -47,7 +47,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
 
   def putExistingList(owner: Owner, listUUID: UUID, list: List): Response[SetResult] = {
     for {
-      listNode <- putExistingListNode(owner, listUUID, list).right
+      listNode <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST).right
       result <- Right(getSetResult(listNode, false)).right
       unit <- Right(updateItemsIndex(listNode, result)).right
     } yield result
@@ -86,21 +86,6 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
 
   // PRIVATE
 
-  protected def putExistingListNode(owner: Owner, listUUID: UUID, list: List): Response[Node] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          itemNode <- getItemNode(owner, listUUID, exactLabelMatch = false).right
-          wasTask <- validateListUpdatable(itemNode).right
-          listNode <- Right(setLabel(itemNode, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.TASK)))).right
-          listNode <- updateNode(listNode, list).right
-          parentNode <- setParentNode(listNode, owner, list).right
-          tagNodes <- setTagNodes(listNode, owner, list).right
-          completable <- setCompletable(listNode, wasTask).right
-        } yield listNode
-    }
-  }
-
   override def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List] = {
     for {
       list <- toCaseClass[List](listNode).right
@@ -121,35 +106,6 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
             tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
           else None))).right
     } yield task
-  }
-
-  protected def validateListUpdatable(itemNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
-    if (itemNode.hasLabel(ItemLabel.TAG))
-      fail(INVALID_PARAMETER, "Tag can not be updated to list, only task or item")
-    else if (itemNode.hasLabel(ItemLabel.NOTE))
-      fail(INVALID_PARAMETER, "Note can not be updated to list, only task or item")
-    else if (itemNode.hasLabel(ItemLabel.TASK) && itemNode.hasProperty("completed"))
-      fail(INVALID_PARAMETER, "Completed task can not be updated to list")
-    else if (itemNode.hasLabel(ItemLabel.TASK) && (itemNode.hasProperty("reminder") || itemNode.hasProperty("repeating")))
-      fail(INVALID_PARAMETER, "Repeating task or task with reminder can not be updated to list")
-    else {
-      if (itemNode.hasLabel(ItemLabel.TASK))
-        Right(true)
-      else
-        Right(false)
-    }
-  }
-
-  protected def setCompletable(itemNode: Node, wasTask: Boolean)(implicit neo4j: DatabaseService): Response[Boolean] = {
-    if (itemNode.hasProperty("completable") && itemNode.getProperty("completable").asInstanceOf[Boolean]) {
-      Right(true);
-    } else if (wasTask) {
-      // If a task is turned into a list, it is automatically completable
-      itemNode.setProperty("completable", java.lang.Boolean.TRUE)
-      Right(true);
-    } else {
-      Right(false)
-    }
   }
 
   protected def validateListArchivable(owner: Owner, listUUID: UUID): Response[Node] = {
