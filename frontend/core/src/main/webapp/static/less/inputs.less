@@ -179,7 +179,7 @@ Input on the left and button on the right OR checkbox on the left, input in the 
 /*
 # Buttons
 
-Use `.button` with buttons for minimalist look (no borders or shadings).
+Use `.button` minimalist look (no default button borders or shadings).
 
 ```markup
 <button class="button">sort inbox</button>
@@ -193,18 +193,21 @@ Use `.button` with buttons for minimalist look (no borders or shadings).
   display: inline-block;
 }
 
-.button-container {
-  text-align: center;
-}
+/*
+Use `.button-container` to center the button label. The parent must be wrapped with `.button-container`.
 
-.wide-button {
-  .simple-input;
-  .center-horizontally;
-  height: @vertical-grid;
-  width: 100%;
-  display: block;
-}
-
+```markup
+<ul class="button-row">
+<li class="button-container left-of-two">
+  <button type="button" class="default-button font-small">change password</button>
+</li>
+<li class="button-container right-of-two">
+  <button type="button" class="default-button font-small">logout</button>
+</li>
+</ul>
+```
+*/
+// TODO: Maybe refactoring needed?
 .button-row {
   width: 100%;
   height: @vertical-grid;
@@ -216,6 +219,26 @@ Use `.button` with buttons for minimalist look (no borders or shadings).
       height: @vertical-grid;
     }
   }
+}
+.button-container {
+  text-align: center;
+}
+
+/*
+Use `.wide-button` to make full width buttons.
+
+```markup
+<button type="submit" class="wide-button normal-button">
+<span>done</span>
+</button>
+```
+*/
+.wide-button {
+  .simple-input;
+  .center-horizontally;
+  height: @vertical-grid;
+  width: 100%;
+  display: block;
 }
 
 .vertical-buttons {
