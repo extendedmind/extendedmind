@@ -194,8 +194,8 @@ Use `.button` minimalist look (no default button borders or shadings).
 }
 
 /*
-* Use `.button-container` to center the button label
-* The parent must be wrapped with `.button-container`
+* Use `.button-container` to group buttons
+* The parent must be wrapped with `.button-row`
 
 ```markup
 <ul class="button-row">
@@ -287,10 +287,6 @@ Use `.wide-button` to make full width buttons.
 /*
 Use `.vertical-buttons` to make buttons align in a vertical column
 
-Following are used for button styling:
-* `.normal-button`
-* `.cancel-button`
-
 ```markup
  <div class="form-group button-container vertical-buttons">
 <button type="submit" class="wide-button normal-button">
@@ -308,6 +304,20 @@ Following are used for button styling:
     margin-bottom: @vertical-grid / 4;
   }
 }
+
+/* Basic buttons
+```markup
+<div class="form-group button-container vertical-buttons">
+  <button type="submit" class="normal-button wide-button">normal button</button>
+  <button type="submit" class="cancel-button wide-button">cancel button</button>
+  <button type="submit" class="border-button wide-button">border button</button>
+  <button type="submit" class="delete-button wide-button">delete button</button>
+  <button type="submit" class="transparent-button wide-button">transparent button</button>
+  <button type="submit" class="tab-button wide-button">tab button</button>
+  <button type="submit" class="add-button wide-button">add button</button>
+</div>
+```
+*/
 button.normal-button {
   color: white;
   & {
@@ -329,7 +339,6 @@ button.cancel-button {
     background-color: @cancel-button-pressed;
   }
 }
-
 button.border-button {
   border-style: solid !important;
   border-width: 2px !important;
@@ -348,7 +357,6 @@ button.border-button {
     border-color: @normal-button-disabled;
   }
 }
-
 button.delete-button {
   color: white;
   & {
@@ -358,7 +366,6 @@ button.delete-button {
     background-color: @delete-button-pressed;
   }
 }
-
 button.transparent-button {
   color: @normal-button;
   &:hover {
@@ -371,7 +378,6 @@ button.transparent-button {
     color: @normal-button-disabled;
   }
 }
-
 button.tab-button {
   color: white;
   background-color: @tab-button;
@@ -386,7 +392,6 @@ button.tab-button {
     background-color: white;
   }
 }
-
 button.add-button {
   .simple-input;
   background-color: white;
