@@ -141,6 +141,6 @@ trait API extends HttpService {
   val resetTokens = post & path("admin" / "tokens" / "reset".r)
 
   // SYSTEM
-  val shutdown = post & path("shutdown".r)
+  val shutdown = post & path("shutdown")
 
 }

@@ -160,7 +160,19 @@ trait Service extends AdminService
   val route = {
     getRoot {
       complete {
-        "{\"version\":\"" + settings.version + "\"}"
+      "{\"version\":\"" + settings.version + "\"}"
+      }
+    } ~
+    shutdown {
+      complete {
+        in(1.second) {
+          // First shut down actor system
+          actorSystem.shutdown
+          actorSystem.awaitTermination
+          // Then shut down Neo4j
+          adminActions.shutdown
+        }
+        "Shutting down in 1 second..."
       }
     } ~ adminRoutes ~ securityRoutes ~ userRoutes ~ inviteRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes
   }

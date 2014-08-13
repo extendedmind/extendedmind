@@ -427,19 +427,6 @@ trait AdminService extends ServiceBase {
             }
           }
         }
-      } ~
-      shutdown { url =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            complete {
-              in(1.second) { 
-                adminActions.shutdown
-                actorSystem.shutdown
-              }
-              "Shutting down in 1 second..."
-            }
-          }
-        }
       }
   }
 }
