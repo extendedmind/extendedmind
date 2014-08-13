@@ -70,6 +70,22 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(updateItemsIndex(deletedNoteNode._1, result.result)).right
     } yield result
   }
+  
+  def noteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[Task] = {
+    for {
+      convertResult <- convertNoteToTask(owner, noteUUID, note).right
+      result <- Right(getSetResult(convertResult._1, false)).right
+      unit <- Right(updateItemsIndex(convertResult._1, result)).right
+    } yield convertResult._2
+  }
+  
+  def noteToList(owner: Owner, noteUUID: UUID, note: Note): Response[List] = {
+    for {
+      convertResult <- convertNoteToList(owner, noteUUID, note).right
+      result <- Right(getSetResult(convertResult._1, false)).right
+      unit <- Right(updateItemsIndex(convertResult._1, result)).right
+    } yield convertResult._2
+  }
 
   // PRIVATE
 
@@ -106,6 +122,30 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
           itemNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)
+    }
+  }
+  
+  protected def convertNoteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, Task)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          noteNode <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
+          taskNode <- Right(setLabel(noteNode, Some(MainLabel.ITEM), Some(ItemLabel.TASK), Some(scala.List(ItemLabel.NOTE)))).right
+          result <- moveContentToDescription(taskNode).right
+          task <- toTask(taskNode, owner).right
+        } yield (taskNode, task)
+    }
+  }
+  
+  protected def convertNoteToList(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, List)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          noteNode <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
+          listNode <- Right(setLabel(noteNode, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.NOTE)))).right
+          result <- moveContentToDescription(listNode).right
+          list <- toList(listNode, owner).right
+        } yield (listNode, list)
     }
   }
 }

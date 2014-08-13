@@ -83,7 +83,24 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
       unit <- Right(updateItemsIndex(listNode, result.result)).right
     } yield result
   }
+  
+  def listToTask(owner: Owner, listUUID: UUID, list: List): Response[Task] = {
+    for {
+      convertResult <- convertListToTask(owner, listUUID, list).right
+      result <- Right(getSetResult(convertResult._1, false)).right
+      unit <- Right(updateItemsIndex(convertResult._1, result)).right
+    } yield convertResult._2
+  }
 
+  def listToNote(owner: Owner, listUUID: UUID, list: List): Response[Note] = {
+    for {
+      convertResult <- convertListToNote(owner, listUUID, list).right
+      result <- Right(getSetResult(convertResult._1, false)).right
+      unit <- Right(updateItemsIndex(convertResult._1, result)).right
+    } yield convertResult._2
+  }
+
+  
   // PRIVATE
 
   override def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List] = {
@@ -193,4 +210,38 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
       }
     }
   }
+  
+  protected def convertListToTask(owner: Owner, listUUID: UUID, list: List): Response[(Node, Task)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          listNode <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST).right
+          result <- validateListConvertable(listNode).right
+          taskNode <- Right(setLabel(listNode, Some(MainLabel.ITEM), Some(ItemLabel.TASK), Some(scala.List(ItemLabel.LIST)))).right
+          task <- toTask(taskNode, owner).right
+        } yield (taskNode, task)
+    }
+  }
+  
+  protected def convertListToNote(owner: Owner, listUUID: UUID, list: List): Response[(Node, Note)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          listNode <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST).right
+          result <- validateListConvertable(listNode).right
+          noteNode <- Right(setLabel(listNode, Some(MainLabel.ITEM), Some(ItemLabel.NOTE), Some(scala.List(ItemLabel.LIST)))).right
+          result <- Right(moveDescriptionToContent(noteNode)).right
+          note <- toNote(noteNode, owner).right
+        } yield (noteNode, note)
+    }
+  }
+  
+  protected def validateListConvertable(listNode: Node)(implicit neo4j: DatabaseService): Response[Unit] = {
+    // Can't convert a list that has children
+    if (hasChildren(listNode, None))
+      fail(INVALID_PARAMETER, "can not convert a list that has child items")
+    else
+      Right()
+  }
+  
 }

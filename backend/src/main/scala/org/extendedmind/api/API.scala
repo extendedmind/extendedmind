@@ -80,6 +80,8 @@ trait API extends HttpService {
   val completeTask = post & path(JavaUUID / "task" / JavaUUID / "complete")
   val uncompleteTask = post & path(JavaUUID / "task" / JavaUUID / "uncomplete")
   val taskToList = post & path(JavaUUID / "task" / JavaUUID / "list")
+  val taskToNote = post & path(JavaUUID / "task" / JavaUUID / "note")
+
   // TODO:
   val assignTask = post & path(JavaUUID / "task" / JavaUUID / "assign")
 
@@ -89,7 +91,9 @@ trait API extends HttpService {
   val putExistingNote = put & path(JavaUUID / "note" / JavaUUID)
   val deleteNote = delete & path(JavaUUID / "note" / JavaUUID)
   val undeleteNote = post & path(JavaUUID / "note" / JavaUUID / "undelete")
-
+  val noteToTask = post & path(JavaUUID / "note" / JavaUUID / "task")
+  val noteToList = post & path(JavaUUID / "note" / JavaUUID / "list")
+  
   // LISTS
   val getList = get & path(JavaUUID / "list" / JavaUUID)
   val putNewList = put & path(JavaUUID / "list")
@@ -99,7 +103,9 @@ trait API extends HttpService {
   val archiveList = post & path(JavaUUID / "list" / JavaUUID / "archive")
   // TODO:
   val unarchiveList = post & path(JavaUUID / "list" / JavaUUID / "unarchive")
-
+  val listToTask = post & path(JavaUUID / "list" / JavaUUID / "task")
+  val listToNote = post & path(JavaUUID / "list" / JavaUUID / "note")
+  
   // TAGS
   val getTag = get & path(JavaUUID / "tag" / JavaUUID)
   val putNewTag = put & path(JavaUUID / "tag")

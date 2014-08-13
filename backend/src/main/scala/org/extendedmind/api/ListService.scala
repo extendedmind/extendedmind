@@ -140,6 +140,43 @@ trait ListService extends ServiceBase {
             }
           }
         }
+      } ~
+      listToTask { (ownerUUID, listUUID) =>
+        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+          authorize(writeAccess(ownerUUID, securityContext)) {
+            entity(as[List]) { list =>
+              complete {
+                Future[Task] {
+                  setLogContext(securityContext, ownerUUID, listUUID)
+                  listActions.listToTask(getOwner(ownerUUID, securityContext), listUUID, list) match {
+                    case Right(task) => processResult(task)
+                    case Left(e) => processErrors(e)
+                  }
+                }
+              }
+            }
+          }
+        }
+      } ~
+      listToNote { (ownerUUID, listUUID) =>
+        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+          authorize(writeAccess(ownerUUID, securityContext)) {
+            entity(as[List]) { list =>
+              complete {
+                Future[Note] {
+                  setLogContext(securityContext, ownerUUID, listUUID)
+                  listActions.listToNote(getOwner(ownerUUID, securityContext), listUUID, list) match {
+                    case Right(note) => processResult(note)
+                    case Left(e) => processErrors(e)
+                  }
+                }
+              }
+            }
+          }
+        }
       }
+      
+      
+      
     }
 }

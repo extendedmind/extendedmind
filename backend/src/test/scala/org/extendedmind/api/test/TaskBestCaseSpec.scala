@@ -224,5 +224,30 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         endTask.relationships.get.tags.get(0) should be (itemsResponse.tags.get(0).uuid.get)
       }
     }
+    it("should successfully convert task to note with POST to /[userUUID]/task/[itemUUID]/note "
+      + "and transform it back with POST to /[userUUID]/note/[itemUUID]/task") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val newTask = Task("learn Spanish", Some("would be useful"), None, None, None, None, None)
+      val putTaskResponse = putNewTask(newTask, authenticateResponse)
+
+      Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/note",
+          marshal(newTask.copy(title = "Spanish studies"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val noteFromTask = responseAs[Note]
+        writeJsonOutput("taskToNoteResponse", responseAs[String])
+        noteFromTask.uuid.get should be (putTaskResponse.uuid.get)
+        noteFromTask.title should be ("Spanish studies")
+        noteFromTask.description should be (None)
+        noteFromTask.content.get should be ("would be useful")
+
+        Post("/" + authenticateResponse.userUUID + "/note/" + putTaskResponse.uuid.get + "/task",
+          marshal(noteFromTask.copy(title = "learn Spanish"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val taskFromNote = responseAs[Task]
+          writeJsonOutput("noteToTaskResponse", responseAs[String])
+          taskFromNote.uuid.get should be (putTaskResponse.uuid.get)
+          taskFromNote.title should be ("learn Spanish")
+          taskFromNote.description.get should be ("would be useful")
+        }
+      }
+    }
   }
 }

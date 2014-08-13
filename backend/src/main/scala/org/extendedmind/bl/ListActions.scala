@@ -61,6 +61,16 @@ trait ListActions {
     log.info("archiveList")
     db.archiveList(owner, listUUID)
   }
+  
+  def listToTask(owner: Owner, listUUID: UUID, list: List)(implicit log: LoggingAdapter): Response[Task] = {
+    log.info("listToTask")
+    db.listToTask(owner, listUUID, list)
+  }
+  
+  def listToNote(owner: Owner, listUUID: UUID, list: List)(implicit log: LoggingAdapter): Response[Note] = {
+    log.info("listToNote")
+    db.listToNote(owner, listUUID, list)
+  }
 }
 
 class ListActionsImpl(implicit val settings: Settings, implicit val inj: Injector)

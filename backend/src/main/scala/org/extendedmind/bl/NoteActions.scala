@@ -56,6 +56,16 @@ trait NoteActions {
     log.info("undeleteNote")
     db.undeleteItem(owner, noteUUID, Some(ItemLabel.NOTE))
   }
+  
+  def noteToTask(owner: Owner, noteUUID: UUID, note: Note)(implicit log: LoggingAdapter): Response[Task] = {
+    log.info("noteToTask")
+    db.noteToTask(owner, noteUUID, note)
+  }
+  
+  def noteToList(owner: Owner, noteUUID: UUID, note: Note)(implicit log: LoggingAdapter): Response[List] = {
+    log.info("noteToList")
+    db.noteToList(owner, noteUUID, note)
+  }
 }
 
 class NoteActionsImpl(implicit val settings: Settings, implicit val inj: Injector)

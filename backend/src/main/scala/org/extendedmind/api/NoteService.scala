@@ -125,6 +125,40 @@ trait NoteService extends ServiceBase {
             }
           }
         }
+      } ~
+      noteToTask { (ownerUUID, noteUUID) =>
+        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+          authorize(writeAccess(ownerUUID, securityContext)) {
+            entity(as[Note]) { note =>
+              complete {
+                Future[Task] {
+                  setLogContext(securityContext, ownerUUID, noteUUID)
+                  noteActions.noteToTask(getOwner(ownerUUID, securityContext), noteUUID, note) match {
+                    case Right(task) => processResult(task)
+                    case Left(e) => processErrors(e)
+                  }
+                }
+              }
+            }
+          }
+        }
+      } ~
+      noteToList { (ownerUUID, noteUUID) =>
+        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+          authorize(writeAccess(ownerUUID, securityContext)) {
+            entity(as[Note]) { note =>
+              complete {
+                Future[List] {
+                  setLogContext(securityContext, ownerUUID, noteUUID)
+                  noteActions.noteToList(getOwner(ownerUUID, securityContext), noteUUID, note) match {
+                    case Right(list) => processResult(list)
+                    case Left(e) => processErrors(e)
+                  }
+                }
+              }
+            }
+          }
+        }
       }
   }
 }

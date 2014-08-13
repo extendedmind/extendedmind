@@ -172,6 +172,23 @@ trait TaskService extends ServiceBase {
             }
           }
         }
+      } ~
+      taskToNote { (ownerUUID, taskUUID) =>
+        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+          authorize(writeAccess(ownerUUID, securityContext)) {
+            entity(as[Task]) { task =>
+              complete {
+                Future[Note] {
+                  setLogContext(securityContext, ownerUUID, taskUUID)
+                  taskActions.taskToNote(getOwner(ownerUUID, securityContext), taskUUID, task) match {
+                    case Right(note) => processResult(note)
+                    case Left(e) => processErrors(e)
+                  }
+                }
+              }
+            }
+          }
+        }
       }
       
       

@@ -97,6 +97,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
     } yield convertResult._2
   }
+  
+  def taskToNote(owner: Owner, taskUUID: UUID, task: Task): Response[Note] = {
+    for {
+      convertResult <- convertTaskToNote(owner, taskUUID, task).right
+      result <- Right(getSetResult(convertResult._1, false)).right
+      unit <- Right(updateItemsIndex(convertResult._1, result)).right
+    } yield convertResult._2
+  }
 
   // PRIVATE
 
@@ -257,9 +265,20 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
         for {
           taskNode <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
           listNode <- Right(setLabel(taskNode, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.TASK)))).right
-          listNode <- updateNode(listNode, task).right
           list <- toList(listNode, owner).right
         } yield (taskNode, list)
+    }
+  }
+  
+  protected def convertTaskToNote(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, Note)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          taskNode <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
+          noteNode <- Right(setLabel(taskNode, Some(MainLabel.ITEM), Some(ItemLabel.NOTE), Some(scala.List(ItemLabel.TASK)))).right
+          result <- Right(moveDescriptionToContent(noteNode)).right
+          note <- toNote(noteNode, owner).right
+        } yield (taskNode, note)
     }
   }
 

@@ -117,5 +117,30 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             }
         }
     }
+    it("should successfully convert note to list with POST to /[userUUID]/note/[itemUUID]/list "
+      + "and transform it back with POST to /[userUUID]/list/[itemUUID]/note") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None)
+      val putNoteResponse = putNewNote(newNote, authenticateResponse)
+
+      Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/list",
+          marshal(newNote.copy(title = "Spanish studies"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val listFromTask = responseAs[List]
+        writeJsonOutput("noteToListResponse", responseAs[String])
+        listFromTask.uuid.get should be (putNoteResponse.uuid.get)
+        listFromTask.title should be ("Spanish studies")
+        listFromTask.description.get should be ("lecture notes for Spanish 101 class")
+
+        Post("/" + authenticateResponse.userUUID + "/list/" + putNoteResponse.uuid.get + "/note",
+          marshal(listFromTask.copy(title = "Spanish 101"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val noteFromList = responseAs[Note]
+          writeJsonOutput("listToNoteResponse", responseAs[String])
+          noteFromList.uuid.get should be (putNoteResponse.uuid.get)
+          noteFromList.title should be ("Spanish 101")
+          noteFromList.content.get should be ("lecture notes for Spanish 101 class")
+          noteFromList.description should be (None)
+        }
+      }
+    }
   }
 }

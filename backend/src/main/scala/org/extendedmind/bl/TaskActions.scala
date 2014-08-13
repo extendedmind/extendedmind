@@ -71,6 +71,11 @@ trait TaskActions {
     log.info("taskToList")
     db.taskToList(owner, taskUUID, task)
   }
+  
+  def taskToNote(owner: Owner, taskUUID: UUID, task: Task)(implicit log: LoggingAdapter): Response[Note] = {
+    log.info("taskToNote")
+    db.taskToNote(owner, taskUUID, task)
+  }
 
 }
 

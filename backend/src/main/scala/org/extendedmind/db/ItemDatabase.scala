@@ -648,6 +648,33 @@ trait ItemDatabase extends UserDatabase {
       Right(Some(relationshipList))
     }
   }
+  
+  protected def moveDescriptionToContent(node: Node)(implicit neo4j: DatabaseService) {
+    if (node.hasProperty("description")){
+      val description = node.getProperty("description").asInstanceOf[String]
+      node.setProperty("content", description)
+      node.removeProperty("description")
+    }else if (node.hasProperty("content")){
+      node.removeProperty("content")
+    }
+  }
+  
+  protected def moveContentToDescription(node: Node)(implicit neo4j: DatabaseService): Response[Unit] = {
+    if (node.hasProperty("description")){
+      fail(INVALID_PARAMETER, "Can't move content to description: item already has a description field.")
+    }else if (node.hasProperty("content")){
+      val content = node.getProperty("content").asInstanceOf[String]
+      if (!Validators.validateDescription(content)){
+        fail(INVALID_PARAMETER, "Can't move content to description: content too long to fit to a description field.")        
+      }else{
+        node.setProperty("description", content)
+        node.removeProperty("content")
+        Right()
+      }
+    }else{
+      Right()
+    }
+  }
 
   protected def deleteItemNode(owner: Owner, itemUUID: UUID): Response[Tuple2[Node, Long]] = {
     withTx {

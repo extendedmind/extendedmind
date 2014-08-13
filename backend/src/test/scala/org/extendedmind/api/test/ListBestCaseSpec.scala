@@ -97,11 +97,11 @@ class ListBestCaseSpec extends ServiceSpecBase {
 	                listResponse.due.get should be("2014-03-01")
 	                
 	                // Add the list to a note
-                    val newNote = Note("bike details", None, Some("model: 12345"), None,
-                      Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
-                    val putNoteResponse = putNewNote(newNote, authenticateResponse)
-                    val noteWithList = getNote(putNoteResponse.uuid.get, authenticateResponse)
-                    noteWithList.relationships.get.parent.get should be(putListResponse.uuid.get)
+                  val newNote = Note("bike details", None, Some("model: 12345"), None,
+                    Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+                  val putNoteResponse = putNewNote(newNote, authenticateResponse)
+                  val noteWithList = getNote(putNoteResponse.uuid.get, authenticateResponse)
+                  noteWithList.relationships.get.parent.get should be(putListResponse.uuid.get)
 	                
 	                Delete("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
 	                  val deleteListResponse = responseAs[String]
@@ -192,7 +192,15 @@ class ListBestCaseSpec extends ServiceSpecBase {
         writeJsonOutput("taskToListResponse", responseAs[String])
         val listFromTask = getList(putTaskResponse.uuid.get, authenticateResponse)
         listFromTask.uuid.get should be (putTaskResponse.uuid.get)
-        listFromTask.title should be ("Spanish studies")        
+        listFromTask.title should be ("Spanish studies")
+        // ..and turn it back to a task
+        Post("/" + authenticateResponse.userUUID + "/list/" + putTaskResponse.uuid.get + "/task",
+            marshal(listFromTask.copy(title = "learn Spanish")).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val taskFromList = responseAs[Task]
+          writeJsonOutput("listToTaskResponse", responseAs[String])
+          taskFromList.uuid.get should be (putTaskResponse.uuid.get)
+          taskFromList.title should be ("learn Spanish")
+        } 
       }
     }
     it("should successfully archive list with POST to /[userUUID]/list/[listUUID]/archive") {
