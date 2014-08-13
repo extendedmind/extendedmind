@@ -59,7 +59,7 @@
       var featureChangedCallback = function featureChangedCallback(name, data, state) {
         setFeatureContainerClass(name);
         if (featureElements[name]) {
-          SnapService.setDraggerElement(featureElements[name].dragElement);
+          SnapService.setDraggerElements(featureElements[name].draggerElements);
         }
 
         if (!state) state = UISessionService.getFeatureState(name);
@@ -96,12 +96,13 @@
 
       // CALLBACK REGISTRATION
 
-      this.registerSnapDrawerDragElement = function registerSnapDrawerDragElement(feature, element) {
+      this.registerSnapDrawerDragElement = function registerSnapDrawerDragElement(feature, element, snapperSide) {
         if ($scope.isFeatureActive(feature)) {
-          SnapService.setDraggerElement(element);
+          SnapService.setDraggerElement(element, snapperSide);
         }
         if (!featureElements[feature]) featureElements[feature] = {};
-        featureElements[feature].dragElement = element;
+        if (!featureElements[feature].draggerElements) featureElements[feature].draggerElements = {};
+        featureElements[feature].draggerElements[snapperSide] = element;
       };
 
       // SET CORRECT CLASSES TO FEATURE CONTAINER ELEMENT
@@ -126,29 +127,50 @@
     },
     link: function postLink(scope, element) {
 
-      function initializeSnapper() {
-        SnapService.createSnapper(element[0].parentNode);
+      function initializeDrawerMenu() {
+        var settings = {
+          element: element[0].parentNode,
+          disable: 'right', // use left only
+          transitionSpeed: 0.2,
+          minDragDistance: 0,
+          addBodyClasses: false
+        };
 
-        SnapService.registerAnimatedCallback(snapperAnimated);
-        SnapService.registerEndCallback(snapperPaneReleased);
-        SnapService.registerCloseCallback(snapperClosed);
+        SnapService.createSnapper(settings, 'left');
+
+        SnapService.registerAnimatedCallback(snapperAnimated, 'left');
+        SnapService.registerEndCallback(snapperPaneReleased, 'left');
+        SnapService.registerCloseCallback(snapperClosed, 'left');
+      }
+
+      function initializeOmnibar() {
+        var settings = {
+          element: element[0].parentNode,
+          touchToDrag: false,
+          disable: 'left', // use right only
+          transitionSpeed: 0.2,
+          minDragDistance: 0,
+          addBodyClasses: false,
+          minPosition: - (element[0].parentNode.offsetWidth > 568 ? 568 : element[0].parentNode.offsetWidth)
+        };
+        SnapService.createSnapper(settings, 'right');
       }
 
       // No clicking/tapping when drawer is open.
       function drawerContentClicked(event) {
-        if (SnapService.getState().state !== 'closed') {
+        if (SnapService.getState('left').state !== 'closed') {
           event.preventDefault();
           event.stopPropagation();
         }
       }
 
       // Snapper is "ready". Set swiper and snapper statuses.
-      function snapperAnimated(snapperState) {
+      function snapperAnimated(snapperState, snapperSide) {
         if (snapperState.state === 'closed') {
           angular.element(element[0].parentNode).unbind('touchstart', drawerContentClicked);
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), true);
-            SnapService.enableSliding();
+            SnapService.enableSliding(snapperSide);
             // make following happen inside angularjs event loop
             scope.$evalAsync(function() {
               scope.setIsWebkitScrolling(true);
@@ -158,7 +180,7 @@
           angular.element(element[0].parentNode).bind('touchstart', drawerContentClicked);
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), false);
-            SnapService.enableSliding();
+            SnapService.enableSliding(snapperSide);
           }
         }
       }
@@ -166,7 +188,7 @@
       function snapperClosed() {
         if (scope.getActiveFeature()) {
           SwiperService.setSwiping(scope.getActiveFeature(), true);
-          SnapService.disableSliding();
+          SnapService.disableSliding('left');
         }
       }
 
@@ -177,21 +199,22 @@
         if (snapperState.info.opening === 'left' && snapperState.info.towards === 'left' && snapperState.info.flick) {
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), true);
-            SnapService.disableSliding();
+            SnapService.disableSliding('left');
           }
           // Drawer is opening
         } else if (snapperState.info.towards === 'right' && snapperState.info.flick) {
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), false);
-            SnapService.enableSliding();
+            SnapService.enableSliding('left');
           }
         }
       }
 
-      initializeSnapper();
+      initializeDrawerMenu();
+      initializeOmnibar();
 
       scope.$on('$destroy', function() {
-        SnapService.deleteSnapper();
+        SnapService.deleteSnapper('left');
         angular.element(element).unbind('touchstart', drawerContentClicked);
       });
     }

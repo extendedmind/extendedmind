@@ -210,6 +210,7 @@
       AnalyticsService.visit('omnibar');
       $scope.setOmnibarFeatureActive(feature);
       $scope.omnibarVisible = true;
+      $scope.openOmnibarDrawer();
     }
   };
 
@@ -471,6 +472,7 @@
     $scope.isItemAddMode = false;
     $scope.omnibarKeywords.isVisible = false;
     selectedOmnibarKeywords = [];
+    $scope.closeOmnibarDrawer();
   }
 
   // Reset item transient values, then clear and hide omnibar

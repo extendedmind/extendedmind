@@ -19,7 +19,7 @@
     restrict: 'A',
     require: '^featureContainer',
     link: function postLink(scope, element, attrs, featureContainerController) {
-      featureContainerController.registerSnapDrawerDragElement(attrs.snapDrawerDrag, element[0]);
+      featureContainerController.registerSnapDrawerDragElement(attrs.snapDrawerDrag, element[0], attrs.snapDrawerDragSide);
     }
   };
 }

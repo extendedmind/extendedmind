@@ -15,71 +15,138 @@
  'use strict';
 
  function SnapService() {
-  var snapper, draggerElement, drawerSlidingDisabled = false;
+  var drawerSlidingDisabled = false;
+
+  var snappers = {};
+  var draggerElements = {};
+
+  function snapperStartDragCallback(snapperSide) {
+    if (snapperSide === 'left') {
+      hideRightAndShowLeft();
+    }
+    else if (snapperSide === 'right') {
+      hideLeftAndShowRight();
+    }
+  }
+
+  function hideRightAndShowLeft() {
+    var rightDrawer = document.getElementById('omnibar-drawer');
+    var leftDrawer = document.getElementById('menu');
+    if (rightDrawer.style.display !== 'none') rightDrawer.style.display = 'none';
+    if (leftDrawer.style.display !== 'block') leftDrawer.style.display = 'block';
+  }
+  function hideLeftAndShowRight() {
+    var leftDrawer = document.getElementById('menu');
+    var rightDrawer = document.getElementById('omnibar-drawer');
+    if (leftDrawer.style.display !== 'none') leftDrawer.style.display = 'none';
+    if (rightDrawer.style.display !== 'block') rightDrawer.style.display = 'block';
+  }
+  function registerSnapperEventCallback(snapperEvent, snapperSide, callback) {
+    if (snappers[snapperSide] && snappers[snapperSide].snapper) {
+      snappers[snapperSide].snapper.on(snapperEvent, function() {
+        callback(snapperSide);
+      });
+    }
+  }
 
   return {
-    createSnapper: function(element) {
-      if (snapper) {
-        snapper.settings({element: element});
-        snapper.enable();
+    createSnapper: function(settings, snapperSide) {
+      if (!snappers[snapperSide]) snappers[snapperSide] = {};
+      if (snappers[snapperSide].snapper) {
+        snappers[snapperSide].snapper.settings({element: settings.element});
+        snappers[snapperSide].snapper.enable();
       } else {
-        snapper = new Snap({
-          element: element,
-          disable: 'right', // use left only
-          transitionSpeed: 0.2,
-          minDragDistance: 0,
-          addBodyClasses: false
-        });
-        if (draggerElement) {
-          snapper.settings({dragger: draggerElement});
+        snappers[snapperSide].snapper = new Snap(settings);
+        if (draggerElements[snapperSide]) {
+          snappers[snapperSide].snapper.settings({dragger: draggerElements[snapperSide]});
+        }
+        if (settings.touchToDrag !== false)
+          registerSnapperEventCallback('start', snapperSide, snapperStartDragCallback);
+        else
+          snappers[snapperSide].snapper.disable();
+      }
+    },
+    deleteSnapper: function(snapperSide) {
+      if (snappers[snapperSide] && snappers[snapperSide].snapper)
+        snappers[snapperSide].snapper.disable();
+    },
+    setDraggerElement: function(element, snapperSide) {
+      if (!draggerElements[snapperSide]) draggerElements[snapperSide] = element;
+      if (snappers[snapperSide] && snappers[snapperSide].snapper) {
+        snappers[snapperSide].snapper.settings({dragger: element});
+      }
+    },
+    setDraggerElements: function(elements) {
+      for (var draggerElementSide in elements) {
+        if (elements.hasOwnProperty(draggerElementSide)) {
+          if (snappers[draggerElementSide] && snappers[draggerElementSide].snapper)
+            snappers[draggerElementSide].snapper.settings({dragger: elements[draggerElementSide]});
         }
       }
     },
-    deleteSnapper: function() {
-      if (snapper) snapper.disable();
-    },
-    setDraggerElement: function(element) {
-      draggerElement = element;
-      if (snapper) snapper.settings({dragger: draggerElement});
-    },
-    toggle: function() {
+    toggle: function(snapperSide) {
       // https://github.com/jakiestfu/Snap.js/#--how-do-i-make-a-toggle-button
-      if (snapper.state().state == 'left') {
-        snapper.close();
-      } else {
-        snapper.open('left');
+      function toggleLeft(snapper) {
+        if (snapper.state().state == 'left') {
+          snapper.close();
+        }
+        else {
+          hideRightAndShowLeft();
+          snapper.open('left');
+        }
+      }
+      function toggleRight(snapper) {
+        if (snapper.state().state === 'right') {
+          snapper.close();
+        } else {
+          hideLeftAndShowRight();
+          snapper.open('right');
+        }
+      }
+      if (snappers[snapperSide] && snappers[snapperSide].snapper) {
+        if (snapperSide === 'left') toggleLeft(snappers[snapperSide].snapper);
+        else if (snapperSide === 'right') toggleRight(snappers[snapperSide].snapper);
       }
     },
-    registerAnimatedCallback: function(callback) {
+    registerAnimatedCallback: function(callback, snapperSide) {
       // http://stackoverflow.com/a/3458612
-      snapper.on('animated', snapAnimated);
+      if (snappers[snapperSide] && snappers[snapperSide].snapper)
+        snappers[snapperSide].snapper.on('animated', snapAnimated);
       function snapAnimated() {
-        callback(snapper.state());
+        callback(snappers[snapperSide].snapper.state(), snapperSide);
       }
     },
-    registerCloseCallback: function(callback) {
-      snapper.on('close', callback);
+    registerCloseCallback: function(callback, snapperSide) {
+      if (snappers[snapperSide] && snappers[snapperSide].snapper)
+        snappers[snapperSide].snapper.on('close', callback);
     },
-    registerEndCallback: function(callback) {
-      snapper.on('end', paneReleased);
+    registerEndCallback: function(callback, snapperSide) {
+      if (snappers[snapperSide] && snappers[snapperSide].snapper)
+        snappers[snapperSide].snapper.on('end', paneReleased);
       function paneReleased() {
-        callback(snapper.state());
+        callback(snappers[snapperSide].snapper.state());
       }
     },
-    disableSliding: function() {
+    disableSliding: function(snapperSide) {
       if (!drawerSlidingDisabled) {
-        snapper.disable();
-        drawerSlidingDisabled = true;
+        if (snappers[snapperSide] && snappers[snapperSide].snapper) {
+          snappers[snapperSide].snapper.disable();
+          drawerSlidingDisabled = true;
+        }
       }
     },
-    enableSliding: function() {
+    enableSliding: function(snapperSide) {
       if (drawerSlidingDisabled) {
-        snapper.enable();
-        drawerSlidingDisabled = false;
+        if (snappers[snapperSide] && snappers[snapperSide].snapper) {
+          snappers[snapperSide].snapper.enable();
+          drawerSlidingDisabled = false;
+        }
       }
     },
-    getState: function() {
-      return snapper.state();
+    getState: function(snapperSide) {
+      if (snappers[snapperSide] && snappers[snapperSide].snapper) {
+        return snappers[snapperSide].snapper.state();
+      }
     }
   };
 }
