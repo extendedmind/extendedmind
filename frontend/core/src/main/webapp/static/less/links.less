@@ -7,11 +7,23 @@
 @import "typography.less";
 @import "layout.less";
 
+/*
+```markup
+<a href="#">Basic link</a> <br />
+<a href="#" class="highlighted-link">Highlighted link</a> <br />
+<a href="#" class="warning-link">Warning link</a> <br />
+<a href="#" class="show-more">Show more</a> <br />
+<a href="#" class="arrow-link"><span class="icon-arrow-right">TODO: arrow link doesn't show up before icons are fixed in Styleguide</span></a> <br />
+<a href="#" class="font-smallest add-new-list-item-cancel">add-new-list-item-cancel</a>
+
+```
+*/
 a {
   text-decoration: none;
   color: @default-element;
   outline: 0;
 }
+
 a:active {
   color: @default-element-pressed;
 }
@@ -29,7 +41,6 @@ a:active {
 .warning-link {
   color: @warning;
 }
-
 .show-more {
   .font-smallest;
   display: inherit;
@@ -42,19 +53,19 @@ a:active {
 }
 
 // Add small margin to prevent arrow from touching scrollbar on desktop
+// TODO: cleanup?
 .click-to-slide {
   span.icon-arrow-right {
     margin-right: 5px;
   }
 }
+a.click-to-slide {
+  color: @default-element;
+}
 
 .add-new-list-item-cancel {
   color: #e22c09;
   padding-right: 15px;
-}
-
-a.click-to-slide {
-  color: @default-element;
 }
 
 .click-to-slide {
