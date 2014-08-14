@@ -12,7 +12,6 @@ Imports normalize.less for making browsers render all elements more consistently
 
 // Text colors
 @content: black;
-@content-pressed: lighten(@content, 20%);
 @content-heading: black;
 @content-heading-pressed: lighten(@content-heading, 20%);
 @logo: #3b3b3b;
@@ -69,10 +68,6 @@ Imports normalize.less for making browsers render all elements more consistently
 
 .content {
   color: @content;
-}
-
-a.content:active {
-  color: @content-pressed;
 }
 
 .dashboard-info {
