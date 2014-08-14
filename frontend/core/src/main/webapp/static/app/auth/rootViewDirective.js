@@ -184,9 +184,9 @@
       // WINDOW RESIZING
 
       function setDimensions(width, height) {
-        $rootScope.currentWidth = width;
-        $rootScope.currentHeight = height;
-        if (width <= 568) {
+
+        // UI for small screens
+        if (width <= 568 && ($rootScope.currentWidth > 568 || !$rootScope.currentWidth)) {
           $rootScope.isDesktop = false;
           $rootScope.isMobile = true;
 
@@ -199,7 +199,10 @@
           SwiperService.setEdgeTouchRatios('dashboard', leftEdgeTouchRatio, rightEdgeTouchRatio);
           SwiperService.setEdgeTouchRatios('archive', leftEdgeTouchRatio, rightEdgeTouchRatio);
 
-        } else {
+          SnapService.toggleSnappersSticky(false);
+
+          // UI for large screens
+        } else if (width > 568 && ($rootScope.currentWidth <= 568 || !$rootScope.currentWidth)) {
           $rootScope.isMobile = false;
           $rootScope.isDesktop = true;
 
@@ -209,7 +212,11 @@
           SwiperService.setEdgeTouchRatios('list');
           SwiperService.setEdgeTouchRatios('dashboard');
           SwiperService.setEdgeTouchRatios('archive');
+
+          SnapService.toggleSnappersSticky(true);
         }
+        $rootScope.currentWidth = width;
+        $rootScope.currentHeight = height;
       }
       setDimensions($window.innerWidth, $window.innerHeight);
 

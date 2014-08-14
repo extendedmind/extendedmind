@@ -19,6 +19,7 @@
 
   var snappers = {};
   var draggerElements = {};
+  var isSnapperSticky = false;
 
   function snapperStartDragCallback(snapperSide) {
     if (snapperSide === 'left') {
@@ -52,18 +53,24 @@
   return {
     createSnapper: function(settings, snapperSide) {
       if (!snappers[snapperSide]) snappers[snapperSide] = {};
+
       if (snappers[snapperSide].snapper) {
-        snappers[snapperSide].snapper.settings({element: settings.element});
-        snappers[snapperSide].snapper.enable();
+        // snappers[snapperSide].snapper.settings({element: settings.element});
+
+        if (snappers[snapperSide].isDraggable) snappers[snapperSide].snapper.enable();
+        else snappers[snapperSide].snapper.disable();
+
       } else {
         snappers[snapperSide].snapper = new Snap(settings);
-        if (draggerElements[snapperSide]) {
-          snappers[snapperSide].snapper.settings({dragger: draggerElements[snapperSide]});
-        }
-        if (settings.touchToDrag !== false)
+        snappers[snapperSide].isDraggable = settings.touchToDrag ? true : false;
+
+        if (snappers[snapperSide].isDraggable) {
+          if (draggerElements[snapperSide]) snappers[snapperSide].snapper.settings({dragger: draggerElements[snapperSide]});
           registerSnapperEventCallback('start', snapperSide, snapperStartDragCallback);
-        else
-          snappers[snapperSide].snapper.disable();
+          if (isSnapperSticky) snappers[snapperSide].snapper.disable();
+          else snappers[snapperSide].snapper.enable();
+        }
+        else snappers[snapperSide].snapper.disable();
       }
     },
     deleteSnapper: function(snapperSide) {
@@ -107,6 +114,20 @@
         if (snapperSide === 'left') toggleLeft(snappers[snapperSide].snapper);
         else if (snapperSide === 'right') toggleRight(snappers[snapperSide].snapper);
       }
+    },
+    toggleSnappersSticky: function(isSticky) {
+      isSnapperSticky = isSticky;
+      for (var snapper in snappers) {
+        if (snappers.hasOwnProperty(snapper)) {
+          if (snappers[snapper].isDraggable) {
+            if (isSnapperSticky) snappers[snapper].snapper.disable();
+            else snappers[snapper].snapper.enable();
+          }
+        }
+      }
+    },
+    getIsSticky: function() {
+      return isSnapperSticky;
     },
     registerAnimatedCallback: function(callback, snapperSide) {
       // http://stackoverflow.com/a/3458612

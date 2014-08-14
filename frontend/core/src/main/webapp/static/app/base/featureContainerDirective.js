@@ -130,6 +130,7 @@
       function initializeDrawerMenu() {
         var settings = {
           element: element[0].parentNode,
+          touchToDrag: true,
           disable: 'right', // use left only
           transitionSpeed: 0.2,
           minDragDistance: 0,
@@ -170,7 +171,9 @@
           angular.element(element[0].parentNode).unbind('touchstart', drawerContentClicked);
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), true);
-            SnapService.enableSliding(snapperSide);
+
+            if (!SnapService.getIsSticky()) SnapService.enableSliding(snapperSide);
+
             // make following happen inside angularjs event loop
             scope.$evalAsync(function() {
               scope.setIsWebkitScrolling(true);
@@ -180,7 +183,8 @@
           angular.element(element[0].parentNode).bind('touchstart', drawerContentClicked);
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), false);
-            SnapService.enableSliding(snapperSide);
+
+            if (!SnapService.getIsSticky()) SnapService.enableSliding(snapperSide);
           }
         }
       }
@@ -205,7 +209,8 @@
         } else if (snapperState.info.towards === 'right' && snapperState.info.flick) {
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), false);
-            SnapService.enableSliding('left');
+
+            if (!SnapService.getIsSticky()) SnapService.enableSliding('left');
           }
         }
       }
