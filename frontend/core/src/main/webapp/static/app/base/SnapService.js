@@ -50,6 +50,10 @@
     }
   }
 
+  function snapperExists(snapperSide) {
+    return snappers[snapperSide] && snappers[snapperSide].snapper;
+  }
+
   return {
     createSnapper: function(settings, snapperSide) {
       if (!snappers[snapperSide]) snappers[snapperSide] = {};
@@ -165,8 +169,17 @@
       }
     },
     getState: function(snapperSide) {
-      if (snappers[snapperSide] && snappers[snapperSide].snapper) {
-        return snappers[snapperSide].snapper.state();
+      if (snapperExists(snapperSide)) {
+        return snappers[snapperSide].snapper.state().state;
+      }
+    },
+    isSnapperClosed: function(snapperSide) {
+      if (snapperExists(snapperSide)) return snappers[snapperSide].snapper.state().state === 'closed';
+    },
+    isSnapperOpen: function(snapperSide) {
+      if (snapperExists(snapperSide)) {
+        if (snapperSide === 'left') return snappers[snapperSide].snapper.state().state === 'left';
+        else if (snapperSide === 'right') return snappers[snapperSide].snapper.state().state === 'right';
       }
     }
   };

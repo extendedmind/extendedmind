@@ -122,20 +122,6 @@
         }
       });
 
-      // MENU TOGGLE
-      $scope.toggleMenu = function toggleMenu() {
-        $scope.setIsWebkitScrolling(false);
-        SnapService.toggle('left');
-      };
-      $scope.openOmnibarDrawer = function openOmnibarDrawer() {
-        $scope.setIsWebkitScrolling(false);
-        SnapService.toggle('right');
-      };
-      $scope.closeOmnibarDrawer = function closeOmnibarDrawer() {
-        $scope.setIsWebkitScrolling(true);
-        SnapService.toggle('right');
-      };
-
       // CSS property -webkit-overflow-scrolling is not working if multiple elements are layered on top of each other,
       // e.g. with 3D transform method translate3d.
       // This happens when swiper slide not the first one and drawer menu is open - webkit scroll event is catched by swiper wrapper.

@@ -521,6 +521,14 @@ footer {
 #feature-container-wrapper {
   position: relative;
   background-color: white;
+  // NOTE: transition correspond with Snap.js drawer animation transition
+  #feature-container {
+    -webkit-transition: max-width .2s ease;
+    -moz-transition: max-width .2s ease;
+    -o-transition: max-width .2s ease;
+    -ms-transition: max-width .2s ease;
+    -transition: max-width .2s ease;
+  }
 }
 
 /* # DATEPICKER */

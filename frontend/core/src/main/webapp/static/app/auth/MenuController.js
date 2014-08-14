@@ -54,7 +54,7 @@
       UISessionService.changeFeature(feature, undefined, state);
       AnalyticsService.visit(feature);
     }
-    $scope.toggleMenu();
+    $scope.toggleUnstickyMenu();
   };
 
   // LISTS
@@ -72,7 +72,7 @@
       UISessionService.changeFeature('list', list);
       AnalyticsService.visit('list');
     }
-    $scope.toggleMenu();
+    $scope.toggleUnstickyMenu();
   };
 
   $scope.toggleLists = function toggleLists() {

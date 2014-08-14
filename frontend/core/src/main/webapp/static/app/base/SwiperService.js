@@ -201,6 +201,25 @@ function SwiperService($q) {
         });
       }
     },
+    setWrapperTranslate: function(swiperPath, x, y, z) {
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
+        x += swipers[swiperPath].swiper.getWrapperTranslate('x');
+        y += swipers[swiperPath].swiper.getWrapperTranslate('y');
+        z += swipers[swiperPath].swiper.getWrapperTranslate('z');
+        swipers[swiperPath].swiper.setWrapperTranslate(x, y, z);
+      }
+    },
+    resizeFixSwiperAndChildSwipers: function(swiperPath) {
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
+        swipers[swiperPath].swiper.resizeFix();
+
+        swipers[swiperPath].slidesPaths.forEach(function(slidePath) {
+          if (swipers[slidePath]) {
+            swipers[slidePath].swiper.resizeFix();
+          }
+        });
+      }
+    },
     onSwiperCreated: function(scope, swiperPath) {
       executeSwiperCreatedCallbacks(swiperPath);
     },

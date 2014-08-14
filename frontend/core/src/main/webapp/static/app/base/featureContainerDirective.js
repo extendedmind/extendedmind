@@ -50,8 +50,61 @@
         }
       };
 
-      $scope.getFooterVisibilityClass = function getFooterVisibilityClass() {
-        if (!$scope.hasFeatureFooter()) return 'hide-footer';
+      function resizeContent() {
+        if ($rootScope.isDesktop) {
+          var swiperWrapperElement = document.getElementById('swiper-wrapper-element');
+          var drawerMenu = document.getElementById('menu');
+          var drawerMenuWidth = 0;
+          if (drawerMenu) drawerMenuWidth = drawerMenu.offsetWidth; // http://stackoverflow.com/a/294273
+
+          if (SnapService.isSnapperClosed('left')) {
+            if (swiperWrapperElement) swiperWrapperTranslate('left');
+            $element[0].style.maxWidth = $rootScope.currentWidth - drawerMenuWidth + 'px';
+          }
+          else if (SnapService.isSnapperOpen('left')) {
+            if (swiperWrapperElement) swiperWrapperTranslate('right');
+            $element[0].style.maxWidth = $rootScope.currentWidth + 'px';
+          }
+        }
+        function swiperWrapperTranslate(direction) {
+          swiperWrapperElement.style['webkitTransition'] = 'all ' + 0.2 + 's ' + 'ease';  // TODO: vendor prefixes
+          var translateSwiperWrapperX = drawerMenuWidth / 2;
+
+           // 568px + drawerMenuWidth (260px)
+           if ($rootScope.currentWidth <= 828) {
+            var contentNewWidth = $rootScope.currentWidth - drawerMenuWidth;
+            var contentLeftSideWillShrink = (568 - contentNewWidth) / 2;
+            translateSwiperWrapperX -= contentLeftSideWillShrink;
+            SwiperService.setWrapperTranslate($scope.getActiveFeature(), translateSwiperWrapperX, 0, 0);
+          }
+          // http://stackoverflow.com/a/5574196
+          if (direction === 'left') translateSwiperWrapperX = -Math.abs(translateSwiperWrapperX);
+          SwiperService.setWrapperTranslate($scope.getActiveFeature(), translateSwiperWrapperX, 0, 0);
+        }
+      }
+
+      // MENU TOGGLE
+      $scope.toggleMenu = function toggleMenu() {
+        resizeContent();
+        $scope.setIsWebkitScrolling(false);
+        SnapService.toggle('left');
+      };
+
+      $scope.toggleUnstickyMenu = function toggleUnstickyMenu() {
+        if (!SnapService.getIsSticky()) SnapService.toggle('left');
+      };
+
+      $scope.openOmnibarDrawer = function openOmnibarDrawer() {
+        $scope.setIsWebkitScrolling(false);
+        SnapService.toggle('right');
+      };
+      $scope.closeOmnibarDrawer = function closeOmnibarDrawer() {
+        $scope.setIsWebkitScrolling(true);
+        SnapService.toggle('right');
+      };
+
+      $scope.getcontentNewMarginterVisibilityClass = function getcontentNewMarginterVisibilityClass() {
+        if (!$scope.hasFeaturecontentNewMarginter()) return 'hide-contentNewMarginter';
       };
 
       // UI SESSION SERVICE HOOKS
@@ -159,7 +212,7 @@
 
       // No clicking/tapping when drawer is open.
       function drawerContentClicked(event) {
-        if (SnapService.getState('left').state !== 'closed') {
+        if (SnapService.getState('left') !== 'closed') {
           event.preventDefault();
           event.stopPropagation();
         }
@@ -187,6 +240,7 @@
             if (!SnapService.getIsSticky()) SnapService.enableSliding(snapperSide);
           }
         }
+        SwiperService.resizeFixSwiperAndChildSwipers('tasks');
       }
 
       function snapperClosed() {
