@@ -1,6 +1,6 @@
 <div ng-show="isFeatureActive('dashboard')" class="swiper-container main-slides" swiper-container="dashboard" swiper-type="main" expected-slides="getExpectedDashboardSlides()" ng-controller="DashboardController">
-  <div class="swiper-wrapper" ng-class="getIsWebkitScrolling() ? 'webkit-scrolling' : 'no-webkit-scrolling'">
-    <div class="swiper-slide" swiper-slide="dashboard/daily" slide-index=0 dashboard-slide="daily" snap-drawer-drag="dashboard" snap-drawer-drag-side="left"></div>
+  <div class="swiper-wrapper" ng-class="getIsWebkitScrolling() ? 'webkit-scrolling' : 'no-webkit-scrolling'" register-element-to-feature="dashboard" register-element-to-feature-swiper="dashboard">
+    <div class="swiper-slide" swiper-slide="dashboard/daily" slide-index=0 dashboard-slide="daily" register-element-to-feature="dashboard" register-element-to-feature-snap="left"></div>
     <div ng-if="dashboardSlides.length === 3" class="swiper-slide" swiper-slide="dashboard/weekly" slide-index=1 dashboard-slide="weekly"></div>
     <div ng-if="dashboardSlides.length === 3" class="swiper-slide" swiper-slide="dashboard/monthly" slide-index=2 dashboard-slide="monthly"></div>
   </div>

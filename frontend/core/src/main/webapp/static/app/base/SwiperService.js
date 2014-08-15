@@ -395,6 +395,9 @@ function SwiperService($q) {
       swiperCreatedCallbacks[swiperPath].push({
         callback: swiperCreatedCallback,
         id: id});
+    },
+    getSwiperSlides: function(swiperPath) {
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) return swipers[swiperPath].swiper.slides;
     }
   };
 }

@@ -20,6 +20,7 @@
     controller: function($scope, $element) {
 
       var featureElements = {};
+      var swiperElements = {};
 
       // COMMON FEATURE METHODS IN SCOPE
 
@@ -52,7 +53,8 @@
 
       function resizeContent() {
         if ($rootScope.isDesktop) {
-          var swiperWrapperElement = document.getElementById('swiper-wrapper-element');
+          var activeFeature = $scope.getActiveFeature();
+          var swiperWrapperElement = swiperElements[activeFeature];
 
           var drawerMenu = document.getElementById('menu');
           var drawerMenuWidth = 0;
@@ -79,17 +81,17 @@
           }
           // http://stackoverflow.com/a/5574196
           if (direction === 'left') translateSwiperWrapperX = -Math.abs(translateSwiperWrapperX);
-          SwiperService.setWrapperTranslate($scope.getActiveFeature(), translateSwiperWrapperX, 0, 0);
-          toggleInactiveSwiperSlidesVisiblity('hidden');
+          SwiperService.setWrapperTranslate(activeFeature, translateSwiperWrapperX, 0, 0);
+          toggleInactiveSwiperSlidesVisiblity('hidden', activeFeature);
         }
       }
 
-      this.toggleInactiveSwiperSlidesVisiblityClass = function toggleInactiveSwiperSlidesVisiblityClass(visibilityValue) {
-        toggleInactiveSwiperSlidesVisiblity(visibilityValue);
+      this.toggleInactiveSwiperSlidesVisiblityClass = function toggleInactiveSwiperSlidesVisiblityClass(visibilityValue, activeFeature) {
+        toggleInactiveSwiperSlidesVisiblity(visibilityValue, activeFeature);
       };
 
-      function toggleInactiveSwiperSlidesVisiblity(visibilityValue) {
-        var swiperSlides = document.getElementsByClassName('swiper-slide');
+      function toggleInactiveSwiperSlidesVisiblity(visibilityValue, activeFeature) {
+        var swiperSlides = SwiperService.getSwiperSlides(activeFeature);
         if (swiperSlides) {
           for (var i = 0, len = swiperSlides.length; i < len; i++) {
             if (!swiperSlides[i].classList.contains('swiper-slide-active')) {
@@ -173,6 +175,15 @@
         if (!featureElements[feature].draggerElements) featureElements[feature].draggerElements = {};
         featureElements[feature].draggerElements[snapperSide] = element;
       };
+      this.unregisterSnapDrawerDragElement = function unregisterSnapDrawerDragElement(feature, snapperSide) {
+        if (featureElements[feature] && featureElements[feature].draggerElements) delete featureElements[feature].draggerElements[snapperSide];
+      };
+      this.registerSwiperElement = function registerSwiperElement(feature, element) {
+        swiperElements[feature] = element;
+      };
+      this.unregisterSwiperElement = function unregisterSwiperElement(feature) {
+        delete swiperElements[feature];
+      };
 
       // SET CORRECT CLASSES TO FEATURE CONTAINER ELEMENT
 
@@ -236,10 +247,11 @@
 
       // Snapper is "ready". Set swiper and snapper statuses.
       function snapperAnimated(snapperState, snapperSide) {
+        var activeFeature = scope.getActiveFeature();
         if (snapperState.state === 'closed') {
           if (!SnapService.getIsSticky()) angular.element(element[0].parentNode).unbind('touchstart', drawerContentClicked);
-          if (scope.getActiveFeature()) {
-            SwiperService.setSwiping(scope.getActiveFeature(), true);
+          if (activeFeature) {
+            SwiperService.setSwiping(activeFeature, true);
             if (!SnapService.getIsSticky()) SnapService.enableSliding(snapperSide);
 
             // make following happen inside angularjs event loop
@@ -249,13 +261,14 @@
           }
         } else if (snapperState.state === 'left') {
           if (!SnapService.getIsSticky()) angular.element(element[0].parentNode).bind('touchstart', drawerContentClicked);
-          if (scope.getActiveFeature()) {
-            if (!SnapService.getIsSticky()) SwiperService.setSwiping(scope.getActiveFeature(), false);
+          if (activeFeature) {
+            if (!SnapService.getIsSticky()) SwiperService.setSwiping(activeFeature, false);
             if (!SnapService.getIsSticky()) SnapService.enableSliding(snapperSide);
           }
         }
-        featureContainerController.toggleInactiveSwiperSlidesVisiblityClass('visible');
-        SwiperService.resizeFixSwiperAndChildSwipers('tasks');
+
+        featureContainerController.toggleInactiveSwiperSlidesVisiblityClass('visible', activeFeature);
+        SwiperService.resizeFixSwiperAndChildSwipers(activeFeature);
       }
 
       function snapperClosed() {
