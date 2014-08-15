@@ -53,6 +53,7 @@
       function resizeContent() {
         if ($rootScope.isDesktop) {
           var swiperWrapperElement = document.getElementById('swiper-wrapper-element');
+
           var drawerMenu = document.getElementById('menu');
           var drawerMenuWidth = 0;
           if (drawerMenu) drawerMenuWidth = drawerMenu.offsetWidth; // http://stackoverflow.com/a/294273
@@ -75,11 +76,26 @@
             var contentNewWidth = $rootScope.currentWidth - drawerMenuWidth;
             var contentLeftSideWillShrink = (568 - contentNewWidth) / 2;
             translateSwiperWrapperX -= contentLeftSideWillShrink;
-            SwiperService.setWrapperTranslate($scope.getActiveFeature(), translateSwiperWrapperX, 0, 0);
           }
           // http://stackoverflow.com/a/5574196
           if (direction === 'left') translateSwiperWrapperX = -Math.abs(translateSwiperWrapperX);
           SwiperService.setWrapperTranslate($scope.getActiveFeature(), translateSwiperWrapperX, 0, 0);
+          toggleInactiveSwiperSlidesVisiblity('hidden');
+        }
+      }
+
+      this.toggleInactiveSwiperSlidesVisiblityClass = function toggleInactiveSwiperSlidesVisiblityClass(visibilityValue) {
+        toggleInactiveSwiperSlidesVisiblity(visibilityValue);
+      };
+
+      function toggleInactiveSwiperSlidesVisiblity(visibilityValue) {
+        var swiperSlides = document.getElementsByClassName('swiper-slide');
+        if (swiperSlides) {
+          for (var i = 0, len = swiperSlides.length; i < len; i++) {
+            if (!swiperSlides[i].classList.contains('swiper-slide-active')) {
+              if (swiperSlides[i].style.visibility !== visibilityValue) swiperSlides[i].style.visibility = visibilityValue;
+            }
+          }
         }
       }
 
@@ -178,7 +194,7 @@
         }
       }
     },
-    link: function postLink(scope, element) {
+    link: function postLink(scope, element, attrs, featureContainerController) {
 
       function initializeDrawerMenu() {
         var settings = {
@@ -221,10 +237,9 @@
       // Snapper is "ready". Set swiper and snapper statuses.
       function snapperAnimated(snapperState, snapperSide) {
         if (snapperState.state === 'closed') {
-          angular.element(element[0].parentNode).unbind('touchstart', drawerContentClicked);
+          if (!SnapService.getIsSticky()) angular.element(element[0].parentNode).unbind('touchstart', drawerContentClicked);
           if (scope.getActiveFeature()) {
             SwiperService.setSwiping(scope.getActiveFeature(), true);
-
             if (!SnapService.getIsSticky()) SnapService.enableSliding(snapperSide);
 
             // make following happen inside angularjs event loop
@@ -233,13 +248,13 @@
             });
           }
         } else if (snapperState.state === 'left') {
-          angular.element(element[0].parentNode).bind('touchstart', drawerContentClicked);
+          if (!SnapService.getIsSticky()) angular.element(element[0].parentNode).bind('touchstart', drawerContentClicked);
           if (scope.getActiveFeature()) {
-            SwiperService.setSwiping(scope.getActiveFeature(), false);
-
+            if (!SnapService.getIsSticky()) SwiperService.setSwiping(scope.getActiveFeature(), false);
             if (!SnapService.getIsSticky()) SnapService.enableSliding(snapperSide);
           }
         }
+        featureContainerController.toggleInactiveSwiperSlidesVisiblityClass('visible');
         SwiperService.resizeFixSwiperAndChildSwipers('tasks');
       }
 
