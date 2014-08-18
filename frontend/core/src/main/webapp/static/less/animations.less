@@ -14,7 +14,6 @@
 <div class="fade-fast">Hover over me.</div>
 ```
 */
-
 .fade-fast {
   -o-transition: 0.25s ease-in-out;
   -moz-transition: 0.25s ease-in-out;
@@ -24,6 +23,15 @@
   transition: 0.25s ease-in-out;
 }
 
+/*
+`.loading-animation`
+
+TODO: example needed!
+
+```markup
+<div class="loading-animation"></div>
+```
+*/
 .loading-animation {
   position: relative;
   height: inherit;
@@ -32,28 +40,32 @@
   text-align: center;
 }
 
-// FADE OUT TOO LONG TEXT ELLIPSIS
-// From: http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/
+/*
+Fade out long ellipsis
 
+TODO: working example needed!
+
+```markup
+<span style="width=100px" accordion-title-link="item.title.length" accordion-title-link-bold="boldTitle" class="ng-isolate-scope ng-binding">contexts could be used to prevent access to data. contexts could be used to prevent access to data. contexts could be used to prevent access to data. contexts could be used to prevent access to data.contexts could be used to prevent access to data.contexts could be used to prevent access to data.contexts could be used to prevent access to data.</span>
+```
+*/
+// From: http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/
 .ellipsis {
   overflow: hidden;
   height: @vertical-grid;
   line-height: 22px;
 }
-
 .ellipsis:before {
   content: "";
   float: left;
   width: 5px;
   height: @vertical-grid;
 }
-
 .ellipsis > span {
   float: right;
   width: 100%;
   margin-left: -5px;
 }
-
 .ellipsis:after {
   content: "\00a0";
 
