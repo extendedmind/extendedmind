@@ -113,7 +113,6 @@
       };
 
       $scope.openOmnibarDrawer = function openOmnibarDrawer() {
-        $scope.setIsWebkitScrolling(false);
         SnapService.toggle('right');
       };
       $scope.closeOmnibarDrawer = function closeOmnibarDrawer() {
@@ -121,8 +120,8 @@
         SnapService.toggle('right');
       };
 
-      $scope.getcontentNewMarginterVisibilityClass = function getcontentNewMarginterVisibilityClass() {
-        if (!$scope.hasFeaturecontentNewMarginter()) return 'hide-contentNewMarginter';
+      $scope.getFooterVisibilityClass = function getFooterVisibilityClass() {
+        if (!$scope.hasFeatureFooter()) return 'hide-footer';
       };
 
       // UI SESSION SERVICE HOOKS
@@ -219,12 +218,18 @@
 
         SnapService.createSnapper(settings, 'left');
 
-        SnapService.registerAnimatedCallback(snapperAnimated, 'left');
+        SnapService.registerAnimatedCallback(snapDrawerAnimated, 'left');
         SnapService.registerEndCallback(snapperPaneReleased, 'left');
         SnapService.registerCloseCallback(snapperClosed, 'left');
       }
 
+      function calculateOmnibarDrawerContainerMinPosition() {
+        var minPosition = element[0].parentNode.offsetWidth > 568 ? $rootScope.currentWidth - (($rootScope.currentWidth - 568) / 2) : element[0].parentNode.offsetWidth;
+        return minPosition;
+      }
+
       function initializeOmnibar() {
+
         var settings = {
           element: element[0].parentNode,
           touchToDrag: false,
@@ -232,9 +237,10 @@
           transitionSpeed: 0.2,
           minDragDistance: 0,
           addBodyClasses: false,
-          minPosition: - (element[0].parentNode.offsetWidth > 568 ? 568 : element[0].parentNode.offsetWidth)
+          minPosition: -calculateOmnibarDrawerContainerMinPosition()
         };
         SnapService.createSnapper(settings, 'right');
+        SnapService.registerAnimatedCallback(snapDrawerAnimated, 'right');
       }
 
       // No clicking/tapping when drawer is open.
@@ -245,25 +251,36 @@
         }
       }
 
+      function snapDrawerAnimated(snapperState, snapperSide) {
+        if (snapperSide === 'left') drawerMenuAnimated(snapperState, snapperSide);
+        else if (snapperSide === 'right') omnibarDrawerAnimated(snapperState, snapperSide);
+      }
+
+      function omnibarDrawerAnimated(snapperState) {
+        if (snapperState === 'closed') {
+          SnapService.setSnapperVisible('left');
+        }
+      }
+
       // Snapper is "ready". Set swiper and snapper statuses.
-      function snapperAnimated(snapperState, snapperSide) {
+      function drawerMenuAnimated(snapperState, snapperSide) {
         var activeFeature = scope.getActiveFeature();
-        if (snapperState.state === 'closed') {
-          if (!SnapService.getIsSticky()) angular.element(element[0].parentNode).unbind('touchstart', drawerContentClicked);
-          if (activeFeature) {
+        if (snapperState === 'closed') {
+          if (!SnapService.getIsSticky()) {
+            angular.element(element[0].parentNode).unbind('touchstart', drawerContentClicked);
             SwiperService.setSwiping(activeFeature, true);
-            if (!SnapService.getIsSticky()) SnapService.enableSliding(snapperSide);
+            SnapService.enableSliding(snapperSide);
 
             // make following happen inside angularjs event loop
             scope.$evalAsync(function() {
               scope.setIsWebkitScrolling(true);
             });
           }
-        } else if (snapperState.state === 'left') {
-          if (!SnapService.getIsSticky()) angular.element(element[0].parentNode).bind('touchstart', drawerContentClicked);
-          if (activeFeature) {
-            if (!SnapService.getIsSticky()) SwiperService.setSwiping(activeFeature, false);
-            if (!SnapService.getIsSticky()) SnapService.enableSliding(snapperSide);
+        } else if (snapperState === 'left') {
+          if (!SnapService.getIsSticky()) {
+            angular.element(element[0].parentNode).bind('touchstart', drawerContentClicked);
+            SwiperService.setSwiping(activeFeature, false);
+            SnapService.enableSliding(snapperSide);
           }
         }
 
@@ -272,7 +289,7 @@
       }
 
       function snapperClosed() {
-        if (scope.getActiveFeature()) {
+        if (SnapService.getIsSticky()) {
           SwiperService.setSwiping(scope.getActiveFeature(), true);
           SnapService.disableSliding('left');
         }
@@ -280,19 +297,19 @@
 
       // Enable swiping and disable sliding and vice versa when snapper pane is released and animation starts.
       function snapperPaneReleased(snapperState) {
+        var activeFeature = scope.getActiveFeature();
         // This if statement is according to current understanding the most reliable (yet not the most intuitive)
         // way to detect that the drawer is closing.
         if (snapperState.info.opening === 'left' && snapperState.info.towards === 'left' && snapperState.info.flick) {
-          if (scope.getActiveFeature()) {
-            SwiperService.setSwiping(scope.getActiveFeature(), true);
+          if (SnapService.getIsSticky()) {
+            SwiperService.setSwiping(activeFeature, true);
             SnapService.disableSliding('left');
           }
           // Drawer is opening
         } else if (snapperState.info.towards === 'right' && snapperState.info.flick) {
-          if (scope.getActiveFeature()) {
-            SwiperService.setSwiping(scope.getActiveFeature(), false);
-
-            if (!SnapService.getIsSticky()) SnapService.enableSliding('left');
+          if (!SnapService.getIsSticky()) {
+            SwiperService.setSwiping(activeFeature, false);
+            SnapService.enableSliding('left');
           }
         }
       }

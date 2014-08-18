@@ -138,7 +138,7 @@
       if (snappers[snapperSide] && snappers[snapperSide].snapper)
         snappers[snapperSide].snapper.on('animated', snapAnimated);
       function snapAnimated() {
-        callback(snappers[snapperSide].snapper.state(), snapperSide);
+        callback(snappers[snapperSide].snapper.state().state, snapperSide);
       }
     },
     registerCloseCallback: function(callback, snapperSide) {
@@ -180,6 +180,11 @@
       if (snapperExists(snapperSide)) {
         if (snapperSide === 'left') return snappers[snapperSide].snapper.state().state === 'left';
         else if (snapperSide === 'right') return snappers[snapperSide].snapper.state().state === 'right';
+      }
+    },
+    setSnapperVisible: function(snapperSide) {
+      if (snapperSide === 'left') {
+        hideRightAndShowLeft();
       }
     }
   };
