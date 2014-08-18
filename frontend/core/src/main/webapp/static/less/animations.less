@@ -108,12 +108,7 @@ TODO: working example needed!
   -ms-transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
   transition: background-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
 }
-.editable-field-backdrop.active {
-  background-color: #d0d0d0 !important;
-  &.backdrop-disable * {
-    pointer-events: none;
-  }
-}
+
 
 /*
 Onboarding bubble fade
@@ -124,6 +119,7 @@ TODO: working example needed!
 <p class="instruction-text-chapter onboarding-bubble">use <b>omnibar</b><br>for quick save and recall</p>
 ```
 */
+// TODO: refactoring needed (onboarding vs. backdrop?)
 .onboarding-bubble:after {
   -webkit-transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
   -moz-transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
@@ -132,13 +128,17 @@ TODO: working example needed!
   transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
 }
 
+.editable-field-backdrop.active {
+  background-color: #d0d0d0 !important;
+  &.backdrop-disable * {
+    pointer-events: none;
+  }
   // In Android, scrolling is not possible form pointer-events:none, even though in iOS it is
   // TODO: The latter is for timeline.html where the section below inner-slide-content-container
   //       is the one with scrolling. This could be nicer.
   &.backdrop-disable .inner-page-content-container, &.backdrop-disable .inner-slide-content-container section {
     pointer-events: auto;
   }
-
   .onboarding-bubble:after {
     border-bottom-color: #f6f6f6 !important;
   }
