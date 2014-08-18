@@ -69,6 +69,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       "visibility", // ShareableItem
       "relationships", // ExtendedItem
       "completed", "assignee", "assigner", // Task
+      "favorited", // Note
       "archived", // List
       "parent", "tagType" // Tag
       ))

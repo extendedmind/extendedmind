@@ -75,7 +75,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
       + "update it with PUT to /[userUUID]/note/[noteUUID] "
       + "and get it back with GET to /[userUUID]/note/[noteUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newNote = Note("home measurements", None, None, Some("bedroom wall: 420cm*250cm"), None)
+      val newNote = Note("home measurements", None, None, Some("bedroom wall: 420cm*250cm"), None, None)
       Put("/" + authenticateResponse.userUUID + "/note",
         marshal(newNote).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putNoteResponse = responseAs[SetResult]
@@ -120,7 +120,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
     it("should successfully convert note to list with POST to /[userUUID]/note/[itemUUID]/list "
       + "and transform it back with POST to /[userUUID]/list/[itemUUID]/note") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None)
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None)
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
       Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/list",
@@ -139,6 +139,28 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           noteFromList.title should be ("Spanish 101")
           noteFromList.content.get should be ("lecture notes for Spanish 101 class")
           noteFromList.description should be (None)
+        }
+      }
+    }
+    it("should successfully favorite note with POST to /[userUUID]/note/[itemUUID]/favorite "
+      + "and unfavorite it with POST to /[userUUID]/note/[itemUUID]/unfavorite") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), Some(100L), None)
+      val putNoteResponse = putNewNote(newNote, authenticateResponse)
+      val originalNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
+      originalNoteResponse.favorited should be (None)
+      
+      Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/favorite") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        writeJsonOutput("favoriteNoteResponse", responseAs[String])
+        val favoriteNoteResponse = responseAs[FavoriteNoteResult]
+        favoriteNoteResponse.favorited should not be None
+        val noteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
+        noteResponse.favorited should not be None
+        
+        Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unfavorite") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          writeJsonOutput("unfavoriteNoteResponse", responseAs[String])
+          val unfavoritedNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
+          unfavoritedNoteResponse.favorited should be(None)
         }
       }
     }

@@ -97,7 +97,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
 	                listResponse.due.get should be("2014-03-01")
 	                
 	                // Add the list to a note
-                  val newNote = Note("bike details", None, Some("model: 12345"), None,
+                  val newNote = Note("bike details", None, Some("model: 12345"), None, None,
                     Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
                   val putNoteResponse = putNewNote(newNote, authenticateResponse)
                   val noteWithList = getNote(putNoteResponse.uuid.get, authenticateResponse)
@@ -163,7 +163,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
       // Put existing task and new note into list 
       val existingTaskInList = newTask.copy(relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
       val putTaskInListResponse = putExistingTask(existingTaskInList, putTaskResponse.uuid.get, authenticateResponse)
-      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), 
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None,
     		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
@@ -212,7 +212,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
       val newTask = Task("learn Spanish", None, None, None, None, None, 
           Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
-      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), 
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None,
     		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
       

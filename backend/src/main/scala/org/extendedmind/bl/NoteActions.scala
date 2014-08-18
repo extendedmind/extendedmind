@@ -57,6 +57,17 @@ trait NoteActions {
     db.undeleteItem(owner, noteUUID, Some(ItemLabel.NOTE))
   }
   
+  def favoriteNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingAdapter): Response[FavoriteNoteResult] = {
+    log.info("favoriteNote")
+    db.favoriteNote(owner, noteUUID)
+  }
+  
+  def unfavoriteNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("unfavoriteNote")
+    db.unfavoriteNote(owner, noteUUID)
+  }
+  
+  
   def noteToTask(owner: Owner, noteUUID: UUID, note: Note)(implicit log: LoggingAdapter): Response[Task] = {
     log.info("noteToTask")
     db.noteToTask(owner, noteUUID, note)

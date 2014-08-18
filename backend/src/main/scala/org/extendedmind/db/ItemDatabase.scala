@@ -218,7 +218,7 @@ trait ItemDatabase extends UserDatabase {
       Right(itemNodeList filter (itemNode => {
         var include = true
         if (!deleted && itemNode.hasProperty("deleted")) include = false
-        if (include && !archived && itemNode.hasProperty("archived")) include = false
+        if (include && !archived && itemNode.hasProperty("archived") && !itemNode.hasProperty("favorited")) include = false
         if (include && !completed && itemNode.hasProperty("completed")) include = false
         if (include && !active &&
           (!itemNode.hasProperty("deleted") && !itemNode.hasProperty("archived") && !itemNode.hasProperty("completed"))) {

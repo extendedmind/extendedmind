@@ -71,6 +71,22 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield result
   }
   
+  def favoriteNote(owner: Owner, noteUUID: UUID): Response[FavoriteNoteResult] = {
+    for {
+      favoriteInfo <- favoriteNoteNode(owner, noteUUID).right
+      result <- Right(FavoriteNoteResult(favoriteInfo._2, getSetResult(favoriteInfo._1, false))).right
+      unit <- Right(updateItemsIndex(favoriteInfo._1, result.result)).right
+    } yield result
+  }
+  
+  def unfavoriteNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
+    for {
+      noteNode <- unfavoriteNoteNode(owner, noteUUID).right
+      result <- Right(getSetResult(noteNode, false)).right
+      unit <- Right(updateItemsIndex(noteNode, result)).right
+    } yield result
+  }
+  
   def noteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[Task] = {
     for {
       convertResult <- convertNoteToTask(owner, noteUUID, note).right
@@ -125,6 +141,36 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
   
+  protected def favoriteNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, Long)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          noteNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
+          favorited <- Right(favoriteNoteNode(noteNode)).right
+        } yield (noteNode, favorited)
+    }
+  }
+  
+  protected def favoriteNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): Long = {
+    val currentTime = System.currentTimeMillis()
+    noteNode.setProperty("favorited", currentTime)
+    currentTime
+  }
+  
+  protected def unfavoriteNoteNode(owner: Owner, noteUUID: UUID): Response[Node] = {
+    withTx {
+      implicit neo =>
+        for {
+          noteNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
+          result <- Right(unfavoriteNoteNode(noteNode)).right
+        } yield noteNode
+    }
+  }
+
+  protected def unfavoriteNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): Unit = {
+    if (noteNode.hasProperty("favorited")) noteNode.removeProperty("favorited")
+  }
+
   protected def convertNoteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, Task)] = {
     withTx {
       implicit neo4j =>

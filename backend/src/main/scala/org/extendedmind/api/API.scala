@@ -91,6 +91,8 @@ trait API extends HttpService {
   val putExistingNote = put & path(JavaUUID / "note" / JavaUUID)
   val deleteNote = delete & path(JavaUUID / "note" / JavaUUID)
   val undeleteNote = post & path(JavaUUID / "note" / JavaUUID / "undelete")
+  val favoriteNote = post & path(JavaUUID / "note" / JavaUUID / "favorite")
+  val unfavoriteNote = post & path(JavaUUID / "note" / JavaUUID / "unfavorite")
   val noteToTask = post & path(JavaUUID / "note" / JavaUUID / "task")
   val noteToList = post & path(JavaUUID / "note" / JavaUUID / "list")
   

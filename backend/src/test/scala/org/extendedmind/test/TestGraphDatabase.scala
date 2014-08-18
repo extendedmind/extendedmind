@@ -178,9 +178,9 @@ trait TestGraphDatabase extends GraphDatabase {
 
     // Store notes for user
     putNewNote(Owner(timoUUID, None),
-      Note("contexts could be used to prevent access to data", None, None, None, None)).right.get
+      Note("contexts could be used to prevent access to data", None, None, None, None, None)).right.get
     putNewNote(Owner(timoUUID, None),
-      Note("office door code", None, None, Some("4321"),
+      Note("office door code", None, None, Some("4321"), None,
         Some(ExtendedItemRelationships(None, None, Some(scala.List(secretTag.right.get.uuid.get)))))).right.get
     putNewNote(Owner(timoUUID, None),
       Note("notes on productivity", None, None, Some(
@@ -195,6 +195,7 @@ trait TestGraphDatabase extends GraphDatabase {
           "use the best possible tools for your work \n" +
           "#process \n" +
           "increasing your productivity doesn't happen overnight"),
+        None,
         Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None,
           Some(scala.List(productivityTag.right.get.uuid.get)))))).right.get
 
@@ -212,7 +213,7 @@ trait TestGraphDatabase extends GraphDatabase {
 
     // Store notes for EMT
     putNewNote(Owner(timoUUID, Some(emtUUID)),
-      Note("list of servers", None, None, None, None)).right.get
+      Note("list of servers", None, None, None, None, None)).right.get
 
     // Build indexes
     rebuildUserIndexes
