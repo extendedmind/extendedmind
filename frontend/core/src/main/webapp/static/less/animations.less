@@ -97,7 +97,7 @@ TODO: working example needed!
 
 ```markup
 <div class="editable-field-backdrop" style="height:100px">
-  <div class="inner-page-content-container" style="width=100px;height=50px">I'm highlighted</div>
+  <div class="inner-page-content-container" style="width=50%;height=50%;">I'm mr. lightbox</div>
 </div>
 ```
 */
@@ -113,7 +113,17 @@ TODO: working example needed!
   &.backdrop-disable * {
     pointer-events: none;
   }
+}
 
+/*
+Onboarding bubble fade
+
+TODO: working example needed!
+
+```markup
+<p class="instruction-text-chapter onboarding-bubble">use <b>omnibar</b><br>for quick save and recall</p>
+```
+*/
 .onboarding-bubble:after {
   -webkit-transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
   -moz-transition: border-bottom-color cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
