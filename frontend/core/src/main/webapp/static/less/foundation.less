@@ -11,6 +11,8 @@ Imports normalize.less for making browsers render all elements more consistently
 */
 
 // Text colors
+
+// TODO: Polish: all pressed states check
 @content: black;
 @content-pressed: lighten(@content, 20%);
 @content-heading: black;
@@ -195,16 +197,15 @@ html {
 # Colors
 
 Text colors
+
+TODO: This is just a short example, needs to be completed when colors are confirmed
 ```markup
-<span style="text-color:black">content: black</span>;
-<span style="text-color:black">content: black</span>;@content-pressed: lighten(@content, 20%);
-@content-heading: black;
-@content-heading-pressed: lighten(@content-heading, 20%);
-@logo: #3b3b3b;
-@icon: #999999;
-@separator: #dadada;
-@instruction: #70c041;
-@warning: #e22c09;
-@menu: #363636;
+<div style="margin-bottom: 5px; background:black">content: black</div>
+<div style="margin-bottom: 5px; background:#3b3b3b">logo: #3b3b3b;</div>
+<div style="margin-bottom: 5px; background:#999999">icon: #999999</div>
+<div style="margin-bottom: 5px; background:#dadada">separator: #dadada</div>
+<div style="margin-bottom: 5px; background:#70c041">instruction: #70c041</div>
+<div style="margin-bottom: 5px; background:#e22c09">warning: #e22c09</div>
+<div style="margin-bottom: 5px; background:#363636">menu: #363636</div>
 ```
 */
