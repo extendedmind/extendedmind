@@ -32,6 +32,7 @@
     if (snapperState === 'closed') {
       clearAndHideOmnibar();
     } else if (snapperState === 'right') setFocusOnEmptyOmnibarInput();
+    $scope.$apply();
   }
 
   var omnibarFeatures = {
