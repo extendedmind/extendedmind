@@ -17,7 +17,14 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
-    .ticks(10, "d");
+    .ticks(6, "d");
+
+function make_y_axis() {        
+    return d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(6)
+}
 
 var svg = d3.select(elementId).append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -25,8 +32,6 @@ var svg = d3.select(elementId).append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// parse string to date object
-var parseDate = d3.time.format("%Y-%m-%d_%H:%M:%S+0000");
 
 d3.json(dataSource, function (data) {
   console.log("data loaded");
@@ -36,9 +41,12 @@ d3.json(dataSource, function (data) {
     return;
   }
 
-  /*data.forEach(function(d) {
-        d.time = parseDate(d.date);
-  });*/
+  data.forEach(function(d) {
+        // format date object into month and day: https://github.com/mbostock/d3/wiki/Time-Formatting
+        var format = d3.time.format("%b %d");
+        d.time = format(new Date(d.time));
+        d.value = +d.value; // assign numeric values into objects
+  });
 
   x.domain(data.map(function(d) { return d.time; }));
   y.domain([0, d3.max(data, function(d) { return d.value; })]);
@@ -63,6 +71,13 @@ d3.json(dataSource, function (data) {
       .style("text-anchor", "end")
       .text("Data");
 
+  svg.append("g")         
+        .attr("class", "grid")
+        .call(make_y_axis()
+            .tickSize(-width, 0, 0)
+            .tickFormat("")
+        )
+
   svg.selectAll(".bar")
       .data(data)
     .enter().append("rect")
@@ -81,13 +96,5 @@ d3.json(dataSource, function (data) {
       .text(function(d) { return d.value; });
 
 });
-
-function type(d) {
-    d.value = +d.value;
-
-    var parseDate = d3.time.format("%Y-%m-%d_%H:%M:%S+0000");
-    d.time = parseDate(d.time);
-    return d;
-}
 
 };

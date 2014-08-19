@@ -6,7 +6,10 @@ function checkRetention(date, days) {
 }
 
 function startRetention(date, days) {
-	dailyUUID = [];
+	var dailyUUID = [];
+    var dailyPackaging = [];
+    var dailyVersions = [];
+
     var endDate = new Date(); 
     endDate.setDate(date.getDate() + 1);
     /* 
@@ -17,30 +20,47 @@ function startRetention(date, days) {
     var endDay = dateToString(endDate);
 
     var baseUrl = "https://ext.md/evaluate/1.0/event?expression="; 
-    var query = baseUrl + "signUp(user.uuid)&step=864e5&start=" + startDay + "&stop=" + endDay;
-    console.log(query);
+    var query = baseUrl + "signUp(user.uuid,version,packaging)&step=864e5&start=" + startDay + "&stop=" + endDay;
+    var example = "data/signup_uuid.json";
 
-    // Process signups
-    // example data: "data/signup_uuid.json" 
+    // Process signups 
     $.getJSON( query, function( data ) {
         var items = [];
         $.each( data, function( key, val ) {
             // console.log(key,val);
             var dateobj = new Date(val.time);
             var uuid = val.data.user.uuid;
+            var packaging = val.data.packaging;
+            var version = val.data.version;
+
             dailyUUID.push(uuid);
+            dailyPackaging.push(packaging);
+            dailyVersions.push(version);
         });
 
-        continueRetention(dailyUUID,date, days);
+        // remove duplicates from packaging and versions arrays
+        var uniquePackaging = [];
+        var uniqueVersions = [];
+        $.each(dailyPackaging, function(i, el){
+            if($.inArray(el, uniquePackaging) === -1) uniquePackaging.push(el);
+        });
+        $.each(dailyVersions, function(i, el){
+            if($.inArray(el, uniqueVersions) === -1) uniqueVersions.push(el);
+        });
+
+        continueRetention(dailyUUID,date, days, uniquePackaging, uniqueVersions);
     });
 }
 
-function continueRetention(uuids, date, days) {
+function continueRetention(uuids, date, days, packaging, versions) {
 	/* 
     Fetch all distinct sessions per day
     https://ext.md/evaluate/1.0/metric/get?expression=distinct(session.in(user.uuid,[%229721068b-7850-44e1-b951-68efe5bea9ab%22,%22cde2222c-f092-485b-96dd-4221f8d13054%22,%225b269b37-80e9-495b-a641-081b73b6884b%22,%22dca7bc8a-102c-436a-bd6d-3288a270d94f%22]))&start=2014-08-05&stop=2014-08-18&step=864e5
     */
-    uuidsString = "'" + uuids.join("','") + "'";
+    var uuidsString = "'" + uuids.join("','") + "'";
+    var packagingString = packaging.join();
+    var versionsString = versions.join();
+
     var endDate = new Date(); 
     endDate.setDate(date.getDate() + 32);
 
@@ -49,13 +69,11 @@ function continueRetention(uuids, date, days) {
 
     var baseUrl = "https://ext.md/evaluate/1.0/metric/get?expression="; 
     var query = baseUrl + "distinct(session.in(user.uuid,["+uuidsString+"]))&step=864e5&start=" + startDay + "&stop=" + endDay;
-
-    console.log(query);
+    var example = "data/sessions_uuids.json";
 
     if (uuids.length > 0) {
 
-        // Json processing
-        // example data: "data/sessions_uuids.json" 
+        // Json processing 
         $.getJSON( query, function( data ) {
 
             console.log(data);
@@ -82,10 +100,9 @@ function continueRetention(uuids, date, days) {
                 d30 = "no data";
             }
 
-            $('#retention').append( '<tr><td>' + dateString + '</td><td>' + signups + '</td><td>' + d1 + '</td><td>' + d7 + '</td><td>' + d30 + '</td></tr>' );
+            $('#retention').append( '<tr><td>' + dateString + '</td><td>' + signups + '</td><td>' + packagingString + '</td><td>' + versionsString + '</td><td>' + d1 + '</td><td>' + d7 + '</td><td>' + d30 + '</td></tr>' );
 
             // one cycle complete --
-
             // go one day back and reduce one day to go
             date.setDate(date.getDate() - 1);
             days -= 1;
@@ -96,15 +113,19 @@ function continueRetention(uuids, date, days) {
 
         // if there are no signups, eg uuids.length is 0. All retention is no data.
         var signups = uuids.length;
+        var packagingString = "no users";
+        var versionsString = "no users";
+
         var dateString = date.toDateString();
         var d1,d7,d30;
         d1 = "no users";
         d7 = "no users";
         d30 = "no users";
 
-        $('#retention').append( '<tr><td>' + dateString + '</td><td>' + signups + '</td><td>' + d1 + '</td><td>' + d7 + '</td><td>' + d30 + '</td></tr>' );
-        // one cycle complete --
 
+        $('#retention').append( '<tr><td>' + dateString + '</td><td>' + signups + '</td><td>' + packagingString + '</td><td>' + versionsString + '</td><td>' + d1 + '</td><td>' + d7 + '</td><td>' + d30 + '</td></tr>' );
+
+        // one cycle complete --
         // go one day back and reduce one day to go
         date.setDate(date.getDate() - 1);
         days -= 1;
