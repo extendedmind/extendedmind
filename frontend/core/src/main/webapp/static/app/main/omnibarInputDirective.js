@@ -22,7 +22,9 @@
 
       scope.registerOmnibarInputFocusCallback(omnibarInputFocus);
       function omnibarInputFocus() {
-        element[0].focus();
+        scope.$evalAsync(function() {
+          element[0].focus();
+        });
       }
     }
   };

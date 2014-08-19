@@ -16,16 +16,25 @@
  /* global cordova */
  'use strict';
 
- function OmnibarController($q, $rootScope, $scope, $timeout, AnalyticsService, ItemsService, NotesService, TasksService, UISessionService) {
+ function OmnibarController($q, $rootScope, $scope, $timeout, AnalyticsService, ItemsService, NotesService, SnapService, TasksService, UISessionService) {
 
+  var omnibarVisible = false;
   $scope.omnibarText = {};
-  $scope.omnibarVisible = false;
   $scope.searchText = {};
   $scope.omnibarKeywords = {isVisible: false};
   $scope.isItemEditMode = false;
   $scope.isItemAddMode = false;
 
-  var omnibarInputFocusCallbackFunction;
+  var omnibarInputFocusCallbackFunction = {};
+
+  SnapService.registerAnimatedCallback(snapDrawerAnimated, 'right', 'OmnibarController');
+  function snapDrawerAnimated(snapperState) {
+    if (snapperState === 'closed') {
+      clearAndHideOmnibar();
+      $scope.isOmnibarOpen = false;
+      $scope.$apply();
+    }
+  }
 
   var omnibarFeatures = {
     search: {
@@ -168,17 +177,8 @@
   };
 
   $scope.getOmnibarVisibilityClass = function getOmnibarVisibilityClass() {
-    return $scope.omnibarVisible ? 'omnibar-visible' : 'omnibar-hidden';
+    return omnibarVisible ? 'omnibar-visible' : 'omnibar-hidden';
   };
-
-  function closeOmnibar() {
-    if ($scope.omnibarVisible){
-      $scope.omnibarVisible = false;
-      if ($rootScope.packaging === 'ios-cordova'){
-        cordova.plugins.Keyboard.disableScroll(false);
-      }
-    }
-  }
 
   $scope.omnibarHasText = function omnibarHasText() {
     return $scope.omnibarText.title && $scope.omnibarText.title.length !== 0;
@@ -203,14 +203,15 @@
 
   // TODO analytics visit omnibar
   $scope.openOmnibar = function openOmnibar(feature) {
+    $scope.isOmnibarOpen = true;
+    $scope.openOmnibarDrawer();
     if (!$scope.onboardingInProgress){
       if ($rootScope.packaging === 'ios-cordova'){
         cordova.plugins.Keyboard.disableScroll(true);
       }
       AnalyticsService.visit('omnibar');
       $scope.setOmnibarFeatureActive(feature);
-      $scope.omnibarVisible = true;
-      $scope.openOmnibarDrawer();
+      omnibarVisible = true;
     }
   };
 
@@ -233,7 +234,7 @@
 
   $scope.omnibarKeyDown = function omnibarKeyDown(event) {
     if (event.keyCode === 27){
-      clearAndHideOmnibar();
+      $scope.closeOmnibarDrawer();
     } else if (event.keyCode === 13){
       // Enter in omnibar saves, no line breaks allowed
       event.preventDefault();
@@ -244,7 +245,7 @@
 
   // For empty omnibar search placeholder
   $scope.hideEmptyOmnibar = function hideEmptyOmnibar() {
-    clearAndHideOmnibar();
+    $scope.closeOmnibarDrawer();
   };
 
   $scope.saveOmnibarText = function saveOmnibarText() {
@@ -262,7 +263,7 @@
           $scope.setOnboardingPhase('secondItemAdded');
         }
       }
-      clearAndHideOmnibar();
+      $scope.closeOmnibarDrawer();
     }
 
     var activeOmnibarFeature;
@@ -326,7 +327,7 @@
   };
 
   function setFocusOnEmptyOmnibarInput() {
-    if (!$scope.omnibarHasText() && omnibarInputFocusCallbackFunction) omnibarInputFocusCallbackFunction();
+    if (typeof omnibarInputFocusCallbackFunction === 'function') omnibarInputFocusCallbackFunction();
   }
 
   $scope.getOmnibarFooterSaveText = function getOmnibarFooterSaveText() {
@@ -472,7 +473,6 @@
     $scope.isItemAddMode = false;
     $scope.omnibarKeywords.isVisible = false;
     selectedOmnibarKeywords = [];
-    $scope.closeOmnibarDrawer();
   }
 
   // Reset item transient values, then clear and hide omnibar
@@ -481,9 +481,18 @@
       var activeOmnibarFeature = $scope.getActiveOmnibarFeature();
       omnibarFeatures[activeOmnibarFeature].itemResetFunction($scope[activeOmnibarFeature], UISessionService.getActiveUUID());
     }
-    clearAndHideOmnibar();
+    $scope.closeOmnibarDrawer();
   };
+
+  function closeOmnibar() {
+    if (omnibarVisible) {
+      omnibarVisible = false;
+      if ($rootScope.packaging === 'ios-cordova') {
+        cordova.plugins.Keyboard.disableScroll(false);
+      }
+    }
+  }
 }
 
-OmnibarController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'AnalyticsService', 'ItemsService', 'NotesService', 'TasksService', 'UISessionService'];
+OmnibarController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'AnalyticsService', 'ItemsService', 'NotesService', 'SnapService', 'TasksService', 'UISessionService'];
 angular.module('em.app').controller('OmnibarController', OmnibarController);

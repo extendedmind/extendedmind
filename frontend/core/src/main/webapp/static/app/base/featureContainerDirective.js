@@ -113,6 +113,7 @@
       };
 
       $scope.openOmnibarDrawer = function openOmnibarDrawer() {
+        $scope.setIsWebkitScrolling(false);
         SnapService.toggle('right');
       };
       $scope.closeOmnibarDrawer = function closeOmnibarDrawer() {
@@ -217,8 +218,7 @@
         };
 
         SnapService.createSnapper(settings, 'left');
-
-        SnapService.registerAnimatedCallback(snapDrawerAnimated, 'left');
+        SnapService.registerAnimatedCallback(snapDrawerAnimated, 'left', 'featureContainerDirective');
         SnapService.registerEndCallback(snapperPaneReleased, 'left');
         SnapService.registerCloseCallback(snapperClosed, 'left');
       }
@@ -240,7 +240,7 @@
           minPosition: -calculateOmnibarDrawerContainerMinPosition()
         };
         SnapService.createSnapper(settings, 'right');
-        SnapService.registerAnimatedCallback(snapDrawerAnimated, 'right');
+        SnapService.registerAnimatedCallback(snapDrawerAnimated, 'right', 'featureContainerDirective');
       }
 
       // No clicking/tapping when drawer is open.
@@ -253,13 +253,6 @@
 
       function snapDrawerAnimated(snapperState, snapperSide) {
         if (snapperSide === 'left') drawerMenuAnimated(snapperState, snapperSide);
-        else if (snapperSide === 'right') omnibarDrawerAnimated(snapperState, snapperSide);
-      }
-
-      function omnibarDrawerAnimated(snapperState) {
-        if (snapperState === 'closed') {
-          SnapService.setSnapperVisible('left');
-        }
       }
 
       // Snapper is "ready". Set swiper and snapper statuses.

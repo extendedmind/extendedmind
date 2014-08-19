@@ -21,6 +21,8 @@
   var draggerElements = {};
   var isSnapperSticky = false;
 
+  var animatedCallbacks = {};
+
   function snapperStartDragCallback(snapperSide) {
     if (snapperSide === 'left') {
       hideRightAndShowLeft();
@@ -33,20 +35,28 @@
   function hideRightAndShowLeft() {
     var rightDrawer = document.getElementById('omnibar-drawer');
     var leftDrawer = document.getElementById('menu');
-    if (rightDrawer.style.display !== 'none') rightDrawer.style.display = 'none';
-    if (leftDrawer.style.display !== 'block') leftDrawer.style.display = 'block';
+    if (rightDrawer && rightDrawer.style.display !== 'none') rightDrawer.style.display = 'none';
+    if (leftDrawer && leftDrawer.style.display !== 'block') leftDrawer.style.display = 'block';
   }
   function hideLeftAndShowRight() {
     var leftDrawer = document.getElementById('menu');
     var rightDrawer = document.getElementById('omnibar-drawer');
-    if (leftDrawer.style.display !== 'none') leftDrawer.style.display = 'none';
-    if (rightDrawer.style.display !== 'block') rightDrawer.style.display = 'block';
+    if (leftDrawer && leftDrawer.style.display !== 'none') leftDrawer.style.display = 'none';
+    if (rightDrawer && rightDrawer.style.display !== 'block') rightDrawer.style.display = 'block';
   }
   function registerSnapperEventCallback(snapperEvent, snapperSide, callback) {
     if (snappers[snapperSide] && snappers[snapperSide].snapper) {
       snappers[snapperSide].snapper.on(snapperEvent, function() {
         callback(snapperSide);
       });
+    }
+  }
+
+  function executeSnapperAnimatedCallbacks(snapperSide) {
+    if (animatedCallbacks[snapperSide]) {
+      for (var i = 0, len = animatedCallbacks[snapperSide].length; i < len; i++) {
+        animatedCallbacks[snapperSide][i].callback(snappers[snapperSide].snapper.state().state, snapperSide);
+      }
     }
   }
 
@@ -59,7 +69,6 @@
       if (!snappers[snapperSide]) snappers[snapperSide] = {};
 
       if (snappers[snapperSide].snapper) {
-        // snappers[snapperSide].snapper.settings({element: settings.element});
 
         if (snappers[snapperSide].isDraggable) snappers[snapperSide].snapper.enable();
         else snappers[snapperSide].snapper.disable();
@@ -75,6 +84,7 @@
           else snappers[snapperSide].snapper.enable();
         }
         else snappers[snapperSide].snapper.disable();
+        registerSnapperEventCallback('animated', snapperSide, executeSnapperAnimatedCallbacks);
       }
     },
     deleteSnapper: function(snapperSide) {
@@ -133,13 +143,20 @@
     getIsSticky: function() {
       return isSnapperSticky;
     },
-    registerAnimatedCallback: function(callback, snapperSide) {
-      // http://stackoverflow.com/a/3458612
-      if (snappers[snapperSide] && snappers[snapperSide].snapper)
-        snappers[snapperSide].snapper.on('animated', snapAnimated);
-      function snapAnimated() {
-        callback(snappers[snapperSide].snapper.state().state, snapperSide);
+    registerAnimatedCallback: function(animatedCallback, snapperSide, id) {
+      if (!animatedCallbacks[snapperSide]) animatedCallbacks[snapperSide] = [];
+      else {
+        for (var i = 0, len = animatedCallbacks[snapperSide].length; i < len; i++) {
+          if (animatedCallbacks[snapperSide][i].id === id) {
+            // Already registered, replace callback
+            animatedCallbacks[snapperSide][i].callback = animatedCallback;
+            return;
+          }
+        }
       }
+      animatedCallbacks[snapperSide].push({
+        callback: animatedCallback,
+        id: id});
     },
     registerCloseCallback: function(callback, snapperSide) {
       if (snappers[snapperSide] && snappers[snapperSide].snapper)
