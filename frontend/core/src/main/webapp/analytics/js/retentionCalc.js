@@ -71,6 +71,11 @@ function continueRetention(uuids, date, days, packaging, versions) {
     var query = baseUrl + "distinct(session.in(user.uuid,["+uuidsString+"]))&step=864e5&start=" + startDay + "&stop=" + endDay;
     var example = "data/sessions_uuids.json";
 
+    // for day-diff calculation
+    var today = new Date();
+    var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+    var daysBetween = Math.round(Math.abs((today.getTime() - date.getTime())/(oneDay)));
+
     if (uuids.length > 0) {
 
         // Json processing 
@@ -83,19 +88,31 @@ function continueRetention(uuids, date, days, packaging, versions) {
             var d1,d7,d30;
 
             if (data.length > 0) {
-                d1 = ((data[1].value / signups) * 100).toFixed(2);
+                if (daysBetween > 0) {
+                    d1 = ((data[1].value / signups) * 100).toFixed(2) + "%";
+                } else {
+                    d1 = "-";
+                }
             } else {
             	d1 = "no data";
             }
 
             if (data.length > 6) {
-                d7 = ((data[7].value / signups) * 100).toFixed(2);
+                if (daysBetween > 7) {
+                    d7 = ((data[7].value / signups) * 100).toFixed(2) + "%";
+                } else {
+                    d7 = "-";
+                }
             } else {
                 d7 = "no data";
             }
 
             if (data.length >29) {
-                d30 = ((data[30].value / signups) * 100).toFixed(2);
+                if (daysBetween > 30) {
+                    d30 = ((data[30].value / signups) * 100).toFixed(2) + "%";
+                } else {
+                    d30 = "-";
+                }
             } else {
                 d30 = "no data";
             }
