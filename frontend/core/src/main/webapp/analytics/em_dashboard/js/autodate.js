@@ -1,8 +1,12 @@
 // automatic date setting
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth()+1; //January is 0!
-    var yyyy = today.getFullYear();
+var today = new Date();
+var startDate = new Date();
+startDate.setMonth(startDate.getMonth() - 2);  // set a date to two months back. We have 60 days history view.
+
+function dateToString (dateObj) {
+    var dd = dateObj.getDate();
+    var mm = dateObj.getMonth()+1; //January is 0!
+    var yyyy = dateObj.getFullYear();
 
     if(dd<10) {
         dd='0'+dd
@@ -12,5 +16,6 @@
         mm='0'+mm
     } 
 
-    today = yyyy+'-'+mm+'-'+dd;
-    console.log("Today is: "+today);
+    var dateString = yyyy+'-'+mm+'-'+dd;
+    return dateString;
+}

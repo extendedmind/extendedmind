@@ -46,8 +46,33 @@
 <body>
 <div class="container" role="main">
     <h1>extended mind retention dashboard</h1>
+    <h4><a href="index.html">Change to: Basic analytics</a></h4>
     <hr>
 
+    <table id="retention" class="table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Signups</th>
+          <th>D1</th>
+          <th>D7</th>
+          <th>D30</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- 
+        example structure
+        <tr>
+            <td>16.6.2014</td>
+            <td>2140</td>
+            <td>40%</td>
+            <td>30%</td>
+            <td>15%</td>
+        </tr>
+        -->
+    </tbody>
+    </table>
+    <!-- 
     <h3>Day 1 retention</h3>
     <p>Does not include admin or beta users.</p>
     <p><strong>Cube requests</strong></p>
@@ -73,6 +98,7 @@
     <div id="chart3"></div>
 
     <hr>
+    -->
 
 </div>
 
@@ -80,43 +106,17 @@
 <script src="js/autodate.js"></script>
 <script src="js/d3/d3.js"></script>
 <script src="js/barchart.js"></script>
+<script src="js/retentionCalc.js"></script>
 <script>
 
-    var dailyUUID = [];
+    var today = new Date();
+    checkRetention(today, 14);
 
-    // Process signups
-    $.getJSON( "data/signup_uuid.json", function( data ) {
-        var items = [];
-        $.each( data, function( key, val ) {
-            // items.push( "<li id='" + key + "'>" + val + "</li>" );
-            console.log(key,val);
-            var dateobj = new Date(val.time);
-            var uuid = val.data.user.uuid;
-            dailyUUID.push(uuid);
-            console.log(dateobj);
-        });
-
-        console.log("all uuids");
-        console.log(dailyUUID);
-        console.log(dailyUUID.length);
-    });
-
-
-    // Json processing
-    $.getJSON( "data/sessions_uuid.json", function( data ) {
-        var items = [];
-        $.each( data, function( key, val ) {
-            // items.push( "<li id='" + key + "'>" + val + "</li>" );
-            // console.log(key,val);
-        });
-    });
-
-    var dataUrl = "https://ext.md/evaluate/1.0/metric?expression=sum(session.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5";
-
+    /* 
     initChartToElement("#chart1","data/sessions.json");
     initChartToElement("#chart2","data/unique_users_sessions.json");
     initChartToElement("#chart3","data/visit_signup.json");
-
+    */
 
 </script>
 </body>

@@ -31,6 +31,10 @@ var parseDate = d3.time.format("%Y-%m-%d_%H:%M:%S+0000");
 d3.json(dataSource, function (data) {
   console.log("data loaded");
   console.log(data);
+  if (data == null) {
+    console.log("Cannot draw chart without data");
+    return;
+  }
 
   /*data.forEach(function(d) {
         d.time = parseDate(d.date);
