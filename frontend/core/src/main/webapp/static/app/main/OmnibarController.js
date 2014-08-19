@@ -33,7 +33,7 @@
       clearAndHideOmnibar();
       $scope.isOmnibarOpen = false;
       $scope.$apply();
-    }
+    } else if (snapperState === 'right') setFocusOnEmptyOmnibarInput();
   }
 
   var omnibarFeatures = {
@@ -290,7 +290,7 @@
       convertOmnibarItemContent(oldActiveFeature, newActiveFeature);
       initializeNewItemFromOmnibarText(newActiveFeature);
     }
-    setFocusOnEmptyOmnibarInput();
+    // setFocusOnEmptyOmnibarInput();
   };
 
   function convertOmnibarItemContent(oldActiveFeature, newActiveFeature) {

@@ -114,10 +114,12 @@
 
       $scope.openOmnibarDrawer = function openOmnibarDrawer() {
         $scope.setIsWebkitScrolling(false);
+        $element[0].parentNode.classList.toggle('animating', true);
         SnapService.toggle('right');
       };
       $scope.closeOmnibarDrawer = function closeOmnibarDrawer() {
         $scope.setIsWebkitScrolling(true);
+        $element[0].parentNode.classList.toggle('animating', false);
         SnapService.toggle('right');
       };
 
@@ -229,12 +231,13 @@
       }
 
       function initializeOmnibar() {
+        /* jshint -W008 */
 
         var settings = {
           element: element[0].parentNode,
           touchToDrag: false,
           disable: 'left', // use right only
-          transitionSpeed: 0.2,
+          transitionSpeed: .3,
           minDragDistance: 0,
           addBodyClasses: false,
           minPosition: -calculateOmnibarDrawerContainerMinPosition()

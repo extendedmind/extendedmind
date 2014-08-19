@@ -18,7 +18,7 @@
   return {
     restrict: 'A',
     link: function postLink(scope, element) {
-      omnibarInputFocus();
+      // omnibarInputFocus();
 
       scope.registerOmnibarInputFocusCallback(omnibarInputFocus);
       function omnibarInputFocus() {
