@@ -114,12 +114,14 @@
 
       $scope.openOmnibarDrawer = function openOmnibarDrawer() {
         $scope.setIsWebkitScrolling(false);
-        $element[0].parentNode.classList.toggle('animating', true);
+        $element[0].classList.toggle('omnibar-closing', false);
+        $element[0].classList.toggle('omnibar-opening', true);
         SnapService.toggle('right');
       };
       $scope.closeOmnibarDrawer = function closeOmnibarDrawer() {
         $scope.setIsWebkitScrolling(true);
-        $element[0].parentNode.classList.toggle('animating', false);
+        $element[0].classList.toggle('omnibar-opening', false);
+        $element[0].classList.toggle('omnibar-closing', true);
         SnapService.toggle('right');
       };
 

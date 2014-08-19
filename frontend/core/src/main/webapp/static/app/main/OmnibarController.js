@@ -31,8 +31,6 @@
   function snapDrawerAnimated(snapperState) {
     if (snapperState === 'closed') {
       clearAndHideOmnibar();
-      $scope.isOmnibarOpen = false;
-      $scope.$apply();
     } else if (snapperState === 'right') setFocusOnEmptyOmnibarInput();
   }
 
@@ -203,8 +201,7 @@
 
   // TODO analytics visit omnibar
   $scope.openOmnibar = function openOmnibar(feature) {
-    $scope.isOmnibarOpen = true;
-    $scope.openOmnibarDrawer();
+    if (!omnibarVisible) $scope.openOmnibarDrawer();
     if (!$scope.onboardingInProgress){
       if ($rootScope.packaging === 'ios-cordova'){
         cordova.plugins.Keyboard.disableScroll(true);
