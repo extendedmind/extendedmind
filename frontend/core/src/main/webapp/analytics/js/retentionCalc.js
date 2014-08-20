@@ -1,5 +1,4 @@
 function checkRetention(date, days) {
-    console.log("days left to count:" + days);
     if (days > 0) {
         startRetention(date, days);
     }
@@ -27,7 +26,7 @@ function startRetention(date, days) {
     $.getJSON( query, function( data ) {
         var items = [];
         $.each( data, function( key, val ) {
-            // console.log(key,val);
+            
             var dateobj = new Date(val.time);
             var uuid = val.data.user.uuid;
             var packaging = val.data.packaging;
@@ -80,8 +79,6 @@ function continueRetention(uuids, date, days, packaging, versions) {
 
         // Json processing 
         $.getJSON( query, function( data ) {
-
-            console.log(data);
 
             var signups = uuids.length;
             var dateString = date.toDateString();
@@ -138,7 +135,6 @@ function continueRetention(uuids, date, days, packaging, versions) {
         d1 = "no users";
         d7 = "no users";
         d30 = "no users";
-
 
         $('#retention').append( '<tr><td>' + dateString + '</td><td>' + signups + '</td><td>' + packagingString + '</td><td>' + versionsString + '</td><td>' + d1 + '</td><td>' + d7 + '</td><td>' + d30 + '</td></tr>' );
 

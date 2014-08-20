@@ -111,8 +111,13 @@
 <script src="js/retentionCalc.js"></script>
 <script>
 
+    // calculate difference between today and first of August 2014.
     var today = new Date();
-    checkRetention(today, 21);
+    var begin = new Date(2014,6,31,0,0,0);   // january is 0!
+    var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+    var daysBetween = Math.round(Math.abs((today.getTime() - begin.getTime())/(oneDay)));
+
+    checkRetention(today, daysBetween);
 
     /* 
     initChartToElement("#chart1","data/sessions.json");

@@ -60,28 +60,28 @@
     <h4 id="pageDate"></h4>
 
     <h3>DAU</h3>
-    <p>Daily active users who have session. Does not include admin or beta users.</p>
+    <p>Daily active users who have session. Does not include admin or alpha users.</p>
     <code id="dauCode">https://ext.md/evaluate/1.0/metric?expression=distinct(session(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5
 </code>
     <div id="chart1"></div>
 
     <h3>Daily sessions</h3>
-    <p>Total number of daily sessions. Does not include admin or beta users.</p>
+    <p>Total number of daily sessions. Does not include admin or alpha users.</p>
     <code id="sessionsCode">https://ext.md/evaluate/1.0/metric?expression=sum(session.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
     <div id="chart2"></div>
 
     <h3>DAU: creating tasks</h3>
-    <p>Does not include admin or beta users.</p>
+    <p>Total tasks created on a day. Does not include admin or alpha users.</p>
     <code id="dauTasksCode">https://ext.md/evaluate/1.0/metric?expression=distinct(addTask(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
     <div id="chart3"></div>
 
     <h3>DAU: creating notes</h3>
-    <p>Does not include admin or beta users.</p>
+    <p>Total notes created on a day. Does not include admin or alpha users.</p>
     <code id="dauNotesCode">https://ext.md/evaluate/1.0/metric?expression=distinct(addNote(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
     <div id="chart4"></div>
 
     <h3>DAU: visiting omnibar</h3>
-    <p>Does not include admin or beta users.</p>
+    <p>Does not include admin or alpha users.</p>
     <code id="dauOmniCode">https://ext.md/evaluate/1.0/metric?expression=distinct(visit_omnibar(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
     <div id="chart5"></div>
 
