@@ -1,12 +1,4 @@
-/*
-
-<h1 class="main-heading">extended mind living styleguide</h1>
-
-The styleguide is a resource for designers, product managers, and developers, providing a common language around em's UI patterns. We use it to maintain modular front-end code and visual consistency across the app.
-
-*/
-
-// External code
+// External libraries
 @import "normalize.less";
 
 // EM code
@@ -19,3 +11,422 @@ The styleguide is a resource for designers, product managers, and developers, pr
 @import "inputs.less";
 @import "notifications.less";
 @import "widgets.less";
+
+/*
+
+<h1 class="main-heading">extended mind living styleguide</h1>
+
+The styleguide is a resource for designers, product managers, and developers, providing a common language around em's UI patterns. We use it to maintain modular front-end code and visual consistency across the app.
+
+<h2>Coding style</h2>
+
+Many parts have been borrowed from Harry Roberts' <a href="http://cssguidelin.es">css {guide:lines;}</a>.
+
+# Syntax and formatting
+
+* Two (2) space indents, no tabs
+* Maximum 120 character wide columns
+* Multiline CSS
+* Meaningful use of whitespace
+* import-statements at the beginning of the file, followed by a short intro text
+
+# Titling and whitespaces
+
+Each section should begin with a `# Markdown title`, preceded by 80 stars:
+```
+
+********************************************************************************
+# Forms
+```
+
+# Ruleset anatomy
+```
+[selector] {
+    [property]: [value];
+    [<--declaration--->]
+}
+
+.foo, .foo--bar,
+.baz {
+    display: block;
+    background-color: green;
+    color: red;
+    padding-bottom: 2px;
+    padding-top: 5px;
+}
+```
+Here you can see we have
+* related selectors on the same line; unrelated selectors on new lines;
+* a space before our opening brace ({);
+* properties and values on the same line;
+* a space after our property–value delimiting colon (:);
+* each declaration on its own new line;
+* the opening brace ({) on the same line as our last selector;
+* our first declaration on a new line after our opening brace ({);
+* our closing brace (}) on its own new line;
+* each declaration indented by two (2) spaces;
+* a trailing semi-colon (;) on our last declaration.
+
+As such, the following would be incorrect:
+
+```
+.foo, .foo--bar, .baz
+{
+  display:block;
+  background-color:green;
+  color:red }
+```
+
+Problems here include
+
+* tabs instead of spaces;
+* unrelated selectors on the same line;
+* the opening brace ({) on its own line;
+* the closing brace (}) does not sit on its own line;
+* the trailing (and, admittedly, optional) semi-colon (;) is missing;
+* no spaces after colons (:).
+
+# Multiline CSS
+CSS should be written across multiple lines, except in very specific circumstances. There are a number of benefits to this:
+* A reduced chance of merge conflicts, because each piece of functionality exists on its own line.
+* More ‘truthful’ and reliable diffs, because one line only ever carries one change.
+
+# Meaningful whitespace
+* No whitespace between a (styleguide) comment and the related code block
+* One (1) empty line between closely related rulesets.
+* Two (2) empty lines between loosely related rulesets and new sections
+
+For example
+```
+/ * (html comment begins here)
+******************************************************************************
+Section heading (markdown # should be in beginning but left out in this example)
+(Some styleguide code example here)
+h1, h2, h3, h4 {
+  .font-bold;
+  margin: 0;
+  color: @content-heading;
+  line-height: normal;
+}
+
+.subheading {
+  padding-top: @vertical-grid-half;
+}
+
+
+.font-bold {
+  font-family: @font-bold;
+  font-weight: 700;
+}
+.font-small {
+  font-size: @font-small-size;
+}
+.font-smallest {
+  font-size: @font-smallest-size;
+}
+
+
+******************************************************************************
+New sections begins here
+```
+
+# Commenting
+
+CSS needs more comments.
+
+As CSS is something of a declarative language that doesn’t really leave much of a paper-trail, it is often hard to discern—from looking at the CSS alone—
+
+* whether some CSS relies on other code elsewhere;
+* what effect changing some code will have elsewhere;
+* where else some CSS might be used;
+* what styles something might inherit (intentionally or otherwise);
+* what styles something might pass on (intentionally or otherwise);
+* where the author intended a piece of CSS to be used.
+
+This doesn’t even take into account some of CSS’ many quirks—such as various sates of `overflow` triggering block formatting context, or certain transform properties triggering hardware acceleration—that make it even more baffling to developers inheriting projects.
+
+As a result of CSS not telling its own story very well, it is a language that really does benefit from being heavily commented.
+
+As a rule, you should comment anything that isn’t immediately obvious from the code alone. That is to say, there is no need to tell someone that `color: red;` will make something red, but if you’re using `overflow: hidden;` to clear floats—as opposed to clipping an element’s overflow—this is probably something worth documenting.
+
+Because most parts of our CSS is styleguided, it's a good idea to integrate comments into Styleguide - then you have to think it through! =) -tuomas
+
+# Naming conventions
+
+Naming conventions in CSS are hugely useful in making your code more strict, more transparent, and more informative.
+
+A good naming convention will tell you and your team
+* what type of thing a class does;
+* where a class can be used;
+* what (else) a class might be related to.
+
+The naming convention we follow is:
+* hyphen (-) delimited strings with CSS
+* CamelCases with Angular
+* Definitions are not abbreviated, unless it's 100% sure (not everyone gets `.btn`)
+
+# CSS Selectors
+
+Perhaps somewhat surprisingly, one of the most fundamental, critical aspects of writing maintainable and scalable CSS is selectors. Their specificity, their portability, and their reusability all have a direct impact on the mileage we will get out of our CSS, and the headaches it might bring us.
+
+## Selector Intent
+
+It is important when writing CSS that we scope our selectors correctly, and that we’re selecting the right things for the right reasons. Selector Intent is the process of deciding and defining what you want to style and how you will go about selecting it. For example, if you are wanting to style your website’s main navigation menu, a selector like this would be incredibly unwise:
+
+```
+header ul {}
+```
+
+This selector’s intent is to style any `ul` inside any `header` element, whereas our intent was to style the site’s main navigation. This is poor Selector Intent: you can have any number of `header` elements on a page, and they in turn can house any number of `uls`, so a selector like this runs the risk of applying very specific styling to a very wide number of elements. This will result in having to write more CSS to undo the greedy nature of such a selector.
+
+A better approach would be a selector like:
+
+```
+.site-nav {}
+```
+
+An unambiguous, explicit selector with good Selector Intent. We are explicitly selecting the right thing for exactly the right reason.
+
+Poor Selector Intent is one of the biggest reasons for headaches on CSS projects. Writing rules that are far too greedy—and that apply very specific treatments via very far reaching selectors—causes unexpected side effects and leads to very tangled stylesheets, with selectors overstepping their intentions and impacting and interfering with otherwise unrelated rulesets.
+
+CSS cannot be encapsulated, it is inherently leaky, but we can mitigate some of these effects by not writing such globally-operating selectors: <b>your selectors should be as explicit and well reasoned as your reason for wanting to select something.</b>
+
+## Reusability
+
+With a move toward a more component-based approach to constructing UIs, the idea of reusability is paramount. We want the option to be able to move, recycle, duplicate, and syndicate components across our projects.
+
+To this end, we make heavy use of classes. IDs, as well as being hugely over-specific, cannot be used more than once on any given page, whereas classes can be reused an infinite amount of times. Everything you choose, from the type of selector to its name, should lend itself toward being reused.
+
+## Location Independence
+
+Given the ever-changing nature of most UI projects, and the move to more component-based architectures, it is in our interests not to style things based on where they are, but on what they are. That is to say, our components’ styling should not be reliant upon where we place them—they should remain entirely location independent.
+
+Let’s take an example of a call-to-action button that we have chosen to style via the following selector:
+
+```
+.promo a {}
+```
+
+Not only does this have poor Selector Intent—it will greedily style any and every link inside of a `.promo` to look like a button—it is also pretty wasteful as a result of being so locationally dependent: we can’t reuse that button with its correct styling outside of `.promo` because it is explicitly tied to that location. A far better selector would have been:
+
+```
+.btn {}
+```
+
+This single class can be reused anywhere outside of `.promo` and will always carry its correct styling. As a result of a better selector, this piece of UI is more portable, more recyclable, doesn’t have any dependencies, and has much better Selector Intent. <b>A component shouldn’t have to live in a certain place to look a certain way.</b>
+
+## Portability
+
+Reducing, or, ideally, removing, location dependence means that we can move components around our markup more freely, but how about improving our ability to move classes around components? On a much lower level, there are changes we can make to our selectors that make the selectors themselves—as opposed to the components they create—more portable. Take the following example:
+
+```
+input.btn {}
+```
+
+This is a qualified selector; the leading `input` ties this ruleset to only being able to work on `input` elements. By omitting this qualification, we allow ourselves to reuse the `.btn` class on any element we choose, like an a, for example, or a `button`.
+
+Qualified selectors do not lend themselves well to being reused, and every selector we write should be authored with reuse in mind.
+
+Of course, there are times when you may want to legitimately qualify a selector—you might need to apply some very specific styling to a particular element when it carries a certain class, for example:
+
+```
+// Embolden and colour any element with a class of `.error`.
+.error {
+    color: red;
+    font-weight: bold;
+}
+
+// If the element is a `div`, also give it some box-like styling.
+div.error {
+    padding: 10px;
+    border: 1px solid;
+}
+```
+
+This is one example where a qualified selector might be justifiable, but I would still recommend an approach more like:
+
+```
+// Text-level errors. 
+.error-text {
+    color: red;
+    font-weight: bold;
+}
+
+
+// Elements that contain errors.
+.error-box {
+    padding: 10px;
+    border: 1px solid;
+}
+```
+This means that we can apply `.error-box` to any element, and not just a div — it is more reusable than a qualified selector.
+
+
+## Selector naming
+
+As Phil Karlton once said, "There are only two hard things in Computer Science: cache invalidation and naming things".
+
+I won’t comment on the former claim here, but the latter has plagued me for years. My advice with regard to naming things in CSS is to pick a name that is sensible, but somewhat ambiguous: aim for high reusability. For example, instead of a class like `.site-nav`, choose something like `.primary-nav`; rather than `.footer-links`, favour a class like `.sub-links`.
+
+The differences in these names is that the first of each two examples is tied to a very specific use case: they can only be used as the site’s navigation or the footer’s links respectively. By using slightly more ambiguous names, we can increase our ability to reuse these components in different circumstances.
+
+To quote Nicolas Gallagher: "Tying your class name semantics tightly to the nature of the content has already reduced the ability of your architecture to scale or be easily put to use by other developers".
+
+That is to say, we should use sensible names—classes like `.border` or `.red` are never advisable — but we should avoid using classes which describe the exact nature of the content and/or its use cases. <b>Using a class name to describe content is redundant because content describes itself.</b>
+
+The debate surrounding semantics has raged for years, but it is important that we adopt a more pragmatic, sensible approach to naming things in order to work more efficiently and effectively. Instead of focussing on ‘semantics’, look more closely at sensibility and longevity — choose names based on ease of maintenance, not for their perceived meaning.
+
+Name things for people; they’re the only things that actually read your classes (everything else merely matches them). Once again, it is better to strive for reusable, recyclable classes rather than writing for specific use cases. Let’s take an example:
+
+```
+// Runs the risk of becoming out of date; not very maintainable.
+.blue {
+    color: blue;
+}
+
+// Depends on location in order to be rendered properly.
+.header span {
+    color: blue;
+}
+
+// Too specific; limits our ability to reuse.
+.header-color {
+    color: blue;
+}
+
+// Nicely abstracted, very portable, doesn’t risk becoming out of date.
+.highlight-color {
+    color: blue;
+}
+```
+
+It is important to strike a balance between names that do not literally describe the style that the class brings, but also ones that do not explicitly describe specific use cases. Instead of `.home-page-panel`, choose `.masthead`; instead of `.site-nav`, favour `.primary-nav`; instead of `.btn-login`, opt for `.btn-primary`.
+
+### Naming UI Components
+
+Naming components with agnosticism and reusability in mind really helps developers construct and modify UIs much more quickly, and with far less waste. However, it can sometimes be beneficial to provide more specific or meaningful naming alongside the more ambiguous class, particularly when several agnostic classes come together to form a more complex and specific component that might benefit from having a more meaningful name. In this scenario, we augment the classes with a `data-ui-component` attribute which houses a more specific name, for example:
+
+```
+<ul class="tabbed-nav" data-ui-component="Main Nav">
+```
+
+Here we have the benefits of a highly reusable class name which does not describe—and, therefore, tie itself to—a specific use case, and added meaning via our `data-ui-component attribute`. The `data-ui-component`’s value can take any format you wish, like title case:
+
+```
+<ul class="tabbed-nav" data-ui-component="Main Nav">
+```
+
+Or class-like:
+
+```
+<ul class="tabbed-nav" data-ui-component="main-nav">
+```
+
+Or namespaced:
+
+```
+<ul class="tabbed-nav" data-ui-component="nav-main">
+```
+
+The implementation is largely personal preference, but the concept still remains: Add any useful or specific meaning via a mechanism that will not inhibit your and your team’s ability to recycle and reuse CSS.
+
+## Selector Performance
+
+A topic which is—with the quality of today’s browsers—more interesting than it is important, is selector performance. That is to say, how quickly a browser can match the selectors your write in CSS up with the nodes it finds in the DOM.
+
+Generally speaking, the longer a selector is (i.e. the more component parts) the slower it is, for example:
+
+```
+body.home div.header ul {}
+```
+
+…is a far less efficient selector than:
+
+```
+.primary-nav {}
+```
+
+This is because browsers read CSS selectors right-to-left. A browser will read the first selector as
+
+* find all `ul` elements in the DOM;
+* now check if they live anywhere inside an element with a class of `.header`;
+* next check that `.header` class exists on a `div` element;
+* now check that that all lives anywhere inside any elements with a class of `.home`;
+* finally, check that `.home` exists on a `body` element.
+
+The second, in contrast, is simply a case of the browser reading
+
+* find all the elements with a class of `.primary-nav`.
+
+To further compound the problem, we are using descendant selectors (e.g. `.foo .bar {}`). The upshot of this is that a browser is required to start with the rightmost part of the selector (i.e. `.bar`) and keep looking up the DOM indefinitely until it finds the next part (i.e. `.foo`). This could mean stepping up the DOM dozens of times until a match is found.
+
+This is just one reason why <b>nesting with preprocessors is often a false economy</b>; as well as making selectors unnecessarily more specific, and creating location dependency, it also creates more work for the browser.
+
+By using a child selector (e.g. `.foo > .bar {}`) we can make the process much more efficient, because this only requires the browser to look one level higher in the DOM, and it will stop regardless of whether or not it found a match.
+
+## The Key Selector
+
+Because browsers read selectors right-to-left, the rightmost selector is often critical in defining a selector’s performance: this is called the key selector.
+
+The following selector might appear to be highly performant at first glance. It uses an ID which is nice and fast, and there can only ever be one on a page, so surely this will be a nice and speedy lookup—just find that one ID and then style everything inside of it:
+
+```
+#foo * {}
+```
+
+The problem with this selector is that the key selector (`*`) is very, very far reaching. What this selector actually does is finds every single node in the DOM (even `<title>`, `<link>`, and `<head>` elements; everything) and then looks to see if it lives anywhere at any level within `#foo`. This is a very, very expensive selector, and should most likely be avoided or rewritten.
+
+Thankfully, by writing selectors with good Selector Intent, we are probably avoiding inefficient selectors by default; we are very unlikely to have greedy key selectors if we’re targeting the right things for the right reason.
+
+That said, however, CSS selector performance should be fairly low on your list of things to optimise; browsers are fast, and are only ever getting faster, and it is only on notable edge cases that inefficient selectors would be likely to pose a problem.
+
+As well as their own specific issues, nesting, qualifying, and poor Selector Intent all contribute to less efficient selectors.
+
+## General Rules
+
+Your selectors are fundamental to writing good CSS. To very briefly sum up the above sections:
+
+* <b>Select what you want explicitly</b>, rather than relying on circumstance or coincidence. Good Selector Intent will rein in the reach and leak of your styles.
+* Write selectors for reusability</b>, so that you can work more efficiently and reduce waste and repetition.
+* <b>Do not nest selectors unnecessarily</b>, because this will increase specificity and affect where else you can use your styles.
+* <b>Do not qualify selectors unnecessarily</b>, as this will impact the number of different elements you can apply styles to.
+* </b>Keep selectors as short as possible</b>, in order to keep specificity down and performance up.
+Focussing on these points will keep your selectors a lot more sane and easy to work with on changing and long-running projects.
+
+# Specificity
+
+As we’ve seen, CSS isn’t the most friendly of languages: globally operating, very leaky, dependent on location, hard to encapsulate, based on inheritance… But! None of that even comes close to the nightmare that is specificity.
+
+No matter how well considered your naming, regardless of how perfect your source order and cascade are managed, and how well you’ve scoped your rulesets, just one overly-specific selector can undo everything.
+
+<b>Specificity takes some understanding, but it is safer just to avoid it entirely.</b>
+
+Keep It Low at All Times
+* Don’t introduce any wildcards.
+
+IDs in CSS
+* Honestly, don’t even bother.
+
+Nesting
+* If it will work without it, avoid it.
+
+Scope
+* It does provide a scope at least (e.g. `.foo .bar {}`), but…
+* So does `.foo__bar`, but with no drawbacks.
+
+!important
+* Proactively, not reactively.
+* Hacking Specificity
+
+Sometimes you gotta…
+* `[id="foo"] {}`
+* `.btn.btn {}`
+
+# HTML
+Always quote attributes:
+```
+<div class="box">
+```
+
+
+*/
