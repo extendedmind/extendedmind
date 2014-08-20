@@ -142,9 +142,9 @@
     return omnibarFeatures[activeOmnibarFeature][valueName];
   }
 
-  function disableNativeScrolling() {
+  function setNativeScrollingDisabled(isDisabled) {
     if ($rootScope.packaging === 'ios-cordova') {
-      cordova.plugins.Keyboard.disableScroll(false);
+      cordova.plugins.Keyboard.disableScroll(isDisabled);
     }
   }
 
@@ -471,7 +471,7 @@
   // TODO analytics visit omnibar
   $scope.openOmnibar = function openOmnibar(feature) {
     if (!$scope.onboardingInProgress){
-      disableNativeScrolling();
+      setNativeScrollingDisabled(true);
       AnalyticsService.visit('omnibar');
       $scope.setOmnibarFeatureActive(feature);
       setOmnibarVisibileAndOpenOmnibarDrawer();
@@ -514,7 +514,7 @@
     $scope.isItemAddMode = false;
     $scope.omnibarKeywords.isVisible = false;
     selectedOmnibarKeywords = [];
-    disableNativeScrolling();
+    setNativeScrollingDisabled(false);
   }
 }
 
