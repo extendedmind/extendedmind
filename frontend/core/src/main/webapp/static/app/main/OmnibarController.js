@@ -94,10 +94,10 @@
   };
   $scope.$watch('omnibarText.title', function(newTitle/*, oldTitle*/) {
     $scope.searchText.current = newTitle;
-    if (newTitle && newTitle.length > 1){
+    if (newTitle && newTitle.length > 1) {
       // Use a delayed update for search
-      $timeout(function(){
-        if ($scope.searchText.current === newTitle){
+      $timeout(function() {
+        if ($scope.searchText.current === newTitle) {
           $scope.searchText.delayed = newTitle;
         }
       }, 700);
@@ -144,6 +144,7 @@
 
   function setNativeScrollingDisabled(isDisabled) {
     if ($rootScope.packaging === 'ios-cordova') {
+      // https://github.com/driftyco/ionic-plugins-keyboard
       cordova.plugins.Keyboard.disableScroll(isDisabled);
     }
   }
@@ -157,16 +158,16 @@
   }
 
   $scope.getOmnibarFeatureHeight = function getOmnibarFeatureHeight() {
-    if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
+    if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT) {
       return $scope.currentHeight - getOmnibarStaticContentHeight() - keyboardHeight;
     } else {
       return MAX_CONTAINER_HEIGHT - getOmnibarStaticContentHeight() - keyboardHeight;
     }
   };
 
-  if ($rootScope.packaging === 'ios-cordova'){
-    $scope.$watch('softKeyboard.height', function(newValue){
-      if (newValue){
+  if ($rootScope.packaging === 'ios-cordova') {
+    $scope.$watch('softKeyboard.height', function(newValue) {
+      if (newValue) {
         keyboardHeight = newValue;
       } else {
         keyboardHeight = 0;
@@ -181,16 +182,16 @@
 
   $scope.getEditTaskDescriptionMaxHeight = function() {
     var usedHeight = $scope.isItemEditMode || $scope.isItemAddMode ? 0 : omnibarActionsHeight;
-    if (taskDescriptionHasFocus){
+    if (taskDescriptionHasFocus) {
       usedHeight += 160;
     } else {
       usedHeight += 290;
-      if ($scope.task && $scope.task.date){
+      if ($scope.task && $scope.task.date) {
         usedHeight += 44;
       }
     }
 
-    if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
+    if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT) {
       var calculatedHeight = $scope.currentHeight - usedHeight - keyboardHeight;
       return (calculatedHeight < 44 ? 44 : calculatedHeight);
     } else {
@@ -201,7 +202,7 @@
   $scope.getEditNoteContentMaxHeight = function() {
     var usedHeight = $scope.isItemEditMode || $scope.isItemAddMode ? 0 : omnibarActionsHeight;
     usedHeight += 112;  // reduce by this much to fit content into view
-    if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
+    if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT) {
       var calculatedHeight = $scope.currentHeight - usedHeight - keyboardHeight;
       return (calculatedHeight < 44 ? 44 : calculatedHeight);
     } else {
@@ -211,7 +212,7 @@
 
   $scope.getSearchPlaceholderMaxHeight = function() {
     var usedHeight = 44 + getOmnibarStaticContentHeight();
-    if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT){
+    if ($scope.currentHeight <= MAX_CONTAINER_HEIGHT) {
       return $scope.currentHeight - usedHeight - keyboardHeight;
     } else {
       return MAX_CONTAINER_HEIGHT - usedHeight - keyboardHeight;
@@ -236,10 +237,10 @@
   }
 
   var currentOmnibarTitleTextStyle;
-  $scope.getOmnibarClass = function getOmnibarClass(){
-    if ($scope.omnibarText.title && $scope.omnibarText.title.length > 10){
+  $scope.getOmnibarClass = function getOmnibarClass() {
+    if ($scope.omnibarText.title && $scope.omnibarText.title.length > 10) {
       var omnibarWidth;
-      if ($rootScope.currentWidth >= 568){
+      if ($rootScope.currentWidth >= 568) {
         // Maximum width for column
         omnibarWidth = 470;
       } else {
@@ -247,28 +248,28 @@
       }
 
       var fontSize = '21px';
-      if (currentOmnibarTitleTextStyle === 'omnibar-input-very-long'){
+      if (currentOmnibarTitleTextStyle === 'omnibar-input-very-long') {
         fontSize = '12px';
-      } else if (currentOmnibarTitleTextStyle === 'omnibar-input-long'){
+      } else if (currentOmnibarTitleTextStyle === 'omnibar-input-long') {
         fontSize = '15px';
-      } else if (currentOmnibarTitleTextStyle === 'omnibar-input-medium'){
+      } else if (currentOmnibarTitleTextStyle === 'omnibar-input-medium') {
         fontSize = '18px';
       }
 
       var currentTextWidth = getTextWidth($scope.omnibarText.title, fontSize + ' sans-serif');
-      if (currentOmnibarTitleTextStyle === 'omnibar-input-very-long' || (currentTextWidth / 2 + 25) > omnibarWidth){
-        if (currentOmnibarTitleTextStyle !== 'omnibar-input-very-long'){
+      if (currentOmnibarTitleTextStyle === 'omnibar-input-very-long' || (currentTextWidth / 2 + 25) > omnibarWidth) {
+        if (currentOmnibarTitleTextStyle !== 'omnibar-input-very-long') {
           $rootScope.$broadcast('elastic:adjust');
           currentOmnibarTitleTextStyle = 'omnibar-input-very-long';
         }
       }
-      else if (currentOmnibarTitleTextStyle === 'omnibar-input-long' || (currentTextWidth / 2 + 35) > omnibarWidth){
-        if (currentOmnibarTitleTextStyle !== 'omnibar-input-long'){
+      else if (currentOmnibarTitleTextStyle === 'omnibar-input-long' || (currentTextWidth / 2 + 35) > omnibarWidth) {
+        if (currentOmnibarTitleTextStyle !== 'omnibar-input-long') {
           $rootScope.$broadcast('elastic:adjust');
           currentOmnibarTitleTextStyle = 'omnibar-input-long';
         }
-      } else if (currentOmnibarTitleTextStyle === 'omnibar-input-medium' || (currentTextWidth + 20) > omnibarWidth){
-        if (currentOmnibarTitleTextStyle !== 'omnibar-input-medium'){
+      } else if (currentOmnibarTitleTextStyle === 'omnibar-input-medium' || (currentTextWidth + 20) > omnibarWidth) {
+        if (currentOmnibarTitleTextStyle !== 'omnibar-input-medium') {
           $rootScope.$broadcast('elastic:adjust');
           currentOmnibarTitleTextStyle = 'omnibar-input-medium';
         }
@@ -338,7 +339,7 @@
   $scope.omnibarKeyDown = function omnibarKeyDown(event) {
     if (event.keyCode === 27) {
       setOmnibarHiddenAndCloseOmnibarDrawer();
-    } else if (event.keyCode === 13){
+    } else if (event.keyCode === 13) {
       // Enter in omnibar saves, no line breaks allowed
       event.preventDefault();
       event.stopPropagation();
@@ -353,11 +354,11 @@
     }
 
     function performTearDown() {
-      if (!$scope.isItemEditMode && !$scope.isItemAddMode){
+      if (!$scope.isItemEditMode && !$scope.isItemAddMode) {
         UISessionService.setToasterNotification(omnibarFeatures[activeOmnibarFeature].saveItemLocation);
       }
-      if (!$scope.isItemEditMode || $scope.isItemAddMode){
-        if ($scope.getOnboardingPhase() === 'itemAdded' || $scope.getOnboardingPhase() === 'sortingStarted'){
+      if (!$scope.isItemEditMode || $scope.isItemAddMode) {
+        if ($scope.getOnboardingPhase() === 'itemAdded' || $scope.getOnboardingPhase() === 'sortingStarted') {
           $scope.setOnboardingPhase('secondItemAdded');
         }
       }
@@ -470,7 +471,7 @@
 
   // TODO analytics visit omnibar
   $scope.openOmnibar = function openOmnibar(feature) {
-    if (!$scope.onboardingInProgress){
+    if (!$scope.onboardingInProgress) {
       setNativeScrollingDisabled(true);
       AnalyticsService.visit('omnibar');
       $scope.setOmnibarFeatureActive(feature);
