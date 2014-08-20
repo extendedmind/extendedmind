@@ -37,7 +37,7 @@
 
   var omnibarFeatures = {
     search: {
-      inputPlaceholder: 'recall/save...',
+      inputPlaceholder: 'save to inbox / search...',
       footerSaveText: 'save to inbox',
       saveItemLocation: 'inbox',
       itemSaveMethod: ItemsService.saveItem.bind(ItemsService),
