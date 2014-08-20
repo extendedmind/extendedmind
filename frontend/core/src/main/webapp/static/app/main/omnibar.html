@@ -6,7 +6,7 @@
         <textarea type="text" class="simple-input omnibar-input" ng-class="getOmnibarClass()" ng-model="omnibarText.title" ng-keydown="omnibarKeyDown($event)" omnibar-input msd-elastic dynamic-placeholder="{{getOmnibarInputPlaceholder()}}" maxlength="128" required ></textarea>
       </div>
       <div ng-show="omnibarHasText() && !isItemEditMode && !isItemAddMode" class="right-button-wrapper">
-        <button type="button" class="button omnibar-x-icon" ng-click="clearOmnibar()"><span class="icon-x"></span>
+        <button type="button" class="button omnibar-x-icon" ng-click="clearOmnibarTitleText()"><span class="icon-x"></span>
         </button>
       </div>
     </div>

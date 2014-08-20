@@ -29,9 +29,8 @@
 
   SnapService.registerAnimatedCallback(snapDrawerAnimated, 'right', 'OmnibarController');
   function snapDrawerAnimated(snapperState) {
-    if (snapperState === 'closed') {
-      clearAndHideOmnibar();
-    } else if (snapperState === 'right') setFocusOnEmptyOmnibarInput();
+    if (snapperState === 'closed') clearAndHideOmnibar();
+    else if (snapperState === 'right') setFocusOnEmptyOmnibarInput();
     $scope.$apply();
   }
 
@@ -62,6 +61,85 @@
       persistentItemValues: ['title', 'content']
     }
   };
+
+  // UI COMPONENTS
+
+  $scope.taskDescriptionFocus = function() {
+    taskDescriptionHasFocus = true;
+  };
+  $scope.taskDescriptionBlur = function() {
+    taskDescriptionHasFocus = false;
+  };
+
+  $scope.hideTaskProperties = function() {
+    return taskDescriptionHasFocus;
+  };
+
+  $scope.getOmnibarVisibilityClass = function getOmnibarVisibilityClass() {
+    return omnibarVisible ? 'omnibar-visible' : 'omnibar-hidden';
+  };
+
+  $scope.omnibarHasText = function omnibarHasText() {
+    return $scope.omnibarText.title && $scope.omnibarText.title.length !== 0;
+  };
+
+  $scope.clearOmnibarTitleText = function clearOmnibarTitleText() {
+    $scope.omnibarText = {};
+    currentOmnibarTitleTextStyle = undefined;
+  };
+
+  $scope.isSearchActive = function isSearchActive() {
+    return $scope.searchText.delayed && $scope.searchText.delayed.length > 1;
+  };
+  $scope.$watch('omnibarText.title', function(newTitle/*, oldTitle*/) {
+    $scope.searchText.current = newTitle;
+    if (newTitle && newTitle.length > 1){
+      // Use a delayed update for search
+      $timeout(function(){
+        if ($scope.searchText.current === newTitle){
+          $scope.searchText.delayed = newTitle;
+        }
+      }, 700);
+    } else {
+      $scope.searchText.delayed = undefined;
+    }
+  });
+
+  $scope.registerOmnibarInputFocusCallback = function registerOmnibarInputFocusCallback(omnibarInputFocusCallback) {
+    omnibarInputFocusCallbackFunction = omnibarInputFocusCallback;
+  };
+
+  function setFocusOnEmptyOmnibarInput() {
+    if (typeof omnibarInputFocusCallbackFunction === 'function') omnibarInputFocusCallbackFunction();
+  }
+
+  $scope.getOmnibarFooterSaveText = function getOmnibarFooterSaveText() {
+    return getActiveOmnibarFeatureValue('footerSaveText');
+  };
+  $scope.getOmnibarInputPlaceholder = function getOmnibarInputPlaceholder() {
+    return getActiveOmnibarFeatureValue('inputPlaceholder');
+  };
+
+  $scope.getActiveOmnibarFeature = function getActiveOmnibarFeature() {
+    for (var omnibarFeature in omnibarFeatures) {
+      if (omnibarFeatures.hasOwnProperty(omnibarFeature)) {
+        if (omnibarFeatures[omnibarFeature].isActive) return omnibarFeature;
+      }
+    }
+  };
+
+  function getActiveOmnibarFeatureValue(valueName) {
+    var activeOmnibarFeature = $scope.getActiveOmnibarFeature();
+    return omnibarFeatures[activeOmnibarFeature][valueName];
+  }
+
+  function disableNativeScrolling() {
+    if ($rootScope.packaging === 'ios-cordova') {
+      cordova.plugins.Keyboard.disableScroll(false);
+    }
+  }
+
+  // CONTAINER DIMENSIONS
 
   var MAX_CONTAINER_HEIGHT = 769;
   var omnibarActionsHeight = 44, omnibarContainerHeight = 156, keyboardHeight = 0;
@@ -131,16 +209,70 @@
     }
   };
 
-  $scope.taskDescriptionFocus = function() {
-    taskDescriptionHasFocus = true;
-  };
-  $scope.taskDescriptionBlur = function() {
-    taskDescriptionHasFocus = false;
+  /**
+  * Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
+  *
+  * @param {String} text The text to be rendered.
+  * @param {String} font The css font descriptor that text is to be rendered with (e.g. "bold 14px verdana").
+  *
+  * @see http://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
+  */
+  function getTextWidth(text, font) {
+    // re-use canvas object for better performance
+    var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'));
+    var context = canvas.getContext('2d');
+    context.font = font;
+    var metrics = context.measureText(text);
+    return metrics.width;
+  }
+
+  var currentOmnibarTitleTextStyle;
+  $scope.getOmnibarClass = function getOmnibarClass(){
+    if ($scope.omnibarText.title && $scope.omnibarText.title.length > 10){
+      var omnibarWidth;
+      if ($rootScope.currentWidth >= 568){
+        // Maximum width for column
+        omnibarWidth = 470;
+      } else {
+        omnibarWidth = $rootScope.currentWidth - 98;
+      }
+
+      var fontSize = '21px';
+      if (currentOmnibarTitleTextStyle === 'omnibar-input-very-long'){
+        fontSize = '12px';
+      } else if (currentOmnibarTitleTextStyle === 'omnibar-input-long'){
+        fontSize = '15px';
+      } else if (currentOmnibarTitleTextStyle === 'omnibar-input-medium'){
+        fontSize = '18px';
+      }
+
+      var currentTextWidth = getTextWidth($scope.omnibarText.title, fontSize + ' sans-serif');
+      if (currentOmnibarTitleTextStyle === 'omnibar-input-very-long' || (currentTextWidth / 2 + 25) > omnibarWidth){
+        if (currentOmnibarTitleTextStyle !== 'omnibar-input-very-long'){
+          $rootScope.$broadcast('elastic:adjust');
+          currentOmnibarTitleTextStyle = 'omnibar-input-very-long';
+        }
+      }
+      else if (currentOmnibarTitleTextStyle === 'omnibar-input-long' || (currentTextWidth / 2 + 35) > omnibarWidth){
+        if (currentOmnibarTitleTextStyle !== 'omnibar-input-long'){
+          $rootScope.$broadcast('elastic:adjust');
+          currentOmnibarTitleTextStyle = 'omnibar-input-long';
+        }
+      } else if (currentOmnibarTitleTextStyle === 'omnibar-input-medium' || (currentTextWidth + 20) > omnibarWidth){
+        if (currentOmnibarTitleTextStyle !== 'omnibar-input-medium'){
+          $rootScope.$broadcast('elastic:adjust');
+          currentOmnibarTitleTextStyle = 'omnibar-input-medium';
+        }
+      } else {
+        currentOmnibarTitleTextStyle = undefined;
+      }
+      return currentOmnibarTitleTextStyle;
+    } else {
+      currentOmnibarTitleTextStyle = undefined;
+    }
   };
 
-  $scope.hideTaskProperties = function() {
-    return taskDescriptionHasFocus;
-  };
+  // EDIT ITEM SCROLLER
 
   var editItemHasScrollerIndicators = false;
   var editItemScrollerActiveSlideIndex = 0;
@@ -175,43 +307,7 @@
     gotoEditItemScrollerSlideFn(slideIndex);
   };
 
-  $scope.getOmnibarVisibilityClass = function getOmnibarVisibilityClass() {
-    return omnibarVisible ? 'omnibar-visible' : 'omnibar-hidden';
-  };
-
-  $scope.omnibarHasText = function omnibarHasText() {
-    return $scope.omnibarText.title && $scope.omnibarText.title.length !== 0;
-  };
-
-  $scope.isSearchActive = function isSearchActive() {
-    return $scope.searchText.delayed && $scope.searchText.delayed.length > 1;
-  };
-  $scope.$watch('omnibarText.title', function(newTitle/*, oldTitle*/) {
-    $scope.searchText.current = newTitle;
-    if (newTitle && newTitle.length > 1){
-      // Use a delayed update for search
-      $timeout(function(){
-        if ($scope.searchText.current === newTitle){
-          $scope.searchText.delayed = newTitle;
-        }
-      }, 700);
-    } else {
-      $scope.searchText.delayed = undefined;
-    }
-  });
-
-  // TODO analytics visit omnibar
-  $scope.openOmnibar = function openOmnibar(feature) {
-    if (!omnibarVisible) $scope.openOmnibarDrawer();
-    if (!$scope.onboardingInProgress){
-      if ($rootScope.packaging === 'ios-cordova'){
-        cordova.plugins.Keyboard.disableScroll(true);
-      }
-      AnalyticsService.visit('omnibar');
-      $scope.setOmnibarFeatureActive(feature);
-      omnibarVisible = true;
-    }
-  };
+  // EDIT ITEM
 
   function initializeOmnibarItem(item, feature) {
     $scope.omnibarText.title = item.title;
@@ -231,19 +327,14 @@
   };
 
   $scope.omnibarKeyDown = function omnibarKeyDown(event) {
-    if (event.keyCode === 27){
-      $scope.closeOmnibarDrawer();
+    if (event.keyCode === 27) {
+      setOmnibarHiddenAndCloseOmnibarDrawer();
     } else if (event.keyCode === 13){
       // Enter in omnibar saves, no line breaks allowed
       event.preventDefault();
       event.stopPropagation();
       $scope.saveOmnibarText();
     }
-  };
-
-  // For empty omnibar search placeholder
-  $scope.hideEmptyOmnibar = function hideEmptyOmnibar() {
-    $scope.closeOmnibarDrawer();
   };
 
   $scope.saveOmnibarText = function saveOmnibarText() {
@@ -261,7 +352,7 @@
           $scope.setOnboardingPhase('secondItemAdded');
         }
       }
-      $scope.closeOmnibarDrawer();
+      setOmnibarHiddenAndCloseOmnibarDrawer();
     }
 
     var activeOmnibarFeature;
@@ -320,34 +411,6 @@
     }
   }
 
-  $scope.registerOmnibarInputFocusCallback = function registerOmnibarInputFocusCallback(omnibarInputFocusCallback) {
-    omnibarInputFocusCallbackFunction = omnibarInputFocusCallback;
-  };
-
-  function setFocusOnEmptyOmnibarInput() {
-    if (typeof omnibarInputFocusCallbackFunction === 'function') omnibarInputFocusCallbackFunction();
-  }
-
-  $scope.getOmnibarFooterSaveText = function getOmnibarFooterSaveText() {
-    return getActiveOmnibarFeatureValue('footerSaveText');
-  };
-  $scope.getOmnibarInputPlaceholder = function getOmnibarInputPlaceholder() {
-    return getActiveOmnibarFeatureValue('inputPlaceholder');
-  };
-
-  $scope.getActiveOmnibarFeature = function getActiveOmnibarFeature() {
-    for (var omnibarFeature in omnibarFeatures) {
-      if (omnibarFeatures.hasOwnProperty(omnibarFeature)) {
-        if (omnibarFeatures[omnibarFeature].isActive) return omnibarFeature;
-      }
-    }
-  };
-
-  function getActiveOmnibarFeatureValue(valueName) {
-    var activeOmnibarFeature = $scope.getActiveOmnibarFeature();
-    return omnibarFeatures[activeOmnibarFeature][valueName];
-  }
-
   // KEYWORDS
 
   var selectedOmnibarKeywords = [];
@@ -394,84 +457,17 @@
     if ($scope.omnibarKeywords.isVisible) selectedOmnibarKeywords = [];
   };
 
-  /**
-  * Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
-  *
-  * @param {String} text The text to be rendered.
-  * @param {String} font The css font descriptor that text is to be rendered with (e.g. "bold 14px verdana").
-  *
-  * @see http://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
-  */
-  function getTextWidth(text, font) {
-    // re-use canvas object for better performance
-    var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'));
-    var context = canvas.getContext('2d');
-    context.font = font;
-    var metrics = context.measureText(text);
-    return metrics.width;
-  }
+  // OPENING / CLOSING
 
-  var currentOmnibarStyle;
-  $scope.getOmnibarClass = function getOmnibarClass(){
-    if ($scope.omnibarText.title && $scope.omnibarText.title.length > 10){
-      var omnibarWidth;
-      if ($rootScope.currentWidth >= 568){
-        // Maximum width for column
-        omnibarWidth = 470;
-      } else {
-        omnibarWidth = $rootScope.currentWidth - 98;
-      }
-
-      var fontSize = '21px';
-      if (currentOmnibarStyle === 'omnibar-input-very-long'){
-        fontSize = '12px';
-      } else if (currentOmnibarStyle === 'omnibar-input-long'){
-        fontSize = '15px';
-      } else if (currentOmnibarStyle === 'omnibar-input-medium'){
-        fontSize = '18px';
-      }
-
-      var currentTextWidth = getTextWidth($scope.omnibarText.title, fontSize + ' sans-serif');
-      if (currentOmnibarStyle === 'omnibar-input-very-long' || (currentTextWidth / 2 + 25) > omnibarWidth){
-        if (currentOmnibarStyle !== 'omnibar-input-very-long'){
-          $rootScope.$broadcast('elastic:adjust');
-          currentOmnibarStyle = 'omnibar-input-very-long';
-        }
-      }
-      else if (currentOmnibarStyle === 'omnibar-input-long' || (currentTextWidth / 2 + 35) > omnibarWidth){
-        if (currentOmnibarStyle !== 'omnibar-input-long'){
-          $rootScope.$broadcast('elastic:adjust');
-          currentOmnibarStyle = 'omnibar-input-long';
-        }
-      } else if (currentOmnibarStyle === 'omnibar-input-medium' || (currentTextWidth + 20) > omnibarWidth){
-        if (currentOmnibarStyle !== 'omnibar-input-medium'){
-          $rootScope.$broadcast('elastic:adjust');
-          currentOmnibarStyle = 'omnibar-input-medium';
-        }
-      } else {
-        currentOmnibarStyle = undefined;
-      }
-      return currentOmnibarStyle;
-    } else {
-      currentOmnibarStyle = undefined;
+  // TODO analytics visit omnibar
+  $scope.openOmnibar = function openOmnibar(feature) {
+    if (!$scope.onboardingInProgress){
+      disableNativeScrolling();
+      AnalyticsService.visit('omnibar');
+      $scope.setOmnibarFeatureActive(feature);
+      setOmnibarVisibileAndOpenOmnibarDrawer();
     }
   };
-
-  // TEARDOWN
-
-  $scope.clearOmnibar = function clearOmnibar() {
-    $scope.omnibarText = {};
-    currentOmnibarStyle = undefined;
-  };
-
-  function clearAndHideOmnibar() {
-    $scope.clearOmnibar();
-    closeOmnibar();
-    $scope.isItemEditMode = false;
-    $scope.isItemAddMode = false;
-    $scope.omnibarKeywords.isVisible = false;
-    selectedOmnibarKeywords = [];
-  }
 
   // Reset item transient values, then clear and hide omnibar
   $scope.cancelOmnibarEdit = function cancelOmnibarEdit() {
@@ -479,16 +475,36 @@
       var activeOmnibarFeature = $scope.getActiveOmnibarFeature();
       omnibarFeatures[activeOmnibarFeature].itemResetFunction($scope[activeOmnibarFeature], UISessionService.getActiveUUID());
     }
-    $scope.closeOmnibarDrawer();
+    setOmnibarHiddenAndCloseOmnibarDrawer();
   };
 
-  function closeOmnibar() {
+  // For empty omnibar search placeholder
+  $scope.hideEmptyOmnibar = function hideEmptyOmnibar() {
+    setOmnibarHiddenAndCloseOmnibarDrawer();
+  };
+
+  function setOmnibarVisibileAndOpenOmnibarDrawer() {
+    if (!omnibarVisible) {
+      omnibarVisible = true;
+      $scope.openOmnibarDrawer();
+    }
+  }
+
+  function setOmnibarHiddenAndCloseOmnibarDrawer() {
+    omnibarVisible = false;
+    $scope.closeOmnibarDrawer();
+  }
+
+  function clearAndHideOmnibar() {
     if (omnibarVisible) {
       omnibarVisible = false;
-      if ($rootScope.packaging === 'ios-cordova') {
-        cordova.plugins.Keyboard.disableScroll(false);
-      }
     }
+    $scope.clearOmnibarTitleText();
+    $scope.isItemEditMode = false;
+    $scope.isItemAddMode = false;
+    $scope.omnibarKeywords.isVisible = false;
+    selectedOmnibarKeywords = [];
+    disableNativeScrolling();
   }
 }
 
