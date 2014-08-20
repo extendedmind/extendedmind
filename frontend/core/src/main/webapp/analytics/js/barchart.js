@@ -26,12 +26,20 @@ function make_y_axis() {
         .ticks(6)
 }
 
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "<span style='color:white'>" + d.value + "</span>";
+  })
+
 var svg = d3.select(elementId).append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+svg.call(tip);
 
 d3.json(dataSource, function (data) {
   console.log("data loaded");
@@ -85,7 +93,9 @@ d3.json(dataSource, function (data) {
       .attr("x", function(d) { return x(d.time); })
       .attr("width", x.rangeBand())
       .attr("y", function(d) { return y(d.value); })
-      .attr("height", function(d) { return height - y(d.value); });
+      .attr("height", function(d) { return height - y(d.value); })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
 
   svg.selectAll(".bar")
       .data(data)
