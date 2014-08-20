@@ -104,7 +104,7 @@
       // MENU TOGGLE
       $scope.toggleMenu = function toggleMenu() {
         resizeContent();
-        $scope.setIsWebkitScrolling(false);
+        if (SnapService.isSnapperClosed('left')) $scope.setIsWebkitScrolling(false);
         SnapService.toggle('left');
       };
 
@@ -117,6 +117,7 @@
         SnapService.toggle('right');
       };
       $scope.closeOmnibarDrawer = function closeOmnibarDrawer() {
+        $scope.setIsWebkitScrolling(true);
         SnapService.toggle('right');
       };
 

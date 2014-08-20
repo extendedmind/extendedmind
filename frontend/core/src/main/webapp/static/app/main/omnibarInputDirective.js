@@ -14,19 +14,26 @@
  */
  'use strict';
 
- function omnibarInputDirective() {
+ function omnibarInputDirective($document) {
   return {
     restrict: 'A',
     link: function postLink(scope, element) {
-      // omnibarInputFocus();
 
       scope.registerOmnibarInputFocusCallback(omnibarInputFocus);
       function omnibarInputFocus() {
         scope.$evalAsync(function() {
-          element[0].focus();
+          // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
+          if ($document[0].activeElement !== element[0]) element[0].focus();
+        });
+      }
+      scope.registerOmnibarInputBlurCallback(omnibarInputBlur);
+      function omnibarInputBlur() {
+        scope.$evalAsync(function() {
+          if ($document[0].activeElement === element[0]) element[0].blur();
         });
       }
     }
   };
 }
+omnibarInputDirective['$inject'] = ['$document'];
 angular.module('em.directives').directive('omnibarInput', omnibarInputDirective);

@@ -26,11 +26,12 @@
   $scope.isItemAddMode = false;
 
   var omnibarInputFocusCallbackFunction = {};
+  var omnibarInputBlurCallbackFunction = {};
 
   SnapService.registerAnimatedCallback(snapDrawerAnimated, 'right', 'OmnibarController');
   function snapDrawerAnimated(snapperState) {
     if (snapperState === 'closed') clearAndHideOmnibar();
-    else if (snapperState === 'right') setFocusOnEmptyOmnibarInput();
+    else if (snapperState === 'right') setFocusOnOmnibarInput();
     $scope.$apply();
   }
 
@@ -109,8 +110,16 @@
     omnibarInputFocusCallbackFunction = omnibarInputFocusCallback;
   };
 
-  function setFocusOnEmptyOmnibarInput() {
+  $scope.registerOmnibarInputBlurCallback = function registerOmnibarInputBlurCallback(omnibarInputBlurCallback) {
+    omnibarInputBlurCallbackFunction = omnibarInputBlurCallback;
+  };
+
+  function setFocusOnOmnibarInput() {
     if (typeof omnibarInputFocusCallbackFunction === 'function') omnibarInputFocusCallbackFunction();
+  }
+
+  function blurOmnibarInput() {
+    if (typeof omnibarInputBlurCallbackFunction === 'function') omnibarInputBlurCallbackFunction();
   }
 
   $scope.getOmnibarFooterSaveText = function getOmnibarFooterSaveText() {
@@ -379,7 +388,7 @@
       convertOmnibarItemContent(oldActiveFeature, newActiveFeature);
       initializeNewItemFromOmnibarText(newActiveFeature);
     }
-    // setFocusOnEmptyOmnibarInput();
+    if (omnibarVisible) setFocusOnOmnibarInput();
   };
 
   function convertOmnibarItemContent(oldActiveFeature, newActiveFeature) {
@@ -491,6 +500,7 @@
   }
 
   function setOmnibarHiddenAndCloseOmnibarDrawer() {
+    blurOmnibarInput();
     omnibarVisible = false;
     $scope.closeOmnibarDrawer();
   }
