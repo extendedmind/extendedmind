@@ -84,43 +84,9 @@
     return $scope.omnibarText.title && $scope.omnibarText.title.length !== 0;
   };
 
-  $scope.clearOmnibarTitleText = function clearOmnibarTitleText() {
-    $scope.omnibarText = {};
-    currentOmnibarTitleTextStyle = undefined;
-  };
-
   $scope.isSearchActive = function isSearchActive() {
     return $scope.searchText.delayed && $scope.searchText.delayed.length > 1;
   };
-  $scope.$watch('omnibarText.title', function(newTitle/*, oldTitle*/) {
-    $scope.searchText.current = newTitle;
-    if (newTitle && newTitle.length > 1) {
-      // Use a delayed update for search
-      $timeout(function() {
-        if ($scope.searchText.current === newTitle) {
-          $scope.searchText.delayed = newTitle;
-        }
-      }, 700);
-    } else {
-      $scope.searchText.delayed = undefined;
-    }
-  });
-
-  $scope.registerOmnibarInputFocusCallback = function registerOmnibarInputFocusCallback(omnibarInputFocusCallback) {
-    omnibarInputFocusCallbackFunction = omnibarInputFocusCallback;
-  };
-
-  $scope.registerOmnibarInputBlurCallback = function registerOmnibarInputBlurCallback(omnibarInputBlurCallback) {
-    omnibarInputBlurCallbackFunction = omnibarInputBlurCallback;
-  };
-
-  function setFocusOnOmnibarInput() {
-    if (typeof omnibarInputFocusCallbackFunction === 'function') omnibarInputFocusCallbackFunction();
-  }
-
-  function blurOmnibarInput() {
-    if (typeof omnibarInputBlurCallbackFunction === 'function') omnibarInputBlurCallbackFunction();
-  }
 
   $scope.getOmnibarFooterSaveText = function getOmnibarFooterSaveText() {
     return getActiveOmnibarFeatureValue('footerSaveText');
@@ -142,11 +108,41 @@
     return omnibarFeatures[activeOmnibarFeature][valueName];
   }
 
+  // We don't want whole page to be scrollable when iOS keyboard is open.
   function setNativeScrollingDisabled(isDisabled) {
     if ($rootScope.packaging === 'ios-cordova') {
       // https://github.com/driftyco/ionic-plugins-keyboard
       cordova.plugins.Keyboard.disableScroll(isDisabled);
     }
+  }
+
+  // Show search results with slight delay.
+  $scope.$watch('omnibarText.title', function(newTitle/*, oldTitle*/) {
+    $scope.searchText.current = newTitle;
+    if (newTitle && newTitle.length > 1) {
+      // Use a delayed update for search
+      $timeout(function() {
+        if ($scope.searchText.current === newTitle) {
+          $scope.searchText.delayed = newTitle;
+        }
+      }, 700);
+    } else {
+      $scope.searchText.delayed = undefined;
+    }
+  });
+
+  // Omnibar title input focus/blur
+  $scope.registerOmnibarInputFocusCallback = function registerOmnibarInputFocusCallback(omnibarInputFocusCallback) {
+    omnibarInputFocusCallbackFunction = omnibarInputFocusCallback;
+  };
+  $scope.registerOmnibarInputBlurCallback = function registerOmnibarInputBlurCallback(omnibarInputBlurCallback) {
+    omnibarInputBlurCallbackFunction = omnibarInputBlurCallback;
+  };
+  function setFocusOnOmnibarInput() {
+    if (typeof omnibarInputFocusCallbackFunction === 'function') omnibarInputFocusCallbackFunction();
+  }
+  function blurOmnibarInput() {
+    if (typeof omnibarInputBlurCallbackFunction === 'function') omnibarInputBlurCallbackFunction();
   }
 
   // CONTAINER DIMENSIONS
@@ -347,6 +343,8 @@
     }
   };
 
+  // SAVE ITEM
+
   $scope.saveOmnibarText = function saveOmnibarText() {
 
     function saveItem() {
@@ -486,6 +484,11 @@
       omnibarFeatures[activeOmnibarFeature].itemResetFunction($scope[activeOmnibarFeature], UISessionService.getActiveUUID());
     }
     setOmnibarHiddenAndCloseOmnibarDrawer();
+  };
+
+  $scope.clearOmnibarTitleText = function clearOmnibarTitleText() {
+    $scope.omnibarText = {};
+    currentOmnibarTitleTextStyle = undefined;
   };
 
   // For empty omnibar search placeholder
