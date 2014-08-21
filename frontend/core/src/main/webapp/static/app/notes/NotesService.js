@@ -295,22 +295,25 @@
       // TODO: Create note.relationships.keywords and then reset them here!
     },
     // Regular expressions for note requests
-    putNewNoteRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
+    putNewNoteRegex: new RegExp(
+      BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       noteRegex.source),
-    putExistingNoteRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
+
+    putExistingNoteRegex: new RegExp(
+      BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       noteSlashRegex.source +
       BackendClientService.uuidRegex.source),
-    deleteNoteRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
+
+    deleteNoteRegex: new RegExp(
+      BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       noteSlashRegex.source +
       BackendClientService.uuidRegex.source),
-    undeleteNoteRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
+
+    undeleteNoteRegex: new RegExp(
+      BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       noteSlashRegex.source +
       BackendClientService.uuidRegex.source  +
