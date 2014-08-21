@@ -1,13 +1,18 @@
 @import "foundation.less";
 
 /*
-
 <h1 class="main-heading">Layout</h1>
 
 TODO: em grid structure explained in plain English
 */
 
-// Columns
+
+
+/*
+**************************************************************************
+# Columns
+*/
+
 @one-column-grid-width: 568px; // iPhone 5 landscape is still one column
 @two-column-grid-width: 720px;
 @two-column-grid-main-width: 66.66%;
@@ -134,7 +139,13 @@ And to four sections:
   margin-bottom: @vertical-grid-half;
 }
 
-// GRID
+
+
+/*
+**************************************************************************
+# Grid
+*/
+
 div#root {
   line-height: @vertical-grid;
   max-height: @maximum-height;
@@ -174,7 +185,12 @@ div#root {
   }
 }
 
-// HEADER
+
+
+/*
+**************************************************************************
+# Header
+*/
 
 header {
   z-index: 1;
@@ -229,7 +245,12 @@ header {
   }
 }
 
-// CONTENT
+
+
+/*
+**************************************************************************
+# Content
+*/
 
 .page-content-container {
   height: 100%;
@@ -272,7 +293,12 @@ header {
   }
 }
 
-// SWIPER
+
+
+/*
+**************************************************************************
+# Swiper
+*/
 
 .swiper-container, .swiper-wrapper, .swiper-slide {
   height: inherit !important;
@@ -309,7 +335,12 @@ header {
   }
 }
 
-// RESPONSIVE
+
+
+/*
+**************************************************************************
+# Responsive
+*/
 
 // We want to horizontally and vertically center everything
 // once the screen size is bigger than a tablet
@@ -357,7 +388,11 @@ header {
 //}
 
 
-// LOGIN / SIGNUP / LAUNCH
+
+/*
+**************************************************************************
+# Login, Signup and Launch
+*/
 
 @login-content-height: @vertical-grid*5.1;
 
@@ -450,12 +485,23 @@ section#forgot, section#verify {
   }
 }
 
-// ABOUT PAGE
+
+
+/*
+**************************************************************************
+# About
+*/
+
 #about-help {
   line-height: @vertical-grid-half;
 }
 
-// SIMPLE CONTENT
+
+
+/*
+**************************************************************************
+# Simple content
+*/
 
 .simple-content {
   padding-bottom: @vertical-grid;
@@ -469,7 +515,13 @@ section#forgot, section#verify {
   padding-top: @vertical-grid-half;
 }
 
-// ERRORS
+
+
+/*
+**************************************************************************
+# Errors
+*/
+
 #errorMessage {
   h3 {
     text-align: center;
