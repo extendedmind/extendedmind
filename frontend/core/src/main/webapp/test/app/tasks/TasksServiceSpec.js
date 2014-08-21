@@ -222,26 +222,6 @@ describe('TasksService', function() {
       .toBe(cleanCloset.modified);
   });
 
-  it('should convert task to list', function () {
-    var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' + cleanCloset.uuid)
-       .respond(200, putExistingTaskResponse);
-    TasksService.taskToList(cleanCloset, testOwnerUUID);
-    $httpBackend.flush();
-    expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
-      .toBeUndefined();
-
-    // There should be just two left
-    expect(TasksService.getTasks(testOwnerUUID).length)
-      .toBe(2);
-
-    // Lists should have the new item
-    expect(ListsService.getListByUUID(cleanCloset.uuid, testOwnerUUID))
-      .toBeDefined();
-    expect(ListsService.getLists(testOwnerUUID).length)
-      .toBe(1);
-  });
-
   it('should reset task', function () {
     var printTickets = TasksService.getTaskByUUID('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID);
 

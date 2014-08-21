@@ -385,16 +385,17 @@
       } else {
         // Online
         BackendClientService.deleteOnline('/api/' + ownerUUID + '/task/' + task.uuid,
-         this.deleteTaskRegex).then(function(result) {
+         this.deleteTaskRegex)
+        .then(function(result) {
           if (result.data) {
             task.deleted = result.data.deleted;
             task.modified = result.data.result.modified;
             updateTask(task, ownerUUID);
           }
         });
-       }
-     },
-     undeleteTask: function(task, ownerUUID) {
+      }
+    },
+    undeleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that task is deleted before trying to undelete
       if (tasks[ownerUUID].deletedTasks.indexOf(task) === -1) {
@@ -411,15 +412,17 @@
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
-         this.undeleteTaskRegex).then(function(result) {
+         this.undeleteTaskRegex)
+        .then(function(result) {
           if (result.data) {
             delete task.deleted;
             task.modified = result.data.modified;
-            updateTask(task, ownerUUID);          }
-          });
-       }
-     },
-     completeTask: function(task, ownerUUID) {
+            updateTask(task, ownerUUID);
+          }
+        });
+      }
+    },
+    completeTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to complete
       if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
@@ -441,15 +444,16 @@
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
-         this.completeTaskRegex).then(function(result) {
+         this.completeTaskRegex)
+        .then(function(result) {
           if (result.data) {
             task.completed = result.data.completed;
             processCompletedTask(task, ownerUUID);
           }
         });
-       }
-     },
-     uncompleteTask: function(task, ownerUUID) {
+      }
+    },
+    uncompleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to uncomplete
       if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
@@ -470,7 +474,8 @@
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
-         this.uncompleteTaskRegex).then(function(result) {
+          this.uncompleteTaskRegex)
+        .then(function(result) {
           if (result.data) {
             delete task.completed;
             // Don't change modified on uncomplete to prevent
@@ -480,22 +485,6 @@
             updateTask(task, ownerUUID);
           }
         });
-       }
-
-     },
-     taskToList: function(task, ownerUUID) {
-      initializeArrays(ownerUUID);
-      // Check that task is not deleted before trying to turn it into a list
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
-        return;
-      }
-
-      cleanRecentlyCompletedTasks(ownerUUID);
-      var index = tasks[ownerUUID].activeTasks.findFirstIndexByKeyValue('uuid', task.uuid);
-      if (index !== undefined && !task.reminder && !task.repeating && !task.completed) {
-        // Save as list and remove from the activeTasks array
-        ListsService.saveList(task, ownerUUID);
-        tasks[ownerUUID].activeTasks.splice(index, 1);
       }
     },
     resetTask: function(task, ownerUUID) {
@@ -507,35 +496,41 @@
       if (task.date) delete task.date;
       addDateToTasks(tasksArray);
     },
+
     // Regular expressions for task requests
-    putNewTaskRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
+    putNewTaskRegex: new RegExp(
+      BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       taskRegex.source),
-    putExistingTaskRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
+
+    putExistingTaskRegex: new RegExp(
+      BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       taskSlashRegex.source +
       BackendClientService.uuidRegex.source),
-    deleteTaskRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
+
+    deleteTaskRegex: new RegExp(
+      BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       taskSlashRegex.source +
       BackendClientService.uuidRegex.source),
-    undeleteTaskRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
+
+    undeleteTaskRegex: new RegExp(
+      BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       taskSlashRegex.source +
       BackendClientService.uuidRegex.source +
       BackendClientService.undeleteRegex.source),
-    completeTaskRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
+
+    completeTaskRegex: new RegExp(
+      BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       taskSlashRegex.source +
       BackendClientService.uuidRegex.source +
       completeRegex.source),
-    uncompleteTaskRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
+
+    uncompleteTaskRegex: new RegExp(
+      BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       taskSlashRegex.source +
       BackendClientService.uuidRegex.source +

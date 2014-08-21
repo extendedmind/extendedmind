@@ -24,11 +24,29 @@
     convertNoteToTask: function(note, ownerUUID) {
       // NOTE: should initializeArrays be called?
 
+      // removeNote
+      // addNote
+
       var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
       var params = {type: 'note', owner: ownerUUID, uuid: note.uuid};
       BackendClientService.postOnline(path, this.convertNoteToTaskRegex, params).then(function(/*result*/) {
         // TODO: something with the resutl
       });
+    },
+    taskToList: function(/*task, ownerUUID*/) {
+      // initializeArrays(ownerUUID);
+      // Check that task is not deleted before trying to turn it into a list
+      // if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
+        // return;
+      // }
+
+      // cleanRecentlyCompletedTasks(ownerUUID);
+      // var index = tasks[ownerUUID].activeTasks.findFirstIndexByKeyValue('uuid', task.uuid);
+      // if (index !== undefined && !task.reminder && !task.repeating && !task.completed) {
+        // Save as list and remove from the activeTasks array
+        // ListsService.saveList(task, ownerUUID);
+        // tasks[ownerUUID].activeTasks.splice(index, 1);
+      // }
     },
 
     convertNoteToTaskRegex: new RegExp(
