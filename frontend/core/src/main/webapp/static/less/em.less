@@ -94,8 +94,7 @@ CSS should be written across multiple lines, except in very specific circumstanc
 # Meaningful whitespace
 * No whitespace between a (styleguide) comment and the related code block
 * One (1) empty line between closely related rulesets.
-* Two (2) empty lines between loosely related rulesets
-* Three (3) empty lines before a new section
+* Two (2) empty lines between loosely related rulesets and before a new section
 
 For example
 ```
@@ -150,7 +149,9 @@ As a result of CSS not telling its own story very well, it is a language that re
 
 As a rule, you should comment anything that isn’t immediately obvious from the code alone. That is to say, there is no need to tell someone that `color: red;` will make something red, but if you’re using `overflow: hidden;` to clear floats—as opposed to clipping an element’s overflow—this is probably something worth documenting.
 
-Because most parts of our CSS is styleguided, it's a good idea to integrate comments into Styleguide - then you have to think it through! =) -tuomas
+Because most parts of our CSS is styleguided, it's a good idea to integrate comments into Styleguide - then you have to think it through! =)
+
+Comments that don't belong to Styleguide (e.g. sources, code comments) should begin with //
 
 # Naming conventions
 
