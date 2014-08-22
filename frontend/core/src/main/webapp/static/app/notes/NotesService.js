@@ -153,6 +153,14 @@
         notes[ownerUUID].deletedNotes,
         getOtherArrays(ownerUUID));
     },
+    getNoteArrays: function(ownerUUID) {
+      initializeArrays(ownerUUID);
+      return notes[ownerUUID];
+    },
+    isNoteDeleted: function(note, ownerUUID) {
+      initializeArrays(ownerUUID);
+      return notes[ownerUUID].deletedNotes.indexOf(note) > 1;
+    },
     getNotes: function(ownerUUID) {
       initializeArrays(ownerUUID);
       return notes[ownerUUID].activeNotes;
@@ -231,7 +239,19 @@
         }
       }
     },
-    deleteNote : function(note, ownerUUID) {
+    removeNote: function(note, ownerUUID) {
+      initializeArrays(ownerUUID);
+      // Check that task is not deleted before trying to remove
+      if (notes[ownerUUID].deletedNotes.indexOf(note) > -1) return;
+
+      var noteIndex = notes[ownerUUID].activeNotes.findFirstIndexByKeyValue('uuid', note.uuid);
+      if (noteIndex !== undefined) {
+        notes[ownerUUID].activeNotes.splice(noteIndex, 1);
+      }
+
+      // TODO: task should be removed from other arrays as well!
+    },
+    deleteNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check if note has already been deleted
       if (notes[ownerUUID].deletedNotes.indexOf(note) > -1) {

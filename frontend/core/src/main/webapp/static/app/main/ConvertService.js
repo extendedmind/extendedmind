@@ -16,24 +16,55 @@
  /* global angular */
  'use strict';
 
- function ConvertService(BackendClientService) {
+ function ConvertService(BackendClientService, ListsService, NotesService, TasksService) {
   var noteSlashRegex = /\/note\//;
   var taskRegex = /\/task/;
 
   return {
-    convertNoteToTask: function(note, ownerUUID) {
-      // NOTE: should initializeArrays be called?
+    finishNoteToTaskConvert: function(note, ownerUUID) {
+      // i.   verify that note exists
+      // ii.  convert to task
+      // iii. remove note and add task
 
-      // removeNote
-      // addNote
+      if (note.uuid) {  // existing note
+        if (noteExistsAndIsNotDeleted()) convertNoteToTask(this.convertNoteToTaskRegex);
+      } else {  // new note
+        // convert note to task
+      }
 
-      var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
-      var params = {type: 'note', owner: ownerUUID, uuid: note.uuid};
-      BackendClientService.postOnline(path, this.convertNoteToTaskRegex, params).then(function(/*result*/) {
-        // TODO: something with the resutl
-      });
+      // i
+      function noteExistsAndIsNotDeleted() {
+        var noteArrays = NotesService.getNoteArrays(ownerUUID);
+        var noteIndex;
+
+        // Find note from array
+        for (var noteArray in noteArrays) {
+          if (noteArrays.hasOwnProperty(noteArray)) {
+            noteIndex = noteArrays[noteArray].findFirstIndexByKeyValue('uuid', note.uuid);
+            // Return found note if it is not deleted.
+            if (noteIndex !== undefined) return !NotesService.isNoteDeleted(noteArrays[noteArray][noteIndex]);
+          }
+        }
+      }
+
+      // ii.
+      function convertNoteToTask(convertNoteToTaskRegex) {
+        var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
+        var params = {type: 'note', owner: ownerUUID, uuid: note.uuid};
+        BackendClientService.postOnline(path, convertNoteToTaskRegex, params).then(removeNoteAndAddTask);
+      }
+
+      // iii.
+      function removeNoteAndAddTask(result) {
+        NotesService.removeNote(note, ownerUUID);
+        TasksService.addTask(result.data, ownerUUID);
+      }
     },
-    taskToList: function(/*task, ownerUUID*/) {
+    taskToList: function(task, ownerUUID) {
+      // i.   verify that task exists
+      // ii.  convert to list
+      // iii. remove task and add list
+
       // initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to turn it into a list
       // if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
@@ -44,7 +75,8 @@
       // var index = tasks[ownerUUID].activeTasks.findFirstIndexByKeyValue('uuid', task.uuid);
       // if (index !== undefined && !task.reminder && !task.repeating && !task.completed) {
         // Save as list and remove from the activeTasks array
-        // ListsService.saveList(task, ownerUUID);
+        ListsService.saveList(task, ownerUUID);
+        TasksService.removeTask(task, ownerUUID);
         // tasks[ownerUUID].activeTasks.splice(index, 1);
       // }
     },
@@ -57,5 +89,5 @@
       taskRegex.source)
   };
 }
-ConvertService['$inject'] = ['BackendClientService'];
+ConvertService['$inject'] = ['BackendClientService', 'ListsService', 'NotesService', 'TasksService'];
 angular.module('em.services').factory('ConvertService', ConvertService);

@@ -34,6 +34,9 @@
   var putExistingTaskResponse = getJSONFixture('putExistingTaskResponse.json');
   putExistingTaskResponse.modified = now.getTime();
 
+  var putNewTaskResponse = getJSONFixture('putTaskResponse.json');
+  putNewTaskResponse.created = putNewTaskResponse.modified = now.getTime();
+
   // SETUP / TEARDOWN
 
   beforeEach(function() {
@@ -91,7 +94,6 @@
             'tags': ['8bd8376c-6257-4623-9c8f-7ca8641d2cf5']
           }
         }], testOwnerUUID);
-
     });
 });
 
@@ -100,45 +102,57 @@ afterEach(function() {
   $httpBackend.verifyNoOutstandingRequest();
 });
 
+// TESTS
+
+it('should convert existing note to task', function() {
+  // SETUP
+  var officeDoorCode = NotesService.getNoteByUUID('c2cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID);
+  var noteToTaskPath = '/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid + '/task';
+  noteToTaskResponse.uuid = officeDoorCode.uuid;
+  $httpBackend.expectPOST(noteToTaskPath).respond(200, noteToTaskResponse);
+
+  // EXECUTE
+  ConvertService.finishNoteToTaskConvert(officeDoorCode, testOwnerUUID);
+  $httpBackend.flush();
+
   // TESTS
+  var notes = NotesService.getNotes(testOwnerUUID);
 
-  it('should convert note to task', function() {
-    var officeDoorCode = NotesService.getNoteByUUID('c2cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID);
-    var noteToTaskPath = '/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid + '/task';
+  // There should not be a note with converted note's UUID
+  expect(NotesService.getNoteByUUID(officeDoorCode.uuid, testOwnerUUID))
+  .toBeUndefined();
 
-    // Convert note to task
-    $httpBackend.expectPOST(noteToTaskPath).respond(200, noteToTaskResponse);
+  // Note should not be in notes array
+  expect(notes.length)
+  .toBe(1);
 
-    ConvertService.convertNoteToTask(officeDoorCode, testOwnerUUID);
-    $httpBackend.flush();
+  expect(TasksService.getTaskByUUID(noteToTaskResponse.uuid, testOwnerUUID))
+  .toBeDefined();
+  expect(TasksService.getTasks(testOwnerUUID).length)
+  .toBe(4);
+});
 
-    // Note should not be in notes array
-    var notes = NotesService.getNotes(testOwnerUUID);
-    expect(notes.length).toBe(2);
+it('should convert task to list', function () {
+  var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
+  var taskToListPath = '/api/' + testOwnerUUID + '/list/' + cleanCloset.uuid;
+  $httpBackend.expectPUT(taskToListPath).respond(200, putExistingTaskResponse);
 
-    // There should not be a note with converted note's UUID
-    expect(NotesService.getNoteByUUID(officeDoorCode.uuid, testOwnerUUID)).toBeUndefined();
-  });
+  // Convert task to list
+  ConvertService.taskToList(cleanCloset, testOwnerUUID);
+  $httpBackend.flush();
 
-  it('should convert task to list', function () {
-    var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
+  expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
+  .toBeUndefined();
 
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' + cleanCloset.uuid)
-    .respond(200, putExistingTaskResponse);
-    TasksService.taskToList(cleanCloset, testOwnerUUID);
-    $httpBackend.flush();
-    expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
-    .toBeUndefined();
+  // There should be just two left
+  expect(TasksService.getTasks(testOwnerUUID).length)
+  .toBe(2);
 
-    // There should be just two left
-    expect(TasksService.getTasks(testOwnerUUID).length)
-    .toBe(2);
-
-    // Lists should have the new item
-    expect(ListsService.getListByUUID(cleanCloset.uuid, testOwnerUUID))
-    .toBeDefined();
-    expect(ListsService.getLists(testOwnerUUID).length)
-    .toBe(1);
-  });
+  // Lists should have the new item
+  expect(ListsService.getListByUUID(cleanCloset.uuid, testOwnerUUID))
+  .toBeDefined();
+  expect(ListsService.getLists(testOwnerUUID).length)
+  .toBe(1);
+});
 
 });

@@ -320,7 +320,8 @@
           } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/task/' + task.uuid,
-             this.putExistingTaskRegex, task).then(function(result) {
+             this.putExistingTaskRegex, task).
+            then(function(result) {
               if (result.data) {
                 task.modified = result.data.modified;
                 updateTransientProperties(context, list, due);
@@ -328,8 +329,8 @@
                 deferred.resolve(task);
               }
             });
-           }
-         } else {
+          }
+        } else {
           // New task
           if (UserSessionService.isOfflineEnabled()) {
             // Push to offline queue with fake UUID
@@ -347,7 +348,8 @@
           } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/task',
-             this.putNewTaskRegex, task).then(function(result) {
+             this.putNewTaskRegex, task).
+            then(function(result) {
               if (result.data) {
                 task.uuid = result.data.uuid;
                 task.created = result.data.created;
@@ -357,12 +359,33 @@
                 deferred.resolve(task);
               }
             });
-           }
-         }
-       }
-       return deferred.promise;
-     },
-     deleteTask: function(task, ownerUUID) {
+          }
+        }
+      }
+      return deferred.promise;
+    },
+    addTask: function(task, ownerUUID) {
+      initializeArrays(ownerUUID);
+      // Check that task is not deleted before trying to add
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) return;
+      updateTask(task, ownerUUID);
+    },
+    removeTask: function(task, ownerUUID) {
+      initializeArrays(ownerUUID);
+      // Check that task is not deleted before trying to remove
+      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) return;
+
+      cleanRecentlyCompletedTasks(ownerUUID);
+
+      // Remove task from active tasks
+      var taskIndex = tasks[ownerUUID].activeTasks.findFirstIndexByKeyValue('uuid', task.uuid);
+      if (taskIndex !== undefined/* && !task.reminder && !task.repeating && !task.completed*/) {  // are these needed?
+        tasks[ownerUUID].activeTasks.splice(taskIndex, 1);
+      }
+
+      // TODO: task should be removed from other arrays as well!
+    },
+    deleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check if task has already been deleted
       if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
