@@ -78,11 +78,8 @@
       return deferredSaveKeywordsSave.promise;
     }
 
-    if ($scope.note.uuid) {
-      AnalyticsService.do('saveNote', 'new');
-    } else {
-      AnalyticsService.do('saveNote', 'existing');
-    }
+    if ($scope.note.uuid) AnalyticsService.do('saveNote', 'existing');
+    else AnalyticsService.do('saveNote', 'new');
 
     return saveKeywords().then(function() {
       return NotesService.saveNote($scope.note, UISessionService.getActiveUUID());
