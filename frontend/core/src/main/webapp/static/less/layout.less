@@ -3,7 +3,7 @@
 /*
 <h1 class="main-heading">Layout</h1>
 
-TODO: em grid structure explained in plain English
+TODO: em grid structure explained in plain English (when new grid structure decided!)
 */
 
 
@@ -270,6 +270,7 @@ header {
       overflow-y: auto;
     }
   }
+  // TODO: To be removed, when Accordion gone
   .accordion-wrapper {
     // NOTE: Due to mysterous iphone laggy accordion, height,
     // nor probably anything else can not be set here.
@@ -293,11 +294,11 @@ header {
   }
 }
 
-
-
 /*
 **************************************************************************
 # Swiper
+
+// TODO: Do we want an example of a swiper in the styleguide?
 */
 
 .swiper-container, .swiper-wrapper, .swiper-slide {
@@ -323,7 +324,6 @@ header {
 }
 
 // NO SWIPER
-
 .no-slides-container {
   .single-page-container {
     height: 100%;
@@ -339,11 +339,12 @@ header {
 
 /*
 **************************************************************************
-# Responsive
-*/
+# Responsive main container
 
-// We want to horizontally and vertically center everything
-// once the screen size is bigger than a tablet
+When the screen size is bigger than a tablet,
+the main container will be horizontally and vertically centered.
+
+*/
 @media (min-height: @maximum-landscape-height) {
   body {
     .no-slides-container {
@@ -385,13 +386,12 @@ header {
   aside {
     display: none;
   }
-//}
-
-
 
 /*
 **************************************************************************
 # Login, Signup and Launch
+
+// TODO: Explain verbally, when new grid done
 */
 
 @login-content-height: @vertical-grid*5.1;
@@ -492,6 +492,7 @@ section#forgot, section#verify {
 # About
 */
 
+// TODO: To be refactored, maybe .multiline-text could be created and universally used?
 #about-help {
   line-height: @vertical-grid-half;
 }
