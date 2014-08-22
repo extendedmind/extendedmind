@@ -16,7 +16,7 @@
  /*global angular */
  'use strict';
 
- function TasksService($q, $rootScope, ArrayService, BackendClientService, ListsService, TagsService, UserSessionService, UUIDService) {
+ function TasksService($q, $rootScope, ArrayService, BackendClientService, ExtendedItemService, ListsService, TagsService, UserSessionService, UUIDService) {
   var tasks = {};
 
   var taskRegex = /\/task/;
@@ -130,100 +130,6 @@
     }
   }
 
-  function addContextToTasks(tasksResponse, ownerUUID) {
-    if (tasksResponse) {
-      for (var i=0, len=tasksResponse.length; i<len; i++) {
-        if (tasksResponse[i].relationships && tasksResponse[i].relationships.tags) {
-          for (var j=0, jlen=tasksResponse[i].relationships.tags.length; j<jlen; j++) {
-            var tag = TagsService.getTagByUUID(tasksResponse[i].relationships.tags[j], ownerUUID);
-            if (tag && tag.tagType === 'context') {
-              tasksResponse[i].relationships.context = tag.uuid;
-              break;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  function addListToTasks(tasksResponse) {
-    if (tasksResponse) {
-      for (var i=0, len=tasksResponse.length; i<len; i++) {
-        if (tasksResponse[i].relationships && tasksResponse[i].relationships.parent) {
-          tasksResponse[i].relationships.list = tasksResponse[i].relationships.parent;
-        }
-      }
-    }
-  }
-
-  function addDateToTasks(tasksResponse) {
-    if (tasksResponse) {
-      for (var i=0, len=tasksResponse.length; i<len; i++) {
-        if (tasksResponse[i].due) {
-          tasksResponse[i].date = tasksResponse[i].due;
-        }
-      }
-    }
-  }
-
-  function moveContextToTags(task, ownerUUID) {
-    if (task.relationships) {
-      var context = task.relationships.context;
-      if (task.relationships.tags) {
-        var foundCurrent = false;
-        var previousContextIndex;
-        for (var i=0, len=task.relationships.tags.length; i<len; i++) {
-          var tag = TagsService.getTagByUUID(task.relationships.tags[i], ownerUUID);
-          if (tag && tag.tagType === 'context') {
-            if (context && tag.uuid === context) {
-              foundCurrent = true;
-            } else {
-              previousContextIndex = i;
-            }
-          }
-        }
-        if (previousContextIndex !== undefined) {
-          // Remove old
-          task.relationships.tags.splice(previousContextIndex, 1);
-        }
-        if (!foundCurrent && context) {
-          // Add new
-          task.relationships.tags.push(context);
-        }
-      } else if (context) {
-        task.relationships.tags = [context];
-      }
-
-      if (task.relationships.hasOwnProperty('context')) {
-        delete task.relationships.context;
-      }
-      return context;
-    }
-  }
-
-  function moveListToParent(task) {
-    if (task.relationships) {
-      var list = task.relationships.list;
-      if (list) {
-        task.relationships.parent = list;
-      } else if (task.relationships.hasOwnProperty('parent')) {
-        delete task.relationships.parent;
-      }
-      if (task.relationships.hasOwnProperty('list')) {
-        delete task.relationships.list;
-      }
-      return list;
-    }
-  }
-
-  function moveDateToDue(task) {
-    if (task.date) {
-      task.due = task.date;
-      delete task.date;
-      return task.due;
-    }
-  }
-
   function processCompletedTask(task, ownerUUID) {
     // Don't change modified on complete to prevent
     // task from moving down in the list on uncomplete.
@@ -241,9 +147,9 @@
     setTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       cleanRecentlyCompletedTasks(ownerUUID);
-      addContextToTasks(tasksResponse, ownerUUID);
-      addListToTasks(tasksResponse);
-      addDateToTasks(tasksResponse);
+      ExtendedItemService.addContextToTasks(tasksResponse, ownerUUID);
+      ExtendedItemService.addListToTasks(tasksResponse);
+      ExtendedItemService.addDateToTasks(tasksResponse);
       return ArrayService.setArrays(
         tasksResponse,
         tasks[ownerUUID].activeTasks,
@@ -253,9 +159,9 @@
     updateTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       cleanRecentlyCompletedTasks(ownerUUID);
-      addContextToTasks(tasksResponse, ownerUUID);
-      addListToTasks(tasksResponse);
-      addDateToTasks(tasksResponse);
+      ExtendedItemService.addContextToTasks(tasksResponse, ownerUUID);
+      ExtendedItemService.addListToTasks(tasksResponse);
+      ExtendedItemService.addDateToTasks(tasksResponse);
       return ArrayService.updateArrays(
         tasksResponse,
         tasks[ownerUUID].activeTasks,
@@ -286,26 +192,15 @@
       return tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', uuid);
     },
     saveTask: function(task, ownerUUID) {
-      function updateTransientProperties(context, list, due) {
-        if (context) {
-          task.relationships.context = context;
-        }
-        if (list) {
-          task.relationships.list = list;
-        }
-        if (due) {
-          task.date = due;
-        }
-      }
       initializeArrays(ownerUUID);
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
         deferred.reject(task);
       } else {
         cleanRecentlyCompletedTasks(ownerUUID);
-        var context = moveContextToTags(task, ownerUUID);
-        var list = moveListToParent(task);
-        var due = moveDateToDue(task);
+        var context = ExtendedItemService.moveContextToTags(task, ownerUUID);
+        var list = ExtendedItemService.moveListToParent(task);
+        var due = ExtendedItemService.moveDateToDue(task);
         if (task.uuid) {
           // Existing task
           if (UserSessionService.isOfflineEnabled()) {
@@ -314,7 +209,7 @@
             BackendClientService.put('/api/' + params.owner + '/task/' + task.uuid,
              this.putExistingTaskRegex, params, task);
             task.modified = (new Date()).getTime() + 1000000;
-            updateTransientProperties(context, list, due);
+            ExtendedItemService.updateTransientProperties(task, context, list, due);
             updateTask(task, ownerUUID);
             deferred.resolve(task);
           } else {
@@ -324,7 +219,7 @@
             then(function(result) {
               if (result.data) {
                 task.modified = result.data.modified;
-                updateTransientProperties(context, list, due);
+                ExtendedItemService.updateTransientProperties(task, context, list, due);
                 updateTask(task, ownerUUID);
                 deferred.resolve(task);
               }
@@ -342,7 +237,7 @@
             // Use a fake modified that is far enough in the to make
             // it to the end of the list
             task.created = task.modified = (new Date()).getTime() + 1000000;
-            updateTransientProperties(context, list, due);
+            ExtendedItemService.updateTransientProperties(task, context, list, due);
             setTask(task, ownerUUID);
             deferred.resolve(task);
           } else {
@@ -354,7 +249,7 @@
                 task.uuid = result.data.uuid;
                 task.created = result.data.created;
                 task.modified = result.data.modified;
-                updateTransientProperties(context, list, due);
+                ExtendedItemService.updateTransientProperties(task, context, list, due);
                 setTask(task, ownerUUID);
                 deferred.resolve(task);
               }
@@ -513,11 +408,11 @@
     resetTask: function(task, ownerUUID) {
       var tasksArray = [task];
       if (task.relationships && task.relationships.context) delete task.relationships.context;
-      addContextToTasks(tasksArray, ownerUUID);
+      ExtendedItemService.addContextToTasks(tasksArray, ownerUUID);
       if (task.relationships && task.relationships.list) delete task.relationships.list;
-      addListToTasks(tasksArray);
+      ExtendedItemService.addListToTasks(tasksArray);
       if (task.date) delete task.date;
-      addDateToTasks(tasksArray);
+      ExtendedItemService.addDateToTasks(tasksArray);
     },
 
     // Regular expressions for task requests
@@ -561,5 +456,5 @@
   };
 }
 
-TasksService['$inject'] = ['$q', '$rootScope', 'ArrayService', 'BackendClientService', 'ListsService', 'TagsService', 'UserSessionService', 'UUIDService'];
+TasksService['$inject'] = ['$q', '$rootScope', 'ArrayService', 'BackendClientService', 'ExtendedItemService', 'ListsService', 'TagsService', 'UserSessionService', 'UUIDService'];
 angular.module('em.services').factory('TasksService', TasksService);
