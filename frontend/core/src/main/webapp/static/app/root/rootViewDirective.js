@@ -19,7 +19,7 @@
   return {
     restrict: 'A',
     replace: 'true',
-    templateUrl: 'static/app/auth/root.html',
+    templateUrl: 'static/app/root/root.html',
     controller: function($scope) {
       // Back function globally available
       $scope.gotoPreviousPage = function gotoPreviousPage() {
@@ -77,7 +77,7 @@
           id: 'errorDialog',
           showHeaderCloseButton: false,
           backdrop: true,
-          footerTemplateUrl:'static/app/auth/modalFooter.html',
+          footerTemplateUrl:'static/app/base/modalFooter.html',
           modalClass: 'modal small-modal'
         };
 
