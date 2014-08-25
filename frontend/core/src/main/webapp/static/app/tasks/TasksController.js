@@ -66,17 +66,13 @@
   $scope.addSubtask = function addSubtask(subtask) {
     if (!subtask.title || subtask.title.length === 0) return false;
     var subtaskToSave = {title: subtask.title};
-    if (subtask.date) {
-      subtaskToSave.date = subtask.date;
-    }
-    if (subtask.relationships) {
-      subtaskToSave.relationships = {};
-      if (subtask.relationships.list) {
-        subtaskToSave.relationships.list = subtask.relationships.list;
-      }
-      if (subtask.relationships.context) {
-        subtaskToSave.relationships.context = subtask.relationships.context;
-      }
+
+    if (subtask.transientProperties) {
+      subtaskToSave.transientProperties = {};
+      if (subtask.transientProperties.date) subtaskToSave.transientProperties.date = subtask.transientProperties.date;
+      if (subtask.transientProperties.list) subtaskToSave.transientProperties.list = subtask.transientProperties.list;
+      if (subtask.transientProperties.context)
+        subtaskToSave.transientProperties.context = subtask.transientProperties.context;
     }
     delete subtask.title;
 

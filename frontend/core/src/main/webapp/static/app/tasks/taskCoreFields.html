@@ -3,7 +3,7 @@
   <div lists-select-options>
     <div ng-if="!addNewListVisible" class="form-group select-list-visible-animation">
       <label for="taskList" class="sr-only">list</label>
-      <select id="taskList" class="simple-input swiper-no-swiping" ng-model="task.relationships.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
+      <select id="taskList" class="simple-input swiper-no-swiping" ng-model="task.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
         <option value="">select list...</option>
       </select>
     </div>

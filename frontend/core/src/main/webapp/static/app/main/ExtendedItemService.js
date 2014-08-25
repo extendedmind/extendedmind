@@ -25,10 +25,6 @@
         if (extendedItem.relationships && extendedItem.relationships.parent) {
           if (!extendedItem.transientProperties) extendedItem.transientProperties = {};
           extendedItem.transientProperties.list = extendedItem.relationships.parent;
-
-          // TODO: REMOVE THIS
-          // extendedItem.relationships.list = extendedItem.relationships.parent;
-          // TODO: REMOVE THIS
         }
       }
 
@@ -68,6 +64,7 @@
       function copyContextToTag(extendedItem, ownerUUID) {
         var previousContextIndex;
 
+        // Transient context exists
         if (extendedItem.transientProperties && extendedItem.transientProperties.context) {
           var foundCurrentTag = false;
           var context = extendedItem.transientProperties.context;
@@ -92,7 +89,7 @@
             else extendedItem.relationships.tags.push(context);
           }
         }
-        // Tag has been removed from item, delete persistent value
+        // Tag has been removed from item, delete persistent value.
         else if (extendedItem.relationships && extendedItem.relationships.tags) {
           previousContextIndex = undefined;
           extendedItem.relationships.tags.forEach(function(tagUUID, index) {
@@ -104,11 +101,19 @@
       }
 
       function copyListToParent(extendedItem) {
-        if (extendedItem.transientProperties && extendedItem.transientProperties.list)
+        // Transient list exists.
+        if (extendedItem.transientProperties && extendedItem.transientProperties.list) {
+          if (!extendedItem.relationships) extendedItem.relationships = {};
+          if (!extendedItem.relationships.parent) extendedItem.relationships.parent = {};
           extendedItem.relationships.parent = extendedItem.transientProperties.list;
+        }
         // List has been removed from item, delete persistent value
-        else if (extendedItem.relationships && extendedItem.relationships.parent)
+        else if (extendedItem.relationships && extendedItem.relationships.parent) {
           delete extendedItem.relationships.parent;
+        }
+        // AngularJS sets transient property to 'null' if it is used in ng-model data-binding and no value is set.
+        if (extendedItem.transientProperties && extendedItem.transientProperties.list === null)
+          delete extendedItem.transientProperties.list;
       }
 
       // copy transient values into persistent values
@@ -116,11 +121,17 @@
       copyListToParent(extendedItem);
       if (typeof detachExtraPropertyFn === 'function') detachExtraPropertyFn(extendedItem, ownerUUID);
 
-      // store transient values into variable and delete transient object from item
-      var transients = extendedItem.transientProperties;
-      delete extendedItem.transientProperties;
+      // Check that transientProperties object is not empty
+      // http://stackoverflow.com/a/4994244
+      if (extendedItem.transientProperties && Object.getOwnPropertyNames(extendedItem.transientProperties).length > 0) {
+        // store transient values into variable and delete transient object from item
+        var transients = extendedItem.transientProperties;
+        delete extendedItem.transientProperties;
 
-      return transients;
+        return transients;
+      } else {
+        delete extendedItem.transientProperties;
+      }
     }
   };
 }

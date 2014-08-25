@@ -233,10 +233,6 @@
         // var context = ExtendedItemService.copyContextToTag(task, ownerUUID);
         // TODO: REMOVE THIS
 
-        // TODO: REMOVE THIS
-        // var list = ExtendedItemService.detachList(task);
-        // TODO: REMOVE THIS
-
         if (task.uuid) {
           // Existing task
           if (UserSessionService.isOfflineEnabled()) {

@@ -20,8 +20,7 @@
     var itemsFilter = {};
 
     itemsFilter.byListUUID = function(items, uuid) {
-      var filteredValues;
-      filteredValues = [];
+      var filteredValues = [];
 
       items.forEach(function(item) {
         if (item.transientProperties && item.transientProperties.list) {

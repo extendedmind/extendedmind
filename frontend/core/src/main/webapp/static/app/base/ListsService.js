@@ -237,8 +237,10 @@
           if (items[i].relationships.parent === deletedList.uuid) {
             delete items[i].relationships.parent;
           }
-          if (items[i].relationships.list === deletedList.uuid) {
-            delete items[i].relationships.list;
+        }
+        if (items[i].transientProperties) {
+          if (items[i].transientProperties.list === deletedList.uuid) {
+            delete items[i].transientProperties.list;
           }
         }
       }

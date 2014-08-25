@@ -19,7 +19,7 @@
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
     if (name === 'list') {
       $scope.list = data;
-      $scope.subtask = {relationships: {list: $scope.list.uuid}};
+      $scope.subtask = {transientProperties: {list: $scope.list.uuid}};
       $scope.newNote = {relationships: {list: $scope.list.uuid}};
     }
   };
