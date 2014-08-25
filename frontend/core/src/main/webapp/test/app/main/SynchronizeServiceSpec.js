@@ -89,7 +89,7 @@ describe('SynchronizeService', function() {
   beforeEach(function() {
     module('em.appTest');
 
-    module('em.services', function ($provide){
+    module('em.base', function ($provide){
       $provide.value('UserSessionService', MockUserSessionService);
     });
 

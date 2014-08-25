@@ -33,7 +33,7 @@ describe('NotesController', function() {
       }
     };
 
-    module('em.services', function($provide){
+    module('em.notes', function($provide){
       $provide.value('NotesService', MockNotesService);
     });
 

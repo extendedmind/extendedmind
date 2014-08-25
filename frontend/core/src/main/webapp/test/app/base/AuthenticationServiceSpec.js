@@ -95,8 +95,11 @@ describe('AuthenticationService', function() {
   beforeEach(function() {
     module('em.appTest');
 
-    module('em.services', function ($provide){
+    module('em.base', function ($provide){
       $provide.value('UserSessionService', MockUserSessionService);
+    });
+
+    module('em.main', function ($provide){
       $provide.value('ItemsService', MockItemsService);
     });
 
