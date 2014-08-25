@@ -66,15 +66,15 @@
     });
 
     $routeProvider.when('/launch', {
-      templateUrl: 'static/app/auth/launch.html'
+      templateUrl: 'static/app/entry/launch.html'
     });
 
     $routeProvider.when('/welcome', {
-      templateUrl: 'static/app/auth/welcome.html'
+      templateUrl: 'static/app/entry/welcome.html'
     });
 
     $routeProvider.when('/waiting', {
-      templateUrl: 'static/app/auth/waiting.html',
+      templateUrl: 'static/app/entry/waiting.html',
       resolve: {
         isEmailOrUUID: ['$location', '$route',
         function($location, $route) {
@@ -86,7 +86,7 @@
     });
 
     $routeProvider.when('/accept/:hex_code', {
-      templateUrl: 'static/app/auth/signup.html',
+      templateUrl: 'static/app/entry/signup.html',
       resolve: {
         routes: ['$location', '$route',
         function($location, $route) {
@@ -99,15 +99,15 @@
     });
 
     $routeProvider.when('/signup', {
-      templateUrl: 'static/app/auth/signup.html'
+      templateUrl: 'static/app/entry/signup.html'
     });
 
     $routeProvider.when('/forgot', {
-      templateUrl: 'static/app/auth/forgot.html'
+      templateUrl: 'static/app/entry/forgot.html'
     });
 
     $routeProvider.when('/reset/:hex_code', {
-      templateUrl: 'static/app/auth/forgot.html',
+      templateUrl: 'static/app/entry/forgot.html',
       resolve: {
         routes: ['$location', '$route', 'AuthenticationService',
         function($location, $route, AuthenticationService) {
@@ -128,7 +128,7 @@
     });
 
     $routeProvider.when('/verify/:hex_code', {
-      templateUrl: 'static/app/auth/verify.html'
+      templateUrl: 'static/app/entry/verify.html'
     });
 
     $routeProvider.when('/404', {
@@ -137,11 +137,11 @@
     });
 
     $routeProvider.when('/login', {
-      templateUrl: 'static/app/auth/login.html'
+      templateUrl: 'static/app/entry/login.html'
     });
 
     $routeProvider.when('/my/account/password', {
-      templateUrl: 'static/app/auth/changePassword.html'
+      templateUrl: 'static/app/entry/changePassword.html'
     });
 
     // ERROR PAGE

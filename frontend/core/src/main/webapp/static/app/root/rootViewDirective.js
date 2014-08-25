@@ -95,12 +95,12 @@
                 fnParamParam: exception.retryParam,
                 fnPromise: exception.promise
               };
-              ModalService.createDialog('static/app/auth/errorMessage.html', modalOptions);
+              ModalService.createDialog('static/app/root/errorMessage.html', modalOptions);
             } else {
               // No retry possibility
               $scope.modalSuccessText = 'close';
               $scope.errorMessageText = 'you need to be online to complete this action';
-              ModalService.createDialog('static/app/auth/errorMessage.html', modalOptions);
+              ModalService.createDialog('static/app/root/errorMessage.html', modalOptions);
             }
           }
         } else if (exception.type === 'http' && exception.status === 403) {
@@ -118,7 +118,7 @@
           $scope.errorMessageHeading = 'something unexpected happened, sorry!';
           $scope.errorMessageText = JSON.stringify(exception, null, 4);
           $scope.modalSuccessText = 'close';
-          ModalService.createDialog('static/app/auth/errorMessage.html', modalOptions);
+          ModalService.createDialog('static/app/root/errorMessage.html', modalOptions);
         }
       });
 
