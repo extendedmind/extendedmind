@@ -180,16 +180,16 @@
     },
     removeDeletedTagFromItems: function(items, deletedTag) {
       for (var i = 0, len = items.length; i < len; i++) {
-        if (items[i].relationships) {
-          if (items[i].relationships.tags) {
-            for (var j = 0, jlen = items[i].relationships.tags.length; j < jlen; j++) {
-              if (items[i].relationships.tags[j] === deletedTag.uuid) {
-                items[i].relationships.tags.splice(j, 1);
-              }
+        if (items[i].relationships && items[i].relationships.tags) {
+          for (var j = 0, jlen = items[i].relationships.tags.length; j < jlen; j++) {
+            if (items[i].relationships.tags[j] === deletedTag.uuid) {
+              items[i].relationships.tags.splice(j, 1);
             }
           }
-          if (items[i].relationships.context === deletedTag.uuid) {
-            delete items[i].relationships.context;
+        }
+        if (items[i].transientProperties && items[i].transientProperties.context) {
+          if (items[i].transientProperties.context === deletedTag.uuid) {
+            delete items[i].transientProperties.context;
           }
         }
       }

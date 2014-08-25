@@ -229,10 +229,6 @@
 
         var transientProperties = ExtendedItemService.detachTransientProperties(task, ownerUUID, copyDateToDue);
 
-        // TODO: REMOVE THIS
-        // var context = ExtendedItemService.copyContextToTag(task, ownerUUID);
-        // TODO: REMOVE THIS
-
         if (task.uuid) {
           // Existing task
           if (UserSessionService.isOfflineEnabled()) {
@@ -279,10 +275,6 @@
             // it to the end of the list
             task.created = task.modified = (new Date()).getTime() + 1000000;
 
-            // TODO: REMOVE THIS
-            // ExtendedItemService.attachTransientProperties(task, context, list);
-            // TODO: REMOVE THIS
-
             ExtendedItemService.attachTransientProperties(task, transientProperties);
 
             setTask(task, ownerUUID);
@@ -296,10 +288,6 @@
                 task.uuid = result.data.uuid;
                 task.created = result.data.created;
                 task.modified = result.data.modified;
-
-                // TODO: REMOVE THIS
-                // ExtendedItemService.attachTransientProperties(task, context, list);
-                // TODO: REMOVE THIS
 
                 ExtendedItemService.attachTransientProperties(task, transientProperties);
 
@@ -460,8 +448,10 @@
     },
     resetTask: function(task, ownerUUID) {
       var tasksArray = [task];
-      if (task.relationships && task.relationships.context) delete task.relationships.context;
-      if (task.transientProperties && task.transientProperties.list) delete task.transientProperties.list;
+      if (task.transientProperties) {
+        if (task.transientProperties.context) delete task.transientProperties.context;
+        if (task.transientProperties.list) delete task.transientProperties.list;
+      }
       if (task.date) delete task.date;
 
       ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, copyDueToDate);

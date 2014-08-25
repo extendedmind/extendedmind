@@ -35,11 +35,6 @@
             if (tag && tag.tagType === 'context') {
               if (!extendedItem.transientProperties) extendedItem.transientProperties = {};
               extendedItem.transientProperties.context = tag.uuid;
-
-              // TODO: REMOVE THIS
-              extendedItem.relationships.context = tag.uuid;
-              // TODO: REMOVE THIS
-
               break;
             }
           }

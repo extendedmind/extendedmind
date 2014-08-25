@@ -91,7 +91,7 @@
   $scope.context = undefined;
   $scope.showContextDetails = function showContextDetails(selectedContext) {
     $scope.context = selectedContext;
-    $scope.subtask = {relationships: {context: $scope.context.uuid}};
+    $scope.subtask = {transientProperties: {context: $scope.context.uuid}};
     SwiperService.swipeTo('tasks/details');
   };
   $scope.showNoContextDetails = function showNoContextDetails() {
