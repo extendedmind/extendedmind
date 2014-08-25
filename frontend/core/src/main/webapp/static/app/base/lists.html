@@ -12,7 +12,6 @@
             <li>
               <form role="form" class="add-element" ng-submit="callAndRefresh(addList, newList)" add-item autocapitalize="none" autocorrect="off">
                 <div class="form-group" editable-field-container="disable">
-                  <label for="listTitle" class="sr-only">title</label>
                   <input type="text" id="listTitle" class="simple-input" ng-model="newList.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" editable-field placeholder="add list..."/>
                 </div>
               </form>
