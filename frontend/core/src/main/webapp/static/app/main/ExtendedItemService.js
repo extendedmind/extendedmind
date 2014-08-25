@@ -17,105 +17,107 @@
  'use strict';
 
  function ExtendedItemService(TagsService) {
-  return {
-    addContextToTasks: function(tasksResponse, ownerUUID) {
-      if (tasksResponse) {
-        for (var i=0, len=tasksResponse.length; i<len; i++) {
-          if (tasksResponse[i].relationships && tasksResponse[i].relationships.tags) {
-            for (var j=0, jlen=tasksResponse[i].relationships.tags.length; j<jlen; j++) {
-              var tag = TagsService.getTagByUUID(tasksResponse[i].relationships.tags[j], ownerUUID);
-              if (tag && tag.tagType === 'context') {
-                tasksResponse[i].relationships.context = tag.uuid;
-                break;
-              }
-            }
-          }
-        }
-      }
-    },
-    addListToTasks: function(tasksResponse) {
-      if (tasksResponse) {
-        for (var i=0, len=tasksResponse.length; i<len; i++) {
-          if (tasksResponse[i].relationships && tasksResponse[i].relationships.parent) {
-            tasksResponse[i].relationships.list = tasksResponse[i].relationships.parent;
-          }
-        }
-      }
-    },
-    addDateToTasks: function(tasksResponse) {
-      if (tasksResponse) {
-        for (var i=0, len=tasksResponse.length; i<len; i++) {
-          if (tasksResponse[i].due) {
-            tasksResponse[i].date = tasksResponse[i].due;
-          }
-        }
-      }
-    },
-    moveContextToTags: function(task, ownerUUID) {
-      if (task.relationships) {
-        var context = task.relationships.context;
-        if (task.relationships.tags) {
-          var foundCurrent = false;
-          var previousContextIndex;
-          for (var i=0, len=task.relationships.tags.length; i<len; i++) {
-            var tag = TagsService.getTagByUUID(task.relationships.tags[i], ownerUUID);
-            if (tag && tag.tagType === 'context') {
-              if (context && tag.uuid === context) {
-                foundCurrent = true;
-              } else {
-                previousContextIndex = i;
-              }
-            }
-          }
-          if (previousContextIndex !== undefined) {
-            // Remove old
-            task.relationships.tags.splice(previousContextIndex, 1);
-          }
-          if (!foundCurrent && context) {
-            // Add new
-            task.relationships.tags.push(context);
-          }
-        } else if (context) {
-          task.relationships.tags = [context];
-        }
 
-        if (task.relationships.hasOwnProperty('context')) {
-          delete task.relationships.context;
+  return {
+    addTransientProperties: function(extendedItemsArray, ownerUUID, addExtraTransientPropertyFn) {
+
+      function copyParentToList(extendedItem) {
+        if (extendedItem.relationships && extendedItem.relationships.parent) {
+          if (!extendedItem.transientProperties) extendedItem.transientProperties = {};
+          extendedItem.transientProperties.list = extendedItem.relationships.parent;
+
+          // TODO: REMOVE THIS
+          extendedItem.relationships.list = extendedItem.relationships.parent;
+          // TODO: REMOVE THIS
         }
-        return context;
+      }
+
+      function copyTagToContext(extendedItem, ownerUUID) {
+        if (extendedItem.relationships && extendedItem.relationships.tags) {
+          for (var i = 0, len = extendedItem.relationships.tags.length; i < len; i++) {
+            var tag = TagsService.getTagByUUID(extendedItem.relationships.tags[i], ownerUUID);
+            if (tag && tag.tagType === 'context') {
+              if (!extendedItem.transientProperties) extendedItem.transientProperties = {};
+              extendedItem.transientProperties.context = tag.uuid;
+
+              // TODO: REMOVE THIS
+              extendedItem.relationships.context = tag.uuid;
+              // TODO: REMOVE THIS
+
+              break;
+            }
+          }
+        }
+      }
+
+      if (extendedItemsArray) {
+        var hasAddExtraTransientPropertyCopyFunction = typeof addExtraTransientPropertyFn === 'function';
+
+        extendedItemsArray.forEach(function(extendedItem) {
+          copyParentToList(extendedItem);
+          copyTagToContext(extendedItem, ownerUUID);
+          if (hasAddExtraTransientPropertyCopyFunction) addExtraTransientPropertyFn(extendedItem, ownerUUID);
+        });
       }
     },
-    moveListToParent: function(task) {
-      if (task.relationships) {
-        var list = task.relationships.list;
-        if (list) {
-          task.relationships.parent = list;
-        } else if (task.relationships.hasOwnProperty('parent')) {
-          delete task.relationships.parent;
+    attachTransientProperties: function(extendedItem, transientProperties) {
+      if (transientProperties) extendedItem.transientProperties = transientProperties;
+    },
+    detachTransientProperties: function(extendedItem, ownerUUID, detachExtraPropertyFn) {
+      // copy transient values into persistent values
+      this.copyContextToTag(extendedItem, ownerUUID);
+      this.copyListToParent(extendedItem);
+      if (typeof detachExtraPropertyFn === 'function') detachExtraPropertyFn(extendedItem, ownerUUID);
+
+      // store transient values into variable and delete transient object from item
+      var transients = extendedItem.transientProperties;
+      delete extendedItem.transientProperties;
+
+      return transients;
+    },
+    copyContextToTag: function(extendedItem, ownerUUID) {
+      var previousContextIndex;
+
+      if (extendedItem.transientProperties && extendedItem.transientProperties.context) {
+        var foundCurrentTag = false;
+        var context = extendedItem.transientProperties.context;
+
+        if (extendedItem.relationships) {
+          if (extendedItem.relationships.tags) {
+            extendedItem.relationships.tags.forEach(function(tagUUID, index) {
+              var tag = TagsService.getTagByUUID(tagUUID, ownerUUID);
+              if (tag && tag.tagType === 'context' && tag.uuid === context) {
+                if (tag.uuid === context) foundCurrentTag = true;
+                else previousContextIndex = index;
+              }
+            });
+            // remove old tag
+            if (previousContextIndex !== undefined) extendedItem.relationships.tags.splice(previousContextIndex, 1);
+          }
         }
-        if (task.relationships.hasOwnProperty('list')) {
-          delete task.relationships.list;
+        // copy new context to tag
+        if (!foundCurrentTag) {
+          if (!extendedItem.relationships) extendedItem.relationships = {};
+          if (!extendedItem.relationships.tags) extendedItem.relationships.tags = [context];
+          else extendedItem.relationships.tags.push(context);
         }
-        return list;
+      }
+      // Tag has been removed from item, delete persistent value
+      else if (extendedItem.relationships && extendedItem.relationships.tags) {
+        previousContextIndex = undefined;
+        extendedItem.relationships.tags.forEach(function(tagUUID, index) {
+          var tag = TagsService.getTagByUUID(tagUUID, ownerUUID);
+          if (tag && tag.tagType === 'context') previousContextIndex = index;
+        });
+        if (previousContextIndex !== undefined) extendedItem.relationships.tags.splice(previousContextIndex, 1);
       }
     },
-    moveDateToDue: function(task) {
-      if (task.date) {
-        task.due = task.date;
-        delete task.date;
-        return task.due;
-      }
-    },
-    updateTransientProperties: function(task, context, list, due) {
-      if (context) {
-        task.relationships.context = context;
-      }
-      if (list) {
-        task.relationships.list = list;
-      }
-      if (due) {
-        task.date = due;
-      }
+    copyListToParent: function(extendedItem) {
+      if (extendedItem.transientProperties && extendedItem.transientProperties.list)
+        extendedItem.relationships.parent = extendedItem.transientProperties.list;
+      // List has been removed from item, delete persistent value
+      else if (extendedItem.relationships && extendedItem.relationships.parent)
+        delete extendedItem.relationships.parent;
     }
   };
 }
