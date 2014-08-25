@@ -64,9 +64,56 @@
       if (transientProperties) extendedItem.transientProperties = transientProperties;
     },
     detachTransientProperties: function(extendedItem, ownerUUID, detachExtraPropertyFn) {
+
+      function copyContextToTag(extendedItem, ownerUUID) {
+        var previousContextIndex;
+
+        if (extendedItem.transientProperties && extendedItem.transientProperties.context) {
+          var foundCurrentTag = false;
+          var context = extendedItem.transientProperties.context;
+
+          if (extendedItem.relationships) {
+            if (extendedItem.relationships.tags) {
+              extendedItem.relationships.tags.forEach(function(tagUUID, index) {
+                var tag = TagsService.getTagByUUID(tagUUID, ownerUUID);
+                if (tag && tag.tagType === 'context' && tag.uuid === context) {
+                  if (tag.uuid === context) foundCurrentTag = true;
+                  else previousContextIndex = index;
+                }
+              });
+              // remove old tag
+              if (previousContextIndex !== undefined) extendedItem.relationships.tags.splice(previousContextIndex, 1);
+            }
+          }
+          // copy new context to tag
+          if (!foundCurrentTag) {
+            if (!extendedItem.relationships) extendedItem.relationships = {};
+            if (!extendedItem.relationships.tags) extendedItem.relationships.tags = [context];
+            else extendedItem.relationships.tags.push(context);
+          }
+        }
+        // Tag has been removed from item, delete persistent value
+        else if (extendedItem.relationships && extendedItem.relationships.tags) {
+          previousContextIndex = undefined;
+          extendedItem.relationships.tags.forEach(function(tagUUID, index) {
+            var tag = TagsService.getTagByUUID(tagUUID, ownerUUID);
+            if (tag && tag.tagType === 'context') previousContextIndex = index;
+          });
+          if (previousContextIndex !== undefined) extendedItem.relationships.tags.splice(previousContextIndex, 1);
+        }
+      }
+
+      function copyListToParent(extendedItem) {
+        if (extendedItem.transientProperties && extendedItem.transientProperties.list)
+          extendedItem.relationships.parent = extendedItem.transientProperties.list;
+        // List has been removed from item, delete persistent value
+        else if (extendedItem.relationships && extendedItem.relationships.parent)
+          delete extendedItem.relationships.parent;
+      }
+
       // copy transient values into persistent values
-      this.copyContextToTag(extendedItem, ownerUUID);
-      this.copyListToParent(extendedItem);
+      copyContextToTag(extendedItem, ownerUUID);
+      copyListToParent(extendedItem);
       if (typeof detachExtraPropertyFn === 'function') detachExtraPropertyFn(extendedItem, ownerUUID);
 
       // store transient values into variable and delete transient object from item
@@ -74,50 +121,6 @@
       delete extendedItem.transientProperties;
 
       return transients;
-    },
-    copyContextToTag: function(extendedItem, ownerUUID) {
-      var previousContextIndex;
-
-      if (extendedItem.transientProperties && extendedItem.transientProperties.context) {
-        var foundCurrentTag = false;
-        var context = extendedItem.transientProperties.context;
-
-        if (extendedItem.relationships) {
-          if (extendedItem.relationships.tags) {
-            extendedItem.relationships.tags.forEach(function(tagUUID, index) {
-              var tag = TagsService.getTagByUUID(tagUUID, ownerUUID);
-              if (tag && tag.tagType === 'context' && tag.uuid === context) {
-                if (tag.uuid === context) foundCurrentTag = true;
-                else previousContextIndex = index;
-              }
-            });
-            // remove old tag
-            if (previousContextIndex !== undefined) extendedItem.relationships.tags.splice(previousContextIndex, 1);
-          }
-        }
-        // copy new context to tag
-        if (!foundCurrentTag) {
-          if (!extendedItem.relationships) extendedItem.relationships = {};
-          if (!extendedItem.relationships.tags) extendedItem.relationships.tags = [context];
-          else extendedItem.relationships.tags.push(context);
-        }
-      }
-      // Tag has been removed from item, delete persistent value
-      else if (extendedItem.relationships && extendedItem.relationships.tags) {
-        previousContextIndex = undefined;
-        extendedItem.relationships.tags.forEach(function(tagUUID, index) {
-          var tag = TagsService.getTagByUUID(tagUUID, ownerUUID);
-          if (tag && tag.tagType === 'context') previousContextIndex = index;
-        });
-        if (previousContextIndex !== undefined) extendedItem.relationships.tags.splice(previousContextIndex, 1);
-      }
-    },
-    copyListToParent: function(extendedItem) {
-      if (extendedItem.transientProperties && extendedItem.transientProperties.list)
-        extendedItem.relationships.parent = extendedItem.transientProperties.list;
-      // List has been removed from item, delete persistent value
-      else if (extendedItem.relationships && extendedItem.relationships.parent)
-        delete extendedItem.relationships.parent;
     }
   };
 }
