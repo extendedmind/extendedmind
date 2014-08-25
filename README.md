@@ -47,4 +47,5 @@ And Nginx:
 `brew install nginx`
 [http://learnaholic.me/2012/10/10/installing-nginx-in-mac-os-x-mountain-lion/]
 
-Maven should already be installed by default.
+Prior to OSX Maveric, Maven should already be installed by default.
+- In Mavericks, install with Brew: `brew install maven`
