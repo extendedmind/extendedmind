@@ -20,28 +20,20 @@
     var itemsFilter = {};
 
     itemsFilter.byListUUID = function(items, uuid) {
-      var filteredValues = [];
-
-      items.forEach(function(item) {
-        if (item.relationships && item.relationships.parent) {
-          if (item.relationships.parent === uuid) filteredValues.push(item);
-        }
-      });
-      return filteredValues;
+      function listItem(item) {
+        if (item.relationships && item.relationships.parent) return item.relationships.parent === uuid;
+      }
+      return items.filter(listItem);
     };
-    itemsFilter.byTagUUID = function(items, uuid) {
-      var filteredValues = [];
 
+    itemsFilter.byTagUUID = function(items, uuid) {
       function isFilterTag(tag) {
         return tag === uuid;
       }
-
-      items.forEach(function(item) {
-        if (item.relationships && item.relationships.tags)
-          if (item.relationships.tags.some(isFilterTag)) filteredValues.push(item);
-      });
-
-      return filteredValues;
+      function tagItem(item) {
+        if (item.relationships && item.relationships.tags) return item.relationships.tags.some(isFilterTag);
+      }
+      return items.filter(tagItem);
     };
 
     itemsFilter.unsorted = function(items) {
