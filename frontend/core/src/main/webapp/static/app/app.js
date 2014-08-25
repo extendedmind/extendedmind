@@ -16,10 +16,40 @@
  /* global $, angular, html5Mode, FastClick, packaging */
  'use strict';
 
- angular.module('em.app', ['ngAnimate', 'ngRoute', 'infinite-scroll', 'monospaced.elastic', 'common', 'em.directives', 'em.filters', 'em.services']);
- angular.module('em.directives', ['common']);
- angular.module('em.filters', ['common']);
- angular.module('em.services', ['common', 'base64']);
+ angular.module('em.app', ['em.root', 'em.entry', 'em.main',
+                           'em.tasks', 'em.notes', 'em.archive', 'em.admin', 'em.account',
+                           'em.base',
+                           'common',
+                           'ngAnimate', 'ngRoute', 'infinite-scroll', 'monospaced.elastic', 'base64']);
+
+ angular.module('em.root', ['em.entry', 'em.main',
+                            'em.tasks', 'em.notes', 'em.archive', 'em.admin', 'em.account',
+                            'em.base',
+                            'common']);
+
+ angular.module('em.main', ['em.tasks', 'em.notes', 'em.archive', 'em.admin', 'em.account',
+                             'em.base',
+                             'common']);
+
+ angular.module('em.entry', ['em.base',
+                             'common']);
+
+ angular.module('em.tasks', ['em.base',
+                             'common']);
+
+ angular.module('em.notes', ['em.base',
+                             'common']);
+
+ angular.module('em.archive', ['em.base',
+                               'common']);
+
+ angular.module('em.admin', ['em.base',
+                             'common']);
+
+ angular.module('em.account', ['em.base',
+                             'common']);
+
+ angular.module('em.base', ['common']);
 
  angular.module('em.app').config(['$locationProvider', '$routeProvider',
   function($locationProvider, $routeProvider) {

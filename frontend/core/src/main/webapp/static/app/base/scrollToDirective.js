@@ -29,4 +29,4 @@
     }
   };
 }
-angular.module('em.directives').directive('scrollTo', scrollToDirective);
+angular.module('em.base').directive('scrollTo', scrollToDirective);

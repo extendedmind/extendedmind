@@ -94,4 +94,4 @@
 }
 
 ForgotController['$inject'] = ['$location', '$routeParams', '$scope', 'AnalyticsService', 'AuthenticationService', 'BackendClientService'];
-angular.module('em.app').controller('ForgotController', ForgotController);
+angular.module('em.entry').controller('ForgotController', ForgotController);

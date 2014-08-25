@@ -53,4 +53,4 @@
 }
 
 KeywordsController['$inject'] = ['$scope', 'AnalyticsService', 'TagsService', 'UISessionService'];
-angular.module('em.app').controller('KeywordsController', KeywordsController);
+angular.module('em.base').controller('KeywordsController', KeywordsController);

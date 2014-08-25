@@ -102,4 +102,4 @@
 }
 
 MenuController['$inject'] = ['$location', '$scope', 'AnalyticsService', 'AuthenticationService', 'ListsService', 'UISessionService', 'UserSessionService'];
-angular.module('em.app').controller('MenuController', MenuController);
+angular.module('em.main').controller('MenuController', MenuController);

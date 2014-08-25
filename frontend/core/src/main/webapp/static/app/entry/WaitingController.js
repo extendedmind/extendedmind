@@ -72,4 +72,4 @@
 }
 
 WaitingController['$inject'] = ['$location', '$routeParams', '$scope', '$window', 'AnalyticsService', 'AuthenticationService'];
-angular.module('em.app').controller('WaitingController', WaitingController);
+angular.module('em.entry').controller('WaitingController', WaitingController);

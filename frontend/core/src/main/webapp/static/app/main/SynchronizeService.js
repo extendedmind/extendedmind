@@ -315,4 +315,4 @@
 
 SynchronizeService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'ItemsService',
 'ListsService', 'NotesService', 'TagsService', 'TasksService', 'UserSessionService'];
-angular.module('em.services').factory('SynchronizeService', SynchronizeService);
+angular.module('em.main').factory('SynchronizeService', SynchronizeService);

@@ -53,4 +53,4 @@
   };
 }
 datepickerDirective['$inject'] = ['$q'];
-angular.module('em.directives').directive('datepicker', datepickerDirective);
+angular.module('em.tasks').directive('datepicker', datepickerDirective);

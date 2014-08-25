@@ -45,4 +45,4 @@
 }
 
 VerifyController['$inject'] = ['$location', '$routeParams', '$scope', 'AuthenticationService', 'AnalyticsService'];
-angular.module('em.app').controller('VerifyController', VerifyController);
+angular.module('em.entry').controller('VerifyController', VerifyController);

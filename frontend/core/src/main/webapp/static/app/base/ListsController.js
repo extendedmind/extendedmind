@@ -110,4 +110,4 @@
 }
 
 ListsController['$inject'] = ['$q', '$scope', 'AnalyticsService', 'ListsService', 'UISessionService'];
-angular.module('em.app').controller('ListsController', ListsController);
+angular.module('em.base').controller('ListsController', ListsController);

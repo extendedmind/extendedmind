@@ -81,4 +81,4 @@
 }
 
 ItemsController['$inject'] = ['$scope', '$timeout', 'AnalyticsService', 'ItemsService', 'UISessionService'];
-angular.module('em.app').controller('ItemsController', ItemsController);
+angular.module('em.main').controller('ItemsController', ItemsController);

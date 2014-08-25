@@ -53,4 +53,4 @@
 }
 
 InboxController['$inject'] = ['$scope'];
-angular.module('em.app').controller('InboxController', InboxController);
+angular.module('em.main').controller('InboxController', InboxController);

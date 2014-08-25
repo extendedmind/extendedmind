@@ -90,4 +90,4 @@
   };
 }
 ConvertService['$inject'] = ['BackendClientService', 'ListsService', 'NotesService', 'TasksService'];
-angular.module('em.services').factory('ConvertService', ConvertService);
+angular.module('em.main').factory('ConvertService', ConvertService);

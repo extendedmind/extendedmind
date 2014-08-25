@@ -315,4 +315,4 @@
   };
 }
 featureContainerDirective['$inject'] = ['$rootScope', 'SnapService', 'SwiperService', 'UISessionService', 'UserSessionService'];
-angular.module('em.directives').directive('featureContainer', featureContainerDirective);
+angular.module('em.main').directive('featureContainer', featureContainerDirective);

@@ -44,4 +44,4 @@
     }
   };
 }
-angular.module('em.directives').directive('itemCoreFields', itemCoreFieldsDirective);
+angular.module('em.base').directive('itemCoreFields', itemCoreFieldsDirective);

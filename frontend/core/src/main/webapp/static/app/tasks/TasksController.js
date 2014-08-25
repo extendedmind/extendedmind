@@ -122,4 +122,4 @@
 }
 
 TasksController['$inject'] = ['$scope', 'AnalyticsService', 'DateService', 'SwiperService', 'TasksService', 'UISessionService'];
-angular.module('em.app').controller('TasksController', TasksController);
+angular.module('em.tasks').controller('TasksController', TasksController);

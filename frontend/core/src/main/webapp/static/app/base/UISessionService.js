@@ -173,4 +173,4 @@
   };
 }
 UISessionService['$inject'] = ['$rootScope', 'LocalStorageService', 'SessionStorageService'];
-angular.module('em.services').factory('UISessionService', UISessionService);
+angular.module('em.base').factory('UISessionService', UISessionService);

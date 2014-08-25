@@ -128,4 +128,4 @@
 }
 
 AdminController['$inject'] = ['$scope', 'AdminService', 'AuthenticationService', 'AnalyticsService', 'DateService'];
-angular.module('em.app').controller('AdminController', AdminController);
+angular.module('em.admin').controller('AdminController', AdminController);

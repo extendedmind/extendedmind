@@ -54,4 +54,4 @@
 
 ContextsController['$inject'] = ['$scope',
 'AnalyticsService', 'TagsService', 'UISessionService'];
-angular.module('em.app').controller('ContextsController', ContextsController);
+angular.module('em.base').controller('ContextsController', ContextsController);

@@ -282,4 +282,4 @@ NotesController['$inject'] = [
 '$filter', '$q', '$scope',
 'AnalyticsService', 'ListsService', 'NotesService', 'TagsService',
 'SwiperService', 'UISessionService', 'UUIDService'];
-angular.module('em.app').controller('NotesController', NotesController);
+angular.module('em.notes').controller('NotesController', NotesController);

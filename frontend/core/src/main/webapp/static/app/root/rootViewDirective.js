@@ -244,4 +244,4 @@
 
 rootViewDirective['$inject'] = ['$injector', '$rootScope', '$window',
 'AnalyticsService', 'BackendClientService', 'ModalService', 'SnapService', 'SwiperService', 'UUIDService', 'UserSessionService'];
-angular.module('em.directives').directive('rootView', rootViewDirective);
+angular.module('em.root').directive('rootView', rootViewDirective);

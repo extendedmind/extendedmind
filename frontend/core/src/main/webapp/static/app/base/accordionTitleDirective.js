@@ -148,4 +148,4 @@ function accordionTitleDirective() {
     }
   };
 }
-angular.module('em.directives').directive('accordionTitle', accordionTitleDirective);
+angular.module('em.base').directive('accordionTitle', accordionTitleDirective);

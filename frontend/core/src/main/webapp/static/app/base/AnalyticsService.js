@@ -611,4 +611,4 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
   };
 }
 AnalyticsService['$inject'] = ['$q', '$rootScope', '$timeout', 'BackendClientService', 'HttpClientService', 'UserSessionService'];
-angular.module('em.services').factory('AnalyticsService', AnalyticsService);
+angular.module('em.base').factory('AnalyticsService', AnalyticsService);

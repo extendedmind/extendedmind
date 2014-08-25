@@ -453,4 +453,4 @@
 };
 }
 swiperContainerDirective['$inject'] = ['$rootScope', '$window', 'SwiperService'];
-angular.module('em.directives').directive('swiperContainer', swiperContainerDirective);
+angular.module('em.base').directive('swiperContainer', swiperContainerDirective);

@@ -43,4 +43,4 @@
 }
 
 LaunchController['$inject'] = ['$scope', 'AnalyticsService', 'AuthenticationService', 'BackendClientService'];
-angular.module('em.app').controller('LaunchController', LaunchController);
+angular.module('em.entry').controller('LaunchController', LaunchController);

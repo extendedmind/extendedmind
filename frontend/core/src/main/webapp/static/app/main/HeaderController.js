@@ -102,4 +102,4 @@
   };
 }
 HeaderController['$inject'] = ['$scope', '$rootScope', 'UISessionService'];
-angular.module('em.app').controller('HeaderController', HeaderController);
+angular.module('em.main').controller('HeaderController', HeaderController);

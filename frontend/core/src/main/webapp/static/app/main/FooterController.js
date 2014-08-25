@@ -154,4 +154,4 @@
 }
 
 FooterController['$inject'] = ['$scope', '$timeout', 'SwiperService', 'UISessionService'];
-angular.module('em.app').controller('FooterController', FooterController);
+angular.module('em.main').controller('FooterController', FooterController);

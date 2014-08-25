@@ -32,4 +32,4 @@
     });
   };
 }
-angular.module('em.filters').filter('tasksByDate', tasksByDate);
+angular.module('em.tasks').filter('tasksByDate', tasksByDate);

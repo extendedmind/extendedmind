@@ -119,4 +119,4 @@
   };
 }
 
-angular.module('em.services').factory('LocalStorageService', LocalStorageService);
+angular.module('em.base').factory('LocalStorageService', LocalStorageService);

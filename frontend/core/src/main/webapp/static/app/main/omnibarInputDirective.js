@@ -36,4 +36,4 @@
   };
 }
 omnibarInputDirective['$inject'] = ['$document'];
-angular.module('em.directives').directive('omnibarInput', omnibarInputDirective);
+angular.module('em.main').directive('omnibarInput', omnibarInputDirective);

@@ -205,4 +205,4 @@ function HttpRequestQueueService() {
   };
   return service;
 }
-angular.module('em.services').factory('HttpRequestQueueService', HttpRequestQueueService);
+angular.module('em.base').factory('HttpRequestQueueService', HttpRequestQueueService);

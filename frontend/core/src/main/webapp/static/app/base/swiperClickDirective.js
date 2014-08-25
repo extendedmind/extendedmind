@@ -55,4 +55,4 @@
   };
 }
 swiperClickDirective['$inject'] = ['$parse', '$rootScope'];
-angular.module('em.directives').directive('swiperClick', swiperClickDirective);
+angular.module('em.base').directive('swiperClick', swiperClickDirective);

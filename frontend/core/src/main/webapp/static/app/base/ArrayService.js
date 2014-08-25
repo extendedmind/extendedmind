@@ -241,4 +241,4 @@ function ArrayService() {
   };
 }
 
-angular.module('em.services').factory('ArrayService', ArrayService);
+angular.module('em.base').factory('ArrayService', ArrayService);

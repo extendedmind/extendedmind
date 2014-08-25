@@ -75,4 +75,4 @@
   };
 }
 addItemDirective['$inject'] = ['$rootScope'];
-angular.module('em.directives').directive('addItem', addItemDirective);
+angular.module('em.base').directive('addItem', addItemDirective);

@@ -105,4 +105,4 @@
   };
 }
 
-angular.module('em.services').factory('SessionStorageService', SessionStorageService);
+angular.module('em.base').factory('SessionStorageService', SessionStorageService);

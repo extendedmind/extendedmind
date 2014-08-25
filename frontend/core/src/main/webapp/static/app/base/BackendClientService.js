@@ -214,4 +214,4 @@
 }
 
 BackendClientService['$inject'] = ['$q', '$rootScope', 'base64', 'HttpClientService', 'UserSessionService'];
-angular.module('em.services').factory('BackendClientService', BackendClientService);
+angular.module('em.base').factory('BackendClientService', BackendClientService);

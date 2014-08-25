@@ -123,4 +123,4 @@
   };
 }
 AdminService['$inject'] = ['BackendClientService'];
-angular.module('em.services').factory('AdminService', AdminService);
+angular.module('em.admin').factory('AdminService', AdminService);

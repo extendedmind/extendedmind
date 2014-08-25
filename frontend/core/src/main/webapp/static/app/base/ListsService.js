@@ -247,4 +247,4 @@
 }
 
 ListsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'TagsService'];
-angular.module('em.services').factory('ListsService', ListsService);
+angular.module('em.base').factory('ListsService', ListsService);

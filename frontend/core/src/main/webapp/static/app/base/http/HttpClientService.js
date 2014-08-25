@@ -330,4 +330,4 @@
 }
 
 HttpClientService['$inject'] = ['$http', '$q', '$rootScope', 'HttpRequestQueueService'];
-angular.module('em.services').factory('HttpClientService', HttpClientService);
+angular.module('em.base').factory('HttpClientService', HttpClientService);

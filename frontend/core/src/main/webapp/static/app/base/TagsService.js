@@ -198,4 +198,4 @@
 }
 
 TagsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService'];
-angular.module('em.services').factory('TagsService', TagsService);
+angular.module('em.base').factory('TagsService', TagsService);

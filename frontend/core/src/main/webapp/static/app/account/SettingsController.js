@@ -127,4 +127,4 @@
 }
 
 SettingsController['$inject'] = ['$http', '$q', '$rootScope', '$scope', '$window', 'AccountService', 'AnalyticsService', 'ModalService', 'UserSessionService'];
-angular.module('em.app').controller('SettingsController', SettingsController);
+angular.module('em.account').controller('SettingsController', SettingsController);

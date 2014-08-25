@@ -513,4 +513,4 @@
 }
 
 TasksService['$inject'] = ['$q', '$rootScope', 'ArrayService', 'BackendClientService', 'ExtendedItemService', 'ListsService', 'TagsService', 'UserSessionService', 'UUIDService'];
-angular.module('em.services').factory('TasksService', TasksService);
+angular.module('em.tasks').factory('TasksService', TasksService);

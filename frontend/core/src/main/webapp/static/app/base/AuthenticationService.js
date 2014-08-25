@@ -427,4 +427,4 @@ return {
   };
 }
 AuthenticationService['$inject'] = ['$location', '$q', '$rootScope', 'BackendClientService', 'UserSessionService'];
-angular.module('em.services').factory('AuthenticationService', AuthenticationService);
+angular.module('em.base').factory('AuthenticationService', AuthenticationService);

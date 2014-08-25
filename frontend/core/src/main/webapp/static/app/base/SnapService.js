@@ -206,4 +206,4 @@
     }
   };
 }
-angular.module('em.services').factory('SnapService', SnapService);
+angular.module('em.base').factory('SnapService', SnapService);

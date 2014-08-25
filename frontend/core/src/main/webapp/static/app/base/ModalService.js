@@ -19,7 +19,7 @@
 // Originally from: https://raw.github.com/RyanBertrand/angularjs-modal-service
 // with Bootstrap modals.js included within
 
-angular.module('em.services').factory('ModalService', ["$document", "$compile", "$rootScope", "$controller", "$timeout",
+angular.module('em.base').factory('ModalService', ["$document", "$compile", "$rootScope", "$controller", "$timeout",
     function ($document, $compile, $rootScope, $controller, $timeout) {
 
         // ####################################

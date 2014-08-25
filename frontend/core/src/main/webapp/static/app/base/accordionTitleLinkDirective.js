@@ -71,4 +71,4 @@
   };
 }
 accordionTitleLinkDirective['$inject'] = ['$rootScope'];
-angular.module('em.directives').directive('accordionTitleLink', accordionTitleLinkDirective);
+angular.module('em.base').directive('accordionTitleLink', accordionTitleLinkDirective);

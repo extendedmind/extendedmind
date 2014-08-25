@@ -112,4 +112,4 @@
 
   return filter;
 }
-angular.module('em.filters').filter('itemsFilter', itemsFilter);
+angular.module('em.main').filter('itemsFilter', itemsFilter);

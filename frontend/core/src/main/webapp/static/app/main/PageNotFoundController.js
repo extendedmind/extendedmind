@@ -19,4 +19,4 @@
  }
 
  PageNotFoundController['$inject'] = ['$scope', 'UISessionService'];
- angular.module('em.app').controller('PageNotFoundController', PageNotFoundController);
+ angular.module('em.main').controller('PageNotFoundController', PageNotFoundController);

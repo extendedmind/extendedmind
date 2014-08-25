@@ -59,4 +59,4 @@
   };
 }
 AccountService['$inject'] = ['BackendClientService', 'UserSessionService'];
-angular.module('em.services').factory('AccountService', AccountService);
+angular.module('em.account').factory('AccountService', AccountService);

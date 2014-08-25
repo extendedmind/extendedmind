@@ -260,4 +260,4 @@
 }
 
 DatesController['$inject'] = ['$q', '$rootScope', '$scope', 'DateService', 'SwiperService'];
-angular.module('em.app').controller('DatesController', DatesController);
+angular.module('em.tasks').controller('DatesController', DatesController);

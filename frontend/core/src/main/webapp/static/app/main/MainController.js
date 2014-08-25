@@ -292,4 +292,4 @@ MainController['$inject'] = [
 'NotesService', 'SwiperService', 'SynchronizeService','TagsService', 'TasksService',
 'UISessionService', 'UserSessionService', 'UUIDService'
 ];
-angular.module('em.app').controller('MainController', MainController);
+angular.module('em.main').controller('MainController', MainController);

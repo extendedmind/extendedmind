@@ -58,4 +58,4 @@
   };
 }
 omnibarEditItemScrollerDirective['$inject'] = ['$parse', '$timeout'];
-angular.module('em.directives').directive('omnibarEditItemScroller', omnibarEditItemScrollerDirective);
+angular.module('em.main').directive('omnibarEditItemScroller', omnibarEditItemScrollerDirective);

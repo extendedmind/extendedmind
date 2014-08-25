@@ -225,4 +225,4 @@
 }
 
 ArchiveController['$inject'] = ['$scope', 'ListsService', 'NotesService', 'SwiperService', 'TasksService', 'SynchronizeService', 'UISessionService'];
-angular.module('em.app').controller('ArchiveController', ArchiveController);
+angular.module('em.archive').controller('ArchiveController', ArchiveController);

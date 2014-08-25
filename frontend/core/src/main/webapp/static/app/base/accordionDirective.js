@@ -200,4 +200,4 @@ function accordionDirective($document) {
   };
 }
 accordionDirective['$inject'] = ['$document'];
-angular.module('em.directives').directive('accordion', accordionDirective);
+angular.module('em.base').directive('accordion', accordionDirective);

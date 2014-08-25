@@ -248,4 +248,4 @@
 
 ItemsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ListsService', 'NotesService',
 'TagsService', 'TasksService', 'UserSessionService', 'UUIDService'];
-angular.module('em.services').factory('ItemsService', ItemsService);
+angular.module('em.main').factory('ItemsService', ItemsService);

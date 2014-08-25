@@ -56,4 +56,4 @@
 }
 
 LoginController['$inject'] = ['$location', '$scope', 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'UserSessionService'];
-angular.module('em.app').controller('LoginController', LoginController);
+angular.module('em.entry').controller('LoginController', LoginController);

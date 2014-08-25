@@ -41,4 +41,4 @@
     }
   };
 }
-angular.module('em.directives').directive('registerElementToFeature', registerElementToFeatureDirective);
+angular.module('em.base').directive('registerElementToFeature', registerElementToFeatureDirective);

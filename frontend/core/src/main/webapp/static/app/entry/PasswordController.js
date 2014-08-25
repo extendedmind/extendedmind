@@ -53,4 +53,4 @@
 }
 
 PasswordController['$inject'] = ['$scope', 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'UserSessionService'];
-angular.module('em.app').controller('PasswordController', PasswordController);
+angular.module('em.entry').controller('PasswordController', PasswordController);

@@ -33,4 +33,4 @@
     }
   };
 }
-angular.module('em.directives').directive('swiperSlide', swiperSlideDirective);
+angular.module('em.base').directive('swiperSlide', swiperSlideDirective);

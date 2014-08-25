@@ -20,4 +20,4 @@
     templateUrl: 'static/app/main/omnibar.html'
   };
 }
-angular.module('em.directives').directive('omnibar', omnibarDirective);
+angular.module('em.main').directive('omnibar', omnibarDirective);

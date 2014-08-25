@@ -255,4 +255,4 @@
   };
 }
 UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'SessionStorageService'];
-angular.module('em.services').factory('UserSessionService', UserSessionService);
+angular.module('em.base').factory('UserSessionService', UserSessionService);

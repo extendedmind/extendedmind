@@ -402,4 +402,4 @@ function SwiperService($q) {
   };
 }
 SwiperService['$inject'] = ['$q'];
-angular.module('em.services').factory('SwiperService', SwiperService);
+angular.module('em.base').factory('SwiperService', SwiperService);

@@ -83,4 +83,4 @@
 }
 
 AccountController['$inject'] = ['$location', '$rootScope', '$scope', 'AccountService', 'AnalyticsService', 'UISessionService', 'UserSessionService'];
-angular.module('em.app').controller('AccountController', AccountController);
+angular.module('em.account').controller('AccountController', AccountController);

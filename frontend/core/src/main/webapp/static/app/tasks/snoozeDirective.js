@@ -93,4 +93,4 @@
  };
 }
 snoozeDirective['$inject'] = ['DateService'];
-angular.module('em.directives').directive('snooze', snoozeDirective);
+angular.module('em.tasks').directive('snooze', snoozeDirective);

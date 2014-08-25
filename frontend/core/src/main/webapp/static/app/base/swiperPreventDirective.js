@@ -98,4 +98,4 @@
   };
 }
 swiperPreventDirective['$inject'] = ['$rootScope', '$window'];
-angular.module('em.directives').directive('swiperPrevent', swiperPreventDirective);
+angular.module('em.base').directive('swiperPrevent', swiperPreventDirective);

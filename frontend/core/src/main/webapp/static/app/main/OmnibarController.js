@@ -523,4 +523,4 @@
 }
 
 OmnibarController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'AnalyticsService', 'ItemsService', 'NotesService', 'SnapService', 'TasksService', 'UISessionService'];
-angular.module('em.app').controller('OmnibarController', OmnibarController);
+angular.module('em.main').controller('OmnibarController', OmnibarController);

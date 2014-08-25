@@ -131,4 +131,4 @@
 }
 
 SignupController['$inject'] = ['$location', '$rootScope', '$routeParams', '$scope', '$window', 'AuthenticationService', 'AnalyticsService', 'BackendClientService', 'UserSessionService'];
-angular.module('em.app').controller('SignupController', SignupController);
+angular.module('em.entry').controller('SignupController', SignupController);
