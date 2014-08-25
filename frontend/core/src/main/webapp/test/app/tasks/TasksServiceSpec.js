@@ -227,13 +227,13 @@ describe('TasksService', function() {
 
     // Change transient values
     printTickets.date = '3014-01-02';
-    printTickets.relationships.list = 'ebff4507-927d-4f99-940a-ee0cfcf6e84c'
+    printTickets.transientProperties.list = 'ebff4507-927d-4f99-940a-ee0cfcf6e84c'
 
     // Reset task
     TasksService.resetTask(printTickets, testOwnerUUID);
 
     // Values should be back to their original values
     expect(printTickets.date).toBe('2014-01-02');
-    expect(printTickets.relationships.list).toBe('dbff4507-927d-4f99-940a-ee0cfcf6e84c');
+    expect(printTickets.transientProperties.list).toBe('dbff4507-927d-4f99-940a-ee0cfcf6e84c');
   });
 });

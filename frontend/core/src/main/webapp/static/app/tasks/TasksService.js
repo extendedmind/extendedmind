@@ -461,7 +461,7 @@
     resetTask: function(task, ownerUUID) {
       var tasksArray = [task];
       if (task.relationships && task.relationships.context) delete task.relationships.context;
-      if (task.relationships && task.relationships.list) delete task.relationships.list;
+      if (task.transientProperties && task.transientProperties.list) delete task.transientProperties.list;
       if (task.date) delete task.date;
 
       ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, copyDueToDate);
