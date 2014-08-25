@@ -19,7 +19,7 @@
  angular.module('em.app', ['ngAnimate', 'ngRoute', 'infinite-scroll', 'monospaced.elastic', 'common', 'em.directives', 'em.filters', 'em.services']);
  angular.module('em.directives', ['common']);
  angular.module('em.filters', ['common']);
- angular.module('em.services', ['common', 'em.base64']);
+ angular.module('em.services', ['common', 'base64']);
 
  angular.module('em.app').config(['$locationProvider', '$routeProvider',
   function($locationProvider, $routeProvider) {

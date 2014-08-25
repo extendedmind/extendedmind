@@ -2,9 +2,9 @@
 /*jslint bitwise: true, regexp: true, white: true */
 'use strict';
 
-angular.module('em.base64', []);
+angular.module('base64', []);
 
-angular.module('em.base64').factory('base64', function() {
+angular.module('base64').factory('base64', function() {
   var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
   return {
     encode : function(input) {
