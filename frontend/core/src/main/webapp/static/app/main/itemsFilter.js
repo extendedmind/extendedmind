@@ -23,27 +23,24 @@
       var filteredValues = [];
 
       items.forEach(function(item) {
-        if (item.transientProperties && item.transientProperties.list) {
-          if (item.transientProperties.list === uuid) filteredValues.push(item);
+        if (item.relationships && item.relationships.parent) {
+          if (item.relationships.parent === uuid) filteredValues.push(item);
         }
       });
       return filteredValues;
     };
     itemsFilter.byTagUUID = function(items, uuid) {
-      var filteredValues, i;
-      filteredValues = [];
-      i = 0;
+      var filteredValues = [];
 
-      while (items[i]) {
-        if (items[i].relationships && items[i].relationships.tags) {
-          for (var j=0, len=items[i].relationships.tags.length; j<len; j++) {
-            if (items[i].relationships.tags[j] === uuid) {
-              filteredValues.push(items[i]);
-            }
-          }
-        }
-        i++;
+      function isFilterTag(tag) {
+        return tag === uuid;
       }
+
+      items.forEach(function(item) {
+        if (item.relationships && item.relationships.tags)
+          if (item.relationships.tags.some(isFilterTag)) filteredValues.push(item);
+      });
+
       return filteredValues;
     };
 

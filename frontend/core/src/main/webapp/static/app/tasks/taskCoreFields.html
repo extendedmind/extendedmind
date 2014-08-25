@@ -20,7 +20,7 @@
 
   <div ng-show="contexts.length" class="form-group">
     <label for="taskContext" class="sr-only">context</label>
-    <select id="taskContext" class="simple-input swiper-no-swiping" ng-model="task.relationships.context" ng-options="context.uuid as context.title for context in contexts" editable-field>
+    <select id="taskContext" class="simple-input swiper-no-swiping" ng-model="task.transientProperties.context" ng-options="context.uuid as context.title for context in contexts" editable-field>
       <option value="">select context...</option>
     </select>
   </div>
