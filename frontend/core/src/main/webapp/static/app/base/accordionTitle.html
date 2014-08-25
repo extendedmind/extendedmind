@@ -22,7 +22,6 @@
       <label for="{{item.uuid}}" class="swiper-no-swiping"></label>
     </div>
     <div ng-class="getTitleClasses()">
-      <label for="accordionTitleInput" class="sr-only">title</label>
       <textarea type="text" id="accordionTitleInput" class="simple-input swiper-no-swiping" ng-model="item.title" ng-focus="startTitleEdit($event)" ng-keypress="evaluateKeyPress($event)"  msd-elastic editable-field placeholder="title..." maxlength="128" required/></textarea>
     </div>
     <div class="right-button-wrapper swiper-no-swiping">
