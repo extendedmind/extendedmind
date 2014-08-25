@@ -17,7 +17,7 @@
  function TasksController($scope, AnalyticsService, DateService, SwiperService, TasksService, UISessionService) {
 
   $scope.initializeTask = function initializeTask(task) {
-    if (task.due || task.date) {
+    if (task.transientProperties && task.transientProperties.date) {
       $scope.showDateInput = true;
       $scope.focusDateInput = false;
     }

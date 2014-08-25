@@ -147,30 +147,24 @@
     if (task.due) {
       if (!task.transientProperties) task.transientProperties = {};
       task.transientProperties.date = task.due;
-
-      // TODO: REMOVE THIS
-      task.date = task.due;
-      // TODO: REMOVE THIS
     }
   }
   function copyDateToDue(task) {
     if (task.transientProperties && task.transientProperties.date) task.due = task.transientProperties.date;
-    // date has been removed from task, delete persistent value
-    else if (task.due) delete task.date;
-  }
 
-  // TODO: REMOVE THIS
-  // NOTE: should not be needed since we are adding date to transient object on init/update
-  // function attachDue(task, due) {
-  //   if (due) task.date = due;
-  // }
-  // TODO: REMOVE THIS
+    // date has been removed from task, delete persistent value
+    else if (task.due) delete task.due;
+
+    // AngularJS sets date property to 'null' if it is used in ng-model data-binding and no value is set.
+    // http://stackoverflow.com/a/7445368
+    if (task.transientProperties)
+      if (!Date.parse(task.transientProperties.date)) delete task.transientProperties.date;
+  }
 
   return {
     setTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       cleanRecentlyCompletedTasks(ownerUUID);
-
       ExtendedItemService.addTransientProperties(tasksResponse, ownerUUID, copyDueToDate);
 
       return ArrayService.setArrays(
@@ -182,7 +176,6 @@
     updateTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       cleanRecentlyCompletedTasks(ownerUUID);
-
       ExtendedItemService.addTransientProperties(tasksResponse, ownerUUID, copyDueToDate);
 
       return ArrayService.updateArrays(
@@ -221,14 +214,7 @@
         deferred.reject(task);
       } else {
         cleanRecentlyCompletedTasks(ownerUUID);
-
-        // TODO: REMOVE THIS
-        // copy date to due
-        // copyDateToDue(task);
-        // TODO: REMOVE THIS
-
         var transientProperties = ExtendedItemService.detachTransientProperties(task, ownerUUID, copyDateToDue);
-
         if (task.uuid) {
           // Existing task
           if (UserSessionService.isOfflineEnabled()) {
@@ -237,13 +223,7 @@
             BackendClientService.put('/api/' + params.owner + '/task/' + task.uuid,
              this.putExistingTaskRegex, params, task);
             task.modified = (new Date()).getTime() + 1000000;
-
             ExtendedItemService.attachTransientProperties(task, transientProperties);
-
-            // TODO: REMOVE THIS
-            // attachDue(task, due);
-            // TODO: REMOVE THIS
-
             updateTask(task, ownerUUID);
             deferred.resolve(task);
           } else {
@@ -253,11 +233,8 @@
             then(function(result) {
               if (result.data) {
                 task.modified = result.data.modified;
-
                 ExtendedItemService.attachTransientProperties(task, transientProperties);
-
                 updateTask(task, ownerUUID);
-
                 deferred.resolve(task);
               }
             });
@@ -274,9 +251,7 @@
             // Use a fake modified that is far enough in the to make
             // it to the end of the list
             task.created = task.modified = (new Date()).getTime() + 1000000;
-
             ExtendedItemService.attachTransientProperties(task, transientProperties);
-
             setTask(task, ownerUUID);
             deferred.resolve(task);
           } else {
@@ -288,9 +263,7 @@
                 task.uuid = result.data.uuid;
                 task.created = result.data.created;
                 task.modified = result.data.modified;
-
                 ExtendedItemService.attachTransientProperties(task, transientProperties);
-
                 setTask(task, ownerUUID);
                 deferred.resolve(task);
               }
@@ -451,9 +424,8 @@
       if (task.transientProperties) {
         if (task.transientProperties.context) delete task.transientProperties.context;
         if (task.transientProperties.list) delete task.transientProperties.list;
+        if (task.transientProperties.date) delete task.transientProperties.date;
       }
-      if (task.date) delete task.date;
-
       ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, copyDueToDate);
     },
 

@@ -25,7 +25,8 @@
 
       function getPikadayDateAndSetToTaskDate() {
         var date = pikaday.getDate();
-        scope.task.date = DateService.getYYYYMMDD(date);
+        if (!scope.task.transientProperties) scope.task.transientProperties = {};
+        scope.task.transientProperties.date = DateService.getYYYYMMDD(date);
       }
 
       var pikaday = new Pikaday({

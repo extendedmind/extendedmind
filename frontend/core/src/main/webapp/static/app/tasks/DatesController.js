@@ -189,7 +189,9 @@
       delete $scope.subtask;
     }
     $scope.subtask = {
-      date: newActiveYYYYMMDD
+      transientProperties: {
+        date: newActiveYYYYMMDD
+      }
     };
     if (newActiveYYYYMMDD === DateService.getTodayYYYYMMDD()) {
       $rootScope.isTodayActive = true;

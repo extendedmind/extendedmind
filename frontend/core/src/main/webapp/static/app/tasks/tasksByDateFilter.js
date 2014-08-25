@@ -26,9 +26,7 @@
       return DateService.getTodayYYYYMMDD() > task.due;
     }
     return tasks.filter(function(task) {
-      if (task.due) {
-        return isDueDate(task) || (isToday() && isOverdue(task));
-      }
+      if (task.due) return isDueDate(task) || (isToday() && isOverdue(task));
     });
   };
 }

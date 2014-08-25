@@ -182,7 +182,7 @@
       usedHeight += 160;
     } else {
       usedHeight += 290;
-      if ($scope.task && $scope.task.date) {
+      if ($scope.task && $scope.task.transientProperties && $scope.task.transientProperties.date) {
         usedHeight += 44;
       }
     }

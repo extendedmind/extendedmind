@@ -29,7 +29,7 @@
     </ul>
   </div>
   <div ng-if="openSnooze.pikaday.isVisible" class="item-actions pikaday-animation">
-    <div class="pikaday-embedded" pikaday bound="false" default-date="{{task.date}}" set-default-date="true"></div>
+    <div class="pikaday-embedded" pikaday bound="false" default-date="{{task.transientProperties.date}}" set-default-date="true"></div>
     <button ng-if="openSnooze.pikaday.hasDoneButton" type="button" class="wide-button normal-button" ng-click="pikadayEditDone()">
       <span>done</span>
     </button>

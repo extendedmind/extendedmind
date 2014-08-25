@@ -158,11 +158,8 @@
       return yyyymmdd(tomorrow);
     },
     getDateTodayOrFromLaterYYYYMMDD: function(dateYYYYMMDD) {
-      if (dateYYYYMMDD && (dateYYYYMMDD > yyyymmdd(new Date()))) {
-        return new Date(dateYYYYMMDD);
-      } else {
-        return new Date();
-      }
+      if (dateYYYYMMDD && (dateYYYYMMDD > yyyymmdd(new Date()))) return new Date(dateYYYYMMDD);
+      else return new Date();
     },
     getWeekdayNames: function() {
       return weekdays;

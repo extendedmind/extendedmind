@@ -43,8 +43,10 @@
       }
 
       function setTaskDateAndSave(task, dateSetterFn) {
-        var startingDate = DateService.getDateTodayOrFromLaterYYYYMMDD(task.date);
-        task.date = dateSetterFn(startingDate).getYYYYMMDD(startingDate);
+        if (!task.transientProperties) task.transientProperties = {};
+
+        var startingDate = DateService.getDateTodayOrFromLaterYYYYMMDD(task.transientProperties.date);
+        task.transientProperties.date = dateSetterFn(startingDate).getYYYYMMDD(startingDate);
         processClose(task);
       }
 
@@ -53,11 +55,13 @@
       };
 
       scope.setDateToday = function setDateToday(task) {
-        task.date = DateService.getTodayYYYYMMDD();
+        if (!task.transientProperties) task.transientProperties = {};
+        task.transientProperties.date = DateService.getTodayYYYYMMDD();
         processClose(task);
       };
       scope.setDateTomorrow = function setDateTomorrow(task) {
-        task.date = DateService.getTomorrowYYYYMMDD();
+        if (!task.transientProperties) task.transientProperties = {};
+        task.transientProperties.date = DateService.getTomorrowYYYYMMDD();
         processClose(task);
       };
       scope.setDateNextDay = function setDateNextDay(task) {
@@ -77,12 +81,12 @@
       };
 
       scope.isTaskDateTodayOrLess = function isTaskDateTodayOrLess(task) {
-        if (!task.date) return; // set date/snooze ng-swith-default value
-        return task.date <= DateService.getTodayYYYYMMDD();
+        if (task.transientProperties && task.transientProperties.date)
+          return task.transientProperties.date <= DateService.getTodayYYYYMMDD();
       };
 
       scope.taskHasDate = function taskHasDate(task) {
-        return task.date;
+        return task.transientProperties && task.transientProperties.date;
       };
 
       scope.openPikaDayAndScroll = function openPikaDayAndScroll() {
