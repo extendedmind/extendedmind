@@ -123,4 +123,4 @@
 }
 
 ExtendedItemService['$inject'] = ['TagsService'];
-angular.module('em.services').factory('ExtendedItemService', ExtendedItemService);
+angular.module('em.main').factory('ExtendedItemService', ExtendedItemService);
