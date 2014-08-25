@@ -182,7 +182,6 @@
           SwiperService.setEdgeTouchRatios('tasks', leftEdgeTouchRatio, rightEdgeTouchRatio);
           SwiperService.setEdgeTouchRatios('notes', leftEdgeTouchRatio, rightEdgeTouchRatio);
           SwiperService.setEdgeTouchRatios('list', leftEdgeTouchRatio, rightEdgeTouchRatio);
-          SwiperService.setEdgeTouchRatios('dashboard', leftEdgeTouchRatio, rightEdgeTouchRatio);
           SwiperService.setEdgeTouchRatios('archive', leftEdgeTouchRatio, rightEdgeTouchRatio);
 
           SnapService.toggleSnappersSticky(false);
@@ -196,7 +195,6 @@
           SwiperService.setEdgeTouchRatios('tasks');
           SwiperService.setEdgeTouchRatios('notes');
           SwiperService.setEdgeTouchRatios('list');
-          SwiperService.setEdgeTouchRatios('dashboard');
           SwiperService.setEdgeTouchRatios('archive');
 
           SnapService.toggleSnappersSticky(true);

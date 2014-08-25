@@ -27,12 +27,6 @@
       leftHeading: 'timeline',
       right: 'contexts'
     },
-    dashboard: {
-      leftSlide: 'daily',
-      leftHeading: 'daily',
-      center: 'weekly',
-      right: 'monthly'
-    },
     archive: {
       leftSlide: 'completed',
       leftHeading: 'completed',
@@ -49,7 +43,6 @@
   // Register a callback to swiper service
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'tasks', 'FooterController');
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'notes', 'FooterController');
-  SwiperService.registerSlideChangeCallback(slideChangeCallback, 'dashboard', 'FooterController');
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'archive', 'FooterController');
   SwiperService.registerSlideChangeCallback(slideChangeCallback, 'list', 'FooterController');
 

@@ -35,7 +35,6 @@
       $scope.hasFeatureFooter = function hasFeatureFooter() {
         if ($scope.isFeatureActive('tasks') ||
           $scope.isFeatureActive('notes') ||
-          $scope.isFeatureActive('dashboard') ||
           $scope.isFeatureActive('archive') ||
           $scope.isFeatureActive('list'))
         {
@@ -162,7 +161,6 @@
       SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'featureContainerDirective');
       SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/home', 'featureContainerDirective');
       SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'dashboard', 'featureContainerDirective');
       SwiperService.registerSlideChangeCallback(slideChangedCallback, 'archive', 'featureContainerDirective');
 
       // CALLBACK REGISTRATION
@@ -193,7 +191,6 @@
       function setFeatureContainerClass(feature) {
         if (feature === 'tasks' ||
           feature === 'notes' ||
-          feature === 'dashboard' ||
           feature === 'archive' ||
           feature === 'list')
         {
