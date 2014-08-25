@@ -27,7 +27,7 @@
           extendedItem.transientProperties.list = extendedItem.relationships.parent;
 
           // TODO: REMOVE THIS
-          extendedItem.relationships.list = extendedItem.relationships.parent;
+          // extendedItem.relationships.list = extendedItem.relationships.parent;
           // TODO: REMOVE THIS
         }
       }

@@ -43,8 +43,8 @@
   $scope.saveUnsavedListAndLinkToItem = function saveUnsavedListAndLinkToItem(item) {
     if ($scope.newList && $scope.newList.title) {
       return $scope.addList($scope.newList).then(function(list) {
-        if (!item.relationships) item.relationships = {};
-        item.relationships.list = list.uuid;
+        if (!item.transientProperties) item.transientProperties = {};
+        item.transientProperties.list = list.uuid;
       });
     }
     var deferred = $q.defer();
