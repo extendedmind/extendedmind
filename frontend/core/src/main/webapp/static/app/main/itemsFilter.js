@@ -20,20 +20,14 @@
     var itemsFilter = {};
 
     itemsFilter.byListUUID = function(items, uuid) {
-      var filteredValues, i;
+      var filteredValues;
       filteredValues = [];
-      i = 0;
 
-      while (items[i]) {
-        if (items[i].relationships) {
-          if (items[i].relationships.parent) {
-            if (items[i].relationships.parent === uuid) {
-              filteredValues.push(items[i]);
-            }
-          }
+      items.forEach(function(item) {
+        if (item.transientProperties && item.transientProperties.list) {
+          if (item.transientProperties.list === uuid) filteredValues.push(item);
         }
-        i++;
-      }
+      });
       return filteredValues;
     };
     itemsFilter.byTagUUID = function(items, uuid) {
