@@ -35,6 +35,153 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   margin-right: auto;
 }
 
+
+/*
+`.container-page` sets the width and horizontal positioning of the main content area.
+*/
+.container-page {
+  .center-horizontally;
+  max-width: @maximum-width;
+  max-height: @maximum-height;
+}
+
+/*
+`.container-content` specifies the vertical overflow.
+*/
+.container-content {
+  height: 100%;
+  overflow-y: auto;
+}
+
+/*
+`.row` is uses horizontal alignment. It specifies the left and right margin and is used
+primarily under `.container-content`.
+*/
+.row {
+  width: 100%;
+  padding-left: @horizontal-grid;
+  padding-right: @horizontal-grid;
+}
+
+.container-banner {
+  .center-horizontally;
+  text-align: center;
+  height: 200px;
+}
+
+/*
+**************************************************************************
+# Responsive
+
+When the screen size is bigger than a tablet,
+the main container will be vertically centered.
+*/
+@media (min-height: @maximum-landscape-height) {
+  .container-page {
+    position: relative;
+    min-height: @maximum-landscape-height;
+    max-height: @maximum-landscape-height;
+    margin-top: -@maximum-landscape-height / 2;
+    top: 50%;
+  }
+}
+
+/*
+Class `.group-btn` groups automatically button elements horizontally. Works
+for 1, 2, 3, 4, 7 and 9 buttons.
+
+```markup
+<div class="group-btn" style="width: 100%;">
+  <button style="background:gray;">&nbsp;</button>
+  <button style="background:red;">&nbsp;</button>
+  <button style="background:gray;">&nbsp;</button>
+  <button style="background:red;">&nbsp;</button>
+  <button style="background:gray;">&nbsp;</button>
+  <button style="background:red;">&nbsp;</button>
+  <button style="background:gray;">&nbsp;</button>
+  <button style="background:red;">&nbsp;</button>
+  <button style="background:gray;">&nbsp;</button>
+</div>
+<div class="group-btn" style="width: 100%;">
+  <button style="background:gray;">&nbsp;</button>
+  <button style="background:red;">&nbsp;</button>
+  <button style="background:gray;">&nbsp;</button>
+  <button style="background:red;">&nbsp;</button>
+  <button style="background:gray;">&nbsp;</button>
+  <button style="background:red;">&nbsp;</button>
+  <button style="background:gray;">&nbsp;</button>
+</div>
+<div class="group-btn" style="width: 100%;">
+  <button style="background:gray;">&nbsp;</button>
+  <button style="background:red;">&nbsp;</button>
+  <button style="background:gray;">&nbsp;</button>
+  <button style="background:red;">&nbsp;</button>
+</div>
+<div class="group-btn" style="width: 100%;">
+  <button style="background:gray;">&nbsp;</button>
+  <button style="background:red;">&nbsp;</button>
+  <button style="background:gray;">&nbsp;</button>
+</div>
+<div class="group-btn" style="width: 100%;">
+  <button style="background:gray;">&nbsp;</button>
+  <button style="background:red;">&nbsp;</button>
+</div>
+<div class="group-btn" style="width: 100%;">
+  <button style="background:gray;">&nbsp;</button>
+</div>
+```
+*/
+.group-btn {
+  button:first-child:nth-last-child(1) {
+    width: 100%;
+  }
+  button:first-child:nth-last-child(2),
+  button:first-child:nth-last-child(2) ~ button {
+    width: 50%;
+    float: left;
+  }
+  button:first-child:nth-last-child(3),
+  button:first-child:nth-last-child(3) ~ button {
+    width: 33.333%;
+    float: left;
+  }
+  button:first-child:nth-last-child(4),
+  button:first-child:nth-last-child(4) ~ button {
+    width: 25%;
+    float: left;
+  }
+  button:first-child:nth-last-child(7),
+  button:first-child:nth-last-child(7) ~ button {
+    width: 14.2857%;
+    float: left;
+  }
+  button:first-child:nth-last-child(9),
+  button:first-child:nth-last-child(9) ~ button {
+    width: 11.111%;
+    float: left;
+  }
+}
+
+/*
+Use `.group-instruction` to create an instruction block in the middle of a section.
+*/
+.group-instruction {
+  color: @instruction;
+  display: block;
+  text-align: center;
+  line-height: 19px;
+  p {
+    padding-bottom: @vertical-grid;
+  }
+}
+
+/*
+Use `.text-details` to separate details from body text.
+*/
+.text-details {
+  font-size: @font-small-size;
+}
+
 /*
 Use `.left-of-two` and `.right-of-two` to divide the horizontal space in two sections, separated by a white border.
 

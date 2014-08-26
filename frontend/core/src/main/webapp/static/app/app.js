@@ -67,6 +67,10 @@
       }
     });
 
+    $routeProvider.when('/entry', {
+      templateUrl: 'static/app/entry/entry.html'
+    });
+
     $routeProvider.when('/my', {
       templateUrl: 'static/app/main/main.html',
       resolve: {
