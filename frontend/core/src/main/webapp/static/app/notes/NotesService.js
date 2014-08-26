@@ -180,6 +180,7 @@
            this.putExistingNoteRegex, note)
           .then(function(result) {
             if (result.data) {
+              note.modified = result.data.modified;
 
               ExtendedItemService.attachTransientProperties(note, transientProperties);
 
