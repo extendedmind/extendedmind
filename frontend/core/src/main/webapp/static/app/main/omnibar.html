@@ -183,7 +183,7 @@
             <div lists-select-options>
               <div ng-if="!addNewListVisible" class="form-group select-list-visible-animation">
                 <label for="noteList" class="sr-only">list</label>
-                <select id="noteList" class="simple-input swiper-no-swiping" ng-model="note.relationships.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
+                <select id="noteList" class="simple-input swiper-no-swiping" ng-model="note.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
                   <option value="">select list...</option>
                 </select>
               </div>

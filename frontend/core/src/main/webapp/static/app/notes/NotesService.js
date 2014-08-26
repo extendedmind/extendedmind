@@ -16,7 +16,7 @@
  /*global angular */
  'use strict';
 
- function NotesService(ArrayService, BackendClientService, ListsService, TagsService, UserSessionService, UUIDService) {
+ function NotesService(ArrayService, BackendClientService, ExtendedItemService, ListsService, TagsService, UserSessionService, UUIDService) {
 
   // An object containing notes for every owner
   var notes = {};
@@ -103,35 +103,12 @@
   };
   ListsService.registerListDeletedCallback(listDeletedCallback, 'NotesService');
 
-  function addListToNotes(notesResponse) {
-    if (notesResponse) {
-      for (var i=0, len=notesResponse.length; i<len; i++) {
-        if (notesResponse[i].relationships && notesResponse[i].relationships.parent) {
-          notesResponse[i].relationships.list = notesResponse[i].relationships.parent;
-        }
-      }
-    }
-  }
-
-  function moveListToParent(note) {
-    if (note.relationships) {
-      var list = note.relationships.list;
-      if (list) {
-        note.relationships.parent = list;
-      } else if (note.relationships.hasOwnProperty('parent')) {
-        delete note.relationships.parent;
-      }
-      if (note.relationships.hasOwnProperty('list')) {
-        delete note.relationships.list;
-      }
-      return list;
-    }
-  }
-
   return {
     setNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      addListToNotes(notesResponse);
+
+      ExtendedItemService.addTransientProperties(notesResponse, ownerUUID);
+
       return ArrayService.setArrays(
         notesResponse,
         notes[ownerUUID].activeNotes,
@@ -139,7 +116,9 @@
     },
     updateNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      addListToNotes(notesResponse);
+
+      ExtendedItemService.addTransientProperties(notesResponse, ownerUUID);
+
       return ArrayService.updateArrays(
         notesResponse,
         notes[ownerUUID].activeNotes,
@@ -179,7 +158,9 @@
         return;
       }
       var params;
-      var list = moveListToParent(note);
+
+      var transientProperties = ExtendedItemService.detachTransientProperties(note, ownerUUID);
+
       if (note.uuid) {
         // Existing note
         if (UserSessionService.isOfflineEnabled()) {
@@ -188,9 +169,9 @@
           BackendClientService.put('/api/' + ownerUUID + '/note/' + note.uuid,
            this.putExistingNoteRegex, params, note);
           note.created = note.modified = (new Date()).getTime() + 1000000;
-          if (list) {
-            note.relationships.list = list;
-          }
+
+          ExtendedItemService.attachTransientProperties(note, transientProperties);
+
           updateNote(note, ownerUUID);
 
         } else {
@@ -199,10 +180,9 @@
            this.putExistingNoteRegex, note)
           .then(function(result) {
             if (result.data) {
-              note.modified = result.data.modified;
-              if (list) {
-                note.relationships.list = list;
-              }
+
+              ExtendedItemService.attachTransientProperties(note, transientProperties);
+
               updateNote(note, ownerUUID);
             }
           });
@@ -217,9 +197,9 @@
            this.putNewNoteRegex, params, note);
           note.uuid = fakeUUID;
           note.created = note.modified = (new Date()).getTime() + 1000000;
-          if (list) {
-            note.relationships.list = list;
-          }
+
+          ExtendedItemService.attachTransientProperties(note, transientProperties);
+
           setNote(note, ownerUUID);
         } else {
           // Online
@@ -230,9 +210,9 @@
               note.uuid = result.data.uuid;
               note.modified = result.data.modified;
               note.created = result.data.created;
-              if (list) {
-                note.relationships.list = list;
-              }
+
+              ExtendedItemService.attachTransientProperties(note, transientProperties);
+
               setNote(note, ownerUUID);
             }
           });
@@ -308,10 +288,12 @@
         });
       }
     },
-    resetNote: function(note/*, ownerUUID*/) {
+    resetNote: function(note, ownerUUID) {
       var notesArray = [note];
-      if (note.relationships && note.relationships.list) delete note.relationships.list;
-      addListToNotes(notesArray);
+      if (note.transientProperties && note.transientProperties.list) delete note.transientProperties.list;
+
+      ExtendedItemService.addTransientProperties(notesArray, ownerUUID);
+
       // TODO: Create note.relationships.keywords and then reset them here!
     },
     // Regular expressions for note requests
@@ -341,5 +323,5 @@
   };
 }
 
-NotesService['$inject'] = ['ArrayService', 'BackendClientService', 'ListsService', 'TagsService', 'UserSessionService', 'UUIDService'];
+NotesService['$inject'] = ['ArrayService', 'BackendClientService', 'ExtendedItemService', 'ListsService', 'TagsService', 'UserSessionService', 'UUIDService'];
 angular.module('em.notes').factory('NotesService', NotesService);

@@ -20,7 +20,7 @@
     if (name === 'list') {
       $scope.list = data;
       $scope.subtask = {transientProperties: {list: $scope.list.uuid}};
-      $scope.newNote = {relationships: {list: $scope.list.uuid}};
+      $scope.newNote = {transientProperties: {list: $scope.list.uuid}};
     }
   };
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ListsController');

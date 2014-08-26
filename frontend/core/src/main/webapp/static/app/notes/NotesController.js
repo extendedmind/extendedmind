@@ -109,12 +109,13 @@
 
   $scope.addNote = function addNote(newNote) {
     var newNoteToSave = {title: undefined};
+
+    if (newNote.transientProperties) {
+      newNoteToSave.transientProperties = {};
+      if (newNote.transientProperties.list) newNoteToSave.transientProperties.list = newNote.transientProperties.list;
+    }
+
     if (newNote.relationships) {
-      if (newNote.relationships.list) {
-        newNoteToSave.relationships = {
-          list: newNote.relationships.list
-        };
-      }
       if(newNote.relationships.tags && newNote.relationships.tags.length) {
         if (!newNoteToSave.relationships) newNoteToSave.relationships = {};
         newNoteToSave.relationships.tags = newNote.relationships.tags.slice(0);
