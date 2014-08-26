@@ -123,9 +123,7 @@
   return {
     setNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-
       ExtendedItemService.addTransientProperties(notesResponse, ownerUUID, copyFavoritedToStarred);
-
       return ArrayService.setArrays(
         notesResponse,
         notes[ownerUUID].activeNotes,
@@ -133,9 +131,7 @@
     },
     updateNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-
       ExtendedItemService.addTransientProperties(notesResponse, ownerUUID, copyFavoritedToStarred);
-
       return ArrayService.updateArrays(
         notesResponse,
         notes[ownerUUID].activeNotes,
@@ -175,9 +171,7 @@
         return;
       }
       var params;
-
       var transientProperties = ExtendedItemService.detachTransientProperties(note, ownerUUID, copyStarredToFavorited);
-
       if (note.uuid) {
         // Existing note
         if (UserSessionService.isOfflineEnabled()) {
@@ -186,11 +180,8 @@
           BackendClientService.put('/api/' + ownerUUID + '/note/' + note.uuid,
            this.putExistingNoteRegex, params, note);
           note.created = note.modified = (new Date()).getTime() + 1000000;
-
           ExtendedItemService.attachTransientProperties(note, transientProperties);
-
           updateNote(note, ownerUUID);
-
         } else {
           // Online
           BackendClientService.putOnline('/api/' + ownerUUID + '/note/' + note.uuid,
@@ -198,9 +189,7 @@
           .then(function(result) {
             if (result.data) {
               note.modified = result.data.modified;
-
               ExtendedItemService.attachTransientProperties(note, transientProperties);
-
               updateNote(note, ownerUUID);
             }
           });
@@ -215,9 +204,7 @@
            this.putNewNoteRegex, params, note);
           note.uuid = fakeUUID;
           note.created = note.modified = (new Date()).getTime() + 1000000;
-
           ExtendedItemService.attachTransientProperties(note, transientProperties);
-
           setNote(note, ownerUUID);
         } else {
           // Online
@@ -228,9 +215,7 @@
               note.uuid = result.data.uuid;
               note.modified = result.data.modified;
               note.created = result.data.created;
-
               ExtendedItemService.attachTransientProperties(note, transientProperties);
-
               setNote(note, ownerUUID);
             }
           });
