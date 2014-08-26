@@ -143,12 +143,14 @@
     tasks[ownerUUID].recentlyCompletedTasks.push(task);
   }
 
+  // due is persistent, date is transient
   function copyDueToDate(task) {
     if (task.due) {
       if (!task.transientProperties) task.transientProperties = {};
       task.transientProperties.date = task.due;
     }
   }
+  // date is transient, due is persistent
   function copyDateToDue(task) {
     if (task.transientProperties && task.transientProperties.date) task.due = task.transientProperties.date;
 
