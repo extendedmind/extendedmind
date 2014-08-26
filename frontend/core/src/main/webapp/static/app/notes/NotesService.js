@@ -103,11 +103,28 @@
   };
   ListsService.registerListDeletedCallback(listDeletedCallback, 'NotesService');
 
+  // favorited is persistend, starred is transient
+  function copyFavoritedToStarred(note) {
+    if (note.favorited) {
+      if (!note.transientProperties) note.transientProperties = {};
+      note.transientProperties.starred = note.favorited;
+    }
+  }
+  // starred is transient, favorited is persistent
+  function copyStarredToFavorited(note) {
+    if (note.transientProperties && note.transientProperties.starred) note.favorited = note.transientProperties.starred;
+
+    // favorited has been removed from note, delete persistent value
+    else if (note.favorited) delete note.favorited;
+
+    // TODO: check transient property when no value is set with AngularJS ng-model data-binding
+  }
+
   return {
     setNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
 
-      ExtendedItemService.addTransientProperties(notesResponse, ownerUUID);
+      ExtendedItemService.addTransientProperties(notesResponse, ownerUUID, copyFavoritedToStarred);
 
       return ArrayService.setArrays(
         notesResponse,
@@ -117,7 +134,7 @@
     updateNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
 
-      ExtendedItemService.addTransientProperties(notesResponse, ownerUUID);
+      ExtendedItemService.addTransientProperties(notesResponse, ownerUUID, copyFavoritedToStarred);
 
       return ArrayService.updateArrays(
         notesResponse,
@@ -159,7 +176,7 @@
       }
       var params;
 
-      var transientProperties = ExtendedItemService.detachTransientProperties(note, ownerUUID);
+      var transientProperties = ExtendedItemService.detachTransientProperties(note, ownerUUID, copyStarredToFavorited);
 
       if (note.uuid) {
         // Existing note
@@ -293,7 +310,7 @@
       var notesArray = [note];
       if (note.transientProperties && note.transientProperties.list) delete note.transientProperties.list;
 
-      ExtendedItemService.addTransientProperties(notesArray, ownerUUID);
+      ExtendedItemService.addTransientProperties(notesArray, ownerUUID, copyFavoritedToStarred);
 
       // TODO: Create note.relationships.keywords and then reset them here!
     },
