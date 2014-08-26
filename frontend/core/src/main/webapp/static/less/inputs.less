@@ -406,6 +406,37 @@ Use `.vertical-buttons` to make buttons align in a vertical column
 }
 
 
+//////// NEW START ////////////////////////
+
+@btn-color: #0f82fe;
+@btn-color-pressed: darken(@btn-color, 20%);
+@btn-color-disabled: lighten(#b0b0b6, 20%);
+
+[class^="btn-"], [class*=" btn-"] {
+  padding: 0;
+  margin: 0;
+  outline: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.btn-action {
+  color: white;
+  & {
+    background-color: @btn-color;
+  }
+  &:active {
+    background-color: @btn-color-pressed;
+  }
+  &[disabled] {
+    background-color: @btn-color-disabled;
+  }
+}
+
+
+//////// NEW END ////////////////////////
+
+
 /*
 ******************************************************************
 # Checkboxes

@@ -23,6 +23,9 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 @maximum-landscape-height: 769px;
 @fixed-page-height: 500px;
 
+@container-banner-height: 200px;
+
+
 /*
 `.center-horizontally` centers the container by making the browser to calculate left and right margins automatically.
 
@@ -35,14 +38,32 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   margin-right: auto;
 }
 
+//////// NEW START ////////////////////////
+
+/*
+**************************************************************************
+# Containers
+*/
 
 /*
 `.container-page` sets the width and horizontal positioning of the main content area.
+  When the screen size is bigger than a tablet,
+  the main container will be vertically centered.
 */
 .container-page {
   .center-horizontally;
   max-width: @maximum-width;
   max-height: @maximum-height;
+}
+
+@media (min-height: @maximum-landscape-height) {
+  .container-page {
+    position: relative;
+    min-height: @maximum-landscape-height;
+    max-height: @maximum-landscape-height;
+    margin-top: -@maximum-landscape-height / 2;
+    top: 50%;
+  }
 }
 
 /*
@@ -53,6 +74,17 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   overflow-y: auto;
 }
 
+.container-banner {
+  .center-horizontally;
+  text-align: center;
+  height: @container-banner-height;
+  display: table;
+  [class^="icon-"], [class*=" icon-"] {
+    display: table-cell;
+    vertical-align: middle;
+  }
+}
+
 /*
 `.row` is uses horizontal alignment. It specifies the left and right margin and is used
 primarily under `.container-content`.
@@ -61,29 +93,6 @@ primarily under `.container-content`.
   width: 100%;
   padding-left: @horizontal-grid;
   padding-right: @horizontal-grid;
-}
-
-.container-banner {
-  .center-horizontally;
-  text-align: center;
-  height: 200px;
-}
-
-/*
-**************************************************************************
-# Responsive
-
-When the screen size is bigger than a tablet,
-the main container will be vertically centered.
-*/
-@media (min-height: @maximum-landscape-height) {
-  .container-page {
-    position: relative;
-    min-height: @maximum-landscape-height;
-    max-height: @maximum-landscape-height;
-    margin-top: -@maximum-landscape-height / 2;
-    top: 50%;
-  }
 }
 
 /*
@@ -170,17 +179,19 @@ Use `.group-instruction` to create an instruction block in the middle of a secti
   display: block;
   text-align: center;
   line-height: 19px;
-  p {
-    padding-bottom: @vertical-grid;
+
+  // If there are more than one paragraph, create padding between them
+  p:not(:first-child) {
+    padding-top: @vertical-grid;
   }
 }
 
-/*
-Use `.text-details` to separate details from body text.
-*/
-.text-details {
-  font-size: @font-small-size;
+.group-instruction ~ .group-btn {
+  padding-top: @vertical-grid;
 }
+
+
+//////// NEW END ////////////////////////
 
 /*
 Use `.left-of-two` and `.right-of-two` to divide the horizontal space in two sections, separated by a white border.
