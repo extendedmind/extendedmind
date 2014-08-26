@@ -308,11 +308,12 @@
     },
     resetNote: function(note, ownerUUID) {
       var notesArray = [note];
-      if (note.transientProperties && note.transientProperties.list) delete note.transientProperties.list;
-
+      if (note.transientProperties) {
+        if (note.transientProperties.list) delete note.transientProperties.list;
+        if (note.transientProperties.keywords) delete note.transientProperties.keywords;
+        if (note.transientProperties.starred) delete note.transientProperties.starred;
+      }
       ExtendedItemService.addTransientProperties(notesArray, ownerUUID, copyFavoritedToStarred);
-
-      // TODO: Create note.relationships.keywords and then reset them here!
     },
     // Regular expressions for note requests
     putNewNoteRegex: new RegExp(

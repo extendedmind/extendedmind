@@ -28,14 +28,19 @@
         }
       }
 
-      function copyTagToContext(extendedItem, ownerUUID) {
+      function copyTagToTransientProperty(extendedItem, ownerUUID) {
         if (extendedItem.relationships && extendedItem.relationships.tags) {
           for (var i = 0, len = extendedItem.relationships.tags.length; i < len; i++) {
             var tag = TagsService.getTagByUUID(extendedItem.relationships.tags[i], ownerUUID);
-            if (tag && tag.tagType === 'context') {
+            if (tag) {
               if (!extendedItem.transientProperties) extendedItem.transientProperties = {};
-              extendedItem.transientProperties.context = tag.uuid;
-              break;
+              if (tag.tagType === 'context') {
+                extendedItem.transientProperties.context = tag.uuid;
+                break;
+              } else if (tag.tagType === 'keyword') {
+                if (!extendedItem.transientProperties.keywords) extendedItem.transientProperties.keywords = [];
+                extendedItem.transientProperties.keywords.push(tag.uuid);
+              }
             }
           }
         }
@@ -46,7 +51,7 @@
 
         extendedItemsArray.forEach(function(extendedItem) {
           copyParentToList(extendedItem);
-          copyTagToContext(extendedItem, ownerUUID);
+          copyTagToTransientProperty(extendedItem, ownerUUID);
           if (hasAddExtraTransientPropertyCopyFunction) addExtraTransientPropertyFn(extendedItem, ownerUUID);
         });
       }
@@ -55,6 +60,77 @@
       if (transientProperties) extendedItem.transientProperties = transientProperties;
     },
     detachTransientProperties: function(extendedItem, ownerUUID, detachExtraPropertyFn) {
+
+      function copyKeywordsToTags(extendedItem, ownerUUID) {
+        // Item has transient keywords.
+        if (extendedItem.transientProperties && extendedItem.transientProperties.keywords) {
+          // Item has persistent tags.
+          if (extendedItem.relationships && extendedItem.relationships.tags) {
+            extendedItem.relationships.tags = filterRemovedTransientKeywordsFromTags()
+            .concat(addNewTransientKeywordsToTags());
+          }
+          // Item does not have persistend tags
+          //  * copy transient keywords to tags
+          else {
+            if (!extendedItem.relationships) extendedItem.relationships = {};
+            extendedItem.relationships.tags = extendedItem.transientProperties.keywords;
+          }
+        }
+        // Transient keywords has been removed from item, delete persistent values
+        else {
+          if (extendedItem.relationships && extendedItem.relationships.tags) {
+            extendedItem.relationships.tags = filterKeywordsFromTags();
+            // Remove tags array if the result yielded an empty array
+            if (extendedItem.relationships.tags.length === 0) delete extendedItem.relationships.tags;
+          }
+        }
+
+        function filterRemovedTransientKeywordsFromTags() {
+          var filteredTags = [];
+          // Filter persistent tags.
+          //  * remove persistent keyword if it is not found from transient keywords.
+          for (var i = 0, len = extendedItem.relationships.tags.length; i < len; i++) {
+            // Find tag
+            var tag = TagsService.getTagByUUID(extendedItem.relationships.tags[i], ownerUUID);
+            if (tag) {
+              if (tag.tagType === 'context') filteredTags.push(extendedItem.relationships.tags[i]);
+              else if (tag.tagType === 'keyword') {
+                // Find persistent keyword from transient keywords
+                if (extendedItem.transientProperties.keywords.indexOf(extendedItem.relationships.tags[i]) !== -1) {
+                  filteredTags.push(extendedItem.relationships.tags[i]);
+                }
+              }
+            }
+          }
+          return filteredTags;
+        }
+
+        function addNewTransientKeywordsToTags() {
+          // Iterate transient keywords.
+          //  * add transient keyword if it is not found from persistent keywords.
+          var filteredTags = [];
+          for (var i = 0, len = extendedItem.transientProperties.keywords.length; i < len; i++) {
+            if (extendedItem.relationships.tags.indexOf(extendedItem.transientProperties.keywords[i]) === -1) {
+              filteredTags.push(extendedItem.transientProperties.keywords[i]);
+            }
+          }
+          return filteredTags;
+        }
+
+        function filterKeywordsFromTags() {
+          // Filter persistent tags.
+          //  * remove persistent tag if it's type is 'keyword'.
+          var filteredTags = [];
+          for (var i = 0, len = extendedItem.relationships.tags.length; i < len; i++) {
+            // Find tag
+            var tag = TagsService.getTagByUUID(extendedItem.relationships.tags[i], ownerUUID);
+            if (tag) {
+              if (tag.tagType === 'context') filteredTags.push(extendedItem.relationships.tags[i]);
+            }
+          }
+          return filteredTags;
+        }
+      }
 
       function copyContextToTag(extendedItem, ownerUUID) {
         var previousContextIndex;
@@ -113,6 +189,7 @@
 
       // copy transient values into persistent values
       copyContextToTag(extendedItem, ownerUUID);
+      copyKeywordsToTags(extendedItem, ownerUUID);
       copyListToParent(extendedItem);
       if (typeof detachExtraPropertyFn === 'function') detachExtraPropertyFn(extendedItem, ownerUUID);
 

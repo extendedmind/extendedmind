@@ -39,7 +39,7 @@
             return false;
           });
         }
-        $scope.note.relationships.tags.forEach(getNoteKeyword);
+        $scope.note.transientProperties.keywords.forEach(getNoteKeyword);
         return filteredKeywords;
       }
 
@@ -47,7 +47,7 @@
       // Keyword is associated with UUID so it needs to be removed from lists also.
       function removeFromMemoryAndReturnSavePromise(keyword) {
         $scope.keywords.splice($scope.keywords.indexOf(keyword), 1);
-        $scope.note.relationships.tags.splice($scope.note.relationships.tags.indexOf(keyword.uuid), 1);
+        $scope.note.transientProperties.keywords.splice($scope.note.transientProperties.keywords.indexOf(keyword.uuid), 1);
         delete keyword.uuid;
         delete keyword.isNew;
 
@@ -57,7 +57,7 @@
       // Re-add keywords to note with correct UUIDs.
       function addKeywordsToNote(keywords) {
         keywords.forEach(function(keyword) {
-          $scope.note.relationships.tags.push(keyword.uuid);
+          $scope.note.transientProperties.keywords.push(keyword.uuid);
         });
       }
 
@@ -113,13 +113,8 @@
     if (newNote.transientProperties) {
       newNoteToSave.transientProperties = {};
       if (newNote.transientProperties.list) newNoteToSave.transientProperties.list = newNote.transientProperties.list;
-    }
-
-    if (newNote.relationships) {
-      if(newNote.relationships.tags && newNote.relationships.tags.length) {
-        if (!newNoteToSave.relationships) newNoteToSave.relationships = {};
-        newNoteToSave.relationships.tags = newNote.relationships.tags.slice(0);
-      }
+      if (newNote.transientProperties.keywords)
+        newNoteToSave.transientProperties.keywords = newNote.transientProperties.keywords.slice(0);
     }
     delete newNote.title;
 
@@ -138,36 +133,25 @@
     }
   };
 
-  $scope.noteKeywords = function noteKeywords() {
-    var filteredKeywords = [];
-
-    function getNoteKeyword(uuid) {
-      $scope.keywords.some(function(keyword) {
-        if (keyword.uuid === uuid) {
-          filteredKeywords.unshift(keyword);
-          return true;
-        }
-        return false;
-      });
-    }
-    $scope.note.relationships.tags.forEach(getNoteKeyword);
-    return filteredKeywords;
+  $scope.showKeywords = function showKeywords() {
+    return $scope.newKeyword && $scope.newKeyword.title && $scope.newKeyword.title.length !== 0;
   };
-
-  $scope.otherThanNoteKeywords = function otherThanNoteKeywords() {
-    function isOtherThanNoteKeyword(element) {
-      return $scope.note.relationships.tags.indexOf(element.uuid) === -1;
-    }
-    if ($scope.noteHasKeywords()) {
-      return $scope.keywords.filter(isOtherThanNoteKeyword);
-    }
-    return $scope.keywords;
+  $scope.isNewKeyword = function isNewKeyword(keyword) {
+    return keyword.title === $scope.newKeyword.title;
+  };
+  $scope.noteHasKeywords = function noteHasKeywords() {
+    return $scope.note.transientProperties && $scope.note.transientProperties.keywords;
+  };
+  $scope.clearKeyword = function clearKeyword() {
+    $scope.newKeyword = {
+      tagType: 'keyword'
+    };
   };
 
   function addKeywordToNote(keyword) {
-    if (!$scope.note.relationships) $scope.note.relationships = {};
-    if (!$scope.note.relationships.tags) $scope.note.relationships.tags = [];
-    $scope.note.relationships.tags.push(keyword.uuid);
+    if (!$scope.note.transientProperties) $scope.note.transientProperties = {};
+    if (!$scope.note.transientProperties.keywords) $scope.note.transientProperties.keywords = [];
+    $scope.note.transientProperties.keywords.push(keyword.uuid);
   }
 
   $scope.selectExistingKeyword = function selectExistingKeyword(keyword) {
@@ -194,37 +178,16 @@
   };
 
   $scope.unSelectKeyword = function unSelectKeyword(keyword) {
-    $scope.note.relationships.tags.splice($scope.note.relationships.tags.indexOf(keyword.uuid), 1);
-    if (keyword.isNew) {
-      $scope.keywords.splice($scope.keywords.indexOf(keyword), 1);
-    }
-  };
-
-  $scope.showKeywords = function showKeywords() {
-    return $scope.newKeyword && $scope.newKeyword.title && $scope.newKeyword.title.length !== 0;
-  };
-
-  $scope.noteHasKeywords = function noteHasKeywords() {
-    return $scope.note.relationships && $scope.note.relationships.tags && $scope.note.relationships.tags.length;
-  };
-
-  $scope.isNewKeyword = function isNewKeyword(keyword) {
-    return keyword.title === $scope.newKeyword.title;
+    $scope.note.transientProperties.keywords.splice($scope.note.transientProperties.keywords.indexOf(keyword.uuid), 1);
+    if (keyword.isNew) $scope.keywords.splice($scope.keywords.indexOf(keyword), 1);
   };
 
   $scope.isSelectedKeyword = function isSelectedKeyword() {
     function isNoteKeyword(keyword) {
-      return keyword.title === $scope.newKeyword.title && $scope.note.relationships.tags.indexOf(keyword.uuid) !== -1;
+      return keyword.title === $scope.newKeyword.title &&
+      $scope.note.transientProperties.keywords.indexOf(keyword.uuid) !== -1;
     }
-    if ($scope.noteHasKeywords()) {
-      return $scope.keywords.some(isNoteKeyword);
-    }
-  };
-
-  $scope.clearKeyword = function clearKeyword() {
-    $scope.newKeyword = {
-      tagType: 'keyword'
-    };
+    if ($scope.noteHasKeywords()) return $scope.keywords.some(isNoteKeyword);
   };
 
 
@@ -257,7 +220,7 @@
   $scope.keyword = undefined;
   $scope.showKeywordDetails = function showKeywordDetails(selectedKeyword) {
     $scope.keyword = selectedKeyword;
-    $scope.newNote = {relationships: {tags: [$scope.keyword.uuid]}};
+    $scope.newNote = {transientProperties: {keywords: [$scope.keyword.uuid]}};
     SwiperService.swipeTo('notes/details');
   };
   $scope.showNoKeywordDetails = function showNoKeywordDetails() {

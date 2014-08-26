@@ -170,12 +170,12 @@
               </span>
 
               <span ng-if="noteHasKeywords()">
-                <button ng-repeat="keyword in noteKeywords()" type="button" class="button font-small selected-keyword" ng-click="unSelectKeyword(keyword)">{{keyword.title}} <strong>x</strong></button>
+                <button ng-repeat="keyword in keywords | keywordsFilter:{name: 'byNoteUUID', item:note}" type="button" class="button font-small selected-keyword" ng-click="unSelectKeyword(keyword)">{{keyword.title}} <strong>x</strong></button>
               </span>
             </div>
 
             <div ng-if="showKeywords()" class="keywords-container">
-              <button ng-hide="isNewKeyword(keyword)" ng-repeat="keyword in otherThanNoteKeywords() | filter: {title: newKeyword.title}" type="button" class="button font-small keyword" ng-click="selectExistingKeyword(keyword)">
+              <button ng-hide="isNewKeyword(keyword)" ng-repeat="keyword in keywords | keywordsFilter:{name: 'byOtherThanNoteUUID', item: note} | filter: {title: newKeyword.title}" type="button" class="button font-small keyword" ng-click="selectExistingKeyword(keyword)">
                 {{keyword.title}} <strong>+</strong>
               </button>
             </div>
