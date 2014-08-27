@@ -145,13 +145,6 @@
   <script src="test/mock/MockTagsBackendService.js"></script>
   <script src="test/mock/MockTasksBackendService.js"></script>
   <script src="test/mock/MockConvertBackendService.js"></script>
-  <script>
-    function MockController(MockBackendService, SwiperService) {
-      MockBackendService.mockBackend();
-    }
 
-    MockController.$inject = ['MockBackendService', 'SwiperService'];
-    angular.module('em.appTest').factory('MockController', MockController);
-  </script>
 </body>
 </html>

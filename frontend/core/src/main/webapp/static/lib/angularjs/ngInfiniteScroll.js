@@ -1,4 +1,4 @@
-/* ng-infinite-scroll - v1.1.2 - 2014-05-21 */
+/* ng-infinite-scroll - v1.1.2 - 2014-08-08 */
 var mod;
 
 mod = angular.module('infinite-scroll', []);
@@ -16,32 +16,54 @@ mod.directive('infiniteScroll', [
         infiniteScrollUseDocumentBottom: '='
       },
       link: function(scope, elem, attrs) {
-        var changeContainer, checkWhenEnabled, container, handleInfiniteScrollContainer, handleInfiniteScrollDisabled, handleInfiniteScrollDistance, handleInfiniteScrollUseDocumentBottom, handler, immediateCheck, scrollDistance, scrollEnabled, throttle, useDocumentBottom;
-        $window = angular.element($window);
+        var changeContainer, checkWhenEnabled, container, handleInfiniteScrollContainer, handleInfiniteScrollDisabled, handleInfiniteScrollDistance, handleInfiniteScrollUseDocumentBottom, handler, height, immediateCheck, offsetTop, pageYOffset, scrollDistance, scrollEnabled, throttle, useDocumentBottom, windowElement;
+        windowElement = angular.element($window);
         scrollDistance = null;
         scrollEnabled = null;
         checkWhenEnabled = null;
         container = null;
         immediateCheck = true;
         useDocumentBottom = false;
+        height = function(elem) {
+          elem = elem[0] || elem;
+          if (isNaN(elem.offsetHeight)) {
+            return height(elem.document.documentElement);
+          } else {
+            return elem.offsetHeight;
+          }
+        };
+        offsetTop = function(elem) {
+          if (!elem[0].getBoundingClientRect || elem.css('none')) {
+            return;
+          }
+          return elem[0].getBoundingClientRect().top + pageYOffset(elem);
+        };
+        pageYOffset = function(elem) {
+          elem = elem[0] || elem;
+          if (isNaN(window.pageYOffset)) {
+            return elem.document.documentElement.scrollTop;
+          } else {
+            return elem.ownerDocument.defaultView.pageYOffset;
+          }
+        };
         handler = function() {
           var containerBottom, containerTopOffset, elementBottom, remaining, shouldScroll;
-          if (container === $window) {
-            containerBottom = container.height() + container.scrollTop();
-            elementBottom = elem.offset().top + elem.height();
+          if (container === windowElement) {
+            containerBottom = height(container) + pageYOffset(container[0].document.documentElement);
+            elementBottom = offsetTop(elem) + height(elem);
           } else {
-            containerBottom = container.height();
+            containerBottom = height(container);
             containerTopOffset = 0;
-            if (container.offset() !== void 0) {
-              containerTopOffset = container.offset().top;
+            if (offsetTop(container) !== void 0) {
+              containerTopOffset = offsetTop(container);
             }
-            elementBottom = elem.offset().top - containerTopOffset + elem.height();
+            elementBottom = offsetTop(elem) - containerTopOffset + height(elem);
           }
           if (useDocumentBottom) {
-            elementBottom = $(document).height();
+            elementBottom = height((elem[0].ownerDocument || elem[0].document).documentElement);
           }
           remaining = elementBottom - containerBottom;
-          shouldScroll = remaining <= container.height() * scrollDistance + 1;
+          shouldScroll = remaining <= height(container) * scrollDistance + 1;
           if (shouldScroll) {
             checkWhenEnabled = true;
             if (scrollEnabled) {
@@ -113,17 +135,17 @@ mod.directive('infiniteScroll', [
           if (container != null) {
             container.off('scroll', handler);
           }
-          container = typeof newContainer.last === 'function' && newContainer !== $window ? newContainer.last() : newContainer;
+          container = typeof newContainer.last === 'function' && newContainer !== windowElement ? newContainer.last() : newContainer;
           if (newContainer != null) {
             return container.on('scroll', handler);
           }
         };
-        changeContainer($window);
+        changeContainer(windowElement);
         handleInfiniteScrollContainer = function(newContainer) {
           if ((!(newContainer != null)) || newContainer.length === 0) {
             return;
           }
-          newContainer = angular.element(newContainer);
+          newContainer = angular.element(document.querySelector(newContainer));
           if (newContainer != null) {
             return changeContainer(newContainer);
           } else {

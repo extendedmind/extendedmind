@@ -20,8 +20,13 @@
 
 angular.module('em.appTest', ['em.app', 'common', 'ngMockE2E']);
 
-angular.module('em.appTest').run(['$httpBackend',
-  function($httpBackend) {
-    $httpBackend.whenGET(/^static\//).passThrough();
-    $httpBackend.whenGET(/test\//).passThrough();
+angular.module('em.appTest')
+  .controller('MockController', ['MockBackendService', 'SwiperService',
+    function(MockBackendService, SwiperService){
+      MockBackendService.mockBackend();
+  }])
+  .run(['$httpBackend',
+    function($httpBackend) {
+      $httpBackend.whenGET(/^static\//).passThrough();
+      $httpBackend.whenGET(/test\//).passThrough();
   }]);
