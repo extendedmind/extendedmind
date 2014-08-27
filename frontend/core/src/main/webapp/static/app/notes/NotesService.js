@@ -300,6 +300,10 @@
       }
       ExtendedItemService.addTransientProperties(notesArray, ownerUUID, copyFavoritedToStarred);
     },
+    detachTransientProperties: function(note, ownerUUID) {
+      return ExtendedItemService.detachTransientProperties(note, ownerUUID, copyStarredToFavorited);
+    },
+
     // Regular expressions for note requests
     putNewNoteRegex: new RegExp(
       BackendClientService.apiPrefixRegex.source +

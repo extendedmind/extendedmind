@@ -430,6 +430,13 @@
       }
       ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, copyDueToDate);
     },
+    attachTransientProperties: function(task, ownerUUID, addExtraTransientPropertyFn) {
+      var addExtraTransientPropertyFunctions;
+      if (typeof addExtraTransientPropertyFn === 'function')
+        addExtraTransientPropertyFunctions = [addExtraTransientPropertyFn, copyDueToDate];
+      else addExtraTransientPropertyFunctions = copyDueToDate;
+      ExtendedItemService.addTransientProperties([task], ownerUUID, addExtraTransientPropertyFunctions);
+    },
 
     // Regular expressions for task requests
     putNewTaskRegex: new RegExp(

@@ -16,48 +16,81 @@
  /* global angular */
  'use strict';
 
- function ConvertService(BackendClientService, ListsService, NotesService, TasksService) {
+ function ConvertService(BackendClientService, ExtendedItemService, ListsService, NotesService, TasksService) {
   var noteSlashRegex = /\/note\//;
   var taskRegex = /\/task/;
 
+  var convertNoteToTaskRegexp = new RegExp(
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    noteSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    taskRegex.source);
+
+  function noteExistsAndIsNotDeleted(note, ownerUUID) {
+    var noteArrays = NotesService.getNoteArrays(ownerUUID);
+    var noteIndex;
+
+    // Find note from array
+    for (var noteArray in noteArrays) {
+      if (noteArrays.hasOwnProperty(noteArray)) {
+        noteIndex = noteArrays[noteArray].findFirstIndexByKeyValue('uuid', note.uuid);
+        // Return found note if it is not deleted.
+        if (noteIndex !== undefined) return !NotesService.isNoteDeleted(noteArrays[noteArray][noteIndex]);
+      }
+    }
+  }
+
+  function postConvertNoteToTask(note, ownerUUID) {
+    var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
+    var params = {type: 'note', owner: ownerUUID, uuid: note.uuid};
+    return BackendClientService.postOnline(path, convertNoteToTaskRegexp, params);
+  }
+
+  function processNoteToTaskResponse(note, task/*, transientProperties*/, ownerUUID) {
+
+    var copyConvertToTaskTransientPropertiesFn;
+
+    if (note.favorited) {
+      var convert = {
+        favorited: note.favorited
+      };
+      // NOTE: no need to pass this to the target function
+      copyConvertToTaskTransientPropertiesFn = copyConvertToTaskTransientProperties.bind(undefined, task, convert);
+    }
+
+    function copyConvertToTaskTransientProperties(task, convert) {
+      // NOTE: Delete task convert object because it may be out of sync before full offline implementation.
+      if (task.transientProperties && task.transientProperties.convert) {
+        if (task.transientProperties.convert.task) delete task.transientProperties.convert.task;
+      }
+      // Check that convert object is not empty
+      if (convert && Object.getOwnPropertyNames(convert).length > 0) {
+        if (!task.transientProperties) task.transientProperties = {};
+        if (!task.transientProperties.convert) task.transientProperties.convert = {};
+        task.transientProperties.convert.note = convert;
+      }
+    }
+
+    TasksService.attachTransientProperties(task, ownerUUID, copyConvertToTaskTransientPropertiesFn);
+    NotesService.removeNote(note, ownerUUID);
+    TasksService.addTask(task, ownerUUID);
+  }
+
   return {
     finishNoteToTaskConvert: function(note, ownerUUID) {
-      // i.   verify that note exists
-      // ii.  convert to task
-      // iii. remove note and add task
-
-      if (note.uuid) {  // existing note
-        if (noteExistsAndIsNotDeleted()) convertNoteToTask(this.convertNoteToTaskRegex);
+      // i. verify that note exists
+      if (note.uuid) {
+        if (noteExistsAndIsNotDeleted(note, ownerUUID)) {
+          /*var transientProperties = */NotesService.detachTransientProperties(note, ownerUUID);
+          // ii. convert to task
+          postConvertNoteToTask(note, ownerUUID).then(function(result) {
+            // iii. remove note and add task
+            processNoteToTaskResponse(note, result.data/*, transientProperties*/, ownerUUID);
+          });
+        }
       } else {  // new note
         // convert note to task
-      }
-
-      // i
-      function noteExistsAndIsNotDeleted() {
-        var noteArrays = NotesService.getNoteArrays(ownerUUID);
-        var noteIndex;
-
-        // Find note from array
-        for (var noteArray in noteArrays) {
-          if (noteArrays.hasOwnProperty(noteArray)) {
-            noteIndex = noteArrays[noteArray].findFirstIndexByKeyValue('uuid', note.uuid);
-            // Return found note if it is not deleted.
-            if (noteIndex !== undefined) return !NotesService.isNoteDeleted(noteArrays[noteArray][noteIndex]);
-          }
-        }
-      }
-
-      // ii.
-      function convertNoteToTask(convertNoteToTaskRegex) {
-        var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
-        var params = {type: 'note', owner: ownerUUID, uuid: note.uuid};
-        BackendClientService.postOnline(path, convertNoteToTaskRegex, params).then(removeNoteAndAddTask);
-      }
-
-      // iii.
-      function removeNoteAndAddTask(result) {
-        NotesService.removeNote(note, ownerUUID);
-        TasksService.addTask(result.data, ownerUUID);
       }
     },
     taskToList: function(task, ownerUUID) {
@@ -81,7 +114,7 @@
       // }
     },
 
-    convertNoteToTaskRegex: new RegExp(
+    convertNoteToTaskRegexp: new RegExp(
       BackendClientService.apiPrefixRegex.source +
       BackendClientService.uuidRegex.source +
       noteSlashRegex.source +
@@ -89,5 +122,5 @@
       taskRegex.source)
   };
 }
-ConvertService['$inject'] = ['BackendClientService', 'ListsService', 'NotesService', 'TasksService'];
+ConvertService['$inject'] = ['BackendClientService', 'ExtendedItemService', 'ListsService', 'NotesService', 'TasksService'];
 angular.module('em.main').factory('ConvertService', ConvertService);
