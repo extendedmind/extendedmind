@@ -1,7 +1,6 @@
 <div class="swiper-no-swiping" data-snap-ignore="true">
   <div lists-select-options>
     <div ng-if="!addNewListVisible" class="form-group select-list-visible-animation">
-      <label for="noteParent" class="sr-only">parent</label>
       <select class="simple-input swiper-no-swiping" id="noteParent" ng-model="note.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
         <option value="">select list...</option>
       </select>

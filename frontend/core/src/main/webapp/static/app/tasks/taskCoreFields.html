@@ -2,7 +2,6 @@
 
   <div lists-select-options>
     <div ng-if="!addNewListVisible" class="form-group select-list-visible-animation">
-      <label for="taskList" class="sr-only">list</label>
       <select id="taskList" class="simple-input swiper-no-swiping" ng-model="task.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
         <option value="">select list...</option>
       </select>
@@ -19,7 +18,6 @@
   </div>
 
   <div ng-show="contexts.length" class="form-group">
-    <label for="taskContext" class="sr-only">context</label>
     <select id="taskContext" class="simple-input swiper-no-swiping" ng-model="task.transientProperties.context" ng-options="context.uuid as context.title for context in contexts" editable-field>
       <option value="">select context...</option>
     </select>

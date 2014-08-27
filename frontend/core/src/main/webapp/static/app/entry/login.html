@@ -7,12 +7,10 @@
       <div class="content">
         <form role="form" name="loginForm" novalidate>
           <div class="form-group">
-            <label for="email" class="sr-only">email</label>
             <input type="email" name="email" id="email" class="simple-input" ng-model="user.username" ng-readonly="isUserEmailEditable" ng-blur="emailAttempted=true" placeholder="enter email..." required />
             <p ng-show="loginForm.email.$invalid && !loginForm.email.$pristine && emailAttempted" class="validation-error">not a valid email address</p>
           </div>
           <div class="form-group">
-            <label for="input-password" class="sr-only">password</label>
             <input type="password" name="password" id="input-password" class="simple-input" ng-model="user.password" ng-minlength="7" ng-blur="passwordAttempted=true" placeholder="enter password..." required />
             <p ng-show="loginForm.password.$invalid && !loginForm.password.$pristine && passwordAttempted" class="validation-error">password must be 7 characters or more</p>
           </div>

@@ -7,17 +7,14 @@
       <div class="content">
         <form role="form" name="signupForm">
           <div class="form-group">
-            <label for="email" class="sr-only">email</label>
             <input type="email" name="email" id="email" class="simple-input" ng-model="user.username" readonly ng-blur="emailAttempted=true" placeholder="enter email..." required />
             <p ng-show="signupForm.email.$invalid && !signupForm.email.$pristine && emailAttempted" class="validation-error">not a valid email address</p>
           </div>
           <div class="form-group">
-            <label for="password" class="sr-only">password</label>
             <input type="password" name="password" id="password" class="simple-input" ng-model="user.password" ng-blur="passwordAttempted=true" ng-minlength="7" placeholder="enter password..." required />
             <p ng-show="signupForm.password.$invalid && !signupForm.password.$pristine && passwordAttempted" class="validation-error">password must be 7 characters or more</p>
           </div>
           <div class="form-group">
-            <label for="passwordReEnter" class="sr-only">password again</label>
             <input type="password" name="passwordReEnter" id="passwordReEnter" class="simple-input" ng-model="user.reEnteredPassword" ng-blur="reEnterAttempted=true" password-match="user.password" ng-minlength="7" placeholder="re-enter password..." required />
             <p ng-show="signupForm.passwordReEnter.$invalid && !signupForm.passwordReEnter.$pristine && reEnterAttempted" class="validation-error">passwords don't match</p>
           </div>

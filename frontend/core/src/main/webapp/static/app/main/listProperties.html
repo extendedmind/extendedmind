@@ -4,15 +4,12 @@
       <h3>properties</h3>
       <div editable-field-container>
         <div class="form-group">
-          <label for="listTitle" class="sr-only">title</label>
           <textarea type="text" id="listTitle" class="simple-input swiper-no-swiping" ng-model="list.title" ng-keypress="evaluateKeyPress($event)" required msd-elastic editable-field placeholder="title..." maxlength="128"/></textarea>
         </div>
         <div class="form-group">
-          <label for="listLink" class="sr-only">url</label>
           <input type="text" id="listLink" class="simple-input" ng-model="list.link" editable-field placeholder="url...">
         </div>
         <div class="form-group">
-          <label for="listDescription" class="sr-only">description</label>
           <textarea id="listDescription" class="simple-input" ng-model="list.description" msd-elastic editable-field placeholder="description..." maxlength="1024"></textarea>
         </div>
 

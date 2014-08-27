@@ -28,7 +28,6 @@
     <div class="swiper-no-swiping item-actions" data-snap-ignore="true" ng-init="openSnooze = {isOpen: false}">
       <div ng-if="openSnooze.isOpen === false" class="form-group item-actions">
         <div ng-if="task.transientProperties.date">
-          <label for="taskDue" class="sr-only">select date...</label>
           <input type="date" id="taskDue" class="simple-input" ng-model="task.transientProperties.date" ng-click="openSnooze.isOpen=true">
         </div>
         <div ng-if="!task.transientProperties.date" class="item-actions">

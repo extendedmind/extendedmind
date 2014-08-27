@@ -16,7 +16,6 @@
           </div>
           <form role="form" class="add-element" ng-init="newItem = {}" ng-submit="callAndRefresh(addNewItem, newItem)" add-item data-snap-ignore="{{ignoreSnap}}" autocapitalize="none" autocorrect="off">
             <div class="form-group" editable-field-container="disable">
-              <label for="itemTitle" class="sr-only">title</label>
               <div>
                 <input type="text" id="itemTitle" class="simple-input" ng-model="newItem.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" editable-field placeholder="add item..." maxlength="128" />
               </div>

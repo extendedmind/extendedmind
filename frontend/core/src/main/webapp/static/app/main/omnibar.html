@@ -114,7 +114,6 @@
             <div ng-hide="hideTaskProperties()">
               <div class="form-group">
                 <div ng-if="showDateInput">
-                  <label for="taskDue" class="sr-only">select date...</label>
                   <input type="date" id="taskDue" class="simple-input" date-input-blur="hideDate" ng-model="task.transientProperties.date" date-input="task" date-input-set-focus="focusDateInput">
                 </div>
                 <div ng-if="!showDateInput" class="item-actions">
@@ -124,20 +123,17 @@
               <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
             </div>
             <div class="form-group omnibar-scroll-container" ng-style="{maxHeight: getEditTaskDescriptionMaxHeight()}" >
-              <label for="taskDescription" class="sr-only">description</label>
               <textarea id="taskDescription" class="simple-input" ng-model="task.description" ng-focus="taskDescriptionFocus()" ng-blur="taskDescriptionBlur()" msd-elastic editable-field placeholder="description..." maxlength="1024"></textarea>
             </div>
           </div>
 
           <div class="omnibar-scroller-slide" editable-field-container>
             <div ng-if="task.transientProperties.date" class="form-group">
-              <label for="taskRepeat" class="sr-only">repeating</label>
               <select id="taskRepeat" class="simple-input" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes" editable-field>
                 <option value="">select repeating...</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="taskLink" class="sr-only">url</label>
               <input type="text" id="taskLink" class="simple-input" ng-model="task.link" editable-field placeholder="url...">
             </div>
           </div>
@@ -152,14 +148,12 @@
 
           <div class="omnibar-scroller-slide" editable-field-container ng-style="{maxHeight: getEditNoteContentMaxHeight()}">
             <div class="form-group omnibar-scroll-container">
-              <label for="noteContent" class="sr-only">content</label>
               <textarea id="noteContent" class="simple-input" ng-model="note.content" msd-elastic editable-field placeholder="content..."></textarea>
             </div>
           </div>
 
           <div class="omnibar-scroller-slide" editable-field-container>
             <div class="form-group">
-              <label for="noteKeywords" class="sr-only">keywords</label>
               <input type="text" id="noteKeywords" class="simple-input" ng-model="newKeyword.title" editable-field placeholder="keywords..." maxlength="128" autocapitalize="none"/>
             </div>
             <div class="keywords-container">
@@ -182,7 +176,6 @@
 
             <div lists-select-options>
               <div ng-if="!addNewListVisible" class="form-group select-list-visible-animation">
-                <label for="noteList" class="sr-only">list</label>
                 <select id="noteList" class="simple-input swiper-no-swiping" ng-model="note.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions" editable-field>
                   <option value="">select list...</option>
                 </select>
