@@ -20,14 +20,14 @@
 
   $scope.entryState;
 
-  $scope.launchSignup = function(){
+  $scope.swipeToSignup = function(){
     $scope.entryState = 'signup';
     $scope.user = {};
     SwiperService.swipeTo('entry/main');
     AnalyticsService.visitEntry('signup');
   };
 
-  $scope.launchLogin = function(){
+  $scope.swipeToLogin = function(){
     $scope.entryState = 'login';
     $scope.user = {};
     SwiperService.swipeTo('entry/main');
@@ -43,6 +43,18 @@
     AnalyticsService.visit('privacy');
     $window.open('http://ext.md/privacy.html', '_system');
   };
+
+  $scope.swipeToHome = function() {
+    SwiperService.swipeTo('entry/home');
+  }
+
+  $scope.swipeToMain = function() {
+    SwiperService.swipeTo('entry/main');
+  }
+
+  $scope.swipeToForgot = function() {
+    SwiperService.swipeTo('entry/details');
+  }
 
 }
 
