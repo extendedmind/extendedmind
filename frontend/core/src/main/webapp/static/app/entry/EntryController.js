@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function EntryController($scope, AnalyticsService, AuthenticationService, BackendClientService) {
+ function EntryController($scope, AnalyticsService, AuthenticationService, BackendClientService, SwiperService) {
 
   AnalyticsService.visitEntry('entry');
 
@@ -22,17 +22,29 @@
 
   $scope.launchSignup = function(){
     $scope.entryState = 'signup';
+    $scope.user = {};
+    SwiperService.swipeTo('entry/main');
+    AnalyticsService.visitEntry('signup');
   };
 
   $scope.launchLogin = function(){
     $scope.entryState = 'login';
+    $scope.user = {};
+    SwiperService.swipeTo('entry/main');
+    AnalyticsService.visitEntry('login');
   };
 
-  $scope.gotoForgot = function(){
-    $scope.entryState = 'forgot';
+  $scope.gotoTermsOfService = function gotoTermsOfService() {
+    AnalyticsService.visit('terms');
+    $window.open('http://ext.md/terms.html', '_system');
+  };
+
+  $scope.gotoPrivacyPolicy = function gotoPrivacyPolicy() {
+    AnalyticsService.visit('privacy');
+    $window.open('http://ext.md/privacy.html', '_system');
   };
 
 }
 
-EntryController['$inject'] = ['$scope', 'AnalyticsService', 'AuthenticationService', 'BackendClientService'];
+EntryController['$inject'] = ['$scope', 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'SwiperService'];
 angular.module('em.entry').controller('EntryController', EntryController);

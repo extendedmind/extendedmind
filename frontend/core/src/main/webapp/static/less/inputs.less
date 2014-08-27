@@ -26,6 +26,11 @@ All forms and buttons used in extended mind UI.
 input, select, textarea {
   width: 100%;
   background-color: inherit;
+  outline: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  background-image: none;
 }
 
 textarea {
@@ -409,8 +414,10 @@ Use `.vertical-buttons` to make buttons align in a vertical column
 //////// NEW START ////////////////////////
 
 @btn-color: #0f82fe;
-@btn-color-pressed: darken(@btn-color, 20%);
+@btn-color-pressed: #0171ea;
 @btn-color-disabled: lighten(#b0b0b6, 20%);
+@btn-width: 100px;
+@btn-height: 32px;
 
 [class^="btn-"], [class*=" btn-"] {
   padding: 0;
@@ -418,17 +425,24 @@ Use `.vertical-buttons` to make buttons align in a vertical column
   outline: 0;
   border: none;
   box-shadow: none;
+  height: @vertical-grid;
+  text-align: center;
 }
 
-.btn-action {
+.btn-action  {
   color: white;
-  & {
+  background-color: transparent;
+  & > .text-btn {
     background-color: @btn-color;
+    display: inline-block;
+    vertical-align: middle;
+    width: @btn-width;
+    line-height: @btn-height;
   }
-  &:active {
+  &:active > .text-btn {
     background-color: @btn-color-pressed;
   }
-  &[disabled] {
+  &[disabled] > .text-btn {
     background-color: @btn-color-disabled;
   }
 }

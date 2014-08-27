@@ -129,8 +129,16 @@ Font control with alignment:
 /*
 Use `.text-details` to separate details from body text.
 */
+
+@error-color: #e22c09;
 .text-details {
   font-size: @font-small-size;
+}
+
+.text-error {
+  font-size: @font-small-size;
+  color: @error-color;
+  .font-bold;
 }
 
 //////// NEW END ////////////////////////
