@@ -18,27 +18,23 @@
   var keywordsFilters = {};
 
   keywordsFilters.byNoteUUID = function(keywords, note) {
-    var filteredKeywords = [];
-
-    function getNoteKeyword(noteKeywordUUID) {
-      keywords.some(function(keyword) {
-        if (keyword.uuid === noteKeywordUUID) {
-          filteredKeywords.unshift(keyword);
-          return true;
-        }
-        return false;
-      });
+    if (note.transientProperties && note.transientProperties.keywords) {
+      var filteredKeywords = [];
+      for (var i = 0, len = keywords.length; i < len; i++) {
+        if (note.transientProperties.keywords.indexOf(keywords[i].uuid) !== -1) filteredKeywords.push(keywords[i]);
+      }
+      return filteredKeywords;
     }
-    note.transientProperties.keywords.forEach(getNoteKeyword);
-    return filteredKeywords;
   };
 
   keywordsFilters.byOtherThanNoteUUID = function(keywords, note) {
-    function isOtherThanNoteKeyword(keyword) {
-      return note.transientProperties.keywords.indexOf(keyword.uuid) === -1;
+    if (note.transientProperties && note.transientProperties.keywords) {
+      var filteredKeywords = [];
+      for (var i = 0, len = keywords.length; i < len; i++) {
+        if (note.transientProperties.keywords.indexOf(keywords[i].uuid) === -1) filteredKeywords.push(keywords[i]);
+      }
+      return filteredKeywords;
     }
-    if (note.transientProperties && note.transientProperties.keywords) return keywords.filter(isOtherThanNoteKeyword);
-    return keywords;
   };
 
   return function(keywords, filterValue) {
