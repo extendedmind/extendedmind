@@ -21,8 +21,8 @@ function listItemDirective() {
     templateUrl: 'static/app/base/listItem.html',
     scope: {
       item: '=listItem',
-      itemClick: '&listItemClick'
-      leftActionType: '=?listItemLeftActionType'
+      itemClick: '&listItemClick',
+      leftActionType: '=?listItemLeftActionType',
       leftActionClass: '=?listItemLeftActionClass',
       leftAction: '&listItemLeftAction',
       leftActionChecked: '&listItemLeftActionChecked',
@@ -30,7 +30,8 @@ function listItemDirective() {
     },
     compile: function(element, attrs){
        if (!attrs.listItemLeftAction) { attrs.listItemLeftAction = 'false'; }
+       if (!attrs.leftActionChecked) { attrs.leftActionChecked = 'false'; }
     },
   };
 }
-angular.module('em.base').directive('accordionTitle', accordionTitleDirective);
+angular.module('em.base').directive('listItem', listItemDirective);

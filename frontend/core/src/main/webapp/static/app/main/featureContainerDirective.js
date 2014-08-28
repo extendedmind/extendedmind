@@ -26,41 +26,46 @@
 
       $scope.features = {
         account: {
+          heading: 'account'
         },
         focus: {
+          heading: 'focus',
           slides: {
             'focus/tasks': 'tasks',
             'focus/notes': 'notes'
           }
         },
         inbox: {
-
+          heading: 'inbox'
         },
         tasks: {
+          heading: 'tasks',
           slides: {
             'tasks/recent': 'recent tasks',
             'tasks/contexts': 'contexts',
-            'tasks/context': undefined
+            'tasks/context': true
           }
         },
         notes: {
+          heading: 'notes',
           slides: {
             'notes/recent': 'recent notes',
             'notes/keywords': 'keywords',
-            'notes/keyword': undefined
+            'notes/keyword': true
           }
         },
         lists: {
-
+          heading: 'lists'
         },
         list: {
+          heading: true,
           slides: {
             'list/tasks': 'tasks',
             'list/notes': 'notes'
           }
         },
         archive: {
-
+          heading: 'archive'
         }
       };
 
