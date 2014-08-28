@@ -1,4 +1,4 @@
-<section id="entry" class="container-page" ng-controller="EntryController">
+<section id="entry" class="container-main" ng-controller="EntryController">
   <header class="container-banner row">
     <span class="icon-logo-with-text"></span>
   </header>
@@ -73,7 +73,7 @@
             <span ng-if="loginFailed" class="text-error">invalid username or password</span>
             <span ng-if="loginOffline" class="text-error">can't connect to server. are you online?</span>
           </div>
-          <footer class="container-navigation-slide">
+          <footer class="group-navigation row">
             <a href class="link-navigation-back" ng-click="swipeToHome()">back</a>
             <a href class="link-navigation-forward" ng-click="swipeToForgot()">forgot?</a>
           </footer>

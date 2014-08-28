@@ -42,21 +42,29 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 
 /*
 **************************************************************************
-# Containers
+# LEVEL 1: Primary Containers (main, editor, menu)
 */
 
 /*
-`.container-page` sets the width and horizontal positioning of the main content area.
-  When the screen size is bigger than a tablet,
-  the main container will be vertically centered.
+`.container-main` sets the vertical positioning of the main
+  content area. When the screen size is bigger than a tablet, the main
+  container will be vertically centered.
 */
-.container-page {
+.container-main {
   .center-horizontally;
   max-height: @maximum-height;
 }
 
+.container-menu {
+
+}
+
+.container-editor {
+
+}
+
 @media (min-height: @maximum-landscape-height) {
-  .container-page {
+  .container-main {
     position: relative;
     min-height: @maximum-landscape-height;
     max-height: @maximum-landscape-height;
@@ -64,6 +72,11 @@ TODO: em grid structure explained in plain English (when new grid structure deci
     top: 50%;
   }
 }
+
+/*
+**************************************************************************
+# LEVEL 2: Secondary Containers (content, banner, toolbar, titlebar)
+*/
 
 /*
 `.container-content` specifies the vertical overflow.
@@ -74,7 +87,6 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 }
 
 .container-banner {
-  .center-horizontally;
   text-align: center;
   height: @container-banner-height;
   display: table;
@@ -83,7 +95,6 @@ TODO: em grid structure explained in plain English (when new grid structure deci
     vertical-align: middle;
   }
 }
-
 
 .container-toolbar {
   // menu     title    omnibar
@@ -95,15 +106,37 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   //  inbox task note list
 }
 
+
+// Align all secondary containers horizontally
+
+.container-content,
+.container-banner,
+.container-toolbar,
+.container-titlebar {
+  .center-horizontally;
+  max-width: @maximum-width;
+}
+
+
 /*
-`.row` is uses horizontal alignment. It specifies the left and right margin and is used
-primarily under `.container-content`.
+**************************************************************************
+# LEVEL 3: row
+*/
+
+/*
+`.row` is uses horizontal alignment. It specifies the left and right
+margin.
 */
 .row {
   width: 100%;
   padding-left: @horizontal-grid;
   padding-right: @horizontal-grid;
 }
+
+/*
+**************************************************************************
+# LEVEL 4: groups
+*/
 
 /*
 Class `.group-btn` groups automatically button elements horizontally. Works
@@ -213,6 +246,9 @@ Use `.group-mixed` to create horizontal collections of different elements.
   line-height: @vertical-grid-half;
 }
 
+.group-navigation {
+  // TODO: Footer navigation here
+}
 
 
 //////// NEW END ////////////////////////
