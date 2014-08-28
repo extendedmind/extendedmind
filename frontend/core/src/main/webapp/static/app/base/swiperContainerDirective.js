@@ -84,9 +84,6 @@
           // to push indexes forward
           $scope.expectedSlides = $scope.expectedSlidesFn();
 
-      console.log($scope.expectedSlides);
-
-
           var slides = sortAndFlattenSlideInfos();
           if (!initializeSwiperCalled) {
             SwiperService.initializeSwiper(

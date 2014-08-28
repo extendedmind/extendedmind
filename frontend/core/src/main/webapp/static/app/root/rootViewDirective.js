@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function rootViewDirective($injector, $rootScope, $window, AnalyticsService, BackendClientService, ModalService, SnapService, SwiperService, UUIDService, UserSessionService) {
+ function rootViewDirective($injector, $rootScope, $window, AnalyticsService, BackendClientService, ModalService, UUIDService, UserSessionService) {
 
   return {
     restrict: 'A',
@@ -169,6 +169,11 @@
 
       // WINDOW RESIZING
 
+      var windowResizedCallbacks = {};
+      scope.registerWindowResizedCallback = function (windowResizedCallback, id) {
+        windowResizedCallbacks[id] = windowResizedCallback;
+      }
+
       function setDimensions(width, height) {
 
         // UI for small screens
@@ -176,31 +181,19 @@
           $rootScope.isDesktop = false;
           $rootScope.isMobile = true;
 
-          // Swiper override parameters.
-          var leftEdgeTouchRatio = 0;
-          var rightEdgeTouchRatio = 0.2;
-          SwiperService.setEdgeTouchRatios('tasks', leftEdgeTouchRatio, rightEdgeTouchRatio);
-          SwiperService.setEdgeTouchRatios('notes', leftEdgeTouchRatio, rightEdgeTouchRatio);
-          SwiperService.setEdgeTouchRatios('list', leftEdgeTouchRatio, rightEdgeTouchRatio);
-          SwiperService.setEdgeTouchRatios('archive', leftEdgeTouchRatio, rightEdgeTouchRatio);
-
-          SnapService.toggleSnappersSticky(false);
-
-          // UI for large screens
+        // UI for large screens
         } else if (width > 568 && ($rootScope.currentWidth <= 568 || !$rootScope.currentWidth)) {
           $rootScope.isMobile = false;
           $rootScope.isDesktop = true;
-
-          // Swiper override parameters.
-          SwiperService.setEdgeTouchRatios('tasks');
-          SwiperService.setEdgeTouchRatios('notes');
-          SwiperService.setEdgeTouchRatios('list');
-          SwiperService.setEdgeTouchRatios('archive');
-
-          SnapService.toggleSnappersSticky(true);
         }
         $rootScope.currentWidth = width;
         $rootScope.currentHeight = height;
+
+        // Execute callbacks
+        for (var id in windowResizedCallbacks) {
+          windowResizedCallbacks[id]();
+        }
+
       }
       setDimensions($window.innerWidth, $window.innerHeight);
 
@@ -211,8 +204,6 @@
       }
 
       angular.element($window).bind('resize', windowResized);
-
-
 
       // CORDOVA SPECIFIC EVENTS
       $rootScope.softKeyboard = {};
@@ -243,5 +234,5 @@
 }
 
 rootViewDirective['$inject'] = ['$injector', '$rootScope', '$window',
-'AnalyticsService', 'BackendClientService', 'ModalService', 'SnapService', 'SwiperService', 'UUIDService', 'UserSessionService'];
+'AnalyticsService', 'BackendClientService', 'ModalService', 'UUIDService', 'UserSessionService'];
 angular.module('em.root').directive('rootView', rootViewDirective);

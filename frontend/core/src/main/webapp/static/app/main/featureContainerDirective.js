@@ -204,6 +204,30 @@
     },
     link: function postLink(scope, element, attrs, featureContainerController) {
 
+      function initializeSwiperAndSnap(){
+        if ($rootScope.isMobile){
+          // Swiper override parameters.
+          var leftEdgeTouchRatio = 0;
+          var rightEdgeTouchRatio = 0.2;
+          SwiperService.setEdgeTouchRatios('tasks', leftEdgeTouchRatio, rightEdgeTouchRatio);
+          SwiperService.setEdgeTouchRatios('notes', leftEdgeTouchRatio, rightEdgeTouchRatio);
+          SwiperService.setEdgeTouchRatios('list', leftEdgeTouchRatio, rightEdgeTouchRatio);
+          SwiperService.setEdgeTouchRatios('archive', leftEdgeTouchRatio, rightEdgeTouchRatio);
+
+          SnapService.toggleSnappersSticky(false);
+        }else{
+          // Swiper override parameters.
+          SwiperService.setEdgeTouchRatios('tasks');
+          SwiperService.setEdgeTouchRatios('notes');
+          SwiperService.setEdgeTouchRatios('list');
+          SwiperService.setEdgeTouchRatios('archive');
+
+          SnapService.toggleSnappersSticky(true);
+        }
+      }
+      // Reinitialize on every window resize event
+      scope.registerWindowResizedCallback(initializeSwiperAndSnap, 'featureContainerDirective');
+
       function initializeDrawerMenu() {
         var settings = {
           element: element[0].parentNode,
@@ -304,8 +328,11 @@
         }
       }
 
+      // Initialize everything
+      initializeSwiperAndSnap();
       initializeDrawerMenu();
       initializeOmnibar();
+
 
       scope.$on('$destroy', function() {
         SnapService.deleteSnapper('left');
