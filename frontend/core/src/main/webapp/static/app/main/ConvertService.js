@@ -146,7 +146,11 @@
         // Save as list and remove from the activeTasks array
         // tasks[ownerUUID].activeTasks.splice(index, 1);
       // }
+
+      // remove pre-existing list before saving
+      if (task.transientProperties && task.transientProperties.list) delete task.transientProperties.list;
       TasksService.detachTransientProperties(task, ownerUUID);
+
       postConvertTaskToList(task, ownerUUID).then(function(result) {
         processTaskToListResponse(task, result.data, ownerUUID);
       });

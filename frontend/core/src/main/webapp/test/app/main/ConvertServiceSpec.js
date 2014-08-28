@@ -196,7 +196,7 @@ TasksService.setTasks(
     'reminder': '10:00',
     'relationships': {
       'parent': 'dbff4507-927d-4f99-940a-ee0cfcf6e84c',
-      'tags': ['8bd8376c-6257-4623-9c8f-7ca8641d2cf5']
+      'tags': ['1208d45b-3b8c-463e-88f3-f7ef19ce87cd']
     }
   }], testOwnerUUID);
 });
@@ -311,7 +311,21 @@ it('should set convert object with \'task\' property in transientProperties ' +
 });
 
 it('should remove pre-existing parent from task when converting existing task to list', function() {
+  // SETUP
+  var writeEssayBody = TasksService.getTaskByUUID('7a612ca2-7de0-45ad-a758-d949df37f51e', testOwnerUUID);
+  var taskToListPath = '/api/' + testOwnerUUID + '/task/' + writeEssayBody.uuid + '/list';
+  delete taskToListResponse.relationships.parent;
+  $httpBackend.expectPOST(taskToListPath).respond(200, taskToListResponse);
 
+  // EXECUTE
+  ConvertService.finishTaskToListConvert(writeEssayBody, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+  var convertedList = ListsService.getListByUUID(taskToListResponse.uuid, testOwnerUUID);
+
+  expect(convertedList.relationships.parent).
+  toBeUndefined();
 });
 
 it('should ... new item to ...', function() {

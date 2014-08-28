@@ -209,7 +209,12 @@
         delete extendedItem.transientProperties;
         return transients;
       }
-      else delete extendedItem.transientProperties;
+      else {
+        // No persistent relationships. Delete relationships object.
+        if (extendedItem.relationships && Object.getOwnPropertyNames(extendedItem.relationships).length === 0)
+          delete extendedItem.relationships;
+        delete extendedItem.transientProperties;
+      }
     }
   };
 }
