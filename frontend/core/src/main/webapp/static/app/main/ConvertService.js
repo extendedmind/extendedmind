@@ -17,7 +17,11 @@
  'use strict';
 
  function ConvertService(BackendClientService, ExtendedItemService, ListsService, NotesService, TasksService) {
+
+  // NOTE: Should these be public getter functions in corresponding services?
   var noteSlashRegex = /\/note\//;
+  var taskSlashRegex = /\/task\//;
+  var listRegex = /\/list/;
   var taskRegex = /\/task/;
 
   var convertNoteToTaskRegexp = new RegExp(
@@ -25,7 +29,14 @@
     BackendClientService.uuidRegex.source +
     noteSlashRegex.source +
     BackendClientService.uuidRegex.source +
-    taskRegex.source);
+    taskRegex.source),
+
+  convertTaskToListRegexp = new RegExp(
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    taskSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    listRegex.source);
 
   function noteExistsAndIsNotDeleted(note, ownerUUID) {
     var noteArrays = NotesService.getNoteArrays(ownerUUID);
@@ -47,8 +58,13 @@
     return BackendClientService.postOnline(path, convertNoteToTaskRegexp, params);
   }
 
-  function processNoteToTaskResponse(note, task/*, transientProperties*/, ownerUUID) {
+  function postConvertTaskToList(task, ownerUUID) {
+    var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/list';
+    var params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
+    return BackendClientService.postOnline(path, convertTaskToListRegexp, params);
+  }
 
+  function processNoteToTaskResponse(note, task/*, transientProperties*/, ownerUUID) {
     var copyConvertToTaskTransientPropertiesFn;
 
     if (note.favorited) {
@@ -56,25 +72,45 @@
         favorited: note.favorited
       };
       // NOTE: no need to pass this to the target function
-      copyConvertToTaskTransientPropertiesFn = copyConvertToTaskTransientProperties.bind(undefined, task, convert);
-    }
-
-    function copyConvertToTaskTransientProperties(task, convert) {
-      // NOTE: Delete task convert object because it may be out of sync before full offline implementation.
-      if (task.transientProperties && task.transientProperties.convert) {
-        if (task.transientProperties.convert.task) delete task.transientProperties.convert.task;
-      }
-      // Check that convert object is not empty
-      if (convert && Object.getOwnPropertyNames(convert).length > 0) {
-        if (!task.transientProperties) task.transientProperties = {};
-        if (!task.transientProperties.convert) task.transientProperties.convert = {};
-        task.transientProperties.convert.note = convert;
-      }
+      copyConvertToTaskTransientPropertiesFn = copyConvertToItemTransientProperties
+      .bind(undefined, task, convert, 'note', 'task');
     }
 
     TasksService.attachTransientProperties(task, ownerUUID, copyConvertToTaskTransientPropertiesFn);
     NotesService.removeNote(note, ownerUUID);
     TasksService.addTask(task, ownerUUID);
+  }
+
+  function processTaskToListResponse(task, list, ownerUUID) {
+    var copyConvertToListTransientPropertiesFn;
+
+    if (task.due || task.repeating || task.reminder) {
+      var convert = {};
+      if (task.due) convert.due = task.due;
+      if (task.repeating) convert.repeating = task.repeating;
+      if (task.reminder) convert.reminder = task.reminder;
+      // NOTE: No need to pass this to the target function
+      copyConvertToListTransientPropertiesFn = copyConvertToItemTransientProperties
+      .bind(undefined, list, convert, 'task', 'list');
+    }
+
+    ListsService.attachTransientProperties(list, ownerUUID, copyConvertToListTransientPropertiesFn);
+    TasksService.removeTask(task, ownerUUID);
+    ListsService.addList(list, ownerUUID);
+  }
+
+  function copyConvertToItemTransientProperties(item, convert, fromItemType, toItemType) {
+    // NOTE: Delete existing 'toItemType' convert object
+    // because it may be out of sync before full offline implementation.
+    if (item.transientProperties && item.transientProperties.convert) {
+      if (item.transientProperties.convert[toItemType]) delete item.transientProperties.convert[toItemType];
+    }
+    // Check that convert object is not empty
+    if (convert && Object.getOwnPropertyNames(convert).length > 0) {
+      if (!item.transientProperties) item.transientProperties = {};
+      if (!item.transientProperties.convert) item.transientProperties.convert = {};
+      item.transientProperties.convert[fromItemType] = convert;
+    }
   }
 
   return {
@@ -93,7 +129,7 @@
         // convert note to task
       }
     },
-    taskToList: function(task, ownerUUID) {
+    finishTaskToListConvert: function(task, ownerUUID) {
       // i.   verify that task exists
       // ii.  convert to list
       // iii. remove task and add list
@@ -108,10 +144,12 @@
       // var index = tasks[ownerUUID].activeTasks.findFirstIndexByKeyValue('uuid', task.uuid);
       // if (index !== undefined && !task.reminder && !task.repeating && !task.completed) {
         // Save as list and remove from the activeTasks array
-        ListsService.saveList(task, ownerUUID);
-        TasksService.removeTask(task, ownerUUID);
         // tasks[ownerUUID].activeTasks.splice(index, 1);
       // }
+      TasksService.detachTransientProperties(task, ownerUUID);
+      postConvertTaskToList(task, ownerUUID).then(function(result) {
+        processTaskToListResponse(task, result.data, ownerUUID);
+      });
     },
 
     convertNoteToTaskRegexp: new RegExp(

@@ -437,6 +437,9 @@
       else addExtraTransientPropertyFunctions = copyDueToDate;
       ExtendedItemService.addTransientProperties([task], ownerUUID, addExtraTransientPropertyFunctions);
     },
+    detachTransientProperties: function(task, ownerUUID) {
+      return ExtendedItemService.detachTransientProperties(task, ownerUUID, copyDateToDue);
+    },
 
     // Regular expressions for task requests
     putNewTaskRegex: new RegExp(

@@ -19,14 +19,15 @@
  describe('ConvertService', function() {
   /*
   * Running 'mvn install' throws "TypeError: 'undefined' is not a function"
-  * because Function.prototype.bind is not present.
+  * because Function.prototype.bind() is not supported by PhantonJS
   *
   * Polyfill 'bind' here since it is currently not needed anywhere else.
   *
   * From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
   *
-  * TODO: Is PhantomJS causing this? In that case, explain current version (and its ECMAScript version)
-  * and related issues on GitHub
+  * NOTE: At the time of writing we are using version 1.9.7 of PhantomJS.
+  * Function.prototype.bind() will be supported in future version of PhantomJS
+  *  - see https://github.com/ariya/phantomjs/issues/10522#issuecomment-50621310
   */
   if (!Function.prototype.bind) {
     Function.prototype.bind = function (oThis) {
@@ -64,8 +65,8 @@
   var noteToTaskResponse = getJSONFixture('noteToTaskResponse.json');
   noteToTaskResponse.modified = now.getTime();
 
-  var putExistingTaskResponse = getJSONFixture('putExistingTaskResponse.json');
-  putExistingTaskResponse.modified = now.getTime();
+  var taskToListResponse = getJSONFixture('taskToListResponse.json');
+  taskToListResponse.modified = now.getTime();
 
   var putNewTaskResponse = getJSONFixture('putTaskResponse.json');
   putNewTaskResponse.created = putNewTaskResponse.modified = now.getTime();
@@ -82,6 +83,28 @@
       NotesService = _NotesService_;
       TagsService = _TagsService_;
       TasksService = _TasksService_;
+
+      ListsService.setLists(
+        [{
+          'uuid': '0da0bff6-3bd7-4884-adba-f47fab9f270d',
+          'created': 1390912600957,
+          'modified': 1390912600957,
+          'title': 'extended mind technologies',
+          'link': 'http://ext.md'
+        }, {
+          'uuid': 'bf726d03-8fee-4614-8b68-f9f885938a51',
+          'created': 1390912600947,
+          'modified': 1390912600947,
+          'title': 'trip to Dublin',
+          'completable': true,
+          'due': '2013-10-31'
+        }, {
+          'uuid': '07bc96d1-e8b2-49a9-9d35-1eece6263f98',
+          'created': 1390912600983,
+          'modified': 1390912600983,
+          'title': 'write essay on cognitive biases',
+          'completable': true
+        }], testOwnerUUID);
 
       TagsService.setTags(
         [{
@@ -197,25 +220,6 @@ it('should convert existing note to task', function() {
   $httpBackend.flush();
 
   // TESTS
-  var convertedTask = TasksService.getTaskByUUID(noteToTaskResponse.uuid, testOwnerUUID);
-
-  expect(convertedTask)
-  .toBeDefined();
-  expect(TasksService.getTasks(testOwnerUUID).length)
-  .toBe(4);
-});
-
-it('should delete note when converting existing note to task', function() {
-  // SETUP
-  var notesOnProductivity = NotesService.getNoteByUUID('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID);
-  var noteToTaskPath = '/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/task';
-  $httpBackend.expectPOST(noteToTaskPath).respond(200, noteToTaskResponse);
-
-  // EXECUTE
-  ConvertService.finishNoteToTaskConvert(notesOnProductivity, testOwnerUUID);
-  $httpBackend.flush();
-
-  // TEST
   var notes = NotesService.getNotes(testOwnerUUID);
 
   // There should not be a note with converted note's UUID
@@ -225,10 +229,17 @@ it('should delete note when converting existing note to task', function() {
   // Note should not be in notes array
   expect(notes.length)
   .toBe(2);
+
+  var convertedTask = TasksService.getTaskByUUID(noteToTaskResponse.uuid, testOwnerUUID);
+
+  expect(convertedTask)
+  .toBeDefined();
+  expect(TasksService.getTasks(testOwnerUUID).length)
+  .toBe(4);
 });
 
 it('should set convert object with \'note\' property in transientProperties ' +
- 'when converting existing note with persistent values to task', function() {
+ 'when converting existing note with transient values to task', function() {
   // SETUP
   var notesOnProductivity = NotesService.getNoteByUUID('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID);
 
@@ -253,15 +264,17 @@ it('should set convert object with \'note\' property in transientProperties ' +
   expect(convertedTask.transientProperties.convert.note.favorited).toBe(true);
 });
 
-it('should convert task to list', function () {
+it('should convert existing task to list', function() {
+  // SETUP
   var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
-  var taskToListPath = '/api/' + testOwnerUUID + '/list/' + cleanCloset.uuid;
-  $httpBackend.expectPUT(taskToListPath).respond(200, putExistingTaskResponse);
+  var taskToListPath = '/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/list';
+  $httpBackend.expectPOST(taskToListPath).respond(200, taskToListResponse);
 
-  // Convert task to list
-  ConvertService.taskToList(cleanCloset, testOwnerUUID);
+  // EXECUTE
+  ConvertService.finishTaskToListConvert(cleanCloset, testOwnerUUID);
   $httpBackend.flush();
 
+  // TESTS
   expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
   .toBeUndefined();
 
@@ -270,10 +283,39 @@ it('should convert task to list', function () {
   .toBe(2);
 
   // Lists should have the new item
-  expect(ListsService.getListByUUID(cleanCloset.uuid, testOwnerUUID))
+  expect(ListsService.getListByUUID(taskToListResponse.uuid, testOwnerUUID))
   .toBeDefined();
   expect(ListsService.getLists(testOwnerUUID).length)
-  .toBe(1);
+  .toBe(4);
+});
+
+it('should set convert object with \'task\' property in transientProperties ' +
+  'when converting existing task with persistent values to list', function() {
+  // SETUP
+  var printTickets = TasksService.getTaskByUUID('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID);
+  var taskToListPath = '/api/' + testOwnerUUID + '/task/' + printTickets.uuid + '/list';
+  $httpBackend.expectPOST(taskToListPath).respond(200, taskToListResponse);
+
+  // EXECUTE
+  ConvertService.finishTaskToListConvert(printTickets, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+  var convertedList = ListsService.getListByUUID(taskToListResponse.uuid, testOwnerUUID);
+
+  expect(convertedList.transientProperties.convert.task)
+  .toBeDefined();
+
+  expect(convertedList.transientProperties.convert.task.due).toEqual('2014-01-02');
+  expect(convertedList.transientProperties.convert.task.reminder).toEqual('10:00');
+});
+
+it('should remove pre-existing parent from task when converting existing task to list', function() {
+
+});
+
+it('should ... new item to ...', function() {
+
 });
 
 });

@@ -16,7 +16,7 @@
  /*global angular */
  'use strict';
 
- function ListsService($q, ArrayService, BackendClientService, TagsService) {
+ function ListsService($q, ArrayService, BackendClientService, ExtendedItemService, TagsService) {
 
   // An object containing lists for every owner
   var lists = {};
@@ -40,6 +40,13 @@
 
   function getOtherArrays(ownerUUID) {
     return [{array: lists[ownerUUID].archivedLists, id: 'archived'}];
+  }
+
+  function updateList(list, ownerUUID) {
+    return ArrayService.updateItem(list,
+      lists[ownerUUID].activeLists,
+      lists[ownerUUID].deletedLists,
+      getOtherArrays(ownerUUID));
   }
 
   return {
@@ -91,95 +98,80 @@
         deferred.reject(list);
       } else if (list.uuid) {
         // Existing list
-        BackendClientService.putOnline('/api/' + ownerUUID + '/list/' + list.uuid,
-         this.putExistingListRegex, list).then(function(result) {
+        BackendClientService.putOnline('/api/' + ownerUUID + '/list/' + list.uuid, this.putExistingListRegex, list)
+        .then(function(result) {
           if (result.data) {
             list.modified = result.data.modified;
-            ArrayService.updateItem(
-              list,
-              lists[ownerUUID].activeLists,
-              lists[ownerUUID].deletedLists,
-              getOtherArrays(ownerUUID));
+            updateList(list, ownerUUID);
             deferred.resolve(list);
           }
         });
-       } else {
+      } else {
         // New list
-        BackendClientService.putOnline('/api/' + ownerUUID + '/list',
-         this.putNewListRegex, list).then(function(result) {
+        BackendClientService.putOnline('/api/' + ownerUUID + '/list',this.putNewListRegex, list).then(function(result) {
           if (result.data) {
             list.uuid = result.data.uuid;
             list.created = result.data.created;
             list.modified = result.data.modified;
-            ArrayService.setItem(
-              list,
-              lists[ownerUUID].activeLists,
-              lists[ownerUUID].deletedLists,
-              getOtherArrays(ownerUUID));
+            updateList(list, ownerUUID);
             deferred.resolve(list);
           }
         });
-       }
-       return deferred.promise;
-     },
-     deleteList: function(list, ownerUUID) {
+      }
+      return deferred.promise;
+    },
+    addList: function(list, ownerUUID) {
+      initializeArrays(ownerUUID);
+      // Check that list is not deleted before trying to add
+      if (lists[ownerUUID].deletedLists.indexOf(list) > -1) return;
+      updateList(list, ownerUUID);
+    },
+    deleteList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check if list has already been deleted
       if (lists[ownerUUID].deletedLists.indexOf(list) > -1) {
         return;
       }
-      BackendClientService.deleteOnline('/api/' + ownerUUID + '/list/' + list.uuid,
-       this.deleteListRegex).then(function(result) {
+      BackendClientService.deleteOnline('/api/' + ownerUUID + '/list/' + list.uuid, this.deleteListRegex)
+      .then(function(result) {
         if (result.data) {
           list.deleted = result.data.deleted;
           list.modified = result.data.result.modified;
-          ArrayService.updateItem(
-            list,
-            lists[ownerUUID].activeLists,
-            lists[ownerUUID].deletedLists,
-            getOtherArrays(ownerUUID));
+          updateList(list, ownerUUID);
 
           for (var id in listDeletedCallbacks) {
             listDeletedCallbacks[id](list, ownerUUID);
           }
         }
       });
-     },
-     undeleteList: function(list, ownerUUID) {
+    },
+    undeleteList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that list is deleted before trying to undelete
       if (lists[ownerUUID].deletedLists.indexOf(list) === -1) {
         return;
       }
-      BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/undelete',
-       this.deleteListRegex).then(function(result) {
+      BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/undelete', this.deleteListRegex)
+      .then(function(result) {
         if (result.data) {
           delete list.deleted;
           list.modified = result.data.modified;
-          ArrayService.updateItem(
-            list,
-            lists[ownerUUID].activeLists,
-            lists[ownerUUID].deletedLists,
-            getOtherArrays(ownerUUID));
+          updateList(list, ownerUUID);
         }
       });
-     },
-     archiveList: function(list, ownerUUID) {
+    },
+    archiveList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that list is active before trying to archive
       if (lists[ownerUUID].activeLists.indexOf(list) === -1) {
         return;
       }
-      BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/archive',
-       this.deleteListRegex).then(function(result) {
+      BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/archive', this.deleteListRegex)
+      .then(function(result) {
         if (result.data) {
           list.archived = result.data.archived;
           list.modified = result.data.result.modified;
-          ArrayService.updateItem(
-            list,
-            lists[ownerUUID].activeLists,
-            lists[ownerUUID].deletedLists,
-            getOtherArrays(ownerUUID));
+          updateList(list, ownerUUID);
           var latestModified = list.modified;
 
           // Add generated tag to the tag array
@@ -194,7 +186,14 @@
           }
         }
       });
-     },
+    },
+    attachTransientProperties: function(list, ownerUUID, addExtraTransientPropertyFn) {
+      var addExtraTransientPropertyFunction;
+      if (typeof addExtraTransientPropertyFn === 'function')
+        addExtraTransientPropertyFunction = addExtraTransientPropertyFn;
+      ExtendedItemService.addTransientProperties([list], ownerUUID, addExtraTransientPropertyFunction);
+    },
+
     // Regular expressions for list requests
     putNewListRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
@@ -222,6 +221,7 @@
       listSlashRegex.source +
       BackendClientService.uuidRegex.source +
       archiveRegex.source),
+
     // Register callbacks that are fired for implicit archiving of
     // elements. Callback must return the latest modified value it
     // stores to its arrays.
@@ -248,5 +248,5 @@
   };
 }
 
-ListsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'TagsService'];
+ListsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ExtendedItemService', 'TagsService'];
 angular.module('em.base').factory('ListsService', ListsService);
