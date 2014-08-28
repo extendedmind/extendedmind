@@ -22,6 +22,48 @@
       var featureElements = {};
       var swiperElements = {};
 
+      // MAP OF ALL FEATURES
+
+      $scope.features = {
+        account: {
+        },
+        focus: {
+          slides: {
+            'focus/tasks': 'tasks',
+            'focus/notes': 'notes'
+          }
+        },
+        inbox: {
+
+        },
+        tasks: {
+          slides: {
+            'tasks/recent': 'recent tasks',
+            'tasks/contexts': 'contexts',
+            'tasks/context': undefined
+          }
+        },
+        notes: {
+          slides: {
+            'notes/recent': 'recent notes',
+            'notes/keywords': 'keywords',
+            'notes/keyword': undefined
+          }
+        },
+        lists: {
+
+        },
+        list: {
+          slides: {
+            'list/tasks': 'tasks',
+            'list/notes': 'notes'
+          }
+        },
+        archive: {
+
+        }
+      };
+
       // COMMON FEATURE METHODS IN SCOPE
 
       $scope.getActiveFeature = function getActiveFeature() {
@@ -101,6 +143,7 @@
       }
 
       // MENU TOGGLE
+
       $scope.toggleMenu = function toggleMenu() {
         resizeContent();
         if (SnapService.isSnapperClosed('left')) $scope.setIsWebkitScrolling(false);
@@ -146,23 +189,6 @@
         featureChangedCallback(UISessionService.getCurrentFeatureName());
       }
 
-      // SWIPER SERVICE HOOKS
-
-      var slideChangedCallback = function slideChangedCallback(activeSlidePath) {
-
-        // Don't set to main slide path, if page slide path is already set
-        if (!UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()) ||
-          !UISessionService.getFeatureState(UISessionService.getCurrentFeatureName()).startsWith(activeSlidePath))
-        {
-          UISessionService.setCurrentFeatureState(activeSlidePath);
-        }
-      };
-
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'tasks/home', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'notes', 'featureContainerDirective');
-      SwiperService.registerSlideChangeCallback(slideChangedCallback, 'archive', 'featureContainerDirective');
-
       // CALLBACK REGISTRATION
 
       this.registerSnapDrawerDragElement = function registerSnapDrawerDragElement(feature, element, snapperSide) {
@@ -189,11 +215,7 @@
 
       // https://developer.mozilla.org/en-US/docs/Web/API/Element.classList
       function setFeatureContainerClass(feature) {
-        if (feature === 'tasks' ||
-          feature === 'notes' ||
-          feature === 'archive' ||
-          feature === 'list')
-        {
+        if ($scope.features[feature].slides){
           $element[0].classList.toggle('no-slides-container', false);
           $element[0].classList.toggle('slides-container', true);
         } else {
@@ -206,22 +228,20 @@
 
       function initializeSwiperAndSnap(){
         if ($rootScope.isMobile){
-          // Swiper override parameters.
           var leftEdgeTouchRatio = 0;
           var rightEdgeTouchRatio = 0.2;
-          SwiperService.setEdgeTouchRatios('tasks', leftEdgeTouchRatio, rightEdgeTouchRatio);
-          SwiperService.setEdgeTouchRatios('notes', leftEdgeTouchRatio, rightEdgeTouchRatio);
-          SwiperService.setEdgeTouchRatios('list', leftEdgeTouchRatio, rightEdgeTouchRatio);
-          SwiperService.setEdgeTouchRatios('archive', leftEdgeTouchRatio, rightEdgeTouchRatio);
-
+          for (var feature in scope.features){
+            if (scope.features.hasOwnProperty(feature) && scope.features[feature].slides){
+              SwiperService.setEdgeTouchRatios(feature, leftEdgeTouchRatio, rightEdgeTouchRatio);
+            }
+          }
           SnapService.toggleSnappersSticky(false);
         }else{
-          // Swiper override parameters.
-          SwiperService.setEdgeTouchRatios('tasks');
-          SwiperService.setEdgeTouchRatios('notes');
-          SwiperService.setEdgeTouchRatios('list');
-          SwiperService.setEdgeTouchRatios('archive');
-
+          for (var feature in scope.features){
+            if (scope.features.hasOwnProperty(feature) && scope.features[feature].slides){
+              SwiperService.setEdgeTouchRatios(feature);
+            }
+          }
           SnapService.toggleSnappersSticky(true);
         }
       }
