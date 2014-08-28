@@ -1,0 +1,8 @@
+<div class="group-mixed">
+  <input ng-if="leftActionType === 'checkbox'" type="checkbox" ng-checked="leftActionChecked" swiper-click="leftAction()" ng-class="leftActionClass" icon-checkbox="{{item.uuid}}">
+  <a href swiper-click="itemAction()">
+    <span ng-if="leftActionType === 'indicator'" ng-class="leftActionClass"></span>
+    <span class="text-link" ng-bind="item.title"></span>
+  </a>
+  <span ng-if="rightIndicatorClass" ng-class="rightIndicatorClass"></span>
+</div>
