@@ -2,7 +2,7 @@
   <div id="menu" ng-include="'static/app/main/menu.html'"></div>
   <div id="omnibar-drawer" class="omnibar-drawer" omnibar></div>
 
-  <div id="feature-container-wrapper">
+  <div id="feature-container-wrapper" snap>
     <div id="feature-container" ng-class="[getOmnibarVisibilityClass(), getFooterVisibilityClass()]" feature-container editable-field-backdrop>
       <header class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
       <div ng-if="isFeatureActive('account')" ng-include="'static/app/account/account.html'" include-replace></div>

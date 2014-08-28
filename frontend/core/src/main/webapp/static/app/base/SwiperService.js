@@ -398,6 +398,9 @@ function SwiperService($q) {
     },
     getSwiperSlides: function(swiperPath) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) return swipers[swiperPath].swiper.slides;
+    },
+    getSwiperContainer: function(swiperPath) {
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) return swipers[swiperPath].container;
     }
   };
 }

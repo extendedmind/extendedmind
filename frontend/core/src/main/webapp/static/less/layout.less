@@ -42,15 +42,15 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 
 /*
 **************************************************************************
-# LEVEL 1: Primary Containers (main, editor, menu)
+# LEVEL 1: Primary Containers (master, editor, menu)
 */
 
 /*
-`.container-main` sets the vertical positioning of the main
-  content area. When the screen size is bigger than a tablet, the main
+`.container-master` sets the vertical positioning of the master
+  content area. When the screen size is bigger than a tablet, the master
   container will be vertically centered.
 */
-.container-main {
+.container-master {
   .center-horizontally;
   max-height: @maximum-height;
 }
@@ -64,7 +64,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 }
 
 @media (min-height: @maximum-landscape-height) {
-  .container-main {
+  .container-master {
     position: relative;
     min-height: @maximum-landscape-height;
     max-height: @maximum-landscape-height;
