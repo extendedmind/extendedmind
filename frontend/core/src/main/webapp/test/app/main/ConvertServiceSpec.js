@@ -68,8 +68,8 @@
   var taskToListResponse = getJSONFixture('taskToListResponse.json');
   taskToListResponse.modified = now.getTime();
 
-  var putNewTaskResponse = getJSONFixture('putTaskResponse.json');
-  putNewTaskResponse.created = putNewTaskResponse.modified = now.getTime();
+  var listToNoteResponse = getJSONFixture('listToNoteResponse.json');
+  listToNoteResponse.modified = now.getTime();
 
   // SETUP / TEARDOWN
 
@@ -326,6 +326,32 @@ it('should remove pre-existing parent from task when converting existing task to
 
   expect(convertedList.relationships.parent).
   toBeUndefined();
+});
+
+it('should convert existing list to note', function() {
+  // SETUP
+  var extendedMindTechnologies = ListsService.getListByUUID('0da0bff6-3bd7-4884-adba-f47fab9f270d', testOwnerUUID);
+  var listToNotePath = '/api/' + testOwnerUUID + '/list/' + extendedMindTechnologies.uuid + '/note';
+  $httpBackend.expectPOST(listToNotePath).respond(200, listToNoteResponse);
+
+  // EXECUTE
+  ConvertService.finishListToNoteConvert(extendedMindTechnologies, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+  expect(ListsService.getListByUUID(extendedMindTechnologies.uuid, testOwnerUUID))
+  .toBeUndefined();
+
+  // There should be just two left
+  expect(ListsService.getLists(testOwnerUUID).length)
+  .toBe(2);
+
+  // Notes should have the new item
+  expect(NotesService.getNoteByUUID(listToNoteResponse.uuid, testOwnerUUID))
+  .toBeDefined();
+  expect(NotesService.getNotes(testOwnerUUID).length)
+  .toBe(4);
+
 });
 
 it('should ... new item to ...', function() {

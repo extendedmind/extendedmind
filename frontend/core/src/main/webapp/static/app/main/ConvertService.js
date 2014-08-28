@@ -19,9 +19,11 @@
  function ConvertService(BackendClientService, ExtendedItemService, ListsService, NotesService, TasksService) {
 
   // NOTE: Should these be public getter functions in corresponding services?
+  var listSlashRegex = /\/list\//;
   var noteSlashRegex = /\/note\//;
   var taskSlashRegex = /\/task\//;
   var listRegex = /\/list/;
+  var noteRegex = /\/note/;
   var taskRegex = /\/task/;
 
   var convertNoteToTaskRegexp = new RegExp(
@@ -36,7 +38,14 @@
     BackendClientService.uuidRegex.source +
     taskSlashRegex.source +
     BackendClientService.uuidRegex.source +
-    listRegex.source);
+    listRegex.source),
+
+  convertListToNoteRegexp = new RegExp(
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    listSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    noteRegex.source);
 
   function noteExistsAndIsNotDeleted(note, ownerUUID) {
     var noteArrays = NotesService.getNoteArrays(ownerUUID);
@@ -54,14 +63,15 @@
 
   function postConvertNoteToTask(note, ownerUUID) {
     var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
-    var params = {type: 'note', owner: ownerUUID, uuid: note.uuid};
-    return BackendClientService.postOnline(path, convertNoteToTaskRegexp, params);
+    return BackendClientService.postOnline(path, convertNoteToTaskRegexp, note);
   }
-
   function postConvertTaskToList(task, ownerUUID) {
     var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/list';
-    var params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
-    return BackendClientService.postOnline(path, convertTaskToListRegexp, params);
+    return BackendClientService.postOnline(path, convertTaskToListRegexp, task);
+  }
+  function postConvertListToNote(list, ownerUUID) {
+    var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/note';
+    return BackendClientService.postOnline(path, convertListToNoteRegexp, list);
   }
 
   function processNoteToTaskResponse(note, task/*, transientProperties*/, ownerUUID) {
@@ -97,6 +107,11 @@
     ListsService.attachTransientProperties(list, ownerUUID, copyConvertToListTransientPropertiesFn);
     TasksService.removeTask(task, ownerUUID);
     ListsService.addList(list, ownerUUID);
+  }
+
+  function processListToNoteResponse(list, note, ownerUUID) {
+    ListsService.removeList(list, ownerUUID);
+    NotesService.addNote(note, ownerUUID);
   }
 
   function copyConvertToItemTransientProperties(item, convert, fromItemType, toItemType) {
@@ -147,12 +162,23 @@
         // tasks[ownerUUID].activeTasks.splice(index, 1);
       // }
 
-      // remove pre-existing list before saving
+      //
+      // TODO: var status = TasksService.getTaskStatus(task)
+      // if (status === 'deleted') do nothing
+      // TODO
+      //
+
+      // NOTE: Currently only one-level lists are supported. Remove pre-existing list before saving.
       if (task.transientProperties && task.transientProperties.list) delete task.transientProperties.list;
       TasksService.detachTransientProperties(task, ownerUUID);
 
       postConvertTaskToList(task, ownerUUID).then(function(result) {
         processTaskToListResponse(task, result.data, ownerUUID);
+      });
+    },
+    finishListToNoteConvert: function(list, ownerUUID) {
+      postConvertListToNote(list, ownerUUID).then(function(result) {
+        processListToNoteResponse(list, result.data, ownerUUID);
       });
     },
 

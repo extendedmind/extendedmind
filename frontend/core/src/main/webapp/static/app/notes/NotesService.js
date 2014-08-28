@@ -116,8 +116,10 @@
 
     // favorited has been removed from note, delete persistent value
     else if (note.favorited) delete note.favorited;
-
-    // TODO: check transient property when no value is set with AngularJS ng-model data-binding
+    //
+    // TODO: After note.transientProperties.starred is implemented in UI,
+    // check transient property when no value is set with AngularJS ng-model data-binding
+    //
   }
 
   return {
@@ -222,17 +224,32 @@
         }
       }
     },
+    getNoteStatus: function(/*note, ownerUUID*/) {
+      //
+      // TODO
+      // return ArrayService.getActiveArray(note, notes[ownerUUID].activeNotes... etc.)
+      //
+    },
+    addNote: function(note, ownerUUID) {
+      initializeArrays(ownerUUID);
+      // Check that note is not deleted before trying to add
+      if (notes[ownerUUID].deletedNotes.indexOf(note) > -1) return;
+      setNote(note, ownerUUID);
+    },
     removeNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
-      // Check that task is not deleted before trying to remove
+      // Check that note is not deleted before trying to remove
       if (notes[ownerUUID].deletedNotes.indexOf(note) > -1) return;
 
       var noteIndex = notes[ownerUUID].activeNotes.findFirstIndexByKeyValue('uuid', note.uuid);
       if (noteIndex !== undefined) {
         notes[ownerUUID].activeNotes.splice(noteIndex, 1);
       }
-
-      // TODO: task should be removed from other arrays as well!
+      //
+      // TODO: note should be removed from other arrays as well!
+      // ArrayService.removeFromArrays(note, notes[ownerUUID].activeNote... etc.)
+      //  => call this.getActiveArray and splice from that array
+      //
     },
     deleteNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);

@@ -275,11 +275,17 @@
       }
       return deferred.promise;
     },
+    getTaskStatus: function(/*task, ownerUUID*/) {
+      //
+      // TODO
+      // return ArrayService.getActiveArray(task, tasks[ownerUUID].activeTasks... etc.)
+      //
+    },
     addTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to add
       if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) return;
-      updateTask(task, ownerUUID);
+      setTask(task, ownerUUID);
     },
     removeTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
@@ -293,8 +299,12 @@
       if (taskIndex !== undefined/* && !task.reminder && !task.repeating && !task.completed*/) {  // are these needed?
         tasks[ownerUUID].activeTasks.splice(taskIndex, 1);
       }
-
+      //
       // TODO: task should be removed from other arrays as well!
+      // ArrayService.removeFromArrays(task, tasks[ownerUUID].activeTask... etc.)
+      //  => call this.getActiveArray and splice from that array
+      // TODO
+      //
     },
     deleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
