@@ -18,7 +18,7 @@
 
  function ConvertService(BackendClientService, ExtendedItemService, ListsService, NotesService, TasksService) {
 
-  // NOTE: Should these be public getter functions in corresponding services?
+  // TODO: Should these be public getter functions in corresponding services?
   var listSlashRegex = /\/list\//;
   var noteSlashRegex = /\/note\//;
   var taskSlashRegex = /\/task\//;
@@ -81,7 +81,7 @@
       var convert = {
         favorited: note.favorited
       };
-      // NOTE: no need to pass this to the target function
+      // NOTE: No need to pass 'this' to the target function.
       copyConvertToTaskTransientPropertiesFn = copyConvertToItemTransientProperties
       .bind(undefined, task, convert, 'note', 'task');
     }
@@ -115,8 +115,8 @@
   }
 
   function copyConvertToItemTransientProperties(item, convert, fromItemType, toItemType) {
-    // NOTE: Delete existing 'toItemType' convert object
-    // because it may be out of sync before full offline implementation.
+    // NOTE:  Delete existing 'toItemType' convert object
+    //        because it may be out of sync before full offline implementation.
     if (item.transientProperties && item.transientProperties.convert) {
       if (item.transientProperties.convert[toItemType]) delete item.transientProperties.convert[toItemType];
     }
@@ -130,6 +130,13 @@
 
   return {
     finishNoteToTaskConvert: function(note, ownerUUID) {
+
+      //
+      // TODO
+      // NotesService.getNoteStatus(note, ownerUUID)  === 'deleted') return;
+      // TODO
+      //
+
       // i. verify that note exists
       if (note.uuid) {
         if (noteExistsAndIsNotDeleted(note, ownerUUID)) {
@@ -144,29 +151,16 @@
         // convert note to task
       }
     },
+    /*
+    * i.   verify that task exists
+    * ii.  convert task to list
+    * iii. remove old task and add new list
+    */
     finishTaskToListConvert: function(task, ownerUUID) {
-      // i.   verify that task exists
-      // ii.  convert to list
-      // iii. remove task and add list
 
-      // initializeArrays(ownerUUID);
-      // Check that task is not deleted before trying to turn it into a list
-      // if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
-        // return;
-      // }
+      // TODO: should cleanRecentlyCompletedTasks(ownerUUID) be called?
 
-      // cleanRecentlyCompletedTasks(ownerUUID);
-      // var index = tasks[ownerUUID].activeTasks.findFirstIndexByKeyValue('uuid', task.uuid);
-      // if (index !== undefined && !task.reminder && !task.repeating && !task.completed) {
-        // Save as list and remove from the activeTasks array
-        // tasks[ownerUUID].activeTasks.splice(index, 1);
-      // }
-
-      //
-      // TODO: var status = TasksService.getTaskStatus(task)
-      // if (status === 'deleted') do nothing
-      // TODO
-      //
+      if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
 
       // NOTE: Currently only one-level lists are supported. Remove pre-existing list before saving.
       if (task.transientProperties && task.transientProperties.list) delete task.transientProperties.list;
@@ -177,6 +171,13 @@
       });
     },
     finishListToNoteConvert: function(list, ownerUUID) {
+
+      //
+      // TODO
+      // ListsService.getListStatus(list, ownerUUID)  === 'deleted') return;
+      // TODO
+      //
+
       postConvertListToNote(list, ownerUUID).then(function(result) {
         processListToNoteResponse(list, result.data, ownerUUID);
       });

@@ -112,6 +112,20 @@ function ArrayService() {
       }
     },
     // item and activeArray are mandatory, rest are optional
+    getActiveArrayInfo: function(item, activeArray, deletedArray, otherArrays) {
+      if (activeArray.indexOf(item) !== -1) return {type: 'active', array: activeArray};
+      else if (deletedArray && deletedArray.indexOf(item) !== -1) return {type: 'deleted', array: deletedArray};
+      else if (otherArrays) {
+        var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(item.uuid, otherArrays);
+        if (otherArrayWithItemInfo) return {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array};
+      }
+    },
+    // item and activeArray are mandatory, rest are optional
+    removeFromArrays: function(item, activeArray, deletedArray, otherArrays) {
+      var arrayInfo = this.getActiveArrayInfo(item, activeArray, deletedArray, otherArrays);
+      if (arrayInfo) arrayInfo.array.splice(item, 1);
+    },
+    // item and activeArray are mandatory, rest are optional
     setItem: function(item, activeArray, deletedArray, otherArrays) {
       var otherArrayInfo = getFirstMatchingArrayInfoByProperty(item, otherArrays);
       if (deletedArray && item.deleted) {

@@ -71,6 +71,9 @@
   var listToNoteResponse = getJSONFixture('listToNoteResponse.json');
   listToNoteResponse.modified = now.getTime();
 
+  var deleteTaskResponse = getJSONFixture('deleteTaskResponse.json');
+  deleteTaskResponse.result.modified = now.getTime();
+
   // SETUP / TEARDOWN
 
   beforeEach(function() {
@@ -289,6 +292,30 @@ it('should convert existing task to list', function() {
   .toBe(4);
 });
 
+it('should not convert deleted task to list', function() {
+  // SETUP
+  var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
+  // var taskToListPath = '/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/list';
+  // TasksService.deleteTask(cleanCloset.uuid, testOwnerUUID);
+  $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid)
+  .respond(200, deleteTaskResponse);
+  TasksService.deleteTask(cleanCloset, testOwnerUUID);
+  $httpBackend.flush();
+  expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
+  .toBeUndefined();
+
+  // EXECUTE
+  ConvertService.finishTaskToListConvert(cleanCloset, testOwnerUUID);
+
+  // Task should be deleted
+  expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
+  .toBeUndefined();
+
+  // There should not be a new list
+  expect(ListsService.getLists(testOwnerUUID).length)
+  .toBe(3);
+});
+
 it('should set convert object with \'task\' property in transientProperties ' +
   'when converting existing task with persistent values to list', function() {
   // SETUP
@@ -351,7 +378,6 @@ it('should convert existing list to note', function() {
   .toBeDefined();
   expect(NotesService.getNotes(testOwnerUUID).length)
   .toBe(4);
-
 });
 
 it('should ... new item to ...', function() {

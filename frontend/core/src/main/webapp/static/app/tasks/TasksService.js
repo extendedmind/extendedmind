@@ -275,10 +275,22 @@
       }
       return deferred.promise;
     },
-    getTaskStatus: function(/*task, ownerUUID*/) {
+    getTaskStatus: function(task, ownerUUID) {
+      // NOTE: should cleanRecentlyCompletedTasks() be called?
+      initializeArrays(ownerUUID);
+      var arrayInfo = ArrayService.getActiveArrayInfo(task,
+        tasks[ownerUUID].activeTasks,
+        tasks[ownerUUID].deletedTasks,
+        getOtherArrays(ownerUUID));
+
+      if (arrayInfo) return arrayInfo.type;
+
       //
       // TODO
-      // return ArrayService.getActiveArray(task, tasks[ownerUUID].activeTasks... etc.)
+      //      replace if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1)
+      //      with this.getTaskStatus(task, ownerUUID) === 'deleted'
+      //      in this service
+      // TODO
       //
     },
     addTask: function(task, ownerUUID) {
@@ -289,22 +301,16 @@
     },
     removeTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
+
       // Check that task is not deleted before trying to remove
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) return;
+      if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
 
       cleanRecentlyCompletedTasks(ownerUUID);
 
-      // Remove task from active tasks
-      var taskIndex = tasks[ownerUUID].activeTasks.findFirstIndexByKeyValue('uuid', task.uuid);
-      if (taskIndex !== undefined/* && !task.reminder && !task.repeating && !task.completed*/) {  // are these needed?
-        tasks[ownerUUID].activeTasks.splice(taskIndex, 1);
-      }
-      //
-      // TODO: task should be removed from other arrays as well!
-      // ArrayService.removeFromArrays(task, tasks[ownerUUID].activeTask... etc.)
-      //  => call this.getActiveArray and splice from that array
-      // TODO
-      //
+      ArrayService.removeFromArrays(task,
+        tasks[ownerUUID].activeTasks,
+        tasks[ownerUUID].deleteTasks,
+        getOtherArrays(ownerUUID));
     },
     deleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
