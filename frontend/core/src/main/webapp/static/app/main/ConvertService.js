@@ -26,21 +26,7 @@
   var noteRegex = /\/note/;
   var taskRegex = /\/task/;
 
-  var convertNoteToTaskRegexp = new RegExp(
-    BackendClientService.apiPrefixRegex.source +
-    BackendClientService.uuidRegex.source +
-    noteSlashRegex.source +
-    BackendClientService.uuidRegex.source +
-    taskRegex.source),
-
-  convertNoteToListRegexp = new RegExp(
-    BackendClientService.apiPrefixRegex.source +
-    BackendClientService.uuidRegex.source +
-    noteSlashRegex.source +
-    BackendClientService.uuidRegex.source +
-    listRegex.source),
-
-  convertTaskToNoteRegexp = new RegExp(
+  var convertTaskToNoteRegexp = new RegExp(
     BackendClientService.apiPrefixRegex.source +
     BackendClientService.uuidRegex.source +
     taskSlashRegex.source +
@@ -51,6 +37,20 @@
     BackendClientService.apiPrefixRegex.source +
     BackendClientService.uuidRegex.source +
     taskSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    listRegex.source),
+
+  convertNoteToTaskRegexp = new RegExp(
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    noteSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    taskRegex.source),
+
+  convertNoteToListRegexp = new RegExp(
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    noteSlashRegex.source +
     BackendClientService.uuidRegex.source +
     listRegex.source),
 
@@ -68,14 +68,6 @@
     BackendClientService.uuidRegex.source +
     noteRegex.source);
 
-  function postConvertNoteToTask(note, ownerUUID) {
-    var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
-    return BackendClientService.postOnline(path, convertNoteToTaskRegexp, note);
-  }
-  function postConvertNoteToList(note, ownerUUID) {
-    var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/list';
-    return BackendClientService.postOnline(path, convertNoteToListRegexp, note);
-  }
   function postConvertTaskToNote(task, ownerUUID) {
     var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/note';
     return BackendClientService.postOnline(path, convertTaskToNoteRegexp, task);
@@ -84,6 +76,14 @@
     var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/list';
     return BackendClientService.postOnline(path, convertTaskToListRegexp, task);
   }
+  function postConvertNoteToTask(note, ownerUUID) {
+    var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
+    return BackendClientService.postOnline(path, convertNoteToTaskRegexp, note);
+  }
+  function postConvertNoteToList(note, ownerUUID) {
+    var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/list';
+    return BackendClientService.postOnline(path, convertNoteToListRegexp, note);
+  }
   function postConvertListToTask(list, ownerUUID) {
     var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/task';
     return BackendClientService.postOnline(path, convertListToTaskRegexp, list);
@@ -91,30 +91,6 @@
   function postConvertListToNote(list, ownerUUID) {
     var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/note';
     return BackendClientService.postOnline(path, convertListToNoteRegexp, list);
-  }
-
-  function processNoteToTaskResponse(note, task, ownerUUID) {
-    var copyConvertToTaskTransientPropertiesFn;
-    var convert = copyNotePersistentPropertiesToConvert(note);
-    // NOTE: No need to pass 'this' to the target function.
-    if (convert) copyConvertToTaskTransientPropertiesFn = copyConvertToItemTransientProperties
-      .bind(undefined, task, convert, 'note', 'task');
-
-    TasksService.attachTransientProperties(task, ownerUUID, copyConvertToTaskTransientPropertiesFn);
-    NotesService.removeNote(note, ownerUUID);
-    TasksService.addTask(task, ownerUUID);
-  }
-
-  function processNoteToListResponse(note, list, ownerUUID) {
-    var copyConvertToListTransientPropertiesFn;
-    var convert = copyNotePersistentPropertiesToConvert(note);
-    // NOTE: No need to pass 'this' to the target function.
-    if (convert) copyConvertToListTransientPropertiesFn = copyConvertToItemTransientProperties
-      .bind(undefined, list, convert, 'note', 'list');
-
-    ListsService.attachTransientProperties(list, ownerUUID, copyConvertToListTransientPropertiesFn);
-    NotesService.removeNote(note, ownerUUID);
-    ListsService.addList(list, ownerUUID);
   }
 
   function processTaskToNoteResponse(task, note, ownerUUID) {
@@ -141,6 +117,30 @@
     ListsService.addList(list, ownerUUID);
   }
 
+  function processNoteToTaskResponse(note, task, ownerUUID) {
+    var copyConvertToTaskTransientPropertiesFn;
+    var convert = copyNotePersistentPropertiesToConvert(note);
+    // NOTE: No need to pass 'this' to the target function.
+    if (convert) copyConvertToTaskTransientPropertiesFn = copyConvertToItemTransientProperties
+      .bind(undefined, task, convert, 'note', 'task');
+
+    TasksService.attachTransientProperties(task, ownerUUID, copyConvertToTaskTransientPropertiesFn);
+    NotesService.removeNote(note, ownerUUID);
+    TasksService.addTask(task, ownerUUID);
+  }
+
+  function processNoteToListResponse(note, list, ownerUUID) {
+    var copyConvertToListTransientPropertiesFn;
+    var convert = copyNotePersistentPropertiesToConvert(note);
+    // NOTE: No need to pass 'this' to the target function.
+    if (convert) copyConvertToListTransientPropertiesFn = copyConvertToItemTransientProperties
+      .bind(undefined, list, convert, 'note', 'list');
+
+    ListsService.attachTransientProperties(list, ownerUUID, copyConvertToListTransientPropertiesFn);
+    NotesService.removeNote(note, ownerUUID);
+    ListsService.addList(list, ownerUUID);
+  }
+
   function processListToTaskResponse(list, task, ownerUUID) {
     ListsService.removeList(list, ownerUUID);
     TasksService.addTask(task, ownerUUID);
@@ -155,10 +155,6 @@
     if (item.transientProperties && item.transientProperties.list) delete item.transientProperties.list;
   }
 
-  function copyNotePersistentPropertiesToConvert(note) {
-    if (note.favorited) return {favorited: note.favorited};
-  }
-
   function copyTaskPersistentPropertiesToConvert(task) {
     if (task.due || task.repeating || task.reminder) {
       var convert = {};
@@ -167,6 +163,10 @@
       if (task.reminder) convert.reminder = task.reminder;
       return convert;
     }
+  }
+
+  function copyNotePersistentPropertiesToConvert(note) {
+    if (note.favorited) return {favorited: note.favorited};
   }
 
   /**
@@ -201,6 +201,17 @@
     * ii.   convert item to new type
     * iii.  remove old item from memory and add new item to memory
     */
+    finishTaskToListConvert: function(task, ownerUUID) {
+      // TODO: should cleanRecentlyCompletedTasks(ownerUUID) be called first?
+      if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
+      // NOTE: Currently only one-level lists are supported. Remove pre-existing list before convertin to list.
+      removeList(task);
+      TasksService.detachTransientProperties(task, ownerUUID);
+
+      postConvertTaskToList(task, ownerUUID).then(function(result) {
+        processTaskToListResponse(task, result.data, ownerUUID);
+      });
+    },
     finishNoteToTaskConvert: function(note, ownerUUID) {
       if (note.uuid) {
         if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') return;
@@ -227,17 +238,6 @@
       TasksService.detachTransientProperties(task, ownerUUID);
       postConvertTaskToNote(task, ownerUUID).then(function(result) {
         processTaskToNoteResponse(task, result.data, ownerUUID);
-      });
-    },
-    finishTaskToListConvert: function(task, ownerUUID) {
-      // TODO: should cleanRecentlyCompletedTasks(ownerUUID) be called first?
-      if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
-      // NOTE: Currently only one-level lists are supported. Remove pre-existing list before convertin to list.
-      removeList(task);
-      TasksService.detachTransientProperties(task, ownerUUID);
-
-      postConvertTaskToList(task, ownerUUID).then(function(result) {
-        processTaskToListResponse(task, result.data, ownerUUID);
       });
     },
     finishListToTaskConvert: function(list, ownerUUID) {

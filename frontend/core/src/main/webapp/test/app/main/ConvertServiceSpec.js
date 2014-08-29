@@ -277,32 +277,6 @@ it('should convert existing note to list', function() {
   .toBe(4);
 });
 
-it('should set convert object with \'note\' property in transientProperties ' +
- 'when converting existing note with transient values to task', function() {
-  // SETUP
-  var notesOnProductivity = NotesService.getNoteByUUID('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID);
-
-  // add transient property to note
-  notesOnProductivity.transientProperties = {
-    starred: true
-  };
-
-  var noteToTaskPath = '/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/task';
-  $httpBackend.expectPOST(noteToTaskPath).respond(200, noteToTaskResponse);
-
-  // EXECUTE
-  ConvertService.finishNoteToTaskConvert(notesOnProductivity, testOwnerUUID);
-  $httpBackend.flush();
-
-  // TESTS
-  var convertedTask = TasksService.getTaskByUUID(noteToTaskResponse.uuid, testOwnerUUID);
-
-  expect(convertedTask.transientProperties.convert.note)
-  .toBeDefined();
-
-  expect(convertedTask.transientProperties.convert.note.favorited).toBe(true);
-});
-
 it('should convert existing task to note', function() {
   // SETUP
   var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
@@ -350,6 +324,56 @@ it('should convert existing task to list', function() {
   expect(ListsService.getListByUUID(taskToListResponse.uuid, testOwnerUUID))
   .toBeDefined();
   expect(ListsService.getLists(testOwnerUUID).length)
+  .toBe(4);
+});
+
+it('should convert existing list to task', function() {
+  // SETUP
+  var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID);
+  var listToTaskPath = '/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/task';
+  $httpBackend.expectPOST(listToTaskPath).respond(200, listToTaskResponse);
+
+  // EXECUTE
+  ConvertService.finishListToTaskConvert(tripToDublin, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+  expect(ListsService.getListByUUID(tripToDublin.uuid, testOwnerUUID))
+  .toBeUndefined();
+
+  // There should be just two left
+  expect(ListsService.getLists(testOwnerUUID).length)
+  .toBe(2);
+
+  // Tasks should have the new item
+  expect(TasksService.getTaskByUUID(listToTaskResponse.uuid, testOwnerUUID))
+  .toBeDefined();
+  expect(TasksService.getTasks(testOwnerUUID).length)
+  .toBe(4);
+});
+
+it('should convert existing list to note', function() {
+  // SETUP
+  var extendedMindTechnologies = ListsService.getListByUUID('0da0bff6-3bd7-4884-adba-f47fab9f270d', testOwnerUUID);
+  var listToNotePath = '/api/' + testOwnerUUID + '/list/' + extendedMindTechnologies.uuid + '/note';
+  $httpBackend.expectPOST(listToNotePath).respond(200, listToNoteResponse);
+
+  // EXECUTE
+  ConvertService.finishListToNoteConvert(extendedMindTechnologies, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+  expect(ListsService.getListByUUID(extendedMindTechnologies.uuid, testOwnerUUID))
+  .toBeUndefined();
+
+  // There should be just two left
+  expect(ListsService.getLists(testOwnerUUID).length)
+  .toBe(2);
+
+  // Notes should have the new item
+  expect(NotesService.getNoteByUUID(listToNoteResponse.uuid, testOwnerUUID))
+  .toBeDefined();
+  expect(NotesService.getNotes(testOwnerUUID).length)
   .toBe(4);
 });
 
@@ -416,54 +440,30 @@ it('should remove pre-existing parent from task when converting existing task to
   toBeUndefined();
 });
 
-it('should convert existing list to task', function() {
+it('should set convert object with \'note\' property in transientProperties ' +
+ 'when converting existing note with transient values to task', function() {
   // SETUP
-  var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID);
-  var listToTaskPath = '/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/task';
-  $httpBackend.expectPOST(listToTaskPath).respond(200, listToTaskResponse);
+  var notesOnProductivity = NotesService.getNoteByUUID('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID);
+
+  // add transient property to note
+  notesOnProductivity.transientProperties = {
+    starred: true
+  };
+
+  var noteToTaskPath = '/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/task';
+  $httpBackend.expectPOST(noteToTaskPath).respond(200, noteToTaskResponse);
 
   // EXECUTE
-  ConvertService.finishListToTaskConvert(tripToDublin, testOwnerUUID);
+  ConvertService.finishNoteToTaskConvert(notesOnProductivity, testOwnerUUID);
   $httpBackend.flush();
 
   // TESTS
-  expect(ListsService.getListByUUID(tripToDublin.uuid, testOwnerUUID))
-  .toBeUndefined();
+  var convertedTask = TasksService.getTaskByUUID(noteToTaskResponse.uuid, testOwnerUUID);
 
-  // There should be just two left
-  expect(ListsService.getLists(testOwnerUUID).length)
-  .toBe(2);
-
-  // Tasks should have the new item
-  expect(TasksService.getTaskByUUID(listToTaskResponse.uuid, testOwnerUUID))
+  expect(convertedTask.transientProperties.convert.note)
   .toBeDefined();
-  expect(TasksService.getTasks(testOwnerUUID).length)
-  .toBe(4);
-});
 
-it('should convert existing list to note', function() {
-  // SETUP
-  var extendedMindTechnologies = ListsService.getListByUUID('0da0bff6-3bd7-4884-adba-f47fab9f270d', testOwnerUUID);
-  var listToNotePath = '/api/' + testOwnerUUID + '/list/' + extendedMindTechnologies.uuid + '/note';
-  $httpBackend.expectPOST(listToNotePath).respond(200, listToNoteResponse);
-
-  // EXECUTE
-  ConvertService.finishListToNoteConvert(extendedMindTechnologies, testOwnerUUID);
-  $httpBackend.flush();
-
-  // TESTS
-  expect(ListsService.getListByUUID(extendedMindTechnologies.uuid, testOwnerUUID))
-  .toBeUndefined();
-
-  // There should be just two left
-  expect(ListsService.getLists(testOwnerUUID).length)
-  .toBe(2);
-
-  // Notes should have the new item
-  expect(NotesService.getNoteByUUID(listToNoteResponse.uuid, testOwnerUUID))
-  .toBeDefined();
-  expect(NotesService.getNotes(testOwnerUUID).length)
-  .toBe(4);
+  expect(convertedTask.transientProperties.convert.note.favorited).toBe(true);
 });
 
 it('should ... new item to ...', function() {
