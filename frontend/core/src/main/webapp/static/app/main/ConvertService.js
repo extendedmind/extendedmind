@@ -40,6 +40,13 @@
     BackendClientService.uuidRegex.source +
     listRegex.source),
 
+  convertTaskToNoteRegexp = new RegExp(
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    taskSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    noteRegex.source),
+
   convertTaskToListRegexp = new RegExp(
     BackendClientService.apiPrefixRegex.source +
     BackendClientService.uuidRegex.source +
@@ -54,18 +61,6 @@
     BackendClientService.uuidRegex.source +
     noteRegex.source);
 
-  function removeList(item) {
-    if (item.transientProperties && item.transientProperties.list) delete item.transientProperties.list;
-  }
-
-  function copyNotePersistentPropertiesToConvert(note) {
-    if (note.favorited) {
-      return {
-        favorited: note.favorited
-      };
-    }
-  }
-
   function postConvertNoteToTask(note, ownerUUID) {
     var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
     return BackendClientService.postOnline(path, convertNoteToTaskRegexp, note);
@@ -73,6 +68,10 @@
   function postConvertNoteToList(note, ownerUUID) {
     var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/list';
     return BackendClientService.postOnline(path, convertNoteToListRegexp, note);
+  }
+  function postConvertTaskToNote(task, ownerUUID) {
+    var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/note';
+    return BackendClientService.postOnline(path, convertTaskToNoteRegexp, task);
   }
   function postConvertTaskToList(task, ownerUUID) {
     var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/list';
@@ -85,7 +84,6 @@
 
   function processNoteToTaskResponse(note, task, ownerUUID) {
     var copyConvertToTaskTransientPropertiesFn;
-
     var convert = copyNotePersistentPropertiesToConvert(note);
     // NOTE: No need to pass 'this' to the target function.
     if (convert) copyConvertToTaskTransientPropertiesFn = copyConvertToItemTransientProperties
@@ -98,7 +96,6 @@
 
   function processNoteToListResponse(note, list, ownerUUID) {
     var copyConvertToListTransientPropertiesFn;
-
     var convert = copyNotePersistentPropertiesToConvert(note);
     // NOTE: No need to pass 'this' to the target function.
     if (convert) copyConvertToListTransientPropertiesFn = copyConvertToItemTransientProperties
@@ -109,18 +106,24 @@
     ListsService.addList(list, ownerUUID);
   }
 
+  function processTaskToNoteResponse(task, note, ownerUUID) {
+    var copyConvertToNoteTransientPropertiesFn;
+    var convert = copyTaskPersistentPropertiesToConvert(task);
+    // NOTE: No need to pass 'this' to the target function.
+    if (convert) copyConvertToNoteTransientPropertiesFn = copyConvertToItemTransientProperties
+      .bind(undefined, note, convert, 'task', 'note');
+
+    NotesService.attachTransientProperties(note, ownerUUID, copyConvertToNoteTransientPropertiesFn);
+    TasksService.removeTask(task, ownerUUID);
+    NotesService.addNote(note, ownerUUID);
+  }
+
   function processTaskToListResponse(task, list, ownerUUID) {
     var copyConvertToListTransientPropertiesFn;
-
-    if (task.due || task.repeating || task.reminder) {
-      var convert = {};
-      if (task.due) convert.due = task.due;
-      if (task.repeating) convert.repeating = task.repeating;
-      if (task.reminder) convert.reminder = task.reminder;
-      // NOTE: No need to pass this to the target function
-      copyConvertToListTransientPropertiesFn = copyConvertToItemTransientProperties
+    var convert = copyTaskPersistentPropertiesToConvert(task);
+    // NOTE: No need to pass 'this' to the target function.
+    if (convert) copyConvertToListTransientPropertiesFn = copyConvertToItemTransientProperties
       .bind(undefined, list, convert, 'task', 'list');
-    }
 
     ListsService.attachTransientProperties(list, ownerUUID, copyConvertToListTransientPropertiesFn);
     TasksService.removeTask(task, ownerUUID);
@@ -132,17 +135,35 @@
     NotesService.addNote(note, ownerUUID);
   }
 
-/**
- * @description Copy convert object to item's transient properties object.
- *
- * Convert object stores item's history during session.
- *
- * @param {Object}  item          The item to copy to.
- * @param {Object}  convert       The object to copy to item.
- * @param {string}  fromItemType  Type of the item converted from
- * @param {string}  toItemType    Type of the item converted to
- */
- function copyConvertToItemTransientProperties(item, convert, fromItemType, toItemType) {
+  function removeList(item) {
+    if (item.transientProperties && item.transientProperties.list) delete item.transientProperties.list;
+  }
+
+  function copyNotePersistentPropertiesToConvert(note) {
+    if (note.favorited) return {favorited: note.favorited};
+  }
+
+  function copyTaskPersistentPropertiesToConvert(task) {
+    if (task.due || task.repeating || task.reminder) {
+      var convert = {};
+      if (task.due) convert.due = task.due;
+      if (task.repeating) convert.repeating = task.repeating;
+      if (task.reminder) convert.reminder = task.reminder;
+      return convert;
+    }
+  }
+
+  /**
+   * @description Copy convert object to item's transient properties object.
+   *
+   * Convert object stores item's history during session.
+   *
+   * @param {Object}  item          The item to copy to.
+   * @param {Object}  convert       The object to copy to item.
+   * @param {string}  fromItemType  Type of the item converted from
+   * @param {string}  toItemType    Type of the item converted to
+   */
+   function copyConvertToItemTransientProperties(item, convert, fromItemType, toItemType) {
     // NOTE:  Delete existing 'toItemType' convert object
     //        because it may be out of sync before full offline implementation.
     if (item.transientProperties && item.transientProperties.convert) {
@@ -158,9 +179,11 @@
 
   return {
     /*
-    * i.    verify that note exists
-    * ii.   convert note to task
-    * iii.  remove old note and add new task
+    * PERSISTENT ITEM CONVERSION
+    *
+    * i.    verify that item to be converted exists
+    * ii.   convert item to new type
+    * iii.  remove old item from memory and add new item to memory
     */
     finishNoteToTaskConvert: function(note, ownerUUID) {
       if (note.uuid) {
@@ -176,24 +199,24 @@
     },
     finishNoteToListConvert: function(note, ownerUUID) {
       if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') return;
-      // NOTE: Currently only one-level lists are supported. Remove pre-existing list before saving.
+      // NOTE: Currently only one-level lists are supported. Remove pre-existing list before convertin to list.
       removeList(note);
       NotesService.detachTransientProperties(note, ownerUUID);
       postConvertNoteToList(note, ownerUUID).then(function(result) {
         processNoteToListResponse(note, result.data, ownerUUID);
       });
     },
-    /*
-    * i.    verify that task exists
-    * ii.   convert task to list
-    * iii.  remove old task and add new list
-    *
-    * TODO: should cleanRecentlyCompletedTasks(ownerUUID) be called first?
-    */
-    finishTaskToListConvert: function(task, ownerUUID) {
+    finishTaskToNoteConvert: function(task, ownerUUID) {
       if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
-
-      // NOTE: Currently only one-level lists are supported. Remove pre-existing list before saving.
+      TasksService.detachTransientProperties(task, ownerUUID);
+      postConvertTaskToNote(task, ownerUUID).then(function(result) {
+        processTaskToNoteResponse(task, result.data, ownerUUID);
+      });
+    },
+    finishTaskToListConvert: function(task, ownerUUID) {
+      // TODO: should cleanRecentlyCompletedTasks(ownerUUID) be called first?
+      if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
+      // NOTE: Currently only one-level lists are supported. Remove pre-existing list before convertin to list.
       removeList(task);
       TasksService.detachTransientProperties(task, ownerUUID);
 
@@ -201,11 +224,6 @@
         processTaskToListResponse(task, result.data, ownerUUID);
       });
     },
-    /*
-    * i.    verify that list exists
-    * ii.   convert list to note
-    * iii.  remove old list and add new note
-    */
     finishListToNoteConvert: function(list, ownerUUID) {
       if (ListsService.getListStatus(list, ownerUUID) === 'deleted') return;
 

@@ -309,6 +309,13 @@
       }
       ExtendedItemService.addTransientProperties(notesArray, ownerUUID, copyFavoritedToStarred);
     },
+    attachTransientProperties: function(note, ownerUUID, addExtraTransientPropertyFn) {
+      var addExtraTransientPropertyFunctions;
+      if (typeof addExtraTransientPropertyFn === 'function')
+        addExtraTransientPropertyFunctions = [addExtraTransientPropertyFn, copyFavoritedToStarred];
+      else addExtraTransientPropertyFunctions = copyFavoritedToStarred;
+      ExtendedItemService.addTransientProperties([note], ownerUUID, addExtraTransientPropertyFunctions);
+    },
     detachTransientProperties: function(note, ownerUUID) {
       return ExtendedItemService.detachTransientProperties(note, ownerUUID, copyStarredToFavorited);
     },

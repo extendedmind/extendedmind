@@ -68,6 +68,9 @@
   var noteToListResponse = getJSONFixture('noteToListResponse.json');
   noteToListResponse.modified = now.getTime();
 
+  var taskToNoteResponse = getJSONFixture('taskToNoteResponse.json');
+  taskToNoteResponse.modified = now.getTime();
+
   var taskToListResponse = getJSONFixture('taskToListResponse.json');
   taskToListResponse.modified = now.getTime();
 
@@ -295,6 +298,31 @@ it('should set convert object with \'note\' property in transientProperties ' +
   .toBeDefined();
 
   expect(convertedTask.transientProperties.convert.note.favorited).toBe(true);
+});
+
+it('should convert existing task to note', function() {
+  // SETUP
+  var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
+  var taskToNotePath = '/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/note';
+  $httpBackend.expectPOST(taskToNotePath).respond(200, taskToNoteResponse);
+
+  // EXECUTE
+  ConvertService.finishTaskToNoteConvert(cleanCloset, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+  expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
+  .toBeUndefined();
+
+  // There should be just two tasks left
+  expect(TasksService.getTasks(testOwnerUUID).length)
+  .toBe(2);
+
+  // Notes should have the new item
+  expect(NotesService.getNoteByUUID(taskToNoteResponse.uuid, testOwnerUUID))
+  .toBeDefined();
+  expect(NotesService.getNotes(testOwnerUUID).length)
+  .toBe(4);
 });
 
 it('should convert existing task to list', function() {
