@@ -47,20 +47,6 @@
     BackendClientService.uuidRegex.source +
     noteRegex.source);
 
-  function noteExistsAndIsNotDeleted(note, ownerUUID) {
-    var noteArrays = NotesService.getNoteArrays(ownerUUID);
-    var noteIndex;
-
-    // Find note from array
-    for (var noteArray in noteArrays) {
-      if (noteArrays.hasOwnProperty(noteArray)) {
-        noteIndex = noteArrays[noteArray].findFirstIndexByKeyValue('uuid', note.uuid);
-        // Return found note if it is not deleted.
-        if (noteIndex !== undefined) return !NotesService.isNoteDeleted(noteArrays[noteArray][noteIndex]);
-      }
-    }
-  }
-
   function postConvertNoteToTask(note, ownerUUID) {
     var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
     return BackendClientService.postOnline(path, convertNoteToTaskRegexp, note);
@@ -74,7 +60,7 @@
     return BackendClientService.postOnline(path, convertListToNoteRegexp, list);
   }
 
-  function processNoteToTaskResponse(note, task/*, transientProperties*/, ownerUUID) {
+  function processNoteToTaskResponse(note, task, ownerUUID) {
     var copyConvertToTaskTransientPropertiesFn;
 
     if (note.favorited) {
@@ -135,15 +121,13 @@
     * iii.  remove old note and add new task
     */
     finishNoteToTaskConvert: function(note, ownerUUID) {
-      if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') return;
-
       if (note.uuid) {
-        if (noteExistsAndIsNotDeleted(note, ownerUUID)) {
-          /*var transientProperties = */NotesService.detachTransientProperties(note, ownerUUID);
-          postConvertNoteToTask(note, ownerUUID).then(function(result) {
-            processNoteToTaskResponse(note, result.data/*, transientProperties*/, ownerUUID);
-          });
-        }
+        if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') return;
+
+        NotesService.detachTransientProperties(note, ownerUUID);
+        postConvertNoteToTask(note, ownerUUID).then(function(result) {
+          processNoteToTaskResponse(note, result.data, ownerUUID);
+        });
       } else {  // new note
         // convert note to task
       }
