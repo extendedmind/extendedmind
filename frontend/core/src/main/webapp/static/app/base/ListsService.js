@@ -102,9 +102,8 @@
       initializeArrays(ownerUUID);
       var deferred = $q.defer();
       // Check that list is not deleted before trying to save
-      if (lists[ownerUUID].deletedLists.indexOf(list) > -1) {
-        deferred.reject(list);
-      } else if (list.uuid) {
+      if (this.getListStatus(list, ownerUUID) === 'deleted') deferred.reject(list);
+      else if (list.uuid) {
         // Existing list
         BackendClientService.putOnline('/api/' + ownerUUID + '/list/' + list.uuid, this.putExistingListRegex, list)
         .then(function(result) {
@@ -136,18 +135,11 @@
         getOtherArrays(ownerUUID));
 
       if (arrayInfo) return arrayInfo.type;
-      //
-      // TODO
-      //      replace if (lists[ownerUUID].deletedLists.indexOf(list) > -1)
-      //      with this.getListStatus(list, ownerUUID) === 'deleted'
-      //      in this service
-      // TODO
-      //
     },
     addList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that list is not deleted before trying to add
-      if (lists[ownerUUID].deletedLists.indexOf(list) > -1) return;
+      if (this.getListStatus(list, ownerUUID) === 'deleted') return;
       setList(list, ownerUUID);
     },
     removeList: function(list, ownerUUID) {
@@ -162,9 +154,7 @@
     deleteList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check if list has already been deleted
-      if (lists[ownerUUID].deletedLists.indexOf(list) > -1) {
-        return;
-      }
+      if (this.getListStatus(list, ownerUUID) === 'deleted') return;
       BackendClientService.deleteOnline('/api/' + ownerUUID + '/list/' + list.uuid, this.deleteListRegex)
       .then(function(result) {
         if (result.data) {
@@ -181,9 +171,7 @@
     undeleteList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that list is deleted before trying to undelete
-      if (lists[ownerUUID].deletedLists.indexOf(list) === -1) {
-        return;
-      }
+      if (this.getListStatus(list, ownerUUID) !== 'deleted') return;
       BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/undelete', this.deleteListRegex)
       .then(function(result) {
         if (result.data) {
