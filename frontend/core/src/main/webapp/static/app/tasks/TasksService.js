@@ -212,9 +212,8 @@
     saveTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       var deferred = $q.defer();
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
-        deferred.reject(task);
-      } else {
+      if (this.getTaskStatus(task, ownerUUID) === 'deleted') deferred.reject(task);
+      else {
         cleanRecentlyCompletedTasks(ownerUUID);
         var transientProperties = ExtendedItemService.detachTransientProperties(task, ownerUUID, copyDateToDue);
         if (task.uuid) {
@@ -284,19 +283,11 @@
         getOtherArrays(ownerUUID));
 
       if (arrayInfo) return arrayInfo.type;
-
-      //
-      // TODO
-      //      replace if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1)
-      //      with this.getTaskStatus(task, ownerUUID) === 'deleted'
-      //      in this service
-      // TODO
-      //
     },
     addTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to add
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) return;
+      if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
       setTask(task, ownerUUID);
     },
     removeTask: function(task, ownerUUID) {
@@ -315,9 +306,7 @@
     deleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check if task has already been deleted
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
-        return;
-      }
+      if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
       cleanRecentlyCompletedTasks(ownerUUID);
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
@@ -348,9 +337,7 @@
     undeleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that task is deleted before trying to undelete
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) === -1) {
-        return;
-      }
+      if (this.getTaskStatus(task, ownerUUID) !== 'deleted') return;
       cleanRecentlyCompletedTasks(ownerUUID);
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
@@ -375,9 +362,7 @@
     completeTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to complete
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
-        return;
-      }
+      if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
 
       cleanRecentlyCompletedTasks(ownerUUID);
       if (UserSessionService.isOfflineEnabled()) {
@@ -406,9 +391,7 @@
     uncompleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to uncomplete
-      if (tasks[ownerUUID].deletedTasks.indexOf(task) > -1) {
-        return;
-      }
+      if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
 
       if (UserSessionService.isOfflineEnabled()) {
         var params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
