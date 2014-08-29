@@ -65,6 +65,9 @@
   var noteToTaskResponse = getJSONFixture('noteToTaskResponse.json');
   noteToTaskResponse.modified = now.getTime();
 
+  var noteToListResponse = getJSONFixture('noteToListResponse.json');
+  noteToListResponse.modified = now.getTime();
+
   var taskToListResponse = getJSONFixture('taskToListResponse.json');
   taskToListResponse.modified = now.getTime();
 
@@ -223,14 +226,13 @@ it('should convert existing note to task', function() {
   $httpBackend.flush();
 
   // TESTS
-  var notes = NotesService.getNotes(testOwnerUUID);
 
   // There should not be a note with converted note's UUID
   expect(NotesService.getNoteByUUID(notesOnProductivity.uuid, testOwnerUUID))
   .toBeUndefined();
 
   // Note should not be in notes array
-  expect(notes.length)
+  expect(NotesService.getNotes(testOwnerUUID).length)
   .toBe(2);
 
   var convertedTask = TasksService.getTaskByUUID(noteToTaskResponse.uuid, testOwnerUUID);
@@ -238,6 +240,34 @@ it('should convert existing note to task', function() {
   expect(convertedTask)
   .toBeDefined();
   expect(TasksService.getTasks(testOwnerUUID).length)
+  .toBe(4);
+});
+
+it('should convert existing note to list', function() {
+  // SETUP
+  var notesOnProductivity = NotesService.getNoteByUUID('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID);
+  var noteToListPath = '/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/list';
+  $httpBackend.expectPOST(noteToListPath).respond(200, noteToListResponse);
+
+  // EXECUTE
+  ConvertService.finishNoteToListConvert(notesOnProductivity, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+
+  // There should not be a note with converted note's UUID
+  expect(NotesService.getNoteByUUID(notesOnProductivity.uuid, testOwnerUUID))
+  .toBeUndefined();
+
+  // Note should not be in notes array
+  expect(NotesService.getNotes(testOwnerUUID).length)
+  .toBe(2);
+
+  var convertedList = ListsService.getListByUUID(noteToListResponse.uuid, testOwnerUUID);
+
+  expect(convertedList)
+  .toBeDefined();
+  expect(ListsService.getLists(testOwnerUUID).length)
   .toBe(4);
 });
 
