@@ -77,6 +77,9 @@
   var listToNoteResponse = getJSONFixture('listToNoteResponse.json');
   listToNoteResponse.modified = now.getTime();
 
+  var listToTaskResponse = getJSONFixture('listToTaskResponse.json');
+  listToTaskResponse.modified = now.getTime();
+
   var deleteTaskResponse = getJSONFixture('deleteTaskResponse.json');
   deleteTaskResponse.result.modified = now.getTime();
 
@@ -411,6 +414,31 @@ it('should remove pre-existing parent from task when converting existing task to
 
   expect(convertedList.relationships.parent).
   toBeUndefined();
+});
+
+it('should convert existing list to task', function() {
+  // SETUP
+  var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID);
+  var listToTaskPath = '/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/task';
+  $httpBackend.expectPOST(listToTaskPath).respond(200, listToTaskResponse);
+
+  // EXECUTE
+  ConvertService.finishListToTaskConvert(tripToDublin, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+  expect(ListsService.getListByUUID(tripToDublin.uuid, testOwnerUUID))
+  .toBeUndefined();
+
+  // There should be just two left
+  expect(ListsService.getLists(testOwnerUUID).length)
+  .toBe(2);
+
+  // Tasks should have the new item
+  expect(TasksService.getTaskByUUID(listToTaskResponse.uuid, testOwnerUUID))
+  .toBeDefined();
+  expect(TasksService.getTasks(testOwnerUUID).length)
+  .toBe(4);
 });
 
 it('should convert existing list to note', function() {

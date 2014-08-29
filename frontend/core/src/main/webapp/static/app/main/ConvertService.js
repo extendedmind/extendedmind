@@ -54,6 +54,13 @@
     BackendClientService.uuidRegex.source +
     listRegex.source),
 
+  convertListToTaskRegexp = new RegExp(
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    listSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    taskRegex.source),
+
   convertListToNoteRegexp = new RegExp(
     BackendClientService.apiPrefixRegex.source +
     BackendClientService.uuidRegex.source +
@@ -76,6 +83,10 @@
   function postConvertTaskToList(task, ownerUUID) {
     var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/list';
     return BackendClientService.postOnline(path, convertTaskToListRegexp, task);
+  }
+  function postConvertListToTask(list, ownerUUID) {
+    var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/task';
+    return BackendClientService.postOnline(path, convertListToTaskRegexp, list);
   }
   function postConvertListToNote(list, ownerUUID) {
     var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/note';
@@ -128,6 +139,11 @@
     ListsService.attachTransientProperties(list, ownerUUID, copyConvertToListTransientPropertiesFn);
     TasksService.removeTask(task, ownerUUID);
     ListsService.addList(list, ownerUUID);
+  }
+
+  function processListToTaskResponse(list, task, ownerUUID) {
+    ListsService.removeList(list, ownerUUID);
+    TasksService.addTask(task, ownerUUID);
   }
 
   function processListToNoteResponse(list, note, ownerUUID) {
@@ -222,6 +238,12 @@
 
       postConvertTaskToList(task, ownerUUID).then(function(result) {
         processTaskToListResponse(task, result.data, ownerUUID);
+      });
+    },
+    finishListToTaskConvert: function(list, ownerUUID) {
+      if (ListsService.getListStatus(list, ownerUUID) === 'deleted') return;
+      postConvertListToTask(list, ownerUUID).then(function(result) {
+        processListToTaskResponse(list, result.data, ownerUUID);
       });
     },
     finishListToNoteConvert: function(list, ownerUUID) {
