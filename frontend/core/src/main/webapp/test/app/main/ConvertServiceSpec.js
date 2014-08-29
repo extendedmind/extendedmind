@@ -221,6 +221,56 @@ afterEach(function() {
 
 // TESTS
 
+it('should convert existing task to note', function() {
+  // SETUP
+  var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
+  var taskToNotePath = '/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/note';
+  $httpBackend.expectPOST(taskToNotePath).respond(200, taskToNoteResponse);
+
+  // EXECUTE
+  ConvertService.finishTaskToNoteConvert(cleanCloset, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+  expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
+  .toBeUndefined();
+
+  // There should be just two tasks left
+  expect(TasksService.getTasks(testOwnerUUID).length)
+  .toBe(2);
+
+  // Notes should have the new item
+  expect(NotesService.getNoteByUUID(taskToNoteResponse.uuid, testOwnerUUID))
+  .toBeDefined();
+  expect(NotesService.getNotes(testOwnerUUID).length)
+  .toBe(4);
+});
+
+it('should convert existing task to list', function() {
+  // SETUP
+  var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
+  var taskToListPath = '/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/list';
+  $httpBackend.expectPOST(taskToListPath).respond(200, taskToListResponse);
+
+  // EXECUTE
+  ConvertService.finishTaskToListConvert(cleanCloset, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+  expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
+  .toBeUndefined();
+
+  // There should be just two left
+  expect(TasksService.getTasks(testOwnerUUID).length)
+  .toBe(2);
+
+  // Lists should have the new item
+  expect(ListsService.getListByUUID(taskToListResponse.uuid, testOwnerUUID))
+  .toBeDefined();
+  expect(ListsService.getLists(testOwnerUUID).length)
+  .toBe(4);
+});
+
 it('should convert existing note to task', function() {
   // SETUP
   var notesOnProductivity = NotesService.getNoteByUUID('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID);
@@ -272,56 +322,6 @@ it('should convert existing note to list', function() {
   var convertedList = ListsService.getListByUUID(noteToListResponse.uuid, testOwnerUUID);
 
   expect(convertedList)
-  .toBeDefined();
-  expect(ListsService.getLists(testOwnerUUID).length)
-  .toBe(4);
-});
-
-it('should convert existing task to note', function() {
-  // SETUP
-  var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
-  var taskToNotePath = '/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/note';
-  $httpBackend.expectPOST(taskToNotePath).respond(200, taskToNoteResponse);
-
-  // EXECUTE
-  ConvertService.finishTaskToNoteConvert(cleanCloset, testOwnerUUID);
-  $httpBackend.flush();
-
-  // TESTS
-  expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
-  .toBeUndefined();
-
-  // There should be just two tasks left
-  expect(TasksService.getTasks(testOwnerUUID).length)
-  .toBe(2);
-
-  // Notes should have the new item
-  expect(NotesService.getNoteByUUID(taskToNoteResponse.uuid, testOwnerUUID))
-  .toBeDefined();
-  expect(NotesService.getNotes(testOwnerUUID).length)
-  .toBe(4);
-});
-
-it('should convert existing task to list', function() {
-  // SETUP
-  var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
-  var taskToListPath = '/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/list';
-  $httpBackend.expectPOST(taskToListPath).respond(200, taskToListResponse);
-
-  // EXECUTE
-  ConvertService.finishTaskToListConvert(cleanCloset, testOwnerUUID);
-  $httpBackend.flush();
-
-  // TESTS
-  expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
-  .toBeUndefined();
-
-  // There should be just two left
-  expect(TasksService.getTasks(testOwnerUUID).length)
-  .toBe(2);
-
-  // Lists should have the new item
-  expect(ListsService.getListByUUID(taskToListResponse.uuid, testOwnerUUID))
   .toBeDefined();
   expect(ListsService.getLists(testOwnerUUID).length)
   .toBe(4);
@@ -479,14 +479,28 @@ it('should set transientProperties object with \'date\' property to task ' +
 
   // TESTS
   var convertedTask = TasksService.getTaskByUUID(listToTaskResponse.uuid, testOwnerUUID);
-  console.log(convertedTask);
 
   expect(convertedTask.transientProperties.date)
   .toEqual('2014-08-29');
 });
 
-it('should ... new item to ...', function() {
+it('should convert new task to note', function() {
+  // SETUP
+  var newTaskToNote = {
+    title: 'print tickets',
+    link: 'http://www.ext.md',
+    due: '2014-01-02',
+    description: 'to oxygen accelerator',
+    reminder: '10:00',
+    relationships: {
+      parent: 'dbff4507-927d-4f99-940a-ee0cfcf6e84c',
+      tags: ['1208d45b-3b8c-463e-88f3-f7ef19ce87cd']
+    }
+  };
 
+  // EXECUTE
+
+  // TESTS
 });
 
 });

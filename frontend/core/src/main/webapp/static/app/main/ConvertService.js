@@ -203,6 +203,13 @@
     * ii.   convert item to new type
     * iii.  remove old item from memory and add new item to memory
     */
+    finishTaskToNoteConvert: function(task, ownerUUID) {
+      if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
+      TasksService.detachTransientProperties(task, ownerUUID);
+      postConvertTaskToNote(task, ownerUUID).then(function(result) {
+        processTaskToNoteResponse(task, result.data, ownerUUID);
+      });
+    },
     finishTaskToListConvert: function(task, ownerUUID) {
       // TODO: should cleanRecentlyCompletedTasks(ownerUUID) be called first?
       if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
@@ -222,8 +229,8 @@
         postConvertNoteToTask(note, ownerUUID).then(function(result) {
           processNoteToTaskResponse(note, result.data, ownerUUID);
         });
-      } else {  // new note
-        // convert note to task
+      } else {
+        // TODO: Convert new note to task.
       }
     },
     finishNoteToListConvert: function(note, ownerUUID) {
@@ -233,13 +240,6 @@
       NotesService.detachTransientProperties(note, ownerUUID);
       postConvertNoteToList(note, ownerUUID).then(function(result) {
         processNoteToListResponse(note, result.data, ownerUUID);
-      });
-    },
-    finishTaskToNoteConvert: function(task, ownerUUID) {
-      if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
-      TasksService.detachTransientProperties(task, ownerUUID);
-      postConvertTaskToNote(task, ownerUUID).then(function(result) {
-        processTaskToNoteResponse(task, result.data, ownerUUID);
       });
     },
     finishListToTaskConvert: function(list, ownerUUID) {
