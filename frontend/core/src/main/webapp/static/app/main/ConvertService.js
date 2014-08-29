@@ -143,11 +143,13 @@
 
   function processListToTaskResponse(list, task, ownerUUID) {
     ListsService.removeList(list, ownerUUID);
+    TasksService.attachTransientProperties(task, ownerUUID);
     TasksService.addTask(task, ownerUUID);
   }
 
   function processListToNoteResponse(list, note, ownerUUID) {
     ListsService.removeList(list, ownerUUID);
+    NotesService.attachTransientProperties(note, ownerUUID);
     NotesService.addNote(note, ownerUUID);
   }
 

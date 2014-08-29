@@ -401,6 +401,24 @@ it('should not convert deleted task to list', function() {
   .toBe(3);
 });
 
+it('should remove pre-existing parent from task when converting existing task to list', function() {
+  // SETUP
+  var writeEssayBody = TasksService.getTaskByUUID('7a612ca2-7de0-45ad-a758-d949df37f51e', testOwnerUUID);
+  var taskToListPath = '/api/' + testOwnerUUID + '/task/' + writeEssayBody.uuid + '/list';
+  delete taskToListResponse.relationships.parent;
+  $httpBackend.expectPOST(taskToListPath).respond(200, taskToListResponse);
+
+  // EXECUTE
+  ConvertService.finishTaskToListConvert(writeEssayBody, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+  var convertedList = ListsService.getListByUUID(taskToListResponse.uuid, testOwnerUUID);
+
+  expect(convertedList.relationships.parent).
+  toBeUndefined();
+});
+
 it('should set convert object with \'task\' property in transientProperties ' +
   'when converting existing task with persistent values to list', function() {
   // SETUP
@@ -422,33 +440,13 @@ it('should set convert object with \'task\' property in transientProperties ' +
   expect(convertedList.transientProperties.convert.task.reminder).toEqual('10:00');
 });
 
-it('should remove pre-existing parent from task when converting existing task to list', function() {
-  // SETUP
-  var writeEssayBody = TasksService.getTaskByUUID('7a612ca2-7de0-45ad-a758-d949df37f51e', testOwnerUUID);
-  var taskToListPath = '/api/' + testOwnerUUID + '/task/' + writeEssayBody.uuid + '/list';
-  delete taskToListResponse.relationships.parent;
-  $httpBackend.expectPOST(taskToListPath).respond(200, taskToListResponse);
-
-  // EXECUTE
-  ConvertService.finishTaskToListConvert(writeEssayBody, testOwnerUUID);
-  $httpBackend.flush();
-
-  // TESTS
-  var convertedList = ListsService.getListByUUID(taskToListResponse.uuid, testOwnerUUID);
-
-  expect(convertedList.relationships.parent).
-  toBeUndefined();
-});
-
 it('should set convert object with \'note\' property in transientProperties ' +
  'when converting existing note with transient values to task', function() {
   // SETUP
   var notesOnProductivity = NotesService.getNoteByUUID('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID);
 
   // add transient property to note
-  notesOnProductivity.transientProperties = {
-    starred: true
-  };
+  notesOnProductivity.transientProperties = {starred: true};
 
   var noteToTaskPath = '/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/task';
   $httpBackend.expectPOST(noteToTaskPath).respond(200, noteToTaskResponse);
@@ -464,6 +462,27 @@ it('should set convert object with \'note\' property in transientProperties ' +
   .toBeDefined();
 
   expect(convertedTask.transientProperties.convert.note.favorited).toBe(true);
+});
+
+it('should set transientProperties object with \'date\' property to task ' +
+  'when converting existing list which has previously been a task to task', function() {
+  // SETUP
+  var writeEssayOnCognitiveBiases = ListsService.getListByUUID('07bc96d1-e8b2-49a9-9d35-1eece6263f98', testOwnerUUID);
+  // add persistent property to task
+  listToTaskResponse.due = '2014-08-29';
+  var listToTaskPath = '/api/' + testOwnerUUID + '/list/' + writeEssayOnCognitiveBiases.uuid + '/task';
+  $httpBackend.expectPOST(listToTaskPath).respond(200, listToTaskResponse);
+
+  // EXECUTE
+  ConvertService.finishListToTaskConvert(writeEssayOnCognitiveBiases, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+  var convertedTask = TasksService.getTaskByUUID(listToTaskResponse.uuid, testOwnerUUID);
+  console.log(convertedTask);
+
+  expect(convertedTask.transientProperties.date)
+  .toEqual('2014-08-29');
 });
 
 it('should ... new item to ...', function() {
