@@ -169,9 +169,7 @@
     },
     saveNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
-      if (notes[ownerUUID].deletedNotes.indexOf(note) > -1) {
-        return;
-      }
+      if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
       var params;
       var transientProperties = ExtendedItemService.detachTransientProperties(note, ownerUUID, copyStarredToFavorited);
       if (note.uuid) {
@@ -232,18 +230,11 @@
         getOtherArrays(ownerUUID));
 
       if (arrayInfo) return arrayInfo.type;
-      //
-      // TODO
-      //      replace if (notes[ownerUUID].deletedNotes.indexOf(note) > -1)
-      //      with this.getNoteStatus(note, ownerUUID) === 'deleted'
-      //      in this service
-      // TODO
-      //
     },
     addNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that note is not deleted before trying to add
-      if (notes[ownerUUID].deletedNotes.indexOf(note) > -1) return;
+      if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
       setNote(note, ownerUUID);
     },
     removeNote: function(note, ownerUUID) {
@@ -259,9 +250,7 @@
     deleteNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check if note has already been deleted
-      if (notes[ownerUUID].deletedNotes.indexOf(note) > -1) {
-        return;
-      }
+      if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
         var params = {type: 'note', owner: ownerUUID, uuid: note.uuid,
@@ -290,9 +279,7 @@
     undeleteNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that note is deleted before trying to undelete
-      if (notes[ownerUUID].deletedNotes.indexOf(note) === -1) {
-        return;
-      }
+      if (this.getNoteStatus(note, ownerUUID) !== 'deleted') return;
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
         var params = {type: 'note', owner: ownerUUID, uuid: note.uuid};
