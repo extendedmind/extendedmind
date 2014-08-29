@@ -429,7 +429,10 @@
       }
       ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, copyDueToDate);
     },
-    attachTransientProperties: function(task, ownerUUID, addExtraTransientPropertyFn) {
+    addTransientProperties: function(task, ownerUUID, addExtraTransientPropertyFn) {
+      //
+      // TODO: Replace ExtendedItemService.addTransientProperties with this
+      //
       var addExtraTransientPropertyFunctions;
       if (typeof addExtraTransientPropertyFn === 'function')
         addExtraTransientPropertyFunctions = [addExtraTransientPropertyFn, copyDueToDate];
@@ -437,6 +440,9 @@
       ExtendedItemService.addTransientProperties([task], ownerUUID, addExtraTransientPropertyFunctions);
     },
     detachTransientProperties: function(task, ownerUUID) {
+      //
+      // TODO: Replace ExtendedItemService.detachTransientProperties with this
+      //
       return ExtendedItemService.detachTransientProperties(task, ownerUUID, copyDateToDue);
     },
 

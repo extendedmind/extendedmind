@@ -208,7 +208,10 @@
         }
       });
     },
-    attachTransientProperties: function(list, ownerUUID, addExtraTransientPropertyFn) {
+    addTransientProperties: function(list, ownerUUID, addExtraTransientPropertyFn) {
+      //
+      // TODO: Replace ExtendedItemService.addTransientProperties with this
+      //
       var addExtraTransientPropertyFunction;
       if (typeof addExtraTransientPropertyFn === 'function')
         addExtraTransientPropertyFunction = addExtraTransientPropertyFn;

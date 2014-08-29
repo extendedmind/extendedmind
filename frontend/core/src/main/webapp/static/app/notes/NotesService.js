@@ -309,7 +309,10 @@
       }
       ExtendedItemService.addTransientProperties(notesArray, ownerUUID, copyFavoritedToStarred);
     },
-    attachTransientProperties: function(note, ownerUUID, addExtraTransientPropertyFn) {
+    addTransientProperties: function(note, ownerUUID, addExtraTransientPropertyFn) {
+      //
+      // TODO: Replace ExtendedItemService.addTransientProperties with this
+      //
       var addExtraTransientPropertyFunctions;
       if (typeof addExtraTransientPropertyFn === 'function')
         addExtraTransientPropertyFunctions = [addExtraTransientPropertyFn, copyFavoritedToStarred];
