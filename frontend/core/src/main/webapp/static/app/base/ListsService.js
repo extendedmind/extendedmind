@@ -128,10 +128,20 @@
       }
       return deferred.promise;
     },
-    getListStatus: function(/*list, ownerUUID*/) {
+    getListStatus: function(list, ownerUUID) {
+      initializeArrays(ownerUUID);
+      var arrayInfo = ArrayService.getActiveArrayInfo(list,
+        lists[ownerUUID].activeLists,
+        lists[ownerUUID].deletedLists,
+        getOtherArrays(ownerUUID));
+
+      if (arrayInfo) return arrayInfo.type;
       //
       // TODO
-      // return ArrayService.getActiveArray(list, lists[ownerUUID].activeLists... etc.)
+      //      replace if (lists[ownerUUID].deletedLists.indexOf(list) > -1)
+      //      with this.getListStatus(list, ownerUUID) === 'deleted'
+      //      in this service
+      // TODO
       //
     },
     addList: function(list, ownerUUID) {
@@ -143,15 +153,11 @@
     removeList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that list is not deleted before trying to remove
-      if (lists[ownerUUID].deletedLists.indexOf(list) > -1) return;
-
-      var listIndex = lists[ownerUUID].activeLists.findFirstIndexByKeyValue('uuid', list.uuid);
-      if (listIndex !== undefined) lists[ownerUUID].activeLists.splice(listIndex, 1);
-      //
-      // TODO: list should be removed from other arrays as well!
-      // ArrayService.removeFromArrays(list, lists[ownerUUID].activeList... etc.)
-      //  => call this.getActiveArray and splice from that array
-      //
+      if (this.getListStatus(list, ownerUUID) === 'deleted') return;
+      ArrayService.removeFromArrays(list,
+        lists[ownerUUID].activeLists,
+        lists[ownerUUID].deletedLists,
+        getOtherArrays(ownerUUID));
     },
     deleteList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);

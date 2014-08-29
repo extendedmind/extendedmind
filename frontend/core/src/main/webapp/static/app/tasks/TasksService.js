@@ -309,7 +309,7 @@
 
       ArrayService.removeFromArrays(task,
         tasks[ownerUUID].activeTasks,
-        tasks[ownerUUID].deleteTasks,
+        tasks[ownerUUID].deletedTasks,
         getOtherArrays(ownerUUID));
     },
     deleteTask: function(task, ownerUUID) {

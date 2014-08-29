@@ -129,21 +129,18 @@
   }
 
   return {
+    /*
+    * i.    verify that note exists
+    * ii.   convert note to task
+    * iii.  remove old note and add new task
+    */
     finishNoteToTaskConvert: function(note, ownerUUID) {
+      if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') return;
 
-      //
-      // TODO
-      // NotesService.getNoteStatus(note, ownerUUID)  === 'deleted') return;
-      // TODO
-      //
-
-      // i. verify that note exists
       if (note.uuid) {
         if (noteExistsAndIsNotDeleted(note, ownerUUID)) {
           /*var transientProperties = */NotesService.detachTransientProperties(note, ownerUUID);
-          // ii. convert to task
           postConvertNoteToTask(note, ownerUUID).then(function(result) {
-            // iii. remove note and add task
             processNoteToTaskResponse(note, result.data/*, transientProperties*/, ownerUUID);
           });
         }
@@ -152,14 +149,13 @@
       }
     },
     /*
-    * i.   verify that task exists
-    * ii.  convert task to list
-    * iii. remove old task and add new list
+    * i.    verify that task exists
+    * ii.   convert task to list
+    * iii.  remove old task and add new list
+    *
+    * TODO: should cleanRecentlyCompletedTasks(ownerUUID) be called first?
     */
     finishTaskToListConvert: function(task, ownerUUID) {
-
-      // TODO: should cleanRecentlyCompletedTasks(ownerUUID) be called?
-
       if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
 
       // NOTE: Currently only one-level lists are supported. Remove pre-existing list before saving.
@@ -170,13 +166,13 @@
         processTaskToListResponse(task, result.data, ownerUUID);
       });
     },
+    /*
+    * i.    verify that list exists
+    * ii.   convert list to note
+    * iii.  remove old list and add new note
+    */
     finishListToNoteConvert: function(list, ownerUUID) {
-
-      //
-      // TODO
-      // ListsService.getListStatus(list, ownerUUID)  === 'deleted') return;
-      // TODO
-      //
+      if (ListsService.getListStatus(list, ownerUUID) === 'deleted') return;
 
       postConvertListToNote(list, ownerUUID).then(function(result) {
         processListToNoteResponse(list, result.data, ownerUUID);

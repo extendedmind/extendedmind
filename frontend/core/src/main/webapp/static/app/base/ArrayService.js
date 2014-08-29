@@ -123,7 +123,7 @@ function ArrayService() {
     // item and activeArray are mandatory, rest are optional
     removeFromArrays: function(item, activeArray, deletedArray, otherArrays) {
       var arrayInfo = this.getActiveArrayInfo(item, activeArray, deletedArray, otherArrays);
-      if (arrayInfo) arrayInfo.array.splice(item, 1);
+      if (arrayInfo) arrayInfo.array.splice(arrayInfo.array.indexOf(item), 1);
     },
     // item and activeArray are mandatory, rest are optional
     setItem: function(item, activeArray, deletedArray, otherArrays) {

@@ -224,10 +224,20 @@
         }
       }
     },
-    getNoteStatus: function(/*note, ownerUUID*/) {
+    getNoteStatus: function(note, ownerUUID) {
+      initializeArrays(ownerUUID);
+      var arrayInfo = ArrayService.getActiveArrayInfo(note,
+        notes[ownerUUID].activeNotes,
+        notes[ownerUUID].deletedNotes,
+        getOtherArrays(ownerUUID));
+
+      if (arrayInfo) return arrayInfo.type;
       //
       // TODO
-      // return ArrayService.getActiveArray(note, notes[ownerUUID].activeNotes... etc.)
+      //      replace if (notes[ownerUUID].deletedNotes.indexOf(note) > -1)
+      //      with this.getNoteStatus(note, ownerUUID) === 'deleted'
+      //      in this service
+      // TODO
       //
     },
     addNote: function(note, ownerUUID) {
@@ -239,17 +249,12 @@
     removeNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that note is not deleted before trying to remove
-      if (notes[ownerUUID].deletedNotes.indexOf(note) > -1) return;
+      if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
 
-      var noteIndex = notes[ownerUUID].activeNotes.findFirstIndexByKeyValue('uuid', note.uuid);
-      if (noteIndex !== undefined) {
-        notes[ownerUUID].activeNotes.splice(noteIndex, 1);
-      }
-      //
-      // TODO: note should be removed from other arrays as well!
-      // ArrayService.removeFromArrays(note, notes[ownerUUID].activeNote... etc.)
-      //  => call this.getActiveArray and splice from that array
-      //
+      ArrayService.removeFromArrays(note,
+        notes[ownerUUID].activeNotes,
+        notes[ownerUUID].deletedNotes,
+        getOtherArrays(ownerUUID));
     },
     deleteNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
