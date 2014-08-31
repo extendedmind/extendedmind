@@ -20,6 +20,7 @@
     var filteredItems = [];
     for (var i = 0, len = tasks.length; i < len; i++) {
       if (tasks[i].due)
+        // match tasks with given date, or if date is today match also overdue tasks
         if (tasks[i].due === date || (date === today && tasks[i].due < today)) filteredItems.push(tasks[i]);
     }
     return filteredItems;
