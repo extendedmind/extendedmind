@@ -40,6 +40,7 @@
     });
     var currentWeek = DateService.generateAndReturnCurrentWeek(new Date());
 
-    expect(DateService.isWeekValid(currentWeek)).toBe(false);
+    expect(DateService.isCurrentWeekValid(currentWeek))
+    .toBe(false);
   });
 });

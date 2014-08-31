@@ -110,14 +110,11 @@
     * @description
     * Check if week is current week and that today is in the right day.
     */
-    isWeekValid: function(week) {
+    isCurrentWeekValid: function(week) {
       var todayYYYYMMDD = this.getTodayYYYYMMDD(new Date());
       for (var i = 0, len = week.length; i < len; i++) {
-        if (week[i].yyyymmdd === todayYYYYMMDD) {
-          return week[i].displayDate === 'today';
-        }
+        if (week[i].displayDate === 'today') return week[i].yyyymmdd === todayYYYYMMDD;
       }
-      return true;
     },
     isDateBeforeCurrentWeek: function(date) {
       var firstDayOfCurrentWeek = getFirstDateOfTheWeek(new Date());

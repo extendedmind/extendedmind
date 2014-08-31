@@ -48,7 +48,7 @@
         $scope.datepickerWeeks = initializeAndReturnDatepickerWeeks(currentWeek);
       } else {
         if (dayChangeLastCheck < (Date.now() - detectDayChangeBuffer)) {
-          if (!DateService.isWeekValid(currentWeek)) {
+          if (!DateService.isCurrentWeekValid(currentWeek)) {
             currentWeek = DateService.generateAndReturnCurrentWeek(new Date());
             $scope.datepickerWeeks = initializeAndReturnDatepickerWeeks(currentWeek);
             swipeToStartingDay();
