@@ -16,18 +16,13 @@
 
  function tasksByDate(DateService) {
   return function(tasks, date) {
-    function isDueDate(task) {
-      return task.due === date;
+    var today = DateService.getTodayYYYYMMDD();
+    var filteredItems = [];
+    for (var i = 0, len = tasks.length; i < len; i++) {
+      if (tasks[i].due)
+        if (tasks[i].due === date || (date === today && tasks[i].due < today)) filteredItems.push(tasks[i]);
     }
-    function isToday() {
-      return DateService.getTodayYYYYMMDD() === date;
-    }
-    function isOverdue(task) {
-      return DateService.getTodayYYYYMMDD() > task.due;
-    }
-    return tasks.filter(function(task) {
-      if (task.due) return isDueDate(task) || (isToday() && isOverdue(task));
-    });
+    return filteredItems;
   };
 }
 angular.module('em.tasks').filter('tasksByDate', tasksByDate);
