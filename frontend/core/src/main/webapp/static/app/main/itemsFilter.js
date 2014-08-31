@@ -15,83 +15,54 @@
  'use strict';
 
  function itemsFilter() {
+  var itemsFilters = {};
 
-  var filter = function(items, filterValue) {
-    var itemsFilter = {};
-
-    itemsFilter.byListUUID = function(items, uuid) {
-      function listItem(item) {
-        if (item.relationships && item.relationships.parent) return item.relationships.parent === uuid;
-      }
-      return items.filter(listItem);
-    };
-
-    itemsFilter.byTagUUID = function(items, uuid) {
-      function isFilterTag(tag) {
-        return tag === uuid;
-      }
-      function tagItem(item) {
-        if (item.relationships && item.relationships.tags) return item.relationships.tags.some(isFilterTag);
-      }
-      return items.filter(tagItem);
-    };
-
-    itemsFilter.unsorted = function(items) {
-
-      var filteredValues, i, sortedTask;
-      filteredValues = [];
-      i = 0;
-
-      while (items[i]) {
-        sortedTask = false;
-        if (!items[i].relationships ||
-          !items[i].relationships.tags ||
-          !items[i].relationships.tags.length > 0)
-        {
-          filteredValues.push(items[i]);
-        }
-        i++;
-      }
-      return filteredValues;
-    };
-
-    itemsFilter.noList = function(items) {
-
-      var filteredValues, i, sortedTask;
-      filteredValues = [];
-      i = 0;
-
-      while (items[i]) {
-        sortedTask = false;
-        if (!items[i].relationships || !items[i].relationships.parent) {
-          filteredValues.push(items[i]);
-        }
-        i++;
-      }
-      return filteredValues;
-    };
-    itemsFilter.noDate = function(items) {
-
-      var filteredValues, i, sortedTask;
-      filteredValues = [];
-      i = 0;
-
-      while (items[i]) {
-        sortedTask = false;
-        if (!items[i].due) {
-          filteredValues.push(items[i]);
-        }
-        i++;
-      }
-      return filteredValues;
-    };
-
-    if (filterValue) {
-      return itemsFilter[filterValue.name](items, filterValue.filterBy);
+  itemsFilters.byListUUID = function(items, uuid) {
+    var filteredItems = [];
+    for (var i = 0, len = items.length; i < len; i++) {
+      if (items[i].relationships && items[i].relationships.parent)
+        if (items[i].relationships.parent === uuid) filteredItems.push(items[i]);
     }
-    return items;
+    return filteredItems;
   };
 
-  return filter;
+  itemsFilters.byTagUUID = function(items, uuid) {
+    var filteredItems = [];
+    for (var i = 0, len = items.length; i < len; i++) {
+      if (items[i].relationships && items[i].relationships.tags)
+        if (items[i].relationships.tags.indexOf(uuid) !== -1) filteredItems.push(items[i]);
+    }
+    return filteredItems;
+  };
+
+  itemsFilters.unsorted = function(items) {
+    var filteredItems = [];
+    for (var i = 0, len = items.length; i < len; i++) {
+      if (!items[i].relationships || !items[i].relationships.tags || items[i].relationships.tags.length === 0)
+        filteredItems.push(items[i]);
+    }
+    return filteredItems;
+  };
+
+  itemsFilters.noList = function(items) {
+    var filteredItems = [];
+    for (var i = 0, len = items.length; i < len; i++) {
+      if (!items[i].relationships || !items[i].relationships.parent)
+        filteredItems.push(items[i]);
+    }
+    return filteredItems;
+  };
+  itemsFilters.noDate = function(items) {
+    var filteredItems = [];
+    for (var i = 0, len = items.length; i < len; i++) {
+      if (!items[i].due) filteredItems.push(items[i]);
+    }
+    return filteredItems;
+  };
+
+  return function(items, filterValue) {
+    if (filterValue) return itemsFilters[filterValue.name](items, filterValue.filterBy);
+  };
+
 }
 angular.module('em.main').filter('itemsFilter', itemsFilter);
