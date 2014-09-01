@@ -159,15 +159,6 @@
         if (!DrawerService.getIsSticky()) DrawerService.toggle('left');
       };
 
-      $scope.openOmnibarDrawer = function openOmnibarDrawer() {
-        $scope.setIsWebkitScrolling(false);
-        DrawerService.toggle('right');
-      };
-      $scope.closeOmnibarDrawer = function closeOmnibarDrawer() {
-        $scope.setIsWebkitScrolling(true);
-        DrawerService.toggle('right');
-      };
-
       $scope.getFooterVisibilityClass = function getFooterVisibilityClass() {
         if (!$scope.hasFeatureFooter()) return 'hide-footer';
       };

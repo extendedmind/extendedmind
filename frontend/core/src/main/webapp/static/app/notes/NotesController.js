@@ -99,7 +99,7 @@
   };
 
   $scope.editNote = function editNote(note) {
-    $scope.editItemInOmnibar(note, 'note');
+    $scope.editItemInEditor(note, 'note');
   };
 
   $scope.deleteNote = function deleteNote(note) {

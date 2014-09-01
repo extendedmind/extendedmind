@@ -40,18 +40,6 @@
     ListsService.saveList(list, UISessionService.getActiveUUID());
   };
 
-  $scope.saveUnsavedListAndLinkToItem = function saveUnsavedListAndLinkToItem(item) {
-    if ($scope.newList && $scope.newList.title) {
-      return $scope.addList($scope.newList).then(function(list) {
-        if (!item.transientProperties) item.transientProperties = {};
-        item.transientProperties.list = list.uuid;
-      });
-    }
-    var deferred = $q.defer();
-    deferred.resolve();
-    return deferred.promise;
-  };
-
   $scope.setUnsavedList = function setUnsavedList(/*list*/) {
     $scope.newList = {};
   };

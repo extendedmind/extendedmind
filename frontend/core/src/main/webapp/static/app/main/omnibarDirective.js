@@ -17,7 +17,7 @@
  function omnibarDirective() {
   return {
     restrict: 'A',
-    templateUrl: 'static/app/main/omnibar.html'
+    templateUrl: 'static/app/main/editor.html'
   };
 }
 angular.module('em.main').directive('omnibar', omnibarDirective);

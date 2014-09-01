@@ -163,11 +163,27 @@
       if (!Date.parse(task.transientProperties.date)) delete task.transientProperties.date;
   }
 
+  function copyDescriptionToTransientProperties(task) {
+    if (task.description) {
+      if (!task.transientProperties) task.transientProperties = {};
+      task.transientProperties.description = task.description;
+    }
+  }
+  function copyTransientDescriptionToPersistent(task) {
+    if (task.transientProperties && task.transientProperties.description)
+      task.description = task.transientProperties.description;
+    else if (task.description) delete task.description;
+
+    // AngularJS sets property to empty string '""' if it is used in ng-model data-binding and text is removed.
+    if (task.transientProperties && task.transientProperties.description === '')
+      delete task.transientProperties.description;
+  }
+
   return {
     setTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       cleanRecentlyCompletedTasks(ownerUUID);
-      ExtendedItemService.addTransientProperties(tasksResponse, ownerUUID, copyDueToDate);
+      this.addTransientProperties(tasksResponse, ownerUUID);
 
       return ArrayService.setArrays(
         tasksResponse,
@@ -178,7 +194,7 @@
     updateTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       cleanRecentlyCompletedTasks(ownerUUID);
-      ExtendedItemService.addTransientProperties(tasksResponse, ownerUUID, copyDueToDate);
+      this.addTransientProperties(tasksResponse, ownerUUID);
 
       return ArrayService.updateArrays(
         tasksResponse,
@@ -215,7 +231,7 @@
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') deferred.reject(task);
       else {
         cleanRecentlyCompletedTasks(ownerUUID);
-        var transientProperties = ExtendedItemService.detachTransientProperties(task, ownerUUID, copyDateToDue);
+        var transientProperties = this.detachTransientProperties(task, ownerUUID);
         if (task.uuid) {
           // Existing task
           if (UserSessionService.isOfflineEnabled()) {
@@ -423,27 +439,22 @@
     resetTask: function(task, ownerUUID) {
       var tasksArray = [task];
       if (task.transientProperties) {
+        if (task.transientProperties.description) delete task.transientProperties.description;
         if (task.transientProperties.context) delete task.transientProperties.context;
         if (task.transientProperties.list) delete task.transientProperties.list;
         if (task.transientProperties.date) delete task.transientProperties.date;
       }
-      ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, copyDueToDate);
+      this.addTransientProperties(tasksArray, ownerUUID);
     },
-    addTransientProperties: function(task, ownerUUID, addExtraTransientPropertyFn) {
-      //
-      // TODO: Replace ExtendedItemService.addTransientProperties with this
-      //
-      var addExtraTransientPropertyFunctions;
+    addTransientProperties: function(tasksArray, ownerUUID, addExtraTransientPropertyFn) {
+      var addExtraTransientPropertyFunctions = [copyDueToDate, copyDescriptionToTransientProperties];
       if (typeof addExtraTransientPropertyFn === 'function')
-        addExtraTransientPropertyFunctions = [addExtraTransientPropertyFn, copyDueToDate];
-      else addExtraTransientPropertyFunctions = copyDueToDate;
-      ExtendedItemService.addTransientProperties([task], ownerUUID, addExtraTransientPropertyFunctions);
+        addExtraTransientPropertyFunctions.push(addExtraTransientPropertyFn);
+      ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, addExtraTransientPropertyFunctions);
     },
     detachTransientProperties: function(task, ownerUUID) {
-      //
-      // TODO: Replace ExtendedItemService.detachTransientProperties with this
-      //
-      return ExtendedItemService.detachTransientProperties(task, ownerUUID, copyDateToDue);
+      var detachExtraTransientPropertyFunctions = [copyDateToDue, copyTransientDescriptionToPersistent];
+      return ExtendedItemService.detachTransientProperties(task, ownerUUID, detachExtraTransientPropertyFunctions);
     },
 
     // Regular expressions for task requests

@@ -44,10 +44,6 @@
     TasksService.saveTask(task, UISessionService.getActiveUUID());
   };
 
-  $scope.editTask = function editTask(task) {
-    $scope.editItemInOmnibar(task, 'task');
-  };
-
   $scope.taskChecked = function taskChecked(task) {
     if (task.completed) {
       AnalyticsService.do('uncompleteTask');
@@ -56,6 +52,15 @@
       AnalyticsService.do('completeTask');
       TasksService.completeTask(task, UISessionService.getActiveUUID());
     }
+  };
+
+  $scope.saveTask = function saveTask(task) {
+    AnalyticsService.do('saveTask');
+    TasksService.saveTask(task, UISessionService.getActiveUUID());
+  };
+
+  $scope.resetTask = function resetTask(task) {
+    TasksService.resetTask(task, UISessionService.getActiveUUID());
   };
 
   $scope.deleteTask = function deleteTask(task) {

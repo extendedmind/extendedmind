@@ -537,9 +537,11 @@ describe('SynchronizeService', function() {
 
     // 3. update task
     var updatedTestTask = {
-      'uuid': testItem.uuid,
-      'title': testItem.title,
-      'description': 'test description'
+      uuid: testItem.uuid,
+      title: testItem.title,
+      transientProperties: {
+        description: 'test description'
+      }
     };
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
        .respond(404);

@@ -200,6 +200,11 @@
       copyKeywordsToTags(extendedItem, ownerUUID);
       copyListToParent(extendedItem);
       if (typeof detachExtraPropertyFn === 'function') detachExtraPropertyFn(extendedItem, ownerUUID);
+      else if (Array.isArray(detachExtraPropertyFn)) {
+        for (var i = 0, len = detachExtraPropertyFn.length; i < len; i++) {
+          detachExtraPropertyFn[i](extendedItem, ownerUUID);
+        }
+      }
 
       // Check that transientProperties object is not empty
       // http://stackoverflow.com/a/4994244

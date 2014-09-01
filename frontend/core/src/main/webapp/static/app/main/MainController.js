@@ -22,7 +22,7 @@
 // which are part of every main slide collection.
 function MainController(
   $controller, $filter, $rootScope, $scope, $timeout, $window,
-  AccountService, AnalyticsService, ArrayService, ItemsService, ListsService,
+  AccountService, AnalyticsService, ArrayService, DrawerService, ItemsService, ListsService,
   NotesService, SwiperService, SynchronizeService, TagsService, TasksService,
   UISessionService, UserSessionService, UUIDService) {
 
@@ -271,11 +271,85 @@ function MainController(
     }
   };
 
+  var editorAboutToOpenCallbacks = {};
+  var editorOpenedCallbacks = {};
+  var editorAboutToCloseCallbacks = {};
+  var editorClosedCallbacks = {};
+
+  // register editor callbacks
+  $scope.registerEditorAboutToOpenCallback = function registerEditorAboutToOpenCallback(callback, id) {
+    editorAboutToOpenCallbacks[id] = callback;
+  };
+
+  $scope.registerEditorOpenedCallback = function(callback, id) {
+    editorOpenedCallbacks[id] = callback;
+  };
+
+  $scope.registerEditorAboutToClose = function(callback, id) {
+    editorAboutToCloseCallbacks[id] = callback;
+  };
+
+  $scope.registerEditorClosedCallback = function(callback, id) {
+    editorClosedCallbacks[id] = callback;
+  };
+
+  // register drawer callbacks to DrawerService
+
+  function executeEditorAboutToOpenCallbacks(editorType, item) {
+    for (var id in editorAboutToOpenCallbacks)
+      editorAboutToOpenCallbacks[id](editorType, item);
+  }
+
+  DrawerService.registerOpenedCallback(editorOpened, 'right', 'MainController');
+  function editorOpened() {
+    for (var id in editorOpenedCallbacks) {
+      editorOpenedCallbacks[id]();
+    }
+  }
+
+  /*
+  function executeEditorAboutToCloseCallbacks(editorType, item) {
+    for (var id in editorAboutToCloseCallbacks)
+      editorAboutToCloseCallbacks[id](editorType, item);
+  }
+  */
+
+  DrawerService.registerClosedCallback(editorClosed, 'right', 'MainController');
+  function editorClosed() {
+    for (var id in editorClosedCallbacks)
+      editorClosedCallbacks[id]();
+  }
+
+  $scope.isEditorVisible = function isEditorVisible() {
+    return DrawerService.isRightDrawerOpen();
+  };
+
+  $scope.isMenuVisible = function isMenuVisible() {
+    return DrawerService.isLeftDrawerOpen();
+  };
+
+  // NAVIGATION
+
+  // TODO analytics visit omnibar
+  $scope.openOmnibarDrawer = function openOmnibarDrawer() {
+    executeEditorAboutToOpenCallbacks('omnibar');
+    $scope.setIsWebkitScrolling(false);
+    DrawerService.toggle('right');
+  };
+
+  $scope.closeOmnibarDrawer = function closeOmnibarDrawer() {
+    $scope.setIsWebkitScrolling(true);
+    DrawerService.toggle('right');
+  };
+
+  $scope.editTask = function editTask(task) {
+    executeEditorAboutToOpenCallbacks('task', task);
+    $scope.setIsWebkitScrolling(false);
+    DrawerService.toggle('right');
+  };
+
 
   // INJECT OTHER CONTENT CONTROLLERS HERE
-  // This is done because editX.html and xSlides.html
-  // need to be side by side in main.html, and they
-  // should both use the same controller
 
   $controller('TasksController',{$scope: $scope});
   $controller('ListsController',{$scope: $scope});
@@ -283,12 +357,11 @@ function MainController(
   $controller('KeywordsController',{$scope: $scope});
   $controller('NotesController',{$scope: $scope});
   $controller('ItemsController',{$scope: $scope});
-  $controller('OmnibarController',{$scope: $scope});
 }
 
 MainController['$inject'] = [
 '$controller', '$filter', '$rootScope', '$scope', '$timeout', '$window',
-'AccountService', 'AnalyticsService', 'ArrayService', 'ItemsService', 'ListsService',
+'AccountService', 'AnalyticsService', 'ArrayService', 'DrawerService', 'ItemsService', 'ListsService',
 'NotesService', 'SwiperService', 'SynchronizeService','TagsService', 'TasksService',
 'UISessionService', 'UserSessionService', 'UUIDService'
 ];

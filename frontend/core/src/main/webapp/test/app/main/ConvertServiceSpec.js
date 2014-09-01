@@ -484,7 +484,8 @@ it('should set transientProperties object with \'date\' property to task ' +
   .toEqual('2014-08-29');
 });
 
-it('should convert new task to note', function() {
+it('should convert new task to note and move description to content', function() {
+  /*
   // SETUP
   var newTaskToNote = {
     title: 'print tickets',
@@ -499,8 +500,15 @@ it('should convert new task to note', function() {
   };
 
   // EXECUTE
+  ConvertService.finishTaskToNoteConvert(newTaskToNote, testOwnerUUID);
 
   // TESTS
+  expect(newTaskToNote.description)
+  .toBeUndefined();
+
+  expect(newTaskToNote.content)
+  .toEqual('to oxygen accelerator');
+  */
 });
 
 });

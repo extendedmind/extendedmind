@@ -172,7 +172,7 @@
       var windowResizedCallbacks = {};
       scope.registerWindowResizedCallback = function (windowResizedCallback, id) {
         windowResizedCallbacks[id] = windowResizedCallback;
-      }
+      };
 
       function setDimensions(width, height) {
 
@@ -182,12 +182,12 @@
           $rootScope.isMobile = true;
 
         // UI for large screens
-        } else if (width > 568 && ($rootScope.currentWidth <= 568 || !$rootScope.currentWidth)) {
-          $rootScope.isMobile = false;
-          $rootScope.isDesktop = true;
-        }
-        $rootScope.currentWidth = width;
-        $rootScope.currentHeight = height;
+      } else if (width > 568 && ($rootScope.currentWidth <= 568 || !$rootScope.currentWidth)) {
+        $rootScope.isMobile = false;
+        $rootScope.isDesktop = true;
+      }
+      $rootScope.currentWidth = width;
+      $rootScope.currentHeight = height;
 
         // Execute callbacks
         for (var id in windowResizedCallbacks) {

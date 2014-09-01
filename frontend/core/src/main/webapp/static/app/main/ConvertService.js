@@ -124,7 +124,7 @@
     if (convert) copyConvertToTaskTransientPropertiesFn = copyConvertToItemTransientProperties
       .bind(undefined, task, convert, 'note', 'task');
 
-    TasksService.addTransientProperties(task, ownerUUID, copyConvertToTaskTransientPropertiesFn);
+    TasksService.addTransientProperties([task], ownerUUID, copyConvertToTaskTransientPropertiesFn);
     TasksService.addTask(task, ownerUUID);
     NotesService.removeNote(note, ownerUUID);
   }
@@ -142,7 +142,7 @@
   }
 
   function processListToTaskResponse(list, task, ownerUUID) {
-    TasksService.addTransientProperties(task, ownerUUID);
+    TasksService.addTransientProperties([task], ownerUUID);
     TasksService.addTask(task, ownerUUID);
     ListsService.removeList(list, ownerUUID);
   }

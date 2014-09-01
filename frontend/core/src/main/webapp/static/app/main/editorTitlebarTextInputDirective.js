@@ -14,20 +14,20 @@
  */
  'use strict';
 
- function omnibarInputDirective($document) {
+ function editorTitlebarTextInputDirective($document) {
   return {
     restrict: 'A',
     link: function postLink(scope, element) {
 
-      scope.registerOmnibarInputFocusCallback(omnibarInputFocus);
-      function omnibarInputFocus() {
+      scope.registerTitleBarInputFocusCallback(titleBarInputFocus);
+      function titleBarInputFocus() {
         scope.$evalAsync(function() {
           // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
           if ($document[0].activeElement !== element[0]) element[0].focus();
         });
       }
-      scope.registerOmnibarInputBlurCallback(omnibarInputBlur);
-      function omnibarInputBlur() {
+      scope.registerTitleBarInputBlurCallback(titleBarInputBlur);
+      function titleBarInputBlur() {
         scope.$evalAsync(function() {
           if ($document[0].activeElement === element[0]) element[0].blur();
         });
@@ -35,5 +35,5 @@
     }
   };
 }
-omnibarInputDirective['$inject'] = ['$document'];
-angular.module('em.main').directive('omnibarInput', omnibarInputDirective);
+editorTitlebarTextInputDirective['$inject'] = ['$document'];
+angular.module('em.main').directive('editorTitlebarTextInput', editorTitlebarTextInputDirective);

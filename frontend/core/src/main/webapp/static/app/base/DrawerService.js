@@ -22,6 +22,8 @@
   var isSnapperSticky = false;
 
   var animatedCallbacks = {};
+  var openedCallbacks = {};
+  var closedCallbacks = {};
 
   function snapperStartDragCallback(snapperSide) {
     if (snapperSide === 'left') {
@@ -56,6 +58,20 @@
     if (animatedCallbacks[snapperSide]) {
       for (var i = 0, len = animatedCallbacks[snapperSide].length; i < len; i++) {
         animatedCallbacks[snapperSide][i].callback(snappers[snapperSide].snapper.state().state, snapperSide);
+      }
+    }
+    if (openedCallbacks[snapperSide]) {
+      if (snappers[snapperSide].snapper.state().state === snapperSide) {  // drawer is open when state is left or right
+        for (var j = 0, jLen = openedCallbacks[snapperSide].length; j < jLen; j++) {
+          openedCallbacks[snapperSide][j].callback();
+        }
+      }
+    }
+    if (closedCallbacks[snapperSide]) {
+      if (snappers[snapperSide].snapper.state().state === 'closed') {
+        for (var k = 0, kLen = closedCallbacks[snapperSide].length; k < kLen; k++) {
+          closedCallbacks[snapperSide][k].callback();
+        }
       }
     }
   }
@@ -158,6 +174,36 @@
         callback: animatedCallback,
         id: id});
     },
+    registerOpenedCallback: function(callback, snapperSide, id) {
+      if (!openedCallbacks[snapperSide]) openedCallbacks[snapperSide] = [];
+      else {
+        for (var i = 0, len = openedCallbacks[snapperSide].length; i < len; i++) {
+          if (openedCallbacks[snapperSide][i].id === id) {
+            // Already registerd, replace callback
+            openedCallbacks[snapperSide][i].callback = callback;
+            return;
+          }
+        }
+      }
+      openedCallbacks[snapperSide].push({
+        callback: callback,
+        id: id});
+    },
+    registerClosedCallback: function(callback, snapperSide, id) {
+      if (!closedCallbacks[snapperSide]) closedCallbacks[snapperSide] = [];
+      else {
+        for (var i = 0, len = closedCallbacks[snapperSide].length; i < len; i++) {
+          if (closedCallbacks[snapperSide][i].id === id) {
+            // Already registerd, replace callback
+            closedCallbacks[snapperSide][i].callback = callback;
+            return;
+          }
+        }
+      }
+      closedCallbacks[snapperSide].push({
+        callback: callback,
+        id: id});
+    },
     registerCloseCallback: function(callback, snapperSide) {
       if (snappers[snapperSide] && snappers[snapperSide].snapper)
         snappers[snapperSide].snapper.on('close', callback);
@@ -198,6 +244,12 @@
         if (snapperSide === 'left') return snappers[snapperSide].snapper.state().state === 'left';
         else if (snapperSide === 'right') return snappers[snapperSide].snapper.state().state === 'right';
       }
+    },
+    isLeftDrawerOpen: function() {
+      if (snapperExists('left')) return snappers['left'].snapper.state().state === 'left';
+    },
+    isRightDrawerOpen: function() {
+      if (snapperExists('right')) return snappers['right'].snapper.state().state === 'right';
     },
     setSnapperVisible: function(snapperSide) {
       if (snapperSide === 'left') {
