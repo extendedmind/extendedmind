@@ -28,7 +28,7 @@
           <form role="form" name="signupForm">
             <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email..." required />
             <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password..." required />
-            <div class="group-mixed row">
+            <div class="group-mixed row group-instruction">
               <input type="checkbox" ng-model="user.agree" ng-true-value="true" icon-checkbox="signupFormAgree" />
               <span class="text-checkbox text-details">I have read and agree to the <a href ng-click="gotoTermsOfService()">terms of service</a> and <a href ng-click="gotoPrivacyPolicy()">privacy policy</a></span>
             </div>
@@ -46,7 +46,7 @@
               <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
             </div>
           </div>
-          <footer class="container-navigation-slide">
+          <footer class="row container-navigation-slide">
             <a href class="link-navigation-back" ng-click="swipeToHome()">back</a>
           </footer>
         </div>
