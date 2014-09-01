@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function SnapService() {
+ function DrawerService() {
   var drawerSlidingDisabled = false;
 
   var snappers = {};
@@ -206,4 +206,4 @@
     }
   };
 }
-angular.module('em.base').factory('SnapService', SnapService);
+angular.module('em.base').factory('DrawerService', DrawerService);

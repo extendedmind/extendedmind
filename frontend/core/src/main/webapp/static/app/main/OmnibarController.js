@@ -16,7 +16,7 @@
  /* global cordova */
  'use strict';
 
- function OmnibarController($q, $rootScope, $scope, $timeout, AnalyticsService, ItemsService, NotesService, SnapService, TasksService, UISessionService) {
+ function OmnibarController($q, $rootScope, $scope, $timeout, AnalyticsService, ItemsService, NotesService, DrawerService, TasksService, UISessionService) {
 
   var omnibarVisible = false;
   $scope.omnibarText = {};
@@ -28,7 +28,7 @@
   var omnibarInputFocusCallbackFunction = {};
   var omnibarInputBlurCallbackFunction = {};
 
-  SnapService.registerAnimatedCallback(snapDrawerAnimated, 'right', 'OmnibarController');
+  DrawerService.registerAnimatedCallback(snapDrawerAnimated, 'right', 'OmnibarController');
   function snapDrawerAnimated(snapperState) {
     if (snapperState === 'closed') clearAndHideOmnibar();
     else if (snapperState === 'right') setFocusOnOmnibarInput();
@@ -522,5 +522,5 @@
   }
 }
 
-OmnibarController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'AnalyticsService', 'ItemsService', 'NotesService', 'SnapService', 'TasksService', 'UISessionService'];
+OmnibarController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'AnalyticsService', 'ItemsService', 'NotesService', 'DrawerService', 'TasksService', 'UISessionService'];
 angular.module('em.main').controller('OmnibarController', OmnibarController);

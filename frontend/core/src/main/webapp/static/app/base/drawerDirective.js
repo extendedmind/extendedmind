@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function snapDirective($rootScope, SnapService) {
+ function drawerDirective($rootScope, DrawerService) {
   return {
     restrict: 'A',
     controller: function($scope, $element) {
@@ -22,25 +22,25 @@
       // MENU TOGGLE
 
       $scope.toggleMenu = function toggleMenu() {
-        if (SnapService.isSnapperClosed('left')) $scope.setIsWebkitScrolling(false);
-        SnapService.toggle('left');
+        if (DrawerService.isSnapperClosed('left')) $scope.setIsWebkitScrolling(false);
+        DrawerService.toggle('left');
       };
 
       $scope.toggleUnstickyMenu = function toggleUnstickyMenu() {
-        if (!SnapService.getIsSticky()) SnapService.toggle('left');
+        if (!DrawerService.getIsSticky()) DrawerService.toggle('left');
       };
 
       $scope.openEditor = function() {
         $scope.setIsWebkitScrolling(false);
-        SnapService.toggle('right');
+        DrawerService.toggle('right');
       };
       $scope.closeEditor = function() {
         $scope.setIsWebkitScrolling(true);
-        SnapService.toggle('right');
+        DrawerService.toggle('right');
       };
 
-      this.registerSnapDirective = function(element, snapperSide){
-        SnapService.setDraggerElement(element, snapperSide);
+      this.registerDrawerDragElement = function(element, snapperSide){
+        DrawerService.setDraggerElement(element, snapperSide);
       }
     },
     link: function postLink(scope, element, attrs, featureContainerController) {
@@ -55,7 +55,7 @@
           addBodyClasses: false
         };
 
-        SnapService.createSnapper(settings, 'left');
+        DrawerService.createSnapper(settings, 'left');
       }
 
       function calculateEditorMinPosition() {
@@ -75,30 +75,30 @@
           addBodyClasses: false,
           minPosition: -calculateEditorMinPosition()
         };
-        SnapService.createSnapper(settings, 'right');
+        DrawerService.createSnapper(settings, 'right');
       }
 
       function initializeSnap(){
         if ($rootScope.isMobile){
-          SnapService.toggleSnappersSticky(false);
+          DrawerService.toggleSnappersSticky(false);
         }else{
-          SnapService.toggleSnappersSticky(true);
+          DrawerService.toggleSnappersSticky(true);
         }
         initializeMenu();
         initializeEditor();
       }
       // Reinitialize on every window resize event
-      scope.registerWindowResizedCallback(initializeSnap, 'snapDirective');
+      scope.registerWindowResizedCallback(initializeSnap, 'drawerDirective');
 
       // Initialize everything
       initializeSnap();
 
       scope.$on('$destroy', function() {
-        SnapService.deleteSnapper('left');
-        SnapService.deleteSnapper('right');
+        DrawerService.deleteSnapper('left');
+        DrawerService.deleteSnapper('right');
       });
     }
   };
 }
-snapDirective['$inject'] = ['$rootScope', 'SnapService'];
-angular.module('em.main').directive('snap', snapDirective);
+drawerDirective['$inject'] = ['$rootScope', 'DrawerService'];
+angular.module('em.main').directive('drawer', drawerDirective);

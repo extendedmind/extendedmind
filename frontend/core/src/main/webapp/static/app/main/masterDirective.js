@@ -12,9 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 'use strict';
+'use strict';
 
- function featureContainerDirective($rootScope, DrawerService, SwiperService, UISessionService, UserSessionService) {
+function masterDirective($rootScope, DrawerService, SwiperService, UISessionService, UserSessionService) {
   return {
     restrict: 'A',
     controller: function($scope, $element) {
@@ -100,22 +100,22 @@
       function resizeContent() {
         if ($rootScope.isDesktop) {
           var activeFeature = $scope.getActiveFeature();
-          var swiperWrapperElement = swiperElements[activeFeature];
+          var swiperContainerElement = SwiperService.getSwiperContainer(activeFeature);
 
           var drawerMenu = document.getElementById('menu');
           var drawerMenuWidth = 0;
           if (drawerMenu) drawerMenuWidth = drawerMenu.offsetWidth; // http://stackoverflow.com/a/294273
 
           if (DrawerService.isSnapperClosed('left')) {
-            if (swiperWrapperElement) swiperWrapperTranslate('left');
+            if (swiperContainerElement) swiperWrapperTranslate('left', swiperContainerElement.firstElementChild);
             $element[0].style.maxWidth = $rootScope.currentWidth - drawerMenuWidth + 'px';
           }
           else if (DrawerService.isSnapperOpen('left')) {
-            if (swiperWrapperElement) swiperWrapperTranslate('right');
+            if (swiperContainerElement) swiperWrapperTranslate('right', swiperContainerElement.firstElementChild);
             $element[0].style.maxWidth = $rootScope.currentWidth + 'px';
           }
         }
-        function swiperWrapperTranslate(direction) {
+        function swiperWrapperTranslate(direction, swiperWrapperElement) {
           swiperWrapperElement.style['webkitTransition'] = 'all ' + 0.2 + 's ' + 'ease';  // TODO: vendor prefixes
           var translateSwiperWrapperX = drawerMenuWidth / 2;
 
@@ -128,15 +128,15 @@
           // http://stackoverflow.com/a/5574196
           if (direction === 'left') translateSwiperWrapperX = -Math.abs(translateSwiperWrapperX);
           SwiperService.setWrapperTranslate(activeFeature, translateSwiperWrapperX, 0, 0);
-          toggleInactiveSwiperSlidesVisiblity('hidden', activeFeature);
+          toggleInactiveSwiperSlidesVisibility('hidden', activeFeature);
         }
       }
 
-      this.toggleInactiveSwiperSlidesVisiblityClass = function toggleInactiveSwiperSlidesVisiblityClass(visibilityValue, activeFeature) {
-        toggleInactiveSwiperSlidesVisiblity(visibilityValue, activeFeature);
+      this.toggleInactiveSwiperSlidesVisibilityClass = function toggleInactiveSwiperSlidesVisibilityClass(visibilityValue, activeFeature) {
+        toggleInactiveSwiperSlidesVisibility(visibilityValue, activeFeature);
       };
 
-      function toggleInactiveSwiperSlidesVisiblity(visibilityValue, activeFeature) {
+      function toggleInactiveSwiperSlidesVisibility(visibilityValue, activeFeature) {
         var swiperSlides = SwiperService.getSwiperSlides(activeFeature);
         if (swiperSlides) {
           for (var i = 0, len = swiperSlides.length; i < len; i++) {
@@ -147,91 +147,32 @@
         }
       }
 
-      // MENU TOGGLE
-
-      $scope.toggleMenu = function toggleMenu() {
-        resizeContent();
-        if (DrawerService.isSnapperClosed('left')) $scope.setIsWebkitScrolling(false);
-        DrawerService.toggle('left');
-      };
-
-      $scope.toggleUnstickyMenu = function toggleUnstickyMenu() {
-        if (!DrawerService.getIsSticky()) DrawerService.toggle('left');
-      };
-
-      $scope.openOmnibarDrawer = function openOmnibarDrawer() {
-        $scope.setIsWebkitScrolling(false);
-        DrawerService.toggle('right');
-      };
-      $scope.closeOmnibarDrawer = function closeOmnibarDrawer() {
-        $scope.setIsWebkitScrolling(true);
-        DrawerService.toggle('right');
-      };
-
-      $scope.getFooterVisibilityClass = function getFooterVisibilityClass() {
-        if (!$scope.hasFeatureFooter()) return 'hide-footer';
-      };
-
       // UI SESSION SERVICE HOOKS
 
       var featureChangedCallback = function featureChangedCallback(name, data, state) {
-        setFeatureContainerClass(name);
-        if (featureElements[name]) {
-          DrawerService.setDraggerElements(featureElements[name].draggerElements);
+        var swiperContainerElement = SwiperService.getSwiperContainer(name);
+        if (swiperContainerElement) {
+          DrawerService.setDraggerElement(swiperContainerElement.firstElementChild);
         }
 
         if (!state) state = UISessionService.getFeatureState(name);
       };
-      UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'featureContainerDirective');
+      UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'masterDirective');
       if (!UISessionService.getCurrentFeatureName()) {
         if ($scope.onboardingInProgress) {
           UISessionService.changeFeature('inbox');
         } else {
-          UISessionService.changeFeature('tasks');
+          UISessionService.changeFeature('focus');
         }
       } else {
         // Need to explicitly call feature change
         featureChangedCallback(UISessionService.getCurrentFeatureName());
       }
 
-      // CALLBACK REGISTRATION
-
-      this.registerSnapDrawerDragElement = function registerSnapDrawerDragElement(feature, element, snapperSide) {
-        if ($scope.isFeatureActive(feature)) {
-          DrawerService.setDraggerElement(element, snapperSide);
-        }
-        if (!featureElements[feature]) featureElements[feature] = {};
-        if (!featureElements[feature].draggerElements) featureElements[feature].draggerElements = {};
-        featureElements[feature].draggerElements[snapperSide] = element;
-      };
-      this.unregisterSnapDrawerDragElement = function unregisterSnapDrawerDragElement(feature, snapperSide) {
-        if (featureElements[feature] && featureElements[feature].draggerElements) delete featureElements[feature].draggerElements[snapperSide];
-      };
-      this.registerSwiperElement = function registerSwiperElement(feature, element) {
-        swiperElements[feature] = element;
-      };
-      this.unregisterSwiperElement = function unregisterSwiperElement(feature) {
-        delete swiperElements[feature];
-      };
-
-      // SET CORRECT CLASSES TO FEATURE CONTAINER ELEMENT
-
-      setFeatureContainerClass($scope.getActiveFeature());
-
-      // https://developer.mozilla.org/en-US/docs/Web/API/Element.classList
-      function setFeatureContainerClass(feature) {
-        if ($scope.features[feature].slides){
-          $element[0].classList.toggle('no-slides-container', false);
-          $element[0].classList.toggle('slides-container', true);
-        } else {
-          $element[0].classList.toggle('no-slides-container', true);
-          $element[0].classList.toggle('slides-container', false);
-        }
-      }
     },
-    link: function postLink(scope, element, attrs, featureContainerController) {
+    link: function postLink(scope, element, attrs, masterController) {
 
-      function initializeSwiperAndSnap(){
+      function initializeSwiper(){
         if ($rootScope.isMobile){
           var leftEdgeTouchRatio = 0;
           var rightEdgeTouchRatio = 0.2;
@@ -240,54 +181,17 @@
               SwiperService.setEdgeTouchRatios(feature, leftEdgeTouchRatio, rightEdgeTouchRatio);
             }
           }
-          DrawerService.toggleSnappersSticky(false);
         }else{
           for (var feature in scope.features){
             if (scope.features.hasOwnProperty(feature) && scope.features[feature].slides){
               SwiperService.setEdgeTouchRatios(feature);
             }
           }
-          DrawerService.toggleSnappersSticky(true);
         }
       }
       // Reinitialize on every window resize event
-      scope.registerWindowResizedCallback(initializeSwiperAndSnap, 'featureContainerDirective');
-
-      function initializeDrawerMenu() {
-        var settings = {
-          element: element[0].parentNode,
-          touchToDrag: true,
-          disable: 'right', // use left only
-          transitionSpeed: 0.2,
-          minDragDistance: 0,
-          addBodyClasses: false
-        };
-
-        DrawerService.createSnapper(settings, 'left');
-        DrawerService.registerAnimatedCallback(snapDrawerAnimated, 'left', 'featureContainerDirective');
-        DrawerService.registerEndCallback(snapperPaneReleased, 'left');
-        DrawerService.registerCloseCallback(snapperClosed, 'left');
-      }
-
-      function calculateOmnibarDrawerContainerMinPosition() {
-        var minPosition = element[0].parentNode.offsetWidth > 568 ? $rootScope.currentWidth - (($rootScope.currentWidth - 568) / 2) : element[0].parentNode.offsetWidth;
-        return minPosition;
-      }
-
-      function initializeOmnibar() {
-        /* jshint -W008 */
-
-        var settings = {
-          element: element[0].parentNode,
-          touchToDrag: false,
-          disable: 'left', // use right only
-          transitionSpeed: .3,
-          minDragDistance: 0,
-          addBodyClasses: false,
-          minPosition: -calculateOmnibarDrawerContainerMinPosition()
-        };
-        DrawerService.createSnapper(settings, 'right');
-      }
+      scope.registerWindowResizedCallback(initializeSwiper, 'masterDirective');
+      initializeSwiper();
 
       // No clicking/tapping when drawer is open.
       function drawerContentClicked(event) {
@@ -323,7 +227,7 @@
           }
         }
 
-        featureContainerController.toggleInactiveSwiperSlidesVisiblityClass('visible', activeFeature);
+        masterController.toggleInactiveSwiperSlidesVisibilityClass('visible', activeFeature);
         SwiperService.resizeFixSwiperAndChildSwipers(activeFeature);
       }
 
@@ -353,18 +257,11 @@
         }
       }
 
-      // Initialize everything
-      initializeSwiperAndSnap();
-      initializeDrawerMenu();
-      initializeOmnibar();
-
-
       scope.$on('$destroy', function() {
-        DrawerService.deleteSnapper('left');
         angular.element(element).unbind('touchstart', drawerContentClicked);
       });
     }
   };
 }
-featureContainerDirective['$inject'] = ['$rootScope', 'DrawerService', 'SwiperService', 'UISessionService', 'UserSessionService'];
-angular.module('em.main').directive('featureContainer', featureContainerDirective);
+masterDirective['$inject'] = ['$rootScope', 'DrawerService', 'SwiperService', 'UISessionService', 'UserSessionService'];
+angular.module('em.main').directive('master', masterDirective);

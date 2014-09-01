@@ -1,10 +1,6 @@
 <section id="focus-tasks" class="container-content" ng-controller="DatesController">
   <div ng-if="!isLoading">
     <div ng-if="isDatepickerVisible" class="row swiper-no-swiping" data-snap-ignore="true" datepicker></div>
-
-    <!-- Inner swiper brings three inner container divs: -->
-    <!-- .swiper-conteiner, .swiper-slide, .swiper-wrapper  { width: inherit; } -->
-
     <div class="swiper-container" swiper-container="tasks/home" swiper-type="page" expected-slides="7">
       <div class="swiper-wrapper">
 

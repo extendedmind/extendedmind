@@ -14,16 +14,13 @@
  */
  'use strict';
 
- function snapDragDirective() {
+ function drawerDragDirective() {
   return {
     restrict: 'A',
-    require: '^snap',
-    scope: {
-      snapDragSide: '@'
-    },
-    link: function postLink(scope, element, attrs, snapController) {
-      snapController.registerSnapDragElement(element[0], scope.snapDragSide);
+    require: '^drawer',
+    link: function postLink(scope, element, attrs, drawerController) {
+      drawerController.registerdrawerDragElement(element[0], attrs.drawerDrag);
     }
   };
 }
-angular.module('em.base').directive('snapDrag', snapDragDirective);
+angular.module('em.base').directive('drawerDrag', drawerDragDirective);

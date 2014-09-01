@@ -112,16 +112,16 @@
         // swiper or not.
         if ($scope.swiperType === 'page') {
           // We're expecting a slide, which has "inner-slide-content-container", which has section
-          element[0].firstElementChild.firstElementChild.addEventListener('touchstart', pageSwiperSlideTouchStart, false);
-          element[0].firstElementChild.firstElementChild.addEventListener('touchmove', pageSwiperSlideTouchMove, false);
-          element[0].firstElementChild.firstElementChild.addEventListener('touchend', pageSwiperSlideTouchEnd, false);
-          element[0].firstElementChild.firstElementChild.addEventListener('scroll', pageSwiperSlideScroll, false);
+          element[0].firstElementChild.addEventListener('touchstart', pageSwiperSlideTouchStart, false);
+          element[0].firstElementChild.addEventListener('touchmove', pageSwiperSlideTouchMove, false);
+          element[0].firstElementChild.addEventListener('touchend', pageSwiperSlideTouchEnd, false);
+          element[0].firstElementChild.addEventListener('scroll', pageSwiperSlideScroll, false);
 
           // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
           if ($window.navigator.msPointerEnabled) {
-            element[0].firstElementChild.firstElementChild.addEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
-            element[0].firstElementChild.firstElementChild.addEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
-            element[0].firstElementChild.firstElementChild.addEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
+            element[0].firstElementChild.addEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
+            element[0].firstElementChild.addEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
+            element[0].firstElementChild.addEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
           }
         }
 
@@ -434,17 +434,17 @@
 
         if ($scope.swiperType === 'page') {
           for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
-            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchstart', pageSwiperSlideTouchStart, false);
-            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchmove', pageSwiperSlideTouchMove, false);
-            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('touchend', pageSwiperSlideTouchEnd, false);
-            swiperSlideInfos[i].slideElement[0].firstElementChild.firstElementChild.removeEventListener('scroll', pageSwiperSlideScroll, false);
+            swiperSlideInfos[i].slideElement[0].firstElementChild.removeEventListener('touchstart', pageSwiperSlideTouchStart, false);
+            swiperSlideInfos[i].slideElement[0].firstElementChild.removeEventListener('touchmove', pageSwiperSlideTouchMove, false);
+            swiperSlideInfos[i].slideElement[0].firstElementChild.removeEventListener('touchend', pageSwiperSlideTouchEnd, false);
+            swiperSlideInfos[i].slideElement[0].firstElementChild.removeEventListener('scroll', pageSwiperSlideScroll, false);
           }
           // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
           if ($window.navigator.msPointerEnabled) {
             for (var j = 0, swiperSlideInfosLength = swiperSlideInfos.length; j < swiperSlideInfosLength; j++) {
-              swiperSlideInfos[j].slideElement[0].firstElementChild.firstElementChild.removeEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
-              swiperSlideInfos[j].slideElement[0].firstElementChild.firstElementChild.removeEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
-              swiperSlideInfos[j].slideElement[0].firstElementChild.firstElementChild.removeEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
+              swiperSlideInfos[j].slideElement[0].firstElementChild.removeEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
+              swiperSlideInfos[j].slideElement[0].firstElementChild.removeEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
+              swiperSlideInfos[j].slideElement[0].firstElementChild.removeEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
             }
           }
         }
