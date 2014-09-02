@@ -262,7 +262,7 @@
 
       function calculateOmnibarDrawerContainerMinPosition() {
         var minPosition = element[0].parentNode.offsetWidth > 568 ? $rootScope.currentWidth - (($rootScope.currentWidth - 568) / 2) : element[0].parentNode.offsetWidth;
-        return minPosition;
+        return parseInt(minPosition);
       }
 
       function initializeOmnibar() {
