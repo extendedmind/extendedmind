@@ -60,7 +60,12 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 }
 
 .container-editor {
-
+  position: absolute;
+  right: 0;
+  left: 0;
+  width: 100%;
+  max-width: @one-column-grid-width;
+  .center-horizontally;
 }
 
 @media (min-height: @maximum-landscape-height) {
@@ -68,6 +73,10 @@ TODO: em grid structure explained in plain English (when new grid structure deci
     position: relative;
     min-height: @maximum-landscape-height;
     max-height: @maximum-landscape-height;
+    margin-top: -@maximum-landscape-height / 2;
+    top: 50%;
+  }
+  .container-editor {
     margin-top: -@maximum-landscape-height / 2;
     top: 50%;
   }
@@ -574,10 +583,6 @@ the main container will be horizontally and vertically centered.
       min-height: @maximum-landscape-height;
       max-height: @maximum-landscape-height;
       margin-top: -@maximum-landscape-height / 2;
-    }
-    .omnibar-drawer {
-      margin-top: -@maximum-landscape-height / 2;
-      top: 50%;
     }
   }
 }
