@@ -18,83 +18,58 @@
   return {
     restrict: 'A',
     templateUrl: 'static/app/tasks/snooze.html',
+    repace: true,
     scope: {
-      task: '=snooze',
-      openSnooze: '=snoozeOpen',
-      selectedFn: '=snoozeSelected',
-      closeAndCall: '=snoozeClose',
-      pikadayHasDoneButton: '=snoozePikadayHasDoneButton',
-      scrollToElementFn: '=snoozeScrollToElement'
+      initialDate: '@snooze',
+      closeAndSave: '&snoozeCloseAndSave',
+      closeAndOpen: '&snoozeCloseAndOpen',
+      destroy: '&snoozeDestroy'
     },
     link: function(scope) {
 
-      scope.openSnooze.pikaday = {
-        isVisible: false,
-        hasDoneButton: scope.pikadayHasDoneButton
-      };
-
-      function processClose(task) {
-        if (angular.isFunction(scope.closeAndCall)) {
-          scope.closeAndCall(task, scope.selectedFn);
-        } else if (angular.isFunction(scope.selectedFn)) {
-          scope.selectedFn(task);
-        }
-        scope.openSnooze.isOpen = false;
+      function processClose(date) {
+        if (angular.isFunction(scope.closeAndSave)) scope.closeAndSave({date: date});
       }
 
-      function setTaskDateAndSave(task, dateSetterFn) {
-        if (!task.transientProperties) task.transientProperties = {};
-
-        var startingDate = DateService.getDateTodayOrFromLaterYYYYMMDD(task.transientProperties.date);
-        task.transientProperties.date = dateSetterFn(startingDate).getYYYYMMDD(startingDate);
-        processClose(task);
+      function setDateAndClose(date, dateSetterFn) {
+        var startingDate = DateService.getDateTodayOrFromLaterYYYYMMDD(date);
+        var offsetFromStaringDate = dateSetterFn(startingDate).getYYYYMMDD(startingDate);
+        processClose(offsetFromStaringDate);
       }
 
-      scope.savePikaday = function savePikaday(task) {
-        processClose(task);
+      scope.setDateToday = function setDateToday() {
+        var today = DateService.getTodayYYYYMMDD();
+        processClose(today);
+      };
+      scope.setDateTomorrow = function setDateTomorrow() {
+        var tomorrow = DateService.getTomorrowYYYYMMDD();
+        processClose(tomorrow);
+      };
+      scope.setDateNextDay = function setDateNextDay(date) {
+        setDateAndClose(date, DateService.setOffsetDate.bind(DateService, 1));
+      };
+      scope.setDateTwoDaysLater = function setDateTwoDaysLater(date) {
+        setDateAndClose(date, DateService.setOffsetDate.bind(DateService, 2));
+      };
+      scope.setDateWeekend = function setDateWeekend(date) {
+        setDateAndClose(date, DateService.setReferenceDate.bind(DateService, 'saturday'));
+      };
+      scope.setDateFirstDayOfNextWeek = function setDateFirstDayOfNextWeek(date) {
+        setDateAndClose(date, DateService.setReferenceDate.bind(DateService, 'monday'));
+      };
+      scope.setDateFirstDayOfNextMonth = function setDateFirstDayOfNextMonth(date) {
+        setDateAndClose(date, DateService.setDateToFirstDayOfNextMonth.bind(DateService));
       };
 
-      scope.setDateToday = function setDateToday(task) {
-        if (!task.transientProperties) task.transientProperties = {};
-        task.transientProperties.date = DateService.getTodayYYYYMMDD();
-        processClose(task);
-      };
-      scope.setDateTomorrow = function setDateTomorrow(task) {
-        if (!task.transientProperties) task.transientProperties = {};
-        task.transientProperties.date = DateService.getTomorrowYYYYMMDD();
-        processClose(task);
-      };
-      scope.setDateNextDay = function setDateNextDay(task) {
-        setTaskDateAndSave(task, DateService.setOffsetDate.bind(DateService, 1));
-      };
-      scope.setDateTwoDaysLater = function setDateTwoDaysLater(task) {
-        setTaskDateAndSave(task, DateService.setOffsetDate.bind(DateService, 2));
-      };
-      scope.setDateWeekend = function setDateWeekend(task) {
-        setTaskDateAndSave(task, DateService.setReferenceDate.bind(DateService, 'saturday'));
-      };
-      scope.setDateFirstDayOfNextWeek = function setDateFirstDayOfNextWeek(task) {
-        setTaskDateAndSave(task, DateService.setReferenceDate.bind(DateService, 'monday'));
-      };
-      scope.setDateFirstDayOfNextMonth = function setDateFirstDayOfNextMonth(task) {
-        setTaskDateAndSave(task, DateService.setDateToFirstDayOfNextMonth.bind(DateService));
+      scope.isDateTodayOrLess = function isDateTodayOrLess(date) {
+        return date <= DateService.getTodayYYYYMMDD();
       };
 
-      scope.isTaskDateTodayOrLess = function isTaskDateTodayOrLess(task) {
-        if (task.transientProperties && task.transientProperties.date)
-          return task.transientProperties.date <= DateService.getTodayYYYYMMDD();
-      };
-
-      scope.taskHasDate = function taskHasDate(task) {
-        return task.transientProperties && task.transientProperties.date;
-      };
-
-      scope.openPikaDayAndScroll = function openPikaDayAndScroll() {
-       scope.openSnooze.pikaday.isVisible = true;
-       if (angular.isFunction(scope.scrollToElementFn)) scope.scrollToElementFn();
-     };
-   }
- };
+      scope.$on('$destroy', function() {
+        if (angular.isFunction(scope.destroy)) scope.destroy();
+      });
+    }
+  };
 }
 snoozeDirective['$inject'] = ['DateService'];
 angular.module('em.tasks').directive('snooze', snoozeDirective);

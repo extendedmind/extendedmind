@@ -115,6 +115,7 @@
       for (var i = 0, len = week.length; i < len; i++) {
         if (week[i].displayDate === 'today') return week[i].yyyymmdd === todayYYYYMMDD;
       }
+      return true;
     },
     isDateBeforeCurrentWeek: function(date) {
       var firstDayOfCurrentWeek = getFirstDateOfTheWeek(new Date());

@@ -17,7 +17,7 @@
  function drawerDirective($rootScope, DrawerService) {
   return {
     restrict: 'A',
-    controller: function($scope, $element) {
+    controller: function($scope) {
 
       // MENU TOGGLE
 
@@ -30,20 +30,11 @@
         if (!DrawerService.getIsSticky()) DrawerService.toggle('left');
       };
 
-      $scope.openEditor = function() {
-        $scope.setIsWebkitScrolling(false);
-        DrawerService.toggle('right');
-      };
-      $scope.closeEditor = function() {
-        $scope.setIsWebkitScrolling(true);
-        DrawerService.toggle('right');
-      };
-
       this.registerDrawerDragElement = function(element, snapperSide){
         DrawerService.setDraggerElement(element, snapperSide);
-      }
+      };
     },
-    link: function postLink(scope, element, attrs, featureContainerController) {
+    link: function postLink(scope, element) {
 
       function initializeMenu() {
         var settings = {

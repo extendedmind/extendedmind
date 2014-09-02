@@ -59,7 +59,7 @@
     // Return
     else if (event.keyCode === 13 && !$rootScope.isLoading && $scope.titlebarHasText()) {
       // Enter in editor saves, no line breaks allowed
-      $scope.closeOmnibarDrawer();
+      $scope.closeEditor();
       $scope.saveItemInEdit();
       event.preventDefault();
       event.stopPropagation();
@@ -115,10 +115,10 @@
     return $scope.titlebar.text && $scope.titlebar.text.length !== 0;
   };
 
-  // OPENING / CLOSING
+  // OPENING / CLOSING / ENDING
 
-  $scope.closeEditor = function closeEditor() {
-    $scope.closeOmnibarDrawer();
+  $scope.endEdit = function endEdit() {
+    $scope.closeEditor();
     if ($scope.saveOnClose) $scope.saveItemInEdit();
     else resetItemInEdit();
   };
@@ -181,6 +181,56 @@
     else if ($scope.editorType === 'context') return 'add context';
     else if ($scope.editorType === 'keyword') return 'add keyword';
     else if ($scope.editorType === 'item') return 'add item';
+  };
+
+  $scope.toggleSnooze = function toggleSnooze() {
+    $scope.isSnoozeOpen = !$scope.isSnoozeOpen;
+  };
+
+  $scope.closeSnoozeAndOpenCalendar = function closeSnoozeAndOpenCalendar() {
+    $scope.isSnoozeOpen = false;
+    $scope.isCalendarOpen = true;
+    $scope.calendarCloseCallbackFn = $scope.endEdit;
+  };
+
+  $scope.openCalendar = function openCalendar() {
+    $scope.isCalendarOpen = true;
+    $scope.calendarCloseCallbackFn = undefined;
+  };
+
+  var getCalendarDateFn;
+  $scope.registerGetCalendarDateFn = function registerGetCalendarDateFn(getDateFn) {
+    getCalendarDateFn = getDateFn;
+  };
+
+  function setDateToTask(date, task) {
+    if (!task.transientProperties) task.transientProperties = {};
+    task.transientProperties.date = date;
+  }
+
+  $scope.closeSnooze = function closeSnooze() {
+    $scope.isSnoozeOpen = false;
+  };
+
+  $scope.closeCalendar = function closeCalendar() {
+    $scope.isCalendarOpen = false;
+  };
+
+  $scope.closeSnoozeAndSave = function closeSnoozeAndSave(date) {
+    $scope.isSnoozeOpen = false;
+    if ($scope.editorType === 'task') {
+      setDateToTask(date, $scope.task);
+      $scope.endEdit();
+    }
+  };
+
+  $scope.closeCalendarAndSave = function closeCalendarAndSave(callback) {
+    $scope.isCalendarOpen = false;
+    if (typeof getCalendarDateFn === 'function') {
+      var date = getCalendarDateFn();
+      if ($scope.editorType === 'task') setDateToTask(date, $scope.task);
+      if (typeof callback === 'function') callback();
+    }
   };
 
   $scope.taskDescriptionFocus = function() {

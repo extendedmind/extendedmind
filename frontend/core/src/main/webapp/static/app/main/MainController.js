@@ -331,13 +331,13 @@ function MainController(
   // NAVIGATION
 
   // TODO analytics visit omnibar
-  $scope.openOmnibarDrawer = function openOmnibarDrawer() {
+  $scope.openEditor = function openEditor() {
     executeEditorAboutToOpenCallbacks('omnibar');
     $scope.setIsWebkitScrolling(false);
     DrawerService.toggle('right');
   };
 
-  $scope.closeOmnibarDrawer = function closeOmnibarDrawer() {
+  $scope.closeEditor = function closeEditor() {
     $scope.setIsWebkitScrolling(true);
     DrawerService.toggle('right');
   };

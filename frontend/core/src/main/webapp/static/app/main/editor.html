@@ -5,15 +5,15 @@
     <header class="container-titlebar">
 
       <div class="group-navigation">
-        <a href class="link-navigation-back" ng-click="closeEditor()" ng-bind="saveOnClose ? 'save' : 'cancel'"></a>
+        <a href class="link-navigation-back" ng-click="endEdit()" ng-bind="saveOnClose ? 'save' : 'cancel'"></a>
       </div>
 
       <form role="form" name="addOmniItem" ng-submit="saveItemInEdit()" autocapitalize="none" autocorrect="off">
         <div class="form-group">
-          <div ng-class="{'left-input-wrapper' : editorType === 'omnibar' && titlebarHasText()}">
+          <div ng-class="titlebarHasText() && 'left-input-wrapper'">
             <textarea type="text" class="simple-input omnibar-input" ng-class="getTitlebarClass()" ng-model="titlebar.text" ng-keydown="titlebarTextKeyDown($event)" editor-titlebar-text-input msd-elastic dynamic-placeholder="{{getTitlebarTextInputPlaceholder()}}" maxlength="128" required ></textarea>
           </div>
-          <div ng-show="editorType === 'omnibar' && titlebarHasText()" class="right-button-wrapper">
+          <div ng-show="titlebarHasText()" class="right-button-wrapper">
             <button type="button" class="button omnibar-x-icon" ng-click="clearTitlebarText()"><span class="icon-x"></span>
             </button>
           </div>
@@ -113,29 +113,29 @@
           <form role="form">
 
             <div class="omnibar-scroller-slide" editable-field-container>
-              <span ng-if="hideTaskProperties()" class="show-more">more</span>
-              <div ng-hide="hideTaskProperties()">
-                <div class="form-group">
-                  <div ng-if="showDateInput">
-                    <input type="date" id="taskDue" class="simple-input" date-input-blur="hideDate" ng-model="task.transientProperties.date" date-input="task" date-input-set-focus="focusDateInput">
-                  </div>
-                  <div ng-if="!showDateInput" class="item-actions">
-                    <span class="simple-input default-element date-input-placeholder" ng-click="focusDate()">select date...</span>
-                  </div>
+              <div ng-hide="isSnoozeOpen || isCalendarOpen">
+                <span ng-if="hideTaskProperties()" class="show-more">more</span>
+                <div ng-hide="hideTaskProperties()">
+                  <span ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></span>
+                  <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
                 </div>
-                <div ng-include="'static/app/tasks/taskCoreFields.html'"></div>
+                <div class="form-group omnibar-scroll-container" ng-style="{maxHeight: getEditTaskDescriptionMaxHeight()}" >
+                  <textarea id="taskDescription" class="simple-input" ng-model="task.transientProperties.description" ng-focus="taskDescriptionFocus()" ng-blur="taskDescriptionBlur()" msd-elastic editable-field placeholder="description..." maxlength="1024"></textarea>
+                </div>
               </div>
-              <div class="form-group omnibar-scroll-container" ng-style="{maxHeight: getEditTaskDescriptionMaxHeight()}" >
-                <textarea id="taskDescription" class="simple-input" ng-model="task.transientProperties.description" ng-focus="taskDescriptionFocus()" ng-blur="taskDescriptionBlur()" msd-elastic editable-field placeholder="description..." maxlength="1024"></textarea>
-              </div>
+              <div ng-if="isSnoozeOpen && !isCalendarOpen" snooze="{{task.transientProperties.date}}" snooze-close-and-save="closeSnoozeAndSave(date)" snooze-close-and-open="closeSnoozeAndOpenCalendar()" snooze-destroy="closeSnooze()"></div>
+              <div ng-if="isCalendarOpen" class="pikaday-embedded" calendar="{{task.transientProperties.date}}" calendar-get-date-fn="registerGetCalendarDateFn(getCalendarDateFn)" calendar-set-default-date="true" calendar-destroy="closeCalendar()" bound="false"></div>
 
               <footer>
                 <div class="group-btn">
                   <button type="button" class="btn-delete">
                     <span class="text-btn">delete</span>
                   </button>
-                  <button type="button" class="btn-checkbox">
-                    <span class="text-btn">snooze</span>
+                  <button ng-if="!isCalendarOpen" type="button" class="btn-checkbox" ng-click="toggleSnooze()">
+                    <span class="text-btn" ng-bind="task.transientProperties.date ? 'snooze' : 'set date'"></span>
+                  </button>
+                  <button ng-if="isCalendarOpen" type="button" class="wide-button normal-button" ng-click="closeCalendarAndSave(calendarCloseCallbackFn)">
+                    <span>done</span>
                   </button>
                 </div>
               </footer>

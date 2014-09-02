@@ -16,26 +16,27 @@
  /* global Pikaday */
 
  'use strict';
- function pikadayDirective(DateService) {
+ function calendarDirective($parse, DateService) {
   return {
     restrict: 'A',
     link: function (scope, elem, attrs) {
       var startingDate;
-      if (attrs.defaultDate) startingDate = DateService.getDateTodayOrFromLaterYYYYMMDD(attrs.defaultDate);
+      if (attrs.calendar) startingDate = DateService.getDateTodayOrFromLaterYYYYMMDD(attrs.calendar);
+      if (attrs.calendarDestroy) scope.destroyFn = $parse(attrs.calendarDestroy);
 
-      function getPikadayDateAndSetToTaskDate() {
-        var date = pikaday.getDate();
-        if (!scope.task.transientProperties) scope.task.transientProperties = {};
-        scope.task.transientProperties.date = DateService.getYYYYMMDD(date);
+      var registerGetCalendarDateFn = $parse(attrs.calendarGetDateFn);
+      registerGetCalendarDateFn(scope, {getCalendarDateFn: getPikadayDateYYYYMMDD});
+      function getPikadayDateYYYYMMDD() {
+        return DateService.getYYYYMMDD(calendar.getDate());
       }
 
-      var pikaday = new Pikaday({
+      var calendar = new Pikaday({
         field: elem[0],
         container: elem[0],
         bound: attrs.bound !== 'false',
         format: attrs.format || 'ddd MMM D YYYY',
         defaultDate: startingDate,
-        setDefaultDate: attrs.setDefaultDate === 'true',
+        setDefaultDate: attrs.calendarSetDefaultDate === 'true',
         firstDay: attrs.firstDay ? parseInt(attrs.firstDay) : 1,
         yearRange: attrs.yearRange ? JSON.parse(attrs.yearRange) : 10,
         isRTL: attrs.isRTL === 'true',
@@ -47,16 +48,14 @@
           weekdaysShort : ['sun','mon','tue','wed','thu','fri','sat']
         },
         yearSuffix: attrs.yearSuffix || '',
-        showMonthAfterYear: attrs.showMonthAfterYear === 'true',
-        onSelect: scope.openSnooze.pikaday.hasDoneButton ? undefined : getPikadayDateAndSetToTaskDate
+        showMonthAfterYear: attrs.showMonthAfterYear === 'true'
       });
 
-      scope.pikadayEditDone = function pikadayEditDone() {
-        getPikadayDateAndSetToTaskDate();
-        scope.savePikaday(scope.task);
-      };
+      scope.$on('$destroy', function() {
+        if (angular.isFunction(scope.destroyFn)) scope.destroyFn(scope);
+      });
     }
   };
 }
-pikadayDirective['$inject'] = ['DateService'];
-angular.module('common').directive('pikaday', pikadayDirective);
+calendarDirective['$inject'] = ['$parse', 'DateService'];
+angular.module('common').directive('calendar', calendarDirective);
