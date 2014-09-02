@@ -51,7 +51,7 @@
 
       function calculateEditorMinPosition() {
         var minPosition = element[0].offsetWidth > 568 ? $rootScope.currentWidth - (($rootScope.currentWidth - 568) / 2) : element[0].offsetWidth;
-        return parseInt(minPosition);
+        return Math.round(minPosition);
       }
 
       function initializeEditor() {
