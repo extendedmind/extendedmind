@@ -47,7 +47,7 @@
             </div>
           </div>
           <footer class="group-navigation row">
-            <a href class="link-navigation-back" ng-click="swipeToHome()">back</a>
+            <a href ng-click="swipeToHome()"><span class="link-navigation-back"/>back</a>
           </footer>
         </div>
         <div ng-if="entryState === 'login'" class="container-content">
@@ -75,8 +75,13 @@
             <span ng-if="loginOffline" class="text-error">can't connect to server. are you online?</span>
           </div>
           <footer class="group-navigation row">
-            <a href class="link-navigation-back" ng-click="swipeToHome()">back</a>
-            <a href class="link-navigation-forward" ng-click="swipeToForgot()">forgot?</a>
+            <span class="left-of-two">
+              <a href ng-click="swipeToHome()"><span class="link-navigation-back"/>back</a>
+            </span>
+            <span class="right-of-two">
+              <a href ng-click="swipeToForgot()">forgot password<span class="link-navigation-forward" />
+              </a>
+            </span>
           </footer>
         </div>
       </div>
@@ -101,7 +106,7 @@
             <span ng-if="sendOffline" class="text-error">can't connect to server. are you online?</span>
           </div>
           <footer class="group-navigation row">
-            <a href class="link-navigation-back" ng-click="swipeToMain()">back</a>
+            <a href ng-click="swipeToMain()"><span class="link-navigation-back"/>back</a>
           </footer>
         </div>
       </div>

@@ -16,11 +16,11 @@ TODO: Icons are not working yet with Phytoplankton
 	font-family: 'icomoon';
 	src:url('../fonts/icomoon.eot');
 	src:url('../fonts/icomoon.eot') format('embedded-opentype'),
-		url('../fonts/icomoon.woff') format('woff'),
-		url('../fonts/icomoon.ttf') format('truetype'),
-		url('../fonts/icomoon.svg?') format('svg');
-	font-weight: normal;
-	font-style: normal;
+  url('../fonts/icomoon.woff') format('woff'),
+  url('../fonts/icomoon.ttf') format('truetype'),
+  url('../fonts/icomoon.svg?') format('svg');
+  font-weight: normal;
+  font-style: normal;
 }
 
 [class^="icon-"], [class*=" icon-"] {
@@ -40,10 +40,6 @@ TODO: Icons are not working yet with Phytoplankton
 [class^="icon-"], [class*=" icon-"] {
   font-size: @icon-size;
   color: @icon;
-}
-
-.icon-arrow-right {
-  font-size: @slide-indicator-width;
 }
 
 .icon-logo-with-text {
@@ -94,12 +90,20 @@ span.icon-i:active, span.icon-logo-only:active {
 .icon-x:before {
   content: "\e604";
 }
-.icon-arrow-left:before {
-  content: "\e605";
+
+.icon-arrow-left {
+  &:before {
+    content: "\e605";
+  }
 }
-.icon-arrow-right:before {
-  content: "\e606";
+
+.icon-arrow-right {
+  &:before {
+    font-size: @slide-indicator-width;
+    content: "\e606";
+  }
 }
+
 .icon-home:before {
   content: "\e607";
 }
