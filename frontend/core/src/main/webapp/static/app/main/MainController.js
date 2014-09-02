@@ -26,6 +26,63 @@ function MainController(
   NotesService, SwiperService, SynchronizeService, TagsService, TasksService,
   UISessionService, UserSessionService, UUIDService) {
 
+  // MAP OF ALL FEATURES
+
+  $scope.features = {
+    account: {
+      heading: 'account'
+    },
+    focus: {
+      heading: 'focus',
+      slides: {
+        'focus/tasks': 'tasks',
+        'focus/notes': 'notes'
+      }
+    },
+    inbox: {
+      heading: 'inbox'
+    },
+    tasks: {
+      heading: 'tasks',
+      slides: {
+        'tasks/timeline': 'timeline',
+        'tasks/contexts': 'contexts',
+        'tasks/context': true
+      }
+    },
+    notes: {
+      heading: 'notes',
+      slides: {
+        'notes/recent': 'recent notes',
+        'notes/keywords': 'keywords',
+        'notes/keyword': true
+      }
+    },
+    lists: {
+      heading: 'lists'
+    },
+    list: {
+      heading: true,
+      slides: {
+        'list/tasks': 'tasks',
+        'list/notes': 'notes'
+      }
+    },
+    archive: {
+      heading: 'archive'
+    }
+  };
+
+  // COMMON FEATURE METHODS IN SCOPE
+
+  $scope.getActiveFeature = function getActiveFeature() {
+    return UISessionService.getCurrentFeatureName();
+  };
+
+  $scope.isFeatureActive = function isFeatureActive(feature) {
+    return $scope.getActiveFeature() === feature;
+  };
+
   // ONBOARDING
 
   $scope.onboardingInProgress = false;

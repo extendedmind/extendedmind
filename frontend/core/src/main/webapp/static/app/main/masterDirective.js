@@ -22,63 +22,6 @@ function masterDirective($rootScope, DrawerService, SwiperService, UISessionServ
       var featureElements = {};
       var swiperElements = {};
 
-      // MAP OF ALL FEATURES
-
-      $scope.features = {
-        account: {
-          heading: 'account'
-        },
-        focus: {
-          heading: 'focus',
-          slides: {
-            'focus/tasks': 'tasks',
-            'focus/notes': 'notes'
-          }
-        },
-        inbox: {
-          heading: 'inbox'
-        },
-        tasks: {
-          heading: 'tasks',
-          slides: {
-            'tasks/recent': 'recent tasks',
-            'tasks/contexts': 'contexts',
-            'tasks/context': true
-          }
-        },
-        notes: {
-          heading: 'notes',
-          slides: {
-            'notes/recent': 'recent notes',
-            'notes/keywords': 'keywords',
-            'notes/keyword': true
-          }
-        },
-        lists: {
-          heading: 'lists'
-        },
-        list: {
-          heading: true,
-          slides: {
-            'list/tasks': 'tasks',
-            'list/notes': 'notes'
-          }
-        },
-        archive: {
-          heading: 'archive'
-        }
-      };
-
-      // COMMON FEATURE METHODS IN SCOPE
-
-      $scope.getActiveFeature = function getActiveFeature() {
-        return UISessionService.getCurrentFeatureName();
-      };
-
-      $scope.isFeatureActive = function isFeatureActive(feature) {
-        return $scope.getActiveFeature() === feature;
-      };
-
       $scope.hasFeatureFooter = function hasFeatureFooter() {
         if ($scope.isFeatureActive('tasks') ||
           $scope.isFeatureActive('notes') ||
@@ -162,7 +105,7 @@ function masterDirective($rootScope, DrawerService, SwiperService, UISessionServ
         if ($scope.onboardingInProgress) {
           UISessionService.changeFeature('inbox');
         } else {
-          UISessionService.changeFeature('focus');
+          UISessionService.changeFeature('tasks');
         }
       } else {
         // Need to explicitly call feature change

@@ -1,8 +1,8 @@
-<!--div id="main" ng-controller="MainController">
+<!--div id="main" ng-controller="MainController" ng-class="[isEditorVisible() ? 'editor-visible' : 'editor-hidden', isMenuVisible() ? 'menu-visible' : 'menu-hidden']">
   <div id="menu" ng-include="'static/app/main/menu.html'"></div>
   <div id="omnibar-drawer" class="omnibar-drawer" omnibar></div>
 
-  <div snap>
+  <div id="feature-container-wrapper" drawer>
     <div master editable-field-backdrop>
       <header class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
       <div ng-if="isFeatureActive('account')" ng-include="'static/app/account/account.html'" include-replace></div>
@@ -23,7 +23,7 @@
 <div id="main" ng-controller="MainController" ng-class="[isEditorVisible() ? 'editor-visible' : 'editor-hidden', isMenuVisible() ? 'menu-visible' : 'menu-hidden']">
   <div id="menu" ng-include="'static/app/main/menu.html'"></div>
   <div ng-include="'static/app/main/editor.html'" include-replace></div>
-  <div id="feature-container-wrapper" snap>
+  <div id="feature-container-wrapper" drawer-aisle>
     <div id="feature-container" ng-class="getFooterVisibilityClass()" feature-container editable-field-backdrop>
       <header class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
       <div ng-if="isFeatureActive('account')" ng-include="'static/app/account/account.html'" include-replace></div>

@@ -14,25 +14,15 @@
  */
  'use strict';
 
- function drawerDirective($rootScope, DrawerService) {
+ function drawerAisleDirective($rootScope, DrawerService) {
   return {
     restrict: 'A',
     controller: function($scope) {
 
-      // MENU TOGGLE
-
-      $scope.toggleMenu = function toggleMenu() {
-        if (DrawerService.isSnapperClosed('left')) $scope.setIsWebkitScrolling(false);
-        DrawerService.toggle('left');
+      this.registerDrawerHandleElement = function(element, snapperSide){
+        DrawerService.setHandleElement(element, snapperSide);
       };
 
-      $scope.toggleUnstickyMenu = function toggleUnstickyMenu() {
-        if (!DrawerService.getIsSticky()) DrawerService.toggle('left');
-      };
-
-      this.registerDrawerDragElement = function(element, snapperSide){
-        DrawerService.setDraggerElement(element, snapperSide);
-      };
     },
     link: function postLink(scope, element) {
 
@@ -49,9 +39,11 @@
         DrawerService.createSnapper(settings, 'left');
       }
 
+      var MASTER_CONTAINER_MAX_WIDTH = 567;
       function calculateEditorMinPosition() {
-        var minPosition = element[0].offsetWidth > 568 ? $rootScope.currentWidth - (($rootScope.currentWidth - 568) / 2) : element[0].offsetWidth;
-        return Math.round(minPosition);
+        var minPosition = element[0].offsetWidth > MASTER_CONTAINER_MAX_WIDTH ?
+               $rootScope.currentWidth - (($rootScope.currentWidth - MASTER_CONTAINER_MAX_WIDTH) / 2) : element[0].offsetWidth;
+        return Math.floor(minPosition);
       }
 
       function initializeEditor() {
@@ -79,7 +71,7 @@
         initializeEditor();
       }
       // Reinitialize on every window resize event
-      scope.registerWindowResizedCallback(initializeSnap, 'drawerDirective');
+      scope.registerWindowResizedCallback(initializeSnap, 'drawerAisleDirective');
 
       // Initialize everything
       initializeSnap();
@@ -91,5 +83,5 @@
     }
   };
 }
-drawerDirective['$inject'] = ['$rootScope', 'DrawerService'];
-angular.module('em.main').directive('drawer', drawerDirective);
+drawerAisleDirective['$inject'] = ['$rootScope', 'DrawerService'];
+angular.module('em.main').directive('drawerAisle', drawerAisleDirective);

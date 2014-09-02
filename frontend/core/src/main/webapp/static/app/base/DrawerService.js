@@ -107,7 +107,7 @@
       if (snappers[snapperSide] && snappers[snapperSide].snapper)
         snappers[snapperSide].snapper.disable();
     },
-    setDraggerElement: function(element, snapperSide) {
+    setHandleElement: function(element, snapperSide) {
       if (!draggerElements[snapperSide]) draggerElements[snapperSide] = element;
       if (snappers[snapperSide] && snappers[snapperSide].snapper) {
         snappers[snapperSide].snapper.settings({dragger: element});

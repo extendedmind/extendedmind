@@ -231,14 +231,14 @@
               SwiperService.setEdgeTouchRatios(feature, leftEdgeTouchRatio, rightEdgeTouchRatio);
             }
           }
-          DrawerService.toggleSnappersSticky(false);
+          //DrawerService.toggleSnappersSticky(false);
         }else{
           for (var feature in scope.features){
             if (scope.features.hasOwnProperty(feature) && scope.features[feature].slides){
               SwiperService.setEdgeTouchRatios(feature);
             }
           }
-          DrawerService.toggleSnappersSticky(true);
+          //DrawerService.toggleSnappersSticky(true);
         }
       }
       // Reinitialize on every window resize event
@@ -254,10 +254,10 @@
           addBodyClasses: false
         };
 
-        DrawerService.createSnapper(settings, 'left');
-        DrawerService.registerAnimatedCallback(snapDrawerAnimated, 'left', 'featureContainerDirective');
-        DrawerService.registerEndCallback(snapperPaneReleased, 'left');
-        DrawerService.registerCloseCallback(snapperClosed, 'left');
+        //DrawerService.createSnapper(settings, 'left');
+        //DrawerService.registerAnimatedCallback(snapDrawerAnimated, 'left', 'featureContainerDirective');
+        //DrawerService.registerEndCallback(snapperPaneReleased, 'left');
+        //DrawerService.registerCloseCallback(snapperClosed, 'left');
       }
 
       function calculateOmnibarDrawerContainerMinPosition() {
@@ -277,7 +277,7 @@
           addBodyClasses: false,
           minPosition: -calculateOmnibarDrawerContainerMinPosition()
         };
-        DrawerService.createSnapper(settings, 'right');
+        //DrawerService.createSnapper(settings, 'right');
       }
 
       // No clicking/tapping when drawer is open.
