@@ -46,9 +46,11 @@
   }
 
   function setEmail(email) {
-    SessionStorageService.setEmail(email);
-    if (offlineBufferEnabled || LocalStorageService.getReplaceable() !== null) {
-      LocalStorageService.setEmail(email);
+    if (email) {
+      SessionStorageService.setEmail(email);
+      if (offlineBufferEnabled || LocalStorageService.getReplaceable() !== null) {
+        LocalStorageService.setEmail(email);
+      }
     }
   }
 
