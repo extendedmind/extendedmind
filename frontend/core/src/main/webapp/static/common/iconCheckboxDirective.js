@@ -14,7 +14,7 @@
  */
  'use strict';
 
-function iconCheckboxDirective() {
+ function iconCheckboxDirective() {
   return {
     restrict: 'A',
     scope: {
@@ -25,8 +25,7 @@ function iconCheckboxDirective() {
       element[0].id = scope.checkboxId;
       // Create label and set it after the input element
       var checkboxLabel = document.createElement('label');
-      checkboxLabel.setAttribute("for", element[0].id);
-      element[0].nextSibling = checkboxLabel;
+      checkboxLabel.setAttribute('for', element[0].id);
       element[0].parentNode.insertBefore(checkboxLabel, element[0].nextSibling);
     }
   };
