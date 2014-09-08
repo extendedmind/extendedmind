@@ -9,8 +9,9 @@ function startRetention(date, days) {
     var dailyPackaging = [];
     var dailyVersions = [];
 
-    var endDate = new Date(); 
+    var endDate = new Date(date.getTime());
     endDate.setDate(date.getDate() + 1);
+
     /* 
     Fetch all signups for a single day
     https://ext.md/evaluate/1.0/event?expression=signUp(user.uuid)&start=2014-08-5&stop=2014-08-06&step=864e5
