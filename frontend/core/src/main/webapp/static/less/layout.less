@@ -23,8 +23,13 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 @maximum-landscape-height: 769px;
 @fixed-page-height: 500px;
 
-@container-banner-height: 200px;
 
+//////// NEW START ////////////////////////
+
+@height-container-banner: 200px;
+@height-landscape-max: 769px;
+@height-max: 1025px;
+@width-column-max: 568px; // iPhone 5 landscape is still one column
 
 /*
 `.center-horizontally` centers the container by making the browser to calculate left and right margins automatically.
@@ -38,8 +43,6 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   margin-right: auto;
 }
 
-//////// NEW START ////////////////////////
-
 /*
 **************************************************************************
 # LEVEL 1: Primary Containers (master, editor, menu)
@@ -52,7 +55,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   */
   .container-master {
     .center-horizontally;
-    max-height: @maximum-height;
+    max-height: @height-max;
   }
 
   .container-menu {
@@ -63,21 +66,20 @@ TODO: em grid structure explained in plain English (when new grid structure deci
     position: absolute;
     right: 0;
     left: 0;
-    width: 100%;
-    max-width: @one-column-grid-width;
+    max-width: @width-column-max;
     .center-horizontally;
   }
 
-  @media (min-height: @maximum-landscape-height) {
+  @media (min-height: @height-landscape-max) {
     .container-master {
       position: relative;
-      min-height: @maximum-landscape-height;
-      max-height: @maximum-landscape-height;
-      margin-top: -@maximum-landscape-height / 2;
+      min-height: @height-landscape-max;
+      max-height: @height-landscape-max;
+      margin-top: -@height-landscape-max / 2;
       top: 50%;
     }
     .container-editor {
-      margin-top: -@maximum-landscape-height / 2;
+      margin-top: -@height-landscape-max / 2;
       top: 50%;
     }
   }
@@ -97,7 +99,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 
 .container-banner {
   text-align: center;
-  height: @container-banner-height;
+  height: @height-container-banner;
   display: table;
   [class^="icon-"], [class*=" icon-"] {
     display: table-cell;
@@ -245,7 +247,15 @@ Use `.group-instruction` to create an instruction block in the middle of a secti
 Use `.group-mixed` to create horizontal collections of different elements.
 */
 .group-mixed {
+  display: table;
+}
 
+.group-mixed--left, .group-mixed--middle, .group-mixed--right {
+  display: table-cell;
+}
+
+.group-mixed--middle {
+  width: 100%;
 }
 
 /*
@@ -418,18 +428,16 @@ div#root {
 # Header
 */
 
-header {
+
+.static-page-header {
+  * {
+    vertical-align: middle;
+  }
   z-index: 1;
   top: 0px;
   left: 0px;
   overflow: hidden;
   width: 100%;
-  * {
-    vertical-align: middle;
-  }
-}
-
-.static-page-header {
   height: @page-header-height;
   position: relative;
   nav {

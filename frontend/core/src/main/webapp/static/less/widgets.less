@@ -12,7 +12,7 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
 
 /*
 *************************************************************
-# Section dependent 
+# Section dependent
 TODO: Examples needed
 */
 section#welcome {
@@ -189,9 +189,9 @@ TODO: Example needed
 }
 
 
-/* 
+/*
 *************************************************************
-# Header 
+# Header
 TODO: Example needed
 */
 
@@ -260,9 +260,9 @@ header.static-page-header {
 }
 
 
-/* 
+/*
 *************************************************************
-# Footer 
+# Footer
 TODO: Example needed
 */
 
@@ -315,149 +315,125 @@ footer {
 }
 
 
-/* 
+/*
 *************************************************************
-# Omnibar 
+# Omnibar
 TODO: Example needed
 */
 
-.omnibar-container {
+.titlebar-input {
+  font-size: @large-font-size;
+  max-height: @vertical-grid;
+  &.titlebar-input-medium {
+    font-size: @default-font-size;
+  }
+  &.titlebar-input-long {
+    font-size: @font-small-size;
+  }
+  &.titlebar-input-very-long {
+    font-size: @font-smallest-size;
+  }
+}
+.omnibar-feature {
   width: 100%;
-  .one-column-grid;
-  position: relative;
-  padding-top: 10px;
-  .omnibar-x-icon {
-    span {
-      font-size: 18px;
-    }
+  float: left;
+  overflow-y: auto;
+  // height set with javascript
+  .omnibar-search, .omnibar-empty-search-placeholder, .omnibar-task, .omnibar-note {
+    height: 100%;
   }
-  .omnibar-input {
-    font-size: @large-font-size;
-    max-height: @vertical-grid;
-    &.omnibar-input-medium {
-      font-size: @default-font-size;
-    }
-    &.omnibar-input-long {
-      font-size: @font-small-size;
-    }
-    &.omnibar-input-very-long {
-      font-size: @font-smallest-size;
-    }
+  .omnibar-search .filtered-items {
+    padding-top: @vertical-grid-half;
   }
-  .omnibar-feature {
-    width: 100%;
-    float: left;
+  .omnibar-scroll-container {
     overflow-y: auto;
-    // height set with javascript
-    .omnibar-search, .omnibar-empty-search-placeholder, .omnibar-task, .omnibar-note {
+  }
+
+  .omnibar-edit-item-scroller-wrapper {
+    height: 100%;
+    width: 100%;
+    .omnibar-edit-item-scroller {
+      position: relative;
+      width: 200%;
       height: 100%;
+      overflow: hidden;
     }
-    .omnibar-search .filtered-items {
-      padding-top: @vertical-grid-half;
-    }
-    .omnibar-scroll-container {
+    .omnibar-scroller-slide {
+      width: 50%;
+      height: 100%;
+      float: left;
+      list-style-type: none;
       overflow-y: auto;
     }
+  }
+}
 
-    .omnibar-hidden .omnibar-container {
-      margin-top: -@page-header-height;
-    }
-
-    .omnibar-edit-item-scroller-wrapper {
-      height: 100%;
-      width: 100%;
-      .omnibar-edit-item-scroller {
-        position: relative;
-        width: 200%;
-        height: 100%;
-        overflow: hidden;
-      }
-      .omnibar-scroller-slide {
-        width: 50%;
-        height: 100%;
-        float: left;
-        list-style-type: none;
-        overflow-y: auto;
-      }
-    }
+.omnibar-footer {
+  height: @footer-height;
+  .button-container, .button-row {
+    border-right: 0;
+    border-left: 0;
+  }
+  .button-container.left-of-two button.transparent-button, .button-container.left-of-three button.transparent-button,
+  .button-container.right-of-two button.transparent-button, .button-container.right-of-three button.transparent-button {
+    width: auto;
+    padding-right: 30px;
+    padding-left: 30px;
+  }
+  .button-container.left-of-two button.transparent-button, .button-container.left-of-three button.transparent-button {
+    float: left;
+    margin-left: -30px;
+  }
+  .button-container.right-of-two button.transparent-button, .button-container.right-of-three button.transparent-button {
+    float: right;
+    margin-right: -30px;
   }
 
-  .omnibar-footer {
-    height: @footer-height;
-    .button-container, .button-row {
-      border-right: 0;
-      border-left: 0;
-    }
-    .button-container.left-of-two button.transparent-button, .button-container.left-of-three button.transparent-button,
-    .button-container.right-of-two button.transparent-button, .button-container.right-of-three button.transparent-button {
-      width: auto;
-      padding-right: 30px;
-      padding-left: 30px;
-    }
-    .button-container.left-of-two button.transparent-button, .button-container.left-of-three button.transparent-button {
-      float: left;
-      margin-left: -30px;
-    }
-    .button-container.right-of-two button.transparent-button, .button-container.right-of-three button.transparent-button {
+  .edit-item-scroller-indicators {
+    .button-container.left-of-two .edit-item-scroller-indicator-wrapper {
+      padding-right: 10px;
+      padding-left: 15px;
       float: right;
-      margin-right: -30px;
     }
-
-    .edit-item-scroller-indicators {
-      .button-container.left-of-two .edit-item-scroller-indicator-wrapper {
-        padding-right: 10px;
-        padding-left: 15px;
+    .button-container.right-of-two .edit-item-scroller-indicator-wrapper {
+      padding-right: 15px;
+      padding-left: 10px;
+      float: left;
+    }
+    .edit-item-scroller-indicator-wrapper {
+      width: auto;
+      .edit-item-scroller-indicator-left, .edit-item-scroller-indicator-right {
+        width: 8px;
+        height: 8px;
+        border-radius: 4px;
+        background-color: #dadada;
+        color: black;
+        -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+        transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+      }
+      .edit-item-scroller-indicator-left {
         float: right;
       }
-      .button-container.right-of-two .edit-item-scroller-indicator-wrapper {
-        padding-right: 15px;
-        padding-left: 10px;
+      .edit-item-scroller-indicator-right {
         float: left;
       }
-      .edit-item-scroller-indicator-wrapper {
-        width: auto;
-        .edit-item-scroller-indicator-left, .edit-item-scroller-indicator-right {
-          width: 8px;
-          height: 8px;
-          border-radius: 4px;
-          background-color: #dadada;
-          color: black;
-          -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-          transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-        }
-        .edit-item-scroller-indicator-left {
-          float: right;
-        }
-        .edit-item-scroller-indicator-right {
-          float: left;
-        }
-        .edit-item-scroller-indicator-active {
-          background-color: #919191;
-        }
+      .edit-item-scroller-indicator-active {
+        background-color: #919191;
       }
-      .edit-item-scroller-indicator-wrapper:active {
-        .edit-item-scroller-indicator-left, .edit-item-scroller-indicator-right {
-          background-color: #919191;
-        }
+    }
+    .edit-item-scroller-indicator-wrapper:active {
+      .edit-item-scroller-indicator-left, .edit-item-scroller-indicator-right {
+        background-color: #919191;
       }
     }
   }
 }
 
-.omnibar-drawer {
-  position: absolute;
-  right: 0;
-  left: 0;
-  .center-horizontally;
-  width: 100%;
-  max-width: @one-column-grid-width;
-}
 
-
-/* 
+/*
 *************************************************************
 # Menu
-TODO: Example needed 
+TODO: Example needed
 */
 
 .no-webkit-scrolling {
@@ -542,11 +518,11 @@ TODO: Example needed
 }
 
 
-/* 
+/*
 *************************************************************
 # Datepicker
 TODO: Gets replaced with pikaday?
- */
+*/
 
 li.datepicker-date {
   line-height: @vertical-grid-half;
@@ -638,7 +614,7 @@ li.datepicker-date {
 }
 
 
-/* 
+/*
 *************************************************************
 # Pick a day
 TODO: Example needed
@@ -887,7 +863,7 @@ TODO: Do we need an example?
 // Mobile touch slider and framework with hardware accelerated transitions
 // http://www.idangero.us/sliders/swiper/
 
- .swiper-container {
+.swiper-container {
   margin:0 auto;
   overflow:hidden;
   -webkit-backface-visibility:hidden;
@@ -974,7 +950,7 @@ TODO: Do we need an example?
   /* Specific visible slide styling: */
 
 }
-/* 
+/*
 *************************************************************
 # Pagination Styles
 // TODO: Example needed

@@ -40,6 +40,7 @@
   function initializeTaskEditor(task) {
     $scope.titlebar.text = task.title;
     $scope.task = task;
+    $scope.itemHasActionButton = true;
   }
 
   function evaluateAndSetSaveOnClose() {
@@ -366,30 +367,30 @@
       }
 
       var fontSize = '21px';
-      if (currentTitlebarTextStyle === 'omnibar-input-very-long') {
+      if (currentTitlebarTextStyle === 'titlebar-input-very-long') {
         fontSize = '12px';
-      } else if (currentTitlebarTextStyle === 'omnibar-input-long') {
+      } else if (currentTitlebarTextStyle === 'titlebar-input-long') {
         fontSize = '15px';
-      } else if (currentTitlebarTextStyle === 'omnibar-input-medium') {
+      } else if (currentTitlebarTextStyle === 'titlebar-input-medium') {
         fontSize = '18px';
       }
 
       var currentTextWidth = getTextWidth($scope.titlebar.text, fontSize + ' sans-serif');
-      if (currentTitlebarTextStyle === 'omnibar-input-very-long' || (currentTextWidth / 2 + 25) > editorWidth) {
-        if (currentTitlebarTextStyle !== 'omnibar-input-very-long') {
+      if (currentTitlebarTextStyle === 'titlebar-input-very-long' || (currentTextWidth / 2 + 25) > editorWidth) {
+        if (currentTitlebarTextStyle !== 'titlebar-input-very-long') {
           $rootScope.$broadcast('elastic:adjust');
-          currentTitlebarTextStyle = 'omnibar-input-very-long';
+          currentTitlebarTextStyle = 'titlebar-input-very-long';
         }
       }
-      else if (currentTitlebarTextStyle === 'omnibar-input-long' || (currentTextWidth / 2 + 35) > editorWidth) {
-        if (currentTitlebarTextStyle !== 'omnibar-input-long') {
+      else if (currentTitlebarTextStyle === 'titlebar-input-long' || (currentTextWidth / 2 + 35) > editorWidth) {
+        if (currentTitlebarTextStyle !== 'titlebar-input-long') {
           $rootScope.$broadcast('elastic:adjust');
-          currentTitlebarTextStyle = 'omnibar-input-long';
+          currentTitlebarTextStyle = 'titlebar-input-long';
         }
-      } else if (currentTitlebarTextStyle === 'omnibar-input-medium' || (currentTextWidth + 20) > editorWidth) {
-        if (currentTitlebarTextStyle !== 'omnibar-input-medium') {
+      } else if (currentTitlebarTextStyle === 'titlebar-input-medium' || (currentTextWidth + 20) > editorWidth) {
+        if (currentTitlebarTextStyle !== 'titlebar-input-medium') {
           $rootScope.$broadcast('elastic:adjust');
-          currentTitlebarTextStyle = 'omnibar-input-medium';
+          currentTitlebarTextStyle = 'titlebar-input-medium';
         }
       } else {
         currentTitlebarTextStyle = undefined;

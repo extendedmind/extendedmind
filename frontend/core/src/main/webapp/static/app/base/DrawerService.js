@@ -35,14 +35,14 @@
   }
 
   function hideRightAndShowLeft() {
-    var rightDrawer = document.getElementById('omnibar-drawer');
+    var rightDrawer = document.getElementById('editor-drawer');
     var leftDrawer = document.getElementById('menu');
     if (rightDrawer && rightDrawer.style.display !== 'none') rightDrawer.style.display = 'none';
     if (leftDrawer && leftDrawer.style.display !== 'block') leftDrawer.style.display = 'block';
   }
   function hideLeftAndShowRight() {
     var leftDrawer = document.getElementById('menu');
-    var rightDrawer = document.getElementById('omnibar-drawer');
+    var rightDrawer = document.getElementById('editor-drawer');
     if (leftDrawer && leftDrawer.style.display !== 'none') leftDrawer.style.display = 'none';
     if (rightDrawer && rightDrawer.style.display !== 'block') rightDrawer.style.display = 'block';
   }

@@ -429,7 +429,7 @@ Use `.vertical-buttons` to make buttons align in a vertical column
   text-align: center;
 }
 
-.btn-action  {
+.btn-action {
   color: white;
   background-color: transparent;
   & > .text-btn {
@@ -444,6 +444,15 @@ Use `.vertical-buttons` to make buttons align in a vertical column
   }
   &[disabled] > .text-btn {
     background-color: @btn-color-disabled;
+  }
+}
+.btn-clear {
+  background-color: transparent;
+  &:before {
+    color: @default-button;
+    .set-icon-font;
+    font-size: @icon-size;
+    content: @icon-x;
   }
 }
 

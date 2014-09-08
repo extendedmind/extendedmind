@@ -1,23 +1,19 @@
-<div id="omnibar-drawer" class="container-editor" ng-controller="EditorController" data-snap-ignore="true">
-
-  <div ng-if="isEditorVisible" class="omnibar-container">
+<div id="editor-drawer" class="container-editor" ng-controller="EditorController" data-snap-ignore="true">
+  <div ng-if="isEditorVisible">
 
     <header class="container-titlebar">
-
       <div class="group-navigation">
         <a href class="link-navigation-back" ng-click="endEdit()" ng-bind="saveOnClose ? 'save' : 'cancel'"></a>
       </div>
 
-      <form role="form" name="addOmniItem" ng-submit="saveItemInEdit()" autocapitalize="none" autocorrect="off">
-        <div class="form-group">
-          <div ng-class="titlebarHasText() && 'left-input-wrapper'">
-            <textarea type="text" class="simple-input omnibar-input" ng-class="getTitlebarClass()" ng-model="titlebar.text" ng-keydown="titlebarTextKeyDown($event)" editor-titlebar-text-input msd-elastic dynamic-placeholder="{{getTitlebarTextInputPlaceholder()}}" maxlength="128" required ></textarea>
-          </div>
-          <div ng-show="titlebarHasText()" class="right-button-wrapper">
-            <button type="button" class="button omnibar-x-icon" ng-click="clearTitlebarText()"><span class="icon-x"></span>
-            </button>
-          </div>
+      <form role="form" class="group-mixed row" ng-submit="saveItemInEdit()" autocapitalize="none" autocorrect="off">
+        <div class="group-mixed--left">
+          <input ng-if="itemHasActionButton" type="checkbox" ng-model="task.completed" icon-checkbox="editorTitlebarCheckbox" />
         </div>
+        <div class="group-mixed--middle">
+          <textarea type="text" ng-model="titlebar.text" ng-keydown="titlebarTextKeyDown($event)" editor-titlebar-text-input msd-elastic dynamic-placeholder="{{getTitlebarTextInputPlaceholder()}}" maxlength="128" required ></textarea>
+        </div>
+        <button ng-show="titlebarHasText()" type="button" class="group-mixed--right btn-clear" ng-click="clearTitlebarText()"></button>
       </form>
 
       <div ng-if="editorType === 'item'" class="group-btn row">
