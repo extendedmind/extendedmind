@@ -12,6 +12,26 @@ TODO: Icons are not working yet with Phytoplankton
 @icon-size: 28px;
 @banner-logo-size: 70px;
 
+// Icon character codes
+@icon-eye: "\e602";
+@icon-pencil: "\e603";
+@icon-x: "\e604";
+@icon-arrow-left: "\e605";
+@icon-arrow-right: "\e606";
+@icon-home: "\e607";
+@icon-i: "\e608";
+@icon-inbox: "\e609";
+@icon-logo-only: "\e60a";
+@icon-logo-with-text: "\e60b";
+@icon-menu: "\e60c";
+@icon-notes: "\e60d";
+@icon-plus: "\e60e";
+@icon-selection-checked: "\e60f";
+@icon-selection-empty: "\e610";
+@icon-tasks: "\e611";
+@icon-triangle-down: "\e600";
+@icon-triangle-right: "\e601";
+
 @font-face {
 	font-family: 'icomoon';
 	src:url('../fonts/icomoon.eot');
@@ -82,65 +102,65 @@ span.icon-i:active, span.icon-logo-only:active {
 // CODE BELOW FROM ICOMOON (MIGHT GET OVERWRITED, DON'T ADD ANYTHING THERE)
 
 .icon-eye:before {
-  content: "\e602";
+  content: @icon-eye;
 }
 .icon-pencil:before {
-  content: "\e603";
+  content: @icon-pencil;
 }
 .icon-x:before {
-  content: "\e604";
+  content: @icon-x;
 }
 
 .icon-arrow-left {
   &:before {
-    content: "\e605";
+    content: @icon-arrow-left;
   }
 }
 
 .icon-arrow-right {
   &:before {
     font-size: @slide-indicator-width;
-    content: "\e606";
+    content: @icon-arrow-right;
   }
 }
 
 .icon-home:before {
-  content: "\e607";
+  content: @icon-home;
 }
 .icon-i:before {
-  content: "\e608";
+  content: @icon-i;
 }
 .icon-inbox:before {
-  content: "\e609";
+  content: @icon-inbox;
 }
 .icon-logo-only:before {
-  content: "\e60a";
+  content: @icon-logo-only;
 }
 .icon-logo-with-text:before {
-  content: "\e60b";
+  content: @icon-logo-with-text;
 }
 .icon-menu:before {
-  content: "\e60c";
+  content: @icon-menu;
 }
 .icon-notes:before {
-  content: "\e60d";
+  content: @icon-notes;
 }
 .icon-plus:before {
-  content: "\e60e";
+  content: @icon-plus;
 }
 .icon-selection-checked:before {
-  content: "\e60f";
+  content: @icon-selection-checked;
 }
 .icon-selection-empty:before {
-  content: "\e610";
+  content: @icon-selection-empty;
 }
 .icon-tasks:before {
-  content: "\e611";
+  content: @icon-tasks;
 }
 .icon-triangle-down:before {
-  content: "\e600";
+  content: @icon-triangle-down;
 }
 .icon-triangle-right:before {
-  content: "\e601";
+  content: @icon-triangle-right;
 }
 
