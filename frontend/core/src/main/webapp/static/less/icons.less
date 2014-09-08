@@ -62,6 +62,24 @@ TODO: Icons are not working yet with Phytoplankton
   color: @icon;
 }
 
+// icon rotating
+.rotate(@angle) {
+  -webkit-transform: rotate(@angle);
+      -ms-transform: rotate(@angle);
+          transform: rotate(@angle);
+}
+.rotate-right {
+  .rotate(90deg);
+}
+ 
+.rotate-down {
+  .rotate(180deg);
+}
+ 
+.rotate-left {
+  .rotate(-90deg);
+}
+
 .icon-logo-with-text {
   color: @logo;
   font-size: @banner-logo-size;
