@@ -91,22 +91,27 @@ span.icon-i:active, span.icon-logo-only:active {
   color: @highlighted-element-pressed;
 }
 
-// CHECK THIS IF ICOMOON FONT FILES GET UPDATED
-.icon-selection-empty {
-  content: "\e610";
-}
 .icon-selection-checked {
-  content: "\e60f";
+  content: @icon-selection-checked;
+  &:before {
+    content: @icon-selection-checked;
+  }
 }
-
-// CODE BELOW FROM ICOMOON (MIGHT GET OVERWRITED, DON'T ADD ANYTHING THERE)
+.icon-selection-empty {
+  content: @icon-selection-empty;
+  &:before {
+    content: @icon-selection-empty;
+  }
+}
 
 .icon-eye:before {
   content: @icon-eye;
 }
+
 .icon-pencil:before {
   content: @icon-pencil;
 }
+
 .icon-x:before {
   content: @icon-x;
 }
@@ -116,7 +121,6 @@ span.icon-i:active, span.icon-logo-only:active {
     content: @icon-arrow-left;
   }
 }
-
 .icon-arrow-right {
   &:before {
     font-size: @slide-indicator-width;
@@ -127,39 +131,43 @@ span.icon-i:active, span.icon-logo-only:active {
 .icon-home:before {
   content: @icon-home;
 }
+
 .icon-i:before {
   content: @icon-i;
 }
+
 .icon-inbox:before {
   content: @icon-inbox;
 }
+
 .icon-logo-only:before {
   content: @icon-logo-only;
 }
+
 .icon-logo-with-text:before {
   content: @icon-logo-with-text;
 }
+
 .icon-menu:before {
   content: @icon-menu;
 }
+
 .icon-notes:before {
   content: @icon-notes;
 }
+
 .icon-plus:before {
   content: @icon-plus;
 }
-.icon-selection-checked:before {
-  content: @icon-selection-checked;
-}
-.icon-selection-empty:before {
-  content: @icon-selection-empty;
-}
+
 .icon-tasks:before {
   content: @icon-tasks;
 }
+
 .icon-triangle-down:before {
   content: @icon-triangle-down;
 }
+
 .icon-triangle-right:before {
   content: @icon-triangle-right;
 }
