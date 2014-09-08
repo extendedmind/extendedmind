@@ -49,38 +49,38 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 `.container-master` sets the vertical positioning of the master
   content area. When the screen size is bigger than a tablet, the master
   container will be vertically centered.
-*/
-.container-master {
-  .center-horizontally;
-  max-height: @maximum-height;
-}
-
-.container-menu {
-
-}
-
-.container-editor {
-  position: absolute;
-  right: 0;
-  left: 0;
-  width: 100%;
-  max-width: @one-column-grid-width;
-  .center-horizontally;
-}
-
-@media (min-height: @maximum-landscape-height) {
+  */
   .container-master {
-    position: relative;
-    min-height: @maximum-landscape-height;
-    max-height: @maximum-landscape-height;
-    margin-top: -@maximum-landscape-height / 2;
-    top: 50%;
+    .center-horizontally;
+    max-height: @maximum-height;
   }
+
+  .container-menu {
+
+  }
+
   .container-editor {
-    margin-top: -@maximum-landscape-height / 2;
-    top: 50%;
+    position: absolute;
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-width: @one-column-grid-width;
+    .center-horizontally;
   }
-}
+
+  @media (min-height: @maximum-landscape-height) {
+    .container-master {
+      position: relative;
+      min-height: @maximum-landscape-height;
+      max-height: @maximum-landscape-height;
+      margin-top: -@maximum-landscape-height / 2;
+      top: 50%;
+    }
+    .container-editor {
+      margin-top: -@maximum-landscape-height / 2;
+      top: 50%;
+    }
+  }
 
 /*
 **************************************************************************
@@ -256,7 +256,9 @@ Use `.group-mixed` to create horizontal collections of different elements.
 }
 
 .group-navigation {
-  // TODO: Footer navigation here
+  .link-navigation-forward {
+    float: right;
+  }
 }
 
 

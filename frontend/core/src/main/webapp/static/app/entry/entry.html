@@ -74,14 +74,9 @@
             <span ng-if="loginFailed" class="text-error">invalid username or password</span>
             <span ng-if="loginOffline" class="text-error">can't connect to server. are you online?</span>
           </div>
-          <footer class="group-navigation row">
-            <span class="left-of-two">
-              <a href ng-click="swipeToHome()"><span class="link-navigation-back"/>back</a>
-            </span>
-            <span class="right-of-two">
-              <a href ng-click="swipeToForgot()">forgot password<span class="link-navigation-forward" />
-              </a>
-            </span>
+          <footer class="group-navigation row " >
+            <a href ng-click="swipeToHome()" class="link-navigation-back">back</a>
+            <a href ng-click="swipeToForgot()" class="link-navigation-forward">forgot?</a>
           </footer>
         </div>
       </div>
