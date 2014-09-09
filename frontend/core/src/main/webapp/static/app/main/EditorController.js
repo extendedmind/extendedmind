@@ -163,7 +163,6 @@
 
   $scope.clearTitlebarText = function clearTitlebarText() {
     $scope.titlebar = {};
-    currentTitlebarTextStyle = undefined;
   };
 
   // For empty omnibar search placeholder
@@ -335,69 +334,6 @@
       return $scope.currentHeight - usedHeight - keyboardHeight;
     } else {
       return MAX_CONTAINER_HEIGHT - usedHeight - keyboardHeight;
-    }
-  };
-
-  /**
-  * Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
-  *
-  * @param {String} text The text to be rendered.
-  * @param {String} font The css font descriptor that text is to be rendered with (e.g. "bold 14px verdana").
-  *
-  * @see http://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
-  */
-  function getTextWidth(text, font) {
-    // re-use canvas object for better performance
-    var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'));
-    var context = canvas.getContext('2d');
-    context.font = font;
-    var metrics = context.measureText(text);
-    return metrics.width;
-  }
-
-  var currentTitlebarTextStyle;
-  $scope.getTitlebarClass = function getTitlebarClass() {
-    if ($scope.titlebar.text && $scope.titlebar.text.length > 10) {
-      var editorWidth;
-      if ($rootScope.currentWidth >= 568) {
-        // Maximum width for column
-        editorWidth = 470;
-      } else {
-        editorWidth = $rootScope.currentWidth - 98;
-      }
-
-      var fontSize = '21px';
-      if (currentTitlebarTextStyle === 'titlebar-input-very-long') {
-        fontSize = '12px';
-      } else if (currentTitlebarTextStyle === 'titlebar-input-long') {
-        fontSize = '15px';
-      } else if (currentTitlebarTextStyle === 'titlebar-input-medium') {
-        fontSize = '18px';
-      }
-
-      var currentTextWidth = getTextWidth($scope.titlebar.text, fontSize + ' sans-serif');
-      if (currentTitlebarTextStyle === 'titlebar-input-very-long' || (currentTextWidth / 2 + 25) > editorWidth) {
-        if (currentTitlebarTextStyle !== 'titlebar-input-very-long') {
-          $rootScope.$broadcast('elastic:adjust');
-          currentTitlebarTextStyle = 'titlebar-input-very-long';
-        }
-      }
-      else if (currentTitlebarTextStyle === 'titlebar-input-long' || (currentTextWidth / 2 + 35) > editorWidth) {
-        if (currentTitlebarTextStyle !== 'titlebar-input-long') {
-          $rootScope.$broadcast('elastic:adjust');
-          currentTitlebarTextStyle = 'titlebar-input-long';
-        }
-      } else if (currentTitlebarTextStyle === 'titlebar-input-medium' || (currentTextWidth + 20) > editorWidth) {
-        if (currentTitlebarTextStyle !== 'titlebar-input-medium') {
-          $rootScope.$broadcast('elastic:adjust');
-          currentTitlebarTextStyle = 'titlebar-input-medium';
-        }
-      } else {
-        currentTitlebarTextStyle = undefined;
-      }
-      return currentTitlebarTextStyle;
-    } else {
-      currentTitlebarTextStyle = undefined;
     }
   };
 
