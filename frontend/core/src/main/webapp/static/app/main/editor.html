@@ -7,14 +7,14 @@
       </div>
 
       <form role="form" class="group-mixed" ng-submit="saveItemInEdit()" autocapitalize="none" autocorrect="off">
-        <div class="group-mixed--left">
-          <input ng-if="itemHasActionButton" type="checkbox" ng-model="task.completed" icon-checkbox="editorTitlebarCheckbox" />
+        <div ng-if="itemHasActionButton" class="group-mixed--left">
+          <input type="checkbox" ng-model="task.completed" icon-checkbox="editorTitlebarCheckbox" />
         </div>
         <div class="group-mixed--middle">
           <textarea type="text" ng-model="titlebar.text" ng-keydown="titlebarTextKeyDown($event)" editor-titlebar-text-input msd-elastic dynamic-placeholder="{{getTitlebarTextInputPlaceholder()}}" maxlength="128" required ></textarea>
         </div>
-        <div class="group-mixed--right">
-          <button ng-show="titlebarHasText()" type="button" class="btn-clear" ng-click="clearTitlebarText()"></button>
+        <div ng-if="titlebarHasText()" class="group-mixed--right">
+          <button type="button" class="btn-clear" ng-click="clearTitlebarText()"></button>
         </div>
       </form>
 

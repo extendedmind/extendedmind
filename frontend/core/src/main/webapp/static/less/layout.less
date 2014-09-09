@@ -235,6 +235,8 @@ Use `.group-instruction` to create an instruction block in the middle of a secti
 
 /*
 Use `.group-mixed` to create horizontal collections of different elements.
+
+NOTE: Implementation depends on the removing of --left|--right DOM nodes if they have no content
 */
 
 @padding-inner-group-mixed: 10px;
@@ -276,10 +278,27 @@ Use `.group-mixed` to create horizontal collections of different elements.
 .group-mixed--right {
   padding-left: @padding-inner-group-mixed;
 
-  // Increase clicking area of elements
+  // Increase clicking area of elements.
   button, a {
     padding-right: @grid-horizontal;
   }
+}
+
+.group-mixed--middle:first-child {
+  textarea {
+    padding-left: @grid-horizontal;
+  }
+}
+.group-mixed--middle:last-child {
+  textarea {
+    padding-right: @grid-horizontal;
+  }
+}
+
+// This will expand width and line-height when there are no sibling elements in .group-mixed
+.group-mixed--middle:only-child {
+  display: block;
+  line-height: @grid-vertical;
 }
 
 // Android hack: 10px padding caused redraw problems
