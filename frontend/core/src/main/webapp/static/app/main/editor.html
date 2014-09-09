@@ -3,17 +3,19 @@
 
     <header class="container-titlebar">
       <div class="group-navigation">
-        <a href class="link-navigation-back" ng-click="endEdit()" ng-bind="saveOnClose ? 'save' : 'cancel'"></a>
+        <a href class="link-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endEdit()" ng-bind="saveOnClose ? 'save' : 'back'"></a>
       </div>
 
-      <form role="form" class="group-mixed row" ng-submit="saveItemInEdit()" autocapitalize="none" autocorrect="off">
+      <form role="form" class="group-mixed" ng-submit="saveItemInEdit()" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--left">
           <input ng-if="itemHasActionButton" type="checkbox" ng-model="task.completed" icon-checkbox="editorTitlebarCheckbox" />
         </div>
         <div class="group-mixed--middle">
           <textarea type="text" ng-model="titlebar.text" ng-keydown="titlebarTextKeyDown($event)" editor-titlebar-text-input msd-elastic dynamic-placeholder="{{getTitlebarTextInputPlaceholder()}}" maxlength="128" required ></textarea>
         </div>
-        <button ng-show="titlebarHasText()" type="button" class="group-mixed--right btn-clear" ng-click="clearTitlebarText()"></button>
+        <div class="group-mixed--right">
+          <button ng-show="titlebarHasText()" type="button" class="btn-clear" ng-click="clearTitlebarText()"></button>
+        </div>
       </form>
 
       <div ng-if="editorType === 'item'" class="group-btn row">

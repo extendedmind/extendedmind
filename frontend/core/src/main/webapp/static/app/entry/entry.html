@@ -28,9 +28,11 @@
           <form role="form" name="signupForm">
             <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email..." required />
             <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password..." required />
-            <div class="group-mixed row group-instruction">
-              <input type="checkbox" ng-model="user.agree" ng-true-value="true" icon-checkbox="signupFormAgree" />
-              <span class="text-checkbox text-details">I have read and agree to the <a href ng-click="gotoTermsOfService()">terms of service</a> and <a href ng-click="gotoPrivacyPolicy()">privacy policy</a></span>
+            <div class="group-mixed">
+              <div class="group-mixed--left">
+                <input type="checkbox" ng-model="user.agree" ng-true-value="true" icon-checkbox="signupFormAgree" />
+              </div>
+              <div class="group-mixed--middle text-details">I have read and agree to the <a href ng-click="gotoTermsOfService()">terms of service</a> and <a href ng-click="gotoPrivacyPolicy()">privacy policy</a></div>
             </div>
             <div class="group-btn row">
               <button type="submit" class="btn-action" ng-disabled="!signupForm.$valid || !user.agree" ng-click="signUp()">
@@ -54,9 +56,11 @@
           <form role="form" name="loginForm">
             <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email..." required />
             <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password..." required />
-            <div class="group-mixed row">
-              <input type="checkbox" ng-model="user.remember" ng-true-value="true" icon-checkbox="loginFormRemember" />
-              <span class="text-checkbox">remember</span>
+            <div class="group-mixed">
+              <div class="group-mixed--left">
+                <input type="checkbox" ng-model="user.remember" ng-true-value="true" icon-checkbox="loginFormRemember" />
+              </div>
+              <span class="group-mixed--middle">remember</span>
             </div>
             <div class="group-btn row">
               <button type="submit" class="btn-action" ng-disabled="!loginForm.$valid" ng-click="logIn()">

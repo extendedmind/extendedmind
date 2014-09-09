@@ -127,18 +127,45 @@ Font control with alignment:
 //////// NEW START ////////////////////////
 
 /*
+<h1 class="main-heading">Typography</h1>
+
+Fonts in use:
+* HelveticaNeue-Light
+* Helvetica Neue Light
+* HelveticaNeueLTStd-Lt
+* Helvetica Neue
+* Arial
+* Helvetica
+* sans-serif
+
+(Bold letters use HelveticaNeueLT-Roman instead of HelveticaNeueLTStd-Lt.)
+*/
+
+@font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'HelveticaNeueLTStd-Lt', 'Helvetica Neue', 'Arial', 'Helvetica', 'sans-serif';
+@font-family-bold: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'HelveticaNeueLT-Roman', 'Helvetica Neue', 'Arial', 'Helvetica', 'sans-serif';
+
+@size-font-small: 15px;
+
+/*
+Font mixins.
+*/
+.set-font-bold() {
+  font-family: @font-family-bold;
+  font-weight: 700;
+}
+
+/*
 Use `.text-details` to separate details from body text.
 */
 
-@error-color: #e22c09;
 .text-details {
-  font-size: @font-small-size;
+  font-size: @size-font-small;
 }
 
 .text-error {
-  font-size: @font-small-size;
-  color: @error-color;
-  .font-bold;
+  font-size: @size-font-small;
+  color: @color-error;
+  .set-font-bold;
 }
 
 //////// NEW END ////////////////////////

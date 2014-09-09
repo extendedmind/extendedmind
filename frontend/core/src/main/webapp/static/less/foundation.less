@@ -64,6 +64,42 @@ Imports normalize.less for making browsers render all elements more consistently
 
 @overdue-task: @delete-button;
 
+
+
+
+//////// NEW START ////////////////////////
+
+/*
+Grid constants
+*/
+
+@grid-horizontal: 22px;
+@grid-vertical: 44px;
+@grid-vertical-half: 19px;
+
+/*
+Text colors
+*/
+
+@color-instruction: #70c041;
+@color-error: #e22c09;
+
+/*
+Default colors for input elements
+*/
+
+@color-default-inactive: #919191;
+@color-default-active: #0f82fe;
+@color-default-pressed: #0171ea;
+@color-default-disabled: lighten(#b0b0b6, 20%); // TODO: don't use lighten
+
+//////// NEW END ////////////////////////
+
+
+
+
+
+
 // TODO: to be refactored?
 .default-element {
   color: @default-element;
@@ -167,13 +203,13 @@ Text colors
 
 TODO: This is just a short example, needs to be completed when colors are confirmed
 ```markup
-<div style="margin-bottom: 5px; background:black">content: black</div>
-<div style="margin-bottom: 5px; background:#3b3b3b">logo: #3b3b3b;</div>
-<div style="margin-bottom: 5px; background:#999999">icon: #999999</div>
-<div style="margin-bottom: 5px; background:#dadada">separator: #dadada</div>
-<div style="margin-bottom: 5px; background:#70c041">instruction: #70c041</div>
-<div style="margin-bottom: 5px; background:#e22c09">warning: #e22c09</div>
-<div style="margin-bottom: 5px; background:#363636">menu: #363636</div>
+<div style="margin-bottom: 5px; background: black">content: black</div>
+<div style="margin-bottom: 5px; background: #3b3b3b">logo: #3b3b3b;</div>
+<div style="margin-bottom: 5px; background: #999999">icon: #999999</div>
+<div style="margin-bottom: 5px; background: #dadada">separator: #dadada</div>
+<div style="margin-bottom: 5px; background: #70c041">instruction: #70c041</div>
+<div style="margin-bottom: 5px; background: #e22c09">warning: #e22c09</div>
+<div style="margin-bottom: 5px; background: #363636">menu: #363636</div>
 ```
 */
 
@@ -185,7 +221,7 @@ TODO: This is just a short example, needs to be completed when colors are confir
 `.center-horizontally` centers the container by making the browser to calculate left and right margins automatically.
 
 ```markup
-<div class="center-horizontally" style="background:gray;max-width:100px;">&nbsp;</div>
+<div class="center-horizontally" style="background: gray; max-width: 100px;">&nbsp;</div>
 ```
 */
 .center-horizontally() {

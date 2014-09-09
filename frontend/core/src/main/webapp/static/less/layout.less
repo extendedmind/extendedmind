@@ -1,4 +1,5 @@
 @import "foundation.less";
+@import "inputs.less";
 
 /*
 <h1 class="main-heading">Layout</h1>
@@ -29,6 +30,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 @height-container-banner: 200px;
 @height-landscape-max: 769px;
 @height-max: 1025px;
+@width-max: 1025px;
 @width-column-max: 568px; // iPhone 5 landscape is still one column
 
 /*
@@ -113,7 +115,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 .container-toolbar,
 .container-titlebar {
   .center-horizontally;
-  max-width: @maximum-width;
+  max-width: @width-max;
 }
 
 
@@ -128,8 +130,8 @@ margin.
 */
 .row {
   width: 100%;
-  padding-left: @horizontal-grid;
-  padding-right: @horizontal-grid;
+  padding-left: @grid-horizontal;
+  padding-right: @grid-horizontal;
 }
 
 /*
@@ -143,42 +145,42 @@ for 1, 2, 3, 4, 7 and 9 buttons.
 
 ```markup
 <div class="group-btn" style="width: 100%;">
-  <button style="background:gray;">&nbsp;</button>
-  <button style="background:red;">&nbsp;</button>
-  <button style="background:gray;">&nbsp;</button>
-  <button style="background:red;">&nbsp;</button>
-  <button style="background:gray;">&nbsp;</button>
-  <button style="background:red;">&nbsp;</button>
-  <button style="background:gray;">&nbsp;</button>
-  <button style="background:red;">&nbsp;</button>
-  <button style="background:gray;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
+  <button style="background: red;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
+  <button style="background: red;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
+  <button style="background: red;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
+  <button style="background: red;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
 </div>
 <div class="group-btn" style="width: 100%;">
-  <button style="background:gray;">&nbsp;</button>
-  <button style="background:red;">&nbsp;</button>
-  <button style="background:gray;">&nbsp;</button>
-  <button style="background:red;">&nbsp;</button>
-  <button style="background:gray;">&nbsp;</button>
-  <button style="background:red;">&nbsp;</button>
-  <button style="background:gray;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
+  <button style="background: red;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
+  <button style="background: red;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
+  <button style="background: red;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
 </div>
 <div class="group-btn" style="width: 100%;">
-  <button style="background:gray;">&nbsp;</button>
-  <button style="background:red;">&nbsp;</button>
-  <button style="background:gray;">&nbsp;</button>
-  <button style="background:red;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
+  <button style="background: red;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
+  <button style="background: red;">&nbsp;</button>
 </div>
 <div class="group-btn" style="width: 100%;">
-  <button style="background:gray;">&nbsp;</button>
-  <button style="background:red;">&nbsp;</button>
-  <button style="background:gray;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
+  <button style="background: red;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
 </div>
 <div class="group-btn" style="width: 100%;">
-  <button style="background:gray;">&nbsp;</button>
-  <button style="background:red;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
+  <button style="background: red;">&nbsp;</button>
 </div>
 <div class="group-btn" style="width: 100%;">
-  <button style="background:gray;">&nbsp;</button>
+  <button style="background: gray;">&nbsp;</button>
 </div>
 ```
 */
@@ -217,40 +219,84 @@ for 1, 2, 3, 4, 7 and 9 buttons.
 Use `.group-instruction` to create an instruction block in the middle of a section.
 */
 .group-instruction {
-  color: @instruction;
+  color: @color-instruction;
   display: block;
   text-align: center;
-  line-height: 19px;
+  line-height: @grid-vertical-half;
 
   // If there are more than one paragraph, create padding between them
   p:not(:first-child) {
-    padding-top: @vertical-grid;
+    padding-top: @grid-vertical;
   }
 }
 .group-instruction ~ .group-btn {
-  padding-top: @vertical-grid;
+  padding-top: @grid-vertical;
 }
 
 /*
 Use `.group-mixed` to create horizontal collections of different elements.
 */
+
+@padding-inner-group-mixed: 10px;
+
 .group-mixed {
-  display: table;
+  display: block;
 }
 
 .group-mixed--left, .group-mixed--middle, .group-mixed--right {
   display: table-cell;
+  vertical-align: middle;
+}
+
+.group-mixed--left, .group-mixed--right {
+  // Force all child elements not to increase .group-mixed height with this
+  * {
+    display: block;
+  }
+}
+
+.group-mixed--left {
+  padding-right: @padding-inner-group-mixed;
+
+  // Increase clicking area of elements
+  a, input[type="checkbox"] + label {
+    padding-left: @grid-horizontal;
+    height: @grid-vertical;
+  }
+  a, input[type="checkbox"] + label:before {
+    line-height: @grid-vertical;
+  }
 }
 
 .group-mixed--middle {
   width: 100%;
+  line-height: @grid-vertical-half;
+}
+
+.group-mixed--right {
+  padding-left: @padding-inner-group-mixed;
+
+  // Increase clicking area of elements
+  button, a {
+    padding-right: @grid-horizontal;
+  }
+}
+
+// Android hack: 10px padding caused redraw problems
+// on the checkbox while swiping, and no other CSS
+// solution fixed the problem. Something like this:
+// http://stackoverflow.com/a/16174338/2659424
+// might be the only proper solution to the repaint
+// problems with Android's WebKit.
+.android .group-mixed--left {
+  padding-right: 15px;
 }
 
 /*
 `.group-error` groups together multiple error messages.
 */
 .group-error {
-  line-height: @vertical-grid-half;
+  line-height: @grid-vertical-half;
 }
 
 .group-navigation {
@@ -266,8 +312,8 @@ Use `.group-mixed` to create horizontal collections of different elements.
 Use `.left-of-two` and `.right-of-two` to divide the horizontal space in two sections, separated by a white border.
 
 ```markup
-<div class="left-of-two" style="background:gray;">&nbsp;</div>
-<div class="right-of-two" style="background:gray;">&nbsp;</div>
+<div class="left-of-two" style="background: gray;">&nbsp;</div>
+<div class="right-of-two" style="background: gray;">&nbsp;</div>
 ```
 */
 .left-of-two {
@@ -288,9 +334,9 @@ Similarly, use the following to divide to three sections:
 * `right-of-three`
 
 ```markup
-<div class="left-of-three" style="background:gray;">&nbsp;</div>
-<div class="center-of-three" style="background:gray;">&nbsp;</div>
-<div class="right-of-three" style="background:gray;">&nbsp;</div>
+<div class="left-of-three" style="background: gray;">&nbsp;</div>
+<div class="center-of-three" style="background: gray;">&nbsp;</div>
+<div class="right-of-three" style="background: gray;">&nbsp;</div>
 ```
 */
 .left-of-three {
@@ -317,10 +363,10 @@ And to four sections:
 * `right-of-four`
 
 ```markup
-<div class="left-of-four" style="background:gray;">&nbsp;</div>
-<div class="center-of-four" style="background:gray;">&nbsp;</div>
-<div class="center-of-four" style="background:gray;">&nbsp;</div>
-<div class="right-of-four" style="background:gray;">&nbsp;</div>
+<div class="left-of-four" style="background: gray;">&nbsp;</div>
+<div class="center-of-four" style="background: gray;">&nbsp;</div>
+<div class="center-of-four" style="background: gray;">&nbsp;</div>
+<div class="right-of-four" style="background: gray;">&nbsp;</div>
 ```
 */
 .left-of-four {
@@ -362,7 +408,7 @@ And to four sections:
 }
 
 .list-last {
-  margin-bottom: @vertical-grid-half;
+  margin-bottom: @grid-vertical-half;
 }
 
 
@@ -372,7 +418,7 @@ And to four sections:
 */
 
 div#root {
-  line-height: @vertical-grid;
+  line-height: @grid-vertical;
   max-height: @maximum-height;
   .center-horizontally;
   position: relative;
@@ -503,7 +549,7 @@ div#root {
 
 .simple-content-container {
   height: inherit;
-  padding-bottom: @heading-header-height + @vertical-grid-half;
+  padding-bottom: @heading-header-height + @grid-vertical-half;
   overflow-y: auto;
 }
 
@@ -542,7 +588,7 @@ TODO: Do we want an example of a swiper in the styleguide?
 }
 
 .hide-footer .page-content-container {
-  padding-bottom: @vertical-grid-half;
+  padding-bottom: @grid-vertical-half;
 }
 
 // NO SWIPER
@@ -612,13 +658,13 @@ the main container will be horizontally and vertically centered.
 TODO: Explain verbally, when new grid done
 */
 
-@login-content-height: @vertical-grid*5.1;
+@login-content-height: @grid-vertical*5.1;
 
 section#login, section#signup, section#launch, section#waiting, section#forgot, section#verify {
   .column {
     overflow-y: auto;
     .banner {
-      padding-bottom: @vertical-grid / 10;
+      padding-bottom: @grid-vertical / 10;
       span {
         width: 200px;
         display: block;
@@ -628,7 +674,7 @@ section#login, section#signup, section#launch, section#waiting, section#forgot, 
       // Make content a "sticky footer"
       min-height: 100%;
       margin-bottom: -@login-content-height;
-      padding-top: @vertical-grid * 1.5;
+      padding-top: @grid-vertical * 1.5;
     }
     .banner:after {
       content: "";
@@ -638,8 +684,8 @@ section#login, section#signup, section#launch, section#waiting, section#forgot, 
     .content {
       height: @login-content-height;
       .button-container {
-        padding-top: @vertical-grid / 2;
-        padding-bottom: @vertical-grid / 2;
+        padding-top: @grid-vertical / 2;
+        padding-bottom: @grid-vertical / 2;
       }
     }
   }
@@ -651,14 +697,14 @@ section#login, section#signup, section#launch, section#waiting, section#forgot, 
 section#waiting {
   .column {
     .banner {
-      margin-bottom: -@vertical-grid * 5.5;
+      margin-bottom: -@grid-vertical * 5.5;
     }
     .content {
       .instruction-text {
         h1 {
           line-height: 200%;
         }
-        padding-bottom: @vertical-grid / 2;
+        padding-bottom: @grid-vertical / 2;
       }
       #input-coupon {
         text-align: center;
@@ -667,7 +713,7 @@ section#waiting {
   }
   .waiting-coupon {
     .banner {
-      margin-bottom: -@vertical-grid * 6.5;
+      margin-bottom: -@grid-vertical * 6.5;
     }
   }
 }
@@ -676,7 +722,7 @@ section#launch {
   .column {
     .content {
       div#email {
-        padding-bottom: @vertical-grid;
+        padding-bottom: @grid-vertical;
       }
     }
   }
@@ -685,19 +731,19 @@ section#launch {
 section#forgot, section#verify {
   .column {
     .banner {
-      margin-bottom: -@vertical-grid * 7.5;
+      margin-bottom: -@grid-vertical * 7.5;
     }
     .content {
       .instruction-text {
         p {
-          height: @vertical-grid / 2;
+          height: @grid-vertical / 2;
           vertical-align: middle;
         }
       }
     }
     #instructions-success {
       .instruction-text {
-        padding-bottom: @vertical-grid;
+        padding-bottom: @grid-vertical;
       }
     }
   }
@@ -711,7 +757,7 @@ section#forgot, section#verify {
 
 // TODO: To be refactored, maybe .multiline-text could be created and universally used?
 #about-help {
-  line-height: @vertical-grid-half;
+  line-height: @grid-vertical-half;
 }
 
 
@@ -721,7 +767,7 @@ section#forgot, section#verify {
 */
 
 .simple-content {
-  padding-bottom: @vertical-grid;
+  padding-bottom: @grid-vertical;
 }
 
 .simple-content:last-child {
@@ -729,7 +775,7 @@ section#forgot, section#verify {
 }
 
 .tasks-notes-container {
-  padding-top: @vertical-grid-half;
+  padding-top: @grid-vertical-half;
 }
 
 
@@ -741,11 +787,11 @@ section#forgot, section#verify {
 #errorMessage {
   h3 {
     text-align: center;
-    padding-bottom: @vertical-grid;
+    padding-bottom: @grid-vertical;
   }
 }
 
 .add-element {
   // Add @vertical grid to make room for 'add [item]...' input
-  padding-bottom: @vertical-grid-half;
+  padding-bottom: @grid-vertical-half;
 }

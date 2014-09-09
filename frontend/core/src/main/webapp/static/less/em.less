@@ -5,10 +5,10 @@
 @import "foundation.less";
 @import "animations.less";
 @import "typography.less";
-@import "layout.less";
 @import "icons.less";
 @import "links.less";
 @import "inputs.less";
+@import "layout.less";
 @import "notifications.less";
 @import "widgets.less";
 
@@ -72,9 +72,9 @@ As such, the following would be incorrect:
 ```
 .foo, .foo--bar, .baz
 {
-  display:block;
-  background-color:green;
-  color:red }
+  display: block;
+  background-color: green;
+  color: red }
 ```
 
 Problems here include
@@ -247,7 +247,7 @@ div.error {
 This is one example where a qualified selector might be justifiable, but I would still recommend an approach more like:
 
 ```
-// Text-level errors. 
+// Text-level errors.
 .error-text {
     color: red;
     font-weight: bold;

@@ -412,11 +412,12 @@ Use `.vertical-buttons` to make buttons align in a vertical column
 
 //////// NEW START ////////////////////////
 
-@btn-color: #0f82fe;
-@btn-color-pressed: #0171ea;
-@btn-color-disabled: lighten(#b0b0b6, 20%);
-@btn-width: 100px;
-@btn-height: 32px;
+@color-btn: @color-default-active;
+@color-btn-pressed: @color-default-pressed;
+@color-btn-disabled: @color-default-disabled;
+@width-btn: 100px;
+@height-btn: 32px;
+@size-btn-clear: 28px;
 
 [class^="btn-"], [class*=" btn-"] {
   padding: 0;
@@ -432,27 +433,60 @@ Use `.vertical-buttons` to make buttons align in a vertical column
   color: white;
   background-color: transparent;
   & > .text-btn {
-    background-color: @btn-color;
+    background-color: @color-btn;
     display: inline-block;
     vertical-align: middle;
-    width: @btn-width;
-    line-height: @btn-height;
+    width: @width-btn;
+    line-height: @height-btn;
   }
   &:active > .text-btn {
-    background-color: @btn-color-pressed;
+    background-color: @color-btn-pressed;
   }
   &[disabled] > .text-btn {
-    background-color: @btn-color-disabled;
+    background-color: @color-btn-disabled;
   }
 }
 .btn-clear {
   background-color: transparent;
-  &:before {
+  &:after {
     color: @default-button;
     .set-icon-font;
-    font-size: @icon-size;
+    font-size: @size-btn-clear;
     content: @icon-x;
   }
+}
+
+
+/*
+******************************************************************
+# Checkboxes
+*/
+@size-checkbox: 28px;
+@color-checkbox: @color-default-inactive;
+@color-checkbox-checked: @color-default-active;
+
+/*
+Basic checkbox
+*/
+
+// TODO:  Write example when icons are working with styleguide.
+//        Make labels also clickable (COMMENT: Why? -JP @ 2014-09-09)
+label {
+  cursor: pointer;
+}
+// Hide default HTML checkbox
+input[type="checkbox"] {
+  display: none;
+}
+input[type="checkbox"] + label:before {
+  .set-icon-font;
+  font-size: @size-checkbox;
+  color: @color-checkbox;
+  content: @icon-selection-empty;
+}
+input[type="checkbox"]:checked + label:before {
+  color: @color-checkbox-checked;
+  content: @icon-selection-checked;
 }
 
 
@@ -469,6 +503,7 @@ Basic checkbox
 */
 // TODO: write example when icons are working with styleguideodo
 // Make labels also clickable
+/*
 label {
   cursor: pointer;
 }
@@ -505,9 +540,10 @@ input[type="checkbox"]:checked + label:before {
 .android input[type='checkbox'] + label:before {
   padding-right: 15px;
 }
+*/
 
 // TODO Changes with pikaday?
-input[type=date] {
+input[type="date"] {
   &.simple-input {
     color: @default-element;
   }

@@ -34,8 +34,8 @@ TODO: Icons are not working yet with Phytoplankton
 
 @font-face {
 	font-family: 'icomoon';
-	src:url('../fonts/icomoon.eot');
-	src:url('../fonts/icomoon.eot') format('embedded-opentype'),
+	src: url('../fonts/icomoon.eot');
+	src: url('../fonts/icomoon.eot') format('embedded-opentype'),
   url('../fonts/icomoon.woff') format('woff'),
   url('../fonts/icomoon.ttf') format('truetype'),
   url('../fonts/icomoon.svg?') format('svg');
@@ -43,7 +43,7 @@ TODO: Icons are not working yet with Phytoplankton
   font-style: normal;
 }
 
-.set-icon-font {
+.set-icon-font() {
   font-family: 'icomoon' !important;
   speak: none;
   font-style: normal;
@@ -107,19 +107,6 @@ span.icon-i, span.icon-logo-only {
 }
 span.icon-i:active, span.icon-logo-only:active {
   color: @highlighted-element-pressed;
-}
-
-.icon-selection-checked {
-  content: @icon-selection-checked;
-  &:before {
-    content: @icon-selection-checked;
-  }
-}
-.icon-selection-empty {
-  content: @icon-selection-empty;
-  &:before {
-    content: @icon-selection-empty;
-  }
 }
 
 .icon-eye:before {
