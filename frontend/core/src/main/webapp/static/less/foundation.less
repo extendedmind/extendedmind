@@ -176,3 +176,19 @@ TODO: This is just a short example, needs to be completed when colors are confir
 <div style="margin-bottom: 5px; background:#363636">menu: #363636</div>
 ```
 */
+
+/*
+**************************************************************************
+# Mixins
+
+/*
+`.center-horizontally` centers the container by making the browser to calculate left and right margins automatically.
+
+```markup
+<div class="center-horizontally" style="background:gray;max-width:100px;">&nbsp;</div>
+```
+*/
+.center-horizontally() {
+  margin-left: auto;
+  margin-right: auto;
+}
