@@ -82,7 +82,15 @@ a.click-to-slide {
   }
 }
 
-.link-navigation-back:before {
+/*
+Hide arrow from link navigation when content is not swipeable.
+
+
+```markup
+<div class="loading-animation"></div>
+```
+*/
+.link-navigation-back:not(.not-swipeable):before {
   .set-icon-font;
   content: @icon-arrow-left;
   font-size: 8px;
