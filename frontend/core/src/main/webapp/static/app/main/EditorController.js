@@ -19,7 +19,7 @@
 
   $scope.titlebar = {};
   $scope.searchText = {};
-  $scope.omnibarKeywords = {isVisible: false};
+  $scope.omnibarKeywords = {visible: false};
 
   var titleBarInputFocusCallbackFunction = {};
   var titleBarInputBlurCallbackFunction = {};
@@ -55,7 +55,7 @@
 
   $scope.titlebarTextKeyDown = function titlebarTextKeyDown(event) {
     // Escape
-    // TODO: editor titlebar input blur is not working here
+    // FIXME: editor titlebar input blur is not working here
     if (event.keyCode === 27) blurTitlebarInput();
     // Return
     else if (event.keyCode === 13 && !$rootScope.isLoading && $scope.titlebarHasText()) {
@@ -141,7 +141,7 @@
       initializeItemEditor(item);
     }*/
     $scope.editorType = editorType;
-    $scope.isEditorVisible = true;
+    $scope.editorVisible = true;
     evaluateAndSetSaveOnClose();
   }
 
@@ -156,7 +156,7 @@
   }
 
   function clearAndHideEditor() {
-    $scope.isEditorVisible = false;
+    $scope.editorVisible = false;
     $scope.editorType = undefined;
     $scope.titlebar = {};
   }
@@ -185,17 +185,17 @@
   };
 
   $scope.toggleSnooze = function toggleSnooze() {
-    $scope.isSnoozeOpen = !$scope.isSnoozeOpen;
+    $scope.snoozeOpen = !$scope.snoozeOpen;
   };
 
   $scope.closeSnoozeAndOpenCalendar = function closeSnoozeAndOpenCalendar() {
-    $scope.isSnoozeOpen = false;
-    $scope.isCalendarOpen = true;
+    $scope.snoozeOpen = false;
+    $scope.calendarOpen = true;
     $scope.calendarCloseCallbackFn = $scope.endEdit;
   };
 
   $scope.openCalendar = function openCalendar() {
-    $scope.isCalendarOpen = true;
+    $scope.calendarOpen = true;
     $scope.calendarCloseCallbackFn = undefined;
   };
 
@@ -210,15 +210,15 @@
   }
 
   $scope.closeSnooze = function closeSnooze() {
-    $scope.isSnoozeOpen = false;
+    $scope.snoozeOpen = false;
   };
 
   $scope.closeCalendar = function closeCalendar() {
-    $scope.isCalendarOpen = false;
+    $scope.calendarOpen = false;
   };
 
   $scope.closeSnoozeAndSave = function closeSnoozeAndSave(date) {
-    $scope.isSnoozeOpen = false;
+    $scope.snoozeOpen = false;
     if ($scope.editorType === 'task') {
       setDateToTask(date, $scope.task);
       $scope.endEdit();
@@ -226,7 +226,7 @@
   };
 
   $scope.closeCalendarAndSave = function closeCalendarAndSave(callback) {
-    $scope.isCalendarOpen = false;
+    $scope.calendarOpen = false;
     if (typeof getCalendarDateFn === 'function') {
       var date = getCalendarDateFn();
       if ($scope.editorType === 'task') setDateToTask(date, $scope.task);
@@ -478,8 +478,8 @@
   };
 
   $scope.toggleOmnibarKeywordsVisible = function toggleOmnibarKeywordsVisible() {
-    $scope.omnibarKeywords.isVisible = !$scope.omnibarKeywords.isVisible;
-    if ($scope.omnibarKeywords.isVisible) selectedOmnibarKeywords = [];
+    $scope.omnibarKeywords.visible = !$scope.omnibarKeywords.visible;
+    if ($scope.omnibarKeywords.visible) selectedOmnibarKeywords = [];
   };
 
   // EDIT ITEM

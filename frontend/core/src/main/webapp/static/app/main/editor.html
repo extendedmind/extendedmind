@@ -1,5 +1,5 @@
 <div id="editor-drawer" class="container-editor" ng-controller="EditorController" data-snap-ignore="true">
-  <div ng-if="isEditorVisible">
+  <div ng-if="editorVisible">
 
     <header class="container-titlebar">
       <div class="group-navigation">
@@ -38,17 +38,17 @@
 
       <div ng-switch-when="omnibar" class="omnibar-search">
 
-        <button ng-if="keywords.length" type="button" class="font-small button" ng-class="omnibarKeywords.isVisible ? 'selected-keyword' : 'keyword'" ng-click="toggleOmnibarKeywordsVisible()">
-          keywords <strong ng-bind="omnibarKeywords.isVisible ? 'x' : '+'"></strong>
+        <button ng-if="keywords.length" type="button" class="font-small button" ng-class="omnibarKeywords.visible ? 'selected-keyword' : 'keyword'" ng-click="toggleOmnibarKeywordsVisible()">
+          keywords <strong ng-bind="omnibarKeywords.visible ? 'x' : '+'"></strong>
         </button>
 
-        <div ng-if="omnibarKeywords.isVisible" class="keywords-container">
-          <button ng-init="isKeywordSelected = false" ng-repeat="keyword in getSelectedAndFilterUnselectedKeywords()" type="button" class="button font-small keyword" ng-class="isKeywordSelected ? 'selected-keyword' : 'keyword'" ng-click="isKeywordSelected = !isKeywordSelected; toggleKeywordSelected(keyword);">
-            {{keyword.title}} <strong ng-bind="isKeywordSelected ? 'x' : '+'"></strong>
+        <div ng-if="omnibarKeywords.visible" class="keywords-container">
+          <button ng-init="keywordSelected = false" ng-repeat="keyword in getSelectedAndFilterUnselectedKeywords()" type="button" class="button font-small keyword" ng-class="keywordSelected ? 'selected-keyword' : 'keyword'" ng-click="keywordSelected = !keywordSelected; toggleKeywordSelected(keyword);">
+            {{keyword.title}} <strong ng-bind="keywordSelected ? 'x' : '+'"></strong>
           </button>
         </div>
 
-        <div ng-if="omnibarKeywords.isVisible && !isLoading">
+        <div ng-if="omnibarKeywords.visible && !isLoading">
           <div ng-show="filteredNotes.length" class="filtered-items">
             <h3><a href ng-click="gotoNotes()">notes</a></h3>
             <div class="inner-page-content-container" accordion>
@@ -62,9 +62,9 @@
           </div>
         </div>
 
-        <div ng-if="!isSearchActive() && !omnibarKeywords.isVisible" class="omnibar-empty-search-placeholder" ng-style="{maxHeight: getSearchPlaceholderMaxHeight()}" ng-click="hideEmptyOmnibar()"></div>
+        <div ng-if="!isSearchActive() && !omnibarKeywords.visible" class="omnibar-empty-search-placeholder" ng-style="{maxHeight: getSearchPlaceholderMaxHeight()}" ng-click="hideEmptyOmnibar()"></div>
 
-        <div ng-if="isSearchActive() && !omnibarKeywords.isVisible && !isLoading">
+        <div ng-if="isSearchActive() && !omnibarKeywords.visible && !isLoading">
           <div ng-show="filteredItems.length" class="filtered-items">
             <h3 ><a href ng-click="gotoInbox()">inbox</a></h3>
             <div class="inner-page-content-container" accordion>
@@ -111,7 +111,7 @@
           <form role="form">
 
             <div class="omnibar-scroller-slide" editable-field-container>
-              <div ng-hide="isSnoozeOpen || isCalendarOpen">
+              <div ng-hide="snoozeOpen || calendarOpen">
                 <span ng-if="hideTaskProperties()" class="show-more">more</span>
                 <div ng-hide="hideTaskProperties()">
                   <span ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></span>
@@ -121,18 +121,18 @@
                   <textarea id="taskDescription" class="simple-input" ng-model="task.transientProperties.description" ng-focus="taskDescriptionFocus()" ng-blur="taskDescriptionBlur()" msd-elastic editable-field placeholder="description..." maxlength="1024"></textarea>
                 </div>
               </div>
-              <div ng-if="isSnoozeOpen && !isCalendarOpen" snooze="{{task.transientProperties.date}}" snooze-close-and-save="closeSnoozeAndSave(date)" snooze-close-and-open="closeSnoozeAndOpenCalendar()" snooze-destroy="closeSnooze()"></div>
-              <div ng-if="isCalendarOpen" class="pikaday-embedded" calendar="{{task.transientProperties.date}}" calendar-get-date-fn="registerGetCalendarDateFn(getCalendarDateFn)" calendar-set-default-date="true" calendar-destroy="closeCalendar()" bound="false"></div>
+              <div ng-if="snoozeOpen && !calendarOpen" snooze="{{task.transientProperties.date}}" snooze-close-and-save="closeSnoozeAndSave(date)" snooze-close-and-open="closeSnoozeAndOpenCalendar()" snooze-destroy="closeSnooze()"></div>
+              <div ng-if="calendarOpen" class="pikaday-embedded" calendar="{{task.transientProperties.date}}" calendar-get-date-fn="registerGetCalendarDateFn(getCalendarDateFn)" calendar-set-default-date="true" calendar-destroy="closeCalendar()" bound="false"></div>
 
               <footer>
                 <div class="group-btn">
                   <button type="button" class="btn-delete">
                     <span class="text-btn">delete</span>
                   </button>
-                  <button ng-if="!isCalendarOpen" type="button" class="btn-checkbox" ng-click="toggleSnooze()">
+                  <button ng-if="!calendarOpen" type="button" class="btn-checkbox" ng-click="toggleSnooze()">
                     <span class="text-btn" ng-bind="task.transientProperties.date ? 'snooze' : 'set date'"></span>
                   </button>
-                  <button ng-if="isCalendarOpen" type="button" class="wide-button normal-button" ng-click="closeCalendarAndSave(calendarCloseCallbackFn)">
+                  <button ng-if="calendarOpen" type="button" class="wide-button normal-button" ng-click="closeCalendarAndSave(calendarCloseCallbackFn)">
                     <span>done</span>
                   </button>
                 </div>
