@@ -40,7 +40,8 @@
   function initializeTaskEditor(task) {
     $scope.titlebar.text = task.title;
     $scope.task = task;
-    $scope.itemHasActionButton = true;
+    $scope.itemTitleHasActionButton = true;
+    $scope.editorHasSwiper = true;
   }
 
   function evaluateAndSetSaveOnClose() {
@@ -233,21 +234,6 @@
     }
   };
 
-  $scope.taskDescriptionFocus = function() {
-    taskDescriptionHasFocus = true;
-  };
-  $scope.taskDescriptionBlur = function() {
-    taskDescriptionHasFocus = false;
-  };
-
-  $scope.hideTaskProperties = function() {
-    return taskDescriptionHasFocus;
-  };
-
-  $scope.isSearchActive = function isSearchActive() {
-    return $scope.searchText.delayed && $scope.searchText.delayed.length > 1;
-  };
-
   // Show search results with slight delay.
   $scope.$watch('titlebar.text', function(newTitle/*, oldTitle*/) {
     $scope.searchText.current = newTitle;
@@ -276,6 +262,38 @@
   function blurTitlebarInput() {
     if (typeof titleBarInputBlurCallbackFunction === 'function') titleBarInputBlurCallbackFunction();
   }
+
+  var HEADER_HEIGHT = 88;
+  $scope.getHeaderHeight = function getHeaderHeight() {
+    return HEADER_HEIGHT;
+  };
+
+  // var ITEM_ACTION_BUTTONS_ROW_HEIGHT = 60;
+  // var ITEM_NAVIGATION_ROW_HEIGHT = 44;
+  var FOOTER_HEIGHT = 104;
+  $scope.getFooterHeight = function getFooterHeight() {
+    return FOOTER_HEIGHT; // ITEM_ACTION_BUTTONS_ROW_HEIGHT + ITEM_NAVIGATION_ROW_HEIGHT
+  };
+
+  // FOR DEBUGGING
+  $scope.DEBUG_openSoftKeyboardTemplate = function DEBUG_openSoftKeyboardTemplate() {
+    var containerEditor = document.getElementById('editor-drawer');
+    containerEditor.style.height = 350 + 'px';
+    FOOTER_HEIGHT = 104;
+  };
+
+  $scope.DEBUG_closeSoftKeyboardTemplate = function DEBUG_closeSoftKeyboardTemplate() {
+    var containerEditor = document.getElementById('editor-drawer');
+    containerEditor.style.height = 100 + '%';
+    // FOOTER_HEIGHT = 0;
+  };
+}
+
+EditorController['$inject'] = ['$rootScope', '$scope', '$timeout'];
+angular.module('em.main').controller('EditorController', EditorController);
+
+
+  /*
 
   // CONTAINER DIMENSIONS
 
@@ -335,6 +353,21 @@
     } else {
       return MAX_CONTAINER_HEIGHT - usedHeight - keyboardHeight;
     }
+  };
+
+  $scope.taskDescriptionFocus = function() {
+    taskDescriptionHasFocus = true;
+  };
+  $scope.taskDescriptionBlur = function() {
+    taskDescriptionHasFocus = false;
+  };
+
+  $scope.hideTaskProperties = function() {
+    return taskDescriptionHasFocus;
+  };
+
+  $scope.isSearchActive = function isSearchActive() {
+    return $scope.searchText.delayed && $scope.searchText.delayed.length > 1;
   };
 
   // EDIT ITEM SCROLLER
@@ -429,7 +462,5 @@
     initializeOmnibarItem(feature, item);
     $scope.openOmnibar(feature);
   };
-}
 
-EditorController['$inject'] = ['$rootScope', '$scope', '$timeout'];
-angular.module('em.main').controller('EditorController', EditorController);
+*/

@@ -40,39 +40,84 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 
 /*
 `.container-master` sets the vertical positioning of the master
-  content area. When the screen size is bigger than a tablet, the master
-  container will be vertically centered.
-  */
+content area. When the screen size is bigger than a tablet, the master
+container will be vertically centered.
+*/
+.container-master {
+  .center-horizontally;
+  max-height: @height-max;
+}
+
+.container-menu {
+
+}
+
+/*
+Editor.
+
+Set editor height to 100%
+*/
+.container-editor {
+  position: absolute;
+  right: 0;
+  left: 0;
+  max-height: @height-max;
+  .center-horizontally;
+  // FIXME
+  max-width: @width-column-max;
+  // FIXME
+  height: 100%; // set height for sticky footer
+}
+
+/*
+We can have fluid container height with this.
+
+Sources:
+http://stackoverflow.com/a/15933376
+http://stackoverflow.com/a/12255692
+http://pixelsvsbytes.com/blog/2011/09/sticky-css-footers-the-flexible-way/
+*/
+.container-editor--inner {
+  display: table;
+  table-layout: fixed;  // Fixes width calculation with swiper inside. See: http://stackoverflow.com/a/19835024
+  height: inherit;      // set height for display: table
+  width: 100%;          // set width for display: table
+}
+
+/*
+Elements inside swiper would otherwise be as wide as `.swiper-wrapper`.
+*/
+.swiper-slide .container-content {
+  width: inherit; // inherit width from parent
+}
+
+/*
+Use same positioning as in swiper to make content scrollable and footer visible.
+NOTE: Footer position in UI is set using javascript. See http://css-tricks.com/snippets/css/sticky-footer/
+*/
+.swiper-slide .container-content, .swiper-slide .container-content--after {
+  position: absolute;
+}
+
+/*
+We can have fluid container height with this.
+*/
+.container-content--outer {
+  display: table-cell;
+  height: inherit;  // set height for for display: table
+}
+
+@media (min-height: @height-landscape-max) {
+  .container-master, .container-editor {
+    min-height: @height-landscape-max;
+    max-height: @height-landscape-max;
+    margin-top: -@height-landscape-max / 2;
+    top: 50%;
+  }
   .container-master {
-    .center-horizontally;
-    max-height: @height-max;
+    position: relative;
   }
-
-  .container-menu {
-
-  }
-
-  .container-editor {
-    position: absolute;
-    right: 0;
-    left: 0;
-    max-width: @width-column-max;
-    .center-horizontally;
-  }
-
-  @media (min-height: @height-landscape-max) {
-    .container-master {
-      position: relative;
-      min-height: @height-landscape-max;
-      max-height: @height-landscape-max;
-      margin-top: -@height-landscape-max / 2;
-      top: 50%;
-    }
-    .container-editor {
-      margin-top: -@height-landscape-max / 2;
-      top: 50%;
-    }
-  }
+}
 
 /*
 **************************************************************************
@@ -101,7 +146,13 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   // menu     title    omnibar
 }
 
+/*
+We can have fluid container height with this.
+*/
 .container-titlebar {
+  display: table-row;
+
+
   // < save
   //    title
   //  inbox task note list
@@ -236,6 +287,8 @@ Use `.group-instruction` to create an instruction block in the middle of a secti
 /*
 Use `.group-mixed` to create horizontal collections of different elements.
 
+Not compatible with `.row` so we need to apply padding-left and -right inside.
+
 NOTE: Implementation depends on the removing of --left|--right DOM nodes if they have no content
 */
 
@@ -279,13 +332,18 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-left: @padding-inner-group-mixed;
 
   // Increase clicking area of elements.
+  // NOTE: all buttons have height defined
   button, a {
     padding-right: @grid-horizontal;
   }
+  a {
+    height: @grid-vertical;
+  }
 }
 
+// Increase
 .group-mixed--middle:first-child {
-  textarea {
+  input, textarea {
     padding-left: @grid-horizontal;
   }
 }

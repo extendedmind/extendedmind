@@ -1,17 +1,16 @@
 <div id="editor-drawer" class="container-editor" ng-controller="EditorController" data-snap-ignore="true">
-  <div ng-if="editorVisible">
+  <div ng-if="editorVisible" class="container-editor--inner">
 
     <header class="container-titlebar">
       <div class="group-navigation">
-        <a href class="link-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endEdit()" ng-bind="saveOnClose ? 'save' : 'back'"></a>
+        <a href class="link-navigation-back row" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endEdit()" ng-bind="saveOnClose ? 'save' : 'back'"></a>
       </div>
-
       <form role="form" class="group-mixed" ng-submit="saveItemInEdit()" autocapitalize="none" autocorrect="off">
-        <div ng-if="itemHasActionButton" class="group-mixed--left">
+        <div ng-if="itemTitleHasActionButton" class="group-mixed--left">
           <input type="checkbox" ng-model="task.completed" icon-checkbox="editorTitlebarCheckbox" />
         </div>
         <div class="group-mixed--middle">
-          <textarea type="text" ng-model="titlebar.text" ng-keydown="titlebarTextKeyDown($event)" editor-titlebar-text-input msd-elastic dynamic-placeholder="{{getTitlebarTextInputPlaceholder()}}" maxlength="128" required ></textarea>
+          <textarea ng-click="DEBUG_openSoftKeyboardTemplate()" type="text" ng-model="titlebar.text" ng-keydown="titlebarTextKeyDown($event)" editor-titlebar-text-input msd-elastic dynamic-placeholder="{{getTitlebarTextInputPlaceholder()}}" maxlength="128" required ></textarea>
         </div>
         <div ng-if="titlebarHasText()" class="group-mixed--right">
           <button type="button" class="btn-clear" ng-click="clearTitlebarText()"></button>
@@ -34,7 +33,83 @@
       </div>
     </header>
 
-    <div ng-switch="editorType" class="omnibar-feature" ng-style="{height: getEditorHeight()}" scroll-to>
+    <div ng-if="!editorHasSwiper" class="container-content--outer" ng-style="{'padding-bottom': getFooterHeight()}">
+      <div class="container-content" ng-click="DEBUG_closeSoftKeyboardTemplate()">
+        Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
+
+
+        Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
+
+
+        Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
+      </div>
+      <div class="container-content--after" ng-style="{height: getFooterHeight()}">footer</div>
+    </div>
+
+    <div ng-if="editorHasSwiper" class="swiper-container container-content--outer" ng-style="{'padding-bottom': getFooterHeight()}" swiper-container="{{editorType}}" swiper-type="editor" expected-slides="2">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide" swiper-slide="{{editorType}}/basic" slide-index="0">
+
+          <div ng-if="editorType === 'task'" class="container-content" ng-click="DEBUG_closeSoftKeyboardTemplate()">
+            <div ng-hide="snoozeOpen || calendarOpen">
+              <div class="row" ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></div>
+              <div lists-select-options>
+                <select ng-if="!addNewListVisible" class="select-list-visible-animation row" ng-model="task.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions">
+                  <option value="">select list...</option>
+                </select>
+                <div ng-if="addNewListVisible" class="group-mixed select-list-visible-animation">
+                  <div class="group-mixed--middle">
+                    <input type="text" ng-model="newList.title" placeholder="add list..."/>
+                  </div>
+                  <div class="group-mixed--right">
+                    <a href class="group-mixed--right font-smallest add-new-list-item-cancel" ng-click="setAddNewListHidden()">cancel</a>
+                  </div>
+                </div>
+              </div>
+              <textarea class="row" ng-model="task.transientProperties.description" msd-elastic placeholder="description..." maxlength="1024"></textarea>
+            </div>
+            <div ng-if="snoozeOpen && !calendarOpen" snooze="{{task.transientProperties.date}}" snooze-close-and-save="closeSnoozeAndSave(date)" snooze-close-and-open="closeSnoozeAndOpenCalendar()" snooze-destroy="closeSnooze()"></div>
+            <div ng-if="calendarOpen" class="pikaday-embedded" calendar="{{task.transientProperties.date}}" calendar-get-date-fn="registerGetCalendarDateFn(getCalendarDateFn)" calendar-set-default-date="true" calendar-destroy="closeCalendar()" bound="false"></div>
+          </div>
+
+          <footer class="container-content--after" ng-style="{height: getFooterHeight(), bottom: -getFooterHeight()}">
+            <div class="group-btn">
+              <button type="button" class="btn-delete">
+                <span class="text-btn">delete</span>
+              </button>
+              <button ng-if="!calendarOpen" type="button" class="btn-checkbox" ng-click="toggleSnooze()">
+                <span class="text-btn" ng-bind="task.transientProperties.date ? 'snooze' : 'set date'"></span>
+              </button>
+              <button ng-if="calendarOpen" type="button" class="wide-button normal-button" ng-click="closeCalendarAndSave(calendarCloseCallbackFn)">
+                <span>done</span>
+              </button>
+            </div>
+            <div class="group-navigation row">
+              <a href ng-click="swipeToForgot()" class="link-navigation-forward">forgot?</a>
+            </div>
+          </footer>
+        </div>
+
+        <div class="swiper-slide" swiper-slide="{{editorType}}/advanced" slide-index="1">
+          <div ng-if="editorType === 'task'" class="container-content">
+            <select ng-show="contexts.length" ng-model="task.transientProperties.context" ng-options="context.uuid as context.title for context in contexts">
+              <option value="">select context...</option>
+            </select>
+            <select ng-if="task.transientProperties.date" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes">
+              <option value="">select repeating...</option>
+            </select>
+            <input type="text" ng-model="task.link" placeholder="url...">
+          </div>
+          <div class="container-content--after" ng-style="{height: getFooterHeight(), bottom: -getFooterHeight()}">footer</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!--     <div ng-switch="editorType" class="editor-feature" ng-style="{height: getEditorHeight()}" scroll-to>
 
       <div ng-switch-when="omnibar" class="omnibar-search">
 
@@ -208,7 +283,4 @@
           </form>
         </div>
       </div>
-    </div>
-
-  </div>
-</div>
+    </div> -->
