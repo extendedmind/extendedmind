@@ -178,7 +178,7 @@ function DrawerService() {
       }
     },
     close: function(drawerSide) {
-      if (snapperExists(drawerSide) && snappers[drawerSide].snapper.state().state === drawerSide){
+      if (snapperExists(drawerSide)){
         snappers[drawerSide].snapper.close();
         executeSnapperCloseCallbacks(drawerSide);
       }
