@@ -1,5 +1,5 @@
 <section id="focus-tasks" class="container-content" ng-controller="DatesController">
-  <div ng-if="!isLoading">
+  <div ng-if="!loading">
     <div ng-if="isDatepickerVisible" class="row swiper-no-swiping" data-snap-ignore="true" datepicker></div>
     <div class="swiper-container" swiper-container="tasks/home" swiper-type="page" expected-slides="7">
       <div class="swiper-wrapper">
@@ -36,5 +36,5 @@
 
   <!-- Instead of a content container, we have a page-loading-container -->
   <!-- NOTE: Renamed .loading-animation to page-loading-container  -->
-  <div ng-if="isLoading" class="page-loading-container" loading-animation></div>
+  <div ng-if="loading" class="page-loading-container" loading-animation></div>
 </section>

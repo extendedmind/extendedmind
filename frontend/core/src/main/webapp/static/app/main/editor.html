@@ -1,6 +1,5 @@
-<div id="editor-drawer" class="container-editor" ng-controller="EditorController" data-snap-ignore="true">
+<div id="editor-drawer" class="container-editor" ng-controller="EditorController" data-snap-ignore="true" drawer="right">
   <div ng-if="editorVisible" class="container-editor--inner">
-
     <header class="container-titlebar">
       <div class="group-navigation">
         <a href class="link-navigation-back row" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endEdit()" ng-bind="saveOnClose ? 'save' : 'back'"></a>
@@ -123,7 +122,11 @@
           </button>
         </div>
 
+<<<<<<< HEAD
         <div ng-if="omnibarKeywords.visible && !isLoading">
+=======
+        <div ng-if="omnibarKeywords.isVisible && !loading">
+>>>>>>> Refactored drawer and swiper, feature-container no longer needed
           <div ng-show="filteredNotes.length" class="filtered-items">
             <h3><a href ng-click="gotoNotes()">notes</a></h3>
             <div class="inner-page-content-container" accordion>
@@ -139,7 +142,11 @@
 
         <div ng-if="!isSearchActive() && !omnibarKeywords.visible" class="omnibar-empty-search-placeholder" ng-style="{maxHeight: getSearchPlaceholderMaxHeight()}" ng-click="hideEmptyOmnibar()"></div>
 
+<<<<<<< HEAD
         <div ng-if="isSearchActive() && !omnibarKeywords.visible && !isLoading">
+=======
+        <div ng-if="isSearchActive() && !omnibarKeywords.isVisible && !loading">
+>>>>>>> Refactored drawer and swiper, feature-container no longer needed
           <div ng-show="filteredItems.length" class="filtered-items">
             <h3 ><a href ng-click="gotoInbox()">inbox</a></h3>
             <div class="inner-page-content-container" accordion>

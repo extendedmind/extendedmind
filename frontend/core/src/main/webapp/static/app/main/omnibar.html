@@ -47,7 +47,7 @@
         </button>
       </div>
 
-      <div ng-if="omnibarKeywords.isVisible && !isLoading">
+      <div ng-if="omnibarKeywords.isVisible && !loading">
         <div ng-show="filteredNotes.length" class="filtered-items">
           <h3><a href ng-click="gotoNotes()">notes</a></h3>
           <div class="inner-page-content-container" accordion>
@@ -63,7 +63,7 @@
 
       <div ng-if="!isSearchActive() && !omnibarKeywords.isVisible" class="omnibar-empty-search-placeholder" ng-style="{maxHeight: getSearchPlaceholderMaxHeight()}" ng-click="hideEmptyOmnibar()"></div>
 
-      <div ng-if="isSearchActive() && !omnibarKeywords.isVisible && !isLoading">
+      <div ng-if="isSearchActive() && !omnibarKeywords.isVisible && !loading">
         <div ng-show="filteredItems.length" class="filtered-items">
           <h3 ><a href ng-click="gotoInbox()">inbox</a></h3>
           <div class="inner-page-content-container" accordion>
@@ -221,7 +221,7 @@
     </li>
 
     <li class="button-container" ng-class="showEditItemScrollerIndicators() ? 'right-of-three' : 'right-of-two'">
-      <button type="button" class="button transparent-button" style="text-align: right;" ng-disabled="!addOmniItem.$valid || isLoading" ng-bind="getOmnibarFooterSaveText()" ng-click="saveOmnibarText()">
+      <button type="button" class="button transparent-button" style="text-align: right;" ng-disabled="!addOmniItem.$valid || loading" ng-bind="getOmnibarFooterSaveText()" ng-click="saveOmnibarText()">
         <span>save</span>
       </button>
     </li>

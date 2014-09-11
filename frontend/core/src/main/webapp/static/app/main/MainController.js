@@ -73,6 +73,9 @@ function MainController(
     }
   };
 
+  // Start from tasks
+  UISessionService.changeFeature('tasks');
+
   // COMMON FEATURE METHODS IN SCOPE
 
   $scope.getActiveFeature = function getActiveFeature() {
@@ -276,7 +279,7 @@ function MainController(
 
   // Synchronize items if not already synchronizing and interval reached.
 
-  $rootScope.isLoading = false;
+  $rootScope.loading = false;
   function synchronizeItems() {
     $scope.registerActivity();
     var activeUUID = UISessionService.getActiveUUID();
@@ -287,12 +290,12 @@ function MainController(
         if (UserSessionService.getLatestModified(activeUUID) === undefined) {
           // This is the first load for the user, set loading variable
           $scope.$evalAsync(function() {
-            $rootScope.isLoading = true;
+            $rootScope.loading = true;
           });
         }
         SynchronizeService.synchronize(activeUUID).then(function() {
           UserSessionService.setItemsSynchronized(activeUUID);
-          $rootScope.isLoading = false;
+          $rootScope.loading = false;
         });
       }
     }
@@ -334,7 +337,7 @@ function MainController(
   var editorClosedCallbacks = {};
 
   // register editor callbacks
-  $scope.registerEditorAboutToOpenCallback = function registerEditorAboutToOpenCallback(callback, id) {
+  $scope.registerEditorAboutToOpenCallback = function (callback, id) {
     editorAboutToOpenCallbacks[id] = callback;
   };
 
@@ -364,13 +367,6 @@ function MainController(
     }
   }
 
-  /*
-  function executeEditorAboutToCloseCallbacks(editorType, item) {
-    for (var id in editorAboutToCloseCallbacks)
-      editorAboutToCloseCallbacks[id](editorType, item);
-  }
-  */
-
   DrawerService.registerClosedCallback(editorClosed, 'right', 'MainController');
   function editorClosed() {
     for (var id in editorClosedCallbacks)
@@ -378,11 +374,11 @@ function MainController(
   }
 
   $scope.isEditorVisible = function isEditorVisible() {
-    return DrawerService.isRightDrawerOpen();
+    return DrawerService.isOpen('right');
   };
 
   $scope.isMenuVisible = function isMenuVisible() {
-    return DrawerService.isLeftDrawerOpen();
+    return DrawerService.isOpen('left');
   };
 
   // NAVIGATION
@@ -390,21 +386,21 @@ function MainController(
   // TODO analytics visit omnibar
   $scope.openEditor = function openEditor() {
     executeEditorAboutToOpenCallbacks('omnibar');
-    $scope.setIsWebkitScrolling(false);
-    DrawerService.toggle('right');
+    DrawerService.open('right');
   };
 
   $scope.closeEditor = function closeEditor() {
-    $scope.setIsWebkitScrolling(true);
-    DrawerService.toggle('right');
+    DrawerService.close('right');
+  };
+
+  $scope.toggleMenu = function toggleMenu() {
+    DrawerService.toggle('left');
   };
 
   $scope.editTask = function editTask(task) {
     executeEditorAboutToOpenCallbacks('task', task);
-    $scope.setIsWebkitScrolling(false);
     DrawerService.toggle('right');
   };
-
 
   // INJECT OTHER CONTENT CONTROLLERS HERE
 

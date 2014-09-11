@@ -59,7 +59,7 @@
     // FIXME: editor titlebar input blur is not working here
     if (event.keyCode === 27) blurTitlebarInput();
     // Return
-    else if (event.keyCode === 13 && !$rootScope.isLoading && $scope.titlebarHasText()) {
+    else if (event.keyCode === 13 && !$rootScope.loading && $scope.titlebarHasText()) {
       // Enter in editor saves, no line breaks allowed
       $scope.closeEditor();
       $scope.saveItemInEdit();

@@ -3,7 +3,7 @@
     <nav ng-repeat="week in datepickerWeeks" role="navigation" class="slide">
       <ul class="horizontally-justified">
 
-        <li ng-if="isDesktop" id="datepicker-arrow-previous" class="justified-element">
+        <li id="datepicker-arrow-previous" class="justified-element">
           <a href ng-click="changeToPreviousWeek()">
             <span class="icon-arrow-left"></span>
           </a>
@@ -58,7 +58,7 @@
           </a>
         </li>
 
-        <li ng-if="isDesktop" id="datepicker-arrow-next" class="justified-element">
+        <li id="datepicker-arrow-next" class="justified-element">
           <a href ng-click="changeToNextWeek()">
             <span class="icon-arrow-right"></span>
           </a>

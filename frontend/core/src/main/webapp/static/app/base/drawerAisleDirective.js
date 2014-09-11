@@ -17,71 +17,194 @@
  function drawerAisleDirective($rootScope, DrawerService) {
   return {
     restrict: 'A',
-    controller: function($scope) {
+    controller: function($scope, $element) {
 
-      this.registerDrawerHandleElement = function(element, snapperSide){
-        DrawerService.setHandleElement(element, snapperSide);
+      // CALLBACK REGISTRATION
+
+      var areaAboutToShrinkCallbacks = {};
+      var areaAboutToGrowCallbacks = {};
+      var areaResizeReadyCallbacks = {};
+
+      this.registerDrawerHandleElement = function(handleElement, snapperSide){
+        DrawerService.setHandleElement(handleElement, snapperSide);
       };
 
-    },
-    link: function postLink(scope, element) {
+      this.registerAreaAboutToShrink = function(callback, feature){
+        areaAboutToShrinkCallbacks[feature] = callback;
+      };
 
-      function initializeMenu() {
+      this.registerAreaAboutToGrow = function(callback, feature){
+        areaAboutToGrowCallbacks[feature] = callback;
+      };
+
+      this.registerAreaResizeReady = function(callback, feature){
+        areaResizeReadyCallbacks[feature] = callback;
+      };
+
+      // INITIALIZATION
+
+      function setupMenuDrawer() {
         var settings = {
-          element: element[0],
-          touchToDrag: true,
+          element: $element[0],
+          touchToDrag: $rootScope.columns === 1 ? true : false,
           disable: 'right', // use left only
           transitionSpeed: 0.2,
           minDragDistance: 0,
           addBodyClasses: false
         };
-
-        DrawerService.createSnapper(settings, 'left');
+        DrawerService.setupDrawer('left', settings);
       }
 
-      var MASTER_CONTAINER_MAX_WIDTH = 567;
-      function calculateEditorMinPosition() {
-        var minPosition = element[0].offsetWidth > MASTER_CONTAINER_MAX_WIDTH ?
-               $rootScope.currentWidth - (($rootScope.currentWidth - MASTER_CONTAINER_MAX_WIDTH) / 2) : element[0].offsetWidth;
-        return Math.floor(minPosition);
-      }
-
-      function initializeEditor() {
-        /* jshint -W008 */
-
+      function setupEditorDrawer() {
         var settings = {
-          element: element[0],
+          element: $element[0],
           touchToDrag: false,
           disable: 'left', // use right only
-          transitionSpeed: .3,
+          transitionSpeed: 0.3,
           minDragDistance: 0,
           addBodyClasses: false,
           minPosition: -calculateEditorMinPosition()
         };
-        DrawerService.createSnapper(settings, 'right');
+        DrawerService.setupDrawer('right', settings);
       }
 
-      function initializeSnap(){
-        if ($rootScope.isMobile){
-          DrawerService.toggleSnappersSticky(false);
-        }else{
-          DrawerService.toggleSnappersSticky(true);
+      function calculateEditorMinPosition() {
+        var minPosition = $element[0].offsetWidth > $rootScope.CONTAINER_MASTER_MAX_WIDTH ?
+               $rootScope.currentWidth - (($rootScope.currentWidth - $rootScope.CONTAINER_MASTER_MAX_WIDTH) / 2) : $element[0].offsetWidth;
+        return Math.floor(minPosition);
+      }
+
+      function setupDrawers(){
+        setupMenuDrawer();
+        setupEditorDrawer();
+      }
+
+      // Setup drawers again on every window resize event
+      $scope.registerWindowResizedCallback(setupDrawers, 'drawerAisleDirective');
+
+      // Initialize everyting
+      setupMenuDrawer();
+      DrawerService.registerOpenedCallback('left', menuDrawerOpened, 'drawerAisleDirective');
+      DrawerService.registerClosedCallback('left', menuDrawerClosed, 'drawerAisleDirective');
+      DrawerService.registerHandleReleasedCallback('left', menuDrawerHandleReleased, 'drawerAisleDirective');
+      DrawerService.registerOpenCallback('left', menuDrawerOpen, 'drawerAisleDirective');
+      DrawerService.registerCloseCallback('left', menuDrawerClose, 'drawerAisleDirective');
+      setupEditorDrawer();
+
+      // MENU DRAWER CALLBACKS
+
+      // Fires when open is called programmatically, i.e. menu button pressed
+      function menuDrawerOpen() {
+        var activeFeature = $scope.getActiveFeature();
+        if ($rootScope.columns > 1 && areaAboutToShrinkCallbacks[activeFeature]){
+          // There are more than one column, this means the aisle area is about to shrink the
+          // same time as the menu opens
+          var amount = DrawerService.getDrawerElement('left').offsetWidth;
+          areaAboutToShrinkCallbacks[activeFeature](amount, 'left');
+          $element[0].style.maxWidth = $rootScope.currentWidth - amount + 'px';
         }
-        initializeMenu();
-        initializeEditor();
       }
-      // Reinitialize on every window resize event
-      scope.registerWindowResizedCallback(initializeSnap, 'drawerAisleDirective');
 
-      // Initialize everything
-      initializeSnap();
+      function partiallyVisibleDrawerAisleClicked(event){
+        // Prevent event from reaching the swiper
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      // Menu drawer animation is ready - menu is open
+      function menuDrawerOpened(){
+        var activeFeature = $scope.getActiveFeature();
+        if ($rootScope.columns === 1) {
+          // There is only one column, so we need to prevent any touching from
+          // getting to the partially visible aisle.
+          $element.bind('touchstart', partiallyVisibleDrawerAisleClicked, true);
+
+          // make following happen inside angularjs event loop
+          $scope.$evalAsync(function() {
+            setAisleWebkitScrolling(false);
+          });
+        }else if (areaResizeReadyCallbacks[activeFeature]){
+          // Execute callbacks to resize ready
+          areaResizeReadyCallbacks[activeFeature]();
+        }
+
+      }
+
+      // Fires when menu is closed programmatically, i.e. menu button pressed or tapToClose
+      // called. This is triggered before any animation takes place.
+      function menuDrawerClose() {
+        var activeFeature = $scope.getActiveFeature();
+        if ($rootScope.columns > 1){
+          if (areaAboutToGrowCallbacks[activeFeature]){
+            // There are more than one column, this means the aisle area is about to grow the
+            // same time as the menu closes
+            var amount = DrawerService.getDrawerElement('left').offsetWidth;
+            areaAboutToGrowCallbacks[activeFeature](amount, 'left');
+            $element[0].style.maxWidth = $rootScope.currentWidth + 'px';
+          }
+          // We need to unbind the touching prevention as early as possible.
+          $element.unbind('touchstart', partiallyVisibleDrawerAisleClicked, true);
+        }
+        if (DrawerService.isDraggingEnabled('left')) {
+          // Menu drawer is closing, disable dragging for the duration of the animation.
+          // This is enabled again later on.
+          DrawerService.disableDragging('left');
+        }
+      }
+
+      // Animation of menu drawer ready, menu now hidden.
+      function menuDrawerClosed(){
+        var activeFeature = $scope.getActiveFeature();
+        if ($rootScope.columns === 1){
+          // make following happen inside angularjs event loop
+          $scope.$evalAsync(function() {
+            setAisleWebkitScrolling(true);
+          });
+        }else if (areaResizeReadyCallbacks[activeFeature]){
+          // Re-enable dragging
+          DrawerService.enableDragging('left');
+
+          // Execute callbacks to resize ready
+          areaResizeReadyCallbacks[activeFeature]();
+        }
+      }
+
+      // Enable swiping and disable sliding and vice versa when drawer
+      // handle is released and animation starts.
+      function menuDrawerHandleReleased(drawerDirection) {
+        if (drawerDirection === 'closing' && $rootScope.columns === 1) {
+          // Disable dragging for the short time that
+          // the menu is animating
+          DrawerService.disableDragging('left');
+        } else if (drawerDirection === 'opening' && $rootScope.columns === 1) {
+          // We need to unbind the touching prevention in this case as well, as
+          // close() callback did not happen.
+          $element.unbind('touchstart', partiallyVisibleDrawerAisleClicked, true);
+        }
+      }
+
+      // HTML METHODS
+
+      // CSS property -webkit-overflow-scrolling is not working if multiple elements are layered on top of each other,
+      // e.g. with 3D transform method translate3d.
+      // This happens when swiper slide not the first one and drawer menu is open - webkit scroll event is catched by swiper wrapper.
+      var webkitScrolling = true;
+      function setAisleWebkitScrolling(scrolling) {
+        webkitScrolling = scrolling;
+      }
+
+      $scope.isAisleWebkitScrolling = function() {
+        return webkitScrolling;
+      };
+    },
+    link: function postLink(scope) {
 
       scope.$on('$destroy', function() {
-        DrawerService.deleteSnapper('left');
-        DrawerService.deleteSnapper('right');
+        DrawerService.deleteDrawer('left');
+        DrawerService.deleteDrawer('right');
       });
     }
   };
 }
 drawerAisleDirective['$inject'] = ['$rootScope', 'DrawerService'];
-angular.module('em.main').directive('drawerAisle', drawerAisleDirective);
+angular.module('em.base').directive('drawerAisle', drawerAisleDirective);

@@ -1,7 +1,7 @@
-<div ng-show="isFeatureActive('tasks')" class="swiper-container main-slides" swiper-container="tasks" swiper-type="main" expected-slides="(isLoading && 1) || (!isLoading && 3)">
-  <div class="swiper-wrapper" ng-class="getIsWebkitScrolling() ? 'webkit-scrolling' : 'no-webkit-scrolling'">
+<div ng-show="isFeatureActive('tasks')" class="swiper-container main-slides" swiper-container="tasks" swiper-type="main" expected-slides="(loading && 1) || (!loading && 3)">
+  <div class="swiper-wrapper">
     <div class="swiper-slide" swiper-slide="tasks/home" slide-index=0 ng-include="'static/app/tasks/timeline.html'" drawer-handle="left"></div>
-    <div ng-if="!isLoading" class="swiper-slide" swiper-slide="tasks/contexts" slide-index=1 ng-include="'static/app/tasks/contexts.html'"></div>
-    <div ng-if="!isLoading" class="swiper-slide" swiper-slide="tasks/details" slide-index=2 ng-include="'static/app/tasks/context.html'"></div>
+    <div ng-if="!loading" class="swiper-slide" swiper-slide="tasks/contexts" slide-index=1 ng-include="'static/app/tasks/contexts.html'"></div>
+    <div ng-if="!loading" class="swiper-slide" swiper-slide="tasks/details" slide-index=2 ng-include="'static/app/tasks/context.html'"></div>
   </div>
 </div>

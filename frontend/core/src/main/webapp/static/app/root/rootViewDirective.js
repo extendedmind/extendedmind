@@ -21,6 +21,11 @@
     replace: 'true',
     templateUrl: 'static/app/root/root.html',
     controller: function($scope) {
+
+      // BASIC DIMENSIONS TO ROOT SCOPE
+      // NOTE: For some reason this had to be 567 before, because editor disappeared after animation was ready.
+      $rootScope.CONTAINER_MASTER_MAX_WIDTH = 568;
+
       // Back function globally available
       $scope.gotoPreviousPage = function gotoPreviousPage() {
         $window.history.back();
@@ -122,19 +127,6 @@
         }
       });
 
-      // CSS property -webkit-overflow-scrolling is not working if multiple elements are layered on top of each other,
-      // e.g. with 3D transform method translate3d.
-      // This happens when swiper slide not the first one and drawer menu is open - webkit scroll event is catched by swiper wrapper.
-      var isWebkitScrolling = true;
-      $scope.setIsWebkitScrolling = function setIsWebkitScrolling(isScrolling) {
-        isWebkitScrolling = isScrolling;
-      };
-      $scope.getIsWebkitScrolling = function getIsWebkitScrolling() {
-        return isWebkitScrolling;
-      };
-
-      // Feature switching end.
-
       // Clean up listening by executing the variable
       $scope.$on('$destroy', unbindEmException);
     },
@@ -170,24 +162,25 @@
       // WINDOW RESIZING
 
       var windowResizedCallbacks = {};
-      scope.registerWindowResizedCallback = function (windowResizedCallback, id) {
+      scope.registerWindowResizedCallback = function registerWindowResizedCallback(windowResizedCallback, id) {
         windowResizedCallbacks[id] = windowResizedCallback;
       };
 
       function setDimensions(width, height) {
 
-        // UI for small screens
-        if (width <= 568 && ($rootScope.currentWidth > 568 || !$rootScope.currentWidth)) {
-          $rootScope.isDesktop = false;
-          $rootScope.isMobile = true;
+        $rootScope.currentWidth = width;
+        $rootScope.currentHeight = height;
 
-        // UI for large screens
-      } else if (width > 568 && ($rootScope.currentWidth <= 568 || !$rootScope.currentWidth)) {
-        $rootScope.isMobile = false;
-        $rootScope.isDesktop = true;
-      }
-      $rootScope.currentWidth = width;
-      $rootScope.currentHeight = height;
+        // UI for small screens, one column
+        if (width <= 568) {
+          $rootScope.columns = 1;
+          // UI for medium screens, two columns
+        } else if (width > 568 && width <= 1024) {
+          $rootScope.columns = 2;
+          // UI for large screens, three columns
+        } else if (width > 1024) {
+          $rootScope.columns = 3;
+        }
 
         // Execute callbacks
         for (var id in windowResizedCallbacks) {

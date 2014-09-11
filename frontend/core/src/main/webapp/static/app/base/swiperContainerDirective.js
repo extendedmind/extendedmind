@@ -18,6 +18,7 @@
 
   return {
     restrict: 'A',
+    require: '?^drawerAisle',
     scope: {
       swiperPath: '@swiperContainer',
       swiperType: '@swiperType',
@@ -449,8 +450,69 @@
           }
         }
       });
-}
-};
+    },
+    link: function (scope, element, attrs, drawerAisleController){
+
+      // Hide inactive slides with this for the duration of a resize animation
+      // to prevent flickering
+      function toggleInactiveSwiperSlidesVisiblity(visibilityValue) {
+        var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
+        if (swiperSlides) {
+          for (var i = 0, len = swiperSlides.length; i < len; i++) {
+            if (!swiperSlides[i].classList.contains('swiper-slide-active')) {
+              if (swiperSlides[i].style.visibility !== visibilityValue) swiperSlides[i].style.visibility = visibilityValue;
+            }
+          }
+        }
+      }
+
+      function swiperWrapperTranslate(swiperWrapperElement, amount, direction) {
+        swiperWrapperElement.style['webkitTransition'] = 'all ' + 0.2 + 's ' + 'ease';  // TODO: vendor prefixes
+        var translateSwiperWrapperX = amount / 2;
+
+        // 568px + amount (260px)
+        if ($rootScope.currentWidth <= 828) {
+          var contentNewWidth = $rootScope.currentWidth - amount;
+          var contentLeftSideWillShrink = (568 - contentNewWidth) / 2;
+          translateSwiperWrapperX -= contentLeftSideWillShrink;
+        }
+        // http://stackoverflow.com/a/5574196
+        if (direction === 'left') translateSwiperWrapperX = -Math.abs(translateSwiperWrapperX);
+        SwiperService.setWrapperTranslate(scope.swiperPath, translateSwiperWrapperX, 0, 0);
+      }
+
+      function swiperAboutToShrink(amount, direction){
+        if ($rootScope.columns > 1) {
+          var swiperWrapperElement = SwiperService.getSwiperContainer(scope.swiperPath).firstElementChild;
+          swiperWrapperTranslate(swiperWrapperElement, amount, 'left');
+        }
+        toggleInactiveSwiperSlidesVisiblity('hidden');
+      }
+
+      function swiperAboutToGrow(amount, direction){
+        if ($rootScope.columns > 1) {
+          var swiperWrapperElement = SwiperService.getSwiperContainer(scope.swiperPath).firstElementChild;
+          swiperWrapperTranslate(swiperWrapperElement, amount, 'right');
+        }
+        toggleInactiveSwiperSlidesVisiblity('hidden');
+      }
+
+      function swiperResizeReady(){
+        toggleInactiveSwiperSlidesVisiblity('visible');
+        SwiperService.resizeFixSwiperAndChildSwipers(scope.swiperPath);
+      }
+
+      if (drawerAisleController){
+
+        // Register callbacks for main swipers
+        if (scope.swiperType === 'main'){
+          drawerAisleController.registerAreaAboutToShrink(swiperAboutToShrink, scope.swiperPath);
+          drawerAisleController.registerAreaAboutToGrow(swiperAboutToGrow, scope.swiperPath);
+          drawerAisleController.registerAreaResizeReady(swiperResizeReady, scope.swiperPath);
+        }
+      }
+    }
+  };
 }
 swiperContainerDirective['$inject'] = ['$rootScope', '$window', 'SwiperService'];
 angular.module('em.base').directive('swiperContainer', swiperContainerDirective);

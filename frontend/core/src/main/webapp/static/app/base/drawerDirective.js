@@ -14,13 +14,13 @@
  */
  'use strict';
 
- function drawerHandleDirective() {
+ function drawerDirective(DrawerService) {
   return {
     restrict: 'A',
-    //require: '^drawerAisle',
     link: function postLink(scope, element, attrs, drawerController) {
-      //drawerController.registerDrawerHandleElement(element[0], attrs.drawerHandle);
+      DrawerService.setDrawerElement(attrs.drawer, element[0]);
     }
   };
 }
-angular.module('em.base').directive('drawerHandle', drawerHandleDirective);
+drawerDirective['$inject'] = ['DrawerService'];
+angular.module('em.base').directive('drawer', drawerDirective);

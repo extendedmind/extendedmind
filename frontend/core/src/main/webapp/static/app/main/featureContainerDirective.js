@@ -147,8 +147,7 @@
         }
       }
 
-      // MENU TOGGLE
-
+/*
       $scope.toggleMenu = function toggleMenu() {
         resizeContent();
         if (DrawerService.isSnapperClosed('left')) $scope.setIsWebkitScrolling(false);
@@ -158,6 +157,7 @@
       $scope.toggleUnstickyMenu = function toggleUnstickyMenu() {
         if (!DrawerService.getIsSticky()) DrawerService.toggle('left');
       };
+      */
 
       $scope.getFooterVisibilityClass = function getFooterVisibilityClass() {
         if (!$scope.hasFeatureFooter()) return 'hide-footer';
@@ -254,9 +254,9 @@
           addBodyClasses: false
         };
 
-        //DrawerService.createSnapper(settings, 'left');
+        //DrawerService.createDrawer(settings, 'left');
         //DrawerService.registerAnimatedCallback(snapDrawerAnimated, 'left', 'featureContainerDirective');
-        //DrawerService.registerEndCallback(snapperPaneReleased, 'left');
+        //DrawerService.registerHandleReleasedCallback(snapperPaneReleased, 'left');
         //DrawerService.registerCloseCallback(snapperClosed, 'left');
       }
 
@@ -277,7 +277,7 @@
           addBodyClasses: false,
           minPosition: -calculateOmnibarDrawerContainerMinPosition()
         };
-        //DrawerService.createSnapper(settings, 'right');
+        //DrawerService.createDrawer(settings, 'right');
       }
 
       // No clicking/tapping when drawer is open.
@@ -351,7 +351,7 @@
 
 
       scope.$on('$destroy', function() {
-        DrawerService.deleteSnapper('left');
+        DrawerService.deleteDrawer('left');
         angular.element(element).unbind('touchstart', drawerContentClicked);
       });
     }

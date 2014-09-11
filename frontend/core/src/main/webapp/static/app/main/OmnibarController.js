@@ -364,7 +364,7 @@
     }
 
     var activeOmnibarFeature;
-    if ($scope.omnibarHasText() && !$rootScope.isLoading) {
+    if ($scope.omnibarHasText() && !$rootScope.loading) {
       activeOmnibarFeature = $scope.getActiveOmnibarFeature();
       $scope[activeOmnibarFeature].title = $scope.omnibarText.title;
       $scope.saveUnsavedListAndLinkToItem($scope[activeOmnibarFeature]).then(saveItem).then(performTearDown);
