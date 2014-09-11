@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function MenuController($location, $scope, AnalyticsService, AuthenticationService, ListsService, UISessionService, UserSessionService) {
+ function MenuController($location, $rootScope, $scope, AnalyticsService, AuthenticationService, ListsService, UISessionService, UserSessionService) {
 
   $scope.isAdmin = function isAdmin() {
     return UserSessionService.getUserType() === 0;
@@ -54,7 +54,9 @@
       UISessionService.changeFeature(feature, undefined, state);
       AnalyticsService.visit(feature);
     }
-    $scope.toggleUnstickyMenu();
+    if ($rootScope.columns > 1){
+      $scope.toggleMenu();
+    }
   };
 
   // LISTS
@@ -72,7 +74,9 @@
       UISessionService.changeFeature('list', list);
       AnalyticsService.visit('list');
     }
-    $scope.toggleUnstickyMenu();
+    if ($rootScope.columns > 1){
+      $scope.toggleMenu();
+    }
   };
 
   $scope.toggleLists = function toggleLists() {
@@ -101,5 +105,5 @@
   };
 }
 
-MenuController['$inject'] = ['$location', '$scope', 'AnalyticsService', 'AuthenticationService', 'ListsService', 'UISessionService', 'UserSessionService'];
+MenuController['$inject'] = ['$location', '$rootScope', '$scope', 'AnalyticsService', 'AuthenticationService', 'ListsService', 'UISessionService', 'UserSessionService'];
 angular.module('em.main').controller('MenuController', MenuController);

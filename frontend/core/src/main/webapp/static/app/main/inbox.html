@@ -1,5 +1,5 @@
-<div ng-show="isFeatureActive('inbox')" class="single-page-container" ng-controller="InboxController" data-snap-ignore="{{onboardingInProgress ? true : undefined}}">
-  <section id="inbox" class="two-column-grid single-page page" register-element-to-feature="inbox" register-element-to-feature-snap="left">
+<div ng-show="isFeatureActive('inbox')" class="single-page-container" ng-controller="InboxController" data-snap-ignore="{{onboardingInProgress ? true : undefined}}" drawer-handle="left">
+  <section id="inbox" class="two-column-grid single-page page">
     <div class="column">
       <div ng-if="!loading" class="page-content-container single-page-content-container">
         <div class="scroll-container" scroll-to>
