@@ -90,6 +90,7 @@
       DrawerService.registerOpenCallback('left', menuDrawerOpen, 'drawerAisleDirective');
       DrawerService.registerCloseCallback('left', menuDrawerClose, 'drawerAisleDirective');
       setupEditorDrawer();
+      $element[0].style.maxWidth = $rootScope.currentWidth + 'px';
 
       // MENU DRAWER CALLBACKS
 
