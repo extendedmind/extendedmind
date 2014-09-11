@@ -98,6 +98,13 @@
               onResistanceAfterCallback,
               $scope.onlyExternalSwipe);
             initializeSwiperCalled = true;
+
+            if ($scope.swiperType === 'main'){
+              // Main swipers have a touch ratio, where left edge does not budge
+              var leftEdgeTouchRatio = 0;
+              var rightEdgeTouchRatio = 0.2;
+              SwiperService.setEdgeTouchRatios($scope.swiperPath, leftEdgeTouchRatio, rightEdgeTouchRatio);
+            }
           } else {
             SwiperService.refreshSwiper($scope.swiperPath, slides);
           }
