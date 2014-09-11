@@ -14,24 +14,32 @@
  */
  'use strict';
 
- function EntryController($scope, AnalyticsService, AuthenticationService, BackendClientService, SwiperService) {
+ function EntryController($scope, $timeout, $window, AnalyticsService, AuthenticationService, BackendClientService, SwiperService) {
 
   AnalyticsService.visitEntry('entry');
 
-  $scope.entryState;
+  // DEBUG //
+  $scope.DEBUG_openKeyboard = function(){
+    var entryElement = document.getElementById('entry');
+    entryElement.style.maxHeight = 250 + 'px';
+  };
+  $scope.DEBUG_closeKeyboard = function(){
+    var entryElement = document.getElementById('entry');
+    entryElement.style.maxHeight = 100 + '%';
+  };
+  // DEBUG //
 
-  $scope.swipeToSignup = function(){
+  $scope.swipeToSignup = function swipeToSignup() {
     $scope.entryState = 'signup';
     $scope.user = {};
     SwiperService.swipeTo('entry/main');
     AnalyticsService.visitEntry('signup');
-  };
 
-  $scope.swipeToLogin = function(){
-    $scope.entryState = 'login';
-    $scope.user = {};
-    SwiperService.swipeTo('entry/main');
-    AnalyticsService.visitEntry('login');
+    // TODO: Use AngularJS
+    var entryBannerLogoElement = document.getElementById('entryBannerLogo');
+    // entryBannerLogoElement.style['transform'] = 'translate3d(0, -50px, 0)';
+    entryBannerLogoElement.style.webkitTransform = 'translate3d(0, -50px, 0)';
+
   };
 
   $scope.gotoTermsOfService = function gotoTermsOfService() {
@@ -46,17 +54,22 @@
 
   $scope.swipeToHome = function() {
     SwiperService.swipeTo('entry/home');
-  }
+
+    // TODO: Use AngularJS
+    var entryBannerLogoElement = document.getElementById('entryBannerLogo');
+    // entryBannerLogoElement.style['transform'] = 'translate3d(0, 0, 0)';
+    entryBannerLogoElement.style.webkitTransform = 'translate3d(0, 0, 0)';
+  };
 
   $scope.swipeToMain = function() {
     SwiperService.swipeTo('entry/main');
-  }
+  };
 
   $scope.swipeToForgot = function() {
     SwiperService.swipeTo('entry/details');
-  }
+  };
 
 }
 
-EntryController['$inject'] = ['$scope', 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'SwiperService'];
+EntryController['$inject'] = ['$scope', '$timeout', '$window', 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'SwiperService'];
 angular.module('em.entry').controller('EntryController', EntryController);

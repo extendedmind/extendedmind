@@ -39,9 +39,8 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 */
 
 /*
-`.container-master` sets the vertical positioning of the master
-content area. When the screen size is bigger than a tablet, the master
-container will be vertically centered.
+`.container-master` sets the vertical positioning of the master content area.
+When the screen size is bigger than a tablet, the master container will be vertically centered.
 */
 .container-master {
   .center-horizontally;
@@ -54,57 +53,69 @@ container will be vertically centered.
 
 /*
 Editor.
-
-Set editor height to 100%
 */
+// 1.  Set editor height for sticky footer.
+// 2.  Animate maximum height change when virtual keyboard opens and closes
 .container-editor {
   position: absolute;
   right: 0;
   left: 0;
   max-height: @height-max;
   .center-horizontally;
+  height: 100%;                     /* [1] */
+  transition: max-height .3s ease;  /* [2] */
   // FIXME
   max-width: @width-column-max;
   // FIXME
-  height: 100%; // set height for sticky footer
 }
 
 /*
-We can have fluid container height with this.
+Entry.
 
-Sources:
-http://stackoverflow.com/a/15933376
-http://stackoverflow.com/a/12255692
-http://pixelsvsbytes.com/blog/2011/09/sticky-css-footers-the-flexible-way/
+* TODO: `.container-content` inside `.container-entry.` is not scrollable. Need to set fixed height for it?
 */
-.container-editor--inner {
+// 1. Make whole page scrollabe
+// 2. Animate maximum height change when virtual keyboard opens and closes
+.container-entry {
+  height: 100%;     /* [1] */
+  overflow-y: auto; /* [1] */
+  transition: max-height .3s ease;  /* [2] */
+}
+
+// Fluid container height.
+//
+// Sources:
+// http://stackoverflow.com/a/15933376
+// http://stackoverflow.com/a/12255692
+// http://pixelsvsbytes.com/blog/2011/09/sticky-css-footers-the-flexible-way/
+//
+// 1. Fixes width calculation with swiper inside. See: http://stackoverflow.com/a/19835024
+// 2. Inherit height for display: table.
+// 3. Set width for display: table
+.container-editor--inner, .container-entry--inner {
   display: table;
-  table-layout: fixed;  // Fixes width calculation with swiper inside. See: http://stackoverflow.com/a/19835024
-  height: inherit;      // set height for display: table
-  width: 100%;          // set width for display: table
+  table-layout: fixed;  /* [1] */
+  height: inherit;      /* [2] */
+  width: 100%;          /* [3] */
 }
 
-/*
-Elements inside swiper would otherwise be as wide as `.swiper-wrapper`.
-*/
+// 1. Inherit width from parent. Elements inside swiper would otherwise be as wide as `.swiper-wrapper`.
 .swiper-slide .container-content {
-  width: inherit; // inherit width from parent
+  width: inherit; /* [1] */
 }
 
-/*
-Use same positioning as in swiper to make content scrollable and footer visible.
-NOTE: Footer position in UI is set using javascript. See http://css-tricks.com/snippets/css/sticky-footer/
-*/
-.swiper-slide .container-content, .swiper-slide .container-content--after {
-  position: absolute;
+// 1. Use same positioning as in swiper to make content scrollable and footer visible.
+// NOTE: Footer position in UI is set using javascript. See http://css-tricks.com/snippets/css/sticky-footer/
+.container-editor .swiper-slide .container-content,
+.container-editor .swiper-slide .container-content--after {
+  position: absolute; /* [1] */
 }
 
-/*
-We can have fluid container height with this.
-*/
+// 1. Fluid container height
+// 2. Inherit height because parent uses display: table
 .container-content--outer {
-  display: table-cell;
-  height: inherit;  // set height for for display: table
+  display: table-cell;  /* [1] */
+  height: inherit;      /* [1,2] */
 }
 
 @media (min-height: @height-landscape-max) {
@@ -132,25 +143,34 @@ We can have fluid container height with this.
   overflow-y: auto;
 }
 
-.container-banner {
-  text-align: center;
-  height: @height-container-banner;
-  display: table;
-  [class^="icon-"], [class*=" icon-"] {
-    display: table-cell;
-    vertical-align: middle;
-  }
-}
-
 .container-toolbar {
   // menu     title    omnibar
 }
 
 /*
-We can have fluid container height with this.
+Banner container.
+
+* NOTE: Decrease `.container-banner` size and initially translate `.icon` y-axis if height is too big.
 */
-.container-titlebar {
+// TODO: comments
+.container-banner {
+  height: @height-container-banner;
   display: table-row;
+  text-align: center;
+  [class^="icon-"], [class*=" icon-"] {
+    display: table-cell;
+    vertical-align: middle;
+    -webkit-transition: -webkit-transform .3s ease-out;
+    -moz-transition: -moz-transform .3s ease-out;
+    -o-transition: -o-transform .3s ease-out;
+    -ms-transition: -ms-transform .3s ease-out;
+    transition: transform .3s ease-out;
+  }
+}
+
+// 1. Fluid container height
+.container-titlebar {
+  display: table-row; /* [1] */
 
 
   // < save
@@ -303,20 +323,20 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   vertical-align: middle;
 }
 
+// 1. Force all child elements not to increase .group-mixed height
 .group-mixed--left, .group-mixed--right {
-  // Force all child elements not to increase .group-mixed height with this
   * {
-    display: block;
+    display: block; /* [1] */
   }
 }
 
+// 1. Increase clicking area
 .group-mixed--left {
   padding-right: @padding-inner-group-mixed;
 
-  // Increase clicking area of elements
   a, input[type="checkbox"] + label {
-    padding-left: @grid-horizontal;
-    height: @grid-vertical;
+    padding-left: @grid-horizontal; /* [1] */
+    height: @grid-vertical;         /* [1] */
   }
   a, input[type="checkbox"] + label:before {
     line-height: @grid-vertical;
@@ -328,45 +348,43 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   line-height: @grid-vertical-half;
 }
 
+// 1. Increase clicking area
 .group-mixed--right {
   padding-left: @padding-inner-group-mixed;
 
-  // Increase clicking area of elements.
   // NOTE: all buttons have height defined
   button, a {
-    padding-right: @grid-horizontal;
+    padding-right: @grid-horizontal;  /* [1] */
   }
   a {
     height: @grid-vertical;
   }
 }
 
-// Increase
+// 1. Increase clicking area
 .group-mixed--middle:first-child {
   input, textarea {
-    padding-left: @grid-horizontal;
+    padding-left: @grid-horizontal;   /* [1] */
   }
 }
 .group-mixed--middle:last-child {
   textarea {
-    padding-right: @grid-horizontal;
+    padding-right: @grid-horizontal;  /* [1] */
   }
 }
 
-// This will expand width and line-height when there are no sibling elements in .group-mixed
+// 1. Expand width and line-height when there are no sibling elements in .group-mixed
 .group-mixed--middle:only-child {
-  display: block;
-  line-height: @grid-vertical;
+  display: block;               /* [1] */
+  line-height: @grid-vertical;  /* [1] */
 }
 
-// Android hack: 10px padding caused redraw problems
-// on the checkbox while swiping, and no other CSS
-// solution fixed the problem. Something like this:
-// http://stackoverflow.com/a/16174338/2659424
-// might be the only proper solution to the repaint
-// problems with Android's WebKit.
+// 1. Android hack: 10px padding caused redraw problems on the checkbox while swiping,
+//    and no other CSS solution fixed the problem.
+//    Something like this: http://stackoverflow.com/a/16174338/2659424
+//    might be the only proper solution to the repaint problems with Android's WebKit.
 .android .group-mixed--left {
-  padding-right: 15px;
+  padding-right: 15px;  /* [1] */
 }
 
 /*

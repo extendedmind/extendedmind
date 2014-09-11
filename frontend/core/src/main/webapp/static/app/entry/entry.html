@@ -1,115 +1,129 @@
-<section id="entry" class="container-master" ng-controller="EntryController">
-  <header class="container-banner row">
-    <span class="icon-logo-with-text"></span>
-  </header>
-  <div class="swiper-container" swiper-container="entry" swiper-type="main" expected-slides="(!entryState && 2) || (entryState === 'login' && 3)">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide swiper-no-swiping" swiper-slide="entry/home" slide-index=0>
-        <div class="container-content">
-          <div class="group-instruction row">
-            <p>extended mind helps you<br/>
-              manage your <b>tasks</b> and<br/>
-              <b>thoughts</b> as easily as if it was an<br/>
-              extension to your biological mind
-            </p>
-          </div>
-          <div class="group-btn row">
-            <button class="btn-action" ng-click="swipeToSignup()">
-              <span class="text-btn">sign up</span>
-            </button>
-            <button class="btn-action" ng-click="swipeToLogin()">
-              <span class="text-btn">log in</span>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="swiper-slide" swiper-slide="entry/main" slide-index=1>
-        <div ng-if="entryState === 'signup'" class="container-content">
-          <form role="form" name="signupForm">
-            <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email..." required />
-            <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password..." required />
-            <div class="group-mixed">
-              <div class="group-mixed--left">
-                <input type="checkbox" ng-model="user.agree" ng-true-value="true" icon-checkbox="signupFormAgree" />
-              </div>
-              <div class="group-mixed--middle text-details">I have read and agree to the <a href ng-click="gotoTermsOfService()">terms of service</a> and <a href ng-click="gotoPrivacyPolicy()">privacy policy</a></div>
+<section id="entry" class="container-master container-entry" ng-controller="EntryController">
+  <div class="container-entry--inner">
+
+    <!-- DEBUG -->
+    <div class="group-btn row">
+      <button class="btn-action" ng-click="DEBUG_openKeyboard()">
+        <span class="text-btn">open kbd</span>
+      </button>
+      <button class="btn-action" ng-click="DEBUG_closeKeyboard()">
+        <span class="text-btn">close kbd</span>
+      </button>
+    </div>
+    <!-- DEBUG -->
+
+    <header class="container-banner row">
+      <span id="entryBannerLogo" class="icon-logo-with-text"></span>
+    </header>
+
+    <div class="swiper-container container-content--outer" swiper-container="entry" swiper-type="main" expected-slides="(!entryState && 2) || (entryState === 'login' && 3)">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide swiper-no-swiping" swiper-slide="entry/home" slide-index=0>
+          <div class="container-content">
+            <div class="group-instruction row">
+              <p>extended mind helps you<br/>
+                manage your <b>tasks</b> and<br/>
+                <b>thoughts</b> as easily as if it was an<br/>
+                extension to your biological mind
+              </p>
             </div>
             <div class="group-btn row">
-              <button type="submit" class="btn-action" ng-disabled="!signupForm.$valid || !user.agree" ng-click="signUp()">
+              <button class="btn-action" ng-click="swipeToSignup()">
                 <span class="text-btn">sign up</span>
               </button>
-            </div>
-          </form>
-          <div class="group-error row">
-            <div ng-if="signupForm.email.$touched" ng-messages="signupForm.email.$error">
-              <span class="text-error" ng-message="email">invalid email address</span>
-            </div>
-            <div ng-if="signupForm.password.$touched" ng-messages="signupForm.password.$error">
-              <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
-            </div>
-          </div>
-          <footer class="group-navigation row">
-            <a href ng-click="swipeToHome()"><span class="link-navigation-back"/>back</a>
-          </footer>
-        </div>
-        <div ng-if="entryState === 'login'" class="container-content">
-          <form role="form" name="loginForm">
-            <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email..." required />
-            <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password..." required />
-            <div class="group-mixed">
-              <div class="group-mixed--left">
-                <input type="checkbox" ng-model="user.remember" ng-true-value="true" icon-checkbox="loginFormRemember" />
-              </div>
-              <span class="group-mixed--middle">remember</span>
-            </div>
-            <div class="group-btn row">
-              <button type="submit" class="btn-action" ng-disabled="!loginForm.$valid" ng-click="logIn()">
+              <button class="btn-action" ng-click="swipeToLogin()">
                 <span class="text-btn">log in</span>
               </button>
             </div>
-          </form>
-          <div class="group-error row">
-            <div ng-if="loginForm.email.$touched" ng-messages="loginForm.email.$error">
-              <span class="text-error" ng-message="email">invalid email address</span>
-            </div>
-            <div ng-if="loginForm.password.$touched" ng-messages="loginForm.password.$error">
-              <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
-            </div>
-            <span ng-if="loginFailed" class="text-error">invalid username or password</span>
-            <span ng-if="loginOffline" class="text-error">can't connect to server. are you online?</span>
           </div>
-          <footer class="group-navigation row " >
-            <a href ng-click="swipeToHome()" class="link-navigation-back">back</a>
-            <a href ng-click="swipeToForgot()" class="link-navigation-forward">forgot?</a>
-          </footer>
         </div>
-      </div>
-      <div ng-if="entryState === 'login'" class="swiper-slide" swiper-slide="entry/details" slide-index=2>
-        <div class="container-content">
-          <div class="group-instruction row">
-            <p>reset password?</p>
-          </div>
-          <form role="form" name="forgotForm">
-            <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email..." required />
-            <div class="group-btn row">
-              <button type="submit" class="btn-action" ng-disabled="!forgotForm.$valid" ng-click="sendInstructions()">
-                <span class="text-btn">send</span>
-              </button>
+        <div class="swiper-slide" swiper-slide="entry/main" slide-index=1>
+          <div ng-if="entryState === 'signup'" class="container-content">
+            <form role="form" name="signupForm">
+              <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email..." required />
+              <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password..." required />
+              <div class="group-mixed">
+                <div class="group-mixed--left">
+                  <input type="checkbox" ng-model="user.agree" ng-true-value="true" icon-checkbox="signupFormAgree" />
+                </div>
+                <div class="group-mixed--middle text-details">I have read and agree to the <a href ng-click="gotoTermsOfService()">terms of service</a> and <a href ng-click="gotoPrivacyPolicy()">privacy policy</a></div>
+              </div>
+              <div class="group-btn row">
+                <button type="submit" class="btn-action" ng-disabled="!signupForm.$valid || !user.agree" ng-click="signUp()">
+                  <span class="text-btn">sign up</span>
+                </button>
+              </div>
+            </form>
+            <div class="group-error row">
+              <div ng-if="signupForm.email.$touched" ng-messages="signupForm.email.$error">
+                <span class="text-error" ng-message="email">invalid email address</span>
+              </div>
+              <div ng-if="signupForm.password.$touched" ng-messages="signupForm.password.$error">
+                <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
+              </div>
             </div>
-          </form>
-          <div class="group-error row">
-            <div ng-if="forgotForm.email.$touched" ng-messages="forgotForm.email.$error">
-              <span class="text-error" ng-message="email">invalid email address</span>
-            </div>
-            <span ng-if="sendFailed" class="text-error">you are not an extended mind user</span>
-            <span ng-if="sendOffline" class="text-error">can't connect to server. are you online?</span>
+            <footer class="group-navigation row">
+              <a href ng-click="swipeToHome()"><span class="link-navigation-back"/>back</a>
+            </footer>
           </div>
-          <footer class="group-navigation row">
-            <a href ng-click="swipeToMain()"><span class="link-navigation-back"/>back</a>
-          </footer>
+          <div ng-if="entryState === 'login'" class="container-content">
+            <form role="form" name="loginForm">
+              <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email..." required />
+              <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password..." required />
+              <div class="group-mixed">
+                <div class="group-mixed--left">
+                  <input type="checkbox" ng-model="user.remember" ng-true-value="true" icon-checkbox="loginFormRemember" />
+                </div>
+                <span class="group-mixed--middle">remember</span>
+              </div>
+              <div class="group-btn row">
+                <button type="submit" class="btn-action" ng-disabled="!loginForm.$valid" ng-click="logIn()">
+                  <span class="text-btn">log in</span>
+                </button>
+              </div>
+            </form>
+            <div class="group-error row">
+              <div ng-if="loginForm.email.$touched" ng-messages="loginForm.email.$error">
+                <span class="text-error" ng-message="email">invalid email address</span>
+              </div>
+              <div ng-if="loginForm.password.$touched" ng-messages="loginForm.password.$error">
+                <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
+              </div>
+              <span ng-if="loginFailed" class="text-error">invalid username or password</span>
+              <span ng-if="loginOffline" class="text-error">can't connect to server. are you online?</span>
+            </div>
+            <footer class="group-navigation row " >
+              <a href ng-click="swipeToHome()" class="link-navigation-back">back</a>
+              <a href ng-click="swipeToForgot()" class="link-navigation-forward">forgot?</a>
+            </footer>
+          </div>
+        </div>
+        <div ng-if="entryState === 'login'" class="swiper-slide" swiper-slide="entry/details" slide-index=2>
+          <div class="container-content">
+            <div class="group-instruction row">
+              <p>reset password?</p>
+            </div>
+            <form role="form" name="forgotForm">
+              <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email..." required />
+              <div class="group-btn row">
+                <button type="submit" class="btn-action" ng-disabled="!forgotForm.$valid" ng-click="sendInstructions()">
+                  <span class="text-btn">send</span>
+                </button>
+              </div>
+            </form>
+            <div class="group-error row">
+              <div ng-if="forgotForm.email.$touched" ng-messages="forgotForm.email.$error">
+                <span class="text-error" ng-message="email">invalid email address</span>
+              </div>
+              <span ng-if="sendFailed" class="text-error">you are not an extended mind user</span>
+              <span ng-if="sendOffline" class="text-error">can't connect to server. are you online?</span>
+            </div>
+            <footer class="group-navigation row">
+              <a href ng-click="swipeToMain()"><span class="link-navigation-back"/>back</a>
+            </footer>
+          </div>
         </div>
       </div>
     </div>
   </div>
-
 </section>

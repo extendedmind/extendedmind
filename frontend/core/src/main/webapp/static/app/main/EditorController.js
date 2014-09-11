@@ -278,13 +278,13 @@
   // FOR DEBUGGING
   $scope.DEBUG_openSoftKeyboardTemplate = function DEBUG_openSoftKeyboardTemplate() {
     var containerEditor = document.getElementById('editor-drawer');
-    containerEditor.style.height = 350 + 'px';
+    containerEditor.style.maxHeight = 350 + 'px';
     FOOTER_HEIGHT = 104;
   };
 
   $scope.DEBUG_closeSoftKeyboardTemplate = function DEBUG_closeSoftKeyboardTemplate() {
     var containerEditor = document.getElementById('editor-drawer');
-    containerEditor.style.height = 100 + '%';
+    containerEditor.style.maxHeight = 100 + '%';
     // FOOTER_HEIGHT = 0;
   };
 }
