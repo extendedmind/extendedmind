@@ -27,7 +27,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 
 //////// NEW START ////////////////////////
 
-@height-container-banner: 200px;
+@height-container-banner: 100px;
 @height-landscape-max: 769px;
 @height-max: 1025px;
 @width-max: 1025px;
@@ -200,14 +200,9 @@ Banner container.
 .container-banner {
   height: @height-container-banner;
   text-align: center;
-  [class^="icon-"], [class*=" icon-"] {
+  .text-banner {
     display: table-cell;
     vertical-align: middle;
-    -webkit-transition: -webkit-transform .3s ease-out;
-    -moz-transition: -moz-transform .3s ease-out;
-    -o-transition: -o-transform .3s ease-out;
-    -ms-transition: -ms-transform .3s ease-out;
-    transition: transform .3s ease-out;
   }
 }
 

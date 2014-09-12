@@ -154,10 +154,17 @@ Font mixins.
   font-weight: 700;
 }
 
+
+/*
+******************************************************************
+# Texts.
+*/
+
+@size-icon-logo-with-text: 48px;
+
 /*
 Use `.text-details` to separate details from body text.
 */
-
 .text-details {
   font-size: @size-font-small;
 }
@@ -166,6 +173,16 @@ Use `.text-details` to separate details from body text.
   font-size: @size-font-small;
   color: @color-error;
   .set-font-bold;
+}
+
+.text-banner {
+  font-size: @size-icon-logo-with-text;
+  line-height: @size-icon-logo-with-text;
+  &:after {
+    .set-icon-font;
+    color: @color-logo;
+    content: @icon-logo-with-text;
+  }
 }
 
 //////// NEW END ////////////////////////
