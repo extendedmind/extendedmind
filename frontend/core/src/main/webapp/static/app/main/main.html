@@ -20,11 +20,11 @@
   </div>
 </div-->
 
-<div id="main" ng-controller="MainController" ng-class="[isEditorVisible() ? 'editor-visible' : 'editor-hidden', isMenuVisible() ? 'menu-visible' : 'menu-hidden']">
+<div class="container-main" ng-controller="MainController" ng-class="[isEditorVisible() ? 'editor-visible' : 'editor-hidden', isMenuVisible() ? 'menu-visible' : 'menu-hidden']" vertical-resize>
   <div id="menu" ng-include="'static/app/main/menu.html'" drawer="left"></div>
   <div ng-include="'static/app/main/editor.html'" include-replace></div>
-  <div id="feature-container-wrapper" drawer-aisle>
-    <div id="feature-container" ng-class="[getFooterVisibilityClass(), isAisleWebkitScrolling() ? 'webkit-scrolling' : 'no-webkit-scrolling']"editable-field-backdrop class="slides-container">
+  <div drawer-aisle>
+    <div ng-class="[getFooterVisibilityClass(), isAisleWebkitScrolling() ? 'webkit-scrolling' : 'no-webkit-scrolling']" editable-field-backdrop>
       <header class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
       <div ng-if="isFeatureActive('account')" ng-include="'static/app/account/account.html'" include-replace></div>
       <div ng-if="isFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>

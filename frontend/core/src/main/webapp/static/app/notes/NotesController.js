@@ -204,7 +204,7 @@
     return $scope.recentNotesLimit;
   };
 
-  $scope.addMoreRecent = function addMoreRecent() {
+  $scope.addMoreRecentNotes = function addMoreRecentNotes() {
     if ($scope.recentNotesLimit !== $scope.allNotes.length) {
       // There is still more to add, add in batches of 25
       if ($scope.recentNotesLimit + 25 < $scope.allNotes.length) {

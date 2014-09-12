@@ -25,6 +25,8 @@
       // BASIC DIMENSIONS TO ROOT SCOPE
       // NOTE: For some reason this had to be 567 before, because editor disappeared after animation was ready.
       $rootScope.CONTAINER_MASTER_MAX_WIDTH = 568;
+      $rootScope.MAX_HEIGHT = 769;
+      $rootScope.KEYBOARD_ANIMATION_TIME = 300;
 
       // Back function globally available
       $scope.gotoPreviousPage = function gotoPreviousPage() {

@@ -2,7 +2,7 @@
   <div class="column">
     <div class="page-content-container">
       <div class="inner-page-content-container" scroll-to swiper-prevent>
-        <div infinite-scroll="addMoreRecent()" infinite-scroll-parent accordion>
+        <div infinite-scroll="addMoreRecentNotes()" infinite-scroll-parent accordion>
           <h3>recent</h3>
           <button type="button" class="add-button" ng-click="addNote({})">add note...</button>
           <div ng-repeat="note in allNotes | orderBy:'modified':true | limitTo: getRecentNotesLimit()" ng-init="newNote = {}">

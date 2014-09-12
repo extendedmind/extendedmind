@@ -34,52 +34,55 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 @width-column-max: 568px; // iPhone 5 landscape is still one column
 
 /*
-**************************************************************************
-# LEVEL 1: Primary Containers (master, editor, menu)
-*/
+ **************************************************************************
+ * LEVEL 1: root
+ */
 
-/*
-`.container-master` sets the vertical positioning of the master content area.
-When the screen size is bigger than a tablet, the master container will be vertically centered.
-*/
-.container-master {
-  .center-horizontally;
-  max-height: @height-max;
-}
-
-.container-menu {
-
+.container-root {
+  display: table;
+  width: 100%;
+  height: 100%;
 }
 
 /*
-Editor.
-*/
-// 1.  Set editor height for sticky footer.
-// 2.  Animate maximum height change when virtual keyboard opens and closes
-.container-editor {
-  position: absolute;
-  right: 0;
-  left: 0;
-  max-height: @height-max;
-  .center-horizontally;
-  height: 100%;                     /* [1] */
-  transition: max-height .3s ease;  /* [2] */
-  // FIXME
-  max-width: @width-column-max;
-  // FIXME
+ **************************************************************************
+ * LEVEL 2: entry, main
+ */
+
+// 1. Animate maximum height change when virtual keyboard opens and closes
+.container-entry, .container-main {
+  display: table-cell;
+  vertical-align: middle;
+  // This field changes programmatically when the soft keyboard appears
+  max-height: @height-landscape-max;
+  -webkit-transition: -webkit-transform .3s ease;
+  transition: transform .3s ease;  /* [1] */
 }
 
 /*
 Entry.
-
-* TODO: `.container-content` inside `.container-entry.` is not scrollable. Need to set fixed height for it?
 */
 // 1. Make whole page scrollabe
-// 2. Animate maximum height change when virtual keyboard opens and closes
-.container-entry {
-  height: 100%;     /* [1] */
+.container-entry--inner {
+  max-height: inherit;
   overflow-y: auto; /* [1] */
-  transition: max-height .3s ease;  /* [2] */
+}
+
+/*
+**************************************************************************
+# LEVEL 3: Primary Containers (master, editor, menu)
+*/
+
+/*
+**************************************************************************
+# LEVEL 4: fluid
+*/
+
+/*
+`.container-fluid` sets the vertical positioning of the content area.
+*/
+.container-fluid {
+  .center-horizontally;
 }
 
 // Fluid container height.
@@ -92,7 +95,7 @@ Entry.
 // 1. Fixes width calculation with swiper inside. See: http://stackoverflow.com/a/19835024
 // 2. Inherit height for display: table.
 // 3. Set width for display: table
-.container-editor--inner, .container-entry--inner {
+.container-fluid {
   display: table;
   table-layout: fixed;  /* [1] */
   height: inherit;      /* [2] */
@@ -118,6 +121,32 @@ Entry.
   height: inherit;      /* [1,2] */
 }
 
+/*
+Menu.
+*/
+.container-menu {
+
+}
+
+/*
+Editor.
+*/
+// 1.  Set editor height for sticky footer.
+// 2.  Animate maximum height change when virtual keyboard opens and closes
+.container-editor {
+  position: absolute;
+  right: 0;
+  left: 0;
+  max-height: @height-max;
+  .center-horizontally;
+  height: 100%;                     /* [1] */
+  transition: max-height .3s ease;  /* [2] */
+  // FIXME
+  max-width: @width-column-max;
+  // FIXME
+}
+
+/*
 @media (min-height: @height-landscape-max) {
   .container-master, .container-editor {
     min-height: @height-landscape-max;
@@ -129,10 +158,11 @@ Entry.
     position: relative;
   }
 }
+*/
 
 /*
 **************************************************************************
-# LEVEL 2: Secondary Containers (content, banner, toolbar, titlebar)
+# LEVEL 4: Secondary Containers (content, banner, toolbar, titlebar)
 */
 
 /*
@@ -189,10 +219,9 @@ Banner container.
   max-width: @width-max;
 }
 
-
 /*
 **************************************************************************
-# LEVEL 3: row
+# LEVEL 5: row and groups
 */
 
 /*
@@ -204,11 +233,6 @@ margin.
   padding-left: @grid-horizontal;
   padding-right: @grid-horizontal;
 }
-
-/*
-**************************************************************************
-# LEVEL 4: groups
-*/
 
 /*
 Class `.group-btn` groups automatically button elements horizontally. Works

@@ -1,5 +1,5 @@
-<div id="editor-drawer" class="container-editor" ng-controller="EditorController" data-snap-ignore="true" drawer="right">
-  <div ng-if="editorVisible" class="container-editor--inner">
+<div class="container-editor" ng-controller="EditorController" data-snap-ignore="true" drawer="right">
+  <div ng-if="editorVisible" class="container-fluid">
     <header class="container-titlebar">
       <div class="group-navigation">
         <a href class="link-navigation-back row" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endEdit()" ng-bind="saveOnClose ? 'save' : 'back'"></a>

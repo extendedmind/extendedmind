@@ -14,18 +14,25 @@
  */
  'use strict';
 
- function EntryController($scope, $timeout, $window, AnalyticsService, AuthenticationService, BackendClientService, SwiperService) {
+ function EntryController($location, $rootScope, $scope, $timeout, $window,
+                          AnalyticsService, AuthenticationService,
+                          BackendClientService, SwiperService,
+                          UserSessionService) {
 
   AnalyticsService.visitEntry('entry');
 
   // DEBUG //
   $scope.DEBUG_openKeyboard = function(){
-    var entryElement = document.getElementById('entry');
-    entryElement.style.maxHeight = 250 + 'px';
+    $rootScope.packaging = 'devel-cordova';
+    $rootScope.softKeyboard.height = 300;
+    if (!$scope.$$phase){
+      $scope.$apply();
+    }
   };
   $scope.DEBUG_closeKeyboard = function(){
-    var entryElement = document.getElementById('entry');
-    entryElement.style.maxHeight = 100 + '%';
+    $rootScope.packaging = 'devel-cordova';
+    $rootScope.softKeyboard.height = 0;
+    if (!$scope.$$phase) $scope.$apply();
   };
   // DEBUG //
 
@@ -39,7 +46,13 @@
     var entryBannerLogoElement = document.getElementById('entryBannerLogo');
     // entryBannerLogoElement.style['transform'] = 'translate3d(0, -50px, 0)';
     entryBannerLogoElement.style.webkitTransform = 'translate3d(0, -50px, 0)';
+  };
 
+  $scope.swipeToLogin = function swipeToLogin() {
+    $scope.entryState = 'login';
+    $scope.user = {};
+    SwiperService.swipeTo('entry/main');
+    AnalyticsService.visitEntry('login');
   };
 
   $scope.gotoTermsOfService = function gotoTermsOfService() {
@@ -69,7 +82,36 @@
     SwiperService.swipeTo('entry/details');
   };
 
+  // ACTIONS
+
+  $scope.logIn = function() {
+    if ($scope.rememberByDefault()) {
+      $scope.user.remember = true;
+    }
+    $scope.loginFailed = false;
+    $scope.loginOffline = false;
+    AuthenticationService.login($scope.user).then(function() {
+      AnalyticsService.do('login');
+      $location.path('/my');
+    }, function(authenticateResponse) {
+      if (BackendClientService.isOffline(authenticateResponse.status)) {
+        AnalyticsService.error('login', 'offline');
+        $scope.loginOffline = true;
+      } else if (authenticateResponse.status === 403) {
+        AnalyticsService.error('login', 'failed');
+        $scope.loginFailed = true;
+      }
+    });
+  };
+
+  $scope.rememberByDefault = function rememberByDefault() {
+    return UserSessionService.getRememberByDefault();
+  };
+
 }
 
-EntryController['$inject'] = ['$scope', '$timeout', '$window', 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'SwiperService'];
+EntryController['$inject'] = ['$location', '$rootScope', '$scope', '$timeout', '$window',
+                              'AnalyticsService', 'AuthenticationService',
+                              'BackendClientService', 'SwiperService',
+                              'UserSessionService'];
 angular.module('em.entry').controller('EntryController', EntryController);
