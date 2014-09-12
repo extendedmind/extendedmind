@@ -41,11 +41,6 @@
     $scope.user = {};
     SwiperService.swipeTo('entry/main');
     AnalyticsService.visitEntry('signup');
-
-    // TODO: Use AngularJS
-    var entryBannerLogoElement = document.getElementById('entryBannerLogo');
-    // entryBannerLogoElement.style['transform'] = 'translate3d(0, -50px, 0)';
-    entryBannerLogoElement.style.webkitTransform = 'translate3d(0, -50px, 0)';
   };
 
   $scope.swipeToLogin = function swipeToLogin() {
@@ -67,11 +62,6 @@
 
   $scope.swipeToHome = function() {
     SwiperService.swipeTo('entry/home');
-
-    // TODO: Use AngularJS
-    var entryBannerLogoElement = document.getElementById('entryBannerLogo');
-    // entryBannerLogoElement.style['transform'] = 'translate3d(0, 0, 0)';
-    entryBannerLogoElement.style.webkitTransform = 'translate3d(0, 0, 0)';
   };
 
   $scope.swipeToMain = function() {
