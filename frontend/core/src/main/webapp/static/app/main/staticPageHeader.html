@@ -1,14 +1,14 @@
-<nav class="swiper-no-swiping" role="navigation" ng-controller="HeaderController">
-  <div class="active-item-container">
+<nav class="group-mixed swiper-no-swiping" role="navigation" ng-controller="HeaderController">
+  <div class="group-mixed--left">
     <button ng-if="!isDatepickerVisible" type="button" id="menu-button" ng-click="toggleMenu()" alt="menu" ng-disabled="onboardingInProgress">
       <span class="icon-menu"></span>
     </button>
     <a href ng-if="isDatepickerVisible" id="today-link" ng-class="{'today-link-active': isTodayActive}">today</a>
   </div>
-  <div class="heading-container" ng-class="getHeadingClass()">
+  <div class="group-mixed--middle" ng-class="getHeadingClass()">
     <a href class="heading" ng-click="switchFeature()" ng-bind="getCurrentHeading()"></a>
   </div>
-  <div class="omni-button-container">
+  <div class="group-mixed--right">
     <a href class="omni-button" ng-click="openEditor()">
       <span class="icon-logo-only"></span>
     </a>

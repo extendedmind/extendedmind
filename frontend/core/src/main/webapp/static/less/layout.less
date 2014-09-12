@@ -74,6 +74,45 @@ Entry.
 */
 
 /*
+Master
+*/
+.container-master {
+  position: relative;
+  background-color: white;
+  .center-horizontally;
+  max-width: @width-column-max;
+}
+
+/*
+Menu.
+*/
+.container-menu {
+  position: absolute;
+  width: 260px;
+  top: 0;
+  bottom: 0;
+}
+
+/*
+Editor.
+*/
+// 1.  Set editor height for sticky footer.
+// 2.  Animate maximum height change when virtual keyboard opens and closes
+.container-editor {
+  position: absolute;
+  right: 0;
+  left: 0;
+  top: 0;
+  max-height: @height-max;
+  .center-horizontally;
+  height: 100%;                     /* [1] */
+  transition: max-height .3s ease;  /* [2] */
+  // FIXME
+  max-width: @width-column-max;
+  // FIXME
+}
+
+/*
 **************************************************************************
 # LEVEL 4: fluid
 */
@@ -122,31 +161,6 @@ Entry.
 }
 
 /*
-Menu.
-*/
-.container-menu {
-
-}
-
-/*
-Editor.
-*/
-// 1.  Set editor height for sticky footer.
-// 2.  Animate maximum height change when virtual keyboard opens and closes
-.container-editor {
-  position: absolute;
-  right: 0;
-  left: 0;
-  max-height: @height-max;
-  .center-horizontally;
-  height: 100%;                     /* [1] */
-  transition: max-height .3s ease;  /* [2] */
-  // FIXME
-  max-width: @width-column-max;
-  // FIXME
-}
-
-/*
 @media (min-height: @height-landscape-max) {
   .container-master, .container-editor {
     min-height: @height-landscape-max;
@@ -185,7 +199,6 @@ Banner container.
 // TODO: comments
 .container-banner {
   height: @height-container-banner;
-  display: table-row;
   text-align: center;
   [class^="icon-"], [class*=" icon-"] {
     display: table-cell;
@@ -199,10 +212,8 @@ Banner container.
 }
 
 // 1. Fluid container height
-.container-titlebar {
+.container-titlebar, .container-toolbar, .container-banner{
   display: table-row; /* [1] */
-
-
   // < save
   //    title
   //  inbox task note list

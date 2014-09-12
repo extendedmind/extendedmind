@@ -1,39 +1,41 @@
-<div id="menu-content" class="swiper-no-swiping" ng-controller="MenuController">
-  <ul>
-    <li class="account-link">
-      <a href ng-class="getFeatureClass('account')" ng-click="gotoFeature('account')">{{getActiveOwnerName()}}</a>
-    </li>
-    <li>
-      <a href class="feature-link" ng-class="getFeatureClass('inbox')" ng-click="gotoFeature('inbox')">inbox</a>
-    </li>
-    <li>
-      <a href class="feature-link" ng-class="getFeatureClass('tasks')" ng-click="gotoFeature('tasks')">tasks</a>
-    </li>
-    <li>
-      <a href class="feature-link" ng-class="getFeatureClass('notes')" ng-click="gotoFeature('notes')">notes</a>
-    </li>
-    <li>
-      <div class="lists-heading-container">
-        <a href class="lists-link" ng-class="getFeatureClass('lists')" ng-click="gotoFeature('lists')">lists</a>
-        <a href ng-class="getFeatureClass('lists')" class="hide-expand-link" ng-click="toggleLists()">
-          <span ng-if="lists.length && isListsVisible()">-</span>
-          <span ng-if="lists.length && !isListsVisible()">+</span>
-        </a>
-      </div>
-      <ul ng-if="isListsVisible() && lists.length > 0">
-        <li class="list" ng-repeat="list in lists" ng-class="$last && 'list-last'">
-          <a href class="list-link" ng-class="getListClass(list)" ng-click="gotoList(list)">{{getListTitleText(list)}}</a>
-        </li>
-      </ul>
-    </li>
-    <li class="last-feature">
-      <a href class="feature-link" ng-class="getFeatureClass('archive')" ng-click="gotoFeature('archive')">archive</a>
-    </li>
-    <li ng-if="isAdmin()">
-      <a href ng-class="getFeatureClass('admin')" ng-click="gotoFeature('admin')">admin</a>
-    </li>
-    <li class="menu-last">
-      <a href ng-class="getFeatureClass('settings')" ng-click="gotoFeature('settings')">settings</a>
-    </li>
-  </ul>
+<div class="container-menu" ng-controller="MenuController" drawer="left">
+  <div id="menu-content" class="swiper-no-swiping" >
+    <ul>
+      <li class="account-link">
+        <a href ng-class="getFeatureClass('account')" ng-click="gotoFeature('account')">{{getActiveOwnerName()}}</a>
+      </li>
+      <li>
+        <a href class="feature-link" ng-class="getFeatureClass('inbox')" ng-click="gotoFeature('inbox')">inbox</a>
+      </li>
+      <li>
+        <a href class="feature-link" ng-class="getFeatureClass('tasks')" ng-click="gotoFeature('tasks')">tasks</a>
+      </li>
+      <li>
+        <a href class="feature-link" ng-class="getFeatureClass('notes')" ng-click="gotoFeature('notes')">notes</a>
+      </li>
+      <li>
+        <div class="lists-heading-container">
+          <a href class="lists-link" ng-class="getFeatureClass('lists')" ng-click="gotoFeature('lists')">lists</a>
+          <a href ng-class="getFeatureClass('lists')" class="hide-expand-link" ng-click="toggleLists()">
+            <span ng-if="lists.length && isListsVisible()">-</span>
+            <span ng-if="lists.length && !isListsVisible()">+</span>
+          </a>
+        </div>
+        <ul ng-if="isListsVisible() && lists.length > 0">
+          <li class="list" ng-repeat="list in lists" ng-class="$last && 'list-last'">
+            <a href class="list-link" ng-class="getListClass(list)" ng-click="gotoList(list)">{{getListTitleText(list)}}</a>
+          </li>
+        </ul>
+      </li>
+      <li class="last-feature">
+        <a href class="feature-link" ng-class="getFeatureClass('archive')" ng-click="gotoFeature('archive')">archive</a>
+      </li>
+      <li ng-if="isAdmin()">
+        <a href ng-class="getFeatureClass('admin')" ng-click="gotoFeature('admin')">admin</a>
+      </li>
+      <li class="menu-last">
+        <a href ng-class="getFeatureClass('settings')" ng-click="gotoFeature('settings')">settings</a>
+      </li>
+    </ul>
+  </div>
 </div>

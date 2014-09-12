@@ -20,22 +20,23 @@
   </div>
 </div-->
 
-<div class="container-main" ng-controller="MainController" ng-class="[isEditorVisible() ? 'editor-visible' : 'editor-hidden', isMenuVisible() ? 'menu-visible' : 'menu-hidden']" vertical-resize>
-  <div id="menu" ng-include="'static/app/main/menu.html'" drawer="left"></div>
+<div class="container-main" ng-controller="MainController" ng-class="[isEditorVisible() ? 'editor-visible' : 'editor-hidden', isMenuVisible() ? 'menu-visible' : 'menu-hidden']" drawer="left" vertical-resize>
+  <div ng-include="'static/app/main/menu.html'" include-replace></div>
   <div ng-include="'static/app/main/editor.html'" include-replace></div>
   <div drawer-aisle>
-    <div ng-class="[getFooterVisibilityClass(), isAisleWebkitScrolling() ? 'webkit-scrolling' : 'no-webkit-scrolling']" editable-field-backdrop>
-      <header class="static-page-header" ng-include="'static/app/main/staticPageHeader.html'"></header>
-      <div ng-if="isFeatureActive('account')" ng-include="'static/app/account/account.html'" include-replace></div>
-      <div ng-if="isFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>
-      <div ng-if="isFeatureActive('tasks')" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>
-      <div ng-if="isFeatureActive('notes')" ng-include="'static/app/notes/notesSlides.html'" include-replace></div>
-      <div ng-if="isFeatureActive('lists')" ng-include="'static/app/base/lists.html'" include-replace></div>
-      <div ng-if="isFeatureActive('list')" ng-include="'static/app/main/listSlides.html'" include-replace></div>
-      <div ng-if="isFeatureActive('archive')" ng-include="'static/app/archive/archiveSlides.html'" include-replace></div>
-      <div ng-if="isFeatureActive('admin')" ng-include="'static/app/admin/admin.html'" include-replace></div>
-      <div ng-if="isFeatureActive('settings')" ng-include="'static/app/account/settings.html'" include-replace></div>
-      <footer ng-include="'static/app/main/footer.html'"></footer>
+    <div class="container-master">
+      <div class="container-fluid" ng-class="[getFooterVisibilityClass(), isAisleWebkitScrolling() ? 'webkit-scrolling' : 'no-webkit-scrolling']" editable-field-backdrop>
+        <header class="container-toolbar" ng-include="'static/app/main/staticPageHeader.html'"></header>
+        <div ng-if="isFeatureActive('account')" ng-include="'static/app/account/account.html'" include-replace></div>
+        <div ng-if="isFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>
+        <div ng-if="isFeatureActive('tasks')" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>
+        <div ng-if="isFeatureActive('notes')" ng-include="'static/app/notes/notesSlides.html'" include-replace></div>
+        <div ng-if="isFeatureActive('lists')" ng-include="'static/app/base/lists.html'" include-replace></div>
+        <div ng-if="isFeatureActive('list')" ng-include="'static/app/main/listSlides.html'" include-replace></div>
+        <div ng-if="isFeatureActive('archive')" ng-include="'static/app/archive/archiveSlides.html'" include-replace></div>
+        <div ng-if="isFeatureActive('admin')" ng-include="'static/app/admin/admin.html'" include-replace></div>
+        <div ng-if="isFeatureActive('settings')" ng-include="'static/app/account/settings.html'" include-replace></div>
+      </div>
     </div>
   </div>
 </div>

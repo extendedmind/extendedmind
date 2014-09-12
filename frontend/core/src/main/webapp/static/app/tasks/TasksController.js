@@ -120,6 +120,27 @@
     $scope.deleteContext(context);
     $scope.context = undefined;
   };
+
+
+  // INFINITE SCROLL
+
+  $scope.recentTasksLimit = $scope.tasks.length;
+
+  $scope.getRecentTasksLimit = function () {
+    return $scope.recentTasksLimit;
+  };
+
+  $scope.addMoreRecentTasks = function () {
+    if ($scope.recentTasksLimit !== $scope.tasks.length) {
+      // There is still more to add, add in batches of 25
+      if ($scope.recentTasksLimit + 25 < $scope.tasks.length) {
+        $scope.recentTasksLimit += 25;
+      } else {
+        $scope.recentTasksLimit = $scope.tasks.length;
+      }
+    }
+  };
+
 }
 
 TasksController['$inject'] = ['$scope', 'AnalyticsService', 'DateService', 'SwiperService', 'TasksService', 'UISessionService'];
