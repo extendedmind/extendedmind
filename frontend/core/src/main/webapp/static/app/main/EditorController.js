@@ -275,18 +275,27 @@
     return FOOTER_HEIGHT; // ITEM_ACTION_BUTTONS_ROW_HEIGHT + ITEM_NAVIGATION_ROW_HEIGHT
   };
 
-  // FOR DEBUGGING
-  $scope.DEBUG_openSoftKeyboardTemplate = function DEBUG_openSoftKeyboardTemplate() {
-    var containerEditor = document.getElementById('editor-drawer');
-    containerEditor.style.maxHeight = 350 + 'px';
-    FOOTER_HEIGHT = 104;
+  // DEBUG //
+  $scope.DEBUG_toggleKeyboard = function(){
+    $rootScope.packaging = 'devel-cordova';
+    $rootScope.softKeyboard.height = $rootScope.softKeyboard.height === 300 ? 0 : 300;
+    if (!$scope.$$phase){
+      $scope.$apply();
+    }
   };
-
-  $scope.DEBUG_closeSoftKeyboardTemplate = function DEBUG_closeSoftKeyboardTemplate() {
-    var containerEditor = document.getElementById('editor-drawer');
-    containerEditor.style.maxHeight = 100 + '%';
-    // FOOTER_HEIGHT = 0;
+  $scope.DEBUG_openKeyboard = function(){
+    $rootScope.packaging = 'devel-cordova';
+    $rootScope.softKeyboard.height = 300;
+    if (!$scope.$$phase){
+      $scope.$apply();
+    }
   };
+  $scope.DEBUG_closeKeyboard = function(){
+    $rootScope.packaging = 'devel-cordova';
+    $rootScope.softKeyboard.height = 0;
+    if (!$scope.$$phase) $scope.$apply();
+  };
+  // DEBUG //
 }
 
 EditorController['$inject'] = ['$rootScope', '$scope', '$timeout'];

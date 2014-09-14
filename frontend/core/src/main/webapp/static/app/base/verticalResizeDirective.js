@@ -17,7 +17,7 @@
  function verticalResizeDirective($rootScope) {
   return {
     restrict: 'A',
-    link: function postLink(scope, element) {
+    link: function postLink(scope, element, attrs) {
       var maxHeightWithoutKeyboard;
       function windowResized(){
         if ($rootScope.currentHeight > $rootScope.MAX_HEIGHT){
@@ -33,29 +33,53 @@
       }
       windowResized();
 
-      scope.$watch('softKeyboard.height', function(newValue) {
-        if (newValue) {
-          var originalOffsetTop = element[0].firstElementChild.offsetTop;
+      if (attrs.verticalResize === 'editor') {
+        scope.$watch('softKeyboard.height', function(newValue, oldValue) {
+          if (newValue || oldValue) {
+            if (newValue) {
+              var originalOffsetTop = element[0].offsetTop;
+              // Animate
+              element[0].style.webkitTransform = 'translate3d(0, -' + originalOffsetTop + 'px, 0)';
 
-          // Animate
-          element[0].style.webkitTransform = 'translate3d(0, -' + originalOffsetTop + 'px, 0)';
+              // Delay changin
+              setTimeout(function(){
+                // Change directly
+                element[0].style.maxHeight = (maxHeightWithoutKeyboard - newValue) + 'px';
 
-          // Delay changin
-          setTimeout(function(){
-            // Change directly
-            element[0].style.position = 'relative';
-            element[0].style.maxHeight = (maxHeightWithoutKeyboard - newValue) + 'px';
+              }, $rootScope.KEYBOARD_ANIMATION_TIME);
+            } else {
+              element[0].style.maxHeight = maxHeightWithoutKeyboard  + 'px';
+              element[0].style.webkitTransform = 'translate3d(0, 0, 0)';
+            }
+          }
+        });
+      }
+      else {
 
-            var newOffsetTop = element[0].firstElementChild.offsetTop;
-            element[0].style.top = '-' + (newOffsetTop - originalOffsetTop) + 'px';
-          }, $rootScope.KEYBOARD_ANIMATION_TIME);
-        } else {
-          element[0].style.position = 'inherit';
-          element[0].style.top = '0';
-          element[0].style.maxHeight = maxHeightWithoutKeyboard  + 'px';
-          element[0].style.webkitTransform = 'translate3d(0, 0, 0)';
-        }
-      });
+        scope.$watch('softKeyboard.height', function(newValue) {
+          if (newValue) {
+            var originalOffsetTop = element[0].firstElementChild.offsetTop;
+
+            // Animate
+            element[0].style.webkitTransform = 'translate3d(0, -' + originalOffsetTop + 'px, 0)';
+
+            // Delay changin
+            setTimeout(function(){
+              // Change directly
+              element[0].style.position = 'relative';
+              element[0].style.maxHeight = (maxHeightWithoutKeyboard - newValue) + 'px';
+
+              var newOffsetTop = element[0].firstElementChild.offsetTop;
+              element[0].style.top = '-' + (newOffsetTop - originalOffsetTop) + 'px';
+            }, $rootScope.KEYBOARD_ANIMATION_TIME);
+          } else {
+            element[0].style.position = 'inherit';
+            element[0].style.top = '0';
+            element[0].style.maxHeight = maxHeightWithoutKeyboard  + 'px';
+            element[0].style.webkitTransform = 'translate3d(0, 0, 0)';
+          }
+        });
+      }
     }
   };
 }
