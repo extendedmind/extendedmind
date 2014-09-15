@@ -27,47 +27,32 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 
 //////// NEW START ////////////////////////
 
-@height-container-banner: 100px;
+@height-container-toolbar: @grid-vertical;
 @height-landscape-max: 769px;
 @height-max: 1025px;
 @width-max: 1025px;
 @width-column-max: 568px; // iPhone 5 landscape is still one column
 
 /*
- **************************************************************************
- * LEVEL 1: root
- */
-
- .container-root {
-  display: table;
-  width: 100%;
-  height: 100%;
-}
-
-/*
- **************************************************************************
- * LEVEL 2: entry, main
- */
-
- .container-entry, .container-main {
-  display: table-cell;
-  vertical-align: middle;
-}
-
-/*
-Entry.
+**************************************************************************
+# LEVEL 1: Root
 */
-// 1. Maximum height and vertical position changes programmatically when soft keyboard opens and closes.
-//    Animate vertical position change when soft keyboard opens and closes
-.container-entry {
-  -webkit-transition: -webkit-transform .3s ease; // [1]
-  transition: transform .3s ease;                 // [1]
 
+// 1. Set width and height for absolutely positioned (grand)children.
+.container-root {
+  height: 100%; // [1]
+  width: 100%;  // [1]
 }
-// 1. Make whole page scrollable
-.container-entry--inner {
-  max-height: inherit;
-  overflow-y: auto; // [1]
+
+/*
+**************************************************************************
+# LEVEL 2: Optional Intermediate Containers (main, drawer-aisle)
+*/
+
+// 1. Inherit width and height for absolutely positioned (grand)children.
+.container-main, .container-drawer-aisle {
+  width: inherit;   // [1]
+  height: inherit;  // [1]
 }
 
 /*
@@ -75,52 +60,63 @@ Entry.
 # LEVEL 3: Primary Containers (master, editor, menu)
 */
 
+// 1. Layout for Snap.js. See https://github.com/jakiestfu/Snap.js/#layout
+// 2. Inherit height to expand vertically and for (grand)children as well.
+.container-master, .container-editor, .container-menu {
+  position: absolute; // [1]
+  height: inherit;    // [2]
+}
+
+// 1. Center horizontally.
+//    Set left and right properties as well because .container-master and .container-editor are absolutely positioned.
+// 2. Maximum height is set programmatically - set default maximum height here as well for reference.
+// 4. Animate maximum height change when soft keyboard opens and closes
+.container-master, .container-editor {
+  .center-horizontally; // [1]
+  left: 0;              // [1]
+  right: 0;             // [1]
+  max-height: @height-landscape-max;        // [2]
+  -webkit-transition: max-height .3s ease;  // [3]
+  -moz-transition: max-height .3s ease;     // [3]
+  -o-transition: max-height .3s ease;       // [3]
+  -ms-transition: max-height .3s ease;      // [3]
+  transition: max-height .3s ease;          // [3]
+  // FIXME
+  max-width: @width-column-max;
+  // FIXME
+}
+
 /*
 Master
 */
+// 1. .container-master must have background not to see-through .container-menu and .container-editor.
 .container-master {
-  position: relative;
-  background-color: white;
-  .center-horizontally;
-  max-width: @width-column-max;
+  background-color: white;  // [1]
 }
 
 /*
-Menu.
+Menu
 */
 .container-menu {
-  position: absolute;
   width: 260px;
-  top: 0;
-  bottom: 0;
+  overflow-y: auto;
 }
 
 /*
-Editor.
+Vertically center
 */
-// 1. Center horizontally and vertically.
-//    http://www.smashingmagazine.com/2013/08/09/absolute-horizontal-vertical-centering-css/
-// 2. Set editor height for sticky footer.
-// 3. Animate maximum height and vertical position change when soft keyboard opens and closes
-.container-editor {
-  position: absolute;   // [1]
-  top: 0;               // [1]
-  bottom: 0;            // [1]
-  left: 0;              // [1]
-  right: 0;             // [1]
-  .center-horizontally; // [1]
-  height: 100%;         // [2]
-  transition: max-height .3s, transform .3s ease;                 // [3]
-  -webkit-transition: max-height .3s, -webkit-transform .3s ease; // [3]
-  // FIXME
-  max-width: @width-column-max;
-  // FIXME
+@media (min-height: @maximum-landscape-height) {
+  .container-master, .container-editor {
+    top: 50%;
+    margin-top: -@maximum-landscape-height / 2;
+  }
 }
 
 /*
 **************************************************************************
-# LEVEL 4: fluid
+# LEVEL 4: Fluid
 */
+@height-footer: @vertical-grid;
 
 /*
 `.container-fluid` sets the vertical positioning of the content area.
@@ -153,16 +149,41 @@ Editor.
 
 // 1. Use same positioning as in swiper to make content scrollable and footer visible.
 // NOTE: Footer position in UI is set using javascript. See http://css-tricks.com/snippets/css/sticky-footer/
+.container-master .swiper-slide .container-content,
+.container-master .swiper-slide .container-content--after,
 .container-editor .swiper-slide .container-content,
 .container-editor .swiper-slide .container-content--after {
-  position: absolute; /* [1] */
+  // position: absolute; /* [1] */
 }
 
-// 1. Fluid container height
+// 1. Use same positioning as in swiper to make .container-content scrollable and .container-content--after visible.
+// 2. .container-content--after inside swiper is absolutely positioned
+//    so it needs to be positioned to the bottom of the content-container.
+//    NOTE: Override programmatically if footer height is different.
+//          See http://css-tricks.com/snippets/css/sticky-footer/
+.container-master, .container-editor {
+  .swiper-slide {
+    .container-content, .container-content--after {
+      position: absolute;       // [1]
+    }
+    .container-content--after {
+      bottom: -@height-footer;  // [2]
+    }
+  }
+}
+
+// 1. Fluid container height.
 // 2. Inherit height because parent uses display: table
+// 3. Default bottom padding to make room for footer. NOTE: Override programmatically if footer height is different.
 .container-content--outer {
-  display: table-cell;  /* [1] */
-  height: inherit;      /* [1,2] */
+  display: table-cell;            // [1]
+  height: inherit;                // [1,2]
+  padding-bottom: @height-footer; // [3]
+}
+
+// 1. Default height for footer. NOTE: Override programmatically if footer height is different
+.container-content--after {
+  height: @height-footer; // [1]
 }
 
 
@@ -176,8 +197,26 @@ Editor.
 
 /*
 **************************************************************************
-# LEVEL 4: Secondary Containers (content, banner, toolbar, titlebar)
+# LEVEL 5: Secondary Containers (content, toolbar, titlebar)
 */
+
+
+// 1. Align all secondary containers horizontally
+.container-content,
+.container-banner,
+.container-toolbar,
+.container-titlebar {
+  .center-horizontally;
+  max-width: @width-max;  // [1]
+}
+
+// 1. Fluid container height
+.container-titlebar, .container-toolbar, .container-banner {
+  display: table-row; /* [1] */
+  // < save
+  //    title
+  //  inbox task note list
+}
 
 /*
 `.container-content` specifies the vertical overflow.
@@ -189,45 +228,12 @@ Editor.
 
 .container-toolbar {
   // menu     title    omnibar
-}
-
-/*
-Banner container.
-
-* NOTE: Decrease `.container-banner` size and initially translate `.icon` y-axis if height is too big.
-*/
-// TODO: comments
-.container-banner {
-  height: @height-container-banner;
-  text-align: center;
-  .text-banner {
-    display: table-cell;
-    vertical-align: middle;
-  }
-}
-
-// 1. Fluid container height
-.container-titlebar, .container-toolbar, .container-banner{
-  display: table-row; /* [1] */
-  // < save
-  //    title
-  //  inbox task note list
-}
-
-
-// Align all secondary containers horizontally
-
-.container-content,
-.container-banner,
-.container-toolbar,
-.container-titlebar {
-  .center-horizontally;
-  max-width: @width-max;
+  height: @height-container-toolbar;
 }
 
 /*
 **************************************************************************
-# LEVEL 5: row and groups
+# LEVEL 6: row and groups
 */
 
 /*
@@ -320,18 +326,15 @@ for 1, 2, 3, 4, 7 and 9 buttons.
 Use `.group-instruction` to create an instruction block in the middle of a section.
 */
 .group-instruction {
-  color: @color-instruction;
   display: block;
-  text-align: center;
-  line-height: @grid-vertical-half;
+  line-height: @grid-vertical;
+  font-size: @size-font-large;
+  font-weight: 700; // TODO: evaluate right value with correct font
 
   // If there are more than one paragraph, create padding between them
   p:not(:first-child) {
     padding-top: @grid-vertical;
   }
-}
-.group-instruction ~ .group-btn {
-  padding-top: @grid-vertical;
 }
 
 /*
@@ -364,11 +367,11 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 .group-mixed--left {
   padding-right: @padding-inner-group-mixed;
 
-  a, input[type="checkbox"] + label {
+  a, input[type="checkbox"] + label, span {
     padding-left: @grid-horizontal; /* [1] */
     height: @grid-vertical;         /* [1] */
   }
-  a, input[type="checkbox"] + label:before {
+  a, input[type="checkbox"] + label:before, span {
     line-height: @grid-vertical;
   }
 }

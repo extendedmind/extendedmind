@@ -17,69 +17,36 @@
  function verticalResizeDirective($rootScope) {
   return {
     restrict: 'A',
-    link: function postLink(scope, element, attrs) {
+    link: function postLink(scope, element) {
       var maxHeightWithoutKeyboard;
       function windowResized(){
-        if ($rootScope.currentHeight > $rootScope.MAX_HEIGHT){
+        if ($rootScope.currentHeight > $rootScope.MAX_HEIGHT) {
           element[0].style.maxHeight = $rootScope.MAX_HEIGHT + 'px';
           maxHeightWithoutKeyboard = $rootScope.MAX_HEIGHT;
-        }else{
+        } else {
           element[0].style.maxHeight = $rootScope.currentHeight + 'px';
           maxHeightWithoutKeyboard = $rootScope.currentHeight;
         }
       }
-      if (angular.isFunction(scope.registerWindowResizedCallback)){
+      if (angular.isFunction(scope.registerWindowResizedCallback)) {
         scope.registerWindowResizedCallback(windowResized, 'verticalResizeDirective');
       }
       windowResized();
 
-      if (attrs.verticalResize === 'editor') {
-        scope.$watch('softKeyboard.height', function(newValue, oldValue) {
-          if (newValue || oldValue) {
-            if (newValue) {
-              var originalOffsetTop = element[0].offsetTop;
-              // Animate
-              element[0].style.webkitTransform = 'translate3d(0, -' + originalOffsetTop + 'px, 0)';
-
-              // Delay changin
-              setTimeout(function(){
-                // Change directly
-                element[0].style.maxHeight = (maxHeightWithoutKeyboard - newValue) + 'px';
-
-              }, $rootScope.KEYBOARD_ANIMATION_TIME);
-            } else {
-              element[0].style.maxHeight = maxHeightWithoutKeyboard  + 'px';
-              element[0].style.webkitTransform = 'translate3d(0, 0, 0)';
-            }
-          }
-        });
-      }
-      else {
-
-        scope.$watch('softKeyboard.height', function(newValue) {
-          if (newValue) {
-            var originalOffsetTop = element[0].firstElementChild.offsetTop;
-
-            // Animate
-            element[0].style.webkitTransform = 'translate3d(0, -' + originalOffsetTop + 'px, 0)';
-
-            // Delay changin
+      function doVerticalResize(newHeight, oldHeight) {
+        if (newHeight || oldHeight) {
+          if (newHeight) {
+            // Delay maximum height change.
             setTimeout(function(){
               // Change directly
-              element[0].style.position = 'relative';
-              element[0].style.maxHeight = (maxHeightWithoutKeyboard - newValue) + 'px';
-
-              var newOffsetTop = element[0].firstElementChild.offsetTop;
-              element[0].style.top = '-' + (newOffsetTop - originalOffsetTop) + 'px';
+              element[0].style.maxHeight = (maxHeightWithoutKeyboard - newHeight) + 'px';
             }, $rootScope.KEYBOARD_ANIMATION_TIME);
-          } else {
-            element[0].style.position = 'inherit';
-            element[0].style.top = '0';
-            element[0].style.maxHeight = maxHeightWithoutKeyboard  + 'px';
-            element[0].style.webkitTransform = 'translate3d(0, 0, 0)';
           }
-        });
+          else element[0].style.maxHeight = maxHeightWithoutKeyboard  + 'px';
+        }
       }
+
+      scope.$watch('softKeyboard.height', doVerticalResize);
     }
   };
 }

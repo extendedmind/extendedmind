@@ -21,21 +21,6 @@
 
   AnalyticsService.visitEntry('entry');
 
-  // DEBUG //
-  $scope.DEBUG_openKeyboard = function(){
-    $rootScope.packaging = 'devel-cordova';
-    $rootScope.softKeyboard.height = 300;
-    if (!$scope.$$phase){
-      $scope.$apply();
-    }
-  };
-  $scope.DEBUG_closeKeyboard = function(){
-    $rootScope.packaging = 'devel-cordova';
-    $rootScope.softKeyboard.height = 0;
-    if (!$scope.$$phase) $scope.$apply();
-  };
-  // DEBUG //
-
   $scope.swipeToSignup = function swipeToSignup() {
     $scope.entryState = 'signup';
     $scope.user = {};

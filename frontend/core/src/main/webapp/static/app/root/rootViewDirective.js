@@ -131,6 +131,14 @@
 
       // Clean up listening by executing the variable
       $scope.$on('$destroy', unbindEmException);
+
+      // DEBUG //
+      $scope.DEBUG_toggleKeyboard = function(){
+        $rootScope.packaging = 'devel-cordova';
+        $rootScope.softKeyboard.height = $rootScope.softKeyboard.height === 216 ? 0 : 216;
+        if (!$scope.$$phase) $scope.$apply();
+      };
+      // DEBUG //
     },
     link: function postLink(scope) {
 

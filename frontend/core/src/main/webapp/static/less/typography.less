@@ -144,6 +144,7 @@ Fonts in use:
 @font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'HelveticaNeueLTStd-Lt', 'Helvetica Neue', 'Arial', 'Helvetica', 'sans-serif';
 @font-family-bold: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'HelveticaNeueLT-Roman', 'Helvetica Neue', 'Arial', 'Helvetica', 'sans-serif';
 
+@size-font-large: 40px;
 @size-font-small: 15px;
 
 /*
@@ -160,11 +161,15 @@ Font mixins.
 # Texts.
 */
 
-@size-icon-logo-with-text: 48px;
+@size-icon-logo: 20px;
 
 /*
 Use `.text-details` to separate details from body text.
 */
+.text-active {
+  color: @color-text-active;
+}
+
 .text-details {
   font-size: @size-font-small;
 }
@@ -175,13 +180,13 @@ Use `.text-details` to separate details from body text.
   .set-font-bold;
 }
 
-.text-banner {
-  font-size: @size-icon-logo-with-text;
-  line-height: @size-icon-logo-with-text;
+.text-logo {
+  font-size: @size-icon-logo;
+  line-height: @size-icon-logo;
   &:after {
     .set-icon-font;
     color: @color-logo;
-    content: @icon-logo-with-text;
+    content: @icon-logo-only;
   }
 }
 
