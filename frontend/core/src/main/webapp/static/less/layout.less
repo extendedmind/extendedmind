@@ -32,6 +32,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 @height-max: 1025px;
 @width-max: 1025px;
 @width-column-max: 568px; // iPhone 5 landscape is still one column
+@width-menu: 260px;
 
 /*
 **************************************************************************
@@ -70,7 +71,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 // 1. Center horizontally.
 //    Set left and right properties as well because .container-master and .container-editor are absolutely positioned.
 // 2. Maximum height is set programmatically - set default maximum height here as well for reference.
-// 4. Animate maximum height change when soft keyboard opens and closes
+// 3. Animate maximum height change when soft keyboard opens and closes
 .container-master, .container-editor {
   .center-horizontally; // [1]
   left: 0;              // [1]
@@ -98,12 +99,12 @@ Master
 Menu
 */
 .container-menu {
-  width: 260px;
+  width: @width-menu;
   overflow-y: auto;
 }
 
 /*
-Vertically center
+Vertically center container-master and container-editor
 */
 @media (min-height: @maximum-landscape-height) {
   .container-master, .container-editor {
@@ -145,15 +146,6 @@ Vertically center
 // 1. Inherit width from parent. Elements inside swiper would otherwise be as wide as `.swiper-wrapper`.
 .swiper-slide .container-content {
   width: inherit; /* [1] */
-}
-
-// 1. Use same positioning as in swiper to make content scrollable and footer visible.
-// NOTE: Footer position in UI is set using javascript. See http://css-tricks.com/snippets/css/sticky-footer/
-.container-master .swiper-slide .container-content,
-.container-master .swiper-slide .container-content--after,
-.container-editor .swiper-slide .container-content,
-.container-editor .swiper-slide .container-content--after {
-  // position: absolute; /* [1] */
 }
 
 // 1. Use same positioning as in swiper to make .container-content scrollable and .container-content--after visible.
