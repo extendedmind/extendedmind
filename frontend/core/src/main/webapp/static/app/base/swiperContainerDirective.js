@@ -473,8 +473,12 @@
         }
       }
 
-      function swiperWrapperTranslate(swiperWrapperElement, amount, direction) {
-        swiperWrapperElement.style['webkitTransition'] = 'all ' + 0.2 + 's ' + 'ease';  // TODO: vendor prefixes
+      function swiperWrapperTranslate(swiperWrapperElement, amount, direction, speed) {
+        swiperWrapperElement.style['webkitTransition'] = 'all ' + (speed / 1000) + 's ' + 'ease-out';
+        swiperWrapperElement.style['mozTransition'] = 'all ' + (speed / 1000) + 's ' + 'ease-out';
+        swiperWrapperElement.style['oTransition'] = 'all ' + (speed / 1000) + 's ' + 'ease-out';
+        swiperWrapperElement.style['msTransition'] = 'all ' + (speed / 1000) + 's ' + 'ease-out';
+        swiperWrapperElement.style['transition'] = 'all ' + (speed / 1000) + 's ' + 'ease-out';
         var translateSwiperWrapperX = amount / 2;
 
         // 568px + amount (260px)
@@ -488,18 +492,18 @@
         SwiperService.setWrapperTranslate(scope.swiperPath, translateSwiperWrapperX, 0, 0);
       }
 
-      function swiperAboutToShrink(amount, direction){
+      function swiperAboutToShrink(amount, direction, speed){
         if ($rootScope.columns > 1) {
           var swiperWrapperElement = SwiperService.getSwiperContainer(scope.swiperPath).firstElementChild;
-          swiperWrapperTranslate(swiperWrapperElement, amount, 'left');
+          swiperWrapperTranslate(swiperWrapperElement, amount, 'left', speed);
         }
         toggleInactiveSwiperSlidesVisiblity('hidden');
       }
 
-      function swiperAboutToGrow(amount, direction){
+      function swiperAboutToGrow(amount, direction, speed){
         if ($rootScope.columns > 1) {
           var swiperWrapperElement = SwiperService.getSwiperContainer(scope.swiperPath).firstElementChild;
-          swiperWrapperTranslate(swiperWrapperElement, amount, 'right');
+          swiperWrapperTranslate(swiperWrapperElement, amount, 'right', speed);
         }
         toggleInactiveSwiperSlidesVisiblity('hidden');
       }

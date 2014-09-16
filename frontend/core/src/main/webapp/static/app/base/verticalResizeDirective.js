@@ -19,6 +19,7 @@
     restrict: 'A',
     link: function postLink(scope, element) {
       var maxHeightWithoutKeyboard;
+      // FIXME: max-height in CSS is 769px which this overrides when screen is initially smaller and is never set.
       function windowResized(){
         if ($rootScope.currentHeight > $rootScope.MAX_HEIGHT) {
           element[0].style.maxHeight = $rootScope.MAX_HEIGHT + 'px';

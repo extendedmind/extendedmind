@@ -12,9 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use strict';
+ 'use strict';
 
-function DrawerService() {
+ function DrawerService() {
 
   var snappers = {};
 
@@ -110,12 +110,12 @@ function DrawerService() {
 
   function createDrawerSkeleton() {
     return {
-            openCallbacks: {},
-            closeCallbacks: {},
-            openedCallbacks: {},
-            closedCallbacks: {},
-            handleReleasedCallbacks: {}
-          };
+      openCallbacks: {},
+      closeCallbacks: {},
+      openedCallbacks: {},
+      closedCallbacks: {},
+      handleReleasedCallbacks: {}
+    };
   }
 
   return {
@@ -196,7 +196,7 @@ function DrawerService() {
       }
     },
     close: function(drawerSide) {
-      if (snapperExists(drawerSide)){
+      if (snapperExists(drawerSide) && snappers[drawerSide].snapper.state().state === drawerSide){
         snappers[drawerSide].snapper.close();
       }
     },
@@ -233,29 +233,34 @@ function DrawerService() {
     // CALLBACK REGISTRATION
 
     registerOpenedCallback: function(drawerSide, callback, id) {
-      if (snapperExists(drawerSide)){
-        snappers[drawerSide].openedCallbacks[id] = callback;
+      if (!snappers[drawerSide]){
+        snappers[drawerSide] = createDrawerSkeleton();
       }
+      snappers[drawerSide].openedCallbacks[id] = callback;
     },
     registerClosedCallback: function(drawerSide, callback, id) {
-      if (snapperExists(drawerSide)){
-        snappers[drawerSide].closedCallbacks[id] = callback;
+      if (!snappers[drawerSide]){
+        snappers[drawerSide] = createDrawerSkeleton();
       }
+      snappers[drawerSide].closedCallbacks[id] = callback;
     },
     registerCloseCallback: function(drawerSide, callback, id) {
-      if (snapperExists(drawerSide)){
-        snappers[drawerSide].closeCallbacks[id] = callback;
+      if (!snappers[drawerSide]){
+        snappers[drawerSide] = createDrawerSkeleton();
       }
+      snappers[drawerSide].closeCallbacks[id] = callback;
     },
     registerOpenCallback: function(drawerSide, callback, id) {
-      if (snapperExists(drawerSide)){
-        snappers[drawerSide].openCallbacks[id] = callback;
+      if (!snappers[drawerSide]){
+        snappers[drawerSide] = createDrawerSkeleton();
       }
+      snappers[drawerSide].openCallbacks[id] = callback;
     },
     registerHandleReleasedCallback: function(drawerSide, callback, id) {
-      if (snapperExists(drawerSide)){
-        snappers[drawerSide].handleReleasedCallbacks[id] = callback;
+      if (!snappers[drawerSide]){
+        snappers[drawerSide] = createDrawerSkeleton();
       }
+      snappers[drawerSide].handleReleasedCallbacks[id] = callback;
     },
   };
 }

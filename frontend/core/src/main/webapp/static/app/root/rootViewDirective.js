@@ -27,6 +27,8 @@
       $rootScope.CONTAINER_MASTER_MAX_WIDTH = 568;
       $rootScope.MAX_HEIGHT = 769;
       $rootScope.KEYBOARD_ANIMATION_TIME = 300;
+      $rootScope.MENU_ANIMATION_SPEED = 200;
+      $rootScope.EDITOR_ANIMATION_SPEED = 350;
 
       // Back function globally available
       $scope.gotoPreviousPage = function gotoPreviousPage() {

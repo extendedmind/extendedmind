@@ -88,6 +88,7 @@ function SwiperService($q) {
     var rightEdgeTouchRatio = (overrideSwiperParams[swiperPath]) ? overrideSwiperParams[swiperPath].rightEdgeTouchRatio : undefined;
 
     var swiperParams = {
+      speed: 300, // set default speed for reference purposes only
       onlyExternal: onlyExternalSwipe ? true : false,
       noSwiping: true,
       queueStartCallbacks: true,

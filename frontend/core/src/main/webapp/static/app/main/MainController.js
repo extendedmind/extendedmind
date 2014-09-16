@@ -360,17 +360,39 @@ function MainController(
       editorAboutToOpenCallbacks[id](editorType, item);
   }
 
-  DrawerService.registerOpenedCallback(editorOpened, 'right', 'MainController');
+  DrawerService.registerOpenedCallback('right', editorOpened, 'MainController');
   function editorOpened() {
     for (var id in editorOpenedCallbacks) {
       editorOpenedCallbacks[id]();
     }
   }
 
-  DrawerService.registerClosedCallback(editorClosed, 'right', 'MainController');
+  DrawerService.registerClosedCallback('right', editorClosed, 'MainController');
   function editorClosed() {
+    if (openMenuAfterEditorClosed) {
+      // Snap.js clears transition style from drawer aisle element and executes closed (animated) callback.
+      // Wait until DOM manipulation is ready before opening editor
+      // to have correct transition style in drawer aisle element.
+      setTimeout(function() {
+        DrawerService.open('left');
+        openMenuAfterEditorClosed = false;
+      }, 0);
+    }
     for (var id in editorClosedCallbacks)
       editorClosedCallbacks[id]();
+  }
+
+  DrawerService.registerClosedCallback('left', menuClosed, 'MainController');
+  function menuClosed() {
+    if (openEditorAfterMenuClosed) {
+      // Snap.js clears transition style from drawer aisle element and executes closed (animated) callback.
+      // Wait until DOM manipulation is ready before opening editor
+      // to have correct transition style in drawer aisle element.
+      setTimeout(function() {
+        DrawerService.open('right');
+        openEditorAfterMenuClosed = false;
+      }, 0);
+    }
   }
 
   $scope.isEditorVisible = function isEditorVisible() {
@@ -383,10 +405,27 @@ function MainController(
 
   // NAVIGATION
 
-  // TODO analytics visit omnibar
+  var openEditorAfterMenuClosed = false;
+  var openMenuAfterEditorClosed = false;
+
+  /*
+  * Open editor.
+  *
+  * Set openEditorAfterMenuClosed and openMenuAFterEditorClosed flags to:
+  *   i.  open editor in menu's close callback
+  *   ii. open menu in editor's close callback
+  *
+  * TODO: analytics visit omnibar
+  */
   $scope.openEditor = function openEditor() {
     executeEditorAboutToOpenCallbacks('omnibar');
-    DrawerService.open('right');
+    if (DrawerService.isOpen('left')) {
+      DrawerService.close('left');
+      openEditorAfterMenuClosed = true;
+      openMenuAfterEditorClosed = true;
+    } else {
+      DrawerService.open('right');
+    }
   };
 
   $scope.closeEditor = function closeEditor() {

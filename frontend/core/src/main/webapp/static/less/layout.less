@@ -56,8 +56,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   height: inherit;  // [1]
 }
 
-// 1. .container-drawer-aisle must have a background in order to hide
-//     .container-menu and .container-editor.
+// 1. .container-drawer-aisle must have a background in order to hide .container-menu and .container-editor.
 .container-drawer-aisle {
   position: absolute;       // [1]
   background-color: white;  // [1]
@@ -67,6 +66,9 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 **************************************************************************
 # LEVEL 3: Primary Containers (master, editor, menu)
 */
+
+@speed-animation-menu: .2s;
+@speed-animation-soft-keyboard: .3s;
 
 // 1. Layout for Snap.js. See https://github.com/jakiestfu/Snap.js/#layout
 // 2. Inherit height to expand vertically and for (grand)children as well.
@@ -78,38 +80,25 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 // 1. Maximum height is set programmatically - set default maximum height here as well for reference.
 // 2. Animate maximum height change when soft keyboard opens and closes
 .container-master, .container-editor {
-  max-height: @height-landscape-max;        // [1]
-  -webkit-transition: max-height .3s ease;  // [2]
-  -moz-transition: max-height .3s ease;     // [2]
-  -o-transition: max-height .3s ease;       // [2]
-  -ms-transition: max-height .3s ease;      // [2]
-  transition: max-height .3s ease;          // [2]
-}
-
-/*
-Editor
-*/
-// 1. Center horizontally.
-//    Set left and right properties as well because .container-master and .container-editor are absolutely positioned.
-.container-editor {
-  .center-horizontally; // [1]
-  left: 0;              // [1]
-  right: 0;             // [1]
-  // FIXME Swiper slides inside must have full width!
-  max-width: @width-column-max;
-  // FIXME
+  max-height: @height-landscape-max;                                      // [1]
+  -webkit-transition: max-height @speed-animation-soft-keyboard ease-out; // [2]
+  -moz-transition: max-height @speed-animation-soft-keyboard ease-out;    // [2]
+  -o-transition: max-height @speed-animation-soft-keyboard ease-out;      // [2]
+  -ms-transition: max-height @speed-animation-soft-keyboard ease-out;     // [2]
+  transition: max-height @speed-animation-soft-keyboard ease-out;         // [2]
 }
 
 /*
 Master
 */
-// 1. Animate max-width change when menu opens
+
+// 1. Animate maximum width change when menu opens and closes.
 .container-master {
-  -webkit-transition: max-width .2s ease;  // [1]
-  -moz-transition: max-width .2s ease;     // [1]
-  -o-transition: max-width .2s ease;       // [1]
-  -ms-transition: max-width .2s ease;      // [1]
-  transition: max-width .2s ease;          // [1]
+  -webkit-transition: max-width @speed-animation-menu ease-out;  // [1]
+  -moz-transition: max-width @speed-animation-menu ease-out;     // [1]
+  -o-transition: max-width @speed-animation-menu ease-out;       // [1]
+  -ms-transition: max-width @speed-animation-menu ease-out;      // [1]
+  transition: max-width @speed-animation-menu ease-out;          // [1]
 }
 
 /*
@@ -121,7 +110,7 @@ Menu
 }
 
 /*
-Vertically center container-master and container-editor
+Vertically center .container-master and .container-editor in large screens
 */
 @media (min-height: @maximum-landscape-height) {
   .container-master, .container-editor {
@@ -140,7 +129,9 @@ Vertically center container-master and container-editor
 `.container-fluid` sets the vertical positioning of the content area.
 */
 .container-fluid {
+  // FIXME: is this needed?
   .center-horizontally;
+  // FIXME: is this needed?
 }
 
 // Fluid container height.
@@ -167,6 +158,7 @@ Vertically center container-master and container-editor
 
 // 1. Use same positioning as in swiper to make .container-content scrollable and .container-content--after visible.
 //    Set left and right properties as well because .container-master and .container-editor are absolutely positioned.
+//    See: http://www.smashingmagazine.com/2013/08/09/absolute-horizontal-vertical-centering-css/
 // 2. .container-content--after inside swiper is absolutely positioned
 //    so it needs to be positioned to the bottom of the content-container.
 //    NOTE: Override programmatically if footer height is different.
@@ -175,15 +167,11 @@ Vertically center container-master and container-editor
 .container-master, .container-editor {
   .swiper-slide {
     .container-content, .container-content--after {
-      position: absolute;       // [1]
-    }
-    .container-content {
-      left: 0;  // [1]
-      right: 0; // [1]
+      position: absolute; // [1]
+      left: 0;            // [1]
+      right: 0;           // [1]
     }
     .container-content--after {
-      max-width: @width-column-max;
-      .center-horizontally-absolute;
       bottom: -@height-footer;  // [2]
       z-index: 1;               // [3]
       background-color: white;  // [3]
@@ -200,7 +188,7 @@ Vertically center container-master and container-editor
   padding-bottom: @height-footer; // [3]
 }
 
-// 1. Default height for footer. NOTE: Override programmatically if footer height is different
+// 1. Default height for footer. NOTE: Override programmatically if footer height is different.
 .container-content--after {
   height: @height-footer; // [1]
 }
@@ -221,19 +209,24 @@ Vertically center container-master and container-editor
 
 // 1. Align all secondary containers horizontally
 // 2. Set maximum width.
-.container-content,
-.container-toolbar,
-.container-titlebar {
+.container-content, .container-content--after {
   .center-horizontally;         // [1]
   max-width: @width-column-max; // [2]
 }
 
+// < save
+//    title
+//  inbox task note list
 // 1. Fluid container height
 .container-titlebar, .container-toolbar {
   display: table-row; /* [1] */
-  // < save
-  //    title
-  //  inbox task note list
+}
+
+// 1. Set content inside wrapper and center horizontally with max-width,
+//    because .container-toolbar has display: table-row which can not(?) be centered horizontally in CSS.
+.container-toolbar--inner, .container-titlebar--inner {
+  max-width: @width-column-max; // [1]
+  .center-horizontally;         // [1]
 }
 
 /*
@@ -244,16 +237,9 @@ Vertically center container-master and container-editor
   overflow-y: auto;
 }
 
+// menu     title    omnibar
 .container-toolbar {
-  // menu     title    omnibar
   height: @height-container-toolbar;
-}
-
-// 1. Set content inside wrapper and center horizontally with max-width,
-//    because .container-toolbar has display: table-row which can not be centered horizontally in CSS.
-.container-toolbar--inner {
-  max-width: @width-column-max; // [1]
-  .center-horizontally;         // [1]
 }
 
 /*

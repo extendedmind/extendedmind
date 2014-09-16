@@ -48,7 +48,8 @@
           element: $element[0],
           touchToDrag: $rootScope.columns === 1 ? true : false,
           disable: 'right', // use left only
-          transitionSpeed: 0.2,
+          transitionSpeed: $rootScope.MENU_ANIMATION_SPEED / 1000,
+          easing: 'ease-out',
           minDragDistance: 0,
           addBodyClasses: false
         };
@@ -60,17 +61,19 @@
           element: $element[0],
           touchToDrag: false,
           disable: 'left', // use right only
-          transitionSpeed: 0.3,
+          transitionSpeed: $rootScope.EDITOR_ANIMATION_SPEED / 1000,
+          easing: 'ease-out',
           minDragDistance: 0,
           addBodyClasses: false,
-          minPosition: -calculateEditorMinPosition()
+          minPosition: -$rootScope.currentWidth
         };
         DrawerService.setupDrawer('right', settings);
       }
 
       function calculateEditorMinPosition() {
         var minPosition = $element[0].offsetWidth > $rootScope.CONTAINER_MASTER_MAX_WIDTH ?
-               $rootScope.currentWidth - (($rootScope.currentWidth - $rootScope.CONTAINER_MASTER_MAX_WIDTH) / 2) : $element[0].offsetWidth;
+                          $rootScope.currentWidth - (($rootScope.currentWidth - $rootScope.CONTAINER_MASTER_MAX_WIDTH) / 2) :
+                          $element[0].offsetWidth;
         return Math.floor(minPosition);
       }
 
@@ -101,7 +104,7 @@
           // There are more than one column, this means the aisle area is about to shrink the
           // same time as the menu opens
           var amount = DrawerService.getDrawerElement('left').offsetWidth;
-          areaAboutToShrinkCallbacks[activeFeature](amount, 'left');
+          areaAboutToShrinkCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
           $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth - amount + 'px';
         }
       }
@@ -140,7 +143,7 @@
             // There are more than one column, this means the aisle area is about to grow the
             // same time as the menu closes
             var amount = DrawerService.getDrawerElement('left').offsetWidth;
-            areaAboutToGrowCallbacks[activeFeature](amount, 'left');
+            areaAboutToGrowCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
             $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
           }
           // We need to unbind the touching prevention as early as possible.
