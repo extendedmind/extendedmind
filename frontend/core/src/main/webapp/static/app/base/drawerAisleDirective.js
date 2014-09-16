@@ -90,7 +90,7 @@
       DrawerService.registerOpenCallback('left', menuDrawerOpen, 'drawerAisleDirective');
       DrawerService.registerCloseCallback('left', menuDrawerClose, 'drawerAisleDirective');
       setupEditorDrawer();
-      $element[0].style.maxWidth = $rootScope.currentWidth + 'px';
+      $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
 
       // MENU DRAWER CALLBACKS
 
@@ -102,7 +102,7 @@
           // same time as the menu opens
           var amount = DrawerService.getDrawerElement('left').offsetWidth;
           areaAboutToShrinkCallbacks[activeFeature](amount, 'left');
-          $element[0].style.maxWidth = $rootScope.currentWidth - amount + 'px';
+          $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth - amount + 'px';
         }
       }
 
@@ -141,7 +141,7 @@
             // same time as the menu closes
             var amount = DrawerService.getDrawerElement('left').offsetWidth;
             areaAboutToGrowCallbacks[activeFeature](amount, 'left');
-            $element[0].style.maxWidth = $rootScope.currentWidth + 'px';
+            $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
           }
           // We need to unbind the touching prevention as early as possible.
           $element.unbind('touchstart', partiallyVisibleDrawerAisleClicked, true);

@@ -20,6 +20,19 @@ function DrawerService() {
 
   // CALLBACKS
 
+  function snapperClose(drawerSide){
+    executeSnapperCloseCallbacks(drawerSide);
+  }
+
+  function snapperOpen(drawerSide){
+    if (drawerSide === 'left'){
+      hideRightAndShowLeft();
+    }else{
+      hideLeftAndShowRight();
+    }
+    executeSnapperOpenCallbacks(drawerSide);
+  }
+
   function snapperStartDrag(snapperSide) {
     if (snapperSide === 'left') {
       hideRightAndShowLeft();
@@ -136,6 +149,14 @@ function DrawerService() {
           executeSnapperDraggerReleasedCallbacks(drawerSide);
         });
 
+        snappers[drawerSide].snapper.on('close', function(){
+          snapperClose(drawerSide);
+        });
+
+        snappers[drawerSide].snapper.on('open', function(){
+          snapperOpen(drawerSide);
+        });
+
       } else {
         // Snapper created already, update settings
         snappers[drawerSide].snapper.settings(settings);
@@ -168,19 +189,15 @@ function DrawerService() {
     open: function(drawerSide) {
       if (snapperExists(drawerSide)){
         if (drawerSide === 'left' && snappers[drawerSide].snapper.state().state !== 'left'){
-          hideRightAndShowLeft();
           snappers[drawerSide].snapper.open('left');
         } else if (drawerSide === 'right' && snappers[drawerSide].snapper.state().state !== 'right'){
-          hideLeftAndShowRight();
           snappers[drawerSide].snapper.open('right');
         }
-        executeSnapperOpenCallbacks(drawerSide);
       }
     },
     close: function(drawerSide) {
       if (snapperExists(drawerSide)){
         snappers[drawerSide].snapper.close();
-        executeSnapperCloseCallbacks(drawerSide);
       }
     },
     toggle: function(drawerSide) {

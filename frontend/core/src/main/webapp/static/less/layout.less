@@ -51,9 +51,16 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 */
 
 // 1. Inherit width and height for absolutely positioned (grand)children.
-.container-main, .container-drawer-aisle {
+.container-main, .container-drawer-aisle, .container-drawer-aisle--inner {
   width: inherit;   // [1]
   height: inherit;  // [1]
+}
+
+// 1. .container-drawer-aisle must have a background in order to hide
+//     .container-menu and .container-editor.
+.container-drawer-aisle {
+  position: absolute; // [1]
+  background-color: white; // [1]
 }
 
 /*
@@ -73,9 +80,6 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 // 2. Maximum height is set programmatically - set default maximum height here as well for reference.
 // 3. Animate maximum height change when soft keyboard opens and closes
 .container-master, .container-editor {
-  .center-horizontally; // [1]
-  left: 0;              // [1]
-  right: 0;             // [1]
   max-height: @height-landscape-max;        // [2]
   -webkit-transition: max-height .3s ease;  // [3]
   -moz-transition: max-height .3s ease;     // [3]
@@ -88,6 +92,9 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 Editor
 */
 .container-editor {
+  .center-horizontally; // [1]
+  left: 0;              // [1]
+  right: 0;             // [1]
   // FIXME Swiper slides inside must have full width!
   max-width: @width-column-max;
   // FIXME
@@ -96,9 +103,13 @@ Editor
 /*
 Master
 */
-// 1. .container-master must have background not to see-through .container-menu and .container-editor.
+// 1. animate max-width change when menu opens
 .container-master {
-  background-color: white;  // [1]
+  -webkit-transition: max-width .2s ease;  // [1]
+  -moz-transition: max-width .2s ease;     // [1]
+  -o-transition: max-width .2s ease;       // [1]
+  -ms-transition: max-width .2s ease;      // [1]
+  transition: max-width .2s ease;          // [1]
 }
 
 /*
