@@ -24,6 +24,7 @@ angular.module('em.appTest')
   .controller('MockController', ['MockBackendService', 'SwiperService',
     function(MockBackendService, SwiperService){
       MockBackendService.mockBackend();
+      SwiperService.setTouchSimulation(true);
   }])
   .run(['$httpBackend',
     function($httpBackend) {

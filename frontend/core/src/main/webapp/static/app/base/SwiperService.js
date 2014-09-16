@@ -25,6 +25,7 @@ function SwiperService($q) {
   var negativeResistancePullToRefreshCallbacks = {};
   var positiveResistancePullToRefreshCallbacks = {};
   var swiperCreatedCallbacks = {};
+  var simulateTouch = false;
 
   // Optional override parameters per swiper
   var overrideSwiperParams = {};
@@ -91,7 +92,7 @@ function SwiperService($q) {
       noSwiping: true,
       queueStartCallbacks: true,
       queueEndCallbacks: true,
-      simulateTouch: true,
+      simulateTouch: simulateTouch,
       leftEdgeTouchRatio: leftEdgeTouchRatio,
       rightEdgeTouchRatio: rightEdgeTouchRatio,
       onSwiperCreated: onSwiperCreatedCallback,
@@ -401,6 +402,9 @@ function SwiperService($q) {
     },
     getSwiperContainer: function(swiperPath) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) return swipers[swiperPath].container;
+    },
+    setTouchSimulation: function(simulate) {
+      simulateTouch = simulate;
     }
   };
 }
