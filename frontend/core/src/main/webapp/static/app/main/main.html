@@ -26,7 +26,7 @@
   <div drawer-aisle class="container-drawer-aisle">
     <div class="container-master" vertical-resize>
       <div class="container-fluid" ng-class="[getFooterVisibilityClass(), isAisleWebkitScrolling() ? 'webkit-scrolling' : 'no-webkit-scrolling']" editable-field-backdrop>
-        <header class="container-toolbar" ng-include="'static/app/main/staticPageHeader.html'"></header>
+        <div ng-include="'static/app/main/toolbar.html'" include-replace></div>
         <div ng-if="isFeatureActive('account')" ng-include="'static/app/account/account.html'" include-replace></div>
         <div ng-if="isFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>
         <div ng-if="isFeatureActive('tasks')" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>

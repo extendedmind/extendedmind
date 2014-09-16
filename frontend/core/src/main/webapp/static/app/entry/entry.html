@@ -1,12 +1,12 @@
-<!-- TODO: add style definitions to LESS and remove them from here -->
-
 <section id="entry" class="container-master" ng-controller="EntryController" vertical-resize>
   <div class="container-fluid">
 
     <header class="container-toolbar">
-      <div class="group-mixed">
-        <div class="group-mixed--left">
-          <span class="text-logo"></span>
+      <div class="container-toolbar--inner">
+        <div class="group-mixed">
+          <div class="group-mixed--left">
+            <span class="text-logo"></span>
+          </div>
         </div>
       </div>
     </header>
@@ -14,8 +14,10 @@
     <div class="swiper-container container-content--outer" swiper-container="entry" swiper-type="main" expected-slides="(!entryState && 2) || (entryState === 'login' && 3)">
       <div class="swiper-wrapper">
         <div class="swiper-slide swiper-no-swiping" swiper-slide="entry/home" slide-index=0>
+          <!-- TODO: add style definitions to LESS and remove them from here -->
           <div class="container-content" style="display: table;">
             <div class="group-instruction row" style="display: table-cell; vertical-align: middle;">
+              <!-- TODO: add style definitions to LESS and remove them from here -->
               <p class="group-instruction--main">
                 <span class="text-active">extend</span> your biological mind
               </p>

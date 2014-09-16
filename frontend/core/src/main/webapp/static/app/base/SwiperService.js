@@ -91,7 +91,7 @@ function SwiperService($q) {
       noSwiping: true,
       queueStartCallbacks: true,
       queueEndCallbacks: true,
-      simulateTouch: false,
+      simulateTouch: true,
       leftEdgeTouchRatio: leftEdgeTouchRatio,
       rightEdgeTouchRatio: rightEdgeTouchRatio,
       onSwiperCreated: onSwiperCreatedCallback,

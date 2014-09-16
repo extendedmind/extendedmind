@@ -82,7 +82,13 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   -o-transition: max-height .3s ease;       // [3]
   -ms-transition: max-height .3s ease;      // [3]
   transition: max-height .3s ease;          // [3]
-  // FIXME
+}
+
+/*
+Editor
+*/
+.container-editor {
+  // FIXME Swiper slides inside must have full width!
   max-width: @width-column-max;
   // FIXME
 }
@@ -149,6 +155,7 @@ Vertically center container-master and container-editor
 }
 
 // 1. Use same positioning as in swiper to make .container-content scrollable and .container-content--after visible.
+//    Set left and right properties as well because .container-master and .container-editor are absolutely positioned.
 // 2. .container-content--after inside swiper is absolutely positioned
 //    so it needs to be positioned to the bottom of the content-container.
 //    NOTE: Override programmatically if footer height is different.
@@ -158,8 +165,14 @@ Vertically center container-master and container-editor
     .container-content, .container-content--after {
       position: absolute;       // [1]
     }
+    .container-content {
+      left: 0;  // [1]
+      right: 0; // [1]
+    }
     .container-content--after {
+      max-width: @width-column-max;
       bottom: -@height-footer;  // [2]
+      .center-horizontally-absolute;
     }
   }
 }
@@ -192,18 +205,17 @@ Vertically center container-master and container-editor
 # LEVEL 5: Secondary Containers (content, toolbar, titlebar)
 */
 
-
 // 1. Align all secondary containers horizontally
+// 2. Set maximum width.
 .container-content,
-.container-banner,
 .container-toolbar,
 .container-titlebar {
-  .center-horizontally;
-  max-width: @width-max;  // [1]
+  .center-horizontally;         // [1]
+  max-width: @width-column-max; // [2]
 }
 
 // 1. Fluid container height
-.container-titlebar, .container-toolbar, .container-banner {
+.container-titlebar, .container-toolbar {
   display: table-row; /* [1] */
   // < save
   //    title
@@ -221,6 +233,13 @@ Vertically center container-master and container-editor
 .container-toolbar {
   // menu     title    omnibar
   height: @height-container-toolbar;
+}
+
+// 1. Set content inside wrapper and center horizontally with max-width,
+//    because .container-toolbar has display: table-row which can not be centered horizontally in CSS.
+.container-toolbar--inner {
+  max-width: @width-column-max; // [1]
+  .center-horizontally;         // [1]
 }
 
 /*

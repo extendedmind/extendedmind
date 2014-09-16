@@ -94,6 +94,31 @@ Default colors for input elements
 @color-default-pressed: #0171ea;
 @color-default-disabled: lighten(#b0b0b6, 20%); // TODO: don't use lighten
 
+/*
+**************************************************************************
+# Mixins
+
+/*
+`.center-horizontally` centers the container by making the browser to calculate left and right margins automatically.
+
+```markup
+<div class="center-horizontally" style="background: gray; max-width: 100px;">&nbsp;</div>
+```
+*/
+.center-horizontally() {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// 1. For position: absolute.
+//    See: http://www.smashingmagazine.com/2013/08/09/absolute-horizontal-vertical-centering-css/
+.center-horizontally-absolute() {
+  .center-horizontally;
+  left: 0;  // [1]
+  right: 0; // [1]
+}
+
+
 //////// NEW END ////////////////////////
 
 
@@ -213,19 +238,3 @@ TODO: This is just a short example, needs to be completed when colors are confir
 <div style="margin-bottom: 5px; background: #363636">menu: #363636</div>
 ```
 */
-
-/*
-**************************************************************************
-# Mixins
-
-/*
-`.center-horizontally` centers the container by making the browser to calculate left and right margins automatically.
-
-```markup
-<div class="center-horizontally" style="background: gray; max-width: 100px;">&nbsp;</div>
-```
-*/
-.center-horizontally() {
-  margin-left: auto;
-  margin-right: auto;
-}
