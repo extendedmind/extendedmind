@@ -59,8 +59,8 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 // 1. .container-drawer-aisle must have a background in order to hide
 //     .container-menu and .container-editor.
 .container-drawer-aisle {
-  position: absolute; // [1]
-  background-color: white; // [1]
+  position: absolute;       // [1]
+  background-color: white;  // [1]
 }
 
 /*
@@ -75,22 +75,22 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   height: inherit;    // [2]
 }
 
-// 1. Center horizontally.
-//    Set left and right properties as well because .container-master and .container-editor are absolutely positioned.
-// 2. Maximum height is set programmatically - set default maximum height here as well for reference.
-// 3. Animate maximum height change when soft keyboard opens and closes
+// 1. Maximum height is set programmatically - set default maximum height here as well for reference.
+// 2. Animate maximum height change when soft keyboard opens and closes
 .container-master, .container-editor {
-  max-height: @height-landscape-max;        // [2]
-  -webkit-transition: max-height .3s ease;  // [3]
-  -moz-transition: max-height .3s ease;     // [3]
-  -o-transition: max-height .3s ease;       // [3]
-  -ms-transition: max-height .3s ease;      // [3]
-  transition: max-height .3s ease;          // [3]
+  max-height: @height-landscape-max;        // [1]
+  -webkit-transition: max-height .3s ease;  // [2]
+  -moz-transition: max-height .3s ease;     // [2]
+  -o-transition: max-height .3s ease;       // [2]
+  -ms-transition: max-height .3s ease;      // [2]
+  transition: max-height .3s ease;          // [2]
 }
 
 /*
 Editor
 */
+// 1. Center horizontally.
+//    Set left and right properties as well because .container-master and .container-editor are absolutely positioned.
 .container-editor {
   .center-horizontally; // [1]
   left: 0;              // [1]
@@ -103,7 +103,7 @@ Editor
 /*
 Master
 */
-// 1. animate max-width change when menu opens
+// 1. Animate max-width change when menu opens
 .container-master {
   -webkit-transition: max-width .2s ease;  // [1]
   -moz-transition: max-width .2s ease;     // [1]
@@ -171,6 +171,7 @@ Vertically center container-master and container-editor
 //    so it needs to be positioned to the bottom of the content-container.
 //    NOTE: Override programmatically if footer height is different.
 //          See http://css-tricks.com/snippets/css/sticky-footer/
+// 3. .container-content--after must have a background and z-index in order to hide resized .swiper-slide:s
 .container-master, .container-editor {
   .swiper-slide {
     .container-content, .container-content--after {
@@ -182,8 +183,10 @@ Vertically center container-master and container-editor
     }
     .container-content--after {
       max-width: @width-column-max;
-      bottom: -@height-footer;  // [2]
       .center-horizontally-absolute;
+      bottom: -@height-footer;  // [2]
+      z-index: 1;               // [3]
+      background-color: white;  // [3]
     }
   }
 }
