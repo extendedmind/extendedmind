@@ -473,37 +473,29 @@
         }
       }
 
-      function swiperWrapperTranslate(swiperWrapperElement, amount, direction, speed) {
-        swiperWrapperElement.style['webkitTransition'] = 'all ' + (speed / 1000) + 's ' + 'ease-out';
-        swiperWrapperElement.style['mozTransition'] = 'all ' + (speed / 1000) + 's ' + 'ease-out';
-        swiperWrapperElement.style['oTransition'] = 'all ' + (speed / 1000) + 's ' + 'ease-out';
-        swiperWrapperElement.style['msTransition'] = 'all ' + (speed / 1000) + 's ' + 'ease-out';
-        swiperWrapperElement.style['transition'] = 'all ' + (speed / 1000) + 's ' + 'ease-out';
+      function swiperWrapperTranslate(amount, direction, speed) {
         var translateSwiperWrapperX = amount / 2;
 
-        // 568px + amount (260px)
-        if ($rootScope.currentWidth <= 828) {
+        if ($rootScope.currentWidth <= ($rootScope.CONTAINER_MASTER_MAX_WIDTH + amount)) {
           var contentNewWidth = $rootScope.currentWidth - amount;
-          var contentLeftSideWillShrink = (568 - contentNewWidth) / 2;
+          var contentLeftSideWillShrink = ($rootScope.CONTAINER_MASTER_MAX_WIDTH - contentNewWidth) / 2;
           translateSwiperWrapperX -= contentLeftSideWillShrink;
         }
         // http://stackoverflow.com/a/5574196
         if (direction === 'left') translateSwiperWrapperX = -Math.abs(translateSwiperWrapperX);
-        SwiperService.setWrapperTranslate(scope.swiperPath, translateSwiperWrapperX, 0, 0);
+        SwiperService.setWrapperTransitionAndTranslate(scope.swiperPath, speed, translateSwiperWrapperX, 0, 0);
       }
 
       function swiperAboutToShrink(amount, direction, speed){
         if ($rootScope.columns > 1) {
-          var swiperWrapperElement = SwiperService.getSwiperContainer(scope.swiperPath).firstElementChild;
-          swiperWrapperTranslate(swiperWrapperElement, amount, 'left', speed);
+          swiperWrapperTranslate(amount, 'left', speed);
         }
         toggleInactiveSwiperSlidesVisiblity('hidden');
       }
 
       function swiperAboutToGrow(amount, direction, speed){
         if ($rootScope.columns > 1) {
-          var swiperWrapperElement = SwiperService.getSwiperContainer(scope.swiperPath).firstElementChild;
-          swiperWrapperTranslate(swiperWrapperElement, amount, 'right', speed);
+          swiperWrapperTranslate(amount, 'right', speed);
         }
         toggleInactiveSwiperSlidesVisiblity('hidden');
       }

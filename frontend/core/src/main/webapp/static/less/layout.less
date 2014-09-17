@@ -444,6 +444,20 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   }
 }
 
+/*
+**************************************************************************
+# Swiper
+
+TODO: Do we want an example of a swiper in the styleguide?
+*/
+
+// 1. Override incorrect swiper.js height calculation.
+//    TODO: Update swiper and use cssWidthAndHeight: 'height' to possible fix this.
+//          Programmatic width calculation is still needed.
+.swiper-wrapper, .swiper-slide {
+  height: inherit !important; // [1]
+}
+
 
 //////// NEW END ////////////////////////
 
@@ -700,22 +714,9 @@ div#root {
   }
 }
 
-
-/*
-**************************************************************************
-# Swiper
-
-TODO: Do we want an example of a swiper in the styleguide?
-*/
-
-.swiper-container, .swiper-wrapper, .swiper-slide {
-  height: inherit !important;
-  width: 100%;
-}
-
 .swiper-container.main-slides {
-  margin-top: -@page-header-height;
-  margin-bottom: -@footer-height;
+  // margin-top: -@page-header-height;
+  // margin-bottom: -@footer-height;
 }
 
 .single-page-container {

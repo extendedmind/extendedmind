@@ -203,8 +203,12 @@ function SwiperService($q) {
         });
       }
     },
-    setWrapperTranslate: function(swiperPath, x, y, z) {
+    /*
+    * Move swiper wrapper with speed.
+    */
+    setWrapperTransitionAndTranslate: function(swiperPath, speed, x, y, z) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
+        swipers[swiperPath].swiper.setWrapperTransition(speed);
         x += swipers[swiperPath].swiper.getWrapperTranslate('x');
         y += swipers[swiperPath].swiper.getWrapperTranslate('y');
         z += swipers[swiperPath].swiper.getWrapperTranslate('z');
@@ -400,9 +404,6 @@ function SwiperService($q) {
     },
     getSwiperSlides: function(swiperPath) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) return swipers[swiperPath].swiper.slides;
-    },
-    getSwiperContainer: function(swiperPath) {
-      if (swipers[swiperPath] && swipers[swiperPath].swiper) return swipers[swiperPath].container;
     },
     setTouchSimulation: function(simulate) {
       simulateTouch = simulate;
