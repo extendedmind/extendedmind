@@ -17,7 +17,7 @@
  function verticalResizeDirective($rootScope) {
   return {
     restrict: 'A',
-    link: function postLink(scope, element) {
+    link: function postLink(scope, element, attrs) {
       var maxHeightWithoutKeyboard;
       function windowResized(){
         if ($rootScope.currentHeight > $rootScope.MAX_HEIGHT) {
@@ -29,8 +29,9 @@
         }
       }
       if (angular.isFunction(scope.registerWindowResizedCallback)) {
-        scope.registerWindowResizedCallback(windowResized, 'verticalResizeDirective');
+        scope.registerWindowResizedCallback(windowResized, 'verticalResizeDirective' + '-' + attrs.verticalResize);
       }
+      windowResized();
 
       function doVerticalResize(newHeight, oldHeight) {
         if (newHeight || oldHeight) {

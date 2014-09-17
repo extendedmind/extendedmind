@@ -24,7 +24,7 @@
   <div ng-include="'static/app/main/menu.html'" include-replace></div>
   <div ng-include="'static/app/main/editor.html'" include-replace></div>
   <div drawer-aisle class="container-drawer-aisle">
-    <div class="container-master" vertical-resize>
+    <div class="container-master" vertical-resize="master">
       <div class="container-fluid" ng-class="[getFooterVisibilityClass(), isAisleWebkitScrolling() ? 'webkit-scrolling' : 'no-webkit-scrolling']" editable-field-backdrop>
         <div ng-include="'static/app/main/toolbar.html'" include-replace></div>
         <div ng-if="isFeatureActive('account')" ng-include="'static/app/account/account.html'" include-replace></div>

@@ -78,14 +78,17 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 }
 
 // 1. Maximum height is set programmatically - set default maximum height here as well for reference.
-// 2. Animate maximum height change when soft keyboard opens and closes
 .container-master, .container-editor {
-  max-height: @height-landscape-max;                                      // [1]
-  -webkit-transition: max-height @speed-animation-soft-keyboard ease-out; // [2]
-  -moz-transition: max-height @speed-animation-soft-keyboard ease-out;    // [2]
-  -o-transition: max-height @speed-animation-soft-keyboard ease-out;      // [2]
-  -ms-transition: max-height @speed-animation-soft-keyboard ease-out;     // [2]
-  transition: max-height @speed-animation-soft-keyboard ease-out;         // [2]
+  max-height: @height-landscape-max;  // [1]
+}
+
+// 1. Animate maximum height change when soft keyboard opens and closes
+.container-editor {
+  -webkit-transition: max-height @speed-animation-soft-keyboard ease-out; // [1]
+  -moz-transition: max-height @speed-animation-soft-keyboard ease-out;    // [1]
+  -o-transition: max-height @speed-animation-soft-keyboard ease-out;      // [1]
+  -ms-transition: max-height @speed-animation-soft-keyboard ease-out;     // [1]
+  transition: max-height @speed-animation-soft-keyboard ease-out;         // [1]
 }
 
 /*
@@ -93,12 +96,13 @@ Master
 */
 
 // 1. Animate maximum width change when menu opens and closes.
+// 2. Animate maximum height change when soft keyboard opens and closes.
 .container-master {
-  -webkit-transition: max-width @speed-animation-menu ease-out;  // [1]
-  -moz-transition: max-width @speed-animation-menu ease-out;     // [1]
-  -o-transition: max-width @speed-animation-menu ease-out;       // [1]
-  -ms-transition: max-width @speed-animation-menu ease-out;      // [1]
-  transition: max-width @speed-animation-menu ease-out;          // [1]
+  -webkit-transition: max-width @speed-animation-menu ease-out, max-height @speed-animation-soft-keyboard ease-out; // [1,2]
+  -moz-transition: max-width @speed-animation-menu ease-out, max-height @speed-animation-soft-keyboard ease-out;    // [1,2]
+  -o-transition: max-width @speed-animation-menu ease-out, max-height @speed-animation-soft-keyboard ease-out;      // [1,2]
+  -ms-transition: max-width @speed-animation-menu ease-out, max-height @speed-animation-soft-keyboard ease-out;     // [1,2]
+  transition: max-width @speed-animation-menu ease-out, max-height @speed-animation-soft-keyboard ease-out;         // [1,2]
 }
 
 /*
