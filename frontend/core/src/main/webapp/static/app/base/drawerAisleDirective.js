@@ -51,7 +51,8 @@
           transitionSpeed: $rootScope.MENU_ANIMATION_SPEED / 1000,
           easing: 'ease-out',
           minDragDistance: 0,
-          addBodyClasses: false
+          addBodyClasses: false,
+          maxPosition: $rootScope.MENU_WIDTH
         };
         DrawerService.setupDrawer('left', settings);
       }
