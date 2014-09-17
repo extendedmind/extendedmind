@@ -89,11 +89,11 @@
               <span ng-if="loginFailed" class="text-error">invalid username or password</span>
               <span ng-if="loginOffline" class="text-error">can't connect to server. are you online?</span>
             </div>
-            <footer class="group-navigation row " >
-              <a href ng-click="swipeToHome()" class="link-navigation-back">back</a>
-              <a href ng-click="swipeToForgot()" class="link-navigation-forward">forgot?</a>
-            </footer>
           </div>
+          <footer class="container-content--after group-navigation row" >
+            <a href ng-click="swipeToHome()" class="link-navigation-back">back</a>
+            <a href ng-click="swipeToForgot()" class="link-navigation-forward">forgot?</a>
+          </footer>
         </div>
         <div ng-if="entryState === 'login'" class="swiper-slide" swiper-slide="entry/details" slide-index=2>
           <div class="container-content">
@@ -115,10 +115,10 @@
               <span ng-if="sendFailed" class="text-error">you are not an extended mind user</span>
               <span ng-if="sendOffline" class="text-error">can't connect to server. are you online?</span>
             </div>
-            <footer class="group-navigation row">
-              <a href ng-click="swipeToMain()"><span class="link-navigation-back"/>back</a>
-            </footer>
           </div>
+          <footer class="container-content--after group-navigation row">
+            <a href ng-click="swipeToMain()"><span class="link-navigation-back"/>back</a>
+          </footer>
         </div>
       </div>
     </div>
