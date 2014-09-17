@@ -1,3 +1,18 @@
+<section ng-show="isFeatureActive('inbox')" class="container-content--outer" ng-controller="InboxController" data-snap-ignore="{{onboardingInProgress ? true : undefined}}" drawer-handle="left">
+
+  <div class="container-content" scroll-to>
+    <div ng-repeat="item in items">{{item.title}}</div>
+  </div>
+
+  <footer ng-if="(items.length > 0 && sortingItem === undefined)" class="container-content--after">
+    <button type="button" ng-click="sortInbox()">
+      <span ng-bind="getSortingText()"></span>
+    </button>
+  </footer>
+
+</section>
+
+<!--
 <div ng-show="isFeatureActive('inbox')" class="single-page-container" ng-controller="InboxController" data-snap-ignore="{{onboardingInProgress ? true : undefined}}" drawer-handle="left">
   <section id="inbox" class="two-column-grid single-page page">
     <div class="column">
@@ -46,3 +61,4 @@
     </aside>
   </section>
 </div>
+ -->
