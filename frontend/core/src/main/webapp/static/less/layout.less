@@ -502,6 +502,17 @@ TODO: Do we want an example of a swiper in the styleguide?
   width: 100%;  // [1]
 }
 
+// 1. -webkit-overflow-scrolling is not working if two elements are layered on top of each other with translate3d.
+//
+//    Slide under element:
+//      -webkit-overflow-scrolling must be set to 'auto' in slide which has been positioned with translate3d
+//      under element to get -webkit-overflow-scrolling working in element.
+//
+//    NOTE: This bug is fixed starging from iOS 8.
+.swiper-slide-under-element .container-content {
+  -webkit-overflow-scrolling: auto; // [1]
+}
+
 
 //////// NEW END ////////////////////////
 

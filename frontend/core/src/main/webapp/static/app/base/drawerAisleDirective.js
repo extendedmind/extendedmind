@@ -24,6 +24,8 @@
       var areaAboutToShrinkCallbacks = {};
       var areaAboutToGrowCallbacks = {};
       var areaResizeReadyCallbacks = {};
+      var areaMovedToNewPositionCallbacks = {};
+      var areaMovedToInitialPositionCallbacks = {};
 
       this.registerDrawerHandleElement = function(handleElement, snapperSide){
         DrawerService.setHandleElement(handleElement, snapperSide);
@@ -39,6 +41,13 @@
 
       this.registerAreaResizeReady = function(callback, feature){
         areaResizeReadyCallbacks[feature] = callback;
+      };
+
+      this.registerAreaMovedToNewPosition = function(callback, feature) {
+        areaMovedToNewPositionCallbacks[feature] = callback;
+      };
+      this.registerAreaMovedToInitialPosition = function(callback, feature) {
+        areaMovedToInitialPositionCallbacks[feature] = callback;
       };
 
       // INITIALIZATION
@@ -69,13 +78,6 @@
           minPosition: -$rootScope.currentWidth
         };
         DrawerService.setupDrawer('right', settings);
-      }
-
-      function calculateEditorMinPosition() {
-        var minPosition = $element[0].offsetWidth > $rootScope.CONTAINER_MASTER_MAX_WIDTH ?
-                          $rootScope.currentWidth - (($rootScope.currentWidth - $rootScope.CONTAINER_MASTER_MAX_WIDTH) / 2) :
-                          $element[0].offsetWidth;
-        return Math.floor(minPosition);
       }
 
       function setupDrawers(){
@@ -122,7 +124,8 @@
         if ($rootScope.columns === 1) {
           // There is only one column, so we need to prevent any touching from
           // getting to the partially visible aisle.
-          $element.bind('touchstart', partiallyVisibleDrawerAisleClicked, true);
+          $element.bind('touchstart', partiallyVisibleDrawerAisleClicked);
+          if (areaMovedToNewPositionCallbacks[activeFeature]) areaMovedToNewPositionCallbacks[activeFeature]();
         }else if (areaResizeReadyCallbacks[activeFeature]){
           // Execute callbacks to resize ready
           areaResizeReadyCallbacks[activeFeature]();
@@ -143,7 +146,7 @@
             $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
           }
           // We need to unbind the touching prevention as early as possible.
-          $element.unbind('touchstart', partiallyVisibleDrawerAisleClicked, true);
+          $element.unbind('touchstart', partiallyVisibleDrawerAisleClicked);
         }
         if (DrawerService.isDraggingEnabled('left')) {
           // Menu drawer is closing, disable dragging for the duration of the animation.
@@ -156,6 +159,7 @@
       function menuDrawerClosed(){
         var activeFeature = $scope.getActiveFeature();
         if ($rootScope.columns === 1){
+          if (areaMovedToInitialPositionCallbacks[activeFeature]) areaMovedToInitialPositionCallbacks[activeFeature]();
         }else if (areaResizeReadyCallbacks[activeFeature]){
           // Re-enable dragging
           DrawerService.enableDragging('left');
@@ -175,7 +179,7 @@
         } else if (drawerDirection === 'opening' && $rootScope.columns === 1) {
           // We need to unbind the touching prevention in this case as well, as
           // close() callback did not happen.
-          $element.unbind('touchstart', partiallyVisibleDrawerAisleClicked, true);
+          $element.unbind('touchstart', partiallyVisibleDrawerAisleClicked);
         }
       }
     },
