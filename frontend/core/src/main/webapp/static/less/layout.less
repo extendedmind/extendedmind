@@ -352,10 +352,28 @@ Use `.group-instruction` to create an instruction block in the middle of a secti
 /*
 Use `.group-instruction-jumbtron` to create a very large instruction block in the middle of a section.
 */
-.group-instruction-jumbotron{
+
+// 1. Reset margins of header to make it go to the top of the page
+// 2. Vertically center a span in the middle of the header
+.group-instruction-jumbotron {
   .set-font-jumbotron();
   line-height: @grid-vertical * 1.5;
+  p {
+    margin-top: @grid-vertical * 1.5;
+    margin-bottom: @grid-vertical * 1.5;
+  }
+  .group-instruction--header {
+    margin-top: 0; // [1]
+    margin-bottom: 0; // [1]
+    display: table; // [2]
+    height: @grid-vertical * 1.5; // [2]
+    span {
+      display: table-cell; // [2]
+      vertical-align: middle; // [2]
+    }
+  }
 }
+
 
 /*
 Use `.group-mixed` to create horizontal collections of different elements.
