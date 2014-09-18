@@ -1,6 +1,6 @@
 <section class="container-content" scroll-to swiper-prevent>
   <div infinite-scroll="addMoreRecentTasks()" infinite-scroll-parent accordion>
-    <h3>recent</h3>
+    <h2>recent</h2>
     <div ng-include="'static/app/tasks/addTask.html'"></div>
     <div ng-repeat="task in tasks | orderBy:'modified':true | limitTo: getRecentTasksLimit()" ng-init="newTask = {}">
       <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
