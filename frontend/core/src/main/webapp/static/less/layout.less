@@ -251,6 +251,8 @@ Vertically center .container-master and .container-editor in large screens
 # LEVEL 6: row and groups
 */
 
+@width-button-gap: 10px;
+
 /*
 `.row` is uses horizontal alignment. It specifies the left and right
 margin.
@@ -315,15 +317,11 @@ for 1, 2, 3, 4, 7 and 9 buttons.
     width: 50%;
     float: left;
   }
-  button:first-child:nth-last-child(3),
-  button:first-child:nth-last-child(3) ~ button {
-    width: 33.333%;
-    float: left;
+  button:first-child:nth-last-child(2) {
+    padding-right: @width-button-gap / 2;
   }
-  button:first-child:nth-last-child(4),
-  button:first-child:nth-last-child(4) ~ button {
-    width: 25%;
-    float: left;
+  button:first-child:nth-last-child(2) ~ button {
+    padding-left: @width-button-gap / 2;
   }
   button:first-child:nth-last-child(7),
   button:first-child:nth-last-child(7) ~ button {
@@ -343,13 +341,20 @@ Use `.group-instruction` to create an instruction block in the middle of a secti
 .group-instruction {
   display: block;
   line-height: @grid-vertical;
-  font-size: @size-font-large;
-  font-weight: 700; // TODO: evaluate right value with correct font
+  .set-font-large();
 
   // If there are more than one paragraph, create padding between them
   p:not(:first-child) {
     padding-top: @grid-vertical;
   }
+}
+
+/*
+Use `.group-instruction-jumbtron` to create a very large instruction block in the middle of a section.
+*/
+.group-instruction-jumbotron{
+  .set-font-jumbotron();
+  line-height: @grid-vertical * 1.5;
 }
 
 /*

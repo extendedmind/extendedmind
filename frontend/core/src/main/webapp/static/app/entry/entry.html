@@ -1,25 +1,13 @@
 <section id="entry" class="container-master" ng-controller="EntryController" vertical-resize="entry">
   <div class="container-fluid">
-
-    <header class="container-toolbar">
-      <div class="container-toolbar--inner">
-        <div class="group-mixed">
-          <div class="group-mixed--left">
-            <span class="text-logo"></span>
-          </div>
-        </div>
-      </div>
-    </header>
-
     <div class="swiper-container container-content--outer" swiper-container="entry" swiper-type="main" expected-slides="((!entryState || entryState === 'signup')  && 2) || (entryState === 'login' && 3)">
       <div class="swiper-wrapper">
         <div class="swiper-slide swiper-no-swiping" swiper-slide="entry/home" slide-index=0>
-          <!-- TODO: add style definitions to LESS and remove them from here -->
-          <div class="container-content" style="display: table;">
-            <div class="group-instruction row" style="display: table-cell; vertical-align: middle;">
-              <!-- TODO: add style definitions to LESS and remove them from here -->
+          <div class="container-content">
+            <div class="group-instruction-jumbotron row">
+              <p class="group-instruction--header"><span class="text-logo"></span></p>
               <p class="group-instruction--main">
-                <span class="text-active">extend</span> your biological mind
+                <span class="text-active">extend</span><br/>your<br/>biological<br/>mind
               </p>
             </div>
           </div>

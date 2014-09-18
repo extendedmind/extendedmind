@@ -421,8 +421,7 @@ Use `.vertical-buttons` to make buttons align in a vertical column
 @color-btn: @color-default-active;
 @color-btn-pressed: @color-default-pressed;
 @color-btn-disabled: @color-default-disabled;
-@width-btn: 100px;
-@height-btn: 32px;
+@height-btn: @grid-vertical;
 @size-btn-clear: 28px;
 
 [class^="btn-"], [class*=" btn-"] {
@@ -436,13 +435,14 @@ Use `.vertical-buttons` to make buttons align in a vertical column
 }
 
 .btn-action {
+  .set-font-ingress();
   color: white;
   background-color: transparent;
   & > .text-btn {
     background-color: @color-btn;
     display: inline-block;
     vertical-align: middle;
-    width: @width-btn;
+    width: 100%;
     line-height: @height-btn;
   }
   &:active > .text-btn {
