@@ -505,18 +505,43 @@
         SwiperService.resizeFixSwiperAndChildSwipers(scope.swiperPath);
       }
 
+      function swiperAboutToMoveToNewPosition() {
+        // Disable swiping during move.
+        SwiperService.setSwiping(scope.swiperPath, false);
+      }
+
+      function swiperAboutToMoveToInitialPosition() {
+        // Disable swiping during move.
+        SwiperService.setSwiping(scope.swiperPath, true);
+      }
+
+      var iOsVersion = DetectIosVersionService(); // for iOS-related stuff
+
       function swiperMovedToNewPosition() {
-        var activeSlideIndex = SwiperService.getSwiperActiveSlideIndex(scope.swiperPath);
-        if (activeSlideIndex > 0) {
-          var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
-          swiperSlides[activeSlideIndex - 1].classList.toggle('swiper-slide-under-element', true);
+        // Disable swiping in new position.
+        SwiperService.setSwiping(scope.swiperPath, false);
+
+        // Only in < iOS 8
+        if (iOsVersion && iOsVersion[0] < 8) {  // running iOS 7 or earlier
+          var activeSlideIndex = SwiperService.getSwiperActiveSlideIndex(scope.swiperPath);
+          if (activeSlideIndex > 0) {
+            var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
+            swiperSlides[activeSlideIndex - 1].classList.toggle('swiper-slide-under-element', true);
+          }
         }
       }
+
       function swiperMovedToInitialPosition() {
-        var activeSlideIndex = SwiperService.getSwiperActiveSlideIndex(scope.swiperPath);
-        if (activeSlideIndex > 0) {
-          var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
-          swiperSlides[activeSlideIndex - 1].classList.toggle('swiper-slide-under-element', false);
+        // Enable swiping in initial position.
+        SwiperService.setSwiping(scope.swiperPath, true);
+
+        // Only in < iOS 8
+        if (iOsVersion && iOsVersion[0] < 8) {  // running iOS 7 or earlier
+          var activeSlideIndex = SwiperService.getSwiperActiveSlideIndex(scope.swiperPath);
+          if (activeSlideIndex > 0) {
+            var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
+            swiperSlides[activeSlideIndex - 1].classList.toggle('swiper-slide-under-element', false);
+          }
         }
       }
 
@@ -528,11 +553,10 @@
           drawerAisleController.registerAreaAboutToGrow(swiperAboutToGrow, scope.swiperPath);
           drawerAisleController.registerAreaResizeReady(swiperResizeReady, scope.swiperPath);
 
-          var iOsVersion = DetectIosVersionService();
-          if (iOsVersion && iOsVersion[0] < 8) {  // running iOS 7 or earlier
-            drawerAisleController.registerAreaMovedToNewPosition(swiperMovedToNewPosition, scope.swiperPath);
-            drawerAisleController.registerAreaMovedToInitialPosition(swiperMovedToInitialPosition, scope.swiperPath);
-          }
+          drawerAisleController.registerAreaAboutToMoveToNewPosition(swiperAboutToMoveToNewPosition, scope.swiperPath);
+          drawerAisleController.registerAreaAboutToMoveToInitialPosition(swiperAboutToMoveToInitialPosition, scope.swiperPath);
+          drawerAisleController.registerAreaMovedToNewPosition(swiperMovedToNewPosition, scope.swiperPath);
+          drawerAisleController.registerAreaMovedToInitialPosition(swiperMovedToInitialPosition, scope.swiperPath);
         }
       }
     }

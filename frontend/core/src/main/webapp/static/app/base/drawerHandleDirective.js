@@ -17,9 +17,9 @@
  function drawerHandleDirective() {
   return {
     restrict: 'A',
-    //require: '^drawerAisle',
+    require: '^drawerAisle',
     link: function postLink(scope, element, attrs, drawerController) {
-      //drawerController.registerDrawerHandleElement(element[0], attrs.drawerHandle);
+      drawerController.registerDrawerHandleElement(element[0], attrs.drawerHandle);
     }
   };
 }
