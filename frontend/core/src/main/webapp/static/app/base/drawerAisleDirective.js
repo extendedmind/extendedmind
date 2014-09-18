@@ -123,11 +123,6 @@
           // There is only one column, so we need to prevent any touching from
           // getting to the partially visible aisle.
           $element.bind('touchstart', partiallyVisibleDrawerAisleClicked, true);
-
-          // make following happen inside angularjs event loop
-          $scope.$evalAsync(function() {
-            setAisleWebkitScrolling(false);
-          });
         }else if (areaResizeReadyCallbacks[activeFeature]){
           // Execute callbacks to resize ready
           areaResizeReadyCallbacks[activeFeature]();
@@ -161,10 +156,6 @@
       function menuDrawerClosed(){
         var activeFeature = $scope.getActiveFeature();
         if ($rootScope.columns === 1){
-          // make following happen inside angularjs event loop
-          $scope.$evalAsync(function() {
-            setAisleWebkitScrolling(true);
-          });
         }else if (areaResizeReadyCallbacks[activeFeature]){
           // Re-enable dragging
           DrawerService.enableDragging('left');
@@ -187,20 +178,6 @@
           $element.unbind('touchstart', partiallyVisibleDrawerAisleClicked, true);
         }
       }
-
-      // HTML METHODS
-
-      // CSS property -webkit-overflow-scrolling is not working if multiple elements are layered on top of each other,
-      // e.g. with 3D transform method translate3d.
-      // This happens when swiper slide not the first one and drawer menu is open - webkit scroll event is catched by swiper wrapper.
-      var webkitScrolling = true;
-      function setAisleWebkitScrolling(scrolling) {
-        webkitScrolling = scrolling;
-      }
-
-      $scope.isAisleWebkitScrolling = function() {
-        return webkitScrolling;
-      };
     },
     link: function postLink(scope) {
 

@@ -108,7 +108,10 @@ Master
 /*
 Menu
 */
+
+// 1. Use native-style scrolling in WebKit browsers
 .container-menu {
+  -webkit-overflow-scrolling: touch;  // [1]
   width: @width-menu;
   overflow-y: auto;
 }
@@ -236,7 +239,10 @@ Vertically center .container-master and .container-editor in large screens
 /*
 `.container-content` specifies the vertical overflow.
 */
+
+// 1. Use native-style scrolling in WebKit browsers
 .container-content {
+  -webkit-overflow-scrolling: touch;  // [1]
   height: 100%;
   overflow-y: auto;
 }
@@ -486,6 +492,7 @@ TODO: Do we want an example of a swiper in the styleguide?
 }
 
 // 1. Inherit height for vertical swiper slides.
+//    NOTE: evaluate need for this when vertical slide pages are implemented with new layout.
 .swiper-container [swiper-type="page"] {
   height: inherit;  // [1]
 }
