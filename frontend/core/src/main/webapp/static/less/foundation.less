@@ -94,6 +94,17 @@ Default colors for input elements
 @color-default-pressed: #0171ea;
 @color-default-disabled: lighten(#b0b0b6, 20%); // TODO: don't use lighten
 
+// 1. Always disable full page scrolling
+// TODO: why height?
+html {
+  height: 100%;
+  overflow: hidden;   // [1]
+  body {
+    height: inherit;  // [1]
+    overflow: hidden;
+  }
+}
+
 /*
 **************************************************************************
 # Mixins
@@ -149,20 +160,6 @@ a.content:active {
 
   // Default to no background repeat
   background-repeat: no-repeat;
-}
-
-html {
-  // Always disable full page scrolling
-  height: 100%;
-  overflow: hidden;
-  body, div#root-container, div#root, div#main, div#feature-container-wrapper, .no-slides-container, .slides-container, section.one-column-grid, section.two-column-grid, .column {
-    height: inherit;
-    overflow: hidden;
-  }
-  div#root {
-    // Default to white background
-    background-color: white;
-  }
 }
 
 // Baseline

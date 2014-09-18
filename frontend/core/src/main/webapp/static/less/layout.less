@@ -40,9 +40,11 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 */
 
 // 1. Set width and height for absolutely positioned (grand)children.
+// 2. Must set position to relative for correct width during transitions. Otherwise page would scroll horizontally.
 .container-root {
   height: 100%; // [1]
   width: 100%;  // [1]
+  position: relative; // [2]
 }
 
 /*
