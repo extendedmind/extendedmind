@@ -16,7 +16,7 @@
 
 // iDangero.us Swiper Service
 // http://www.idangero.us/sliders/swiper/api.php
-function SwiperService($q) {
+function SwiperService($q, $timeout) {
 
   // Holds reference to all the swipers and their respective paths
   var swipers = {};
@@ -112,8 +112,9 @@ function SwiperService($q) {
   };
 
   var setPathsToSlides = function(swiperInfo, swiperSlidesPaths) {
+    swiperInfo.slidesPaths = swiperSlidesPaths;
     for (var i = 0; i < swiperInfo.swiper.slides.length; i++) {
-      swiperInfo.swiper.slides[i].setData('path', swiperSlidesPaths[i]);
+      swiperInfo.swiper.slides[i].setData('path', swiperInfo.slidesPaths[i]);
     }
   };
 
@@ -165,13 +166,21 @@ function SwiperService($q) {
       swipers[swiperPath] = {
         swiper: swiper,
         swiperType: swiperType,
-        slidesPaths: swiperSlidesPaths,
         container: containerElement,
         callback: onSlideChangeEndCallback
       };
       setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
     },
     refreshSwiper: function(swiperPath, swiperSlidesPaths) {
+      function doRefresh(swiperInfo, swiperSlidesPaths, overrideSlideIndex){
+        setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
+        if ((overrideSlideIndex !== undefined) && (swipers[swiperPath].swiper.activeIndex !== overrideSlideIndex) ) {
+          // Re-init did not work, still wrong slide, need to swipe there
+          // NOTE: Adding a 0 after this call would make swiping instant, but the animation might
+          //       be helpful in understanding where this is transitioning
+          swipers[swiperPath].swiper.swipeTo(overrideSlideIndex);
+        }
+      }
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         // Set initial slide path
         var initialSlideIndex = 0;
@@ -180,16 +189,18 @@ function SwiperService($q) {
           initialSlideIndex = overrideSlideIndex;
         }
         swipers[swiperPath].swiper.params.initialSlide = initialSlideIndex;
-        swipers[swiperPath].slidesPaths = swiperSlidesPaths;
-        $q.when(swipers[swiperPath].swiper.reInit()).then(function() {
-          setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
-          if ((overrideSlideIndex !== undefined) && (swipers[swiperPath].swiper.activeIndex !== overrideSlideIndex) ) {
-            // Re-init did not work, still wrong slide, need to swipe there
-            // NOTE: Adding a 0 after this call would make swiping instant, but the animation might
-            //       be helpful in understanding where this is transitioning
-            swipers[swiperPath].swiper.swipeTo(overrideSlideIndex);
-          }
-        });
+
+        if (swiperSlidesPaths.length !== swipers[swiperPath].slidesPaths){
+          // The number of slides has changed, reinit won't in scope, has to be done outside
+          $timeout(function(){
+            swipers[swiperPath].swiper.reInit();
+            doRefresh(swipers[swiperPath], swiperSlidesPaths, overrideSlideIndex);
+          }, 0);
+        }else {
+          $q.when(swipers[swiperPath].swiper.reInit()).then(function(){
+            doRefresh(swipers[swiperPath], swiperSlidesPaths, overrideSlideIndex);
+          });
+        }
       }
     },
     refreshSwiperAndChildSwipers: function(swiperPath) {
@@ -410,5 +421,5 @@ function SwiperService($q) {
     }
   };
 }
-SwiperService['$inject'] = ['$q'];
+SwiperService['$inject'] = ['$q', '$timeout'];
 angular.module('em.base').factory('SwiperService', SwiperService);

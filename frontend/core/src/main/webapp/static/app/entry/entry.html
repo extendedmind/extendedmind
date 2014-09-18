@@ -11,7 +11,7 @@
       </div>
     </header>
 
-    <div class="swiper-container container-content--outer" swiper-container="entry" swiper-type="main" expected-slides="(!entryState && 2) || (entryState === 'login' && 3)">
+    <div class="swiper-container container-content--outer" swiper-container="entry" swiper-type="main" expected-slides="((!entryState || entryState === 'signup')  && 2) || (entryState === 'login' && 3)">
       <div class="swiper-wrapper">
         <div class="swiper-slide swiper-no-swiping" swiper-slide="entry/home" slide-index=0>
           <!-- TODO: add style definitions to LESS and remove them from here -->
