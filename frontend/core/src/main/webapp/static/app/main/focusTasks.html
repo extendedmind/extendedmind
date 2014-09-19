@@ -7,18 +7,32 @@
       <div class="swiper-loader row" id="pull-to-previous">
         <span>previous week...</span>
       </div>
-      <div class="swiper-slide" ng-repeat="date in detectDayChangeAndReturnWeekdays() track by date.weekdayIndex" swiper-slide="tasks/home/{{date.weekday}}" slide-index="$index" scroll-to>
-        <h2 ng-hide="isDatepickerVisible" class="date-heading row" ng-click="setDatepickerVisible()">{{date.displayDate}}</h2>
-        <!-- list-item directive creates the content for this div -->
-        <!-- NOTE: needs more parameters, like list-item-has-star etc. -->
-        <div class="row" ng-repeat="task in tasks | tasksByDate:date.yyyymmdd" list-item="task" list-item-has-checkbox="true"></div>
+      <div class="swiper-slide" ng-repeat="date in detectDayChangeAndReturnWeekdays() track by date.weekdayIndex" swiper-slide="focus/tasks/{{date.weekday}}" slide-index="$index" scroll-to>
+        <div class="container-content">
+          <h2 ng-hide="isDatepickerVisible" class="date-heading row" ng-click="setDatepickerVisible()">{{date.displayDate}}</h2>
+          <p>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+          </p>
+          <p>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+          </p>
+          <p>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+          </p>
+          <p>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+          </p>
+          <!-- list-item directive creates the content for this div -->
+          <!-- NOTE: needs more parameters, like list-item-has-star etc. -->
+          <div class="row" ng-repeat="task in tasks | tasksByDate:date.yyyymmdd" list-item="task" list-item-has-checkbox="true"></div>
 
-        <!-- When add task is activated, this should get a ".row-active" class -->
-        <!-- This would work if feature-container has the editable-field-backdrop / backdrop-container directive -->
-        <div class="row" ng-include="'static/app/tasks/addTask.html'"></div>
-        <div class="row" ng-if="tasks.length === 0">
-          <div class="instruction-text">
-            <p class="instruction-text-chapter">tasks are things<br/>you want <b>to do</b><br/><br/></p>
+          <!-- When add task is activated, this should get a ".row-active" class -->
+          <!-- This would work if feature-container has the editable-field-backdrop / backdrop-container directive -->
+          <div class="row" ng-include="'static/app/tasks/addTask.html'"></div>
+          <div class="row" ng-if="tasks.length === 0">
+            <div class="instruction-text">
+              <p class="instruction-text-chapter">tasks are things<br/>you want <b>to do</b><br/><br/></p>
+            </div>
           </div>
         </div>
       </div>

@@ -17,7 +17,7 @@
  function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
   var detectDayChangeBuffer = 1000;
   var dayChangeLastCheck;
-  var slidePath = 'tasks/home';
+  var slidePath = 'focus/tasks';
 
   var currentWeek = DateService.generateAndReturnCurrentWeek(new Date());
   $scope.datepickerWeeks = initializeAndReturnDatepickerWeeks(currentWeek);
