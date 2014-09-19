@@ -460,16 +460,23 @@
     },
     link: function (scope, element, attrs, drawerAisleController){
 
-      // Hide inactive slides with this for the duration of a resize animation
-      // to prevent flickering
-      function toggleInactiveSwiperSlidesVisiblity(visibilityValue) {
+      // Hide previous and/or next slide with this for the duration of a resize animation to prevent flickering.
+      function toggleAdjacentInactiveSwiperSlidesVisiblity(visibilityValue) {
+        var activeSlideIndex = SwiperService.getSwiperActiveSlideIndex(scope.swiperPath);
         var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
-        if (swiperSlides) {
-          for (var i = 0, len = swiperSlides.length; i < len; i++) {
-            if (!swiperSlides[i].classList.contains('swiper-slide-active')) {
-              if (swiperSlides[i].style.visibility !== visibilityValue) swiperSlides[i].style.visibility = visibilityValue;
-            }
-          }
+
+        // hide previous
+        var previousSlideIndex = activeSlideIndex - 1;
+        if (previousSlideIndex >= 0) {
+          var previousSwiperSlide = swiperSlides[previousSlideIndex];
+          if (previousSwiperSlide.style.visibility !== visibilityValue) previousSwiperSlide.style.visibility = visibilityValue;
+        }
+
+        // hide next
+        var nextSlideIndex = activeSlideIndex + 1;
+        if (nextSlideIndex <= swiperSlides.length - 1) {
+          var nextSwiperSlide = swiperSlides[nextSlideIndex];
+          if (nextSwiperSlide.style.visibility !== visibilityValue) nextSwiperSlide.style.visibility = visibilityValue;
         }
       }
 
@@ -488,16 +495,16 @@
 
       function swiperAboutToShrink(amount, direction, speed){
         swiperWrapperTranslate(amount, 'left', speed);
-        toggleInactiveSwiperSlidesVisiblity('hidden');
+        toggleAdjacentInactiveSwiperSlidesVisiblity('hidden');
       }
 
       function swiperAboutToGrow(amount, direction, speed){
         swiperWrapperTranslate(amount, 'right', speed);
-        toggleInactiveSwiperSlidesVisiblity('hidden');
+        toggleAdjacentInactiveSwiperSlidesVisiblity('hidden');
       }
 
       function swiperResizeReady(){
-        toggleInactiveSwiperSlidesVisiblity('visible');
+        toggleAdjacentInactiveSwiperSlidesVisiblity('visible');
         SwiperService.resizeFixSwiperAndChildSwipers(scope.swiperPath);
       }
 
