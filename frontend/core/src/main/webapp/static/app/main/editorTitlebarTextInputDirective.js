@@ -21,16 +21,12 @@
 
       scope.registerTitleBarInputFocusCallback(titleBarInputFocus);
       function titleBarInputFocus() {
-        scope.$evalAsync(function() {
-          // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
-          if ($document[0].activeElement !== element[0]) element[0].focus();
-        });
+        // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
+        if ($document[0].activeElement !== element[0]) element[0].focus();
       }
       scope.registerTitleBarInputBlurCallback(titleBarInputBlur);
       function titleBarInputBlur() {
-        scope.$evalAsync(function() {
-          if ($document[0].activeElement === element[0]) element[0].blur();
-        });
+        if ($document[0].activeElement === element[0]) element[0].blur();
       }
     }
   };
