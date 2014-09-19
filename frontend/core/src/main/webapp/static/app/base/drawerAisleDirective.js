@@ -31,15 +31,7 @@
       var areaAboutToMoveToInitialPositionCallbacks = {};
 
       this.registerDrawerHandleElement = function(handleElement, drawerSide){
-        if (DrawerService.drawerExists(drawerSide)) DrawerService.setHandleElement(drawerSide, handleElement);
-        else {
-          DrawerService.registerCreatedCallback(
-            drawerSide,
-            function() {
-              DrawerService.setHandleElement(handleElement, drawerSide);
-            },
-            $scope.getActiveFeature());
-        }
+        DrawerService.setHandleElement(drawerSide, handleElement);
       };
 
       this.registerAreaAboutToShrink = function(callback, feature){
@@ -131,32 +123,25 @@
         } else if ($rootScope.columns === 1) {
           if (areaAboutToMoveToNewPositionCallbacks[activeFeature])
             areaAboutToMoveToNewPositionCallbacks[activeFeature]();
+          $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
         }
       }
 
-      // TODO: Prevent clicks to elements etc.
-      // function partiallyVisibleDrawerAisleClicked(event){
-      //   // Prevent event from reaching the swiper
-      //   event.preventDefault();
-      //   event.stopPropagation();
-      // }
-      // TODO:
+      // Prevent clicks to elements etc. when menu is open.
+      function partiallyVisibleDrawerAisleClicked() {
+        event.preventDefault();
+        event.stopPropagation();
+      }
 
       // Menu drawer animation is ready - menu is open
       function menuDrawerOpened(){
         var activeFeature = $scope.getActiveFeature();
         if ($rootScope.columns === 1) {
-
           // Re-enable dragging
           DrawerService.enableDragging('left');
-
-          // TODO:
-          // There is only one column, so we need to prevent any touching from
-          // getting to the partially visible aisle.
-          // $element.bind('touchstart', partiallyVisibleDrawerAisleClicked);
-          // TODO:
-
           if (areaMovedToNewPositionCallbacks[activeFeature]) areaMovedToNewPositionCallbacks[activeFeature]();
+          // There is only one column, so we need to prevent any touching from getting to the partially visible aisle.
+          $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
         }else if (areaResizeReadyCallbacks[activeFeature]){
           // Execute callbacks to resize ready
           areaResizeReadyCallbacks[activeFeature]();
@@ -176,14 +161,10 @@
             areaAboutToGrowCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
             $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
           }
-          // We need to unbind the touching prevention as early as possible.
-          // $element.unbind('touchstart', partiallyVisibleDrawerAisleClicked);
         } else if ($rootScope.columns === 1) {
-
           // Menu drawer is closing, disable dragging for the duration of the animation.
           // This is enabled again later on.
           DrawerService.disableDragging('left');
-
           if (areaAboutToMoveToInitialPositionCallbacks[activeFeature])
             areaAboutToMoveToInitialPositionCallbacks[activeFeature]();
         }
@@ -199,10 +180,10 @@
         var activeFeature = $scope.getActiveFeature();
         if ($rootScope.columns === 1){
           if (areaMovedToInitialPositionCallbacks[activeFeature]) areaMovedToInitialPositionCallbacks[activeFeature]();
-
           // Re-enable dragging
           DrawerService.enableDragging('left');
-
+          // Re-enable touching in fully visible aisle.
+          $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
         }else if (areaResizeReadyCallbacks[activeFeature]){
           // Execute callbacks to resize ready
           areaResizeReadyCallbacks[activeFeature]();
@@ -222,16 +203,15 @@
             areaAboutToMoveToInitialPositionCallbacks[activeFeature]();
         } else if (drawerDirection === 'opening' && $rootScope.columns === 1) {
 
-          // TODO:
-          // We need to unbind the touching prevention in this case as well, as
-          // close() callback did not happen.
-          // $element.unbind('touchstart', partiallyVisibleDrawerAisleClicked);
-          // TODO:
-
           if (areaAboutToMoveToNewPositionCallbacks[activeFeature])
             areaAboutToMoveToNewPositionCallbacks[activeFeature]();
         }
       }
+
+      $scope.$on('$destroy', function() {
+        $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
+      });
+
     },
     link: function postLink(scope) {
 

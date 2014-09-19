@@ -42,12 +42,6 @@
     }
   }
 
-  function executeSnapperCreatedCallbacks(snapperSide) {
-    for (var id in snappers[snapperSide].createdCallbacks) {
-      if (snappers[snapperSide].createdCallbacks.hasOwnProperty(id)) snappers[snapperSide].createdCallbacks[id]();
-    }
-  }
-
   function executeSnapperAnimatedCallbacks(snapperSide) {
     if (snappers[snapperSide].snapper.state().state === snapperSide) {  // drawer is open when state is left or right
       for (var openId in snappers[snapperSide].openedCallbacks) {
@@ -120,8 +114,7 @@
       closeCallbacks: {},
       openedCallbacks: {},
       closedCallbacks: {},
-      handleReleasedCallbacks: {},
-      createdCallbacks: {}
+      handleReleasedCallbacks: {}
     };
   }
 
@@ -172,7 +165,6 @@
         if (settings.touchToDrag) this.enableDragging(drawerSide);
         else this.disableDragging(drawerSide);
       }
-      executeSnapperCreatedCallbacks(drawerSide);
     },
     deleteDrawer: function(drawerSide) {
       if (snapperExists(drawerSide))
@@ -237,9 +229,6 @@
     isOpen: function(drawerSide) {
       if (snapperExists(drawerSide)) return snappers[drawerSide].snapper.state().state === drawerSide;
     },
-    drawerExists: function(drawerSide) {
-      return snapperExists(drawerSide);
-    },
 
     // CALLBACK REGISTRATION
 
@@ -272,10 +261,6 @@
         snappers[drawerSide] = createDrawerSkeleton();
       }
       snappers[drawerSide].handleReleasedCallbacks[id] = callback;
-    },
-    registerCreatedCallback: function(drawerSide, callback, id) {
-      if (!snappers[drawerSide]) snappers[drawerSide] = createDrawerSkeleton();
-      snappers[drawerSide].createdCallbacks[id] = callback;
     }
   };
 }
