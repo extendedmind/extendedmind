@@ -487,16 +487,12 @@
       }
 
       function swiperAboutToShrink(amount, direction, speed){
-        if ($rootScope.columns > 1) {
-          swiperWrapperTranslate(amount, 'left', speed);
-        }
+        swiperWrapperTranslate(amount, 'left', speed);
         toggleInactiveSwiperSlidesVisiblity('hidden');
       }
 
       function swiperAboutToGrow(amount, direction, speed){
-        if ($rootScope.columns > 1) {
-          swiperWrapperTranslate(amount, 'right', speed);
-        }
+        swiperWrapperTranslate(amount, 'right', speed);
         toggleInactiveSwiperSlidesVisiblity('hidden');
       }
 
