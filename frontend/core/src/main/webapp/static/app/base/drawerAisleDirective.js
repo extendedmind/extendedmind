@@ -30,19 +30,19 @@
       var areaAboutToMoveToNewPositionCallbacks = {};
       var areaAboutToMoveToInitialPositionCallbacks = {};
 
-      this.registerDrawerHandleElement = function(handleElement, drawerSide){
+      this.registerDrawerHandleElement = function(handleElement, drawerSide) {
         DrawerService.setHandleElement(drawerSide, handleElement);
       };
 
-      this.registerAreaAboutToShrink = function(callback, feature){
+      this.registerAreaAboutToShrink = function(callback, feature) {
         areaAboutToShrinkCallbacks[feature] = callback;
       };
 
-      this.registerAreaAboutToGrow = function(callback, feature){
+      this.registerAreaAboutToGrow = function(callback, feature) {
         areaAboutToGrowCallbacks[feature] = callback;
       };
 
-      this.registerAreaResizeReady = function(callback, feature){
+      this.registerAreaResizeReady = function(callback, feature) {
         areaResizeReadyCallbacks[feature] = callback;
       };
 
@@ -91,7 +91,7 @@
         DrawerService.setupDrawer('right', settings);
       }
 
-      function setupDrawers(){
+      function setupDrawers() {
         setupMenuDrawer();
         setupEditorDrawer();
       }
@@ -111,98 +111,107 @@
 
       // MENU DRAWER CALLBACKS
 
-      // Fires when open is called programmatically, i.e. menu button pressed
-      function menuDrawerOpen() {
-        var activeFeature = $scope.getActiveFeature();
-        if ($rootScope.columns > 1 && areaAboutToShrinkCallbacks[activeFeature]){
-          // There are more than one column, this means the aisle area is about to shrink the
-          // same time as the menu opens
-          var amount = DrawerService.getDrawerElement('left').offsetWidth;
-          areaAboutToShrinkCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
-          $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth - amount + 'px';
-        } else if ($rootScope.columns === 1) {
-          if (areaAboutToMoveToNewPositionCallbacks[activeFeature])
-            areaAboutToMoveToNewPositionCallbacks[activeFeature]();
-          $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
-        }
-      }
-
       // Prevent clicks to elements etc. when menu is open.
       function partiallyVisibleDrawerAisleClicked() {
         event.preventDefault();
         event.stopPropagation();
       }
 
-      // Menu drawer animation is ready - menu is open
-      function menuDrawerOpened(){
+      /*
+      * Fires when open is called programmatically, i.e. menu button pressed.
+      */
+      function menuDrawerOpen() {
         var activeFeature = $scope.getActiveFeature();
+
+        if ($rootScope.columns === 1) {
+          if (areaAboutToMoveToNewPositionCallbacks[activeFeature])
+            areaAboutToMoveToNewPositionCallbacks[activeFeature]();
+          // There is only one column, so we need to prevent any touching from getting to the partially visible aisle.
+          $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
+        }
+        else if (areaAboutToShrinkCallbacks[activeFeature]) {
+          // There are more than one column, this means the aisle area is about to shrink the
+          // same time as the menu opens.
+          var amount = DrawerService.getDrawerElement('left').offsetWidth;
+          areaAboutToShrinkCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
+          $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth - amount + 'px';
+        }
+      }
+
+      /*
+      * Menu drawer animation is ready - menu is open.
+      */
+      function menuDrawerOpened() {
+        var activeFeature = $scope.getActiveFeature();
+
         if ($rootScope.columns === 1) {
           // Re-enable dragging
           DrawerService.enableDragging('left');
           if (areaMovedToNewPositionCallbacks[activeFeature]) areaMovedToNewPositionCallbacks[activeFeature]();
           // There is only one column, so we need to prevent any touching from getting to the partially visible aisle.
           $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
-        }else if (areaResizeReadyCallbacks[activeFeature]){
+        }
+        else if (areaResizeReadyCallbacks[activeFeature]) {
           // Execute callbacks to resize ready
           areaResizeReadyCallbacks[activeFeature]();
         }
-
       }
 
-      // Fires when menu is closed programmatically, i.e. menu button pressed or tapToClose
-      // called. This is triggered before any animation takes place.
+      /*
+      * Fires when menu is closed programmatically, i.e. menu button pressed or tapToClose called.
+      * This is triggered before any animation takes place.
+      */
       function menuDrawerClose() {
         var activeFeature = $scope.getActiveFeature();
-        if ($rootScope.columns > 1){
-          if (areaAboutToGrowCallbacks[activeFeature]){
-            // There are more than one column, this means the aisle area is about to grow the
-            // same time as the menu closes
-            var amount = DrawerService.getDrawerElement('left').offsetWidth;
-            areaAboutToGrowCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
-            $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
-          }
-        } else if ($rootScope.columns === 1) {
+
+        if ($rootScope.columns === 1) {
           // Menu drawer is closing, disable dragging for the duration of the animation.
           // This is enabled again later on.
           DrawerService.disableDragging('left');
           if (areaAboutToMoveToInitialPositionCallbacks[activeFeature])
             areaAboutToMoveToInitialPositionCallbacks[activeFeature]();
         }
-        // if (DrawerService.isDraggingEnabled('left')) {
-          // Menu drawer is closing, disable dragging for the duration of the animation.
-          // This is enabled again later on.
-          // DrawerService.disableDragging('left');
-        // }
+        else if (areaAboutToGrowCallbacks[activeFeature]) {
+          // There are more than one column, this means the aisle area is about to grow the
+          // same time as the menu closes
+          var amount = DrawerService.getDrawerElement('left').offsetWidth;
+          areaAboutToGrowCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
+          $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
+        }
       }
 
-      // Animation of menu drawer ready, menu now hidden.
-      function menuDrawerClosed(){
+      /*
+      * Animation of menu drawer ready, menu now hidden.
+      */
+      function menuDrawerClosed() {
         var activeFeature = $scope.getActiveFeature();
-        if ($rootScope.columns === 1){
+
+        if ($rootScope.columns === 1) {
           if (areaMovedToInitialPositionCallbacks[activeFeature]) areaMovedToInitialPositionCallbacks[activeFeature]();
           // Re-enable dragging
           DrawerService.enableDragging('left');
           // Re-enable touching in fully visible aisle.
           $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
-        }else if (areaResizeReadyCallbacks[activeFeature]){
+        }
+        else if (areaResizeReadyCallbacks[activeFeature]) {
           // Execute callbacks to resize ready
           areaResizeReadyCallbacks[activeFeature]();
         }
       }
 
-      // Enable swiping and disable sliding and vice versa when drawer
-      // handle is released and animation starts.
+      /*
+      * Enable swiping and disable sliding and vice versa when drawer handle is released and animation starts.
+      */
       function menuDrawerHandleReleased(drawerDirection) {
         var activeFeature = $scope.getActiveFeature();
-        if (drawerDirection === 'closing' && $rootScope.columns === 1) {
 
+        if (drawerDirection === 'closing' && $rootScope.columns === 1) {
           // Disable dragging for the short time that the menu is animating
           DrawerService.disableDragging('left');
-
           if (areaAboutToMoveToInitialPositionCallbacks[activeFeature])
             areaAboutToMoveToInitialPositionCallbacks[activeFeature]();
-        } else if (drawerDirection === 'opening' && $rootScope.columns === 1) {
-
+        }
+        else if (drawerDirection === 'opening' && $rootScope.columns === 1) {
           if (areaAboutToMoveToNewPositionCallbacks[activeFeature])
             areaAboutToMoveToNewPositionCallbacks[activeFeature]();
         }
