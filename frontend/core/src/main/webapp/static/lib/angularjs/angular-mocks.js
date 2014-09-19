@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.3.0-beta.19
+ * @license AngularJS v1.3.0-rc.2
  * (c) 2010-2014 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -63,6 +63,8 @@ angular.mock.$Browser = function() {
     return listener;
   };
 
+  self.$$checkUrlChange = angular.noop;
+
   self.cookieHash = {};
   self.lastCookieHash = {};
   self.deferredFns = [];
@@ -125,7 +127,7 @@ angular.mock.$Browser = function() {
     }
   };
 
-  self.$$baseHref = '';
+  self.$$baseHref = '/';
   self.baseHref = function() {
     return this.$$baseHref;
   };
@@ -774,13 +776,21 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
       };
     });
 
-    $provide.decorator('$animate', ['$delegate', '$$asyncCallback',
-      function($delegate, $$asyncCallback) {
+    $provide.decorator('$animate', ['$delegate', '$$asyncCallback', '$timeout', '$browser',
+                            function($delegate,   $$asyncCallback,   $timeout,   $browser) {
       var animate = {
         queue : [],
+        cancel : $delegate.cancel,
         enabled : $delegate.enabled,
-        triggerCallbacks : function() {
+        triggerCallbackEvents : function() {
           $$asyncCallback.flush();
+        },
+        triggerCallbackPromise : function() {
+          $timeout.flush(0);
+        },
+        triggerCallbacks : function() {
+          this.triggerCallbackEvents();
+          this.triggerCallbackPromise();
         },
         triggerReflow : function() {
           angular.forEach(reflowQueue, function(fn) {
@@ -889,7 +899,7 @@ angular.mock.dump = function(object) {
  * development please see {@link ngMockE2E.$httpBackend e2e $httpBackend mock}.
  *
  * During unit testing, we want our unit tests to run quickly and have no external dependencies so
- * we donâ€™t want to send [XHR](https://developer.mozilla.org/en/xmlhttprequest) or
+ * we don’t want to send [XHR](https://developer.mozilla.org/en/xmlhttprequest) or
  * [JSONP](http://en.wikipedia.org/wiki/JSONP) requests to a real server. All we really need is
  * to verify whether a certain request has been sent or not, or alternatively just let the
  * application make requests, respond with pre-trained responses and assert that the end result is
@@ -1057,7 +1067,7 @@ angular.mock.dump = function(object) {
          var controller = createController();
          $httpBackend.flush();
 
-         // now you donâ€™t care about the authentication, but
+         // now you don’t care about the authentication, but
          // the controller will still send the request and
          // $httpBackend will respond without you having to
          // specify the expectation and response for this request
@@ -1210,10 +1220,10 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    *   request is handled. You can save this object for later use and invoke `respond` again in
    *   order to change how a matched request is handled.
    *
-   *  - respond â€“
+   *  - respond –
    *      `{function([status,] data[, headers, statusText])
    *      | function(function(method, url, data, headers)}`
-   *    â€“ The respond method takes a set of static data to be returned or a function that can
+   *    – The respond method takes a set of static data to be returned or a function that can
    *    return an array containing response status (number), response data (string), response
    *    headers (Object), and the text for the status (string). The respond method returns the
    *    `requestHandler` object for possible overrides.
@@ -1347,10 +1357,10 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    *  request is handled. You can save this object for later use and invoke `respond` again in
    *  order to change how a matched request is handled.
    *
-   *  - respond â€“
+   *  - respond –
    *    `{function([status,] data[, headers, statusText])
    *    | function(function(method, url, data, headers)}`
-   *    â€“ The respond method takes a set of static data to be returned or a function that can
+   *    – The respond method takes a set of static data to be returned or a function that can
    *    return an array containing response status (number), response data (string), response
    *    headers (Object), and the text for the status (string). The respond method returns the
    *    `requestHandler` object for possible overrides.
@@ -1487,11 +1497,11 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    *   all pending requests will be flushed. If there are no pending requests when the flush method
    *   is called an exception is thrown (as this typically a sign of programming error).
    */
-  $httpBackend.flush = function(count) {
-    $rootScope.$digest();
+  $httpBackend.flush = function(count, digest) {
+    if (digest !== false) $rootScope.$digest();
     if (!responses.length) throw new Error('No pending request to flush !');
 
-    if (angular.isDefined(count)) {
+    if (angular.isDefined(count) && count !== null) {
       while (count--) {
         if (!responses.length) throw new Error('No more pending request to flush !');
         responses.shift()();
@@ -1501,7 +1511,7 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
         responses.shift()();
       }
     }
-    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingExpectation(digest);
   };
 
 
@@ -1519,8 +1529,8 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    *   afterEach($httpBackend.verifyNoOutstandingExpectation);
    * ```
    */
-  $httpBackend.verifyNoOutstandingExpectation = function() {
-    $rootScope.$digest();
+  $httpBackend.verifyNoOutstandingExpectation = function(digest) {
+    if (digest !== false) $rootScope.$digest();
     if (expectations.length) {
       throw new Error('Unsatisfied requests: ' + expectations.join(', '));
     }
@@ -1885,13 +1895,13 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *   control how a matched request is handled. You can save this object for later use and invoke
  *   `respond` or `passThrough` again in order to change how a matched request is handled.
  *
- *  - respond â€“
+ *  - respond –
  *    `{function([status,] data[, headers, statusText])
  *    | function(function(method, url, data, headers)}`
- *    â€“ The respond method takes a set of static data to be returned or a function that can return
+ *    – The respond method takes a set of static data to be returned or a function that can return
  *    an array containing response status (number), response data (string), response headers
  *    (Object), and the text for the status (string).
- *  - passThrough â€“ `{function()}` â€“ Any request matching a backend definition with
+ *  - passThrough – `{function()}` – Any request matching a backend definition with
  *    `passThrough` handler will be passed through to the real backend (an XHR request will be made
  *    to the server.)
  *  - Both methods return the `requestHandler` object for possible overrides.
