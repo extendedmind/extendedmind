@@ -54,9 +54,7 @@
       UISessionService.changeFeature(feature, undefined, state);
       AnalyticsService.visit(feature);
     }
-    if ($rootScope.columns > 1){
-      $scope.toggleMenu();
-    }
+    if ($rootScope.columns === 1) $scope.toggleMenu();
   };
 
   // LISTS
@@ -74,9 +72,7 @@
       UISessionService.changeFeature('list', list);
       AnalyticsService.visit('list');
     }
-    if ($rootScope.columns > 1){
-      $scope.toggleMenu();
-    }
+    if ($rootScope.columns === 1) $scope.toggleMenu();
   };
 
   $scope.toggleLists = function toggleLists() {
