@@ -486,16 +486,14 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 TODO: Do we want an example of a swiper in the styleguide?
 */
 
-// 1. Override incorrect swiper.js height calculation.
-//    TODO: Update swiper and use cssWidthAndHeight: 'height' to possible fix this.
-//          Programmatic width calculation is still needed.
+// 1. Inherit height for .swiper-wrapper and .swiper-slide
 .swiper-wrapper, .swiper-slide {
-  height: inherit !important; // [1]
+  height: inherit; // [1]
 }
 
 // 1. Inherit height for vertical swiper slides.
 //    NOTE: evaluate need for this when vertical slide pages are implemented with new layout.
-.swiper-container [swiper-type="page"] {
+.swiper-container[swiper-type="page"] {
   height: inherit;  // [1]
 }
 

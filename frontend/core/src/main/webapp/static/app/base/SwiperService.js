@@ -91,6 +91,7 @@ function SwiperService($q, $timeout) {
       speed: 300, // set default speed for reference purposes only
       onlyExternal: onlyExternalSwipe ? true : false,
       noSwiping: true,
+      cssWidthAndHeight: 'height',
       queueStartCallbacks: true,
       queueEndCallbacks: true,
       simulateTouch: simulateTouch,
