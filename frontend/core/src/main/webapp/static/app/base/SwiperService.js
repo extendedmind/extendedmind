@@ -340,11 +340,6 @@ function SwiperService($q, $timeout) {
         }
       }
     },
-    setSwiping: function(swiperPath, swipe) {
-      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
-        swipers[swiperPath].swiper.params.swiping = swipe;
-      }
-    },
     setOnlyExternal: function(swiperPath, swipe) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         swipers[swiperPath].swiper.params.onlyExternal = swipe;

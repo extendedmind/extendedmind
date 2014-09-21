@@ -510,19 +510,19 @@
 
       function swiperAboutToMoveToNewPosition() {
         // Disable swiping during move.
-        SwiperService.setSwiping(scope.swiperPath, false);
+        SwiperService.setOnlyExternal(scope.swiperPath, true);
       }
 
       function swiperAboutToMoveToInitialPosition() {
         // Disable swiping during move.
-        SwiperService.setSwiping(scope.swiperPath, true);
+        SwiperService.setOnlyExternal(scope.swiperPath, false);
       }
 
       var iOsVersion = DetectIosVersionService(); // for iOS-related stuff
 
       function swiperMovedToNewPosition() {
         // Disable swiping in new position.
-        SwiperService.setSwiping(scope.swiperPath, false);
+        SwiperService.setOnlyExternal(scope.swiperPath, true);
 
         // Only in < iOS 8
         if (iOsVersion && iOsVersion[0] < 8) {  // running iOS 7 or earlier
@@ -536,7 +536,7 @@
 
       function swiperMovedToInitialPosition() {
         // Enable swiping in initial position.
-        SwiperService.setSwiping(scope.swiperPath, true);
+        SwiperService.setOnlyExternal(scope.swiperPath, false);
 
         // Only in < iOS 8
         if (iOsVersion && iOsVersion[0] < 8) {  // running iOS 7 or earlier
