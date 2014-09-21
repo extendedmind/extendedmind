@@ -101,6 +101,7 @@
 
             if ($scope.swiperType === 'main'){
               // Main swipers have a touch ratio, where left edge does not budge
+              // TODO: set left edge touch ratio to same value as right edge touch ratio when $rootsScope.colums > 1
               var leftEdgeTouchRatio = 0;
               var rightEdgeTouchRatio = 0.2;
               SwiperService.setEdgeTouchRatios($scope.swiperPath, leftEdgeTouchRatio, rightEdgeTouchRatio);
