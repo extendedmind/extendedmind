@@ -9,7 +9,7 @@
       </div>
       <div class="swiper-slide" ng-repeat="date in detectDayChangeAndReturnWeekdays() track by date.weekdayIndex" swiper-slide="focus/tasks/{{date.weekday}}" slide-index="$index">
         <div class="container-content" scroll-to>
-        <h2 ng-hide="isDatepickerVisible" class="date-heading row" ng-click="setDatepickerVisible()">{{date.displayDate}}</h2>
+          <h2 ng-hide="isDatepickerVisible" class="date-heading row" ng-click="setDatepickerVisible()">{{date.displayDate}}</h2>
           <!-- list-item directive creates the content for this div -->
           <!-- NOTE: needs more parameters, like list-item-has-star etc. -->
           <div class="row" ng-repeat="task in tasks | tasksByDate:date.yyyymmdd" list-item="task" list-item-has-checkbox="true"></div>
