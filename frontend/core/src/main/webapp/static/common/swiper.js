@@ -2414,7 +2414,6 @@ var Swiper = function (selector, params) {
     _this.loadSlides = function () {
         var slidesHTML = '';
         _this.activeLoaderIndex = 0;
-        console.log(params.loader.slides);
         var slides = params.loader.slides;
         var slidesToLoad = params.loader.loadAllSlides ? slides.length : params.slidesPerView * (1 + params.loader.surroundGroups);
         for (var i = 0; i < slidesToLoad; i++) {
