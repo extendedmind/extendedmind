@@ -23,7 +23,8 @@
       swiperPath: '@swiperContainer',
       swiperType: '@swiperType',
       expectedSlidesFn: '&expectedSlides',
-      onlyExternalSwipe: '=?swiperContainerOnlyExternalSwipe'
+      onlyExternalSwipe: '=?swiperContainerOnlyExternalSwipe',  // TODO unused, remove
+      loop: '=?swiperContainerLoop'
     },
     controller: function($scope, $element) {
       var swiperSlideInfos = [];
@@ -84,7 +85,6 @@
           // Update the expected slides variable only now, to make it possible
           // to push indexes forward
           $scope.expectedSlides = $scope.expectedSlidesFn();
-
           var slides = sortAndFlattenSlideInfos();
           if (!initializeSwiperCalled) {
             SwiperService.initializeSwiper(
@@ -96,7 +96,8 @@
               onSlideChangeEndCallback,
               onResistanceBeforeCallback,
               onResistanceAfterCallback,
-              $scope.onlyExternalSwipe);
+              $scope.onlyExternalSwipe,
+              $scope.loop);
             initializeSwiperCalled = true;
 
             if ($scope.swiperType === 'main'){
@@ -170,8 +171,8 @@
         SwiperService.onSwiperCreated($scope, $scope.swiperPath);
       }
 
-      function onSlideChangeEndCallback() {
-        SwiperService.onSlideChangeEnd($scope, $scope.swiperPath);
+      function onSlideChangeEndCallback(swiper, direction) {
+        SwiperService.onSlideChangeEnd($scope, $scope.swiperPath, direction);
       }
 
       var negativeHoldPosition, positiveHoldPosition;
