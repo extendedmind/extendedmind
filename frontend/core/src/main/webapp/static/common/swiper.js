@@ -12,6 +12,9 @@
  *
  * Released on: August 30, 2014
 */
+
+// FORKS:
+//  1.  Include duplicate slides in loop mode and do not create them to preserve AngularJS data-binding.
 var Swiper = function (selector, params) {
     'use strict';
 
@@ -2347,31 +2350,41 @@ var Swiper = function (selector, params) {
         var numSlides = _this.slides.length;
         var fullSlideSets = Math.floor(_this.loopedSlides / numSlides);
         var remainderSlides = _this.loopedSlides % numSlides;
-        // assemble full sets of slides
-        for (i = 0; i < (fullSlideSets * numSlides); i++) {
-            var j = i;
-            if (i >= numSlides) {
-                var over = Math.floor(i / numSlides);
-                j = i - (numSlides * over);
-            }
-            slidesSetFullHTML += _this.slides[j].outerHTML;
-        }
-        // assemble remainder slides
-        // assemble remainder appended to existing slides
-        for (i = 0; i < remainderSlides;i++) {
-            slideLastHTML += addClassToHtmlString(params.slideDuplicateClass, _this.slides[i].outerHTML);
-        }
-        // assemble slides that get preppended to existing slides
-        for (i = numSlides - remainderSlides; i < numSlides;i++) {
-            slideFirstHTML += addClassToHtmlString(params.slideDuplicateClass, _this.slides[i].outerHTML);
-        }
-        // assemble all slides
-        var slides = slideFirstHTML + slidesSetFullHTML + wrapper.innerHTML + slidesSetFullHTML + slideLastHTML;
-        // set the slides
-        wrapper.innerHTML = slides;
 
-        _this.loopCreated = true;
+        if (!params.loopDuplicateSlidesIncluded) {  // FORK [1]
+
+            // assemble full sets of slides
+            for (i = 0; i < (fullSlideSets * numSlides); i++) {
+                var j = i;
+                if (i >= numSlides) {
+                    var over = Math.floor(i / numSlides);
+                    j = i - (numSlides * over);
+                }
+                slidesSetFullHTML += _this.slides[j].outerHTML;
+            }
+            // assemble remainder slides
+            // assemble remainder appended to existing slides
+            for (i = 0; i < remainderSlides;i++) {
+                slideLastHTML += addClassToHtmlString(params.slideDuplicateClass, _this.slides[i].outerHTML);
+            }
+            // assemble slides that get preppended to existing slides
+            for (i = numSlides - remainderSlides; i < numSlides;i++) {
+                slideFirstHTML += addClassToHtmlString(params.slideDuplicateClass, _this.slides[i].outerHTML);
+            }
+            // assemble all slides
+            var slides = slideFirstHTML + slidesSetFullHTML + wrapper.innerHTML + slidesSetFullHTML + slideLastHTML;
+            // set the slides
+            wrapper.innerHTML = slides;
+
         _this.calcSlides();
+
+        // FORK [1]
+        } else {
+            _this.slides[0].classList.add(params.slideDuplicateClass);
+            _this.slides[_this.slides.length - 1].classList.add(params.slideDuplicateClass);
+        }
+        _this.loopCreated = true;
+        // FORK [1]
 
         //Update Looped Slides with special class
         for (i = 0; i < _this.slides.length; i++) {
@@ -2401,6 +2414,7 @@ var Swiper = function (selector, params) {
     _this.loadSlides = function () {
         var slidesHTML = '';
         _this.activeLoaderIndex = 0;
+        console.log(params.loader.slides);
         var slides = params.loader.slides;
         var slidesToLoad = params.loader.loadAllSlides ? slides.length : params.slidesPerView * (1 + params.loader.surroundGroups);
         for (var i = 0; i < slidesToLoad; i++) {
