@@ -30,13 +30,4 @@ describe('DatesController', function() {
       DateService = _DateService_;
     });
   });
-
-  it('should set active day to clicked day', function() {
-    var today = {
-      yyyymmdd: DateService.getTodayYYYYMMDD()
-    };
-    $scope.getDateClass(today);
-    expect($scope.getDateClass(today)).toEqual('date-active-today');
-  });
-
 });
