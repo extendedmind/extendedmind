@@ -121,16 +121,16 @@ Menu
 /*
 Vertically center .container-master and .container-editor in large screens
 */
-@media (min-height: @maximum-landscape-height) {
+@media (min-height: @height-landscape-max) {
   .container-master, .container-editor {
+    margin-top: -@height-landscape-max / 2;
     top: 50%;
-    margin-top: -@maximum-landscape-height / 2;
   }
 }
 
 /*
 **************************************************************************
-# LEVEL 4: Fluid
+# LEVEL 4: Fluid, toaster
 */
 @height-footer: @vertical-grid;
 
@@ -202,14 +202,25 @@ Vertically center .container-master and .container-editor in large screens
   height: @height-footer; // [1]
 }
 
-
-@media (min-height: @height-landscape-max) {
-  .container-editor {
-    margin-top: -@height-landscape-max / 2;
-    top: 50%;
-  }
+// 1. Put toaster to the bottom of its parent, .container-master or .container-editor
+// 2. Center toaster
+// 3. Set height and color
+.container-toaster {
+  position: absolute; // [1]
+  bottom: 0; // [1]
+  .center-horizontally; // [2]
+  left: 0; // [2]
+  right: 0; // [2]
+  max-width: @width-column-max; // [2]
+  height: @grid-vertical; // [3]
+  line-height: @grid-vertical; // [3]
+  background-color: @color-toaster; // [3]
 }
 
+// Position over master
+.container-master .container-toaster {
+  z-index: 1;
+}
 
 /*
 **************************************************************************

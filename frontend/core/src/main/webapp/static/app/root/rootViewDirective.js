@@ -30,6 +30,8 @@
       $rootScope.KEYBOARD_ANIMATION_TIME = 300;
       $rootScope.MENU_ANIMATION_SPEED = 200;
       $rootScope.EDITOR_ANIMATION_SPEED = 350;
+      $rootScope.EDITOR_FOOTER_HEIGHT = 44;
+
 
       // Back function globally available
       $scope.gotoPreviousPage = function gotoPreviousPage() {

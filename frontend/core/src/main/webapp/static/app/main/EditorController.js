@@ -270,9 +270,9 @@
 
   // var ITEM_ACTION_BUTTONS_ROW_HEIGHT = 60;
   // var ITEM_NAVIGATION_ROW_HEIGHT = 44;
-  var FOOTER_HEIGHT = 104;  // ITEM_ACTION_BUTTONS_ROW_HEIGHT + ITEM_NAVIGATION_ROW_HEIGHT
+  // ITEM_ACTION_BUTTONS_ROW_HEIGHT + ITEM_NAVIGATION_ROW_HEIGHT
   $scope.getOverrideEditorFooterHeight = function getOverrideEditorFooterHeight() {
-    return FOOTER_HEIGHT;
+    return $rootScope.EDITOR_FOOTER_HEIGHT;
   };
 }
 
