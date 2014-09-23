@@ -445,7 +445,9 @@ function SwiperService($q, $timeout) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) return swipers[swiperPath].swiper.slides;
     },
     getSwiperActiveSlideIndex: function(swiperPath) {
-      if (swipers[swiperPath] && swipers[swiperPath].swiper) return swipers[swiperPath].swiper.activeIndex;
+      if (swipers[swiperPath] && swipers[swiperPath].swiper)
+        return swipers[swiperPath].swiper.params.loop ?
+      swipers[swiperPath].swiper.activeLoopIndex : swipers[swiperPath].swiper.activeIndex;
     },
     setTouchSimulation: function(simulate) {
       simulateTouch = simulate;
