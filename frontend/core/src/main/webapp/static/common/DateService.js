@@ -81,7 +81,8 @@
 
       // show today or month + date
       // http://stackoverflow.com/a/9300653
-      day.displayDate = (date.toDateString() === today.toDateString() ? 'today' : day.month.name + ' ' + day.date);
+      day.referenceDate = day.displayDate =
+      (date.toDateString() === today.toDateString() ? 'today' : day.month.name + ' ' + day.date);
       day.displayDateShort = day.date;
 
       week.push(day);
@@ -104,6 +105,12 @@
     generateAndReturnNextWeek: function(week) {
       var date = new Date(week[0].yyyymmdd);
       date.setDate(date.getDate() + daysFromActiveWeekToNext);
+      return weekDaysStartingFrom(date);
+    },
+    generateAndReturnWeekWithOffset: function(offsetWeeks, week) {
+      var date = new Date(week[0].yyyymmdd);
+      var offsetDays = daysFromActiveWeekToNext * offsetWeeks;
+      date.setDate(date.getDate() + offsetDays);
       return weekDaysStartingFrom(date);
     },
     /**

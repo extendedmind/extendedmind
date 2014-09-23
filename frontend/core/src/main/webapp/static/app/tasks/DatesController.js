@@ -34,10 +34,43 @@
   }
   ];
 
-  var offsetFromOldActiveDay = 0;
-  var daySlideInfoCleared = false;
+  var currentWeek = DateService.generateAndReturnCurrentWeek(new Date());
+  $scope.datepickerWeeks = initializeAndReturnDatepickerWeeks(currentWeek);
 
-  SwiperService.registerSlideChangeStartCallback(slideChangeStartCallback, slidePath, '/focus/tasks');
+  function initializeAndReturnDatepickerWeeks(currentWeek) {
+    var datepickerWeeks = [];
+    var previousWeek = DateService.generateAndReturnPreviousWeek(currentWeek);
+    var nextWeek = DateService.generateAndReturnNextWeek(currentWeek);
+    datepickerWeeks.push(currentWeek);
+    datepickerWeeks.push(nextWeek);
+    datepickerWeeks.push(previousWeek);
+    return datepickerWeeks;
+  }
+
+  var offsetFromOldActiveSlide = 0;
+  var datepickerWeeksInfosCleared = false;
+
+  SwiperService.registerSlideChangeStartCallback(datepickerSlideChangeStartCallback, 'datepicker', 'DatesController');
+  function datepickerSlideChangeStartCallback(direction) {
+    offsetFromOldActiveSlide += direction === 'prev' ? -1 : 1;
+
+    if (Math.abs(offsetFromOldActiveSlide) >= 2) {
+      if (!datepickerWeeksInfosCleared) {
+        for (var i = 0, len = $scope.datepickerWeeks.length; i < len; i++) {
+          for (var j = 0, jLen = $scope.datepickerWeeks[i].length; j < jLen; j++) {
+            // FIXME: use displayDate instead of displayDateShort when display format is decided!
+            $scope.datepickerWeeks[i][j].displayDateShort = '...';
+            if (!$scope.$$phase) $scope.$digest();
+          }
+        }
+      }
+    }
+  }
+
+  var offsetFromOldActiveDay = 0;
+  var daySlidesInfosCleared = false;
+
+  SwiperService.registerSlideChangeStartCallback(slideChangeStartCallback, 'focus/tasks', 'DatesController');
   function slideChangeStartCallback(direction) {
     // Store offset from old active day because slides can be swiped back and forth
     // before slide change end callback is fired.
@@ -45,15 +78,41 @@
 
     // Hide dates before values are updated. Only old active date and its next and previous dates are correct.
     if (Math.abs(offsetFromOldActiveDay) >= 2) {
-      if (!daySlideInfoCleared) {
+      if (!daySlidesInfosCleared) {
         for (var i = 0, len = $scope.daySlides.length; i < len; i++) {
           $scope.daySlides[i].referenceDate = $scope.daySlides[i].info;
           $scope.daySlides[i].info = '...';
         }
         if (!$scope.$$phase) $scope.$digest();
-        daySlideInfoCleared = true;
+        daySlidesInfosCleared = true;
       }
     }
+  }
+
+  SwiperService.registerSlideChangeCallback(datepickerSlideChangeCallback, 'datepicker', 'DatesController');
+  function datepickerSlideChangeCallback(slidePath, activeSlideIndex) {
+
+    var slidesArrayLength = $scope.datepickerWeeks.length;
+
+    var movedOffset = offsetFromOldActiveSlide % slidesArrayLength;
+    var oldActiveSlideIndex = (activeSlideIndex - movedOffset + slidesArrayLength) % slidesArrayLength;
+
+    var previousSlideIndex = (activeSlideIndex - 1 + slidesArrayLength) % slidesArrayLength;
+    var nextSlideIndex = (activeSlideIndex + 1 + slidesArrayLength) % slidesArrayLength;
+
+    var referenceWeek = $scope.datepickerWeeks[oldActiveSlideIndex];
+    var newActiveWeek = DateService.generateAndReturnWeekWithOffset(offsetFromOldActiveSlide, referenceWeek);
+
+    var newPreviousWeek = DateService.generateAndReturnPreviousWeek(newActiveWeek);
+    var newNextWeek = DateService.generateAndReturnNextWeek(newActiveWeek);
+
+    $scope.datepickerWeeks[previousSlideIndex] = newPreviousWeek;
+    $scope.datepickerWeeks[activeSlideIndex] = newActiveWeek;
+    $scope.datepickerWeeks[nextSlideIndex] = newNextWeek;
+
+    if (!$scope.$$phase) $scope.$digest();
+    offsetFromOldActiveSlide = 0;
+    datepickerWeeksInfosCleared = false;
   }
 
   /*
@@ -63,7 +122,7 @@
   function slideChangeCallback(slidePath, slideIndex) {
     // Swiper is in loop mode so array that stores slide infos is circular.
 
-    // Moved offset is a remainder from total moves divided by slides array length.
+    // Moved offset is the remainder from total moves divided by slides array length.
     // Used later to set offset date from reference day.
     var movedOffset = offsetFromOldActiveDay % $scope.daySlides.length;
     var oldActiveSlideIndex = (slideIndex - movedOffset + $scope.daySlides.length) % $scope.daySlides.length;
@@ -162,15 +221,13 @@
     //     }
     //   }
     // }
-
-    if (!$scope.$$phase) $scope.$digest();
-
+    // Set variables to initial values.
     offsetFromOldActiveDay = 0;
-    daySlideInfoCleared = false;
-  }
+    daySlidesInfosCleared = false;
 
-  var currentWeek = DateService.generateAndReturnCurrentWeek(new Date());
-  $scope.datepickerWeeks = initializeAndReturnDatepickerWeeks(currentWeek);
+    // Update UI.
+    if (!$scope.$$phase) $scope.$digest();
+  }
 
   $scope.activeDay = {};
   $rootScope.isDatepickerVisible = false;
@@ -212,16 +269,6 @@
 
   function getDateSlidePath(activeDay) {
     return slidePath + '/' + activeDay.weekday;
-  }
-
-  function initializeAndReturnDatepickerWeeks(currentWeek) {
-    var datepickerWeeks = [];
-    var previousWeek = DateService.generateAndReturnPreviousWeek(currentWeek);
-    var nextWeek = DateService.generateAndReturnNextWeek(currentWeek);
-    datepickerWeeks.push(previousWeek);
-    datepickerWeeks.push(currentWeek);
-    datepickerWeeks.push(nextWeek);
-    return datepickerWeeks;
   }
 
   /**
