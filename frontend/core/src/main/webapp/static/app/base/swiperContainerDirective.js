@@ -93,6 +93,7 @@
               $scope.swiperType,
               slides,
               onSwiperCreatedCallback,
+              $scope.loop ? onSlideChangeStartCallback : undefined,
               onSlideChangeEndCallback,
               onResistanceBeforeCallback,
               onResistanceAfterCallback,
@@ -169,6 +170,10 @@
 
       function onSwiperCreatedCallback() {
         SwiperService.onSwiperCreated($scope, $scope.swiperPath);
+      }
+
+      function onSlideChangeStartCallback(swiper, direction) {
+        SwiperService.onSlideChangeStart($scope, $scope.swiperPath, direction);
       }
 
       function onSlideChangeEndCallback(swiper, direction) {

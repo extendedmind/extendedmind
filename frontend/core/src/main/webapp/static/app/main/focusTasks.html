@@ -1,21 +1,68 @@
 <section class="container-content" ng-controller="DatesController">
   <div ng-if="isDatepickerVisible" class="row swiper-no-swiping" data-snap-ignore="true" datepicker></div>
-  <div class="swiper-container" swiper-container="focus/tasks" swiper-type="page" expected-slides="7">
+  <div class="swiper-container" swiper-container="focus/tasks" swiper-type="page" expected-slides="5" swiper-container-loop="true">
     <div class="swiper-wrapper">
-      <!-- Swiper has for internal reasons, a previous week loader that is below the header  -->
-      <!-- NOTE: .loader renamed to .swiper-loader -->
+
+      <div class="swiper-slide" swiper-slide="focus/tasks/right" slide-index="0">
+        <div class="container-content">
+          <h1>{{daySlides[2].info}}</h1>
+        </div>
+      </div>
+
+      <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1">
+        <div class="container-content">
+          <h1>{{daySlides[0].info}}</h1>
+        </div>
+      </div>
+
+      <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2">
+        <div class="container-content">
+          <h1>{{daySlides[1].info}}</h1>
+        </div>
+      </div>
+
+      <div class="swiper-slide" swiper-slide="focus/tasks/right" slide-index="3">
+        <div class="container-content">
+          <h1>{{daySlides[2].info}}</h1>
+        </div>
+      </div>
+
+      <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="4">
+        <div class="container-content">
+          <h1>{{daySlides[0].info}}</h1>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<footer class="container-content--after">notes -</footer>
+
+
+
+<!-- Swiper has for internal reasons, a previous week loader that is below the header  -->
+<!-- NOTE: .loader renamed to .swiper-loader -->
+
+<!-- UNCOMMENT
       <div class="swiper-loader row" id="pull-to-previous">
         <span>previous week...</span>
       </div>
       <div class="swiper-slide" ng-repeat="date in detectDayChangeAndReturnWeekdays() track by date.weekdayIndex" swiper-slide="focus/tasks/{{date.weekday}}" slide-index="$index">
         <div class="container-content" scroll-to>
           <h2 ng-hide="isDatepickerVisible" class="date-heading row" ng-click="setDatepickerVisible()">{{date.displayDate}}</h2>
+          UNCOMMENT -->
+
           <!-- list-item directive creates the content for this div -->
           <!-- NOTE: needs more parameters, like list-item-has-star etc. -->
+
+<!-- UNCOMMENT
           <div class="row" ng-repeat="task in tasks | tasksByDate:date.yyyymmdd" list-item="task" list-item-has-checkbox="true"></div>
+          UNCOMMENT -->
 
           <!-- When add task is activated, this should get a ".row-active" class -->
           <!-- This would work if feature-container has the editable-field-backdrop / backdrop-container directive -->
+
+<!-- UNCOMMENT
           <div class="row" ng-include="'static/app/tasks/addTask.html'"></div>
           <div class="row" ng-if="tasks.length === 0">
             <div class="instruction-text">
@@ -24,13 +71,14 @@
           </div>
         </div>
       </div>
+      UNCOMMENT -->
+
 
       <!-- Swiper has for internal reasons, a next week loader that is below the footer  -->
       <!-- NOTE: .loader renamed to .swiper-loader -->
+
+<!-- UNCOMMENT
       <div id="pull-to-next" class="loader">
         <span>next week...</span>
       </div>
-    </div>
-  </div>
-</section>
-<footer class="container-content--after">notes -</footer>
+      UNCOMMENT -->

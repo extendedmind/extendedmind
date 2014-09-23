@@ -147,6 +147,11 @@
     getFirstDateOfTheMonth: function(date) {
       return new Date(date.getFullYear(), date.getMonth(), 1);
     },
+    getYesterdayYYYYMMDD: function() {
+      var yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      return yyyymmdd(yesterday);
+    },
     getTodayYYYYMMDD: function() {
       return yyyymmdd(new Date());
     },
@@ -164,6 +169,12 @@
     },
     getMonthNames: function() {
       return monthNames;
+    },
+    getDateWithOffset: function(offsetDays, date) {
+      // console.log(date.getDate());
+      var d = new Date(date);
+      d.setDate(date.getDate() + offsetDays);
+      return d;
     },
 
     // setters

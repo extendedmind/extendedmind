@@ -19,6 +19,156 @@
   var dayChangeLastCheck;
   var slidePath = 'focus/tasks';
 
+  $scope.daySlides = [
+  {
+    info: DateService.getTodayYYYYMMDD(),
+    referenceDate: DateService.getTodayYYYYMMDD()
+  },
+  {
+    info: DateService.getTomorrowYYYYMMDD(),
+    referenceDate: DateService.getTomorrowYYYYMMDD()
+  },
+  {
+    info: DateService.getYesterdayYYYYMMDD(),
+    referenceDate: DateService.getYesterdayYYYYMMDD()
+  }
+  ];
+
+  var offsetFromOldActiveDay = 0;
+  var daySlideInfoCleared = false;
+
+  SwiperService.registerSlideChangeStartCallback(slideChangeStartCallback, slidePath, '/focus/tasks');
+  function slideChangeStartCallback(direction) {
+    // Store offset from old active day because slides can be swiped back and forth
+    // before slide change end callback is fired.
+    offsetFromOldActiveDay += direction === 'prev' ? -1 : 1;
+
+    // Hide dates before values are updated. Only old active date and its next and previous dates are correct.
+    if (Math.abs(offsetFromOldActiveDay) >= 2) {
+      if (!daySlideInfoCleared) {
+        for (var i = 0, len = $scope.daySlides.length; i < len; i++) {
+          $scope.daySlides[i].referenceDate = $scope.daySlides[i].info;
+          $scope.daySlides[i].info = '...';
+        }
+        if (!$scope.$$phase) $scope.$digest();
+        daySlideInfoCleared = true;
+      }
+    }
+  }
+
+  /*
+  * Register a slide change callback to swiper service.
+  */
+  SwiperService.registerSlideChangeCallback(slideChangeCallback, slidePath, 'focus/tasks');
+  function slideChangeCallback(slidePath, slideIndex) {
+    // Swiper is in loop mode so array that stores slide infos is circular.
+
+    // Moved offset is a remainder from total moves divided by slides array length.
+    // Used later to set offset date from reference day.
+    var movedOffset = offsetFromOldActiveDay % $scope.daySlides.length;
+    var oldActiveSlideIndex = (slideIndex - movedOffset + $scope.daySlides.length) % $scope.daySlides.length;
+
+    // Adjacent circular array indexes.
+    var previousIndex = (slideIndex - 1 + $scope.daySlides.length) % $scope.daySlides.length;
+    var nextIndex = (slideIndex + 1 + $scope.daySlides.length) % $scope.daySlides.length;
+
+    // Set new active day with offset from old active day.
+    var referenceDate = new Date($scope.daySlides[oldActiveSlideIndex].referenceDate);
+    var newActiveDay = DateService.getDateWithOffset(offsetFromOldActiveDay, referenceDate);
+
+    // Set adjacent days.
+    var newPreviousDay = DateService.getDateWithOffset(-1, newActiveDay);
+    var newNextDay = DateService.getDateWithOffset(1, newActiveDay);
+
+    $scope.daySlides[previousIndex].info = $scope.daySlides[previousIndex].referenceDate = DateService.getYYYYMMDD(newPreviousDay);
+    $scope.daySlides[slideIndex].info = $scope.daySlides[slideIndex].referenceDate = DateService.getYYYYMMDD(newActiveDay);
+    $scope.daySlides[nextIndex].info = $scope.daySlides[nextIndex].referenceDate = DateService.getYYYYMMDD(newNextDay);
+
+
+    // (index - 1 + array.length) % array.length
+
+    // get old active index
+    // if (direction === 'prev') {
+      // var offset = direction === 'prev' ? -1 : 1;
+
+    // var previousIndex = (slideIndex + movedOffset + $scope.daySlides.length) % $scope.daySlides.length;
+    // var nextIndex = (slideIndex - movedOffset + $scope.daySlides.length) % $scope.daySlides.length;
+
+    // var oldActiveSlideIndex = direction === 'prev' ? previousIndex : nextIndex;
+
+    // console.log('moved offset: ' + movedOffset);
+    // console.log(offsetFromOldActiveDay);
+
+    // console.log('old active index: ' + (slideIndex + movedOffset + $scope.daySlides.length) % $scope.daySlides.length);
+
+    // // TODO rename!
+
+    // if (offsetFromOldActiveDay >= 2) {
+
+
+    //   var referenceDate = new Date($scope.daySlides[oldActiveSlideIndex].referenceDate);
+    //   var offsetDays = direction === 'prev' ? -offsetFromOldActiveDay : offsetFromOldActiveDay;
+    //   var offsetDay = DateService.getDateWithOffset(referenceDate, offsetDays);
+
+    //   $scope.daySlides[slideIndex].info = $scope.daySlides[slideIndex].referenceDate = DateService.getYYYYMMDD(offsetDay);
+
+    //   var previousSlide, nextSlide;
+    //   if (slideIndex === 0) {
+    //     previousSlide = $scope.daySlides[$scope.daySlides.length - 1];
+    //     nextSlide = $scope.daySlides[slideIndex + 1];
+    //   }
+    //   else if (slideIndex === $scope.daySlides.length - 1) {
+    //     nextSlide = $scope.daySlides[0];
+    //     previousSlide = $scope.daySlides[slideIndex - 1];
+    //   }
+    //   else {
+    //     previousSlide = $scope.daySlides[slideIndex - 1];
+    //     nextSlide = $scope.daySlides[slideIndex + 1];
+    //   }
+
+    //   var previousDay = DateService.getDateWithOffset(offsetDay, -1);
+    //   var nextDay = DateService.getDateWithOffset(offsetDay, 1);
+
+    //   previousSlide.info = previousSlide.referenceDate = DateService.getYYYYMMDD(previousDay);
+    //   nextSlide.info = nextSlide.referenceDate = DateService.getYYYYMMDD(nextDay);
+    // }
+
+    // else {
+    //   var d = new Date($scope.daySlides[slideIndex].referenceDate);
+
+
+    //   if (direction === 'prev') {
+
+    //     var offsetDate = DateService.setOffsetDate(-offsetFromOldActiveDay, d).getYYYYMMDD(d);
+    //     // update previous slide
+
+
+    //     if (slideIndex === 0) {
+    //       $scope.daySlides[$scope.daySlides.length - 1].info = offsetDate;
+
+    //     } else {
+    //       $scope.daySlides[slideIndex - 1].info = offsetDate;
+    //     }
+
+    //   } else if (direction === 'next') {
+
+    //     var offsetDate = DateService.setOffsetDate(offsetFromOldActiveDay, d).getYYYYMMDD(d);
+
+    //     // update next slide
+    //     if (slideIndex === $scope.daySlides.length - 1) {
+    //       $scope.daySlides[0].info = offsetDate;
+    //     } else {
+    //       $scope.daySlides[slideIndex + 1].info = offsetDate;
+    //     }
+    //   }
+    // }
+
+    if (!$scope.$$phase) $scope.$digest();
+
+    offsetFromOldActiveDay = 0;
+    daySlideInfoCleared = false;
+  }
+
   var currentWeek = DateService.generateAndReturnCurrentWeek(new Date());
   $scope.datepickerWeeks = initializeAndReturnDatepickerWeeks(currentWeek);
 
@@ -38,7 +188,7 @@
       }
     });
   }
-  swipeToStartingDay(undefined, true);
+  // swipeToStartingDay(undefined, true);
 
   $scope.detectDayChangeAndReturnWeekdays = function detectDayChangeAndReturnWeekdays() {
     var activeSlide = SwiperService.getActiveSlidePath($scope.getActiveFeature());
@@ -122,19 +272,6 @@
     var newActiveDay = currentWeek[weekdayIndex];
     swipeToStartingDay(newActiveDay);
   };
-
-  // Register a slide change callback to swiper service
-  SwiperService.registerSlideChangeCallback(slideChangeCallback, slidePath, 'DatesController');
-  function slideChangeCallback(activeSlidePath) {
-    if (!activeSlidePath.endsWith($scope.activeDay.weekday)) {
-      for (var i = 0, len = currentWeek.length; i < len; i++) {
-        if (activeSlidePath.endsWith(currentWeek[i].weekday)) {
-          $scope.activeDay = currentWeek[i];
-          return;
-        }
-      }
-    }
-  }
 
   // Pull to refresh previous/next week callbacks
   SwiperService.registerNegativeResistancePullToRefreshCallback(
