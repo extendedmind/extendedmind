@@ -36,7 +36,7 @@
 
   $scope.dateClicked = function dateClicked(date) {
     // Get reference date from active slide.
-    var activeSlideIndex = SwiperService.getSwiperActiveSlideIndex('focus/tasks');
+    var activeSlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
     var newActiveDate = new Date(date);
 
     // http://stackoverflow.com/a/543152

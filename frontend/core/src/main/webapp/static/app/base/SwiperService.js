@@ -444,7 +444,7 @@ function SwiperService($q, $timeout) {
     getSwiperSlides: function(swiperPath) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) return swipers[swiperPath].swiper.slides;
     },
-    getSwiperActiveSlideIndex: function(swiperPath) {
+    getActiveSlideIndex: function(swiperPath) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper)
         return swipers[swiperPath].swiper.params.loop ?
       swipers[swiperPath].swiper.activeLoopIndex : swipers[swiperPath].swiper.activeIndex;

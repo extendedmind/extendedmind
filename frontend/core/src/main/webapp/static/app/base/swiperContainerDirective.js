@@ -469,7 +469,7 @@
 
       // Hide previous and/or next slide with this for the duration of a resize animation to prevent flickering.
       function toggleAdjacentInactiveSwiperSlidesVisiblity(visibilityValue) {
-        var activeSlideIndex = SwiperService.getSwiperActiveSlideIndex(scope.swiperPath);
+        var activeSlideIndex = SwiperService.getActiveSlideIndex(scope.swiperPath);
         var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
 
         // hide previous
@@ -533,7 +533,7 @@
 
         // Only in < iOS 8
         if (iOsVersion && iOsVersion[0] < 8) {  // running iOS 7 or earlier
-          var activeSlideIndex = SwiperService.getSwiperActiveSlideIndex(scope.swiperPath);
+          var activeSlideIndex = SwiperService.getActiveSlideIndex(scope.swiperPath);
           if (activeSlideIndex > 0) {
             var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
             swiperSlides[activeSlideIndex - 1].classList.toggle('swiper-slide-under-element', true);
@@ -547,7 +547,7 @@
 
         // Only in < iOS 8
         if (iOsVersion && iOsVersion[0] < 8) {  // running iOS 7 or earlier
-          var activeSlideIndex = SwiperService.getSwiperActiveSlideIndex(scope.swiperPath);
+          var activeSlideIndex = SwiperService.getActiveSlideIndex(scope.swiperPath);
           if (activeSlideIndex > 0) {
             var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
             swiperSlides[activeSlideIndex - 1].classList.toggle('swiper-slide-under-element', false);
