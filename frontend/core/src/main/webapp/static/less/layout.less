@@ -272,41 +272,9 @@ margin.
 }
 
 /*
-Class `.group-btn` groups automatically button elements horizontally. Works
-for 1, 2, 3, 4, 7 and 9 buttons.
+Class `.group-btn` groups automatically button elements horizontally. Works for 1 and 2 buttons.
 
 ```markup
-<div class="group-btn" style="width: 100%;">
-  <button style="background: gray;">&nbsp;</button>
-  <button style="background: red;">&nbsp;</button>
-  <button style="background: gray;">&nbsp;</button>
-  <button style="background: red;">&nbsp;</button>
-  <button style="background: gray;">&nbsp;</button>
-  <button style="background: red;">&nbsp;</button>
-  <button style="background: gray;">&nbsp;</button>
-  <button style="background: red;">&nbsp;</button>
-  <button style="background: gray;">&nbsp;</button>
-</div>
-<div class="group-btn" style="width: 100%;">
-  <button style="background: gray;">&nbsp;</button>
-  <button style="background: red;">&nbsp;</button>
-  <button style="background: gray;">&nbsp;</button>
-  <button style="background: red;">&nbsp;</button>
-  <button style="background: gray;">&nbsp;</button>
-  <button style="background: red;">&nbsp;</button>
-  <button style="background: gray;">&nbsp;</button>
-</div>
-<div class="group-btn" style="width: 100%;">
-  <button style="background: gray;">&nbsp;</button>
-  <button style="background: red;">&nbsp;</button>
-  <button style="background: gray;">&nbsp;</button>
-  <button style="background: red;">&nbsp;</button>
-</div>
-<div class="group-btn" style="width: 100%;">
-  <button style="background: gray;">&nbsp;</button>
-  <button style="background: red;">&nbsp;</button>
-  <button style="background: gray;">&nbsp;</button>
-</div>
 <div class="group-btn" style="width: 100%;">
   <button style="background: gray;">&nbsp;</button>
   <button style="background: red;">&nbsp;</button>
@@ -331,13 +299,43 @@ for 1, 2, 3, 4, 7 and 9 buttons.
   button:first-child:nth-last-child(2) ~ button {
     padding-left: @width-button-gap / 2;
   }
-  button:first-child:nth-last-child(7),
-  button:first-child:nth-last-child(7) ~ button {
+}
+
+/*
+Class `.group-link` groups automatically a elements horizontally. Works for 7 and 9 links.
+
+```markup
+<div class="group-link" style="width: 100%;">
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+</div>
+<div class="group-link" style="width: 100%;">
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+</div>
+```
+*/
+.group-link {
+  text-align: center;
+  a:first-child:nth-last-child(7),
+  a:first-child:nth-last-child(7) ~ a {
     width: 14.2857%;
     float: left;
   }
-  button:first-child:nth-last-child(9),
-  button:first-child:nth-last-child(9) ~ button {
+  a:first-child:nth-last-child(9),
+  a:first-child:nth-last-child(9) ~ a {
     width: 11.111%;
     float: left;
   }
