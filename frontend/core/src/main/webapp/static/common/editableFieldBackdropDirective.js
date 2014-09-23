@@ -36,20 +36,12 @@
       $scope.hideBackdrop = function hideBackdrop() {
         $rootScope.backdropActive = false;
         $element.removeClass('active swiper-no-swiping');
-        $element.addClass('animating');
       };
 
       // Listen to transition end callbacks
 
-      var transitionEndCallback = function() {
-        $element.removeClass('animating');
-      };
-      angular.element($element).bind(
-        'webkitTransitionend oTransitionend msTransitionend transitionend', transitionEndCallback);
       $scope.$on('$destroy', function() {
         $rootScope.backdropActive = false;
-        angular.element($element).unbind(
-          'webkitTransitionend oTransitionend msTransitionend transitionend', transitionEndCallback);
       });
     }
   };

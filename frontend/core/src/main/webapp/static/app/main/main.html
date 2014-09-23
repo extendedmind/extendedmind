@@ -25,7 +25,7 @@
   <div ng-include="'static/app/main/editor.html'" include-replace></div>
   <div drawer-aisle class="container-drawer-aisle">
     <div class="container-master" vertical-resize="master">
-      <div class="container-fluid" ng-class="getFooterVisibilityClass()" editable-field-backdrop>
+      <div class="container-fluid" ng-class="getFooterVisibilityClass()">
         <div ng-include="'static/app/main/toolbar.html'" include-replace></div>
         <div ng-if="isFeatureActive('account')" ng-include="'static/app/account/account.html'" include-replace></div>
         <div ng-if="isFeatureActive('focus')" ng-include="'static/app/main/focusSlides.html'" include-replace></div>

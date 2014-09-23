@@ -51,7 +51,36 @@ TODO: Do we want an example of a swiper in the styleguide?
   -ms-touch-action: pan-x;  // [1]
 }
 
-//////// NEW START ////////////////////////
+
+/*
+Backdrop for editable field
+
+TODO: working example needed!
+
+```markup
+<div class="editable-field-backdrop" style="height: 100px">
+  <div class="inner-page-content-container" style="width=50%;height=50%;">I'm mr. lightbox</div>
+</div>
+```
+*/
+
+.editable-field-backdrop.active {
+  &.backdrop-disable * {
+    pointer-events: none;
+  }
+  // In Android, scrolling is not possible form pointer-events: none, even though in iOS it is
+  &.backdrop-disable .container-content {
+    pointer-events: auto;
+  }
+}
+
+.backdrop-disable .editable-field-container.active {
+  * {
+    pointer-events: auto !important;
+  }
+}
+
+//////// NEW END ////////////////////////
 
 /*
 *************************************************************
