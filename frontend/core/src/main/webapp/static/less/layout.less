@@ -70,7 +70,6 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 */
 
 @speed-animation-menu: .2s;
-@speed-animation-soft-keyboard: .3s;
 
 // 1. Layout for Snap.js. See https://github.com/jakiestfu/Snap.js/#layout
 // 2. Inherit height to expand vertically and for (grand)children as well.
@@ -84,15 +83,6 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   max-height: @height-landscape-max;  // [1]
 }
 
-// 1. Animate maximum height change when soft keyboard opens and closes
-.container-editor {
-  -webkit-transition: max-height @speed-animation-soft-keyboard ease-out; // [1]
-  -moz-transition: max-height @speed-animation-soft-keyboard ease-out;    // [1]
-  -o-transition: max-height @speed-animation-soft-keyboard ease-out;      // [1]
-  -ms-transition: max-height @speed-animation-soft-keyboard ease-out;     // [1]
-  transition: max-height @speed-animation-soft-keyboard ease-out;         // [1]
-}
-
 /*
 Master
 */
@@ -100,11 +90,11 @@ Master
 // 1. Animate maximum width change when menu opens and closes.
 // 2. Animate maximum height change when soft keyboard opens and closes.
 .container-master {
-  -webkit-transition: max-width @speed-animation-menu ease-out, max-height @speed-animation-soft-keyboard ease-out; // [1,2]
-  -moz-transition: max-width @speed-animation-menu ease-out, max-height @speed-animation-soft-keyboard ease-out;    // [1,2]
-  -o-transition: max-width @speed-animation-menu ease-out, max-height @speed-animation-soft-keyboard ease-out;      // [1,2]
-  -ms-transition: max-width @speed-animation-menu ease-out, max-height @speed-animation-soft-keyboard ease-out;     // [1,2]
-  transition: max-width @speed-animation-menu ease-out, max-height @speed-animation-soft-keyboard ease-out;         // [1,2]
+  -webkit-transition: max-width @speed-animation-menu ease-out; // [1,2]
+  -moz-transition: max-width @speed-animation-menu ease-out;    // [1,2]
+  -o-transition: max-width @speed-animation-menu ease-out;      // [1,2]
+  -ms-transition: max-width @speed-animation-menu ease-out;     // [1,2]
+  transition: max-width @speed-animation-menu ease-out;         // [1,2]
 }
 
 /*
