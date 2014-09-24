@@ -532,13 +532,14 @@
         SwiperService.setOnlyExternal(scope.swiperPath, true);
 
         // Only in < iOS 8
-        if (iOsVersion && iOsVersion[0] < 8) {  // running iOS 7 or earlier
+        // TODO: update cordova and uncomment: https://issues.apache.org/jira/browse/CB-7043
+        //if (iOsVersion && iOsVersion[0] < 8) {  // running iOS 7 or earlier
           var activeSlideIndex = SwiperService.getActiveSlideIndex(scope.swiperPath);
           if (activeSlideIndex > 0) {
             var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
             swiperSlides[activeSlideIndex - 1].classList.toggle('swiper-slide-under-element', true);
           }
-        }
+        //}
       }
 
       function swiperMovedToInitialPosition() {
@@ -546,13 +547,14 @@
         SwiperService.setOnlyExternal(scope.swiperPath, false);
 
         // Only in < iOS 8
-        if (iOsVersion && iOsVersion[0] < 8) {  // running iOS 7 or earlier
+        // TODO: update cordova and uncomment: https://issues.apache.org/jira/browse/CB-7043
+        //if (iOsVersion && iOsVersion[0] < 8) {  // running iOS 7 or earlier
           var activeSlideIndex = SwiperService.getActiveSlideIndex(scope.swiperPath);
           if (activeSlideIndex > 0) {
             var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
             swiperSlides[activeSlideIndex - 1].classList.toggle('swiper-slide-under-element', false);
           }
-        }
+        //}
       }
 
       if (drawerAisleController){
