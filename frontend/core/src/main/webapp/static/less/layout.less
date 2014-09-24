@@ -172,7 +172,6 @@ Vertically center .container-master and .container-editor in large screens
 //    so it needs to be positioned to the bottom of the content-container.
 //    NOTE: Override programmatically if footer height is different.
 //          See http://css-tricks.com/snippets/css/sticky-footer/
-// 3. .container-content--after must have a background and z-index in order to hide resized .swiper-slide:s
 .container-master, .container-editor {
   .swiper-slide {
     .container-content, .container-content--after {
@@ -182,8 +181,6 @@ Vertically center .container-master and .container-editor in large screens
     }
     .container-content--after {
       bottom: -@height-footer;  // [2]
-      z-index: 1;               // [3]
-      background-color: white;  // [3]
     }
   }
 }

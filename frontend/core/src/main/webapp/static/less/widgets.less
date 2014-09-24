@@ -19,6 +19,7 @@ see: http://www.idangero.us/sliders/swiper/
 TODO: Do we want an example of a swiper in the styleguide?
 */
 
+// 1. Prevent slide flicker during transforms & transitions. See http://stackoverflow.com/a/4674791
 // TODO: explanations
 .swiper-container {
   overflow: hidden;
@@ -34,6 +35,11 @@ TODO: Do we want an example of a swiper in the styleguide?
   -ms-transition-timing-function: ease-out;
   -o-transition-timing-function: ease-out;
   transition-timing-function: ease-out;
+
+  -webkit-transition-property:-webkit-transform;  // [1]
+  -o-transition-property:-o-transform;            // [1]
+  -ms-transition-property:-ms-transform;          // [1]
+  transition-property: transform;                 // [1]
 }
 
 // 1. Relative position is needed to center children horizontally.
