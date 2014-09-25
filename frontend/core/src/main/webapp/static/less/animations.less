@@ -1,18 +1,66 @@
 @import "foundation.less";
 
+//////// NEW START ////////////////////////
+
+@speed-animate-item-fade: 1s;
+@speed-animate-item-shrink: .5s;
+@delay-animate-item-shrink: .5s;
+@timing-animate-item: cubic-bezier(0.250, 0.460, 0.450, 0.940);
+
+// 1. TODO: remove when grid is implemented and correct values are inherited
+// 2. Animate opacity first, delay max-height animation by 0.5s.
+.list-item-leave-add, {
+  max-height: 31px; // [1]
+  opacity: 1;       // [1]
+
+  -webkit-transition-property: opacity, max-height;                                   // [2]
+  -webkit-transition-duration: @speed-animate-item-fade, @speed-animate-item-shrink;  // [2]
+  -webkit-transition-timing-function: @timing-animate-item, @timing-animate-item;     // [2]
+  -webkit-transition-delay: 0s, @delay-animate-item-shrink;                           // [2]
+
+  -moz-transition-property: opacity, max-height;                                      // [2]
+  -moz-transition-duration: @speed-animate-item-fade, @speed-animate-item-shrink;     // [2]
+  -moz-transition-timing-function: @timing-animate-item, @timing-animate-item;        // [2]
+  -moz-transition-delay: 0s, @delay-animate-item-shrink;                              // [2]
+
+  -o-transition-property: opacity, max-height;                                        // [2]
+  -o-transition-duration: @speed-animate-item-fade, @speed-animate-item-shrink;       // [2]
+  -o-transition-timing-function: @timing-animate-item, @timing-animate-item;          // [2]
+  -o-transition-delay: 0s, @delay-animate-item-shrink;                                // [2]
+
+  -ms-transition-property: opacity, max-height;                                       // [2]
+  -ms-transition-duration: @speed-animate-item-fade, @speed-animate-item-shrink;      // [2]
+  -ms-transition-timing-function: @timing-animate-item, @timing-animate-item;         // [2]
+  -ms-transition-delay: 0s, @delay-animate-item-shrink;                               // [2]
+
+  transition-property: opacity, max-height;                                           // [2]
+  transition-duration: @speed-animate-item-fade, @speed-animate-item-shrink;          // [2]
+  transition-timing-function: @timing-animate-item, @timing-animate-item;             // [2]
+  transition-delay: 0s, @delay-animate-item-shrink;                                   // [2]
+}
+
+// 1. Fade out and shrink .list-item
+.list-item-leave,
+.list-item-leave-add.list-item-leave-add-active {
+  opacity: 0;     // [1]
+  max-height: 0;  // [2]
+}
+
+//////// NEW END ////////////////////////
+
 /*
 
 <h1 class="main-heading">Animations</h1>
 
 The app animations are mostly fades between different colors and brightnesses.
-*/
+
 
 /*
 * Set fading background to content when omnibar drawer is toggled and max width when menu drawer is toggled.
 *
 * Animation time should be shorter than the speed paramer in Snap.js drawer.
 * Backgroung must be animated faster than Snap.js drawer because otherwise it seems to be a little laggy.
-*/
+
 
 #feature-container-wrapper {
   background-color: white;
