@@ -54,8 +54,11 @@
  // Global variable "packaging" is defined in index.html
  angular.module('em.app').constant('packaging', (typeof packaging !== 'undefined') ? packaging: 'devel');
 
- angular.module('em.app').config(['$compileProvider', '$locationProvider', '$routeProvider', 'packaging',
-  function($compileProvider, $locationProvider, $routeProvider, packaging) {
+ angular.module('em.app').config(['$animateProvider', '$compileProvider', '$locationProvider', '$routeProvider', 'packaging',
+  function($animateProvider, $compileProvider, $locationProvider, $routeProvider, packaging) {
+
+    // Enable animations for elements that have classes containing word 'animate'.
+    $animateProvider.classNameFilter(/animate/);
 
     // Global variable "html5Mode" is defined in index.html
     var h5m = (typeof html5Mode !== 'undefined') ? html5Mode: true;
