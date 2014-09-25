@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function addItemDirective($rootScope) {
+ function addItemDirective(packaging) {
   return {
     restrict: 'A',
     link: function postLink(scope, element) {
@@ -43,7 +43,7 @@
       };
 
       // In Android, scrolling needs to be done after keyboard is shown
-      if ($rootScope.packaging === 'android-cordova' && angular.isFunction(scope.scrollToElement)) {
+      if (packaging === 'android-cordova' && angular.isFunction(scope.scrollToElement)) {
         scope.$watch('softKeyboard.height', function(newValue) {
           if (newValue && elementHasFocus) {
             scope.scrollToElement(element);
@@ -74,5 +74,5 @@
     }
   };
 }
-addItemDirective['$inject'] = ['$rootScope'];
+addItemDirective['$inject'] = ['packaging'];
 angular.module('em.base').directive('addItem', addItemDirective);

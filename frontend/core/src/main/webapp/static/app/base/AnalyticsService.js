@@ -14,12 +14,13 @@
  */
  'use strict';
 
-function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpClientService, UserSessionService) {
+function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpClientService, UserSessionService, packaging) {
 
   var deferredLocation = $q.defer();
+  var collectAnalytics = packaging !== 'devel';
 
   // Skip all analytics, if it is not in use
-  if ($rootScope.collectAnalytics){
+  if (collectAnalytics){
 
     // START SESSION.JS
 
@@ -519,7 +520,7 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
         type: type,
         time: new Date().toISOString(),
         data: {
-          packaging: $rootScope.packaging,
+          packaging: packaging,
           version: $rootScope.extendedMindVersion,
           session: session
         }
@@ -561,23 +562,23 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
 
   return {
     visitEntry: function(location) {
-      if ($rootScope.collectAnalytics){
+      if (collectAnalytics){
         var payload = getPayload("visit_" + location, undefined, undefined, true);
         return postAnalytics(payload, true);
       }
     },
     visit: function(location) {
-      if ($rootScope.collectAnalytics){
+      if (collectAnalytics){
         return sendAnalytics("visit_" + location);
       }
     },
     do: function(action, description) {
-      if ($rootScope.collectAnalytics){
+      if (collectAnalytics){
         return sendAnalytics(action, description);
       }
     },
     doWithUuid: function(action, description, uuid) {
-      if ($rootScope.collectAnalytics){
+      if (collectAnalytics){
         var payload = getPayload(action, description)
         if (!payload[0].data.user){
           payload[0].data.user = {uuid: uuid};
@@ -588,19 +589,19 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
       }
     },
     error: function(location, errorType) {
-      if ($rootScope.collectAnalytics){
+      if (collectAnalytics){
         return sendAnalytics("error_" + location, errorType);
       }
     },
     startSession: function(id) {
-      if ($rootScope.collectAnalytics){
+      if (collectAnalytics){
         var payload = getPayload("session", undefined, id);
         postAnalytics(payload);
         return payload.time;
       }
     },
     stopSession: function(id, startTime) {
-      if ($rootScope.collectAnalytics){
+      if (collectAnalytics){
         var payload = getPayload("session", undefined, id);
         payload[0].data.endTime = payload[0].time;
         payload[0].time = startTime;
@@ -610,5 +611,5 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
     }
   };
 }
-AnalyticsService['$inject'] = ['$q', '$rootScope', '$timeout', 'BackendClientService', 'HttpClientService', 'UserSessionService'];
+AnalyticsService['$inject'] = ['$q', '$rootScope', '$timeout', 'BackendClientService', 'HttpClientService', 'UserSessionService', 'packaging'];
 angular.module('em.base').factory('AnalyticsService', AnalyticsService);

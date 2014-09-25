@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function rootViewDirective($injector, $rootScope, $window, AnalyticsService, BackendClientService, ModalService, UUIDService, UserSessionService) {
+ function rootViewDirective($injector, $rootScope, $window, AnalyticsService, BackendClientService, ModalService, UUIDService, UserSessionService, packaging) {
 
   return {
     restrict: 'A',
@@ -139,7 +139,7 @@
 
       // DEBUG //
       $scope.DEBUG_toggleKeyboard = function(){
-        $rootScope.packaging = 'devel-cordova';
+        packaging = 'devel-cordova';
         $rootScope.softKeyboard.height = $rootScope.softKeyboard.height === 216 ? 0 : 216;
         if (!$scope.$$phase) $scope.$apply();
       };
@@ -223,7 +223,7 @@
         $rootScope.softKeyboard.height = undefined;
         if (!scope.$$phase) scope.$apply();
       }
-      if ($rootScope.packaging.endsWith('cordova')) {
+      if (packaging.endsWith('cordova')) {
         window.addEventListener('native.keyboardshow', cordovaKeyboardShow);
         window.addEventListener('native.keyboardhide', cordovaKeyboardHide);
       }
@@ -232,7 +232,7 @@
 
       scope.$on('$destroy', function() {
         angular.element($window).unbind('resize', windowResized);
-        if ($rootScope.packaging === 'ios-cordova') {
+        if (packaging === 'ios-cordova') {
           window.removeEventListener('native.keyboardshow', cordovaKeyboardShow);
           window.removeEventListener('native.keyboardhide', cordovaKeyboardHide);
         }
@@ -242,5 +242,5 @@
 }
 
 rootViewDirective['$inject'] = ['$injector', '$rootScope', '$window',
-'AnalyticsService', 'BackendClientService', 'ModalService', 'UUIDService', 'UserSessionService'];
+'AnalyticsService', 'BackendClientService', 'ModalService', 'UUIDService', 'UserSessionService', 'packaging'];
 angular.module('em.root').directive('rootView', rootViewDirective);

@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function SettingsController($http, $q, $rootScope, $scope, $window, AccountService, AnalyticsService, ModalService, UserSessionService) {
+ function SettingsController($http, $q, $scope, $window, AccountService, AnalyticsService, ModalService, UserSessionService, packaging) {
 
   $scope.isUserVerified = false;
   AnalyticsService.visit('settings');
@@ -35,7 +35,7 @@
     if ($scope.settings.showOnboarding) {
       UserSessionService.setPreference('onboarded', undefined);
     } else {
-      UserSessionService.setPreference('onboarded', $rootScope.packaging);
+      UserSessionService.setPreference('onboarded', packaging);
     }
     AccountService.updateAccountPreferences();
   };
@@ -126,5 +126,5 @@
   }
 }
 
-SettingsController['$inject'] = ['$http', '$q', '$rootScope', '$scope', '$window', 'AccountService', 'AnalyticsService', 'ModalService', 'UserSessionService'];
+SettingsController['$inject'] = ['$http', '$q', '$scope', '$window', 'AccountService', 'AnalyticsService', 'ModalService', 'UserSessionService', 'packaging'];
 angular.module('em.account').controller('SettingsController', SettingsController);

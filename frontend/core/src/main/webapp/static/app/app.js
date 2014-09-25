@@ -51,12 +51,17 @@
 
  angular.module('em.base', ['common']);
 
- angular.module('em.app').config(['$locationProvider', '$routeProvider',
-  function($locationProvider, $routeProvider) {
+ // Global variable "packaging" is defined in index.html
+ angular.module('em.app').constant('packaging', (typeof packaging !== 'undefined') ? packaging: 'devel');
+
+ angular.module('em.app').config(['$compileProvider', '$locationProvider', '$routeProvider', 'packaging',
+  function($compileProvider, $locationProvider, $routeProvider, packaging) {
 
     // Global variable "html5Mode" is defined in index.html
     var h5m = (typeof html5Mode !== 'undefined') ? html5Mode: true;
     $locationProvider.html5Mode(h5m);
+
+    $compileProvider.debugInfoEnabled(packaging === 'devel');
 
     $routeProvider.when('/', {
       resolve: {
@@ -194,15 +199,10 @@
 
 angular.module('em.app').run(function($rootScope) {
 
-  // Global variable "packaging" is defined in index.html
-  var pkging = (typeof packaging !== 'undefined') ? packaging: 'devel';
-  $rootScope.packaging = pkging;
-
   // Put version to root scope
   $.getJSON('static/config.json', function(data) {
     $rootScope.extendedMindVersion = data.version;
   });
-  $rootScope.collectAnalytics = $rootScope.packaging !== 'devel' ? true : false;
 
   // http://stackoverflow.com/a/21113518
   // http://www.youtube.com/watch?v=xOAG7Ab_Oz0#t=2314

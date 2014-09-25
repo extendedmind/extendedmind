@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function accordionTitleLinkDirective($rootScope) {
+ function accordionTitleLinkDirective(packaging) {
   return {
     require: '^accordion',  // We need this directive to be inside an accordion
     restrict: 'A',          // It will be an attribute
@@ -45,7 +45,7 @@
       function addClasses() {
         if (isTitleOnTwoLines(accordionTitleLinkWidth)) {
           var classes = 'ellipsis';
-          if ($rootScope.packaging === 'ios-cordova') {
+          if (packaging === 'ios-cordova') {
             classes += ' needsSmallPadding';
           } else {
             classes += ' needsBigPadding';
@@ -70,5 +70,5 @@
     }
   };
 }
-accordionTitleLinkDirective['$inject'] = ['$rootScope'];
+accordionTitleLinkDirective['$inject'] = ['packaging'];
 angular.module('em.base').directive('accordionTitleLink', accordionTitleLinkDirective);

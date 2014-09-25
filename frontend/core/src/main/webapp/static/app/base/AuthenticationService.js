@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function AuthenticationService($location, $q, $rootScope, BackendClientService, UserSessionService) {
+ function AuthenticationService($location, $q, $rootScope, BackendClientService, UserSessionService, packaging) {
 
   var acceptRegex = /\/accept/;
   var authenticateRegex = /authenticate/;
@@ -124,7 +124,7 @@
 
   function getAuthenticatePayload(remember) {
     var payload = {rememberMe: remember};
-    if (remember && $rootScope.packaging.endsWith('cordova')) {
+    if (remember && packaging.endsWith('cordova')) {
       // In apps use extended 90 day replaceable authentication
       payload.extended = true;
     }
@@ -426,5 +426,5 @@ return {
     resendInviteRegex: resendInviteRegexp
   };
 }
-AuthenticationService['$inject'] = ['$location', '$q', '$rootScope', 'BackendClientService', 'UserSessionService'];
+AuthenticationService['$inject'] = ['$location', '$q', '$rootScope', 'BackendClientService', 'UserSessionService', 'packaging'];
 angular.module('em.base').factory('AuthenticationService', AuthenticationService);
