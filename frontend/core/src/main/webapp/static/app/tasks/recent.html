@@ -1,20 +1,11 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" drawer-handle="left">
   <section class="container-content" scroll-to>
-    <div infinite-scroll="addMoreRecentTasks()" infinite-scroll-container accordion>
+    <div list="tasks" list-slide="home">
       <h2>recent</h2>
       <div ng-include="'static/app/tasks/addTask.html'"></div>
-      <div ng-repeat="task in tasks | orderBy:'modified':true | limitTo: getRecentTasksLimit()" ng-init="newTask = {}">
-        <div accordion-title="task" edit-item="editTask(task)" edit-item-fields="editTaskFields(task)" has-complete="true" toggle-complete="taskChecked(task)"></div>
-        <div ng-if="isOpen(task)" editable-field-container="auto">
-          <div item-core-fields="task" item-core-fields-details="itemDetails"></div>
-          <div ng-init="initializeTask(task)" ng-include="'static/app/tasks/taskActions.html'"></div>
-        </div>
-      </div>
-      <div ng-if="notes.length === 0">
-        <div class="instruction-text">
-          <p class="instruction-text-chapter">notes are things you<br/>want to <b>remember</b><br/><br/></p>
-        </div>
-      </div>
+
+      <div class="row" ng-repeat="task in tasks | filter:{completed: '!'} | orderBy:'modified':true" list-item="task" list-item-action="setItemAnimationActiveAndCall(task, editTask)" list-item-left-action="taskChecked(task)" list-item-left-action-type="checkbox" list-item-left-action-checked="task.completed" ng-class="isAnimationActive() && 'animate-list-item-leave'"></div>
+
     </div>
   </section>
   <footer class="container-content--after">recent tasks</footer>

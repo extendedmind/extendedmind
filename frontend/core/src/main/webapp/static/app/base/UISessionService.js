@@ -16,7 +16,7 @@
  /* global angular */
  'use strict';
 
- function UISessionService($rootScope, LocalStorageService, SessionStorageService) {
+ function UISessionService($q, $rootScope, LocalStorageService, SessionStorageService) {
 
   // Map containing states and datas of features per owner
   var featureMap = {};
@@ -26,6 +26,8 @@
   var featureChangedCallbacks = [];
 
   var ownerPrefix = 'my'; // default owner
+
+  var deferredAnimation;
 
   return {
     // owner
@@ -169,8 +171,17 @@
       toasterNotificationMap = {};
       featureChangedCallbacks = [];
       ownerPrefix = 'my';
+    },
+    // FIXME
+    setAnimationLock: function(lock) {
+      if (lock) deferredAnimation = $q.defer();
+      else deferredAnimation.resolve();
+    },
+    getAnimationLock: function() {
+      return deferredAnimation ? deferredAnimation.promise : $q.when(); // http://stackoverflow.com/a/22506507
     }
+    // FIXME
   };
 }
-UISessionService['$inject'] = ['$rootScope', 'LocalStorageService', 'SessionStorageService'];
+UISessionService['$inject'] = ['$q', '$rootScope', 'LocalStorageService', 'SessionStorageService'];
 angular.module('em.base').factory('UISessionService', UISessionService);

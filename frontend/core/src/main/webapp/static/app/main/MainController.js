@@ -358,6 +358,9 @@ function MainController(
     }
     for (var id in editorClosedCallbacks)
       editorClosedCallbacks[id]();
+
+    // TODO: for testing!
+    UISessionService.setAnimationLock(false);
   }
 
   DrawerService.registerClosedCallback('left', menuClosed, 'MainController');

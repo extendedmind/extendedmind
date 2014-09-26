@@ -14,24 +14,23 @@
  */
  'use strict';
 
-function listItemDirective() {
+ function listItemDirective() {
   return {
     restrict: 'A',
-    replace: true,
     templateUrl: 'static/app/base/listItem.html',
     scope: {
       item: '=listItem',
-      itemClick: '&listItemClick',
-      leftActionType: '=?listItemLeftActionType',
+      itemAction: '&listItemAction',
+      leftActionType: '@?listItemLeftActionType',
       leftActionClass: '=?listItemLeftActionClass',
       leftAction: '&listItemLeftAction',
-      leftActionChecked: '&listItemLeftActionChecked',
+      leftActionChecked: '=listItemLeftActionChecked',
       rightIndicatorClass: '=?listItemRightIndicatorClass',
     },
     compile: function(element, attrs){
-       if (!attrs.listItemLeftAction) { attrs.listItemLeftAction = 'false'; }
-       if (!attrs.leftActionChecked) { attrs.leftActionChecked = 'false'; }
-    },
-  };
+     if (!attrs.listItemLeftAction) { attrs.listItemLeftAction = 'false'; }
+     if (!attrs.leftActionChecked) { attrs.leftActionChecked = 'false'; }
+   }
+ };
 }
 angular.module('em.base').directive('listItem', listItemDirective);

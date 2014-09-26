@@ -16,15 +16,17 @@
  /*global angular */
  'use strict';
 
- function listItemLeave($animate, $timeout) {
+ function listItemLeave($animate, UISessionService) {
   return {
     leave: function(element, leaveDone) {
-      $timeout(function() {
-        $animate.addClass(element, 'list-item-leave').then(leaveDone);
-      },500);
+      var canLeavePromise = UISessionService.getAnimationLock();
+
+      canLeavePromise.then(function() {
+        return $animate.addClass(element, 'list-item-leave');
+      }).then(leaveDone);
     }
   };
 }
 
-listItemLeave['$inject'] = ['$animate', '$timeout'];
+listItemLeave['$inject'] = ['$animate', 'UISessionService'];
 angular.module('em.tasks').animation('.animate-list-item-leave', listItemLeave);
