@@ -104,29 +104,6 @@
   };
   ListsService.registerListDeletedCallback(listDeletedCallback, 'TasksService');
 
-  function setTaskCompleting(task) {
-    if (!task.transientProperties) task.transientProperties = {};
-    task.transientProperties.completing = true;
-  }
-
-  function finishCompletingTask(task) {
-    if (task.transientProperties && task.transientProperties.completing){
-      delete task.transientProperties.completing;
-      if (!task.completed){
-        task.completed = BackendClientService.generateFakeTimestamp();
-      }
-    }
-  }
-
-  function finishAllCompletingTasks(ownerUUID) {
-    if (tasks[ownerUUID]) {
-      // Loop through active tasks and complete all that have completing set
-      for (var i=0, len=tasks[ownerUUID].activeTasks.length; i<len; i++) {
-        finishCompletingTask(tasks[ownerUUID].activeTasks[i]);
-      }
-    }
-  }
-
   // due is persistent, date is transient
   function copyDueToDate(task) {
     if (task.due) {
@@ -166,7 +143,6 @@
   return {
     setTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      finishAllCompletingTasks(ownerUUID);
       this.addTransientProperties(tasksResponse, ownerUUID);
 
       return ArrayService.setArrays(
@@ -177,7 +153,6 @@
     },
     updateTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      finishAllCompletingTasks(ownerUUID);
       this.addTransientProperties(tasksResponse, ownerUUID);
 
       return ArrayService.updateArrays(
@@ -210,7 +185,6 @@
       var deferred = $q.defer();
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') deferred.reject(task);
       else {
-        finishCompletingTask(task);
         var transientProperties = this.detachTransientProperties(task, ownerUUID);
         if (task.uuid) {
           // Existing task
@@ -292,8 +266,6 @@
       // Check that task is not deleted before trying to remove
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
 
-      finishCompletingTask(task);
-
       ArrayService.removeFromArrays(task,
         tasks[ownerUUID].activeTasks,
         tasks[ownerUUID].deletedTasks,
@@ -303,7 +275,6 @@
       initializeArrays(ownerUUID);
       // Check if task has already been deleted
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
-      finishCompletingTask(task);
 
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
@@ -333,7 +304,7 @@
       initializeArrays(ownerUUID);
       // Check that task is deleted before trying to undelete
       if (this.getTaskStatus(task, ownerUUID) !== 'deleted') return;
-      finishCompletingTask(task);
+
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
         var params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
@@ -359,7 +330,6 @@
       // Check that task is not deleted before trying to complete
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
 
-      setTaskCompleting(task);
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
         var params = {type: 'task', owner: ownerUUID, uuid: task.uuid,
@@ -369,7 +339,7 @@
                       }};
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
                                   this.completeTaskRegex, params);
-        finishCompletingTask(task);
+        task.completed = BackendClientService.generateFakeTimestamp();
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
@@ -377,7 +347,6 @@
         .then(function(result) {
           if (result.data) {
             task.completed = result.data.completed;
-            finishCompletingTask(task);
           }
         });
       }
@@ -419,7 +388,6 @@
         if (task.transientProperties.context) delete task.transientProperties.context;
         if (task.transientProperties.list) delete task.transientProperties.list;
         if (task.transientProperties.date) delete task.transientProperties.date;
-        if (task.transientProperties.completing) delete task.transientProperties.completing;
       }
       this.addTransientProperties(tasksArray, ownerUUID);
     },
