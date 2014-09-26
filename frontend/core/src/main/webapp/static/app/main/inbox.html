@@ -1,4 +1,4 @@
-<section ng-show="isFeatureActive('inbox')" class="container-content--outer" ng-controller="InboxController" data-snap-ignore="{{onboardingInProgress ? true : undefined}}" drawer-handle="left">
+<section ng-show="isFeatureActive('inbox')" class="container-fluid--inner" ng-controller="InboxController" data-snap-ignore="{{onboardingInProgress ? true : undefined}}" drawer-handle="left">
 
   <div class="container-content" scroll-to>
     <div ng-repeat="item in items">{{item.title}}</div>

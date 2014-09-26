@@ -46,14 +46,7 @@
   };
 
   $scope.gotoFeature = function gotoFeature(feature) {
-    if (UISessionService.getCurrentFeatureName() !== feature) {
-      var state = UISessionService.getFeatureState(feature);
-      if (!state && feature === 'notes') {
-        state = 'notes/home';
-      }
-      UISessionService.changeFeature(feature, undefined, state);
-      AnalyticsService.visit(feature);
-    }
+    $scope.changeFeature(feature);
     if ($rootScope.columns === 1) $scope.toggleMenu();
   };
 

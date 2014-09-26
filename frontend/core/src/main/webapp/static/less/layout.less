@@ -150,6 +150,15 @@ Vertically center .container-master and .container-editor in large screens
   width: 100%;          /* [3] */
 }
 
+// 1. Fluid container height.
+// 2. Inherit height because parent uses display: table
+// 3. Default bottom padding to make room for footer. NOTE: Override programmatically if footer height is different.
+.container-fluid--inner {
+  display: table-cell;            // [1]
+  height: inherit;                // [1,2]
+  padding-bottom: @height-footer; // [3]
+}
+
 // 1. Inherit width from parent. Elements inside swiper would otherwise be as wide as `.swiper-wrapper`.
 .swiper-slide .container-content {
   width: inherit; /* [1] */
@@ -175,13 +184,13 @@ Vertically center .container-master and .container-editor in large screens
   }
 }
 
-// 1. Fluid container height.
-// 2. Inherit height because parent uses display: table
-// 3. Default bottom padding to make room for footer. NOTE: Override programmatically if footer height is different.
+/*
+* Optional outer element to wrap container-content and container-content--after.
+* Needed only for swiper elements
+*/
+// 1. To get drawer handle to work, height needs to be set
 .container-content--outer {
-  display: table-cell;            // [1]
-  height: inherit;                // [1,2]
-  padding-bottom: @height-footer; // [3]
+  height: inherit; // [1]
 }
 
 // 1. Default height for footer. NOTE: Override programmatically if footer height is different.

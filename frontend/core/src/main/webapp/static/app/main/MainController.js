@@ -70,13 +70,24 @@ function MainController(
     },
     archive: {
       heading: 'archive'
+    },
+    admin: {
+      heading: 'admin'
     }
   };
 
-  // Start from tasks
-  UISessionService.changeFeature('tasks');
+  $scope.changeFeature = function(feature){
+    if (UISessionService.getCurrentFeatureName() !== feature) {
+      if (!$scope.features[feature].loaded) $scope.features[feature].loaded = true;
+      var state = UISessionService.getFeatureState(feature);
+      UISessionService.changeFeature(feature, undefined, state);
+      AnalyticsService.visit(feature);
+    }
+  }
 
-  // COMMON FEATURE METHODS IN SCOPE
+  $scope.isFeatureLoaded = function(feature){
+    return $scope.features[feature].loaded;
+  }
 
   $scope.getActiveFeature = function getActiveFeature() {
     return UISessionService.getCurrentFeatureName();
@@ -85,6 +96,9 @@ function MainController(
   $scope.isFeatureActive = function isFeatureActive(feature) {
     return $scope.getActiveFeature() === feature;
   };
+
+  // Start from tasks
+  $scope.changeFeature('tasks');
 
   // ONBOARDING
 
