@@ -84,7 +84,7 @@
           params = {type: 'item', owner: ownerUUID, uuid: item.uuid};
           BackendClientService.put('/api/' + params.owner + '/item/' + item.uuid,
            this.putNewItemRegex, params, item);
-          item.modified = (new Date()).getTime() + 1000000;
+          item.modified = BackendClientService.generateFakeTimestamp();
           updateItem(item, ownerUUID);
           deferred.resolve(item);
         } else {
@@ -109,7 +109,7 @@
           // Use the fake uuid and a fake modified that is far enough in the to make
           // it to the end of the list
           item.uuid = fakeUUID;
-          item.created = item.modified = (new Date()).getTime() + 1000000;
+          item.created = item.modified = BackendClientService.generateFakeTimestamp();
           setItem(item, ownerUUID);
           deferred.resolve(item);
         } else {
@@ -143,9 +143,7 @@
         }};
         BackendClientService.deleteOffline('/api/' + ownerUUID + '/item/' + item.uuid,
          this.deleteItemRegex, params);
-        var fakeTimestamp = (new Date()).getTime() + 1000000;
-        item.deleted = fakeTimestamp;
-        item.modified = fakeTimestamp;
+        item.deleted = item.modified = BackendClientService.generateFakeTimestamp();
         updateItem(item, ownerUUID);
       } else {
         // Online

@@ -190,6 +190,13 @@
     return HttpClientService.isOffline(status);
   };
 
+  methods.generateFakeTimestamp = function() {
+    // Put the fake timestamp 1000 seconds in the future to make sure the
+    // new timestamp is in the future even if the local time is slightly
+    // behind server time
+    return (new Date()).getTime() + 1000000;
+  },
+
   // Callback registration
   methods.registerRefreshCredentialsCallback = function(callback) {
     refreshCredentialsCallback = callback;

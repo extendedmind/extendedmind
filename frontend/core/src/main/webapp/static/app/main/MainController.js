@@ -116,7 +116,6 @@ function MainController(
   // DATA ARRAYS
   $scope.items = ItemsService.getItems(UISessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UISessionService.getActiveUUID());
-  $scope.completedTasks = TasksService.getCompletedTasks(UISessionService.getActiveUUID());
   $scope.archivedTasks = TasksService.getArchivedTasks(UISessionService.getActiveUUID());
   $scope.notes = NotesService.getNotes(UISessionService.getActiveUUID());
   $scope.archivedNotes = NotesService.getArchivedNotes(UISessionService.getActiveUUID());
@@ -205,41 +204,6 @@ function MainController(
   $scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
     combineTasksArrays();
   });
-
-
-  var completedArrayCallbacks = {};
-  var watchingFullCompleted = false;
-  $scope.createFullCompletedTasks = function createFullCompletedTasks(callback, id) {
-    function combineCompletedTasksArrays() {
-      var completedArchivedTasks = [];
-      var i = 0;
-      while ($scope.archivedTasks[i]) {
-        if ($scope.archivedTasks[i].completed !== undefined) {
-          completedArchivedTasks.push($scope.archivedTasks[i]);
-        }
-        i++;
-      }
-      $scope.fullCompletedTasks = ArrayService.combineArrays(
-        completedArchivedTasks,
-        $scope.completedTasks, 'completed', true);
-
-      for (var id in completedArrayCallbacks) {
-        completedArrayCallbacks[id]($scope.fullCompletedTasks.length);
-      }
-    }
-
-    if (callback) completedArrayCallbacks[id] = callback;
-
-    if (!watchingFullCompleted) {
-      watchingFullCompleted = true;
-      $scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
-        combineCompletedTasksArrays();
-      });
-      $scope.$watch('completedTasks.length', function(/*newValue, oldValue*/) {
-        combineCompletedTasksArrays();
-      });
-    }
-  };
 
   $scope.ownerPrefix = UISessionService.getOwnerPrefix();
 

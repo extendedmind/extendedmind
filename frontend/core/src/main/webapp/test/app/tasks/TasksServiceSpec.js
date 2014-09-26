@@ -180,23 +180,22 @@ afterEach(function() {
 it('should complete and uncomplete task', function () {
     // Complete
     var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
-    expect(TasksService.getCompletedTasks(testOwnerUUID).length)
-    .toBe(0);
+
+    expect(TasksService.getTasks(testOwnerUUID).length)
+    .toBe(3);
 
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/complete')
     .respond(200, completeTaskResponse);
     TasksService.completeTask(cleanCloset, testOwnerUUID);
     $httpBackend.flush();
 
-    // The task should still be active and in its old place, but with the complete flag set
+    // The task should be active and in its old place, but with the complete flag set
     expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID).completed)
     .toBeDefined();
     expect(TasksService.getTasks(testOwnerUUID)[0].uuid)
     .toBe(cleanCloset.uuid);
     expect(TasksService.getTasks(testOwnerUUID).length)
     .toBe(3);
-    expect(TasksService.getCompletedTasks(testOwnerUUID).length)
-    .toBe(1);
 
     // Uncomplete
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/uncomplete')
@@ -204,17 +203,11 @@ it('should complete and uncomplete task', function () {
     TasksService.uncompleteTask(cleanCloset, testOwnerUUID);
     $httpBackend.flush();
 
-    // The task should be back in its old place as modified
-    // is not changed to make task stay in the same place
-    // when clicking on/off.
-    expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
-    .toBeDefined();
+    expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID).completed)
+        .toBeUndefined();
     var tasks = TasksService.getTasks(testOwnerUUID);
     expect(tasks.length)
     .toBe(3);
-
-    expect(TasksService.getCompletedTasks(testOwnerUUID).length)
-    .toBe(0);
 
     expect(tasks[0].uuid)
     .toBe(cleanCloset.uuid);

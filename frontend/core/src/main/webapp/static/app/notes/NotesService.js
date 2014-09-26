@@ -179,7 +179,7 @@
           params = {type: 'note', owner: ownerUUID, uuid: note.uuid};
           BackendClientService.put('/api/' + ownerUUID + '/note/' + note.uuid,
            this.putExistingNoteRegex, params, note);
-          note.created = note.modified = (new Date()).getTime() + 1000000;
+          note.created = note.modified = BackendClientService.generateFakeTimestamp();
           ExtendedItemService.attachTransientProperties(note, transientProperties);
           updateNote(note, ownerUUID);
         } else {
@@ -203,7 +203,7 @@
           BackendClientService.put('/api/' + ownerUUID + '/note',
            this.putNewNoteRegex, params, note);
           note.uuid = fakeUUID;
-          note.created = note.modified = (new Date()).getTime() + 1000000;
+          note.created = note.modified = BackendClientService.generateFakeTimestamp();
           ExtendedItemService.attachTransientProperties(note, transientProperties);
           setNote(note, ownerUUID);
         } else {
@@ -260,9 +260,7 @@
         }};
         BackendClientService.deleteOffline('/api/' + ownerUUID + '/note/' + note.uuid,
          this.deleteNoteRegex, params);
-        var fakeTimestamp = (new Date()).getTime() + 1000000;
-        note.deleted = fakeTimestamp;
-        note.modified = fakeTimestamp;
+        note.deleted = note.modified = BackendClientService.generateFakeTimestamp();
         updateNote(note, ownerUUID);
       } else {
         BackendClientService.deleteOnline('/api/' + ownerUUID + '/note/' + note.uuid,

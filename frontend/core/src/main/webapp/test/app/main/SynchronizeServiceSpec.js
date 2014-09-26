@@ -308,9 +308,7 @@ describe('SynchronizeService', function() {
     expect(ListsService.getLists(testOwnerUUID).length)
       .toBe(3);
     expect(TasksService.getTasks(testOwnerUUID).length)
-      .toBe(3);
-    expect(TasksService.getCompletedTasks(testOwnerUUID).length)
-      .toBe(1);
+      .toBe(4);
     expect(NotesService.getNotes(testOwnerUUID).length)
       .toBe(4);
 
@@ -363,9 +361,7 @@ describe('SynchronizeService', function() {
     };
     // Initial situation
     expect(TasksService.getTasks(testOwnerUUID).length)
-      .toBe(3);
-    expect(TasksService.getCompletedTasks(testOwnerUUID).length)
-      .toBe(1);
+      .toBe(4);
     expect(TasksService.getArchivedTasks(testOwnerUUID).length)
       .toBe(0);
 
@@ -376,9 +372,8 @@ describe('SynchronizeService', function() {
     TasksService.completeTask(printTickets, testOwnerUUID);
     $httpBackend.flush();
 
-    // The task should have moved to completed tasks
-    expect(TasksService.getCompletedTasks(testOwnerUUID).length)
-      .toBe(2);
+    // The task should be completed task
+    expect(printTickets.completed).toBeDefined();
 
     // Archive list
     var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID);
@@ -403,9 +398,7 @@ describe('SynchronizeService', function() {
     expect(TasksService.getArchivedTasks(testOwnerUUID).length)
       .toBe(2);
     expect(TasksService.getTasks(testOwnerUUID).length)
-      .toBe(1);
-    expect(TasksService.getCompletedTasks(testOwnerUUID).length)
-      .toBe(1);
+      .toBe(2);
   });
 
   it('should handle item offline create, update, delete', function () {
@@ -533,7 +526,7 @@ describe('SynchronizeService', function() {
       .toBe(3);
     var tasks = TasksService.getTasks(testOwnerUUID);
     expect(tasks.length)
-      .toBe(4);
+      .toBe(5);
 
     // 3. update task
     var updatedTestTask = {
@@ -549,7 +542,7 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
 
     expect(tasks.length)
-      .toBe(4);
+      .toBe(5);
 
     // 4. delete task
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
@@ -557,7 +550,7 @@ describe('SynchronizeService', function() {
     TasksService.deleteTask(updatedTestTask, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
-      .toBe(3);
+      .toBe(4);
 
     // 5. undelete task
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
@@ -565,7 +558,7 @@ describe('SynchronizeService', function() {
     TasksService.undeleteTask(updatedTestTask, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
-      .toBe(4);
+      .toBe(5);
 
     // 6. synchronize items and get back online, we're expecting the delete and undelete to cancel each other
     var latestModified = now.getTime();
@@ -588,7 +581,7 @@ describe('SynchronizeService', function() {
     expect(items.length)
       .toBe(3);
     expect(tasks.length)
-      .toBe(4);
+      .toBe(5);
     expect(UUIDService.isFakeUUID(tasks[3].uuid))
       .toBeFalsy();
     expect(tasks[1].description)
@@ -600,7 +593,7 @@ describe('SynchronizeService', function() {
     TasksService.deleteTask(updatedTestTask, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
-      .toBe(3);
+      .toBe(4);
     expect(updatedTestTask.deleted)
       .toBe(deleteItemResponse.deleted);
     expect(updatedTestTask.modified)
@@ -612,7 +605,7 @@ describe('SynchronizeService', function() {
     TasksService.undeleteTask(updatedTestTask, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
-      .toBe(4);
+      .toBe(5);
     expect(tasks[1].deleted)
       .toBeUndefined();
     expect(tasks[1].modified)
@@ -631,11 +624,8 @@ describe('SynchronizeService', function() {
     TasksService.saveTask(testTask, testOwnerUUID);
     $httpBackend.flush();
     var tasks = TasksService.getTasks(testOwnerUUID);
-    var completedTasks = TasksService.getCompletedTasks(testOwnerUUID);
     expect(tasks.length)
-      .toBe(4);
-    expect(completedTasks.length)
-      .toBe(1);
+      .toBe(5);
 
     // 2. complete it
 
@@ -644,9 +634,8 @@ describe('SynchronizeService', function() {
     TasksService.completeTask(testTask, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
-      .toBe(4);
-    expect(completedTasks.length)
-      .toBe(2);
+      .toBe(5);
+    expect(testTask.completed).toBeDefined();
 
     // 3. uncomplete it
 
@@ -655,9 +644,8 @@ describe('SynchronizeService', function() {
     TasksService.uncompleteTask(testTask, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
-      .toBe(4);
-    expect(completedTasks.length)
-      .toBe(1);
+      .toBe(5);
+    expect(testTask.completed).toBeUndefined();
 
     // 4. complete it again but go online, expect only one complete
 
@@ -668,12 +656,10 @@ describe('SynchronizeService', function() {
     TasksService.completeTask(testTask, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
-      .toBe(4);
-    expect(completedTasks.length)
-      .toBe(2);
-    expect(completedTasks[0].completed)
+      .toBe(5);
+    expect(testTask.completed)
       .toBe(completeTaskResponse.completed);
-    expect(completedTasks[0].modified)
+    expect(testTask.modified)
       .toBe(completeTaskResponse.result.modified);
 
     // 5. uncomplete online
@@ -683,10 +669,8 @@ describe('SynchronizeService', function() {
     TasksService.uncompleteTask(testTask, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
-      .toBe(4);
-    expect(completedTasks.length)
-      .toBe(1);
-    expect(tasks[3].modified)
+      .toBe(5);
+    expect(testTask.modified)
       .toBe(uncompleteTaskResponse.modified);
   });
 
