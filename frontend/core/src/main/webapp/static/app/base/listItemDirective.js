@@ -17,6 +17,7 @@
  function listItemDirective() {
   return {
     restrict: 'A',
+    require: '^?list',
     templateUrl: 'static/app/base/listItem.html',
     scope: {
       item: '=listItem',
@@ -27,10 +28,32 @@
       leftActionChecked: '=listItemLeftActionChecked',
       rightIndicatorClass: '=?listItemRightIndicatorClass',
     },
-    compile: function(element, attrs){
-     if (!attrs.listItemLeftAction) { attrs.listItemLeftAction = 'false'; }
-     if (!attrs.leftActionChecked) { attrs.leftActionChecked = 'false'; }
-   }
- };
+    compile: function(){
+      return {
+        pre: function(element, attrs) {
+          if (!attrs.listItemLeftAction) { attrs.listItemLeftAction = 'false'; }
+          if (!attrs.leftActionChecked) { attrs.leftActionChecked = 'false'; }
+        },
+        post: function(scope, element, attrs, controller) {
+
+          scope.callItemAction = function callItemAction() {
+            if (controller) controller.setItemAnimationActiveAndCall(scope.item, scope.itemAction, element[0]);
+            else scope.itemAction(scope.item);
+          };
+
+          scope.callLeftAction = function callLeftAction() {
+            if (controller) {
+              controller.setItemLeftActionAnimationActiveAndCall(
+                scope.item,
+                scope.leftAction,
+                scope.leftActionChecked,
+                element[0]);
+            }
+            else scope.leftAction(scope.item);
+          };
+        }
+      };
+    }
+  };
 }
 angular.module('em.base').directive('listItem', listItemDirective);

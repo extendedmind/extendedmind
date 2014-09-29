@@ -83,11 +83,11 @@ function MainController(
       UISessionService.changeFeature(feature, undefined, state);
       AnalyticsService.visit(feature);
     }
-  }
+  };
 
   $scope.isFeatureLoaded = function(feature){
     return $scope.features[feature].loaded;
-  }
+  };
 
   $scope.getActiveFeature = function getActiveFeature() {
     return UISessionService.getCurrentFeatureName();
@@ -330,6 +330,9 @@ function MainController(
   $scope.registerEditorClosedCallback = function(callback, id) {
     editorClosedCallbacks[id] = callback;
   };
+  $scope.unregisterEditorClosedCallback = function(id) {
+    if (editorClosedCallbacks[id]) delete editorClosedCallbacks[id];
+  };
 
   // register drawer callbacks to DrawerService
 
@@ -358,9 +361,6 @@ function MainController(
     }
     for (var id in editorClosedCallbacks)
       editorClosedCallbacks[id]();
-
-    // TODO: for testing!
-    UISessionService.setAnimationLock(false);
   }
 
   DrawerService.registerClosedCallback('left', menuClosed, 'MainController');

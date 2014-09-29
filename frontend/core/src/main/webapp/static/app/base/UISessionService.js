@@ -27,7 +27,8 @@
 
   var ownerPrefix = 'my'; // default owner
 
-  var deferredAnimation;
+  var deferredLeaveAnimations = [];
+  var checkingAnimations = [];
 
   return {
     // owner
@@ -172,15 +173,108 @@
       featureChangedCallbacks = [];
       ownerPrefix = 'my';
     },
-    // FIXME
-    setAnimationLock: function(lock) {
-      if (lock) deferredAnimation = $q.defer();
-      else deferredAnimation.resolve();
+    // TODO: better naming
+    setTaskChecking: function(element) {
+      if (!checkingAnimations) checkingAnimations = [];
+      else {
+        for (var i = 0, len = checkingAnimations.length; i < len; i++) {
+          if (checkingAnimations[i].element === element) {
+            checkingAnimations[i].deferred = $q.defer();
+            return;
+          }
+        }
+      }
+      checkingAnimations.push({
+        element: element,
+        deferred: $q.defer()
+      });
     },
-    getAnimationLock: function() {
-      return deferredAnimation ? deferredAnimation.promise : $q.when(); // http://stackoverflow.com/a/22506507
+    // TODO: better naming
+    setTaskCheckingResolved: function(element) {
+      if (checkingAnimations && checkingAnimations.length > 0) {
+        for (var i = 0, len = checkingAnimations.length; i < len; i++) {
+          if (checkingAnimations[i].element === element) {
+            checkingAnimations[i].deferred.resolve('checking resolved');
+          }
+        }
+      }
+    },
+    // TODO: better naming
+    setTaskCheckingRejected: function(element) {
+      if (checkingAnimations && checkingAnimations.length > 0) {
+        for (var i = 0, len = checkingAnimations.length; i < len; i++) {
+          if (checkingAnimations[i].element === element) {
+            checkingAnimations[i].deferred.reject('checking rejected');
+          }
+        }
+      }
+    },
+    // TODO: better naming
+    getTaskCheckingPromise: function(element) {
+      if (checkingAnimations && checkingAnimations.length > 0) {
+        for (var i = 0, len = checkingAnimations.length; i < len; i++) {
+          if (checkingAnimations[i].element === element) {
+            return checkingAnimations[i].deferred.promise;
+          }
+        }
+      }
+    },
+    // TODO: better naming
+    getIsTaskChecking: function(element) {
+      if (checkingAnimations && checkingAnimations.length > 0) {
+        for (var i = 0, len = checkingAnimations.length; i < len; i++) {
+          if (checkingAnimations[i].element === element) {
+            return true;
+          }
+        }
+      }
+    },
+    // TODO: better naming
+    deferItemLeaveAnimation: function(element) {
+      if (deferredLeaveAnimations) deferredLeaveAnimations = [];
+      else {
+        for (var i = 0, len = deferredLeaveAnimations.length; i < len; i++) {
+          if (deferredLeaveAnimations[i].element === element) {
+            deferredLeaveAnimations[i].deferred = $q.defer();
+            return;
+          }
+        }
+      }
+      deferredLeaveAnimations.push({
+        element: element,
+        deferred: $q.defer()
+      });
+    },
+    // TODO: better naming
+    resolveItemLeaveAnimation: function(element, resolveInfo) {
+      if (deferredLeaveAnimations && deferredLeaveAnimations.length > 0) {
+        for (var i = 0, len = deferredLeaveAnimations.length; i < len; i++) {
+          if (deferredLeaveAnimations[i].element === element) {
+            deferredLeaveAnimations[i].deferred.resolve(resolveInfo);
+          }
+        }
+      }
+    },
+    // TODO: better naming
+    rejectItemLeaveAnimation: function(element, rejectInfo) {
+      if (deferredLeaveAnimations && deferredLeaveAnimations.length > 0) {
+        for (var i = 0, len = deferredLeaveAnimations.length; i < len; i++) {
+          if (deferredLeaveAnimations[i].element === element) {
+            deferredLeaveAnimations[i].deferred.reject(rejectInfo);
+          }
+        }
+      }
+    },
+    // TODO: better naming
+    getItemLeavePromise: function(element) {
+      if (deferredLeaveAnimations && deferredLeaveAnimations.length > 0) {
+        for (var i = 0, len = deferredLeaveAnimations.length; i < len; i++) {
+          if (deferredLeaveAnimations[i].element === element) {
+            return deferredLeaveAnimations[i].deferred.promise;
+          }
+        }
+      }
     }
-    // FIXME
   };
 }
 UISessionService['$inject'] = ['$q', '$rootScope', 'LocalStorageService', 'SessionStorageService'];

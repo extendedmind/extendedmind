@@ -1,10 +1,10 @@
 <div class="group-mixed">
 
   <div ng-if="leftAction" class="group-mixed--left">
-    <input ng-if="leftActionType === 'checkbox'" type="checkbox" ng-checked="leftActionChecked" swiper-click="leftAction()" ng-class="leftActionClass" icon-checkbox="{{item.uuid}}">
+    <input ng-if="leftActionType === 'checkbox'" type="checkbox" ng-checked="leftActionChecked" swiper-click="callLeftAction()" ng-class="leftActionClass" icon-checkbox="{{item.uuid}}">
   </div>
 
-  <a href class="group-mixed--middle" swiper-click="itemAction()">
+  <a href class="group-mixed--middle" swiper-click="callItemAction()">
     <span class="text-link" ng-bind="item.title"></span>
   </a>
 

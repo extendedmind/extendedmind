@@ -491,11 +491,20 @@ input[type="checkbox"] + label:before {
   content: @icon-selection-empty;
 }
 input[type="checkbox"]:checked + label:before {
+  transition: color 2s ease;
   color: @color-checkbox-checked;
   content: @icon-selection-checked;
 }
 
-
+// 1. Override unchecked checkbox to look like :checked.
+//    NOTE: AngularJS UI may not be updated ($digest is not run) at the time deferred ng-repeat leave animation starts,
+//          so checkbox CSS is set programmatically.
+.checked-checkbox {
+  input[type="checkbox"] + label:before {
+    color: @color-checkbox-checked;   // [1]
+    content: @icon-selection-checked; // [1]
+  }
+}
 //////// NEW END ////////////////////////
 
 
