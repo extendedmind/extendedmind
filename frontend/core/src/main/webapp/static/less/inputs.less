@@ -491,7 +491,7 @@ input[type="checkbox"] + label:before {
   content: @icon-selection-empty;
 }
 input[type="checkbox"]:checked + label:before {
-  transition: color 2s ease;
+  transition: color 2s cubic-bezier(.01,1.11,0,.97);
   color: @color-checkbox-checked;
   content: @icon-selection-checked;
 }
