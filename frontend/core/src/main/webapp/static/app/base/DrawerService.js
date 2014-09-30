@@ -43,7 +43,8 @@
   }
 
   function executeSnapperAnimatedCallbacks(snapperSide) {
-    if (snappers[snapperSide].snapper.state().state === snapperSide) {  // drawer is open when state is left or right
+    // drawer is open when state is left or right
+    if (snappers[snapperSide].snapper.state().state === snapperSide) {
       for (var openId in snappers[snapperSide].openedCallbacks) {
         if (snappers[snapperSide].openedCallbacks.hasOwnProperty(openId))
           snappers[snapperSide].openedCallbacks[openId]();
@@ -62,7 +63,10 @@
     // way to detect that the drawer is closing.
     var drawerState = snappers[snapperSide].snapper.state();
     var drawerDirection;
-    if (drawerState.info.opening === snapperSide && drawerState.info.towards === snapperSide && drawerState.info.flick) {
+    if (drawerState.info.opening === snapperSide &&
+        drawerState.info.towards === snapperSide &&
+        drawerState.info.flick)
+    {
       drawerDirection = 'closing';
     } else if (drawerState.info.towards !== snapperSide && drawerState.info.flick) {
       drawerDirection = 'opening';
@@ -92,15 +96,21 @@
 
   function hideRightAndShowLeft() {
     if (snapperExists('left') && snapperExists('right')){
-      if (snappers['right'].drawerElement.style.display !== 'none') snappers['right'].drawerElement.style.display = 'none';
-      if (snappers['left'].drawerElement.style.display !== 'block') snappers['left'].drawerElement.style.display = 'block';
+      if (snappers['right'].drawerElement.style.display !== 'none')
+        snappers['right'].drawerElement.style.display = 'none';
+
+      if (snappers['left'].drawerElement.style.display !== 'block')
+        snappers['left'].drawerElement.style.display = 'block';
     }
   }
 
   function hideLeftAndShowRight() {
     if (snapperExists('left') && snapperExists('right')){
-      if (snappers['left'].drawerElement.style.display !== 'none') snappers['left'].drawerElement.style.display = 'none';
-      if (snappers['right'].drawerElement.style.display !== 'block') snappers['right'].drawerElement.style.display = 'block';
+      if (snappers['left'].drawerElement.style.display !== 'none')
+        snappers['left'].drawerElement.style.display = 'none';
+
+      if (snappers['right'].drawerElement.style.display !== 'block')
+        snappers['right'].drawerElement.style.display = 'block';
     }
   }
 

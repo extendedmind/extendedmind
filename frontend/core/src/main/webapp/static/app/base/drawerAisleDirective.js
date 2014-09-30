@@ -128,7 +128,8 @@
         if ($rootScope.columns === 1) {
           if (areaAboutToMoveToNewPositionCallbacks[activeFeature])
             areaAboutToMoveToNewPositionCallbacks[activeFeature]();
-          // There is only one column, so we need to prevent any touching from getting to the partially visible aisle.
+          // There is only one column,
+          // so we need to prevent any touching from getting to the partially visible aisle.
           $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
         }
         else if (areaAboutToShrinkCallbacks[activeFeature]) {
@@ -149,8 +150,10 @@
         if ($rootScope.columns === 1) {
           // Re-enable dragging
           DrawerService.enableDragging('left');
-          if (areaMovedToNewPositionCallbacks[activeFeature]) areaMovedToNewPositionCallbacks[activeFeature]();
-          // There is only one column, so we need to prevent any touching from getting to the partially visible aisle.
+          if (areaMovedToNewPositionCallbacks[activeFeature])
+            areaMovedToNewPositionCallbacks[activeFeature]();
+          // There is only one column,
+          // so we need to prevent any touching from getting to the partially visible aisle.
           $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
         }
         else if (areaResizeReadyCallbacks[activeFeature]) {
@@ -189,7 +192,8 @@
         var activeFeature = $scope.getActiveFeature();
 
         if ($rootScope.columns === 1) {
-          if (areaMovedToInitialPositionCallbacks[activeFeature]) areaMovedToInitialPositionCallbacks[activeFeature]();
+          if (areaMovedToInitialPositionCallbacks[activeFeature])
+            areaMovedToInitialPositionCallbacks[activeFeature]();
           // Re-enable dragging
           DrawerService.enableDragging('left');
           // Re-enable touching in fully visible aisle.
