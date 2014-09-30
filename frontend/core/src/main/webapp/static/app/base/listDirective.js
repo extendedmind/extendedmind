@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function listDirective(SwiperService, UISessionService) {
+ function listDirective(UISessionService) {
   return {
     require: '?^swiperSlide',
     restrict: 'A',
@@ -52,5 +52,5 @@
   };
 }
 
-listDirective['$inject'] = ['SwiperService', 'UISessionService'];
+listDirective['$inject'] = ['UISessionService'];
 angular.module('em.base').directive('list', listDirective);
