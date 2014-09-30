@@ -31,7 +31,9 @@
   var checkingAnimations = [];
 
   return {
-    // owner
+
+    // COMMON
+
     getOwnerPrefix: function() {
       return ownerPrefix;
     },
@@ -64,7 +66,8 @@
       return SessionStorageService.getActiveUUID();
     },
 
-    // Feature history
+    // FEATURES
+
     changeFeature: function(name, data, state) {
       var uuid = this.getActiveUUID();
       if (!featureMap[uuid][name]) {
@@ -117,36 +120,10 @@
         return featureMap[uuid][featureName].data;
       }
     },
-    registerFeatureChangedCallback: function(callback, id) {
-      for (var i = 0; i < featureChangedCallbacks.length; i++) {
-        if (featureChangedCallbacks[i].id === id) {
-          // Already registered, replace callback
-          featureChangedCallbacks[i].callback = callback;
-          return;
-        }
-      }
-      featureChangedCallbacks.push({
-        callback: callback,
-        id: id});
-    },
-    setToasterNotification: function(notificationLocation) {
-      var notification = {
-        location: notificationLocation,
-        displayed: false
-      };
-      var uuid = this.getActiveUUID();
-      if (!toasterNotificationMap[uuid]) toasterNotificationMap[uuid] = [];
-      toasterNotificationMap[uuid].push(notification);
-    },
-    getToasterNotification: function() {
-      var uuid = this.getActiveUUID();
-      if (toasterNotificationMap[uuid] && toasterNotificationMap[uuid].length > 0) {
-        var lastNotification = toasterNotificationMap[uuid][toasterNotificationMap[uuid].length - 1];
-        if (!lastNotification.displayed) {
-          return lastNotification;
-        }
-      }
-    },
+
+
+    // UI STATE
+
     setUIStateParameter: function(key, value) {
       var state = this.getUIState();
       if (!state) state = {};
@@ -166,13 +143,43 @@
       }
       return state;
     },
-    reset: function() {
-      featureMap = {};
-      featureHistory = {};
-      toasterNotificationMap = {};
-      featureChangedCallbacks = [];
-      ownerPrefix = 'my';
+
+    // TOASTER
+
+    setToasterNotification: function(notificationLocation) {
+      var notification = {
+        location: notificationLocation,
+        displayed: false
+      };
+      var uuid = this.getActiveUUID();
+      if (!toasterNotificationMap[uuid]) toasterNotificationMap[uuid] = [];
+      toasterNotificationMap[uuid].push(notification);
     },
+    getToasterNotification: function() {
+      var uuid = this.getActiveUUID();
+      if (toasterNotificationMap[uuid] && toasterNotificationMap[uuid].length > 0) {
+        var lastNotification = toasterNotificationMap[uuid][toasterNotificationMap[uuid].length - 1];
+        if (!lastNotification.displayed) {
+          return lastNotification;
+        }
+      }
+    },
+
+    // PROMISES
+
+    deferAction: function(id, type){
+      // TODO
+    },
+    resolveDeferredAction: function(id, type, resolveParameter){
+      // TODO
+    },
+    rejectDeferredAction: function(id, type, rejectParameter){
+      // TODO
+    },
+
+
+    // FIXME: refactor the functions below to use the functions above
+
     // TODO: better naming
     setTaskChecking: function(element) {
       if (!checkingAnimations) checkingAnimations = [];
@@ -274,6 +281,32 @@
           }
         }
       }
+    },
+
+
+    // CALLBACK REGISTRATION
+
+    registerFeatureChangedCallback: function(callback, id) {
+      for (var i = 0; i < featureChangedCallbacks.length; i++) {
+        if (featureChangedCallbacks[i].id === id) {
+          // Already registered, replace callback
+          featureChangedCallbacks[i].callback = callback;
+          return;
+        }
+      }
+      featureChangedCallbacks.push({
+        callback: callback,
+        id: id});
+    },
+
+    // CLEANUP
+
+    reset: function() {
+      featureMap = {};
+      featureHistory = {};
+      toasterNotificationMap = {};
+      featureChangedCallbacks = [];
+      ownerPrefix = 'my';
     }
   };
 }
