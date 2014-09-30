@@ -183,6 +183,11 @@
     setHandleElement: function(drawerSide, handleElement) {
       snappers[drawerSide].snapper.settings({dragger: handleElement});
     },
+    // NOTE: Call here needs to be _after_  setupDrawer has been called!
+    setOverrideAisleElement: function(drawerSide, element) {
+      snappers[drawerSide].snapper.settings({overrideElement: element});
+      snappers[drawerSide].snapper.addOverrideListeningElementEvents(element);
+    },
 
     // MANIPULATION
 

@@ -1,4 +1,4 @@
-<div class="container-editor" ng-controller="EditorController" data-snap-ignore="true" drawer="right" vertical-resize="editor">
+<div class="container-editor" ng-controller="EditorController" drawer="right" vertical-resize="editor">
   <div ng-if="editorVisible" class="container-fluid">
     <header class="container-titlebar">
       <div class="container-titlebar--inner">
@@ -35,7 +35,7 @@
     </header>
 
     <div ng-if="!editorHasSwiper" class="container-fluid--inner" ng-style="{'padding-bottom': getOverrideEditorFooterHeight()}">
-      <div class="container-content">
+      <div class="container-content" drawer-override-aisle="right">
       </div>
       <div class="container-content--after" ng-style="{height: getOverrideEditorFooterHeight()}">footer</div>
     </div>
@@ -44,7 +44,7 @@
       <div class="swiper-wrapper">
         <div class="swiper-slide" swiper-slide="{{editorType}}/basic" slide-index="0">
 
-          <div ng-if="editorType === 'task'" class="container-content">
+          <div ng-if="editorType === 'task'" class="container-content" drawer-override-aisle="right">
             <div ng-hide="snoozeOpen || calendarOpen">
               <div class="row" ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></div>
               <div lists-select-options>

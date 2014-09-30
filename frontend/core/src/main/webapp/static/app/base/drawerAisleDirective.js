@@ -80,7 +80,9 @@
       function setupEditorDrawer() {
         var settings = {
           element: $element[0],
-          touchToDrag: false,
+          overrideListeningElement: true,
+          touchToDrag: true,
+          tapToClose: false,
           disable: 'left', // use right only
           transitionSpeed: $rootScope.EDITOR_ANIMATION_SPEED / 1000,
           easing: 'ease-out',
