@@ -357,6 +357,23 @@ function SwiperService($q, $timeout) {
         }
       }
     },
+    isSlideActive: function(slidePath) {
+      var swiperInfos = getSwiperInfosBySlidePath(slidePath);
+      if (!swiperInfos || !swiperInfos.main){
+        return false;
+      }
+      if (swiperInfos.page) {
+        var activePageSlidePath = this.getActiveSlidePath(swiperInfos.pagePath);
+        if (activePageSlidePath === undefined || activePageSlidePath !== slidePath) {
+          return false;
+        }
+      }
+      var activeMainSlidePath = this.getActiveSlidePath(swiperInfos.mainPath);
+      if (activeMainSlidePath === undefined || !slidePath.startsWith(activeMainSlidePath)) {
+        return false;
+      }
+      return true;
+    },
     setOnlyExternal: function(swiperPath, swipe) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         swipers[swiperPath].swiper.params.onlyExternal = swipe;

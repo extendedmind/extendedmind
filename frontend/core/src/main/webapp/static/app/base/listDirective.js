@@ -16,6 +16,7 @@
 
  function listDirective(SwiperService, UISessionService) {
   return {
+    require: '?^swiperSlide',
     restrict: 'A',
     controller: function($scope) {
 
@@ -43,12 +44,9 @@
         itemAction(item);
       };
     },
-    link: function(scope, element, attrs) {
-      var swiperSlide;
-      if (attrs.listSlide) swiperSlide = attrs.list + '/' + attrs.listSlide;
-
-      scope.isAnimationActive = function isAnimationActive() {
-        return swiperSlide ? SwiperService.getActiveSlidePath(attrs.list) === swiperSlide : true;
+    link: function(scope, element, attrs, swiperSlideController) {
+      scope.isAnimationActive = function() {
+        return swiperSlideController ? swiperSlideController.isSlideActive() : true;
       };
     }
   };

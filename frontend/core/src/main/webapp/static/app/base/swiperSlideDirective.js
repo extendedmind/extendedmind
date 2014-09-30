@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function swiperSlideDirective() {
+ function swiperSlideDirective(SwiperService) {
   return {
     restrict: 'A',
     // All relevant business logic is in the container, which is
@@ -25,7 +25,12 @@
       slidePath: '@swiperSlide',
       slideIndex: '='
     },
-    link: function postLink(scope, element, attrs, swiperContainerDirectiveController) {
+    controller: function($scope){
+      this.isSlideActive = function(){
+        return SwiperService.isSlideActive($scope.slidePath);
+      };
+    },
+    link: function(scope, element, attrs, swiperContainerDirectiveController) {
       swiperContainerDirectiveController.registerSlide(scope.slidePath, element, scope.slideIndex);
       scope.$on('$destroy', function() {
         swiperContainerDirectiveController.unregisterSlide(scope.slidePath);
@@ -33,4 +38,5 @@
     }
   };
 }
+swiperSlideDirective['$inject'] = ['SwiperService'];
 angular.module('em.base').directive('swiperSlide', swiperSlideDirective);
