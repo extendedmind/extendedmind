@@ -57,3 +57,43 @@
   };
 }
 angular.module('em.base').directive('listItem', listItemDirective);
+
+function listItemLeaveAnimation($animate, $q, UISessionService) {
+
+  function setItemLeaveAnimation(element) {
+    var canLeavePromise = UISessionService.getItemLeavePromise(element[0]);
+    if (canLeavePromise) {
+
+      return canLeavePromise.then(function(changeType) {
+        // if checked, add checked because $digest may have not run yet
+        if (changeType === 'completed') element.addClass('checked-checkbox');
+        return $animate.addClass(element, 'list-item-leave'); // returns a promise
+      });
+    }
+    else
+      return $animate.addClass(element, 'list-item-leave');
+  }
+
+  return {
+    // Call leave on error/reject.
+    leave: function(element, leaveDone) {
+      var isTaskChecking = UISessionService.getIsTaskChecking(element[0]);
+
+      if (isTaskChecking) {
+        var taskCheckingPromise = UISessionService.getTaskCheckingPromise(element[0]);
+        var checkedAnimatedPromise = $animate.addClass(element, 'list-item-completing');
+
+        checkedAnimatedPromise.then(function() {
+          UISessionService.setTaskCheckingResolved(element[0]);
+        }, leaveDone);
+
+        taskCheckingPromise.then(function() {
+          setItemLeaveAnimation(element).then(leaveDone, leaveDone);
+        }, leaveDone);
+      }
+      else setItemLeaveAnimation(element).then(leaveDone, leaveDone);
+    }
+  };
+}
+listItemLeaveAnimation['$inject'] = ['$animate', '$q', 'UISessionService'];
+angular.module('em.tasks').animation('.animate-list-item-leave', listItemLeaveAnimation);
