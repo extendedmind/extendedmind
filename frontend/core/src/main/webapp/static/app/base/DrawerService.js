@@ -115,7 +115,7 @@
   }
 
   function snapperExists(snapperSide) {
-    return snappers[snapperSide] && snappers[snapperSide].snapper;
+    if (snappers[snapperSide] && snappers[snapperSide].snapper) return true;
   }
 
   function createDrawerSkeleton() {
