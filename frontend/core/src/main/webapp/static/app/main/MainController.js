@@ -35,8 +35,14 @@ function MainController(
     focus: {
       heading: 'focus',
       slides: {
-        'focus/tasks': 'tasks',
-        'focus/notes': 'notes'
+        left: {
+          path: 'focus/tasks',
+          heading: 'tasks'
+        },
+        right: {
+          path: 'focus/notes',
+          heading: 'notes'
+        }
       }
     },
     inbox: {
@@ -45,31 +51,62 @@ function MainController(
     tasks: {
       heading: 'tasks',
       slides: {
-        'tasks/timeline': 'timeline',
-        'tasks/contexts': 'contexts',
-        'tasks/context': true
+        left: {
+          path: 'tasks/recent',
+          heading: 'recent'
+        },
+        middle: {
+          path: 'tasks/contexts',
+          heading: 'contexts',
+        },
+        right: {
+          path: 'tasks/context',
+          heading: true,
+        }
       }
     },
     notes: {
       heading: 'notes',
       slides: {
-        'notes/recent': 'recent notes',
-        'notes/keywords': 'keywords',
-        'notes/keyword': true
+        left: {
+          path: 'notes/recent',
+          heading: 'recent'
+        },
+        middle: {
+          path: 'notes/keywords',
+          heading: 'keywords',
+        },
+        right: {
+          path: 'notes/keyword',
+          heading: true,
+        }
       }
     },
     lists: {
-      heading: 'lists'
+      heading: 'lists',
+      slides: {
+        left: {
+          path: 'lists/active',
+          heading: 'active'
+        },
+        right: {
+          path: 'lists/archive',
+          heading: 'archive'
+        }
+      }
     },
     list: {
       heading: true,
       slides: {
-        'list/tasks': 'tasks',
-        'list/notes': 'notes'
+        left: {
+          path: 'list/tasks',
+          heading: 'tasks'
+        },
+        right: {
+          path: 'list/notes',
+          heading: 'notes'
+        }
       }
-    },
-    archive: {
-      heading: 'archive'
     },
     admin: {
       heading: 'admin'
@@ -96,6 +133,10 @@ function MainController(
   $scope.isFeatureActive = function isFeatureActive(feature) {
     return $scope.getActiveFeature() === feature;
   };
+
+  $scope.getFeatureMap = function(feature){
+    return $scope.features[feature];
+  }
 
   // Start from tasks
   $scope.changeFeature('tasks');

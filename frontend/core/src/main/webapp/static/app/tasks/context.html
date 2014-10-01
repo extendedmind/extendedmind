@@ -61,4 +61,4 @@
     <div ng-include="'static/app/tasks/addTask.html'" include-replace></div>
   </div>
 </section>
-<footer class="container-content--after">context</footer>
+<footer class="container-content--after" master-footer="getFeatureMap('tasks')" master-footer-add-item="addTask({transientProperties: {context: context.uuid}})"></footer>

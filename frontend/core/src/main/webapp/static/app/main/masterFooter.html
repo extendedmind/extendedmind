@@ -1,0 +1,13 @@
+<nav role="navigation" class="swiper-no-swiping group-mixed">
+  <div ng-if="leftNavigationText" class="group-mixed--left">
+    <a href ng-click="navigationAction(leftNavigationActionParameter)" ng-bind="leftNavigationText"></a>
+  </div>
+
+  <a href class="group-mixed--middle" ng-click="addItemFn()">
+    <span class="text-link">+</span>
+  </a>
+
+  <div ng-if="rightNavigationText" class="group-mixed--right">
+    <a href ng-click="navigationAction(rightNavigationActionParameter)" ng-bind="rightNavigationText"></a>
+  </div>
+</nav>

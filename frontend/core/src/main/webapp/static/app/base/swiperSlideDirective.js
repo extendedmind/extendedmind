@@ -29,6 +29,12 @@
       this.isSlideActive = function(){
         return SwiperService.isSlideActive($scope.slidePath);
       };
+      this.getSlidePath = function(){
+        return $scope.slidePath;
+      };
+      this.swipeToSibling = function(siblingSlidePath){
+        return SwiperService.swipeTo(siblingSlidePath);
+      }
     },
     link: function(scope, element, attrs, swiperContainerDirectiveController) {
       swiperContainerDirectiveController.registerSlide(scope.slidePath, element, scope.slideIndex);
