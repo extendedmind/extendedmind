@@ -175,36 +175,25 @@
     TasksService.saveTask(task, UISessionService.getActiveUUID());
   };
 
-  // Navigation
+  // NAVIGATION
 
   $scope.context = undefined;
-  $scope.showContextDetails = function showContextDetails(selectedContext) {
-    $scope.context = selectedContext;
-    $scope.subtask = {transientProperties: {context: $scope.context.uuid}};
-    SwiperService.swipeTo('tasks/details');
-  };
-  $scope.showNoContextDetails = function showNoContextDetails() {
-    $scope.context = undefined;
-    $scope.subtask = {};
-    SwiperService.swipeTo('tasks/details');
-  };
-  $scope.showNoListTasksDetails = function showNoListTasksDetails() {
-    $scope.context = null;
-    $scope.subtask = {};
-    SwiperService.swipeTo('tasks/details');
-  };
-  $scope.showNoDateTasksDetails = function showNoDateTasksDetails() {
-    $scope.context = 0;
-    $scope.subtask = {};
-    SwiperService.swipeTo('tasks/details');
-  };
-
   $scope.deleteContextAndShowContexts = function deleteContextAndShowContexts(context) {
     SwiperService.swipeTo('tasks/contexts');
     $scope.deleteContext(context);
     $scope.context = undefined;
   };
 
+  $scope.swipeToContext = function(context){
+    $scope.context = context;
+    SwiperService.swipeTo('tasks/context');
+    $scope.$evalAsync(function(){
+      if ($scope.context)
+        $scope.getFeatureMap('tasks').slides.right.heading = '@' + $scope.context.title;
+      else
+        $scope.getFeatureMap('tasks').slides.right.heading = 'no context';
+    });
+  }
 
   // INFINITE SCROLL
 
@@ -224,19 +213,6 @@
       }
     }
   };
-
-  $scope.swipeToContext = function(context){
-    $scope.features['tasks'].slides.right.heading = '@' + context.title;
-    $scope.$evalAsync(function(){
-      // TODO:
-      // This doesn't work the first time, needs some sort of promise thing
-      SwiperService.swipeTo('tasks/details');
-    });
-  }
-
-  $scope.isContextActive = function(){
-    return $scope.features['tasks'].slides.right.heading !== undefined;
-  }
 
 }
 

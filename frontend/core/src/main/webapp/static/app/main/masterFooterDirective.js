@@ -45,6 +45,9 @@
           scope.leftNavigationActionParameter = scope.featureInfo.slides.left.path;
 
           scope.rightNavigationText = scope.featureInfo.slides.right.heading;
+          scope.$watch('featureInfo.slides.right.heading', function(newValue) {
+            scope.rightNavigationText = newValue;
+          });
           scope.rightNavigationActionParameter = scope.featureInfo.slides.right.path;
 
         }else if (scope.featureInfo.slides.right.path === currentSlidePath){

@@ -61,7 +61,7 @@ function MainController(
         },
         right: {
           path: 'tasks/context',
-          heading: undefined,
+          heading: 'no context',
         }
       }
     },
