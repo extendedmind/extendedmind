@@ -30,7 +30,8 @@
       }
 
       scope.$on('$destroy', function() {
-        // unregister callbacks for toaster type in UISessionService
+        // Unregister notifications callback for toaster type in UISessionService
+        UISessionService.unregisterNotificationsActiveCallback(attrs.toaster);
       });
     }
   };

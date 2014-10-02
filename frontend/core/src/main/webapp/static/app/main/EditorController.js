@@ -125,7 +125,8 @@
       $scope.closeTaskEditor($scope.task);
 
       UISessionService.pushDelayedNotification({
-        type: 'task',
+        type: 'deleted',
+        itemType: 'task',
         item: $scope.task,
         navigateFn: navigateToItem,
         undoFn: undoDelete

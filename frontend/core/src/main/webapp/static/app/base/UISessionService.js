@@ -39,12 +39,41 @@
     }
   }
 
+  /*
+  * Run active notifications callbacks.
+  *
+  * Execute only override callback if it exists.
+  */
   function executeNotificationsActiveCallbacks(notifications) {
     if (notificationsActiveCallbacks) {
+
+      var overrideCallback = notificationsActiveCallbacks.findFirstObjectByKeyValue('type', 'override');
+      if (overrideCallback) {
+        overrideCallback.callback(notifications);
+        return;
+      }
+
       for (var i = 0, len = notificationsActiveCallbacks.length; i < len; i++) {
         notificationsActiveCallbacks[i].callback(notifications);
       }
     }
+  }
+
+  function removeReverseNotification(notification, notifications) {
+    var reverseIndex;
+
+    // Find index of a reversible item in notifications array.
+    for (var i = 0, len = notifications.length; i < len; i++) {
+      if (notifications[i].type === notification.reverseType &&
+          notifications[i].item === notification.item)
+      {
+        // Found a reverse of the notification in the notifications array
+        reverseIndex = i;
+        break;
+      }
+    }
+
+    if (reverseIndex !== undefined) notifications.splice(reverseIndex, 1);
   }
 
   return {
@@ -163,17 +192,25 @@
     // NOTIFICATION
 
     registerNotificationsActiveCallback: function(type, callback) {
-      var notificationCallbackIndex = notificationsActiveCallbacks.findFirstIndexByKeyValue('type', type);
-      if (notificationCallbackIndex === undefined) {
+      var callbackIndex = notificationsActiveCallbacks.findFirstIndexByKeyValue('type', type);
+      if (callbackIndex === undefined) {
         notificationsActiveCallbacks.push({
           type: type,
           callback: callback
         });
       }
     },
+    unregisterNotificationsActiveCallback: function(type) {
+      var callbackIndex = notificationsActiveCallbacks.findFirstIndexByKeyValue('type', type);
+      if (callbackIndex) notificationsActiveCallbacks.splice(callbackIndex, 1);
+    },
     pushNotification: function(notification) {
       var uuid = this.getActiveUUID();
       if (!notificationMap[uuid]) notificationMap[uuid] = [];
+
+      // If notification has reverseType, delete existing item notification where type equals reverseType
+      // NOTE: Should delayedNotificationMap[uuid] be traversed as well?
+      if (notification.reverseType) removeReverseNotification(notification, notificationMap[uuid]);
       notificationMap[uuid].push(notification);
       // NOTE: should notifications be removed/marked as displayed?
       executeNotificationsActiveCallbacks(notificationMap[uuid]);
@@ -181,6 +218,11 @@
     pushDelayedNotification: function(notification) {
       var uuid = this.getActiveUUID();
       if (!delayedNotificationMap[uuid]) delayedNotificationMap[uuid] = [];
+
+      // If notification has reverseType, delete existing item notification where type equals reverseType
+      // NOTE: Should notificationMap[uuid] be traversed as well?
+      if (notification.reverseType) removeReverseNotification(notification, delayedNotificationMap[uuid]);
+
       delayedNotificationMap[uuid].push(notification);
     },
     activateDelayedNotifications: function() {
