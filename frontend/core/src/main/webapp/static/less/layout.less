@@ -204,9 +204,7 @@ Vertically center .container-master and .container-editor in large screens
 .container-toaster {
   position: absolute; // [1]
   bottom: 0; // [1]
-  .center-horizontally; // [2]
-  left: 0; // [2]
-  right: 0; // [2]
+  .center-horizontally-absolute; // [2]
   max-width: @width-column-max; // [2]
   height: @grid-vertical; // [3]
   line-height: @grid-vertical; // [3]
@@ -473,17 +471,35 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   line-height: @grid-vertical-half;
 }
 
-.group-navigation {
-  .link-navigation-forward {
-    float: right;
-  }
+/*
+`.group-symmetrical` groups together up to three adjacent elements
+symmetrically so that `.group-symmetrical-middle` is always in the
+center.
+*/
+
+@max-width-group-symmetrical-middle: 70px;
+
+.group-symmetrical {
+  //height: @grid-vertical;
+  line-height: @grid-vertical;
+}
+.group-symmetrical--left {
+  text-align: left;
+  float: left;
+}
+.group-symmetrical--middle {
+  position: absolute;
+  .center-horizontally-absolute;
+  text-align: center;
+  max-width: @max-width-group-symmetrical-middle;
+}
+.group-symmetrical--right {
+  float: right;
 }
 
 /*
 **************************************************************************
 # Swiper
-
-TODO: Do we want an example of a swiper in the styleguide?
 */
 
 // 1. Inherit height for .swiper-wrapper and .swiper-slide

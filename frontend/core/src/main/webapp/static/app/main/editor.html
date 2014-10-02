@@ -2,7 +2,7 @@
   <div ng-if="editorVisible" class="container-fluid">
     <header class="container-titlebar">
       <div class="container-titlebar--inner">
-        <div class="group-navigation">
+        <div class="group-symmetrical">
           <a href class="link-navigation-back row" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endEdit()" ng-bind="saveOnClose ? 'save' : 'back'"></a>
         </div>
         <form role="form" class="group-mixed" ng-submit="saveItemInEdit()" autocapitalize="none" autocorrect="off">
@@ -77,9 +77,6 @@
               <button ng-if="calendarOpen" type="button" class="wide-button normal-button" ng-click="closeCalendarAndSave(calendarCloseCallbackFn)">
                 <span>done</span>
               </button>
-            </div>
-            <div class="group-navigation row">
-              <a href ng-click="swipeToForgot()" class="link-navigation-forward">forgot?</a>
             </div>
           </footer>
         </div>
