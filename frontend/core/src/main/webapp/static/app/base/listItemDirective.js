@@ -72,7 +72,11 @@ angular.module('em.base').directive('listItem', listItemDirective);
 function listItemLeaveAnimation($animate, UISessionService) {
 
   return {
-    // Call leave on error/reject.
+    /*
+    * (1) Wait for deferred edit promise to be fulfilled.
+    *  2  Animate item leave.
+    *  3  Wait for item leave promise to be fulfilled. Call leaveDone.
+    */
     leave: function(element, leaveDone) {
       // Classes ".ng-leave" and ".ng-leave-active" are present on the element.
       // Because we want to delay animation start we have to use our own animation classes.
@@ -80,11 +84,17 @@ function listItemLeaveAnimation($animate, UISessionService) {
       var deferredEdit = UISessionService.getDeferredAction('edit');
       if (deferredEdit) {
         deferredEdit.promise.then(function() {
-          $animate.addClass(element, 'list-item-leave').then(leaveDone);
+          $animate.addClass(element, 'list-item-leave').then(function() {
+            leaveDone();
+            UISessionService.activateDelayedNotifications();
+          });
         });
       } else {
         // Straight leave without promises.
-        $animate.addClass(element, 'list-item-leave').then(leaveDone);
+        $animate.addClass(element, 'list-item-leave').then(function() {
+          leaveDone();
+          UISessionService.activateDelayedNotifications();
+        });
       }
     }
   };

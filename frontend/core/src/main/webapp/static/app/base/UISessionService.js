@@ -22,8 +22,11 @@
   var featureMap = {};
   // List containing history of features per owner
   var featureHistory = {};
-  var toasterNotificationMap = {};
   var featureChangedCallbacks = [];
+
+  var notificationMap = {};
+  var delayedNotificationMap = {};
+  var notificationsActiveCallbacks = [];
 
   var ownerPrefix = 'my'; // default owner
 
@@ -33,6 +36,14 @@
     var deferredActionIndex = deferredActions.findFirstIndexByKeyValue('type', type);
     if (deferredActionIndex !== undefined) {
       deferredActions.splice(deferredActionIndex, 1);
+    }
+  }
+
+  function executeNotificationsActiveCallbacks(notifications) {
+    if (notificationsActiveCallbacks) {
+      for (var i = 0, len = notificationsActiveCallbacks.length; i < len; i++) {
+        notificationsActiveCallbacks[i].callback(notifications);
+      }
     }
   }
 
@@ -127,7 +138,6 @@
       }
     },
 
-
     // UI STATE
 
     setUIStateParameter: function(key, value) {
@@ -150,26 +160,46 @@
       return state;
     },
 
-    // TOASTER
+    // NOTIFICATION
 
-    setToasterNotification: function(notificationLocation) {
-      var notification = {
-        location: notificationLocation,
-        displayed: false
-      };
-      var uuid = this.getActiveUUID();
-      if (!toasterNotificationMap[uuid]) toasterNotificationMap[uuid] = [];
-      toasterNotificationMap[uuid].push(notification);
+    registerNotificationsActiveCallback: function(type, callback) {
+      var notificationCallbackIndex = notificationsActiveCallbacks.findFirstIndexByKeyValue('type', type);
+      if (notificationCallbackIndex === undefined) {
+        notificationsActiveCallbacks.push({
+          type: type,
+          callback: callback
+        });
+      }
     },
+    pushNotification: function(notification) {
+      var uuid = this.getActiveUUID();
+      if (!notificationMap[uuid]) notificationMap[uuid] = [];
+      notificationMap[uuid].push(notification);
+      // NOTE: should notifications be removed/marked as displayed?
+      executeNotificationsActiveCallbacks(notificationMap[uuid]);
+    },
+    pushDelayedNotification: function(notification) {
+      var uuid = this.getActiveUUID();
+      if (!delayedNotificationMap[uuid]) delayedNotificationMap[uuid] = [];
+      delayedNotificationMap[uuid].push(notification);
+    },
+    activateDelayedNotifications: function() {
+      var uuid = this.getActiveUUID();
+      if (delayedNotificationMap && delayedNotificationMap[uuid])
+        executeNotificationsActiveCallbacks(delayedNotificationMap[uuid]);
+        // NOTE: should notifications be removed/marked as displayed?
+      },
+    /*
     getToasterNotification: function() {
       var uuid = this.getActiveUUID();
-      if (toasterNotificationMap[uuid] && toasterNotificationMap[uuid].length > 0) {
-        var lastNotification = toasterNotificationMap[uuid][toasterNotificationMap[uuid].length - 1];
+      if (notificationMap[uuid] && notificationMap[uuid].length > 0) {
+        var lastNotification = notificationMap[uuid][notificationMap[uuid].length - 1];
         if (!lastNotification.displayed) {
           return lastNotification;
         }
       }
     },
+    */
 
     // PROMISES
 
@@ -223,8 +253,11 @@
     reset: function() {
       featureMap = {};
       featureHistory = {};
-      toasterNotificationMap = {};
+      notificationMap = {};
+      delayedNotificationMap = {};
       featureChangedCallbacks = [];
+      notificationsActiveCallbacks = [];
+      deferredActions = [];
       ownerPrefix = 'my';
     }
   };

@@ -14,10 +14,7 @@
         <div ng-if="isFeatureLoaded('list')" ng-include="'static/app/main/listSlides.html'" include-replace></div>
         <div ng-if="isFeatureLoaded('admin')" ng-include="'static/app/admin/admin.html'" include-replace></div>
       </div>
-      <!-- TODO: Toaster directive -->
-      <!--div class="container-toaster">
-        <span class="text-toaster">master toaster</span>
-      </div-->
+      <div toaster="primary"></div>
     </div>
   </div>
 

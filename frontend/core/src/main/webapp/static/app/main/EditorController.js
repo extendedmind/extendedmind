@@ -15,7 +15,7 @@
 
  'use strict';
 
- function EditorController($rootScope, $scope, $timeout) {
+ function EditorController($rootScope, $scope, $timeout, UISessionService) {
 
   $scope.titlebar = {};
   $scope.searchText = {};
@@ -113,9 +113,24 @@
     }
   };
 
+  function navigateToItem(/*destination*/) {
+    // TODO
+  }
+  function undoDelete(/*item*/) {
+    // TODO
+  }
+
   $scope.deleteItemInEdit = function() {
     if ($scope.editorType === 'task') {
       $scope.closeTaskEditor($scope.task);
+
+      UISessionService.pushDelayedNotification({
+        type: 'task',
+        item: $scope.task,
+        navigateFn: navigateToItem,
+        undoFn: undoDelete
+      });
+
       $scope.deleteTask($scope.task);
     } else alert('implement delete for: ' + $scope.editorType);
     //
@@ -289,7 +304,7 @@
   };
 }
 
-EditorController['$inject'] = ['$rootScope', '$scope', '$timeout'];
+EditorController['$inject'] = ['$rootScope', '$scope', '$timeout', 'UISessionService'];
 angular.module('em.main').controller('EditorController', EditorController);
 
 
