@@ -2,9 +2,16 @@
   <div ng-if="editorVisible" class="container-fluid">
     <header class="container-titlebar">
       <div class="container-titlebar--inner">
-        <div class="group-symmetrical">
-          <a href class="link-navigation-back row" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endEdit()" ng-bind="saveOnClose ? 'save' : 'back'"></a>
+
+        <div class="group-symmetrical row">
+          <div class="group-symmetrical--left">
+            <a href class="link-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endEdit()" ng-bind="saveOnClose ? 'save' : 'back'"></a>
+          </div>
+          <div class="group-symmetrical--right">
+            <a href ng-click="deleteItemInEdit()">delete</a>
+          </div>
         </div>
+
         <form role="form" class="group-mixed" ng-submit="saveItemInEdit()" autocapitalize="none" autocorrect="off">
           <div ng-if="itemTitleHasActionButton" class="group-mixed--left">
             <input type="checkbox" ng-click="toggleCompleteTask(task)" icon-checkbox="editorTitlebarCheckbox" />
@@ -68,9 +75,6 @@
 
           <footer class="container-content--after" ng-style="{height: getOverrideEditorFooterHeight(), bottom: -getOverrideEditorFooterHeight()}">
             <div class="group-btn">
-              <button type="button" class="btn-delete">
-                <span class="text-btn">delete</span>
-              </button>
               <button ng-if="!calendarOpen" type="button" class="btn-checkbox" ng-click="toggleSnooze()">
                 <span class="text-btn" ng-bind="task.transientProperties.date ? 'snooze' : 'set date'"></span>
               </button>
