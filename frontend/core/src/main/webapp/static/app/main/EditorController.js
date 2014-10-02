@@ -113,6 +113,16 @@
     }
   };
 
+  $scope.deleteItemInEdit = function() {
+    if ($scope.editorType === 'task') {
+      $scope.closeTaskEditor($scope.task);
+      $scope.deleteTask($scope.task);
+    } else alert('implement delete for: ' + $scope.editorType);
+    //
+    // TODO: others
+    //
+  };
+
   $scope.titlebarHasText = function titlebarHasText() {
     return $scope.titlebar.text && $scope.titlebar.text.length !== 0;
   };
