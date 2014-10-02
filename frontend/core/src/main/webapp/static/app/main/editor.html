@@ -7,7 +7,7 @@
         </div>
         <form role="form" class="group-mixed" ng-submit="saveItemInEdit()" autocapitalize="none" autocorrect="off">
           <div ng-if="itemTitleHasActionButton" class="group-mixed--left">
-            <input type="checkbox" ng-click="taskChecked(task)" icon-checkbox="editorTitlebarCheckbox" />
+            <input type="checkbox" ng-click="toggleCompleteTask(task)" icon-checkbox="editorTitlebarCheckbox" />
           </div>
           <div class="group-mixed--middle">
             <textarea type="text" ng-model="titlebar.text" ng-keydown="titlebarTextKeyDown($event)" editor-titlebar-text-input msd-elastic dynamic-placeholder="{{getTitlebarTextInputPlaceholder()}}" maxlength="128" required ></textarea>

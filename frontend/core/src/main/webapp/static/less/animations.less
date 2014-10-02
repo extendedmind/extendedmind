@@ -7,11 +7,14 @@
 @delay-animate-item-shrink: .5s;
 @timing-animate-item: cubic-bezier(0.250, 0.460, 0.450, 0.940);
 
+
 // 1. Set initial max-height for item to make max-height animation work in WebKit browsers.
 .animate-list-item-leave {
   max-height: 44px; // [1]
 }
 
+// .list-item-leave is added to an element when we want the element to be removed from list.
+// Class postfixes: "-add" and "-add-active" are added by angular $animate service.
 // 1. TODO: remove when grid is implemented and correct values are inherited
 // 2. Animate opacity first, delay max-height animation by 0.5s.
 .list-item-leave-add, {
@@ -54,14 +57,14 @@
 
 .list-item-completing-add {
   transition-duration: 2s;
-  input[type="checkbox"] + label:before {
+  input[type="checkbox"]:checked + label:before {
     transition: color 2s ease;
   }
 }
 
 .list-item-completing,
 .list-item-completing-add.list-item-completing-add-active {
-  input[type="checkbox"] + label:before {
+  input[type="checkbox"]:checked + label:before {
     color: @color-checkbox-checked;
     content: @icon-selection-checked;
   }

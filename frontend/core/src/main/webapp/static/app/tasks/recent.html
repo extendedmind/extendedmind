@@ -4,7 +4,7 @@
       <h2>recent</h2>
       <div ng-include="'static/app/tasks/addTask.html'"></div>
 
-      <div class="row" ng-repeat="task in tasks | filter:{completed: '!'} | orderBy:'modified':true track by task.uuid" list-item="task" list-item-action="editTask(task)" list-item-left-action="taskChecked(task)" list-item-left-action-type="checkbox" list-item-left-action-checked="task.completed" ng-class="isAnimationActive() && 'animate-list-item-leave'"></div>
+      <div class="row" ng-repeat="task in tasks | filter:isTaskVisible" list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox" list-item-left-action-checked="task.completed" ng-class="isAnimationActive() && 'animate-list-item-leave'"></div>
 
     </div>
   </section>

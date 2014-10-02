@@ -27,8 +27,14 @@
 
   var ownerPrefix = 'my'; // default owner
 
-  var deferredLeaveAnimations = [];
-  var checkingAnimations = [];
+  var deferredActions = [];
+
+  function removeDeferredAction(type) {
+    var deferredActionIndex = deferredActions.findFirstIndexByKeyValue('type', type);
+    if (deferredActionIndex !== undefined) {
+      deferredActions.splice(deferredActionIndex, 1);
+    }
+  }
 
   return {
 
@@ -167,122 +173,35 @@
 
     // PROMISES
 
-    deferAction: function(id, type){
-      // TODO
-    },
-    resolveDeferredAction: function(id, type, resolveParameter){
-      // TODO
-    },
-    rejectDeferredAction: function(id, type, rejectParameter){
-      // TODO
-    },
-
-
-    // FIXME: refactor the functions below to use the functions above
-
-    // TODO: better naming
-    setTaskChecking: function(element) {
-      if (!checkingAnimations) checkingAnimations = [];
-      else {
-        for (var i = 0, len = checkingAnimations.length; i < len; i++) {
-          if (checkingAnimations[i].element === element) {
-            checkingAnimations[i].deferred = $q.defer();
-            return;
-          }
-        }
+    deferAction: function(type, deferred){
+      var deferredAction = deferred;
+      if (!deferredAction) {
+        deferredAction = $q.defer();
       }
-      checkingAnimations.push({
-        element: element,
-        deferred: $q.defer()
+
+      deferredActions.push({
+        type: type,
+        deferred: deferredAction,
+      });
+
+      return deferredAction.promise.then(function(resolved) {
+        removeDeferredAction(type);
+        return resolved;
+      }, function(rejected) {
+        removeDeferredAction(type);
+        return rejected;
       });
     },
-    // TODO: better naming
-    setTaskCheckingResolved: function(element) {
-      if (checkingAnimations && checkingAnimations.length > 0) {
-        for (var i = 0, len = checkingAnimations.length; i < len; i++) {
-          if (checkingAnimations[i].element === element) {
-            checkingAnimations[i].deferred.resolve('checking resolved');
-          }
-        }
+    getDeferredAction: function(type) {
+      var deferredActionIndex = deferredActions.findFirstIndexByKeyValue('type', type);
+      if (deferredActionIndex !== undefined) {
+        return deferredActions[deferredActionIndex].deferred;
       }
     },
-    // TODO: better naming
-    setTaskCheckingRejected: function(element) {
-      if (checkingAnimations && checkingAnimations.length > 0) {
-        for (var i = 0, len = checkingAnimations.length; i < len; i++) {
-          if (checkingAnimations[i].element === element) {
-            checkingAnimations[i].deferred.reject('checking rejected');
-          }
-        }
-      }
+    resolveDeferredActions: function(type, parameter) {
+      var deferredAction = deferredActions.findFirstObjectByKeyValue('type', type);
+      if (deferredAction) deferredAction.deferred.resolve(parameter);
     },
-    // TODO: better naming
-    getTaskCheckingPromise: function(element) {
-      if (checkingAnimations && checkingAnimations.length > 0) {
-        for (var i = 0, len = checkingAnimations.length; i < len; i++) {
-          if (checkingAnimations[i].element === element) {
-            return checkingAnimations[i].deferred.promise;
-          }
-        }
-      }
-    },
-    // TODO: better naming
-    getIsTaskChecking: function(element) {
-      if (checkingAnimations && checkingAnimations.length > 0) {
-        for (var i = 0, len = checkingAnimations.length; i < len; i++) {
-          if (checkingAnimations[i].element === element) {
-            return true;
-          }
-        }
-      }
-    },
-    // TODO: better naming
-    deferItemLeaveAnimation: function(element) {
-      if (deferredLeaveAnimations) deferredLeaveAnimations = [];
-      else {
-        for (var i = 0, len = deferredLeaveAnimations.length; i < len; i++) {
-          if (deferredLeaveAnimations[i].element === element) {
-            deferredLeaveAnimations[i].deferred = $q.defer();
-            return;
-          }
-        }
-      }
-      deferredLeaveAnimations.push({
-        element: element,
-        deferred: $q.defer()
-      });
-    },
-    // TODO: better naming
-    resolveItemLeaveAnimation: function(element, resolveInfo) {
-      if (deferredLeaveAnimations && deferredLeaveAnimations.length > 0) {
-        for (var i = 0, len = deferredLeaveAnimations.length; i < len; i++) {
-          if (deferredLeaveAnimations[i].element === element) {
-            deferredLeaveAnimations[i].deferred.resolve(resolveInfo);
-          }
-        }
-      }
-    },
-    // TODO: better naming
-    rejectItemLeaveAnimation: function(element, rejectInfo) {
-      if (deferredLeaveAnimations && deferredLeaveAnimations.length > 0) {
-        for (var i = 0, len = deferredLeaveAnimations.length; i < len; i++) {
-          if (deferredLeaveAnimations[i].element === element) {
-            deferredLeaveAnimations[i].deferred.reject(rejectInfo);
-          }
-        }
-      }
-    },
-    // TODO: better naming
-    getItemLeavePromise: function(element) {
-      if (deferredLeaveAnimations && deferredLeaveAnimations.length > 0) {
-        for (var i = 0, len = deferredLeaveAnimations.length; i < len; i++) {
-          if (deferredLeaveAnimations[i].element === element) {
-            return deferredLeaveAnimations[i].deferred.promise;
-          }
-        }
-      }
-    },
-
 
     // CALLBACK REGISTRATION
 

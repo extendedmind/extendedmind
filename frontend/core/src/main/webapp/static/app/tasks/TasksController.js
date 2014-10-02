@@ -44,13 +44,97 @@
     TasksService.saveTask(task, UISessionService.getActiveUUID());
   };
 
-  $scope.taskChecked = function taskChecked(task) {
+  $scope.openTaskEditor = function openTaskEditor(task) {
+    freezeTask(task);
+    $scope.openEditor('task', task);
+  };
+
+  $scope.closeTaskEditor = function closeTaskEditor(task) {
+    unfreezeTask(task, true);
+    $scope.closeEditor();
+  };
+
+  /*
+  * Every task in this list will not change in lists using ng-repeat.
+  * Relates to isTaskVisible filter filter function,
+  * and getTaskModifiedOrder and getTaskOrder orderBy filter functions, for example:
+  *
+  *   <div ng-repeat="task in tasks | filter:isTaskVisible | orderBy:getTaskModifiedOrder"></div>
+  *
+  */
+  var freezedTasksInLists = [];
+
+  /*
+  * Filter completed tasks that are not locked.
+  */
+  $scope.isTaskVisible = function(task) {
+    if (task.completed && !isTaskFrozen(task)) {
+      return false;
+    }
+
+    return true;
+  };
+
+  function isTaskFrozen(task) {
+    return freezedTasksInLists.findFirstIndexByKeyValue('task', task) !== undefined;
+  }
+
+  // lock task in lists
+  function freezeTask(task) {
+
+    var taskIndex = freezedTasksInLists.findFirstIndexByKeyValue('task', task);
+
+    if (taskIndex === undefined) {
+      freezedTasksInLists.push({
+        task: task
+      });
+    } else {
+      // Freeze some more.
+      freezedTasksInLists[taskIndex].needsForce = true;
+    }
+  }
+
+  // Release locked task in lists.
+  function unfreezeTask(task, force) {
+
+    var taskIndex = freezedTasksInLists.findFirstIndexByKeyValue('task', task);
+
+
+    // Remove found task if we have the force or task does not need force to be unfrozen.
+    if (taskIndex !== undefined && (force || !freezedTasksInLists[taskIndex].needsForce)) {
+      freezedTasksInLists.splice(taskIndex, 1);
+    }
+  }
+
+  /*
+  * Toggle task complete.
+  *
+  * Lock task in lists before its deferred complete is settled.
+  *
+  * Return checkbox checked statuses.
+  */
+  $scope.toggleCompleteTask = function toggleCompleteTask(task, taskCompletingReadyDeferred) {
+
+    if (taskCompletingReadyDeferred) {
+      taskCompletingReadyDeferred.promise.then(function(task) {
+        unfreezeTask(task);
+      });
+    }
+
+    freezeTask(task);
+
     if (task.completed) {
       AnalyticsService.do('uncompleteTask');
-      TasksService.uncompleteTask(task, UISessionService.getActiveUUID());
+      TasksService.uncompleteTask(task, UISessionService.getActiveUUID()).then(function() {
+        unfreezeTask(task, true);
+      }, function() {
+        unfreezeTask(task, true);
+      });
+      return false;
     } else {
       AnalyticsService.do('completeTask');
       TasksService.completeTask(task, UISessionService.getActiveUUID());
+      return true;
     }
   };
 

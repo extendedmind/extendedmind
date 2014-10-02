@@ -14,35 +14,11 @@
  */
  'use strict';
 
- function listDirective(UISessionService) {
+ function listDirective() {
   return {
     require: '?^swiperSlide',
     restrict: 'A',
-    controller: function($scope) {
-
-      this.setItemAnimationActiveAndCall = function setItemAnimationActiveAndCall(item, itemAction, element) {
-        // Item is going to be opened in editor. Defer possible leave animations in list.
-        UISessionService.deferItemLeaveAnimation(element);
-        $scope.registerEditorClosedCallback(itemEditDone, 'listDirective');
-
-        // Resolve deferred animations for item.
-        // TODO: Now only supports completed. Add support for other actions as well, deleted etc.
-        function itemEditDone() {
-          // If a user toggles checkbox on and off and state is eventually off,
-          // filter has already fired list's leave callback. Reject leave animation here.
-          if (item.completed) UISessionService.resolveItemLeaveAnimation(element, 'completed');
-          else UISessionService.rejectItemLeaveAnimation(element, 'uncompleted');
-          $scope.unregisterEditorClosedCallback('listDirective');
-        }
-
-        itemAction(item);
-      };
-
-      this.setItemLeftActionAnimationActiveAndCall = function setItemAnimationActiveAndCall(item, itemAction, isChecked, element) {
-        if (UISessionService.getIsTaskChecking(element)) UISessionService.setTaskCheckingRejected(element);
-        if (!isChecked) UISessionService.setTaskChecking(element);
-        itemAction(item);
-      };
+    controller: function() {
     },
     link: function(scope, element, attrs, swiperSlideController) {
       scope.isAnimationActive = function() {
@@ -52,5 +28,4 @@
   };
 }
 
-listDirective['$inject'] = ['UISessionService'];
 angular.module('em.base').directive('list', listDirective);

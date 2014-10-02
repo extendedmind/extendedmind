@@ -402,6 +402,10 @@ function MainController(
     }
     for (var id in editorClosedCallbacks)
       editorClosedCallbacks[id]();
+
+    // Don't remove list items from list before editor has been closed.
+    // See: listItemLeaveAnimation in listItemDirective.
+    UISessionService.resolveDeferredActions('edit');
   }
 
   DrawerService.registerClosedCallback('left', menuClosed, 'MainController');
@@ -439,8 +443,15 @@ function MainController(
   *
   * TODO: analytics visit omnibar
   */
-  $scope.openEditor = function openEditor() {
-    executeEditorAboutToOpenCallbacks('omnibar');
+  $scope.openEditor = function openEditor(type, item) {
+    executeEditorAboutToOpenCallbacks(type, item);
+
+    // Check for existing edit locks and resolve them first.
+    var deferredEditAction = UISessionService.getDeferredAction('edit');
+    if (deferredEditAction) deferredEditAction.resolve();
+
+    UISessionService.deferAction('edit');
+
     if (DrawerService.isOpen('left')) {
       DrawerService.close('left');
       openEditorAfterMenuClosed = true;
@@ -456,11 +467,6 @@ function MainController(
 
   $scope.toggleMenu = function toggleMenu() {
     DrawerService.toggle('left');
-  };
-
-  $scope.editTask = function editTask(task) {
-    executeEditorAboutToOpenCallbacks('task', task);
-    DrawerService.toggle('right');
   };
 
   // INJECT OTHER CONTENT CONTROLLERS HERE

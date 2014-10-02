@@ -46,9 +46,9 @@
 
   function evaluateAndSetSaveOnClose() {
     if ($scope.editorType !== 'omnibar' &&
-      $scope.titlebar &&
-      $scope.titlebar.text &&
-      $scope.titlebar.text.length > 0)
+        $scope.titlebar &&
+        $scope.titlebar.text &&
+        $scope.titlebar.text.length > 0)
       $scope.saveOnClose = true;
 
     else $scope.saveOnClose = false;
@@ -120,7 +120,10 @@
   // OPENING / CLOSING / ENDING
 
   $scope.endEdit = function endEdit() {
-    $scope.closeEditor();
+    if ($scope.editorType === 'omnibar') $scope.closeEditor();
+    else if ($scope.editorType === 'task') $scope.closeTaskEditor($scope.task);
+    else alert('implement close for: ' + $scope.editorType);  // FIXME
+
     if ($scope.saveOnClose) $scope.saveItemInEdit();
     else resetItemInEdit();
   };
@@ -450,4 +453,4 @@ angular.module('em.main').controller('EditorController', EditorController);
     $scope.openOmnibar(feature);
   };
 
-*/
+  */

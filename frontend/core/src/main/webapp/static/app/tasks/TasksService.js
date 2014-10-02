@@ -327,6 +327,7 @@
     },
     completeTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
+      var deferred = $q.defer();
       // Check that task is not deleted before trying to complete
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
 
@@ -340,6 +341,7 @@
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
                                   this.completeTaskRegex, params);
         task.completed = BackendClientService.generateFakeTimestamp();
+        deferred.resolve(task);
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
@@ -348,11 +350,14 @@
           if (result.data) {
             task.completed = result.data.completed;
           }
+          deferred.resolve(task);
         });
       }
+      return deferred.promise;
     },
     uncompleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
+      var deferred = $q.defer();
       // Check that task is not deleted before trying to uncomplete
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
 
@@ -366,6 +371,7 @@
         // task from moving down in the list when clicking on/off.
         //task.modified = result.data.modified;
         updateTask(task, ownerUUID);
+        deferred.resolve(task);
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
@@ -378,8 +384,10 @@
             //task.modified = result.data.modified;
             updateTask(task, ownerUUID);
           }
+          deferred.resolve(task);
         });
       }
+      return deferred.promise;
     },
     resetTask: function(task, ownerUUID) {
       var tasksArray = [task];

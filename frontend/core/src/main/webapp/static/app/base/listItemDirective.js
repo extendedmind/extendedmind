@@ -14,10 +14,10 @@
  */
  'use strict';
 
- function listItemDirective() {
+ function listItemDirective($animate, $q) {
   return {
     restrict: 'A',
-    require: '^?list',
+    require: '^list',
     templateUrl: 'static/app/base/listItem.html',
     scope: {
       item: '=listItem',
@@ -34,66 +34,60 @@
           if (!attrs.listItemLeftAction) { attrs.listItemLeftAction = 'false'; }
           if (!attrs.leftActionChecked) { attrs.leftActionChecked = 'false'; }
         },
-        post: function(scope, element, attrs, controller) {
+        post: function(scope, element) {
 
-          scope.callItemAction = function callItemAction() {
-            if (controller) controller.setItemAnimationActiveAndCall(scope.item, scope.itemAction, element[0]);
-            else scope.itemAction(scope.item);
-          };
+          /*
+          * Animate checked checkbox here.
+          */
+          scope.toggleLeftCheckbox = function toggleLeftCheckbox(item) {
 
-          scope.callLeftAction = function callLeftAction() {
-            if (controller) {
-              controller.setItemLeftActionAnimationActiveAndCall(
-                scope.item,
-                scope.leftAction,
-                scope.leftActionChecked,
-                element[0]);
-            }
-            else scope.leftAction(scope.item);
+            var checkboxCheckingReadyDeferred = $q.defer();
+            var checked = scope.leftAction({
+              task: item,
+              checkboxCheckingReadyDeferred: checkboxCheckingReadyDeferred
+            });
+
+            if (checked) {
+              $animate.addClass(element, 'list-item-completing').then(function() {
+                checkboxCheckingReadyDeferred.resolve(item);
+                scope.$apply();
+              });
+            } else $animate.removeClass(element, 'list-item-completing');
           };
         }
       };
     }
   };
 }
+listItemDirective['$inject'] = ['$animate', '$q'];
 angular.module('em.base').directive('listItem', listItemDirective);
 
-function listItemLeaveAnimation($animate, $q, UISessionService) {
-
-  function setItemLeaveAnimation(element) {
-    var canLeavePromise = UISessionService.getItemLeavePromise(element[0]);
-    if (canLeavePromise) {
-
-      return canLeavePromise.then(function(changeType) {
-        // if checked, add checked because $digest may have not run yet
-        if (changeType === 'completed') element.addClass('checked-checkbox');
-        return $animate.addClass(element, 'list-item-leave'); // returns a promise
-      });
-    }
-    else
-      return $animate.addClass(element, 'list-item-leave');
-  }
+/*
+* Own custom ng-repeat animation override.
+*
+* Triggered by class ".animate-list-item-leave" on the ng-repeat element.
+*
+* See: https://docs.angularjs.org/api/ngAnimate
+*/
+function listItemLeaveAnimation($animate, UISessionService) {
 
   return {
     // Call leave on error/reject.
     leave: function(element, leaveDone) {
-      var isTaskChecking = UISessionService.getIsTaskChecking(element[0]);
+      // Classes ".ng-leave" and ".ng-leave-active" are present on the element.
+      // Because we want to delay animation start we have to use our own animation classes.
 
-      if (isTaskChecking) {
-        var taskCheckingPromise = UISessionService.getTaskCheckingPromise(element[0]);
-        var checkedAnimatedPromise = $animate.addClass(element, 'list-item-completing');
-
-        checkedAnimatedPromise.then(function() {
-          UISessionService.setTaskCheckingResolved(element[0]);
-        }, leaveDone);
-
-        taskCheckingPromise.then(function() {
-          setItemLeaveAnimation(element).then(leaveDone, leaveDone);
-        }, leaveDone);
+      var deferredEdit = UISessionService.getDeferredAction('edit');
+      if (deferredEdit) {
+        deferredEdit.promise.then(function() {
+          $animate.addClass(element, 'list-item-leave').then(leaveDone);
+        });
+      } else {
+        // Straight leave without promises.
+        $animate.addClass(element, 'list-item-leave').then(leaveDone);
       }
-      else setItemLeaveAnimation(element).then(leaveDone, leaveDone);
     }
   };
 }
-listItemLeaveAnimation['$inject'] = ['$animate', '$q', 'UISessionService'];
+listItemLeaveAnimation['$inject'] = ['$animate', 'UISessionService'];
 angular.module('em.tasks').animation('.animate-list-item-leave', listItemLeaveAnimation);
