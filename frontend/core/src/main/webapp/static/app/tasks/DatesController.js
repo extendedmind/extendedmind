@@ -132,6 +132,14 @@
     $scope.datepickerWeeks[activeSlideIndex] = newActiveWeek;
     $scope.datepickerWeeks[nextSlideIndex] = newNextWeek;
 
+    var oldActiveDaySlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
+
+    // http://stackoverflow.com/a/543152
+    var oldActiveDate = new Date($scope.daySlides[oldActiveDaySlideIndex].referenceDate);
+    var offsetFromOldActiveDay = offsetFromOldActiveSlide * 7;
+    var newActiveYYYYMMDD = DateService.setOffsetDate(offsetFromOldActiveDay, oldActiveDate).getYYYYMMDD(oldActiveDate);
+    $scope.dateClicked(newActiveYYYYMMDD);
+
     if (!$scope.$$phase) $scope.$digest();
     offsetFromOldActiveSlide = 0;
     datepickerWeeksInfosCleared = false;
