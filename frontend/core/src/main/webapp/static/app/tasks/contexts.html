@@ -2,7 +2,7 @@
   <h3>contexts</h3>
   <ul>
     <li ng-show="contexts.length" ng-repeat="context in contexts">
-      <a href class="click-to-slide" swiper-click="showContextDetails(context)">
+      <a href class="click-to-slide" swiper-click="swipeToContext(context)">
         <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right"></span>
       </a>
     </li>

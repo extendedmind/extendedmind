@@ -61,7 +61,7 @@ function MainController(
         },
         right: {
           path: 'tasks/context',
-          heading: true,
+          heading: undefined,
         }
       }
     },
@@ -78,7 +78,7 @@ function MainController(
         },
         right: {
           path: 'notes/keyword',
-          heading: true,
+          heading: undefined,
         }
       }
     },
@@ -96,7 +96,7 @@ function MainController(
       }
     },
     list: {
-      heading: true,
+      heading: undefined,
       slides: {
         left: {
           path: 'list/tasks',
@@ -113,7 +113,7 @@ function MainController(
     }
   };
 
-  $scope.changeFeature = function(feature){
+  $scope.changeFeature = function(feature, state){
     if (UISessionService.getCurrentFeatureName() !== feature) {
       if (!$scope.features[feature].loaded) $scope.features[feature].loaded = true;
       var state = UISessionService.getFeatureState(feature);

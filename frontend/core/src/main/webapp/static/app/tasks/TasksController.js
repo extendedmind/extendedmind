@@ -225,6 +225,19 @@
     }
   };
 
+  $scope.swipeToContext = function(context){
+    $scope.features['tasks'].slides.right.heading = '@' + context.title;
+    $scope.$evalAsync(function(){
+      // TODO:
+      // This doesn't work the first time, needs some sort of promise thing
+      SwiperService.swipeTo('tasks/details');
+    });
+  }
+
+  $scope.isContextActive = function(){
+    return $scope.features['tasks'].slides.right.heading !== undefined;
+  }
+
 }
 
 TasksController['$inject'] = ['$scope', 'AnalyticsService', 'DateService', 'SwiperService', 'TasksService', 'UISessionService'];
