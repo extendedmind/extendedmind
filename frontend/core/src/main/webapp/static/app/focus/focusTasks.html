@@ -1,6 +1,5 @@
 <div ng-if="isFeatureActive('focus')"class="container-content--outer" drawer-handle="left">
   <section class="container-content" ng-controller="DatesController">
-    <!-- <div ng-if="isDatepickerVisible" class="row swiper-no-swiping" data-snap-ignore="true" datepicker></div> -->
 
     <div class="swiper-container" swiper-container="datepicker" swiper-type="main" expected-slides="5" swiper-container-loop="true" data-snap-ignore="true">
       <div class="swiper-wrapper">
@@ -103,49 +102,6 @@
       </div>
     </div>
   </section>
-  <footer class="container-content--after">notes -</footer>
+  <footer class="container-content--after" master-footer="getFeatureMap('focus')"
+  master-footer-add-item="addTask({transientProperties: {date:TODOgetActiveDate()}})"></footer>
 </div>
-
-
-<!-- Swiper has for internal reasons, a previous week loader that is below the header  -->
-<!-- NOTE: .loader renamed to .swiper-loader -->
-
-<!-- UNCOMMENT
-      <div class="swiper-loader row" id="pull-to-previous">
-        <span>previous week...</span>
-      </div>
-      <div class="swiper-slide" ng-repeat="date in detectDayChangeAndReturnWeekdays() track by date.weekdayIndex" swiper-slide="focus/tasks/{{date.weekday}}" slide-index="$index">
-        <div class="container-content" scroll-to>
-          <h2 ng-hide="isDatepickerVisible" class="date-heading row" ng-click="setDatepickerVisible()">{{date.displayDateShort}}</h2>
-          UNCOMMENT -->
-
-          <!-- list-item directive creates the content for this div -->
-          <!-- NOTE: needs more parameters, like list-item-has-star etc. -->
-
-<!-- UNCOMMENT
-          <div class="row" ng-repeat="task in tasks | tasksByDate:date.yyyymmdd" list-item="task" list-item-has-checkbox="true"></div>
-          UNCOMMENT -->
-
-          <!-- When add task is activated, this should get a ".row-active" class -->
-          <!-- This would work if feature-container has the editable-field-backdrop / backdrop-container directive -->
-
-<!-- UNCOMMENT
-          <div class="row" ng-include="'static/app/tasks/addTask.html'"></div>
-          <div class="row" ng-if="tasks.length === 0">
-            <div class="instruction-text">
-              <p class="instruction-text-chapter">tasks are things<br/>you want <b>to do</b><br/><br/></p>
-            </div>
-          </div>
-        </div>
-      </div>
-      UNCOMMENT -->
-
-
-      <!-- Swiper has for internal reasons, a next week loader that is below the footer  -->
-      <!-- NOTE: .loader renamed to .swiper-loader -->
-
-<!-- UNCOMMENT
-      <div id="pull-to-next" class="loader">
-        <span>next week...</span>
-      </div>
-      UNCOMMENT -->

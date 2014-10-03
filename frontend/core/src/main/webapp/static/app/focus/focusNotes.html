@@ -1,5 +1,8 @@
-<section class="container-content" list>
-  <h2>favorite</h2>
-  <div class="row" ng-repeat="note in notes" list-item="note" list-item-has-checkbox="false"></div>
-</section>
-<footer class="container-content--after">-tasks</footer>
+<div ng-if="isFeatureActive('focus')"class="container-content--outer">
+  <section class="container-content" list>
+    <h2>favorite</h2>
+    <div class="row" ng-repeat="note in notes" list-item="note" list-item-has-checkbox="false"></div>
+  </section>
+  <footer class="container-content--after" master-footer="getFeatureMap('focus')"
+  master-footer-add-item="addTask({transientProperties: {favorited:true}})"></footer>
+</div>
