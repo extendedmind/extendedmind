@@ -1,0 +1,11 @@
+<div class="container-content--outer" ng-if="isFeatureActive('lists')" drawer-handle="left">
+  <section class="container-content" scroll-to>
+    <div list>
+      <h2>archived</h2>
+      <div ng-repeat="archivedList in archivedLists" ng-bind="archivedList.title"></div>
+    </div>
+  </section>
+  <footer class="container-content--after" master-footer="getFeatureMap('lists')"
+  master-footer-add-item="addList({})"></footer>
+</div>
+

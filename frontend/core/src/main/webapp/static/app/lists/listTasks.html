@@ -1,0 +1,10 @@
+<div class="container-content--outer" ng-if="isFeatureActive('list')" drawer-handle="left">
+  <section class="container-content" scroll-to>
+    <div list>
+      <h2>tasks</h2>
+      <div ng-repeat="task in tasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}" ng-bind="task.title"></div>
+    </div>
+  </section>
+  <footer class="container-content--after" master-footer="getFeatureMap('list')"
+  master-footer-add-item="addTask({transientProperties: {list:list.uuid}})"></footer>
+</div>

@@ -1,0 +1,9 @@
+<div ng-show="isFeatureActive('list')" class="swiper-container container-fluid--inner"
+swiper-container="list" swiper-type="main" expected-slides=2>
+  <div class="swiper-wrapper">
+    <div class="swiper-slide" swiper-slide="list/tasks" slide-index=0
+    ng-include="'static/app/lists/listTasks.html'"></div>
+    <div class="swiper-slide" swiper-slide="list/notes" slide-index=1
+    ng-include="'static/app/lists/listNotes.html'"></div>
+  </div>
+</div>

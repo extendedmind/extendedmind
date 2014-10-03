@@ -123,11 +123,11 @@ function MainController(
     }
   };
 
-  $scope.changeFeature = function(feature, state){
+  $scope.changeFeature = function(feature, data){
     if (UISessionService.getCurrentFeatureName() !== feature) {
       if (!$scope.features[feature].loaded) $scope.features[feature].loaded = true;
       var state = UISessionService.getFeatureState(feature);
-      UISessionService.changeFeature(feature, undefined, state);
+      UISessionService.changeFeature(feature, data, state);
       AnalyticsService.visit(feature);
     }
   };

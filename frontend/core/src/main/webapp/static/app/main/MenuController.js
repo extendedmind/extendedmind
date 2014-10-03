@@ -45,8 +45,8 @@
     }
   };
 
-  $scope.gotoFeature = function gotoFeature(feature) {
-    $scope.changeFeature(feature);
+  $scope.gotoFeature = function gotoFeature(feature, data) {
+    $scope.changeFeature(feature,data);
     if ($rootScope.columns === 1) $scope.toggleMenu();
   };
 
@@ -58,14 +58,6 @@
     if (UISessionService.getCurrentFeatureName() === 'list' && UISessionService.getFeatureData('list') === list) {
       return 'active';
     }
-  };
-
-  $scope.gotoList = function gotoList(list) {
-    if (UISessionService.getCurrentFeatureName() !== 'list' || UISessionService.getFeatureState('list') !== list) {
-      UISessionService.changeFeature('list', list);
-      AnalyticsService.visit('list');
-    }
-    if ($rootScope.columns === 1) $scope.toggleMenu();
   };
 
   $scope.toggleLists = function toggleLists() {

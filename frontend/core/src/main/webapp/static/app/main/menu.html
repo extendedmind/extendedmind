@@ -26,7 +26,7 @@
         </div>
         <ul ng-if="isListsVisible() && lists.length > 0">
           <li class="list" ng-repeat="list in lists" ng-class="$last && 'list-last'">
-            <a href class="list-link" ng-class="getListClass(list)" ng-click="gotoList(list)">{{getListTitleText(list)}}</a>
+            <a href class="list-link" ng-class="getListClass(list)" ng-click="gotoFeature('list', list)">{{getListTitleText(list)}}</a>
           </li>
         </ul>
       </li>

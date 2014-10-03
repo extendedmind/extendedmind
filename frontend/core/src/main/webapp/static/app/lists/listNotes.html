@@ -1,0 +1,10 @@
+<div class="container-content--outer" ng-if="isFeatureActive('list')">
+  <section class="container-content" scroll-to>
+    <div list>
+      <h2>notes</h2>
+      <div ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}" ng-bind="note.title"></div>
+    </div>
+  </section>
+  <footer class="container-content--after" master-footer="getFeatureMap('list')"
+  master-footer-add-item="addNote({transientProperties: {list:list.uuid}})"></footer>
+</div>
