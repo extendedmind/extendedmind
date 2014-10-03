@@ -76,21 +76,7 @@ function MainController(
       }
     },
     notes: {
-      heading: 'notes',
-      slides: {
-        left: {
-          path: 'notes/recent',
-          heading: 'recent'
-        },
-        middle: {
-          path: 'notes/keywords',
-          heading: 'keywords',
-        },
-        right: {
-          path: 'notes/keyword',
-          heading: undefined,
-        }
-      }
+      heading: 'notes'
     },
     lists: {
       heading: 'lists',

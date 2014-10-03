@@ -1,13 +1,7 @@
-<section ng-show="isFeatureActive('inbox')" class="container-fluid--inner" ng-controller="InboxController" drawer-handle="left">
-
-  <div class="container-content" scroll-to>
-    <div ng-repeat="item in items">{{item.title}}</div>
-  </div>
-
-  <footer ng-if="(items.length > 0 && sortingItem === undefined)" class="container-content--after">
-    <button type="button" ng-click="sortInbox()">
-      <span ng-bind="getSortingText()"></span>
-    </button>
-  </footer>
-
+<section class="container-content" drawer-handle="left">
+  <h2 ng-bind="items.length + ' items'"></h2>
+  <div ng-repeat="item in items">{{item.title}}</div>
 </section>
+<footer class="container-content--after" master-footer="getFeatureMap('inbox')"
+master-footer-add-item="addItem({})"></footer>
+
