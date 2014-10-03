@@ -16,12 +16,14 @@
 
  function EntryController($location, $rootScope, $scope, $timeout, $window,
                           AnalyticsService, AuthenticationService,
-                          BackendClientService, SwiperService,
+                          BackendClientService, DetectBrowserService, SwiperService,
                           UserSessionService) {
 
   AnalyticsService.visitEntry('entry');
 
-  $scope.entryForms = {};
+  if (DetectBrowserService.isMobile()){
+    $scope.entryState = 'download';
+  }
 
   $scope.swipeToSignup = function swipeToSignup() {
     $scope.entryState = 'signup';
@@ -57,23 +59,24 @@
 
   $scope.swipeToForgot = function() {
     SwiperService.swipeTo('entry/details');
+    AnalyticsService.visitEntry('forgot');
   };
 
-  // ACTIONS
+  // LOG IN
 
   $scope.logIn = function() {
     if ($scope.rememberByDefault()) {
       $scope.user.remember = true;
     }
     $scope.loginFailed = false;
-    $scope.loginOffline = false;
+    $scope.entryOffline = false;
     AuthenticationService.login($scope.user).then(function() {
       AnalyticsService.do('login');
       $location.path('/my');
     }, function(authenticateResponse) {
       if (BackendClientService.isOffline(authenticateResponse.status)) {
         AnalyticsService.error('login', 'offline');
-        $scope.loginOffline = true;
+        $scope.entryOffline = true;
       } else if (authenticateResponse.status === 403) {
         AnalyticsService.error('login', 'failed');
         $scope.loginFailed = true;
@@ -85,10 +88,67 @@
     return UserSessionService.getRememberByDefault();
   };
 
+  // SIGN UP
+
+  $scope.signUp = function signUp() {
+    $scope.signupFailed = false;
+    $scope.entryOffline = false;
+    $scope.loginFailed = false;
+
+    // Cohort is a random number between 1 and 128
+    var randomCohort = Math.floor(Math.random() * 128) + 1;
+
+    var payload = {email: $scope.user.username,
+     password: $scope.user.password,
+     cohort: randomCohort};
+     if ($routeParams.bypass) {
+      payload.bypass = true;
+    }
+
+    AuthenticationService.signUp(payload).then(function(response) {
+      AnalyticsService.doWithUuid('signUp', undefined, response.data.uuid);
+      AuthenticationService.login($scope.user).then(function() {
+        $location.path('/my');
+      }, function(authenticateResponse) {
+        if (BackendClientService.isOffline(authenticateResponse.status)) {
+          $scope.entryOffline = true;
+        } else if (authenticateResponse.status === 403) {
+          $scope.loginFailed = true;
+        }
+      });
+    }, function(error) {
+      if (BackendClientService.isOffline(error.status)) {
+        $scope.entryOffline = true;
+      } else if (error.status === 400) {
+        $scope.signupFailed = true;
+      }
+    });
+  };
+
+  // FORGOT
+
+  $scope.sendInstructions = function sendInstructions() {
+    $scope.sendFailed = false;
+    $scope.sendOffline = false;
+    if ($scope.user.email) {
+      AuthenticationService.postForgotPassword($scope.user.email).then(
+        function(forgotPasswordResponse) {
+          if (BackendClientService.isOffline(forgotPasswordResponse.status)) {
+            $scope.sendOffline = true;
+          } else if (forgotPasswordResponse.status !== 200) {
+            $scope.sendFailed = true;
+          } else if (forgotPasswordResponse.data) {
+            $scope.resetCodeExpires = forgotPasswordResponse.data.resetCodeExpires;
+          }
+        }
+        );
+    }
+  };
+
 }
 
 EntryController['$inject'] = ['$location', '$rootScope', '$scope', '$timeout', '$window',
                               'AnalyticsService', 'AuthenticationService',
-                              'BackendClientService', 'SwiperService',
+                              'BackendClientService', 'DetectBrowserService', 'SwiperService',
                               'UserSessionService'];
 angular.module('em.entry').controller('EntryController', EntryController);

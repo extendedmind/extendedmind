@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function swiperContainerDirective($rootScope, $window, DetectIosVersionService, SwiperService) {
+ function swiperContainerDirective($rootScope, $window, DetectBrowserService, SwiperService) {
 
   return {
     restrict: 'A',
@@ -525,7 +525,7 @@
         SwiperService.setOnlyExternal(scope.swiperPath, false);
       }
 
-      var iOsVersion = DetectIosVersionService(); // for iOS-related stuff
+      var iOsVersion = DetectBrowserService.getIosVersion(); // for iOS-related stuff
 
       function swiperMovedToNewPosition() {
         // Disable swiping in new position.
@@ -574,5 +574,5 @@
     }
   };
 }
-swiperContainerDirective['$inject'] = ['$rootScope', '$window', 'DetectIosVersionService', 'SwiperService'];
+swiperContainerDirective['$inject'] = ['$rootScope', '$window', 'DetectBrowserService', 'SwiperService'];
 angular.module('em.base').directive('swiperContainer', swiperContainerDirective);

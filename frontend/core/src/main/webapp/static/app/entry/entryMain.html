@@ -1,31 +1,34 @@
 <!-- SIGNUP -->
-<form ng-if="entryState === 'signup'" name="loginForm">
+<form ng-if="entryState === 'signup'" name="signupForm">
   <section class="container-content">
     <header class="group-symmetrical">
       <a href ng-click="swipeToHome()"><span class="link-navigation-back">back</span></a>
     </header>
     <h1>sign up</h1>
-    <form role="form" name="entryForms.signupForm">
+    <form role="form" name="signupForm">
       <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email..." required />
       <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password..." required />
       <div class="group-mixed">
         <div class="group-mixed--left">
-          <input type="checkbox" ng-model="user.agree" ng-true-value="true" icon-checkbox="entryForms.signupFormAgree" />
+          <input type="checkbox" ng-model="user.agree" ng-true-value="true" icon-checkbox="signupFormAgree" />
         </div>
-        <div class="group-mixed--middle text-details">I have read and agree to the <a href ng-click="gotoTermsOfService()">terms of service</a> and <a href ng-click="gotoPrivacyPolicy()">privacy policy</a></div>
+        <div class="group-mixed--middle text-details">i have read and agree to the <a href ng-click="gotoTermsOfService()">terms of service</a> and <a href ng-click="gotoPrivacyPolicy()">privacy policy</a></div>
       </div>
     </form>
     <div class="group-error row">
-      <div ng-if="entryForms.signupForm.email.$touched" ng-messages="entryForms.signupForm.email.$error">
+      <div ng-if="signupForm.email.$touched" ng-messages="signupForm.email.$error">
         <span class="text-error" ng-message="email">invalid email address</span>
       </div>
-      <div ng-if="entryForms.signupForm.password.$touched" ng-messages="entryForms.signupForm.password.$error">
+      <div ng-if="signupForm.password.$touched" ng-messages="signupForm.password.$error">
         <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
       </div>
+      <span ng-if="signupFailed" class="text-error">user with given email already registered</span>
+      <span ng-if="entryOffline" class="text-error">can't connect to server. are you online?</span>
+      <span ng-if="loginFailed" class="text-error">could not login with new credentials</span>
     </div>
   </section>
   <footer class="container-content--after group-btn">
-    <button type="submit" class="btn-action" ng-disabled="!entryForms.signupForm.$valid || !user.agree" ng-click="signUp()">
+    <button type="submit" class="btn-action" ng-disabled="!signupForm.$valid || !user.agree" ng-click="signUp()">
       <span class="text-btn">done</span>
     </button>
   </footer>
@@ -53,8 +56,8 @@
       <div ng-if="loginForm.password.$touched" ng-messages="loginForm.password.$error">
         <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
       </div>
-      <span ng-if="loginFailed" class="text-error">invalid username or password</span>
-      <span ng-if="loginOffline" class="text-error">can't connect to server. are you online?</span>
+      <span ng-if="loginFailed" class="text-error">invalid email or password</span>
+      <span ng-if="entryOffline" class="text-error">can't connect to server. are you online?</span>
     </div>
   </section>
   <footer class="container-content--after group-btn">

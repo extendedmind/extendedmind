@@ -1,0 +1,23 @@
+<div class="container-master" ng-controller="ResetController" vertical-resize="entry">
+  <div class="container-fluid">
+    <form class="container-fluid--inner" name="resetForm">
+      <section class="container-content">
+        <h1>reset password</h1>
+        <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password..." ng-keydown="typePassword()" required />
+        <div class="group-error row">
+          <div ng-if="resetForm.password.$touched" ng-messages="resetForm.password.$error">
+            <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
+          </div>
+          <span ng-if="resetFailed" class="text-error">error resetting password</span>
+          <span ng-if="resetOffline" class="text-error">can't connect to server. are you online?</span>
+          <span ng-if="loginFailed" class="text-error">could not login with new credentials</span>
+        </div>
+      </section>
+      <footer class="container-content--after group-btn">
+        <button type="submit" class="btn-action" ng-disabled="!resetForm.$valid" ng-click="resetPassword()">
+          <span class="text-btn">log in</span>
+        </button>
+      </footer>
+    </form>
+  </div>
+</div>

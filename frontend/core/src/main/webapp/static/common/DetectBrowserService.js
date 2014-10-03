@@ -14,15 +14,25 @@
  */
  'use strict';
 
- function DetectIosVersionService() {
+ function DetectBrowserService() {
   // http://stackoverflow.com/a/14223920
-  return function() {
-    if (/iP(hone|od|ad)/.test(navigator.platform)) {
-      // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
-      var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
-      return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
+  return {
+    getIosVersion: function() {
+      if (this.isIos()) {
+        // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
+        var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+        return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
+      }
+    },
+    isAndroid: function() {
+      return /Android/i.test(navigator.userAgent);
+    },
+    isIos: function() {
+      return /iP(hone|od|ad)/.test(navigator.platform);
+    },
+    isMobile: function() {
+      return this.isAndroid() || this.isIos();
     }
   };
 }
-
-angular.module('common').factory('DetectIosVersionService', DetectIosVersionService);
+angular.module('common').factory('DetectBrowserService', DetectBrowserService);

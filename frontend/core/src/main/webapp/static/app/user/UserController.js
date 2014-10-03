@@ -71,7 +71,7 @@
   // LOGOUT
   $scope.logOut = function logOut() {
     UserService.logout().then(function() {
-      $location.path('/login');
+      $location.path('/');
       UserSessionService.clearUser();
       UISessionService.reset();
     });

@@ -71,7 +71,7 @@
       };
 
       var exiting = false;
-      function redirectToLogin() {
+      function redirectToEntry() {
         exiting = true;
         var email = UserSessionService.getEmail();
         UserSessionService.clearUser();
@@ -79,7 +79,7 @@
         // $location can not be injected directly presumably because this directive
         // is defined above ng-view
         var $location = $injector.get('$location');
-        $location.url('/login');
+        $location.url('/');
       }
 
       // Listen to exceptions emitted to rootscope
@@ -118,12 +118,12 @@
         } else if (exception.type === 'http' && exception.status === 403) {
           // Redirect thrown 403 Forbidden exception to the login page
           AnalyticsService.error('forbidden', JSON.stringify(exception));
-          redirectToLogin();
+          redirectToEntry();
         } else if (exception.type === 'session') {
           if (!exiting) {
             // Redirect session errors to the login page
             AnalyticsService.error('session', exception.description);
-            redirectToLogin();
+            redirectToEntry();
           }
         } else {
           AnalyticsService.error('unexpected', JSON.stringify(exception));
