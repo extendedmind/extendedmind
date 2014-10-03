@@ -1,12 +1,16 @@
 @import "foundation.less";
+@import "inputs.less";
 
-//////// NEW START ////////////////////////
+/*
+
+<h1 class="main-heading">Animations</h1>
+
+*/
 
 @speed-animate-item-fade: 1s;
 @speed-animate-item-shrink: .5s;
 @delay-animate-item-shrink: .5s;
 @timing-animate-item: cubic-bezier(0.250, 0.460, 0.450, 0.940);
-
 
 // 1. Set initial max-height for item to make max-height animation work in WebKit browsers.
 .animate-list-item-leave {
@@ -68,135 +72,4 @@
     color: @color-checkbox-checked;
     content: @icon-selection-checked;
   }
-}
-
-
-//////// NEW END ////////////////////////
-
-/*
-
-<h1 class="main-heading">Animations</h1>
-
-The app animations are mostly fades between different colors and brightnesses.
-
-
-/*
-* Set fading background to content when omnibar drawer is toggled and max width when menu drawer is toggled.
-*
-* Animation time should be shorter than the speed paramer in Snap.js drawer.
-* Backgroung must be animated faster than Snap.js drawer because otherwise it seems to be a little laggy.
-
-
-#feature-container-wrapper {
-  background-color: white;
-
-  // NOTE: transition correspond with Snap.js menu drawer animation transition
-  // http://stackoverflow.com/a/15138493
-  #feature-container {
-    -webkit-transition: max-width .2s ease;
-    -moz-transition: max-width .2s ease;
-    -o-transition: max-width .2s ease;
-    -ms-transition: max-width .2s ease;
-    -transition: max-width .2s ease;
-  }
-  #feature-container.omnibar-visible, #feature-container.omnibar-hidden {
-    -webkit-transition: background-color .1s linear;
-    -moz-transition: background-color .1s linear;
-    -o-transition: background-color .1s linear;
-    -ms-transition: background-color .1s linear;
-    -transition: background-color .1s linear;
-    background-color: #dadada;
-  }
-  #feature-container.omnibar-hidden {
-    background-color: white;
-  }
-}
-
-/*
-`.fade-fast` fades to new color in 0.25 seconds.
-
-```markup
-<style>
-  .fade-fast {
-  }
-  .fade-fast:hover {
-   color: red;
-  }
-</style>
-<div class="fade-fast">Hover over me.</div>
-```
-*/
-.fade-fast {
-  -o-transition: 0.25s ease-in-out;
-  -moz-transition: 0.25s ease-in-out;
-  -khtml-transition: 0.25s ease-in-out;
-  -webkit-transition: 0.25s ease-in-out;
-  -ms-transition: 0.25s ease-in-out;
-  transition: 0.25s ease-in-out;
-}
-
-/*
-`.loading-animation`
-
-TODO: example needed!
-
-```markup
-<div class="loading-animation"></div>
-```
-*/
-.loading-animation {
-  position: relative;
-  height: inherit;
-  padding-top: @vertical-grid * 3;
-  color: @default-element;
-  text-align: center;
-}
-
-/*
-Fade out long ellipsis
-
-TODO: working example needed!
-
-```markup
-<span style="width=100px" accordion-title-link="item.title.length" accordion-title-link-bold="boldTitle" class="ng-isolate-scope ng-binding">contexts could be used to prevent access to data. contexts could be used to prevent access to data. contexts could be used to prevent access to data. contexts could be used to prevent access to data.contexts could be used to prevent access to data.contexts could be used to prevent access to data.contexts could be used to prevent access to data.</span>
-```
-*/
-// From: http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/
-.ellipsis {
-  overflow: hidden;
-  height: @vertical-grid;
-  line-height: 22px;
-}
-.ellipsis:before {
-  content: "";
-  float: left;
-  width: 5px;
-  height: @vertical-grid;
-}
-.ellipsis > span {
-  float: right;
-  width: 100%;
-  margin-left: -5px;
-}
-.ellipsis:after {
-  content: "\00a0";
-
-  box-sizing: content-box;
-  -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-
-  float: right;
-  position: relative;
-  top: -24px;
-  left: 100%;
-  width: 7em;
-  margin-left: -7em;
-  padding-right: 5px;
-  text-align: right;
-  background: -webkit-gradient(linear, left top, right top,
-    from(rgba(255, 255, 255, 0)), to(white), color-stop(75%, white));
-  background: -moz-linear-gradient(to right, rgba(255, 255, 255, 0), white 75%, white);
-  background: -o-linear-gradient(to right, rgba(255, 255, 255, 0), white 75%, white);
-  background: -ms-linear-gradient(to right, rgba(255, 255, 255, 0), white 75%, white);
-  background: linear-gradient(to right, rgba(255, 255, 255, 0), white 75%, white);
 }

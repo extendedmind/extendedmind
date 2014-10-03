@@ -364,16 +364,16 @@
     var element = event.target;
     if (element.id === 'datepicker') {
       return;
-    } else if (element.id === 'today-link') {
+    } else if (element.id === 'todayLink') {
       event.stopPropagation();
       gotoToday();
     }
-    if (element.id !== 'datepicker' || element.id !== 'today-link') {
+    if (element.id !== 'datepicker' || element.id !== 'todayLink') {
       while (element.parentNode) {
         element = element.parentNode;
         if (element.id === 'datepicker') {
           return;
-        } else if (element.id === 'today-link') {
+        } else if (element.id === 'todayLink') {
           event.stopPropagation();
           gotoToday();
         }

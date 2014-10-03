@@ -12,76 +12,18 @@ Following navigation links are used. These shouldn't be used for actions!
 /*
 ```markup
 <a href="#">Basic link</a> <br />
-<a href="#" class="highlighted-link">Highlighted link</a> <br />
-<a href="#" class="warning-link">Warning link</a> <br />
-<a href="#" class="show-more">Show more</a> <br />
-<a href="#" class="arrow-link"><span class="icon-arrow-right">TODO: arrow link doesn't show up before icons are fixed in Styleguide</span></a> <br />
-<a href="#" class="font-smallest add-new-list-item-cancel">add-new-list-item-cancel</a>
-
 ```
 */
+
 a {
   text-decoration: none;
-  color: @default-element;
+  color: @color-link-active;
   outline: 0;
 }
 
 a:active {
-  color: @default-element-pressed;
+  color: @color-link-pressed;
 }
-
-.highlighted-link {
-  color: @highlighted-element;
-  &:hover {
-    color: @highlighted-element-hover;
-  }
-  &:active {
-    color: @highlighted-element-pressed;
-  }
-}
-
-.warning-link {
-  color: @warning;
-}
-.show-more {
-  .font-smallest;
-  display: inherit;
-  .center-horizontally;
-  text-align: center;
-}
-
-.arrow-link {
-  line-height: @vertical-grid;
-}
-
-// Add small margin to prevent arrow from touching scrollbar on desktop
-// TODO: cleanup?
-.click-to-slide {
-  span.icon-arrow-right {
-    margin-right: 5px;
-  }
-}
-a.click-to-slide {
-  color: @default-element;
-}
-
-.add-new-list-item-cancel {
-  color: #e22c09;
-}
-
-.click-to-slide {
-  display: table;
-  width: 100%;
-  vertical-align: middle;
-  span.link-title {
-    width: 100%;
-    display: table-cell;
-    line-height: normal;
-    color: @content;
-  }
-}
-
-//////// NEW START ////////////////////////
 
 /*
 Navigation links
@@ -100,4 +42,10 @@ Navigation links
   padding-left: 5px;
 }
 
-//////// NEW END ////////////////////////
+/*
+Highlighted link
+*/
+
+.link-highlighted {
+  // TODO
+}

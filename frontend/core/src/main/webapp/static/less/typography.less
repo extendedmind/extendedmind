@@ -1,130 +1,5 @@
 @import "foundation.less";
-
-/*
-<h1 class="main-heading">Typography</h1>
-
-Fonts in use:
-* HelveticaNeue-Light
-* Helvetica Neue Light
-* HelveticaNeueLTStd-Lt
-* Helvetica Neue
-* Arial
-* Helvetica
-* sans-serif
-
-(Bold letters use HelveticaNeueLT-Roman instead of HelveticaNeueLTStd-Lt.)
-*/
-
-@font: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'HelveticaNeueLTStd-Lt', 'Helvetica Neue', 'Arial', 'Helvetica', 'sans-serif';
-@font-bold: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'HelveticaNeueLT-Roman', 'Helvetica Neue', 'Arial', 'Helvetica', 'sans-serif';
-
-@large-font-size: 21px;
-@default-font-size: 18px;
-@font-small-size: 15px;
-@font-smallest-size: 12px;
-
-* {
-  font-family: @font;
-}
-
-html {
-  font-size: @default-font-size;
-}
-
-
-/*
-******************************************************************************
-# Headings
-```markup
-<h1>h1</h1>
-<h2>h2</h2>
-<h3>h3</h3>
-<h4>h4</h4>
-<p class="subheading">.subheading</a>
-```
-*/
-h1, h2, h3, h4 {
-  .font-bold;
-  margin: 0;
-  color: @content-heading;
-  line-height: normal;
-}
-
-.subheading {
-  padding-top: @vertical-grid-half;
-}
-
-
-/*
-******************************************************************************
-# Inputs & links
-
-```markup
-<a class="bold-title">.bold-title</a> <br/>
-<a>normal a</a> <br/>
-<input></input>
-```
-*/
-
-// TODO: Could be separated and simplified
-h3, .bold-title {
-  min-height: @content-heading-height;
-  a&, input, a {
-    .font-bold;
-    color: @content-heading;
-  }
-  a&, input {
-    font-size: @large-font-size;
-  }
-  a&:active, input:active, a:active {
-    color: @content-heading-pressed;
-  }
-}
-
-/*
-# Inline font control
-```markup
-<p class="font-bold">.font-bold</p>
-<p class="font-small">.font-small</p>
-<p class="font-smallest">.font-smallest</p>
-```
-*/
-.font-bold {
-  font-family: @font-bold;
-  font-weight: 700;
-}
-.font-small {
-  font-size: @font-small-size;
-}
-.font-smallest {
-  font-size: @font-smallest-size;
-}
-
-/*
-Font control with alignment:
-```markup
-<p class="instruction-text">.instruction-text</p>
-```
-*/
-
-.instruction-text {
-  color: @instruction;
-  display: block;
-  text-align: center;
-  line-height: 19px;
-  .icon-logo-only {
-    font-size: @font-small-size;
-  }
-  .instruction-text-chapter {
-    padding-bottom: @vertical-grid;
-  }
-  .instruction-text-chapter-details {
-    font-size: @font-small-size;
-    padding-bottom: @vertical-grid;
-  }
-}
-
-//////// NEW START ////////////////////////
+@import "icons.less";
 
 /*
 <h1 class="main-heading">Typography</h1>
@@ -147,7 +22,16 @@ Fonts in use:
 @size-font-jumbotron: 56px;
 @size-font-large: 40px;
 @size-font-ingress: 25px;
+@size-font-content: 18px;
 @size-font-small: 15px;
+
+* {
+  font-family: @font-family;
+}
+
+html {
+  font-size: @size-font-content;
+}
 
 /*
 Font mixins.
@@ -178,6 +62,7 @@ Font mixins.
 */
 
 @size-icon-logo: 30px;
+@size-icon-menu: 20px;
 
 /*
 Use `.text-details` to separate details from body text.
@@ -206,18 +91,12 @@ Use `.text-details` to separate details from body text.
   }
 }
 
-//////// NEW END ////////////////////////
-
-
-#email-verification-status {
-  font-size: @font-smallest-size;
-  display: block;
-  line-height: @vertical-grid-half;
-}
-
-// Lists
-ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
+.text-menu {
+  font-size: @size-icon-menu;
+  line-height: @size-icon-menu;
+  &:after {
+    .set-icon-font;
+    color: @color-menu-button;
+    content: @icon-menu;
+  }
 }

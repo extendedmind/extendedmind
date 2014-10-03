@@ -3,8 +3,6 @@
 @import "animations.less";
 @import "inputs.less";
 
-//////// NEW START ////////////////////////
-
 /*
 <h1 class="main-heading">Widgets</h1>
 
@@ -86,592 +84,21 @@ TODO: working example needed!
   }
 }
 
-//////// NEW END ////////////////////////
-
-/*
-*************************************************************
-# Section dependent
-TODO: Examples needed
-*/
-section#welcome {
-  max-width: 350px;
-  .column {
-    overflow-y: auto;
-    .banner {
-      padding-bottom: @vertical-grid;
-      span {
-        width: 200px;
-        display: block;
-        text-align: center;
-        .center-horizontally;
-      }
-      padding-top: @vertical-grid * 1.5;
-    }
-    .content {
-      text-align: center;
-      line-height: @vertical-grid-half;
-      #welcome-instructions {
-        padding-bottom: @vertical-grid;
-      }
-      #welcome-store-buttons {
-        padding-bottom: @vertical-grid;
-      }
-      #welcome-continue-link {
-        font-size: @font-small-size;
-      }
-    }
-  }
-}
-
-section#signup {
-  .column {
-    .banner {
-      margin-bottom: -@vertical-grid * 7;
-    }
-    .banner:after {
-      height: @vertical-grid * 7;
-    }
-    .content {
-      height: @vertical-grid * 7;
-      span#agreeText {
-        font-size: @font-small-size;
-        color: @content;
-        line-height: 19px;
-        a {
-          color: @highlighted-element;
-        }
-        a:active {
-          color: @highlighted-element-pressed;
-        }
-      }
-    }
-  }
-}
-
-
-/*
-*************************************************************
-# Tasks timeline
-TODO: Changes to focus?
-*/
-section#tasks-timeline {
-  .date-heading {
-    position: relative;
-  }
-  #pull-to-previous, #pull-to-next {
-    text-align: center;
-    line-height: 200px;
-    height: 200px;
-    width: 100%;
-  }
-  #pull-to-previous {
-    position: absolute;
-    top: -200px;
-  }
-  .loader {
-    color: @default-element;
-  }
-  .loader-active {
-    color: @highlighted-element;
-  }
-}
-
-
-/*
-# Accordion
-TODO: Gets wiped?
-*/
-
-.accordion-item-active {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  .accordion-title-open {
-    margin-top: -4px;
-    padding-bottom: 5px;
-    .left-input-wrapper {
-      padding-left: 1px;
-    }
-    &.no-checkbox {
-      margin-top: -6px;
-    }
-  }
-}
-
-.keywords-container {
-  line-height: @vertical-grid / 1.2;
-  #new-keyword {
-    margin-right: -4px;
-  }
-}
-
-button.keyword {
-  color: #0f82fe;
-  border: 1px solid;
-  padding: 2px 4px;
-  margin-right: 4px;
-}
-
-button.keyword:disabled {
-  opacity: .5;
-}
-
-button.selected-keyword {
-  background-color: #0f82fe;
-  color: white;
-  padding: 3px 6px;
-  margin-right: 4px;
-}
-
-input[type="checkbox"]:checked ~ a#accordionTitleLink {
-  color: @default-element;
-  // .fade-fast;
-}
-
-div#accordionTitleHeightFix {
-  height: @vertical-grid;
-}
-
-a#accordionTitleLink {
-  color: @content;
-  line-height: 19px;
-  .break-words;
-  &.needsSmallPadding {
-    padding-top: 4px;
-  }
-  &.needsBigPadding {
-    padding-top: 5px;
-  }
-}
-
-div#closedAccordionTitleWrapper {
-  max-height: @vertical-grid;
-  overflow: hidden;
-}
-
-
-/*
-*************************************************************
-# Excerpt
-(Previously known as "teaser")
-TODO: Example needed
-*/
-
-.excerpt {
-  line-height: @vertical-grid-half;
-  font-size: @font-small-size;
-  .break-words;
-}
-
-.excerpt, .excerpt-empty {
-  padding-bottom: @vertical-grid-half;
-}
-
-
-/*
-*************************************************************
-# Header
-TODO: Example needed
-*/
-
-header.static-page-header {
-  .active-item-container {
-    button#menu-button {
-      .button;
-      padding: 19px 20px 13px @horizontal-grid - 4; // increased clicking area, align icon to grid with right padding
-      span.icon-menu {
-        color: @highlighted-element;
-      }
-    }
-    button#menu-button:active {
-      span.icon-menu {
-        color: @highlighted-element-pressed;
-      }
-    }
-    a#today-link {
-      float: left;
-      color: @highlighted-element;
-      font-size: @font-small-size;
-      margin-top: 10px;
-      padding-left: @horizontal-grid + 4;
-      height: @page-header-height;
-    }
-    a.today-link-active {
-      .font-bold;
-    }
-  }
-  .heading {
-    color: @highlighted-element;
-    font-weight: 700;
-    font-size: @large-font-size;
-  }
-  a.heading, .omni-button span {
-    &:hover {
-      color: @highlighted-element-hover;
-    }
-    &:active {
-      color: @highlighted-element-pressed;
-    }
-  }
-
-  .long-heading, .medium-heading {
-    display: table;
-    line-height: @vertical-grid-half;
-    .heading {
-      display: table-cell;
-      vertical-align: middle;
-    }
-  }
-  .medium-heading .heading {
-    font-size: @default-font-size;
-  }
-  .long-heading .heading {
-    font-size: @font-small-size;
-  }
-  .omni-button {
-    .button;
-    line-height: normal;
-    padding: 17px @horizontal-grid 17px 11px; // increased clicking area
-    span {
-      font-size: 16px;
-    }
-  }
-}
-
-
-/*
-*************************************************************
-# Footer
-TODO: Example needed
-*/
-
-footer {
-  a[class^='active-slide'], a[class*=' active-slide'] {
-    span {
-      color: @highlighted-element;
-    }
-    span:active {
-      color: @highlighted-element-pressed;
-    }
-  }
-}
-
-.feature-footer {
-  li.left-slide-link {
-    a {
-      padding-right: @horizontal-grid - 10px; // make room for long names
-    }
-  }
-  li.right-slide-link {
-    a {
-      padding-left: @horizontal-grid - 10px; // make room for long names
-    }
-  }
-}
-
-/*
-*************************************************************
-# Omnibar
-TODO: Example needed
-*/
-
-.titlebar-input {
-  font-size: @large-font-size;
-  max-height: @vertical-grid;
-  &.titlebar-input-medium {
-    font-size: @default-font-size;
-  }
-  &.titlebar-input-long {
-    font-size: @font-small-size;
-  }
-  &.titlebar-input-very-long {
-    font-size: @font-smallest-size;
-  }
-}
-.omnibar-feature {
-  width: 100%;
-  float: left;
-  overflow-y: auto;
-  // height set with javascript
-  .omnibar-search, .omnibar-empty-search-placeholder, .omnibar-task, .omnibar-note {
-    height: 100%;
-  }
-  .omnibar-search .filtered-items {
-    padding-top: @vertical-grid-half;
-  }
-  .omnibar-scroll-container {
-    overflow-y: auto;
-  }
-
-  .omnibar-edit-item-scroller-wrapper {
-    height: 100%;
-    width: 100%;
-    .omnibar-edit-item-scroller {
-      position: relative;
-      width: 200%;
-      height: 100%;
-      overflow: hidden;
-    }
-    .omnibar-scroller-slide {
-      width: 50%;
-      height: 100%;
-      float: left;
-      list-style-type: none;
-      overflow-y: auto;
-    }
-  }
-}
-
-.omnibar-footer {
-  height: @footer-height;
-  .button-container, .button-row {
-    border-right: 0;
-    border-left: 0;
-  }
-  .button-container.left-of-two button.transparent-button, .button-container.left-of-three button.transparent-button,
-  .button-container.right-of-two button.transparent-button, .button-container.right-of-three button.transparent-button {
-    width: auto;
-    padding-right: 30px;
-    padding-left: 30px;
-  }
-  .button-container.left-of-two button.transparent-button, .button-container.left-of-three button.transparent-button {
-    float: left;
-    margin-left: -30px;
-  }
-  .button-container.right-of-two button.transparent-button, .button-container.right-of-three button.transparent-button {
-    float: right;
-    margin-right: -30px;
-  }
-
-  .edit-item-scroller-indicators {
-    .button-container.left-of-two .edit-item-scroller-indicator-wrapper {
-      padding-right: 10px;
-      padding-left: 15px;
-      float: right;
-    }
-    .button-container.right-of-two .edit-item-scroller-indicator-wrapper {
-      padding-right: 15px;
-      padding-left: 10px;
-      float: left;
-    }
-    .edit-item-scroller-indicator-wrapper {
-      width: auto;
-      .edit-item-scroller-indicator-left, .edit-item-scroller-indicator-right {
-        width: 8px;
-        height: 8px;
-        border-radius: 4px;
-        background-color: #dadada;
-        color: black;
-        -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-        transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-      }
-      .edit-item-scroller-indicator-left {
-        float: right;
-      }
-      .edit-item-scroller-indicator-right {
-        float: left;
-      }
-      .edit-item-scroller-indicator-active {
-        background-color: #919191;
-      }
-    }
-    .edit-item-scroller-indicator-wrapper:active {
-      .edit-item-scroller-indicator-left, .edit-item-scroller-indicator-right {
-        background-color: #919191;
-      }
-    }
-  }
-}
-
-
-/*
-*************************************************************
-# Menu
-TODO: Example needed
-*/
-
-.no-webkit-scrolling {
-  -webkit-overflow-scrolling: auto;
-}
-
-.webkit-scrolling {
-  -webkit-overflow-scrolling: touch;
-}
-
-#menu {
-  background-color: @menu;
-  position: absolute;
-  width: 260px;
-  height: 100%;
-  overflow: auto;
-  #menu-content {
-    li.account-link {
-      padding-top: 8px;
-      height: @page-header-height;
-    }
-    a, span {
-      font-size: @font-small-size;
-      .font-bold;
-    }
-    a.feature-link, a.lists-link {
-      font-size: 1.17em;  // http://www.w3.org/TR/CSS2/sample.html
-    }
-    li.last-feature { // padding-bottom for li with last a.feature-link
-      padding-bottom: @vertical-grid;
-    }
-    ul {
-      margin-top: 4px;
-    }
-    a {
-      color: #FEFFFF;
-      padding-right: 30px;
-      padding-left: 30px;
-    }
-    a.active, a.lists-link.active + a.hide-expand-link, a:active, a:active + a.hide-expand-link {
-      background-color: white;
-      color: black;
-    }
-    a {
-      // http://getbootstrap.com/components/#dropdowns
-      display: block;
-    }
-    .list {
-      display: table;
-      line-height: @vertical-grid-half;
-      height: @vertical-grid;
-      width: 100%;
-      .list-link {
-        display: table-cell;
-        vertical-align: middle;
-        padding-left: 40px;
-      }
-    }
-    .lists-heading-container {
-      display: table;
-      .feature-link {
-        display: table-cell;
-        width: 90%;
-      }
-      a.hide-expand-link {
-        vertical-align: middle;
-        display: table-cell;
-        width: 10%;
-      }
-    }
-    .menu-last {
-      padding-bottom: @vertical-grid-half;
-    }
-  }
-}
-
-// Override again with background color of the next element
-// of the mobile menu
-#feature-container-wrapper {
-  position: relative;
-  background-color: white;
-}
-
-
-/*
-*************************************************************
-# Datepicker
-TODO: Gets replaced with pikaday?
-*/
-
-li.datepicker-date {
-  line-height: @vertical-grid-half;
-}
-
-#datepicker {
-  height: @vertical-grid + 6;
-  margin-top: -16px;
-  overflow: hidden;
-  div#scroller {
-    // http://stackoverflow.com/a/18784257
-    // css divide width 100% to 3 column
-    width: 300%;
-    height: inherit;
-    display: flex;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    justify-content: center;
-    -webkit-justify-content: center;
-    -ms-flex-pack: center;
-    nav[role=navigation].slide {
-      height: inherit;
-      flex: 1;
-      -webkit-flex: 1;
-      -ms-flex: 1;
-      ul {
-        // http://stackoverflow.com/a/14103766
-        // How to stretch html / css horizontal navigation items evenly and fully across a specified container
-        width: 100%;
-        height: inherit;
-        li {
-          height: inherit;
-          vertical-align: middle;
-        }
-        li#datepicker-arrow-previous {
-          text-align: left;
-        }
-        li#datepicker-arrow-next {
-          text-align: right;
-        }
-        li.datepicker-date {
-          min-width: 11.11%;
-          text-align: center;
-          a {
-            font-size: @font-small-size;
-            width: inherit;
-            color: @highlighted-element;
-            span {
-              display: block;
-              min-width: 29px;
-            }
-            span.day-date {
-              display: block;
-              margin: 0 auto;
-              height: 28px;
-              width: 28px;
-              text-align: center;
-              padding-top: 4px;
-            }
-          }
-          a.date-active, a.date-active-today {
-            font-weight: 700;
-            span.day-date {
-              color: white;
-              border-radius: 50%; //http://css-tricks.com/almanac/properties/b/border-radius/
-              background-color: @highlighted-element;
-            }
-          }
-          a.date-past, a.date-active-past {
-            color: @default-element;
-          }
-          a.date-active-past {
-            span.day-date {
-              color: white;
-              border-radius: 50%; //http://css-tricks.com/almanac/properties/b/border-radius/
-              background-color: @default-element;
-            }
-          }
-          a.date-today {
-            span.day-date {
-              border-radius: 50%; //http://css-tricks.com/almanac/properties/b/border-radius/
-              border: 1px solid @highlighted-element;
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-
 /*
 *************************************************************
 # Pick a day
 TODO: Example needed
 */
+
+
+@pikaday-button: #f5f5f5;
+@pikaday-button-hover: darken(@pikaday-button, 10%);
+
+@pikaday-selected-button: #0f82fe;
+@pikaday-selected-button-hover: darken(@pikaday-selected-button, 10%);
+@pikaday-selected-button-pressed: darken(@pikaday-selected-button, 20%);
+
+
 .pika-single {
   z-index: 9999;
   display: block;
@@ -732,7 +159,7 @@ TODO: Example needed
   overflow: hidden;
   margin: 0;
   padding: 5px 3px;
-  font-size: @font-small-size;
+  font-size: @size-font-small;
   line-height: 30px;
   background-color: #fff;
 }
@@ -798,7 +225,7 @@ TODO: Example needed
   margin-top: 15px;
   font-family: 'icomoon' !important;
   speak: none;
-  font-size: @font-small-size;
+  font-size: @size-font-small;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -867,7 +294,7 @@ TODO: Example needed
   font-size: 12px;
   line-height: 15px;
   text-align: right;
-  background-color: @pikaday-button;
+  background-color: @color-default-active;
 }
 
 .pika-week {
@@ -876,7 +303,6 @@ TODO: Example needed
 }
 
 .is-today .pika-button {
-  color: @highlighted-element;
   font-weight: bold;
 }
 
@@ -907,7 +333,6 @@ TODO: Example needed
 }
 
 
-
 // #############################
 // from Bootstrap variables.less
 
@@ -918,7 +343,7 @@ TODO: Example needed
 //** Padding applied to the modal title
 @modal-title-padding: 15px;
 //** Modal title line-height
-@modal-title-line-height: @vertical-grid-half;
+@modal-title-line-height: @grid-vertical-half;
 //** Background color of modal content area
 @modal-content-bg: #fff;
 //** Modal content border color

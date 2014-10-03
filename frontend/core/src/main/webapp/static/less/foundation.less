@@ -10,65 +10,6 @@ Imports normalize.less for making browsers render all elements more consistently
 
 */
 
-// Text colors
-
-// TODO: Polish: all pressed states check
-@content: black;
-@content-pressed: lighten(@content, 20%);
-@content-heading: black;
-@content-heading-pressed: lighten(@content-heading, 20%);
-@logo: #3b3b3b;
-@icon: #999999;
-@separator: #dadada;
-@instruction: #70c041;
-@warning: #e22c09;
-@menu: #363636;
-
-@default-element: #919191;
-@default-element-hover: darken(@default-element, 10%);
-@default-element-pressed: darken(@default-element, 20%);
-@highlighted-element: #0f82fe;
-@highlighted-element-hover: darken(@highlighted-element, 10%);
-@highlighted-element-pressed: darken(@highlighted-element, 20%);
-
-// Button colors
-@normal-button: #0f82fe;
-@normal-button-hover: darken(@normal-button, 10%);
-@normal-button-pressed: darken(@normal-button, 20%);
-@normal-button-disabled: lighten(#b0b0b6, 20%);
-
-@default-button: #b0b0b6;
-@default-button-pressed: darken(@default-button, 20%);
-@default-button-disabled: lighten(@default-button, 20%);
-
-@tab-button: #b0b0b6;
-@tab-button-hover: darken(@tab-button, 10%);
-@tab-button-pressed: darken(@tab-button, 20%);
-
-@highlighted-button: #0f82fe;
-@highlighted-button-pressed: darken(@highlighted-button, 20%);
-@highlighted-button-disabled: lighten(#b0b0b6, 20%);
-
-@cancel-button: #7e7e7e;
-@cancel-button-pressed: darken(@cancel-button, 20%);
-
-@delete-button: #e22c09;
-@delete-button-pressed: darken(@delete-button, 20%);
-
-@pikaday-button: #f5f5f5;
-@pikaday-button-hover: darken(@pikaday-button, 10%);
-
-@pikaday-selected-button: #0f82fe;
-@pikaday-selected-button-hover: darken(@pikaday-selected-button, 10%);
-@pikaday-selected-button-pressed: darken(@pikaday-selected-button, 20%);
-
-@overdue-task: @delete-button;
-
-
-
-
-//////// NEW START ////////////////////////
-
 /*
 Grid constants
 */
@@ -80,38 +21,33 @@ Grid constants
 /*
 Text colors
 */
-
 @color-error: #e22c09;
 @color-logo: #000000;
+@color-menu-button: #000000;
 @color-text-active: #0098ea;
 @color-toaster: #c1c1c1;
 
 /*
+Link colors
+*/
+@color-link-active: #919191;
+@color-link-pressed: darken(@color-link-active, 10%);
+
+/*
 Default colors for input elements
 */
-
 @color-default-inactive: #919191;
 @color-default-active: #0f82fe;
 @color-default-pressed: #0171ea;
 @color-default-disabled: lighten(#b0b0b6, 20%); // TODO: don't use lighten
 
-// 1. Always disable full page scrolling
-// TODO: why height?
-html {
-  height: 100%;
-  overflow: hidden;   // [1]
-  body {
-    height: inherit;  // [1]
-    overflow: hidden;
-  }
-}
 
 /*
 **************************************************************************
 # Mixins
 
 /*
-`.center-horizontally` centers the container by making the browser to calculate left and right margins automatically.
+`.center-horizontally()` centers the container by making the browser to calculate left and right margins automatically.
 
 ```markup
 <div class="center-horizontally" style="background: gray; max-width: 100px;">&nbsp;</div>
@@ -128,69 +64,8 @@ html {
   right: 0;
 }
 
-
-//////// NEW END ////////////////////////
-
-
-
-
-
-
-// TODO: to be refactored?
-.default-element {
-  color: @default-element;
-}
-
-.content {
-  color: @content;
-}
-
-a.content:active {
-  color: @content-pressed;
-}
-
-// Foundation
-
-* {
-  // TODO: mitä tarkoittaa?
-  // Use border box everywhere
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-
-  // Remove pressed element's gray background
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  -webkit-tap-highlight-color: transparent;
-
-  // Disable showing popup during touch and hold a target in Safari
-  -webkit-touch-callout: none;
-
-  // Default to no background repeat
-  background-repeat: no-repeat;
-}
-
-// Baseline
-@horizontal-grid: 30px;
-@vertical-grid: 44px;
-@vertical-grid-half: 19px;
-
-// Header
-@page-header-height: 60px;
-@heading-header-height: 60px;
-@content-heading-height: 34px;
-
-// Footer
-@footer-height: 60px;
-
-// Always disable scrollbars
-::-webkit-scrollbar {
-  display: none;
-}
-
-
 /*
-**************************************************************************
-# Word breaking
+`.break-words()` sets word braking on
 source: http://kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/
 
 ```markup
@@ -213,24 +88,24 @@ source: http://kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/
   hyphens: auto;
 }
 
-@slide-indicator-width: 0.5em;
-
-
 /*
 **************************************************************************
-# Colors
-
-Text colors
-
-TODO: This is just a short example, needs to be completed when colors are confirmed
-```markup
-<div style="margin-bottom: 5px; background: black">content: black</div>
-<div style="margin-bottom: 5px; background: #3b3b3b">logo: #3b3b3b</div>
-<div style="margin-bottom: 5px; background: #0f82fe">highlight: #0f82fe</div>
-<div style="margin-bottom: 5px; background: #999999">icon: #999999</div>
-<div style="margin-bottom: 5px; background: #dadada">separator: #dadada</div>
-<div style="margin-bottom: 5px; background: #70c041">instruction: #70c041</div>
-<div style="margin-bottom: 5px; background: #e22c09">warning: #e22c09</div>
-<div style="margin-bottom: 5px; background: #363636">menu: #363636</div>
-```
+# Reset
 */
+
+// 1. Always disable full page scrolling
+// TODO: why height?
+html {
+  height: 100%;
+  overflow: hidden;   // [1]
+  body {
+    height: inherit;  // [1]
+    overflow: hidden;
+  }
+}
+
+// Always disable scrollbars
+::-webkit-scrollbar {
+  display: none;
+}
+
