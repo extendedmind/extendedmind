@@ -182,14 +182,14 @@ function MainController(
 
   function combineListsArrays() {
     if ($scope.archivedLists.length && $scope.lists.length) {
-      $scope.listsSelectOptions = $scope.lists.slice(0);  // http://davidwalsh.name/javascript-clone-array
+      $scope.listsSelectOptions = $scope.lists.clone();  // http://davidwalsh.name/javascript-clone-array
       // Push a fake list as archived list delimiter
       $scope.listsSelectOptions.push({uuid: UUIDService.generateFakeUUID(), title: '--------', delimiter: true});
       $scope.listsSelectOptions = $scope.listsSelectOptions.concat($scope.archivedLists);
     } else if ($scope.lists.length && !$scope.archivedLists.length) {
-      $scope.listsSelectOptions = $scope.lists.slice(0);  // http://davidwalsh.name/javascript-clone-array
+      $scope.listsSelectOptions = $scope.lists.clone();  // http://davidwalsh.name/javascript-clone-array
     } else if ($scope.archivedLists.length && !$scope.lists.length) {
-      $scope.listsSelectOptions = $scope.archivedLists.slice(0);
+      $scope.listsSelectOptions = $scope.archivedLists.clone();
     } else {
       $scope.listsSelectOptions = [];
     }

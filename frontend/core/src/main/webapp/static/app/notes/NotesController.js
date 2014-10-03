@@ -98,7 +98,7 @@
       newNoteToSave.transientProperties = {};
       if (newNote.transientProperties.list) newNoteToSave.transientProperties.list = newNote.transientProperties.list;
       if (newNote.transientProperties.keywords)
-        newNoteToSave.transientProperties.keywords = newNote.transientProperties.keywords.slice(0);
+        newNoteToSave.transientProperties.keywords = newNote.transientProperties.keywords.clone();
     }
     delete newNote.title;
 

@@ -43,6 +43,9 @@
       };
     }
 
+    /*
+    * See: http://jsperf.com/new-array-vs-splice-vs-slice/42 for fastest implementation
+    */
     if (typeof Array.prototype.clone !== 'function') {
       Array.prototype.clone = function() {
         return this.slice(0);
