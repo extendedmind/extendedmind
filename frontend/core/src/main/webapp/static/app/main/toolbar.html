@@ -1,6 +1,6 @@
-<header class="container-toolbar">
+<header class="container-toolbar" ng-controller="HeaderController">
   <div class="container-toolbar--inner">
-    <nav class="group-symmetrical swiper-no-swiping" role="navigation" ng-controller="HeaderController">
+    <nav class="group-symmetrical swiper-no-swiping" role="navigation">
       <div class="group-symmetrical--left">
         <button ng-if="!isDatepickerVisible" type="button" id="menu-button" ng-click="toggleMenu()" alt="menu">
           <span class="icon-menu"></span>
