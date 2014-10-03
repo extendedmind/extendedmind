@@ -84,7 +84,7 @@
     });
 
     $routeProvider.when('/entry', {
-      templateUrl: 'static/app/entry/entry.html'
+      templateUrl: 'static/app/entry/entrySlides.html'
     });
 
     $routeProvider.when('/my', {
@@ -123,31 +123,6 @@
       templateUrl: 'static/app/entry/welcome.html'
     });
 
-    $routeProvider.when('/waiting', {
-      templateUrl: 'static/app/entry/waiting.html',
-      resolve: {
-        isEmailOrUUID: ['$location', '$route',
-        function($location, $route) {
-          if (!$route.current.params.email && !$route.current.params.uuid) {
-            $location.path('/login').search({});
-          }
-        }]
-      }
-    });
-
-    $routeProvider.when('/accept/:hex_code', {
-      templateUrl: 'static/app/entry/signup.html',
-      resolve: {
-        routes: ['$location', '$route',
-        function($location, $route) {
-          if (!$route.current.params.hex_code || !$route.current.params.email) {
-            $location.url($location.path());
-            $location.path('/login');
-          }
-        }]
-      }
-    });
-
     $routeProvider.when('/signup', {
       templateUrl: 'static/app/entry/signup.html'
     });
@@ -171,7 +146,7 @@
                   $location.path('/login');
                 }
               }
-              );
+            );
           }
         }]
       }

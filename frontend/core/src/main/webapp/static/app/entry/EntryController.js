@@ -21,6 +21,8 @@
 
   AnalyticsService.visitEntry('entry');
 
+  $scope.entryForms = {};
+
   $scope.swipeToSignup = function swipeToSignup() {
     $scope.entryState = 'signup';
     $scope.user = {};
