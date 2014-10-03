@@ -113,25 +113,9 @@
     }
   };
 
-  function navigateToItem(/*destination*/) {
-    // TODO
-  }
-  function undoDelete(/*item*/) {
-    // TODO
-  }
-
   $scope.deleteItemInEdit = function() {
     if ($scope.editorType === 'task') {
       $scope.closeTaskEditor($scope.task);
-
-      UISessionService.pushDelayedNotification({
-        type: 'deleted',
-        itemType: 'task',
-        item: $scope.task,
-        navigateFn: navigateToItem,
-        undoFn: undoDelete
-      });
-
       $scope.deleteTask($scope.task);
     } else alert('implement delete for: ' + $scope.editorType);
     //

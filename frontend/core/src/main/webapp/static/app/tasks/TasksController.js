@@ -147,7 +147,23 @@
     TasksService.resetTask(task, UISessionService.getActiveUUID());
   };
 
+  function navigateToItem(/*destination*/) {
+    // TODO
+  }
+  function undoDelete(/*item*/) {
+    // TODO
+  }
+
   $scope.deleteTask = function deleteTask(task) {
+
+    UISessionService.pushDelayedNotification({
+      type: 'deleted',
+      itemType: 'task',
+      item: $scope.task,
+      navigateFn: navigateToItem,
+      undoFn: undoDelete
+    });
+
     AnalyticsService.do('deleteTask');
     TasksService.deleteTask(task, UISessionService.getActiveUUID());
   };

@@ -76,6 +76,19 @@
     if (reverseIndex !== undefined) notifications.splice(reverseIndex, 1);
   }
 
+  /*
+  * Store delayed notifications.
+  *
+  * Ideally user after delayed notifications are activated.
+  */
+  function moveDelayedNotificationsToNotificationMap(delayedNotifications, uuid) {
+    if (!notificationMap[uuid]) notificationMap[uuid] = [];
+    for (var i = 0, len = delayedNotifications.length; i < len; i++) {
+      notificationMap[uuid].push(delayedNotifications[i]);
+    }
+    delayedNotifications.length = 0;
+  }
+
   return {
 
     // COMMON
@@ -227,21 +240,12 @@
     },
     activateDelayedNotifications: function() {
       var uuid = this.getActiveUUID();
-      if (delayedNotificationMap && delayedNotificationMap[uuid])
-        executeNotificationsActiveCallbacks(delayedNotificationMap[uuid]);
-        // NOTE: should notifications be removed/marked as displayed?
-      },
-    /*
-    getToasterNotification: function() {
-      var uuid = this.getActiveUUID();
-      if (notificationMap[uuid] && notificationMap[uuid].length > 0) {
-        var lastNotification = notificationMap[uuid][notificationMap[uuid].length - 1];
-        if (!lastNotification.displayed) {
-          return lastNotification;
-        }
+      if (delayedNotificationMap && delayedNotificationMap[uuid]) {
+        var notifications = delayedNotificationMap[uuid].clone();
+        executeNotificationsActiveCallbacks(notifications);
+        moveDelayedNotificationsToNotificationMap(delayedNotificationMap[uuid], uuid);
       }
     },
-    */
 
     // PROMISES
 

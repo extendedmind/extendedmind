@@ -14,19 +14,44 @@
  */
  'use strict';
 
- function toasterDirective(UISessionService) {
+ function toasterDirective($timeout, UISessionService) {
   return {
     restrict: 'A',
     templateUrl: 'static/app/base/toaster.html',
     scope: true,
     link: function(scope, element, attrs) {
-      UISessionService.registerNotificationsActiveCallback(attrs.toaster, notificationsActive);
 
-      function notificationsActive(/*notifications*/) {
-        // Digest may not be running.
-        scope.$evalAsync(function() {
-          // Activate notifications here.
-        });
+      // TODO: pause toaster
+      // https://github.com/extendedmind/extendedmind/blob/719b7fba55cdab65989df50fcff448f48ea9e805/frontend/core/src/main/webapp/static/app/main/footer.html#L3
+      // https://github.com/extendedmind/extendedmind/blob/719b7fba55cdab65989df50fcff448f48ea9e805/frontend/core/src/main/webapp/static/app/main/FooterController.js#L88
+
+      scope.toasterNotifications = false;
+
+      UISessionService.registerNotificationsActiveCallback(attrs.toaster, notificationsActive);
+      var notificationTimer, notificationVisibleInMilliseconds = 3000;
+
+      function notificationsActive(notifications) {
+        scope.toasterNotifications = true;
+        showNotifications(notifications);
+
+        // Digest may not be running when callback is executed. E.g. from $animate promise.
+        if (!scope.$phase) scope.$digest();
+      }
+
+      /*
+      * Show notifications serialized.
+      */
+      function showNotifications(notifications) {
+        if (notifications && notifications.length > 0) {
+          var notification = notifications.shift();
+          scope.notification = notification.itemType + ' ' + notification.type;
+
+          notificationTimer = $timeout(function() {
+            scope.notification = undefined;
+            showNotifications(notifications);
+          }, notificationVisibleInMilliseconds);
+        } else
+        scope.toasterNotifications = false;
       }
 
       scope.$on('$destroy', function() {
@@ -36,5 +61,5 @@
     }
   };
 }
-toasterDirective['$inject'] = ['UISessionService'];
+toasterDirective['$inject'] = ['$timeout', 'UISessionService'];
 angular.module('em.base').directive('toaster', toasterDirective);

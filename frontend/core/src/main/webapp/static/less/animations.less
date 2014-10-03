@@ -12,6 +12,9 @@
 @delay-animate-item-shrink: .5s;
 @timing-animate-item: cubic-bezier(0.250, 0.460, 0.450, 0.940);
 
+@speed-animate-toaster-fade: .5s;
+@timing-animate-toaster: cubic-bezier(0.250, 0.460, 0.450, 0.940);
+
 // 1. Set initial max-height for item to make max-height animation work in WebKit browsers.
 .animate-list-item-leave {
   max-height: 44px; // [1]
@@ -72,4 +75,25 @@
     color: @color-checkbox-checked;
     content: @icon-selection-checked;
   }
+}
+
+// 1. Simple fade-in-out animation.
+.animate-toaster.ng-enter, .animate-toaster.ng-leave {
+  -webkit-transition: opacity @timing-animate-toaster @speed-animate-toaster-fade;  // [1]
+  -moz-transition: opacity @timing-animate-toaster @speed-animate-toaster-fade;     // [1]
+  -o-transition: opacity @timing-animate-toaster @speed-animate-toaster-fade;       // [1]
+  -mx-transition: opacity @timing-animate-toaster @speed-animate-toaster-fade;      // [1]
+  transition: opacity @timing-animate-toaster @speed-animate-toaster-fade;          // [1]
+}
+
+// 1. Starting point for fade in and ending point for fade out.
+.animate-toaster.ng-enter,
+.animate-toaster.ng-leave.ng-leave-active {
+  opacity: 0; // [1]
+}
+
+// 1. Starting point for fade out and ending point for fade in.
+.animate-toaster.ng-leave,
+.animate-toaster.ng-enter.ng-enter-active {
+  opacity: 1; // [1]
 }
