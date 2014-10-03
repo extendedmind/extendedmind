@@ -7,7 +7,7 @@
         <div ng-include="'static/app/main/toolbar.html'" include-replace></div>
         <div ng-if="isFeatureLoaded('user')" ng-include="'static/app/user/userSlides.html'" include-replace></div>
         <div ng-if="isFeatureLoaded('focus')" ng-include="'static/app/focus/focusSlides.html'" include-replace></div>
-        <div ng-if="isFeatureActive('inbox')" class="container-fluid--inner" ng-include="'static/app/main/inbox.html'" ng-controller="InboxController"></div>
+        <div ng-if="isFeatureActive('inbox')" class="container-fluid--inner" ng-include="'static/app/main/inbox.html'"></div>
         <div ng-if="isFeatureLoaded('tasks')" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>
         <div ng-if="isFeatureActive('notes')" class="container-fluid--inner" ng-include="'static/app/notes/notesRecent.html'"></div>
         <div ng-if="isFeatureLoaded('lists')" ng-include="'static/app/lists/listsSlides.html'" include-replace></div>

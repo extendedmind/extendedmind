@@ -16,29 +16,12 @@
 
  function ItemsController($scope, $timeout, AnalyticsService, ItemsService, UISessionService) {
 
-  $scope.resetInboxEdit = function resetInboxEdit() {
-    $scope.itemType = 'item';
-    if ($scope.task) $scope.task = undefined;
-    if ($scope.note) $scope.note = undefined;
-  };
-
-  $scope.addNewItem = function(newItem) {
+  $scope.addItem = function(newItem) {
     if (newItem.title && newItem.title.length > 0) {
       var newItemToSave = {title: newItem.title};
       delete newItem.title;
       ItemsService.saveItem(newItemToSave, UISessionService.getActiveUUID());
     }
-  };
-
-  $scope.editItemFields = function(item) {
-    AnalyticsService.do('editItemFields');
-    ItemsService.saveItem(item, UISessionService.getActiveUUID());
-    $scope.resetInboxEdit();
-  };
-
-  $scope.itemDetails = {visible: false};
-  $scope.editItem = function(/*item*/) {
-    $scope.itemDetails.visible = !$scope.itemDetails.visible;
   };
 
   $scope.deleteItem = function(item) {
@@ -52,14 +35,6 @@
     $scope.task = item;
   };
 
-  $scope.taskEditDone = function(task) {
-    AnalyticsService.do('itemToTaskDone');
-    $scope.saveUnsavedListAndLinkToItem(task).then(function() {
-      ItemsService.itemToTask(task, UISessionService.getActiveUUID());
-    });
-    $scope.resetInboxEdit();
-  };
-
   $scope.itemToNote = function(item) {
     $scope.itemType = 'note';
     $scope.note = item;
@@ -68,14 +43,6 @@
   $scope.itemToList = function(item) {
     AnalyticsService.do('itemToList');
     ItemsService.itemToList(item, UISessionService.getActiveUUID());
-    $scope.resetInboxEdit();
-  };
-
-  $scope.noteEditDone = function(note) {
-    AnalyticsService.do('itemToNoteDone');
-    $scope.saveUnsavedListAndLinkToItem(note).then(function() {
-      ItemsService.itemToNote(note, UISessionService.getActiveUUID());
-    });
     $scope.resetInboxEdit();
   };
 }

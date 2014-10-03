@@ -86,22 +86,6 @@
     });
   };
 
-  $scope.noteQuickEditDone = function noteQuickEditDone(note) {
-    AnalyticsService.do('noteQuickEditDone');
-    $scope.saveUnsavedListAndLinkToItem(note).then(function() {
-      NotesService.saveNote(note, UISessionService.getActiveUUID());
-    });
-  };
-
-  $scope.editNoteFields = function editNoteFields(note) {
-    AnalyticsService.do('editNoteFields');
-    NotesService.saveNote(note, UISessionService.getActiveUUID());
-  };
-
-  $scope.editNote = function editNote(note) {
-    $scope.editItemInEditor(note, 'note');
-  };
-
   $scope.deleteNote = function deleteNote(note) {
     AnalyticsService.do('deleteNote');
     NotesService.deleteNote(note, UISessionService.getActiveUUID());
@@ -192,6 +176,7 @@
 
 
   // INFINITE SCROLL
+
   $scope.recentNotesLimit = 0;
   function setAllNotesLimit(allNotesSize) {
     if (allNotesSize < 25) {
@@ -214,32 +199,6 @@
       }
     }
   };
-
-  // Navigation
-
-  $scope.keyword = undefined;
-  $scope.showKeywordDetails = function showKeywordDetails(selectedKeyword) {
-    $scope.keyword = selectedKeyword;
-    $scope.newNote = {transientProperties: {keywords: [$scope.keyword.uuid]}};
-    SwiperService.swipeTo('notes/details');
-  };
-  $scope.showNoKeywordDetails = function showNoKeywordDetails() {
-    $scope.keyword = undefined;
-    $scope.newNote = {};
-    SwiperService.swipeTo('notes/details');
-  };
-  $scope.showNoListNotesDetails = function showNoListNotesDetails() {
-    $scope.keyword = null;
-    $scope.newNote = {};
-    SwiperService.swipeTo('notes/details');
-  };
-
-  $scope.deleteKeywordAndShowKeywords = function deleteKeywordAndShowKeywords(keyword) {
-    SwiperService.swipeTo('notes/keywords');
-    $scope.deleteKeyword(keyword);
-    $scope.keyword = undefined;
-  };
-
 }
 
 NotesController['$inject'] = [

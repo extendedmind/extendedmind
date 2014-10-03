@@ -14,21 +14,35 @@
  */
  'use strict';
 
- function ContextsController($scope, AnalyticsService, TagsService, UISessionService) {
+ function TagsController($scope, AnalyticsService, TagsService, UISessionService) {
+
+  // KEYWORDS
+
+  $scope.saveKeyword = function(keyword) {
+    TagsService.saveTag(keyword, UISessionService.getActiveUUID());
+    $scope.gotoPreviousPage();
+  };
+
+  $scope.deleteKeyword = function deleteKeyword(keyword) {
+    TagsService.deleteTag(keyword, UISessionService.getActiveUUID());
+  };
+
+  $scope.addKeyword = function addKeyword(newKeyword) {
+    if (!newKeyword.title || newKeyword.title.length === 0) return false;
+
+    var keywordToSave = {title: newKeyword.title, tagType: newKeyword.tagType};
+    delete newKeyword.title;
+
+    TagsService.saveTag(keywordToSave, UISessionService.getActiveUUID()).then(function(/*keyword*/) {
+      AnalyticsService.do('addKeyword');
+    });
+  };
+
+  // CONTEXTS
 
   $scope.saveContext = function(context) {
     TagsService.saveTag(context, UISessionService.getActiveUUID());
     $scope.gotoPreviousPage();
-  };
-
-  $scope.contextDetails = {visible: false};
-  $scope.editContext = function editContext(/*context*/) {
-    $scope.contextDetails.visible = !$scope.contextDetails.visible;
-  };
-
-  $scope.editContextFields = function editContextFields(context) {
-    AnalyticsService.do('editContextFields');
-    TagsService.saveTag(context, UISessionService.getActiveUUID());
   };
 
   $scope.deleteContext = function deleteContext(context) {
@@ -45,13 +59,7 @@
       AnalyticsService.do('addContext');
     });
   };
-
-  $scope.contextQuickEditDone = function contextQuickEditDone(context) {
-    AnalyticsService.do('contextQuickEditDone');
-    TagsService.saveTag(context, UISessionService.getActiveUUID());
-  };
 }
 
-ContextsController['$inject'] = ['$scope',
-'AnalyticsService', 'TagsService', 'UISessionService'];
-angular.module('em.base').controller('ContextsController', ContextsController);
+TagsController['$inject'] = ['$scope', 'AnalyticsService', 'TagsService', 'UISessionService'];
+angular.module('em.base').controller('TagsController', TagsController);

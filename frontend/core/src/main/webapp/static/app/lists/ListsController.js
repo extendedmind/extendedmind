@@ -30,16 +30,6 @@
     $scope.gotoPreviousPage();
   };
 
-  $scope.listDetails = {visible: false};
-  $scope.editList = function editList(/*list*/) {
-    $scope.listDetails.visible = !$scope.listDetails.visible;
-  };
-
-  $scope.editListFields = function editListFields(list) {
-    AnalyticsService.do('editListFields');
-    ListsService.saveList(list, UISessionService.getActiveUUID());
-  };
-
   $scope.setUnsavedList = function setUnsavedList(/*list*/) {
     $scope.newList = {};
   };
@@ -65,11 +55,6 @@
 
   $scope.deleteList = function deleteList(list) {
     ListsService.deleteList(list, UISessionService.getActiveUUID());
-  };
-
-  $scope.listQuickEditDone = function listQuickEditDone(list) {
-    AnalyticsService.do('listQuickEditDone');
-    ListsService.saveList(list, UISessionService.getActiveUUID());
   };
 
   // Navigation

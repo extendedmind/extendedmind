@@ -170,11 +170,6 @@
     });
   };
 
-  $scope.taskQuickEditDone = function addSubtask(task) {
-    AnalyticsService.do('taskQuickEditDone');
-    TasksService.saveTask(task, UISessionService.getActiveUUID());
-  };
-
   // NAVIGATION
 
   $scope.context = undefined;

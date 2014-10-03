@@ -328,23 +328,7 @@ function MainController(
   });
 
 
-  // GENERAL
-
-  $scope.cancelEdit = function cancelEdit() {
-    UISessionService.changeFeature(UISessionService.getPreviousFeatureName());
-  };
-
-  $scope.isActiveSlide = function isActiveSlide(pathFragment) {
-    var activeSlide = SwiperService.getActiveSlidePath($scope.getActiveFeature());
-    if (activeSlide && (activeSlide.indexOf(pathFragment) != -1)) {
-      return true;
-      // NOTE Swiper may not have set active slide for this feature during init
-    } else if (!activeSlide) {
-      if (pathFragment === 'home') {
-        return true;
-      }
-    }
-  };
+  // CALLBACKS
 
   var editorAboutToOpenCallbacks = {};
   var editorOpenedCallbacks = {};
@@ -469,8 +453,7 @@ function MainController(
 
   $controller('TasksController',{$scope: $scope});
   $controller('ListsController',{$scope: $scope});
-  $controller('ContextsController',{$scope: $scope});
-  $controller('KeywordsController',{$scope: $scope});
+  $controller('TagsController',{$scope: $scope});
   $controller('NotesController',{$scope: $scope});
   $controller('ItemsController',{$scope: $scope});
 }
