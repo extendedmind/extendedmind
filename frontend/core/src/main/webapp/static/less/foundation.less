@@ -87,6 +87,7 @@ source: http://kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/
   -ms-hyphens: auto;
   hyphens: auto;
 }
+// Foundation
 
 /*
 **************************************************************************
@@ -94,18 +95,34 @@ source: http://kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/
 */
 
 // 1. Always disable full page scrolling
+// 2. Remove element gray highlight color on WebKit browsers.
+//    See:  http://phonegap-tips.com/articles/essential-phonegap-css-webkit-tap-highlight-color.html
+// 3. Disable showing popup during touch and hold a target in Webkit browsers.
+
 // TODO: why height?
 html {
   height: 100%;
   overflow: hidden;   // [1]
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);  // [2]
+  -webkit-tap-highlight-color: transparent;       // [2]
+  -webkit-touch-callout: none;                    // [3]
   body {
     height: inherit;  // [1]
     overflow: hidden;
   }
 }
 
+// 1. Apply a natural box layout model to all elements, but allowing components to change.
+//    See:  http://www.paulirish.com/2012/box-sizing-border-box-ftw/
+//          http://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+html {
+  box-sizing: border-box; // [1]
+}
+*, *:before, *:after {
+  box-sizing: inherit;    // [1]
+}
+
 // Always disable scrollbars
 ::-webkit-scrollbar {
   display: none;
 }
-
