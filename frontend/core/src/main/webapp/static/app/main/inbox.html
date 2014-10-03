@@ -1,4 +1,4 @@
-<section ng-show="isFeatureActive('inbox')" class="container-fluid--inner" ng-controller="InboxController" data-snap-ignore="{{onboardingInProgress ? true : undefined}}" drawer-handle="left">
+<section ng-show="isFeatureActive('inbox')" class="container-fluid--inner" ng-controller="InboxController" drawer-handle="left">
 
   <div class="container-content" scroll-to>
     <div ng-repeat="item in items">{{item.title}}</div>
@@ -11,54 +11,3 @@
   </footer>
 
 </section>
-
-<!--
-<div ng-show="isFeatureActive('inbox')" class="single-page-container" ng-controller="InboxController" data-snap-ignore="{{onboardingInProgress ? true : undefined}}" drawer-handle="left">
-  <section id="inbox" class="two-column-grid single-page page">
-    <div class="column">
-      <div ng-if="!loading" class="page-content-container single-page-content-container">
-        <div class="scroll-container" scroll-to>
-          <div class="accordion-wrapper">
-            <div class="inner-page-content-container" accordion>
-              <div ng-repeat="item in items">
-                <div accordion-title="item" edit-item="editItem(item)" edit-item-inline="true" edit-item-fields="editItemFields(item)" has-complete="false" toggle-complete></div>
-                <div ng-if="isOpen(item) || isInboxSorting(item)" editable-field-container="auto">
-                  <div item-core-fields="item" item-core-fields-details="itemDetails"></div>
-                  <div ng-include="'static/app/main/itemActions.html'"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <form role="form" class="add-element" ng-init="newItem = {}" ng-submit="callAndRefresh(addNewItem, newItem)" add-item data-snap-ignore="{{ignoreSnap}}" autocapitalize="none" autocorrect="off">
-            <div class="form-group" editable-field-container="disable">
-              <div>
-                <input type="text" id="itemTitle" class="simple-input" ng-model="newItem.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" editable-field placeholder="add item..." maxlength="128" />
-              </div>
-            </div>
-          </form>
-          <div ng-if="getOnboardingPhase() === 'new'" class="onboarding-bubble">
-            <div class="instruction-text">
-              <p>type here what you want to <b>remember</b>, we'll take care of the rest</p>
-            </div>
-          </div>
-          <div ng-if="getOnboardingPhase() === 'itemAdded'" class="instruction-text">
-            <p class="instruction-text-chapter">use <b>omnibar</b> <span class="icon-logo-only"></span><br/>for quick save and recall</p>
-            <p class="instruction-text-chapter">use <b>sort inbox</b> to sort your items into <b>tasks</b>, <b>notes</b> and <b>lists</b><br/></p>
-          </div>
-          <footer ng-if="(items.length > 0 && sortingItem === undefined)">
-            <nav role="navigation" class="swiper-no-swiping item-actions">
-              <button type="button" class="wide-button border-button" ng-click="sortInbox()">
-                <span ng-bind="getSortingText()"></span>
-              </button>
-            </nav>
-          </footer>
-        </div>
-      </div>
-      <div ng-if="loading" class="loading-animation" loading-animation></div>
-    </div>
-    <aside class="column">
-      TODO
-    </aside>
-  </section>
-</div>
- -->

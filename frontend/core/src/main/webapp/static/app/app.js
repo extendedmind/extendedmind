@@ -16,18 +16,22 @@
  /* global $, angular, html5Mode, FastClick, packaging */
  'use strict';
 
- angular.module('em.app', ['em.root', 'em.entry', 'em.main',
-                           'em.tasks', 'em.notes', 'em.archive', 'em.admin', 'em.account',
+ angular.module('em.app', ['em.root', 'em.entry', 'em.main', 'em.focus',
+                           'em.tasks', 'em.notes', 'em.archive', 'em.admin', 'em.user',
                            'em.base',
                            'common',
                            'ngAnimate', 'ngRoute', 'ngMessages', 'infinite-scroll', 'monospaced.elastic', 'base64']);
 
- angular.module('em.root', ['em.entry', 'em.main',
-                            'em.tasks', 'em.notes', 'em.archive', 'em.admin', 'em.account',
+ angular.module('em.root', ['em.entry', 'em.main', 'em.focus',
+                            'em.tasks', 'em.notes', 'em.archive', 'em.admin', 'em.user',
                             'em.base',
                             'common']);
 
- angular.module('em.main', ['em.tasks', 'em.notes', 'em.archive', 'em.admin', 'em.account',
+ angular.module('em.main', ['em.focus', 'em.tasks', 'em.notes', 'em.archive', 'em.admin', 'em.user',
+                             'em.base',
+                             'common']);
+
+ angular.module('em.focus', ['em.tasks', 'em.notes',
                              'em.base',
                              'common']);
 
@@ -46,7 +50,7 @@
  angular.module('em.admin', ['em.base',
                              'common']);
 
- angular.module('em.account', ['em.base',
+ angular.module('em.user', ['em.base',
                              'common']);
 
  angular.module('em.base', ['common']);

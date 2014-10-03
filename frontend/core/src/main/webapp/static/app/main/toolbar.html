@@ -2,7 +2,7 @@
   <div class="container-toolbar--inner">
     <nav class="group-symmetrical swiper-no-swiping" role="navigation" ng-controller="HeaderController">
       <div class="group-symmetrical--left">
-        <button ng-if="!isDatepickerVisible" type="button" id="menu-button" ng-click="toggleMenu()" alt="menu" ng-disabled="onboardingInProgress">
+        <button ng-if="!isDatepickerVisible" type="button" id="menu-button" ng-click="toggleMenu()" alt="menu">
           <span class="icon-menu"></span>
         </button>
         <a href ng-if="isDatepickerVisible" id="today-link" ng-class="{'today-link-active': isTodayActive}">today</a>

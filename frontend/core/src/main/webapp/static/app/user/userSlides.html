@@ -1,0 +1,6 @@
+<div ng-show="isFeatureActive('user')" class="swiper-container container-fluid--inner" swiper-container="user" swiper-type="main" expected-slides= 2>
+  <div class="swiper-wrapper" ng-controller="UserController">
+    <div class="swiper-slide swiper-no-swiping" swiper-slide="user/home" slide-index=0 ng-include="'static/app/user/home.html'"></div>
+    <div class="swiper-slide" swiper-slide="user/details" slide-index=1 ng-include="'static/app/user/details.html'"></div>
+  </div>
+</div>

@@ -14,14 +14,78 @@
  */
  'use strict';
 
- function SettingsController($http, $q, $scope, $window, AccountService, AnalyticsService, ModalService, UserSessionService, packaging) {
+ function UserController($http, $location, $q, $rootScope, $scope, $window, AnalyticsService, SwiperService,
+                         UISessionService, UserService, UserSessionService) {
+
+  $scope.isUserVerified = false;
+  AnalyticsService.visit('account');
+
+  UserService.getAccount().then(function(accountResponse) {
+    $scope.isUserVerified = accountResponse.emailVerified ? true : false;
+    $scope.email = accountResponse.email;
+  });
+
+  $scope.gotoChangePassword = function gotoChangePassword() {
+    $location.path('/my/account/password');
+  };
+
+  $scope.gotoAdmin = function gotoAdmin() {
+    $location.path('/admin');
+  };
+
+  $scope.useCollectives = function useCollectives() {
+    return $scope.collectives && Object.keys($scope.collectives).length > 1;
+  };
+
+  $scope.setMyActive = function setMyActive() {
+    if (!$location.path().startsWith('/my')) {
+      UISessionService.setMyActive();
+      UISessionService.changeFeature('tasks');
+      $location.path('/my');
+    } else {
+      $scope.toggleMenu();
+    }
+  };
+
+  $scope.setCollectiveActive = function setCollectiveActive(uuid) {
+    if (!$location.path().startsWith('/collective/' + uuid)) {
+      UISessionService.setCollectiveActive(uuid);
+      UISessionService.changeFeature('tasks');
+      $location.path('/collective/' + uuid);
+    } else {
+      $scope.toggleMenu();
+    }
+  };
+
+  // NAVIGATION
+
+  $scope.activeDetails;
+  $scope.swipeToDetails = function(detailsType){
+    $scope.activeDetails = detailsType;
+    SwiperService.swipeTo('user/details');
+  }
+  $scope.swipeToHome = function(detailsType){
+    SwiperService.swipeTo('user/home');
+  }
+
+  // LOGOUT
+  $scope.logOut = function logOut() {
+    UserService.logout().then(function() {
+      $location.path('/login');
+      UserSessionService.clearUser();
+      UISessionService.reset();
+    });
+  };
+
+
+  // SETTINGS
 
   $scope.isUserVerified = false;
   AnalyticsService.visit('settings');
 
   $scope.settings = {};
 
-  AccountService.getAccount().then(function(/*accountResponse*/) {
+  UserService.getAccount().then(function(/*accountResponse*/) {
     var userPreferences = UserSessionService.getPreferences();
     if (userPreferences.ui) {
       if (userPreferences.ui.hideFooter !== undefined) {
@@ -37,7 +101,7 @@
     } else {
       UserSessionService.setPreference('onboarded', packaging);
     }
-    AccountService.updateAccountPreferences();
+    UserService.updateAccountPreferences();
   };
 
   $scope.showOnboardingCheckbox = function showOnboardingCheckbox() {
@@ -53,7 +117,7 @@
       userPreferences.ui[name] = false;
     }
     UserSessionService.setPreferences(userPreferences);
-    AccountService.updateAccountPreferences();
+    UserService.updateAccountPreferences();
   }
 
   $scope.hideFooter = function hideFooter() {
@@ -113,7 +177,8 @@
     footerHeight = policyModalElement.getElementsByClassName('modal-footer')[0].offsetHeight;
 
     policyModalElement.getElementsByClassName('modal-content')[0].style.maxHeight = contentHeight;
-    policyModalElement.getElementsByClassName('modal-body')[0].style.maxHeight = (contentHeight - footerHeight) + 'px';
+    policyModalElement.getElementsByClassName('modal-body')[0].style.maxHeight = (contentHeight -
+                                                                                  footerHeight) + 'px';
 
     var modalDialogElement = policyModalElement.getElementsByClassName('modal-dialog')[0];
 
@@ -125,6 +190,7 @@
     }
   }
 }
-
-SettingsController['$inject'] = ['$http', '$q', '$scope', '$window', 'AccountService', 'AnalyticsService', 'ModalService', 'UserSessionService', 'packaging'];
-angular.module('em.account').controller('SettingsController', SettingsController);
+UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$window',
+                             'AnalyticsService', 'SwiperService', 'UISessionService', 'UserService',
+                             'UserSessionService'];
+angular.module('em.user').controller('UserController', UserController);

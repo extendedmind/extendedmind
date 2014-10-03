@@ -14,8 +14,8 @@
  */
  'use strict';
 
-describe('AccountController', function() {
-  var $location, $scope, AccountController;
+describe('UserController', function() {
+  var $location, $scope, UserController;
 
   var MockUserSessionService = {
     getEmail: function() {
@@ -38,7 +38,7 @@ describe('AccountController', function() {
 
     inject(function($controller, _$location_, $rootScope) {
       $scope = $rootScope.$new();
-      AccountController = $controller('AccountController', {
+      UserController = $controller('UserController', {
         $scope: $scope
       });
       $location = _$location_;

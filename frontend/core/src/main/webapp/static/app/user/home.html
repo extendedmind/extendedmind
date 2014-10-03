@@ -1,0 +1,24 @@
+<div class="container-content--outer" ng-if="isFeatureActive('user')" drawer-handle="left">
+  <section class="container-content" scroll-to>
+    <h2>online</h2>
+
+    <div ng-if="useCollectives()">
+      <h3>collectives</h3>
+      <div ng-repeat="(key, value) in collectives">
+        <div ng-if="value[2] === false">
+          <a href ng-class="getCollectiveClass(key)" ng-click="setCollectiveActive(key)">{{value[0]}}</a>
+        </div>
+      </div>
+    </div>
+
+    <a href ng-click="swipeToDetails('account')">account</a>
+    <a href ng-click="swipeToDetails('settings')">settings</a>
+    <a href ng-click="swipeToDetails('about')">about</a>
+
+  </section>
+  <footer class="container-content--after group-btn">
+    <button class="btn-active" ng-click="logOut()">
+      <span class="text-btn">log out</span>
+    </button>
+  </footer>
+</div>

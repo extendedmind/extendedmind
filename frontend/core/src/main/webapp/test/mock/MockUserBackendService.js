@@ -16,7 +16,7 @@
  /*global angular, getJSONFixture */
 'use strict';
 
-function MockAccountBackendService($httpBackend, AccountService) {
+function MockUserBackendService($httpBackend, UserService) {
   var termsOfService =
   'Lorem Ipsum is simply dummy text of the printing and typesetting industry.' +
   'Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s,' +
@@ -30,7 +30,7 @@ function MockAccountBackendService($httpBackend, AccountService) {
   'like Aldus PageMaker including versions of Lorem Ipsum.';
 
   function mockGetAccount(expectResponse){
-    $httpBackend.whenGET(AccountService.getAccountRegex)
+    $httpBackend.whenGET(UserService.getAccountRegex)
     .respond(function(method, url, data, headers) {
       var accountResponse = getJSONFixture('accountResponse.json');
       return expectResponse(method, url, data, headers, accountResponse);
@@ -48,7 +48,7 @@ function MockAccountBackendService($httpBackend, AccountService) {
   }
 
   function mockPutAccount(expectResponse) {
-    $httpBackend.whenPUT(AccountService.putAccountRegex)
+    $httpBackend.whenPUT(UserService.putAccountRegex)
     .respond(function(method, url, data, headers) {
       var putAccountResponse = getJSONFixture('putAccountResponse.json');
       return expectResponse(method, url, data, headers, putAccountResponse);
@@ -56,7 +56,7 @@ function MockAccountBackendService($httpBackend, AccountService) {
   }
 
   function mockLogout(expectResponse){
-    $httpBackend.whenPOST(AccountService.postLogoutRegex)
+    $httpBackend.whenPOST(UserService.postLogoutRegex)
     .respond(function(method, url, data, headers) {
       var logoutResponse = getJSONFixture('logoutResponse.json');
       return expectResponse(method, url, data, headers, logoutResponse);
@@ -64,7 +64,7 @@ function MockAccountBackendService($httpBackend, AccountService) {
   }
 
   return {
-    mockAccountBackend: function(expectResponse) {
+    mockUserBackend: function(expectResponse) {
       mockGetAccount(expectResponse);
       mockPutAccount(expectResponse);
       mockGetTermsOfService();
@@ -74,5 +74,5 @@ function MockAccountBackendService($httpBackend, AccountService) {
   };
 }
 
-MockAccountBackendService.$inject = ['$httpBackend', 'AccountService'];
-angular.module('em.appTest').factory('MockAccountBackendService', MockAccountBackendService);
+MockUserBackendService.$inject = ['$httpBackend', 'UserService'];
+angular.module('em.appTest').factory('MockUserBackendService', MockUserBackendService);

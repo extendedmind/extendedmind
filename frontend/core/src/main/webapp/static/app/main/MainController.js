@@ -22,15 +22,25 @@
 // which are part of every main slide collection.
 function MainController(
   $controller, $filter, $rootScope, $scope, $timeout, $window,
-  AccountService, AnalyticsService, ArrayService, DrawerService, ItemsService, ListsService,
+  UserService, AnalyticsService, ArrayService, DrawerService, ItemsService, ListsService,
   NotesService, SwiperService, SynchronizeService, TagsService, TasksService,
   UISessionService, UserSessionService, UUIDService) {
 
   // MAP OF ALL FEATURES
 
   $scope.features = {
-    account: {
-      heading: 'account'
+    user: {
+      heading: undefined,
+      slides: {
+        left: {
+          path: 'user/home',
+          heading: 'home'
+        },
+        right: {
+          path: 'user/details',
+          heading: undefined
+        }
+      }
     },
     focus: {
       heading: 'focus',
@@ -155,7 +165,7 @@ function MainController(
     if (onboardingPhase === 'itemAdded') {
       // End right after first item added
       UserSessionService.setPreference('onboarded', $rootScope.packaging);
-      AccountService.updateAccountPreferences();
+      UserService.updateAccountPreferences();
       $scope.onboardingInProgress = false;
       AnalyticsService.do('firstItemAdded');
     } else if (onboardingPhase === 'secondItemAdded') {
@@ -481,7 +491,7 @@ function MainController(
 
 MainController['$inject'] = [
 '$controller', '$filter', '$rootScope', '$scope', '$timeout', '$window',
-'AccountService', 'AnalyticsService', 'ArrayService', 'DrawerService', 'ItemsService', 'ListsService',
+'UserService', 'AnalyticsService', 'ArrayService', 'DrawerService', 'ItemsService', 'ListsService',
 'NotesService', 'SwiperService', 'SynchronizeService','TagsService', 'TasksService',
 'UISessionService', 'UserSessionService', 'UUIDService'
 ];

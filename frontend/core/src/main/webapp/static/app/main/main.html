@@ -5,8 +5,8 @@
     <div class="container-master" vertical-resize="master">
       <div class="container-fluid" ng-class="getFooterVisibilityClass()">
         <div ng-include="'static/app/main/toolbar.html'" include-replace></div>
-        <div ng-if="isFeatureLoaded('account')" ng-include="'static/app/account/account.html'" include-replace></div>
-        <div ng-if="isFeatureLoaded('focus')" ng-include="'static/app/main/focusSlides.html'" include-replace></div>
+        <div ng-if="isFeatureLoaded('user')" ng-include="'static/app/user/userSlides.html'" include-replace></div>
+        <div ng-if="isFeatureLoaded('focus')" ng-include="'static/app/focus/focusSlides.html'" include-replace></div>
         <div ng-if="isFeatureLoaded('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>
         <div ng-if="isFeatureLoaded('tasks')" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>
         <div ng-if="isFeatureLoaded('notes')" ng-include="'static/app/notes/notesSlides.html'" include-replace></div>

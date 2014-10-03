@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function AccountService(BackendClientService, UserSessionService) {
+ function UserService(BackendClientService, UserSessionService) {
 
   var logoutRegex = /logout/;
   var postLogoutRegexp = new RegExp(
@@ -58,5 +58,5 @@
       /password$/.source)
   };
 }
-AccountService['$inject'] = ['BackendClientService', 'UserSessionService'];
-angular.module('em.account').factory('AccountService', AccountService);
+UserService['$inject'] = ['BackendClientService', 'UserSessionService'];
+angular.module('em.user').factory('UserService', UserService);

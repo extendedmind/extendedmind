@@ -14,11 +14,11 @@
  */
  'use strict';
 
-describe('AccountService', function() {
+describe('UserService', function() {
 
   // INJECTS
   var $httpBackend;
-  var AccountService, UserSessionService;
+  var UserService, UserSessionService;
 
   // MOCKS
   var accountResponse = getJSONFixture('accountResponse.json');
@@ -28,9 +28,9 @@ describe('AccountService', function() {
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function (_$httpBackend_, _AccountService_, _UserSessionService_) {
+    inject(function (_$httpBackend_, _UserService_, _UserSessionService_) {
       $httpBackend = _$httpBackend_;
-      AccountService = _AccountService_;
+      UserService = _UserService_;
       UserSessionService = _UserSessionService_;
     });
   });
@@ -44,7 +44,7 @@ describe('AccountService', function() {
   it('should get account', function () {
     spyOn(UserSessionService, 'setEmail');
     $httpBackend.expectGET('/api/account').respond(200, accountResponse);
-    AccountService.getAccount().then(function(authenticateResponse) {
+    UserService.getAccount().then(function(authenticateResponse) {
       expect(UserSessionService.setEmail).toHaveBeenCalledWith(authenticateResponse.email);
     });
     $httpBackend.flush();
@@ -53,7 +53,7 @@ describe('AccountService', function() {
   it('should log out', function() {
     var loggedOut;
     $httpBackend.expectPOST('/api/logout').respond(200, logoutResponse);
-    AccountService.logout().then(function(response) {
+    UserService.logout().then(function(response) {
       loggedOut = response;
     });
     expect(loggedOut).toBeUndefined();
