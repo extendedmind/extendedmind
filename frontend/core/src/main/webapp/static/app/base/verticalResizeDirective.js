@@ -36,11 +36,7 @@
       function doVerticalResize(newHeight, oldHeight) {
         if (newHeight || oldHeight) {
           if (newHeight) {
-            // Delay maximum height change.
-            setTimeout(function(){
-              // Change directly
-              element[0].style.maxHeight = (maxHeightWithoutKeyboard - newHeight) + 'px';
-            }, $rootScope.KEYBOARD_ANIMATION_TIME);
+            element[0].style.maxHeight = (maxHeightWithoutKeyboard - newHeight) + 'px';
           }
           else element[0].style.maxHeight = maxHeightWithoutKeyboard  + 'px';
         }
