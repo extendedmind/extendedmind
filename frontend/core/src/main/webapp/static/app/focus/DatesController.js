@@ -278,29 +278,6 @@
     swipeToStartingDay(newActiveDay);
   };
 
-  // Pull to refresh previous/next week callbacks
-  SwiperService.registerNegativeResistancePullToRefreshCallback(
-    negativeResistancePullToRefreshCallback,
-    slidePath,
-    'DatesController');
-  SwiperService.registerPositiveResistancePullToRefreshCallback(
-    positiveResistancePullToRefreshCallback,
-    slidePath,
-    'DatesController');
-
-  function negativeResistancePullToRefreshCallback() {
-    currentWeek = DateService.generateAndReturnPreviousWeek(currentWeek);
-    changeDatePickerWeeks('previous', currentWeek);
-    var newActiveDay = currentWeek[6];
-    swipeToStartingDay(newActiveDay);
-  }
-  function positiveResistancePullToRefreshCallback() {
-    currentWeek = DateService.generateAndReturnNextWeek(currentWeek);
-    changeDatePickerWeeks('next', currentWeek);
-    var newActiveDay = currentWeek[0];
-    swipeToStartingDay(newActiveDay);
-  }
-
   $scope.getDateClass = function getDateClass(date) {
     var todayYYYYMMDD = DateService.getTodayYYYYMMDD();
     var status = 'date';
