@@ -87,23 +87,15 @@
           $scope.expectedSlides = $scope.expectedSlidesFn();
           var slides = sortAndFlattenSlideInfos();
           if (!initializeSwiperCalled) {
-            SwiperService.initializeSwiper(
-              $element[0],
-              $scope.swiperPath,
-              $scope.swiperType,
-              slides,
-              onSwiperCreatedCallback,
-              $scope.loop ? onSlideChangeStartCallback : undefined,
-              onSlideChangeEndCallback,
-              onResistanceBeforeCallback,
-              onResistanceAfterCallback,
-              $scope.onlyExternalSwipe,
-              $scope.loop);
+            SwiperService.initializeSwiper($element[0], $scope.swiperPath, $scope.swiperType, slides,
+                                           $scope.loop ? onSlideChangeStartCallback : undefined,
+                                           onSlideChangeEndCallback, $scope.onlyExternalSwipe, $scope.loop);
             initializeSwiperCalled = true;
 
             if ($scope.swiperType === 'main'){
               // Main swipers have a touch ratio, where left edge does not budge
-              // TODO: set left edge touch ratio to same value as right edge touch ratio when $rootsScope.colums > 1
+              // TODO: set left edge touch ratio to same value as right edge touch ratio
+              // when $rootsScope.colums > 1
               var leftEdgeTouchRatio = 0;
               var rightEdgeTouchRatio = 0.2;
               SwiperService.setEdgeTouchRatios($scope.swiperPath, leftEdgeTouchRatio, rightEdgeTouchRatio);
@@ -168,24 +160,12 @@
         }
       };
 
-      function onSwiperCreatedCallback() {
-        SwiperService.onSwiperCreated($scope, $scope.swiperPath);
-      }
-
       function onSlideChangeStartCallback(swiper, direction) {
         SwiperService.onSlideChangeStart($scope, $scope.swiperPath, direction);
       }
 
       function onSlideChangeEndCallback(swiper, direction) {
         SwiperService.onSlideChangeEnd($scope, $scope.swiperPath, direction);
-      }
-
-      var negativeHoldPosition, positiveHoldPosition;
-      function onResistanceBeforeCallback(swiper, negativePosition) {
-        negativeHoldPosition = negativePosition;
-      }
-      function onResistanceAfterCallback(swiper, positivePosition) {
-        positiveHoldPosition = positivePosition;
       }
 
       var swipeUp = false;
@@ -237,7 +217,8 @@
         swipeUp = false;
 
         // http://www.javascriptkit.com/javatutors/touchevents2.shtml
-        if (Math.abs(swipeDistanceX) >= swipeRestraintX && Math.abs(swipeDistanceY) <= swipeRestraintX) { // horizontal
+        if (Math.abs(swipeDistanceX) >= swipeRestraintX &&
+            Math.abs(swipeDistanceY) <= swipeRestraintX) { // horizontal
           if (swipeDistanceX < 0) {
             swipeLeft = true;
             swipeRight = false;
@@ -245,7 +226,8 @@
             swipeLeft = false;
             swipeRight = true;
           }
-        } else if (Math.abs(swipeDistanceY) >= swipeRestraintY && Math.abs(swipeDistanceX) <= swipeRestraintY) { // vertical
+        } else if (Math.abs(swipeDistanceY) >= swipeRestraintY &&
+                   Math.abs(swipeDistanceX) <= swipeRestraintY) { // vertical
           if (swipeDistanceY < 0) {
             swipeDown = false;
             swipeUp = true;
@@ -276,10 +258,10 @@
       var swipePageSlideDown = false;
       var swipePageSlideTop = false;
       var swipePageSlideBottom = false;
-      var swipePageSlideStartX, swipePageSlideStartY, swipePageSlideDistX, swipePageSlideDistY, swipePageSlideYSpeedStart, swipePageSlideYSpeed;
+      var swipePageSlideStartX, swipePageSlideStartY, swipePageSlideDistX, swipePageSlideDistY;
+      var swipePageSlideYSpeedStart, swipePageSlideYSpeed;
       var pageSwiperSlideScrollTimeout;
 
-      var pullToRefreshPosition = 200;  // in pixels
       var pullToPreviousWeekElement = document.getElementById('pull-to-previous');
       var pullToNextWeekElement = document.getElementById('pull-to-next');
       var isPullToPreviousWeekLoaderActive = false;
@@ -293,8 +275,6 @@
         swipePageSlideUp = false;
         swipePageSlideTop = false;
         swipePageSlideBottom = false;
-        negativeHoldPosition = 0;
-        positiveHoldPosition = 0;
 
         if (event.type === 'touchstart') {
           swipePageSlideStartX = event.targetTouches[0].pageX;
@@ -311,12 +291,13 @@
         // we need to use speed as well
 
         if (((this.scrollHeight - this.scrollTop) <= this.clientHeight) ||
-         (((this.scrollHeight - this.scrollTop) <= this.clientHeight + 200) && swipePageSlideYSpeed !== undefined && swipePageSlideYSpeed < -30))
+            (((this.scrollHeight - this.scrollTop) <= this.clientHeight + 200) &&
+             swipePageSlideYSpeed !== undefined && swipePageSlideYSpeed < -30))
         {
           swipePageSlideBottom = true;
         }
         if (this.scrollTop <= 0 ||
-          (this.scrollTop <= 200 && swipePageSlideYSpeed !== undefined && swipePageSlideYSpeed > 30))
+            (this.scrollTop <= 200 && swipePageSlideYSpeed !== undefined && swipePageSlideYSpeed > 30))
         {
           swipePageSlideTop = true;
         }
@@ -369,25 +350,8 @@
           // https://developer.mozilla.org/en-US/docs/Web/API/Element.scrollHeight#Determine_if_an_element_has_been_totally_scrolled
           if (swipePageSlideBottom && swipePageSlideDown) {
             // Bottom of a slide and swiping down. Let the event bubble to swiper.
-
-            // Toggle pull to next week indicator in DOM
-            if (positiveHoldPosition > pullToRefreshPosition) {
-              pullToNextWeekElement.className = 'loader-active';
-              isPullToNextWeekLoaderActive = true;
-            } else if (isPullToNextWeekLoaderActive) {
-              pullToNextWeekElement.className = 'loader';
-            }
           } else if (swipePageSlideTop && swipePageSlideUp) {
             // Top of a slide on swiping up. Let the event bubble to swiper.
-
-            // Toggle pull to previous week indicator in DOM
-            if (negativeHoldPosition > pullToRefreshPosition) {
-              pullToPreviousWeekElement.className = 'loader-active';
-              isPullToPreviousWeekLoaderActive = true;
-            } else if (isPullToPreviousWeekLoaderActive) {
-              pullToPreviousWeekElement.className = 'loader';
-            }
-
           } else {
             // Middle of a slide. Do a regular scroll and stop the event bubbling to swiper.
             event.stopPropagation();
@@ -401,13 +365,6 @@
           $rootScope.innerSwiping = true;
           // FIXME: innerswiping isn't set back to false anywhere, might cause problems,
           //        Using setTimeout as below in scrolling might do the trick!
-        }
-
-        // Fire pull to refresh callbacks
-        if (negativeHoldPosition > pullToRefreshPosition) {
-          SwiperService.reachedNegativeResistancePullToRefreshPosition($scope.swiperPath);
-        } else if (positiveHoldPosition > pullToRefreshPosition) {
-          SwiperService.reachedPositiveResistancePullToRefreshPosition($scope.swiperPath);
         }
 
         // Toggle pull to previous/next week indicator in DOM
@@ -449,25 +406,40 @@
 
         if ($scope.swiperType === 'page') {
           for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
-            swiperSlideInfos[i].slideElement[0].firstElementChild.removeEventListener('touchstart', pageSwiperSlideTouchStart, false);
-            swiperSlideInfos[i].slideElement[0].firstElementChild.removeEventListener('touchmove', pageSwiperSlideTouchMove, false);
-            swiperSlideInfos[i].slideElement[0].firstElementChild.removeEventListener('touchend', pageSwiperSlideTouchEnd, false);
-            swiperSlideInfos[i].slideElement[0].firstElementChild.removeEventListener('scroll', pageSwiperSlideScroll, false);
+            swiperSlideInfos[i].slideElement[0].firstElementChild.
+            removeEventListener('touchstart', pageSwiperSlideTouchStart, false);
+
+            swiperSlideInfos[i].slideElement[0].firstElementChild.
+            removeEventListener('touchmove', pageSwiperSlideTouchMove, false);
+
+            swiperSlideInfos[i].slideElement[0].firstElementChild.
+            removeEventListener('touchend', pageSwiperSlideTouchEnd, false);
+
+            swiperSlideInfos[i].slideElement[0].firstElementChild.
+            removeEventListener('scroll', pageSwiperSlideScroll, false);
           }
           // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
           if ($window.navigator.msPointerEnabled) {
-            for (var j = 0, swiperSlideInfosLength = swiperSlideInfos.length; j < swiperSlideInfosLength; j++) {
-              swiperSlideInfos[j].slideElement[0].firstElementChild.removeEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
-              swiperSlideInfos[j].slideElement[0].firstElementChild.removeEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
-              swiperSlideInfos[j].slideElement[0].firstElementChild.removeEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
+            for (var j = 0, swiperSlideInfosLength = swiperSlideInfos.length;
+                 j < swiperSlideInfosLength; j++)
+            {
+              swiperSlideInfos[j].slideElement[0].firstElementChild.
+              removeEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
+
+              swiperSlideInfos[j].slideElement[0].firstElementChild.
+              removeEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
+
+              swiperSlideInfos[j].slideElement[0].firstElementChild.
+              removeEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
             }
           }
         }
       });
-    },
-    link: function (scope, element, attrs, drawerAisleController){
+},
+link: function (scope, element, attrs, drawerAisleController){
 
-      // Hide previous and/or next slide with this for the duration of a resize animation to prevent flickering.
+      // Hide previous and/or next slide with this for the duration of a resize animation
+      // to prevent flickering.
       function toggleAdjacentInactiveSwiperSlidesVisiblity(visibilityValue) {
         var activeSlideIndex = SwiperService.getActiveSlideIndex(scope.swiperPath);
         var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
@@ -476,14 +448,16 @@
         var previousSlideIndex = activeSlideIndex - 1;
         if (previousSlideIndex >= 0) {
           var previousSwiperSlide = swiperSlides[previousSlideIndex];
-          if (previousSwiperSlide.style.visibility !== visibilityValue) previousSwiperSlide.style.visibility = visibilityValue;
+          if (previousSwiperSlide.style.visibility !== visibilityValue)
+            previousSwiperSlide.style.visibility = visibilityValue;
         }
 
         // hide next
         var nextSlideIndex = activeSlideIndex + 1;
         if (nextSlideIndex <= swiperSlides.length - 1) {
           var nextSwiperSlide = swiperSlides[nextSlideIndex];
-          if (nextSwiperSlide.style.visibility !== visibilityValue) nextSwiperSlide.style.visibility = visibilityValue;
+          if (nextSwiperSlide.style.visibility !== visibilityValue)
+            nextSwiperSlide.style.visibility = visibilityValue;
         }
       }
 
@@ -497,7 +471,9 @@
         }
         // http://stackoverflow.com/a/5574196
         if (direction === 'left') translateSwiperWrapperX = -Math.abs(translateSwiperWrapperX);
-        SwiperService.setWrapperTransitionAndTranslate(scope.swiperPath, speed, translateSwiperWrapperX, 0, 0);
+        SwiperService.setWrapperTransitionAndTranslate(scope.swiperPath,
+                                                       speed,
+                                                       translateSwiperWrapperX, 0, 0);
       }
 
       function swiperAboutToShrink(amount, direction, speed){
@@ -525,7 +501,8 @@
         SwiperService.setOnlyExternal(scope.swiperPath, false);
       }
 
-      var iOsVersion = DetectBrowserService.getIosVersion(); // for iOS-related stuff
+      // TODO: update cordova and uncomment: https://issues.apache.org/jira/browse/CB-7043
+      // var iOsVersion = DetectBrowserService.getIosVersion(); // for iOS-related stuff
 
       function swiperMovedToNewPosition() {
         // Disable swiping in new position.
@@ -565,10 +542,14 @@
           drawerAisleController.registerAreaAboutToGrow(swiperAboutToGrow, scope.swiperPath);
           drawerAisleController.registerAreaResizeReady(swiperResizeReady, scope.swiperPath);
 
-          drawerAisleController.registerAreaAboutToMoveToNewPosition(swiperAboutToMoveToNewPosition, scope.swiperPath);
-          drawerAisleController.registerAreaAboutToMoveToInitialPosition(swiperAboutToMoveToInitialPosition, scope.swiperPath);
-          drawerAisleController.registerAreaMovedToNewPosition(swiperMovedToNewPosition, scope.swiperPath);
-          drawerAisleController.registerAreaMovedToInitialPosition(swiperMovedToInitialPosition, scope.swiperPath);
+          drawerAisleController.registerAreaAboutToMoveToNewPosition(swiperAboutToMoveToNewPosition,
+                                                                     scope.swiperPath);
+          drawerAisleController.registerAreaAboutToMoveToInitialPosition(swiperAboutToMoveToInitialPosition,
+                                                                         scope.swiperPath);
+          drawerAisleController.registerAreaMovedToNewPosition(swiperMovedToNewPosition,
+                                                               scope.swiperPath);
+          drawerAisleController.registerAreaMovedToInitialPosition(swiperMovedToInitialPosition,
+                                                                   scope.swiperPath);
         }
       }
     }

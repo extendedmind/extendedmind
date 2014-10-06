@@ -23,9 +23,6 @@ function SwiperService($q, $timeout) {
 
   var slideChangeStartCallbacks = {};
   var slideChangeCallbacks = {};
-  var negativeResistancePullToRefreshCallbacks = {};
-  var positiveResistancePullToRefreshCallbacks = {};
-  var swiperCreatedCallbacks = {};
   var simulateTouch = false;
 
   // Optional override parameters per swiper
@@ -83,10 +80,13 @@ function SwiperService($q, $timeout) {
 
   function useOverrideSlideIndex(swiperPath, swiperSlidesPaths) {
     if (overrideSwiperParams[swiperPath] && overrideSwiperParams[swiperPath].initialSlidePath) {
-      var slideIndex = getSlideIndexBySlidePath(overrideSwiperParams[swiperPath].initialSlidePath, swiperSlidesPaths);
+      var slideIndex = getSlideIndexBySlidePath(overrideSwiperParams[swiperPath].initialSlidePath,
+                                                swiperSlidesPaths);
       if (slideIndex !== undefined) {
         // execute slide change callbacks on override
-        executeSlideChangeCallbacks(swiperPath, overrideSwiperParams[swiperPath].initialSlidePath, slideIndex);
+        executeSlideChangeCallbacks(swiperPath,
+                                    overrideSwiperParams[swiperPath].initialSlidePath,
+                                    slideIndex);
 
         // set initial slide path to undefined for future swiper instances
         overrideSwiperParams[swiperPath].initialSlidePath = undefined;
@@ -96,9 +96,16 @@ function SwiperService($q, $timeout) {
     }
   }
 
-  var getSwiperParameters = function(swiperPath, swiperType, swiperSlidesPaths, onSwiperCreatedCallback, onSlideChangeStartCallback, onSlideChangeEndCallback, onResistanceBeforeCallback, onResistanceAfterCallback, onlyExternalSwipe, loop) {
-    var leftEdgeTouchRatio = (overrideSwiperParams[swiperPath]) ? overrideSwiperParams[swiperPath].leftEdgeTouchRatio : undefined;
-    var rightEdgeTouchRatio = (overrideSwiperParams[swiperPath]) ? overrideSwiperParams[swiperPath].rightEdgeTouchRatio : undefined;
+  var getSwiperParameters = function(swiperPath, swiperType, swiperSlidesPaths,
+                                     onSlideChangeStartCallback, onSlideChangeEndCallback, onlyExternalSwipe,
+                                     loop) {
+
+    var leftEdgeTouchRatio = (overrideSwiperParams[swiperPath] ?
+                              overrideSwiperParams[swiperPath].leftEdgeTouchRatio : undefined);
+
+    var rightEdgeTouchRatio = (overrideSwiperParams[swiperPath] ?
+                               overrideSwiperParams[swiperPath].rightEdgeTouchRatio : undefined);
+
     var swiperParams = {
       speed: 300, // set default speed for reference purposes only
       onlyExternal: onlyExternalSwipe ? true : false,
@@ -111,11 +118,8 @@ function SwiperService($q, $timeout) {
       simulateTouch: simulateTouch,
       leftEdgeTouchRatio: leftEdgeTouchRatio,
       rightEdgeTouchRatio: rightEdgeTouchRatio,
-      onSwiperCreated: onSwiperCreatedCallback,
       onSlideChangeStart: onSlideChangeStartCallback,
-      onSlideChangeEnd: onSlideChangeEndCallback,
-      onResistanceBefore: onResistanceBeforeCallback,
-      onResistanceAfter: onResistanceAfterCallback
+      onSlideChangeEnd: onSlideChangeEndCallback
     };
 
     swiperParams.initialSlide = getInitialSlideIndex(swiperPath, swiperSlidesPaths);
@@ -149,44 +153,17 @@ function SwiperService($q, $timeout) {
       }
     }
   };
-  var executeNegativeResistancePullToRefreshCallbacks = function executeNegativeResistancePullToRefreshCallbacks(swiperPath) {
-    if (negativeResistancePullToRefreshCallbacks[swiperPath]) {
-      for (var i = 0, len = negativeResistancePullToRefreshCallbacks[swiperPath].length; i < len; i++) {
-        negativeResistancePullToRefreshCallbacks[swiperPath][i].callback();
-      }
-    }
-  };
-  var executePositiveResistancePullToRefreshCallbacks = function executePositiveResistancePullToRefreshCallbacks(swiperPath) {
-    if (positiveResistancePullToRefreshCallbacks[swiperPath]) {
-      for (var i = 0, len = positiveResistancePullToRefreshCallbacks[swiperPath].length; i < len; i++) {
-        positiveResistancePullToRefreshCallbacks[swiperPath][i].callback();
-      }
-    }
-  };
-  var executeSwiperCreatedCallbacks = function executeSwiperCreatedCallbacks(swiperPath) {
-    if (swiperCreatedCallbacks[swiperPath]) {
-      for (var i = 0, len = swiperCreatedCallbacks[swiperPath].length; i < len; i++) {
-        swiperCreatedCallbacks[swiperPath][i].callback();
-      }
-    }
-  };
 
   return {
-    initializeSwiper: function(containerElement, swiperPath, swiperType, swiperSlidesPaths, onSwiperCreatedCallback, onSlideChangeStartCallback, onSlideChangeEndCallback, onResistanceBeforeCallback, onResistanceAfterCallback, disableSwiper, loop) {
+    initializeSwiper: function(containerElement, swiperPath, swiperType, swiperSlidesPaths,
+                               onSlideChangeStartCallback, onSlideChangeEndCallback,
+                               disableSwiper, loop) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         delete swipers[swiperPath].swiper;
       }
-      var params = getSwiperParameters(
-        swiperPath,
-        swiperType,
-        swiperSlidesPaths,
-        onSwiperCreatedCallback,
-        onSlideChangeStartCallback,
-        onSlideChangeEndCallback,
-        onResistanceBeforeCallback,
-        onResistanceAfterCallback,
-        disableSwiper,
-        loop);
+      var params = getSwiperParameters(swiperPath, swiperType, swiperSlidesPaths,
+                                       onSlideChangeStartCallback, onSlideChangeEndCallback, disableSwiper,
+                                       loop);
       var swiper = new Swiper(containerElement, params);
 
       swipers[swiperPath] = {
@@ -200,7 +177,9 @@ function SwiperService($q, $timeout) {
     refreshSwiper: function(swiperPath, swiperSlidesPaths) {
       function doRefresh(swiperInfo, swiperSlidesPaths, overrideSlideIndex){
         setPathsToSlides(swipers[swiperPath], swiperSlidesPaths);
-        if ((overrideSlideIndex !== undefined) && (swipers[swiperPath].swiper.activeIndex !== overrideSlideIndex) ) {
+        if ((overrideSlideIndex !== undefined) &&
+            (swipers[swiperPath].swiper.activeIndex !== overrideSlideIndex))
+        {
           // Re-init did not work, still wrong slide, need to swipe there
           // NOTE: Adding a 0 after this call would make swiping instant, but the animation might
           //       be helpful in understanding where this is transitioning
@@ -263,9 +242,6 @@ function SwiperService($q, $timeout) {
         });
       }
     },
-    onSwiperCreated: function(scope, swiperPath) {
-      executeSwiperCreatedCallbacks(swiperPath);
-    },
     onSlideChangeStart: function(scope, swiperPath, direction) {
       executeSlideChangeStartCallbacks(swiperPath, direction);
     },
@@ -275,12 +251,6 @@ function SwiperService($q, $timeout) {
       var activeSlide = swipers[swiperPath].swiper.getSlide(activeIndex);
       var path = activeSlide.getData('path');
       executeSlideChangeCallbacks(swiperPath, path, activeIndex, direction);
-    },
-    reachedNegativeResistancePullToRefreshPosition: function(swiperPath) {
-      executeNegativeResistancePullToRefreshCallbacks(swiperPath);
-    },
-    reachedPositiveResistancePullToRefreshPosition: function(swiperPath) {
-      executePositiveResistancePullToRefreshCallbacks(swiperPath);
     },
     setInitialSlidePath: function(swiperPath, slidePath) {
       if (overrideSwiperParams[swiperPath]) {
@@ -391,9 +361,6 @@ function SwiperService($q, $timeout) {
         swipers[swiperPath].swiper.params.onlyExternal = swipe;
       }
     },
-    setSwiperResistance: function(swiperPath, resistance) {
-      swipers[swiperPath].swiper.params.resistance = resistance;
-    },
     registerSlideChangeStartCallback: function(slideChageStartCallback, swiperPath, id) {
       if (!slideChangeStartCallbacks[swiperPath]) slideChangeStartCallbacks[swiperPath] = [];
       else {
@@ -423,51 +390,6 @@ function SwiperService($q, $timeout) {
       }
       slideChangeCallbacks[swiperPath].push({
         callback: slideChangeCallback,
-        id: id});
-    },
-    registerNegativeResistancePullToRefreshCallback: function(negativeResistancePullToRefreshCallback, swiperPath, id) {
-      if (!negativeResistancePullToRefreshCallbacks[swiperPath]) {
-        negativeResistancePullToRefreshCallbacks[swiperPath] = [];
-      } else {
-        for (var i = 0, len = negativeResistancePullToRefreshCallbacks[swiperPath].length; i < len; i++) {
-          if (negativeResistancePullToRefreshCallbacks[swiperPath][i].id === id) {
-            negativeResistancePullToRefreshCallbacks[swiperPath][i].callback = negativeResistancePullToRefreshCallback;
-            return;
-          }
-        }
-      }
-      negativeResistancePullToRefreshCallbacks[swiperPath].push({
-        callback: negativeResistancePullToRefreshCallback,
-        id: id});
-    },
-    registerPositiveResistancePullToRefreshCallback: function(positiveResistancePullToRefreshCallback, swiperPath, id) {
-      if (!positiveResistancePullToRefreshCallbacks[swiperPath]) {
-        positiveResistancePullToRefreshCallbacks[swiperPath] = [];
-      } else {
-        for (var i = 0, len = positiveResistancePullToRefreshCallbacks[swiperPath].length; i < len; i++) {
-          if (positiveResistancePullToRefreshCallbacks[swiperPath][i].id === id) {
-            positiveResistancePullToRefreshCallbacks[swiperPath][i].callback = positiveResistancePullToRefreshCallback;
-            return;
-          }
-        }
-      }
-      positiveResistancePullToRefreshCallbacks[swiperPath].push({
-        callback: positiveResistancePullToRefreshCallback,
-        id: id});
-    },
-    registerSwiperCreatedCallback: function(swiperCreatedCallback, swiperPath, id) {
-      if (!swiperCreatedCallbacks[swiperPath]) {
-        swiperCreatedCallbacks[swiperPath] = [];
-      } else {
-        for (var i = 0, len = swiperCreatedCallbacks[swiperPath].length; i < len; i++) {
-          if (swiperCreatedCallbacks[swiperPath][i].id === id) {
-            swiperCreatedCallbacks[swiperPath][i].callback = swiperCreatedCallback;
-            return;
-          }
-        }
-      }
-      swiperCreatedCallbacks[swiperPath].push({
-        callback: swiperCreatedCallback,
         id: id});
     },
     getSwiperSlides: function(swiperPath) {
