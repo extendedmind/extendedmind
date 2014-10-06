@@ -15,6 +15,8 @@
  'use strict';
 
  function toasterDirective($timeout, UISessionService) {
+  var notificationVisibleInMilliseconds = 3000;
+
   return {
     restrict: 'A',
     templateUrl: 'static/app/base/toaster.html',
@@ -28,7 +30,6 @@
       scope.toasterNotifications = false;
 
       UISessionService.registerNotificationsActiveCallback(attrs.toaster, notificationsActive);
-      var notificationTimer, notificationVisibleInMilliseconds = 3000;
 
       function notificationsActive(notifications) {
         scope.toasterNotifications = true;
@@ -44,15 +45,32 @@
       function showNotifications(notifications) {
         if (notifications && notifications.length > 0) {
           var notification = notifications.shift();
-          scope.notification = notification.itemType + ' ' + notification.type;
+          scope.notification = notification;
 
-          notificationTimer = $timeout(function() {
-            scope.notification = undefined;
+          // Proceed to next notification when timeout is reached or promise is cancelled.
+          var notificationTimer = $timeout(function() {
+            scope.notification = undefined; // clear notification just in case
             showNotifications(notifications);
           }, notificationVisibleInMilliseconds);
+
+          // Timeout promise cancelled.
+          notificationTimer.then(null, function() {
+            scope.notification = undefined; // clear notification just in case
+            showNotifications(notifications);
+          });
+          scope.notification.timer = notificationTimer; // attach timeout promise to notification
         } else
+        // No more notifications. End.
         scope.toasterNotifications = false;
       }
+
+      /*
+      * Cancel notification's timeout promise and fire callback.
+      */
+      scope.closeNotificationAndCall = function(notification, item, callback) {
+        if (notification.timer) $timeout.cancel(notification.timer);
+        if (callback) callback(item);
+      };
 
       scope.$on('$destroy', function() {
         // Unregister notifications callback for toaster type in UISessionService

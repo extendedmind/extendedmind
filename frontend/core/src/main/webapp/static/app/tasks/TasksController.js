@@ -147,11 +147,9 @@
     TasksService.resetTask(task, UISessionService.getActiveUUID());
   };
 
-  function navigateToItem(/*destination*/) {
-    // TODO
-  }
-  function undoDelete(/*item*/) {
-    // TODO
+  function undoDelete(task) {
+    TasksService.undeleteTask(task, UISessionService.getActiveUUID());
+    // FIXME: where task went?
   }
 
   $scope.deleteTask = function deleteTask(task) {
@@ -159,8 +157,7 @@
     UISessionService.pushDelayedNotification({
       type: 'deleted',
       itemType: 'task',
-      item: $scope.task,
-      navigateFn: navigateToItem,
+      item: task,
       undoFn: undoDelete
     });
 
