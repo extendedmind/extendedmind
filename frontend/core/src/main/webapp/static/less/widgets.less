@@ -90,203 +90,114 @@ TODO: working example needed!
 TODO: Example needed
 */
 
+@color-weekdays: @color-default-inactive;
 
-@pikaday-button: #f5f5f5;
-@pikaday-button-hover: darken(@pikaday-button, 10%);
-
-@pikaday-selected-button: #0f82fe;
-@pikaday-selected-button-hover: darken(@pikaday-selected-button, 10%);
-@pikaday-selected-button-pressed: darken(@pikaday-selected-button, 20%);
-
-
-.pika-single {
-  z-index: 9999;
-  display: block;
-  position: relative;
-  color: #333;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-bottom-color: #bbb;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-/*
-clear child float (pika-lendar), using the famous micro clearfix hack
-http://nicolasgallagher.com/micro-clearfix-hack/
-*/
-.pika-single:before,
-.pika-single:after {
-  content: " ";
-  display: table;
-}
-.pika-single:after { clear: both }
-.pika-single { *zoom: 1 }
-
-.pika-single.is-hidden {
-  display: none;
-}
-
-.pika-single.is-bound {
-  position: absolute;
-  box-shadow: 0 5px 15px -5px rgba(0,0,0,.5);
-}
-
-.pika-lendar {
-  float: left;
-  width: 240px;
-  margin: 8px;
+// 1. Override style from normalize.less
+// 2. Override th's inherited font-weight
+.pika-table abbr[title] {
+  border-bottom: none;  // [1]
+  font-weight: normal;  // [2]
+  font-size: @size-font-small;
+  color: @color-weekdays;
 }
 
 .pika-title {
-  position: relative;
   text-align: center;
 }
 
 .pika-label {
   display: inline-block;
-  *display: inline;
   position: relative;
-  z-index: 9999;
-  overflow: hidden;
-  margin: 0;
-  padding: 5px 3px;
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: bold;
-  background-color: #fff;
-}
-.pika-title select {
-  cursor: pointer;
-  position: absolute;
-  z-index: 9998;
-  margin: 0;
-  left: 0;
-  top: 5px;
-  filter: alpha(opacity=0);
-  opacity: 0;
 }
 
+// 1. Make some room between month and year labels.
+.pika-label:first-child {
+  padding-right: 5px; // [1]
+}
+// 1. Make some room between month and year labels.
+.pika-label:last-child {
+  padding-left: 5px;  // [1]
+}
+
+// 1. Unmodified from Pikaday.css
+.pika-title select {
+  position: absolute; // [1]
+  margin: 0;          // [1]
+  left: 0;            // [1]
+  opacity: 0;         // [1]
+}
+
+.pika-next:after {
+  .set-icon-font;
+  content: @icon-arrow-right;
+  font-size: 8px;
+  padding-left: 5px;
+}
+.pika-prev:before {
+  .set-icon-font;
+  content: @icon-arrow-left;
+  font-size: 8px;
+  padding-right: 5px;
+}
+
+// 1. Remove borders.
+// 2. Remove background.
 .pika-prev,
 .pika-next {
-  display: block;
-  cursor: pointer;
-  position: relative;
-  outline: none;
-  border: 0;
-  padding: 0;
-  width: 20px;
-  height: 30px;
-  /* hide text using text-indent trick, using width value (it's enough) */
-  text-indent: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  background-color: transparent;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: 75% 75%;
-  opacity: .5;
-  *position: absolute;
-  *top: 0;
-}
-
-.pika-prev:hover,
-.pika-next:hover {
-  opacity: 1;
+  border: 0;  // [1]
+  background-color: transparent;  // [2]
 }
 
 .pika-prev,
 .is-rtl .pika-next {
   float: left;
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAAAUklEQVR42u3VMQoAIBADQf8Pgj+OD9hG2CtONJB2ymQkKe0HbwAP0xucDiQWARITIDEBEnMgMQ8S8+AqBIl6kKgHiXqQqAeJepBo/z38J/U0uAHlaBkBl9I4GwAAAABJRU5ErkJggg==');
-  *left: 0;
 }
 
 .pika-next,
 .is-rtl .pika-prev {
   float: right;
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAAAU0lEQVR42u3VOwoAMAgE0dwfAnNjU26bYkBCFGwfiL9VVWoO+BJ4Gf3gtsEKKoFBNTCoCAYVwaAiGNQGMUHMkjGbgjk2mIONuXo0nC8XnCf1JXgArVIZAQh5TKYAAAAASUVORK5CYII=');
-  *right: 0;
 }
 
-.pika-prev.is-disabled,
-.pika-next.is-disabled {
-  cursor: default;
-  opacity: .2;
-}
-
-.pika-select {
-  display: inline-block;
-  *display: inline;
-}
-
+// 1. Utilize whole available width.
 .pika-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-  border: 0;
+  width: 100%;  // [1]
 }
 
+// 1. Set width for table header and data cells: 100% / 7.
 .pika-table th,
 .pika-table td {
-  width: 14.285714285714286%;
-  padding: 0;
+  width: 14.285714285714286%; // [1]
 }
 
-.pika-table th {
-  color: #999;
-  font-size: 12px;
-  line-height: 25px;
-  font-weight: bold;
-  text-align: center;
-}
+// 1. Remove borders.
+// 2. Remove outline.
+// 3. Add some padding value to make calendar obey window width.
 
+// TODO: add height to button
 .pika-button {
-  cursor: pointer;
-  display: block;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  outline: none;
-  border: 0;
-  margin: 0;
+  border: 0;      // [1]
+  outline: none;  // [2]
+  padding: 0;     // [3]
   width: 100%;
-  padding: 5px;
-  color: #666;
-  font-size: 12px;
-  line-height: 15px;
-  text-align: right;
-  background: #f5f5f5;
+  font-size: @size-font-small;
+  background-color: white;
 }
 
-.pika-week {
-  font-size: 11px;
-  color: #999;
-}
+// 1. Highlight today with border.
 
+// TODO: add border-radius when correct height (and dimensions) is set.
 .is-today .pika-button {
-  color: #33aaff;
-  font-weight: bold;
+  border: 1px solid black;  // [1]
 }
 
+// 1. Highlight selected date with bold font.
 .is-selected .pika-button {
-  color: #fff;
-  font-weight: bold;
-  background: #33aaff;
-  box-shadow: inset 0 1px 3px #178fe5;
-  border-radius: 3px;
+  .set-font-bold; // [1]
 }
 
-.is-disabled .pika-button {
-  pointer-events: none;
-  cursor: default;
-  color: #999;
-  opacity: .3;
-}
-
-.pika-button:hover {
-  color: #fff !important;
-  background: #ff8000 !important;
-  box-shadow: none !important;
-  border-radius: 3px !important;
+// 1. Highlight hovered date with bold font.
+.web .pika-button:hover {
+  .set-font-bold; // [1]
 }
 
 

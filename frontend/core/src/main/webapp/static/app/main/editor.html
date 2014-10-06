@@ -70,7 +70,7 @@
               <textarea class="row" ng-model="task.transientProperties.description" msd-elastic placeholder="description..." maxlength="1024"></textarea>
             </div>
             <div ng-if="snoozeOpen && !calendarOpen" snooze="{{task.transientProperties.date}}" snooze-close-and-save="closeSnoozeAndSave(date)" snooze-close-and-open="closeSnoozeAndOpenCalendar()" snooze-destroy="closeSnooze()"></div>
-            <div ng-if="calendarOpen" class="pikaday-embedded" calendar="{{task.transientProperties.date}}" calendar-get-date-fn="registerGetCalendarDateFn(getCalendarDateFn)" calendar-set-default-date="true" calendar-destroy="closeCalendar()" bound="false"></div>
+            <div ng-if="calendarOpen" class="swiper-no-swiping row" data-snap-ignore="true" calendar="{{task.transientProperties.date}}" calendar-get-date-fn="registerGetCalendarDateFn(getCalendarDateFn)" calendar-set-default-date="true" calendar-destroy="closeCalendar()" calendar-bound="false"></div>
           </div>
 
           <footer class="container-content--after" ng-style="{height: getOverrideEditorFooterHeight(), bottom: -getOverrideEditorFooterHeight()}">

@@ -19,7 +19,7 @@
  function calendarDirective($parse, DateService) {
   return {
     restrict: 'A',
-    link: function (scope, elem, attrs) {
+    link: function (scope, element, attrs) {
       var startingDate;
       if (attrs.calendar) startingDate = DateService.getDateTodayOrFromLaterYYYYMMDD(attrs.calendar);
       if (attrs.calendarDestroy) scope.destroyFn = $parse(attrs.calendarDestroy);
@@ -31,9 +31,9 @@
       }
 
       var calendar = new Pikaday({
-        field: elem[0],
-        container: elem[0],
-        bound: attrs.bound !== 'false',
+        field: element[0],
+        container: element[0],
+        bound: attrs.calendarBound !== 'false',
         format: attrs.format || 'ddd MMM D YYYY',
         defaultDate: startingDate,
         setDefaultDate: attrs.calendarSetDefaultDate === 'true',
