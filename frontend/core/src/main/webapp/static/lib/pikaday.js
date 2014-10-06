@@ -509,7 +509,6 @@
         self.el.className = 'pika-single' + (opts.isRTL ? ' is-rtl' : '');
 
         addEvent(self.el, 'mousedown', self._onMouseDown, true);
-        addEvent(self.el, 'touchstart', self._onMouseDown, true); // Fix for iOS: https://github.com/dbushell/Pikaday/issues/101#issue-19774828
         addEvent(self.el, 'change', self._onChange);
 
         if (opts.field) {
@@ -659,6 +658,12 @@
         {
             if (!date) {
                 this._d = null;
+
+                if (this._o.field) {
+                    this._o.field.value = '';
+                    fireEvent(this._o.field, 'change', { firedBy: this });
+                }
+
                 return this.draw();
             }
             if (typeof date === 'string') {
