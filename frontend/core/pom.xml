@@ -174,7 +174,6 @@
             <include>lib/elastic.js</include>
             <include>lib/fastclick.js</include>
             <include>lib/snap.js</include>
-            <include>lib/pikaday.js</include>
             <include>app/*.js</include>
             <include>common/common.js</include>
             <include>common/*.js</include>
