@@ -31,11 +31,23 @@ function SwiperService($q, $timeout) {
   // Optional override parameters per swiper
   var overrideSwiperParams = {};
 
-  // Gets all swipers that match the given slide path
+  /*
+  * Gets all swipers that match the given slide path.
+  */
   var getSwiperInfosBySlidePath = function(slidePath) {
+
+    // Slide path's root equals the swiper path it is associated to.
+    var slidePathStart = slidePath;
+    var slidePathStartEndIndex = slidePathStart.indexOf('/');
+
+    if (slidePathStartEndIndex !== -1) {
+      // Slide path has sub path(s). Get root path.
+      slidePathStart = slidePathStart.substring(0, slidePathStartEndIndex);
+    }
+
     var swiperInfos = {};
     for (var swiperPath in swipers) {
-      if (slidePath.startsWith(swiperPath)) {
+      if (slidePathStart === swiperPath) {
         if (swipers[swiperPath].swiperType === 'main') {
           swiperInfos.main = swipers[swiperPath];
           swiperInfos.mainPath = swiperPath;
