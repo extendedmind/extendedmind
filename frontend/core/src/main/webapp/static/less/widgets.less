@@ -91,6 +91,7 @@ TODO: Example needed
 */
 
 @color-weekdays: @color-default-inactive;
+@color-date-active: @color-link-active;
 
 // 1. Override style from normalize.less
 // 2. Override th's inherited font-weight
@@ -101,7 +102,18 @@ TODO: Example needed
   color: @color-weekdays;
 }
 
+// 1. Float clear button to the right of .pika-title which is rendered by Pikaday.js.
+// TODO: align with .pika-title
+.pikaday-clear {
+  float: right; // [1]
+}
+
+// 1. Make room for .pikaday-clear.
+//    NOTE: Make sure that layout does not break if setting width smaller than 60%.
+// TODO: align with .pika-clear
 .pika-title {
+  width: 60%; // [1]
+  .center-horizontally;
   text-align: center;
 }
 
@@ -190,9 +202,19 @@ TODO: Example needed
   border: 1px solid black;  // [1]
 }
 
+@timing-animate-date-active: @timing-animate-steep;
 // 1. Highlight selected date with bold font.
-.is-selected .pika-button {
+// 2. Animate background-color.
+// TODO:  Add border-radius when correct height (and dimensions) is set.
+//        Move to animations.less
+.animate-calendar-selected-date-add {
+  -webkit-transition: background-color 2s @timing-animate-date-active;  // [2]
+  -moz-transition: background-color 2s @timing-animate-date-active;  // [2]
+  -o-transition: background-color 2s @timing-animate-date-active;  // [2]
+  -ms-transition: background-color 2s @timing-animate-date-active;  // [2]
+  transition: background-color 2s @timing-animate-date-active;  // [2]
   .set-font-bold; // [1]
+  background-color: @color-date-active; // [2]
 }
 
 // 1. Highlight hovered date with bold font.

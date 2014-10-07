@@ -199,9 +199,8 @@
 
   // CALENDAR
 
-  $scope.closeCalendarAndSetDateToTask = function(date, task) {
-    $scope.calendarOpen = false;
-    $scope.setTaskDate(date, task);
+  $scope.openCalendar = function() {
+    $scope.calendarOpen = true;
   };
 
   /*
@@ -211,15 +210,16 @@
     return $scope.getTaskDate(task);
   };
 
-  $scope.openCalendar = function openCalendar() {
-    $scope.calendarOpen = true;
+  $scope.closeCalendarAndCall = function(itemAction, item, newItemProperty) {
+    $scope.calendarOpen = false;
+    itemAction(item, newItemProperty);
   };
+
+  // SNOOZE
 
   $scope.toggleSnooze = function toggleSnooze() {
     $scope.snoozeOpen = !$scope.snoozeOpen;
   };
-
-  // SNOOZE
 
   $scope.closeSnoozeAndOpenCalendar = function closeSnoozeAndOpenCalendar() {
     $scope.snoozeOpen = false;

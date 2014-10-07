@@ -16,7 +16,7 @@
  /* global Pikaday */
 
  'use strict';
- function calendarDirective(DateService) {
+ function calendarDirective($animate, DateService) {
   return {
     restrict: 'A',
     scope: {
@@ -32,11 +32,45 @@
       // Set first day of the week. Default to 1 = Monday.
       var firstDay = scope.firstDay ? parseInt(scope.firstDay) : 1;
 
+      // Listen to touch events to detect movements during date select.
+      var touchMovedAmount = 0, touchMoveThreshold = 5;
+      element[0].addEventListener('touchstart', function() {
+        touchMovedAmount = 0;
+        element[0].addEventListener('touchmove', incrementTouchMovedAmount);
+        element[0].addEventListener('touchend', removeTouchListeners);
+      });
+      // Increment moved amount (into any direction).
+      function incrementTouchMovedAmount() {
+        touchMovedAmount++;
+      }
+      function removeTouchListeners() {
+        element[0].removeEventListener('touchmove', incrementTouchMovedAmount);
+        element[0].removeEventListener('touchend', removeTouchListeners);
+      }
+
+      /*
+      * Return date to whoever is interested.
+      */
       function returnDate() {
-        // Back to AngularJS event loop from callback.
-        scope.$apply(function() {
-          scope.returnDate({date: calendar.getDate()});
-        });
+        var activeDates = element[0].getElementsByClassName('is-selected');
+        var activeDate;
+        if (activeDates) activeDate = activeDates[0]; // There is only one active date at a time.
+        if (!activeDate) return;  // Class .is-selected has not been set for some reason.
+
+        // Callback fires too soon. Do nothing if touched past threshold.
+        if (touchMovedAmount < touchMoveThreshold) {
+          // Legit touch. Back to AngularJS event loop from callback.
+          scope.$apply(function() {
+            // Add little animation to indicate the user that he/she succesfully clicked a date.
+            $animate.addClass(activeDate.firstElementChild, 'animate-calendar-selected-date')
+            .then(function() {
+              scope.$apply(function() {
+                // Good to return the date.
+                scope.returnDate({date: calendar.getDate()});
+              });
+            });
+          });
+        }
       }
 
       // See https://github.com/dbushell/Pikaday#configuration for all available options.
@@ -59,5 +93,5 @@
     }
   };
 }
-calendarDirective['$inject'] = ['DateService'];
+calendarDirective['$inject'] = ['$animate', 'DateService'];
 angular.module('common').directive('calendar', calendarDirective);

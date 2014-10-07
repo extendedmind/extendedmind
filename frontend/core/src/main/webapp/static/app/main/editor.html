@@ -56,8 +56,9 @@
             <div ng-hide="snoozeOpen">
 
               <div ng-if="!calendarOpen" class="row animate-calendar" ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></div>
-
-              <div ng-if="calendarOpen" class="swiper-no-swiping row animate-calendar" data-snap-ignore="true" calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndSetDateToTask(date, task)" calendar-set-default-date="true" calendar-bound="false"></div>
+              <div ng-if="calendarOpen" class="swiper-no-swiping row animate-calendar" data-snap-ignore="true" calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false">
+                <button ng-if="task.transientProperties.date" type="button" class="btn-clear pikaday-clear" ng-click="closeCalendarAndCall(clearTransientDate, task)"></button>
+              </div>
 
               <div lists-select-options>
                 <select ng-if="!addNewListVisible" class="select-list-visible-animation row" ng-model="task.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions">

@@ -45,7 +45,7 @@
     TasksService.saveTask(task, UISessionService.getActiveUUID());
   };
 
-  $scope.setTaskDate = function(date, task) {
+  $scope.setTaskDate = function(task, date) {
     if (!task.transientProperties) task.transientProperties = {};
     task.transientProperties.date = DateService.getYYYYMMDD(date);
   };
@@ -53,6 +53,10 @@
   $scope.getTaskDate = function(task) {
     if (task.transientProperties && task.transientProperties.date)
       return DateService.getDateTodayOrFromLaterYYYYMMDD(task.transientProperties.date);
+  };
+
+  $scope.clearTransientDate = function(task) {
+    if (task.transientProperties) delete task.transientProperties.date;
   };
 
   $scope.openTaskEditor = function openTaskEditor(task) {
