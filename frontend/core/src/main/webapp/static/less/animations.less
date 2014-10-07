@@ -7,6 +7,8 @@
 
 */
 
+@timing-animate: cubic-bezier(0.250, 0.460, 0.450, 0.940);
+
 @speed-animate-item-fade: 1s;
 @speed-animate-item-shrink: .5s;
 @delay-animate-item-shrink: .5s;
@@ -14,6 +16,9 @@
 
 @speed-animate-toaster-fade: .5s;
 @timing-animate-toaster: cubic-bezier(0.250, 0.460, 0.450, 0.940);
+
+@speed-animate-calendar-fade: .3s;
+@timing-animate-calendar: @timing-animate;
 
 // 1. Set initial max-height for item to make max-height animation work in WebKit browsers.
 .animate-list-item-leave {
@@ -95,5 +100,27 @@
 // 1. Starting point for fade out and ending point for fade in.
 .animate-toaster.ng-leave,
 .animate-toaster.ng-enter.ng-enter-active {
+  opacity: 1; // [1]
+}
+
+// 1. Crossfade between calendar and date field.
+//    We are animating entering part of ng-if only, because:
+//      Date field: ng-if="!calendarOpen"
+//      Calendar:   ng-if="calendarOpen"
+.animate-calendar.ng-enter {
+  -webkit-transition: opacity @timing-animate-calendar @speed-animate-calendar-fade;  // [1]
+  -moz-transition: opacity @timing-animate-calendar @speed-animate-calendar-fade;  // [1]
+  -o-transition: opacity @timing-animate-calendar @speed-animate-calendar-fade;  // [1]
+  -ms-transition: opacity @timing-animate-calendar @speed-animate-calendar-fade;  // [1]
+  transition: opacity @timing-animate-calendar @speed-animate-calendar-fade;  // [1]
+}
+
+// 1. Fade in
+.animate-calendar.ng-enter {
+  opacity: 0; // [1]
+}
+
+// 1. Fade in
+.animate-calendar.ng-enter.ng-enter-active {
   opacity: 1; // [1]
 }

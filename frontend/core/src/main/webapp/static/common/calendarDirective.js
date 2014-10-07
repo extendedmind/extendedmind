@@ -16,46 +16,48 @@
  /* global Pikaday */
 
  'use strict';
- function calendarDirective($parse, DateService) {
+ function calendarDirective(DateService) {
   return {
     restrict: 'A',
-    link: function (scope, element, attrs) {
-      var startingDate;
-      if (attrs.calendar) startingDate = DateService.getDateTodayOrFromLaterYYYYMMDD(attrs.calendar);
-      if (attrs.calendarDestroy) scope.destroyFn = $parse(attrs.calendarDestroy);
+    scope: {
+      getStartingDate: '&calendar',
+      setDefaultDate: '=calendarSetDefaultDate',
+      returnDate: '&calendarReturnDate',
+      firstDay: '@calendarFirstDay',
+      bound: '=calendarBound'
+    },
+    link: function (scope, element) {
+      var startingDate = scope.getStartingDate();
 
-      var registerGetCalendarDateFn = $parse(attrs.calendarGetDateFn);
-      registerGetCalendarDateFn(scope, {getCalendarDateFn: getPikadayDateYYYYMMDD});
-      function getPikadayDateYYYYMMDD() {
-        return DateService.getYYYYMMDD(calendar.getDate());
+      // Set first day of the week. Default to 1 = Monday.
+      var firstDay = scope.firstDay ? parseInt(scope.firstDay) : 1;
+
+      function returnDate() {
+        // Back to AngularJS event loop from callback.
+        scope.$apply(function() {
+          scope.returnDate({date: calendar.getDate()});
+        });
       }
 
+      // See https://github.com/dbushell/Pikaday#configuration for all available options.
       var calendar = new Pikaday({
         field: element[0],
         container: element[0],
-        bound: attrs.calendarBound !== 'false',
-        format: attrs.format || 'ddd MMM D YYYY',
+        bound: scope.bound,
         defaultDate: startingDate,
-        setDefaultDate: attrs.calendarSetDefaultDate === 'true',
-        firstDay: attrs.firstDay ? parseInt(attrs.firstDay) : 1,
-        yearRange: attrs.yearRange ? JSON.parse(attrs.yearRange) : 10,
-        isRTL: attrs.isRTL === 'true',
+        setDefaultDate: scope.setDefaultDate,
+        firstDay: firstDay,
         i18n: {
-          previousMonth : '',
-          nextMonth     : '',
+          previousMonth : '', // Remove previous month text label
+          nextMonth     : '', // Remove next month text label
           months        : DateService.getMonthNames(),
           weekdays      : DateService.getWeekdayNames(),
           weekdaysShort : ['sun','mon','tue','wed','thu','fri','sat']
         },
-        yearSuffix: attrs.yearSuffix || '',
-        showMonthAfterYear: attrs.showMonthAfterYear === 'true'
-      });
-
-      scope.$on('$destroy', function() {
-        if (angular.isFunction(scope.destroyFn)) scope.destroyFn(scope);
+        onSelect: returnDate
       });
     }
   };
 }
-calendarDirective['$inject'] = ['$parse', 'DateService'];
+calendarDirective['$inject'] = ['DateService'];
 angular.module('common').directive('calendar', calendarDirective);

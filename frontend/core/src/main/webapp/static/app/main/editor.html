@@ -52,8 +52,13 @@
         <div class="swiper-slide" swiper-slide="{{editorType}}/basic" slide-index="0">
 
           <div ng-if="editorType === 'task'" class="container-content" drawer-override-aisle="right">
-            <div ng-hide="snoozeOpen || calendarOpen">
-              <div class="row" ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></div>
+
+            <div ng-hide="snoozeOpen">
+
+              <div ng-if="!calendarOpen" class="row animate-calendar" ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></div>
+
+              <div ng-if="calendarOpen" class="swiper-no-swiping row animate-calendar" data-snap-ignore="true" calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndSetDateToTask(date, task)" calendar-set-default-date="true" calendar-bound="false"></div>
+
               <div lists-select-options>
                 <select ng-if="!addNewListVisible" class="select-list-visible-animation row" ng-model="task.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions">
                   <option value="">select list...</option>
@@ -68,18 +73,17 @@
                 </div>
               </div>
               <textarea class="row" ng-model="task.transientProperties.description" msd-elastic placeholder="description..." maxlength="1024"></textarea>
+
             </div>
-            <div ng-if="snoozeOpen && !calendarOpen" snooze="{{task.transientProperties.date}}" snooze-close-and-save="closeSnoozeAndSave(date)" snooze-close-and-open="closeSnoozeAndOpenCalendar()" snooze-destroy="closeSnooze()"></div>
-            <div ng-if="calendarOpen" class="swiper-no-swiping row" data-snap-ignore="true" calendar="{{task.transientProperties.date}}" calendar-get-date-fn="registerGetCalendarDateFn(getCalendarDateFn)" calendar-set-default-date="true" calendar-destroy="closeCalendar()" calendar-bound="false"></div>
+
+            <div ng-if="snoozeOpen" snooze="{{task.transientProperties.date}}" snooze-close-and-save="closeSnoozeAndSave(date)" snooze-close-and-open="closeSnoozeAndOpenCalendar()" snooze-destroy="closeSnooze()"></div>
+
           </div>
 
           <footer class="container-content--after" ng-style="{height: getOverrideEditorFooterHeight(), bottom: -getOverrideEditorFooterHeight()}">
             <div class="group-btn">
-              <button ng-if="!calendarOpen" type="button" class="btn-checkbox" ng-click="toggleSnooze()">
+              <button type="button" class="btn-checkbox" ng-click="toggleSnooze()">
                 <span class="text-btn" ng-bind="task.transientProperties.date ? 'snooze' : 'set date'"></span>
-              </button>
-              <button ng-if="calendarOpen" type="button" class="wide-button normal-button" ng-click="closeCalendarAndSave(calendarCloseCallbackFn)">
-                <span>done</span>
               </button>
             </div>
           </footer>

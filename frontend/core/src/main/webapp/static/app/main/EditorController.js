@@ -15,7 +15,7 @@
 
  'use strict';
 
- function EditorController($rootScope, $scope, $timeout, UISessionService) {
+ function EditorController($rootScope, $scope, $timeout) {
 
   $scope.titlebar = {};
   $scope.searchText = {};
@@ -197,24 +197,34 @@
     else if ($scope.editorType === 'item') return 'add item';
   };
 
+  // CALENDAR
+
+  $scope.closeCalendarAndSetDateToTask = function(date, task) {
+    $scope.calendarOpen = false;
+    $scope.setTaskDate(date, task);
+  };
+
+  /*
+  * Return Date object from tasks transient date.
+  */
+  $scope.getCalendarStartingDate = function(task) {
+    return $scope.getTaskDate(task);
+  };
+
+  $scope.openCalendar = function openCalendar() {
+    $scope.calendarOpen = true;
+  };
+
   $scope.toggleSnooze = function toggleSnooze() {
     $scope.snoozeOpen = !$scope.snoozeOpen;
   };
+
+  // SNOOZE
 
   $scope.closeSnoozeAndOpenCalendar = function closeSnoozeAndOpenCalendar() {
     $scope.snoozeOpen = false;
     $scope.calendarOpen = true;
     $scope.calendarCloseCallbackFn = $scope.endEdit;
-  };
-
-  $scope.openCalendar = function openCalendar() {
-    $scope.calendarOpen = true;
-    $scope.calendarCloseCallbackFn = undefined;
-  };
-
-  var getCalendarDateFn;
-  $scope.registerGetCalendarDateFn = function registerGetCalendarDateFn(getDateFn) {
-    getCalendarDateFn = getDateFn;
   };
 
   function setDateToTask(date, task) {
@@ -226,24 +236,11 @@
     $scope.snoozeOpen = false;
   };
 
-  $scope.closeCalendar = function closeCalendar() {
-    $scope.calendarOpen = false;
-  };
-
   $scope.closeSnoozeAndSave = function closeSnoozeAndSave(date) {
     $scope.snoozeOpen = false;
     if ($scope.editorType === 'task') {
       setDateToTask(date, $scope.task);
       $scope.endEdit();
-    }
-  };
-
-  $scope.closeCalendarAndSave = function closeCalendarAndSave(callback) {
-    $scope.calendarOpen = false;
-    if (typeof getCalendarDateFn === 'function') {
-      var date = getCalendarDateFn();
-      if ($scope.editorType === 'task') setDateToTask(date, $scope.task);
-      if (typeof callback === 'function') callback();
     }
   };
 
@@ -289,7 +286,7 @@
   };
 }
 
-EditorController['$inject'] = ['$rootScope', '$scope', '$timeout', 'UISessionService'];
+EditorController['$inject'] = ['$rootScope', '$scope', '$timeout'];
 angular.module('em.main').controller('EditorController', EditorController);
 
 
