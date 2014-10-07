@@ -14,7 +14,8 @@
  */
  'use strict';
 
- function TasksController($scope, AnalyticsService, DateService, SwiperService, TasksService, UISessionService) {
+ function TasksController($scope, AnalyticsService, DateService, SwiperService, TasksService,
+                          UISessionService) {
 
   $scope.initializeTask = function initializeTask(task) {
     if (task.transientProperties && task.transientProperties.date) {
@@ -181,8 +182,13 @@
 
     if (subtask.transientProperties) {
       subtaskToSave.transientProperties = {};
-      if (subtask.transientProperties.date) subtaskToSave.transientProperties.date = subtask.transientProperties.date;
-      if (subtask.transientProperties.list) subtaskToSave.transientProperties.list = subtask.transientProperties.list;
+
+      if (subtask.transientProperties.date)
+        subtaskToSave.transientProperties.date = subtask.transientProperties.date;
+
+      if (subtask.transientProperties.list)
+        subtaskToSave.transientProperties.list = subtask.transientProperties.list;
+
       if (subtask.transientProperties.context)
         subtaskToSave.transientProperties.context = subtask.transientProperties.context;
     }
@@ -211,7 +217,7 @@
       else
         $scope.getFeatureMap('tasks').slides.right.heading = 'no context';
     });
-  }
+  };
 
   // INFINITE SCROLL
 
@@ -234,5 +240,6 @@
 
 }
 
-TasksController['$inject'] = ['$scope', 'AnalyticsService', 'DateService', 'SwiperService', 'TasksService', 'UISessionService'];
+TasksController['$inject'] = ['$scope', 'AnalyticsService', 'DateService', 'SwiperService', 'TasksService',
+'UISessionService'];
 angular.module('em.tasks').controller('TasksController', TasksController);
