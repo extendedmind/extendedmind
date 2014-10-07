@@ -1,12 +1,8 @@
-<div class="container-content--outer" ng-if="isFeatureActive('tasks')" drawer-handle="left">
-  <section class="container-content" scroll-to>
-    <div list>
-      <h2>recent</h2>
-      <div ng-include="'static/app/tasks/addTask.html'"></div>
-
-      <div class="row" ng-repeat="task in tasks | filter:isTaskVisible" list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox" list-item-left-action-checked="task.completed" ng-class="isAnimationActive() && 'animate-list-item-leave'"></div>
-
-    </div>
+<div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
+  <section class="container-content" list>
+    <h2>recent</h2>
+    <div list-item-add></div>
+    <div class="row animate-list-item-leave" ng-repeat="task in tasks | filter:isTaskVisible" list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox" list-item-left-action-checked="task.completed"></div>
   </section>
-  <footer class="container-content--after" master-footer="getFeatureMap('tasks')" master-footer-add-item="addTask({})"></footer>
+  <footer class="container-content--after" list-footer="getFeatureMap('tasks')"></footer>
 </div>

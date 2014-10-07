@@ -14,20 +14,19 @@
  */
  'use strict';
 
- function iconCheckboxDirective() {
+ function listContainerDirective() {
   return {
     restrict: 'A',
-    scope: {
-      checkboxId: '@iconCheckbox',
-    },
-    link: function (scope, element) {
-      element.addClass('icon-checkbox-input');
-      element[0].id = scope.checkboxId ? scope.checkboxId : 'iconCheckbox';
-      // Create label and set it after the input element
-      var checkboxLabel = document.createElement('label');
-      checkboxLabel.setAttribute('for', element[0].id);
-      element[0].parentNode.insertBefore(checkboxLabel, element[0].nextSibling);
+    controller: function() {
+      var activateAddListItemCallback;
+      this.registerActivateAddListItemCallback = function(callback){
+        activateAddListItemCallback = callback;
+      }
+
+      this.activateAddListItem = function(){
+        if (activateAddListItemCallback) activateAddListItemCallback();
+      }
     }
   };
 }
-angular.module('common').directive('iconCheckbox', iconCheckboxDirective);
+angular.module('em.base').directive('listContainer', listContainerDirective);

@@ -5,6 +5,6 @@
       <div ng-repeat="task in tasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}" ng-bind="task.title"></div>
     </div>
   </section>
-  <footer class="container-content--after" master-footer="getFeatureMap('list')"
-  master-footer-add-item="addTask({transientProperties: {list:list.uuid}})"></footer>
+  <footer class="container-content--after" list-footer="getFeatureMap('list')"
+  list-footer-add-item="addTask({transientProperties: {list:list.uuid}})"></footer>
 </div>

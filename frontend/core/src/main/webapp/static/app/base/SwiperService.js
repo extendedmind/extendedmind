@@ -23,6 +23,8 @@ function SwiperService($q, $timeout) {
 
   var slideChangeStartCallbacks = {};
   var slideChangeCallbacks = {};
+  var slideActiveCallbacks = {};
+
   var simulateTouch = false;
 
   // Optional override parameters per swiper
@@ -152,6 +154,10 @@ function SwiperService($q, $timeout) {
         slideChangeCallbacks[swiperPath][i].callback(path, activeIndex, direction);
       }
     }
+    // Execute slide active callbacks
+    if (slideActiveCallbacks && slideActiveCallbacks[path]) {
+      slideActiveCallbacks[path]();
+    }
   };
 
   return {
@@ -247,8 +253,8 @@ function SwiperService($q, $timeout) {
     },
     onSlideChangeEnd: function(scope, swiperPath, direction) {
       var activeIndex = swipers[swiperPath].swiper.params.loop ?
-      swipers[swiperPath].swiper.activeLoopIndex : swipers[swiperPath].swiper.activeIndex;
-      var activeSlide = swipers[swiperPath].swiper.getSlide(activeIndex);
+        swipers[swiperPath].swiper.activeLoopIndex : swipers[swiperPath].swiper.activeIndex;
+      var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
       var path = activeSlide.getData('path');
       executeSlideChangeCallbacks(swiperPath, path, activeIndex, direction);
     },
@@ -342,16 +348,19 @@ function SwiperService($q, $timeout) {
     isSlideActive: function(slidePath) {
       var swiperInfos = getSwiperInfosBySlidePath(slidePath);
       if (!swiperInfos || !swiperInfos.main){
+        console.log("1")
         return false;
       }
       if (swiperInfos.page) {
         var activePageSlidePath = this.getActiveSlidePath(swiperInfos.pagePath);
         if (activePageSlidePath === undefined || activePageSlidePath !== slidePath) {
+          console.log("2")
           return false;
         }
       }
       var activeMainSlidePath = this.getActiveSlidePath(swiperInfos.mainPath);
       if (activeMainSlidePath === undefined || !slidePath.startsWith(activeMainSlidePath)) {
+        console.log("3")
         return false;
       }
       return true;
@@ -391,6 +400,12 @@ function SwiperService($q, $timeout) {
       slideChangeCallbacks[swiperPath].push({
         callback: slideChangeCallback,
         id: id});
+    },
+    registerSlideActiveCallback: function(slideActiveCallback, slidePath) {
+      slideActiveCallbacks[slidePath] = slideActiveCallback;
+    },
+    unregisterSlideActiveCallback: function(slidePath) {
+      if (slideActiveCallbacks[slidePath]) delete slideActiveCallbacks[slidePath];
     },
     getSwiperSlides: function(swiperPath) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) return swipers[swiperPath].swiper.slides;

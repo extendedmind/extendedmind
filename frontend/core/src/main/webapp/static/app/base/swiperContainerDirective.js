@@ -24,7 +24,6 @@
       swiperType: '@swiperType',
       expectedSlidesFn: '&expectedSlides',
       onlyExternalSwipe: '=?swiperContainerOnlyExternalSwipe',  // TODO unused, remove
-      loop: '=?swiperContainerLoop'
     },
     controller: function($scope, $element) {
       var swiperSlideInfos = [];
@@ -108,7 +107,11 @@
 
       // Registers the path of the slide to the swiper
       // and sets up listeners for element, if needed
-      this.registerSlide = function registerSlide(path, element, index) {
+      this.registerSlide = function registerSlide(path, element, index, duplicate) {
+        if (duplicate){
+          // Registered a duplicate slide, this is a looping swiper
+          $scope.loop = true;
+        }
 
         // For vertical page outerSwiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal

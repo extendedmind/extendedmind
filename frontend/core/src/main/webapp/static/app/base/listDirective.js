@@ -16,16 +16,35 @@
 
  function listDirective() {
   return {
-    require: '?^swiperSlide',
+    require: ['^listContainer', '?^swiperSlide'],
     restrict: 'A',
-    controller: function() {
+    scope: true,
+    controller: function($scope) {
+      this.registerAddActiveCallback = function(callback){
+        $scope.addActiveCallback = callback;
+      }
     },
-    link: function(scope, element, attrs, swiperSlideController) {
-      scope.isAnimationActive = function() {
-        return swiperSlideController ? swiperSlideController.isSlideActive() : true;
-      };
+    link: function(scope, element, attrs, controllers) {
+      function activateListAdd() {
+        if (scope.addActiveCallback) scope.addActiveCallback();
+      }
+      function listActive(){
+        controllers[0].registerActivateAddListItemCallback(activateListAdd);
+      }
+      if (controllers[1]){
+        controllers[1].registerSlideActiveCallback(listActive);
+        if (controllers[1].isSlideActiveByDefault()){
+          listActive();
+        }
+      }else {
+        // List is active as it doesn't have a swiper to begin with
+        listActive();
+      }
+
+      scope.$on('$destroy', function() {
+        if (controllers[1]) controllers[1].unregisterSlideActiveCallback();
+      });
     }
   };
 }
-
 angular.module('em.base').directive('list', listDirective);

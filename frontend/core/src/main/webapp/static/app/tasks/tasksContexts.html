@@ -1,30 +1,32 @@
-<section ng-init="newContext={title:undefined, tagType:'context'}" class="container-content" scroll-to>
-  <h3>contexts</h3>
-  <ul>
-    <li ng-show="contexts.length" ng-repeat="context in contexts">
-      <a href class="click-to-slide" swiper-click="swipeToContext(context)">
-        <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right"></span>
-      </a>
-    </li>
-    <li>
-      <form role="form" class="add-element" ng-submit="callAndRefresh(addContext, newContext)" add-item autocapitalize="none" autocorrect="off">
-        <div class="form-group" editable-field-container="disable">
-          <input type="text" id="contextTitle" class="simple-input" ng-model="newContext.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" editable-field placeholder="add context..."/>
+<div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container>
+  <section ng-init="newContext={title:undefined, tagType:'context'}" class="container-content" scroll-to>
+    <h3>contexts</h3>
+    <ul>
+      <li ng-show="contexts.length" ng-repeat="context in contexts">
+        <a href class="click-to-slide" swiper-click="swipeToContext(context)">
+          <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right"></span>
+        </a>
+      </li>
+      <li>
+        <form role="form" class="add-element" ng-submit="callAndRefresh(addContext, newContext)" add-item autocapitalize="none" autocorrect="off">
+          <div class="form-group" editable-field-container="disable">
+            <input type="text" id="contextTitle" class="simple-input" ng-model="newContext.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" editable-field placeholder="add context..."/>
+          </div>
+        </form>
+      </li>
+      <li ng-if="contexts.length === 0">
+        <div class="instruction-text">
+          <p class="instruction-text-chapter">contexts are<br/><b>task types</b><br/><br/>
+            <span class="instruction-text-chapter-details">(e.g. home, computer,<br/>phone, errands etc.)</span>
+          </p>
         </div>
-      </form>
-    </li>
-    <li ng-if="contexts.length === 0">
-      <div class="instruction-text">
-        <p class="instruction-text-chapter">contexts are<br/><b>task types</b><br/><br/>
-          <span class="instruction-text-chapter-details">(e.g. home, computer,<br/>phone, errands etc.)</span>
-        </p>
-      </div>
-    </li>
-  </ul>
-  <h3 class="arrow-link">
-    <a href class="click-to-slide" swiper-click="swipeToContext()">
-      <span class="link-title">no context</span><span class="icon-arrow-right"></span>
-    </a>
-  </h3>
-</section>
-<footer class="container-content--after" master-footer="getFeatureMap('tasks')" master-footer-add-item="addContext({})"></footer>
+      </li>
+    </ul>
+    <h3 class="arrow-link">
+      <a href class="click-to-slide" swiper-click="swipeToContext()">
+        <span class="link-title">no context</span><span class="icon-arrow-right"></span>
+      </a>
+    </h3>
+  </section>
+  <footer class="container-content--after" list-footer="getFeatureMap('tasks')" list-footer-add-item="addContext({})"></footer>
+</div>

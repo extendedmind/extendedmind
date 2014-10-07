@@ -14,10 +14,44 @@
  */
  'use strict';
 
- function addItemDirective(packaging) {
+ function listItemAddDirective() {
   return {
     restrict: 'A',
-    link: function postLink(scope, element) {
+    require: '^list',
+    templateUrl: 'static/app/base/listItemAdd.html',
+    compile: function(){
+      return {
+        pre: function(scope, element, attrs, listController) {
+
+          // Use this instead of ng-show to get focus() to work. With ng-show this doesn't work
+          // as ng-show has not been evaluated before we reach the callback.
+          element[0].style.display = "none";
+
+          scope.registerAddItemFocusCallback = function(focusCallback){
+            listController.registerAddActiveCallback(function(){
+              element[0].style.display = "initial";
+              focusCallback();
+            })
+          }
+
+          var addItemBlurCallback;
+          scope.registerAddItemBlurCallback = function(callback){
+           addItemBlurCallback = callback;
+          }
+
+          scope.textareaBlurred = function(){
+            scope.addVisible = false;
+            element[0].style.display = "none";
+            if (addItemBlurCallback) addItemBlurCallback();
+          }
+        }
+      };
+    },
+    link: function(scope, element, attrs, listController) {
+
+
+
+      /* REFERENCE CODE FROM addItemDirective!
 
       var scrollToAddItem = false;
       function accordionLastElementCallback() {
@@ -70,9 +104,9 @@
             scope.setOnboardingPhase('secondItemAdded');
           }
         }
-      };
+      };*/
+
     }
   };
 }
-addItemDirective['$inject'] = ['packaging'];
-angular.module('em.base').directive('addItem', addItemDirective);
+angular.module('em.base').directive('listItemAdd', listItemAddDirective);

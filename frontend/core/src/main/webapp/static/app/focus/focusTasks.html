@@ -1,9 +1,9 @@
-<div ng-if="isFeatureActive('focus')"class="container-content--outer" drawer-handle="left">
+<div ng-if="isFeatureActive('focus')" class="container-content--outer" list-container drawer-handle="left">
   <section class="container-content" ng-controller="DatesController">
 
-    <div class="swiper-container" swiper-container="datepicker" swiper-type="main" expected-slides="5" swiper-container-loop="true" data-snap-ignore="true">
+    <div class="swiper-container" swiper-container="datepicker" swiper-type="main" expected-slides="5" data-snap-ignore="true">
       <div class="swiper-wrapper">
-        <div class="swiper-slide group-link" swiper-slide="datepicker/right" slide-index="0">
+        <div class="swiper-slide group-link" swiper-slide="datepicker/right" slide-index="0" swiper-slide-duplicate="true">
           <a href ng-click="dateClicked(datepickerWeeks[2][0].yyyymmdd)">{{datepickerWeeks[2][0].displayDateShort}}</a>
           <a href ng-click="dateClicked(datepickerWeeks[2][1].yyyymmdd)">{{datepickerWeeks[2][1].displayDateShort}}</a>
           <a href ng-click="dateClicked(datepickerWeeks[2][2].yyyymmdd)">{{datepickerWeeks[2][2].displayDateShort}}</a>
@@ -12,7 +12,7 @@
           <a href ng-click="dateClicked(datepickerWeeks[2][5].yyyymmdd)">{{datepickerWeeks[2][5].displayDateShort}}</a>
           <a href ng-click="dateClicked(datepickerWeeks[2][6].yyyymmdd)">{{datepickerWeeks[2][6].displayDateShort}}</a>
         </div>
-        <div class="swiper-slide group-link" swiper-slide="datepicker/first" slide-index="1">
+        <div class="swiper-slide group-link" swiper-slide="datepicker/first" slide-index="1" swiper-slide-loop-start="true">
           <a href ng-click="dateClicked(datepickerWeeks[0][0].yyyymmdd)">{{datepickerWeeks[0][0].displayDateShort}}</a>
           <a href ng-click="dateClicked(datepickerWeeks[0][1].yyyymmdd)">{{datepickerWeeks[0][1].displayDateShort}}</a>
           <a href ng-click="dateClicked(datepickerWeeks[0][2].yyyymmdd)">{{datepickerWeeks[0][2].displayDateShort}}</a>
@@ -39,7 +39,7 @@
           <a href ng-click="dateClicked(datepickerWeeks[2][5].yyyymmdd)">{{datepickerWeeks[2][5].displayDateShort}}</a>
           <a href ng-click="dateClicked(datepickerWeeks[2][6].yyyymmdd)">{{datepickerWeeks[2][6].displayDateShort}}</a>
         </div>
-        <div class="swiper-slide group-link" swiper-slide="datepicker/first" slide-index="4">
+        <div class="swiper-slide group-link" swiper-slide="datepicker/first" slide-index="4" swiper-slide-duplicate="true">
           <a href ng-click="dateClicked(datepickerWeeks[0][0].yyyymmdd)">{{datepickerWeeks[0][0].displayDateShort}}</a>
           <a href ng-click="dateClicked(datepickerWeeks[0][1].yyyymmdd)">{{datepickerWeeks[0][1].displayDateShort}}</a>
           <a href ng-click="dateClicked(datepickerWeeks[0][2].yyyymmdd)">{{datepickerWeeks[0][2].displayDateShort}}</a>
@@ -51,24 +51,26 @@
       </div>
     </div>
 
-    <div class="swiper-container" swiper-container="focus/tasks" swiper-type="page" expected-slides="5" swiper-container-loop="true">
+    <div class="swiper-container" swiper-container="focus/tasks" swiper-type="page" expected-slides="5">
       <div class="swiper-wrapper">
 
-        <div class="swiper-slide" swiper-slide="focus/tasks/right" slide-index="0">
+        <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0" swiper-slide-duplicate="true">
           <div class="container-content" list>
             <h1>{{daySlides[2].info}}</h1>
             <div ng-repeat="task in tasks | tasksByDate:daySlides[2].info" list-item="task" list-item-has-checkbox="true">
               {{task.title}}
             </div>
+            <div list-item-add></div>
           </div>
         </div>
 
-        <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1">
+        <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1" swiper-slide-loop-start="true">
           <div class="container-content" list>
             <h1>{{daySlides[0].info}}</h1>
             <div ng-repeat="task in tasks | tasksByDate:daySlides[0].info" list-item="task" list-item-has-checkbox="true">
               {{task.title}}
             </div>
+            <div list-item-add></div>
           </div>
         </div>
 
@@ -78,6 +80,7 @@
             <div ng-repeat="task in tasks | tasksByDate:daySlides[1].info" list-item="task" list-item-has-checkbox="true">
               {{task.title}}
             </div>
+            <div list-item-add></div>
           </div>
         </div>
 
@@ -87,21 +90,22 @@
             <div ng-repeat="task in tasks | tasksByDate:daySlides[2].info" list-item="task" list-item-has-checkbox="true">
               {{task.title}}
             </div>
+            <div list-item-add></div>
           </div>
         </div>
 
-        <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="4">
+        <div class="swiper-slide" swiper-slide="focus/tasks/leftDuplicate" slide-index="4" swiper-slide-duplicate="true">
           <div class="container-content" list>
             <h1>{{daySlides[0].info}}</h1>
             <div ng-repeat="task in tasks | tasksByDate:daySlides[0].info" list-item="task" list-item-has-checkbox="true">
               {{task.title}}
             </div>
+            <div list-item-add></div>
           </div>
         </div>
 
       </div>
     </div>
   </section>
-  <footer class="container-content--after" master-footer="getFeatureMap('focus')"
-  master-footer-add-item="addTask({transientProperties: {date:TODOgetActiveDate()}})"></footer>
+  <footer class="container-content--after" list-footer="getFeatureMap('focus')"></footer>
 </div>

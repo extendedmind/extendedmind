@@ -14,22 +14,25 @@
  */
  'use strict';
 
- function editorTitlebarTextInputDirective($document) {
+ function autoFocusDirective($document) {
   return {
     restrict: 'A',
+    scope: {
+      registerFocusCallbackFn: '&autoFocus',
+      registerBlurCallbackFn: '&autoFocusBlur'
+    },
     link: function postLink(scope, element) {
-
-      scope.registerTitleBarInputFocusCallback(titleBarInputFocus);
-      function titleBarInputFocus() {
+      scope.registerFocusCallbackFn({fn: focus});
+      function focus() {
         // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
         if ($document[0].activeElement !== element[0]) element[0].focus();
       }
-      scope.registerTitleBarInputBlurCallback(titleBarInputBlur);
-      function titleBarInputBlur() {
+      scope.registerBlurCallbackFn({fn: blur});
+      function blur() {
         if ($document[0].activeElement === element[0]) element[0].blur();
       }
     }
   };
 }
-editorTitlebarTextInputDirective['$inject'] = ['$document'];
-angular.module('em.main').directive('editorTitlebarTextInput', editorTitlebarTextInputDirective);
+autoFocusDirective['$inject'] = ['$document'];
+angular.module('common').directive('autoFocus', autoFocusDirective);

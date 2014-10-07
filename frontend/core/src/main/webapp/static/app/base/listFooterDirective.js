@@ -14,20 +14,24 @@
  */
  'use strict';
 
- function masterFooterDirective() {
+ function listFooterDirective() {
   return {
-    require: '?^swiperSlide',
+    require: ['^listContainer', '?^swiperSlide'],
     restrict: 'A',
-    templateUrl: 'static/app/main/masterFooter.html',
+    templateUrl: 'static/app/base/listFooter.html',
     scope: {
-      featureInfo: '=masterFooter',
-      addItemFn: '&masterFooterAddItem',
+      featureInfo: '=listFooter'
     },
-    link: function(scope, element, attrs, swiperSlideController){
+    link: function(scope, element, attrs, controllers){
 
-      if (swiperSlideController){
-        var currentSlidePath = swiperSlideController.getSlidePath();
-        scope.navigationAction = swiperSlideController.swipeToSibling;
+      scope.addItem = function(){
+        controllers[0].activateAddListItem();
+      }
+
+
+      if (controllers[1]){
+        var currentSlidePath = controllers[1].getSlidePath();
+        scope.navigationAction = controllers[1].swipeToSibling;
 
         if (scope.featureInfo.slides.left.path === currentSlidePath){
           // Leftmost slide
@@ -64,4 +68,4 @@
     }
   };
 }
-angular.module('em.base').directive('masterFooter', masterFooterDirective);
+angular.module('em.base').directive('listFooter', listFooterDirective);

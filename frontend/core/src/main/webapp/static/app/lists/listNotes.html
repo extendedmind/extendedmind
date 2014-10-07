@@ -5,6 +5,6 @@
       <div ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}" ng-bind="note.title"></div>
     </div>
   </section>
-  <footer class="container-content--after" master-footer="getFeatureMap('list')"
-  master-footer-add-item="addNote({transientProperties: {list:list.uuid}})"></footer>
+  <footer class="container-content--after" list-footer="getFeatureMap('list')"
+  list-footer-add-item="addNote({transientProperties: {list:list.uuid}})"></footer>
 </div>

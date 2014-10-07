@@ -1,6 +1,8 @@
-<section class="container-content" drawer-handle="left">
-  <h2 ng-bind="items.length + ' items'"></h2>
-  <div ng-repeat="item in items">{{item.title}}</div>
-</section>
-<footer class="container-content--after" master-footer="getFeatureMap('inbox')"
-master-footer-add-item="addItem({})"></footer>
+<div class="container-fluid--inner" list-container drawer-handle="left">
+  <section class="container-content" list>
+    <h2 ng-bind="items.length + ' items'"></h2>
+    <div list-item-add></div>
+    <div ng-repeat="item in items">{{item.title}}</div>
+  </section>
+  <footer class="container-content--after" list-footer="getFeatureMap('inbox')"></footer>
+</div>

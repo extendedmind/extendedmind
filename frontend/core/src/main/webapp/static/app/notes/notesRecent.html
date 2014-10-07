@@ -2,5 +2,5 @@
   <h2>recent</h2>
   <div ng-repeat="note in allNotes | orderBy:'modified':true | limitTo: getRecentNotesLimit()" ng-bind="note.title">
 </section>
-<footer class="container-content--after" master-footer="getFeatureMap('notes')"
-master-footer-add-item="addNote({})"></footer>
+<footer class="container-content--after" list-footer="getFeatureMap('notes')"
+list-footer-add-item="addNote({})"></footer>

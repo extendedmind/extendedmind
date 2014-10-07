@@ -1,8 +1,8 @@
-<div ng-if="isFeatureActive('focus')"class="container-content--outer">
+<div ng-if="isFeatureActive('focus')" class="container-content--outer" list-container>
   <section class="container-content" list>
     <h2>favorite</h2>
     <div class="row" ng-repeat="note in notes" list-item="note" list-item-has-checkbox="false"></div>
+    <div list-item-add></div>
   </section>
-  <footer class="container-content--after" master-footer="getFeatureMap('focus')"
-  master-footer-add-item="addTask({transientProperties: {favorited:true}})"></footer>
+  <footer class="container-content--after" list-footer="getFeatureMap('focus')"></footer>
 </div>

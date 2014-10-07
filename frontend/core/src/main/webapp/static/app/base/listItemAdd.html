@@ -1,0 +1,16 @@
+<form role="form" class="group-mixed swiper-no-swiping" ng-submit="callAndRefresh(addSubtask, subtask)"
+add-item data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container="disable">
+
+  <div class="group-mixed--left">
+    <input ng-if="leftActionType === 'checkbox'" type="checkbox" ng-checked="leftActionChecked"
+    swiper-click="toggleLeftCheckbox(item)" ng-class="leftActionClass" icon-checkbox>
+  </div>
+  <div class="group-mixed--middle">
+    <textarea id="listItemAddTextarea" ng-model="subtask.title" ng-blur="textareaBlurred()"
+    editable-field placeholder="add task..." maxlength="128" auto-focus="registerAddItemFocusCallback(fn)"
+    auto-focus-blur="registerAddItemBlurCallback(fn)"></textarea>
+  </div>
+  <div class="group-mixed--right">
+    <a href>right</a>
+  </div>
+</form>
