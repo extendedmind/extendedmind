@@ -90,10 +90,6 @@
       }
     });
 
-    $routeProvider.when('/entry', {
-      templateUrl: 'static/app/entry/entrySlides.html'
-    });
-
     $routeProvider.when('/my', {
       templateUrl: 'static/app/main/main.html',
       resolve: {

@@ -14,7 +14,8 @@
  */
  'use strict';
 
- function rootViewDirective($injector, $rootScope, $window, AnalyticsService, BackendClientService, ModalService, UUIDService, UserSessionService, packaging) {
+ function rootViewDirective($injector, $rootScope, $window, AnalyticsService, BackendClientService,
+                            ModalService, UISessionService, UUIDService, UserSessionService, packaging) {
 
   return {
     restrict: 'A',
@@ -71,11 +72,10 @@
       };
 
       var exiting = false;
-      function redirectToEntry() {
+      $rootScope.redirectToEntry = function() {
         exiting = true;
-        var email = UserSessionService.getEmail();
+        UISessionService.reset();
         UserSessionService.clearUser();
-        UserSessionService.setEmail(email);
         // $location can not be injected directly presumably because this directive
         // is defined above ng-view
         var $location = $injector.get('$location');
@@ -118,12 +118,12 @@
         } else if (exception.type === 'http' && exception.status === 403) {
           // Redirect thrown 403 Forbidden exception to the login page
           AnalyticsService.error('forbidden', JSON.stringify(exception));
-          redirectToEntry();
+          $rootScope.redirectToEntry();
         } else if (exception.type === 'session') {
           if (!exiting) {
             // Redirect session errors to the login page
             AnalyticsService.error('session', exception.description);
-            redirectToEntry();
+            $rootScope.redirectToEntry();
           }
         } else {
           AnalyticsService.error('unexpected', JSON.stringify(exception));
@@ -136,14 +136,6 @@
 
       // Clean up listening by executing the variable
       $scope.$on('$destroy', unbindEmException);
-
-      // DEBUG //
-      $scope.DEBUG_toggleKeyboard = function(){
-        packaging = 'devel-cordova';
-        $rootScope.softKeyboard.height = $rootScope.softKeyboard.height === 216 ? 0 : 216;
-        if (!$scope.$$phase) $scope.$apply();
-      };
-      // DEBUG //
     },
     link: function postLink(scope) {
 
@@ -242,5 +234,6 @@
 }
 
 rootViewDirective['$inject'] = ['$injector', '$rootScope', '$window',
-'AnalyticsService', 'BackendClientService', 'ModalService', 'UUIDService', 'UserSessionService', 'packaging'];
+'AnalyticsService', 'BackendClientService', 'ModalService', 'UISessionService', 'UUIDService',
+'UserSessionService', 'packaging'];
 angular.module('em.root').directive('rootView', rootViewDirective);

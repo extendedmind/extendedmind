@@ -22,7 +22,7 @@
       sessionStorage.setItem('activeUUID', uuid);
     },
     setCollectives: function(collectives) {
-      sessionStorage.setItem('collectives', JSON.stringify(collectives));
+      if (collectives) sessionStorage.setItem('collectives', JSON.stringify(collectives));
     },
     setEmail: function(email) {
       sessionStorage.setItem('email', email);
@@ -60,7 +60,8 @@
       return sessionStorage.getItem('activeUUID');
     },
     getCollectives: function() {
-      return JSON.parse(sessionStorage.getItem('collectives'));
+      var collectives = sessionStorage.getItem('collectives');
+      if (collectives) JSON.parse(collectives);
     },
     getEmail: function() {
       return sessionStorage.getItem('email');

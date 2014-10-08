@@ -14,48 +14,23 @@
  */
  'use strict';
 
- function AuthenticationService($location, $q, $rootScope, BackendClientService, UserSessionService, packaging) {
+ function AuthenticationService($location, $q, $rootScope, BackendClientService,
+                                UserSessionService, packaging) {
 
-  var acceptRegex = /\/accept/;
   var authenticateRegex = /authenticate/;
   var emailRegex = /\?email=.+/;
-  var inviteRegex = /invite\//;
-  var requestRegex = /request/;
   var passwordRegex = /password/;
 
-  var acceptInviteRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    inviteRegex.source +
-    BackendClientService.hexCodeRegex.source +
-    acceptRegex.source +
-    /$/.source
-    ),
-  signUpRegexp = new RegExp(
+  var signUpRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
     /signup/.source +
-    /$/.source
-    ),
-  getInviteRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    inviteRegex.source +
-    BackendClientService.hexCodeRegex.source +
-    emailRegex.source +
     /$/.source
     ),
   postAuthenticateRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
     authenticateRegex.source +
-    /$/.source
-    ),
-  postInviteRequestRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    inviteRegex.source +
-    requestRegex.source +
     /$/.source
     ),
   postForgotPasswordRegexp = new RegExp(
@@ -95,21 +70,7 @@
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
     /password$/.source
-    ),
-  postInviteRequestBypassRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    inviteRegex.source +
-    requestRegex.source +
-    /\//.source +
-    BackendClientService.uuidRegex.source +
-    /\/bypass$/.source),
-  resendInviteRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    inviteRegex.source +
-    BackendClientService.uuidRegex.source +
-    /\/resend$/.source);
+    );
 
   // Register refresh credentials callback to backend
   BackendClientService.registerRefreshCredentialsCallback(verifyAndUpdateAuthentication);
@@ -187,7 +148,9 @@
           if (UserSessionService.isOfflineEnabled() && !online) {
             // Push token swap to be the first thing that is done
             // when online connection is up
-            BackendClientService.postPrimary('/api/authenticate', postAuthenticateRegexp, getAuthenticatePayload(true));
+            BackendClientService.postPrimary('/api/authenticate',
+                                             postAuthenticateRegexp,
+                                             getAuthenticatePayload(true));
             validateAuthentication();
           } else {
             // Online
@@ -206,7 +169,11 @@
                   promise: deferredAuthentication
                 });
               }else {
-                $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
+                $rootScope.$emit('emException',
+                                 {type: 'http',
+                                  status: error.status,
+                                  data: error.data,
+                                  url: error.config.url});
               }
             });
           }
@@ -224,156 +191,25 @@
     return deferredAuthentication.promise;
   }
 
-  function checkEmailStatus(inviteRequestResponse, user) {
-    user.email = sanitizeEmail(user.email);
-    // Redirect user with new invite request to waiting page, then show queue.
-    if (inviteRequestResponse.data.resultType === 'newInviteRequest') {
-      redirectToInviteWaitingPage();
-    }
-    // Redirect user with existing invite request to waiting page, then show queue.
-    else if (inviteRequestResponse.data.resultType === 'inviteRequest') {
-      redirectToInviteWaitingPage();
-    }
-    // Redirect invited user either to sign up page or to to waiting page
-    else if (inviteRequestResponse.data.resultType === 'invite') {
-      if (inviteRequestResponse.data.code) {
-        // Code given directly, go to sign up
-        $location.path('/accept/' + inviteRequestResponse.data.code);
-        $location.search({
-          email: user.email,
-          bypass: true
-        });
+  return {
+    verifyAndUpdateAuthentication: function() {
+      if (UserSessionService.getLatestModified(UserSessionService.getUserUUID()) !== undefined) {
+        return verifyAndUpdateAuthentication();
       } else {
-        $location.path('/waiting');
-        $location.search({
-          uuid: inviteRequestResponse.data.result.uuid,
-          email: user.email,
-          invite: true
-        });
-      }
-    }
-    // Redirect existing user to front page.
-    else if (inviteRequestResponse.data.resultType === 'user') {
-      $location.path('/login');
-    // Redirect coupon to waiting page with possibility to give coupon
-  } else if (inviteRequestResponse.data.resultType === 'inviteCoupon') {
-    $location.path('/waiting');
-    $location.search({
-      uuid: inviteRequestResponse.data.result.uuid,
-      queueNumber: inviteRequestResponse.data.queueNumber,
-      email: user.email,
-      coupon: true
-    });
-  }
-    // Accept invite directly by bypassing queue
-    else if (inviteRequestResponse.data.resultType === 'inviteAutomatic') {
-      postInviteRequestBypass(inviteRequestResponse.data.result.uuid, user.email).then(
-        function(inviteResponse) {
-          if (inviteResponse.data) {
-            $location.path('/accept/' + inviteResponse.data.code);
-            $location.search({
-              email: user.email,
-              bypass: true
-            });
-          }
-        }, function(/*error*/) {
-          return false;
-        });
-    // Redirect user to sign up
-  } else if (inviteRequestResponse.data.resultType === 'signUp') {
-    $location.path('/signup');
-  }
-  function redirectToInviteWaitingPage() {
-    $location.path('/waiting');
-    $location.search({
-      uuid: inviteRequestResponse.data.result.uuid,
-      queueNumber: inviteRequestResponse.data.queueNumber,
-      request: true
-    });
-  }
-  return true;
-}
-
-function postInviteRequestBypass(uuid, email, coupon) {
-  var payload = {email: sanitizeEmail(email)};
-  if (coupon) {
-    payload.inviteCoupon = coupon;
-  }
-  return BackendClientService.postOnline(
-    '/api/invite/request/' + uuid + '/bypass',
-    postInviteRequestBypassRegexp,
-    payload,
-    true,
-    [0, 400, 404, 502]);
-}
-
-return {
-  verifyAndUpdateAuthentication: function() {
-    if (UserSessionService.getLatestModified(UserSessionService.getUserUUID()) !== undefined) {
-      return verifyAndUpdateAuthentication();
-    } else {
-        // When there is no data in-memory, this needs to be done online
-        return verifyAndUpdateAuthentication(true);
-      }
-    },
-    checkEmailStatus: function(response, user) {
-      return checkEmailStatus(response, user);
-    },
-    checkAndRedirectUser: function() {
-      // Existing user
-      if (UserSessionService.getUserUUID()) {
-        $location.path('/my');
-      } else if (UserSessionService.getEmail() && !UserSessionService.getUserUUID()) {
-        BackendClientService.postOnline(
-          '/api/invite/request',
-          postInviteRequestRegexp,
-          {email: sanitizeEmail(UserSessionService.getEmail()),
-           bypass: true},
-           true)
-        .then(function(response) {
-          checkEmailStatus(response, {email: sanitizeEmail(UserSessionService.getEmail())});
-        });
-      } else {
-        $location.path('/launch');
-      }
+          // When there is no data in-memory, this needs to be done online
+          return verifyAndUpdateAuthentication(true);
+        }
     },
     login: function(user) {
       var remember = user.remember || false;
       BackendClientService.setUsernamePassword(user.username, user.password);
       return authenticate(remember).then(function(authenticateResponse) {
-        var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse.data, user.username);
+        var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse.data,
+                                                                               user.username);
         // Update backend client to use token authentication instead of username/password
         BackendClientService.setCredentials(encodedCredentials);
         return authenticateResponse;
       });
-    },
-    getInvite: function(inviteResponseCode, email) {
-      return BackendClientService.get('/api/invite/' + inviteResponseCode + '?email=' + sanitizeEmail(email),
-        getInviteRegexp, true);
-    },
-    postInviteRequest: function(email) {
-      return BackendClientService.postOnline(
-        '/api/invite/request',
-        postInviteRequestRegexp,
-        {email: sanitizeEmail(email),
-         bypass: true},
-         true,
-         [0, 400, 404, 502])
-      .then(function(inviteRequestResponse) {
-        UserSessionService.setEmail(sanitizeEmail(email));
-        return inviteRequestResponse;
-      });
-    },
-    postInviteRequestBypass: function(uuid, email, coupon) {
-      return postInviteRequestBypass(uuid, sanitizeEmail(email), coupon);
-    },
-    resendInvite: function(uuid, email) {
-      return BackendClientService.postOnline('/api/invite/' + uuid + '/resend',
-        resendInviteRegexp, {email: sanitizeEmail(email)}, true);
-    },
-    acceptInvite: function(inviteResponseCode, data) {
-      return BackendClientService.postOnline('/api/invite/' + inviteResponseCode + '/accept',
-        acceptInviteRegexp, data, true, [0, 400, 404, 502]);
     },
     signUp: function(data) {
       return BackendClientService.postOnline('/api/signup',
@@ -413,18 +249,14 @@ return {
         currentPassword);
     },
     // Regular expressions for account requests
-    acceptInviteRegex: acceptInviteRegexp,
-    getInviteRegex: getInviteRegexp,
     postAuthenticateRegex: postAuthenticateRegexp,
-    postInviteRequestRegex: postInviteRequestRegexp,
     postForgotPasswordRegex: postForgotPasswordRegexp,
     getPasswordResetExpiresRegex: getPasswordResetExpiresRegexp,
     postResetPasswordRegex: postResetPasswordRegexp,
     putChangePasswordRegex: putChangePasswordRegexp,
-    postVerifyEmailRegex: postVerifyEmailRegexp,
-    postInviteRequestBypassRegex: postInviteRequestBypassRegexp,
-    resendInviteRegex: resendInviteRegexp
+    postVerifyEmailRegex: postVerifyEmailRegexp
   };
 }
-AuthenticationService['$inject'] = ['$location', '$q', '$rootScope', 'BackendClientService', 'UserSessionService', 'packaging'];
+AuthenticationService['$inject'] = ['$location', '$q', '$rootScope', 'BackendClientService',
+                                    'UserSessionService', 'packaging'];
 angular.module('em.base').factory('AuthenticationService', AuthenticationService);

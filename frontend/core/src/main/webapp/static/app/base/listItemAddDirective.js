@@ -40,7 +40,6 @@
           }
 
           scope.textareaBlurred = function(){
-            scope.addVisible = false;
             element[0].style.display = "none";
             if (addItemBlurCallback) addItemBlurCallback();
           }

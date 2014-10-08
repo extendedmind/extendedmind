@@ -69,11 +69,10 @@
   }
 
   // LOGOUT
+
   $scope.logOut = function logOut() {
     UserService.logout().then(function() {
-      $location.path('/');
-      UserSessionService.clearUser();
-      UISessionService.reset();
+      $rootScope.redirectToEntry();
     });
   };
 

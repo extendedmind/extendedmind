@@ -22,21 +22,23 @@
 
   $scope.getActiveOwnerName = function getActiveOwnerName() {
     var activeUUID = UISessionService.getActiveUUID();
-    var ownerName;
-    if (activeUUID === UserSessionService.getUserUUID()) {
-      ownerName = UserSessionService.getEmail();
-    } else {
-      angular.forEach($scope.collectives, function(collective, uuid) {
-        if (activeUUID === uuid) {
-          ownerName = collective[0];
-        }
-      });
+      if (activeUUID){
+      var ownerName;
+      if (activeUUID === UserSessionService.getUserUUID()) {
+        ownerName = UserSessionService.getEmail();
+      } else {
+        angular.forEach($scope.collectives, function(collective, uuid) {
+          if (activeUUID === uuid) {
+            ownerName = collective[0];
+          }
+        });
+      }
+      var maximumOwnerNameLength = 20;
+      if (ownerName.length > maximumOwnerNameLength) {
+        return ownerName.substring(0, maximumOwnerNameLength) + '...';
+      }
+      return ownerName;
     }
-    var maximumOwnerNameLength = 20;
-    if (ownerName.length > maximumOwnerNameLength) {
-      return ownerName.substring(0, maximumOwnerNameLength) + '...';
-    }
-    return ownerName;
   };
 
   $scope.getFeatureClass = function getFeatureClass(feature) {
@@ -64,17 +66,6 @@
     var state = UISessionService.getUIState();
     UISessionService.setUIStateParameter('listsVisible',
       !state['listsVisible']);
-  };
-
-  $scope.isListsVisible = function isListsVisible() {
-    var state = UISessionService.getUIState();
-    if (state) {
-      return state.listsVisible;
-    } else {
-      // Default to true
-      UISessionService.setUIStateParameter('listsVisible', true);
-      return true;
-    }
   };
 
   $scope.getListTitleText = function getListTitleText(list) {

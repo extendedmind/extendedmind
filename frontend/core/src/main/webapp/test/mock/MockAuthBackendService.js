@@ -17,13 +17,6 @@
 
 function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService) {
 
-  function mockAcceptInvite() {
-    $httpBackend.whenPOST(AuthenticationService.acceptInviteRegex).respond(function() {
-      var acceptInviteResponse = getJSONFixture('acceptInviteResponse.json');
-      return [200, acceptInviteResponse];
-    });
-  }
-
   function mockAuthenticate(expectResponse){
     $httpBackend.whenPOST(AuthenticationService.postAuthenticateRegex)
     .respond(function(method, url, data, headers) {
@@ -36,67 +29,6 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
         authenticateResponse.replaceable = now.getTime() + 1000*60*60*24*7;
       }
       return expectResponse(method, url, data, headers, authenticateResponse);
-    });
-  }
-
-  function mockGetInvite(){
-    $httpBackend.whenGET(AuthenticationService.getInviteRegex).respond(function() {
-      var inviteResponse = getJSONFixture('inviteResponse.json');
-      return [200, inviteResponse];
-    });
-  }
-
-  function mockPostInviteRequest() {
-    $httpBackend.whenPOST(AuthenticationService.postInviteRequestRegex).respond(function(method, url, data) {
-      var inviteRequestResponse = getJSONFixture('inviteRequestResponse.json');
-      // Existing user
-      var parsedData = JSON.parse(data);
-      if (parsedData.email === 'jp@ext.md' || parsedData.email === 'timo@ext.md') {
-        inviteRequestResponse = {
-          resultType: 'user'
-        };
-      }
-      // Invited user
-      else if (parsedData.email === 'info@ext.md') {
-        inviteRequestResponse.resultType = 'invite';
-      }
-      // Invite request
-      else if (parsedData.email === 'example@example.com') {
-        inviteRequestResponse = {resultType: 'signUp'};
-      }
-      else if (parsedData.email === 'coupon@example.com') {
-        inviteRequestResponse.resultType = 'inviteCoupon';
-      }
-      else if (parsedData.email === 'automatic@example.com') {
-        inviteRequestResponse.resultType = 'inviteAutomatic';
-      }
-      else if (parsedData.email === 'test@ext.md') {
-        inviteRequestResponse.resultType = 'inviteRequest';
-      }
-      // New invite
-      else {
-        inviteRequestResponse.resultType = 'newInviteRequest';
-      }
-      return [200, inviteRequestResponse];
-    });
-  }
-
-
-  function mockPostInviteRequestBypass() {
-    $httpBackend.whenPOST(AuthenticationService.postInviteRequestBypassRegex).respond(function(method, url, data) {
-      var inviteResponse = getJSONFixture('inviteResponse.json');
-      var parsedData = JSON.parse(data);
-      if (parsedData.coupon === '1234') {
-        return [400, {}];
-      }
-      return [200, inviteResponse];
-    });
-  }
-
-  function mockResendInvite() {
-    $httpBackend.whenPOST(AuthenticationService.resendInviteRegex).respond(function(method, url, data) {
-      var resendInviteResponse = getJSONFixture('resendInviteResponse.json');
-      return [200, resendInviteResponse];
     });
   }
 
@@ -148,12 +80,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
 
   return {
     mockAuthBackend: function(expectResponse) {
-      mockAcceptInvite();
       mockAuthenticate(expectResponse);
-      mockGetInvite();
-      mockPostInviteRequest();
-      mockPostInviteRequestBypass();
-      mockResendInvite();
       mockPostForgotPassword();
       mockGetPasswordResetExpires(expectResponse);
       mockPostResetPassword(expectResponse);
