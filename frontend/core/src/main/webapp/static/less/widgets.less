@@ -187,6 +187,9 @@ TODO: Example needed
 // 1. Remove borders.
 // 2. Remove outline.
 // 3. Add some padding value to make calendar obey window width.
+// 4. Explicitly set box-sizing if Pikaday is used in some environment that sets box-sizing to something
+//    other than border-box.
+//    See. https://github.com/dbushell/Pikaday/commit/ee4d064769e66315dcb2fe33783588c6feb14cd0
 
 // TODO: add height to button
 .pika-button {
@@ -196,6 +199,7 @@ TODO: Example needed
   width: 100%;
   font-size: @size-font-small;
   background-color: white;
+  // box-sizing: border-box; // [4]
 }
 
 // 1. Highlight today with border.
