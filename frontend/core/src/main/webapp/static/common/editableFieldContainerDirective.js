@@ -14,9 +14,10 @@
  */
  'use strict';
 
- function editableFieldContainerDirective() {
+ function editableFieldContainerDirective($parse) {
   return {
     restrict: 'A',
+    require: '^?editableFieldBackdrop',
     controller: function($scope, $element, $attrs) {
       var undisableBackdrop = false;
       var backdropWasDisabled = false;
@@ -51,7 +52,29 @@
       $scope.$on('$destroy', function() {
         if ($scope.hideBackdrop) $scope.hideBackdrop();
       });
+    },
+    link: function postLink(scope, element, attrs, backdropController) {
+      function clickedContainer() {
+        if (backdropController) backdropController.setEditableFieldClicked(element[0]);
+      }
+
+      if (attrs.editableFieldContainer === 'auto' && backdropController) {
+        var clickElsewhereFn;
+        if (attrs.editableFieldContainerClickElsewhere)
+          clickElsewhereFn = $parse(attrs.editableFieldContainerClickElsewhere).bind(undefined, scope);
+
+        backdropController.registerClickElsewhere(element[0], clickElsewhereFn);
+        element[0].addEventListener('click', clickedContainer, false);
+      }
+
+      scope.$on('$destroy', function() {
+        if (attrs.editableFieldContainer === 'auto' && backdropController) {
+          element[0].removeEventListener('click', clickedContainer, false);
+          backdropController.unregisterClickElsewhere(element[0]);
+        }
+      });
     }
   };
 }
+editableFieldContainerDirective['$inject'] = ['$parse'];
 angular.module('common').directive('editableFieldContainer', editableFieldContainerDirective);

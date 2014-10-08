@@ -210,8 +210,12 @@
     return $scope.getTaskDate(task);
   };
 
-  $scope.closeCalendarAndCall = function(itemAction, item, newItemProperty) {
+  $scope.closeCalendar = function() {
     $scope.calendarOpen = false;
+  };
+
+  $scope.closeCalendarAndCall = function(itemAction, item, newItemProperty) {
+    $scope.closeCalendar();
     itemAction(item, newItemProperty);
   };
 
