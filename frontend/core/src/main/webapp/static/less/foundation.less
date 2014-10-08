@@ -94,6 +94,13 @@ source: http://kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/
 # Reset
 */
 
+// 1. Apply a natural box layout model to all elements. Set explicitly different box-sizing when needed.
+//    See:  http://www.paulirish.com/2012/box-sizing-border-box-ftw/
+//          http://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+* {
+  box-sizing: border-box; // [1]
+}
+
 // 1. Always disable full page scrolling
 // 2. Remove element gray highlight color on WebKit browsers.
 //    See:  http://phonegap-tips.com/articles/essential-phonegap-css-webkit-tap-highlight-color.html
@@ -110,16 +117,6 @@ html {
     height: inherit;  // [1]
     overflow: hidden;
   }
-}
-
-// 1. Apply a natural box layout model to all elements, but allowing components to change.
-//    See:  http://www.paulirish.com/2012/box-sizing-border-box-ftw/
-//          http://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
-html {
-  box-sizing: border-box; // [1]
-}
-*, *:before, *:after {
-  box-sizing: inherit;    // [1]
 }
 
 // Always disable scrollbars

@@ -17,8 +17,7 @@ see: http://www.idangero.us/sliders/swiper/
 TODO: Do we want an example of a swiper in the styleguide?
 */
 
-// 1. Prevent slide flicker during transforms & transitions. See http://stackoverflow.com/a/4674791
-// TODO: Other explanations.
+// TODO: Explanations.
 .swiper-container {
   overflow: hidden;
   -webkit-backface-visibility: hidden;
@@ -27,6 +26,10 @@ TODO: Do we want an example of a swiper in the styleguide?
   -o-backface-visibility: hidden;
   backface-visibility: hidden;
 }
+
+// 1. Prevent slide flicker during transforms & transitions. See http://stackoverflow.com/a/4674791
+// 2. https://github.com/nolimits4web/Swiper/issues/310
+//    https://github.com/nolimits4web/Swiper/issues/855
 .swiper-wrapper {
   -webkit-transition-timing-function: ease-out;
   -moz-transition-timing-function: ease-out;
@@ -38,12 +41,16 @@ TODO: Do we want an example of a swiper in the styleguide?
   -o-transition-property: -o-transform;           // [1]
   -ms-transition-property: -ms-transform;         // [1]
   transition-property: transform;                 // [1]
+  box-sizing: content-box;  // [2]
 }
 
 // 1. Relative position is needed to center children horizontally.
+// 2. https://github.com/nolimits4web/Swiper/issues/310
+//    https://github.com/nolimits4web/Swiper/issues/855
 .swiper-slide {
   position: relative; // [1]
   float: left;
+  box-sizing: content-box;  // [2]
 }
 
 // 1. IE10 Windows Phone 8 Fixes
