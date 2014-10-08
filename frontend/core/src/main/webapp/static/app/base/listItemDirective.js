@@ -27,6 +27,7 @@
       leftAction: '&listItemLeftAction',
       leftActionChecked: '=listItemLeftActionChecked',
       rightIndicatorClass: '=?listItemRightIndicatorClass',
+      listLength: '=listItemLength'
     },
     compile: function(){
       return {
@@ -34,7 +35,7 @@
           if (!attrs.listItemLeftAction) { attrs.listItemLeftAction = 'false'; }
           if (!attrs.leftActionChecked) { attrs.leftActionChecked = 'false'; }
         },
-        post: function(scope, element) {
+        post: function(scope, element, attrs, listController) {
 
           /*
           * Animate checked checkbox here.
@@ -54,6 +55,8 @@
               });
             } else $animate.removeClass(element, 'list-item-completing');
           };
+
+          listController.notifyListLength(scope.listLength);
         }
       };
     }
@@ -69,6 +72,7 @@ angular.module('em.base').directive('listItem', listItemDirective);
 *
 * See: https://docs.angularjs.org/api/ngAnimate
 */
+
 function listItemLeaveAnimation($animate, UISessionService) {
 
   return {
@@ -78,6 +82,11 @@ function listItemLeaveAnimation($animate, UISessionService) {
     *  3  Wait for item leave promise to be fulfilled. Call leaveDone.
     */
     leave: function(element, leaveDone) {
+      if (UISessionService.isLocked('leave')){
+        leaveDone();
+        return;
+      }
+
       // Classes ".ng-leave" and ".ng-leave-active" are present on the element.
       // Because we want to delay animation start we have to use our own animation classes.
 

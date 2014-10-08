@@ -2,7 +2,11 @@
   <section class="container-content" list>
     <h2>recent</h2>
     <div list-item-add></div>
-    <div class="row animate-list-item-leave" ng-repeat="task in tasks | filter:isTaskVisible" list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox" list-item-left-action-checked="task.completed"></div>
+    <div class="row animate-list-item-leave"
+    ng-repeat="task in recentTasks = (tasks | filter:isTaskVisible)
+    | limitTo: currentListLimitTo"
+    list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox"
+    list-item-left-action-checked="task.completed" list-item-length="recentTasks.length"></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('tasks')"></footer>
 </div>

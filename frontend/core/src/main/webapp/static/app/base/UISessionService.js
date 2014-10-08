@@ -16,7 +16,7 @@
  /* global angular */
  'use strict';
 
- function UISessionService($q, $rootScope, LocalStorageService, SessionStorageService) {
+ function UISessionService($q, $rootScope, $timeout, LocalStorageService, SessionStorageService) {
 
   // Map containing states and datas of features per owner
   var featureMap = {};
@@ -31,6 +31,8 @@
   var ownerPrefix = 'my'; // default owner
 
   var deferredActions = [];
+
+  var locks = {};
 
   function removeDeferredAction(type) {
     var deferredActionIndex = deferredActions.findFirstIndexByKeyValue('type', type);
@@ -247,7 +249,7 @@
       }
     },
 
-    // PROMISES
+    // DEFERRED
 
     deferAction: function(type, deferred){
       var deferredAction = deferred;
@@ -279,6 +281,18 @@
       if (deferredAction) deferredAction.deferred.resolve(parameter);
     },
 
+    // LOCKS
+
+    lock: function(type, duration) {
+      locks[type] = true;
+      $timeout(function(){
+        locks[type] = false;
+      },duration);
+    },
+    isLocked: function(type) {
+      return locks[type];
+    },
+
     // CALLBACK REGISTRATION
 
     registerFeatureChangedCallback: function(callback, id) {
@@ -308,5 +322,5 @@
     }
   };
 }
-UISessionService['$inject'] = ['$q', '$rootScope', 'LocalStorageService', 'SessionStorageService'];
+UISessionService['$inject'] = ['$q', '$rootScope', '$timeout', 'LocalStorageService', 'SessionStorageService'];
 angular.module('em.base').factory('UISessionService', UISessionService);
