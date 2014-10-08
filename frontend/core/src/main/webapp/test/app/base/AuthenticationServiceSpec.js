@@ -24,10 +24,9 @@ describe('AuthenticationService', function() {
   // MOCKS
 
   var authenticateResponse = getJSONFixture('authenticateResponse.json');
-  var inviteResponse = getJSONFixture('inviteResponse.json');
-  var acceptInviteResponse = getJSONFixture('acceptInviteResponse.json');
   var changePasswordResponse = getJSONFixture('passwordResponse.json');
-  var inviteRequestResponse;
+  var signUpResponse = getJSONFixture('signUpResponse.json');
+
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
   var MockUserSessionService = {
@@ -114,7 +113,6 @@ describe('AuthenticationService', function() {
 
     spyOn($location, 'path');
     spyOn($location, 'search');
-    inviteRequestResponse = getJSONFixture('inviteRequestResponse.json');
   });
 
   afterEach(function() {
@@ -156,146 +154,11 @@ describe('AuthenticationService', function() {
     expect(MockUserSessionService.setEmail).toHaveBeenCalledWith(user.username);
   });
 
-  it('should post invite request', function() {
-    var email = 'example@example.com';
-    var skipLogStatuses = [0, 400, 404, 502];
-    var postInviteRequestRegex = /^\/api\/invite\/request$/;
-    spyOn(BackendClientService, 'postOnline').andCallThrough();
-    spyOn(MockUserSessionService, 'setEmail');
-
-    $httpBackend.expectPOST('/api/invite/request').respond(200);
-    AuthenticationService.postInviteRequest(email);
-    $httpBackend.flush();
-
-    expect(BackendClientService.postOnline).toHaveBeenCalledWith(
-      '/api/invite/request',
-      postInviteRequestRegex,
-      {email: email, bypass: true},
-      true,
-      skipLogStatuses);
-    expect(MockUserSessionService.setEmail).toHaveBeenCalledWith(email);
-  });
-
-  it('should resolve authenticated user and redirect from \'/\' to \'/my\'', function() {
-    spyOn(MockUserSessionService, 'getUserUUID').andReturn(testOwnerUUID);
-    AuthenticationService.checkAndRedirectUser();
-    expect($location.path).toHaveBeenCalledWith('/my');
-  });
-
-  it('should resolve user with new invite request and redirect from \'/\' to \'/waiting\'', function() {
-    // SETUP
-    inviteRequestResponse.resultType = 'newInviteRequest';
-    spyOn(MockUserSessionService, 'getEmail').andReturn('example@example.com');
-    spyOn(MockUserSessionService, 'getUserUUID').andReturn();
-    var email = MockUserSessionService.getEmail();
-    $httpBackend.expectPOST('/api/invite/request', {email: email, bypass: true}).
-    respond(200, inviteRequestResponse);
-
-    // EXECUTE
-    AuthenticationService.checkAndRedirectUser();
-    $httpBackend.flush();
-
-    expect($location.path).toHaveBeenCalledWith('/waiting');
-    expect($location.search).toHaveBeenCalledWith({
-      uuid: inviteRequestResponse.result.uuid,
-      queueNumber: inviteRequestResponse.queueNumber,
-      request: true
-    });
-  });
-
-  it('should resolve user with existing invite request and redirect from \'/\' to \'/waiting\'', function() {
-    // SETUP
-    inviteRequestResponse.resultType = 'inviteRequest';
-    spyOn(MockUserSessionService, 'getEmail').andReturn('example@example.com');
-    spyOn(MockUserSessionService, 'getUserUUID').andReturn();
-    var email = MockUserSessionService.getEmail();
-    $httpBackend.expectPOST('/api/invite/request', {email: email, bypass: true}).
-    respond(200, inviteRequestResponse);
-
-    // EXECUTE
-    AuthenticationService.checkAndRedirectUser();
-    $httpBackend.flush();
-
-    expect($location.path).toHaveBeenCalledWith('/waiting');
-    expect($location.search).toHaveBeenCalledWith({
-      uuid: inviteRequestResponse.result.uuid,
-      queueNumber: inviteRequestResponse.queueNumber,
-      request: true
-    });
-  });
-
-  it('should resolve invited user and redirect from \'/\' to \'/waiting\'', function() {
-    // SETUP
-    inviteRequestResponse.resultType = 'invite';
-    spyOn(MockUserSessionService, 'getEmail').andReturn('example@example.com');
-    spyOn(MockUserSessionService, 'getUserUUID').andReturn();
-    var email = MockUserSessionService.getEmail();
-    $httpBackend.expectPOST('/api/invite/request', {email: email, bypass: true}).
-    respond(200, inviteRequestResponse);
-
-    // EXECUTE
-    AuthenticationService.checkAndRedirectUser();
-    $httpBackend.flush();
-
-    expect($location.path).toHaveBeenCalledWith('/waiting');
-    expect($location.search).toHaveBeenCalledWith({
-      uuid: inviteRequestResponse.result.uuid,
-      email: email,
-      invite: true
-    });
-  });
-
-  it('should resolve existing not authenticated user and redirect from \'/\' to \'login\'', function() {
-    // SETUP
-    inviteRequestResponse.resultType = 'user';
-    spyOn(MockUserSessionService, 'getEmail').andReturn('example@example.com');
-    spyOn(MockUserSessionService, 'getUserUUID').andReturn();
-    var email = MockUserSessionService.getEmail();
-    $httpBackend.expectPOST('/api/invite/request', {email: email, bypass: true}).
-    respond(200, inviteRequestResponse);
-
-    // EXECUTE
-    AuthenticationService.checkAndRedirectUser();
-    $httpBackend.flush();
-
-    expect($location.path).toHaveBeenCalledWith('/login');
-  });
-
-  it('should resolve fresh session and redirect from \'/\' to \'launch\'', function() {
-    spyOn(MockUserSessionService, 'getEmail').andReturn();
-    spyOn(MockUserSessionService, 'getUserUUID').andReturn();
-    AuthenticationService.checkAndRedirectUser();
-    expect($location.path).toHaveBeenCalledWith('/launch');
-  });
-
-  it('should set email to Web Storage after invite request', function() {
-    var email = 'example@example.com';
-    spyOn(MockUserSessionService, 'setEmail');
-    $httpBackend.expectPOST('/api/invite/request').respond(200);
-    AuthenticationService.postInviteRequest(email);
-    $httpBackend.flush();
-
-    expect(MockUserSessionService.setEmail).toHaveBeenCalledWith(email);
-  });
-
-  it('should get invite', function() {
-    var inviteResponseCode = '6ee80fc23d4b0fee';
-    var email = 'timo@ext.md';
-    var invite;
-    $httpBackend.expectGET('/api/invite/' + inviteResponseCode + '?email=' + email).respond(200, inviteResponse);
-    AuthenticationService.getInvite(inviteResponseCode, email).then(function(response) {
-      invite = response;
-    });
-    expect(invite).toBeUndefined();
-    $httpBackend.flush();
-    expect(invite).toBeDefined();
-  });
-
   it('should sign up', function() {
-    var inviteResponseCode = '123';
     var signUp;
-    $httpBackend.expectPOST('/api/invite/' + inviteResponseCode + '/accept').respond(200, acceptInviteResponse);
-    AuthenticationService.acceptInvite(inviteResponseCode, {email: 'timo@ext.md', password: 'timopwd'}).then(function(response) {
+    $httpBackend.expectPOST('/api/signup').respond(200, signUpResponse);
+    AuthenticationService.signUp({email: 'timo@ext.md', password: 'timopwd', cohort: 123})
+    .then(function(response) {
       signUp = response;
     });
     expect(signUp).toBeUndefined();
