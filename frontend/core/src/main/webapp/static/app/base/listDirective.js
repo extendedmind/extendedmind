@@ -93,7 +93,7 @@
 
         // issue a 500ms lock to prevent leave animation for this digest cycle
         // see listItemDirective => animation
-        UISessionService.lock('leave', 500);
+        UISessionService.lock('leaveAnimation', 500);
       }
 
       function addMoreItemsToBottom(){

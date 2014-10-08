@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function DatesController($q, $rootScope, $scope, DateService, SwiperService) {
+ function DatesController($q, $rootScope, $scope, DateService, SwiperService, UISessionService) {
   var detectDayChangeBuffer = 1000;
   var dayChangeLastCheck;
   var slidePath = 'focus/tasks';
@@ -95,6 +95,11 @@
 
   SwiperService.registerSlideChangeStartCallback(slideChangeStartCallback, 'focus/tasks', 'DatesController');
   function slideChangeStartCallback(direction) {
+
+    // issue a 500ms lock to prevent leave animation for this digest cycle
+    // see listItemDirective => animation
+    UISessionService.lock('leaveAnimation', 500);
+
     // Store offset from old active day because slides can be swiped back and forth
     // before slide change end callback is fired.
     offsetFromOldActiveDay += direction === 'prev' ? -1 : 1;
@@ -375,5 +380,6 @@
   }
 }
 
-DatesController['$inject'] = ['$q', '$rootScope', '$scope', 'DateService', 'SwiperService'];
+DatesController['$inject'] = ['$q', '$rootScope', '$scope', 'DateService', 'SwiperService',
+'UISessionService'];
 angular.module('em.focus').controller('DatesController', DatesController);

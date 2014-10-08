@@ -82,7 +82,7 @@ function listItemLeaveAnimation($animate, UISessionService) {
     *  3  Wait for item leave promise to be fulfilled. Call leaveDone.
     */
     leave: function(element, leaveDone) {
-      if (UISessionService.isLocked('leave')){
+      if (UISessionService.isLocked('leaveAnimation')){
         leaveDone();
         return;
       }

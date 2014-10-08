@@ -20,7 +20,7 @@
                            'em.tasks', 'em.notes', 'em.archive', 'em.admin', 'em.user',
                            'em.base',
                            'common',
-                           'ngAnimate', 'ngRoute', 'ngMessages', 'infinite-scroll', 'monospaced.elastic',
+                           'ngAnimate', 'ngRoute', 'ngMessages', 'monospaced.elastic',
                            'base64']);
 
  angular.module('em.root', ['em.entry', 'em.main', 'em.focus', 'em.lists',
