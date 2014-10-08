@@ -62,7 +62,7 @@
             | limitTo: currentListLimitTo"
             list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox"
             list-item-left-action-checked="task.completed" list-item-length="rightDuplicateTasks.length"></div>
-            <div list-item-add></div>
+            <div list-item-add="getNewDayTask(2)" list-item-add-type="task" list-item-add-fn="addTask(newItem)"></div>
           </div>
         </div>
 
@@ -74,7 +74,7 @@
             | limitTo: currentListLimitTo"
             list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox"
             list-item-left-action-checked="task.completed" list-item-length="leftTasks.length"></div>
-            <div list-item-add></div>
+            <div list-item-add="getNewDayTask(0)" list-item-add-type="task" list-item-add-fn="addTask(newItem)"></div>
           </div>
         </div>
 
@@ -86,7 +86,7 @@
             | limitTo: currentListLimitTo"
             list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox"
             list-item-left-action-checked="task.completed" list-item-length="middleTasks.length"></div>
-            <div list-item-add></div>
+            <div list-item-add="getNewDayTask(1)" list-item-add-type="task" list-item-add-fn="addTask(newItem)"></div>
           </div>
         </div>
 
@@ -98,7 +98,7 @@
             | limitTo: currentListLimitTo"
             list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox"
             list-item-left-action-checked="task.completed" list-item-length="rightTasks.length"></div>
-            <div list-item-add></div>
+            <div list-item-add="getNewDayTask(2)" list-item-add-type="task" list-item-add-fn="addTask(newItem)"></div>
           </div>
         </div>
 
@@ -108,7 +108,7 @@
             <div class="row animate-list-item-leave"
             ng-repeat="task in leftDuplicateTasks = (tasks | tasksByDate:daySlides[0].info)
             | limitTo: currentListLimitTo" list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox" list-item-left-action-checked="task.completed" list-item-length="leftDuplicateTasks.length"></div>
-            <div list-item-add></div>
+            <div list-item-add="getNewDayTask(0)" list-item-add-type="task" list-item-add-fn="addTask(newItem)"></div>
           </div>
         </div>
 

@@ -36,7 +36,7 @@
         if ($attrs.editableFieldContainer !== 'auto') {
           $element.removeClass('active');
           if (backdropWasDisabled) $scope.disableBackdrop();
-          $scope.hideBackdrop();
+          if ($scope.hideBackdrop) $scope.hideBackdrop();
         }
       };
 
@@ -44,7 +44,7 @@
         if ($scope.disableBackdrop) $scope.disableBackdrop();
         doShowBackdrop();
       } else if ($attrs.editableFieldContainer === 'disable') {
-        $scope.disableBackdrop();
+        if ($scope.disableBackdrop) $scope.disableBackdrop();
       } else {
         undisableBackdrop = true;
       }

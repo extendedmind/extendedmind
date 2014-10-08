@@ -173,32 +173,6 @@
     }
     if ($scope.noteHasKeywords()) return $scope.keywords.some(isNoteKeyword);
   };
-
-
-  // INFINITE SCROLL
-
-  $scope.recentNotesLimit = 0;
-  function setAllNotesLimit(allNotesSize) {
-    if (allNotesSize < 25) {
-      $scope.recentNotesLimit = allNotesSize;
-    }
-  }
-  $scope.registerAllNotesUpdatedCallback(setAllNotesLimit, 'NotesController');
-
-  $scope.getRecentNotesLimit = function getRecentNotesLimit() {
-    return $scope.recentNotesLimit;
-  };
-
-  $scope.addMoreRecentNotes = function addMoreRecentNotes() {
-    if ($scope.recentNotesLimit !== $scope.allNotes.length) {
-      // There is still more to add, add in batches of 25
-      if ($scope.recentNotesLimit + 25 < $scope.allNotes.length) {
-        $scope.recentNotesLimit += 25;
-      } else {
-        $scope.recentNotesLimit = $scope.allNotes.length;
-      }
-    }
-  };
 }
 
 NotesController['$inject'] = [

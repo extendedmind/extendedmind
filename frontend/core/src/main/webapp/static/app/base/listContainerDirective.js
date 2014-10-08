@@ -17,7 +17,7 @@
  function listContainerDirective() {
   return {
     restrict: 'A',
-    controller: function() {
+    controller: function($scope, $element) {
       var activateAddListItemCallback;
       this.registerActivateAddListItemCallback = function(callback){
         activateAddListItemCallback = callback;

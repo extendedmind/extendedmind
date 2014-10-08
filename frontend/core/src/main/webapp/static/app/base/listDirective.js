@@ -18,9 +18,10 @@
   return {
     require: ['^listContainer', '?^swiperSlide'],
     restrict: 'A',
+    scope: true,
     controller: function($scope) {
       this.registerAddActiveCallback = function(callback){
-        $scope.addActiveCallback = callback;
+        $scope.activateAddItem = callback;
       }
       this.notifyListLength = function(length){
         $scope.listLength = length;
@@ -28,7 +29,16 @@
     },
     link: function(scope, element, attrs, controllers) {
       function activateListAdd() {
-        if (scope.addActiveCallback) scope.addActiveCallback();
+        if (scope.activateAddItem){
+          if (attrs.list !== 'top'){
+            activateListBottom();
+            scope.$evalAsync(function(){
+              scope.activateAddItem();
+            });
+          }else{
+            scope.activateAddItem();
+          }
+        }
       }
       function listActive(){
         controllers[0].registerActivateAddListItemCallback(activateListAdd);
@@ -94,6 +104,12 @@
         // issue a 500ms lock to prevent leave animation for this digest cycle
         // see listItemDirective => animation
         UISessionService.lock('leaveAnimation', 500);
+      }
+
+      function activateListBottom() {
+        if (scope.listLength - scope.maximumNumberOfItems > 0){
+          setLimits(scope.listLength - scope.maximumNumberOfItems);
+        }
       }
 
       function addMoreItemsToBottom(){

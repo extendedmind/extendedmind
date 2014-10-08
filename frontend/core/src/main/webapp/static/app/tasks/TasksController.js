@@ -180,25 +180,25 @@
     TasksService.deleteTask(task, UISessionService.getActiveUUID());
   };
 
-  $scope.addSubtask = function addSubtask(subtask) {
-    if (!subtask.title || subtask.title.length === 0) return false;
-    var subtaskToSave = {title: subtask.title};
+  $scope.addTask = function addTask(newTask) {
+    if (!newTask || !newTask.title || newTask.title.length === 0) return false;
+    var newTaskToSave = {title: newTask.title};
 
-    if (subtask.transientProperties) {
-      subtaskToSave.transientProperties = {};
+    if (newTask.transientProperties) {
+      newTaskToSave.transientProperties = {};
 
-      if (subtask.transientProperties.date)
-        subtaskToSave.transientProperties.date = subtask.transientProperties.date;
+      if (newTask.transientProperties.date)
+        newTaskToSave.transientProperties.date = newTask.transientProperties.date;
 
-      if (subtask.transientProperties.list)
-        subtaskToSave.transientProperties.list = subtask.transientProperties.list;
+      if (newTask.transientProperties.list)
+        newTaskToSave.transientProperties.list = newTask.transientProperties.list;
 
-      if (subtask.transientProperties.context)
-        subtaskToSave.transientProperties.context = subtask.transientProperties.context;
+      if (newTask.transientProperties.context)
+        newTaskToSave.transientProperties.context = newTask.transientProperties.context;
     }
-    delete subtask.title;
+    delete newTask.title;
 
-    TasksService.saveTask(subtaskToSave, UISessionService.getActiveUUID()).then(function(/*subtaskToSave*/) {
+    TasksService.saveTask(newTaskToSave, UISessionService.getActiveUUID()).then(function(/*newTaskToSave*/) {
       AnalyticsService.do('addTask');
     });
   };
@@ -222,26 +222,6 @@
         $scope.getFeatureMap('tasks').slides.right.heading = 'no context';
     });
   };
-
-  // INFINITE SCROLL
-
-  $scope.recentTasksLimit = $scope.tasks.length;
-
-  $scope.getRecentTasksLimit = function () {
-    return $scope.recentTasksLimit;
-  };
-
-  $scope.addMoreRecentTasks = function () {
-    if ($scope.recentTasksLimit !== $scope.tasks.length) {
-      // There is still more to add, add in batches of 25
-      if ($scope.recentTasksLimit + 25 < $scope.tasks.length) {
-        $scope.recentTasksLimit += 25;
-      } else {
-        $scope.recentTasksLimit = $scope.tasks.length;
-      }
-    }
-  };
-
 }
 
 TasksController['$inject'] = ['$scope', 'AnalyticsService', 'DateService', 'SwiperService', 'TasksService',

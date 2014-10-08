@@ -1,7 +1,7 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
-  <section class="container-content" list>
+  <section class="container-content" list="top">
     <h2>recent</h2>
-    <div list-item-add></div>
+    <div list-item-add list-item-add-type="task" list-item-add-fn="addTask(newItem)"></div>
     <div class="row animate-list-item-leave"
     ng-repeat="task in recentTasks = (tasks | filter:isTaskVisible)
     | limitTo: currentListLimitTo"

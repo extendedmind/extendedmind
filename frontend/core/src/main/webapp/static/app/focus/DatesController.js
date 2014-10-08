@@ -34,6 +34,10 @@
   }
   ];
 
+  $scope.getNewDayTask = function(daySlidesIndex){
+    return {transientProperties: {date: $scope.daySlides[daySlidesIndex].info}}
+  }
+
   $scope.dateClicked = function dateClicked(date) {
     // Get reference date from active slide.
     var activeSlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
