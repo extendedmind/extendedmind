@@ -48,13 +48,16 @@
         element[0].removeEventListener('touchend', removeTouchListeners);
       }
 
+      function getActiveDate() {
+        var activeDates = element[0].getElementsByClassName('is-selected');
+        if (activeDates) return activeDates[0]; // There is only one active date at a time.
+      }
+
       /*
       * Return date to whoever is interested.
       */
       function returnDate() {
-        var activeDates = element[0].getElementsByClassName('is-selected');
-        var activeDate;
-        if (activeDates) activeDate = activeDates[0]; // There is only one active date at a time.
+        var activeDate = getActiveDate();
         if (!activeDate) return;  // Class .is-selected has not been set for some reason.
 
         // Callback fires too soon. Do nothing if touched past threshold.
@@ -73,6 +76,17 @@
         }
       }
 
+      /*
+      * set class to active date programmatically.
+      */
+      function setStartingDateActive() {
+        var activeDate = getActiveDate();
+        if (!activeDate) return;  // Class .is-selected has not been set for some reason.
+
+        // Actucally, it is not animated, but we are using same class anyway.
+        activeDate.firstElementChild.classList.add('animate-calendar-selected-date');
+      }
+
       // See https://github.com/dbushell/Pikaday#configuration for all available options.
       var calendar = new Pikaday({
         field: element[0],
@@ -88,7 +102,8 @@
           weekdays      : DateService.getWeekdayNames(),
           weekdaysShort : ['sun','mon','tue','wed','thu','fri','sat']
         },
-        onSelect: returnDate
+        onSelect: returnDate,
+        onOpen: setStartingDateActive
       });
     }
   };
