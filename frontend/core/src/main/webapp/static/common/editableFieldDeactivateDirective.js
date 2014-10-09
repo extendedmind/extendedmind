@@ -14,29 +14,23 @@
  */
  'use strict';
 
- function editableFieldDirective() {
+ // Deactivates editable field based on fired event
+ function editableFieldDeactivateDirective() {
   return {
     require: '^editableFieldContainer',
     restrict: 'A',
     link: function($scope, $element, $attrs, editableFieldContainerController) {
-      $element.addClass('editable-field');
-
-      var editableFieldFocus = function() {
-        $element.addClass('active');
-        editableFieldContainerController.notifyFocus();
-      };
-      var editableFieldBlur = function() {
-        $element.removeClass('active');
+      var clicked = function() {
+        editableFieldContainerController.deactivateContainer();
       };
 
-      angular.element($element).bind('focus', editableFieldFocus);
-      angular.element($element).bind('blur', editableFieldBlur);
+      // Defaults to deactivating 'click' event
+      angular.element($element).bind('click', clicked);
 
       $scope.$on('$destroy', function() {
-        angular.element($element).unbind('focus', editableFieldFocus);
-        angular.element($element).unbind('blur', editableFieldBlur);
+        angular.element($element).unbind('click', editableFieldFocus);
       });
     }
   };
 }
-angular.module('common').directive('editableField', editableFieldDirective);
+angular.module('common').directive('editableFieldDeactivate', editableFieldDeactivateDirective);

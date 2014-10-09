@@ -23,17 +23,17 @@
       var containerInfos = [];
       var preventBackdropBubbleClick;
 
-      this.registerContainer = function(id, deActivateFn, callback){
+      this.registerContainer = function(id, deactivateFn, callback){
         var containerInfo = containerInfos.findFirstObjectByKeyValue('id', id);
         if (containerInfo) {
           // Overwrite id's existing values
-          containerInfo.deActivate = deActivateFn;
+          containerInfo.deactivate = deactivateFn;
           containerInfo.clickedElsewhere = callback;
           return;
         }
         containerInfos.push({
           id: id,
-          deActivate: deActivateFn,
+          deactivate: deactivateFn,
           clickedElsewhere: callback
         });
       }
@@ -59,7 +59,7 @@
             if (!containerInfos[i].clicked) {
               if (containerInfos[i].active) {
                 // Clicked elsewhere than container for an active container, deactivate container
-                containerInfos[i].deActivate();
+                containerInfos[i].deactivate();
                 if (typeof containerInfos[i].clickedElsewhere === 'function'){
                   // Click elsewhere callback.
                   // NOTE: use $apply because callback may not be inside scope.
@@ -94,7 +94,7 @@
         $element.addClass('active');
       };
 
-      this.deActivateContainer = function(id) {
+      this.deactivateContainer = function(id) {
         preventBackdropBubbleClick = false;
 
         // mark container info deactivated

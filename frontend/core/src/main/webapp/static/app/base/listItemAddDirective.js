@@ -22,7 +22,8 @@
       newItemFn: '&listItemAdd',
       newItemType: '@listItemAddType',
       addItemFn: '&listItemAddFn',
-      leftCheckboxFn: '&listItemAddCheckboxFn'
+      leftCheckboxFn: '&listItemAddCheckboxFn',
+      leftRightArrowFn: '&listItemAddArrowFn'
     },
     templateUrl: 'static/app/base/listItemAdd.html',
     compile: function(){
@@ -74,6 +75,10 @@
             scope.addItemFn({newItem: scope.newItem});
             scope.newItem = scope.newItemFn();
           };
+
+          scope.clickArrow = function(){
+            scope.leftRightArrowFn({newItem: scope.newItem});
+          }
         }
       };
     }

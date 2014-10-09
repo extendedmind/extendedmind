@@ -20,12 +20,16 @@
     scope: true,
     require: '^editableFieldBackdrop',
     controller: function($scope, $element, $attrs) {
-      this.notifyFocus = function notifyFocus() {
+      this.notifyFocus = function() {
         if ($attrs.editableFieldContainer !== 'auto'){
           // activate on focus
           $scope.activateContainer();
         }
       };
+      this.deactivateContainer = function(){
+        // deactivate and call click elsewhere
+        $scope.deactivateContainer(true);
+      }
     },
     link: function (scope, element, attrs, backdropController) {
       element.addClass('editable-field-container');
@@ -44,12 +48,16 @@
         }
       }
 
-      function deActivateContainer() {
+      scope.deactivateContainer = function(callClickElsewhere) {
         if (listeningToClick){
-          backdropController.deActivateContainer(element[0]);
+          backdropController.deactivateContainer(element[0]);
           element[0].removeEventListener('click', clickedContainer, false);
           element.removeClass('active');
           listeningToClick = false;
+          if (callClickElsewhere && clickedElsewhereFn){
+            // Call click elsewhere also on direct deactivation
+            clickedElsewhereFn();
+          }
         }
       }
 
@@ -60,7 +68,7 @@
         clickedElsewhereFn = $parse(attrs.editableFieldContainerClickedElsewhere).bind(undefined, scope);
       }
 
-      backdropController.registerContainer(element[0], deActivateContainer, clickedElsewhereFn);
+      backdropController.registerContainer(element[0], scope.deactivateContainer, clickedElsewhereFn);
 
       if (attrs.editableFieldContainer === 'auto') {
         // Activate immediately for "auto" type container
@@ -69,7 +77,7 @@
 
       scope.$on('$destroy', function() {
         if (listeningToClick) {
-          deActivateContainer();
+          scope.deactivateContainer();
         }
         backdropController.unregisterContainer(element[0]);
       });
