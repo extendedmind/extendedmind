@@ -47,9 +47,12 @@
 
       function backdropClicked() {
         if (preventBackdropBubbleClick) {
-          // Event bubbled from undesired click. Do nothing.
+          if (preventBackdropBubbleClick > (new Date).getTime() - 200){
+            // Event bubbled from undesired click less than 200ms ago. Do nothing.
+            preventBackdropBubbleClick = false;
+            return;
+          }
           preventBackdropBubbleClick = false;
-          return;
         }
         if (containerInfos && containerInfos.length > 0) {
           for (var i = 0, len = containerInfos.length; i < len; i++) {
@@ -74,7 +77,12 @@
       this.activateContainer = function (id) {
         // Function called in the middle of a click event. It may be unsafe to stop event bubbling,
         // so prevent bubbling locally to backdrop click event.
-        preventBackdropBubbleClick = event && event.type === 'click' || event.type === 'focus';
+        if (event && event.type === 'click' || event.type === 'focus'){
+          preventBackdropBubbleClick = (new Date).getTime();
+
+        }
+
+
 
         // activate container
         var containerInfo = containerInfos.findFirstObjectByKeyValue('id', id);

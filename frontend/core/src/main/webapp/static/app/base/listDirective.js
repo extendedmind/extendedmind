@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function listDirective(UISessionService) {
+ function listDirective($timeout, UISessionService) {
   return {
     require: ['^listContainer', '?^swiperSlide'],
     restrict: 'A',
@@ -31,13 +31,17 @@
       function activateListAdd() {
         if (scope.activateAddItem){
           if (attrs.list !== 'top'){
-            activateListBottom();
-            scope.$evalAsync(function(){
-              scope.activateAddItem();
-            });
-          }else{
-            scope.activateAddItem();
+            if (activateListBottom()){
+              // The entire list was not visible, we
+              // have to wait for digest to complete for focus to move to the
+              // bottom. Can't think of a better way to do this, can you?
+              $timeout(function(){
+                scope.activateAddItem();
+              });
+              return;
+            }
           }
+          scope.activateAddItem();
         }
       }
       function listActive(){
@@ -109,6 +113,7 @@
       function activateListBottom() {
         if (scope.listLength - scope.maximumNumberOfItems > 0){
           setLimits(scope.listLength - scope.maximumNumberOfItems);
+          return true;
         }
       }
 
@@ -155,5 +160,5 @@
     }
   };
 }
-listDirective['$inject'] = ['UISessionService'];
+listDirective['$inject'] = ['$timeout', 'UISessionService'];
 angular.module('em.base').directive('list', listDirective);
