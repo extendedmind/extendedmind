@@ -14,25 +14,34 @@
  */
  'use strict';
 
- function autoFocusDirective($document) {
+ function autoFocusDirective($document, $rootScope, $timeout) {
   return {
     restrict: 'A',
     scope: {
-      registerFocusCallbackFn: '&autoFocus',
-      registerBlurCallbackFn: '&autoFocusBlur'
+      registerCallbacksFn: '&autoFocus'
     },
     link: function postLink(scope, element) {
-      scope.registerFocusCallbackFn({fn: focus});
+      scope.registerCallbacksFn({focus: focus, blur: blur});
       function focus() {
         // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
         if ($document[0].activeElement !== element[0]) element[0].focus();
       }
-      scope.registerBlurCallbackFn({fn: blur});
       function blur() {
-        if ($document[0].activeElement === element[0]) element[0].blur();
+        if ($document[0].activeElement === element[0]){
+          if ($rootScope.$$phase || scope.$$phase){
+            // It seems $timeout can not be avoided here:
+            // https://github.com/angular/angular.js/issues/1250
+            // "In the future, this will (hopefully) be solved with Object.observe."
+            $timeout(function(){
+              element[0].blur();
+            });
+          }else {
+            element[0].blur();
+          }
+        }
       }
     }
   };
 }
-autoFocusDirective['$inject'] = ['$document'];
+autoFocusDirective['$inject'] = ['$document', '$rootScope', '$timeout'];
 angular.module('common').directive('autoFocus', autoFocusDirective);

@@ -56,7 +56,6 @@
 
   $scope.titlebarTextKeyDown = function titlebarTextKeyDown(event) {
     // Escape
-    // FIXME: editor titlebar input blur is not working here
     if (event.keyCode === 27) blurTitlebarInput();
     // Return
     else if (event.keyCode === 13 && !$rootScope.loading && $scope.titlebarHasText()) {
@@ -264,11 +263,9 @@
   });
 
   // Titlebar text input focus/blur
-  $scope.registerTitleBarInputFocusCallback = function registerTitleBarInputFocusCallback(callback) {
-    titleBarInputFocusCallbackFunction = callback;
-  };
-  $scope.registerTitleBarInputBlurCallback = function registerTitleBarInputBlurCallback(callback) {
-    titleBarInputBlurCallbackFunction = callback;
+  $scope.registerTitleBarInputCallbacks = function (focusCallback, blurCallback) {
+    titleBarInputFocusCallbackFunction = focusCallback;
+    titleBarInputBlurCallbackFunction = blurCallback;
   };
   function setFocusOnTitlebarInput() {
     if (typeof titleBarInputFocusCallbackFunction === 'function') titleBarInputFocusCallbackFunction();

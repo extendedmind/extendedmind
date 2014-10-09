@@ -7,7 +7,7 @@ editable-field-container-clicked-elsewhere="clickedElsewhere()">
   <div class="group-mixed--middle">
     <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
     editable-field placeholder="add {{newItemType}}..." maxlength="128"
-    auto-focus="registerAddItemFocusCallback(fn)" auto-focus-blur="registerAddItemBlurCallback(fn)">
+    auto-focus="registerAddItemCallbacks(focus, blur)">
     </textarea>
   </div>
   <div class="group-mixed--right">
