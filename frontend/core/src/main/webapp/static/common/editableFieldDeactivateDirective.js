@@ -28,7 +28,7 @@
       angular.element($element).bind('click', clicked);
 
       $scope.$on('$destroy', function() {
-        angular.element($element).unbind('click', editableFieldFocus);
+        angular.element($element).unbind('click', clicked);
       });
     }
   };
