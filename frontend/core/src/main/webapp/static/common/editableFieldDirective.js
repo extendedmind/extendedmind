@@ -18,16 +18,15 @@
   return {
     require: '^editableFieldContainer',
     restrict: 'A',
-    link: function($scope, $element, $attrs, editableFieldContainerDirectiveController) {
+    link: function($scope, $element, $attrs, editableFieldContainerController) {
       $element.addClass('editable-field');
 
       var editableFieldFocus = function() {
         $animate.addClass($element[0], 'active');
-        editableFieldContainerDirectiveController.showBackdrop();
+        editableFieldContainerController.notifyFocus();
       };
       var editableFieldBlur = function() {
         $animate.removeClass($element[0], 'active');
-        editableFieldContainerDirectiveController.hideBackdrop();
       };
 
       angular.element($element).bind('focus', editableFieldFocus);

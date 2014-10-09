@@ -348,19 +348,16 @@ function SwiperService($q, $timeout) {
     isSlideActive: function(slidePath) {
       var swiperInfos = getSwiperInfosBySlidePath(slidePath);
       if (!swiperInfos || !swiperInfos.main){
-        console.log("1")
         return false;
       }
       if (swiperInfos.page) {
         var activePageSlidePath = this.getActiveSlidePath(swiperInfos.pagePath);
         if (activePageSlidePath === undefined || activePageSlidePath !== slidePath) {
-          console.log("2")
           return false;
         }
       }
       var activeMainSlidePath = this.getActiveSlidePath(swiperInfos.mainPath);
       if (activeMainSlidePath === undefined || !slidePath.startsWith(activeMainSlidePath)) {
-        console.log("3")
         return false;
       }
       return true;

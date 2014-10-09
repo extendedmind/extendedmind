@@ -17,61 +17,61 @@
  function editableFieldContainerDirective($parse) {
   return {
     restrict: 'A',
-    require: '^?editableFieldBackdrop',
+    scope: true,
+    require: '^editableFieldBackdrop',
     controller: function($scope, $element, $attrs) {
-      var undisableBackdrop = false;
-      var backdropWasDisabled = false;
-      function doShowBackdrop() {
-        $element.addClass('active');
-        if (undisableBackdrop && $scope.undisableBackdrop) backdropWasDisabled = $scope.undisableBackdrop();
-        if ($scope.showBackdrop) $scope.showBackdrop();
-      }
-      $element.addClass('editable-field-container');
-
-      this.showBackdrop = function showBackdrop() {
-        doShowBackdrop();
-      };
-
-      this.hideBackdrop = function hideBackdrop() {
-        if ($attrs.editableFieldContainer !== 'auto') {
-          $element.removeClass('active');
-          if (backdropWasDisabled) $scope.disableBackdrop();
-          if ($scope.hideBackdrop) $scope.hideBackdrop();
+      this.notifyFocus = function notifyFocus() {
+        if ($attrs.editableFieldContainer !== 'auto'){
+          // activate on focus
+          $scope.activateContainer();
         }
       };
-
-      if ($attrs.editableFieldContainer === 'auto') {
-        if ($scope.disableBackdrop) $scope.disableBackdrop();
-        doShowBackdrop();
-      } else if ($attrs.editableFieldContainer === 'disable') {
-        if ($scope.disableBackdrop) $scope.disableBackdrop();
-      } else {
-        undisableBackdrop = true;
-      }
-
-      $scope.$on('$destroy', function() {
-        if ($scope.hideBackdrop) $scope.hideBackdrop();
-      });
     },
-    link: function postLink(scope, element, attrs, backdropController) {
+    link: function (scope, element, attrs, backdropController) {
+      element.addClass('editable-field-container');
+
+      var listeningToClick = false;
       function clickedContainer() {
-        if (backdropController) backdropController.setEditableFieldClicked(element[0]);
+        backdropController.notifyContainerClicked(element[0]);
       }
 
-      if (attrs.editableFieldContainer === 'auto' && backdropController) {
-        var clickElsewhereFn;
-        if (attrs.editableFieldContainerClickElsewhere)
-          clickElsewhereFn = $parse(attrs.editableFieldContainerClickElsewhere).bind(undefined, scope);
+      scope.activateContainer = function() {
+        if (!listeningToClick){
+          backdropController.activateContainer(element[0]);
+          element[0].addEventListener('click', clickedContainer, false);
+          element.addClass('active');
+          listeningToClick = true;
+        }
+      }
 
-        backdropController.registerClickElsewhere(element[0], clickElsewhereFn);
-        element[0].addEventListener('click', clickedContainer, false);
+      function deActivateContainer() {
+        if (listeningToClick){
+          backdropController.deActivateContainer(element[0]);
+          element[0].removeEventListener('click', clickedContainer, false);
+          element.removeClass('active');
+          listeningToClick = false;
+        }
+      }
+
+      // optional click elsewhere function can be set with editable-field-container-click-elswhere="fn"
+      // If not set, clicking elsewhere just deactivates the backdrop
+      var clickedElsewhereFn;
+      if (attrs.editableFieldContainerClickedElsewhere){
+        clickedElsewhereFn = $parse(attrs.editableFieldContainerClickedElsewhere).bind(undefined, scope);
+      }
+
+      backdropController.registerContainer(element[0], deActivateContainer, clickedElsewhereFn);
+
+      if (attrs.editableFieldContainer === 'auto') {
+        // Activate immediately for "auto" type container
+        scope.activateContainer();
       }
 
       scope.$on('$destroy', function() {
-        if (attrs.editableFieldContainer === 'auto' && backdropController) {
-          element[0].removeEventListener('click', clickedContainer, false);
-          backdropController.unregisterClickElsewhere(element[0]);
+        if (listeningToClick) {
+          deActivateContainer();
         }
+        backdropController.unregisterContainer(element[0]);
       });
     }
   };

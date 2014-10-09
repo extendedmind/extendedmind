@@ -1,11 +1,11 @@
 <form role="form" class="group-mixed swiper-no-swiping" ng-submit="addItem()"
-add-item data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container="disable">
+add-item data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
+editable-field-container-clicked-elsewhere="clickedElsewhere()">
   <div class="group-mixed--left">
     <input ng-if="leftCheckboxFn" type="checkbox" ng-checked="leftCheckboxChecked" icon-checkbox>
   </div>
   <div class="group-mixed--middle">
-    <textarea ng-model="newItem.title" msd-elastic ng-blur="textareaBlurred()"
-    ng-keydown="textareaKeyDown($event)"
+    <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
     editable-field placeholder="add {{newItemType}}..." maxlength="128"
     auto-focus="registerAddItemFocusCallback(fn)" auto-focus-blur="registerAddItemBlurCallback(fn)">
     </textarea>

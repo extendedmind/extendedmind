@@ -20,26 +20,30 @@
     controller: function($scope, $element) {
       $element.addClass('editable-field-backdrop');
 
-      $scope.disableBackdrop = function disableBackdrop() {
-        $element.addClass('backdrop-disable');
-      };
-      $scope.undisableBackdrop = function undisableBackdrop() {
-        if ($element.hasClass('backdrop-disable')) {
-          $element.removeClass('backdrop-disable');
-          return true;
+      var containerInfos = [];
+      var preventBackdropBubbleClick;
+
+      this.registerContainer = function(id, deActivateFn, callback){
+        var containerInfo = containerInfos.findFirstObjectByKeyValue('id', id);
+        if (containerInfo) {
+          // Overwrite id's existing values
+          containerInfo.deActivate = deActivateFn;
+          containerInfo.clickedElsewhere = callback;
+          return;
+        }
+        containerInfos.push({
+          id: id,
+          deActivate: deActivateFn,
+          clickedElsewhere: callback
+        });
+      }
+
+      this.unregisterContainer = function(id) {
+        var containerIndex = containerInfos.findFirstIndexByKeyValue('id', id);
+        if (containerIndex !== undefined){
+          containerInfos.splice(containerIndex, 1);
         }
       };
-      $scope.showBackdrop = function showBackdrop() {
-        $rootScope.backdropActive = true;
-        $element.addClass('active swiper-no-swiping');
-      };
-      $scope.hideBackdrop = function hideBackdrop() {
-        $rootScope.backdropActive = false;
-        $element.removeClass('active swiper-no-swiping');
-      };
-
-      var clickEditableFieldMap = [];
-      var preventBackdropBubbleClick;
 
       function backdropClicked() {
         if (preventBackdropBubbleClick) {
@@ -47,62 +51,65 @@
           preventBackdropBubbleClick = false;
           return;
         }
-        if (clickEditableFieldMap && clickEditableFieldMap.length > 0) {
-          for (var i = 0, len = clickEditableFieldMap.length; i < len; i++) {
-            if (!clickEditableFieldMap[i].clicked) {
-              // Clicked elsewhere than editable field
-              if (typeof clickEditableFieldMap[i].clickElsewhere === 'function')
-                // Click elsewhere callback.
-                // NOTE: use $apply because callback may not be inside scope.
-                $scope.$apply(clickEditableFieldMap[i].clickElsewhere);
-                return;
-              } else {
+        if (containerInfos && containerInfos.length > 0) {
+          for (var i = 0, len = containerInfos.length; i < len; i++) {
+            if (!containerInfos[i].clicked) {
+              if (containerInfos[i].active) {
+                // Clicked elsewhere than container for an active container, deactivate container
+                containerInfos[i].deActivate();
+                if (typeof containerInfos[i].clickedElsewhere === 'function'){
+                  // Click elsewhere callback.
+                  // NOTE: use $apply because callback may not be inside scope.
+                  $scope.$apply(containerInfos[i].clickedElsewhere);
+                }
+              }
+            }else {
               // reset clicked info
-              clickEditableFieldMap[i].clicked = false;
+              containerInfos[i].clicked = false;
             }
           }
         }
       }
 
+      this.activateContainer = function (id) {
+        // Function called in the middle of a click event. It may be unsafe to stop event bubbling,
+        // so prevent bubbling locally to backdrop click event.
+        preventBackdropBubbleClick = event && event.type === 'click' || event.type === 'focus';
+
+        // activate container
+        var containerInfo = containerInfos.findFirstObjectByKeyValue('id', id);
+        if (containerInfo) containerInfo.active = true;
+
+        // activate backdrop
+        $element[0].addEventListener('click', backdropClicked, false);
+        $rootScope.backdropActive = true;
+        $element.addClass('active');
+      };
+
+      this.deActivateContainer = function(id) {
+        preventBackdropBubbleClick = false;
+
+        // mark container info deactivated
+        var containerInfo = containerInfos.findFirstObjectByKeyValue('id', id);
+        if (containerInfo) containerInfo.active = false;
+
+        // deactivate backdrop
+        if ($rootScope.backdropActive){
+          $element[0].removeEventListener('click', backdropClicked, false);
+          $rootScope.backdropActive = false;
+          $element.removeClass('active');
+        }
+      };
+
       /*
-      * Editable field clicked.
+      * Editable field container clicked.
       *
       * Click event bubbles to backdrop where clicked information is used.
       */
-      this.setEditableFieldClicked = function(id) {
-        var editableField = clickEditableFieldMap.findFirstObjectByKeyValue('id', id);
-        if (editableField)
-          editableField.clicked = true;
-      };
-
-      /*
-      * Start listening click events and register click elsewhere callback.
-      */
-      this.registerClickElsewhere = function(id, callback) {
-        // Function called in the middle of a click event. It may be unsafe to stop event bubbling,
-        // so prevent bubbling locally to backdrop click event.
-        preventBackdropBubbleClick = event && event.type === 'click';
-
-        $element[0].addEventListener('click', backdropClicked, false);
-
-        var editableField = clickEditableFieldMap.findFirstObjectByKeyValue('id', id);
-        if (editableField) {
-          // Overwrite id's existing click elsewhere
-          editableField.clickElsewhere = callback;
-          return;
-        }
-        clickEditableFieldMap.push({
-          id: id,
-          clickElsewhere: callback
-        });
-      };
-      this.unregisterClickElsewhere = function(id) {
-        preventBackdropBubbleClick = false;
-        $element[0].removeEventListener('click', backdropClicked, false);
-
-        var editableFieldIndex = clickEditableFieldMap.findFirstIndexByKeyValue('id', id);
-        if (editableFieldIndex !== undefined)
-          clickEditableFieldMap.splice(editableFieldIndex, 1);
+      this.notifyContainerClicked = function(id) {
+        var containerInfo = containerInfos.findFirstObjectByKeyValue('id', id);
+        if (containerInfo)
+          containerInfo.clicked = true;
       };
 
       // Listen to transition end callbacks

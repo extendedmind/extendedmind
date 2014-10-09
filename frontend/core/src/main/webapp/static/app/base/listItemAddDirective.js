@@ -56,7 +56,7 @@
             element[0].style.display = "none";
           }
 
-          scope.textareaBlurred = function(){
+          scope.clickedElsewhere = function(){
             scope.addItem();
             exit();
           }
