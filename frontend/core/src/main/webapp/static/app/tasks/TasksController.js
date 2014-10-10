@@ -170,7 +170,12 @@
       if (task.transientProperties && task.transientProperties.completed){
         completeOnSave = true;
       }
+
+      // issue a 500ms lock to prevent leave animation for tasks below this
+      // in the list
+      UISessionService.lock('leaveAnimation', 500);
     }
+
 
     return TasksService.saveTask(task, UISessionService.getActiveUUID()).then(function(savedTask) {
       if (completeOnSave){

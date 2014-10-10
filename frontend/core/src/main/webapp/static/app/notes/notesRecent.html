@@ -2,7 +2,7 @@
   <section class="container-content" list="top" list-open="openEditor('note', {})">
     <h2>recent</h2>
     <div class="row animate-list-item-leave"
-    ng-repeat="note in allNotes | limitTo: currentListLimitTo | orderBy:'modified':true"
+    ng-repeat="note in allNotes | orderBy:'modified':true | limitTo: currentListLimitTo"
     list-item="allNotes.length" ng-include="'static/app/notes/noteListItem.html'"
     ng-style="{maxHeight: getNoteListItemHeight(note)}"></div>
   </section>
