@@ -40,17 +40,31 @@
 
   // DATEPICKER SLIDES CONSTRUCTOR
 
-  var currentWeek = DateService.generateAndReturnCurrentWeek(new Date());
-  $scope.datepickerWeeks = initializeAndReturnDatepickerWeeks(currentWeek);
+  /*
+  * Datepicker weeks.
+  *
+  * Starting from the week which has date from active day slide.
+  * Start from current week if there is no active day slide.
+  */
+  function initializeDatepickerWeeks() {
+    var activeDaySlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
+    var activeDate;
+    if (activeDaySlideIndex !== undefined)
+      activeDate = new Date($scope.daySlides[activeDaySlideIndex].referenceDate);
+    else
+      activeDate = new Date();
 
-  function initializeAndReturnDatepickerWeeks(currentWeek) {
-    var datepickerWeeks = [];
+    var currentWeek = DateService.generateAndReturnCurrentWeek(activeDate);
+    $scope.datepickerWeeks = [];
     var previousWeek = DateService.generateAndReturnPreviousWeek(currentWeek);
     var nextWeek = DateService.generateAndReturnNextWeek(currentWeek);
-    datepickerWeeks.push(currentWeek);
-    datepickerWeeks.push(nextWeek);
-    datepickerWeeks.push(previousWeek);
-    return datepickerWeeks;
+    $scope.datepickerWeeks.push(currentWeek);
+    $scope.datepickerWeeks.push(nextWeek);
+    $scope.datepickerWeeks.push(previousWeek);
+    SwiperService.registerSlideChangeStartCallback(datepickerSlideChangeStart,
+                                                   'datepicker',
+                                                   'DatesController');
+    SwiperService.registerSlideChangeCallback(datepickerSlideChangeEnd, 'datepicker', 'DatesController');
   }
 
 
@@ -144,10 +158,8 @@
   var offsetFromOldActiveDatepickerSlide = 0;
   var datepickerWeeksInfosCleared = false;
 
-  SwiperService.registerSlideChangeStartCallback(datepickerSlideChangeStart, 'datepicker', 'DatesController');
   function datepickerSlideChangeStart(direction) {
     offsetFromOldActiveDatepickerSlide += direction === 'prev' ? -1 : 1;
-
     if (Math.abs(offsetFromOldActiveDatepickerSlide) >= 2) {
       if (!datepickerWeeksInfosCleared) {
         for (var i = 0, len = $scope.datepickerWeeks.length; i < len; i++) {
@@ -161,7 +173,6 @@
     }
   }
 
-  SwiperService.registerSlideChangeCallback(datepickerSlideChangeEnd, 'datepicker', 'DatesController');
   function datepickerSlideChangeEnd(slidePath, activeSlideIndex) {
     var slidesArrayLength = $scope.datepickerWeeks.length;
 
@@ -199,6 +210,11 @@
 
   /*
   * Construct a heading for day slide.
+  *
+  * Date can be shown like:
+  *   - no date
+  *   - today
+  *   - fri 10 oct
   */
   function daySlideHeading(day) {
     return day;
@@ -206,6 +222,12 @@
 
   $scope.getNewDayTask = function(daySlidesIndex){
     return {transientProperties: {date: $scope.daySlides[daySlidesIndex].info, completed: false}};
+  };
+
+  $scope.toggleDatepicker = function() {
+    if (!$scope.datepickerVisible) initializeDatepickerWeeks();
+    else $scope.datepickerWeeks = undefined;
+    $scope.datepickerVisible = !$scope.datepickerVisible;
   };
 
   $scope.dateClicked = function(date) {

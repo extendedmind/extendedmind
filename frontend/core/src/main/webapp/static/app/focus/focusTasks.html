@@ -1,8 +1,9 @@
 <div ng-if="isFeatureActive('focus')" class="container-content--outer" list-container drawer-handle="left">
   <section class="container-content" ng-controller="DatesController">
 
-    <div class="swiper-container" swiper-container="datepicker" swiper-type="main" expected-slides="5" data-snap-ignore="true">
-      <div class="swiper-wrapper">
+    <div ng-if="datepickerVisible" class="swiper-container" swiper-container="datepicker" swiper-type="main" expected-slides="5" data-snap-ignore="true">
+      <!-- Set editable-field-container to child to circumvent AngularJS error https://docs.angularjs.org/error/$compile/multidir -->
+      <div class="swiper-wrapper" editable-field-container="auto" editable-field-container-clicked-elsewhere="toggleDatepicker()" >
         <div class="swiper-slide group-link" swiper-slide="datepicker/right" slide-index="0" swiper-slide-duplicate="true">
           <a href ng-click="dateClicked(datepickerWeeks[2][0].yyyymmdd)">{{datepickerWeeks[2][0].displayDateShort}}</a>
           <a href ng-click="dateClicked(datepickerWeeks[2][1].yyyymmdd)">{{datepickerWeeks[2][1].displayDateShort}}</a>
@@ -56,7 +57,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0" swiper-slide-duplicate="true">
           <div class="container-content" list>
-            <h1 ng-bind="daySlides[2].heading"></h1>
+            <h1 ng-hide="datepickerVisible" ng-bind="daySlides[2].heading" ng-click="toggleDatepicker()"></h1>
 
             <div class="row animate-list-item-leave"
             ng-repeat="task in rightDuplicateTasks = (tasks | tasksByDate:daySlides[2].info | filter:isTaskVisible)
@@ -70,7 +71,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1" swiper-slide-loop-start="true">
           <div class="container-content" list>
-            <h1 ng-bind="daySlides[0].heading"></h1>
+            <h1 ng-hide="datepickerVisible" ng-bind="daySlides[0].heading" ng-click="toggleDatepicker()"></h1>
 
             <div class="row animate-list-item-leave"
             ng-repeat="task in leftTasks = (tasks | tasksByDate:daySlides[0].info | filter:isTaskVisible)
@@ -85,7 +86,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2">
           <div class="container-content" list>
-            <h1 ng-bind="daySlides[1].heading"></h1>
+            <h1 ng-hide="datepickerVisible" ng-bind="daySlides[1].heading" ng-click="toggleDatepicker()"></h1>
 
             <div class="row animate-list-item-leave"
             ng-repeat="task in middleTasks = (tasks | tasksByDate:daySlides[1].info | filter:isTaskVisible)
@@ -100,7 +101,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/right" slide-index="3">
           <div class="container-content" list>
-            <h1 ng-bind="daySlides[2].heading"></h1>
+            <h1 ng-hide="datepickerVisible" ng-bind="daySlides[2].heading" ng-click="toggleDatepicker()"></h1>
             <div class="row animate-list-item-leave"
             ng-repeat="task in rightTasks = (tasks | tasksByDate:daySlides[2].info | filter:isTaskVisible)
             | limitTo: currentListLimitTo"
@@ -113,7 +114,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/leftDuplicate" slide-index="4" swiper-slide-duplicate="true">
           <div class="container-content" list>
-            <h1 ng-bind="daySlides[0].heading"></h1>
+            <h1 ng-hide="datepickerVisible" ng-bind="daySlides[0].heading" ng-click="toggleDatepicker()"></h1>
             <div class="row animate-list-item-leave"
             ng-repeat="task in leftDuplicateTasks = (tasks | tasksByDate:daySlides[0].info | filter:isTaskVisible)
             | limitTo: currentListLimitTo"
