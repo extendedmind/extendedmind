@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function DatesController($q, $rootScope, $scope, DateService, SwiperService, UISessionService) {
+ function DatesController($scope, DateService, SwiperService, UISessionService) {
   var slidePath = 'focus/tasks';
 
   // DAY SLIDES CONSTRUCTOR
@@ -218,6 +218,5 @@
   };
 }
 
-DatesController['$inject'] = ['$q', '$rootScope', '$scope', 'DateService', 'SwiperService',
-'UISessionService'];
+DatesController['$inject'] = ['$scope', 'DateService', 'SwiperService', 'UISessionService'];
 angular.module('em.focus').controller('DatesController', DatesController);
