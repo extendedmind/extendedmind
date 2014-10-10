@@ -86,8 +86,8 @@ function MainController(
           heading: 'active'
         },
         right: {
-          path: 'lists/archive',
-          heading: 'archive'
+          path: 'lists/archived',
+          heading: 'archived'
         }
       }
     },
@@ -109,12 +109,87 @@ function MainController(
     }
   };
 
-  $scope.changeFeature = function(feature, data){
-    if (UISessionService.getCurrentFeatureName() !== feature) {
+  // NAVIGATION
+
+  var openEditorAfterMenuClosed = false;
+  var openMenuAfterEditorClosed = false;
+
+  /*
+  * Open editor.
+  *
+  * Set openEditorAfterMenuClosed and openMenuAFterEditorClosed flags to:
+  *   i.  open editor in menu's close callback
+  *   ii. open menu in editor's close callback
+  *
+  * TODO: analytics visit omnibar
+  */
+  $scope.openEditor = function openEditor(type, item) {
+    executeEditorAboutToOpenCallbacks(type, item);
+
+    // Check for existing edit locks and resolve them first.
+    var deferredEditAction = UISessionService.getDeferredAction('edit');
+    if (deferredEditAction) deferredEditAction.resolve();
+
+    UISessionService.deferAction('edit');
+
+    if (DrawerService.isOpen('left')) {
+      DrawerService.close('left');
+      openEditorAfterMenuClosed = true;
+      openMenuAfterEditorClosed = true;
+    } else {
+      DrawerService.open('right');
+    }
+  };
+
+  $scope.closeEditor = function closeEditor() {
+    DrawerService.close('right');
+  };
+
+  $scope.toggleMenu = function toggleMenu() {
+    DrawerService.toggle('left');
+  };
+
+  $scope.isEditorVisible = function isEditorVisible() {
+    return DrawerService.isOpen('right');
+  };
+
+  $scope.isMenuVisible = function isMenuVisible() {
+    return DrawerService.isOpen('left');
+  };
+
+  // FEATURE CHANGING
+
+  var featurePendingOpen;
+  $scope.changeFeature = function(feature, data, initial){
+
+    var currentFeature = UISessionService.getCurrentFeatureName();
+    var currentData = UISessionService.getFeatureData();
+
+    if (!(currentFeature === feature && currentData === data)) {
       if (!$scope.features[feature].loaded) $scope.features[feature].loaded = true;
-      var state = UISessionService.getFeatureState(feature);
-      UISessionService.changeFeature(feature, data, state);
-      AnalyticsService.visit(feature);
+
+      if (!$scope.isMenuVisible() && !initial){
+        // Open only after menu has been opened
+        featurePendingOpen = {
+          feature: feature,
+          data: data
+        };
+        $scope.toggleMenu();
+      }else{
+
+        // issue a 500ms lock to prevent leave animation to prevent items from fading
+        // on list change
+        UISessionService.lock('leaveAnimation', 500);
+
+        var state = UISessionService.getFeatureState(feature);
+        if (!$scope.$$phase && !$rootScope.$$phase){
+          UISessionService.changeFeature(feature, data, state);
+          $scope.$digest();
+        }else{
+          UISessionService.changeFeature(feature, data, state);
+        }
+        AnalyticsService.visit(feature);
+      }
     }
   };
 
@@ -135,7 +210,7 @@ function MainController(
   }
 
   // Start from tasks
-  $scope.changeFeature('tasks');
+  $scope.changeFeature('tasks', undefined, true);
 
   // ONBOARDING
 
@@ -165,6 +240,7 @@ function MainController(
   };
 
   // DATA ARRAYS
+
   $scope.items = ItemsService.getItems(UISessionService.getActiveUUID());
   $scope.tasks = TasksService.getTasks(UISessionService.getActiveUUID());
   $scope.archivedTasks = TasksService.getArchivedTasks(UISessionService.getActiveUUID());
@@ -388,6 +464,14 @@ function MainController(
     UISessionService.resolveDeferredActions('edit');
   }
 
+  DrawerService.registerOpenedCallback('left', menuOpened, 'MainController');
+  function menuOpened() {
+    if (featurePendingOpen){
+      $scope.changeFeature(featurePendingOpen.feature, featurePendingOpen.data);
+      featurePendingOpen = undefined;
+    }
+  }
+
   DrawerService.registerClosedCallback('left', menuClosed, 'MainController');
   function menuClosed() {
     if (openEditorAfterMenuClosed) {
@@ -400,54 +484,6 @@ function MainController(
       }, 0);
     }
   }
-
-  $scope.isEditorVisible = function isEditorVisible() {
-    return DrawerService.isOpen('right');
-  };
-
-  $scope.isMenuVisible = function isMenuVisible() {
-    return DrawerService.isOpen('left');
-  };
-
-  // NAVIGATION
-
-  var openEditorAfterMenuClosed = false;
-  var openMenuAfterEditorClosed = false;
-
-  /*
-  * Open editor.
-  *
-  * Set openEditorAfterMenuClosed and openMenuAFterEditorClosed flags to:
-  *   i.  open editor in menu's close callback
-  *   ii. open menu in editor's close callback
-  *
-  * TODO: analytics visit omnibar
-  */
-  $scope.openEditor = function openEditor(type, item) {
-    executeEditorAboutToOpenCallbacks(type, item);
-
-    // Check for existing edit locks and resolve them first.
-    var deferredEditAction = UISessionService.getDeferredAction('edit');
-    if (deferredEditAction) deferredEditAction.resolve();
-
-    UISessionService.deferAction('edit');
-
-    if (DrawerService.isOpen('left')) {
-      DrawerService.close('left');
-      openEditorAfterMenuClosed = true;
-      openMenuAfterEditorClosed = true;
-    } else {
-      DrawerService.open('right');
-    }
-  };
-
-  $scope.closeEditor = function closeEditor() {
-    DrawerService.close('right');
-  };
-
-  $scope.toggleMenu = function toggleMenu() {
-    DrawerService.toggle('left');
-  };
 
   // INJECT OTHER CONTENT CONTROLLERS HERE
 

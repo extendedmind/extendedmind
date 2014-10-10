@@ -1,11 +1,16 @@
-<div class="container-content--outer" ng-if="isFeatureActive('lists')" drawer-handle="left">
+<div class="container-content--outer" ng-if="isFeatureActive('lists')" list-container drawer-handle="left">
   <section class="container-content" scroll-to>
     <div list>
       <h2>active</h2>
-      <div ng-repeat="list in lists" ng-bind="list.title"></div>
+      <div class="row animate-list-item-leave"
+      ng-repeat="list in lists | limitTo: currentListLimitTo"
+      list-item="lists.length" ng-include="'static/app/lists/listListItem.html'"></div>
+
+      <div list-item-add="{}" list-item-add-save="saveList(newItem)"
+      ng-include="'static/app/lists/listListItemAdd.html'"></div>
+
     </div>
   </section>
-  <footer class="container-content--after" list-footer="getFeatureMap('lists')"
-  list-footer-add-item="addList({})"></footer>
+  <footer class="container-content--after" list-footer="getFeatureMap('lists')"></footer>
 </div>
 

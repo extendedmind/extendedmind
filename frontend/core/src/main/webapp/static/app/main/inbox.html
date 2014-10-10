@@ -3,7 +3,7 @@
     <h2 ng-bind="items.length + ' items'"></h2>
 
     <div list-item-add="{}" list-item-add-save="saveItem(newItem)">
-      <form role="form" class="group-mixed" ng-submit="saveItem(newItem)"
+      <form role="form" class="group-mixed" ng-submit="callAndExit(saveItem, newItem)"
       data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
       editable-field-container-clicked-elsewhere="clickedElsewhere()">
         <div class="group-mixed--middle">

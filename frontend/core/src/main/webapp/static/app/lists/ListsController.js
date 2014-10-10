@@ -25,60 +25,60 @@
   };
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ListsController');
 
-  $scope.saveList = function saveList(list) {
-    ListsService.saveList(list, UISessionService.getActiveUUID());
-    $scope.gotoPreviousPage();
+  $scope.saveList = function(list) {
+    if (list && list.title && list.title.length > 0){
+      if (list.uuid){
+        AnalyticsService.do('saveList');
+      }else{
+        AnalyticsService.do('addList');
+      }
+      return ListsService.saveList(list, UISessionService.getActiveUUID());
+    }
   };
 
-  $scope.setUnsavedList = function setUnsavedList(/*list*/) {
-    $scope.newList = {};
+  $scope.saveListAndChangeFeature = function(list) {
+    var saveListDeferred = $scope.saveList(list);
+    if (saveListDeferred){
+      saveListDeferred.then(function(savedList){
+        $scope.changeFeature('list', savedList);
+      });
+    }
   };
 
-  $scope.clearUnsavedList = function clearUnsavedList() {
-    $scope.newList = undefined;
+  $scope.saveAndArchiveList = function(list){
+    var saveListDeferred = $scope.saveList(list);
+    if (saveListDeferred){
+      saveListDeferred.then(function(savedList){
+        $scope.archiveList(savedList);
+      });
+    }
   };
 
-  $scope.addList = function addList(newList) {
-    if (!newList.title || newList.title.length === 0) return false;
-
-    var listToSave = {title: newList.title};
-    delete newList.title;
-    return ListsService.saveList(listToSave, UISessionService.getActiveUUID()).then(function(list) {
-      AnalyticsService.do('addList');
-      return list;
-    });
-  };
-
-  $scope.archiveList = function archiveList(list) {
+  $scope.archiveList = function(list) {
+    AnalyticsService.do('archiveList');
     ListsService.archiveList(list, UISessionService.getActiveUUID());
   };
 
-  $scope.deleteList = function deleteList(list) {
+  $scope.deleteList = function(list) {
+    AnalyticsService.do('deleteList');
     ListsService.deleteList(list, UISessionService.getActiveUUID());
   };
 
   // Navigation
 
-  $scope.gotoList = function gotoList(list) {
-    if (UISessionService.getCurrentFeatureName() !== 'list' || UISessionService.getFeatureState('list') !== list) {
-      UISessionService.changeFeature('list', list);
-      AnalyticsService.visit('list');
-    }
-  };
-
   $scope.archiveListAndMoveToLists = function archiveListAndMoveToLists(list) {
     $scope.archiveList(list);
-    UISessionService.changeFeature('lists');
+    $scope.changeFeature('lists');
   };
 
   $scope.deleteListAndMoveToLists = function deleteListAndMoveToLists(list) {
     $scope.deleteList(list);
-    UISessionService.changeFeature('lists');
+    $scope.changeFeature('lists');
   };
 
   $scope.saveListAndMoveToLists = function saveListAndMoveToLists(list) {
     $scope.editListFields(list);
-    UISessionService.changeFeature('lists');
+    $scope.changeFeature('lists');
   };
 }
 

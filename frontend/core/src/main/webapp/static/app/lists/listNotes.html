@@ -1,10 +1,13 @@
-<div class="container-content--outer" ng-if="isFeatureActive('list')">
-  <section class="container-content" scroll-to>
+<div class="container-content--outer" ng-if="isFeatureActive('list')" list-container>
+  <section class="container-content" list list-open="openEditor('note', {transientProperties: {list:list.uuid}})">
     <div list>
       <h2>notes</h2>
-      <div ng-repeat="note in notes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}" ng-bind="note.title"></div>
+      <div class="row animate-list-item-leave"
+      ng-repeat="note in listNotes = (allNotes | itemsFilter:{name:'byListUUID', filterBy: list.uuid})
+      | limitTo: currentListLimitTo"
+      list-item="listNotes.length" ng-include="'static/app/notes/noteListItem.html'"
+      ng-style="{maxHeight: getNoteListItemHeight(note)}"></div>
     </div>
   </section>
-  <footer class="container-content--after" list-footer="getFeatureMap('list')"
-  list-footer-add-item="addNote({transientProperties: {list:list.uuid}})"></footer>
+  <footer class="container-content--after" list-footer="getFeatureMap('list')"></footer>
 </div>

@@ -80,6 +80,11 @@
               event.stopPropagation();
             }
           };
+
+          scope.callAndExit = function(fn, parameter){
+            fn(parameter);
+            exit();
+          }
         }
       };
     }
