@@ -242,7 +242,7 @@
     },
     activateDelayedNotifications: function() {
       var uuid = this.getActiveUUID();
-      if (delayedNotificationMap && delayedNotificationMap[uuid]) {
+      if (delayedNotificationMap && delayedNotificationMap[uuid] && delayedNotificationMap[uuid].length) {
         var notifications = delayedNotificationMap[uuid].clone();
         executeNotificationsActiveCallbacks(notifications);
         moveDelayedNotificationsToNotificationMap(delayedNotificationMap[uuid], uuid);
