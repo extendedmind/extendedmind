@@ -38,7 +38,7 @@
       };
 
       scope.setDateDayAfterTomorrow = function() {
-        var tomorrow = DateService.getTomorrowYYYYMMDD();
+        var tomorrow = DateService.getTomorrowDate();
         setDateAndClose(tomorrow, DateService.setOffsetDate.bind(DateService, 1));
       };
 

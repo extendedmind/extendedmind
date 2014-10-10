@@ -145,6 +145,11 @@
         }
       }
     },
+    getTomorrowDate: function() {
+      var tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return tomorrow;
+    },
     getYYYYMMDD: function(date) {
       return yyyymmdd(date);
     },
@@ -163,8 +168,7 @@
       return yyyymmdd(new Date());
     },
     getTomorrowYYYYMMDD: function() {
-      var tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
+      var tomorrow = this.getTomorrowDate();
       return yyyymmdd(tomorrow);
     },
     getDateTodayOrFromLaterYYYYMMDD: function(dateYYYYMMDD) {
