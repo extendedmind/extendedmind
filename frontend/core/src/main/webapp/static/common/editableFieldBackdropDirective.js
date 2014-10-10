@@ -82,8 +82,6 @@
 
         }
 
-
-
         // activate container
         var containerInfo = containerInfos.findFirstObjectByKeyValue('id', id);
         if (containerInfo) containerInfo.active = true;

@@ -28,13 +28,22 @@
       var editableFieldBlur = function() {
         $element.removeClass('active');
       };
+      var editableFieldKeydown = function(event){
+        // ESC button
+        if (event.keyCode === 27){
+          editableFieldBlur();
+          editableFieldContainerController.deactivateContainer();
+        }
+      };
 
+      angular.element($element).bind('keydown', editableFieldKeydown);
       angular.element($element).bind('focus', editableFieldFocus);
       angular.element($element).bind('blur', editableFieldBlur);
 
       $scope.$on('$destroy', function() {
         angular.element($element).unbind('focus', editableFieldFocus);
         angular.element($element).unbind('blur', editableFieldBlur);
+        angular.element($element).unbind('focus', editableFieldKeydown);
       });
     }
   };
