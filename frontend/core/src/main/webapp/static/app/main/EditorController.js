@@ -15,9 +15,8 @@
 
  'use strict';
 
- function EditorController($animate, $q, $rootScope, $scope, $timeout) {
+ function EditorController($q, $rootScope, $scope, $timeout) {
 
-  var editorElement = document.getElementById("editor");
 
   $scope.titlebar = {};
   $scope.searchText = {};
@@ -105,16 +104,12 @@
     // TODO: throw meaningful error e.g. to toaster
   }
 
-
   var completeReadyDeferred;
   $scope.clickCompleteTaskInEdit = function() {
     completeReadyDeferred = $q.defer();
     var completed = $scope.toggleCompleteTask($scope.task, completeReadyDeferred);
 
-    if (completed) {
-      $animate.addClass(angular.element(editorElement), 'checkbox-checking');
-    } else{
-      $animate.removeClass(angular.element(editorElement), 'checkbox-checking');
+    if (!completed) {
       completeReadyDeferred.resolve($scope.task);
       completeReadyDeferred = undefined;
     }
@@ -313,7 +308,7 @@
   };
 }
 
-EditorController['$inject'] = ['$animate', '$q', '$rootScope', '$scope', '$timeout'];
+EditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout'];
 angular.module('em.main').controller('EditorController', EditorController);
 
 
