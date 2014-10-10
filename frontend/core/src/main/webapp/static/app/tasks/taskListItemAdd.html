@@ -1,0 +1,17 @@
+<form role="form" class="group-mixed swiper-no-swiping animate-checkbox-checking" ng-submit="saveTask(newItem)"
+data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
+editable-field-container-clicked-elsewhere="clickedElsewhere()">
+  <div class="group-mixed--left">
+    <input type="checkbox" ng-model="newItem.transientProperties.completed"
+    swiper-click="toggleLeftCheckbox(toggleCompleteTask)" icon-checkbox="getListItemAddId()" ng-disabled="!newItem.title">
+  </div>
+  <div class="group-mixed--middle">
+    <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
+    editable-field placeholder="add task..." maxlength="128"
+    auto-focus="registerAddItemCallbacks(focus, blur)">
+    </textarea>
+  </div>
+  <div class="group-mixed--right">
+    <a href editable-field-deactivate ng-click="openTaskEditor(newItem)">&gt;</a>
+  </div>
+</form>

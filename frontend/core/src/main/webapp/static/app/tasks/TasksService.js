@@ -111,6 +111,13 @@
       task.transientProperties.date = task.due;
     }
   }
+  // copies completed field from persistent to transient
+  function copyCompleted(task) {
+    if (task.completed){
+      if (!task.transientProperties) task.transientProperties = {};
+      task.transientProperties.completed = task.completed;
+    }
+  }
   // date is transient, due is persistent
   function copyDateToDue(task) {
     if (task.transientProperties && task.transientProperties.date) task.due = task.transientProperties.date;
@@ -396,11 +403,12 @@
         if (task.transientProperties.context) delete task.transientProperties.context;
         if (task.transientProperties.list) delete task.transientProperties.list;
         if (task.transientProperties.date) delete task.transientProperties.date;
+        if (task.transientProperties.completed) delete task.transientProperties.completed;
       }
       this.addTransientProperties(tasksArray, ownerUUID);
     },
     addTransientProperties: function(tasksArray, ownerUUID, addExtraTransientPropertyFn) {
-      var addExtraTransientPropertyFunctions = [copyDueToDate, copyDescriptionToTransientProperties];
+      var addExtraTransientPropertyFunctions = [copyDueToDate, copyCompleted, copyDescriptionToTransientProperties];
       if (typeof addExtraTransientPropertyFn === 'function')
         addExtraTransientPropertyFunctions.push(addExtraTransientPropertyFn);
       ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, addExtraTransientPropertyFunctions);

@@ -15,7 +15,9 @@
 
  'use strict';
 
- function EditorController($rootScope, $scope, $timeout) {
+ function EditorController($animate, $q, $rootScope, $scope, $timeout) {
+
+  var editorElement = document.getElementById("editor");
 
   $scope.titlebar = {};
   $scope.searchText = {};
@@ -64,6 +66,11 @@
       $scope.saveItemInEdit();
       event.preventDefault();
       event.stopPropagation();
+    }else{
+      if ($scope.editorType === 'task'){
+        // Change task title at the same time
+        $scope.task.title = $scope.titlebar.text;
+      }
     }
   };
 
@@ -98,6 +105,21 @@
     // TODO: throw meaningful error e.g. to toaster
   }
 
+
+  var completeReadyDeferred;
+  $scope.clickCompleteTaskInEdit = function() {
+    completeReadyDeferred = $q.defer();
+    var completed = $scope.toggleCompleteTask($scope.task, completeReadyDeferred);
+
+    if (completed) {
+      $animate.addClass(angular.element(editorElement), 'checkbox-checking');
+    } else{
+      $animate.removeClass(angular.element(editorElement), 'checkbox-checking');
+      completeReadyDeferred.resolve($scope.task);
+      completeReadyDeferred = undefined;
+    }
+  }
+
   $scope.saveItemInEdit = function saveItemInEdit() {
     if ($scope.newList && $scope.newList.title)
       $scope.addList($scope.newList).then(deleteNewListAndAddListToItemAndSaveItem, deleteNewListAndSaveItem);
@@ -105,6 +127,10 @@
       if ($scope.editorType === 'task') {
         $scope.task.title = $scope.titlebar.text;
         $scope.saveTask($scope.task);
+        if (completeReadyDeferred){
+          completeReadyDeferred.resolve($scope.task);
+          completeReadyDeferred = undefined;
+        }
       }
       //
       // TODO: others
@@ -287,7 +313,7 @@
   };
 }
 
-EditorController['$inject'] = ['$rootScope', '$scope', '$timeout'];
+EditorController['$inject'] = ['$animate', '$q', '$rootScope', '$scope', '$timeout'];
 angular.module('em.main').controller('EditorController', EditorController);
 
 

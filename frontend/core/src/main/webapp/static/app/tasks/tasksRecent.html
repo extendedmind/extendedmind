@@ -1,13 +1,11 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
   <section class="container-content" list="top">
     <h2>recent</h2>
-    <div list-item-add="{}" list-item-add-type="task" list-item-add-fn="addTask(newItem)"
-    list-item-add-arrow-fn="openTaskEditor(newItem)"></div>
+    <div list-item-add="{transientProperties: {completed: false}}" list-item-add-save="saveTask(newItem)"
+    ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
     <div class="row animate-list-item-leave"
-    ng-repeat="task in recentTasks = (tasks | filter:isTaskVisible)
-    | limitTo: currentListLimitTo"
-    list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox"
-    list-item-left-action-checked="task.completed" list-item-length="recentTasks.length"></div>
+    ng-repeat="task in recentTasks = (tasks | filter:isTaskVisible) | limitTo: currentListLimitTo"
+    list-item="recentTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('tasks')"></footer>
 </div>

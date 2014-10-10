@@ -17,6 +17,7 @@
  function ItemsController($scope, $timeout, AnalyticsService, ItemsService, UISessionService) {
 
   $scope.addItem = function(newItem) {
+    console.trace();
     if (newItem.title && newItem.title.length > 0) {
       var newItemToSave = {title: newItem.title};
       delete newItem.title;

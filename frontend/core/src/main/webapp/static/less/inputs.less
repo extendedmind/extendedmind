@@ -113,7 +113,11 @@ input[type="checkbox"] + label:before {
   color: @color-checkbox;
   content: @icon-selection-empty;
 }
+
 input[type="checkbox"]:checked + label:before {
+  // NOTE: this animation is hard to completely move to animations.less
+  //       without it the checkbox is immediately checked, because :checked
+  //       is evaluated before the new class is inserted!
   transition: color 2s cubic-bezier(.01,1.11,0,.97);
   color: @color-checkbox-checked;
   content: @icon-selection-checked;

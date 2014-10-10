@@ -35,7 +35,7 @@
   ];
 
   $scope.getNewDayTask = function(daySlidesIndex){
-    return {transientProperties: {date: $scope.daySlides[daySlidesIndex].info}}
+    return {transientProperties: {date: $scope.daySlides[daySlidesIndex].info, completed: false}}
   }
 
   $scope.dateClicked = function dateClicked(date) {

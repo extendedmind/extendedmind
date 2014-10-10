@@ -14,49 +14,58 @@
  */
  'use strict';
 
- function listItemAddDirective() {
+ function listItemAddDirective($parse) {
   return {
     restrict: 'A',
-    require: '^list',
-    scope: {
-      newItemFn: '&listItemAdd',
-      newItemType: '@listItemAddType',
-      addItemFn: '&listItemAddFn',
-      leftCheckboxFn: '&listItemAddCheckboxFn',
-      leftRightArrowFn: '&listItemAddArrowFn'
-    },
-    templateUrl: 'static/app/base/listItemAdd.html',
+    require: ['^list', '?^swiperSlide'],
+    scope: true,
     compile: function(){
       return {
-        pre: function(scope, element, attrs, listController) {
+        pre: function(scope, element, attrs, controllers) {
+
+          var createNewItemFn = $parse(attrs.listItemAdd).bind(undefined, scope);
+          var saveNewItemFn = $parse(attrs.listItemAddSave).bind(undefined, scope);
 
           // Use this instead of ng-show to get focus() to work. With ng-show this doesn't work
           // as ng-show has not been evaluated before we reach the callback.
           element[0].style.display = "none";
-          scope.leftCheckboxChecked = false;
 
           var addItemFocusCallback;
           var addItemBlurCallback;
           scope.registerAddItemCallbacks = function(focusCallback, blurCallback){
             addItemFocusCallback = focusCallback;
             addItemBlurCallback = blurCallback;
-            listController.registerAddActiveCallback(function(){
-              element[0].style.display = "initial";
-              // Initialize first item on focus
-              scope.newItem = scope.newItemFn();
-              addItemFocusCallback();
-            })
+            controllers[0].registerAddActiveCallback(enter);
+          }
+
+          scope.toggleLeftCheckbox = function (toggleFn) {
+            controllers[0].toggleLeftCheckbox(scope.newItem, toggleFn,
+                                              angular.element(element[0].firstElementChild));
+          };
+
+          function enter(){
+            element[0].style.display = "initial";
+            // Initialize first item on focus
+            scope.newItem = createNewItemFn();
+            addItemFocusCallback();
           }
 
           function exit(){
-            scope.leftCheckboxChecked = false;
             if (addItemBlurCallback) addItemBlurCallback();
             element[0].style.display = "none";
           }
 
           scope.clickedElsewhere = function(){
-            scope.addItem();
+            saveNewItemFn(scope.newItem);
             exit();
+          }
+
+          scope.getListItemAddId = function(){
+            if (controllers[1]){
+              return controllers[1].getSlidePath() + "/newItem";
+            }else{
+              return "newItem";
+            }
           }
 
           scope.textareaKeyDown = function (event) {
@@ -65,23 +74,16 @@
             // RETURN button
             else if (event.keyCode === 13) {
               // Enter in add item saves, no line breaks allowed
-              scope.addItem();
+              saveNewItemFn(scope.newItem);
+              scope.newItem = createNewItemFn();
               event.preventDefault();
               event.stopPropagation();
             }
           };
-
-          scope.addItem = function(){
-            scope.addItemFn({newItem: scope.newItem});
-            scope.newItem = scope.newItemFn();
-          };
-
-          scope.clickArrow = function(){
-            scope.leftRightArrowFn({newItem: scope.newItem});
-          }
         }
       };
     }
   };
 }
+listItemAddDirective['$inject'] = ['$parse'];
 angular.module('em.base').directive('listItemAdd', listItemAddDirective);

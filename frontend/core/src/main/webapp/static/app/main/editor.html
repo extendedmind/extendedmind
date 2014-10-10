@@ -1,4 +1,4 @@
-<div class="container-editor" ng-controller="EditorController" drawer="right" vertical-resize="editor">
+<div id="editor" class="container-editor" ng-controller="EditorController" drawer="right" vertical-resize="editor">
   <div ng-if="editorVisible" class="container-fluid">
     <header class="container-titlebar">
       <div class="container-titlebar--inner">
@@ -14,7 +14,7 @@
 
         <form role="form" class="group-mixed" ng-submit="saveItemInEdit()" autocapitalize="none" autocorrect="off">
           <div ng-if="itemTitleHasActionButton" class="group-mixed--left">
-            <input type="checkbox" ng-click="toggleCompleteTask(task)" icon-checkbox="editorTitlebarCheckbox" />
+            <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-checked="task.transientProperties.completed" ng-model="task.transientProperties.completed" icon-checkbox="editorTitlebarCheckbox" />
           </div>
           <div class="group-mixed--middle">
             <textarea type="text" ng-model="titlebar.text" ng-keydown="titlebarTextKeyDown($event)" auto-focus="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="{{getTitlebarTextInputPlaceholder()}}" maxlength="128" required ></textarea>

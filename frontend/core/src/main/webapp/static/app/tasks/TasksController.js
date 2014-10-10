@@ -130,6 +130,9 @@
   */
   $scope.toggleCompleteTask = function toggleCompleteTask(task, taskCompletingReadyDeferred) {
 
+    // Don't try to complete a task that hasn't been saved, saveTask will call this again
+    // after the task has a uuid
+    if (!task.uuid){ return !task.transientProperties.completed;}
     if (taskCompletingReadyDeferred) {
       taskCompletingReadyDeferred.promise.then(function(task) {
         unfreezeTask(task);
@@ -148,14 +151,33 @@
       return false;
     } else {
       AnalyticsService.do('completeTask');
-      TasksService.completeTask(task, UISessionService.getActiveUUID());
+      TasksService.completeTask(task, UISessionService.getActiveUUID()).then(function(){
+        if (!taskCompletingReadyDeferred) unfreezeTask(task, true);
+      }, function() {
+        if (!taskCompletingReadyDeferred) unfreezeTask(task, true);
+      });
       return true;
     }
   };
 
   $scope.saveTask = function saveTask(task) {
-    AnalyticsService.do('saveTask');
-    TasksService.saveTask(task, UISessionService.getActiveUUID());
+    if (!task || !task.title || task.title.length === 0) return false;
+    var completeOnSave = false;
+    if (task.uuid){
+      AnalyticsService.do('saveTask');
+    }else{
+      AnalyticsService.do('addTask');
+      if (task.transientProperties && task.transientProperties.completed){
+        completeOnSave = true;
+      }
+    }
+
+    return TasksService.saveTask(task, UISessionService.getActiveUUID()).then(function(savedTask) {
+      if (completeOnSave){
+        $scope.toggleCompleteTask(savedTask);
+      }
+      return savedTask;
+    });
   };
 
   $scope.resetTask = function resetTask(task) {
@@ -178,29 +200,6 @@
 
     AnalyticsService.do('deleteTask');
     TasksService.deleteTask(task, UISessionService.getActiveUUID());
-  };
-
-  $scope.addTask = function addTask(newTask) {
-    if (!newTask || !newTask.title || newTask.title.length === 0) return false;
-    var newTaskToSave = {title: newTask.title};
-
-    if (newTask.transientProperties) {
-      newTaskToSave.transientProperties = {};
-
-      if (newTask.transientProperties.date)
-        newTaskToSave.transientProperties.date = newTask.transientProperties.date;
-
-      if (newTask.transientProperties.list)
-        newTaskToSave.transientProperties.list = newTask.transientProperties.list;
-
-      if (newTask.transientProperties.context)
-        newTaskToSave.transientProperties.context = newTask.transientProperties.context;
-    }
-    delete newTask.title;
-
-    TasksService.saveTask(newTaskToSave, UISessionService.getActiveUUID()).then(function(/*newTaskToSave*/) {
-      AnalyticsService.do('addTask');
-    });
   };
 
   // NAVIGATION

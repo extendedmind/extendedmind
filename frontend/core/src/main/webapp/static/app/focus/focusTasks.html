@@ -57,36 +57,44 @@
         <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0" swiper-slide-duplicate="true">
           <div class="container-content" list>
             <h1>{{daySlides[2].info}}</h1>
+
             <div class="row animate-list-item-leave"
-            ng-repeat="task in rightDuplicateTasks = (tasks | tasksByDate:daySlides[2].info)
+            ng-repeat="task in rightDuplicateTasks = (tasks | tasksByDate:daySlides[2].info | filter:isTaskVisible)
             | limitTo: currentListLimitTo"
-            list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox"
-            list-item-left-action-checked="task.completed" list-item-length="rightDuplicateTasks.length"></div>
-            <div list-item-add="getNewDayTask(2)" list-item-add-type="task" list-item-add-fn="addTask(newItem)"></div>
+            list-item="rightDuplicateTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
+
+            <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
+            ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1" swiper-slide-loop-start="true">
           <div class="container-content" list>
             <h1>{{daySlides[0].info}}</h1>
+
             <div class="row animate-list-item-leave"
-            ng-repeat="task in leftTasks = (tasks | tasksByDate:daySlides[0].info)
+            ng-repeat="task in leftTasks = (tasks | tasksByDate:daySlides[0].info | filter:isTaskVisible)
             | limitTo: currentListLimitTo"
-            list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox"
-            list-item-left-action-checked="task.completed" list-item-length="leftTasks.length"></div>
-            <div list-item-add="getNewDayTask(0)" list-item-add-type="task" list-item-add-fn="addTask(newItem)"></div>
+            list-item="leftTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
+
+            <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
+            ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
+
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2">
           <div class="container-content" list>
             <h1>{{daySlides[1].info}}</h1>
+
             <div class="row animate-list-item-leave"
-            ng-repeat="task in middleTasks = (tasks | tasksByDate:daySlides[1].info)
+            ng-repeat="task in middleTasks = (tasks | tasksByDate:daySlides[1].info | filter:isTaskVisible)
             | limitTo: currentListLimitTo"
-            list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox"
-            list-item-left-action-checked="task.completed" list-item-length="middleTasks.length"></div>
-            <div list-item-add="getNewDayTask(1)" list-item-add-type="task" list-item-add-fn="addTask(newItem)"></div>
+            list-item="middleTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
+
+            <div list-item-add="getNewDayTask(1)" list-item-add-save="saveTask(newItem)"
+            ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
+
           </div>
         </div>
 
@@ -94,11 +102,12 @@
           <div class="container-content" list>
             <h1>{{daySlides[2].info}}</h1>
             <div class="row animate-list-item-leave"
-            ng-repeat="task in rightTasks = (tasks | tasksByDate:daySlides[2].info)
+            ng-repeat="task in rightTasks = (tasks | tasksByDate:daySlides[2].info | filter:isTaskVisible)
             | limitTo: currentListLimitTo"
-            list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox"
-            list-item-left-action-checked="task.completed" list-item-length="rightTasks.length"></div>
-            <div list-item-add="getNewDayTask(2)" list-item-add-type="task" list-item-add-fn="addTask(newItem)"></div>
+            list-item="rightTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
+
+            <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
+            ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
           </div>
         </div>
 
@@ -106,9 +115,12 @@
           <div class="container-content" list>
             <h1>{{daySlides[0].info}}</h1>
             <div class="row animate-list-item-leave"
-            ng-repeat="task in leftDuplicateTasks = (tasks | tasksByDate:daySlides[0].info)
-            | limitTo: currentListLimitTo" list-item="task" list-item-action="openTaskEditor(task)" list-item-left-action="toggleCompleteTask(task, checkboxCheckingReadyDeferred)" list-item-left-action-type="checkbox" list-item-left-action-checked="task.completed" list-item-length="leftDuplicateTasks.length"></div>
-            <div list-item-add="getNewDayTask(0)" list-item-add-type="task" list-item-add-fn="addTask(newItem)"></div>
+            ng-repeat="task in leftDuplicateTasks = (tasks | tasksByDate:daySlides[0].info | filter:isTaskVisible)
+            | limitTo: currentListLimitTo"
+            list-item="leftDuplicateTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
+
+            <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
+            ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
           </div>
         </div>
 

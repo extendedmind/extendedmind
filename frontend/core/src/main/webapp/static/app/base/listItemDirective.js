@@ -14,55 +14,27 @@
  */
  'use strict';
 
- function listItemDirective($animate, $q) {
+ function listItemDirective($parse) {
   return {
     restrict: 'A',
     require: '^list',
-    templateUrl: 'static/app/base/listItem.html',
-    scope: {
-      item: '=listItem',
-      itemAction: '&listItemAction',
-      leftActionType: '@?listItemLeftActionType',
-      leftActionClass: '=?listItemLeftActionClass',
-      leftAction: '&listItemLeftAction',
-      leftActionChecked: '=listItemLeftActionChecked',
-      rightIndicatorClass: '=?listItemRightIndicatorClass',
-      listLength: '=listItemLength'
-    },
+    scope: true,
     compile: function(){
       return {
-        pre: function(element, attrs) {
-          if (!attrs.listItemLeftAction) { attrs.listItemLeftAction = 'false'; }
-          if (!attrs.leftActionChecked) { attrs.leftActionChecked = 'false'; }
-        },
         post: function(scope, element, attrs, listController) {
+          var listLength = $parse(attrs.listItem)(scope);
+          listController.notifyListLength(listLength);
 
-          /*
-          * Animate checked checkbox here.
-          */
-          scope.toggleLeftCheckbox = function toggleLeftCheckbox(item) {
-
-            var checkboxCheckingReadyDeferred = $q.defer();
-            var checked = scope.leftAction({
-              task: item,
-              checkboxCheckingReadyDeferred: checkboxCheckingReadyDeferred
-            });
-
-            if (checked) {
-              $animate.addClass(element, 'list-item-completing').then(function() {
-                checkboxCheckingReadyDeferred.resolve(item);
-                scope.$apply();
-              });
-            } else $animate.removeClass(element, 'list-item-completing');
+          scope.toggleLeftCheckbox = function (item, toggleFn) {
+            listController.toggleLeftCheckbox(item, toggleFn,
+                                              angular.element(element[0].firstElementChild));
           };
-
-          listController.notifyListLength(scope.listLength);
         }
       };
     }
   };
 }
-listItemDirective['$inject'] = ['$animate', '$q'];
+listItemDirective['$inject'] = ['$parse'];
 angular.module('em.base').directive('listItem', listItemDirective);
 
 /*
