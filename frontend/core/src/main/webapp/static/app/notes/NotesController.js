@@ -117,6 +117,19 @@
     }
   };
 
+  // FIXME: This needs fine tuning! Figure out how to know how many rows
+  // the teaser need, and use that for height calculation!
+  $scope.getNoteListItemHeight = function(note){
+    var teaser = $scope.getNoteContentTeaser(note);
+    if (teaser && teaser.length > 30){
+      return 88;
+    }else if (teaser && teaser.length > 0){
+      return 44;
+    }else {
+      return 'inherit';
+    }
+  }
+
   $scope.showKeywords = function showKeywords() {
     return $scope.newKeyword && $scope.newKeyword.title && $scope.newKeyword.title.length !== 0;
   };

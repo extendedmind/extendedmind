@@ -1,6 +1,10 @@
-<section class="container-content" drawer-handle="left">
-  <h2>recent</h2>
-  <div ng-repeat="note in allNotes | orderBy:'modified':true | limitTo: getRecentNotesLimit()" ng-bind="note.title">
-</section>
-<footer class="container-content--after" list-footer="getFeatureMap('notes')"
-list-footer-add-item="addNote({})"></footer>
+<div class="container-fluid--inner" list-container drawer-handle="left">
+  <section class="container-content" list="top" list-open="openEditor('note', {})">
+    <h2>recent</h2>
+    <div class="row animate-list-item-leave"
+    ng-repeat="note in allNotes | limitTo: currentListLimitTo | orderBy:'modified':true"
+    list-item="allNotes.length" ng-include="'static/app/notes/noteListItem.html'"
+    ng-style="{maxHeight: getNoteListItemHeight(note)}"></div>
+  </section>
+  <footer class="container-content--after" list-footer="getFeatureMap('notes')"></footer>
+</div>

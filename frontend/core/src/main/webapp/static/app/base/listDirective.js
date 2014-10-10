@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function listDirective($animate, $q, $timeout, UISessionService) {
+ function listDirective($animate, $parse, $q, $timeout, UISessionService) {
   return {
     require: ['^listContainer', '?^swiperSlide'],
     restrict: 'A',
@@ -49,8 +49,17 @@
 
     },
     link: function(scope, element, attrs, controllers) {
+
+      var listOpenOnAddFn;
+      if (attrs.listOpen){
+        listOpenOnAddFn = $parse(attrs.listOpen).bind(undefined, scope);
+      }
+
       function activateListAdd() {
-        if (scope.activateAddItem){
+        if (listOpenOnAddFn){
+          // Execute open function
+          listOpenOnAddFn();
+        }else if (scope.activateAddItem){
           if (attrs.list !== 'top'){
             if (activateListBottom()){
               // The entire list was not visible, we
@@ -181,5 +190,5 @@
     }
   };
 }
-listDirective['$inject'] = ['$animate', '$q', '$timeout', 'UISessionService'];
+listDirective['$inject'] = ['$animate', '$parse', '$q',  '$timeout', 'UISessionService'];
 angular.module('em.base').directive('list', listDirective);
