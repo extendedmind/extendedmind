@@ -186,7 +186,7 @@
     }
 
     deferredAuthentication.promise.then(null, function() {
-      $location.path('/login');
+      $location.path('/');
     });
     return deferredAuthentication.promise;
   }
