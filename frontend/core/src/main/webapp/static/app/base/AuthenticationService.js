@@ -186,7 +186,8 @@
     }
 
     deferredAuthentication.promise.then(null, function() {
-      $location.path('/');
+      // On error redirect to login
+      $rootScope.redirectToEntry();
     });
     return deferredAuthentication.promise;
   }

@@ -17,11 +17,11 @@
  function EntryController($location, $rootScope, $scope, $timeout, $window,
                           AnalyticsService, AuthenticationService,
                           BackendClientService, DetectBrowserService, SwiperService,
-                          UserSessionService) {
+                          UserSessionService, packaging) {
 
   AnalyticsService.visitEntry('entry');
 
-  if (DetectBrowserService.isMobile()){
+  if (packaging === 'web' && DetectBrowserService.isMobile()){
     $scope.entryState = 'download';
   }
 
@@ -150,5 +150,5 @@
 EntryController['$inject'] = ['$location', '$rootScope', '$scope', '$timeout', '$window',
                               'AnalyticsService', 'AuthenticationService',
                               'BackendClientService', 'DetectBrowserService', 'SwiperService',
-                              'UserSessionService'];
+                              'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);
