@@ -15,8 +15,6 @@
  'use strict';
 
  function DatesController($q, $rootScope, $scope, DateService, SwiperService, UISessionService) {
-  var detectDayChangeBuffer = 1000;
-  var dayChangeLastCheck;
   var slidePath = 'focus/tasks';
 
   $scope.daySlides = [
@@ -35,8 +33,8 @@
   ];
 
   $scope.getNewDayTask = function(daySlidesIndex){
-    return {transientProperties: {date: $scope.daySlides[daySlidesIndex].info, completed: false}}
-  }
+    return {transientProperties: {date: $scope.daySlides[daySlidesIndex].info, completed: false}};
+  };
 
   $scope.dateClicked = function dateClicked(date) {
     // Get reference date from active slide.
@@ -44,19 +42,23 @@
     var newActiveDate = new Date(date);
 
     // http://stackoverflow.com/a/543152
-    var offsetBetweenDays = (newActiveDate - new Date($scope.daySlides[activeSlideIndex].referenceDate)) / (1000*60*60*24);
+    var offsetBetweenDays = (newActiveDate -
+                             new Date($scope.daySlides[activeSlideIndex].referenceDate)) / (1000*60*60*24);
 
-    // Offset between days determines swipe direction. Set new active date to adjacent slide and swipe to that slide.
+    // Offset between days determines swipe direction.
+    // Set new active date to adjacent slide and swipe to that slide.
     if (offsetBetweenDays < 0) {
       // Get adjacent circular array index.
       var previousIndex = (activeSlideIndex - 1 + $scope.daySlides.length) % $scope.daySlides.length;
-      $scope.daySlides[previousIndex].info = $scope.daySlides[previousIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
+      $scope.daySlides[previousIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
+      $scope.daySlides[previousIndex].info = $scope.daySlides[previousIndex].referenceDate;
       SwiperService.swipePrevious('focus/tasks');
     }
     else if (offsetBetweenDays > 0) {
       // Get adjacent circular array index.
       var nextIndex = (activeSlideIndex + 1 + $scope.daySlides.length) % $scope.daySlides.length;
-      $scope.daySlides[nextIndex].info = $scope.daySlides[nextIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
+      $scope.daySlides[nextIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
+      $scope.daySlides[nextIndex].info = $scope.daySlides[nextIndex].referenceDate;
       SwiperService.swipeNext('focus/tasks');
     }
   };
@@ -77,7 +79,9 @@
   var offsetFromOldActiveSlide = 0;
   var datepickerWeeksInfosCleared = false;
 
-  SwiperService.registerSlideChangeStartCallback(datepickerSlideChangeStartCallback, 'datepicker', 'DatesController');
+  SwiperService.registerSlideChangeStartCallback(datepickerSlideChangeStartCallback,
+                                                 'datepicker',
+                                                 'DatesController');
   function datepickerSlideChangeStartCallback(direction) {
     offsetFromOldActiveSlide += direction === 'prev' ? -1 : 1;
 
@@ -146,7 +150,9 @@
     // http://stackoverflow.com/a/543152
     var oldActiveDate = new Date($scope.daySlides[oldActiveDaySlideIndex].referenceDate);
     var offsetFromOldActiveDay = offsetFromOldActiveSlide * 7;
-    var newActiveYYYYMMDD = DateService.setOffsetDate(offsetFromOldActiveDay, oldActiveDate).getYYYYMMDD(oldActiveDate);
+    var newActiveYYYYMMDD = DateService.setOffsetDate(offsetFromOldActiveDay, oldActiveDate)
+    .getYYYYMMDD(oldActiveDate);
+
     $scope.dateClicked(newActiveYYYYMMDD);
 
     if (!$scope.$$phase) $scope.$digest();
@@ -166,12 +172,14 @@
       // Moved offset is the remainder from total moves divided by slides array length.
       var movedOffset = offsetFromOldActiveDay % $scope.daySlides.length;
       // Old active day is in old active slide index.
-      var oldActiveSlideIndex = (slideIndex - movedOffset + $scope.daySlides.length) % $scope.daySlides.length;
+      var oldActiveSlideIndex = (slideIndex - movedOffset +
+                                 $scope.daySlides.length) % $scope.daySlides.length;
 
       // Update date in active slide: set new active date with offset from old active date.
       var oldActiveDate = new Date($scope.daySlides[oldActiveSlideIndex].referenceDate);
       newActiveDate = DateService.getDateWithOffset(offsetFromOldActiveDay, oldActiveDate);
-      $scope.daySlides[slideIndex].info = $scope.daySlides[slideIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
+      $scope.daySlides[slideIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
+      $scope.daySlides[slideIndex].info = $scope.daySlides[slideIndex].referenceDate;
 
     } else {
       // Date in active slide is up to date.
@@ -185,8 +193,11 @@
     var newPreviousDate = DateService.getDateWithOffset(-1, newActiveDate);
     var newNextDate = DateService.getDateWithOffset(1, newActiveDate);
 
-    $scope.daySlides[previousIndex].info = $scope.daySlides[previousIndex].referenceDate = DateService.getYYYYMMDD(newPreviousDate);
-    $scope.daySlides[nextIndex].info = $scope.daySlides[nextIndex].referenceDate = DateService.getYYYYMMDD(newNextDate);
+    $scope.daySlides[previousIndex].referenceDate = DateService.getYYYYMMDD(newPreviousDate);
+    $scope.daySlides[previousIndex].info = $scope.daySlides[previousIndex].referenceDate;
+
+    $scope.daySlides[nextIndex].referenceDate = DateService.getYYYYMMDD(newNextDate);
+    $scope.daySlides[nextIndex].info = $scope.daySlides[nextIndex].referenceDate;
 
     // Update UI.
     if (!$scope.$$phase) $scope.$digest();
@@ -194,193 +205,6 @@
     // Set variables to initial values.
     offsetFromOldActiveDay = 0;
     daySlidesInfosCleared = false;
-  }
-
-  // $scope.activeDay = {};
-  $rootScope.isDatepickerVisible = false;
-
-  // Invoke function during compile and $scope.$apply();
-  // Set initial swiper slide path to staring day or swipe to active day.
-  function swipeToStartingDay(startingDay, init) {
-    $scope.activeDay = startingDay || DateService.getTodayDate(currentWeek) || DateService.getMondayDate();
-
-    $q.when(SwiperService.setInitialSlidePath(slidePath, getDateSlidePath($scope.activeDay)))
-    .then(function() {
-      if (!init) {
-        // Need additional swiping if setting initial slide path fails to work
-        SwiperService.swipeTo(getDateSlidePath($scope.activeDay));
-      }
-    });
-  }
-  // swipeToStartingDay(undefined, true);
-
-  $scope.detectDayChangeAndReturnWeekdays = function detectDayChangeAndReturnWeekdays() {
-    var activeSlide = SwiperService.getActiveSlidePath($scope.getActiveFeature());
-    if (activeSlide === slidePath) {
-      if (!currentWeek) {
-        currentWeek = DateService.generateAndReturnCurrentWeek(new Date());
-        $scope.datepickerWeeks = initializeAndReturnDatepickerWeeks(currentWeek);
-      } else {
-        if (dayChangeLastCheck < (Date.now() - detectDayChangeBuffer)) {
-          if (!DateService.isCurrentWeekValid(currentWeek)) {
-            currentWeek = DateService.generateAndReturnCurrentWeek(new Date());
-            $scope.datepickerWeeks = initializeAndReturnDatepickerWeeks(currentWeek);
-            swipeToStartingDay();
-          }
-        }
-      }
-      dayChangeLastCheck = Date.now();
-    }
-    return currentWeek;
-  };
-
-  function getDateSlidePath(activeDay) {
-    return slidePath + '/' + activeDay.weekday;
-  }
-
-  /**
-   * @description
-   * Previous, current and next week with datepicker dates.
-   *
-   * Either adds previous week to first and removes last week
-   * or adds next week to last and removes first week.
-   *
-   * @param {string} direction Previous or next week.
-   * @param {Array} currentWeek Current week.
-   */
-   function changeDatePickerWeeks(direction, currentWeek) {
-    if (direction === 'previous') {
-      var previousWeek = DateService.generateAndReturnPreviousWeek(currentWeek);
-      $scope.datepickerWeeks.splice(($scope.datepickerWeeks.length - 1), 1);
-      $scope.datepickerWeeks.unshift(previousWeek);
-    } else if (direction === 'next') {
-      var nextWeek = DateService.generateAndReturnNextWeek(currentWeek);
-      $scope.datepickerWeeks.splice(0, 1);
-      $scope.datepickerWeeks.push(nextWeek);
-    }
-  }
-
-  // This function is intended to be called from datepicker directive.
-  $scope.changeActiveWeek = function changeActiveWeek(direction, gotoScrollerMiddlePageCallback) {
-    if (direction === 'previous') {
-      $scope.changeToPreviousWeek();
-    } else if (direction === 'next') {
-      $scope.changeToNextWeek();
-    }
-    // digest is needed to remove flicker from UI
-    gotoScrollerMiddlePageCallback().then($scope.$digest());
-  };
-
-  $scope.changeToPreviousWeek = function changeToPreviousWeek() {
-    var weekdayIndex = $scope.activeDay.weekdayIndex;
-    currentWeek = DateService.generateAndReturnPreviousWeek(currentWeek);
-    changeDatePickerWeeks('previous', currentWeek);
-    var newActiveDay = currentWeek[weekdayIndex];
-    swipeToStartingDay(newActiveDay);
-  };
-
-  $scope.changeToNextWeek = function changeToNextWeek() {
-    var weekdayIndex = $scope.activeDay.weekdayIndex;
-    currentWeek = DateService.generateAndReturnNextWeek(currentWeek);
-    changeDatePickerWeeks('next', currentWeek);
-    var newActiveDay = currentWeek[weekdayIndex];
-    swipeToStartingDay(newActiveDay);
-  };
-
-  $scope.getDateClass = function getDateClass(date) {
-    var todayYYYYMMDD = DateService.getTodayYYYYMMDD();
-    var status = 'date';
-
-    if (date.yyyymmdd === $scope.activeDay.yyyymmdd) {
-      status += '-active';
-    }
-
-    if (date.yyyymmdd < todayYYYYMMDD && DateService.isDateBeforeCurrentWeek(date)) {
-      status += '-past';
-    } else if (date.yyyymmdd === todayYYYYMMDD) {
-      status += '-today';
-    }
-    return status;
-  };
-
-  $scope.visibleDateFormat = function visibleDateFormat(date) {
-    return (date.yyyymmdd === $scope.activeDay.yyyymmdd) ? date.month.name : date.weekday.substring(0, 1);
-  };
-
-  $scope.$watch('activeDay.yyyymmdd', function(newActiveYYYYMMDD) {
-    if ($scope.subtask) {
-      delete $scope.subtask;
-    }
-    $scope.subtask = {
-      transientProperties: {
-        date: newActiveYYYYMMDD
-      }
-    };
-    if (newActiveYYYYMMDD === DateService.getTodayYYYYMMDD()) {
-      $rootScope.isTodayActive = true;
-    } else {
-      $rootScope.isTodayActive = false;
-    }
-  });
-
-  $scope.setDatepickerVisible = function setDatepickerVisible() {
-    $rootScope.isDatepickerVisible = true;
-    bindElsewhereThanDatepickerEvents();
-  };
-
-  var elsewhereThanDatepickerEventsBound = false;
-
-  function bindElsewhereThanDatepickerEvents() {
-    if (!elsewhereThanDatepickerEventsBound) {
-      document.addEventListener('click', elseWhereThanDatepickerCallback, true);
-      document.addEventListener('touchmove', elseWhereThanDatepickerCallback, true);
-      elsewhereThanDatepickerEventsBound = true;
-    }
-  }
-
-  function gotoToday() {
-    if (!DateService.getTodayDate(currentWeek)) {
-      currentWeek = DateService.generateAndReturnCurrentWeek(new Date());
-      $scope.datepickerWeeks = initializeAndReturnDatepickerWeeks(currentWeek);
-    }
-    swipeToStartingDay();
-  }
-
-  function elseWhereThanDatepickerCallback(event) {
-    var element = event.target;
-    if (element.id === 'datepicker') {
-      return;
-    } else if (element.id === 'todayLink') {
-      event.stopPropagation();
-      gotoToday();
-    }
-    if (element.id !== 'datepicker' || element.id !== 'todayLink') {
-      while (element.parentNode) {
-        element = element.parentNode;
-        if (element.id === 'datepicker') {
-          return;
-        } else if (element.id === 'todayLink') {
-          event.stopPropagation();
-          gotoToday();
-        }
-      }
-    }
-    if (event.type === 'click') {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    $scope.$apply(function() {
-      $rootScope.isDatepickerVisible = false;
-      unbindElsewhereThanDatepickerEvents();
-    });
-  }
-
-  function unbindElsewhereThanDatepickerEvents() {
-    if (elsewhereThanDatepickerEventsBound) {
-      document.removeEventListener('click', elseWhereThanDatepickerCallback, true);
-      document.removeEventListener('touchmove', elseWhereThanDatepickerCallback, true);
-      elsewhereThanDatepickerEventsBound = false;
-    }
   }
 }
 
