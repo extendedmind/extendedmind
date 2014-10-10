@@ -56,7 +56,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0" swiper-slide-duplicate="true">
           <div class="container-content" list>
-            <h1>{{daySlides[2].info}}</h1>
+            <h1 ng-bind="daySlides[2].heading"></h1>
 
             <div class="row animate-list-item-leave"
             ng-repeat="task in rightDuplicateTasks = (tasks | tasksByDate:daySlides[2].info | filter:isTaskVisible)
@@ -70,7 +70,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1" swiper-slide-loop-start="true">
           <div class="container-content" list>
-            <h1>{{daySlides[0].info}}</h1>
+            <h1 ng-bind="daySlides[0].heading"></h1>
 
             <div class="row animate-list-item-leave"
             ng-repeat="task in leftTasks = (tasks | tasksByDate:daySlides[0].info | filter:isTaskVisible)
@@ -85,7 +85,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2">
           <div class="container-content" list>
-            <h1>{{daySlides[1].info}}</h1>
+            <h1 ng-bind="daySlides[1].heading"></h1>
 
             <div class="row animate-list-item-leave"
             ng-repeat="task in middleTasks = (tasks | tasksByDate:daySlides[1].info | filter:isTaskVisible)
@@ -100,7 +100,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/right" slide-index="3">
           <div class="container-content" list>
-            <h1>{{daySlides[2].info}}</h1>
+            <h1 ng-bind="daySlides[2].heading"></h1>
             <div class="row animate-list-item-leave"
             ng-repeat="task in rightTasks = (tasks | tasksByDate:daySlides[2].info | filter:isTaskVisible)
             | limitTo: currentListLimitTo"
@@ -113,7 +113,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/leftDuplicate" slide-index="4" swiper-slide-duplicate="true">
           <div class="container-content" list>
-            <h1>{{daySlides[0].info}}</h1>
+            <h1 ng-bind="daySlides[0].heading"></h1>
             <div class="row animate-list-item-leave"
             ng-repeat="task in leftDuplicateTasks = (tasks | tasksByDate:daySlides[0].info | filter:isTaskVisible)
             | limitTo: currentListLimitTo"

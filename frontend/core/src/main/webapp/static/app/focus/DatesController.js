@@ -22,15 +22,18 @@
   $scope.daySlides = [
   {
     info: DateService.getTodayYYYYMMDD(),
-    referenceDate: DateService.getTodayYYYYMMDD()
+    referenceDate: DateService.getTodayYYYYMMDD(),
+    heading: daySlideHeading(DateService.getTodayYYYYMMDD())
   },
   {
     info: DateService.getTomorrowYYYYMMDD(),
-    referenceDate: DateService.getTomorrowYYYYMMDD()
+    referenceDate: DateService.getTomorrowYYYYMMDD(),
+    heading: daySlideHeading(DateService.getTomorrowYYYYMMDD())
   },
   {
     info: DateService.getYesterdayYYYYMMDD(),
-    referenceDate: DateService.getYesterdayYYYYMMDD()
+    referenceDate: DateService.getYesterdayYYYYMMDD(),
+    heading: daySlideHeading(DateService.getYesterdayYYYYMMDD())
   }
   ];
 
@@ -72,7 +75,8 @@
       if (!daySlidesInfosCleared) {
         for (var i = 0, len = $scope.daySlides.length; i < len; i++) {
           $scope.daySlides[i].referenceDate = $scope.daySlides[i].info;
-          $scope.daySlides[i].info = '...';
+          $scope.daySlides[i].heading = '...';
+          $scope.daySlides[i].info = undefined;
         }
         if (!$scope.$$phase) $scope.$digest();
         daySlidesInfosCleared = true;
@@ -101,6 +105,9 @@
       $scope.daySlides[slideIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
       $scope.daySlides[slideIndex].info = $scope.daySlides[slideIndex].referenceDate;
 
+      // Set heading for active day slide.
+      $scope.daySlides[slideIndex].heading = daySlideHeading($scope.daySlides[slideIndex].referenceDate);
+
     } else {
       // Date in active slide is up to date.
       newActiveDate = new Date($scope.daySlides[slideIndex].referenceDate);
@@ -115,9 +122,13 @@
 
     $scope.daySlides[previousIndex].referenceDate = DateService.getYYYYMMDD(newPreviousDate);
     $scope.daySlides[previousIndex].info = $scope.daySlides[previousIndex].referenceDate;
+    // Set heading for previous slide.
+    $scope.daySlides[previousIndex].heading = daySlideHeading($scope.daySlides[previousIndex].referenceDate);
 
     $scope.daySlides[nextIndex].referenceDate = DateService.getYYYYMMDD(newNextDate);
     $scope.daySlides[nextIndex].info = $scope.daySlides[nextIndex].referenceDate;
+    // Set heading for next slide.
+    $scope.daySlides[nextIndex].heading = daySlideHeading($scope.daySlides[nextIndex].referenceDate);
 
     // Update UI.
     if (!$scope.$$phase) $scope.$digest();
@@ -186,6 +197,13 @@
     datepickerWeeksInfosCleared = false;
   }
 
+  /*
+  * Construct a heading for day slide.
+  */
+  function daySlideHeading(day) {
+    return day;
+  }
+
   $scope.getNewDayTask = function(daySlidesIndex){
     return {transientProperties: {date: $scope.daySlides[daySlidesIndex].info, completed: false}};
   };
@@ -206,6 +224,10 @@
       var previousIndex = (activeSlideIndex - 1 + $scope.daySlides.length) % $scope.daySlides.length;
       $scope.daySlides[previousIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
       $scope.daySlides[previousIndex].info = $scope.daySlides[previousIndex].referenceDate;
+      // Set heading for active day slide
+      $scope.daySlides[previousIndex].heading = daySlideHeading($scope.daySlides[previousIndex]
+                                                                .referenceDate);
+
       SwiperService.swipePrevious('focus/tasks');
     }
     else if (offsetBetweenDays > 0) {
@@ -213,6 +235,10 @@
       var nextIndex = (activeSlideIndex + 1 + $scope.daySlides.length) % $scope.daySlides.length;
       $scope.daySlides[nextIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
       $scope.daySlides[nextIndex].info = $scope.daySlides[nextIndex].referenceDate;
+      // Set heading for active day slide
+      $scope.daySlides[nextIndex].heading = daySlideHeading($scope.daySlides[nextIndex]
+                                                            .referenceDate);
+
       SwiperService.swipeNext('focus/tasks');
     }
   };
