@@ -53,43 +53,42 @@
 
           <div ng-if="editorType === 'task'" class="container-content" drawer-override-aisle="right">
 
-            <div ng-hide="snoozeOpen">
-
-              <div ng-if="!calendarOpen" class="row animate-calendar" ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></div>
-              <div ng-if="calendarOpen" class="row swiper-no-swiping" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()" data-snap-ignore="true">
-                <div class="animate-calendar" calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false" >
-                  <button ng-if="task.transientProperties.date" type="button" class="btn-clear pikaday-clear" ng-click="closeCalendarAndCall(clearTransientDate, task)"></button>
-                </div>
+            <div ng-if="!calendarOpen" class="row animate-calendar" ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></div>
+            <div ng-if="calendarOpen" class="row swiper-no-swiping animate-calendar" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()" data-snap-ignore="true">
+              <div calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false" >
+                <button ng-if="task.transientProperties.date" type="button" class="btn-clear pikaday-clear" ng-click="closeCalendarAndCall(clearTransientDate, task)"></button>
               </div>
-
-              <div lists-select-options>
-                <select ng-if="!addNewListVisible" class="select-list-visible-animation row" ng-model="task.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions">
-                  <option value="">select list...</option>
-                </select>
-                <div ng-if="addNewListVisible" class="group-mixed select-list-visible-animation">
-                  <div class="group-mixed--middle">
-                    <input type="text" ng-model="newList.title" placeholder="add list..."/>
-                  </div>
-                  <div class="group-mixed--right">
-                    <a href class="group-mixed--right font-smallest add-new-list-item-cancel" ng-click="setAddNewListHidden()">cancel</a>
-                  </div>
-                </div>
-              </div>
-              <textarea class="row" ng-model="task.transientProperties.description" msd-elastic placeholder="description..." maxlength="1024"></textarea>
-
             </div>
 
-            <div ng-if="snoozeOpen" snooze="{{task.transientProperties.date}}" snooze-close-and-save="closeSnoozeAndSave(date)" snooze-close-and-open="closeSnoozeAndOpenCalendar()" snooze-destroy="closeSnooze()"></div>
+            <div lists-select-options>
+              <select ng-if="!addNewListVisible" class="select-list-visible-animation row" ng-model="task.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions">
+                <option value="">select list...</option>
+              </select>
+              <div ng-if="addNewListVisible" class="group-mixed select-list-visible-animation">
+                <div class="group-mixed--middle">
+                  <input type="text" ng-model="newList.title" placeholder="add list..."/>
+                </div>
+                <div class="group-mixed--right">
+                  <a href class="group-mixed--right font-smallest add-new-list-item-cancel" ng-click="setAddNewListHidden()">cancel</a>
+                </div>
+              </div>
+            </div>
+            <textarea class="row" ng-model="task.transientProperties.description" msd-elastic placeholder="description..." maxlength="1024"></textarea>
 
           </div>
 
-          <footer class="container-content--after" ng-style="{height: getOverrideEditorFooterHeight(), bottom: -getOverrideEditorFooterHeight()}">
-            <div class="group-btn">
-              <button type="button" class="btn-checkbox" ng-click="toggleSnooze()">
-                <span class="text-btn" ng-bind="task.transientProperties.date ? 'snooze' : 'set date'"></span>
-              </button>
-            </div>
+          <footer class="container-content--after editor-footer" editor-footer>
+            <nav role="navigation" class="swiper-no-swiping group-symmetrical">
+              <a href ng-if="task.transientProperties.date" class="group-symmetrical--middle" ng-click="toggleExpand()">
+                <span>later</span>
+              </a>
+              <a href ng-click="swipeToAdvanced()" class="group-symmetrical--right">
+                <span class="link-navigation-forward">advanced</span>
+              </a>
+            </nav>
+            <div ng-if="footerExpanded" later="callAndSaveLater(toggleExpand, date)" editable-field-container="auto" editable-field-container-clicked-elsewhere="toggleExpand()"></div>
           </footer>
+
         </div>
 
         <div class="swiper-slide" swiper-slide="{{editorType}}/advanced" slide-index="1">
@@ -207,7 +206,7 @@
                   <textarea id="taskDescription" class="simple-input" ng-model="task.transientProperties.description" ng-focus="taskDescriptionFocus()" ng-blur="taskDescriptionBlur()" msd-elastic editable-field placeholder="description..." maxlength="1024"></textarea>
                 </div>
               </div>
-              <div ng-if="snoozeOpen && !calendarOpen" snooze="{{task.transientProperties.date}}" snooze-close-and-save="closeSnoozeAndSave(date)" snooze-close-and-open="closeSnoozeAndOpenCalendar()" snooze-destroy="closeSnooze()"></div>
+              <div ng-if="snoozeOpen && !calendarOpen" snooze="{{task.transientProperties.date}}" snooze-close-and-save="closeLaterAndSave(date)" snooze-close-and-open="closeSnoozeAndOpenCalendar()" snooze-destroy="closeSnooze()"></div>
               <div ng-if="calendarOpen" class="pikaday-embedded" calendar="{{task.transientProperties.date}}" calendar-get-date-fn="registerGetCalendarDateFn(getCalendarDateFn)" calendar-set-default-date="true" calendar-destroy="closeCalendar()" bound="false"></div>
 
               <footer>

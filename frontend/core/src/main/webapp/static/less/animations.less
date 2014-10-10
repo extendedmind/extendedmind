@@ -126,3 +126,31 @@
 .animate-calendar.ng-enter.ng-enter-active {
   opacity: 1; // [1]
 }
+
+@expanded-position-editor: 135px;
+@speed-animate-editor-toggle: .3s;
+
+// 1. Animate editor to expanded position with translate3d.
+.animate-editor-footer-open {
+  -webkit-transform: translate3d(0, -@expanded-position-editor, 0); // [1]
+  -mox-transform: translate3d(0, -@expanded-position-editor, 0);    // [1]
+  -o-transform: translate3d(0, -@expanded-position-editor, 0);      // [1]
+  -ms-transform: translate3d(0, -@expanded-position-editor, 0);     // [1]
+  transform: translate3d(0, -@expanded-position-editor, 0);         // [1]
+}
+
+.animate-editor-footer-open-add {
+  -webkit-transition: -webkit-transform @speed-animate-editor-toggle @timing-animate;
+  -moz-transition: -moz-transform @speed-animate-editor-toggle @timing-animate;
+  -o-transition: -o-transform @speed-animate-editor-toggle @timing-animate;
+  -ms-transition: -ms-transform @speed-animate-editor-toggle @timing-animate;
+  transition: transform @speed-animate-editor-toggle @timing-animate;
+}
+
+.animate-editor-footer-open-remove {
+  -webkit-transition: -webkit-transform @speed-animate-editor-toggle @timing-animate;
+  -moz-transition: -moz-transform @speed-animate-editor-toggle @timing-animate;
+  -o-transition: -o-transform @speed-animate-editor-toggle @timing-animate;
+  -ms-transition: -ms-transform @speed-animate-editor-toggle @timing-animate;
+  transition: transform @speed-animate-editor-toggle @timing-animate;
+}

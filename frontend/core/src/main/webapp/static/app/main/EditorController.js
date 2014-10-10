@@ -15,8 +15,7 @@
 
  'use strict';
 
- function EditorController($q, $rootScope, $scope, $timeout) {
-
+ function EditorController($q, $rootScope, $scope, $timeout, SwiperService) {
 
   $scope.titlebar = {};
   $scope.searchText = {};
@@ -205,6 +204,16 @@
     blurTitlebarInput();
   };
 
+  // NAVIGATION
+
+  $scope.swipeToAdvanced = function() {
+    SwiperService.swipeTo($scope.editorType + '/advanced');
+  };
+
+  $scope.swipeToBasic = function() {
+    SwiperService.swipeTo($scope.editorType + '/basic');
+  };
+
   // UI COMPONENTS
 
   $scope.getTitlebarTextInputPlaceholder = function getTitlebarTextInputPlaceholder() {
@@ -239,29 +248,14 @@
     itemAction(item, newItemProperty);
   };
 
-  // SNOOZE
-
-  $scope.toggleSnooze = function toggleSnooze() {
-    $scope.snoozeOpen = !$scope.snoozeOpen;
-  };
-
-  $scope.closeSnoozeAndOpenCalendar = function closeSnoozeAndOpenCalendar() {
-    $scope.snoozeOpen = false;
-    $scope.calendarOpen = true;
-    $scope.calendarCloseCallbackFn = $scope.endEdit;
-  };
-
   function setDateToTask(date, task) {
     if (!task.transientProperties) task.transientProperties = {};
     task.transientProperties.date = date;
   }
 
-  $scope.closeSnooze = function closeSnooze() {
-    $scope.snoozeOpen = false;
-  };
+  $scope.callAndSaveLater = function(callback, date) {
+    if (typeof callback === 'function') callback();
 
-  $scope.closeSnoozeAndSave = function closeSnoozeAndSave(date) {
-    $scope.snoozeOpen = false;
     if ($scope.editorType === 'task') {
       setDateToTask(date, $scope.task);
       $scope.endEdit();
@@ -308,7 +302,7 @@
   };
 }
 
-EditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout'];
+EditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'SwiperService'];
 angular.module('em.main').controller('EditorController', EditorController);
 
 

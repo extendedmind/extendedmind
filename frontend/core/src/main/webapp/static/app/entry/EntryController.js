@@ -22,7 +22,7 @@
   AnalyticsService.visitEntry('entry');
 
   if (DetectBrowserService.isMobile()){
-    $scope.entryState = 'download';
+    // $scope.entryState = 'download';
   }
 
   $scope.swipeToSignup = function swipeToSignup() {

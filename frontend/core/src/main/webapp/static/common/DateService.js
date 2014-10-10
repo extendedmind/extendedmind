@@ -197,6 +197,14 @@
       date.setDate(date.getDate() + offsetDays);
       return this;
     },
+    setDateToFirstDayOfFortNight: function(referenceDate) {
+      var offsetToWeekday = (weekdays.indexOf('monday') + (7 - referenceDate.getDay())) % 7;
+      // jump seven days if reference day is same day as weekday
+      if (offsetToWeekday === 0) offsetToWeekday = 7;
+      // set new date with offset to next monday plus one week.
+      referenceDate.setDate(referenceDate.getDate() + offsetToWeekday + 7);
+      return this;
+    },
     setDateToFirstDayOfNextMonth: function(referenceDate) {
       referenceDate.setMonth(referenceDate.getMonth() + 1);
       referenceDate.setDate(1);

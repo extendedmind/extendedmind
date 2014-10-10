@@ -9,6 +9,43 @@
 Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidemenu and omnibar.
 */
 
+
+/*
+*************************************************************
+# Editor footer
+*/
+
+// 1. Set white background to hide stuff below.
+.editor-footer {
+  background-color: white;
+}
+
+/*
+*************************************************************
+# Later
+*/
+
+// 1. Use simple table grid layout in later.
+.later {
+  display: table; // [1]
+  width: 100%;
+}
+
+.later-row {
+  display: table-row;
+  height: @grid-vertical;
+}
+
+// 1. Each later item has half the width
+.later-row--left, .later-row--right {
+  display: table-cell;
+  vertical-align: middle;
+  width: 50%; // [1]
+  text-align: center;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
 /*
 *************************************************************
 # Swiper
