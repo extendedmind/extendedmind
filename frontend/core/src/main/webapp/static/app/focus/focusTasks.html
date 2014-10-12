@@ -3,7 +3,7 @@
 
     <div ng-if="datepickerVisible" class="swiper-container" swiper-container="datepicker" swiper-type="main" expected-slides="5" data-snap-ignore="true">
       <!-- Set editable-field-container to child to circumvent AngularJS error https://docs.angularjs.org/error/$compile/multidir -->
-      <div class="swiper-wrapper" editable-field-container="auto" editable-field-container-clicked-elsewhere="toggleDatepicker()" >
+      <div class="swiper-wrapper" editable-field-container="auto" editable-field-container-clicked-elsewhere="toggleDatepicker()">
         <div class="swiper-slide group-link" swiper-slide="datepicker/right" slide-index="0" swiper-slide-duplicate="true">
           <a href ng-click="dateClicked(datepickerWeeks[2][0].yyyymmdd)">{{datepickerWeeks[2][0].displayDateShort}}</a>
           <a href ng-click="dateClicked(datepickerWeeks[2][1].yyyymmdd)">{{datepickerWeeks[2][1].displayDateShort}}</a>

@@ -110,6 +110,7 @@ var Swiper = function (selector, params) {
     _this.centerIndex = 0;
     _this.activeLoaderIndex = 0;
     _this.activeLoopIndex = 0;
+    _this.previousLoopIndex = null; // FORK
     _this.previousIndex = null;
     _this.velocity = 0;
     _this.snapGrid = [];
@@ -1952,11 +1953,18 @@ var Swiper = function (selector, params) {
             anim();
         }
 
-        // FORK
         //Update Active Slide Index
-        setTimeout(function() {
+        // FORK
+        if (!params.onSlideChangeStart) {
+            // It's probably safe to use timeout since we are relying on callbacks that are run in
+            // wrapperTransitionEnd callback.
+            setTimeout(function() {
+                _this.updateActiveSlide(newPosition);
+            }, 0)
+        } else {
+            // Update immediately to make sure slideChangeStart callback (and others) are run afterwards.
             _this.updateActiveSlide(newPosition);
-        }, 0)
+        }
         // FORK
 
         //Callbacks
@@ -2087,6 +2095,7 @@ var Swiper = function (selector, params) {
 
         //Update loop index
         if (params.loop) {
+            _this.previousLoopIndex = _this.activeLoopIndex;    // FORK
             var ls = _this.loopedSlides;
             _this.activeLoopIndex = _this.activeIndex - ls;
             if (_this.activeLoopIndex >= _this.slides.length - ls * 2) {

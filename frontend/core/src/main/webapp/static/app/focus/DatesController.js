@@ -61,12 +61,22 @@
     $scope.datepickerWeeks.push(currentWeek);
     $scope.datepickerWeeks.push(nextWeek);
     $scope.datepickerWeeks.push(previousWeek);
-    SwiperService.registerSlideChangeStartCallback(datepickerSlideChangeStart,
-                                                   'datepicker',
+    SwiperService.registerSlideChangeStartCallback(datepickerSlideChangeStart, 'datepicker',
                                                    'DatesController');
     SwiperService.registerSlideChangeCallback(datepickerSlideChangeEnd, 'datepicker', 'DatesController');
+    SwiperService.registerSlideResetCallback(datepickerSlideReset, 'datepicker', 'DatesController');
   }
 
+  /*
+  * Restore datepicker state variables to default values.
+  */
+  function resetDatepickerState() {
+    offsetFromOldActiveDatepickerSlide = 0;
+    datepickerWeeksInfosCleared = false;
+    previousActiveIndex = undefined;
+    preventDatepickerClicks = false;
+    datepickerSlideChangeReseted = false;
+  }
 
   // DAY SLIDES
 
@@ -74,7 +84,7 @@
   var daySlidesInfosCleared = false;
 
   SwiperService.registerSlideChangeStartCallback(daySlideChangeStart, 'focus/tasks', 'DatesController');
-  function daySlideChangeStart(direction) {
+  function daySlideChangeStart(slideIndex, direction) {
 
     // issue a 500ms lock to prevent leave animation for this digest cycle
     // see listItemDirective => animation
@@ -157,9 +167,19 @@
 
   var offsetFromOldActiveDatepickerSlide = 0;
   var datepickerWeeksInfosCleared = false;
+  var previousActiveIndex;
+  var preventDatepickerClicks;
+  var datepickerSlideChangeReseted;
 
-  function datepickerSlideChangeStart(direction) {
+  function datepickerSlideChangeStart(slideIndex, direction) {
+    preventDatepickerClicks = true;  // prevent clicks when swipe started
+    // Make sure last swipe did change slide.
+    if (previousActiveIndex === slideIndex) return;
+
+    // Increment offset from active datepicker slide.
+    previousActiveIndex = slideIndex;
     offsetFromOldActiveDatepickerSlide += direction === 'prev' ? -1 : 1;
+
     if (Math.abs(offsetFromOldActiveDatepickerSlide) >= 2) {
       if (!datepickerWeeksInfosCleared) {
         for (var i = 0, len = $scope.datepickerWeeks.length; i < len; i++) {
@@ -173,7 +193,19 @@
     }
   }
 
+  function datepickerSlideReset(activeIndex, previousIndex) {
+    datepickerSlideChangeReseted = (activeIndex !== previousIndex);
+  }
+
   function datepickerSlideChangeEnd(slidePath, activeSlideIndex) {
+    preventDatepickerClicks = false;  // allow clicks when swipe ended
+    if (datepickerSlideChangeReseted) {
+      datepickerSlideChangeReseted = false;
+      offsetFromOldActiveDatepickerSlide = 0;
+      previousActiveIndex = undefined;
+      return;
+    }
+
     var slidesArrayLength = $scope.datepickerWeeks.length;
 
     var movedOffset = offsetFromOldActiveDatepickerSlide % slidesArrayLength;
@@ -206,6 +238,7 @@
     if (!$scope.$$phase) $scope.$digest();
     offsetFromOldActiveDatepickerSlide = 0;
     datepickerWeeksInfosCleared = false;
+    previousActiveIndex = undefined;
   }
 
   /*
@@ -225,12 +258,20 @@
   };
 
   $scope.toggleDatepicker = function() {
-    if (!$scope.datepickerVisible) initializeDatepickerWeeks();
-    else $scope.datepickerWeeks = undefined;
-    $scope.datepickerVisible = !$scope.datepickerVisible;
+    if (!$scope.datepickerVisible) {
+      initializeDatepickerWeeks();
+      $scope.datepickerVisible = true;
+    }
+    else {
+      $scope.datepickerVisible = false;
+      resetDatepickerState();
+      $scope.datepickerWeeks = undefined;
+    }
   };
 
   $scope.dateClicked = function(date) {
+    if (preventDatepickerClicks) return;
+
     // Get reference date from active slide.
     var activeSlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
     var newActiveDate = new Date(date);
@@ -258,8 +299,7 @@
       $scope.daySlides[nextIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
       $scope.daySlides[nextIndex].info = $scope.daySlides[nextIndex].referenceDate;
       // Set heading for active day slide
-      $scope.daySlides[nextIndex].heading = daySlideHeading($scope.daySlides[nextIndex]
-                                                            .referenceDate);
+      $scope.daySlides[nextIndex].heading = daySlideHeading($scope.daySlides[nextIndex].referenceDate);
 
       SwiperService.swipeNext('focus/tasks');
     }

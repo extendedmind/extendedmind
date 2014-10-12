@@ -86,8 +86,13 @@
           $scope.expectedSlides = $scope.expectedSlidesFn();
           var slides = sortAndFlattenSlideInfos();
           if (!initializeSwiperCalled) {
+            var slideChangeStartCallback, slideResetCallback;
+            if ($scope.loop) {
+              slideChangeStartCallback = onSlideChangeStartCallback;
+              slideResetCallback = onSlideResetCallback;
+            }
             SwiperService.initializeSwiper($element[0], $scope.swiperPath, $scope.swiperType, slides,
-                                           $scope.loop ? onSlideChangeStartCallback : undefined,
+                                           slideChangeStartCallback, slideResetCallback,
                                            onSlideChangeEndCallback, $scope.onlyExternalSwipe, $scope.loop);
             initializeSwiperCalled = true;
 
@@ -162,6 +167,10 @@
           updateSwiper();
         }
       };
+
+      function onSlideResetCallback() {
+        SwiperService.onSlideReset($scope, $scope.swiperPath);
+      }
 
       function onSlideChangeStartCallback(swiper, direction) {
         SwiperService.onSlideChangeStart($scope, $scope.swiperPath, direction);
