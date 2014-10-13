@@ -94,14 +94,9 @@
     // before slide change end callback is fired.
     offsetFromOldActiveDaySlide += direction === 'prev' ? -1 : 1;
 
-    // Hide dates before values are updated. Only old active date and its next and previous dates are correct.
     if (Math.abs(offsetFromOldActiveDaySlide) >= 2) {
       if (!daySlidesInfosCleared) {
-        for (var i = 0, len = $scope.daySlides.length; i < len; i++) {
-          $scope.daySlides[i].referenceDate = $scope.daySlides[i].info;
-          $scope.daySlides[i].heading = '...';
-          $scope.daySlides[i].info = undefined;
-        }
+        clearDaySlidesInfos();
         if (!$scope.$$phase) $scope.$digest();
         daySlidesInfosCleared = true;
       }
@@ -114,45 +109,24 @@
   SwiperService.registerSlideChangeCallback(daySlideChangeEnd, slidePath, 'focus/tasks');
   function daySlideChangeEnd(slidePath, slideIndex) {
     // Swiper is in loop mode so array that stores slide infos is circular.
-    var newActiveDate;
+    var activeDaySlideInfo;
 
     if (daySlidesInfosCleared) {
       // Moved offset is the remainder from total moves divided by slides array length.
       var movedOffset = offsetFromOldActiveDaySlide % $scope.daySlides.length;
-      // Old active day is in old active slide index.
       var oldActiveSlideIndex = (slideIndex - movedOffset +
                                  $scope.daySlides.length) % $scope.daySlides.length;
 
-      // Update date in active slide: set new active date with offset from old active date.
-      var oldActiveDate = new Date($scope.daySlides[oldActiveSlideIndex].referenceDate);
-      newActiveDate = DateService.getDateWithOffset(offsetFromOldActiveDaySlide, oldActiveDate);
-      $scope.daySlides[slideIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
-      $scope.daySlides[slideIndex].info = $scope.daySlides[slideIndex].referenceDate;
-
-      // Set heading for active day slide.
-      $scope.daySlides[slideIndex].heading = daySlideHeading($scope.daySlides[slideIndex].referenceDate);
+      activeDaySlideInfo = refreshActiveDaySlideAndReturnInfo(oldActiveSlideIndex, slideIndex);
 
     } else {
-      // Date in active slide is up to date.
-      newActiveDate = new Date($scope.daySlides[slideIndex].referenceDate);
+      // Active slide is up to date. Get info.
+      activeDaySlideInfo = getActiveDaySlideInfo(slideIndex);
     }
 
-    // Get adjacent new dates and set them to adjacent circular array indexes.
     var previousIndex = (slideIndex - 1 + $scope.daySlides.length) % $scope.daySlides.length;
     var nextIndex = (slideIndex + 1 + $scope.daySlides.length) % $scope.daySlides.length;
-
-    var newPreviousDate = DateService.getDateWithOffset(-1, newActiveDate);
-    var newNextDate = DateService.getDateWithOffset(1, newActiveDate);
-
-    $scope.daySlides[previousIndex].referenceDate = DateService.getYYYYMMDD(newPreviousDate);
-    $scope.daySlides[previousIndex].info = $scope.daySlides[previousIndex].referenceDate;
-    // Set heading for previous slide.
-    $scope.daySlides[previousIndex].heading = daySlideHeading($scope.daySlides[previousIndex].referenceDate);
-
-    $scope.daySlides[nextIndex].referenceDate = DateService.getYYYYMMDD(newNextDate);
-    $scope.daySlides[nextIndex].info = $scope.daySlides[nextIndex].referenceDate;
-    // Set heading for next slide.
-    $scope.daySlides[nextIndex].heading = daySlideHeading($scope.daySlides[nextIndex].referenceDate);
+    refreshAdjacentDaySlides(previousIndex, nextIndex, activeDaySlideInfo);
 
     // Update UI.
     if (!$scope.$$phase) $scope.$digest();
@@ -160,6 +134,56 @@
     // Set variables to initial values.
     offsetFromOldActiveDaySlide = 0;
     daySlidesInfosCleared = false;
+  }
+
+  /*
+  * Hide dates before values are updated. Only old active date and its next and previous dates are correct.
+  */
+  function clearDaySlidesInfos() {
+    for (var i = 0, len = $scope.daySlides.length; i < len; i++) {
+      $scope.daySlides[i].referenceDate = $scope.daySlides[i].info;
+      $scope.daySlides[i].heading = '...';
+      $scope.daySlides[i].info = undefined;
+    }
+  }
+
+  function refreshActiveDaySlideAndReturnInfo(oldActiveSlideIndex, newActiveSlideIndex) {
+    var newActiveDate;
+
+    // Update date in active slide: set new active date with offset from old active date.
+    // Old active day is in old active slide index.
+    var oldActiveDate = new Date($scope.daySlides[oldActiveSlideIndex].referenceDate);
+    newActiveDate = DateService.getDateWithOffset(offsetFromOldActiveDaySlide, oldActiveDate);
+    $scope.daySlides[newActiveSlideIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
+    $scope.daySlides[newActiveSlideIndex].info = $scope.daySlides[newActiveSlideIndex].referenceDate;
+
+    // Set heading for active day slide.
+    $scope.daySlides[newActiveSlideIndex].heading = daySlideHeading($scope.daySlides[newActiveSlideIndex]
+                                                                    .referenceDate);
+
+    return newActiveDate;
+  }
+
+  function getActiveDaySlideInfo(slideIndex) {
+    return new Date($scope.daySlides[slideIndex].referenceDate);
+  }
+
+  /*
+  * Get new adjacent dates and set them to adjacent circular array indexes.
+  */
+  function refreshAdjacentDaySlides(previousIndex, nextIndex, activeDate) {
+    var previousDate = DateService.getDateWithOffset(-1, activeDate);
+    var nextDate = DateService.getDateWithOffset(1, activeDate);
+
+    $scope.daySlides[previousIndex].referenceDate = DateService.getYYYYMMDD(previousDate);
+    $scope.daySlides[previousIndex].info = $scope.daySlides[previousIndex].referenceDate;
+    // Set heading for previous slide.
+    $scope.daySlides[previousIndex].heading = daySlideHeading($scope.daySlides[previousIndex].referenceDate);
+
+    $scope.daySlides[nextIndex].referenceDate = DateService.getYYYYMMDD(nextDate);
+    $scope.daySlides[nextIndex].info = $scope.daySlides[nextIndex].referenceDate;
+    // Set heading for next slide.
+    $scope.daySlides[nextIndex].heading = daySlideHeading($scope.daySlides[nextIndex].referenceDate);
   }
 
 
