@@ -15,7 +15,7 @@
 
  'use strict';
 
- function EditorController($q, $rootScope, $scope, $timeout, SwiperService) {
+ function EditorController($q, $rootScope, $scope, $timeout, SwiperService, UISessionService) {
 
   $scope.titlebar = {};
   $scope.searchText = {};
@@ -130,11 +130,15 @@
     else {
       if ($scope.editorType === 'task') {
         $scope.task.title = $scope.titlebar.text;
-        $scope.saveTask($scope.task);
-        if (completeReadyDeferred){
-          completeReadyDeferred.resolve($scope.task);
-          completeReadyDeferred = undefined;
-        }
+
+        UISessionService.deferAction('edit', $rootScope.EDITOR_CLOSED_FAILSAFE_TIME).then(function() {
+          $scope.saveTask($scope.task);
+          if (completeReadyDeferred){
+            completeReadyDeferred.resolve($scope.task);
+            completeReadyDeferred = undefined;
+          }
+        });
+
       }else if ($scope.editorType === 'note') {
         $scope.note.title = $scope.titlebar.text;
         $scope.saveNote($scope.note);
@@ -147,8 +151,16 @@
 
   $scope.deleteItemInEdit = function() {
     if ($scope.editorType === 'task') {
-      $scope.closeTaskEditor($scope.task);
-      $scope.deleteTask($scope.task);
+      $scope.closeTaskEditor();
+
+      UISessionService.deferAction('edit', $rootScope.EDITOR_CLOSED_FAILSAFE_TIME).then(function() {
+        $scope.deleteTask($scope.task);
+        if (completeReadyDeferred){
+          completeReadyDeferred.resolve($scope.task);
+          completeReadyDeferred = undefined;
+        }
+      });
+
     } else if ($scope.editorType === 'note') {
       $scope.closeNoteEditor($scope.note);
       $scope.deleteNote($scope.note);
@@ -166,7 +178,7 @@
 
   $scope.endEdit = function endEdit() {
     if ($scope.editorType === 'omnibar') $scope.closeEditor();
-    else if ($scope.editorType === 'task') $scope.closeTaskEditor($scope.task);
+    else if ($scope.editorType === 'task') $scope.closeTaskEditor();
     else if ($scope.editorType === 'note') $scope.closeNoteEditor($scope.note);
     else alert('implement close for: ' + $scope.editorType);  // FIXME
 
@@ -202,6 +214,8 @@
 
   // Callback from Snap.js, outside of AngularJS event loop
   function editorClosed() {
+    // Don't manipulate list items in list before editor has been closed.
+    UISessionService.resolveDeferredActions('edit');
     $scope.$apply(clearAndHideEditor);
   }
 
@@ -319,5 +333,5 @@
   };
 }
 
-EditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'SwiperService'];
+EditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'SwiperService', 'UISessionService'];
 angular.module('em.main').controller('EditorController', EditorController);

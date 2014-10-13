@@ -14,8 +14,8 @@
  */
  'use strict';
 
- function TasksController($scope, AnalyticsService, DateService, SwiperService, TasksService,
-                          UISessionService) {
+ function TasksController($rootScope, $scope, $timeout, AnalyticsService, DateService, SwiperService,
+                          TasksService, UISessionService) {
 
   $scope.initializeTask = function initializeTask(task) {
     if (task.transientProperties && task.transientProperties.date) {
@@ -60,12 +60,10 @@
   };
 
   $scope.openTaskEditor = function openTaskEditor(task) {
-    freezeTask(task);
     return $scope.openEditor('task', task);
   };
 
-  $scope.closeTaskEditor = function closeTaskEditor(task) {
-    unfreezeTask(task, true);
+  $scope.closeTaskEditor = function closeTaskEditor() {
     $scope.closeEditor();
   };
 
@@ -203,6 +201,10 @@
       undoFn: undoDelete
     });
 
+    $timeout(function() {
+      UISessionService.activateDelayedNotifications();
+    }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
+
     AnalyticsService.do('deleteTask');
     TasksService.deleteTask(task, UISessionService.getActiveUUID());
   };
@@ -228,6 +230,6 @@
   };
 }
 
-TasksController['$inject'] = ['$scope', 'AnalyticsService', 'DateService', 'SwiperService', 'TasksService',
-'UISessionService'];
+TasksController['$inject'] = ['$rootScope', '$scope', '$timeout', 'AnalyticsService', 'DateService',
+  'SwiperService', 'TasksService', 'UISessionService'];
 angular.module('em.tasks').controller('TasksController', TasksController);

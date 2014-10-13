@@ -251,16 +251,19 @@
 
     // DEFERRED
 
-    deferAction: function(type, deferred){
-      var deferredAction = deferred;
-      if (!deferredAction) {
-        deferredAction = $q.defer();
-      }
+    deferAction: function(type, failsafeDeferTime){
+      var deferredAction = $q.defer();
 
       deferredActions.push({
         type: type,
         deferred: deferredAction,
       });
+
+      if (failsafeDeferTime) {  // Make sure promise gets resolved eventually.
+        $timeout(function() {
+          if (deferredAction) deferredAction.resolve();
+        }, failsafeDeferTime);
+      }
 
       return deferredAction.promise.then(function(resolved) {
         removeDeferredAction(type);
@@ -322,5 +325,6 @@
     }
   };
 }
-UISessionService['$inject'] = ['$q', '$rootScope', '$timeout', 'LocalStorageService', 'SessionStorageService'];
+UISessionService['$inject'] = ['$q', '$rootScope', '$timeout', 'LocalStorageService',
+'SessionStorageService'];
 angular.module('em.base').factory('UISessionService', UISessionService);

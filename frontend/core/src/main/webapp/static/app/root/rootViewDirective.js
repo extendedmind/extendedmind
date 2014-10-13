@@ -31,8 +31,10 @@
       $rootScope.KEYBOARD_ANIMATION_TIME = 300;
       $rootScope.MENU_ANIMATION_SPEED = 200;
       $rootScope.EDITOR_ANIMATION_SPEED = 350;
+      $rootScope.EDITOR_CLOSED_FAILSAFE_TIME = 2*$rootScope.EDITOR_ANIMATION_SPEED;
       $rootScope.EDITOR_FOOTER_HEIGHT = 44;
       $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME = 2000;
+      $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED = 1000;
 
       // Back function globally available
       $scope.gotoPreviousPage = function gotoPreviousPage() {

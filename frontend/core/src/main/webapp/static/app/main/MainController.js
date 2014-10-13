@@ -127,10 +127,10 @@ function MainController(
     executeEditorAboutToOpenCallbacks(type, item);
 
     // Check for existing edit locks and resolve them first.
-    var deferredEditAction = UISessionService.getDeferredAction('edit');
-    if (deferredEditAction) deferredEditAction.resolve();
+    var deferredEditorClose = UISessionService.getDeferredAction('editorClose');
+    if (deferredEditorClose) deferredEditorClose.resolve();
 
-    var promise = UISessionService.deferAction('edit');
+    var promise = UISessionService.deferAction('editorClose');
 
     if (DrawerService.isOpen('left')) {
       DrawerService.close('left');
@@ -462,7 +462,7 @@ function MainController(
 
     // Don't remove list items from list before editor has been closed.
     // See: listItemLeaveAnimation in listItemDirective.
-    UISessionService.resolveDeferredActions('edit');
+    UISessionService.resolveDeferredActions('editorClose');
   }
 
   DrawerService.registerOpenedCallback('left', menuOpened, 'MainController');

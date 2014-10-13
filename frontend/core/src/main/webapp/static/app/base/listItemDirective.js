@@ -49,33 +49,14 @@ function listItemLeaveAnimation($animate, UISessionService) {
 
   return {
     /*
-    * (1) Wait for deferred edit promise to be fulfilled.
-    *  2  Animate item leave.
-    *  3  Wait for item leave promise to be fulfilled. Call leaveDone.
+    *  Cancel animation when leave animation is locked.
     */
     leave: function(element, leaveDone) {
-      if (UISessionService.isLocked('leaveAnimation')){
+      leaveDone();
+      if (UISessionService.isLocked('leaveAnimation')) {
+        // Second leaveDone call will cancel animation.
         leaveDone();
         return;
-      }
-
-      // Classes ".ng-leave" and ".ng-leave-active" are present on the element.
-      // Because we want to delay animation start we have to use our own animation classes.
-
-      var deferredEdit = UISessionService.getDeferredAction('edit');
-      if (deferredEdit) {
-        deferredEdit.promise.then(function() {
-          $animate.addClass(element, 'list-item-leave').then(function() {
-            leaveDone();
-            UISessionService.activateDelayedNotifications();
-          });
-        });
-      } else {
-        // Straight leave without promises.
-        $animate.addClass(element, 'list-item-leave').then(function() {
-          leaveDone();
-          UISessionService.activateDelayedNotifications();
-        });
       }
     }
   };
