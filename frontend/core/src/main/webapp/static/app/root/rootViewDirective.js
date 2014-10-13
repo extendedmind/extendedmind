@@ -28,11 +28,14 @@
       $rootScope.CONTAINER_MASTER_MAX_WIDTH = 568;
       $rootScope.MAX_HEIGHT = 769;
       $rootScope.MENU_WIDTH = 260;
+      $rootScope.EDITOR_FOOTER_HEIGHT = 44;
+
+      // ANIMATION
       $rootScope.KEYBOARD_ANIMATION_TIME = 300;
+      // NOTE: These need to be in sync with their counterparts in LESS and/or JS.
       $rootScope.MENU_ANIMATION_SPEED = 200;
       $rootScope.EDITOR_ANIMATION_SPEED = 350;
       $rootScope.EDITOR_CLOSED_FAILSAFE_TIME = 2*$rootScope.EDITOR_ANIMATION_SPEED;
-      $rootScope.EDITOR_FOOTER_HEIGHT = 44;
       $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME = 2000;
       $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED = 1000;
 
