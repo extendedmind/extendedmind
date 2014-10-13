@@ -17,47 +17,7 @@
  function TasksController($rootScope, $scope, $timeout, AnalyticsService, DateService, SwiperService,
                           TasksService, UISessionService) {
 
-  $scope.initializeTask = function initializeTask(task) {
-    if (task.transientProperties && task.transientProperties.date) {
-      $scope.showDateInput = true;
-      $scope.focusDateInput = false;
-    }
-    else {
-      $scope.showDateInput = false;
-      $scope.focusDateInput = false;
-    }
-  };
-
-  $scope.focusDate = function focusDate() {
-    $scope.showDateInput = true;
-    $scope.focusDateInput = true;
-  };
-
-  $scope.hideDate = function hideDate() {
-    $scope.showDateInput = false;
-    $scope.focusDateInput = false;
-  };
-
   $scope.repeatTypes = ['daily', 'weekly', 'monthly', 'yearly'];
-
-  $scope.editTaskFields = function editTaskFields(task) {
-    AnalyticsService.do('editTaskFields');
-    TasksService.saveTask(task, UISessionService.getActiveUUID());
-  };
-
-  $scope.setTaskDate = function(task, date) {
-    if (!task.transientProperties) task.transientProperties = {};
-    task.transientProperties.date = DateService.getYYYYMMDD(date);
-  };
-
-  $scope.getTaskDate = function(task) {
-    if (task.transientProperties && task.transientProperties.date)
-      return DateService.getDateTodayOrFromLaterYYYYMMDD(task.transientProperties.date);
-  };
-
-  $scope.clearTransientDate = function(task) {
-    if (task.transientProperties) delete task.transientProperties.date;
-  };
 
   $scope.openTaskEditor = function openTaskEditor(task) {
     return $scope.openEditor('task', task);
@@ -181,10 +141,6 @@
       }
       return savedTask;
     });
-  };
-
-  $scope.resetTask = function resetTask(task) {
-    TasksService.resetTask(task, UISessionService.getActiveUUID());
   };
 
   function undoDelete(task) {

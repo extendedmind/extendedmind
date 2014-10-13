@@ -14,11 +14,11 @@
  */
  'use strict';
 
- function autoFocusDirective($document, $rootScope, $timeout) {
+ function focusableDirective($document, $rootScope, $timeout) {
   return {
     restrict: 'A',
     scope: {
-      registerCallbacksFn: '&autoFocus'
+      registerCallbacksFn: '&focusable'
     },
     link: function postLink(scope, element) {
       scope.registerCallbacksFn({focus: focus, blur: blur});
@@ -43,5 +43,5 @@
     }
   };
 }
-autoFocusDirective['$inject'] = ['$document', '$rootScope', '$timeout'];
-angular.module('common').directive('autoFocus', autoFocusDirective);
+focusableDirective['$inject'] = ['$document', '$rootScope', '$timeout'];
+angular.module('common').directive('focusable', focusableDirective);

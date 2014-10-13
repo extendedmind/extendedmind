@@ -416,9 +416,15 @@ function MainController(
   $scope.registerEditorAboutToOpenCallback = function (callback, id) {
     editorAboutToOpenCallbacks[id] = callback;
   };
+  $scope.unregisterEditorAboutToOpenCallback = function (callback, id) {
+    if (editorAboutToOpenCallbacks[id]) delete editorAboutToOpenCallbacks[id];
+  };
 
   $scope.registerEditorOpenedCallback = function(callback, id) {
     editorOpenedCallbacks[id] = callback;
+  };
+  $scope.unregisterEditorOpenedCallback = function(id) {
+    if (editorOpenedCallbacks[id]) delete editorOpenedCallbacks[id];
   };
 
   $scope.registerEditorAboutToClose = function(callback, id) {

@@ -14,12 +14,8 @@
  */
  'use strict';
 
- function NotesController($filter, $q, $scope, AnalyticsService, ListsService, NotesService, TagsService, SwiperService, UISessionService, UUIDService) {
-  $scope.newKeyword = {};
-
-  $scope.initializeOmnibarNote = function initializeOmnibarNote(omnibarText) {
-    $scope.note = omnibarText ? omnibarText : {};
-  };
+ function NotesController($filter, $q, $scope, AnalyticsService, ListsService, NotesService, TagsService,
+                          SwiperService, UISessionService, UUIDService) {
 
   $scope.saveNote = function saveNote(note, keywords) {
 
@@ -78,8 +74,8 @@
       return deferredSaveKeywordsSave.promise;
     }
 
-    if (note.uuid) AnalyticsService.do('saveNote', 'existing');
-    else AnalyticsService.do('saveNote', 'new');
+    if (note.uuid) AnalyticsService.do('saveNote');
+    else AnalyticsService.do('addNote');
 
     return saveKeywords(note, keywords).then(function() {
       return NotesService.saveNote(note, UISessionService.getActiveUUID());
@@ -89,21 +85,6 @@
   $scope.deleteNote = function deleteNote(note) {
     AnalyticsService.do('deleteNote');
     NotesService.deleteNote(note, UISessionService.getActiveUUID());
-  };
-
-  $scope.addNote = function addNote(newNote) {
-    var newNoteToSave = {title: undefined};
-
-    if (newNote.transientProperties) {
-      newNoteToSave.transientProperties = {};
-      if (newNote.transientProperties.list) newNoteToSave.transientProperties.list = newNote.transientProperties.list;
-      if (newNote.transientProperties.keywords)
-        newNoteToSave.transientProperties.keywords = newNote.transientProperties.keywords.clone();
-    }
-    delete newNote.title;
-
-    AnalyticsService.do('addNote');
-    $scope.addItemInOmnibar(newNoteToSave, 'note');
   };
 
   $scope.getNoteContentTeaser = function getNoteContentTeaser(note) {
@@ -129,63 +110,6 @@
       return 'inherit';
     }
   }
-
-  $scope.showKeywords = function showKeywords() {
-    return $scope.newKeyword && $scope.newKeyword.title && $scope.newKeyword.title.length !== 0;
-  };
-  $scope.isNewKeyword = function isNewKeyword(keyword) {
-    return keyword.title === $scope.newKeyword.title;
-  };
-  $scope.noteHasKeywords = function noteHasKeywords(note) {
-    return note.transientProperties && note.transientProperties.keywords;
-  };
-  $scope.clearKeyword = function clearKeyword() {
-    $scope.newKeyword = {
-      tagType: 'keyword'
-    };
-  };
-
-  function addKeywordToNote(keyword) {
-    if (!$scope.note.transientProperties) $scope.note.transientProperties = {};
-    if (!$scope.note.transientProperties.keywords) $scope.note.transientProperties.keywords = [];
-    $scope.note.transientProperties.keywords.push(keyword.uuid);
-  }
-
-  $scope.selectExistingKeyword = function selectExistingKeyword(keyword) {
-    addKeywordToNote(keyword);
-    $scope.clearKeyword();
-  };
-
-  $scope.selectNewKeyword = function selectNewKeyword() {
-    function keywordExists(keyword) {
-      if (keyword.title === $scope.newKeyword.title) {
-        $scope.newKeyword = keyword;
-        return true;
-      }
-      return false;
-    }
-    var isExistingKeyword = $scope.keywords.some(keywordExists);
-    if (!isExistingKeyword) {
-      $scope.newKeyword.uuid = UUIDService.generateFakeUUID();
-      $scope.newKeyword.isNew = true;
-      $scope.keywords.push($scope.newKeyword);
-    }
-    addKeywordToNote($scope.newKeyword);
-    $scope.clearKeyword();
-  };
-
-  $scope.unSelectKeyword = function unSelectKeyword(keyword) {
-    $scope.note.transientProperties.keywords.splice($scope.note.transientProperties.keywords.indexOf(keyword.uuid), 1);
-    if (keyword.isNew) $scope.keywords.splice($scope.keywords.indexOf(keyword), 1);
-  };
-
-  $scope.isSelectedKeyword = function isSelectedKeyword() {
-    function isNoteKeyword(keyword) {
-      return keyword.title === $scope.newKeyword.title &&
-      $scope.note.transientProperties.keywords.indexOf(keyword.uuid) !== -1;
-    }
-    if ($scope.noteHasKeywords()) return $scope.keywords.some(isNoteKeyword);
-  };
 
   $scope.openNoteEditor = function(note){
     return $scope.openEditor('note', note);

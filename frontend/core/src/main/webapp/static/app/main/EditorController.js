@@ -15,304 +15,104 @@
 
  'use strict';
 
- function EditorController($q, $rootScope, $scope, $timeout, SwiperService, UISessionService) {
-
-  $scope.titlebar = {};
-  $scope.searchText = {};
-  $scope.omnibarKeywords = {visible: false};
-
-  var titleBarInputFocusCallbackFunction = {};
-  var titleBarInputBlurCallbackFunction = {};
+ function EditorController($rootScope, $scope, SwiperService, UISessionService) {
 
   // REGISTER CALLBACKS
 
-  if (angular.isFunction($scope.registerEditorAboutToOpenCallback))
-    $scope.registerEditorAboutToOpenCallback(editorAboutToOpen);
-
-  if (angular.isFunction($scope.registerEditorOpenedCallback))
-    $scope.registerEditorOpenedCallback(editorOpened);
-
-  if (angular.isFunction($scope.registerEditorClosedCallback))
-    $scope.registerEditorClosedCallback(editorClosed);
-
-  // EDITOR INITIALIZATION
-
-  function initializeTaskEditor(task) {
-    $scope.titlebar.text = task.title;
-    $scope.task = task;
-    $scope.itemTitleHasActionButton = true;
-    $scope.editorHasSwiper = true;
-  }
-
-  function initializeNoteEditor(note) {
-    $scope.titlebar.text = note.title;
-    $scope.note = note;
-    $scope.itemTitleHasActionButton = false;
-    $scope.editorHasSwiper = true;
-  }
-
-  function evaluateAndSetSaveOnClose() {
-    if ($scope.editorType !== 'omnibar' &&
-        $scope.titlebar &&
-        $scope.titlebar.text &&
-        $scope.titlebar.text.length > 0)
-      $scope.saveOnClose = true;
-
-    else $scope.saveOnClose = false;
-  }
-
-  $scope.titlebarTextKeyDown = function titlebarTextKeyDown(event) {
-    // Escape
-    if (event.keyCode === 27) blurTitlebarInput();
-    // Return
-    else if (event.keyCode === 13 && !$rootScope.loading && $scope.titlebarHasText()) {
-      // Enter in editor saves, no line breaks allowed
-      $scope.closeEditor();
-      $scope.saveItemInEdit();
-      event.preventDefault();
-      event.stopPropagation();
-    }else{
-      if ($scope.editorType === 'task'){
-        // Change task title at the same time
-        $scope.task.title = $scope.titlebar.text;
-      }else if ($scope.editorType === 'note'){
-        // Change task title at the same time
-        $scope.note.title = $scope.titlebar.text;
-      }
-    }
-  };
-
-  // EDIT ITEM
-
-  function getExtendedItemInEdit() {
-    if ($scope.editorType === 'task') return $scope.task;
-    //
-    // TODO: others!
-    //
-  }
-
-  function resetItemInEdit() {
-    if ($scope.editorType === 'task') $scope.resetTask($scope.task);
-    //
-    // TODO: others
-    //
-  }
-
-  function deleteNewListAndAddListToItemAndSaveItem(list) {
-    delete $scope.newList;
-    var extendedItemInEdit = getExtendedItemInEdit();
-    if (extendedItemInEdit) {
-      if (!extendedItemInEdit.transientProperties) extendedItemInEdit.transientProperties = {};
-      extendedItemInEdit.transientProperties.list = list.uuid;
-      $scope.saveItemInEdit();
-    }
-  }
-  function deleteNewListAndSaveItem() {
-    delete $scope.newList;
-    $scope.saveItemInEdit();
-    // TODO: throw meaningful error e.g. to toaster
-  }
-
-  var completeReadyDeferred;
-  $scope.clickCompleteTaskInEdit = function() {
-    completeReadyDeferred = $q.defer();
-    var completed = $scope.toggleCompleteTask($scope.task, completeReadyDeferred);
-
-    if (!completed) {
-      completeReadyDeferred.resolve($scope.task);
-      completeReadyDeferred = undefined;
-    }
-  };
-
-  $scope.saveItemInEdit = function saveItemInEdit() {
-    if ($scope.newList && $scope.newList.title)
-      $scope.addList($scope.newList).then(deleteNewListAndAddListToItemAndSaveItem, deleteNewListAndSaveItem);
-    else {
-      if ($scope.editorType === 'task') {
-        $scope.task.title = $scope.titlebar.text;
-
-        UISessionService.deferAction('edit', $rootScope.EDITOR_CLOSED_FAILSAFE_TIME).then(function() {
-          $scope.saveTask($scope.task);
-          if (completeReadyDeferred){
-            completeReadyDeferred.resolve($scope.task);
-            completeReadyDeferred = undefined;
-          }
-        });
-
-      }else if ($scope.editorType === 'note') {
-        $scope.note.title = $scope.titlebar.text;
-        $scope.saveNote($scope.note);
-      }
-      //
-      // TODO: others
-      //
-    }
-  };
-
-  $scope.deleteItemInEdit = function() {
-    if ($scope.editorType === 'task') {
-      $scope.closeTaskEditor();
-
-      UISessionService.deferAction('edit', $rootScope.EDITOR_CLOSED_FAILSAFE_TIME).then(function() {
-        $scope.deleteTask($scope.task);
-        if (completeReadyDeferred){
-          completeReadyDeferred.resolve($scope.task);
-          completeReadyDeferred = undefined;
-        }
-      });
-
-    } else if ($scope.editorType === 'note') {
-      $scope.closeNoteEditor($scope.note);
-      $scope.deleteNote($scope.note);
-    }else alert('implement delete for: ' + $scope.editorType);
-    //
-    // TODO: others
-    //
-  };
-
-  $scope.titlebarHasText = function titlebarHasText() {
-    return $scope.titlebar.text && $scope.titlebar.text.length !== 0;
-  };
-
-  // OPENING / CLOSING / ENDING
-
-  $scope.endEdit = function endEdit() {
-    if ($scope.editorType === 'omnibar') $scope.closeEditor();
-    else if ($scope.editorType === 'task') $scope.closeTaskEditor();
-    else if ($scope.editorType === 'note') $scope.closeNoteEditor($scope.note);
-    else alert('implement close for: ' + $scope.editorType);  // FIXME
-
-    if ($scope.saveOnClose) $scope.saveItemInEdit();
-    else resetItemInEdit();
-  };
-
+  var currentItem;
   function editorAboutToOpen(editorType, item) {
-    if (editorType === 'omnibar') {
-      // initializeOmnibar();
-    } else if (editorType === 'task') {
-      initializeTaskEditor(item);
-    } else if (editorType === 'note') {
-      initializeNoteEditor(item);
-    } /*else if (editorType === 'list') {
-      initializeListEditor(item);
-    } else if (editorType === 'context') {
-      initializeContextEditor(item);
-    } else if (editorType === 'keyword') {
-      initializeKeywordEditor(item);
-    } else if (editorType === 'item') {
-      initializeItemEditor(item);
-    }*/
     $scope.editorType = editorType;
     $scope.editorVisible = true;
-    evaluateAndSetSaveOnClose();
+    currentItem = item;
   }
 
   // Callback from Snap.js, outside of AngularJS event loop
   function editorOpened() {
-    $scope.$apply(setFocusOnTitlebarInput);
+    if (typeof titleBarInputFocusCallbackFunction === 'function')
+     $scope.$apply(setFocusOnTitlebarInput);
   }
 
   // Callback from Snap.js, outside of AngularJS event loop
   function editorClosed() {
     // Don't manipulate list items in list before editor has been closed.
     UISessionService.resolveDeferredActions('edit');
-    $scope.$apply(clearAndHideEditor);
-  }
 
-  function clearAndHideEditor() {
-    $scope.editorVisible = false;
+    // NOTE: Call $apply here if these don't seem to be reseted
     $scope.editorType = undefined;
-    $scope.titlebar = {};
+    $scope.editorVisible = false;
+    currentItem = false;
+    titleBarInputFocusCallbackFunction = titleBarInputBlurCallbackFunction = undefined;
   }
 
-  $scope.clearTitlebarText = function clearTitlebarText() {
-    $scope.titlebar = {};
-  };
+  if (angular.isFunction($scope.registerEditorAboutToOpenCallback))
+    $scope.registerEditorAboutToOpenCallback(editorAboutToOpen);
 
-  // For empty omnibar search placeholder
-  $scope.hideEmptyOmnibar = function hideEmptyOmnibar() {
-    // TODO: replace things here with swiper from left to right
-    blurTitlebarInput();
-  };
+  if (angular.isFunction($scope.registerEditorClosedCallback))
+    $scope.registerEditorClosedCallback(editorClosed, 'EditorController');
 
-  // NAVIGATION
+  if (angular.isFunction($scope.registerEditorOpenedCallback))
+    $scope.registerEditorOpenedCallback(editorOpened, 'TaskEditorController');
 
-  $scope.swipeToAdvanced = function() {
-    SwiperService.swipeTo($scope.editorType + '/advanced');
-  };
+  $scope.$on('$destroy', function() {
+    if (angular.isFunction($scope.unregisterEditorAboutToOpenCallback))
+      $scope.unregisterEditorAboutToOpenCallback('EditorController');
 
-  $scope.swipeToBasic = function() {
-    SwiperService.swipeTo($scope.editorType + '/basic');
-  };
+    if (angular.isFunction($scope.unregisterEditorOpenedCallback))
+      $scope.unregisterEditorOpenedCallback('EditorController');
 
-  // UI COMPONENTS
-
-  $scope.getTitlebarTextInputPlaceholder = function getTitlebarTextInputPlaceholder() {
-    if ($scope.editorType === 'omnibar') return 'save to inbox / search...';
-    else if ($scope.editorType === 'task') return 'add task';
-    else if ($scope.editorType === 'note') return 'add note';
-    else if ($scope.editorType === 'list') return 'add list';
-    else if ($scope.editorType === 'context') return 'add context';
-    else if ($scope.editorType === 'keyword') return 'add keyword';
-    else if ($scope.editorType === 'item') return 'add item';
-  };
-
-  // CALENDAR
-
-  $scope.openCalendar = function() {
-    $scope.calendarOpen = true;
-  };
-
-  /*
-  * Return Date object from tasks transient date.
-  */
-  $scope.getCalendarStartingDate = function(task) {
-    return $scope.getTaskDate(task);
-  };
-
-  $scope.closeCalendar = function() {
-    $scope.calendarOpen = false;
-  };
-
-  $scope.closeCalendarAndCall = function(itemAction, item, newItemProperty) {
-    $scope.closeCalendar();
-    itemAction(item, newItemProperty);
-  };
-
-  function setDateToTask(date, task) {
-    if (!task.transientProperties) task.transientProperties = {};
-    task.transientProperties.date = date;
-  }
-
-  $scope.callAndSaveLater = function(callback, date) {
-    if (typeof callback === 'function') callback();
-
-    if ($scope.editorType === 'task') {
-      setDateToTask(date, $scope.task);
-      $scope.endEdit();
-    }
-  };
-
-  // Show search results with slight delay.
-  $scope.$watch('titlebar.text', function(newTitle/*, oldTitle*/) {
-    $scope.searchText.current = newTitle;
-    if (newTitle && newTitle.length > 1) {
-      // Use a delayed update for search
-      $timeout(function() {
-        if ($scope.searchText.current === newTitle)
-          $scope.searchText.delayed = newTitle;
-      }, 700);
-    } else {
-      $scope.searchText.delayed = undefined;
-    }
-    evaluateAndSetSaveOnClose();
+    if (angular.isFunction($scope.unregisterEditorClosedCallback))
+      $scope.unregisterEditorClosedCallback('EditorController');
   });
 
-  // Titlebar text input focus/blur
+  // EDIT SESSION HANDLING
+
+  var currentItem;
+  function editorAboutToOpen(editorType, item) {
+    $scope.editorType = editorType;
+    $scope.editorVisible = true;
+    currentItem = item;
+  }
+
+  $scope.getItemInEdit = function(){
+    return currentItem;
+  }
+
+  // HELPER METHODS
+
+  $scope.saveNewListToExtendedItem = function(item, newList, readyFn) {
+    if (newList && newList.title)
+      saveList($scope.newList).then(
+        function(savedList){
+          // success
+          if (item.transientProperties) item.transientProperties = {};
+          item.transientProperties.list = savedList.uuid;
+          readyFn(item);
+        },
+        function(){
+          // failure
+          readyFn(item);
+        });
+    else {
+      readyFn(item);
+    }
+  };
+
+  $scope.deferEdit = function(){
+    return UISessionService.deferAction('edit', $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
+  }
+
+  // TITLEBAR
+
+  $scope.titlebar = {};
+
+  var titleBarInputFocusCallbackFunction;
+  var titleBarInputBlurCallbackFunction;
+
   $scope.registerTitleBarInputCallbacks = function (focusCallback, blurCallback) {
     titleBarInputFocusCallbackFunction = focusCallback;
     titleBarInputBlurCallbackFunction = blurCallback;
   };
+
   function setFocusOnTitlebarInput() {
     if (typeof titleBarInputFocusCallbackFunction === 'function') titleBarInputFocusCallbackFunction();
   }
@@ -320,18 +120,32 @@
     if (typeof titleBarInputBlurCallbackFunction === 'function') titleBarInputBlurCallbackFunction();
   }
 
-  var HEADER_HEIGHT = 88;
-  $scope.getHeaderHeight = function getHeaderHeight() {
-    return HEADER_HEIGHT;
+  $scope.titlebarHasText = function() {
+    return $scope.titlebar.text && $scope.titlebar.text.length !== 0;
   };
 
-  // var ITEM_ACTION_BUTTONS_ROW_HEIGHT = 60;
-  // var ITEM_NAVIGATION_ROW_HEIGHT = 44;
-  // ITEM_ACTION_BUTTONS_ROW_HEIGHT + ITEM_NAVIGATION_ROW_HEIGHT
-  $scope.getOverrideEditorFooterHeight = function getOverrideEditorFooterHeight() {
-    return $rootScope.EDITOR_FOOTER_HEIGHT;
+  $scope.handleBasicTitlebarKeydown = function(keydownEvent, item){
+    // Escape
+    if (keydownEvent.keyCode === 27){
+      blurTitlebarInput();
+    }
+    else if (item && $scope.titlebarHasText()){
+      // Change task title at the same time, but not if its empty
+      item.title = $scope.titlebar.text;
+    }
+  }
+
+  // NAVIGATION
+
+  $scope.swipeToAdvanced = function() {
+    SwiperService.swipeTo($scope.editorType + 'Editor/advanced');
   };
+
+  $scope.swipeToBasic = function() {
+    SwiperService.swipeTo($scope.editorType + 'Editor/basic');
+  };
+
 }
 
-EditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'SwiperService', 'UISessionService'];
+EditorController['$inject'] = ['$rootScope', '$scope', 'SwiperService', 'UISessionService'];
 angular.module('em.main').controller('EditorController', EditorController);

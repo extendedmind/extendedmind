@@ -1,0 +1,25 @@
+<div class="container-fluid" ng-controller="OmnibarEditorController">
+  <header class="container-titlebar">
+    <div class="container-titlebar--inner">
+      <div class="group-symmetrical row">
+        <a href class="group-symmetrical--left" ng-click="closeEditor()">
+          <span class="link-navigation-back">back</span>
+        </a>
+      </div>
+
+      <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
+        <div class="group-mixed--middle">
+          <textarea type="text" ng-model="titlebar.text" ng-keydown="omnibarTitlebarTextKeyDown($event)" focusable="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="search/addTODO&#8230;" maxlength="128" required ></textarea>
+        </div>
+      </form>
+    </div>
+  </header>
+
+  <div class="container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}">
+    <div class="container-content" drawer-override-aisle="right">
+      TODO: SEARCH RESULTS
+    </div>
+    <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">footer
+    </footer>
+  </div>
+</div>
