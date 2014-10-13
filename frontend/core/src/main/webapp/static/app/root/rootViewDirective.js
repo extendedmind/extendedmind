@@ -32,7 +32,7 @@
       $rootScope.MENU_ANIMATION_SPEED = 200;
       $rootScope.EDITOR_ANIMATION_SPEED = 350;
       $rootScope.EDITOR_FOOTER_HEIGHT = 44;
-
+      $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME = 2000;
 
       // Back function globally available
       $scope.gotoPreviousPage = function gotoPreviousPage() {

@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function listDirective($animate, $parse, $q, $timeout, UISessionService) {
+ function listDirective($parse, $q, $rootScope, $timeout, UISessionService) {
   return {
     require: ['^listContainer', '?^swiperSlide'],
     restrict: 'A',
@@ -27,22 +27,22 @@
         $scope.listLength = length;
       }
 
-      /*
-      * Animate checked checkbox here, available for both list-item
-      * and list-item-add. NOTE: given element must have 'animate-checkbox-checking' set!
-      */
+      var checkingTimeout;
       this.toggleLeftCheckbox = function(item, toggleFn, element) {
 
         var checkboxCheckingReadyDeferred = $q.defer();
         var checked = toggleFn(item, checkboxCheckingReadyDeferred);
 
         if (checked) {
-          $animate.addClass(element, 'checkbox-checking').then(function() {
+          checkingTimeout = $timeout(function() {
             checkboxCheckingReadyDeferred.resolve(item);
             $scope.$digest();
-          });
+          }, $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME);
         } else{
-          $animate.removeClass(element, 'checkbox-checking');
+          if (checkingTimeout){
+            $timeout.cancel(checkingTimeout);
+            checkingTimeout = undefined;
+          }
           checkboxCheckingReadyDeferred.resolve(item);
         };
       };
@@ -202,5 +202,5 @@
     }
   };
 }
-listDirective['$inject'] = ['$animate', '$parse', '$q',  '$timeout', 'UISessionService'];
+listDirective['$inject'] = ['$parse', '$q', '$rootScope', '$timeout', 'UISessionService'];
 angular.module('em.base').directive('list', listDirective);

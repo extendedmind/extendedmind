@@ -68,19 +68,9 @@
   max-height: 0;  // [2]
 }
 
-.checkbox-checking-add {
-  transition-duration: 2s;
-  input[type="checkbox"]:checked + label:before {
-    transition: color 2s cubic-bezier(.01,1.11,0,.97);
-  }
-}
-
-.checkbox-checking,
-.checkbox-checking-add.checkbox-checking-add-active {
-  input[type="checkbox"]:checked + label:before {
-    color: @color-checkbox-checked;
-    content: @icon-selection-checked;
-  }
+// Animate checkbox checking
+input[type="checkbox"]:checked + label:before {
+  transition: color 2s cubic-bezier(.01,1.11,0,.97);
 }
 
 // 1. Simple fade-in-out animation.
