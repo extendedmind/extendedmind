@@ -61,7 +61,7 @@
 
   $scope.openTaskEditor = function openTaskEditor(task) {
     freezeTask(task);
-    $scope.openEditor('task', task);
+    return $scope.openEditor('task', task);
   };
 
   $scope.closeTaskEditor = function closeTaskEditor(task) {

@@ -87,6 +87,18 @@
         listActive();
       }
 
+      // Calls a function which returns a promise, and on promise resolve,
+      // scrolls to the right place.
+      scope.callAndWaitThenScroll = function(fn, parameter){
+        var promise = fn(parameter);
+        if (attrs.list === 'top' && promise && promise.then){
+          promise.then(function(){
+            element[0].scrollTop = 0;
+          })
+        }
+      }
+
+
       // INFINITE SCROLL
 
       element[0].addEventListener('scroll', listScroll, false);

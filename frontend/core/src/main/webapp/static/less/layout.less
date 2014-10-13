@@ -478,6 +478,25 @@ center.
 }
 
 /*
+`.group-heading` groups together a h2 element and optionally
+a button on the right.
+*/
+
+.group-heading {
+  display: table;
+  h2, button {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  h2 {
+    width: 100%;
+  }
+  button {
+    text-align: right;
+  }
+}
+
+/*
 **************************************************************************
 # Swiper
 */

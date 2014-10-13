@@ -21,17 +21,17 @@
     $scope.note = omnibarText ? omnibarText : {};
   };
 
-  $scope.saveNote = function saveNote() {
+  $scope.saveNote = function saveNote(note, keywords) {
 
     // Save keywords first because saveTag requires network connection.
-    function saveKeywords() {
+    function saveKeywords(note, keywords) {
 
       // Return keywords, that has beend added during note edit
       function getNewKeywords() {
         var filteredKeywords = [];
 
         function getNoteKeyword(uuid) {
-          $scope.keywords.some(function(keyword) {
+          keywords.some(function(keyword) {
             if (keyword.uuid === uuid && keyword.isNew) {
               filteredKeywords.push(keyword);
               return true;
@@ -39,15 +39,15 @@
             return false;
           });
         }
-        $scope.note.transientProperties.keywords.forEach(getNoteKeyword);
+        note.transientProperties.keywords.forEach(getNoteKeyword);
         return filteredKeywords;
       }
 
       // Keyword is added with fake UUID and isNew key, which are removed before save.
       // Keyword is associated with UUID so it needs to be removed from lists also.
       function removeFromMemoryAndReturnSavePromise(keyword) {
-        $scope.keywords.splice($scope.keywords.indexOf(keyword), 1);
-        $scope.note.transientProperties.keywords.splice($scope.note.transientProperties.keywords.indexOf(keyword.uuid), 1);
+        keywords.splice(keywords.indexOf(keyword), 1);
+        note.transientProperties.keywords.splice(note.transientProperties.keywords.indexOf(keyword.uuid), 1);
         delete keyword.uuid;
         delete keyword.isNew;
 
@@ -57,14 +57,14 @@
       // Re-add keywords to note with correct UUIDs.
       function addKeywordsToNote(keywords) {
         keywords.forEach(function(keyword) {
-          $scope.note.transientProperties.keywords.push(keyword.uuid);
+          note.transientProperties.keywords.push(keyword.uuid);
         });
       }
 
       var deferredSaveKeywordsSave = $q.defer();
       var saveNewKeywordPromises = [];
 
-      if ($scope.noteHasKeywords()) {
+      if ($scope.noteHasKeywords(note)) {
         // http://stackoverflow.com/a/21315112
         saveNewKeywordPromises = getNewKeywords().map(removeFromMemoryAndReturnSavePromise);
 
@@ -78,11 +78,11 @@
       return deferredSaveKeywordsSave.promise;
     }
 
-    if ($scope.note.uuid) AnalyticsService.do('saveNote', 'existing');
+    if (note.uuid) AnalyticsService.do('saveNote', 'existing');
     else AnalyticsService.do('saveNote', 'new');
 
-    return saveKeywords().then(function() {
-      return NotesService.saveNote($scope.note, UISessionService.getActiveUUID());
+    return saveKeywords(note, keywords).then(function() {
+      return NotesService.saveNote(note, UISessionService.getActiveUUID());
     });
   };
 
@@ -136,8 +136,8 @@
   $scope.isNewKeyword = function isNewKeyword(keyword) {
     return keyword.title === $scope.newKeyword.title;
   };
-  $scope.noteHasKeywords = function noteHasKeywords() {
-    return $scope.note.transientProperties && $scope.note.transientProperties.keywords;
+  $scope.noteHasKeywords = function noteHasKeywords(note) {
+    return note.transientProperties && note.transientProperties.keywords;
   };
   $scope.clearKeyword = function clearKeyword() {
     $scope.newKeyword = {
@@ -186,6 +186,15 @@
     }
     if ($scope.noteHasKeywords()) return $scope.keywords.some(isNoteKeyword);
   };
+
+  $scope.openNoteEditor = function(note){
+    return $scope.openEditor('note', note);
+  }
+
+  $scope.closeNoteEditor = function(note) {
+    $scope.closeEditor();
+  };
+
 }
 
 NotesController['$inject'] = [

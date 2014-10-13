@@ -130,7 +130,7 @@ function MainController(
     var deferredEditAction = UISessionService.getDeferredAction('edit');
     if (deferredEditAction) deferredEditAction.resolve();
 
-    UISessionService.deferAction('edit');
+    var promise = UISessionService.deferAction('edit');
 
     if (DrawerService.isOpen('left')) {
       DrawerService.close('left');
@@ -139,6 +139,7 @@ function MainController(
     } else {
       DrawerService.open('right');
     }
+    return promise;
   };
 
   $scope.closeEditor = function closeEditor() {

@@ -5,7 +5,7 @@
     swiper-click="toggleLeftCheckbox(task, toggleCompleteTask)" icon-checkbox="task.uuid">
   </div>
 
-  <a href class="group-mixed--middle" swiper-click="openTaskEditor(task)">
+  <a href class="group-mixed--middle" swiper-click="callAndWaitThenScroll(openTaskEditor, task)">
     <span class="text-link" ng-bind="task.title"></span>
   </a>
 </div>

@@ -1,5 +1,5 @@
 <div class="group-mixed">
-  <a href class="group-mixed--middle" swiper-click="openEditor('note', note)">
+  <a href class="group-mixed--middle" swiper-click="callAndWaitThenScroll(openNoteEditor, note)">
     <span class="text-link" ng-bind="note.title"></span>
   </a>
   <span class="text-teaser" ng-bind="getNoteContentTeaser(note)"></span>

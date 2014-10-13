@@ -44,6 +44,13 @@
     $scope.editorHasSwiper = true;
   }
 
+  function initializeNoteEditor(note) {
+    $scope.titlebar.text = note.title;
+    $scope.note = note;
+    $scope.itemTitleHasActionButton = false;
+    $scope.editorHasSwiper = true;
+  }
+
   function evaluateAndSetSaveOnClose() {
     if ($scope.editorType !== 'omnibar' &&
         $scope.titlebar &&
@@ -68,6 +75,9 @@
       if ($scope.editorType === 'task'){
         // Change task title at the same time
         $scope.task.title = $scope.titlebar.text;
+      }else if ($scope.editorType === 'note'){
+        // Change task title at the same time
+        $scope.note.title = $scope.titlebar.text;
       }
     }
   };
@@ -125,6 +135,9 @@
           completeReadyDeferred.resolve($scope.task);
           completeReadyDeferred = undefined;
         }
+      }else if ($scope.editorType === 'note') {
+        $scope.note.title = $scope.titlebar.text;
+        $scope.saveNote($scope.note);
       }
       //
       // TODO: others
@@ -136,7 +149,10 @@
     if ($scope.editorType === 'task') {
       $scope.closeTaskEditor($scope.task);
       $scope.deleteTask($scope.task);
-    } else alert('implement delete for: ' + $scope.editorType);
+    } else if ($scope.editorType === 'note') {
+      $scope.closeNoteEditor($scope.note);
+      $scope.deleteNote($scope.note);
+    }else alert('implement delete for: ' + $scope.editorType);
     //
     // TODO: others
     //
@@ -151,6 +167,7 @@
   $scope.endEdit = function endEdit() {
     if ($scope.editorType === 'omnibar') $scope.closeEditor();
     else if ($scope.editorType === 'task') $scope.closeTaskEditor($scope.task);
+    else if ($scope.editorType === 'note') $scope.closeNoteEditor($scope.note);
     else alert('implement close for: ' + $scope.editorType);  // FIXME
 
     if ($scope.saveOnClose) $scope.saveItemInEdit();
@@ -162,9 +179,9 @@
       // initializeOmnibar();
     } else if (editorType === 'task') {
       initializeTaskEditor(item);
-    }/* else if (editorType === 'note') {
+    } else if (editorType === 'note') {
       initializeNoteEditor(item);
-    } else if (editorType === 'list') {
+    } /*else if (editorType === 'list') {
       initializeListEditor(item);
     } else if (editorType === 'context') {
       initializeContextEditor(item);
