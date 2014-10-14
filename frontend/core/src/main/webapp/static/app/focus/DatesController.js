@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function DatesController($scope, DateService, SwiperService, UISessionService) {
+ function DatesController($filter, $scope, DateService, SwiperService, UISessionService) {
   var slidePath = 'focus/tasks';
 
   // DAY SLIDES CONSTRUCTOR
@@ -375,7 +375,11 @@
   *   - fri 10 oct
   */
   function daySlideHeading(day) {
-    return day ? day : 'no date';
+    if (!day) return 'no date';
+
+    if (day === DateService.getTodayYYYYMMDD()) return 'today';
+    else
+      return $filter('date')(day, 'EEE d MMM').toLowerCase(); // e.g. fri 10 oct
   }
 
   $scope.getNewDayTask = function(daySlidesIndex){
@@ -436,5 +440,5 @@
   };
 }
 
-DatesController['$inject'] = ['$scope', 'DateService', 'SwiperService', 'UISessionService'];
+DatesController['$inject'] = ['$filter', '$scope', 'DateService', 'SwiperService', 'UISessionService'];
 angular.module('em.focus').controller('DatesController', DatesController);
