@@ -17,7 +17,7 @@
 
  function EditorController($rootScope, $scope, SwiperService, UISessionService) {
 
-  // REGISTER CALLBACKS
+  // OPENING, INITIALIZING, CLOSING
 
   var currentItem;
   function editorAboutToOpen(editorType, item) {
@@ -25,6 +25,10 @@
     $scope.editorVisible = true;
     currentItem = item;
   }
+
+  $scope.getItemInEdit = function(){
+    return currentItem;
+  };
 
   // Callback from Snap.js, outside of AngularJS event loop
   function editorOpened() {
@@ -64,24 +68,11 @@
       $scope.unregisterEditorClosedCallback('EditorController');
   });
 
-  // EDIT SESSION HANDLING
-
-  var currentItem;
-  function editorAboutToOpen(editorType, item) {
-    $scope.editorType = editorType;
-    $scope.editorVisible = true;
-    currentItem = item;
-  }
-
-  $scope.getItemInEdit = function(){
-    return currentItem;
-  }
-
   // HELPER METHODS
 
   $scope.saveNewListToExtendedItem = function(item, newList, readyFn) {
     if (newList && newList.title)
-      saveList($scope.newList).then(
+      $scope.saveList($scope.newList).then(
         function(savedList){
           // success
           if (item.transientProperties) item.transientProperties = {};
@@ -99,7 +90,7 @@
 
   $scope.deferEdit = function(){
     return UISessionService.deferAction('edit', $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
-  }
+  };
 
   // TITLEBAR
 
@@ -133,7 +124,7 @@
       // Change task title at the same time, but not if its empty
       item.title = $scope.titlebar.text;
     }
-  }
+  };
 
   // NAVIGATION
 
