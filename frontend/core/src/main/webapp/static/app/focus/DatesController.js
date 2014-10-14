@@ -143,7 +143,7 @@
   */
   function clearDaySlidesInfos() {
     for (var i = 0, len = $scope.daySlides.length; i < len; i++) {
-      $scope.daySlides[i].heading = '&#8230;';
+      $scope.daySlides[i].heading = '...';
       $scope.daySlides[i].referenceDate = $scope.daySlides[i].info;
       $scope.daySlides[i].info = undefined;
     }
@@ -332,7 +332,7 @@
     for (var i = 0, len = $scope.datepickerWeeks.length; i < len; i++) {
       for (var j = 0, jLen = $scope.datepickerWeeks[i].length; j < jLen; j++) {
         // FIXME: use displayDate instead of displayDateShort when display format is decided!
-        $scope.datepickerWeeks[i][j].displayDateShort = '&#8230;';
+        $scope.datepickerWeeks[i][j].displayDateShort = '...';
       }
     }
   }
