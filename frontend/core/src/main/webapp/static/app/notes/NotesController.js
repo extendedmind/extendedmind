@@ -93,7 +93,7 @@
       if (note.content.length <= maximumTeaserLength) {
         return note.content;
       } else {
-        return note.content.substring(0, maximumTeaserLength) + '...';
+        return note.content.substring(0, maximumTeaserLength) + '&#8230;';
       }
     }
   };

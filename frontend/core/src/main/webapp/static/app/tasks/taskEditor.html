@@ -39,18 +39,18 @@
 
           <div lists-select-options>
             <select ng-if="!addNewListVisible" class="select-list-visible-animation row" ng-model="task.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions">
-              <option value="">select list...</option>
+              <option value="">select list&#8230;</option>
             </select>
             <div ng-if="addNewListVisible" class="group-mixed select-list-visible-animation">
               <div class="group-mixed--middle">
-                <input type="text" ng-model="newList.title" placeholder="add list..."/>
+                <input type="text" ng-model="newList.title" placeholder="add list&#8230;"/>
               </div>
               <div class="group-mixed--right">
                 <a href class="group-mixed--right font-smallest add-new-list-item-cancel" ng-click="setAddNewListHidden()">cancel</a>
               </div>
             </div>
           </div>
-          <textarea class="row" ng-model="task.transientProperties.description" msd-elastic placeholder="description..." maxlength="1024"></textarea>
+          <textarea class="row" ng-model="task.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
 
         </div>
 
@@ -71,12 +71,12 @@
       <div class="swiper-slide" swiper-slide="taskEditor/advanced" slide-index="1">
         <div class="container-content">
           <select ng-show="contexts.length" ng-model="task.transientProperties.context" ng-options="context.uuid as context.title for context in contexts">
-            <option value="">select context...</option>
+            <option value="">select context&#8230;</option>
           </select>
           <select ng-if="task.transientProperties.date" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes">
-            <option value="">select repeating...</option>
+            <option value="">select repeating&#8230;</option>
           </select>
-          <input type="text" ng-model="task.link" placeholder="url...">
+          <input type="text" ng-model="task.link" placeholder="enter url&#8230;">
         </div>
         <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">

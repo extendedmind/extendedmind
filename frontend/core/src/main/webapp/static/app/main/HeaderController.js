@@ -42,7 +42,7 @@
       if (data) {
         var maximumHeadingLength = calculateMaximumHeadingLength();
         if (data.title.length > maximumHeadingLength) {
-          $scope.overrideHeading = data.title.substring(0, maximumHeadingLength-2) + '...';
+          $scope.overrideHeading = data.title.substring(0, maximumHeadingLength-2) + '&#8230;';
         } else {
           $scope.overrideHeading = data.title;
         }

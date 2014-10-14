@@ -273,7 +273,7 @@ function MainController(
     }
     $scope.listsSelectOptions.unshift({
       uuid: UUIDService.generateFakeUUID(),
-      title: 'add list...',
+      title: 'add list&#8230;',
       isAddNewItem: true
     });
   }

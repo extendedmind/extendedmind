@@ -32,8 +32,17 @@
       this.notifyListLength = function(length){
         $scope.listLength = length;
       }
-      this.getListLength = function(){
-        return $scope.listLength;
+
+      this.notifyListItemAdd = function(){
+        if ($attrs.listOrder !== 'top'){
+          // NOTE: This is called before notifyListLength, that's why we
+          // have to set list length directly here
+          $scope.listLength = $scope.listLength + 1;
+          $scope.activateListBottom();
+          setTimeout(function(){
+            $element[0].scrollTop = $element[0].scrollHeight;
+          });
+        }
       }
 
       var customFilterItemVisible;
@@ -82,7 +91,7 @@
           listOpenOnAddFn();
         }else if (scope.activateAddItem){
           if (attrs.listOrder !== 'top'){
-            if (activateListBottom()){
+            if (scope.activateListBottom()){
               // The entire list was not visible, we
               // have to wait for digest to complete for focus to move to the
               // bottom. Can't think of a better way to do this, can you?
@@ -118,7 +127,6 @@
           })
         }
       }
-
 
       // INFINITE SCROLL
 
@@ -173,7 +181,7 @@
         UISessionService.lock('leaveAnimation', 500);
       }
 
-      function activateListBottom() {
+      scope.activateListBottom = function() {
         if (scope.listLength - scope.maximumNumberOfItems > 0){
           setLimits(scope.listLength - scope.maximumNumberOfItems);
           return true;

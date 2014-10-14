@@ -27,7 +27,7 @@
           <li class="simple-content" ng-repeat="user in users | orderBy:'created':true">
             <a ng-href="mailto:{{user.email}}" ng-bind="user.email"></a> since: {{getDateString(user.created)}}
             <form role="form" ng-submit="destroyUser(user)">
-              <input type="text" class="simple-input font-small" ng-model="user.destroy" placeholder="write 'destroy [email]' to destroy the user..."/>
+              <input type="text" class="simple-input font-small" ng-model="user.destroy" placeholder="write 'destroy [email]' to destroy the user&#8230;"/>
             </form>
           </li>
         </ul>

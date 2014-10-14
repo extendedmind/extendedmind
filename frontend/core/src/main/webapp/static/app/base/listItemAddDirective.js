@@ -56,7 +56,8 @@
           }
 
           scope.clickedElsewhere = function(){
-            saveNewItemFn(scope.newItem);
+            if (scope.newItem.title && scope.newItem.title.length > 0)
+              saveNewItem(scope.newItem);
             exit();
           }
 
@@ -72,14 +73,22 @@
             // ESC button
             if (event.keyCode === 27) exit();
             // RETURN button
-            else if (event.keyCode === 13) {
-              // Enter in add item saves, no line breaks allowed
-              saveNewItemFn(scope.newItem);
-              scope.newItem = createNewItemFn();
+            else if (event.keyCode === 13){
+              if (scope.newItem.title && scope.newItem.title.length > 0) {
+                // Enter in add item saves, no line breaks allowed
+                saveNewItem(scope.newItem);
+                scope.newItem = createNewItemFn();
+              }
               event.preventDefault();
               event.stopPropagation();
             }
           };
+
+          function saveNewItem(newItem){
+            saveNewItemFn(newItem).then(function(){
+              controllers[0].notifyListItemAdd();
+            });
+          }
 
           scope.callAndExit = function(fn, parameter){
             fn(parameter);

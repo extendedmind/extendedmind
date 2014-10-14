@@ -3,7 +3,7 @@
     <form class="container-fluid--inner" name="resetForm">
       <section class="container-content">
         <h1>reset password</h1>
-        <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password..." ng-keydown="typePassword()" required />
+        <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password&#8230;" ng-keydown="typePassword()" required />
         <div class="group-error row">
           <div ng-if="resetForm.password.$touched" ng-messages="resetForm.password.$error">
             <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
