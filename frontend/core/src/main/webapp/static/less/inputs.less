@@ -47,7 +47,7 @@ textarea {
 @height-btn: @grid-vertical;
 @size-btn-clear: 28px;
 
-[class^="btn-"], [class*=" btn-"] {
+[class^="btn"], [class*=" btn"] {
   padding: 0;
   margin: 0;
   outline: 0;
@@ -55,6 +55,10 @@ textarea {
   box-shadow: none;
   height: @height-btn;
   text-align: center;
+}
+
+.btn {
+  background-color: transparent;
 }
 
 .btn-action {
@@ -75,6 +79,7 @@ textarea {
     background-color: @color-btn-disabled;
   }
 }
+
 .btn-clear {
   background-color: transparent;
   &:after {

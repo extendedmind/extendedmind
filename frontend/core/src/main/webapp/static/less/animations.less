@@ -9,6 +9,7 @@
 
 @timing-animate: cubic-bezier(0.250, 0.460, 0.450, 0.940);
 @timing-animate-steep: cubic-bezier(.01, 1.11, 0, .97);
+@timing-animate-gradual: cubic-bezier(.97,.01,.93,.63);
 
 @speed-animate-item-fade: 1s;
 @speed-animate-item-shrink: .5s;
@@ -17,6 +18,9 @@
 
 @speed-animate-toaster-fade: .5s;
 @timing-animate-toaster: @timing-animate;
+
+@speed-animate-btn-completed-fade: 1s;
+@timing-animate-btn-completed: @timing-animate-gradual;
 
 @speed-animate-calendar-fade: .3s;
 @timing-animate-calendar: @timing-animate;
@@ -92,6 +96,27 @@ input[type="checkbox"]:checked + label:before {
 // 1. Starting point for fade out and ending point for fade in.
 .animate-toaster.ng-leave,
 .animate-toaster.ng-enter.ng-enter-active {
+  opacity: 1; // [1]
+}
+
+// 1. Simple fade-in-out animation.
+.animate-btn-completed {
+  -webkit-transition: opacity @timing-animate-btn-completed @speed-animate-btn-completed-fade;  // [1]
+  -moz-transition: opacity @timing-animate-btn-completed @speed-animate-btn-completed-fade;     // [1]
+  -o-transition: opacity @timing-animate-btn-completed @speed-animate-btn-completed-fade;       // [1]
+  -ms-transition: opacity @timing-animate-btn-completed @speed-animate-btn-completed-fade;      // [1]
+  transition: opacity @timing-animate-btn-completed @speed-animate-btn-completed-fade;          // [1]
+}
+
+// 1. Starting point for fade in and ending point for fade out.
+.animate-btn-completed.ng-enter,
+.animate-btn-completed.ng-leave.ng-leave-active {
+  opacity: 0; // [1]
+}
+
+// 1. Starting point for fade out and ending point for fade in.
+.animate-btn-completed.ng-leave,
+.animate-btn-completed.ng-enter.ng-enter-active {
   opacity: 1; // [1]
 }
 

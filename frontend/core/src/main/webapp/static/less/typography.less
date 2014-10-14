@@ -63,6 +63,7 @@ Font mixins.
 
 @size-icon-logo: 30px;
 @size-icon-menu: 20px;
+@size-icon-toggle-completed: 20px;
 
 /*
 Use `.text-details` to separate details from body text.
@@ -96,6 +97,17 @@ Use `.text-details` to separate details from body text.
   line-height: @size-icon-menu;
   &:after {
     .set-icon-font;
+    color: @color-menu-button;
+    content: @icon-menu;
+  }
+}
+
+.text-toggle-completed {
+  font-size: @size-icon-toggle-completed;
+  line-height: @size-icon-toggle-completed;
+  &:after {
+    .set-icon-font;
+    // FIXME: Change when actual logo is in the font pack!
     color: @color-menu-button;
     content: @icon-menu;
   }

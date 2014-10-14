@@ -425,12 +425,12 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 
 // 1. Increase clicking area
 .group-mixed--middle:first-child {
-  input, textarea {
+  input, textarea, h1, h2, h3 {
     padding-left: @grid-horizontal;   /* [1] */
   }
 }
 .group-mixed--middle:last-child {
-  textarea {
+  textarea, h1, h2, h3 {
     padding-right: @grid-horizontal;  /* [1] */
   }
 }

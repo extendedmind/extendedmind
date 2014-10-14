@@ -86,7 +86,7 @@
   *
   * Return checkbox checked statuses.
   */
-  $scope.toggleCompleteTask = function toggleCompleteTask(task, taskCompletingReadyDeferred) {
+  $scope.toggleCompleteTask = function(task, taskCompletingReadyDeferred) {
 
     // Don't try to complete a task that hasn't been saved, saveTask will call this again
     // after the task has a uuid
@@ -118,7 +118,17 @@
     }
   };
 
-  $scope.saveTask = function saveTask(task) {
+  $scope.containsCompleted = function(taskArray){
+    if (taskArray && taskArray.length){
+      for (var i = 0; i < taskArray.length;i++){
+        if (taskArray[i].completed && !isTaskFrozen(taskArray[i])){
+          return true;
+        }
+      }
+    }
+  }
+
+  $scope.saveTask = function(task) {
     if (!task || !task.title || task.title.length === 0) return false;
     var completeOnSave = false;
     if (task.uuid){
@@ -148,7 +158,7 @@
     // FIXME: where task went?
   }
 
-  $scope.deleteTask = function deleteTask(task) {
+  $scope.deleteTask = function(task) {
 
     UISessionService.pushDelayedNotification({
       type: 'deleted',

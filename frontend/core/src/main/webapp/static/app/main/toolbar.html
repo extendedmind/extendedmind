@@ -2,7 +2,7 @@
   <div class="container-toolbar--inner">
     <nav class="group-symmetrical swiper-no-swiping" role="navigation">
       <div class="group-symmetrical--left">
-        <button ng-if="!isDatepickerVisible" type="button" ng-click="toggleMenu()" alt="menu">
+        <button class="btn" ng-if="!isDatepickerVisible" type="button" ng-click="toggleMenu()" alt="menu">
           <span class="text-menu"></span>
         </button>
         <a href ng-if="isDatepickerVisible" id="todayLink" ng-class="{'link-highlighted': !isTodayActive}">today</a>
@@ -11,9 +11,9 @@
         <a href class="heading" ng-click="switchFeature()" ng-bind="getCurrentHeading()"></a>
       </div>
       <div class="group-symmetrical--right">
-        <a href class="omni-button" ng-click="openEditor('omnibar')">
+        <button class="btn" ng-click="openEditor('omnibar')">
           <span class="text-logo"></span>
-        </a>
+        </button>
       </div>
     </nav>
   </div>
