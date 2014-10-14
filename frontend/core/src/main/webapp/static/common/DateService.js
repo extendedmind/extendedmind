@@ -137,6 +137,11 @@
         return activeWeek[0];
       })();
     },
+    getYesterdayDate: function() {
+      var yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      return yesterday;
+    },
     getTodayDate: function(currentWeek) {
       var today = new Date();
       for (var i = 0, len = currentWeek.length; i < len; i++) {
@@ -160,8 +165,7 @@
       return new Date(date.getFullYear(), date.getMonth(), 1);
     },
     getYesterdayYYYYMMDD: function() {
-      var yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      var yesterday = this.getYesterdayDate();
       return yyyymmdd(yesterday);
     },
     getTodayYYYYMMDD: function() {

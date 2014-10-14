@@ -31,9 +31,9 @@
     heading: daySlideHeading(DateService.getTomorrowYYYYMMDD())
   },
   {
-    info: DateService.getYesterdayYYYYMMDD(),
-    referenceDate: DateService.getYesterdayYYYYMMDD(),
-    heading: daySlideHeading(DateService.getYesterdayYYYYMMDD())
+    info: undefined,
+    referenceDate: undefined,
+    heading: daySlideHeading()
   }
   ];
 
@@ -94,12 +94,13 @@
     // before slide change end callback is fired.
     offsetFromOldActiveDaySlide += direction === 'prev' ? -1 : 1;
 
-    if (Math.abs(offsetFromOldActiveDaySlide) >= 2) {
-      if (!daySlidesInfosCleared) {
-        clearDaySlidesInfos();
-        if (!$scope.$$phase) $scope.$digest();
-        daySlidesInfosCleared = true;
-      }
+    // Infos will be cleared when absolute value of offset from old active day slide is >= 2.
+    // We are in slide change start callback and it is potentially fired many times, so check that infos are
+    // cleared before comparing the absolute value.
+    if (!daySlidesInfosCleared && (offsetFromOldActiveDaySlide >= 2 || offsetFromOldActiveDaySlide <= -2)) {
+      clearDaySlidesInfos();
+      if (!$scope.$$phase) $scope.$digest();
+      daySlidesInfosCleared = true;
     }
   }
 
@@ -142,18 +143,68 @@
   */
   function clearDaySlidesInfos() {
     for (var i = 0, len = $scope.daySlides.length; i < len; i++) {
-      $scope.daySlides[i].referenceDate = $scope.daySlides[i].info;
       $scope.daySlides[i].heading = '...';
+      $scope.daySlides[i].referenceDate = $scope.daySlides[i].info;
       $scope.daySlides[i].info = undefined;
     }
   }
 
+  /*
+  * Update date in active slide: set new active date with offset from old active date.
+  *
+  * Yesterday, 'no date' and today are special cases.
+  */
   function refreshActiveDaySlideAndReturnInfo(oldActiveSlideIndex, newActiveSlideIndex, offset) {
     var newActiveDate;
 
-    // Update date in active slide: set new active date with offset from old active date.
+    var referenceDate = $scope.daySlides[oldActiveSlideIndex].referenceDate;
+    if (referenceDate) {
+      referenceDate = new Date(referenceDate);
+      var today = new Date().setHours(0, 0, 0, 0);
+      var newActiveDateCandidate = DateService.getDateWithOffset(offset, referenceDate);
+
+      if (referenceDate.setHours(0, 0, 0, 0) < today) { // Past
+        if (newActiveDateCandidate.setHours(0, 0, 0, 0) > today) {
+          // From past to future, so hopped over 'no date' slide. Go back one day.
+          newActiveDateCandidate = DateService.getDateWithOffset(-1, newActiveDateCandidate);
+          makeDaySlide(newActiveSlideIndex, newActiveDateCandidate);
+          return newActiveDateCandidate;
+
+        } else if (newActiveDateCandidate.setHours(0, 0, 0, 0) === today) {
+          // Active slide is a 'no date' slide when new active date candidate is today.
+          makeDaySlide(newActiveSlideIndex);
+          return;
+        }
+
+      } else { // Present or future
+        var yesterday = DateService.getYesterdayDate().setHours(0, 0, 0, 0);
+        if (newActiveDateCandidate.setHours(0, 0, 0, 0) < yesterday) {
+          // From future to past, so hopped over 'no date' slide. Go forward one day.
+          newActiveDateCandidate = DateService.getDateWithOffset(1, newActiveDateCandidate);
+          makeDaySlide(newActiveSlideIndex, newActiveDateCandidate);
+          return newActiveDateCandidate;
+
+        } else if (newActiveDateCandidate.setHours(0, 0, 0, 0) === yesterday) {
+          // Active slide is a 'no date' slide when new active date candidate is today.
+          makeDaySlide(newActiveSlideIndex);
+          return;
+        }
+      }
+    } else {
+      // No date slide. Today is the reference when going past, yesterday when future.
+      if (offset > 0) { // Going to the future.
+        // Subtract offset and then use today as a reference. Result is the same as using original offset and
+        // yesterday, but this is easier.
+        offset--;
+      }
+      var slideDate = DateService.getDateWithOffset(offset, new Date());
+      makeDaySlide(newActiveSlideIndex, slideDate);
+      return slideDate;
+    }
+
     // Old active day is in old active slide index.
     var oldActiveDate = new Date($scope.daySlides[oldActiveSlideIndex].referenceDate);
+
     newActiveDate = DateService.getDateWithOffset(offset, oldActiveDate);
     $scope.daySlides[newActiveSlideIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
     $scope.daySlides[newActiveSlideIndex].info = $scope.daySlides[newActiveSlideIndex].referenceDate;
@@ -165,23 +216,62 @@
     return newActiveDate;
   }
 
+  function makeDaySlide(slideIndex, slideDate) {
+    var daySlide = $scope.daySlides[slideIndex];
+    if (!slideDate) {
+      daySlide.referenceDate = daySlide.info = undefined;
+    } else {
+      daySlide.referenceDate = daySlide.info = DateService.getYYYYMMDD(slideDate);
+    }
+    daySlide.heading = daySlideHeading(daySlide.referenceDate);
+  }
+
+  /*
+  * Day slide has either some date or no date which is before today slide and after yesterday.
+  */
   function getActiveDaySlideInfo(slideIndex) {
-    return new Date($scope.daySlides[slideIndex].referenceDate);
+    var referenceDate = $scope.daySlides[slideIndex].referenceDate;
+    if (referenceDate) return new Date($scope.daySlides[slideIndex].referenceDate);
+    // Slide has no reference date so it is a 'no date' slide.
   }
 
   /*
   * Get new adjacent dates and set them to adjacent circular array indexes.
   */
   function refreshAdjacentDaySlides(previousIndex, nextIndex, activeDate) {
-    var previousDate = DateService.getDateWithOffset(-1, activeDate);
-    var nextDate = DateService.getDateWithOffset(1, activeDate);
+    var previousDate, nextDate;
+    // Detect type of active day slide.
+    if (activeDate) {
+      // Clear the time from date for comparison between dates. See http://stackoverflow.com/a/6202196
+      activeDate.setHours(0, 0, 0, 0);
 
-    $scope.daySlides[previousIndex].referenceDate = DateService.getYYYYMMDD(previousDate);
+      if (activeDate.getTime() === new Date().setHours(0, 0, 0, 0)) {
+        // Today slide. Previous slide is 'no date' slide.
+        nextDate = DateService.getTomorrowDate();
+      } else if (activeDate.getTime() === DateService.getYesterdayDate().setHours(0, 0, 0, 0)) {
+        // Yesterday slide. Next slide is 'no date' slide.
+        previousDate = DateService.getDateWithOffset(-1, activeDate);
+      } else {
+        // Standard date slide. Get previous and next date.
+        previousDate = DateService.getDateWithOffset(-1, activeDate);
+        nextDate = DateService.getDateWithOffset(1, activeDate);
+      }
+    } else {
+      // 'No date' slide. Previous date is yesterday and next date is today.
+      previousDate = DateService.getYesterdayDate();
+      nextDate = new Date();
+    }
+
+    // NOTE:  We could check equality between adjacent reference date and new adjacent date without
+    //        overwriting them if it has performance gains.
+
+    $scope.daySlides[previousIndex].referenceDate = previousDate ? DateService.getYYYYMMDD(previousDate) :
+    undefined;
     $scope.daySlides[previousIndex].info = $scope.daySlides[previousIndex].referenceDate;
     // Set heading for previous slide.
     $scope.daySlides[previousIndex].heading = daySlideHeading($scope.daySlides[previousIndex].referenceDate);
 
-    $scope.daySlides[nextIndex].referenceDate = DateService.getYYYYMMDD(nextDate);
+    $scope.daySlides[nextIndex].referenceDate = nextDate ? DateService.getYYYYMMDD(nextDate) : undefined;
     $scope.daySlides[nextIndex].info = $scope.daySlides[nextIndex].referenceDate;
     // Set heading for next slide.
     $scope.daySlides[nextIndex].heading = daySlideHeading($scope.daySlides[nextIndex].referenceDate);
@@ -205,7 +295,7 @@
     previousActiveIndex = slideIndex;
     offsetFromOldActiveDatepickerSlide += direction === 'prev' ? -1 : 1;
 
-    if (Math.abs(offsetFromOldActiveDatepickerSlide) >= 2) {
+    if (offsetFromOldActiveDatepickerSlide >= 2 || offsetFromOldActiveDatepickerSlide <= -2) {
       if (!datepickerWeeksInfosCleared) {
         clearDatepickerSlidesInfos();
         datepickerWeeksInfosCleared = true;
@@ -285,15 +375,20 @@
   *   - fri 10 oct
   */
   function daySlideHeading(day) {
-    return day;
+    return day ? day : 'no date';
   }
 
   $scope.getNewDayTask = function(daySlidesIndex){
     return {transientProperties: {date: $scope.daySlides[daySlidesIndex].info, completed: false}};
   };
 
-  $scope.toggleDatepicker = function() {
+  $scope.toggleDatepicker = function(startingDateYYYYMMDD) {
     if (!$scope.datepickerVisible) {
+      if (startingDateYYYYMMDD) {
+        // TODO: start from date
+      } else {
+        // TODO: no date slide, start from today
+      }
       initializeDatepickerWeeks();
       $scope.datepickerVisible = true;
     }
