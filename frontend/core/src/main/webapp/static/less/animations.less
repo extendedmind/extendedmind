@@ -25,6 +25,9 @@
 @speed-animate-calendar-fade: .3s;
 @timing-animate-calendar: @timing-animate;
 
+@speed-animate-date-active: .2s;
+@timing-animate-date-active: @timing-animate-steep;
+
 // 1. Set initial max-height for item to make max-height animation work in WebKit browsers.
 .animate-list-item-leave {
   max-height: 44px; // [1]
@@ -80,11 +83,11 @@ input[type="checkbox"]:checked + label:before {
 
 // 1. Simple fade-in-out animation.
 .animate-toaster.ng-enter, .animate-toaster.ng-leave {
-  -webkit-transition: opacity @timing-animate-toaster @speed-animate-toaster-fade;  // [1]
-  -moz-transition: opacity @timing-animate-toaster @speed-animate-toaster-fade;     // [1]
-  -o-transition: opacity @timing-animate-toaster @speed-animate-toaster-fade;       // [1]
-  -ms-transition: opacity @timing-animate-toaster @speed-animate-toaster-fade;      // [1]
-  transition: opacity @timing-animate-toaster @speed-animate-toaster-fade;          // [1]
+  -webkit-transition: opacity @speed-animate-toaster-fade @timing-animate-toaster;  // [1]
+  -moz-transition: opacity @speed-animate-toaster-fade @timing-animate-toaster;     // [1]
+  -o-transition: opacity @speed-animate-toaster-fade @timing-animate-toaster;       // [1]
+  -ms-transition: opacity @speed-animate-toaster-fade @timing-animate-toaster;      // [1]
+  transition: opacity @speed-animate-toaster-fade @timing-animate-toaster;          // [1]
 }
 
 // 1. Starting point for fade in and ending point for fade out.
@@ -101,11 +104,11 @@ input[type="checkbox"]:checked + label:before {
 
 // 1. Simple fade-in-out animation.
 .animate-btn-completed {
-  -webkit-transition: opacity @timing-animate-btn-completed @speed-animate-btn-completed-fade;  // [1]
-  -moz-transition: opacity @timing-animate-btn-completed @speed-animate-btn-completed-fade;     // [1]
-  -o-transition: opacity @timing-animate-btn-completed @speed-animate-btn-completed-fade;       // [1]
-  -ms-transition: opacity @timing-animate-btn-completed @speed-animate-btn-completed-fade;      // [1]
-  transition: opacity @timing-animate-btn-completed @speed-animate-btn-completed-fade;          // [1]
+  -webkit-transition: opacity @speed-animate-btn-completed-fade @timing-animate-btn-completed;  // [1]
+  -moz-transition: opacity @speed-animate-btn-completed-fade @timing-animate-btn-completed;     // [1]
+  -o-transition: opacity @speed-animate-btn-completed-fade @timing-animate-btn-completed;       // [1]
+  -ms-transition: opacity @speed-animate-btn-completed-fade @timing-animate-btn-completed;      // [1]
+  transition: opacity @speed-animate-btn-completed-fade @timing-animate-btn-completed;          // [1]
 }
 
 // 1. Starting point for fade in and ending point for fade out.
@@ -120,17 +123,30 @@ input[type="checkbox"]:checked + label:before {
   opacity: 1; // [1]
 }
 
+// 1. Highlight selected date with bold font.
+// 2. Animate background-color.
+// TODO:  Add border-radius when correct height (and dimensions) is set.
+.animate-calendar-selected-date {
+  -webkit-transition: background-color @speed-animate-date-active @timing-animate-date-active ; // [2]
+  -moz-transition: background-color @speed-animate-date-active @timing-animate-date-active;    // [2]
+  -o-transition: background-color @speed-animate-date-active @timing-animate-date-active;      // [2]
+  -ms-transition: background-color @speed-animate-date-active @timing-animate-date-active;     // [2]
+  transition: background-color @speed-animate-date-active @timing-animate-date-active;         // [2]
+  .set-font-bold; // [1]
+  background-color: @color-date-active; // [2]
+}
+
 // 1. Crossfade between calendar and date field.
 //    We are animating entering part of ng-if only, because:
 //      Date field: ng-if="!calendarOpen"
 //      Calendar:   ng-if="calendarOpen"
 .animate-calendar.ng-enter {
   pointer-events: none;
-  -webkit-transition: opacity @timing-animate-calendar @speed-animate-calendar-fade;  // [1]
-  -moz-transition: opacity @timing-animate-calendar @speed-animate-calendar-fade;     // [1]
-  -o-transition: opacity @timing-animate-calendar @speed-animate-calendar-fade;       // [1]
-  -ms-transition: opacity @timing-animate-calendar @speed-animate-calendar-fade;      // [1]
-  transition: opacity @timing-animate-calendar @speed-animate-calendar-fade;          // [1]
+  -webkit-transition: opacity @speed-animate-calendar-fade @timing-animate-calendar;  // [1]
+  -moz-transition: opacity @speed-animate-calendar-fade @timing-animate-calendar;     // [1]
+  -o-transition: opacity @speed-animate-calendar-fade @timing-animate-calendar;       // [1]
+  -ms-transition: opacity @speed-animate-calendar-fade @timing-animate-calendar;      // [1]
+  transition: opacity @speed-animate-calendar-fade @timing-animate-calendar;          // [1]
 }
 
 // 1. Fade in

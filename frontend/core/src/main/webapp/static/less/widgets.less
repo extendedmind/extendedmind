@@ -1,7 +1,6 @@
 @import "foundation.less";
-@import "layout.less";
-@import "animations.less";
 @import "inputs.less";
+@import "layout.less";
 
 /*
 <h1 class="main-heading">Widgets</h1>
@@ -244,21 +243,6 @@ TODO: Example needed
 // TODO: add border-radius when correct height (and dimensions) is set.
 .is-today .pika-button {
   border: 1px solid black;  // [1]
-}
-
-@timing-animate-date-active: @timing-animate-steep;
-// 1. Highlight selected date with bold font.
-// 2. Animate background-color.
-// TODO:  Add border-radius when correct height (and dimensions) is set.
-//        Move to animations.less
-.animate-calendar-selected-date {
-  -webkit-transition: background-color .2s @timing-animate-date-active; // [2]
-  -moz-transition: background-color .2s @timing-animate-date-active;    // [2]
-  -o-transition: background-color .2s @timing-animate-date-active;      // [2]
-  -ms-transition: background-color .2s @timing-animate-date-active;     // [2]
-  transition: background-color .2s @timing-animate-date-active;         // [2]
-  .set-font-bold; // [1]
-  background-color: @color-date-active; // [2]
 }
 
 // 1. Highlight hovered date with bold font.

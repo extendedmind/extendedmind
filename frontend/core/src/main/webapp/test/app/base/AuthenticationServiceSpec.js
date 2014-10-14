@@ -199,7 +199,6 @@ describe('AuthenticationService', function() {
 
     verifyAndUpdateAuthenticationPromise().then(function(promise) {
       expect(promise).toEqual(false);
-      expect($location.path).toHaveBeenCalledWith('/login');
     });
   });
 
@@ -210,7 +209,6 @@ describe('AuthenticationService', function() {
 
     verifyAndUpdateAuthenticationPromise().then(function(promise) {
       expect(promise).toEqual(false);
-      expect($location.path).toHaveBeenCalledWith('/login');
     });
   });
 
