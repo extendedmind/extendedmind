@@ -9,7 +9,7 @@
     <div list-item-add="{transientProperties: {completed: false}}" list-item-add-save="saveTask(newItem)"
     ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
-    ng-repeat="task in recentTasks = (getList() | filter:isListItemVisible) | orderBy:'modified':true
+    ng-repeat="task in recentTasks = (getList() | paramFilter:isListItemVisible) | orderBy:'modified':true
     | limitTo: currentListLimitTo"
     list-item="recentTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
   </section>
