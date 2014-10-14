@@ -1,19 +1,15 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
-  <section class="container-content" list="top">
+  <section class="container-content" list="tasks" list-order="top">
     <div class="group-mixed">
       <div class="group-mixed--middle">
         <h2>recent</h2>
       </div>
-      <div class="group-mixed--right">
-        <button class="btn animate-btn-completed" ng-if="containsCompleted(tasks)" ng-click="">
-          <span class="text-toggle-completed"></span>
-        </button>
-      </div>
+      <div class="group-mixed--right" task-list-completed></div>
     </div>
     <div list-item-add="{transientProperties: {completed: false}}" list-item-add-save="saveTask(newItem)"
     ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
-    <div class="row animate-list-item-leave"
-    ng-repeat="task in recentTasks = (tasks | filter:isTaskVisible) | orderBy:'modified':true
+    <div class="animate-list-item-leave"
+    ng-repeat="task in recentTasks = (getList() | filter:isListItemVisible) | orderBy:'modified':true
     | limitTo: currentListLimitTo"
     list-item="recentTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
   </section>

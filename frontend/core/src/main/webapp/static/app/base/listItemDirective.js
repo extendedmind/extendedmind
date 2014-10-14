@@ -22,8 +22,10 @@
     compile: function(){
       return {
         post: function(scope, element, attrs, listController) {
-          var listLength = $parse(attrs.listItem)(scope);
-          listController.notifyListLength(listLength);
+          if (!listController.getListLength()){
+            var listLength = $parse(attrs.listItem)(scope);
+            listController.notifyListLength(listLength);
+          }
 
           scope.toggleLeftCheckbox = function (item, toggleFn) {
             listController.toggleLeftCheckbox(item, toggleFn,

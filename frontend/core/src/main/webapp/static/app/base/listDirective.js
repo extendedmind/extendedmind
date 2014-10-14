@@ -19,12 +19,33 @@
     require: ['^listContainer', '?^swiperSlide'],
     restrict: 'A',
     scope: true,
-    controller: function($scope) {
+    controller: function($scope, $element, $attrs) {
+
+      var listArrayFn = $parse($attrs.list).bind(undefined, $scope);
+      $scope.getList = function(){
+        return listArrayFn($scope);
+      }
+
       this.registerAddActiveCallback = function(callback){
         $scope.activateAddItem = callback;
       }
       this.notifyListLength = function(length){
         $scope.listLength = length;
+      }
+      this.getListLength = function(){
+        return $scope.listLength;
+      }
+
+      var customFilterItemVisible;
+      this.setCustomFilterItemVisible = function(filter){
+        customFilterItemVisible = filter;
+      }
+      $scope.isListItemVisible = function(item){
+        if (!customFilterItemVisible){
+          return true;
+        }else{
+          return customFilterItemVisible(item);
+        }
       }
 
       var checkingTimeout;
@@ -60,7 +81,7 @@
           // Execute open function
           listOpenOnAddFn();
         }else if (scope.activateAddItem){
-          if (attrs.list !== 'top'){
+          if (attrs.listOrder !== 'top'){
             if (activateListBottom()){
               // The entire list was not visible, we
               // have to wait for digest to complete for focus to move to the
@@ -91,7 +112,7 @@
       // scrolls to the right place.
       scope.callAndWaitThenScroll = function(fn, parameter){
         var promise = fn(parameter);
-        if (attrs.list === 'top' && promise && promise.then){
+        if (attrs.listOrder === 'top' && promise && promise.then){
           promise.then(function(){
             element[0].scrollTop = 0;
           })

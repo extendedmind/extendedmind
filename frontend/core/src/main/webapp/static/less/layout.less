@@ -425,12 +425,12 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 
 // 1. Increase clicking area
 .group-mixed--middle:first-child {
-  input, textarea, h1, h2, h3 {
+  a, input, textarea, h1, h2, h3 {
     padding-left: @grid-horizontal;   /* [1] */
   }
 }
 .group-mixed--middle:last-child {
-  textarea, h1, h2, h3 {
+  a, textarea, h1, h2, h3 {
     padding-right: @grid-horizontal;  /* [1] */
   }
 }
@@ -460,6 +460,9 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 `.group-symmetrical` groups together up to three adjacent elements
 symmetrically so that `.group-symmetrical-middle` is always in the
 center.
+
+Not compatible with `.row` so we need to apply padding-left and -right inside.
+
 */
 
 @max-width-group-symmetrical-middle: 70px;
@@ -471,6 +474,8 @@ center.
 .group-symmetrical--left {
   text-align: left;
   float: left;
+  padding-left: @grid-horizontal;
+  height: @grid-vertical;
 }
 .group-symmetrical--middle {
   position: absolute;
@@ -480,25 +485,8 @@ center.
 }
 .group-symmetrical--right {
   float: right;
-}
-
-/*
-`.group-heading` groups together a h2 element and optionally
-a button on the right.
-*/
-
-.group-heading {
-  display: table;
-  h2, button {
-    display: table-cell;
-    vertical-align: middle;
-  }
-  h2 {
-    width: 100%;
-  }
-  button {
-    text-align: right;
-  }
+  padding-right: @grid-horizontal;
+  height: @grid-vertical;
 }
 
 /*

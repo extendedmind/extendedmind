@@ -37,18 +37,7 @@
   */
   var freezedTasksInLists = [];
 
-  /*
-  * Filter completed tasks that are not locked.
-  */
-  $scope.isTaskVisible = function(task) {
-    if (task.completed && !isTaskFrozen(task)) {
-      return false;
-    }
-
-    return true;
-  };
-
-  function isTaskFrozen(task) {
+  $scope.isTaskFrozen = function(task) {
     return freezedTasksInLists.findFirstIndexByKeyValue('task', task) !== undefined;
   }
 
@@ -117,16 +106,6 @@
       return true;
     }
   };
-
-  $scope.containsCompleted = function(taskArray){
-    if (taskArray && taskArray.length){
-      for (var i = 0; i < taskArray.length;i++){
-        if (taskArray[i].completed && !isTaskFrozen(taskArray[i])){
-          return true;
-        }
-      }
-    }
-  }
 
   $scope.saveTask = function(task) {
     if (!task || !task.title || task.title.length === 0) return false;

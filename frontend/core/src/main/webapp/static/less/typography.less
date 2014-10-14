@@ -61,8 +61,8 @@ Font mixins.
 # Texts.
 */
 
-@size-icon-logo: 30px;
-@size-icon-menu: 20px;
+@size-icon-logo: 22px;
+@size-icon-menu: 35px;
 @size-icon-toggle-completed: 20px;
 
 /*
@@ -80,6 +80,11 @@ Use `.text-details` to separate details from body text.
   font-size: @size-font-small;
   color: @color-error;
   .set-font-bold;
+}
+
+.text-teaser, .text-link {
+  display: inline-block;
+  line-height: @grid-vertical-half;
 }
 
 .text-logo {

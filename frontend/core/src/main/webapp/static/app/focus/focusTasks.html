@@ -56,13 +56,19 @@
       <div class="swiper-wrapper">
 
         <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0" swiper-slide-duplicate="true">
-          <div class="container-content" list>
-            <h1 ng-hide="datepickerVisible" ng-bind="daySlides[2].heading" ng-click="toggleDatepicker()"></h1>
+          <div class="container-content" list="tasks | tasksByDate:daySlides[2].info">
+            <div ng-hide="datepickerVisible" class="group-mixed">
+              <div class="group-mixed--middle">
+                <h2 ng-bind="daySlides[2].heading" ng-click="toggleDatepicker()"></h2>
+              </div>
+              <div class="group-mixed--right" task-list-completed="rightDuplicateTasksDate"></div>
+            </div>
 
-            <div class="row animate-list-item-leave"
-            ng-repeat="task in rightDuplicateTasks = (tasks | tasksByDate:daySlides[2].info | filter:isTaskVisible)
+            <div class="animate-list-item-leave"
+            ng-repeat="task in rightDuplicateTasks = (getList() | filter:isListItemVisible)
             | limitTo: currentListLimitTo"
-            list-item="rightDuplicateTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
+            list-item="rightDuplicateTasks.length" list-item-array
+            ng-include="'static/app/tasks/taskListItem.html'"></div>
 
             <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
             ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
@@ -70,11 +76,17 @@
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1" swiper-slide-loop-start="true">
-          <div class="container-content" list>
-            <h1 ng-hide="datepickerVisible" ng-bind="daySlides[0].heading" ng-click="toggleDatepicker()"></h1>
+          <div class="container-content" list="tasks | tasksByDate:daySlides[0].info">
 
-            <div class="row animate-list-item-leave"
-            ng-repeat="task in leftTasks = (tasks | tasksByDate:daySlides[0].info | filter:isTaskVisible)
+            <div ng-hide="datepickerVisible" class="group-mixed">
+              <div class="group-mixed--middle">
+                <h2 ng-bind="daySlides[0].heading" ng-click="toggleDatepicker()"></h2>
+              </div>
+              <div class="group-mixed--right" task-list-completed></div>
+            </div>
+
+            <div class="animate-list-item-leave"
+            ng-repeat="task in leftTasks = (getList() | filter:isListItemVisible)
             | limitTo: currentListLimitTo"
             list-item="leftTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
 
@@ -85,11 +97,17 @@
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2">
-          <div class="container-content" list>
-            <h1 ng-hide="datepickerVisible" ng-bind="daySlides[1].heading" ng-click="toggleDatepicker()"></h1>
+          <div class="container-content" list="tasks | tasksByDate:daySlides[1].info">
 
-            <div class="row animate-list-item-leave"
-            ng-repeat="task in middleTasks = (tasks | tasksByDate:daySlides[1].info | filter:isTaskVisible)
+            <div ng-hide="datepickerVisible" class="group-mixed">
+              <div class="group-mixed--middle">
+                <h2 ng-bind="daySlides[1].heading" ng-click="toggleDatepicker()"></h2>
+              </div>
+              <div class="group-mixed--right" task-list-complete></div>
+            </div>
+
+            <div class="animate-list-item-leave"
+            ng-repeat="task in middleTasks = (getList() | filter:isListItemVisible)
             | limitTo: currentListLimitTo"
             list-item="middleTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
 
@@ -100,10 +118,16 @@
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/right" slide-index="3">
-          <div class="container-content" list>
-            <h1 ng-hide="datepickerVisible" ng-bind="daySlides[2].heading" ng-click="toggleDatepicker()"></h1>
-            <div class="row animate-list-item-leave"
-            ng-repeat="task in rightTasks = (tasks | tasksByDate:daySlides[2].info | filter:isTaskVisible)
+          <div class="container-content" list="tasks | tasksByDate:daySlides[2].info">
+            <div ng-hide="datepickerVisible" class="group-mixed">
+              <div class="group-mixed--middle">
+                <h2 ng-bind="daySlides[2].heading" ng-click="toggleDatepicker()"></h2>
+              </div>
+              <div class="group-mixed--right" task-list-completed></div>
+            </div>
+
+            <div class="animate-list-item-leave"
+            ng-repeat="task in rightTasks = (getList() | filter:isListItemVisible)
             | limitTo: currentListLimitTo"
             list-item="rightTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
 
@@ -113,10 +137,16 @@
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/leftDuplicate" slide-index="4" swiper-slide-duplicate="true">
-          <div class="container-content" list>
-            <h1 ng-hide="datepickerVisible" ng-bind="daySlides[0].heading" ng-click="toggleDatepicker()"></h1>
-            <div class="row animate-list-item-leave"
-            ng-repeat="task in leftDuplicateTasks = (tasks | tasksByDate:daySlides[0].info | filter:isTaskVisible)
+          <div class="container-content" list="tasks | tasksByDate:daySlides[0].info">
+            <div ng-hide="datepickerVisible" class="group-mixed">
+              <div class="group-mixed--middle">
+                <h2 ng-bind="daySlides[0].heading" ng-click="toggleDatepicker()"></h2>
+              </div>
+              <div class="group-mixed--right" task-list-completed></div>
+            </div>
+
+            <div class="animate-list-item-leave"
+            ng-repeat="task in leftDuplicateTasks = (getList() | filter:isListItemVisible)
             | limitTo: currentListLimitTo"
             list-item="leftDuplicateTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
 
