@@ -4,7 +4,7 @@
       <a href ng-click="swipeToMain()"><span class="link-navigation-back">back</span></a>
     </header>
     <h1>forgot password?</h1>
-    <input class="row" type="email" name="email" ng-model="user.email" placeholder="enter email&#8230" required />
+    <input class="row" type="email" name="email" ng-model="user.email" placeholder="enter email&#8230;" required />
     <div class="group-error row">
       <div ng-if="forgotForm.email.$touched" ng-messages="forgotForm.email.$error">
         <span class="text-error" ng-message="email">invalid email address</span>
