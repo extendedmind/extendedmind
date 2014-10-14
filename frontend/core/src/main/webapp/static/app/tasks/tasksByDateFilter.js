@@ -16,12 +16,20 @@
 
  function tasksByDate(DateService) {
   return function(tasks, date) {
-    var today = DateService.getTodayYYYYMMDD();
     var filteredItems = [];
-    for (var i = 0, len = tasks.length; i < len; i++) {
-      if (tasks[i].due)
+
+    if (!date) {  // no date
+      for (var i = 0, len = tasks.length; i < len; i++) {
+        if (!tasks[i].due) filteredItems.push(tasks[i]);
+      }
+      return filteredItems;
+    }
+
+    var today = DateService.getTodayYYYYMMDD();
+    for (var j = 0, jLen = tasks.length; j < jLen; j++) {
+      if (tasks[j].due)
         // match tasks with given date, or if date is today match also overdue tasks
-        if (tasks[i].due === date || (date === today && tasks[i].due < today)) filteredItems.push(tasks[i]);
+      if (tasks[j].due === date || (date === today && tasks[j].due < today)) filteredItems.push(tasks[j]);
     }
     return filteredItems;
   };
