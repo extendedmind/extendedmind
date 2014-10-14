@@ -2,7 +2,7 @@
   <div id="menu-content" class="swiper-no-swiping">
     <ul>
       <li class="account-link">
-        <a href ng-class="getFeatureClass('user')" ng-click="gotoFeature('user')">{{getActiveOwnerName()}}</a>
+        <a href ng-class="getFeatureClass('user')" ng-click="gotoFeature('user')" ng-bind="getActiveOwnerName()"></a>
       </li>
       <li>
         <a href class="feature-link" ng-class="getFeatureClass('focus')" ng-click="gotoFeature('focus')">focus</a>
@@ -22,7 +22,7 @@
         </div>
         <ul ng-if="lists.length > 0">
           <li class="list" ng-repeat="list in lists" ng-class="$last && 'list-last'">
-            <a href class="list-link" ng-class="getListClass(list)" ng-click="gotoFeature('list', list)">{{getListTitleText(list)}}</a>
+            <a href class="list-link" ng-class="getListClass(list)" ng-click="gotoFeature('list', list)" ng-bind="getListTitleText(list)"></a>
           </li>
         </ul>
       </li>

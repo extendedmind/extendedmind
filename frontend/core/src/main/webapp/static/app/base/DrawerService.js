@@ -45,12 +45,14 @@
   function executeSnapperAnimatedCallbacks(snapperSide) {
     // drawer is open when state is left or right
     if (snappers[snapperSide].snapper.state().state === snapperSide) {
+      snappers[snapperSide].isOpen = true;
       for (var openId in snappers[snapperSide].openedCallbacks) {
         if (snappers[snapperSide].openedCallbacks.hasOwnProperty(openId))
           snappers[snapperSide].openedCallbacks[openId]();
       }
     }
     if (snappers[snapperSide].snapper.state().state === 'closed') {
+      snappers[snapperSide].isOpen = false;
       for (var closeId in snappers[snapperSide].closedCallbacks) {
         if (snappers[snapperSide].closedCallbacks.hasOwnProperty(closeId))
           snappers[snapperSide].closedCallbacks[closeId]();
@@ -242,7 +244,7 @@
       }
     },
     isOpen: function(drawerSide) {
-      if (snapperExists(drawerSide)) return snappers[drawerSide].snapper.state().state === drawerSide;
+      if (snapperExists(drawerSide)) return snappers[drawerSide].isOpen;
     },
 
     // CALLBACK REGISTRATION

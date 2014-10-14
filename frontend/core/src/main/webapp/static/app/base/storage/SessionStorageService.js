@@ -15,16 +15,21 @@
  'use strict';
 
  function SessionStorageService() {
+  var cachedActiveUUID;
+  var cachedUserUUID;
+  var cachedEmail;
   return {
 
     // setters
     setActiveUUID: function(uuid) {
+      cachedActiveUUID = uuid;
       sessionStorage.setItem('activeUUID', uuid);
     },
     setCollectives: function(collectives) {
       if (collectives) sessionStorage.setItem('collectives', JSON.stringify(collectives));
     },
     setEmail: function(email) {
+      cachedEmail = email;
       sessionStorage.setItem('email', email);
     },
     setExpires: function(expires) {
@@ -37,6 +42,7 @@
       sessionStorage.setItem('userType', userType);
     },
     setUserUUID: function(userUUID) {
+      cachedUserUUID = userUUID;
       sessionStorage.setItem('userUUID', userUUID);
     },
     setCohort: function(cohort) {
@@ -57,14 +63,16 @@
 
     // getters
     getActiveUUID: function() {
-      return sessionStorage.getItem('activeUUID');
+      if (!cachedActiveUUID) cachedActiveUUID = sessionStorage.getItem('activeUUID');
+      return cachedActiveUUID;
     },
     getCollectives: function() {
       var collectives = sessionStorage.getItem('collectives');
       if (collectives) JSON.parse(collectives);
     },
     getEmail: function() {
-      return sessionStorage.getItem('email');
+      if (!cachedEmail) cachedEmail = sessionStorage.getItem('email');
+      return cachedEmail;
     },
     getExpires: function() {
       return sessionStorage.getItem('expires');
@@ -76,7 +84,8 @@
       return sessionStorage.getItem('userType');
     },
     getUserUUID: function() {
-      return sessionStorage.getItem('userUUID');
+      if (!cachedUserUUID) cachedUserUUID = sessionStorage.getItem('userUUID');
+      return cachedUserUUID;
     },
     getCohort: function() {
       return sessionStorage.getItem('cohort');

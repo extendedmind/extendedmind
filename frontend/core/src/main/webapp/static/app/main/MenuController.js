@@ -22,7 +22,7 @@
 
   $scope.getActiveOwnerName = function getActiveOwnerName() {
     var activeUUID = UISessionService.getActiveUUID();
-      if (activeUUID){
+    if (activeUUID){
       var ownerName;
       if (activeUUID === UserSessionService.getUserUUID()) {
         ownerName = UserSessionService.getEmail();
@@ -35,7 +35,7 @@
       }
       var maximumOwnerNameLength = 20;
       if (ownerName.length > maximumOwnerNameLength) {
-        return ownerName.substring(0, maximumOwnerNameLength) + '...';
+        return ownerName.substring(0, maximumOwnerNameLength) + '&#8230;';
       }
       return ownerName;
     }
@@ -71,7 +71,7 @@
   $scope.getListTitleText = function getListTitleText(list) {
     var maximumListNameLength = 35;
     if (list.title.length > maximumListNameLength) {
-      return list.title.substring(0, maximumListNameLength-2) + '...';
+      return list.title.substring(0, maximumListNameLength-2) + '&#8230;';
     }
     return list.title;
   };
