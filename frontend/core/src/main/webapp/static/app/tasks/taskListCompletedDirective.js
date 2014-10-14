@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function taskListCompletedDirective($parse) {
+ function taskListCompletedDirective() {
   return {
     restrict: 'A',
     require: '^list',
@@ -29,6 +29,11 @@
             showCompletedTasks = !showCompletedTasks;
           };
 
+          var disableCompleted;
+          scope.isCompletedDisabled = function() {
+            return disableCompleted;
+          };
+
           scope.containsCompleted = function(){
             var taskArray = scope.getList();
             if (taskArray && taskArray.length){
@@ -39,8 +44,19 @@
               }
             }
             showCompletedTasks = false;
-          }
-          function filterCompletedTasks(task){
+          };
+          function filterCompletedTasks(task, pastDate){
+            if (pastDate) {
+              disableCompleted = true;
+              if (task.completed) {
+                // Match task completed on past date.
+                return (new Date(task.completed).setHours(0, 0, 0, 0) ===
+                        new Date(pastDate).setHours(0, 0, 0, 0));
+              }
+              return false;
+            }
+            disableCompleted = false;
+
             if (!showCompletedTasks && task.completed && !scope.isTaskFrozen(task)) {
               return false;
             }
@@ -52,5 +68,4 @@
     }
   };
 }
-taskListCompletedDirective['$inject'] = ['$parse'];
 angular.module('em.base').directive('taskListCompleted', taskListCompletedDirective);

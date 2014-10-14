@@ -204,14 +204,8 @@
 
     // Old active day is in old active slide index.
     var oldActiveDate = new Date($scope.daySlides[oldActiveSlideIndex].referenceDate);
-
     newActiveDate = DateService.getDateWithOffset(offset, oldActiveDate);
-    $scope.daySlides[newActiveSlideIndex].referenceDate = DateService.getYYYYMMDD(newActiveDate);
-    $scope.daySlides[newActiveSlideIndex].info = $scope.daySlides[newActiveSlideIndex].referenceDate;
-
-    // Set heading for active day slide.
-    $scope.daySlides[newActiveSlideIndex].heading = daySlideHeading($scope.daySlides[newActiveSlideIndex]
-                                                                    .referenceDate);
+    makeDaySlide(newActiveSlideIndex, newActiveDate);
 
     return newActiveDate;
   }
@@ -219,10 +213,16 @@
   function makeDaySlide(slideIndex, slideDate) {
     var daySlide = $scope.daySlides[slideIndex];
     if (!slideDate) {
-      daySlide.referenceDate = daySlide.info = undefined;
+      daySlide.referenceDate = daySlide.info = daySlide.pastDate = undefined;
     } else {
       daySlide.referenceDate = daySlide.info = DateService.getYYYYMMDD(slideDate);
+      if (slideDate.setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0))
+        daySlide.pastDate = daySlide.referenceDate;
+
+      else
+        daySlide.pastDate = undefined;
     }
+    // Set heading for active day slide.
     daySlide.heading = daySlideHeading(daySlide.referenceDate);
   }
 
@@ -264,17 +264,8 @@
 
     // NOTE:  We could check equality between adjacent reference date and new adjacent date without
     //        overwriting them if it has performance gains.
-
-    $scope.daySlides[previousIndex].referenceDate = previousDate ? DateService.getYYYYMMDD(previousDate) :
-    undefined;
-    $scope.daySlides[previousIndex].info = $scope.daySlides[previousIndex].referenceDate;
-    // Set heading for previous slide.
-    $scope.daySlides[previousIndex].heading = daySlideHeading($scope.daySlides[previousIndex].referenceDate);
-
-    $scope.daySlides[nextIndex].referenceDate = nextDate ? DateService.getYYYYMMDD(nextDate) : undefined;
-    $scope.daySlides[nextIndex].info = $scope.daySlides[nextIndex].referenceDate;
-    // Set heading for next slide.
-    $scope.daySlides[nextIndex].heading = daySlideHeading($scope.daySlides[nextIndex].referenceDate);
+    makeDaySlide(previousIndex, previousDate);
+    makeDaySlide(nextIndex, nextDate);
   }
 
 

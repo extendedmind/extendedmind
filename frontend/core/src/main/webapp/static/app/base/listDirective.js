@@ -49,11 +49,11 @@
       this.setCustomFilterItemVisible = function(filter){
         customFilterItemVisible = filter;
       }
-      $scope.isListItemVisible = function(item){
+      $scope.isListItemVisible = function(item, param){
         if (!customFilterItemVisible){
           return true;
         }else{
-          return customFilterItemVisible(item);
+          return customFilterItemVisible(item, param);
         }
       }
 

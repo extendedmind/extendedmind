@@ -56,7 +56,7 @@
       <div class="swiper-wrapper">
 
         <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0" swiper-slide-duplicate="true">
-          <div class="container-content" list="tasks | tasksByDate:daySlides[2].info">
+          <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'" list="tasks | tasksByDate:daySlides[2].info:daySlides[2].pastDate">
             <div ng-hide="datepickerVisible" class="group-mixed">
               <div class="group-mixed--middle">
                 <h2 ng-bind="daySlides[2].heading" ng-click="toggleDatepicker()"></h2>
@@ -65,7 +65,7 @@
             </div>
 
             <div class="animate-list-item-leave"
-            ng-repeat="task in rightDuplicateTasks = (getList() | filter:isListItemVisible)
+            ng-repeat="task in rightDuplicateTasks = (getList() | paramFilter:isListItemVisible:daySlides[2].pastDate)
             | limitTo: currentListLimitTo"
             list-item="rightDuplicateTasks.length" list-item-array
             ng-include="'static/app/tasks/taskListItem.html'"></div>
@@ -76,7 +76,7 @@
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1" swiper-slide-loop-start="true">
-          <div class="container-content" list="tasks | tasksByDate:daySlides[0].info">
+          <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'" list="tasks | tasksByDate:daySlides[0].info:daySlides[0].pastDate">
 
             <div ng-hide="datepickerVisible" class="group-mixed">
               <div class="group-mixed--middle">
@@ -86,7 +86,7 @@
             </div>
 
             <div class="animate-list-item-leave"
-            ng-repeat="task in leftTasks = (getList() | filter:isListItemVisible)
+            ng-repeat="task in leftTasks = (getList() | paramFilter:isListItemVisible:daySlides[0].pastDate)
             | limitTo: currentListLimitTo"
             list-item="leftTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
 
@@ -97,17 +97,17 @@
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2">
-          <div class="container-content" list="tasks | tasksByDate:daySlides[1].info">
+          <div class="container-content" ng-class="daySlides[1].pastDate && 'past-date'" list="tasks | tasksByDate:daySlides[1].info:daySlides[1].pastDate">
 
             <div ng-hide="datepickerVisible" class="group-mixed">
               <div class="group-mixed--middle">
                 <h2 ng-bind="daySlides[1].heading" ng-click="toggleDatepicker()"></h2>
               </div>
-              <div class="group-mixed--right" task-list-complete></div>
+              <div class="group-mixed--right" task-list-completed></div>
             </div>
 
             <div class="animate-list-item-leave"
-            ng-repeat="task in middleTasks = (getList() | filter:isListItemVisible)
+            ng-repeat="task in middleTasks = (getList() | paramFilter:isListItemVisible:daySlides[1].pastDate)
             | limitTo: currentListLimitTo"
             list-item="middleTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
 
@@ -118,7 +118,7 @@
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/right" slide-index="3">
-          <div class="container-content" list="tasks | tasksByDate:daySlides[2].info">
+          <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'" list="tasks | tasksByDate:daySlides[2].info:daySlides[2].pastDate">
             <div ng-hide="datepickerVisible" class="group-mixed">
               <div class="group-mixed--middle">
                 <h2 ng-bind="daySlides[2].heading" ng-click="toggleDatepicker()"></h2>
@@ -127,7 +127,7 @@
             </div>
 
             <div class="animate-list-item-leave"
-            ng-repeat="task in rightTasks = (getList() | filter:isListItemVisible)
+            ng-repeat="task in rightTasks = (getList() | paramFilter:isListItemVisible:daySlides[2].pastDate)
             | limitTo: currentListLimitTo"
             list-item="rightTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
 
@@ -137,7 +137,7 @@
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/leftDuplicate" slide-index="4" swiper-slide-duplicate="true">
-          <div class="container-content" list="tasks | tasksByDate:daySlides[0].info">
+          <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'" list="tasks | tasksByDate:daySlides[0].info:daySlides[0].pastDate">
             <div ng-hide="datepickerVisible" class="group-mixed">
               <div class="group-mixed--middle">
                 <h2 ng-bind="daySlides[0].heading" ng-click="toggleDatepicker()"></h2>
@@ -146,7 +146,7 @@
             </div>
 
             <div class="animate-list-item-leave"
-            ng-repeat="task in leftDuplicateTasks = (getList() | filter:isListItemVisible)
+            ng-repeat="task in leftDuplicateTasks = (getList() | paramFilter:isListItemVisible:daySlides[0].pastDate)
             | limitTo: currentListLimitTo"
             list-item="leftDuplicateTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
 
