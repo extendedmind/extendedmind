@@ -111,7 +111,7 @@ function MainController(
 
   // NAVIGATION
 
-  var openEditorAfterMenuClosed = false;
+  var openEditorAfterMenuClosed;
   var openMenuAfterEditorClosed = false;
 
   /*
@@ -124,7 +124,6 @@ function MainController(
   * TODO: analytics visit omnibar
   */
   $scope.openEditor = function openEditor(type, item) {
-    executeEditorAboutToOpenCallbacks(type, item);
 
     // Check for existing edit locks and resolve them first.
     var deferredEditorClose = UISessionService.getDeferredAction('editorClose');
@@ -134,11 +133,13 @@ function MainController(
 
     if (DrawerService.isOpen('left')) {
       DrawerService.close('left');
-      openEditorAfterMenuClosed = true;
+      openEditorAfterMenuClosed = {type: type, item: item};
       openMenuAfterEditorClosed = true;
     } else {
       DrawerService.open('right');
+      executeEditorAboutToOpenCallbacks(type, item);
     }
+
     return promise;
   };
 
@@ -485,10 +486,11 @@ function MainController(
       // Snap.js clears transition style from drawer aisle element and executes closed (animated) callback.
       // Wait until DOM manipulation is ready before opening editor
       // to have correct transition style in drawer aisle element.
-      setTimeout(function() {
+      $timeout(function() {
+        executeEditorAboutToOpenCallbacks(openEditorAfterMenuClosed.type, openEditorAfterMenuClosed.item);
+        openEditorAfterMenuClosed = undefined;
         DrawerService.open('right');
-        openEditorAfterMenuClosed = false;
-      }, 0);
+      });
     }
   }
 
