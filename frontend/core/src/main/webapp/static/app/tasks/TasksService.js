@@ -115,7 +115,7 @@
   function copyCompleted(task) {
     if (task.completed){
       if (!task.transientProperties) task.transientProperties = {};
-      task.transientProperties.completed = task.completed;
+      task.transientProperties.completed = task.completed !== undefined;
     }
   }
   // date is transient, due is persistent
@@ -169,12 +169,14 @@
         getOtherArrays(ownerUUID));
     },
     updateTaskProperties: function(uuid, properties, ownerUUID) {
-      return ArrayService.updateItemProperties(
+      var updatedTask = ArrayService.updateItemProperties(
         uuid,
         properties,
         tasks[ownerUUID].activeTasks,
         tasks[ownerUUID].deletedTasks,
         getOtherArrays(ownerUUID));
+      if (updatedTask) this.addTransientProperties([updatedTask], ownerUUID);
+      return updatedTask;
     },
     getTasks: function(ownerUUID) {
       initializeArrays(ownerUUID);

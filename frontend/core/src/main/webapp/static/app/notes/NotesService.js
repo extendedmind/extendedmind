@@ -140,12 +140,14 @@
         notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
     },
     updateNoteProperties: function(uuid, properties, ownerUUID) {
-      return ArrayService.updateItemProperties(
+      var updatedNote = ArrayService.updateItemProperties(
         uuid,
         properties,
         notes[ownerUUID].activeNotes,
         notes[ownerUUID].deletedNotes,
         getOtherArrays(ownerUUID));
+      if (updatedNote) ExtendedItemService.addTransientProperties([updatedNote], ownerUUID, copyFavoritedToStarred);
+      return updatedNote;
     },
     getNoteArrays: function(ownerUUID) {
       initializeArrays(ownerUUID);
