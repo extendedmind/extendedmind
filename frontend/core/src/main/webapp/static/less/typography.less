@@ -61,6 +61,13 @@ Font mixins.
 # Headings.
 */
 
+// 1. Most browsers will set default margin-top and -bottom to heading elements.
+//    We are using headings up to h4.
+h1, h2, h3, h4 {
+  margin-top: 0;    // [1]
+  margin-bottom: 0; // [1]
+}
+
 h2 {
   font-size: @size-font-large;
 }
