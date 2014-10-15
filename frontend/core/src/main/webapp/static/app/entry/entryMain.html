@@ -2,7 +2,9 @@
 <form ng-if="entryState === 'signup'" name="signupForm">
   <section class="container-content">
     <header class="group-symmetrical">
-      <a href ng-click="swipeToHome()"><span class="link-navigation-back">back</span></a>
+      <a href ng-click="swipeToHome()" class="group-symmetrical--left">
+        <span class="link-navigation-back">back</span>
+      </a>
     </header>
     <h1>sign up</h1>
     <form role="form" name="signupForm">
@@ -36,9 +38,13 @@
 <!-- LOGIN -->
 <form ng-if="entryState === 'login'" name="loginForm">
   <section class="container-content">
-    <header class="group-symmetrical row" >
-      <a href ng-click="swipeToHome()" class="link-navigation-back">back</a>
-      <a href ng-click="swipeToForgot()" class="link-navigation-forward group-symmetrical--right">forgot?</a>
+    <header class="group-symmetrical" >
+      <a href ng-click="swipeToHome()" class="group-symmetrical--left">
+        <span class="link-navigation-back">back</span>
+      </a>
+      <a href ng-click="swipeToForgot()" class="group-symmetrical--right">
+        <span class="link-navigation-forward">forgot?</span>
+      </a>
     </header>
     <h1>log in</h1>
     <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email&#8230;" required />

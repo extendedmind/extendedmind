@@ -1,7 +1,9 @@
 <form name="forgotForm">
   <section class="container-content">
-    <header class="group-symmetrical row">
-      <a href ng-click="swipeToMain()"><span class="link-navigation-back">back</span></a>
+    <header class="group-symmetrical">
+      <a href class="group-symmetrical--left" ng-click="swipeToMain()">
+        <span class="link-navigation-back">back</span>
+      </a>
     </header>
     <h1>forgot password?</h1>
     <input class="row" type="email" name="email" ng-model="user.email" placeholder="enter email&#8230;" required />
