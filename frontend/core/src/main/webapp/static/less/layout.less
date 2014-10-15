@@ -7,8 +7,8 @@
 TODO: em grid structure explained in plain English (when new grid structure decided!)
 */
 
-@height-heading: @grid-vertical * 1.5;
-@height-container-toolbar: @height-heading;
+@height-heading: @grid-vertical * 2;
+@height-container-toolbar: @grid-vertical * 1.5;
 @height-landscape-max: 769px;
 @height-max: 1025px;
 @width-max: 1025px;
@@ -495,11 +495,13 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   height: @grid-vertical;
   line-height: @grid-vertical;
 }
+
+// 1. Inherit varying container height.
 .group-symmetrical--left {
+  height: inherit;  // [1]
   text-align: left;
   float: left;
   padding-left: @grid-horizontal;
-  height: @grid-vertical;
 }
 .group-symmetrical--middle {
   position: absolute;
@@ -507,25 +509,18 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   text-align: center;
   max-width: @max-width-group-symmetrical-middle;
 }
+
+// 1. Inherit varying container height.
 .group-symmetrical--right {
+  height: inherit;  // [1]
   float: right;
   padding-right: @grid-horizontal;
-  height: @grid-vertical;
 }
 
-// 1. Set height.
-.group-symmetrical.heading {
-  height: @height-heading;  // [1]
-}
-
-// 1. Set override height.
-// 2. Align components vertically.
-.group-symmetrical.heading > .group-symmetrical--left,
-.group-symmetrical.heading > .group-symmetrical--middle,
-.group-symmetrical.heading > .group-symmetrical--right {
-  height: @height-heading;      // [1]
-  line-height: @height-heading; // [1]
-  vertical-align: middle;       // [2]
+// 1. Set height for large .group-symmetrical. Overrides default height.
+.group-symmetrical.large {
+  height: @grid-vertical * 1.5;  // [1]
+  line-height: @grid-vertical * 1.5; // [1]
 }
 
 /*
