@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function HeaderController($scope, $rootScope, UISessionService) {
+ function ToolbarController($scope, $rootScope, UISessionService) {
 
   function calculateHeadingWidth() {
     if ($rootScope.currentWidth >= 568) {
@@ -51,7 +51,7 @@
       $scope.overrideHeading = undefined;
     }
   };
-  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'HeaderController');
+  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ToolbarController');
 
   $scope.getCurrentHeading = function getCurrentHeading() {
     var currentHeading;
@@ -101,5 +101,5 @@
     }
   };
 }
-HeaderController['$inject'] = ['$scope', '$rootScope', 'UISessionService'];
-angular.module('em.main').controller('HeaderController', HeaderController);
+ToolbarController['$inject'] = ['$scope', '$rootScope', 'UISessionService'];
+angular.module('em.main').controller('ToolbarController', ToolbarController);

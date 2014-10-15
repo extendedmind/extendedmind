@@ -494,6 +494,20 @@ function MainController(
     }
   }
 
+  // UI FUNCTIONS
+
+  var hideToolbar = false;
+  $scope.isToolbarHidden = function(){
+    return hideToolbar;
+  }
+
+  $scope.hideToolbar = function(){
+    hideToolbar = true;
+  }
+  $scope.showToolbar = function(){
+    hideToolbar = false;
+  }
+
   // INJECT OTHER CONTENT CONTROLLERS HERE
 
   $controller('TasksController',{$scope: $scope});
