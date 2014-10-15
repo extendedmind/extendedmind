@@ -15,30 +15,46 @@ Following navigation links are used. These shouldn't be used for actions!
 
 a {
   text-decoration: none;
-  color: @color-text-highlighted;
+  color: @color-text;
   outline: 0;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 a:active {
-  color: @color-text-highlighted-pressed;
+  color: @color-text-pressed;
 }
 
 /*
 Navigation links
 */
+
+.link-navigation-back, .link-navigation-forward {
+  color: @color-text-downplayed;
+  font-size: @size-font-small;
+  .set-font-bold();
+  &.highlighted{
+    color: @color-text-highlighted;
+  }
+  display:inherit;
+}
+
+@width-arrow-text-gap: 5px;
 .link-navigation-back:not(.not-swipeable):before {
   .set-icon-font;
   content: @icon-arrow-left;
-  font-size: 8px;
-  padding-right: 5px;
+  color: @color-text-downplayed;
+  font-size: @size-icon-arrow-small;
+  padding-right: @width-arrow-text-gap;
+  vertical-align: middle;
 }
 
 .link-navigation-forward:after {
   .set-icon-font;
   content: @icon-arrow-right;
-  font-size: 8px;
-  padding-left: 5px;
+  color: @color-text-downplayed;
+  font-size: @size-icon-arrow-small;
+  padding-left: @width-arrow-text-gap;
+  vertical-align: middle;
 }
 
 /*

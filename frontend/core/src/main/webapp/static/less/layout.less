@@ -467,6 +467,11 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 
 @max-width-group-symmetrical-middle: 70px;
 
+.group-symmetrical--left, .group-symmetrical--middle, .group-symmetrical--right {
+  display:table-cell;
+  vertical-align: middle;
+}
+
 .group-symmetrical {
   height: @grid-vertical;
   line-height: @grid-vertical;
