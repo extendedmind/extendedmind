@@ -16,11 +16,7 @@
 
  function MenuController($location, $rootScope, $scope, AnalyticsService, AuthenticationService, ListsService, UISessionService, UserSessionService) {
 
-  $scope.isAdmin = function isAdmin() {
-    return UserSessionService.getUserType() === 0;
-  };
-
-  $scope.getActiveOwnerName = function getActiveOwnerName() {
+  $scope.getActiveDisplayName = function() {
     var activeUUID = UISessionService.getActiveUUID();
     if (activeUUID){
       var ownerName;
@@ -38,12 +34,6 @@
         return ownerName.substring(0, maximumOwnerNameLength) + '&#8230;';
       }
       return ownerName;
-    }
-  };
-
-  $scope.getFeatureClass = function getFeatureClass(feature) {
-    if (UISessionService.getCurrentFeatureName() === feature) {
-      return 'active';
     }
   };
 

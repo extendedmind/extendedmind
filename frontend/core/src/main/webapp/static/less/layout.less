@@ -49,8 +49,6 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 # LEVEL 3: Primary Containers (master, editor, menu)
 */
 
-@speed-animation-menu: .2s;
-
 // 1. Layout for Snap.js. See https://github.com/jakiestfu/Snap.js/#layout
 // 2. Inherit height to expand vertically and for (grand)children as well.
 .container-master, .container-editor, .container-menu {
@@ -69,28 +67,34 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 }
 
 /*
-Master
-*/
-
-// 1. Animate maximum width change when menu opens and closes.
-// 2. Animate maximum height change when soft keyboard opens and closes.
-.container-master {
-  -webkit-transition: max-width @speed-animation-menu ease-out; // [1,2]
-  -moz-transition: max-width @speed-animation-menu ease-out;    // [1,2]
-  -o-transition: max-width @speed-animation-menu ease-out;      // [1,2]
-  -ms-transition: max-width @speed-animation-menu ease-out;     // [1,2]
-  transition: max-width @speed-animation-menu ease-out;         // [1,2]
-}
-
-/*
 Menu
 */
 
+@height-menu-footer: 80px;
 // 1. Use native-style scrolling in WebKit browsers
 .container-menu {
   -webkit-overflow-scrolling: touch;  // [1]
   width: @width-menu;
   overflow-y: auto;
+  height:100%;
+  background-color: @color-background-menu;
+}
+
+.container-menu--top {
+  min-height: 100%;
+  margin: 0 auto -@height-menu-footer; /* the bottom margin is the negative value of the footer's height */
+  .separate {
+    // use this to separate link elements from other
+    line-height: @grid-vertical * 1.5;
+  }
+}
+
+.container-menu--bottom, .container-menu--push {
+  height: @height-menu-footer;
+}
+
+.container-menu--bottom {
+  height: @height-menu-footer;
 }
 
 /*

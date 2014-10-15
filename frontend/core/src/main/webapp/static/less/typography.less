@@ -23,6 +23,7 @@ Fonts in use:
 @size-font-large: 49px;
 @size-font-ingress: 25px;
 @size-font-content: 18px;
+@size-font-topheading: 13px;
 @size-font-small: 11px;
 
 * {
@@ -98,6 +99,51 @@ Use `.text-details` to separate details from body text.
   display: inline-block;
   line-height: @grid-vertical-half;
 }
+
+
+/*
+Navigation texts
+*/
+
+.text-navigation-back, .text-navigation-forward {
+  color: @color-text-downplayed;
+  font-size: @size-font-small;
+  .set-font-bold();
+  display:inherit;
+}
+
+@width-arrow-text-gap: 5px;
+.text-navigation-back:not(.not-swipeable):before {
+  .set-icon-font;
+  content: @icon-arrow-left;
+  color: @color-text-downplayed;
+  font-size: @size-icon-arrow-small;
+  padding-right: @width-arrow-text-gap;
+  vertical-align: middle;
+}
+
+.text-navigation-forward:after {
+  .set-icon-font;
+  content: @icon-arrow-right;
+  color: @color-text-downplayed;
+  font-size: @size-icon-arrow-small;
+  padding-left: @width-arrow-text-gap;
+  vertical-align: middle;
+}
+
+.text-navigation-menu {
+  color: @color-text-inverse;
+  font-size: @size-font-large;
+}
+
+.text-navigation-menu-small {
+  color: @color-text-inverse;
+  font-size: @size-font-topheading;
+}
+
+/*
+Icon texts
+*/
 
 .text-logo {
   font-size: @size-icon-logo;

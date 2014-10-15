@@ -21,40 +21,52 @@ a {
 }
 
 a:active {
-  color: @color-text-pressed;
+  *, *:before, *:after {
+    color: @color-text-pressed;
+  }
 }
 
 /*
-Navigation links
+Highlighting and downplaying
 */
 
-.link-navigation-back, .link-navigation-forward {
-  color: @color-text-downplayed;
-  font-size: @size-font-small;
-  .set-font-bold();
-  display:inherit;
+// 1. important is needed for before and after elements to get
+//    selector to match
+a.highlighted {
+  *, *:before, *:after {
+    color: @color-text-highlighted !important; // [1]
+  }
 }
 
-@width-arrow-text-gap: 5px;
-.link-navigation-back:not(.not-swipeable):before {
-  .set-icon-font;
-  content: @icon-arrow-left;
-  color: @color-text-downplayed;
-  font-size: @size-icon-arrow-small;
-  padding-right: @width-arrow-text-gap;
-  vertical-align: middle;
+a:active.highlighted{
+  *, *:before, *:after {
+    color: @color-text-highlighted-pressed !important; // [1]
+  }
 }
 
-.link-navigation-forward:after {
-  .set-icon-font;
-  content: @icon-arrow-right;
-  color: @color-text-downplayed;
-  font-size: @size-icon-arrow-small;
-  padding-left: @width-arrow-text-gap;
-  vertical-align: middle;
+a.downplayed {
+  *, *:before, *:after {
+    color: @color-text-downplayed !important; // [1]
+  }
 }
 
-.link-navigation-back.highlighted, .link-navigation-forward.highlighted,
-.link-navigation-back.highlighted:before, .link-navigation-forward.highlighted:after {
-  color: @color-text-highlighted;
+a:active.downplayed{
+  *, *:before, *:after {
+    color: @color-text-downplayed-pressed !important; // [1]
+  }
+}
+
+/*
+Special links
+*/
+
+.link-navigation:active {
+  *, *:before, *:after {
+    color: @color-text-downplayed-pressed !important; // [1]
+  }
+}
+
+.link-menu {
+  line-height: @grid-vertical;
+  display: inline-block;
 }

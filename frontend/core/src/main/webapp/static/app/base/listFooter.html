@@ -1,13 +1,13 @@
 <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-  <a href ng-if="leftNavigationText" ng-click="navigationAction(leftNavigationActionParameter)" class="group-symmetrical--left">
-    <span class="link-navigation-back" ng-bind="leftNavigationText"></span>
+  <a href ng-if="leftNavigationText" class="group-symmetrical--left link-navigation" ng-click="navigationAction(leftNavigationActionParameter)">
+    <span class="text-navigation-back" ng-bind="leftNavigationText"></span>
   </a>
 
   <a href class="group-symmetrical--middle" ng-click="addItem()">
     <span class="text-plus"></span>
   </a>
 
-  <a href ng-if="rightNavigationText" class="group-symmetrical--right" ng-click="navigationAction(rightNavigationActionParameter)">
-    <span class="link-navigation-forward" ng-bind="rightNavigationText"></span>
+  <a href ng-if="rightNavigationText" class="group-symmetrical--right link-navigation" ng-click="navigationAction(rightNavigationActionParameter)">
+    <span class="text-navigation-forward" ng-bind="rightNavigationText"></span>
   </a>
 </nav>

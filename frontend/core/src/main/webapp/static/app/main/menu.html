@@ -1,37 +1,38 @@
-<div class="container-menu" ng-controller="MenuController" drawer="left">
-  <div id="menu-content" class="swiper-no-swiping">
-    <ul>
-      <li class="account-link">
-        <a href ng-class="getFeatureClass('user')" ng-click="gotoFeature('user')" ng-bind="getActiveOwnerName()"></a>
-      </li>
-      <li>
-        <a href class="feature-link" ng-class="getFeatureClass('focus')" ng-click="gotoFeature('focus')">focus</a>
-      </li>
-      <li>
-        <a href class="feature-link" ng-class="getFeatureClass('inbox')" ng-click="gotoFeature('inbox')">inbox</a>
-      </li>
-      <li>
-        <a href class="feature-link" ng-class="getFeatureClass('tasks')" ng-click="gotoFeature('tasks')">tasks</a>
-      </li>
-      <li>
-        <a href class="feature-link" ng-class="getFeatureClass('notes')" ng-click="gotoFeature('notes')">notes</a>
-      </li>
-      <li>
-        <div class="lists-heading-container">
-          <a href class="lists-link" ng-class="getFeatureClass('lists')" ng-click="gotoFeature('lists')">lists</a>
-        </div>
-        <ul ng-if="lists.length > 0">
-          <li class="list" ng-repeat="list in lists" ng-class="$last && 'list-last'">
-            <a href class="list-link" ng-class="getListClass(list)" ng-click="gotoFeature('list', list)" ng-bind="getListTitleText(list)"></a>
-          </li>
-        </ul>
-      </li>
-      <li ng-if="isAdmin()">
-        <a href ng-class="getFeatureClass('admin')" ng-click="gotoFeature('admin')">admin</a>
-      </li>
-      <li class="menu-last">
-        <a href ng-class="getFeatureClass('trash')" ng-click="gotoFeature('trash')">trash</a>
-      </li>
-    </ul>
+<div class="container-menu swiper-no-swiping" ng-controller="MenuController" drawer="left">
+  <div class="container-menu--top">
+    <a href class="link-menu row" ng-click="gotoFeature('user')" ng-class="isFeatureActive('user') && 'highlighted'">
+      <span class="text-navigation-menu-small" ng-bind="getActiveDisplayName()"></span>
+    </a>
+
+    <a href class="row separate" ng-click="gotoFeature('focus')" ng-class="isFeatureActive('focus') && 'highlighted'">
+      <span >focus</span>
+    </a>
+    <a href class="link-menu row" ng-click="gotoFeature('inbox')" ng-class="isFeatureActive('inbox') && 'highlighted'">
+      <span class="text-navigation-menu">inbox</span>
+    </a>
+    <a href class="link-menu row" ng-click="gotoFeature('tasks')" ng-class="isFeatureActive('tasks') && 'highlighted'">
+      <span class="text-navigation-menu">tasks</span>
+    </a>
+    <a href class="link-menu row" ng-click="gotoFeature('notes')" ng-class="isFeatureActive('notes') && 'highlighted'">
+      <span class="text-navigation-menu">notes</span>
+    </a>
+    <a href class="link-menu row" ng-click="gotoFeature('lists')" ng-class="isFeatureActive('lists') && 'highlighted'">
+      <span class="text-navigation-menu">lists</span>
+    </a>
+
+    <div ng-if="menuLists.length > 0" class="group-mixed" ng-repeat="menuList in menuLists">
+      <a class="group-mixed--middle">
+        <span class="text-link" ng-bind="menuList.title"></span>
+      </a>
+      <a ng-if="isFavoritedList(menuList)" class="group-mixed--right">
+        <span class="text-favorite"></span>
+      </a>
+    </div>
+    <div class="container-menu--push"></div>
+  </div>
+  <div class="container-menu--bottom">
+    <a href class="link-menu downplayed row" ng-click="gotoFeature('trash')" ng-class="isFeatureActive('trash') && 'active'">
+      <span class="text-navigation-menu-small">trash</h4>
+    </a>
   </div>
 </div>

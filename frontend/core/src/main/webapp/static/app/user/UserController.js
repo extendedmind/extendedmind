@@ -29,6 +29,10 @@
     $location.path('/my/account/password');
   };
 
+  $scope.isAdmin = function isAdmin() {
+    return UserSessionService.getUserType() === 0;
+  };
+
   $scope.gotoAdmin = function gotoAdmin() {
     $location.path('/admin');
   };

@@ -2,8 +2,8 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical">
-        <a href class="group-symmetrical--left">
-          <span class="link-navigation-back highlighted" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endTaskEdit()" ng-bind="titlebarHasText() ? 'save' : 'back'"></span>
+        <a href class="group-symmetrical--left link-navigation highlighted">
+          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endTaskEdit()" ng-bind="titlebarHasText() ? 'save' : 'back'"></span>
         </a>
         <a href class="group-symmetrical--right" ng-click="deleteItemInEdit()" >
           <span class="text-trash"></span>
@@ -56,8 +56,8 @@
             <a href ng-if="task.transientProperties.date" class="group-symmetrical--middle" ng-click="toggleExpand()">
               <span>later</span>
             </a>
-            <a href ng-click="swipeToAdvanced()" class="group-symmetrical--right">
-              <span class="link-navigation-forward">advanced</span>
+            <a href ng-click="swipeToAdvanced()" class="group-symmetrical--right link-navigation">
+              <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>
           <div ng-if="footerExpanded" later="setDateAndSave(date)" editable-field-container="auto" editable-field-container-clicked-elsewhere="toggleExpand()"></div>
@@ -77,8 +77,8 @@
         </div>
         <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-click="swipeToBasic()" class="group-symmetrical--left">
-              <span class="link-navigation-back">basic</span>
+            <a href ng-click="swipeToBasic()" class="group-symmetrical--left link-navigation">
+              <span class="text-navigation-back">basic</span>
             </a>
           </nav>
         </footer>

@@ -2,8 +2,8 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical row">
-        <a href class="group-symmetrical--left">
-          <span class="link-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endNoteEdit()" ng-bind="titlebarHasText() ? 'save' : 'back'"></a>
+        <a href class="group-symmetrical--left link-navigation">
+          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endNoteEdit()" ng-bind="titlebarHasText() ? 'save' : 'back'"></a>
         </a>
         <div class="group-symmetrical--right">
           <a href ng-click="deleteNoteInEdit()">delete</a>
@@ -39,8 +39,8 @@
         </div>
         <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-click="swipeToAdvanced()" class="group-symmetrical--right">
-              <span class="link-navigation-forward">advanced</span>
+            <a href ng-click="swipeToAdvanced()" class="group-symmetrical--right link-navigation">
+              <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>
         </footer>
@@ -55,8 +55,8 @@
         </div>
         <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-click="swipeToBasic()" class="group-symmetrical--left">
-              <span class="link-navigation-back">basic</span>
+            <a href ng-click="swipeToBasic()" class="group-symmetrical--left link-navigation">
+              <span class="text-navigation-back">basic</span>
             </a>
           </nav>
         </footer>

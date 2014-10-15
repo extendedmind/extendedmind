@@ -7,6 +7,8 @@
 
 */
 
+@speed-animation-menu: .2s;
+
 @timing-animate: cubic-bezier(0.250, 0.460, 0.450, 0.940);
 @timing-animate-steep: cubic-bezier(.01, 1.11, 0, .97);
 @timing-animate-gradual: cubic-bezier(.97,.01,.93,.63);
@@ -27,6 +29,16 @@
 
 @speed-animate-date-active: .2s;
 @timing-animate-date-active: @timing-animate-steep;
+
+// 1. Animate maximum width change when menu opens and closes.
+// 2. Animate maximum height change when soft keyboard opens and closes.
+.animate-container-master {
+  -webkit-transition: max-width @speed-animation-menu ease-out; // [1,2]
+  -moz-transition: max-width @speed-animation-menu ease-out;    // [1,2]
+  -o-transition: max-width @speed-animation-menu ease-out;      // [1,2]
+  -ms-transition: max-width @speed-animation-menu ease-out;     // [1,2]
+  transition: max-width @speed-animation-menu ease-out;         // [1,2]
+}
 
 // 1. Set initial max-height for item to make max-height animation work in WebKit browsers.
 .animate-list-item-leave {

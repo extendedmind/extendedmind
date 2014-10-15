@@ -15,6 +15,8 @@
     <a href ng-click="swipeToDetails('settings')">settings</a>
     <a href ng-click="swipeToDetails('about')">about</a>
 
+    <a href class="row" ng-if="isAdmin()" ng-click="changeFeature('admin')">admin</a>
+
   </section>
   <footer class="container-content--after group-btn">
     <button class="btn-active" ng-click="logOut()">
