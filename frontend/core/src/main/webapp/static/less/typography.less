@@ -78,7 +78,7 @@ Use `.text-details` to separate details from body text.
 
 .text-error {
   font-size: @size-font-small;
-  color: @color-error;
+  color: @color-text-error;
   .set-font-bold;
 }
 
@@ -92,7 +92,7 @@ Use `.text-details` to separate details from body text.
   line-height: @size-icon-logo;
   &:after {
     .set-icon-font;
-    color: @color-logo;
+    color: @color-text;
     content: @icon-logo-only;
   }
 }
@@ -102,7 +102,7 @@ Use `.text-details` to separate details from body text.
   line-height: @size-icon-menu;
   &:after {
     .set-icon-font;
-    color: @color-menu-button;
+    color: @color-text;
     content: @icon-menu;
   }
 }
@@ -113,7 +113,15 @@ Use `.text-details` to separate details from body text.
   &:after {
     .set-icon-font;
     // FIXME: Change when actual logo is in the font pack!
-    color: @color-menu-button;
+    color: @color-text;
     content: @icon-menu;
+  }
+}
+
+.text-plus {
+  &:after {
+    .set-icon-font;
+    color: @color-text-highlighted;
+    content: @icon-plus;
   }
 }

@@ -129,16 +129,13 @@ TODO: working example needed!
 TODO: Example needed
 */
 
-@color-weekdays: @color-default-inactive;
-@color-date-active: @color-link-active;
-
 // 1. Override style from normalize.less
 // 2. Override th's inherited font-weight
 .pika-table abbr[title] {
   border-bottom: none;  // [1]
   font-weight: normal;  // [2]
   font-size: @size-font-small;
-  color: @color-weekdays;
+  color: @color-text-downplayed;
 }
 
 // 1. Float clear button to the right of .pika-title which is rendered by Pikaday.js.

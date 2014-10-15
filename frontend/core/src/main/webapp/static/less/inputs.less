@@ -41,9 +41,6 @@ textarea {
 # Buttons
 */
 
-@color-btn: @color-default-active;
-@color-btn-pressed: @color-default-pressed;
-@color-btn-disabled: @color-default-disabled;
 @height-btn: @grid-vertical;
 @size-btn-clear: 28px;
 
@@ -66,24 +63,24 @@ textarea {
   color: white;
   background-color: transparent;
   & > .text-btn {
-    background-color: @color-btn;
+    background-color: @color-background-btn-active;
     display: inline-block;
     vertical-align: middle;
     width: 100%;
     line-height: @height-btn;
   }
   &:active > .text-btn {
-    background-color: @color-btn-pressed;
+    background-color: @color-background-btn-pressed;
   }
   &[disabled] > .text-btn {
-    background-color: @color-btn-disabled;
+    background-color: @color-background-btn-disabled;
   }
 }
 
 .btn-clear {
   background-color: transparent;
   &:after {
-    color: @color-default-active;
+    color: @color-text;
     .set-icon-font;
     font-size: @size-btn-clear;
     content: @icon-x;
@@ -96,8 +93,6 @@ textarea {
 # Checkboxes
 */
 @size-checkbox: 28px;
-@color-checkbox: @color-default-inactive;
-@color-checkbox-checked: @color-default-active;
 
 /*
 Basic checkbox
@@ -115,11 +110,11 @@ input[type="checkbox"] {
 input[type="checkbox"] + label:before {
   .set-icon-font;
   font-size: @size-checkbox;
-  color: @color-checkbox;
+  color: @color-text-downplayed;
   content: @icon-selection-empty;
 }
 
 input[type="checkbox"]:checked + label:before {
-  color: @color-checkbox-checked;
+  color: @color-text-highlighted;
   content: @icon-selection-checked;
 }
