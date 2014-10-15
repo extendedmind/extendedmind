@@ -44,6 +44,16 @@
         $window.history.back();
       };
 
+      // Sticky inputs
+      var useStickyInputs = false;
+      if (packaging.endsWith('cordova')){
+        useStickyInputs = true;
+      }
+
+      $scope.getEditableFieldSticky = function(){
+        if (useStickyInputs) return 'sticky';
+      }
+
       // Online/offline status, optimistic default
       $scope.online = true;
       var onlineStatusCallback = function(online) {
@@ -214,11 +224,11 @@
       $rootScope.softKeyboard = {};
       function cordovaKeyboardShow(event) {
         $rootScope.softKeyboard.height = event.keyboardHeight;
-        if (!scope.$$phase) scope.$apply();
+        if (!$rootScope.$$phase && !scope.$$phase) scope.$apply();
       }
       function cordovaKeyboardHide(/*event*/) {
         $rootScope.softKeyboard.height = undefined;
-        if (!scope.$$phase) scope.$apply();
+        if (!$rootScope.$$phase && !scope.$$phase) scope.$apply();
       }
       if (packaging.endsWith('cordova')) {
         window.addEventListener('native.keyboardshow', cordovaKeyboardShow);

@@ -14,44 +14,70 @@
  */
  'use strict';
 
- function editableFieldDirective($document) {
+ function editableFieldDirective($document, $parse, $rootScope, $timeout) {
   return {
-    require: '^editableFieldContainer',
+    require: '^?editableFieldContainer',
     restrict: 'A',
-    link: function($scope, $element, $attrs, editableFieldContainerController) {
-      $element.addClass('editable-field');
+    link: function(scope, element, attrs, editableFieldContainerController) {
+      element.addClass('editable-field');
+
+      var editableFieldType;
+      if (attrs.editableField.length > 0){
+        editableFieldType = $parse(attrs.editableField)(scope);
+      }
+
+      if (attrs.editableFieldRegisterCallbacks){
+        var registerCallbacksFn = $parse(attrs.editableFieldRegisterCallbacks).bind(undefined, scope);
+        registerCallbacksFn({focus: focus, blur: blur}) ;
+      }
+
+      function focus() {
+        // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
+        if ($document[0].activeElement !== element[0]) element[0].focus();
+      }
+
+      var unfocusInProgress = false;
+      function blur() {
+        if ($document[0].activeElement === element[0]){
+          unfocusInProgress = true;
+          if ($rootScope.$$phase || scope.$$phase){
+            // It seems $timeout can not be avoided here:
+            // https://github.com/angular/angular.js/issues/1250
+            // "In the future, this will (hopefully) be solved with Object.observe."
+            $timeout(function(){
+              element[0].blur();
+            });
+          }else {
+            element[0].blur();
+          }
+        }
+      }
 
       var refocusInProgress = false;
       function reFocusEditableField(){
         refocusInProgress = true;
-        if ($document[0].activeElement !== $element[0]) $element[0].focus();
-      }
-
-      var unfocusInProgress = false;
-      function unFocusEditableField(){
-        unfocusInProgress = true;
-        if ($document[0].activeElement === $element[0]) $element[0].blur();
+        focus();
       }
 
       var editableFieldClicked = function() {
-        editableFieldContainerController.notifyFocus();
+        if (editableFieldContainerController) editableFieldContainerController.notifyFocus();
         reFocusEditableField();
       }
 
       var editableFieldFocus = function() {
         if (!refocusInProgress){
-          editableFieldContainerController.notifyFocus();
-          $element.addClass('active');
+          if (editableFieldContainerController) editableFieldContainerController.notifyFocus();
+          element.addClass('active');
         }
         refocusInProgress = false;
       };
 
       var editableFieldBlur = function() {
-        if ($attrs.editableField === 'sticky' && !unfocusInProgress){
+        if (editableFieldType === 'sticky' && !unfocusInProgress){
           reFocusEditableField();
-          editableFieldContainerController.notifyReFocus(unFocusEditableField);
+          if (editableFieldContainerController) editableFieldContainerController.notifyReFocus(blur);
         }else{
-          $element.removeClass('active');
+          element.removeClass('active');
           unfocusInProgress = false;
         }
       };
@@ -60,26 +86,26 @@
         // ESC button
         if (event.keyCode === 27){
           editableFieldBlur();
-          editableFieldContainerController.deactivateContainer();
+          if (editableFieldContainerController) editableFieldContainerController.deactivateContainer();
         }
       };
 
-      angular.element($element).bind('focus', editableFieldFocus);
-      angular.element($element).bind('blur', editableFieldBlur);
-      angular.element($element).bind('keydown', editableFieldKeydown);
-      if ($attrs.editableField === 'sticky')
-        angular.element($element).bind('click', editableFieldClicked);
+      angular.element(element).bind('focus', editableFieldFocus);
+      angular.element(element).bind('blur', editableFieldBlur);
+      angular.element(element).bind('keydown', editableFieldKeydown);
+      if (editableFieldType === 'sticky')
+        angular.element(element).bind('click', editableFieldClicked);
 
 
-      $scope.$on('$destroy', function() {
-        angular.element($element).unbind('focus', editableFieldFocus);
-        angular.element($element).unbind('blur', editableFieldBlur);
-        angular.element($element).unbind('keydown', editableFieldKeydown);
-        if ($attrs.editableField === 'sticky')
-          angular.element($element).bind('click', editableFieldClicked);
+      scope.$on('$destroy', function() {
+        angular.element(element).unbind('focus', editableFieldFocus);
+        angular.element(element).unbind('blur', editableFieldBlur);
+        angular.element(element).unbind('keydown', editableFieldKeydown);
+        if (editableFieldType === 'sticky')
+          angular.element(element).bind('click', editableFieldClicked);
       });
     }
   };
 }
-editableFieldDirective['$inject'] = ['$document'];
+editableFieldDirective['$inject'] = ['$document', '$parse', '$rootScope', '$timeout'];
 angular.module('common').directive('editableField', editableFieldDirective);

@@ -23,11 +23,7 @@
 
   if (packaging === 'web' && DetectBrowserService.isMobile()){
     $scope.entryState = 'download';
-  }else if (packaging.endsWith('cordova')){
-    $scope.useStickyInputs = true;
   }
-
-  // PUT
 
   $scope.swipeToSignup = function() {
     $scope.entryState = 'signup';
@@ -60,11 +56,13 @@
   };
 
   $scope.swipeToMain = function() {
+    $scope.forgotActive = false;
     SwiperService.swipeTo('entry/main');
   };
 
   $scope.swipeToForgot = function() {
     SwiperService.swipeTo('entry/details');
+    $scope.forgotActive = true;
     AnalyticsService.visitEntry('forgot');
   };
 
@@ -73,6 +71,11 @@
   $scope.registerEntryMainEmailInputCallbacks = function(focus, blur){
     entryEmailMainInputFocusCallbackFunction = focus;
     entryEmailMainInputBlurCallbackFunction = blur;
+  }
+
+  var entryPasswordMainInputBlurCallbackFunction;
+  $scope.registerEntryMainPasswordInputCallbacks = function(focus, blur){
+    entryPasswordMainInputBlurCallbackFunction = blur;
   }
 
   var entryEmailForgotInputFocusCallbackFunction;
@@ -100,7 +103,11 @@
     $scope.entryOffline = false;
     AuthenticationService.login($scope.user).then(function() {
       AnalyticsService.do('login');
+      // blur all inputs to prevent swiper from breaking
+      if (entryEmailMainInputBlurCallbackFunction) entryEmailMainInputBlurCallbackFunction();
+      if (entryPasswordMainInputBlurCallbackFunction) entryPasswordMainInputBlurCallbackFunction();
       $location.path('/my');
+
     }, function(authenticateResponse) {
       if (BackendClientService.isOffline(authenticateResponse.status)) {
         AnalyticsService.error('login', 'offline');

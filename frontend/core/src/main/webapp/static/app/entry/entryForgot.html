@@ -1,13 +1,14 @@
 <form name="forgotForm">
-  <section class="container-content">
+  <section class="container-content" editable-field-container>
     <header class="group-symmetrical">
-      <a href class="group-symmetrical--left link-navigation" ng-click="swipeToMain()">
+      <a href class="group-symmetrical--left link-navigation" ng-click="swipeToMain()" editable-field-deactivate>
         <span class="text-navigation-back downplayed">back</span>
       </a>
     </header>
     <h2>forgot password?</h2>
     <input class="row" type="email" name="email" ng-model="user.email"
-    placeholder="enter email&#8230;" focusable="registerEntryForgotEmailInputCallbacks(focus, blur)" required />
+    placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
+    editable-field-register-callbacks="registerEntryForgotEmailInputCallbacks(focus, blur)" required />
     <div class="group-error row">
       <div ng-if="forgotForm.email.$touched" ng-messages="forgotForm.email.$error">
         <span class="text-error" ng-message="email">invalid email address</span>
@@ -16,7 +17,7 @@
       <span ng-if="entryOffline" class="text-error">can't connect to server. are you online?</span>
     </div>
   </section>
-  <footer class="container-content--after group-btn">
+  <footer ng-if="forgotActive" class="container-content--after group-btn" editable-field-container="auto">
     <button type="submit" class="btn-action" ng-disabled="!forgotForm.$valid" ng-click="sendInstructions()">
       <span class="text-btn">send instructions</span>
     </button>

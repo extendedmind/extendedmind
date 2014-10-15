@@ -25,7 +25,7 @@
         UISessionService.lock('leaveAnimation', 500);
       }
 
-      ItemsService.saveItem(item, UISessionService.getActiveUUID());
+      return ItemsService.saveItem(item, UISessionService.getActiveUUID());
     }
   };
 
