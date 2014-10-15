@@ -50,10 +50,10 @@
         customFilterItemVisible = filter;
       }
       $scope.isListItemVisible = function(item, param){
-        if (!customFilterItemVisible){
-          return true;
-        }else{
+        if (customFilterItemVisible){
           return customFilterItemVisible(item, param);
+        }else{
+          return true;
         }
       }
 
