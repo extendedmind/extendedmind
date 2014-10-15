@@ -88,9 +88,9 @@ var getErrorMessage = function(responseText, status) {
 var setQueueNumber = function(uuid) {
   $.getJSON('/api/invite/request/' + uuid).done(function(json) {
     if (json.queueNumber === 0){
-      $('#number').html('<h1>no</h1>');
+      $('#number').html('<h2>no</h2>');
     }else{
-      $('#number').html('<h1>' + (parseInt(json.queueNumber) - 1) + '</h1>');
+      $('#number').html('<h2>' + (parseInt(json.queueNumber) - 1) + '</h2>');
     }
   }).fail(function(xhr, textStatus, error) {
     $('#number').html('<div class="alert">' + getErrorMessage(xhr.responseText, xhr.status) + '</div>');
