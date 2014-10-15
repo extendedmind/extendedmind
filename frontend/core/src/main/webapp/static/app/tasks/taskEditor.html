@@ -1,13 +1,13 @@
 <div class="container-fluid" ng-controller="TaskEditorController">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
-      <div class="group-symmetrical row">
+      <div class="group-symmetrical">
         <a href class="group-symmetrical--left">
-          <span class="link-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endTaskEdit()" ng-bind="titlebarHasText() ? 'save' : 'back'"></a>
+          <span class="link-navigation-back highlighted" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endTaskEdit()" ng-bind="titlebarHasText() ? 'save' : 'back'"></span>
         </a>
-        <div class="group-symmetrical--right">
-          <a href ng-click="deleteItemInEdit()">delete</a>
-        </div>
+        <a href class="group-symmetrical--right" ng-click="deleteItemInEdit()" >
+          <span class="text-trash"></span>
+        </a>
       </div>
 
       <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
@@ -17,14 +17,11 @@
         <div class="group-mixed--middle">
           <textarea type="text" ng-model="titlebar.text" ng-keydown="taskTitlebarTextKeyDown($event)" focusable="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="add task&#8230;" maxlength="128" required ></textarea>
         </div>
-        <div ng-if="titlebarHasText()" class="group-mixed--right">
-          <button type="button" class="btn-clear" ng-click="clearTitlebarText()"></button>
-        </div>
       </form>
     </div>
   </header>
 
-  <div class="swiper-container container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" swiper-container="taskEditor" swiper-type="main" expected-slides="2">
+  <div class="swiper-container container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" swiper-container="taskEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="taskEditor/basic" slide-index="0">
 

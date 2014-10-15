@@ -128,6 +128,10 @@
 
   // NAVIGATION
 
+  $scope.isFirstSlide = function(){
+    return SwiperService.isSlideActive($scope.editorType + 'Editor/basic');
+  }
+
   $scope.swipeToAdvanced = function() {
     SwiperService.swipeTo($scope.editorType + 'Editor/advanced');
   };
@@ -136,6 +140,11 @@
     SwiperService.swipeTo($scope.editorType + 'Editor/basic');
   };
 
+  $scope.editorSwiperSlideChanged = function(){
+    // Need to digest on slide change to get changes to header to bite
+    if (!$rootScope.$$phase && !$scope.$$phase)
+      $scope.$digest();
+  }
 }
 
 EditorController['$inject'] = ['$rootScope', '$scope', 'SwiperService', 'UISessionService'];

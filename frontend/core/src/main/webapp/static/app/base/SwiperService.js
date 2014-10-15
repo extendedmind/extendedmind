@@ -101,8 +101,7 @@ function SwiperService($q, $timeout) {
 
   var getSwiperParameters = function(swiperPath, swiperType, swiperSlidesPaths,
                                      onSlideChangeStartCallback, onSlideResetCallback,
-                                     onSlideChangeEndCallback, onlyExternalSwipe,
-                                     loop) {
+                                     onSlideChangeEndCallback, loop) {
 
     var leftEdgeTouchRatio = (overrideSwiperParams[swiperPath] ?
                               overrideSwiperParams[swiperPath].leftEdgeTouchRatio : undefined);
@@ -112,7 +111,7 @@ function SwiperService($q, $timeout) {
 
     var swiperParams = {
       speed: 300, // set default speed for reference purposes only
-      onlyExternal: onlyExternalSwipe ? true : false,
+      onlyExternal: false,
       noSwiping: true,
       loop: loop ? true : false,
       loopDuplicateSlidesIncluded: loop ? true : false,
@@ -174,14 +173,13 @@ function SwiperService($q, $timeout) {
   return {
     initializeSwiper: function(containerElement, swiperPath, swiperType, swiperSlidesPaths,
                                onSlideChangeStartCallback, onSlideResetCallback, onSlideChangeEndCallback,
-                               disableSwiper, loop) {
+                               loop) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         delete swipers[swiperPath].swiper;
       }
       var params = getSwiperParameters(swiperPath, swiperType, swiperSlidesPaths,
                                        onSlideChangeStartCallback, onSlideResetCallback,
-                                       onSlideChangeEndCallback, disableSwiper,
-                                       loop);
+                                       onSlideChangeEndCallback, loop);
       var swiper = new Swiper(containerElement, params);
 
       swipers[swiperPath] = {

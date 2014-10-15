@@ -32,9 +32,6 @@ Navigation links
   color: @color-text-downplayed;
   font-size: @size-font-small;
   .set-font-bold();
-  &.highlighted{
-    color: @color-text-highlighted;
-  }
   display:inherit;
 }
 
@@ -57,10 +54,7 @@ Navigation links
   vertical-align: middle;
 }
 
-/*
-Highlighted link
-*/
-
-.link-highlighted {
-  // TODO
+.link-navigation-back.highlighted, .link-navigation-forward.highlighted,
+.link-navigation-back.highlighted:before, .link-navigation-forward.highlighted:after {
+  color: @color-text-highlighted;
 }

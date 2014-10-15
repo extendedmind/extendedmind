@@ -23,9 +23,9 @@
       swiperPath: '@swiperContainer',
       swiperType: '@swiperType',
       expectedSlidesFn: '&expectedSlides',
-      onlyExternalSwipe: '=?swiperContainerOnlyExternalSwipe',  // TODO unused, remove
+      slideChangedCallbackFn: '&swiperContainerSlideChanged',
     },
-    controller: function($scope, $element) {
+    controller: function($scope, $element, $attrs) {
       var swiperSlideInfos = [];
       var initializeSwiperCalled = false;
 
@@ -93,8 +93,13 @@
             }
             SwiperService.initializeSwiper($element[0], $scope.swiperPath, $scope.swiperType, slides,
                                            slideChangeStartCallback, slideResetCallback,
-                                           onSlideChangeEndCallback, $scope.onlyExternalSwipe, $scope.loop);
+                                           onSlideChangeEndCallback, $scope.loop);
             initializeSwiperCalled = true;
+
+            if ($attrs.swiperContainerSlideChanged) {
+              SwiperService.registerSlideChangeCallback($scope.slideChangedCallbackFn, $scope.swiperPath,
+                                                        'swiperContainer');
+            }
 
             if ($scope.swiperType === 'main'){
               // Main swipers have a touch ratio, where left edge does not budge
