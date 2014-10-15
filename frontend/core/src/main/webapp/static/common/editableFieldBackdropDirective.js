@@ -107,6 +107,15 @@
         }
       };
 
+      var reFocusCallback;
+      $scope.notifyLatestBlur = function(reFocusFn){
+        reFocusCallback = reFocusFn;
+      }
+
+      this.reFocusEditableField = function(){
+        if (reFocusCallback) reFocusCallback();
+      }
+
       /*
       * Editable field container clicked.
       *

@@ -6,7 +6,8 @@
       </a>
     </header>
     <h2>forgot password?</h2>
-    <input class="row" type="email" name="email" ng-model="user.email" placeholder="enter email&#8230;" required />
+    <input class="row" type="email" name="email" ng-model="user.email"
+    placeholder="enter email&#8230;" focusable="registerEntryForgotEmailInputCallbacks(focus, blur)" required />
     <div class="group-error row">
       <div ng-if="forgotForm.email.$touched" ng-messages="forgotForm.email.$error">
         <span class="text-error" ng-message="email">invalid email address</span>

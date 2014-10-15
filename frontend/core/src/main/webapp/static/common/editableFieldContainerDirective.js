@@ -26,6 +26,11 @@
           $scope.activateContainer();
         }
       };
+      this.notifyBlur = function(reFocusFn) {
+        if ($scope.notifyLatestBlur){
+          $scope.notifyLatestBlur(reFocusFn)
+        }
+      };
       this.deactivateContainer = function(){
         // deactivate and call click elsewhere
         $scope.deactivateContainer(true);
@@ -74,6 +79,12 @@
         // Activate immediately for "auto" type container
         scope.activateContainer();
       }
+
+      if (attrs.editableFieldContainer === 'active') {
+        // Set active class permanately
+        element.addClass('active');
+      }
+
 
       scope.$on('$destroy', function() {
         if (listeningToClick) {

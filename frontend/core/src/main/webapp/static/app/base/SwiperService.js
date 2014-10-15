@@ -454,6 +454,11 @@ function SwiperService($q, $timeout) {
     },
     setTouchSimulation: function(simulate) {
       simulateTouch = simulate;
+    },
+    setEnableSwipeToNext: function(swiperPath, enable) {
+      if (swipers[swiperPath]) {
+        swipers[swiperPath].swiper.params.swipeToNext = enable;
+      }
     }
   };
 }

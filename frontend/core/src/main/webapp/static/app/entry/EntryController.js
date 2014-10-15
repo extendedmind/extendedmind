@@ -25,26 +25,28 @@
     $scope.entryState = 'download';
   }
 
-  $scope.swipeToSignup = function swipeToSignup() {
+  $scope.swipeToSignup = function() {
     $scope.entryState = 'signup';
     $scope.user = {};
     SwiperService.swipeTo('entry/main');
+    SwiperService.setEnableSwipeToNext('entry', false);
     AnalyticsService.visitEntry('signup');
   };
 
-  $scope.swipeToLogin = function swipeToLogin() {
+  $scope.swipeToLogin = function() {
     $scope.entryState = 'login';
     $scope.user = {};
     SwiperService.swipeTo('entry/main');
+    SwiperService.setEnableSwipeToNext('entry', true);
     AnalyticsService.visitEntry('login');
   };
 
-  $scope.gotoTermsOfService = function gotoTermsOfService() {
+  $scope.gotoTermsOfService = function() {
     AnalyticsService.visit('terms');
     $window.open('http://ext.md/terms.html', '_system');
   };
 
-  $scope.gotoPrivacyPolicy = function gotoPrivacyPolicy() {
+  $scope.gotoPrivacyPolicy = function() {
     AnalyticsService.visit('privacy');
     $window.open('http://ext.md/privacy.html', '_system');
   };
@@ -61,6 +63,28 @@
     SwiperService.swipeTo('entry/details');
     AnalyticsService.visitEntry('forgot');
   };
+
+  var entryEmailMainInputFocusCallbackFunction;
+  var entryEmailMainInputBlurCallbackFunction;
+  $scope.registerEntryMainEmailInputCallbacks = function(focus, blur){
+    entryEmailMainInputFocusCallbackFunction = focus;
+    entryEmailMainInputBlurCallbackFunction = blur;
+  }
+
+  var entryEmailForgotInputFocusCallbackFunction;
+  var entryEmailForgotInputBlurCallbackFunction;
+  $scope.registerEntryForgotEmailInputCallbacks = function(focus, blur){
+    entryEmailForgotInputFocusCallbackFunction = focus;
+    entryEmailForgotInputBlurCallbackFunction = blur;
+  }
+
+  $scope.entrySwiperSlideChanged = function(slidePath, activeIndex){
+    if (entryEmailMainInputFocusCallbackFunction && slidePath === 'entry/main'){
+      entryEmailMainInputFocusCallbackFunction();
+    }else if (entryEmailForgotInputFocusCallbackFunction && slidePath === 'entry/details'){
+      entryEmailForgotInputFocusCallbackFunction();
+    }
+  }
 
   // LOG IN
 
@@ -84,13 +108,13 @@
     });
   };
 
-  $scope.rememberByDefault = function rememberByDefault() {
+  $scope.rememberByDefault = function() {
     return UserSessionService.getRememberByDefault();
   };
 
   // SIGN UP
 
-  $scope.signUp = function signUp() {
+  $scope.signUp = function() {
     $scope.signupFailed = false;
     $scope.entryOffline = false;
     $scope.loginFailed = false;
@@ -127,7 +151,7 @@
 
   // FORGOT
 
-  $scope.sendInstructions = function sendInstructions() {
+  $scope.sendInstructions = function() {
     $scope.sendFailed = false;
     $scope.sendOffline = false;
     if ($scope.user.email) {

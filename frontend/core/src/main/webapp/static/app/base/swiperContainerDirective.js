@@ -97,7 +97,10 @@
             initializeSwiperCalled = true;
 
             if ($attrs.swiperContainerSlideChanged) {
-              SwiperService.registerSlideChangeCallback($scope.slideChangedCallbackFn, $scope.swiperPath,
+              var slideChangedCallback = function(path, activeIndex, direction){
+                $scope.slideChangedCallbackFn({path: path, activeIndex: activeIndex, direction: direction});
+              };
+              SwiperService.registerSlideChangeCallback(slideChangedCallback, $scope.swiperPath,
                                                         'swiperContainer');
             }
 

@@ -6,9 +6,10 @@
         <span class="text-navigation-back">back</span>
       </a>
     </header>
-    <h2>sign up</h2>
+    <h2 class="group-heading row">sign up</h2>
     <form role="form" name="signupForm">
-      <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email&#8230;" required />
+      <input class="row" type="email" name="email" ng-model="user.username"
+      placeholder="enter email&#8230;" focusable="registerEntryMainEmailInputCallbacks(focus, blur)" required />
       <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password&#8230;" required />
       <div class="group-mixed">
         <div class="group-mixed--left">
@@ -46,14 +47,18 @@
         <span class="text-navigation-forward">forgot?</span>
       </a>
     </header>
-    <h2>log in</h2>
-    <input class="row" type="email" name="email" ng-model="user.username" placeholder="enter email&#8230;" required />
-    <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password&#8230;" required />
-    <div class="group-mixed">
-      <div class="group-mixed--left">
-        <input type="checkbox" ng-model="user.remember" ng-true-value="true" icon-checkbox="loginFormRemember" />
+    <h2 class="group-heading row">log in</h2>
+    <div editable-field-container="sticky">
+      <input class="row" type="email" name="email" ng-model="user.username"
+      placeholder="enter email&#8230;" focusable="registerEntryMainEmailInputCallbacks(focus, blur)"
+      editable-field required />
+      <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password&#8230;" editable-field required />
+      <div class="group-mixed">
+        <div class="group-mixed--left">
+          <input type="checkbox" editable-field ng-model="user.remember" ng-true-value="true" icon-checkbox="loginFormRemember" />
+        </div>
+        <span class="group-mixed--middle">remember</span>
       </div>
-      <span class="group-mixed--middle">remember</span>
     </div>
     <div class="group-error row">
       <div ng-if="loginForm.email.$touched" ng-messages="loginForm.email.$error">
@@ -66,8 +71,8 @@
       <span ng-if="entryOffline" class="text-error">can't connect to server. are you online?</span>
     </div>
   </section>
-  <footer class="container-content--after group-btn">
-    <button type="submit" class="btn-action" ng-disabled="!loginForm.$valid" ng-click="logIn()">
+  <footer class="container-content--after group-btn" editable-field-container="active">
+    <button editable-field-re-focus type="submit" class="btn-action" ng-disabled="!loginForm.$valid" ng-click="logIn()">
       <span class="text-btn">done</span>
     </button>
   </footer>

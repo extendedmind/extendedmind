@@ -14,12 +14,16 @@
  */
  'use strict';
 
- function editableFieldDirective() {
+ function editableFieldDirective($document) {
   return {
     require: '^editableFieldContainer',
     restrict: 'A',
     link: function($scope, $element, $attrs, editableFieldContainerController) {
       $element.addClass('editable-field');
+
+      function reFocusEditableField(){
+        if ($document[0].activeElement !== $element[0]) $element[0].focus();
+      }
 
       var editableFieldFocus = function() {
         $element.addClass('active');
@@ -27,7 +31,9 @@
       };
       var editableFieldBlur = function() {
         $element.removeClass('active');
+        editableFieldContainerController.notifyBlur(reFocusEditableField);
       };
+
       var editableFieldKeydown = function(event){
         // ESC button
         if (event.keyCode === 27){
@@ -48,4 +54,5 @@
     }
   };
 }
+editableFieldDirective['$inject'] = ['$document'];
 angular.module('common').directive('editableField', editableFieldDirective);
