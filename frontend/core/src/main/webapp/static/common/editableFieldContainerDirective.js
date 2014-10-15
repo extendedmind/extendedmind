@@ -20,16 +20,18 @@
     scope: true,
     require: '^editableFieldBackdrop',
     controller: function($scope, $element, $attrs) {
+
       this.notifyFocus = function() {
-        if ($attrs.editableFieldContainer !== 'auto'){
+        if (!$scope.containerActive){
           // activate on focus
           $scope.activateContainer();
         }
-      };
-      this.notifyBlur = function(reFocusFn) {
-        if ($scope.notifyLatestBlur){
-          $scope.notifyLatestBlur(reFocusFn)
+        if ($scope.unFocusCallback){
+          $scope.unFocusCallback();
         }
+      };
+      this.notifyReFocus = function(unFocusFn) {
+        $scope.unFocusCallback = unFocusFn;
       };
       this.deactivateContainer = function(){
         // deactivate and call click elsewhere
@@ -39,29 +41,35 @@
     link: function (scope, element, attrs, backdropController) {
       element.addClass('editable-field-container');
 
-      var listeningToClick = false;
+      scope.containerActive = false;
       function clickedContainer() {
         backdropController.notifyContainerClicked(element[0]);
       }
 
       scope.activateContainer = function() {
-        if (!listeningToClick){
+        if (!scope.containerActive){
           backdropController.activateContainer(element[0]);
           element[0].addEventListener('click', clickedContainer, false);
           element.addClass('active');
-          listeningToClick = true;
+          scope.containerActive = true;
         }
       }
 
-      scope.deactivateContainer = function(callClickElsewhere) {
-        if (listeningToClick){
-          backdropController.deactivateContainer(element[0]);
-          element[0].removeEventListener('click', clickedContainer, false);
-          element.removeClass('active');
-          listeningToClick = false;
-          if (callClickElsewhere && clickedElsewhereFn){
-            // Call click elsewhere also on direct deactivation
-            clickedElsewhereFn();
+      scope.deactivateContainer = function(directCall) {
+        if (scope.containerActive){
+          if (attrs.editableFieldContainer !== 'auto' || directCall){
+            backdropController.deactivateContainer(element[0]);
+            element[0].removeEventListener('click', clickedContainer, false);
+            element.removeClass('active');
+            scope.containerActive = false;
+            if (directCall && clickedElsewhereFn){
+              // Call click elsewhere also on direct deactivation
+              clickedElsewhereFn();
+            }
+            if (scope.unFocusCallback){
+              scope.unFocusCallback();
+              scope.unFocusCallback = undefined;
+            }
           }
         }
       }
@@ -80,14 +88,8 @@
         scope.activateContainer();
       }
 
-      if (attrs.editableFieldContainer === 'active') {
-        // Set active class permanately
-        element.addClass('active');
-      }
-
-
       scope.$on('$destroy', function() {
-        if (listeningToClick) {
+        if (scope.containerActive) {
           scope.deactivateContainer();
         }
         backdropController.unregisterContainer(element[0]);

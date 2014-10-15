@@ -46,6 +46,7 @@
       };
 
       function backdropClicked() {
+
         if (preventBackdropBubbleClick) {
           if (preventBackdropBubbleClick > (new Date).getTime() - 200){
             // Event bubbled from undesired click less than 200ms ago. Do nothing.
@@ -54,21 +55,29 @@
           }
           preventBackdropBubbleClick = false;
         }
+
         if (containerInfos && containerInfos.length > 0) {
+
+          // First check that click did not hit one of the active containers
+          var foundActiveClicked = false;
           for (var i = 0, len = containerInfos.length; i < len; i++) {
-            if (!containerInfos[i].clicked) {
-              if (containerInfos[i].active) {
-                // Clicked elsewhere than container for an active container, deactivate container
-                containerInfos[i].deactivate();
-                if (typeof containerInfos[i].clickedElsewhere === 'function'){
-                  // Click elsewhere callback.
-                  // NOTE: use $apply because callback may not be inside scope.
-                  $scope.$apply(containerInfos[i].clickedElsewhere);
-                }
-              }
-            }else {
+            if (containerInfos[i].clicked && containerInfos[i].active) {
               // reset clicked info
               containerInfos[i].clicked = false;
+              foundActiveClicked = true;
+            }
+          }
+          if (foundActiveClicked) return;
+
+          for (var i = 0, len = containerInfos.length; i < len; i++) {
+            if (!containerInfos[i].clicked && containerInfos[i].active) {
+              // Clicked elsewhere than container for an active container, deactivate container
+              containerInfos[i].deactivate();
+              if (typeof containerInfos[i].clickedElsewhere === 'function'){
+                // Click elsewhere callback.
+                // NOTE: use $apply because callback may not be inside scope.
+                $scope.$apply(containerInfos[i].clickedElsewhere);
+              }
             }
           }
         }
@@ -106,15 +115,6 @@
           $element.removeClass('active');
         }
       };
-
-      var reFocusCallback;
-      $scope.notifyLatestBlur = function(reFocusFn){
-        reFocusCallback = reFocusFn;
-      }
-
-      this.reFocusEditableField = function(){
-        if (reFocusCallback) reFocusCallback();
-      }
 
       /*
       * Editable field container clicked.

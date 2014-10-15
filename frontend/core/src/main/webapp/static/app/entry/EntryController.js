@@ -23,7 +23,11 @@
 
   if (packaging === 'web' && DetectBrowserService.isMobile()){
     $scope.entryState = 'download';
+  }else if (packaging.endsWith('cordova')){
+    $scope.useStickyInputs = true;
   }
+
+  // PUT
 
   $scope.swipeToSignup = function() {
     $scope.entryState = 'signup';

@@ -21,17 +21,39 @@
     link: function($scope, $element, $attrs, editableFieldContainerController) {
       $element.addClass('editable-field');
 
+      var refocusInProgress = false;
       function reFocusEditableField(){
+        refocusInProgress = true;
         if ($document[0].activeElement !== $element[0]) $element[0].focus();
       }
 
-      var editableFieldFocus = function() {
-        $element.addClass('active');
+      var unfocusInProgress = false;
+      function unFocusEditableField(){
+        unfocusInProgress = true;
+        if ($document[0].activeElement === $element[0]) $element[0].blur();
+      }
+
+      var editableFieldClicked = function() {
         editableFieldContainerController.notifyFocus();
+        reFocusEditableField();
+      }
+
+      var editableFieldFocus = function() {
+        if (!refocusInProgress){
+          editableFieldContainerController.notifyFocus();
+          $element.addClass('active');
+        }
+        refocusInProgress = false;
       };
+
       var editableFieldBlur = function() {
-        $element.removeClass('active');
-        editableFieldContainerController.notifyBlur(reFocusEditableField);
+        if ($attrs.editableField === 'sticky' && !unfocusInProgress){
+          reFocusEditableField();
+          editableFieldContainerController.notifyReFocus(unFocusEditableField);
+        }else{
+          $element.removeClass('active');
+          unfocusInProgress = false;
+        }
       };
 
       var editableFieldKeydown = function(event){
@@ -45,11 +67,16 @@
       angular.element($element).bind('focus', editableFieldFocus);
       angular.element($element).bind('blur', editableFieldBlur);
       angular.element($element).bind('keydown', editableFieldKeydown);
+      if ($attrs.editableField === 'sticky')
+        angular.element($element).bind('click', editableFieldClicked);
+
 
       $scope.$on('$destroy', function() {
         angular.element($element).unbind('focus', editableFieldFocus);
         angular.element($element).unbind('blur', editableFieldBlur);
         angular.element($element).unbind('keydown', editableFieldKeydown);
+        if ($attrs.editableField === 'sticky')
+          angular.element($element).bind('click', editableFieldClicked);
       });
     }
   };
