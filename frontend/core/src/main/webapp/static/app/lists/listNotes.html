@@ -1,7 +1,7 @@
 <div class="container-content--outer" ng-if="isFeatureActive('list')" list-container>
   <section class="container-content" list list-open="openEditor('note', {transientProperties: {list:list.uuid}})">
     <div list>
-      <h2>notes</h2>
+      <h2 class="group-heading row">notes</h2>
       <div class="row animate-list-item-leave"
       ng-repeat="note in listNotes = (allNotes | itemsFilter:{name:'byListUUID', filterBy: list.uuid})
       | limitTo: currentListLimitTo"

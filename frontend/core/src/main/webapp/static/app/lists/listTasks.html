@@ -1,6 +1,6 @@
 <div class="container-content--outer" ng-if="isFeatureActive('list')" list-container drawer-handle="left">
   <section class="container-content" list>
-    <h2>tasks</h2>
+    <h2 class="group-heading row">tasks</h2>
     <div class="row animate-list-item-leave"
     ng-repeat="task in listTasks =
     (tasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid} | filter:isTaskVisible)

@@ -1,6 +1,6 @@
 <div class="container-fluid--inner" list-container drawer-handle="left">
   <section class="container-content" list>
-    <h2 ng-bind="items.length + ' items'"></h2>
+    <h2 class="group-heading row" ng-bind="items.length + ' items'"></h2>
 
     <div list-item-add="{}" list-item-add-save="saveItem(newItem)">
       <form role="form" class="group-mixed" ng-submit="callAndExit(saveItem, newItem)"

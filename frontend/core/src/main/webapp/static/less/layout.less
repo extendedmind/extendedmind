@@ -449,6 +449,15 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-right: 15px;  /* [1] */
 }
 
+// 1. Increase line-height for heading.
+// 2. Center vertically. We are using .group-mixed--middle and .group-mixed--right in .group-mixed heading
+//    or just .group-heading.
+.group-heading,
+.group-mixed.heading > .group-mixed--middle, .group-mixed--right {
+  line-height: @grid-vertical * 2;  // [1]
+  vertical-align: middle;           // [2]
+}
+
 /*
 `.group-error` groups together multiple error messages.
 */
