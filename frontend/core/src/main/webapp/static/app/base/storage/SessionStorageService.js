@@ -111,6 +111,7 @@
       sessionStorage.removeItem('cohort');
       sessionStorage.removeItem('preferences');
       sessionStorage.removeItem('state');
+      cachedActiveUUID = cachedUserUUID = cachedEmail = undefined;
     }
   };
 }
