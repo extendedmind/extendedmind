@@ -17,15 +17,34 @@
  function listContainerDirective() {
   return {
     restrict: 'A',
-    controller: function($scope, $element) {
+    require: '?^verticalResize',
+    controller: function($scope, $element, $attrs) {
       var activateAddListItemCallback;
-      this.registerActivateAddListItemCallback = function(callback){
+
+      var overrideVerticalResize = $attrs.listContainerOverrideVerticalResize;
+
+      this.registerActivateAddListItemCallback = function(callback, element){
         activateAddListItemCallback = callback;
-      }
+        if (overrideVerticalResize) $scope.registerOverrideElement(element);
+      };
 
       this.activateAddListItem = function(){
         if (activateAddListItemCallback) activateAddListItemCallback();
-      }
+      };
+    },
+    compile: function compile() {
+      return {
+        pre: function preLink(scope, element, attrs, verticalResizeController) {
+          scope.registerOverrideElement = function(overrideElement) {
+            if (verticalResizeController)
+              verticalResizeController.overrideVerticalResize(overrideElement);
+          };
+
+          scope.$on('$destroy', function() {
+            if (verticalResizeController) verticalResizeController.clearOverrideElement();
+          });
+        }
+      };
     }
   };
 }

@@ -1,5 +1,5 @@
 <div id="editor" class="container-editor" ng-controller="EditorController" drawer="right"
-vertical-resize="editor" ng-switch="editorType">
+vertical-resize="editor" vertical-resize-prevent="!isEditorVisible()" ng-switch="editorType">
   <div ng-if="editorVisible" ng-switch-when="task" class="container-editor--inner" ng-init="task = getItemInEdit()">
     <div ng-include="'static/app/tasks/taskEditor.html'" include-replace></div>
   </div>

@@ -105,7 +105,7 @@
         }
       }
       function listActive(){
-        controllers[0].registerActivateAddListItemCallback(activateListAdd);
+        controllers[0].registerActivateAddListItemCallback(activateListAdd, element);
       }
       if (controllers[1]){
         controllers[1].registerSlideActiveCallback(listActive);

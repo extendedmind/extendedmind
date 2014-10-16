@@ -14,12 +14,27 @@
  */
  'use strict';
 
- function verticalResizeDirective($rootScope) {
+ function verticalResizeDirective($parse, $rootScope) {
   return {
     restrict: 'A',
+    controller: function($scope) {
+      this.overrideVerticalResize = function(element) {
+        $scope.overrideElement = element;
+      };
+      this.clearOverrideElement = function() {
+        $scope.overrideElement = undefined;
+      };
+    },
     link: function postLink(scope, element, attrs) {
       var maxHeightWithoutKeyboard;
+
+      var isPrevented = $parse(attrs.verticalResizePrevent).bind(undefined, scope);
+
       function windowResized(){
+        if (isPrevented()) {
+          // do nothing in attrs.verticalResize
+          return;
+        }
         if ($rootScope.currentHeight > $rootScope.MAX_HEIGHT) {
           element[0].style.maxHeight = $rootScope.MAX_HEIGHT + 'px';
           maxHeightWithoutKeyboard = $rootScope.MAX_HEIGHT;
@@ -29,16 +44,27 @@
         }
       }
       if (angular.isFunction(scope.registerWindowResizedCallback)) {
-        scope.registerWindowResizedCallback(windowResized, 'verticalResizeDirective' + '-' + attrs.verticalResize);
+        scope.registerWindowResizedCallback(windowResized, 'verticalResizeDirective' + '-' +
+                                            attrs.verticalResize);
       }
       windowResized();
 
       function doVerticalResize(newHeight, oldHeight) {
+        if (isPrevented()) {
+          // do nothing in attrs.verticalResize
+          return;
+        }
         if (newHeight || oldHeight) {
+
+          var resizeElement = element;
+
+          if (scope.overrideElement)
+            resizeElement = scope.overrideElement;
+
           if (newHeight) {
-            element[0].style.maxHeight = (maxHeightWithoutKeyboard - newHeight) + 'px';
+            resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard - newHeight) + 'px';
           }
-          else element[0].style.maxHeight = maxHeightWithoutKeyboard  + 'px';
+          else resizeElement[0].style.maxHeight = maxHeightWithoutKeyboard  + 'px';
         }
       }
 
@@ -46,5 +72,5 @@
     }
   };
 }
-verticalResizeDirective['$inject'] = ['$rootScope'];
+verticalResizeDirective['$inject'] = ['$parse', '$rootScope'];
 angular.module('em.base').directive('verticalResize', verticalResizeDirective);
