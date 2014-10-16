@@ -1,7 +1,7 @@
 <div class="container-content--outer" list-container drawer-handle="left">
   <section class="container-content" ng-controller="DatesController">
 
-    <div ng-if="datepickerVisible" class="swiper-container group-heading" swiper-container="datepicker" swiper-type="main" expected-slides="5" data-snap-ignore="true">
+    <div ng-if="datepickerVisible" class="swiper-container datepicker" swiper-container="datepicker" swiper-type="main" expected-slides="5" data-snap-ignore="true">
       <!-- Set editable-field-container to child to circumvent AngularJS error https://docs.angularjs.org/error/$compile/multidir -->
       <div class="swiper-wrapper" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeDatepicker()">
         <div class="swiper-slide group-link" swiper-slide="datepicker/right" slide-index="0" swiper-slide-duplicate="true">
