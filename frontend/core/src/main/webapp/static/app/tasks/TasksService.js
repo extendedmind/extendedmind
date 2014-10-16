@@ -16,7 +16,8 @@
  /*global angular */
  'use strict';
 
- function TasksService($q, $rootScope, ArrayService, BackendClientService, ExtendedItemService, ListsService, TagsService, UserSessionService, UUIDService) {
+ function TasksService($q, $rootScope, ArrayService, BackendClientService, ExtendedItemService,
+                       ListsService, TagsService, UISessionService, UserSessionService, UUIDService) {
   var tasks = {};
 
   var taskRegex = /\/task/;
@@ -170,6 +171,9 @@
       initializeArrays(ownerUUID);
       this.addTransientProperties(tasksResponse, ownerUUID);
 
+      // issue a very short lived lock to prevent leave animation
+      // when arrays are reformulated
+      UISessionService.lock('leaveAnimation', 100);
       return ArrayService.updateArrays(
         tasksResponse,
         tasks[ownerUUID].activeTasks,
@@ -465,5 +469,6 @@
   };
 }
 
-TasksService['$inject'] = ['$q', '$rootScope', 'ArrayService', 'BackendClientService', 'ExtendedItemService', 'ListsService', 'TagsService', 'UserSessionService', 'UUIDService'];
+TasksService['$inject'] = ['$q', '$rootScope', 'ArrayService', 'BackendClientService',
+'ExtendedItemService', 'ListsService', 'TagsService', 'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.tasks').factory('TasksService', TasksService);

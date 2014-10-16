@@ -16,7 +16,8 @@
  /*global angular */
  'use strict';
 
- function NotesService(ArrayService, BackendClientService, ExtendedItemService, ListsService, TagsService, UserSessionService, UUIDService) {
+ function NotesService(ArrayService, BackendClientService, ExtendedItemService, ListsService,
+                       TagsService, UISessionService, UserSessionService, UUIDService) {
 
   // An object containing notes for every owner
   var notes = {};
@@ -38,6 +39,7 @@
   }
 
   function updateNote(note, ownerUUID) {
+    ExtendedItemService.addTransientProperties([note], ownerUUID, copyFavoritedToStarred);
     return ArrayService.updateItem(note,
       notes[ownerUUID].activeNotes,
       notes[ownerUUID].deletedNotes,
@@ -134,6 +136,11 @@
     updateNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       ExtendedItemService.addTransientProperties(notesResponse, ownerUUID, copyFavoritedToStarred);
+
+      // issue a very short lived lock to prevent leave animation
+      // when arrays are reformulated
+      UISessionService.lock('leaveAnimation', 100);
+
       return ArrayService.updateArrays(
         notesResponse,
         notes[ownerUUID].activeNotes,
@@ -350,5 +357,6 @@
   };
 }
 
-NotesService['$inject'] = ['ArrayService', 'BackendClientService', 'ExtendedItemService', 'ListsService', 'TagsService', 'UserSessionService', 'UUIDService'];
+NotesService['$inject'] = ['ArrayService', 'BackendClientService', 'ExtendedItemService',
+'ListsService', 'TagsService', 'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.notes').factory('NotesService', NotesService);

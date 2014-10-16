@@ -16,7 +16,8 @@
  /*global angular */
  'use strict';
 
- function ListsService($q, ArrayService, BackendClientService, ExtendedItemService, TagsService) {
+ function ListsService($q, ArrayService, BackendClientService, ExtendedItemService,
+                       TagsService, UISessionService) {
 
   // An object containing lists for every owner
   var lists = {};
@@ -68,6 +69,10 @@
     },
     updateLists: function(listsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
+
+      // issue a very short lived lock to prevent leave animation
+      // when arrays are reformulated
+      UISessionService.lock('leaveAnimation', 100);
 
       var latestModified = ArrayService.updateArrays(
         listsResponse,
@@ -272,5 +277,6 @@
   };
 }
 
-ListsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ExtendedItemService', 'TagsService'];
+ListsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ExtendedItemService',
+'TagsService', 'UISessionService'];
 angular.module('em.lists').factory('ListsService', ListsService);

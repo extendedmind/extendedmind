@@ -16,7 +16,8 @@
  /* global angular*/
  'use strict';
 
- function ItemsService($q, ArrayService, BackendClientService, ListsService, NotesService, TagsService, TasksService, UserSessionService, UUIDService) {
+ function ItemsService($q, ArrayService, BackendClientService, ListsService, NotesService, TagsService,
+                       TasksService, UISessionService, UserSessionService, UUIDService) {
   var items = {};
 
   var itemRegex = /\/item/;
@@ -53,6 +54,10 @@
     },
     updateItems: function(itemsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
+      // issue a very short lived lock to prevent leave animation
+      // when arrays are reformulated
+      UISessionService.lock('leaveAnimation', 100);
+
       return ArrayService.updateArrays(itemsResponse,
         items[ownerUUID].activeItems,
         items[ownerUUID].deletedItems);
@@ -245,5 +250,5 @@
 }
 
 ItemsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ListsService', 'NotesService',
-'TagsService', 'TasksService', 'UserSessionService', 'UUIDService'];
+'TagsService', 'TasksService', 'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.main').factory('ItemsService', ItemsService);
