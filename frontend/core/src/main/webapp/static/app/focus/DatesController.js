@@ -19,6 +19,11 @@
 
   // DAY SLIDES CONSTRUCTOR
 
+  /*
+  * Initial day slides state.
+  *
+  * Reference to 'no date' slide with null.
+  */
   $scope.daySlides = [
   {
     info: DateService.getTodayYYYYMMDD(),
@@ -31,9 +36,10 @@
     heading: daySlideHeading(DateService.getTomorrowYYYYMMDD())
   },
   {
-    info: undefined,
-    referenceDate: undefined,
-    heading: daySlideHeading()
+    // 'no date' slide
+    info: null,
+    referenceDate: null,
+    heading: daySlideHeading(null)
   }
   ];
 
@@ -171,7 +177,7 @@
 
         } else if (newActiveDateCandidate.setHours(0, 0, 0, 0) === today) {
           // Active slide is a 'no date' slide when new active date candidate is today.
-          makeDaySlide(newActiveIndex);
+          makeDaySlide(newActiveIndex, null);
           return;
         }
 
@@ -185,12 +191,12 @@
 
         } else if (newActiveDateCandidate.setHours(0, 0, 0, 0) === yesterday) {
           // Active slide is a 'no date' slide when new active date candidate is today.
-          makeDaySlide(newActiveIndex);
+          makeDaySlide(newActiveIndex, null);
           return;
         }
       }
-    } else {
-      // No date slide. Today is the reference when going past, yesterday when future.
+    } else if (referenceDate === null) {
+      // 'no date' slide. Today is the reference when going past, yesterday when future.
       if (offset > 0) { // Going to the future.
         // Subtract offset and then use today as a reference. Result is the same as using original offset and
         // yesterday, but this is easier.
@@ -211,27 +217,33 @@
 
   function makeDaySlide(slideIndex, slideDate) {
     var daySlide = $scope.daySlides[slideIndex];
-    if (!slideDate) {
-      daySlide.referenceDate = daySlide.info = daySlide.pastDate = undefined;
-    } else {
+
+    if (slideDate) {
       daySlide.referenceDate = daySlide.info = DateService.getYYYYMMDD(slideDate);
       if (slideDate.setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0))
         daySlide.pastDate = daySlide.referenceDate;
 
       else
         daySlide.pastDate = undefined;
+
+    } else if (slideDate === null) {
+      // 'no date' slide.
+      daySlide.referenceDate = daySlide.info = daySlide.pastDate = null;
     }
     // Set heading for active day slide.
     daySlide.heading = daySlideHeading(daySlide.referenceDate);
   }
 
   /*
-  * Day slide has either some date or no date which is before today slide and after yesterday.
+  * Day slide has either some date or 'no date' which is before today slide and after yesterday.
   */
   function getActiveDaySlideInfo(slideIndex) {
     var referenceDate = $scope.daySlides[slideIndex].referenceDate;
     if (referenceDate) return new Date($scope.daySlides[slideIndex].referenceDate);
-    // Slide has no reference date so it is a 'no date' slide.
+    else if (referenceDate === null) {
+      // Slide's reference date is null so it is a 'no date' slide.
+      return null;
+    }
   }
 
   /*
@@ -247,15 +259,17 @@
       if (activeDate.getTime() === new Date().setHours(0, 0, 0, 0)) {
         // Today slide. Previous slide is 'no date' slide.
         nextDate = DateService.getTomorrowDate();
+        previousDate = null;
       } else if (activeDate.getTime() === DateService.getYesterdayDate().setHours(0, 0, 0, 0)) {
         // Yesterday slide. Next slide is 'no date' slide.
         previousDate = DateService.getDateWithOffset(-1, activeDate);
+        nextDate = null;
       } else {
         // Standard date slide. Get previous and next date.
         previousDate = DateService.getDateWithOffset(-1, activeDate);
         nextDate = DateService.getDateWithOffset(1, activeDate);
       }
-    } else {
+    } else if (activeDate === null) {
       // 'No date' slide. Previous date is yesterday and next date is today.
       previousDate = DateService.getYesterdayDate();
       nextDate = new Date();
@@ -387,7 +401,7 @@
   *   - fri 10 oct
   */
   function daySlideHeading(day) {
-    if (!day) return 'no date';
+    if (day === null) return 'no date';
 
     if (day === DateService.getTodayYYYYMMDD()) return 'today';
     else
@@ -423,7 +437,7 @@
     $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), true);
   }
   function gotoNoDate() {
-    $scope.changeDaySlide(undefined, true);
+    $scope.changeDaySlide(null, true);
   }
 
   /*
@@ -442,11 +456,11 @@
 
     var oldActiveDate, newActiveDate, offsetBetweenDays;
 
-    if (!oldDateYYYYMMDD && !newDateYYYYMMDD) {
-      // Came from no date. Going to no date. Do nothing.
+    if (oldDateYYYYMMDD === null && newDateYYYYMMDD === null) {
+      // Came from 'no date'. Going to 'no date'. Do nothing.
       return;
-    } else if (!oldDateYYYYMMDD) {
-      // Came from no date. Reference today as an old active date and compare it with new active date.
+    } else if (oldDateYYYYMMDD === null) {
+      // Came from 'no date'. Reference today as an old active date and compare it with new active date.
       newActiveDate = new Date(newDateYYYYMMDD);
       offsetBetweenDays = (newActiveDate.setHours(0, 0, 0, 0) -
                            new Date().setHours(0, 0, 0, 0)) / (1000*60*60*24);
@@ -454,11 +468,12 @@
         // Going to today
         offsetBetweenDays++;
       }
-    } else if (!newDateYYYYMMDD) {
-      // Going to no date. Reference today as a new active date and compare it with old active date.
+    } else if (newDateYYYYMMDD === null) {
+      // Going to 'no date'. Reference today as a new active date and compare it with old active date.
       oldActiveDate = new Date(oldDateYYYYMMDD);
       offsetBetweenDays = (new Date().setHours(0, 0, 0, 0) -
                            oldActiveDate.setHours(0, 0, 0, 0)) / (1000*60*60*24);
+      newActiveDate = null; // 'no date'
 
       if (offsetBetweenDays === 0) {
         // Came from today.

@@ -23,8 +23,8 @@
 
     var filteredItems = [];
 
-    // Tasks with no date.
-    if (!date) {
+    // Tasks with 'no date'.
+    if (date === null) {
       for (var i = 0, len = tasks.length; i < len; i++) {
         if (!tasks[i].due) filteredItems.push(tasks[i]);
       }
