@@ -386,9 +386,16 @@ function MainController(
             $rootScope.loading = true;
           });
         }
-        SynchronizeService.synchronize(activeUUID).then(function() {
+        SynchronizeService.synchronize(activeUUID).then(function(firstSync) {
           UserSessionService.setItemsSynchronized(activeUUID);
           $rootScope.loading = false;
+          if (firstSync){
+            // Also immediately after first sync start syncing all others
+            $rootScope.isCompletedAndArchivedLoading = true;
+            SynchronizeService.synchronizeCompletedAndArchived(activeUUID).then(function(){
+              $rootScope.isCompletedAndArchivedLoading = false;
+            });
+          }
         });
       }
     }

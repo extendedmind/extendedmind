@@ -62,7 +62,8 @@
       BackendClientService.registerOnlineStatusCallback(onlineStatusCallback);
 
       $scope.retrying = false;
-      var onlineRequiredRetryCallback = function(modalScope, modalClose, retryFunction, retryFunctionParam, promise) {
+      var onlineRequiredRetryCallback = function(modalScope, modalClose, retryFunction, retryFunctionParam,
+                                                 promise, promiseParam) {
         $scope.retrying = true;
         modalScope.modalSuccessText = 'retrying&#8230;';
         modalScope.modalSuccessDisabled = true;
@@ -70,14 +71,14 @@
           $scope.retrying = false;
           modalClose();
           if (promise) {
-            promise.resolve();
+            promise.resolve(promiseParam);
           }
         },function(error) {
           $scope.retrying = false;
           if (error.status === 403) {
             modalClose();
             if (promise) {
-              promise.resolve();
+              promise.resolve(promiseParam);
             }
           } else {
             modalScope.modalSuccessText = 'retry';
@@ -120,7 +121,8 @@
                 fn: onlineRequiredRetryCallback,
                 fnParam: exception.retry,
                 fnParamParam: exception.retryParam,
-                fnPromise: exception.promise
+                fnPromise: exception.promise,
+                fnPromiseParam: exception.promiseParam,
               };
               ModalService.createDialog('static/app/root/errorMessage.html', modalOptions);
             } else {

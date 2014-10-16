@@ -204,7 +204,7 @@
   var getAllOnline = function getAllOnline(ownerUUID, getAllMethod, deferred) {
     getAllMethod(ownerUUID).then(
       function(result) {
-        deferred.resolve();
+        deferred.resolve(true);
         return result;
       },
       function(error) {
@@ -216,7 +216,8 @@
             data: error.data,
             retry: getAllMethod,
             retryParam: ownerUUID,
-            promise: deferred
+            promise: deferred,
+            promiseParam: true
           });
         } else {
           $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
@@ -262,14 +263,14 @@
           if (result.data) {
             processSynchronizeUpdateResult(ownerUUID, result.data);
           }
-          deferred.resolve();
+          deferred.resolve(false);
         }, function(error) {
           if (error && error.status === 403) {
             // Got 403, need to go to login
             $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
           } else {
             // just resolve, because this command does not need to always succeed
-            deferred.resolve();
+            deferred.resolve(false);
           }
         });
       }

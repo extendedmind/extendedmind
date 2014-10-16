@@ -438,7 +438,12 @@ angular.module('em.base').factory('ModalService', ["$document", "$compile", "$ro
             scope.$modalSuccess = function () {
                 var callFn = options.success.fn || closeFn;
                 if (options.asyncSuccess){
-                  callFn(this, scope.$modalClose, options.success.fnParam, options.success.fnParamParam, options.success.fnPromise);
+                  callFn(this,
+                         scope.$modalClose,
+                         options.success.fnParam,
+                         options.success.fnParamParam,
+                         options.success.fnPromise,
+                         options.success.fnPromiseParam);
                 }else{
                   callFn.call(this);
                   scope.$modalClose();

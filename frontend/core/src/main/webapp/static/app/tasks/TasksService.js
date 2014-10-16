@@ -39,6 +39,7 @@
   }
 
   function updateTask(task, ownerUUID) {
+    if (task) addTransientProperties([task], ownerUUID);
     return ArrayService.updateItem(task,
       tasks[ownerUUID].activeTasks,
       tasks[ownerUUID].deletedTasks,
@@ -145,6 +146,13 @@
     // AngularJS sets property to empty string '""' if it is used in ng-model data-binding and text is removed.
     if (task.transientProperties && task.transientProperties.description === '')
       delete task.transientProperties.description;
+  }
+
+  function addTransientProperties(tasksArray, ownerUUID, addExtraTransientPropertyFn) {
+    var addExtraTransientPropertyFunctions = [copyDueToDate, copyCompleted, copyDescriptionToTransientProperties];
+    if (typeof addExtraTransientPropertyFn === 'function')
+      addExtraTransientPropertyFunctions.push(addExtraTransientPropertyFn);
+    ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, addExtraTransientPropertyFunctions);
   }
 
   return {
@@ -349,7 +357,8 @@
                       }};
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
                                   this.completeTaskRegex, params);
-        task.completed = BackendClientService.generateFakeTimestamp();
+        task.completed = task.modified = BackendClientService.generateFakeTimestamp();
+        updateTask(task, ownerUUID);
         deferred.resolve(task);
       } else {
         // Online
@@ -358,7 +367,9 @@
         .then(function(result) {
           if (result.data) {
             task.completed = result.data.completed;
+            task.modified = result.data.modified;
           }
+          updateTask(task, ownerUUID);
           deferred.resolve(task);
         });
       }
@@ -376,9 +387,7 @@
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
          this.uncompleteTaskRegex, params);
         delete task.completed;
-        // Don't change modified on uncomplete to prevent
-        // task from moving down in the list when clicking on/off.
-        //task.modified = result.data.modified;
+        task.modified = BackendClientService.generateFakeTimestamp();
         updateTask(task, ownerUUID);
         deferred.resolve(task);
       } else {
@@ -388,9 +397,7 @@
         .then(function(result) {
           if (result.data) {
             delete task.completed;
-            // Don't change modified on uncomplete to prevent
-            // task from moving down in the list when clicking on/off.
-            //task.modified = result.data.modified;
+            task.modified = result.data.modified;
             updateTask(task, ownerUUID);
           }
           deferred.resolve(task);
@@ -410,10 +417,7 @@
       this.addTransientProperties(tasksArray, ownerUUID);
     },
     addTransientProperties: function(tasksArray, ownerUUID, addExtraTransientPropertyFn) {
-      var addExtraTransientPropertyFunctions = [copyDueToDate, copyCompleted, copyDescriptionToTransientProperties];
-      if (typeof addExtraTransientPropertyFn === 'function')
-        addExtraTransientPropertyFunctions.push(addExtraTransientPropertyFn);
-      ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, addExtraTransientPropertyFunctions);
+      addTransientProperties(tasksArray, ownerUUID, addExtraTransientPropertyFn);
     },
     detachTransientProperties: function(task, ownerUUID) {
       var detachExtraTransientPropertyFunctions = [copyDateToDue, copyTransientDescriptionToPersistent];
