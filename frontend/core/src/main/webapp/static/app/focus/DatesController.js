@@ -438,27 +438,25 @@
     return $filter('date')(activeDateYYYYMMDD, 'MMMM yyyy').toLowerCase();
   }
 
-  $scope.toggleDatepicker = function(startingDateYYYYMMDD) {
-    if (!$scope.datepickerVisible) {
-      initializeDatepickerWeeks(startingDateYYYYMMDD);
-      setDayActive(startingDateYYYYMMDD);
-      $scope.datepickerVisible = true;
+  $scope.closeDatepicker = function() {
+    $scope.datepickerVisible = false;
+    resetDatepickerState();
+    $scope.datepickerWeeks = undefined;
+    $scope.resetToDefaultToolbar();
+  };
 
-      $scope.swapToCustomToolbar({
-        leftActionName: 'today',
-        leftActionFn: gotoToday,
-        getMiddleActionName: datepickerHeading,
-        middleActionFn: $scope.toggleDatepicker,  // FIXME: DEBUG
-        rightActionName: 'no date',
-        rightActionFn: gotoNoDate
-      });
-    }
-    else {
-      $scope.datepickerVisible = false;
-      resetDatepickerState();
-      $scope.datepickerWeeks = undefined;
-      $scope.resetToDefaultToolbar();
-    }
+  $scope.openDatepicker = function(startingDateYYYYMMDD) {
+    initializeDatepickerWeeks(startingDateYYYYMMDD);
+    setDayActive(startingDateYYYYMMDD);
+    $scope.datepickerVisible = true;
+
+    $scope.swapToCustomToolbar({
+      leftActionName: 'today',
+      leftActionFn: gotoToday,
+      getMiddleActionName: datepickerHeading,
+      rightActionName: 'no date',
+      rightActionFn: gotoNoDate
+    });
   };
 
   function gotoToday() {

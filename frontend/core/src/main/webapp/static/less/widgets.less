@@ -13,6 +13,33 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
 *************************************************************
 # Datepicker
 */
+
+.datepicker-day {
+  height: 88px;
+  line-height: 88px;
+  text-align: center;
+  display:table;
+}
+
+.datepicker-day > div {
+  width: 100%;
+  height: 88px;
+  line-height: 88px;
+  display:table-cell;
+  vertical-align: middle;
+}
+.datepicker-day > div > * {
+  display: block;
+  line-height: normal;
+}
+
+.datepicker-day > div >:first-child {
+  padding-bottom: 4px;
+}
+.datepicker-day > div >:last-child {
+  font-size: @size-font-medium;
+}
+
 .datepicker-active-day {
   .set-font-bold();
 }

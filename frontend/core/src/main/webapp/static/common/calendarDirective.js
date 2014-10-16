@@ -100,7 +100,7 @@
           nextMonth     : '', // Remove next month text label
           months        : DateService.getMonthNames(),
           weekdays      : DateService.getWeekdayNames(),
-          weekdaysShort : ['sun','mon','tue','wed','thu','fri','sat']
+          weekdaysShort : DateService.getShortWeekdayNames()
         },
         onSelect: returnDate,
         onOpen: setStartingDateActive

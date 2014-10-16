@@ -8,7 +8,7 @@
       <span class="text-logo"></span>
     </button>
   </div>
-  <div ng-show="isCustomToolbar()" class="group-symmetrical height-large">
+  <div ng-if="isCustomToolbar()" class="group-symmetrical height-large" editable-field-container="auto">
     <a href class="group-symmetrical--left link-navigation highlighted" ng-click="customToolbar.leftActionFn()">
       <span class="text-navigation" ng-bind="customToolbar.leftActionName"></span>
     </a>

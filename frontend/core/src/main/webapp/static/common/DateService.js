@@ -22,6 +22,7 @@
   'sep', 'oct', 'nov', 'dec'
   ];
   var weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  var weekdaysShort = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
   var activeWeek;
   var daysFromActiveWeekToNext = 7;
@@ -68,11 +69,11 @@
     var week = [];
     var today = new Date();
 
-    for (var i = 0, len = weekdays.length; i < len; i++) {
+    for (var i = 0, len = weekdaysShort.length; i < len; i++) {
       var dayIndex = (date.getDay() === 0) ? 6 : date.getDay() - 1;
       day = {};
       day.date = date.getDate();
-      day.weekday = weekdays[date.getDay()];
+      day.weekday = weekdaysShort[date.getDay()];
       day.weekdayIndex = dayIndex;
       day.month = {};
       day.month.name = monthNames[date.getMonth()];
@@ -178,6 +179,9 @@
     getDateTodayOrFromLaterYYYYMMDD: function(dateYYYYMMDD) {
       if (dateYYYYMMDD && (dateYYYYMMDD > yyyymmdd(new Date()))) return new Date(dateYYYYMMDD);
       else return new Date();
+    },
+    getShortWeekdayNames: function() {
+      return weekdaysShort;
     },
     getWeekdayNames: function() {
       return weekdays;

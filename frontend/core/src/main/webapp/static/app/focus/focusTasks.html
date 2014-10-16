@@ -3,51 +3,236 @@
 
     <div ng-if="datepickerVisible" class="swiper-container group-heading" swiper-container="datepicker" swiper-type="main" expected-slides="5" data-snap-ignore="true">
       <!-- Set editable-field-container to child to circumvent AngularJS error https://docs.angularjs.org/error/$compile/multidir -->
-      <div class="swiper-wrapper">
+      <div class="swiper-wrapper" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeDatepicker()">
         <div class="swiper-slide group-link" swiper-slide="datepicker/right" slide-index="0" swiper-slide-duplicate="true">
-          <a href ng-class="isDayActive(datepickerWeeks[2][0].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][0].yyyymmdd)">{{datepickerWeeks[2][0].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[2][1].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][1].yyyymmdd)">{{datepickerWeeks[2][1].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[2][2].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][2].yyyymmdd)">{{datepickerWeeks[2][2].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[2][3].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][3].yyyymmdd)">{{datepickerWeeks[2][3].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[2][4].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][4].yyyymmdd)">{{datepickerWeeks[2][4].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[2][5].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][5].yyyymmdd)">{{datepickerWeeks[2][5].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[2][6].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][6].yyyymmdd)">{{datepickerWeeks[2][6].displayDateShort}}</a>
+          <div class="row">
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][0].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][0].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][0].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][0].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][1].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][1].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][1].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][1].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][2].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][2].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][2].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][2].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][3].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][3].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][3].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][3].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][4].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][4].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][4].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][4].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][5].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][5].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][5].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][5].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][6].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][6].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][6].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][6].displayDateShort"></span>
+              </div>
+            </a>
+          </div>
         </div>
         <div class="swiper-slide group-link" swiper-slide="datepicker/first" slide-index="1" swiper-slide-loop-start="true">
-          <a href ng-class="isDayActive(datepickerWeeks[0][0].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][0].yyyymmdd)">{{datepickerWeeks[0][0].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[0][1].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][1].yyyymmdd)">{{datepickerWeeks[0][1].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[0][2].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][2].yyyymmdd)">{{datepickerWeeks[0][2].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[0][3].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][3].yyyymmdd)">{{datepickerWeeks[0][3].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[0][4].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][4].yyyymmdd)">{{datepickerWeeks[0][4].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[0][5].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][5].yyyymmdd)">{{datepickerWeeks[0][5].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[0][6].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][6].yyyymmdd)">{{datepickerWeeks[0][6].displayDateShort}}</a>
+          <div class="row">
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][0].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][0].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][0].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][0].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][1].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][1].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][1].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][1].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][2].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][2].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][2].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][2].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][3].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][3].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][3].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][3].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][4].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][4].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][4].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][4].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][5].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][5].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][5].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][5].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][6].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][6].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][6].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][6].displayDateShort"></span>
+              </div>
+            </a>
+          </div>
         </div>
         <div class="swiper-slide group-link" swiper-slide="datepicker/middle" slide-index="2">
-          <a href ng-class="isDayActive(datepickerWeeks[1][0].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[1][0].yyyymmdd)">{{datepickerWeeks[1][0].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[1][1].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[1][1].yyyymmdd)">{{datepickerWeeks[1][1].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[1][2].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[1][2].yyyymmdd)">{{datepickerWeeks[1][2].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[1][3].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[1][3].yyyymmdd)">{{datepickerWeeks[1][3].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[1][4].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[1][4].yyyymmdd)">{{datepickerWeeks[1][4].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[1][5].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[1][5].yyyymmdd)">{{datepickerWeeks[1][5].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[1][6].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[1][6].yyyymmdd)">{{datepickerWeeks[1][6].displayDateShort}}</a>
+          <div class="row">
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[1][0].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[1][0].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[1][0].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[1][0].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[1][1].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[1][1].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[1][1].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[1][1].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[1][2].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[1][2].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[1][2].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[1][2].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[1][3].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[1][3].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[1][3].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[1][3].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[1][4].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[1][4].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[1][4].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[1][4].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[1][5].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[1][5].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[1][5].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[1][5].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[1][6].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[1][6].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[1][6].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[1][6].displayDateShort"></span>
+              </div>
+            </a>
+          </div>
         </div>
         <div class="swiper-slide group-link" swiper-slide="datepicker/right" slide-index="3">
-          <a href ng-class="isDayActive(datepickerWeeks[2][0].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][0].yyyymmdd)">{{datepickerWeeks[2][0].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[2][1].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][1].yyyymmdd)">{{datepickerWeeks[2][1].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[2][2].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][2].yyyymmdd)">{{datepickerWeeks[2][2].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[2][3].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][3].yyyymmdd)">{{datepickerWeeks[2][3].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[2][4].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][4].yyyymmdd)">{{datepickerWeeks[2][4].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[2][5].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][5].yyyymmdd)">{{datepickerWeeks[2][5].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[2][6].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[2][6].yyyymmdd)">{{datepickerWeeks[2][6].displayDateShort}}</a>
+          <div class="row">
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][0].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][0].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][0].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][0].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][1].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][1].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][1].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][1].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][2].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][2].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][2].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][2].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][3].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][3].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][3].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][3].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][4].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][4].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][4].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][4].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][5].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][5].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][5].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][5].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[2][6].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[2][6].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[2][6].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[2][6].displayDateShort"></span>
+              </div>
+            </a>
+          </div>
         </div>
         <div class="swiper-slide group-link" swiper-slide="datepicker/first" slide-index="4" swiper-slide-duplicate="true">
-          <a href ng-class="isDayActive(datepickerWeeks[0][0].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][0].yyyymmdd)">{{datepickerWeeks[0][0].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[0][1].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][1].yyyymmdd)">{{datepickerWeeks[0][1].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[0][2].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][2].yyyymmdd)">{{datepickerWeeks[0][2].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[0][3].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][3].yyyymmdd)">{{datepickerWeeks[0][3].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[0][4].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][4].yyyymmdd)">{{datepickerWeeks[0][4].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[0][5].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][5].yyyymmdd)">{{datepickerWeeks[0][5].displayDateShort}}</a>
-          <a href ng-class="isDayActive(datepickerWeeks[0][6].yyyymmdd) && 'datepicker-active-day'" ng-click="changeDaySlide(datepickerWeeks[0][6].yyyymmdd)">{{datepickerWeeks[0][6].displayDateShort}}</a>
+          <div class="row">
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][0].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][0].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][0].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][0].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][1].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][1].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][1].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][1].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][2].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][2].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][2].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][2].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][3].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][3].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][3].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][3].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][4].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][4].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][4].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][4].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][5].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][5].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][5].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][5].displayDateShort"></span>
+              </div>
+            </a>
+            <a href class="datepicker-day" ng-click="changeDaySlide(datepickerWeeks[0][6].yyyymmdd)">
+              <div>
+                <span class="text-details" ng-bind="datepickerWeeks[0][6].weekday"></span>
+                <span ng-class="isDayActive(datepickerWeeks[0][6].yyyymmdd) && 'datepicker-active-day'" ng-bind="datepickerWeeks[0][6].displayDateShort"></span>
+              </div>
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -60,7 +245,7 @@
             <div ng-if="isFeatureActive('focus')">
 
               <div ng-hide="datepickerVisible" class="group-mixed heading">
-                <div class="group-mixed--middle" ng-click="toggleDatepicker(daySlides[2].info)">
+                <div class="group-mixed--middle" ng-click="openDatepicker(daySlides[2].info)">
                   <h2 ng-bind="daySlides[2].heading"></h2>
                 </div>
                 <div class="group-mixed--right" task-list-completed="rightDuplicateTasksDate"></div>
@@ -83,7 +268,7 @@
             <div ng-if="isFeatureActive('focus')">
 
               <div ng-hide="datepickerVisible" class="group-mixed heading">
-                <div class="group-mixed--middle" ng-click="toggleDatepicker(daySlides[0].info)">
+                <div class="group-mixed--middle" ng-click="openDatepicker(daySlides[0].info)">
                   <h2 ng-bind="daySlides[0].heading"></h2>
                 </div>
                 <div class="group-mixed--right" task-list-completed></div>
@@ -106,7 +291,7 @@
             <div ng-if="isFeatureActive('focus')">
 
               <div ng-hide="datepickerVisible" class="group-mixed heading">
-                <div class="group-mixed--middle" ng-click="toggleDatepicker(daySlides[1].info)">
+                <div class="group-mixed--middle" ng-click="openDatepicker(daySlides[1].info)">
                   <h2 ng-bind="daySlides[1].heading"></h2>
                 </div>
                 <div class="group-mixed--right" task-list-completed></div>
@@ -129,7 +314,7 @@
             <div ng-if="isFeatureActive('focus')">
 
               <div ng-hide="datepickerVisible" class="group-mixed heading">
-                <div class="group-mixed--middle" ng-click="toggleDatepicker(daySlides[2].info)">
+                <div class="group-mixed--middle" ng-click="openDatepicker(daySlides[2].info)">
                   <h2 ng-bind="daySlides[2].heading"></h2>
                 </div>
                 <div class="group-mixed--right" task-list-completed></div>
@@ -151,7 +336,7 @@
             <div ng-if="isFeatureActive('focus')">
 
               <div ng-hide="datepickerVisible" class="group-mixed heading">
-                <div class="group-mixed--middle" ng-click="toggleDatepicker(daySlides[0].info)">
+                <div class="group-mixed--middle" ng-click="openDatepicker(daySlides[0].info)">
                   <h2 ng-bind="daySlides[0].heading"></h2>
                 </div>
                 <div class="group-mixed--right" task-list-completed></div>
