@@ -90,7 +90,7 @@
 
       scope.$on('$destroy', function() {
         if (scope.containerActive) {
-          scope.deactivateContainer();
+          scope.deactivateContainer(true);
         }
         backdropController.unregisterContainer(element[0]);
       });
