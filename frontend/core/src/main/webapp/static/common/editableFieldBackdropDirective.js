@@ -70,8 +70,9 @@
           if (foundActiveClicked) return;
 
           for (var i = 0, len = containerInfos.length; i < len; i++) {
-            if (!containerInfos[i].clicked && containerInfos[i].active) {
-              // Clicked elsewhere than container for an active container, deactivate container
+            if (containerInfos[i] && (!containerInfos[i].clicked && containerInfos[i].active)) {
+              // Clicked elsewhere than container for an active container, deactivate container.
+              // NOTE: Make sure container is not removed same time as looping containers.
               containerInfos[i].deactivate();
               if (typeof containerInfos[i].clickedElsewhere === 'function'){
                 // Click elsewhere callback.
