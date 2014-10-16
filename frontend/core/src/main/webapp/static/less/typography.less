@@ -104,12 +104,17 @@ Use `.text-details` to separate details from body text.
   line-height: @grid-vertical-half;
 }
 
+.text-heading-primary {
+  font-size: @size-font-small;
+  .set-font-bold();
+}
+
 
 /*
 Navigation texts
 */
 
-.text-navigation-back, .text-navigation-forward {
+.text-navigation-back, .text-navigation-forward, .text-navigation {
   color: @color-text-downplayed;
   font-size: @size-font-small;
   .set-font-bold();
