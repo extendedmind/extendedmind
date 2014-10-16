@@ -1,9 +1,9 @@
-<div ng-if="isFeatureActive('focus')" class="container-content--outer" list-container drawer-handle="left">
+<div class="container-content--outer" list-container drawer-handle="left">
   <section class="container-content" ng-controller="DatesController">
 
-    <div ng-if="datepickerVisible" class="swiper-container" swiper-container="datepicker" swiper-type="main" expected-slides="5" data-snap-ignore="true">
+    <div ng-if="datepickerVisible" class="swiper-container group-heading" swiper-container="datepicker" swiper-type="main" expected-slides="5" data-snap-ignore="true">
       <!-- Set editable-field-container to child to circumvent AngularJS error https://docs.angularjs.org/error/$compile/multidir -->
-      <div class="swiper-wrapper" editable-field-container="auto" editable-field-container-clicked-elsewhere="toggleDatepicker()">
+      <div class="swiper-wrapper">
         <div class="swiper-slide group-link" swiper-slide="datepicker/right" slide-index="0" swiper-slide-duplicate="true">
           <a href ng-click="changeDaySlide(datepickerWeeks[2][0].yyyymmdd)">{{datepickerWeeks[2][0].displayDateShort}}</a>
           <a href ng-click="changeDaySlide(datepickerWeeks[2][1].yyyymmdd)">{{datepickerWeeks[2][1].displayDateShort}}</a>
@@ -57,101 +57,114 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0" swiper-slide-duplicate="true">
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'" list="tasks | tasksByDate:daySlides[2].info:daySlides[2].pastDate">
-            <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle">
-                <h2 ng-bind="daySlides[2].heading" ng-click="toggleDatepicker()"></h2>
+            <div ng-if="isFeatureActive('focus')">
+
+              <div ng-hide="datepickerVisible" class="group-mixed heading">
+                <div class="group-mixed--middle" ng-click="toggleDatepicker(daySlides[2].info)">
+                  <h2 ng-bind="daySlides[2].heading"></h2>
+                </div>
+                <div class="group-mixed--right" task-list-completed="rightDuplicateTasksDate"></div>
               </div>
-              <div class="group-mixed--right" task-list-completed="rightDuplicateTasksDate"></div>
+
+              <div class="animate-list-item-leave"
+              ng-repeat="task in rightDuplicateTasks = (getList() | paramFilter:isListItemVisible:daySlides[2].pastDate)
+              | limitTo: currentListLimitTo"
+              list-item="rightDuplicateTasks.length" list-item-array
+              ng-include="'static/app/tasks/taskListItem.html'"></div>
+
+              <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
+              ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
             </div>
-
-            <div class="animate-list-item-leave"
-            ng-repeat="task in rightDuplicateTasks = (getList() | paramFilter:isListItemVisible:daySlides[2].pastDate)
-            | limitTo: currentListLimitTo"
-            list-item="rightDuplicateTasks.length" list-item-array
-            ng-include="'static/app/tasks/taskListItem.html'"></div>
-
-            <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
-            ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1" swiper-slide-loop-start="true">
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'" list="tasks | tasksByDate:daySlides[0].info:daySlides[0].pastDate">
+            <div ng-if="isFeatureActive('focus')">
 
-            <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle">
-                <h2 ng-bind="daySlides[0].heading" ng-click="toggleDatepicker()"></h2>
+              <div ng-hide="datepickerVisible" class="group-mixed heading">
+                <div class="group-mixed--middle" ng-click="toggleDatepicker(daySlides[0].info)">
+                  <h2 ng-bind="daySlides[0].heading"></h2>
+                </div>
+                <div class="group-mixed--right" task-list-completed></div>
               </div>
-              <div class="group-mixed--right" task-list-completed></div>
+
+              <div class="animate-list-item-leave"
+              ng-repeat="task in leftTasks = (getList() | paramFilter:isListItemVisible:daySlides[0].pastDate)
+              | limitTo: currentListLimitTo"
+              list-item="leftTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
+
+              <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
+              ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
+
             </div>
-
-            <div class="animate-list-item-leave"
-            ng-repeat="task in leftTasks = (getList() | paramFilter:isListItemVisible:daySlides[0].pastDate)
-            | limitTo: currentListLimitTo"
-            list-item="leftTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
-
-            <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
-            ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
-
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2">
           <div class="container-content" ng-class="daySlides[1].pastDate && 'past-date'" list="tasks | tasksByDate:daySlides[1].info:daySlides[1].pastDate">
+            <div ng-if="isFeatureActive('focus')">
 
-            <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle">
-                <h2 ng-bind="daySlides[1].heading" ng-click="toggleDatepicker()"></h2>
+              <div ng-hide="datepickerVisible" class="group-mixed heading">
+                <div class="group-mixed--middle" ng-click="toggleDatepicker(daySlides[1].info)">
+                  <h2 ng-bind="daySlides[1].heading"></h2>
+                </div>
+                <div class="group-mixed--right" task-list-completed></div>
               </div>
-              <div class="group-mixed--right" task-list-completed></div>
+
+              <div class="animate-list-item-leave"
+              ng-repeat="task in middleTasks = (getList() | paramFilter:isListItemVisible:daySlides[1].pastDate)
+              | limitTo: currentListLimitTo"
+              list-item="middleTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
+
+              <div list-item-add="getNewDayTask(1)" list-item-add-save="saveTask(newItem)"
+              ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
+
             </div>
-
-            <div class="animate-list-item-leave"
-            ng-repeat="task in middleTasks = (getList() | paramFilter:isListItemVisible:daySlides[1].pastDate)
-            | limitTo: currentListLimitTo"
-            list-item="middleTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
-
-            <div list-item-add="getNewDayTask(1)" list-item-add-save="saveTask(newItem)"
-            ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
-
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/right" slide-index="3">
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'" list="tasks | tasksByDate:daySlides[2].info:daySlides[2].pastDate">
-            <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle">
-                <h2 ng-bind="daySlides[2].heading" ng-click="toggleDatepicker()"></h2>
+            <div ng-if="isFeatureActive('focus')">
+
+              <div ng-hide="datepickerVisible" class="group-mixed heading">
+                <div class="group-mixed--middle" ng-click="toggleDatepicker(daySlides[2].info)">
+                  <h2 ng-bind="daySlides[2].heading"></h2>
+                </div>
+                <div class="group-mixed--right" task-list-completed></div>
               </div>
-              <div class="group-mixed--right" task-list-completed></div>
+
+              <div class="animate-list-item-leave"
+              ng-repeat="task in rightTasks = (getList() | paramFilter:isListItemVisible:daySlides[2].pastDate)
+              | limitTo: currentListLimitTo"
+              list-item="rightTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
+
+              <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
+              ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
             </div>
-
-            <div class="animate-list-item-leave"
-            ng-repeat="task in rightTasks = (getList() | paramFilter:isListItemVisible:daySlides[2].pastDate)
-            | limitTo: currentListLimitTo"
-            list-item="rightTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
-
-            <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
-            ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/leftDuplicate" slide-index="4" swiper-slide-duplicate="true">
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'" list="tasks | tasksByDate:daySlides[0].info:daySlides[0].pastDate">
-            <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle">
-                <h2 ng-bind="daySlides[0].heading" ng-click="toggleDatepicker()"></h2>
+            <div ng-if="isFeatureActive('focus')">
+
+              <div ng-hide="datepickerVisible" class="group-mixed heading">
+                <div class="group-mixed--middle" ng-click="toggleDatepicker(daySlides[0].info)">
+                  <h2 ng-bind="daySlides[0].heading"></h2>
+                </div>
+                <div class="group-mixed--right" task-list-completed></div>
               </div>
-              <div class="group-mixed--right" task-list-completed></div>
+
+              <div class="animate-list-item-leave"
+              ng-repeat="task in leftDuplicateTasks = (getList() | paramFilter:isListItemVisible:daySlides[0].pastDate)
+              | limitTo: currentListLimitTo"
+              list-item="leftDuplicateTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
+
+              <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
+              ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
             </div>
-
-            <div class="animate-list-item-leave"
-            ng-repeat="task in leftDuplicateTasks = (getList() | paramFilter:isListItemVisible:daySlides[0].pastDate)
-            | limitTo: currentListLimitTo"
-            list-item="leftDuplicateTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
-
-            <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
-            ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
           </div>
         </div>
 

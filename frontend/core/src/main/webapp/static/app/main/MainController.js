@@ -503,16 +503,16 @@ function MainController(
 
   // UI FUNCTIONS
 
-  var hideToolbar = false;
-  $scope.isToolbarHidden = function(){
-    return hideToolbar;
+  $scope.customToolbar = undefined;
+  $scope.isCustomToolbar = function(){
+    return $scope.customToolbar;
   }
 
-  $scope.hideToolbar = function(){
-    hideToolbar = true;
+  $scope.swapToCustomToolbar = function(toolbar){
+    $scope.customToolbar = toolbar;
   }
-  $scope.showToolbar = function(){
-    hideToolbar = false;
+  $scope.resetToDefaultToolbar = function(){
+    $scope.customToolbar = undefined;
   }
 
   // INJECT OTHER CONTENT CONTROLLERS HERE

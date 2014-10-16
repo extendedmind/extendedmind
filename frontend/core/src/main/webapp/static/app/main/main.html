@@ -4,7 +4,7 @@
   <div drawer-aisle class="container-drawer-aisle">
     <div class="container-master animate-container-master" vertical-resize="master">
       <div class="container-fluid" ng-class="getFooterVisibilityClass()">
-        <header ng-hide="isToolbarHidden()" class="container-toolbar" ng-include="'static/app/main/toolbar.html'"></header>
+        <header class="container-toolbar" ng-include="'static/app/main/toolbar.html'"></header>
         <div ng-if="isFeatureLoaded('user')" ng-include="'static/app/user/userSlides.html'" include-replace></div>
         <div ng-if="isFeatureLoaded('focus')" ng-include="'static/app/focus/focusSlides.html'" include-replace></div>
         <div ng-if="isFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>

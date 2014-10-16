@@ -1,9 +1,20 @@
-<div class="container-toolbar--inner swiper-no-swiping group-symmetrical large" ng-controller="ToolbarController">
-  <button class="group-symmetrical--left btn" type="button" ng-click="toggleMenu()" alt="menu">
-    <span class="text-menu"></span>
-  </button>
-  <a href class="group-symmetrical--middle" ng-click="switchFeature()" ng-bind="getCurrentHeading()"></a>
-  <button class="group-symmetrical--right btn" ng-click="openEditor('omnibar')">
-    <span class="text-logo"></span>
-  </button>
+<div class="container-toolbar--inner">
+  <div ng-hide="isCustomToolbar()" class="swiper-no-swiping group-symmetrical large" ng-controller="ToolbarController">
+    <button class="group-symmetrical--left btn" type="button" ng-click="toggleMenu()" alt="menu">
+      <span class="text-menu"></span>
+    </button>
+    <a href class="group-symmetrical--middle" ng-click="switchFeature()" ng-bind="getCurrentHeading()"></a>
+    <button class="group-symmetrical--right btn" ng-click="openEditor('omnibar')">
+      <span class="text-logo"></span>
+    </button>
+  </div>
+  <div ng-show="isCustomToolbar()" class="group-symmetrical large">
+    <a href class="group-symmetrical--left link-navigation highlighted" ng-click="customToolbar.leftActionFn()">
+      <span ng-bind="customToolbar.leftActionName"></span>
+    </a>
+    <div class="group-symmetrical--middle" ng-bind="customToolbar.middleActionName" ng-click="customToolbar.middleActionFn()"></div>
+    <a href class="group-symmetrical--right link-navigation highlighted" ng-click="customToolbar.rightActionFn()">
+      <span ng-bind="customToolbar.rightActionName"></span>
+    </a>
+  </div>
 </div>
