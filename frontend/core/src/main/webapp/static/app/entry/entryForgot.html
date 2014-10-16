@@ -5,11 +5,13 @@
         <span class="text-navigation-back downplayed">back</span>
       </a>
     </header>
-    <h2>forgot password?</h2>
-    <input class="row" type="email" name="email" ng-model="user.email"
-    placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
-    editable-field-register-callbacks="registerEntryForgotEmailInputCallbacks(focus, blur)" required />
-    <div class="group-error row">
+    <h2 class="group-heading row-form">forgot password?</h2>
+    <div class="row-form">
+      <input type="email" name="email" ng-model="user.email"
+      placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
+      editable-field-register-callbacks="registerEntryForgotEmailInputCallbacks(focus, blur)" required />
+    </div>
+    <div class="group-error row-form">
       <div ng-if="forgotForm.email.$touched" ng-messages="forgotForm.email.$error">
         <span class="text-error" ng-message="email">invalid email address</span>
       </div>

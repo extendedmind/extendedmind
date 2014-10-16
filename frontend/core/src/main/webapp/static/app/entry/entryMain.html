@@ -6,20 +6,24 @@
         <span class="text-navigation-back">back</span>
       </a>
     </header>
-    <h2 class="group-heading row">sign up</h2>
-    <input class="row" type="email" name="email" ng-model="user.username"
-    placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
-    editable-field-register-callbacks="registerEntryMainEmailInputCallbacks(focus, blur)" required />
-    <input class="row" type="password" name="password" id="password" ng-model="user.password"
-    ng-minlength="7" placeholder="enter password&#8230;" editable-field="getEditableFieldSticky()"
-    editable-field-register-callbacks="registerEntryMainPasswordInputCallbacks(focus, blur)" required />
+    <h2 class="group-heading row-form">sign up</h2>
+    <div class="row-form">
+      <input type="email" name="email" ng-model="user.username"
+      placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
+      editable-field-register-callbacks="registerEntryMainEmailInputCallbacks(focus, blur)" required />
+    </div>
+    <div class="row-form">
+      <input type="password" name="password" id="password" ng-model="user.password"
+      ng-minlength="7" placeholder="enter password&#8230;" editable-field="getEditableFieldSticky()"
+      editable-field-register-callbacks="registerEntryMainPasswordInputCallbacks(focus, blur)" required />
+    </div>
     <div class="group-mixed">
       <div class="group-mixed--left">
         <input type="checkbox" ng-model="user.agree" ng-true-value="true" icon-checkbox="signupFormAgree" />
       </div>
       <div class="group-mixed--middle text-details">i have read and agree to the <a href ng-click="gotoTermsOfService()">terms of service</a> and <a href ng-click="gotoPrivacyPolicy()">privacy policy</a></div>
     </div>
-    <div class="group-error row">
+    <div class="group-error row-form">
       <div ng-if="signupForm.email.$touched" ng-messages="signupForm.email.$error">
         <span class="text-error" ng-message="email">invalid email address</span>
       </div>
@@ -48,19 +52,23 @@
         <span class="text-navigation-forward">forgot?</span>
       </a>
     </header>
-    <h2 class="group-heading row">log in</h2>
-    <input class="row" type="email" name="email" ng-model="user.username"
-    placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
-    editable-field-register-callbacks="registerEntryMainEmailInputCallbacks(focus, blur)" required />
-    <input class="row" type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password&#8230;" editable-field="getEditableFieldSticky()"
-    editable-field-register-callbacks="registerEntryMainPasswordInputCallbacks(focus, blur)" required />
-    <div ng-if="!rememberByDefault()"class="group-mixed">
+    <h2 class="group-heading row-form">log in</h2>
+    <div class="row-form">
+      <input type="email" name="email" ng-model="user.username"
+      placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
+      editable-field-register-callbacks="registerEntryMainEmailInputCallbacks(focus, blur)" required />
+    </div>
+    <div class="row-form">
+      <input type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password&#8230;" editable-field="getEditableFieldSticky()"
+      editable-field-register-callbacks="registerEntryMainPasswordInputCallbacks(focus, blur)" required />
+    </div>
+    <div ng-if="!rememberByDefault()" class="group-mixed">
       <div class="group-mixed--left">
         <input type="checkbox" ng-model="user.remember" ng-true-value="true" icon-checkbox="loginFormRemember" />
       </div>
       <span class="group-mixed--middle">remember</span>
     </div>
-    <div class="group-error row">
+    <div class="group-error row-form">
       <div ng-if="loginForm.email.$touched" ng-messages="loginForm.email.$error">
         <span class="text-error" ng-message="email">invalid email address</span>
       </div>

@@ -265,6 +265,11 @@ margin.
   padding-right: @grid-horizontal;
 }
 
+.row-form {
+  .row;
+  line-height: @grid-vertical;
+}
+
 /*
 Class `.group-btn` groups automatically button elements horizontally. Works for 1 and 2 buttons.
 
@@ -461,11 +466,18 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 1. Increase line-height for heading.
 // 2. Center vertically. We are using .group-mixed--middle and .group-mixed--right in .group-mixed heading
 //    or just .group-heading.
-.group-heading,
 .group-mixed.heading > .group-mixed--middle,
 .group-mixed.heading > .group-mixed--right {
   line-height: @height-heading; // [1]
   vertical-align: middle;       // [2]
+}
+
+// Heading is long, multiple lines need smaller spacing, so the method above does not work
+// 1. Match 88 pixels with this, to make this be the same as the above for consistent look and feel
+.group-heading {
+  padding-top: @grid-vertical-half + 3px; // [1]
+  line-height: @grid-vertical;
+  padding-bottom: @grid-vertical-half + 3px; // [1]
 }
 
 /*
