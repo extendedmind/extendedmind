@@ -356,6 +356,7 @@
   }
 
   function clearDatepickerSlidesInfos() {
+    setDayActive(undefined);  // Clear active day.
     for (var i = 0, len = $scope.datepickerWeeks.length; i < len; i++) {
       for (var j = 0, jLen = $scope.datepickerWeeks[i].length; j < jLen; j++) {
         // FIXME: use displayDate instead of displayDateShort when display format is decided!
@@ -392,6 +393,13 @@
     return DateService.setOffsetDate(daysOffset, oldActiveDate).getYYYYMMDD(oldActiveDate);
   }
 
+
+  // UI
+
+  $scope.getNewDayTask = function(daySlidesIndex){
+    return {transientProperties: {date: $scope.daySlides[daySlidesIndex].info, completed: false}};
+  };
+
   /*
   * Construct a heading for day slide.
   *
@@ -408,18 +416,38 @@
       return $filter('date')(day, 'EEE d MMM').toLowerCase(); // e.g. fri 10 oct
   }
 
-  $scope.getNewDayTask = function(daySlidesIndex){
-    return {transientProperties: {date: $scope.daySlides[daySlidesIndex].info, completed: false}};
+  var activeDateYYYYMMDD;
+  $scope.isDayActive = function(dateYYYYMMDD) {
+    return activeDateYYYYMMDD === dateYYYYMMDD;
   };
+
+  function getActiveDay() {
+    return activeDateYYYYMMDD;
+  }
+
+  function setDayActive(dateYYYYMMDD) {
+    if (dateYYYYMMDD === null) {
+      // 'no date'. Set today active.
+      dateYYYYMMDD = DateService.getTodayYYYYMMDD();
+    }
+    activeDateYYYYMMDD = dateYYYYMMDD;
+  }
+
+  function datepickerHeading() {
+    var activeDateYYYYMMDD = getActiveDay();
+    return $filter('date')(activeDateYYYYMMDD, 'MMMM yyyy').toLowerCase();
+  }
 
   $scope.toggleDatepicker = function(startingDateYYYYMMDD) {
     if (!$scope.datepickerVisible) {
       initializeDatepickerWeeks(startingDateYYYYMMDD);
+      setDayActive(startingDateYYYYMMDD);
       $scope.datepickerVisible = true;
+
       $scope.swapToCustomToolbar({
         leftActionName: 'today',
         leftActionFn: gotoToday,
-        middleActionName: 'month',
+        getMiddleActionName: datepickerHeading,
         middleActionFn: $scope.toggleDatepicker,  // FIXME: DEBUG
         rightActionName: 'no date',
         rightActionFn: gotoNoDate
@@ -449,6 +477,7 @@
   */
   $scope.changeDaySlide = function(newDateYYYYMMDD, calculateWeekOffset) {
     if (preventDaySlideClicking) return;
+    setDayActive(newDateYYYYMMDD);
 
     // Get reference date from active slide.
     var activeSlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
