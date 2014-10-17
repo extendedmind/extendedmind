@@ -101,7 +101,7 @@ function SwiperService($q, $timeout) {
 
   var getSwiperParameters = function(swiperPath, swiperType, swiperSlidesPaths,
                                      onSlideChangeStartCallback, onSlideResetCallback,
-                                     onSlideChangeEndCallback, loop) {
+                                     onSlideChangeEndCallback, loop, queueStartCallbacks) {
 
     var leftEdgeTouchRatio = (overrideSwiperParams[swiperPath] ?
                               overrideSwiperParams[swiperPath].leftEdgeTouchRatio : undefined);
@@ -116,7 +116,7 @@ function SwiperService($q, $timeout) {
       loop: loop ? true : false,
       loopDuplicateSlidesIncluded: loop ? true : false,
       cssWidthAndHeight: 'height',
-      queueStartCallbacks: loop ? false : true,
+      queueStartCallbacks: queueStartCallbacks,
       queueEndCallbacks: true,
       simulateTouch: simulateTouch,
       leftEdgeTouchRatio: leftEdgeTouchRatio,
@@ -173,13 +173,13 @@ function SwiperService($q, $timeout) {
   return {
     initializeSwiper: function(containerElement, swiperPath, swiperType, swiperSlidesPaths,
                                onSlideChangeStartCallback, onSlideResetCallback, onSlideChangeEndCallback,
-                               loop) {
+                               loop, queueStartCallbacks) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         delete swipers[swiperPath].swiper;
       }
       var params = getSwiperParameters(swiperPath, swiperType, swiperSlidesPaths,
                                        onSlideChangeStartCallback, onSlideResetCallback,
-                                       onSlideChangeEndCallback, loop);
+                                       onSlideChangeEndCallback, loop, queueStartCallbacks);
       var swiper = new Swiper(containerElement, params);
 
       swipers[swiperPath] = {
@@ -272,13 +272,13 @@ function SwiperService($q, $timeout) {
     },
     onSlideChangeStart: function(scope, swiperPath, direction) {
       var activeIndex = swipers[swiperPath].swiper.params.loop ? swipers[swiperPath].swiper.activeLoopIndex :
-        swipers[swiperPath].swiper.activeIndex;
+      swipers[swiperPath].swiper.activeIndex;
 
       executeSlideChangeStartCallbacks(swiperPath, activeIndex, direction);
     },
     onSlideChangeEnd: function(scope, swiperPath, direction) {
       var activeIndex = swipers[swiperPath].swiper.params.loop ?
-        swipers[swiperPath].swiper.activeLoopIndex : swipers[swiperPath].swiper.activeIndex;
+      swipers[swiperPath].swiper.activeLoopIndex : swipers[swiperPath].swiper.activeIndex;
       var activeSlide = swipers[swiperPath].swiper.getSlide(swipers[swiperPath].swiper.activeIndex);
       var path = activeSlide.getData('path');
       executeSlideChangeCallbacks(swiperPath, path, activeIndex, direction);

@@ -246,21 +246,32 @@
             },
             drag: {
                 listen: function() {
-                    cache.translation = 0;
-                    cache.easing = false;
-
                     // FORK
                     if (!settings.overrideListeningElement) {
+                    cache.translation = 0;
+                    cache.easing = false;
                         utils.events.addEvent(settings.element, utils.eventType('down'), action.drag.startDrag);
                         utils.events.addEvent(settings.element, utils.eventType('move'), action.drag.dragging);
                         utils.events.addEvent(settings.element, utils.eventType('up'), action.drag.endDrag);
+                    } else if (settings.overrideElement) {
+                        utils.events.addEvent(settings.overrideElement, utils.eventType('down'), action.drag.startDrag);
+                        utils.events.addEvent(settings.overrideElement, utils.eventType('move'), action.drag.dragging);
+                        utils.events.addEvent(settings.overrideElement, utils.eventType('up'), action.drag.endDrag);
                     }
                     // FORK
                 },
                 stopListening: function() {
-                    utils.events.removeEvent(settings.element, utils.eventType('down'), action.drag.startDrag);
-                    utils.events.removeEvent(settings.element, utils.eventType('move'), action.drag.dragging);
-                    utils.events.removeEvent(settings.element, utils.eventType('up'), action.drag.endDrag);
+                    // FORK
+                    if (!settings.overrideListeningElement) {
+                        utils.events.removeEvent(settings.element, utils.eventType('down'), action.drag.startDrag);
+                        utils.events.removeEvent(settings.element, utils.eventType('move'), action.drag.dragging);
+                        utils.events.removeEvent(settings.element, utils.eventType('up'), action.drag.endDrag);
+                    } else if (settings.overrideElement) {
+                        utils.events.removeEvent(settings.overrideElement, utils.eventType('down'), action.drag.startDrag);
+                        utils.events.removeEvent(settings.overrideElement, utils.eventType('move'), action.drag.dragging);
+                        utils.events.removeEvent(settings.overrideElement, utils.eventType('up'), action.drag.endDrag);
+                    }
+                    // FORK
                 },
                 startDrag: function(e) {
                     // No drag on ignored elements
@@ -560,13 +571,7 @@
 
         // FORK
         this.addOverrideListeningElementEvents = function() {
-            utils.events.removeEvent(settings.overrideElement, utils.eventType('down'), action.drag.startDrag);
-            utils.events.removeEvent(settings.overrideElement, utils.eventType('move'), action.drag.dragging);
-            utils.events.removeEvent(settings.overrideElement, utils.eventType('up'), action.drag.endDrag);
-
-            utils.events.addEvent(settings.overrideElement, utils.eventType('down'), action.drag.startDrag);
-            utils.events.addEvent(settings.overrideElement, utils.eventType('move'), action.drag.dragging);
-            utils.events.addEvent(settings.overrideElement, utils.eventType('up'), action.drag.endDrag);
+            action.drag.listen();
         }
         // FORK
 

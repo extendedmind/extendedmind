@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function swiperContainerDirective($rootScope, $window, DetectBrowserService, SwiperService) {
+ function swiperContainerDirective($rootScope, $window, DetectBrowserService, DrawerService, SwiperService) {
 
   return {
     restrict: 'A',
@@ -23,7 +23,8 @@
       swiperPath: '@swiperContainer',
       swiperType: '@swiperType',
       expectedSlidesFn: '&expectedSlides',
-      slideChangedCallbackFn: '&swiperContainerSlideChanged',
+      toggleDrawerSlidingEvents: '@swiperContainerToggleDrawerSlidingEvents',
+      slideChangedCallbackFn: '&swiperContainerSlideChanged'
     },
     controller: function($scope, $element, $attrs) {
       var swiperSlideInfos = [];
@@ -86,14 +87,23 @@
           $scope.expectedSlides = $scope.expectedSlidesFn();
           var slides = sortAndFlattenSlideInfos();
           if (!initializeSwiperCalled) {
+            var queueStartCallbacks = true; // Queue slide change start callbacks.
             var slideChangeStartCallback, slideResetCallback;
-            if ($scope.loop) {
-              slideChangeStartCallback = onSlideChangeStartCallback;
-              slideResetCallback = onSlideResetCallback;
+
+            if ($scope.toggleDrawerSlidingEvents) {
+              queueStartCallbacks = false;
+              slideResetCallback = swiperSlideChangeReset;  // Add custom callback.
             }
+
+            if ($scope.loop) {
+              queueStartCallbacks = false;
+              slideChangeStartCallback = onSlideChangeStartCallback;  // Add custom callback.
+              slideResetCallback = onSlideResetCallback;              // Add custom callback.
+            }
+
             SwiperService.initializeSwiper($element[0], $scope.swiperPath, $scope.swiperType, slides,
                                            slideChangeStartCallback, slideResetCallback,
-                                           onSlideChangeEndCallback, $scope.loop);
+                                           onSlideChangeEndCallback, $scope.loop, queueStartCallbacks);
             initializeSwiperCalled = true;
 
             if ($attrs.swiperContainerSlideChanged) {
@@ -102,6 +112,12 @@
               };
               SwiperService.registerSlideChangeCallback(slideChangedCallback, $scope.swiperPath,
                                                         'swiperContainer');
+            }
+
+            if ($scope.toggleDrawerSlidingEvents) {
+              // Add custom callback.
+              SwiperService.registerSlideChangeCallback(swiperSlideChangeEnd, $scope.swiperPath,
+                                                        'swiperContainer' + $scope.swiperPath);
             }
 
             if ($scope.swiperType === 'main'){
@@ -176,41 +192,68 @@
         }
       };
 
-      function onSlideResetCallback() {
-        SwiperService.onSlideReset($scope, $scope.swiperPath);
-      }
-
-      function onSlideChangeStartCallback(swiper, direction) {
-        SwiperService.onSlideChangeStart($scope, $scope.swiperPath, direction);
-      }
-
-      function onSlideChangeEndCallback(swiper, direction) {
-        SwiperService.onSlideChangeEnd($scope, $scope.swiperPath, direction);
-      }
-
-      var swipeUp = false;
-      var swipeDown = false;
-      var swipeLeft = false;
-      var swipeRight = false;
-      var swipeStartX, swipeStartY, swipeDistanceX, swipeDistanceY;
-      var swipeRestraintX = 1;
-      var swipeRestraintY = 1;
-
-      function mainSwiperTouchStart(event) {
-        if (event.type === 'touchstart') {
-          swipeStartX = event.targetTouches[0].pageX;
-          swipeStartY = event.targetTouches[0].pageY;
-        } else {
-          swipeStartX = event.pageX;
-          swipeStartY = event.pageY;
+      var drawerDisabled; // FIXME: use isDraggable from DrawerService
+      function disableDrawer() {
+        if (!drawerDisabled && $scope.toggleDrawerSlidingEvents) {
+          drawerDisabled = true;
+          // FIXME: Remove DrawerService dependency and use drawerAisleController.
+          DrawerService.disableDragging('right');
         }
-
-        $rootScope.outerSwiping = false;
-        swipeLeft = false;
-        swipeRight = false;
-        swipeDown = false;
-        swipeUp = false;
       }
+      function enableDrawer() {
+        if (drawerDisabled && $scope.toggleDrawerSlidingEvents) {
+          if (SwiperService.getActiveSlideIndex($scope.swiperPath) === 0) {
+            // FIXME: Listen touch events only on first slide(?)
+            drawerDisabled = false;
+          // FIXME: Remove DrawerService dependency and use drawerAisleController.
+          DrawerService.enableDragging('right');
+        }
+      }
+    }
+
+    function swiperSlideChangeReset(path, index) {
+      if (index === 0) enableDrawer();
+    }
+    function swiperSlideChangeEnd(path, index) {
+      if (index === 0) enableDrawer();
+      else disableDrawer();
+    }
+
+    function onSlideResetCallback() {
+      SwiperService.onSlideReset($scope, $scope.swiperPath);
+    }
+
+    function onSlideChangeStartCallback(swiper, direction) {
+      SwiperService.onSlideChangeStart($scope, $scope.swiperPath, direction);
+    }
+
+    function onSlideChangeEndCallback(swiper, direction) {
+      SwiperService.onSlideChangeEnd($scope, $scope.swiperPath, direction);
+    }
+
+    var swipeUp = false;
+    var swipeDown = false;
+    var swipeLeft = false;
+    var swipeRight = false;
+    var swipeStartX, swipeStartY, swipeDistanceX, swipeDistanceY;
+    var swipeRestraintX = 1;
+    var swipeRestraintY = 1;
+
+    function mainSwiperTouchStart(event) {
+      if (event.type === 'touchstart') {
+        swipeStartX = event.targetTouches[0].pageX;
+        swipeStartY = event.targetTouches[0].pageY;
+      } else {
+        swipeStartX = event.pageX;
+        swipeStartY = event.pageY;
+      }
+
+      $rootScope.outerSwiping = false;
+      swipeLeft = false;
+      swipeRight = false;
+      swipeDown = false;
+      swipeUp = false;
+    }
 
       // Main swiper swiping detection.
       function mainSwiperTouchMove(event) {
@@ -240,9 +283,11 @@
         if (Math.abs(swipeDistanceX) >= swipeRestraintX &&
             Math.abs(swipeDistanceY) <= swipeRestraintX) { // horizontal
           if (swipeDistanceX < 0) {
+            disableDrawer();  // FIXME: Listen touch events only on first slide(?)
             swipeLeft = true;
             swipeRight = false;
           } else {
+            enableDrawer();   // FIXME: Listen touch events only on first slide(?)
             swipeLeft = false;
             swipeRight = true;
           }
@@ -258,10 +303,16 @@
         }
 
         if (event.type === 'touchmove') {
-          swipeStartX = event.targetTouches[0].pageX;
+          // swipeStartX = event.targetTouches[0].pageX;
+          // FIXME: Uncommented so that initial swipeStartX is preserved.
+
+          // TODO: Evaluate need to do this here touchstart event.
           swipeStartY = event.targetTouches[0].pageY;
         } else {
-          swipeStartX = event.pageX;
+          // swipeStartX = event.pageX;
+          // FIXME: Uncommented so that initial swipeStartX is preserved.
+
+          // TODO: Evaluate need to do this here touchstart event.
           swipeStartY = event.pageY;
         }
       }
@@ -455,8 +506,8 @@
           }
         }
       });
-},
-link: function (scope, element, attrs, drawerAisleController){
+    },
+    link: function (scope, element, attrs, drawerAisleController){
 
       // Hide previous and/or next slide with this for the duration of a resize animation
       // to prevent flickering.
@@ -585,5 +636,6 @@ link: function (scope, element, attrs, drawerAisleController){
     }
   };
 }
-swiperContainerDirective['$inject'] = ['$rootScope', '$window', 'DetectBrowserService', 'SwiperService'];
+swiperContainerDirective['$inject'] = ['$rootScope', '$window', 'DetectBrowserService', 'DrawerService',
+                                       'SwiperService'];
 angular.module('em.base').directive('swiperContainer', swiperContainerDirective);
