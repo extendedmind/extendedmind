@@ -1,0 +1,60 @@
+<div class="container-fluid" ng-controller="ListEditorController">
+  <header class="container-titlebar">
+    <div class="container-titlebar--inner">
+      <div class="group-symmetrical height-large">
+        <a href class="group-symmetrical--left link-navigation highlighted">
+          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endListEdit()" ng-bind="titlebarHasText() ? 'save' : 'back'"></span>
+        </a>
+        <a href class="group-symmetrical--right" ng-click="deleteListInEdit()" >
+          <span class="text-trash"></span>
+        </a>
+      </div>
+
+      <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
+        <div class="group-mixed--middle">
+          <textarea type="text" ng-model="titlebar.text" ng-keydown="listTitlebarTextKeyDown($event)"
+          editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+          msd-elastic dynamic-placeholder="enter list title&#8230;" maxlength="128" required ></textarea>
+        </div>
+      </form>
+    </div>
+  </header>
+
+  <div class="swiper-container container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" swiper-container="listEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
+        <div class="container-content" drawer-override-aisle="right">
+          <textarea class="row" ng-model="list.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
+        </div>
+        <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
+          <nav role="navigation" class="swiper-no-swiping group-symmetrical">
+            <a href ng-click="clickFavorite()" class="group-symmetrical--left">
+              <span class="text-star"></span>
+            </a>
+            <a href ng-click="swipeToAdvanced()" class="group-symmetrical--right link-navigation">
+              <span class="text-navigation-forward">advanced</span>
+            </a>
+          </nav>
+        </footer>
+      </div>
+
+      <div class="swiper-slide" swiper-slide="listEditor/advanced" slide-index="1">
+        <div class="container-content">
+          <input ng-if="list.link" type="text" ng-model="list.link" placeholder="enter url&#8230;">
+        </div>
+        <footer class="container-content--after"
+        ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
+          <nav role="navigation" class="swiper-no-swiping group-symmetrical">
+            <a href ng-click="swipeToBasic()" class="group-symmetrical--left link-navigation">
+              <span class="text-navigation-back">basic</span>
+            </a>
+            <a href ng-click="archiveListInEdit(list)"
+            class="group-symmetrical--right link-navigation highlighted">
+              <span class="text-navigation">archive</span>
+            </a>
+          </nav>
+        </footer>
+      </div>
+    </div>
+  </div>
+</div>

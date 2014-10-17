@@ -16,7 +16,7 @@
         </div>
         <div class="group-mixed--middle">
           <textarea type="text" ng-model="titlebar.text" ng-keydown="taskTitlebarTextKeyDown($event)" editable-field
-          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="add task&#8230;" maxlength="128" required ></textarea>
+          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="enter task title&#8230;" maxlength="128" required ></textarea>
         </div>
       </form>
     </div>
@@ -35,7 +35,9 @@
             </div>
           </div>
 
-          <div lists-select-options>
+          <!--
+          TODO: lists-picker
+          div lists-select-options>
             <select ng-if="!addNewListVisible" class="select-list-visible-animation row" ng-model="task.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions">
               <option value="">select list&#8230;</option>
             </select>
@@ -47,7 +49,7 @@
                 <a href class="group-mixed--right font-smallest add-new-list-item-cancel" ng-click="setAddNewListHidden()">cancel</a>
               </div>
             </div>
-          </div>
+          </div-->
           <textarea class="row" ng-model="task.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
 
         </div>

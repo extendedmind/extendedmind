@@ -160,7 +160,7 @@
       initializeArrays(ownerUUID);
       // Check if list has already been deleted
       if (this.getListStatus(list, ownerUUID) === 'deleted') return;
-      BackendClientService.deleteOnline('/api/' + ownerUUID + '/list/' + list.uuid, this.deleteListRegex)
+      return BackendClientService.deleteOnline('/api/' + ownerUUID + '/list/' + list.uuid, this.deleteListRegex)
       .then(function(result) {
         if (result.data) {
           list.deleted = result.data.deleted;

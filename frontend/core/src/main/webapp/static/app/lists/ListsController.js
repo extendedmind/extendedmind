@@ -14,7 +14,8 @@
  */
  'use strict';
 
- function ListsController($q, $rootScope, $scope, AnalyticsService, ListsService, UISessionService, UserSessionService) {
+ function ListsController($q, $rootScope, $scope, AnalyticsService, ListsService,
+                          UISessionService, UserService, UserSessionService) {
 
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
     if (name === 'list') {
@@ -34,8 +35,11 @@
   $scope.favoriteList = function(list) {
     var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
     if (!favoriteListUuids) favoriteListUuids = [];
-    favoriteListUuids.push(list.uuid);
-    updateFavoriteLists(favoriteListUuids);
+    if (favoriteListUuids.indexOf(list.uuid) === -1){
+      favoriteListUuids.push(list.uuid);
+      //console.log(favoriteListUuids)
+      updateFavoriteLists(favoriteListUuids);
+    }
   };
 
   $scope.unfavoriteList = function(list) {
@@ -72,7 +76,7 @@
   $scope.saveAndArchiveList = function(list){
     var saveListDeferred = $scope.saveList(list);
     if (saveListDeferred){
-      saveListDeferred.then(function(savedList){
+      return saveListDeferred.then(function(savedList){
         $scope.archiveList(savedList);
       });
     }
@@ -80,27 +84,18 @@
 
   $scope.archiveList = function(list) {
     AnalyticsService.do('archiveList');
-    ListsService.archiveList(list, UISessionService.getActiveUUID());
+    return ListsService.archiveList(list, UISessionService.getActiveUUID());
   };
 
   $scope.deleteList = function(list) {
     AnalyticsService.do('deleteList');
-    ListsService.deleteList(list, UISessionService.getActiveUUID());
+    return ListsService.deleteList(list, UISessionService.getActiveUUID());
   };
 
   // Navigation
 
-  $scope.archiveListAndMoveToLists = function archiveListAndMoveToLists(list) {
-    $scope.archiveList(list);
-    $scope.changeFeature('lists');
-  };
 
-  $scope.deleteListAndMoveToLists = function deleteListAndMoveToLists(list) {
-    $scope.deleteList(list);
-    $scope.changeFeature('lists');
-  };
-
-  $scope.saveListAndMoveToLists = function saveListAndMoveToLists(list) {
+  $scope.saveListAndMoveToLists = function(list) {
     $scope.editListFields(list);
     $scope.changeFeature('lists');
   };

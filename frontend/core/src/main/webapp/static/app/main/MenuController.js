@@ -40,7 +40,7 @@
 
   $scope.gotoFeature = function (feature, data) {
     $scope.changeFeature(feature,data);
-    if ($rootScope.columns === 1) $scope.toggleMenu();
+    if ($rootScope.columns === 1) $scope.closeMenu();
   };
 
   // LISTS

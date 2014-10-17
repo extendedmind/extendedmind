@@ -29,6 +29,8 @@
       $rootScope.MAX_HEIGHT = 769;
       $rootScope.MENU_WIDTH = 260;
       $rootScope.EDITOR_FOOTER_HEIGHT = 44;
+      $rootScope.TOOLBAR_BUTTON_WIDTH = 80;
+      $rootScope.TOOLBAR_HEADING_MAX_WIDTH = 350;
 
       // ANIMATION
       $rootScope.KEYBOARD_ANIMATION_TIME = 300;

@@ -407,7 +407,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 
 .group-mixed--left, .group-mixed--middle, .group-mixed--right {
   display: table-cell;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 // 1. Force all child elements not to increase .group-mixed height
@@ -509,7 +509,7 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 
 @max-width-group-symmetrical-middle: 70px;
 
-.group-symmetrical--left, .group-symmetrical--middle, .group-symmetrical--right {
+.group-symmetrical--left, .group-symmetrical--right {
   display:table-cell;
   vertical-align: middle;
 }
@@ -526,11 +526,28 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   float: left;
   padding-left: @grid-horizontal;
 }
+
+// 1. Vertically and horizontally align the content of the middle element.
+// Works with <a><span></span></a> structure. Unfortunately a <button> element does not work here
+// because that buttons don't work with display:table*. Bootstrap has a similar solution:
+// http://getbootstrap.com/components/#input-groups-buttons
 .group-symmetrical--middle {
   position: absolute;
   .center-horizontally-absolute;
-  text-align: center;
   max-width: @max-width-group-symmetrical-middle;
+  height: inherit;
+
+  & > a{                        // [1]
+    display: table;
+    width: 100%;
+    height: inherit;
+    & > span{                   // [1]
+      text-align: center;
+      height: inherit;
+      display: table-cell;
+      vertical-align: middle;
+    }
+  }
 }
 
 // 1. Inherit varying container height.

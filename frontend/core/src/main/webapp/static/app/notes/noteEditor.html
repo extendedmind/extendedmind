@@ -13,8 +13,9 @@
 
       <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--middle">
-          <textarea type="text" ng-model="titlebar.text" ng-keydown="noteTitlebarTextKeyDown($event)" editable-field
-          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="add note&#8230;" maxlength="128" required ></textarea>
+          <textarea type="text" ng-model="titlebar.text" ng-keydown="noteTitlebarTextKeyDown($event)"
+          editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+          msd-elastic dynamic-placeholder="enter note title&#8230;" maxlength="128" required ></textarea>
         </div>
       </form>
     </div>
@@ -24,10 +25,8 @@
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
         <div class="container-content" drawer-override-aisle="right">
-          <div lists-select-options>
-            <select ng-if="!addNewListVisible" class="select-list-visible-animation row" ng-model="note.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions">
-              <option value="">select list&#8230;</option>
-            </select>
+          <!-- TODO: List picker!
+          div lists-select-options>
             <div ng-if="addNewListVisible" class="group-mixed select-list-visible-animation">
               <div class="group-mixed--middle">
                 <input type="text" ng-model="newList.title" placeholder="add list&#8230;"/>
@@ -36,7 +35,7 @@
                 <a href class="group-mixed--right font-smallest add-new-list-item-cancel" ng-click="setAddNewListHidden()">cancel</a>
               </div>
             </div>
-          </div>
+          </div-->
           <textarea class="row" ng-model="note.transientProperties.content" msd-elastic placeholder="enter content&#8230;" ></textarea>
         </div>
         <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">

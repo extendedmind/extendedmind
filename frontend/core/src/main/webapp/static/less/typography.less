@@ -107,10 +107,10 @@ Use `.text-details` to separate details from body text.
 }
 
 .text-heading-primary {
-  font-size: @size-font-small;
+  line-height: @grid-vertical-half;
+  font-size: @size-font-topheading;
   .set-font-bold();
 }
-
 
 /*
 Navigation texts
@@ -196,9 +196,25 @@ Icon texts
 }
 
 .text-trash {
- &:after {
+  &:after {
     .set-icon-font;
     color: @color-text;
     content: @icon-trash;
   }
+}
+
+.text-star {
+  &:after {
+    .set-icon-font;
+    color: @color-text;
+    content: @icon-star;
+    line-height: @grid-vertical;
+    font-size: @size-icon-star;
+  }
+}
+.text-star.inverse:after{
+  color: @color-text-inverse;
+}
+.text-star.small:after{
+  font-size: @size-icon-star-small;
 }

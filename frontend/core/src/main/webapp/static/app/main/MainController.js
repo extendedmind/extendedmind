@@ -147,8 +147,18 @@ function MainController(
     DrawerService.close('right');
   };
 
-  $scope.toggleMenu = function toggleMenu() {
+  $scope.toggleMenu = function() {
     DrawerService.toggle('left');
+  };
+
+  $scope.closeMenu = function() {
+    DrawerService.close('left');
+  };
+
+  $scope.openMenu = function() {
+    if (!$scope.isMenuVisible()){
+      DrawerService.open('left');
+    }
   };
 
   $scope.isEditorVisible = function isEditorVisible() {
@@ -162,22 +172,21 @@ function MainController(
   // FEATURE CHANGING
 
   var featurePendingOpen;
-  $scope.changeFeature = function(feature, data, initial){
-
+  $scope.changeFeature = function(feature, data, toggleMenu, pending){
     var currentFeature = UISessionService.getCurrentFeatureName();
     var currentData = UISessionService.getFeatureData();
 
     if (!(currentFeature === feature && currentData === data)) {
-      if (!$scope.features[feature].loaded) $scope.features[feature].loaded = true;
-
-      if (!$scope.isMenuVisible() && !initial){
+      if (!$scope.isMenuVisible() && toggleMenu){
         // Open only after menu has been opened
         featurePendingOpen = {
           feature: feature,
           data: data
         };
-        $scope.toggleMenu();
-      }else{
+        $scope.openMenu();
+      }else {
+
+        if (!$scope.features[feature].loaded) $scope.features[feature].loaded = true;
 
         // issue a 500ms lock to prevent leave animation to prevent items from fading
         // on list change
@@ -186,17 +195,23 @@ function MainController(
         var state = UISessionService.getFeatureState(feature);
         if (!$scope.$$phase && !$rootScope.$$phase){
           UISessionService.changeFeature(feature, data, state);
-          $scope.$digest();
+          $scope.$digest()
         }else{
           UISessionService.changeFeature(feature, data, state);
         }
-        AnalyticsService.visit(feature);
+        if (toggleMenu && pending){
+          $timeout(function(){
+            $scope.closeMenu()
+          }, 300);
+        }
       }
-      // Run special case focus callbacks because drawer-handle directive does not re-register itself when
-      // feature changes to focus.
-      if (feature === 'focus' && typeof focusActiveCallback === 'function')
-        focusActiveCallback();
+
+      AnalyticsService.visit(feature);
     }
+    // Run special case focus callbacks because drawer-handle directive does not re-register itself when
+    // feature changes to focus.
+    if (feature === 'focus' && typeof focusActiveCallback === 'function')
+      focusActiveCallback();
   };
 
   $scope.isFeatureLoaded = function(feature){
@@ -221,7 +236,7 @@ function MainController(
   };
 
   // Start from tasks
-  $scope.changeFeature('tasks', undefined, true);
+  $scope.changeFeature('tasks');
 
   // ONBOARDING
 
@@ -296,9 +311,8 @@ function MainController(
         var deleted = false;
         while (len--) {
           var favoriteList = $scope.allLists.findFirstObjectByKeyValue('uuid', favoriteListUuids[len]);
-          if (!favoriteList){
+          if (favoriteList){
             $scope.favoriteLists.unshift(favoriteList);
-
           }else{
             // Favorite list is not among all lists, splice it from the array
             favoriteListUuids.splice(len, 1);
@@ -532,7 +546,10 @@ function MainController(
   DrawerService.registerOpenedCallback('left', menuOpened, 'MainController');
   function menuOpened() {
     if (featurePendingOpen){
-      $scope.changeFeature(featurePendingOpen.feature, featurePendingOpen.data);
+      $scope.changeFeature(featurePendingOpen.feature,
+                           featurePendingOpen.data,
+                           true,
+                           true);
       featurePendingOpen = undefined;
     }
   }

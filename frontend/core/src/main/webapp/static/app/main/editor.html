@@ -6,6 +6,9 @@ vertical-resize="editor" vertical-resize-prevent="!isEditorVisible()" ng-switch=
   <div ng-if="editorVisible" ng-switch-when="note" class="container-editor--inner" ng-init="note = getItemInEdit()">
     <div ng-include="'static/app/notes/noteEditor.html'" include-replace></div>
   </div>
+  <div ng-if="editorVisible" ng-switch-when="list" class="container-editor--inner" ng-init="list = getItemInEdit()">
+    <div ng-include="'static/app/lists/listEditor.html'" include-replace></div>
+  </div>
   <div ng-if="editorVisible" ng-switch-when="omnibar" class="container-editor--inner">
     <div ng-include="'static/app/main/omnibarEditor.html'" include-replace></div>
   </div>

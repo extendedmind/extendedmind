@@ -3,9 +3,11 @@
     <span class="text-navigation-back" ng-bind="leftNavigationText"></span>
   </a>
 
-  <a href class="group-symmetrical--middle" ng-click="addItem()">
-    <span class="text-plus"></span>
-  </a>
+  <div class="group-symmetrical--middle">
+    <a href ng-click="addItem()">
+      <span class="text-plus"></span>
+    </a>
+  </div>
 
   <a href ng-if="rightNavigationText" class="group-symmetrical--right link-navigation" ng-click="navigationAction(rightNavigationActionParameter)">
     <span class="text-navigation-forward" ng-bind="rightNavigationText"></span>
