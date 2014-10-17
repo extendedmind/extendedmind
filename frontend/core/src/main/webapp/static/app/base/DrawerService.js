@@ -101,8 +101,8 @@
       if (snappers['right'].drawerElement.style.display !== 'none')
         snappers['right'].drawerElement.style.display = 'none';
 
-      if (snappers['left'].drawerElement.style.display !== 'block')
-        snappers['left'].drawerElement.style.display = 'block';
+      if (snappers['left'].drawerElement.style.display !== 'initial')
+        snappers['left'].drawerElement.style.display = 'initial';
     }
   }
 
@@ -111,8 +111,8 @@
       if (snappers['left'].drawerElement.style.display !== 'none')
         snappers['left'].drawerElement.style.display = 'none';
 
-      if (snappers['right'].drawerElement.style.display !== 'block')
-        snappers['right'].drawerElement.style.display = 'block';
+      if (snappers['right'].drawerElement.style.display !== 'initial')
+        snappers['right'].drawerElement.style.display = 'initial';
     }
   }
 

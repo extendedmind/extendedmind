@@ -30,6 +30,9 @@
       var areaAboutToMoveToNewPositionCallbacks = {};
       var areaAboutToMoveToInitialPositionCallbacks = {};
 
+      var areaAboutToHideCallbacks = {};
+      var areaAboutToShowCallbacks = {};
+
       this.registerDrawerHandleElement = function(handleElement, drawerSide) {
         DrawerService.setHandleElement(drawerSide, handleElement);
       };
@@ -51,6 +54,13 @@
       };
       this.registerAreaAboutToMoveToInitialPosition = function(callback, feature) {
         areaAboutToMoveToInitialPositionCallbacks[feature] = callback;
+      };
+
+      this.registerAreaAboutToHide = function(callback, feature) {
+        areaAboutToHideCallbacks[feature] = callback;
+      };
+      this.registerAreaAboutToShow = function(callback, feature) {
+        areaAboutToShowCallbacks[feature] = callback;
       };
 
       this.registerAreaMovedToNewPosition = function(callback, feature) {
@@ -109,6 +119,10 @@
       DrawerService.registerOpenCallback('left', menuDrawerOpen, 'drawerAisleDirective');
       DrawerService.registerCloseCallback('left', menuDrawerClose, 'drawerAisleDirective');
       setupEditorDrawer();
+      DrawerService.registerHandleReleasedCallback('right', editorDrawerHandleReleased,
+                                                   'drawerAisleDirective');
+      DrawerService.registerOpenCallback('right', editorDrawerOpen, 'drawerAisleDirective');
+      DrawerService.registerCloseCallback('right', editorDrawerClose, 'drawerAisleDirective');
       $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
 
       // MENU DRAWER CALLBACKS
@@ -220,6 +234,38 @@
         else if (drawerDirection === 'opening' && $rootScope.columns === 1) {
           if (areaAboutToMoveToNewPositionCallbacks[activeFeature])
             areaAboutToMoveToNewPositionCallbacks[activeFeature]();
+        }
+      }
+
+      /*
+      * Fires when editor is closed programmatically, i.e. save button pressed.
+      * This is triggered before any animation takes place.
+      */
+      function editorDrawerClose() {
+        var activeFeature = $scope.getActiveFeature();
+        if ($rootScope.columns === 1) {
+          // Editor drawer is closing, enable swiping for underlying swiper.
+          if (areaAboutToShowCallbacks[activeFeature]) areaAboutToShowCallbacks[activeFeature]();
+        }
+      }
+
+      /*
+      * Fires when open is called programmatically, i.e. item is pressed.
+      */
+      function editorDrawerOpen() {
+        var activeFeature = $scope.getActiveFeature();
+        if ($rootScope.columns === 1) {
+          if (areaAboutToHideCallbacks[activeFeature]) areaAboutToHideCallbacks[activeFeature]();
+        }
+      }
+
+      /*
+      * Enable swiping for underlying swiper when drawer handle is released and animation starts.
+      */
+      function editorDrawerHandleReleased(drawerDirection) {
+        var activeFeature = $scope.getActiveFeature();
+        if (drawerDirection === 'closing' && $rootScope.columns === 1) {
+          if (areaAboutToShowCallbacks[activeFeature]) areaAboutToShowCallbacks[activeFeature]();
         }
       }
 

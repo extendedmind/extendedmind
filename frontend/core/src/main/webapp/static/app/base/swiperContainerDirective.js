@@ -526,7 +526,7 @@ link: function (scope, element, attrs, drawerAisleController){
 
       function swiperMovedToNewPosition() {
         // Disable swiping in new position.
-        SwiperService.setOnlyExternal(scope.swiperPath, true);
+        disableSwiping();
 
         // Only in < iOS 8
         // TODO: update cordova and uncomment: https://issues.apache.org/jira/browse/CB-7043
@@ -541,7 +541,7 @@ link: function (scope, element, attrs, drawerAisleController){
 
       function swiperMovedToInitialPosition() {
         // Enable swiping in initial position.
-        SwiperService.setOnlyExternal(scope.swiperPath, false);
+        enableSwiping();
 
         // Only in < iOS 8
         // TODO: update cordova and uncomment: https://issues.apache.org/jira/browse/CB-7043
@@ -552,6 +552,13 @@ link: function (scope, element, attrs, drawerAisleController){
             swiperSlides[activeSlideIndex - 1].classList.toggle('swiper-slide-under-element', false);
           }
         //}
+      }
+
+      function enableSwiping() {
+        SwiperService.setOnlyExternal(scope.swiperPath, false);
+      }
+      function disableSwiping() {
+        SwiperService.setOnlyExternal(scope.swiperPath, true);
       }
 
       if (drawerAisleController){
@@ -571,6 +578,9 @@ link: function (scope, element, attrs, drawerAisleController){
           drawerAisleController.registerAreaMovedToInitialPosition(swiperMovedToInitialPosition,
                                                                    scope.swiperPath);
         }
+        // Register hide and show callbacks to swipers whose ancestor is drawerAisleController.
+        drawerAisleController.registerAreaAboutToHide(disableSwiping, scope.swiperPath);
+        drawerAisleController.registerAreaAboutToShow(enableSwiping, scope.swiperPath);
       }
     }
   };

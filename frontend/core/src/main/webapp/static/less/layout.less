@@ -28,6 +28,17 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   position: relative; // [2]
 }
 
+// 1. Minimize paint when editor is open and .container-master and .container-menu are stacked beneath.
+//    At least absolutely positioned elements inside these classes would repaint and slow down swiping in
+//    editor swiper.
+.editor-visible .container-master,
+.editor-visible .container-master *,
+.editor-visible .container-menu,
+.editor-visible .container-menu * {
+  pointer-events: none; // [1]
+  overflow: hidden;     // [1]
+}
+
 /*
 **************************************************************************
 # LEVEL 2: Optional Intermediate Containers (main, drawer-aisle)
