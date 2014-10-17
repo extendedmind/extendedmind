@@ -192,6 +192,10 @@ function MainController(
         }
         AnalyticsService.visit(feature);
       }
+      // Run special case focus callbacks because drawer-handle directive does not re-register itself when
+      // feature changes to focus.
+      if (feature === 'focus' && typeof focusActiveCallback === 'function')
+        focusActiveCallback();
     }
   };
 
@@ -210,6 +214,11 @@ function MainController(
   $scope.getFeatureMap = function(feature){
     return $scope.features[feature];
   }
+
+  var focusActiveCallback;
+  $scope.registerFocusActivateCallback = function(activateFn) {
+    focusActiveCallback = activateFn;
+  };
 
   // Start from tasks
   $scope.changeFeature('tasks', undefined, true);

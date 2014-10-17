@@ -14,13 +14,29 @@
  */
  'use strict';
 
- function drawerHandleDirective() {
+ function drawerHandleDirective($parse) {
   return {
     restrict: 'A',
     require: '^drawerAisle',
     link: function postLink(scope, element, attrs, drawerController) {
       drawerController.registerDrawerHandleElement(element[0], attrs.drawerHandle);
+
+      if (attrs.drawerHandleRegisterActivate){
+        var registerActivateCallbackFn = $parse(attrs.drawerHandleRegisterActivate);
+        registerActivateCallbackFn(scope, {activate: activate});
+      }
+
+      /*
+      * Register activate drawer handle element callback.
+      *
+      * NOTE: All drawer-handle elements are below ng-if="isFeatureActive(<FEATURE>)" except when <FEATURE>
+      *       is 'focus'. Implement deactivate callback if other <FEATURE>(s) behaves like 'focus'.
+      */
+      function activate() {
+        drawerController.registerDrawerHandleElement(element[0], attrs.drawerHandle);
+      }
     }
   };
 }
+drawerHandleDirective['$inject'] = ['$parse'];
 angular.module('em.base').directive('drawerHandle', drawerHandleDirective);
