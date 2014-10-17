@@ -16,11 +16,14 @@
     </div>
   </header>
 
-  <div class="container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}">
+  <div ng-if="syncState !== 'active'" class="container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}">
     <div class="container-content" drawer-override-aisle="right">
       TODO: SEARCH RESULTS
     </div>
     <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">footer
     </footer>
+  </div>
+  <div ng-if="syncState === 'active'" class="container-fluid--inner">
+    <div class="loading-animation" loading-animation></div>
   </div>
 </div>

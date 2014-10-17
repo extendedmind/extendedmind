@@ -194,12 +194,12 @@
 
   return {
     verifyAndUpdateAuthentication: function() {
-      if (UserSessionService.getLatestModified(UserSessionService.getUserUUID()) !== undefined) {
+      if (UserSessionService.isItemsSynchronized(UserSessionService.getUserUUID())) {
         return verifyAndUpdateAuthentication();
       } else {
-          // When there is no data in-memory, this needs to be done online
-          return verifyAndUpdateAuthentication(true);
-        }
+        // When there is no data in-memory, this needs to be done online
+        return verifyAndUpdateAuthentication(true);
+      }
     },
     login: function(user) {
       var remember = user.remember || false;

@@ -94,6 +94,7 @@
   return {
     restrict: 'A',
     link: function(scope, element) {
+      element.addClass('loading-animation');
       element.Loadingdotdotdot();
     }
   };

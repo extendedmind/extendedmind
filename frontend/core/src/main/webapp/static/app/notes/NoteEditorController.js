@@ -48,7 +48,7 @@
   $scope.noteTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.note);
     // Return
-    if (event.keyCode === 13 && !$rootScope.loading && $scope.titlebarHasText()) {
+    if (event.keyCode === 13 && $scope.titlebarHasText()) {
       // TODO: Move focus to content field on enter!
       //
       event.preventDefault();

@@ -41,10 +41,12 @@
       $scope.closeEditor();
     }
     // Return
-    else if (event.keyCode === 13 && !$rootScope.loading && $scope.titlebarHasText()) {
-      // Enter in editor saves to new item
-      $scope.closeEditor();
-      $scope.saveOmnibarToItem();
+    else if (event.keyCode === 13){
+      if ($rootScope.syncState !== 'active' && $scope.titlebarHasText()) {
+        // Enter in editor saves to new item
+        $scope.closeEditor();
+        $scope.saveOmnibarToItem();
+      }
       event.preventDefault();
       event.stopPropagation();
     }

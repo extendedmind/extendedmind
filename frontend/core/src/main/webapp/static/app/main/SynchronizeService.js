@@ -16,7 +16,8 @@
  /* global angular, jQuery */
  'use strict';
 
- function SynchronizeService($q, $rootScope, BackendClientService, ItemsService, ListsService, NotesService, TagsService, TasksService, UserSessionService) {
+ function SynchronizeService($q, $rootScope, BackendClientService, ItemsService, ListsService,
+                             NotesService, TagsService, TasksService, UserSessionService) {
 
   var itemsRegex = /\/items/;
   var getItemsRegex = new RegExp(BackendClientService.apiPrefixRegex.source +
@@ -120,7 +121,8 @@
       } else {
         // New, there should be an uuid in the response and a fake one in the request
         if (!response.uuid) {
-          $rootScope.$emit('emException', {type: 'response', response: response, description: 'No uuid from server'});
+          $rootScope.$emit('emException',
+                           {type: 'response', response: response, description: 'No uuid from server'});
           return;
         } else {
           oldUuid = request.params.fakeUUID;
@@ -220,13 +222,17 @@
             promiseParam: true
           });
         } else {
-          $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
+          $rootScope.$emit('emException', {type: 'http', status: error.status,
+                           data: error.data, url: error.config.url});
         }
       });
   };
 
   var getAllItemsOnline = function getAllItemsOnline(ownerUUID) {
-    return BackendClientService.getSecondary('/api/' + ownerUUID + '/items', getItemsRegex, undefined, true).then(function(result) {
+    return BackendClientService.getSecondary('/api/' +
+                                             ownerUUID +
+                                             '/items', getItemsRegex,
+                                             undefined, true).then(function(result) {
       if (result.data) {
         var latestTag, latestList, latestTask, latestItem, latestNote;
         // Reset all arrays
@@ -267,7 +273,8 @@
         }, function(error) {
           if (error && error.status === 403) {
             // Got 403, need to go to login
-            $rootScope.$emit('emException', {type: 'http', status: error.status, data: error.data, url: error.config.url});
+            $rootScope.$emit('emException',
+                             {type: 'http', status: error.status, data: error.data, url: error.config.url});
           } else {
             // just resolve, because this command does not need to always succeed
             deferred.resolve(false);
@@ -281,7 +288,10 @@
   };
 
   var getAllArchivedAndCompletedOnline = function getAllArchivedOnline(ownerUUID) {
-    return BackendClientService.getSecondary('/api/' + ownerUUID + '/items?archived=true&completed=true&active=false', getItemsRegex, undefined, true).then(function(result) {
+    return BackendClientService.getSecondary('/api/' +
+                                             ownerUUID +
+                                             '/items?archived=true&completed=true&active=false',
+                                             getItemsRegex, undefined, true).then(function(result) {
       if (result.data) {
         // Update all arrays with archived values
         TagsService.updateTags(result.data.tags, ownerUUID);
@@ -289,7 +299,6 @@
         TasksService.updateTasks(result.data.tasks, ownerUUID);
         NotesService.updateNotes(result.data.notes, ownerUUID);
         ItemsService.updateItems(result.data.items, ownerUUID);
-        UserSessionService.setArchivedSynchronized(ownerUUID);
       }
       return result;
     });
@@ -300,13 +309,9 @@
     synchronize: function(ownerUUID) {
       return synchronize(ownerUUID);
     },
-    synchronizeCompletedAndArchived: function(ownerUUID) {
+    addCompletedAndArchived: function(ownerUUID) {
       var deferred = $q.defer();
-      if (!UserSessionService.getArchivedSynchronized()) {
-        getAllOnline(ownerUUID, getAllArchivedAndCompletedOnline, deferred);
-      } else {
-        deferred.resolve();
-      }
+      getAllOnline(ownerUUID, getAllArchivedAndCompletedOnline, deferred);
       return deferred.promise;
     },
     // Regular expressions for item requests

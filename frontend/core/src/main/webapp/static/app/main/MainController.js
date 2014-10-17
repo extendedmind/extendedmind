@@ -196,7 +196,7 @@ function MainController(
   };
 
   $scope.isFeatureLoaded = function(feature){
-    return $scope.features[feature].loaded;
+    return $rootScope.syncState !== 'active' && $scope.features[feature].loaded;
   };
 
   $scope.getActiveFeature = function getActiveFeature() {
@@ -204,7 +204,7 @@ function MainController(
   };
 
   $scope.isFeatureActive = function isFeatureActive(feature) {
-    return $scope.getActiveFeature() === feature;
+    return $rootScope.syncState !== 'active' && $scope.getActiveFeature() === feature;
   };
 
   $scope.getFeatureMap = function(feature){
@@ -257,25 +257,16 @@ function MainController(
     $scope.keywords = $filter('filter')($scope.tags, {tagType: 'keyword'});
   });
 
-
   function combineListsArrays() {
     if ($scope.archivedLists.length && $scope.lists.length) {
-      $scope.listsSelectOptions = $scope.lists.clone();  // http://davidwalsh.name/javascript-clone-array
-      // Push a fake list as archived list delimiter
-      $scope.listsSelectOptions.push({uuid: UUIDService.generateFakeUUID(), title: '--------', delimiter: true});
-      $scope.listsSelectOptions = $scope.listsSelectOptions.concat($scope.archivedLists);
+      $scope.allLists = $scope.lists.concat($scope.archivedLists);
     } else if ($scope.lists.length && !$scope.archivedLists.length) {
-      $scope.listsSelectOptions = $scope.lists.clone();  // http://davidwalsh.name/javascript-clone-array
+      $scope.allLists = $scope.lists;
     } else if ($scope.archivedLists.length && !$scope.lists.length) {
-      $scope.listsSelectOptions = $scope.archivedLists.clone();
+      $scope.allLists = $scope.archivedLists;
     } else {
-      $scope.listsSelectOptions = [];
+      $scope.allLists = [];
     }
-    $scope.listsSelectOptions.unshift({
-      uuid: UUIDService.generateFakeUUID(),
-      title: 'add list&#8230;',
-      isAddNewItem: true
-    });
   }
 
   $scope.$watch('lists.length', function(/*newValue, oldValue*/) {
@@ -285,7 +276,6 @@ function MainController(
     combineListsArrays();
   });
 
-  var allNotesUpdatedCallbacks = {};
   function combineNotesArrays() {
     if ($scope.notes.length && $scope.archivedNotes.length) {
       $scope.allNotes = $scope.notes.concat($scope.archivedNotes);
@@ -296,14 +286,7 @@ function MainController(
     } else {
       $scope.allNotes = [];
     }
-
-    for (var id in allNotesUpdatedCallbacks) {
-      allNotesUpdatedCallbacks[id]($scope.allNotes.length);
-    }
   }
-  $scope.registerAllNotesUpdatedCallback = function registerAllNotesUpdatedCallback(callback, id) {
-    allNotesUpdatedCallbacks[id] = callback;
-  };
 
   $scope.$watch('notes.length', function(/*newValue, oldValue*/) {
     combineNotesArrays();
@@ -370,32 +353,50 @@ function MainController(
     }, synchronizeItemsDelay);
   }
 
+  function updateItemsSyncronized(activeUUID){
+    var timestamp = Date.now();
+    UserSessionService.setItemsSynchronized(timestamp, activeUUID);
+    $rootScope.synced = timestamp;
+    $rootScope.syncState = "ready";
+  }
+
   // Synchronize items if not already synchronizing and interval reached.
 
-  $rootScope.loading = false;
   function synchronizeItems() {
     $scope.registerActivity();
     var activeUUID = UISessionService.getActiveUUID();
     // First check that the user has login
-    if (activeUUID) {
+    if ((!$rootScope.syncState || $rootScope.syncState === "ready") && activeUUID) {
+
+      // User has logged in, now set when user was last synchronized
+      $rootScope.synced = UserSessionService.getItemsSynchronized(activeUUID);
       var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
       if (isNaN(sinceLastItemsSynchronized) || sinceLastItemsSynchronized > itemsSynchronizedThreshold) {
-        if (UserSessionService.getLatestModified(activeUUID) === undefined) {
-          // This is the first load for the user, set loading variable
-          $scope.$evalAsync(function() {
-            $rootScope.loading = true;
-          });
-        }
-        SynchronizeService.synchronize(activeUUID).then(function(firstSync) {
-          UserSessionService.setItemsSynchronized(activeUUID);
-          $rootScope.loading = false;
-          if (firstSync){
-            // Also immediately after first sync start syncing all others
-            $rootScope.isCompletedAndArchivedLoading = true;
-            SynchronizeService.synchronizeCompletedAndArchived(activeUUID).then(function(){
-              $rootScope.isCompletedAndArchivedLoading = false;
-            });
+        $scope.$evalAsync(function() {
+          if (!$rootScope.synced){
+            // This is the first load for the user
+            $rootScope.syncState = "active";
+          }else{
+            $rootScope.syncState = "modified";
           }
+        });
+
+        SynchronizeService.synchronize(activeUUID).then(function(firstSync) {
+          if (firstSync){
+            // Also immediately after first sync add completed and archived to the mix
+            $rootScope.syncState = "completedAndArchived";
+            SynchronizeService.addCompletedAndArchived(activeUUID).then(function(){
+              updateItemsSyncronized(activeUUID);
+            }, function(){
+              // Error
+              $rootScope.syncState === "ready";
+            });
+          }else{
+            updateItemsSyncronized(activeUUID);
+          }
+        }, function(){
+          // Error
+          $rootScope.syncState === "ready";
         });
       }
     }

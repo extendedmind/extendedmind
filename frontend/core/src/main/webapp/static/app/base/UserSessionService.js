@@ -19,7 +19,7 @@
  function UserSessionService(base64, LocalStorageService, SessionStorageService) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   var latestModified = {};
-  var itemsSynchronize = {};
+  var itemsSynchronized = {};
   var offlineBufferEnabled = (typeof useOfflineBuffer !== 'undefined') ? useOfflineBuffer: false;
   var collectives = {};
 
@@ -105,7 +105,7 @@
       SessionStorageService.clearUser();
       LocalStorageService.clearUser();
       latestModified = {};
-      itemsSynchronize = {};
+      itemsSynchronized = {};
     },
 
     // Web storage setters
@@ -150,6 +150,17 @@
       }
       this.setPreferences(preferences);
     },
+    setUIPreference: function(name, value) {
+      var preferences = this.getPreferences() || {};
+      if (!preferences.ui) preferences.ui = {};
+
+      if (value !== undefined){
+        preferences.ui[name] = value;
+      }else if (preferences.ui[name] !== undefined) {
+        delete preferences.ui[name];
+      }
+      this.setPreferences(preferences);
+    },
     setPreferences: function(preferences) {
       SessionStorageService.setPreferences(preferences);
       if (offlineBufferEnabled || LocalStorageService.getReplaceable() !== null) {
@@ -165,19 +176,8 @@
         latestModified[ownerUUID] = modified;
       }
     },
-    setItemsSynchronized: function(ownerUUID) {
-      if (!itemsSynchronize[ownerUUID]) {
-        itemsSynchronize[ownerUUID] = {};
-      }
-      itemsSynchronize[ownerUUID].itemsSynchronized = Date.now();
-    },
-    setCompletedSynchronized: function(ownerUUID) {
-      if (!itemsSynchronize[ownerUUID]) itemsSynchronize[ownerUUID] = {};
-      itemsSynchronize[ownerUUID].completedSynchronized = Date.now();
-    },
-    setArchivedSynchronized: function(ownerUUID) {
-      if (!itemsSynchronize[ownerUUID]) itemsSynchronize[ownerUUID] = {};
-      itemsSynchronize[ownerUUID].archivedSynchronized = Date.now();
+    setItemsSynchronized: function(timestamp, ownerUUID) {
+      itemsSynchronized[ownerUUID] = timestamp;
     },
     // Web storage getters
     getCollectives: function() {
@@ -208,13 +208,10 @@
       return latestModified[ownerUUID];
     },
     getItemsSynchronized: function(ownerUUID) {
-      return (itemsSynchronize[ownerUUID]) ? itemsSynchronize[ownerUUID].itemsSynchronized : undefined;
+      return itemsSynchronized[ownerUUID];
     },
-    getCompletedSynchronized: function(ownerUUID) {
-      return (itemsSynchronize[ownerUUID]) ? itemsSynchronize[ownerUUID].completedSynchronized : undefined;
-    },
-    getArchivedSynchronized: function(ownerUUID) {
-      return (itemsSynchronize[ownerUUID]) ? itemsSynchronize[ownerUUID].archivedSynchronized : undefined;
+    isItemsSynchronized: function(ownerUUID) {
+      return itemsSynchronized[ownerUUID] !== undefined;
     },
     getTransportPreferences: function() {
       syncWebStorages();
