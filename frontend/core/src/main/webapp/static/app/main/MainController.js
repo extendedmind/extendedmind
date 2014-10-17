@@ -24,7 +24,7 @@ function MainController(
   $controller, $filter, $rootScope, $scope, $timeout, $window,
   UserService, AnalyticsService, ArrayService, DrawerService, ItemsService, ListsService,
   NotesService, SwiperService, SynchronizeService, TagsService, TasksService,
-  UISessionService, UserSessionService, UUIDService) {
+  UISessionService, UserSessionService) {
 
   // MAP OF ALL FEATURES
 
@@ -213,7 +213,7 @@ function MainController(
 
   $scope.getFeatureMap = function(feature){
     return $scope.features[feature];
-  }
+  };
 
   var focusActiveCallback;
   $scope.registerFocusActivateCallback = function(activateFn) {
@@ -333,13 +333,17 @@ function MainController(
   var synchronizeItemsTimer;
   var synchronizeItemsDelay = 12 * 1000;
   var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
+  var itemsSynchronizeCounter = 0; // count the number of syncs in this session
+  var userSyncCounterTreshold = 5; // sync user every fifth sync
+  var userSyncTimeTreshold = 60000; // sync user if there has been a minute of non-syncing
+
 
   // Start synchronize interval or just start synchronize interval.
   synchronizeItemsAndSynchronizeItemsDelayed();
 
-  // Global variable bindToFocusEvent specifies if focus event should be listened to. Variable is true by default
-  // for browsers, where hidden tab should not poll continuously, false in Cordova where javascript
-  // execution is paused anyway when app is not in focus.
+  // Global variable bindToFocusEvent specifies if focus event should be listened to. Variable is true
+  // by default for browsers, where hidden tab should not poll continuously, false in Cordova where
+  // javascript execution is paused anyway when app is not in focus.
   var bindToFocus = (typeof bindToFocusEvent !== 'undefined') ? bindToFocusEvent: true;
   if (bindToFocus) {
     angular.element($window).bind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
@@ -366,7 +370,7 @@ function MainController(
     var timestamp = Date.now();
     UserSessionService.setItemsSynchronized(timestamp, activeUUID);
     $rootScope.synced = timestamp;
-    $rootScope.syncState = "ready";
+    $rootScope.syncState = 'ready';
   }
 
   // Synchronize items if not already synchronizing and interval reached.
@@ -375,7 +379,8 @@ function MainController(
     $scope.registerActivity();
     var activeUUID = UISessionService.getActiveUUID();
     // First check that the user has login
-    if ((!$rootScope.syncState || $rootScope.syncState === "ready") && activeUUID) {
+    if ((!$rootScope.syncState || $rootScope.syncState === 'ready' ||
+        $rootScope.syncState === 'error') && activeUUID) {
 
       // User has logged in, now set when user was last synchronized
       $rootScope.synced = UserSessionService.getItemsSynchronized(activeUUID);
@@ -384,28 +389,35 @@ function MainController(
         $scope.$evalAsync(function() {
           if (!$rootScope.synced){
             // This is the first load for the user
-            $rootScope.syncState = "active";
+            $rootScope.syncState = 'active';
           }else{
-            $rootScope.syncState = "modified";
+            $rootScope.syncState = 'modified';
           }
         });
 
         SynchronizeService.synchronize(activeUUID).then(function(firstSync) {
           if (firstSync){
             // Also immediately after first sync add completed and archived to the mix
-            $rootScope.syncState = "completedAndArchived";
+            $rootScope.syncState = 'completedAndArchived';
             SynchronizeService.addCompletedAndArchived(activeUUID).then(function(){
               updateItemsSyncronized(activeUUID);
             }, function(){
-              // Error
-              $rootScope.syncState === "ready";
+              $rootScope.syncState = 'error';
             });
           }else{
             updateItemsSyncronized(activeUUID);
           }
+
+          // If there has been a long enough time from last sync, update account preferences as well
+          if (itemsSynchronizeCounter === 0 ||
+              itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
+              sinceLastItemsSynchronized > userSyncTimeTreshold){
+            UserService.updateAccountPreferences();
+          }
+
+          itemsSynchronizeCounter++;
         }, function(){
-          // Error
-          $rootScope.syncState === "ready";
+          $rootScope.syncState = 'error';
         });
       }
     }
@@ -516,14 +528,15 @@ function MainController(
   $scope.customToolbar = undefined;
   $scope.isCustomToolbar = function(){
     return $scope.customToolbar;
-  }
+  };
 
   $scope.swapToCustomToolbar = function(toolbar){
     $scope.customToolbar = toolbar;
-  }
+  };
+
   $scope.resetToDefaultToolbar = function(){
     $scope.customToolbar = undefined;
-  }
+  };
 
   // INJECT OTHER CONTENT CONTROLLERS HERE
 
@@ -538,6 +551,6 @@ MainController['$inject'] = [
 '$controller', '$filter', '$rootScope', '$scope', '$timeout', '$window',
 'UserService', 'AnalyticsService', 'ArrayService', 'DrawerService', 'ItemsService', 'ListsService',
 'NotesService', 'SwiperService', 'SynchronizeService','TagsService', 'TasksService',
-'UISessionService', 'UserSessionService', 'UUIDService'
+'UISessionService', 'UserSessionService'
 ];
 angular.module('em.main').controller('MainController', MainController);
