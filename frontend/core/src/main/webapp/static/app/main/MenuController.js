@@ -14,7 +14,8 @@
  */
  'use strict';
 
- function MenuController($location, $rootScope, $scope, AnalyticsService, AuthenticationService, ListsService, UISessionService, UserSessionService) {
+ function MenuController($location, $rootScope, $scope, AnalyticsService, AuthenticationService,
+                         ListsService, UISessionService, UserSessionService) {
 
   $scope.getActiveDisplayName = function() {
     var activeUUID = UISessionService.getActiveUUID();
@@ -37,7 +38,7 @@
     }
   };
 
-  $scope.gotoFeature = function gotoFeature(feature, data) {
+  $scope.gotoFeature = function (feature, data) {
     $scope.changeFeature(feature,data);
     if ($rootScope.columns === 1) $scope.toggleMenu();
   };
@@ -46,26 +47,19 @@
 
   $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
 
-  $scope.getListClass = function getListClass(list) {
-    if (UISessionService.getCurrentFeatureName() === 'list' && UISessionService.getFeatureData('list') === list) {
-      return 'active';
+  $scope.getActiveList = function() {
+    if ($scope.isFeatureActive('list')){
+      return UISessionService.getFeatureData(UISessionService.getCurrentFeatureName());
     }
-  };
+  }
 
-  $scope.toggleLists = function toggleLists() {
-    var state = UISessionService.getUIState();
-    UISessionService.setUIStateParameter('listsVisible',
-      !state['listsVisible']);
-  };
-
-  $scope.getListTitleText = function getListTitleText(list) {
-    var maximumListNameLength = 35;
-    if (list.title.length > maximumListNameLength) {
-      return list.title.substring(0, maximumListNameLength-2) + '&#8230;';
+  $scope.isFavoriteList = function (list) {
+    if (list.transientProperties && list.transientProperties.favorite){
+      return true;
     }
-    return list.title;
-  };
+  }
 }
 
-MenuController['$inject'] = ['$location', '$rootScope', '$scope', 'AnalyticsService', 'AuthenticationService', 'ListsService', 'UISessionService', 'UserSessionService'];
+MenuController['$inject'] = ['$location', '$rootScope', '$scope', 'AnalyticsService',
+'AuthenticationService', 'ListsService', 'UISessionService', 'UserSessionService'];
 angular.module('em.main').controller('MenuController', MenuController);

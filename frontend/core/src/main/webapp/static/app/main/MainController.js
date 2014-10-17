@@ -276,6 +276,7 @@ function MainController(
     } else {
       $scope.allLists = [];
     }
+    $scope.refreshFavoriteLists();
   }
 
   $scope.$watch('lists.length', function(/*newValue, oldValue*/) {
@@ -284,6 +285,33 @@ function MainController(
   $scope.$watch('archivedLists.length', function(/*newValue, oldValue*/) {
     combineListsArrays();
   });
+
+  $scope.refreshFavoriteLists = function(){
+    // Can not refresh if allLists array has not been created yet
+    if ($scope.allLists && $rootScope.synced){
+      $scope.favoriteLists = [];
+      var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
+      if (favoriteListUuids){
+        var len = favoriteListUuids.length;
+        var deleted = false;
+        while (len--) {
+          var favoriteList = $scope.allLists.findFirstObjectByKeyValue('uuid', favoriteListUuids[len]);
+          if (!favoriteList){
+            $scope.favoriteLists.unshift(favoriteList);
+
+          }else{
+            // Favorite list is not among all lists, splice it from the array
+            favoriteListUuids.splice(len, 1);
+            deleted = true;
+          }
+        }
+        if (deleted){
+          UserSessionService.setUIPreference('favoriteLists', favoriteListUuids);
+          UserService.updateAccountPreferences();
+        }
+      }
+    }
+  };
 
   function combineNotesArrays() {
     if ($scope.notes.length && $scope.archivedNotes.length) {

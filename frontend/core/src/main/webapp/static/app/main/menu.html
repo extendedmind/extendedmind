@@ -20,18 +20,36 @@
       <span class="text-navigation-menu">lists</span>
     </a>
 
-    <div ng-if="menuLists.length > 0" class="group-mixed" ng-repeat="menuList in menuLists">
-      <a class="group-mixed--middle">
-        <span class="text-link" ng-bind="menuList.title"></span>
-      </a>
-      <a ng-if="isFavoritedList(menuList)" class="group-mixed--right">
-        <span class="text-favorite"></span>
-      </a>
+    <div ng-if="isFeatureActive('list')" class="group-mixed">
+      <div class="group-mixed--middle">
+        <a href class="link-menu highlighted">
+          <span class="text-navigation-menu-small" ng-bind="getActiveList().title"></span>
+        </a>
+      </div>
+      <div class="group-mixed--right">
+        <a href ng-if="isFavoriteList(getActiveList())" ng-click="unfavoriteList(getActiveList())">
+          <span class="text-favorite inverse"></span>
+        </a>
+      </div>
+    </div>
+    <div ng-if="favoriteLists.length > 0" class="group-mixed" ng-repeat="favoriteList in favoriteLists"
+    ng-hide="favoriteList === getActiveList()">
+      <div class="group-mixed--middle">
+        <a href class="link-menu">
+          <span class="text-navigation-menu-small" ng-bind="favoriteList.title"></span>
+        </a>
+      </div>
+      <div class="group-mixed--right">
+        <a href ng-click="unfavoriteList(list)">
+          <span class="text-favorite inverse"></span>
+        </a>
+      </div>
     </div>
     <div class="container-menu--push"></div>
   </div>
   <div class="container-menu--bottom">
-    <a href class="link-menu downplayed row" ng-click="gotoFeature('trash')" ng-class="isFeatureActive('trash') && 'active'">
+    <a href class="link-menu downplayed row" ng-click="gotoFeature('trash')"
+    ng-class="isFeatureActive('trash') && 'active'">
       <span class="text-navigation-menu-small">trash</h4>
     </a>
   </div>

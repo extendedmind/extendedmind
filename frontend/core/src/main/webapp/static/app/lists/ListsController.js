@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function ListsController($q, $scope, AnalyticsService, ListsService, UISessionService) {
+ function ListsController($q, $rootScope, $scope, AnalyticsService, ListsService, UISessionService, UserSessionService) {
 
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
     if (name === 'list') {
@@ -24,6 +24,30 @@
     }
   };
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ListsController');
+
+  function updateFavoriteLists(favoriteListUuids){
+    UserSessionService.setUIPreference('favoriteLists', favoriteListUuids);
+    UserService.updateAccountPreferences();
+    $scope.refreshFavoriteLists();
+  }
+
+  $scope.favoriteList = function(list) {
+    var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
+    if (!favoriteListUuids) favoriteListUuids = [];
+    favoriteListUuids.push(list.uuid);
+    updateFavoriteLists(favoriteListUuids);
+  };
+
+  $scope.unfavoriteList = function(list) {
+    var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
+    if (favoriteListUuids){
+      var favoriteIndex = favoriteListUuids.indexOf(list.uuid);
+      if (favoriteIndex !== -1){
+        favoriteListUuids.splice(favoriteIndex, 1);
+        updateFavoriteLists(favoriteListUuids);
+      }
+    }
+  };
 
   $scope.saveList = function(list) {
     if (list && list.title && list.title.length > 0){
@@ -82,5 +106,6 @@
   };
 }
 
-ListsController['$inject'] = ['$q', '$scope', 'AnalyticsService', 'ListsService', 'UISessionService'];
+ListsController['$inject'] = ['$q', '$rootScope', '$scope', 'AnalyticsService', 'ListsService',
+'UISessionService', 'UserService', 'UserSessionService'];
 angular.module('em.base').controller('ListsController', ListsController);
