@@ -17,7 +17,10 @@
 
  function TaskEditorController($q, $rootScope, $scope, $timeout, DateService, UISessionService) {
 
-  // INITIALIZE VARIABLES
+  // INITIALIZING
+
+  if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
+    $scope.registerFeatureEditorAboutToCloseCallback(taskEditorAboutToClose, 'TaskEditorController');
 
   // We expect there to be a $scope.task via ng-init
 
@@ -57,6 +60,10 @@
   $scope.endTaskEdit = function() {
     $scope.closeTaskEditor();
     if ($scope.titlebarHasText()) $scope.saveTaskInEdit();
+  }
+
+  function taskEditorAboutToClose() {
+    $scope.saveTaskInEdit();
   }
 
   // TITLEBAR

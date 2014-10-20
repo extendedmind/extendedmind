@@ -26,6 +26,10 @@
     currentItem = item;
   }
 
+  function editorAboutToClose() {
+    if (typeof featureEditorAboutToCloseCallback === 'function') featureEditorAboutToCloseCallback();
+  }
+
   $scope.getItemInEdit = function(){
     return currentItem;
   };
@@ -34,7 +38,7 @@
   function editorOpened() {
     if (typeof titleBarInputFocusCallbackFunction === 'function')
      $scope.$apply(setFocusOnTitlebarInput);
-  }
+ }
 
   // Callback from Snap.js, outside of AngularJS event loop
   function editorClosed() {
@@ -49,17 +53,23 @@
   }
 
   if (angular.isFunction($scope.registerEditorAboutToOpenCallback))
-    $scope.registerEditorAboutToOpenCallback(editorAboutToOpen);
+    $scope.registerEditorAboutToOpenCallback(editorAboutToOpen, 'EditorController');
+
+  if (angular.isFunction($scope.registerEditorAboutToCloseCallback))
+    $scope.registerEditorAboutToCloseCallback(editorAboutToClose, 'EditorController');
 
   if (angular.isFunction($scope.registerEditorClosedCallback))
     $scope.registerEditorClosedCallback(editorClosed, 'EditorController');
 
   if (angular.isFunction($scope.registerEditorOpenedCallback))
-    $scope.registerEditorOpenedCallback(editorOpened, 'TaskEditorController');
+    $scope.registerEditorOpenedCallback(editorOpened, 'EditorController');
 
   $scope.$on('$destroy', function() {
     if (angular.isFunction($scope.unregisterEditorAboutToOpenCallback))
       $scope.unregisterEditorAboutToOpenCallback('EditorController');
+
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
+      $scope.unregisterEditorAboutToCloseCallback('EditorController');
 
     if (angular.isFunction($scope.unregisterEditorOpenedCallback))
       $scope.unregisterEditorOpenedCallback('EditorController');
@@ -73,7 +83,7 @@
   $scope.saveNewListToExtendedItem = function(item, newList, readyFn) {
     if (newList && newList.title)
       $scope.saveList($scope.newList).then(
-        function(savedList){
+                                           function(savedList){
           // success
           if (item.transientProperties) item.transientProperties = {};
           item.transientProperties.list = savedList.uuid;
@@ -86,6 +96,11 @@
     else {
       readyFn(item);
     }
+  };
+
+  var featureEditorAboutToCloseCallback;
+  $scope.registerFeatureEditorAboutToCloseCallback = function(callback) {
+    featureEditorAboutToCloseCallback = callback;
   };
 
   $scope.deferEdit = function(){

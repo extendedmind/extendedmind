@@ -70,6 +70,10 @@
         drawerState.info.flick)
     {
       drawerDirection = 'closing';
+      for (var aboutToCloseID in snappers[snapperSide].aboutToCloseCallbacks) {
+        if (snappers[snapperSide].aboutToCloseCallbacks.hasOwnProperty(aboutToCloseID))
+          snappers[snapperSide].aboutToCloseCallbacks[aboutToCloseID]();
+      }
     } else if (drawerState.info.towards !== snapperSide && drawerState.info.flick) {
       drawerDirection = 'opening';
     }
@@ -124,6 +128,7 @@
     return {
       openCallbacks: {},
       closeCallbacks: {},
+      aboutToCloseCallbacks: {},
       openedCallbacks: {},
       closedCallbacks: {},
       handleReleasedCallbacks: {}
@@ -260,6 +265,11 @@
         snappers[drawerSide] = createDrawerSkeleton();
       }
       snappers[drawerSide].closedCallbacks[id] = callback;
+    },
+    registerAboutToCloseCallback: function(drawerSide, callback, id) {
+      if (!snappers[drawerSide])
+        snappers[drawerSide] = createDrawerSkeleton();
+      snappers[drawerSide].aboutToCloseCallbacks[id] = callback;
     },
     registerCloseCallback: function(drawerSide, callback, id) {
       if (!snappers[drawerSide]){

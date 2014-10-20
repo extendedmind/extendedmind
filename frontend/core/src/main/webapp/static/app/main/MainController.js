@@ -499,8 +499,11 @@ function MainController(
     if (editorOpenedCallbacks[id]) delete editorOpenedCallbacks[id];
   };
 
-  $scope.registerEditorAboutToClose = function(callback, id) {
+  $scope.registerEditorAboutToCloseCallback = function(callback, id) {
     editorAboutToCloseCallbacks[id] = callback;
+  };
+  $scope.unregisterEditorAboutToCloseCallback = function(id) {
+    if (editorAboutToCloseCallbacks[id]) delete editorAboutToCloseCallbacks[id];
   };
 
   $scope.registerEditorClosedCallback = function(callback, id) {
@@ -521,6 +524,13 @@ function MainController(
   function editorOpened() {
     for (var id in editorOpenedCallbacks) {
       editorOpenedCallbacks[id]();
+    }
+  }
+
+  DrawerService.registerAboutToCloseCallback('right', editorAboutToClose, 'MainController');
+  function editorAboutToClose() {
+    for (var id in editorAboutToCloseCallbacks) {
+      editorAboutToCloseCallbacks[id]();
     }
   }
 
