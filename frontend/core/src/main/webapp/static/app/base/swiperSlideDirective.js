@@ -41,14 +41,12 @@
 
       // CALLBACKS
 
-      var slideActiveCallback;
-      this.registerSlideActiveCallback = function(callback) {
-        slideActiveCallback = callback;
-        SwiperService.registerSlideActiveCallback(slideActiveCallback,
-                                                  $scope.slidePath);
+      this.registerSlideActiveCallback = function(callback, id) {
+        SwiperService.registerSlideActiveCallback(callback,
+                                                  $scope.slidePath, id);
       }
-      this.unregisterSlideActiveCallback = function(){
-        SwiperService.unregisterSlideActiveCallback($scope.slidePath);
+      this.unregisterSlideActiveCallback = function(id){
+        SwiperService.unregisterSlideActiveCallback($scope.slidePath, id);
       }
     },
     link: function(scope, element, attrs, swiperContainerDirectiveController) {

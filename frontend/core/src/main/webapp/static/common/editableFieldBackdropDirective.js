@@ -77,7 +77,9 @@
               if (typeof containerInfos[i].clickedElsewhere === 'function'){
                 // Click elsewhere callback.
                 // NOTE: use $apply because callback may not be inside scope.
-                $scope.$apply(containerInfos[i].clickedElsewhere);
+                if (!$scope.$$phase && !$rootScope.$$phase)
+                  $scope.$apply(containerInfos[i].clickedElsewhere);
+                else containerInfos[i].clickedElsewhere();
               }
             }
           }

@@ -37,7 +37,6 @@
     if (!favoriteListUuids) favoriteListUuids = [];
     if (favoriteListUuids.indexOf(list.uuid) === -1){
       favoriteListUuids.push(list.uuid);
-      //console.log(favoriteListUuids)
       updateFavoriteLists(favoriteListUuids);
     }
   };

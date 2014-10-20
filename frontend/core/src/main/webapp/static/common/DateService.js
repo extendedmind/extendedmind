@@ -190,7 +190,6 @@
       return monthNames;
     },
     getDateWithOffset: function(offsetDays, date) {
-      // console.log(date.getDate());
       var d = new Date(date);
       d.setDate(date.getDate() + offsetDays);
       return d;

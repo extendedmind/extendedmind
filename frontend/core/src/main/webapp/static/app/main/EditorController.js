@@ -36,8 +36,13 @@
 
   // Callback from Snap.js, outside of AngularJS event loop
   function editorOpened() {
-    if (typeof titleBarInputFocusCallbackFunction === 'function')
-     $scope.$apply(setFocusOnTitlebarInput);
+    if (typeof titleBarInputFocusCallbackFunction === 'function'){
+      if (!$scope.$$phase && !$rootScope.$$phase){
+        $scope.$apply(setFocusOnTitlebarInput);
+      }else{
+        setFocusOnTitlebarInput();
+      }
+    }
  }
 
   // Callback from Snap.js, outside of AngularJS event loop

@@ -17,37 +17,47 @@
  function verticalResizeDirective($parse, $rootScope) {
   return {
     restrict: 'A',
-    controller: function($scope) {
-      this.overrideVerticalResize = function(element) {
-        $scope.overrideElement = element;
-      };
-      this.clearOverrideElement = function() {
-        $scope.overrideElement = undefined;
-      };
-    },
-    link: function postLink(scope, element, attrs) {
+    controller: function($scope, $element, $attrs) {
+
       var maxHeightWithoutKeyboard;
+      var overrideElement;
+      var isPrevented = $parse($attrs.verticalResizePrevent).bind(undefined, $scope);
 
-      var isPrevented = $parse(attrs.verticalResizePrevent).bind(undefined, scope);
-
-      function windowResized(){
+      function setMaxHeight(){
         if (isPrevented()) {
-          // do nothing in attrs.verticalResize
           return;
         }
-        if ($rootScope.currentHeight > $rootScope.MAX_HEIGHT) {
-          element[0].style.maxHeight = $rootScope.MAX_HEIGHT + 'px';
-          maxHeightWithoutKeyboard = $rootScope.MAX_HEIGHT;
-        } else {
-          element[0].style.maxHeight = $rootScope.currentHeight + 'px';
-          maxHeightWithoutKeyboard = $rootScope.currentHeight;
+        var referenceMaxHeight = $rootScope.MAX_HEIGHT;
+        if ($rootScope.currentHeight < $rootScope.MAX_HEIGHT) {
+          referenceMaxHeight = $rootScope.currentHeight;
+        }
+        if (referenceMaxHeight !== maxHeightWithoutKeyboard){
+          // Hide footer under keyboard
+          maxHeightWithoutKeyboard = referenceMaxHeight;
+          $element[0].style.maxHeight = referenceMaxHeight + 'px';
+        }
+
+        if (overrideElement){
+          maxHeightWithoutKeyboard =
+            referenceMaxHeight - $rootScope.TOOLBAR_HEIGHT - $rootScope.LIST_FOOTER_HEIGHT;
+          overrideElement[0].style.maxHeight = maxHeightWithoutKeyboard;
         }
       }
-      if (angular.isFunction(scope.registerWindowResizedCallback)) {
-        scope.registerWindowResizedCallback(windowResized, 'verticalResizeDirective' + '-' +
-                                            attrs.verticalResize);
+
+      this.overrideVerticalResize = function(elem) {
+        overrideElement = elem;
+        setMaxHeight();
+      };
+      this.clearOverrideElement = function() {
+        overrideElement = undefined;
+        setMaxHeight();
+      };
+
+      if (angular.isFunction($scope.registerWindowResizedCallback)) {
+        $scope.registerWindowResizedCallback(setMaxHeight, 'verticalResizeDirective' + '-' +
+                                            $attrs.verticalResize);
       }
-      windowResized();
+      setMaxHeight();
 
       function doVerticalResize(newHeight, oldHeight) {
         if (isPrevented()) {
@@ -56,19 +66,28 @@
         }
         if (newHeight || oldHeight) {
 
-          var resizeElement = element;
+          var resizeElement = $element;
 
-          if (scope.overrideElement)
-            resizeElement = scope.overrideElement;
+          if (overrideElement)
+            resizeElement = overrideElement;
 
           if (newHeight) {
-            resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard - newHeight) + 'px';
+            if ($attrs.verticalResizeHideFooter){
+              resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard + $rootScope.LIST_FOOTER_HEIGHT -
+                                                newHeight) + 'px';
+            }else {
+              resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard  - newHeight) + 'px';
+            }
           }
-          else resizeElement[0].style.maxHeight = maxHeightWithoutKeyboard  + 'px';
+          else{
+            resizeElement[0].style.maxHeight = maxHeightWithoutKeyboard  + 'px';
+            // If scrollTop is below scrollHeight, set it to the bottom
+            if (resizeElement[0].scrollTop > resizeElement[0].scrollHeight)
+              resizeElement[0].scrollTop = resizeElement[0].scrollHeight;
+          }
         }
       }
-
-      scope.$watch('softKeyboard.height', doVerticalResize);
+      $scope.$watch('softKeyboard.height', doVerticalResize);
     }
   };
 }

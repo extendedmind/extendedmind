@@ -2,7 +2,8 @@
   <div ng-include="'static/app/main/menu.html'" include-replace></div>
   <div ng-include="'static/app/main/editor.html'" include-replace></div>
   <div drawer-aisle class="container-drawer-aisle">
-    <div class="container-master animate-container-master" vertical-resize="master" vertical-resize-prevent="isEditorVisible()">
+    <div class="container-master animate-container-master" vertical-resize="master"
+    vertical-resize-prevent="isEditorVisible()" vertical-resize-hide-footer="true">
       <div class="container-fluid" ng-class="getFooterVisibilityClass()">
         <header class="container-toolbar" ng-include="'static/app/main/toolbar.html'"></header>
         <div ng-if="isFeatureLoaded('user')" ng-include="'static/app/user/userSlides.html'" include-replace></div>

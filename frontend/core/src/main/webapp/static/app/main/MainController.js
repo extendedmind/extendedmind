@@ -193,11 +193,10 @@ function MainController(
         UISessionService.lock('leaveAnimation', 500);
 
         var state = UISessionService.getFeatureState(feature);
+
+        UISessionService.changeFeature(feature, data, state);
         if (!$scope.$$phase && !$rootScope.$$phase){
-          UISessionService.changeFeature(feature, data, state);
           $scope.$digest();
-        }else{
-          UISessionService.changeFeature(feature, data, state);
         }
         if (toggleMenu && pending){
           $timeout(function(){

@@ -17,15 +17,14 @@
  function listContainerDirective() {
   return {
     restrict: 'A',
-    require: '?^verticalResize',
+    require: ['^verticalResize', '?^swiperSlide'],
     controller: function($scope, $element, $attrs) {
       var activateAddListItemCallback;
 
-      var overrideVerticalResize = $attrs.listContainerOverrideVerticalResize;
-
       this.registerActivateAddListItemCallback = function(callback, element){
         activateAddListItemCallback = callback;
-        if (overrideVerticalResize) $scope.registerOverrideElement(element);
+        if ($attrs.listContainerOverrideVerticalResize)
+          $scope.registerOverrideElement(element);
       };
 
       this.activateAddListItem = function(){
@@ -34,14 +33,33 @@
     },
     compile: function compile() {
       return {
-        pre: function preLink(scope, element, attrs, verticalResizeController) {
-          scope.registerOverrideElement = function(overrideElement) {
-            if (verticalResizeController)
-              verticalResizeController.overrideVerticalResize(overrideElement);
+        pre: function preLink(scope, element, attrs, controllers) {
+          var overrideElement;
+          scope.registerOverrideElement = function(elem) {
+            overrideElement = elem;
+            controllers[0].overrideVerticalResize(overrideElement);
           };
 
+          function listContainerActive(){
+            if (!attrs.listContainerOverrideVerticalResize){
+              controllers[0].clearOverrideElement();
+            }else {
+              controllers[0].overrideVerticalResize(overrideElement);
+            }
+          }
+          if (controllers[1]){
+            controllers[1].registerSlideActiveCallback(listContainerActive, 'listContainerDirective');
+            if (controllers[1].isSlideActiveByDefault()){
+              listContainerActive();
+            }
+          }else {
+            // List is active as it doesn't have a swiper to begin with
+            listContainerActive();
+          }
+
           scope.$on('$destroy', function() {
-            if (verticalResizeController) verticalResizeController.clearOverrideElement();
+            controllers[0].clearOverrideElement();
+            if (controllers[1]) controllers[1].unregisterSlideActiveCallback('listContainerDirective');
           });
         }
       };

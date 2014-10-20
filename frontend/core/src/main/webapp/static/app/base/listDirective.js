@@ -39,7 +39,7 @@
           // have to set list length directly here
           $scope.listLength = $scope.listLength + 1;
           $scope.activateListBottom();
-          setTimeout(function(){
+          $timeout(function(){
             $element[0].scrollTop = $element[0].scrollHeight;
           });
         }
@@ -66,7 +66,7 @@
         if (checked) {
           checkingTimeout = $timeout(function() {
             checkboxCheckingReadyDeferred.resolve(item);
-            $scope.$digest();
+            if (!scope.$$phase && !$rootScope.$$phase) $scope.$digest();
           }, $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME);
         } else{
           if (checkingTimeout){
@@ -91,15 +91,14 @@
           listOpenOnAddFn();
         }else if (scope.activateAddItem){
           if (attrs.listOrder !== 'top'){
-            if (scope.activateListBottom()){
-              // The entire list was not visible, we
-              // have to wait for digest to complete for focus to move to the
-              // bottom. Can't think of a better way to do this, can you?
-              $timeout(function(){
-                scope.activateAddItem();
-              });
-              return;
-            }
+            scope.activateListBottom();
+            // If the entire list was not visible, we
+            // have to wait for digest to complete for focus to move to the
+            // bottom. Can't think of a better way to do this, can you?
+            $timeout(function(){
+              scope.activateAddItem();
+            });
+            return;
           }
           scope.activateAddItem();
         }
@@ -108,7 +107,7 @@
         controllers[0].registerActivateAddListItemCallback(activateListAdd, element);
       }
       if (controllers[1]){
-        controllers[1].registerSlideActiveCallback(listActive);
+        controllers[1].registerSlideActiveCallback(listActive, 'listDirective');
         if (controllers[1].isSlideActiveByDefault()){
           listActive();
         }
@@ -134,7 +133,10 @@
 
       // Coefficient of container height, which specifies when add more
       // is called.
-      var addMoreCoefficientToEdge = 1.5;
+      var addMoreCoefficientToEdge = 1;
+      var removeCoefficientToEdge = 2;
+      var nearingCoefficientToEdge = 2;
+
       var lastScrollPosition = 0;
 
       function listScroll(event){
@@ -153,10 +155,17 @@
         }
         lastScrollPosition = elementScrollPosition;
 
+        // Set near list bottom variable
+        if (remainingToBottom <= elementHeight * nearingCoefficientToEdge){
+          scope.nearListBottom = true;
+        }else {
+          scope.nearListBottom = false;
+        }
+
         // call add methods if distance to edge is smaller than the safe zone
         if (scrollingDown && (remainingToBottom <= elementHeight * addMoreCoefficientToEdge)) {
           addMoreItemsToBottom();
-        }else if (!scrollingDown && (remainingToBottom > elementHeight * addMoreCoefficientToEdge)) {
+        }else if (!scrollingDown && (remainingToBottom > elementHeight * removeCoefficientToEdge)) {
           removeItemsFromBottom();
         }
       }
@@ -164,7 +173,7 @@
       // TODO: Max number and increase amount should be calculated based on the height of the
       // container and the height of individual elements in the list.
       scope.maximumNumberOfItems = 25;
-      scope.itemIncreaseAmount = 10;
+      scope.itemIncreaseAmount = 25;
       setLimits(0);
       function setLimits(startIndex){
         scope.currentListStartIndex = startIndex;
@@ -182,7 +191,7 @@
       }
 
       scope.activateListBottom = function() {
-        if (scope.listLength - scope.maximumNumberOfItems > 0){
+        if ((scope.listLength - scope.maximumNumberOfItems) > 0){
           setLimits(scope.listLength - scope.maximumNumberOfItems);
           return true;
         }
@@ -190,18 +199,27 @@
 
       function addMoreItemsToBottom(){
         function doAddMoreItemsToBottom(){
+          scope.scrollDownLoading = true;
+          var startScrollTop = element[0].scrollTop + $rootScope.LOADING_ANIMATION_HEIGHT;
 
-          if (scope.maximumNumberOfItems + scope.itemIncreaseAmount >= scope.listLength){
-            setLimits(scope.listLength - scope.maximumNumberOfItems);
-          }else{
-            setLimits(scope.currentListStartIndex + scope.itemIncreaseAmount);
-          }
+          $timeout(function(){
+            scope.scrollDownLoading = false;
+            // Only add more elements if a full second at the bottom
+            if (startScrollTop >= element[0].scrollTop) {
+              if (scope.maximumNumberOfItems + scope.itemIncreaseAmount >= scope.listLength){
+                setLimits(scope.listLength - scope.maximumNumberOfItems);
+              }else{
+                setLimits(scope.currentListStartIndex + scope.itemIncreaseAmount);
+              }
+            }
+          }, 1000);
         }
         if ((scope.listLength - scope.currentListStartIndex) > scope.maximumNumberOfItems){
           if (scope.$$phase) {
             doAddMoreItemsToBottom();
           } else {
-            scope.$apply(doAddMoreItemsToBottom);
+            if (!$rootScope.$$phase && !scope.$$phase) scope.$apply();
+            doAddMoreItemsToBottom()
           }
         }
       }
@@ -216,16 +234,13 @@
         }
 
         if (scope.currentListStartIndex !== 0){
-          if (scope.$$phase) {
-            doRemoveItemsFromBottom();
-          } else {
-            scope.$apply(doRemoveItemsFromBottom);
-          }
+          if (!scope.$$phase && !$rootScope.$$phase) scope.$apply();
+          doRemoveItemsFromBottom();
         }
       }
 
       scope.$on('$destroy', function() {
-        if (controllers[1]) controllers[1].unregisterSlideActiveCallback();
+        if (controllers[1]) controllers[1].unregisterSlideActiveCallback('listDirective');
         element[0].removeEventListener('scroll', listScroll, false);
       });
     }

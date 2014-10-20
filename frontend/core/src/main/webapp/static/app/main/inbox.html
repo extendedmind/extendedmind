@@ -1,5 +1,5 @@
 <div class="container-fluid--inner" list-container drawer-handle="left">
-  <section class="container-content" list>
+  <section class="container-content" list="items" list-order="top">
     <h2 class="group-heading row" ng-bind="items.length + ' items'"></h2>
 
     <div class="row" list-item-add="{}" list-item-add-save="saveItem(newItem)">
@@ -17,8 +17,8 @@
     </div>
 
     <div class="animate-list-item-leave"
-    ng-repeat="item in items | orderBy:'created':true | limitTo: currentListLimitTo"
-    list-item="items.length">
+    ng-repeat="item in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
+    list-item="getList().length">
       <div class="row">
         <a href class="group-mixed--middle" swiper-click="openEditor('item', newItem)">
           <span class="text-link" ng-bind="item.title"></span>

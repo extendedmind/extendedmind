@@ -38,9 +38,13 @@
           element[0].style.height = footerHeight + 'px';
           element[0].style.bottom = -footerHeight + 'px';
 
-          scope.$apply(function() {
+          if (!$rootScope.$$phase && !scope.$$phase)
+            scope.$apply(function(){
+              scope.footerExpanded = false; // remove expandable DOM
+            });
+          else {
             scope.footerExpanded = false; // remove expandable DOM
-          });
+          }
           shrinkPromise = undefined;
         });
       };

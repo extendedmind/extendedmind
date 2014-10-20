@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function toasterDirective($timeout, UISessionService) {
+ function toasterDirective($rootScope, $timeout, UISessionService) {
   var notificationVisibleInMilliseconds = 3000;
 
   return {
@@ -36,7 +36,7 @@
         showNotifications(notifications);
 
         // Digest may not be running when callback is executed. E.g. from $animate promise.
-        if (!scope.$phase) scope.$digest();
+        if (!scope.$phase && !$rootScope.$$phase) scope.$digest();
       }
 
       /*
@@ -79,5 +79,5 @@
     }
   };
 }
-toasterDirective['$inject'] = ['$timeout', 'UISessionService'];
+toasterDirective['$inject'] = ['$rootScope', '$timeout', 'UISessionService'];
 angular.module('em.base').directive('toaster', toasterDirective);

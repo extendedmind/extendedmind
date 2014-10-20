@@ -17,9 +17,10 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
 .loading-animation {
   color: @color-text-downplayed;
   font-size: @size-font-small;
+  height: @grid-vertical-half;
 }
 
-.container-master .loading-animation {
+.container-master > .container-fluid > .container-fluid--inner > .loading-animation {
   padding-top: @grid-vertical * 2;
 }
 

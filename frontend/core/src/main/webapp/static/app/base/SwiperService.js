@@ -166,7 +166,9 @@ function SwiperService($q, $timeout) {
     }
     // Execute slide active callbacks
     if (slideActiveCallbacks && slideActiveCallbacks[path]) {
-      slideActiveCallbacks[path]();
+      for (var j = 0; j < slideActiveCallbacks[path].length; j++) {
+        slideActiveCallbacks[path][j].callback();
+      }
     }
   };
 
@@ -438,11 +440,29 @@ function SwiperService($q, $timeout) {
         callback: slideChangeCallback,
         id: id});
     },
-    registerSlideActiveCallback: function(slideActiveCallback, slidePath) {
-      slideActiveCallbacks[slidePath] = slideActiveCallback;
+    registerSlideActiveCallback: function(slideActiveCallback, slidePath, id) {
+      if (!slideActiveCallbacks[slidePath]) {
+        slideActiveCallbacks[slidePath] = [];
+      } else {
+        for (var i = 0; i < slideActiveCallbacks[slidePath].length; i++) {
+          if (slideActiveCallbacks[slidePath][i].id === id) {
+            // Already registered, replace callback
+            slideActiveCallbacks[slidePath][i].callback = slideActiveCallback;
+            return;
+          }
+        }
+      }
+      slideActiveCallbacks[slidePath].push({
+        callback: slideActiveCallback,
+        id: id});
     },
-    unregisterSlideActiveCallback: function(slidePath) {
-      if (slideActiveCallbacks[slidePath]) delete slideActiveCallbacks[slidePath];
+    unregisterSlideActiveCallback: function(slidePath, id) {
+      if (slideActiveCallbacks[slidePath]){
+        var index = slideActiveCallbacks[slidePath].findFirstIndexByKeyValue('id', id);
+        if (index !== undefined){
+          slideActiveCallbacks[slidePath].splice(index, 1)
+        }
+      }
     },
     getSwiperSlides: function(swiperPath) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) return swipers[swiperPath].swiper.slides;

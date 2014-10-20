@@ -1,8 +1,10 @@
 <div ng-if="isFeatureActive('focus')" class="container-content--outer" list-container>
-  <section class="container-content" list>
+  <section class="container-content" list="notes | filter:'transientProperties.favorite'" list-order="top" list-open="openEditor('note', {transientProperties: {favorite:true}})">
     <h2 class="group-heading row">favorite</h2>
-    <div class="row" ng-repeat="note in notes" list-item="note" list-item-has-checkbox="false"></div>
-    <div list-item-add></div>
+    <div class="row" ng-repeat="note in getList()
+    | orderBy:'created':true
+    | limitTo: currentListLimitTo"
+    list-item="getList().length" list-item-has-checkbox="false"></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('focus')"></footer>
 </div>

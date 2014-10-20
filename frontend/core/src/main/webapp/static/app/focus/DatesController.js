@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function DatesController($filter, $scope, DateService, SwiperService, UISessionService) {
+ function DatesController($filter, $rootScope, $scope, DateService, SwiperService, UISessionService) {
   var slidePath = 'focus/tasks';
 
   // DAY SLIDES CONSTRUCTOR
@@ -106,7 +106,7 @@
     if (!daySlidesInfosCleared && (offsetFromOldActiveDaySlide >= 2 || offsetFromOldActiveDaySlide <= -2)) {
       daySlidesInfosCleared = true;
       clearDaySlidesInfos();
-      if (!$scope.$$phase) $scope.$digest();
+      if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
     }
   }
 
@@ -136,7 +136,7 @@
     refreshAdjacentDaySlides(previousIndex, nextIndex, activeDaySlideInfo);
 
     // Update UI.
-    if (!$scope.$$phase) $scope.$digest();
+    if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
 
     // Set variables to initial values.
     offsetFromOldActiveDaySlide = 0;
@@ -305,7 +305,7 @@
     {
       datepickerWeeksInfosCleared = true;
       clearDatepickerSlidesInfos();
-      if (!$scope.$$phase) $scope.$digest();
+      if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
     }
   }
 
@@ -348,7 +348,7 @@
       $scope.changeDaySlide(activeDaySlideInfo);
     }
 
-    if (!$scope.$$phase) $scope.$digest();
+    if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
     offsetFromOldActiveDatepickerSlide = 0;
     datepickerWeeksInfosCleared = false;
     previousActiveIndex = undefined;
@@ -568,5 +568,5 @@
   };
 }
 
-DatesController['$inject'] = ['$filter', '$scope', 'DateService', 'SwiperService', 'UISessionService'];
+DatesController['$inject'] = ['$filter', '$rootScope', '$scope', 'DateService', 'SwiperService', 'UISessionService'];
 angular.module('em.focus').controller('DatesController', DatesController);
