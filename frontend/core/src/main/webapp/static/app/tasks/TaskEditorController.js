@@ -15,7 +15,7 @@
 
  'use strict';
 
- function TaskEditorController($q, $rootScope, $scope, $timeout, DateService, UISessionService) {
+ function TaskEditorController($q, $rootScope, $scope, $timeout, DateService) {
 
   // INITIALIZING
 
@@ -60,7 +60,7 @@
   $scope.endTaskEdit = function() {
     $scope.closeTaskEditor();
     if ($scope.titlebarHasText()) $scope.saveTaskInEdit();
-  }
+  };
 
   function taskEditorAboutToClose() {
     $scope.saveTaskInEdit();

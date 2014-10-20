@@ -21,10 +21,10 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
 function MainController(
-  $controller, $filter, $rootScope, $scope, $timeout, $window,
-  UserService, AnalyticsService, ArrayService, DrawerService, ItemsService, ListsService,
-  NotesService, SwiperService, SynchronizeService, TagsService, TasksService,
-  UISessionService, UserSessionService) {
+                        $controller, $filter, $rootScope, $scope, $timeout, $window,
+                        UserService, AnalyticsService, ArrayService, DrawerService, ItemsService, ListsService,
+                        NotesService, SwiperService, SynchronizeService, TagsService, TasksService,
+                        UISessionService, UserSessionService) {
 
   // MAP OF ALL FEATURES
 
@@ -195,13 +195,13 @@ function MainController(
         var state = UISessionService.getFeatureState(feature);
         if (!$scope.$$phase && !$rootScope.$$phase){
           UISessionService.changeFeature(feature, data, state);
-          $scope.$digest()
+          $scope.$digest();
         }else{
           UISessionService.changeFeature(feature, data, state);
         }
         if (toggleMenu && pending){
           $timeout(function(){
-            $scope.closeMenu()
+            $scope.closeMenu();
           }, 300);
         }
       }
@@ -357,8 +357,8 @@ function MainController(
     }
     $scope.allActiveTasks =
     ArrayService.combineArrays(
-      activeArchivedTasks,
-      $scope.tasks, 'created', true);
+                               activeArchivedTasks,
+                               $scope.tasks, 'created', true);
   }
 
   $scope.$watch('tasks.length', function(/*newValue, oldValue*/) {
@@ -425,11 +425,11 @@ function MainController(
         $rootScope.syncState === 'error') && activeUUID) {
 
       // User has logged in, now set when user was last synchronized
-      $rootScope.synced = UserSessionService.getItemsSynchronized(activeUUID);
-      var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
-      if (isNaN(sinceLastItemsSynchronized) || sinceLastItemsSynchronized > itemsSynchronizedThreshold) {
-        $scope.$evalAsync(function() {
-          if (!$rootScope.synced){
+    $rootScope.synced = UserSessionService.getItemsSynchronized(activeUUID);
+    var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
+    if (isNaN(sinceLastItemsSynchronized) || sinceLastItemsSynchronized > itemsSynchronizedThreshold) {
+      $scope.$evalAsync(function() {
+        if (!$rootScope.synced){
             // This is the first load for the user
             $rootScope.syncState = 'active';
           }else{
@@ -437,8 +437,8 @@ function MainController(
           }
         });
 
-        SynchronizeService.synchronize(activeUUID).then(function(firstSync) {
-          if (firstSync){
+      SynchronizeService.synchronize(activeUUID).then(function(firstSync) {
+        if (firstSync){
             // Also immediately after first sync add completed and archived to the mix
             $rootScope.syncState = 'completedAndArchived';
             SynchronizeService.addCompletedAndArchived(activeUUID).then(function(){
@@ -455,15 +455,15 @@ function MainController(
               itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
               sinceLastItemsSynchronized > userSyncTimeTreshold){
             UserService.updateAccountPreferences();
-          }
+        }
 
-          itemsSynchronizeCounter++;
-        }, function(){
-          $rootScope.syncState = 'error';
-        });
-      }
+        itemsSynchronizeCounter++;
+      }, function(){
+        $rootScope.syncState = 'error';
+      });
     }
   }
+}
 
   // CLEANUP
 

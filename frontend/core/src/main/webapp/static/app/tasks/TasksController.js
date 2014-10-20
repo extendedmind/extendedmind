@@ -39,7 +39,7 @@
 
   $scope.isTaskFrozen = function(task) {
     return freezedTasksInLists.findFirstIndexByKeyValue('task', task) !== undefined;
-  }
+  };
 
   $scope.getTaskModified = function(task){
     var frozenTask = freezedTasksInLists.findFirstObjectByKeyValue('task', task);
@@ -48,7 +48,7 @@
     }else {
       return task.modified;
     }
-  }
+  };
 
   // lock task in lists
   function freezeTask(task) {
