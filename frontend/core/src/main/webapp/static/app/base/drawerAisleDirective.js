@@ -115,12 +115,13 @@
       setupMenuDrawer();
       DrawerService.registerOpenedCallback('left', menuDrawerOpened, 'drawerAisleDirective');
       DrawerService.registerClosedCallback('left', menuDrawerClosed, 'drawerAisleDirective');
-      DrawerService.registerHandleReleasedCallback('left', menuDrawerHandleReleased, 'drawerAisleDirective');
+      DrawerService.registerAboutToOpenCallback('left', menuDrawerAboutToOpen, 'drawerAisleDirective');
+      DrawerService.registerAboutToCloseCallback('left', menuDrawerAboutToClose, 'drawerAisleDirective');
       DrawerService.registerOpenCallback('left', menuDrawerOpen, 'drawerAisleDirective');
       DrawerService.registerCloseCallback('left', menuDrawerClose, 'drawerAisleDirective');
+
       setupEditorDrawer();
-      DrawerService.registerHandleReleasedCallback('right', editorDrawerHandleReleased,
-                                                   'drawerAisleDirective');
+      DrawerService.registerAboutToCloseCallback('right', editorDrawerAboutToClose, 'drawerAisleDirective');
       DrawerService.registerOpenCallback('right', editorDrawerOpen, 'drawerAisleDirective');
       DrawerService.registerCloseCallback('right', editorDrawerClose, 'drawerAisleDirective');
       $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
@@ -220,20 +221,27 @@
       }
 
       /*
-      * Enable swiping and disable sliding and vice versa when drawer handle is released and animation starts.
+      * Disable swiping when drawer handle is released and about to open and animation starts.
       */
-      function menuDrawerHandleReleased(drawerDirection) {
+      function menuDrawerAboutToOpen() {
         var activeFeature = $scope.getActiveFeature();
+        if ($rootScope.columns === 1) {
+          if (areaAboutToMoveToNewPositionCallbacks[activeFeature])
+            areaAboutToMoveToNewPositionCallbacks[activeFeature]();
+        }
+      }
 
-        if (drawerDirection === 'closing' && $rootScope.columns === 1) {
+      /*
+      * Enable swiping and disable sliding when drawer handle is released and about to close
+      * and animation starts.
+      */
+      function menuDrawerAboutToClose() {
+        var activeFeature = $scope.getActiveFeature();
+        if ($rootScope.columns === 1) {
           // Disable dragging for the short time that the menu is animating
           DrawerService.disableDragging('left');
           if (areaAboutToMoveToInitialPositionCallbacks[activeFeature])
             areaAboutToMoveToInitialPositionCallbacks[activeFeature]();
-        }
-        else if (drawerDirection === 'opening' && $rootScope.columns === 1) {
-          if (areaAboutToMoveToNewPositionCallbacks[activeFeature])
-            areaAboutToMoveToNewPositionCallbacks[activeFeature]();
         }
       }
 
@@ -260,11 +268,12 @@
       }
 
       /*
-      * Enable swiping for underlying swiper when drawer handle is released and animation starts.
+      * Enable swiping for underlying swiper when drawer handle is released and about to close
+      * and animation starts.
       */
-      function editorDrawerHandleReleased(drawerDirection) {
+      function editorDrawerAboutToClose() {
         var activeFeature = $scope.getActiveFeature();
-        if (drawerDirection === 'closing' && $rootScope.columns === 1) {
+        if ($rootScope.columns === 1) {
           if (areaAboutToShowCallbacks[activeFeature]) areaAboutToShowCallbacks[activeFeature]();
         }
       }

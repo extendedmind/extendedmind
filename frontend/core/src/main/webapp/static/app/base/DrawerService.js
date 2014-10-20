@@ -76,11 +76,10 @@
       }
     } else if (drawerState.info.towards !== snapperSide && drawerState.info.flick) {
       drawerDirection = 'opening';
-    }
-
-    for (var id in snappers[snapperSide].handleReleasedCallbacks) {
-      if (snappers[snapperSide].handleReleasedCallbacks.hasOwnProperty(id))
-        snappers[snapperSide].handleReleasedCallbacks[id](drawerDirection);
+      for (var aboutToOpenID in snappers[snapperSide].aboutToOpenCallbacks) {
+        if (snappers[snapperSide].aboutToOpenCallbacks.hasOwnProperty(aboutToOpenID))
+          snappers[snapperSide].aboutToOpenCallbacks[aboutToOpenID]();
+      }
     }
   }
 
@@ -128,10 +127,10 @@
     return {
       openCallbacks: {},
       closeCallbacks: {},
+      aboutToOpenCallbacks: {},
       aboutToCloseCallbacks: {},
       openedCallbacks: {},
-      closedCallbacks: {},
-      handleReleasedCallbacks: {}
+      closedCallbacks: {}
     };
   }
 
@@ -266,6 +265,11 @@
       }
       snappers[drawerSide].closedCallbacks[id] = callback;
     },
+    registerAboutToOpenCallback: function(drawerSide, callback, id) {
+      if (!snappers[drawerSide])
+        snappers[drawerSide] = createDrawerSkeleton();
+      snappers[drawerSide].aboutToOpenCallbacks[id] = callback;
+    },
     registerAboutToCloseCallback: function(drawerSide, callback, id) {
       if (!snappers[drawerSide])
         snappers[drawerSide] = createDrawerSkeleton();
@@ -282,12 +286,6 @@
         snappers[drawerSide] = createDrawerSkeleton();
       }
       snappers[drawerSide].openCallbacks[id] = callback;
-    },
-    registerHandleReleasedCallback: function(drawerSide, callback, id) {
-      if (!snappers[drawerSide]){
-        snappers[drawerSide] = createDrawerSkeleton();
-      }
-      snappers[drawerSide].handleReleasedCallbacks[id] = callback;
     }
   };
 }
