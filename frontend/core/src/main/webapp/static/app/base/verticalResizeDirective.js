@@ -18,12 +18,22 @@
   return {
     restrict: 'A',
     controller: function($scope) {
+
+      $scope.resizedCallbacks = {}
+
       this.overrideVerticalResize = function(element) {
         $scope.overrideElement = element;
       };
       this.clearOverrideElement = function() {
         $scope.overrideElement = undefined;
       };
+      this.registerResizedCallback = function(callback, id){
+        $scope.resizedCallbacks[id] = callback;
+      };
+      this.unregisterResizedCallback = function(id){
+        if ($scope.resizedCallbacks[id]) delete $scope.resizedCallbacks[id];
+      };
+
     },
     link: function postLink(scope, element, attrs) {
       var maxHeightWithoutKeyboard;
@@ -42,6 +52,7 @@
           element[0].style.maxHeight = $rootScope.currentHeight + 'px';
           maxHeightWithoutKeyboard = $rootScope.currentHeight;
         }
+        executeResizedCallbacks();
       }
       if (angular.isFunction(scope.registerWindowResizedCallback)) {
         scope.registerWindowResizedCallback(windowResized, 'verticalResizeDirective' + '-' +
@@ -61,12 +72,24 @@
           if (scope.overrideElement)
             resizeElement = scope.overrideElement;
 
+          var newHeight
           if (newHeight) {
             resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard - newHeight) + 'px';
           }
           else resizeElement[0].style.maxHeight = maxHeightWithoutKeyboard  + 'px';
+          executeResizedCallbacks();
         }
       }
+
+      function executeResizedCallbacks() {
+        if (scope.resizedCallbacks) {
+          for (var callbackId in scope.resizedCallbacks) {
+            if (scope.resizedCallbacks.hasOwnProperty(callbackId))
+              scope.resizedCallbacks[callbackId]();
+          }
+        }
+      }
+
 
       scope.$watch('softKeyboard.height', doVerticalResize);
     }
