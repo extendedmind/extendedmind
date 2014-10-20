@@ -15,7 +15,7 @@
 
  'use strict';
 
- function EditorController($rootScope, $scope, SwiperService, UISessionService) {
+ function EditorController($rootScope, $scope, ListsService, SwiperService, UISessionService) {
 
   // OPENING, INITIALIZING, CLOSING
 
@@ -160,7 +160,35 @@
     if (!$rootScope.$$phase && !$scope.$$phase)
       $scope.$digest();
   };
+
+  // DROP-DOWN LIST WIDGET
+  $scope.openDropDownList = function() {
+    $scope.dropDownListOpen = true;
+  };
+  $scope.closeDropDownList = function() {
+    $scope.dropDownListOpen = false;
+  };
+  $scope.getListFromUUID = function(uuid) {
+    var list = ListsService.getListByUUID(uuid, UISessionService.getActiveUUID());
+    if (list) return list;
+  };
+  $scope.getListTitleFromUUID = function(uuid) {
+    var list = ListsService.getListByUUID(uuid, UISessionService.getActiveUUID());
+    if (list) return list.title;
+  };
+
+  $scope.closeDropDownListAndSetListToItem = function(item, listUUID) {
+    $scope.closeDropDownList();
+    if (!item.transientProperties) item.transientProperties = {};
+    item.transientProperties.list = listUUID;
+  };
+
+  $scope.closeDropDownListAndClearListFromItem = function(item, listUUID) {
+    $scope.closeDropDownList();
+    if (item.transientProperties && item.transientProperties.list === listUUID)
+      delete item.transientProperties.list;
+  };
 }
 
-EditorController['$inject'] = ['$rootScope', '$scope', 'SwiperService', 'UISessionService'];
+EditorController['$inject'] = ['$rootScope', '$scope', 'ListsService', 'SwiperService', 'UISessionService'];
 angular.module('em.main').controller('EditorController', EditorController);

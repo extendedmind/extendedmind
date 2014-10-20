@@ -264,6 +264,21 @@ Vertically center .container-master and .container-editor in large screens
 # LEVEL 6: row and groups
 */
 
+// 1. Vertically and horizontally align the content of the middle element.
+// Works with <a><span></span></a> structure. Unfortunately a <button> element does not work here
+// because that buttons don't work with display:table*. Bootstrap has a similar solution:
+// http://getbootstrap.com/components/#input-groups-buttons
+.row-form,
+.group-mixed--middle:first-child {
+  & > a{                        // [1]
+    display: table;
+    & > span{                   // [1]
+      height: inherit;
+      vertical-align: middle;
+    }
+  }
+}
+
 @width-button-gap: 10px;
 
 /*

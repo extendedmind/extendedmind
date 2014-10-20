@@ -33,8 +33,17 @@
               <button ng-if="task.transientProperties.date" type="button" class="btn-clear pikaday-clear" ng-click="closeCalendarAndCall(clearTransientDate, task)"></button>
             </div>
           </div>
-          <div ng-if="!calendarOpen">
-            <div class="row animate-calendar" ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></div>
+
+          <div ng-if="dropDownListOpen" class="swiper-no-swiping animate-calendar" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeDropDownList()" data-snap-ignore="true">
+            <div drop-down-list="lists" drop-down-list-save="closeDropDownListAndSetListToItem(task, listUUID)" drop-down-list-clear="closeDropDownListAndClearListFromItem(task, listUUID)" drop-down-list-get-selected="getListFromUUID(task.transientProperties.list)"></div>
+          </div>
+
+          <div ng-if="!calendarOpen && !dropDownListOpen">
+            <div class="row-form animate-calendar" ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></div>
+
+            <div class="row-form" ng-click="openDropDownList()">
+              <span class="text-link" ng-bind="task.transientProperties.list ? getListTitleFromUUID(task.transientProperties.list) : 'select list...'"></span>
+            </div>
 
             <!--
             TODO: lists-picker
@@ -51,7 +60,7 @@
                 </div>
               </div>
             </div-->
-            <textarea class="row" ng-model="task.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
+            <textarea class="row-form" ng-model="task.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
 
           </div>
         </div>

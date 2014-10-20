@@ -1,0 +1,20 @@
+<div>
+
+  <div ng-if="selectedList" class="group-mixed">
+    <div class="group-mixed--middle" ng-click="listSelected(selectedList)">
+      <a href>
+        <span class="text-link emphasis" ng-bind="selectedList.title"></span>
+      </a>
+    </div>
+
+    <div class="group-mixed--right">
+      <button type="button" class="btn-clear" ng-click="listCleared(selectedList)"></button>
+    </div>
+  </div>
+
+  <div class="row-form" ng-repeat="list in lists | filter:notSelectedList" ng-click="listSelected(list)">
+    <a href>
+      <span class="text-link" ng-bind="list.title"></span>
+    </a>
+  </div>
+</div>
