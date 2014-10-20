@@ -96,6 +96,10 @@
       });
     }
 
+    // Vibrate
+    if (navigator.vibrate)
+      navigator.vibrate(200);
+
     freezeTask(task);
 
     if (task.completed) {
@@ -108,9 +112,6 @@
       return false;
     } else {
       AnalyticsService.do('completeTask');
-      // Vibrate
-      if (navigator.vibrate)
-        navigator.vibrate(200);
 
       TasksService.completeTask(task, UISessionService.getActiveUUID()).then(function(){
         if (!taskCompletingReadyDeferred) unfreezeTask(task, true);
