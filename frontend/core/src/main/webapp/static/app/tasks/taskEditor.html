@@ -28,36 +28,38 @@
 
         <div class="container-content" drawer-override-aisle="right">
 
-          <div ng-if="!calendarOpen" class="row animate-calendar" ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></div>
           <div ng-if="calendarOpen" class="row swiper-no-swiping animate-calendar" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()" data-snap-ignore="true">
             <div calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false" >
               <button ng-if="task.transientProperties.date" type="button" class="btn-clear pikaday-clear" ng-click="closeCalendarAndCall(clearTransientDate, task)"></button>
             </div>
           </div>
+          <div ng-if="!calendarOpen">
+            <div class="row animate-calendar" ng-click="openCalendar()" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></div>
 
-          <!--
-          TODO: lists-picker
-          div lists-select-options>
-            <select ng-if="!addNewListVisible" class="select-list-visible-animation row" ng-model="task.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions">
-              <option value="">select list&#8230;</option>
-            </select>
-            <div ng-if="addNewListVisible" class="group-mixed select-list-visible-animation">
-              <div class="group-mixed--middle">
-                <input type="text" ng-model="newList.title" placeholder="add list&#8230;"/>
+            <!--
+            TODO: lists-picker
+            div lists-select-options>
+              <select ng-if="!addNewListVisible" class="select-list-visible-animation row" ng-model="task.transientProperties.list" ng-options="list.uuid as list.title for list in listsSelectOptions" options-disabled="list.delimiter for list in listsSelectOptions">
+                <option value="">select list&#8230;</option>
+              </select>
+              <div ng-if="addNewListVisible" class="group-mixed select-list-visible-animation">
+                <div class="group-mixed--middle">
+                  <input type="text" ng-model="newList.title" placeholder="add list&#8230;"/>
+                </div>
+                <div class="group-mixed--right">
+                  <a href class="group-mixed--right font-smallest add-new-list-item-cancel" ng-click="setAddNewListHidden()">cancel</a>
+                </div>
               </div>
-              <div class="group-mixed--right">
-                <a href class="group-mixed--right font-smallest add-new-list-item-cancel" ng-click="setAddNewListHidden()">cancel</a>
-              </div>
-            </div>
-          </div-->
-          <textarea class="row" ng-model="task.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
+            </div-->
+            <textarea class="row" ng-model="task.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
 
+          </div>
         </div>
 
         <footer class="container-content--after editor-footer" editor-footer>
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
-            <a href ng-if="task.transientProperties.date" ng-click="openExpand()">
+              <a href ng-if="task.transientProperties.date" ng-click="openExpand()">
                 <span class="text-move"></span>
               </a>
             </div>
