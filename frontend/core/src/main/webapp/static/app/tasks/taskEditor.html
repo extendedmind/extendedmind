@@ -57,7 +57,7 @@
         <footer class="container-content--after editor-footer" editor-footer>
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
-            <a href ng-if="task.transientProperties.date" ng-click="toggleExpand()">
+            <a href ng-if="task.transientProperties.date" ng-click="openExpand()">
                 <span class="text-move"></span>
               </a>
             </div>
@@ -65,7 +65,7 @@
               <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>
-          <div ng-if="footerExpanded" later="setDateAndSave(date)" editable-field-container="auto" editable-field-container-clicked-elsewhere="toggleExpand()"></div>
+          <div ng-if="footerExpanded" later="setDateAndSave(date)" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeExpand()"></div>
         </footer>
 
       </div>

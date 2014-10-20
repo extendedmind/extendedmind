@@ -28,12 +28,12 @@
       }
 
       function setDateAndClose(date, dateSetterFn) {
-        var offsetFromStaringDate = dateSetterFn(date).getYYYYMMDD(date);
-        processClose(offsetFromStaringDate);
+        dateSetterFn(date);
+        processClose(date);
       }
 
       scope.setDateTomorrow = function() {
-        var tomorrow = DateService.getTomorrowYYYYMMDD();
+        var tomorrow = DateService.getTomorrowDate();
         processClose(tomorrow);
       };
 

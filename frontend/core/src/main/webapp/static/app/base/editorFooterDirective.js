@@ -23,54 +23,53 @@
     link: function(scope, element) {
       var expandPromise, shrinkPromise;
 
-      scope.toggleExpand = function() {
-        if (scope.footerExpanded) {
-          // Reset container's padding-bottom to default footer height before animation so that the backside
-          // of expanded footer is not blank.
-          $rootScope.EDITOR_FOOTER_HEIGHT = footerHeight;
-          // Set new bottom for footer so that it does not follow new position caused by container's
-          // padding-bottom change.
-          element[0].style.bottom = -expandedFooterHeight + 'px';
+      scope.closeExpand = function() {
+        // Reset container's padding-bottom to default footer height before animation so that the backside
+        // of expanded footer is not blank.
+        $rootScope.EDITOR_FOOTER_HEIGHT = footerHeight;
+        // Set new bottom for footer so that it does not follow new position caused by container's
+        // padding-bottom change.
+        element[0].style.bottom = -expandedFooterHeight + 'px';
 
-          // Start shrink animation.
-          shrinkPromise = $animate.removeClass(element, 'animate-editor-footer-open').then(function() {
+        // Start shrink animation.
+        shrinkPromise = $animate.removeClass(element, 'animate-editor-footer-open').then(function() {
 
-            // Set footer height and bottom to default values.
-            element[0].style.height = footerHeight + 'px';
-            element[0].style.bottom = -footerHeight + 'px';
+          // Set footer height and bottom to default values.
+          element[0].style.height = footerHeight + 'px';
+          element[0].style.bottom = -footerHeight + 'px';
 
+          scope.$apply(function() {
+            scope.footerExpanded = false; // remove expandable DOM
+          });
+          shrinkPromise = undefined;
+        });
+      };
+
+      scope.openExpand = function() {
+        scope.footerExpanded = true;
+        // Footer expands so it needs no height and bottom.
+        element[0].style.height = expandedFooterHeight + 'px';
+        element[0].style.bottom = -expandedFooterHeight + 'px';
+
+        // Start expand animation.
+        expandPromise = $animate.addClass(element, 'animate-editor-footer-open').then(function() {
+
+          // Shrink promise exists if footer is shrinked before it is fully expanded. In that case,
+          // this resolve callback is more like a rejection so let's do nothing here and let shrink promise
+          // do its thing instead.
+          if (!shrinkPromise) {
+            // No shrink promise -> footer expanded.
+
+            // Set new bottom for footer so that it does not follow new position caused by container's
+            // padding-bottom change.
+            element[0].style.bottom = -(135 + expandedFooterHeight) + 'px';
             scope.$apply(function() {
-              scope.footerExpanded = false; // remove expandable DOM
+              // Set padding-bottom for container to make content scrollable.
+              $rootScope.EDITOR_FOOTER_HEIGHT = expandedFooterHeight;
             });
-            shrinkPromise = undefined;
-          });
-        }
-        else {
-          scope.footerExpanded = true;
-          // Footer expands so it needs no height and bottom.
-          element[0].style.height = expandedFooterHeight + 'px';
-          element[0].style.bottom = -expandedFooterHeight + 'px';
-
-          // Start expand animation.
-          expandPromise = $animate.addClass(element, 'animate-editor-footer-open').then(function() {
-
-            // Shrink promise exists if footer is shrinked before it is fully expanded. In that case,
-            // this resolve callback is more like a rejection so let's do nothing here and let shrink promise
-            // do its thing instead.
-            if (!shrinkPromise) {
-              // No shrink promise -> footer expanded.
-
-              // Set new bottom for footer so that it does not follow new position caused by container's
-              // padding-bottom change.
-              element[0].style.bottom = -(135 + expandedFooterHeight) + 'px';
-              scope.$apply(function() {
-                // Set padding-bottom for container to make content scrollable.
-                $rootScope.EDITOR_FOOTER_HEIGHT = expandedFooterHeight;
-              });
-            }
-            expandPromise = undefined;
-          });
-        }
+          }
+          expandPromise = undefined;
+        });
       };
     }
   };
