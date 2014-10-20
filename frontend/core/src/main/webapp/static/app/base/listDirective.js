@@ -33,10 +33,6 @@
         $scope.listLength = length;
       }
 
-      $scope.scrollToBottom = function(){
-        $element[0].scrollTop = $element[0].scrollHeight;
-      }
-
       this.notifyListItemAdd = function(){
         if ($attrs.listOrder !== 'top'){
           // NOTE: This is called before notifyListLength, that's why we
@@ -44,7 +40,7 @@
           $scope.listLength = $scope.listLength + 1;
           $scope.activateListBottom();
           setTimeout(function(){
-            $scope.scrollToBottom();
+            $element[0].scrollTop = $element[0].scrollHeight;
           });
         }
       }
@@ -90,13 +86,6 @@
       }
 
       function activateListAdd() {
-        function doActivateListItemAddWithLock(){
-          // Set activating lock on, to use it for scrolling after
-          // soft keyboard is visible
-          UISessionService.lock('activatingAdd', 500);
-          scope.activateAddItem();
-        }
-
         if (listOpenOnAddFn){
           // Execute open function
           listOpenOnAddFn();
@@ -107,28 +96,16 @@
               // have to wait for digest to complete for focus to move to the
               // bottom. Can't think of a better way to do this, can you?
               $timeout(function(){
-                doActivateListItemAddWithLock();
+                scope.activateAddItem();
               });
               return;
-            }else{
-              // Bottom ordered but no need to digest more list, just activate
-              doActivateListItemAddWithLock();
             }
-          }else{
-            // Top ordered list, just activate
-            scope.activateAddItem();
           }
+          scope.activateAddItem();
         }
       }
-      function verticallyResized(){
-        // Use lock to prevent scrolling when something else other than add has been activated
-        if (attrs.listOrder !== 'top' && UISessionService.isLocked('activatingAdd')){
-           $scope.scrollToBottom();
-        };
-      }
-
       function listActive(){
-        controllers[0].registerCallbacks(activateListAdd, verticallyResized, element);
+        controllers[0].registerActivateAddListItemCallback(activateListAdd, element);
       }
       if (controllers[1]){
         controllers[1].registerSlideActiveCallback(listActive);

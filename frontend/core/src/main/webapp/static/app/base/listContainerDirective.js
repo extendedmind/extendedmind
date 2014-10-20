@@ -23,17 +23,14 @@
 
       var overrideVerticalResize = $attrs.listContainerOverrideVerticalResize;
 
-      this.registerCallbacks = function(activateCallback, resizeCallback, element){
-        activateAddListItemCallback = activateCallback;
-        $scope.verticallyResizedCallback = resizeCallback;
+      this.registerActivateAddListItemCallback = function(callback, element){
+        activateAddListItemCallback = callback;
         if (overrideVerticalResize) $scope.registerOverrideElement(element);
       };
 
       this.activateAddListItem = function(){
         if (activateAddListItemCallback) activateAddListItemCallback();
       };
-
-
     },
     compile: function compile() {
       return {
@@ -43,17 +40,8 @@
               verticalResizeController.overrideVerticalResize(overrideElement);
           };
 
-          function verticallyResized(){
-            if (scope.verticallyResizedCallback) scope.verticallyResizedCallback();
-          }
-
-          if (verticalResizeController){
-            verticalResizeController.registerResizedCallback(verticallyResized, element);
-          }
-
           scope.$on('$destroy', function() {
             if (verticalResizeController) verticalResizeController.clearOverrideElement();
-            if (verticalResizeController) verticalResizeController.unregisterResizedCallback(element);
           });
         }
       };
