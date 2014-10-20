@@ -21,10 +21,17 @@
 angular.module('em.appTest', ['em.app', 'common', 'ngMockE2E']);
 
 angular.module('em.appTest')
-  .controller('MockController', ['MockBackendService', 'SwiperService',
-    function(MockBackendService, SwiperService){
+  .controller('MockController', ['$rootScope', 'MockBackendService', 'SwiperService',
+    function($rootScope, MockBackendService, SwiperService){
       MockBackendService.mockBackend();
       SwiperService.setTouchSimulation(true);
+
+      $rootScope.DEBUG_toggleSoftKeyboard = function() {
+        if ($rootScope.softKeyboard) {
+          $rootScope.softKeyboard.height = $rootScope.softKeyboard.height === 0 ? 350 : 0;
+        }
+      };
+
   }])
   .run(['$httpBackend',
     function($httpBackend) {
