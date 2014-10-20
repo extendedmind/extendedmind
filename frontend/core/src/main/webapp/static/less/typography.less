@@ -24,7 +24,7 @@ Fonts in use:
 @size-font-ingress: 25px;
 @size-font-content: 18px;
 @size-font-medium: 15px;
-@size-font-topheading: 13px;
+@size-font-topheading: 15px;
 @size-font-small: 13px;
 
 * {
@@ -72,6 +72,7 @@ h1, h2, h3, h4 {
 
 h1 {
   font-size: @size-font-topheading;
+  .set-font-bold;
 }
 
 h2 {
@@ -143,11 +144,13 @@ Navigation texts
 }
 
 .text-navigation-menu {
+  .set-font-bold;
   color: @color-text-inverse;
   font-size: @size-font-large;
 }
 
 .text-navigation-menu-small {
+  .set-font-bold;
   color: @color-text-inverse;
   font-size: @size-font-topheading;
 }
