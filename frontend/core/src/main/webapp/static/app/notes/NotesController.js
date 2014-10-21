@@ -15,69 +15,69 @@
  'use strict';
 
  function NotesController($filter, $q, $scope, AnalyticsService, ListsService, NotesService, TagsService,
-                          SwiperService, UISessionService, UUIDService) {
+                          SwiperService, UISessionService) {
 
-  $scope.saveNote = function saveNote(note, keywords) {
+  $scope.noteHasKeywords = function noteHasKeywords(note) {
+    return note.transientProperties && note.transientProperties.keywords;
+  };
 
-    // Save keywords first because saveTag requires network connection.
-    function saveKeywords(note, keywords) {
-
-      // Return keywords, that has beend added during note edit
-      function getNewKeywords() {
-        var filteredKeywords = [];
-
-        function getNoteKeyword(uuid) {
-          keywords.some(function(keyword) {
-            if (keyword.uuid === uuid && keyword.isNew) {
-              filteredKeywords.push(keyword);
-              return true;
-            }
-            return false;
-          });
-        }
-        note.transientProperties.keywords.forEach(getNoteKeyword);
-        return filteredKeywords;
+  // Return keywords, that has beend added during note edit
+  function getNewKeywords(keywords) {
+    var newKeywords = [];
+    for (var i=0; i<keywords.length; i++){
+      var keyword = keywords[i];
+      if (keyword.isNew){
+        newKeywords.push(keyword);
       }
-
-      // Keyword is added with fake UUID and isNew key, which are removed before save.
-      // Keyword is associated with UUID so it needs to be removed from lists also.
-      function removeFromMemoryAndReturnSavePromise(keyword) {
-        keywords.splice(keywords.indexOf(keyword), 1);
-        note.transientProperties.keywords.splice(note.transientProperties.keywords.indexOf(keyword.uuid), 1);
-        delete keyword.uuid;
-        delete keyword.isNew;
-
-        return TagsService.saveTag(keyword, UISessionService.getActiveUUID());
-      }
-
-      // Re-add keywords to note with correct UUIDs.
-      function addKeywordsToNote(keywords) {
-        keywords.forEach(function(keyword) {
-          note.transientProperties.keywords.push(keyword.uuid);
-        });
-      }
-
-      var deferredSaveKeywordsSave = $q.defer();
-      var saveNewKeywordPromises = [];
-
-      if ($scope.noteHasKeywords(note)) {
-        // http://stackoverflow.com/a/21315112
-        saveNewKeywordPromises = getNewKeywords().map(removeFromMemoryAndReturnSavePromise);
-
-        $q.all(saveNewKeywordPromises)
-        .then(addKeywordsToNote)
-        .then(deferredSaveKeywordsSave.resolve);
-
-      } else {
-        deferredSaveKeywordsSave.resolve();
-      }
-      return deferredSaveKeywordsSave.promise;
     }
+    return newKeywords;
+  }
 
+  // Keyword is added with fake UUID and isNew key, which are removed before save.
+  // Keyword is associated with UUID so it needs to be removed from lists also.
+  function removeFromMemoryAndReturnSavePromise(keyword, note) {
+    note.transientProperties.keywords.splice(note.transientProperties.keywords.indexOf(keyword.uuid), 1);
+    delete keyword.uuid;
+    delete keyword.isNew;
+
+    return TagsService.saveTag(keyword, UISessionService.getActiveUUID());
+  }
+
+  // Re-add keywords to note with correct UUIDs.
+  function addKeywordsToNote(keywords, note) {
+    keywords.forEach(function(keyword) {
+      note.transientProperties.keywords.push(keyword.uuid);
+    });
+  }
+
+  // Save keywords first because saveTag requires network connection.
+  function saveKeywords(note) {
+    var deferredSaveKeywordsSave = $q.defer();
+
+    if ($scope.noteHasKeywords(note))
+     {
+      // http://stackoverflow.com/a/21315112
+      var newKeywords = getNewKeywords(note.transientProperties.keywords);
+      var saveNewKeywordPromises = newKeywords.map(function(newKeyword){
+        return removeFromMemoryAndReturnSavePromise(newKeyword, note);
+      });
+
+      $q.all(saveNewKeywordPromises).then(function(){
+        addKeywordsToNote(newKeywords, note);
+        deferredSaveKeywordsSave.resolve();
+      });
+
+    } else {
+      deferredSaveKeywordsSave.resolve();
+    }
+    return deferredSaveKeywordsSave.promise;
+  }
+
+  $scope.saveNote = function saveNote(note) {
     if (note.uuid) AnalyticsService.do('saveNote');
     else AnalyticsService.do('addNote');
 
-    return saveKeywords(note, keywords).then(function() {
+    return saveKeywords(note).then(function() {
       return NotesService.saveNote(note, UISessionService.getActiveUUID());
     });
   };
@@ -100,14 +100,14 @@
 
   $scope.openNoteEditor = function(note){
     return $scope.openEditor('note', note, 'fullScreen');
-  }
+  };
 
   $scope.openNoteEditorView = function(note){
     // TODO: Use mode 'view' here when view mode is implemented!
     return $scope.openEditor('note', note, 'fullScreen');
-  }
+  };
 
-  $scope.closeNoteEditor = function(note) {
+  $scope.closeNoteEditor = function() {
     $scope.closeEditor();
   };
 
@@ -116,5 +116,5 @@
 NotesController['$inject'] = [
 '$filter', '$q', '$scope',
 'AnalyticsService', 'ListsService', 'NotesService', 'TagsService',
-'SwiperService', 'UISessionService', 'UUIDService'];
+'SwiperService', 'UISessionService'];
 angular.module('em.notes').controller('NotesController', NotesController);

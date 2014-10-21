@@ -96,9 +96,6 @@
   $scope.isNewKeyword = function isNewKeyword(keyword) {
     return keyword.title === $scope.newKeyword.title;
   };
-  $scope.noteHasKeywords = function noteHasKeywords(note) {
-    return note.transientProperties && note.transientProperties.keywords;
-  };
   $scope.clearKeyword = function clearKeyword() {
     $scope.newKeyword = {
       tagType: 'keyword'
