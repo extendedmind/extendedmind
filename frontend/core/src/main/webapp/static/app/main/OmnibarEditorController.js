@@ -50,6 +50,10 @@
     }
   };
 
+  $scope.clearOmnibarTitlebar = function(){
+    $scope.titlebar.text = "";
+  }
+
   // SEARCH
 
   $scope.$watch('titlebar.text', function(newTitle/*, oldTitle*/) {

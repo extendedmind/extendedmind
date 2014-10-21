@@ -12,6 +12,9 @@
           <textarea type="text" ng-model="titlebar.text" ng-keydown="omnibarTitlebarTextKeyDown($event)" editable-field
           editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="save to inbox / search&#8230;" maxlength="128" required ></textarea>
         </div>
+        <div ng-if="titlebar.text.length"class="group-mixed--right">
+           <button type="button" class="btn-clear" ng-click="clearOmnibarTitlebar()"></button>
+         </div>
       </form>
     </div>
   </header>

@@ -43,7 +43,7 @@ textarea {
 */
 
 @height-btn: @grid-vertical;
-@size-btn-clear: 28px;
+@size-btn-clear: 10px;
 
 [class^="btn"], [class*=" btn"] {
   padding: 0;
@@ -87,6 +87,7 @@ are `button` elements that have a logo as `label`.
   &:after {
     color: @color-text;
     .set-icon-font;
+    vertical-align: middle;
     font-size: @size-btn-clear;
     content: @icon-x;
   }
