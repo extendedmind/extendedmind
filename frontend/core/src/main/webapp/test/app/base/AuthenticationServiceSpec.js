@@ -45,6 +45,9 @@ describe('AuthenticationService', function() {
     isOfflineEnabled: function() {
       return false;
     },
+    isItemsSynchronized: function() {
+      return true;
+    },
     getActiveUUID: function() {
       return testOwnerUUID;
     },

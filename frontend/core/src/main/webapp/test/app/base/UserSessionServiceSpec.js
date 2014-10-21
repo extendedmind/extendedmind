@@ -126,9 +126,9 @@ describe('UserSessionService', function() {
     inject(function(_UserSessionService_) {
       UserSessionService = _UserSessionService_;
     });
-    UserSessionService.setItemsSynchronized(testOwnerUUID);
+    UserSessionService.setItemsSynchronized(Date.now(), testOwnerUUID);
     var itemsSynchronized = UserSessionService.getItemsSynchronized(testOwnerUUID);
-    expect(isNaN(itemsSynchronized)).toBe(false);
+    expect(itemsSynchronized).toBeDefined();
   });
 
   it('should sync email in Web Storages and return email from sessionStorage', function() {
