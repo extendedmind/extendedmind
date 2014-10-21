@@ -39,6 +39,7 @@
     SessionStorageService.setUserUUID(LocalStorageService.getUserUUID());
     SessionStorageService.setCohort(LocalStorageService.getCohort());
     SessionStorageService.setPreferences(LocalStorageService.getPreferences());
+    SessionStorageService.setUserModified(LocalStorageService.getUserModified());
   }
 
   function encodeUsernamePassword(username, password) {
@@ -122,6 +123,7 @@
       SessionStorageService.setUserUUID(authenticateResponse.userUUID);
       SessionStorageService.setCohort(authenticateResponse.cohort);
       SessionStorageService.setPreferences(preferences);
+      SessionStorageService.setUserModified(authenticateResponse.modified);
 
       if (authenticateResponse.replaceable) {
         LocalStorageService.setExpires(authenticateResponse.expires + authExpiresDelta);
@@ -132,6 +134,7 @@
         LocalStorageService.setUserUUID(authenticateResponse.userUUID);
         LocalStorageService.setCohort(authenticateResponse.cohort);
         LocalStorageService.setPreferences(preferences);
+        LocalStorageService.setUserModified(authenticateResponse.modified);
       }
       if (email) {
         setEmail(email);
@@ -174,6 +177,12 @@
       // Only set if given value is larger than set value
       if (!latestModified[ownerUUID] || (modified && latestModified[ownerUUID] < modified)) {
         latestModified[ownerUUID] = modified;
+      }
+    },
+    setUserModified: function(modified) {
+      SessionStorageService.setUserModified(modified);
+      if (offlineBufferEnabled || LocalStorageService.getReplaceable() !== null) {
+        LocalStorageService.setUserModified(modified);
       }
     },
     setItemsSynchronized: function(timestamp, ownerUUID) {
@@ -240,7 +249,8 @@
       if (SessionStorageService.getUserUUID()) {
         var user = {
           uuid: SessionStorageService.getUserUUID(),
-          type: parseInt(SessionStorageService.getUserType())
+          type: parseInt(SessionStorageService.getUserType()),
+          modified: SessionStorageService.getUserModified()
         };
         if (SessionStorageService.getCohort()) {
           user.cohort = parseInt(SessionStorageService.getCohort());

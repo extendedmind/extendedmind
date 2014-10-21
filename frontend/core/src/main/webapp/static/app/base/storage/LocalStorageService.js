@@ -49,12 +49,16 @@
         localStorage.setItem('preferences', JSON.stringify(preferences));
       }
     },
+    setUserModified: function(modified) {
+      if (modified) {
+        localStorage.setItem('userModified', modified);
+      }
+    },
     setState: function(state) {
       if (state) {
         localStorage.setItem('state', JSON.stringify(state));
       }
     },
-
     // getters
     getCollectives: function() {
       if (localStorage.getItem('collectives')) {
@@ -87,12 +91,14 @@
         return JSON.parse(localStorage.getItem('preferences'));
       }
     },
+    getUserModified: function() {
+      return localStorage.getItem('userModified');
+    },
     getState: function() {
       if (localStorage.getItem('state')) {
         return JSON.parse(localStorage.getItem('state'));
       }
     },
-
     clearUser: function() {
       localStorage.removeItem('collectives');
       localStorage.removeItem('email');
@@ -103,6 +109,7 @@
       localStorage.removeItem('userUUID');
       localStorage.removeItem('cohort');
       localStorage.removeItem('preferences');
+      localStorage.removeItem('userModified');
       localStorage.removeItem('state');
 
       // Also clear offline queue
@@ -111,6 +118,9 @@
       }
       if (localStorage.getItem('secondaryRequest')) {
         localStorage.removeItem('secondaryRequest');
+      }
+      if (localStorage.getItem('tertiaryRequest')) {
+        localStorage.removeItem('tertiaryRequest');
       }
       if (localStorage.getItem('requestQueue')) {
         localStorage.removeItem('requestQueue');

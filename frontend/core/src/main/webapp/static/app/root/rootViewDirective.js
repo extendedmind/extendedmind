@@ -70,7 +70,7 @@
       var onlineRequiredRetryCallback = function(modalScope, modalClose, retryFunction, retryFunctionParam,
                                                  promise, promiseParam) {
         $scope.retrying = true;
-        modalScope.modalSuccessText = 'retrying&#8230;';
+        modalScope.modalSuccessText = 'retrying...';
         modalScope.modalSuccessDisabled = true;
         retryFunction(retryFunctionParam).then(function() {
           $scope.retrying = false;

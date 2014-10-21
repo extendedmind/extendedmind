@@ -33,7 +33,7 @@
 
   function updateFavoriteLists(favoriteListUuids){
     UserSessionService.setUIPreference('favoriteLists', favoriteListUuids);
-    UserService.updateAccountPreferences();
+    UserService.saveAccountPreferences();
     $scope.refreshFavoriteLists();
   }
 

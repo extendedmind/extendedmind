@@ -234,8 +234,8 @@ function MainController(
     focusActiveCallback = activateFn;
   };
 
-  // Start from tasks
-  $scope.changeFeature('tasks');
+  // Start from focus
+  $scope.changeFeature('focus');
 
   // ONBOARDING
 
@@ -251,7 +251,7 @@ function MainController(
     if (onboardingPhase === 'itemAdded') {
       // End right after first item added
       UserSessionService.setPreference('onboarded', $rootScope.packaging);
-      UserService.updateAccountPreferences();
+      UserService.saveAccountPreferences();
       $scope.onboardingInProgress = false;
       AnalyticsService.do('firstItemAdded');
     } else if (onboardingPhase === 'secondItemAdded') {
@@ -320,7 +320,7 @@ function MainController(
         }
         if (deleted){
           UserSessionService.setUIPreference('favoriteLists', favoriteListUuids);
-          UserService.updateAccountPreferences();
+          UserService.saveAccountPreferences();
         }
       }
     }
@@ -412,6 +412,7 @@ function MainController(
     UserSessionService.setItemsSynchronized(timestamp, activeUUID);
     $rootScope.synced = timestamp;
     $rootScope.syncState = 'ready';
+    $scope.refreshFavoriteLists();
   }
 
   // Synchronize items if not already synchronizing and interval reached.
@@ -438,24 +439,25 @@ function MainController(
 
       SynchronizeService.synchronize(activeUUID).then(function(firstSync) {
         if (firstSync){
-            // Also immediately after first sync add completed and archived to the mix
-            $rootScope.syncState = 'completedAndArchived';
-            SynchronizeService.addCompletedAndArchived(activeUUID).then(function(){
-              updateItemsSyncronized(activeUUID);
-            }, function(){
-              $rootScope.syncState = 'error';
-            });
-          }else{
+          // Also immediately after first sync add completed and archived to the mix
+          $rootScope.syncState = 'completedAndArchived';
+          SynchronizeService.addCompletedAndArchived(activeUUID).then(function(){
             updateItemsSyncronized(activeUUID);
-          }
-
-          // If there has been a long enough time from last sync, update account preferences as well
-          if (itemsSynchronizeCounter === 0 ||
-              itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
-              sinceLastItemsSynchronized > userSyncTimeTreshold){
-            UserService.updateAccountPreferences();
+          }, function(){
+            $rootScope.syncState = 'error';
+          });
+        }else{
+          updateItemsSyncronized(activeUUID);
         }
 
+        // If there has been a long enough time from last sync, update account preferences as well
+        if (itemsSynchronizeCounter === 0 ||
+            itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
+            sinceLastItemsSynchronized > userSyncTimeTreshold){
+          SynchronizeService.synchronizeUser(activeUUID).then(function(){
+            $scope.refreshFavoriteLists();
+          });
+        }
         itemsSynchronizeCounter++;
       }, function(){
         $rootScope.syncState = 'error';

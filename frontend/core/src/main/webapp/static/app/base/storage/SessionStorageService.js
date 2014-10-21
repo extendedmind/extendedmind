@@ -55,6 +55,11 @@
         sessionStorage.setItem('preferences', JSON.stringify(preferences));
       }
     },
+    setUserModified: function(modified) {
+      if (modified) {
+        sessionStorage.setItem('userModified', modified);
+      }
+    },
     setState: function(state) {
       if (state) {
         sessionStorage.setItem('state', JSON.stringify(state));
@@ -91,14 +96,15 @@
       return sessionStorage.getItem('cohort');
     },
     getPreferences: function() {
-      if (sessionStorage.getItem('preferences')) {
-        return JSON.parse(sessionStorage.getItem('preferences'));
-      }
+      var preferences = sessionStorage.getItem('preferences');
+      if (preferences) return JSON.parse(preferences);
+    },
+    getUserModified: function() {
+      return sessionStorage.getItem('userModified');
     },
     getState: function() {
-      if (sessionStorage.getItem('state')) {
-        return JSON.parse(sessionStorage.getItem('state'));
-      }
+      var state = sessionStorage.getItem('state');
+      if (state) return JSON.parse(state);
     },
     clearUser: function() {
       sessionStorage.removeItem('activeUUID');
@@ -110,6 +116,7 @@
       sessionStorage.removeItem('userUUID');
       sessionStorage.removeItem('cohort');
       sessionStorage.removeItem('preferences');
+      sessionStorage.removeItem('userModified');
       sessionStorage.removeItem('state');
       cachedActiveUUID = cachedUserUUID = cachedEmail = undefined;
     }

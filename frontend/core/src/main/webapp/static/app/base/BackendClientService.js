@@ -93,6 +93,20 @@
     });
   };
 
+  methods.getTertiary = function(url, regex, params, online) {
+    return refreshCredentials(online).then(function() {
+      if (regex.test(url)) {
+        if (online) {
+          return HttpClientService.get(getUrlPrefix() + url);
+        } else {
+          return HttpClientService.getTertiary(getUrlPrefix() + url, params);
+        }
+      } else {
+        emitRegexException(regex, 'get', url);
+      }
+    });
+  };
+
   methods.deleteOffline = function(url, regex, params) {
     return refreshCredentials().then(function() {
       if (regex.test(url)) {
@@ -209,6 +223,9 @@
   };
   methods.registerSecondaryGetCallback = function(callback) {
     HttpClientService.registerCallback('secondary', callback);
+  };
+  methods.registerTertiaryGetCallback = function(callback) {
+    HttpClientService.registerCallback('tertiary', callback);
   };
   methods.registerDefaultCallback = function(callback) {
     HttpClientService.registerCallback('default', callback);

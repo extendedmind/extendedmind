@@ -36,12 +36,24 @@
         return accountResponse.data;
       });
     },
-    updateAccountPreferences: function() {
+    saveAccountPreferences: function() {
       var payload = {
         email: UserSessionService.getEmail(),
         preferences: UserSessionService.getTransportPreferences()
       };
-      BackendClientService.putOnline('/api/account', this.putAccountRegex, payload);
+
+      if (UserSessionService.isOfflineEnabled()) {
+        // Offline
+        var params = {
+          uuid: UserSessionService.getUserUUID(),
+          replaceable: true,
+          type: 'user'
+        }
+        BackendClientService.put('/api/account', this.putAccountRegex, params, payload);
+      }else{
+        // Online
+        BackendClientService.putOnline('/api/account', this.putAccountRegex, payload);
+      }
     },
     logout: function() {
       return BackendClientService.postOnline('/api/logout', postLogoutRegexp).then(function(logoutResponse) {

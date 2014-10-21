@@ -58,8 +58,8 @@
   }
 
   // Callbacks
-  var primaryResultCallback, primaryCreateCallback, secondaryCallback, defaultCallback, onlineCallback;
-
+  var primaryResultCallback, primaryCreateCallback, secondaryCallback, tertiaryCallback,
+  defaultCallback, onlineCallback;
 
   var retryingExecution = false;
   // Recursive method to empty the queue
@@ -84,7 +84,10 @@
           } else if (headRequest.secondary && secondaryCallback) {
             secondaryCallback(headRequest, data, HttpRequestQueueService.getQueue());
             HttpRequestQueueService.saveQueue();
-          } else if (defaultCallback) {
+          } else if (headRequest.tertiary && tertiaryCallback) {
+            tertiaryCallback(headRequest, data, HttpRequestQueueService.getQueue());
+            HttpRequestQueueService.saveQueue();
+          }  else if (defaultCallback) {
             defaultCallback(headRequest, data, HttpRequestQueueService.getQueue());
             HttpRequestQueueService.saveQueue();
           }
@@ -261,6 +264,14 @@
     executeRequests();
   };
 
+  // Custom method for tertiary GET, i.e. user account
+  methods.getTertiary = function(url, params) {
+    var request = getRequest('get', url, params);
+    request.tertiary = true;
+    HttpRequestQueueService.push(request);
+    executeRequests();
+  };
+
   // Custom method for last post, i.e. analytics
   methods.postLast = function(url, data) {
     var request = getRequest('post', url, undefined, data);
@@ -319,6 +330,8 @@
       primaryCreateCallback = callback;
     } else if (type === 'secondary') {
       secondaryCallback = callback;
+    } else if (type === 'tertiary') {
+      tertiaryCallback = callback;
     } else if (type === 'default') {
       defaultCallback = callback;
     } else if (type === 'online') {

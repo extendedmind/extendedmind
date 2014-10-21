@@ -17,7 +17,7 @@
  'use strict';
 
  function SynchronizeService($q, $rootScope, BackendClientService, ItemsService, ListsService,
-                             NotesService, TagsService, TasksService, UserSessionService) {
+                             NotesService, TagsService, TasksService, UserService, UserSessionService) {
 
   var itemsRegex = /\/items/;
   var getItemsRegex = new RegExp(BackendClientService.apiPrefixRegex.source +
@@ -48,7 +48,7 @@
   }
 
   // Register callbacks to BackendClientService
-  var synchronizeCallback = function(request, response /*, queue*/) {
+  function synchronizeCallback(request, response /*, queue*/) {
     if (!jQuery.isEmptyObject(response)) {
       // TODO: The entire offline queue should be evaluated to see, if
       //       something will fail. I.e. delete task on desktop, and try to
@@ -56,9 +56,24 @@
       var ownerUUID = request.params.owner;
       processSynchronizeUpdateResult(ownerUUID, response);
     }
-  };
+  }
+
+  function synchronizeUserAccountCallback(request, response /*, queue*/) {
+    // TODO: We should find from the offline queue whether there is a
+    //       putAccount that comes after this. Currently the response here is just overwritten!
+    storeUserAccountResponse(response);
+  }
+
+  function storeUserAccountResponse(accountResponse){
+    if (!jQuery.isEmptyObject(accountResponse) && accountResponse && accountResponse.data){
+      UserSessionService.setEmail(accountResponse.data.email);
+      UserSessionService.setUserModified(accountResponse.data.modified);
+      UserSessionService.setTransportPreferences(accountResponse.data.preferences);
+    }
+  }
+
   // Handles response from backend where offline buffer has been used
-  var defaultCallback = function(request, response, queue) {
+  function defaultCallback(request, response, queue) {
     var properties;
     // Get the necessary information from the request
     // ****
@@ -141,7 +156,10 @@
       }
 
       properties = {uuid: uuid, modified: response.modified};
-      if (request.params.type === 'item') {
+
+      if (request.params.type === 'user') {
+        UserSessionService.setUserModified(properties.modified);
+      } else if (request.params.type === 'item') {
         if (!ItemsService.updateItemProperties(oldUuid, properties, request.params.owner)) {
           // The item might have moved to either notes or tasks
           if (!TasksService.updateTaskProperties(oldUuid, properties, request.params.owner)) {
@@ -199,8 +217,9 @@
         }
       }
     }
-  };
+  }
   BackendClientService.registerSecondaryGetCallback(synchronizeCallback);
+  BackendClientService.registerTertiaryGetCallback(synchronizeUserAccountCallback);
   BackendClientService.registerDefaultCallback(defaultCallback);
 
   var getAllOnline = function getAllOnline(ownerUUID, getAllMethod, deferred) {
@@ -314,11 +333,29 @@
       getAllOnline(ownerUUID, getAllArchivedAndCompletedOnline, deferred);
       return deferred.promise;
     },
+    synchronizeUser: function(ownerUUID) {
+      var deferred = $q.defer();
+
+      if (UserSessionService.isOfflineEnabled()) {
+        // Offline
+        BackendClientService.getTertiary('/api/account',
+         UserService.getAccountRegex);
+        deferred.resolve();
+      } else {
+        // Online
+        BackendClientService.getTertiary('/api/account',
+         UserService.getAccountRegex, undefined, true).then(function(accountResponse) {
+          storeUserAccountResponse(accountResponse);
+          deferred.resolve();
+        });
+      }
+      return deferred.promise;
+    },
     // Regular expressions for item requests
     getItemsRegex: getItemsRegex
   };
 }
 
 SynchronizeService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'ItemsService',
-'ListsService', 'NotesService', 'TagsService', 'TasksService', 'UserSessionService'];
+'ListsService', 'NotesService', 'TagsService', 'TasksService', 'UserService', 'UserSessionService'];
 angular.module('em.main').factory('SynchronizeService', SynchronizeService);

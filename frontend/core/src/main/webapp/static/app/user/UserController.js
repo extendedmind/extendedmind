@@ -104,7 +104,7 @@
     } else {
       UserSessionService.setPreference('onboarded', packaging);
     }
-    UserService.updateAccountPreferences();
+    UserService.saveAccountPreferences();
   };
 
   $scope.showOnboardingCheckbox = function showOnboardingCheckbox() {
@@ -120,7 +120,7 @@
       userPreferences.ui[name] = false;
     }
     UserSessionService.setPreferences(userPreferences);
-    UserService.updateAccountPreferences();
+    UserService.saveAccountPreferences();
   }
 
   $scope.hideFooter = function hideFooter() {

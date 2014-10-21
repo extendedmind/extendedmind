@@ -21,8 +21,8 @@
 */
 function HttpRequestQueueService() {
 
-  // Primary is the first every time, secondary the second
-  var primary, secondary;
+  // Primary is the first every time, secondary the second, tertiary the third
+  var primary, secondary, tertiary;
   // After primary and secondary there is a FIFO queue
   var queue = [];
   // Last request is exectued last
@@ -41,6 +41,9 @@ function HttpRequestQueueService() {
   if (localStorage.getItem('secondaryRequest')) {
     secondary = JSON.parse(localStorage.getItem('secondaryRequest'));
   }
+  if (localStorage.getItem('tertiaryRequest')) {
+    tertiary = JSON.parse(localStorage.getItem('tertiaryRequest'));
+  }
   if (localStorage.getItem('requestQueue')) {
     queue = JSON.parse(localStorage.getItem('requestQueue'));
   }
@@ -55,6 +58,18 @@ function HttpRequestQueueService() {
         request.content.url === queue[i].params.reverse.url &&
         request.content.method === queue[i].params.reverse.method) {
           // Found a reverse of the request in the queue
+        return i;
+      }
+    }
+  }
+
+  // Returns true if there is the same request in the queue
+  function findReplaceableRequestIndex(request) {
+    for (var i=0, len=queue.length; i<len; i++) {
+      if (queue[i].params && queue[i].params.replaceable &&
+          request.content.url === queue[i].content.url &&
+          request.content.method === queue[i].content.method) {
+        // Found a replaceable request from the queue
         return i;
       }
     }
@@ -92,6 +107,8 @@ function HttpRequestQueueService() {
       return primary;
     } else if (secondary) {
       return secondary;
+    } else if (tertiary) {
+      return tertiary;
     } else if (queue && queue.length > 0) {
       return queue[0];
     } else if (last) {
@@ -111,6 +128,11 @@ function HttpRequestQueueService() {
           secondary = request;
           localStorage.setItem('secondaryRequest', JSON.stringify(secondary));
         }
+      } else if (request.tertiary) {
+        if (!tertiary || tertiary.offline) {
+          tertiary = request;
+          localStorage.setItem('tertiaryRequest', JSON.stringify(tertiary));
+        }
       }
       else {
         var reverseRequestIndex = findReverseRequestIndex(request);
@@ -120,7 +142,21 @@ function HttpRequestQueueService() {
           removeFromQueue(reverseRequestIndex);
           return false;
         } else {
-          pushToQueue(request);
+          var replaceableIndex = findReplaceableRequestIndex(request);
+
+          if (replaceableIndex !== undefined &&
+              (getHead() !== queue[replaceableIndex] || queue[replaceableIndex].offline)){
+            // Find identical replaceable method from the queue (not currently on the go):
+            // replace the data with the newer data
+            if (!(queue[replaceableIndex].content.data === undefined && request.content.data === undefined)){
+              // There is data to be replaced
+              queue[replaceableIndex].content.data = request.content.data;
+              persistQueue();
+            }
+            return false;
+          }else{
+            pushToQueue(request);
+          }
         }
       }
       return true;
@@ -142,6 +178,9 @@ function HttpRequestQueueService() {
       } else if (request.secondary) {
         secondary = undefined;
         localStorage.removeItem('secondaryRequest');
+      } else if (request.tertiary) {
+        tertiary = undefined;
+        localStorage.removeItem('tertiaryRequest');
       } else if (request.last) {
         last = undefined;
         localStorage.removeItem('lastRequest');
@@ -161,6 +200,9 @@ function HttpRequestQueueService() {
       } else if (request.secondary) {
         secondary.offline = true;
         localStorage.setItem('secondaryRequest', JSON.stringify(secondary));
+      } else if (request.tertiary) {
+        tertiary.offline = true;
+        localStorage.setItem('tertiaryRequest', JSON.stringify(tertiary));
       } else {
         var requestIndex = findRequestIndex(request);
         if (requestIndex !== undefined) {
