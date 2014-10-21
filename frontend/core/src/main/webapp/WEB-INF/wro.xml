@@ -10,6 +10,7 @@
   	<js>/src/main/webapp/static/lib/base64.js</js>
     <js>/src/main/webapp/static/lib/elastic.js</js>
     <js>/src/main/webapp/static/lib/fastclick.js</js>
+    <js>/src/main/webapp/static/lib/clamp.min.js</js>
     <js>/src/main/webapp/static/app/app.js</js>
     <js>/src/main/webapp/static/common/common.js</js>
     <js>/src/main/webapp/static/common/*.js</js>

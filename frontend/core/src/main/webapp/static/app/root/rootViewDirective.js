@@ -159,7 +159,7 @@
       // Clean up listening by executing the variable
       $scope.$on('$destroy', unbindEmException);
     },
-    link: function postLink(scope) {
+    link: function (scope) {
 
       // SESSION MANAGEMENT
 
