@@ -2,28 +2,28 @@
   <section class="container-content" list="items" list-order="top">
     <h2 class="group-heading row" ng-bind="items.length + ' items'"></h2>
 
-    <div class="row" list-item-add="{}" list-item-add-save="saveItem(newItem)">
-      <form role="form" ng-submit="callAndExit(saveItem, newItem)"
+    <div list-item-add="{}" list-item-add-save="saveItem(newItem)">
+      <form role="form" class="group-mixed swiper-no-swiping" ng-submit="callAndExit(saveItem, newItem)"
       data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
       editable-field-container-clicked-elsewhere="clickedElsewhere()">
+        <div class="group-mixed--middle">
           <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
           editable-field editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)"
           placeholder="add item&#8230;" maxlength="128">
           </textarea>
+        </div>
         <div class="group-mixed--right">
           <a href editable-field-deactivate ng-click="openEditor('item', newItem)">&gt;</a>
         </div>
       </form>
     </div>
 
-    <div class="animate-list-item-leave"
+    <div class="animate-list-item-leave row"
     ng-repeat="item in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
     list-item="getList().length">
-      <div class="row">
-        <a href class="group-mixed--middle" swiper-click="openEditor('item', newItem)">
-          <span class="text-link" ng-bind="item.title"></span>
-        </a>
-      </div>
+      <a href swiper-click="openEditor('item', newItem)">
+        <span class="text-link" clamp=2 ng-bind="item.title"></span>
+      </a>
     </div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('inbox')"></footer>
