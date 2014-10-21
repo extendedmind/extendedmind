@@ -45,6 +45,38 @@
     if ($scope.titlebarHasText()) saveNoteInEdit();
   }
 
+
+  // MODES
+
+  $scope.noteTitleFocused = function(){
+    if ($scope.isFirstSlide()){
+      $scope.mode = 'fullScreen';
+    }
+  }
+
+  $scope.noteContentFocused = function(){
+    if ($scope.isFirstSlide()){
+      $scope.mode = 'fullScreen';
+    }
+  }
+
+  $scope.toggleNoteEditMode = function(){
+    if ($scope.mode === 'fullScreen'){
+      $scope.mode = undefined;
+    }else if ($scope.mode === 'view'){
+      $scope.mode = undefined;
+    }else {
+      $scope.mode = 'view';
+    }
+  }
+
+  // CONTENT
+
+  var noteContentFocusCallback;
+  $scope.registerNoteContentInputCallbacks = function(focus){
+    noteContentFocusCallback = focus;
+  }
+
   // TITLEBAR
 
   $scope.noteTitlebarTextKeyDown = function (keydownEvent) {
@@ -52,7 +84,7 @@
     // Return
     if (event.keyCode === 13 && $scope.titlebarHasText()) {
       // TODO: Move focus to content field on enter!
-      //
+      noteContentFocusCallback();
       event.preventDefault();
       event.stopPropagation();
     }

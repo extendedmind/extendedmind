@@ -33,7 +33,18 @@
 
       function focus() {
         // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
-        if ($document[0].activeElement !== element[0]) element[0].focus();
+        if ($document[0].activeElement !== element[0]){
+          if ($rootScope.$$phase || scope.$$phase){
+            // It seems $timeout can not be avoided here:
+            // https://github.com/angular/angular.js/issues/1250
+            // "In the future, this will (hopefully) be solved with Object.observe."
+            $timeout(function(){
+              element[0].focus()
+            });
+          }else {
+            element[0].focus()
+          }
+        };
       }
 
       var unfocusInProgress = false;
@@ -41,9 +52,6 @@
         if ($document[0].activeElement === element[0]){
           unfocusInProgress = true;
           if ($rootScope.$$phase || scope.$$phase){
-            // It seems $timeout can not be avoided here:
-            // https://github.com/angular/angular.js/issues/1250
-            // "In the future, this will (hopefully) be solved with Object.observe."
             $timeout(function(){
               element[0].blur();
             });

@@ -6,6 +6,11 @@
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endNoteEdit()" ng-bind="titlebarHasText() ? 'save' : 'back'">
           </a>
         </a>
+        <div ng-if="mode === 'fullScreen'" class="group-symmetrical--middle width-large">
+          <a href ng-class="link-navigation" ng-click="toggleNoteEditMode()">
+            <span class="text-navigation downplayed">note settings</span>
+          </a>
+        </div>
         <div class="group-symmetrical--right">
           <a href ng-click="deleteNoteInEdit()"><span class="text-trash"></span></a>
         </div>
@@ -15,13 +20,14 @@
         <div class="group-mixed--middle">
           <textarea type="text" ng-model="titlebar.text" ng-keydown="noteTitlebarTextKeyDown($event)"
           editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-          msd-elastic dynamic-placeholder="enter note title&#8230;" maxlength="128" required ></textarea>
+          msd-elastic dynamic-placeholder="enter note title&#8230;" maxlength="128" required
+          ng-focus="noteTitleFocused()"></textarea>
         </div>
       </form>
     </div>
   </header>
 
-  <div class="swiper-container container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" swiper-container="noteEditor" swiper-type="main" expected-slides="2">
+  <div class="swiper-container container-fluid--inner" ng-style="{'padding-bottom': mode === 'fullScreen' ? 0 : EDITOR_FOOTER_HEIGHT}" swiper-container="noteEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
         <div class="container-content" drawer-override-aisle="right">
@@ -36,9 +42,11 @@
               </div>
             </div>
           </div-->
-          <textarea class="row" ng-model="note.content" msd-elastic placeholder="enter content&#8230;" ></textarea>
+          <textarea class="row" ng-model="note.content" msd-elastic placeholder="enter content&#8230;"
+          ng-focus="noteContentFocused()"
+          editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"></textarea>
         </div>
-        <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
+        <footer ng-hide="mode === 'fullScreen'" class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <a href ng-click="swipeToAdvanced()" class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>

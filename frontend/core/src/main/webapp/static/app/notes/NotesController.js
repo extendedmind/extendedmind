@@ -99,11 +99,12 @@
   };
 
   $scope.openNoteEditor = function(note){
-    return $scope.openEditor('note', note);
+    return $scope.openEditor('note', note, 'fullScreen');
   }
 
   $scope.openNoteEditorView = function(note){
-    return $scope.openEditor('note', note, 'view');
+    // TODO: Use mode 'view' here when view mode is implemented!
+    return $scope.openEditor('note', note, 'fullScreen');
   }
 
   $scope.closeNoteEditor = function(note) {
