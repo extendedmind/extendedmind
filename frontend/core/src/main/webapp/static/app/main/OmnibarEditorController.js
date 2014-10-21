@@ -25,11 +25,9 @@
   // SAVING
 
   $scope.saveOmnibarToItem = function() {
-    $scope.saveNewListToExtendedItem($scope.task, $scope.newList, function(task){
-      var item = {title: $scope.titlebar.text};
-      $scope.deferEdit().then(function() {
-        $scope.saveItem(item);
-      });
+    var item = {title: $scope.titlebar.text};
+    $scope.deferEdit().then(function() {
+      $scope.saveItem(item);
     });
   };
 

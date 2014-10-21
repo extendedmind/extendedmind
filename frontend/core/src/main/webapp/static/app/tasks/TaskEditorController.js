@@ -40,17 +40,15 @@
   };
 
   function saveTaskInEdit() {
-    $scope.saveNewListToExtendedItem($scope.task, $scope.newList, function(task){
-      task.title = $scope.titlebar.text;
-      $scope.deferEdit().then(function() {
-        $scope.saveTask(task);
-        if (completeReadyDeferred){
-          completeReadyDeferred.resolve(task);
-          completeReadyDeferred = undefined;
-        }
-      });
+    $scope.task.title = $scope.titlebar.text;
+    $scope.deferEdit().then(function() {
+      $scope.saveTask($scope.task);
+      if (completeReadyDeferred){
+        completeReadyDeferred.resolve($scope.task);
+        completeReadyDeferred = undefined;
+      }
     });
-  };
+  }
 
   $scope.deleteTaskInEdit = function() {
     $scope.closeTaskEditor();

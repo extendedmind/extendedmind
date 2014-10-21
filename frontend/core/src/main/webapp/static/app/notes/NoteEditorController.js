@@ -22,14 +22,10 @@
   // SAVING, DELETING
 
   function saveNoteInEdit() {
-    $scope.saveNewListToExtendedItem($scope.note, $scope.newList, function(note){
-
-      // TODO: Keywords
-
-      note.title = $scope.titlebar.text;
-      $scope.deferEdit().then(function() {
-        $scope.saveNote(note);
-      });
+    // TODO: Keywords
+    $scope.note.title = $scope.titlebar.text;
+    $scope.deferEdit().then(function() {
+      $scope.saveNote($scope.note);
     });
   };
 

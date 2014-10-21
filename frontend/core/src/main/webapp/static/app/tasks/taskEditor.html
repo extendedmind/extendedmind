@@ -35,7 +35,7 @@
           </div>
 
           <div ng-if="listPickerOpen" class="swiper-no-swiping animate-calendar" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
-            <div list-picker="lists" list-picker-save="closeListPickerAndSetListToItem(task, listUUID)" list-picker-clear="closeListPickerAndClearListFromItem(task, listUUID)" list-picker-get-selected="getListFromUUID(task.transientProperties.list)"></div>
+            <div list-picker="lists" list-picker-save="closeListPickerAndSetListToItem(task, list)" list-picker-clear="closeListPickerAndClearListFromItem(task, list)" list-picker-get-selected="getListFromUUID(task.transientProperties.list)"></div>
           </div>
 
           <div ng-if="!calendarOpen && !listPickerOpen">

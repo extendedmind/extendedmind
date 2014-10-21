@@ -87,24 +87,6 @@
 
   // HELPER METHODS
 
-  $scope.saveNewListToExtendedItem = function(item, newList, readyFn) {
-    if (newList && newList.title)
-      $scope.saveList($scope.newList).then(
-                                           function(savedList){
-          // success
-          if (item.transientProperties) item.transientProperties = {};
-          item.transientProperties.list = savedList.uuid;
-          readyFn(item);
-        },
-        function(){
-          // failure
-          readyFn(item);
-        });
-    else {
-      readyFn(item);
-    }
-  };
-
   var featureEditorAboutToCloseCallback;
   $scope.registerFeatureEditorAboutToCloseCallback = function(callback) {
     featureEditorAboutToCloseCallback = callback;
@@ -184,15 +166,23 @@
     if (list) return list.title;
   };
 
-  $scope.closeListPickerAndSetListToItem = function(item, listUUID) {
-    $scope.closeListPicker();
-    if (!item.transientProperties) item.transientProperties = {};
-    item.transientProperties.list = listUUID;
+  $scope.closeListPickerAndSetListToItem = function(item, list) {
+
+    function doCloseAndSave() {
+      $scope.closeListPicker();
+      if (!item.transientProperties) item.transientProperties = {};
+      item.transientProperties.list = list.uuid;
+    }
+
+    if (!list.uuid) // List is new, save it first. Close list picker on error saving new list.
+      $scope.saveList(list).then(doCloseAndSave, $scope.closeListPicker);
+    else
+      doCloseAndSave();
   };
 
-  $scope.closeListPickerAndClearListFromItem = function(item, listUUID) {
+  $scope.closeListPickerAndClearListFromItem = function(item, list) {
     $scope.closeListPicker();
-    if (item.transientProperties && item.transientProperties.list === listUUID)
+    if (item.transientProperties && item.transientProperties.list === list.uuid)
       delete item.transientProperties.list;
   };
 }

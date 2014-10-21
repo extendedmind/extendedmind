@@ -36,11 +36,22 @@
       };
 
       scope.listSelected = function(list) {
-        scope.closeAndSave({listUUID: list.uuid});
+        scope.closeAndSave({list: list});
       };
 
       scope.listCleared = function(list) {
-        scope.closeAndClearList({listUUID: list.uuid});
+        scope.closeAndClearList({list: list});
+      };
+
+      scope.textareaKeyDown = function(event) {
+        if (event.keyCode === 13) { // RETURN button
+          if (scope.newList.title && scope.newList.title.length > 0) {
+            // Enter in add item saves, no line breaks allowed
+            scope.closeAndSave({list: scope.newList});
+          }
+          event.preventDefault();
+          event.stopPropagation();
+        }
       };
     }
   };
