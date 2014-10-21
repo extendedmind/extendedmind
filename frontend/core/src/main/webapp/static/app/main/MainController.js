@@ -123,7 +123,7 @@ function MainController(
   *
   * TODO: analytics visit omnibar
   */
-  $scope.openEditor = function openEditor(type, item) {
+  $scope.openEditor = function openEditor(type, item, mode) {
 
     // Check for existing edit locks and resolve them first.
     var deferredEditorClose = UISessionService.getDeferredAction('editorClose');
@@ -133,11 +133,11 @@ function MainController(
 
     if (DrawerService.isOpen('left')) {
       DrawerService.close('left');
-      openEditorAfterMenuClosed = {type: type, item: item};
+      openEditorAfterMenuClosed = {type: type, item: item, mode: mode};
       openMenuAfterEditorClosed = true;
     } else {
       DrawerService.open('right');
-      executeEditorAboutToOpenCallbacks(type, item);
+      executeEditorAboutToOpenCallbacks(type, item, mode);
     }
 
     return promise;
@@ -514,9 +514,9 @@ function MainController(
 
   // register drawer callbacks to DrawerService
 
-  function executeEditorAboutToOpenCallbacks(editorType, item) {
+  function executeEditorAboutToOpenCallbacks(editorType, item, mode) {
     for (var id in editorAboutToOpenCallbacks)
-      editorAboutToOpenCallbacks[id](editorType, item);
+      editorAboutToOpenCallbacks[id](editorType, item, mode);
   }
 
   DrawerService.registerOpenedCallback('right', editorOpened, 'MainController');
@@ -570,7 +570,9 @@ function MainController(
       // Wait until DOM manipulation is ready before opening editor
       // to have correct transition style in drawer aisle element.
       $timeout(function() {
-        executeEditorAboutToOpenCallbacks(openEditorAfterMenuClosed.type, openEditorAfterMenuClosed.item);
+        executeEditorAboutToOpenCallbacks(openEditorAfterMenuClosed.type,
+                                          openEditorAfterMenuClosed.item,
+                                          openEditorAfterMenuClosed.mode);
         openEditorAfterMenuClosed = undefined;
         DrawerService.open('right');
       });

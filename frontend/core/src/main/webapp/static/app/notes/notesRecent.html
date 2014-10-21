@@ -1,13 +1,13 @@
 <div class="container-fluid--inner" list-container drawer-handle="left">
-  <section class="container-content" list="allNotes" list-order="top" list-open="openEditor('note', {})">
+  <section class="container-content" list="allNotes" list-order="top" list-recent list-open="openEditor('note', {})">
     <div class="group-mixed heading">
       <div class="group-mixed--middle">
         <h2>recent</h2>
       </div>
     </div>
     <div class="animate-list-item-leave"
-    ng-repeat="note in allNotes | orderBy:'modified':true | limitTo: currentListLimitTo"
-    list-item="allNotes.length" ng-include="'static/app/notes/noteListItem.html'"
+    ng-repeat="note in getList() | orderBy:'modified':true | limitTo: currentListLimitTo"
+    list-item="getList().length" ng-include="'static/app/notes/noteListItem.html'"
     ng-style="{maxHeight: getNoteListItemHeight(note)}"></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('notes')"></footer>

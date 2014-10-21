@@ -20,9 +20,10 @@
   // OPENING, INITIALIZING, CLOSING
 
   var currentItem;
-  function editorAboutToOpen(editorType, item) {
+  function editorAboutToOpen(editorType, item, mode) {
     $scope.editorType = editorType;
     $scope.editorVisible = true;
+    $scope.mode = mode;
     currentItem = item;
   }
 
@@ -52,6 +53,7 @@
 
     // NOTE: Call $apply here if these don't seem to be reseted
     $scope.editorType = undefined;
+    $scope.mode = undefined;
     $scope.editorVisible = false;
     currentItem = false;
     titleBarInputFocusCallbackFunction = titleBarInputBlurCallbackFunction = undefined;

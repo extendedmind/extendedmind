@@ -115,6 +115,10 @@
     return $scope.openEditor('note', note);
   }
 
+  $scope.openNoteEditorView = function(note){
+    return $scope.openEditor('note', note, 'view');
+  }
+
   $scope.closeNoteEditor = function(note) {
     $scope.closeEditor();
   };
