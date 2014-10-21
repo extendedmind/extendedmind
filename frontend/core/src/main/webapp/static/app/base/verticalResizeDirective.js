@@ -24,9 +24,6 @@
       var isPrevented = $parse($attrs.verticalResizePrevent).bind(undefined, $scope);
 
       function setMaxHeight(){
-        if (isPrevented()) {
-          return;
-        }
         var referenceMaxHeight = $rootScope.MAX_HEIGHT;
         if ($rootScope.currentHeight < $rootScope.MAX_HEIGHT) {
           referenceMaxHeight = $rootScope.currentHeight;
