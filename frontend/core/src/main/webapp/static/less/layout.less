@@ -7,10 +7,10 @@
 TODO: em grid structure explained in plain English (when new grid structure decided!)
 */
 
-@height-heading: @grid-vertical * 2;
+@height-heading: @grid-vertical * 1.6;
 @height-container-toolbar: @grid-vertical * 1.5;
 @height-landscape-max: 769px;
-@height-max: 1025px;
+@t-max: 1025px;
 @width-max: 1025px;
 @width-column-max: 568px; // iPhone 5 landscape is still one column
 @width-menu: 260px;
@@ -470,6 +470,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     padding-left: @grid-horizontal;   /* [1] */
   }
 }
+
 // 1. .group-mixed--middle can be used directly in <a> elements for increased clicking area.
 .group-mixed--middle:last-child {
   padding-right: @grid-horizontal;  /* [1] */
@@ -585,8 +586,13 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 
 // 1. Set height for large .group-symmetrical. Overrides default height.
 .group-symmetrical.height-large {
-  height: @grid-vertical * 1.5;  // [1]
-  line-height: @grid-vertical * 1.5; // [1]
+ margin-top: 15px;
+}
+
+// Justify whitespace between topbar and content
+h2 {
+  margin-top: -15px;
+  margin-bottom: 5px;
 }
 
 .group-symmetrical--middle.width-large {
