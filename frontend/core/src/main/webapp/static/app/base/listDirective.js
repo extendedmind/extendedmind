@@ -66,7 +66,7 @@
         if (checked) {
           checkingTimeout = $timeout(function() {
             checkboxCheckingReadyDeferred.resolve(item);
-            if (!scope.$$phase && !$rootScope.$$phase) $scope.$digest();
+            if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
           }, $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME);
         } else{
           if (checkingTimeout){
