@@ -17,6 +17,13 @@
 
  function NoteEditorController($scope) {
 
+  // INITIALIZING
+
+  if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
+    $scope.registerFeatureEditorAboutToCloseCallback(noteEditorAboutToClose, 'NoteEditorController');
+
+  // We expect there to be a $scope.task via ng-init
+
   $scope.titlebar.text = $scope.note.title;
 
   // SAVING, DELETING
@@ -39,6 +46,10 @@
   $scope.endNoteEdit = function() {
     $scope.closeNoteEditor();
     if ($scope.titlebarHasText()) saveNoteInEdit();
+  }
+
+  function noteEditorAboutToClose() {
+    saveNoteInEdit();
   }
 
 
