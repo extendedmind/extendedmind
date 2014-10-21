@@ -31,21 +31,22 @@
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
         <div class="container-content" drawer-override-aisle="right">
-          <!-- TODO: List picker!
-          div lists-select-options>
-            <div ng-if="addNewListVisible" class="group-mixed select-list-visible-animation">
-              <div class="group-mixed--middle">
-                <input type="text" ng-model="newList.title" placeholder="add list&#8230;"/>
-              </div>
-              <div class="group-mixed--right">
-                <a href class="group-mixed--right font-smallest add-new-list-item-cancel" ng-click="setAddNewListHidden()">cancel</a>
-              </div>
+
+          <div ng-if="listPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
+            <div list-picker="lists" list-picker-archived-lists="archivedLists" list-picker-save="closeListPickerAndSetListToItem(note, list)" list-picker-clear="closeListPickerAndClearListFromItem(note, list)" list-picker-get-selected="getListFromUUID(note.transientProperties.list)"></div>
+          </div>
+
+          <div ng-if="!listPickerOpen">
+            <div ng-hide="mode === 'fullScreen'" class="row-form" ng-click="openListPicker()">
+              <span class="text-link" ng-bind="note.transientProperties.list ? getListTitleFromUUID(note.transientProperties.list) : 'select list...'"></span>
             </div>
-          </div-->
-          <textarea class="row" ng-model="note.content" msd-elastic placeholder="enter content&#8230;"
-          ng-focus="noteContentFocused()"
-          editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"></textarea>
+
+            <textarea class="row" ng-model="note.content" msd-elastic placeholder="enter content&#8230;"
+            ng-focus="noteContentFocused()"
+            editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"></textarea>
+          </div>
         </div>
+
         <footer ng-hide="mode === 'fullScreen'" class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <a href ng-click="swipeToAdvanced()" class="group-symmetrical--right link-navigation">
