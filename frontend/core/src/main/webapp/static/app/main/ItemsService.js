@@ -48,12 +48,14 @@
   return {
     setItems: function(itemsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
+      this.addTransientProperties(itemsResponse);
       return ArrayService.setArrays(itemsResponse,
         items[ownerUUID].activeItems,
         items[ownerUUID].deletedItems);
     },
     updateItems: function(itemsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
+      this.addTransientProperties(itemsResponse);
       // issue a very short lived lock to prevent leave animation
       // when arrays are reformulated
       UISessionService.lock('leaveAnimation', 100);
@@ -84,12 +86,16 @@
         deferred.reject(item);
       } else if (item.uuid) {
         // Existing item
+        var transientProperties = item.transientProperties;
+        delete item.transientProperties;
+
         if (UserSessionService.isOfflineEnabled()) {
           // Push to offline buffer
           params = {type: 'item', owner: ownerUUID, uuid: item.uuid};
           BackendClientService.put('/api/' + params.owner + '/item/' + item.uuid,
            this.putNewItemRegex, params, item);
           item.modified = BackendClientService.generateFakeTimestamp();
+          item.transientProperties = transientProperties;
           updateItem(item, ownerUUID);
           deferred.resolve(item);
         } else {
@@ -98,6 +104,7 @@
            this.putExistingItemRegex, item).then(function(result) {
             if (result.data) {
               item.modified = result.data.modified;
+              item.transientProperties = transientProperties;
               updateItem(item, ownerUUID);
               deferred.resolve(item);
             }
@@ -115,6 +122,7 @@
           // it to the end of the list
           item.uuid = fakeUUID;
           item.created = item.modified = BackendClientService.generateFakeTimestamp();
+          item.transientProperties = {itemType: 'item'};
           setItem(item, ownerUUID);
           deferred.resolve(item);
         } else {
@@ -125,6 +133,7 @@
               item.uuid = result.data.uuid;
               item.created = result.data.created;
               item.modified = result.data.modified;
+              item.transientProperties = {itemType: 'item'};
               setItem(item, ownerUUID);
               deferred.resolve(item);
             }
@@ -223,6 +232,14 @@
         // Save as list and remove from the activeItems array
         ListsService.saveList(item, ownerUUID);
         items[ownerUUID].activeItems.splice(index, 1);
+      }
+    },
+    addTransientProperties: function(items) {
+      if (items && items.length > 0){
+        for (var i = 0; i< items.length; i++){
+          if (!items[i].transientProperties) items[i].transientProperties = {};
+          items[i].transientProperties.itemType = 'item';
+        }
       }
     },
     // Regular expressions for item requests

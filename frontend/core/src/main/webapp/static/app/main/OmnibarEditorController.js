@@ -15,7 +15,7 @@
 
  'use strict';
 
- function OmnibarEditorController($q, $rootScope, $scope, $timeout, DateService, UISessionService) {
+ function OmnibarEditorController($q, $rootScope, $scope, $timeout, ArrayService, DateService, UISessionService) {
 
   // INITIALIZE VARIABLES
 
@@ -65,8 +65,40 @@
     }
   });
 
+  function createSearchItems() {
+    var allNotesAndTasks = ArrayService.combineArrays(
+                               $scope.allActiveTasks,
+                               $scope.allNotes, 'created', true);
+    var allNotesAndTasksAndLists = ArrayService.combineArrays(
+                               allNotesAndTasks,
+                               $scope.allLists, 'created', true);
+    $scope.searchItems = ArrayService.combineArrays(
+                               allNotesAndTasksAndLists,
+                               $scope.items, 'created', true);
+  }
+
+  $scope.$watch('synced', function(newValue){
+    if (newValue)
+      createSearchItems();
+  });
+
+  if ($rootScope.synced){
+    createSearchItems();
+  }
+
+  // Search filter for all item fields: title, content and description
+  $scope.searchItemFields = function (item){
+    if ($scope.searchText && $scope.searchText.delayed &&
+        (item.title.indexOf($scope.searchText.delayed)!=-1
+        || (item.description && item.description.indexOf($scope.searchText.delayed)!=-1)
+        || (item.content && item.content.indexOf($scope.searchText.delayed)!=-1))) {
+      return true;
+    }
+    return false;
+  }
+
 }
 
-OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'DateService',
+OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'ArrayService', 'DateService',
 'UISessionService'];
 angular.module('em.main').controller('OmnibarEditorController', OmnibarEditorController);

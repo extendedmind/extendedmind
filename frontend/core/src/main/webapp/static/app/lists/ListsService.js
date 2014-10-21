@@ -61,6 +61,8 @@
   return {
     setLists: function(listsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
+      this.addTransientProperties(listsResponse, ownerUUID);
+
       return ArrayService.setArrays(
         listsResponse,
         lists[ownerUUID].activeLists,
@@ -69,6 +71,7 @@
     },
     updateLists: function(listsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
+      this.addTransientProperties(listsResponse, ownerUUID);
 
       // issue a very short lived lock to prevent leave animation
       // when arrays are reformulated
@@ -110,21 +113,25 @@
       if (this.getListStatus(list, ownerUUID) === 'deleted') deferred.reject(list);
       else if (list.uuid) {
         // Existing list
+        var transientProperties = this.detachTransientProperties(list, ownerUUID);
         BackendClientService.putOnline('/api/' + ownerUUID + '/list/' + list.uuid, this.putExistingListRegex, list)
         .then(function(result) {
           if (result.data) {
             list.modified = result.data.modified;
+            ExtendedItemService.attachTransientProperties(list, transientProperties, 'list');
             updateList(list, ownerUUID);
             deferred.resolve(list);
           }
         });
       } else {
         // New list
+        var transientProperties = this.detachTransientProperties(list, ownerUUID);
         BackendClientService.putOnline('/api/' + ownerUUID + '/list',this.putNewListRegex, list).then(function(result) {
           if (result.data) {
             list.uuid = result.data.uuid;
             list.created = result.data.created;
             list.modified = result.data.modified;
+            ExtendedItemService.attachTransientProperties(list, transientProperties, 'list');
             updateList(list, ownerUUID);
             deferred.resolve(list);
           }
@@ -218,14 +225,11 @@
 
       return deferred.promise;
     },
-    addTransientProperties: function(list, ownerUUID, addExtraTransientPropertyFn) {
-      //
-      // TODO: Replace ExtendedItemService.addTransientProperties with this
-      //
+    addTransientProperties: function(lists, ownerUUID, addExtraTransientPropertyFn) {
       var addExtraTransientPropertyFunction;
       if (typeof addExtraTransientPropertyFn === 'function')
         addExtraTransientPropertyFunction = addExtraTransientPropertyFn;
-      ExtendedItemService.addTransientProperties([list], ownerUUID, addExtraTransientPropertyFunction);
+      ExtendedItemService.addTransientProperties(lists, ownerUUID, 'list', addExtraTransientPropertyFunction);
     },
 
     // Regular expressions for list requests

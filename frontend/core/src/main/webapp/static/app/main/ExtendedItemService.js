@@ -170,7 +170,7 @@
   }
 
   return {
-    addTransientProperties: function(extendedItemsArray, ownerUUID, addExtraTransientPropertyFn) {
+    addTransientProperties: function(extendedItemsArray, ownerUUID, itemType, addExtraTransientPropertyFn) {
       if (extendedItemsArray) {
         var hasAddExtraTransientPropertyCopyFunction;
         var hasAddExtraTransientPropertyCopyFunctions;
@@ -180,6 +180,8 @@
 
         for (var i = 0, len = extendedItemsArray.length; i < len; i++) {
           var extendedItem = extendedItemsArray[i];
+          if (!extendedItem.transientProperties) extendedItem.transientProperties = {};
+          extendedItem.transientProperties.itemType = itemType;
           copyParentToList(extendedItem);
           copyTagToTransientProperty(extendedItem, ownerUUID);
           if (hasAddExtraTransientPropertyCopyFunction) addExtraTransientPropertyFn(extendedItem, ownerUUID);
@@ -191,8 +193,10 @@
         }
       }
     },
-    attachTransientProperties: function(extendedItem, transientProperties) {
+    attachTransientProperties: function(extendedItem, transientProperties, itemType) {
       if (transientProperties) extendedItem.transientProperties = transientProperties;
+      if (!extendedItem.transientProperties) extendedItem.transientProperties = {};
+      extendedItem.transientProperties.itemType = itemType;
     },
     detachTransientProperties: function(extendedItem, ownerUUID, detachExtraPropertyFn) {
       // copy transient values into persistent values

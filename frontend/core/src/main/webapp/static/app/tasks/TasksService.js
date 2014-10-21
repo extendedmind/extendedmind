@@ -153,7 +153,7 @@
     var addExtraTransientPropertyFunctions = [copyDueToDate, copyCompleted, copyDescriptionToTransientProperties];
     if (typeof addExtraTransientPropertyFn === 'function')
       addExtraTransientPropertyFunctions.push(addExtraTransientPropertyFn);
-    ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, addExtraTransientPropertyFunctions);
+    ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, 'task', addExtraTransientPropertyFunctions);
   }
 
   return {
@@ -215,7 +215,7 @@
             BackendClientService.put('/api/' + params.owner + '/task/' + task.uuid,
              this.putExistingTaskRegex, params, task);
             task.modified = BackendClientService.generateFakeTimestamp();
-            ExtendedItemService.attachTransientProperties(task, transientProperties);
+            ExtendedItemService.attachTransientProperties(task, transientProperties, 'task');
             updateTask(task, ownerUUID);
             deferred.resolve(task);
           } else {
@@ -225,7 +225,7 @@
             then(function(result) {
               if (result.data) {
                 task.modified = result.data.modified;
-                ExtendedItemService.attachTransientProperties(task, transientProperties);
+                ExtendedItemService.attachTransientProperties(task, transientProperties, 'task');
                 updateTask(task, ownerUUID);
                 deferred.resolve(task);
               }
@@ -243,7 +243,7 @@
             // Use a fake modified that is far enough in the to make
             // it to the end of the list
             task.created = task.modified = BackendClientService.generateFakeTimestamp();
-            ExtendedItemService.attachTransientProperties(task, transientProperties);
+            ExtendedItemService.attachTransientProperties(task, transientProperties, 'task');
             setTask(task, ownerUUID);
             deferred.resolve(task);
           } else {
@@ -255,7 +255,7 @@
                 task.uuid = result.data.uuid;
                 task.created = result.data.created;
                 task.modified = result.data.modified;
-                ExtendedItemService.attachTransientProperties(task, transientProperties);
+                ExtendedItemService.attachTransientProperties(task, transientProperties, 'task');
                 setTask(task, ownerUUID);
                 deferred.resolve(task);
               }

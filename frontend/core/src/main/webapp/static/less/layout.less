@@ -455,10 +455,10 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-left: @padding-inner-group-mixed;
 
   // NOTE: all buttons have height defined
-  button, a {
+  & > button, & > a, & > span {
     padding-right: @grid-horizontal;  /* [1] */
   }
-  a {
+  & > a {
     height: @grid-vertical;
   }
 }

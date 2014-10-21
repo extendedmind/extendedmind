@@ -18,7 +18,16 @@
 
   <div ng-if="syncState !== 'active'" class="container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}">
     <div class="container-content" drawer-override-aisle="right">
-      TODO: SEARCH RESULTS
+      <div ng-repeat="searchResult in searchItems | filter: searchItemFields" class="group-mixed">
+        <div class="group-mixed--middle">
+          <a href class="link-search-result">
+            <span class="text-search-result" ng-bind="searchResult.title"></span>
+          </a>
+        </div>
+        <div class="group-mixed--right">
+          <span class="text-search-type" ng-bind="searchResult.transientProperties.itemType"></span>
+        </div>
+      </div>
     </div>
     <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">footer
     </footer>
