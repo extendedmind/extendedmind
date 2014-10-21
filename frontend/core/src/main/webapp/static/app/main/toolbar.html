@@ -5,7 +5,7 @@
     </button>
     <div class="group-symmetrical--middle" ng-style="{maxWidth: calculateHeadingWidth()}">
       <a href ng-click="clickToolbarHeading()">
-        <span class="text-heading-primary" ng-bind="getCurrentHeading()"></span>
+        <div><span class="text-heading-primary" clamp=2 ng-bind="getCurrentHeading()"></span></div>
       </a>
     </div>
     <button class="group-symmetrical--right btn" ng-click="openEditor('omnibar')">

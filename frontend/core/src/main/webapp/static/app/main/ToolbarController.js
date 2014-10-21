@@ -32,7 +32,7 @@
       currentHeading = UISessionService.getFeatureData(currentHeading).title;
     }
     if (!$scope.online) {
-      currentHeading += '*';
+      currentHeading = '*' + currentHeading;
     }
     return currentHeading;
   };
