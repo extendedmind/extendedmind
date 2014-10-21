@@ -5,10 +5,9 @@
         <h2>recent</h2>
       </div>
     </div>
-    <div class="animate-list-item-leave"
+    <div class="animate-list-item-leave tall"
     ng-repeat="note in getList() | orderBy:'modified':true | limitTo: currentListLimitTo"
-    list-item="getList().length" ng-include="'static/app/notes/noteListItem.html'"
-    ng-style="{maxHeight: getNoteListItemHeight(note)}"></div>
+    list-item="getList().length" ng-include="'static/app/notes/noteListItem.html'"></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('notes')"></footer>
 </div>

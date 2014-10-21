@@ -89,27 +89,14 @@
 
   $scope.getNoteContentTeaser = function getNoteContentTeaser(note) {
     if (note.content) {
-      var maximumTeaserLength = 80;
+      var maximumTeaserLength = 300;
       if (note.content.length <= maximumTeaserLength) {
         return note.content;
       } else {
-        return note.content.substring(0, maximumTeaserLength) + '&#8230;';
+        return note.content.substring(0, maximumTeaserLength);
       }
     }
   };
-
-  // FIXME: This needs fine tuning! Figure out how to know how many rows
-  // the teaser need, and use that for height calculation!
-  $scope.getNoteListItemHeight = function(note){
-    var teaser = $scope.getNoteContentTeaser(note);
-    if (teaser && teaser.length > 30){
-      return 88;
-    }else if (teaser && teaser.length > 0){
-      return 44;
-    }else {
-      return 'inherit';
-    }
-  }
 
   $scope.openNoteEditor = function(note){
     return $scope.openEditor('note', note);

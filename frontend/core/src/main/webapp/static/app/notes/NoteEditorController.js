@@ -21,7 +21,7 @@
 
   // SAVING, DELETING
 
-  $scope.saveNoteInEdit = function() {
+  function saveNoteInEdit() {
     $scope.saveNewListToExtendedItem($scope.note, $scope.newList, function(note){
 
       // TODO: Keywords
@@ -35,12 +35,14 @@
 
   $scope.deleteNoteInEdit = function() {
     $scope.closeNoteEditor();
-    $scope.deleteNote($scope.note);
+    $scope.deferEdit().then(function() {
+      $scope.deleteNote($scope.note);
+    });
   };
 
   $scope.endNoteEdit = function() {
     $scope.closeNoteEditor();
-    if ($scope.titlebarHasText()) $scope.saveNoteInEdit();
+    if ($scope.titlebarHasText()) saveNoteInEdit();
   }
 
   // TITLEBAR

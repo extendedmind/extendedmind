@@ -20,12 +20,14 @@ function clampDirective($rootScope, $timeout) {
     link: function(scope, element, attrs) {
       // https://github.com/josephschmitt/Clamp.js/
 
+      var lineCount = parseInt(attrs.clamp);
+
       // For webkit browsers, timeout isn't needed as webkit line clamp is supported
       if (typeof(element[0].style.webkitLineClamp) != 'undefined'){
-        $clamp(element[0], {clamp: 2});
+        $clamp(element[0], {clamp: lineCount});
       } else{
         $timeout(function(){
-          $clamp(element[0], {clamp: 2});
+          $clamp(element[0], {clamp: lineCount});
         });
       }
     }

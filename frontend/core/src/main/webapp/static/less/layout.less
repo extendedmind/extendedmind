@@ -513,6 +513,17 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 }
 
 /*
+`.group-teaser` is used for displaying a teaser.
+*/
+.group-teaser {
+  span {
+    padding-left: @grid-horizontal;
+    padding-right: @grid-horizontal;
+  }
+}
+
+
+/*
 `.group-symmetrical` groups together up to three adjacent elements
 symmetrically so that `.group-symmetrical-middle` is always in the
 center.

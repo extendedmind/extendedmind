@@ -13,9 +13,9 @@
 @timing-animate-steep: cubic-bezier(.01, 1.11, 0, .97);
 @timing-animate-gradual: cubic-bezier(.97,.01,.93,.63);
 
-@speed-animate-item-fade: 1s;
-@speed-animate-item-shrink: .5s;
-@delay-animate-item-shrink: .5s;
+@speed-animate-item-fade: .5s;
+@speed-animate-item-shrink: .4s;
+@delay-animate-item-shrink: .6s;
 @timing-animate-item: @timing-animate;
 
 @speed-animate-toaster-fade: .5s;
@@ -42,7 +42,11 @@
 
 // 1. Set initial max-height for item to make max-height animation work in WebKit browsers.
 .animate-list-item-leave {
-  max-height: 44px; // [1]
+  max-height: @grid-vertical; // [1]
+}
+
+.animate-list-item-leave.tall {
+  max-height: @grid-vertical * 3; // [1]
 }
 
 // 1. Animate opacity first, delay max-height animation by 0.5s.
@@ -79,12 +83,8 @@
   max-height: 0;  // [1]
 }
 
-// .list-item-leave is added to an element when we want the element to be removed from list.
-// Class postfixes: "-add" and "-add-active" are added by angular $animate service.
-// 1. TODO: remove when grid is implemented and correct values are inherited
 .animate-list-item-leave.ng-leave {
   pointer-events: none;
-  max-height: 44px; // [1]
   opacity: 1;       // [1]
 }
 

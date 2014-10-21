@@ -39,7 +39,7 @@
     }
   };
 
-  $scope.saveTaskInEdit = function() {
+  function saveTaskInEdit() {
     $scope.saveNewListToExtendedItem($scope.task, $scope.newList, function(task){
       task.title = $scope.titlebar.text;
       $scope.deferEdit().then(function() {
@@ -54,16 +54,18 @@
 
   $scope.deleteTaskInEdit = function() {
     $scope.closeTaskEditor();
-    $scope.deleteTask($scope.task);
+    $scope.deferEdit().then(function(){
+      $scope.deleteTask($scope.task);
+    });
   };
 
   $scope.endTaskEdit = function() {
     $scope.closeTaskEditor();
-    if ($scope.titlebarHasText()) $scope.saveTaskInEdit();
+    if ($scope.titlebarHasText()) saveTaskInEdit();
   };
 
   function taskEditorAboutToClose() {
-    $scope.saveTaskInEdit();
+    saveTaskInEdit();
   }
 
   // TITLEBAR
@@ -74,7 +76,7 @@
     if (event.keyCode === 13 && $scope.titlebarHasText()) {
       // Enter in editor saves, no line breaks allowed
       $scope.closeTaskEditor();
-      $scope.saveTaskInEdit();
+      saveTaskInEdit();
       event.preventDefault();
       event.stopPropagation();
     }
