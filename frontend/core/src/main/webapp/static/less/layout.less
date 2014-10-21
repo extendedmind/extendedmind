@@ -97,7 +97,11 @@ Menu
   margin: 0 auto -@height-menu-footer; /* the bottom margin is the negative value of the footer's height */
   .separate {
     // use this to separate link elements from other
-    line-height: @grid-vertical * 3;
+    line-height: @grid-vertical * 2.3;
+    padding-bottom: 15px;
+  }
+  a:first-child {
+    padding-top: 15px;
   }
 }
 
@@ -507,6 +511,13 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-bottom: @grid-vertical-half + 3px; // [1]
 }
 
+@margin-bottom-heading-justified: 17px;
+// Justify whitespace between toolbar and content
+.group-heading.justified {
+  margin-top: 0;
+  margin-bottom: @margin-bottom-heading-justified;
+}
+
 /*
 `.group-error` groups together multiple error messages.
 */
@@ -587,12 +598,6 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 // 1. Set height for large .group-symmetrical. Overrides default height.
 .group-symmetrical.height-large {
  margin-top: 15px;
-}
-
-// Justify whitespace between topbar and content
-h2 {
-  margin-top: -15px;
-  margin-bottom: 5px;
 }
 
 .group-symmetrical--middle.width-large {

@@ -1,7 +1,7 @@
 <div class="container-content--outer" ng-if="isFeatureActive('lists')" list-container drawer-handle="left">
   <section class="container-content" scroll-to>
     <div list>
-      <h2 class="group-heading row">active</h2>
+      <h2 class="group-heading justified row">active</h2>
       <div class="animate-list-item-leave"
       ng-repeat="list in lists | limitTo: currentListLimitTo"
       list-item="lists.length" ng-include="'static/app/lists/listListItem.html'"></div>
