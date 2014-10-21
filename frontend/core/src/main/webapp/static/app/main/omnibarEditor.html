@@ -20,7 +20,8 @@
     <div class="container-content" drawer-override-aisle="right">
       <div ng-repeat="searchResult in searchItems | filter: searchItemFields" class="group-mixed">
         <div class="group-mixed--middle">
-          <a href class="link-search-result">
+          <a href class="link-search-result"
+          ng-click="initializeEditor(searchResult.transientProperties.itemType, searchResult)">
             <span class="text-search-result" ng-bind="searchResult.title"></span>
           </a>
         </div>

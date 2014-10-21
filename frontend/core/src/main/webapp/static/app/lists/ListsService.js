@@ -113,7 +113,7 @@
       if (this.getListStatus(list, ownerUUID) === 'deleted') deferred.reject(list);
       else if (list.uuid) {
         // Existing list
-        var transientProperties = this.detachTransientProperties(list, ownerUUID);
+        var transientProperties = ExtendedItemService.detachTransientProperties(list, ownerUUID);
         BackendClientService.putOnline('/api/' + ownerUUID + '/list/' + list.uuid, this.putExistingListRegex, list)
         .then(function(result) {
           if (result.data) {
@@ -125,7 +125,7 @@
         });
       } else {
         // New list
-        var transientProperties = this.detachTransientProperties(list, ownerUUID);
+        var transientProperties = ExtendedItemService.detachTransientProperties(list, ownerUUID);
         BackendClientService.putOnline('/api/' + ownerUUID + '/list',this.putNewListRegex, list).then(function(result) {
           if (result.data) {
             list.uuid = result.data.uuid;

@@ -20,7 +20,8 @@
   // OPENING, INITIALIZING, CLOSING
 
   var currentItem;
-  function editorAboutToOpen(editorType, item, mode) {
+
+  $scope.initializeEditor = function(editorType, item, mode){
     $scope.editorType = editorType;
     $scope.editorVisible = true;
     $scope.mode = mode;
@@ -60,7 +61,7 @@
   }
 
   if (angular.isFunction($scope.registerEditorAboutToOpenCallback))
-    $scope.registerEditorAboutToOpenCallback(editorAboutToOpen, 'EditorController');
+    $scope.registerEditorAboutToOpenCallback($scope.initializeEditor, 'EditorController');
 
   if (angular.isFunction($scope.registerEditorAboutToCloseCallback))
     $scope.registerEditorAboutToCloseCallback(editorAboutToClose, 'EditorController');
