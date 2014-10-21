@@ -16,7 +16,7 @@
         </div>
       </div>
 
-      <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
+      <form ng-hide="hideNoteTitle" role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--middle">
           <textarea type="text" ng-model="titlebar.text" ng-keydown="noteTitlebarTextKeyDown($event)"
           editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"

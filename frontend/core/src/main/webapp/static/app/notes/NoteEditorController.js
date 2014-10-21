@@ -53,6 +53,7 @@
   $scope.noteContentFocused = function(){
     if ($scope.isFirstSlide()){
       $scope.mode = 'fullScreen';
+      $scope.hideNoteTitle = true;
     }
   }
 
@@ -64,6 +65,7 @@
     }else {
       $scope.mode = 'view';
     }
+    $scope.hideNoteTitle = false;
   }
 
   // CONTENT
