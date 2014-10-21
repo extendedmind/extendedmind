@@ -45,10 +45,15 @@
   function executeSnapperAnimatedCallbacks(snapperSide) {
     // drawer is open when state is left or right
     if (snappers[snapperSide].snapper.state().state === snapperSide) {
-      snappers[snapperSide].isOpen = true;
-      for (var openId in snappers[snapperSide].openedCallbacks) {
-        if (snappers[snapperSide].openedCallbacks.hasOwnProperty(openId))
-          snappers[snapperSide].openedCallbacks[openId]();
+
+      // Don't execute callbacks if already open. Animated is triggered
+      // on every swipe to handle!
+      if (!snappers[snapperSide].isOpen){
+        snappers[snapperSide].isOpen = true;
+        for (var openId in snappers[snapperSide].openedCallbacks) {
+          if (snappers[snapperSide].openedCallbacks.hasOwnProperty(openId))
+            snappers[snapperSide].openedCallbacks[openId]();
+        }
       }
     }
     if (snappers[snapperSide].snapper.state().state === 'closed') {
