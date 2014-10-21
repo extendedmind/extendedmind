@@ -25,13 +25,14 @@ import org.extendedmind.domain.UserPreferences
 
 case class SecurityContext(userUUID: UUID, 
 						   userType: Byte,
+						   modified: Long,
 						   cohort: Option[Int],
 						   token: Option[String],
 						   authenticated: Option[Long],
 						   expires: Option[Long],
 						   replaceable: Option[Long],
-                           collectives: Option[Map[UUID,(String, Byte, Boolean)]],
-                           preferences: Option[UserPreferences]){
+               collectives: Option[Map[UUID,(String, Byte, Boolean)]],
+               preferences: Option[UserPreferences]){
   // Tweak that helps skip one database call when creating a token
   @transient var user: Node = null
 }

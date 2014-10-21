@@ -269,6 +269,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     SecurityContext(
       sc.userUUID,
       sc.userType,
+      sc.modified,
       sc.cohort,
       Some(Token.encryptToken(token)),
       Some(tokenInfo._1),
@@ -448,6 +449,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     SecurityContext(
       getUUID(user),
       userType,
+      user.getProperty("modified").asInstanceOf[Long],
       if (user.hasProperty("cohort")) Some(user.getProperty("cohort").asInstanceOf[Int]) else None,
       None,
       None,
