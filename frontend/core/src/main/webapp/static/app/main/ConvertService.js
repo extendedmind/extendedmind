@@ -112,7 +112,7 @@
     if (convert) copyConvertToListTransientPropertiesFn = copyConvertToItemTransientProperties
       .bind(undefined, list, convert, 'task', 'list');
 
-    ListsService.addTransientProperties(list, ownerUUID, copyConvertToListTransientPropertiesFn);
+    ListsService.addTransientProperties([list], ownerUUID, copyConvertToListTransientPropertiesFn);
     ListsService.addList(list, ownerUUID);
     TasksService.removeTask(task, ownerUUID);
   }
