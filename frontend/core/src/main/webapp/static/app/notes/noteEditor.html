@@ -2,9 +2,9 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
-        <a href class="group-symmetrical--left link-navigation">
-          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endNoteEdit()" ng-bind="titlebarHasText() ? 'save' : 'back'">
-          </a>
+        <a href class="group-symmetrical--left link-navigation" ng-click="endNoteEdit()" >
+          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="titlebarHasText() ? 'save' : 'back'">
+        </a>
         </a>
         <div ng-if="mode === 'fullScreen'" class="group-symmetrical--middle width-large">
           <a href ng-class="link-navigation" ng-click="toggleNoteEditMode()">

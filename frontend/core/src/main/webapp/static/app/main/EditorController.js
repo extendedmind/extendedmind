@@ -15,26 +15,30 @@
 
  'use strict';
 
- function EditorController($rootScope, $scope, SwiperService, UISessionService) {
+ function EditorController($rootScope, $scope, ConvertService, ItemsService, SwiperService, UISessionService) {
 
   // OPENING, INITIALIZING, CLOSING
 
-  var currentItem;
 
   $scope.initializeEditor = function(editorType, item, mode){
     $scope.editorType = editorType;
     $scope.editorVisible = true;
     $scope.mode = mode;
-    currentItem = item;
+
+    if (editorType === 'task'){
+      $scope.task = item;
+    }else if (editorType === 'note'){
+      $scope.note = item;
+    }else if (editorType === 'list'){
+      $scope.list = item;
+    }else if (editorType === 'item'){
+      $scope.item = item;
+    }
   }
 
   function editorAboutToClose() {
     if (typeof featureEditorAboutToCloseCallback === 'function') featureEditorAboutToCloseCallback();
   }
-
-  $scope.getItemInEdit = function(){
-    return currentItem;
-  };
 
   // Callback from Snap.js, outside of AngularJS event loop
   function editorOpened() {
@@ -56,7 +60,6 @@
     $scope.editorType = undefined;
     $scope.mode = undefined;
     $scope.editorVisible = false;
-    currentItem = false;
     titleBarInputFocusCallbackFunction = titleBarInputBlurCallbackFunction = undefined;
   }
 
@@ -97,6 +100,41 @@
     return UISessionService.deferAction('edit', $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
   };
 
+  // CONVERTING
+
+  $scope.convertToNote = function(itemInEdit){
+    if (itemInEdit.transientProperties.itemType === 'item'){
+      var itemToNote = ItemsService.itemToNote(itemInEdit, UISessionService.getActiveUUID());
+      if (itemToNote){
+        itemToNote.then(function(note){
+          $scope.initializeEditor('note', note);
+        });
+      }
+    }
+  }
+
+  $scope.convertToTask = function(itemInEdit){
+    if (itemInEdit.transientProperties.itemType === 'item'){
+      var itemToTask = ItemsService.itemToTask(itemInEdit, UISessionService.getActiveUUID());
+      if (itemToTask){
+        itemToTask.then(function(task){
+          $scope.initializeEditor('task', task);
+        });
+      }
+    }
+  }
+
+  $scope.convertToList = function(itemInEdit){
+    if (itemInEdit.transientProperties.itemType === 'item'){
+      var itemToList = ItemsService.itemToList(itemInEdit, UISessionService.getActiveUUID());
+      if (itemToList){
+        itemToList.then(function(list){
+          $scope.initializeEditor('list', list);
+        });
+      }
+    }
+  }
+
   // TITLEBAR
 
   $scope.titlebar = {};
@@ -124,10 +162,6 @@
     // Escape
     if (keydownEvent.keyCode === 27){
       blurTitlebarInput();
-    }
-    else if (item && $scope.titlebarHasText()){
-      // Change task title at the same time, but not if its empty
-      item.title = $scope.titlebar.text;
     }
   };
 
@@ -188,5 +222,5 @@
   };
 }
 
-EditorController['$inject'] = ['$rootScope', '$scope', 'SwiperService', 'UISessionService'];
+EditorController['$inject'] = ['$rootScope', '$scope', 'ConvertService', 'ItemsService', 'SwiperService', 'UISessionService'];
 angular.module('em.main').controller('EditorController', EditorController);

@@ -138,11 +138,11 @@
               deferred.resolve(item);
             }
           });
-         }
-       }
-       return deferred.promise;
-     },
-     deleteItem: function(item, ownerUUID) {
+        }
+      }
+      return deferred.promise;
+    },
+    deleteItem: function(item, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check if item has already been deleted
       if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
@@ -169,9 +169,9 @@
             updateItem(item, ownerUUID);
           }
         });
-       }
-     },
-     undeleteItem: function(item, ownerUUID) {
+      }
+    },
+    undeleteItem: function(item, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that item is deleted before trying to undelete
       if (items[ownerUUID].deletedItems.indexOf(item) === -1) {
@@ -194,9 +194,9 @@
             updateItem(item, ownerUUID);
           }
         });
-       }
-     },
-     itemToTask: function(item, ownerUUID) {
+      }
+    },
+    itemToTask: function(item, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that item is not deleted before trying to turn it into a task
       if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
@@ -204,8 +204,10 @@
       }
       var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.uuid);
       if (index !== undefined) {
-        TasksService.saveTask(item, ownerUUID);
-        items[ownerUUID].activeItems.splice(index, 1);
+        return TasksService.saveTask(item, ownerUUID).then(function(task){
+          items[ownerUUID].activeItems.splice(index, 1);
+          return task;
+        });
       }
     },
     itemToNote: function(item, ownerUUID) {
@@ -215,9 +217,12 @@
         return;
       }
       var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.uuid);
+
       if (index !== undefined) {
-        NotesService.saveNote(item, ownerUUID);
-        items[ownerUUID].activeItems.splice(index, 1);
+        return NotesService.saveNote(item, ownerUUID).then(function(note){
+          items[ownerUUID].activeItems.splice(index, 1);
+          return note;
+        });
       }
     },
     itemToList: function(item, ownerUUID) {
@@ -230,8 +235,10 @@
       var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.uuid);
       if (index !== undefined) {
         // Save as list and remove from the activeItems array
-        ListsService.saveList(item, ownerUUID);
-        items[ownerUUID].activeItems.splice(index, 1);
+        return ListsService.saveList(item, ownerUUID).then(function(list){
+          items[ownerUUID].activeItems.splice(index, 1);
+          return list;
+        });
       }
     },
     addTransientProperties: function(items) {

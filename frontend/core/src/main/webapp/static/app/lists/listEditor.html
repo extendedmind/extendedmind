@@ -2,8 +2,8 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
-        <a href class="group-symmetrical--left link-navigation highlighted">
-          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-click="endListEdit()" ng-bind="titlebarHasText() ? 'save' : 'back'"></span>
+        <a href class="group-symmetrical--left link-navigation highlighted" ng-click="endListEdit()" >
+          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="titlebarHasText() ? 'save' : 'back'"></span>
         </a>
         <a href class="group-symmetrical--right" ng-click="deleteListInEdit()" >
           <span class="text-trash"></span>

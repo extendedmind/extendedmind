@@ -1,0 +1,42 @@
+<div class="container-fluid" ng-controller="ItemEditorController">
+  <header class="container-titlebar">
+    <div class="container-titlebar--inner">
+      <div class="group-symmetrical height-large">
+        <a href class="group-symmetrical--left link-navigation highlighted" ng-click="endItemEdit()">
+          <span class="text-navigation-back" ng-bind="titlebarHasText() ? 'save' : 'back'"></span>
+        </a>
+        <a href class="group-symmetrical--right" ng-click="deleteItemInEdit()" >
+          <span class="text-trash"></span>
+        </a>
+      </div>
+
+      <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
+        <div class="group-mixed--middle">
+          <textarea type="text" ng-model="titlebar.text" ng-keydown="itemTitlebarTextKeyDown($event)" editable-field
+          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="enter item title&#8230;" maxlength="128" required ></textarea>
+        </div>
+      </form>
+    </div>
+  </header>
+
+  <div class="container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}">
+    <div class="container-content" drawer-override-aisle="right">
+      <textarea class="row-form" ng-model="item.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
+    </div>
+    <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
+      <div class="group-symmetrical">
+        <a href class="group-symmetrical--left" ng-click="convertToTask(item)">
+          <span class="text-convert">task</span>
+        </a>
+        <div class="group-symmetrical--middle width-large">
+          <a href ng-click="convertToNote(item)">
+            <span class="text-convert">note</span>
+          </a>
+        </div>
+        <a href class="group-symmetrical--right" ng-click="convertToList(item)">
+          <span class="text-convert">list</span>
+        </a>
+      </div>
+    </footer>
+  </div>
+</div>

@@ -1,8 +1,8 @@
 <div class="container-fluid" ng-controller="OmnibarEditorController">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
-      <div class="group-symmetrical height-large">
-        <a href class="group-symmetrical--left link-navigation" ng-click="closeEditor()">
+      <div class="group-symmetrical height-large" ng-click="closeEditor()">
+        <a href class="group-symmetrical--left link-navigation">
           <span class="text-navigation-back">back</span>
         </a>
       </div>
@@ -10,7 +10,7 @@
       <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--middle">
           <textarea type="text" ng-model="titlebar.text" ng-keydown="omnibarTitlebarTextKeyDown($event)" editable-field
-          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="search/addTODO&#8230;" maxlength="128" required ></textarea>
+          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="save to inbox / search&#8230;" maxlength="128" required ></textarea>
         </div>
       </form>
     </div>

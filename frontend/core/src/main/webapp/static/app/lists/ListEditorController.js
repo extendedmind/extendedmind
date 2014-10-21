@@ -25,7 +25,7 @@
 
   // SAVING, DELETING
 
-  $scope.saveListInEdit = function() {
+  function saveListInEdit () {
     $scope.list.title = $scope.titlebar.text;
     $scope.deferEdit().then(function() {
       $scope.saveList($scope.list);
@@ -41,7 +41,7 @@
 
   $scope.endListEdit = function() {
     $scope.closeEditor();
-    if ($scope.titlebarHasText()) $scope.saveListInEdit();
+    if ($scope.titlebarHasText()) saveListInEdit();
   };
 
   $scope.archiveListInEdit = function() {
@@ -66,7 +66,7 @@
     if (event.keyCode === 13 && $scope.titlebarHasText()) {
       // Enter in editor saves, no line breaks allowed
       $scope.closeEditor();
-      $scope.saveListInEdit();
+      saveListInEdit();
       event.preventDefault();
       event.stopPropagation();
     }

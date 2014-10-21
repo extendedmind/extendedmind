@@ -1,13 +1,16 @@
 <div id="editor" class="container-editor" ng-controller="EditorController" drawer="right"
 vertical-resize="editor" vertical-resize-prevent="!isEditorVisible()" ng-switch="editorType">
-  <div ng-if="editorVisible" ng-switch-when="task" class="container-editor--inner" ng-init="task = getItemInEdit()">
+  <div ng-if="editorVisible" ng-switch-when="task" class="container-editor--inner">
     <div ng-include="'static/app/tasks/taskEditor.html'" include-replace></div>
   </div>
-  <div ng-if="editorVisible" ng-switch-when="note" class="container-editor--inner" ng-init="note = getItemInEdit()">
+  <div ng-if="editorVisible" ng-switch-when="note" class="container-editor--inner">
     <div ng-include="'static/app/notes/noteEditor.html'" include-replace></div>
   </div>
-  <div ng-if="editorVisible" ng-switch-when="list" class="container-editor--inner" ng-init="list = getItemInEdit()">
+  <div ng-if="editorVisible" ng-switch-when="list" class="container-editor--inner">
     <div ng-include="'static/app/lists/listEditor.html'" include-replace></div>
+  </div>
+  <div ng-if="editorVisible" ng-switch-when="item" class="container-editor--inner">
+    <div ng-include="'static/app/main/itemEditor.html'" include-replace></div>
   </div>
   <div ng-if="editorVisible" ng-switch-when="omnibar" class="container-editor--inner">
     <div ng-include="'static/app/main/omnibarEditor.html'" include-replace></div>

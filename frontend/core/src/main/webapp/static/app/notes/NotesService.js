@@ -16,7 +16,7 @@
  /*global angular */
  'use strict';
 
- function NotesService(ArrayService, BackendClientService, ExtendedItemService, ListsService,
+ function NotesService($q, ArrayService, BackendClientService, ExtendedItemService, ListsService,
                        TagsService, UISessionService, UserSessionService, UUIDService) {
 
   // An object containing notes for every owner
@@ -178,6 +178,7 @@
     },
     saveNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
+      var deferred = $q.defer();
       if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
       var params;
       var transientProperties = ExtendedItemService.detachTransientProperties(note, ownerUUID, copyStarredToFavorited);
@@ -191,6 +192,7 @@
           note.created = note.modified = BackendClientService.generateFakeTimestamp();
           ExtendedItemService.attachTransientProperties(note, transientProperties, 'note');
           updateNote(note, ownerUUID);
+          deferred.resolve(note);
         } else {
           // Online
           BackendClientService.putOnline('/api/' + ownerUUID + '/note/' + note.uuid,
@@ -200,6 +202,7 @@
               note.modified = result.data.modified;
               ExtendedItemService.attachTransientProperties(note, transientProperties, 'note');
               updateNote(note, ownerUUID);
+              deferred.resolve(note);
             }
           });
         }
@@ -215,6 +218,7 @@
           note.created = note.modified = BackendClientService.generateFakeTimestamp();
           ExtendedItemService.attachTransientProperties(note, transientProperties, 'note');
           setNote(note, ownerUUID);
+          deferred.resolve(note);
         } else {
           // Online
           BackendClientService.putOnline('/api/' + ownerUUID + '/note',
@@ -226,10 +230,12 @@
               note.created = result.data.created;
               ExtendedItemService.attachTransientProperties(note, transientProperties, 'note');
               setNote(note, ownerUUID);
+              deferred.resolve(note);
             }
           });
         }
       }
+      return deferred.promise;
     },
     getNoteStatus: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
@@ -357,6 +363,6 @@
   };
 }
 
-NotesService['$inject'] = ['ArrayService', 'BackendClientService', 'ExtendedItemService',
+NotesService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ExtendedItemService',
 'ListsService', 'TagsService', 'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.notes').factory('NotesService', NotesService);
