@@ -22,4 +22,10 @@
     <textarea autocapitalize="none" autocorrect="off" ng-model="newList.title" msd-elastic ng-keydown="textareaKeyDown($event)" placeholder="add list&#8230;" maxlength="128"></textarea>
   </div>
 
+  <div class="row-form" ng-repeat="archivedList in archivedLists | filter:notSelectedList" ng-click="listSelected(archivedList)">
+    <a href>
+      <span class="text-link" ng-bind="archivedList.title"></span>
+    </a>
+  </div>
+
 </div>

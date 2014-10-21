@@ -15,7 +15,7 @@
 
  'use strict';
 
- function EditorController($rootScope, $scope, ListsService, SwiperService, UISessionService) {
+ function EditorController($rootScope, $scope, SwiperService, UISessionService) {
 
   // OPENING, INITIALIZING, CLOSING
 
@@ -158,11 +158,11 @@
     $scope.listPickerOpen = false;
   };
   $scope.getListFromUUID = function(uuid) {
-    var list = ListsService.getListByUUID(uuid, UISessionService.getActiveUUID());
+    var list = $scope.allLists.findFirstObjectByKeyValue('uuid', uuid);
     if (list) return list;
   };
   $scope.getListTitleFromUUID = function(uuid) {
-    var list = ListsService.getListByUUID(uuid, UISessionService.getActiveUUID());
+    var list = $scope.allLists.findFirstObjectByKeyValue('uuid', uuid);
     if (list) return list.title;
   };
 
@@ -187,5 +187,5 @@
   };
 }
 
-EditorController['$inject'] = ['$rootScope', '$scope', 'ListsService', 'SwiperService', 'UISessionService'];
+EditorController['$inject'] = ['$rootScope', '$scope', 'SwiperService', 'UISessionService'];
 angular.module('em.main').controller('EditorController', EditorController);

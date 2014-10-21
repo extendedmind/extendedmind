@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function ListsController($q, $rootScope, $scope, AnalyticsService, ListsService,
+ function ListsController($q, $rootScope, $scope, AnalyticsService, ListsService, SwiperService,
                           UISessionService, UserService, UserSessionService) {
 
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
@@ -22,6 +22,11 @@
       $scope.list = data;
       $scope.subtask = {transientProperties: {list: $scope.list.uuid}};
       $scope.newNote = {transientProperties: {list: $scope.list.uuid}};
+    } else if (name === 'lists') {
+      if (data && data.archived) {
+        // List was archived, swipe to archived lists slide.
+        SwiperService.swipeTo('lists/archived');
+      }
     }
   };
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ListsController');
@@ -76,7 +81,7 @@
     var saveListDeferred = $scope.saveList(list);
     if (saveListDeferred){
       return saveListDeferred.then(function(savedList){
-        $scope.archiveList(savedList);
+        return $scope.archiveList(savedList);
       });
     }
   };
@@ -101,5 +106,5 @@
 }
 
 ListsController['$inject'] = ['$q', '$rootScope', '$scope', 'AnalyticsService', 'ListsService',
-'UISessionService', 'UserService', 'UserSessionService'];
+'SwiperService', 'UISessionService', 'UserService', 'UserSessionService'];
 angular.module('em.base').controller('ListsController', ListsController);

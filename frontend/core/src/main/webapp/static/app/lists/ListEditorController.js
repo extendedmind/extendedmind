@@ -15,7 +15,7 @@
 
  'use strict';
 
- function ListEditorController($q, $rootScope, $scope, $timeout, DateService, UISessionService) {
+ function ListEditorController($q, $rootScope, $scope) {
 
   // INITIALIZE VARIABLES
 
@@ -42,21 +42,21 @@
   $scope.endListEdit = function() {
     $scope.closeEditor();
     if ($scope.titlebarHasText()) $scope.saveListInEdit();
-  }
+  };
 
   $scope.archiveListInEdit = function() {
     var deferredSaveAndArchive = $scope.saveAndArchiveList($scope.list);
     if (deferredSaveAndArchive){
       return deferredSaveAndArchive.then(function(){
         $scope.closeEditor();
-        $scope.changeFeature('lists', list);
+        $scope.changeFeature('lists', $scope.list);
       });
     }
   };
 
   $scope.clickFavorite = function() {
     $scope.favoriteList($scope.list);
-  }
+  };
 
   // TITLEBAR
 
@@ -73,6 +73,5 @@
   };
 }
 
-ListEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'DateService',
-'UISessionService'];
+ListEditorController['$inject'] = ['$q', '$rootScope', '$scope'];
 angular.module('em.main').controller('ListEditorController', ListEditorController);

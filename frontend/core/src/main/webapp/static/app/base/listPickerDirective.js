@@ -20,6 +20,7 @@
     templateUrl: 'static/app/base/listPicker.html',
     scope: {
       lists: '=listPicker',
+      archivedLists: '=listPickerArchivedLists',
       getSelectedList: '&listPickerGetSelected',
       closeAndSave: '&listPickerSave',
       closeAndClearList: '&listPickerClear'

@@ -189,29 +189,34 @@
     archiveList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
       // Check that list is active before trying to archive
+      var deferred = $q.defer();
       if (lists[ownerUUID].activeLists.indexOf(list) === -1) {
-        return;
-      }
-      BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/archive', this.deleteListRegex)
-      .then(function(result) {
-        if (result.data) {
-          list.archived = result.data.archived;
-          list.modified = result.data.result.modified;
-          updateList(list, ownerUUID);
-          var latestModified = list.modified;
+        deferred.reject();
+      } else {
+        BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/archive', this.deleteListRegex)
+        .then(function(result) {
+          if (result.data) {
+            list.archived = result.data.archived;
+            list.modified = result.data.result.modified;
+            updateList(list, ownerUUID);
+            var latestModified = list.modified;
 
-          // Add generated tag to the tag array
-          var tagModified = TagsService.setGeneratedTag(result.data.history, ownerUUID);
-          if (tagModified > latestModified) latestModified = tagModified;
-          // Call child callbacks
-          if (result.data.children) {
-            for (var id in itemArchiveCallbacks) {
-              var itemModified = itemArchiveCallbacks[id](result.data.children, result.data.archived, ownerUUID);
-              if (itemModified && itemModified > latestModified) latestModified = itemModified;
+            // Add generated tag to the tag array
+            var tagModified = TagsService.setGeneratedTag(result.data.history, ownerUUID);
+            if (tagModified > latestModified) latestModified = tagModified;
+            // Call child callbacks
+            if (result.data.children) {
+              for (var id in itemArchiveCallbacks) {
+                var itemModified = itemArchiveCallbacks[id](result.data.children, result.data.archived, ownerUUID);
+                if (itemModified && itemModified > latestModified) latestModified = itemModified;
+              }
             }
+            deferred.resolve();
           }
-        }
-      });
+        });
+      }
+
+      return deferred.promise;
     },
     addTransientProperties: function(list, ownerUUID, addExtraTransientPropertyFn) {
       //
