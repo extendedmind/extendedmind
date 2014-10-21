@@ -120,7 +120,7 @@
       // scrolls to the right place.
       scope.callAndWaitThenScroll = function(fn, parameter){
         var promise = fn(parameter);
-        if (attrs.listRecent && promise && promise.then){
+        if (attrs.listRecent !== undefined && promise && promise.then){
           promise.then(function(){
             element[0].scrollTop = 0;
           })
