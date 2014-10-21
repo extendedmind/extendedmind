@@ -44,7 +44,7 @@
         setFocusOnTitlebarInput();
       }
     }
- }
+  }
 
   // Callback from Snap.js, outside of AngularJS event loop
   function editorClosed() {
@@ -168,12 +168,12 @@
       $scope.$digest();
   };
 
-  // DROP-DOWN LIST WIDGET
-  $scope.openDropDownList = function() {
-    $scope.dropDownListOpen = true;
+  // LIST PICKER WIDGET
+  $scope.openListPicker = function() {
+    $scope.listPickerOpen = true;
   };
-  $scope.closeDropDownList = function() {
-    $scope.dropDownListOpen = false;
+  $scope.closeListPicker = function() {
+    $scope.listPickerOpen = false;
   };
   $scope.getListFromUUID = function(uuid) {
     var list = ListsService.getListByUUID(uuid, UISessionService.getActiveUUID());
@@ -184,14 +184,14 @@
     if (list) return list.title;
   };
 
-  $scope.closeDropDownListAndSetListToItem = function(item, listUUID) {
-    $scope.closeDropDownList();
+  $scope.closeListPickerAndSetListToItem = function(item, listUUID) {
+    $scope.closeListPicker();
     if (!item.transientProperties) item.transientProperties = {};
     item.transientProperties.list = listUUID;
   };
 
-  $scope.closeDropDownListAndClearListFromItem = function(item, listUUID) {
-    $scope.closeDropDownList();
+  $scope.closeListPickerAndClearListFromItem = function(item, listUUID) {
+    $scope.closeListPicker();
     if (item.transientProperties && item.transientProperties.list === listUUID)
       delete item.transientProperties.list;
   };

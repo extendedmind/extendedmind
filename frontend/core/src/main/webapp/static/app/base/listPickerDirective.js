@@ -14,15 +14,15 @@
  */
  'use strict';
 
- function dropDownListDirective() {
+ function listPickerDirective() {
   return {
     restrict: 'A',
-    templateUrl: 'static/app/base/dropDownList.html',
+    templateUrl: 'static/app/base/listPicker.html',
     scope: {
-      lists: '=dropDownList',
-      getSelectedList: '&dropDownListGetSelected',
-      closeAndSave: '&dropDownListSave',
-      closeAndClearList: '&dropDownListClear'
+      lists: '=listPicker',
+      getSelectedList: '&listPickerGetSelected',
+      closeAndSave: '&listPickerSave',
+      closeAndClearList: '&listPickerClear'
     },
     link: function(scope) {
       if (angular.isFunction(scope.getSelectedList))
@@ -45,4 +45,4 @@
     }
   };
 }
-angular.module('em.base').directive('dropDownList', dropDownListDirective);
+angular.module('em.base').directive('listPicker', listPickerDirective);
