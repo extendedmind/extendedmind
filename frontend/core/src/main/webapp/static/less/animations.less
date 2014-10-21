@@ -24,8 +24,8 @@
 @speed-animate-btn-completed-fade: 1s;
 @timing-animate-btn-completed: @timing-animate-gradual;
 
-@speed-animate-calendar-fade: .3s;
-@timing-animate-calendar: @timing-animate;
+@speed-animate-fade-in: .3s;
+@timing-animate-fade-in: @timing-animate;
 
 @speed-animate-date-active: .2s;
 @timing-animate-date-active: @timing-animate-steep;
@@ -148,26 +148,23 @@ input[type="checkbox"]:checked + label:before {
   background-color: @color-background-highlighted; // [2]
 }
 
-// 1. Crossfade between calendar and date field.
-//    We are animating entering part of ng-if only, because:
-//      Date field: ng-if="!calendarOpen"
-//      Calendar:   ng-if="calendarOpen"
-.animate-calendar.ng-enter {
+// 1. Fade in animating only ng-enter part of ng-if
+.animate-fade-in.ng-enter {
   pointer-events: none;
-  -webkit-transition: opacity @speed-animate-calendar-fade @timing-animate-calendar;  // [1]
-  -moz-transition: opacity @speed-animate-calendar-fade @timing-animate-calendar;     // [1]
-  -o-transition: opacity @speed-animate-calendar-fade @timing-animate-calendar;       // [1]
-  -ms-transition: opacity @speed-animate-calendar-fade @timing-animate-calendar;      // [1]
-  transition: opacity @speed-animate-calendar-fade @timing-animate-calendar;          // [1]
+  -webkit-transition: opacity @speed-animate-fade-in @timing-animate-fade-in;  // [1]
+  -moz-transition: opacity @speed-animate-fade-in @timing-animate-fade-in;     // [1]
+  -o-transition: opacity @speed-animate-fade-in @timing-animate-fade-in;       // [1]
+  -ms-transition: opacity @speed-animate-fade-in @timing-animate-fade-in;      // [1]
+  transition: opacity @speed-animate-fade-in @timing-animate-fade-in;          // [1]
 }
 
 // 1. Fade in
-.animate-calendar.ng-enter {
+.animate-fade-in.ng-enter {
   opacity: 0; // [1]
 }
 
 // 1. Fade in
-.animate-calendar.ng-enter.ng-enter-active {
+.animate-fade-in.ng-enter.ng-enter-active {
   opacity: 1; // [1]
 }
 

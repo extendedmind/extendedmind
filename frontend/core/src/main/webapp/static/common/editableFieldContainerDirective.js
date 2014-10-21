@@ -19,7 +19,7 @@
     restrict: 'A',
     scope: true,
     require: '^editableFieldBackdrop',
-    controller: function($scope, $element, $attrs) {
+    controller: function($scope) {
 
       this.notifyFocus = function() {
         if (!$scope.containerActive){
@@ -36,24 +36,36 @@
       this.deactivateContainer = function(){
         // deactivate and call click elsewhere
         $scope.deactivateContainer(true);
-      }
+      };
     },
     link: function (scope, element, attrs, backdropController) {
       element.addClass('editable-field-container');
 
       scope.containerActive = false;
       function clickedContainer() {
+        if (attrs.editableFieldContainerScrollable) {
+          // Scrollable editable field container has height: 100% so when it does not have enough content to
+          // be scrollable, container click may hit into area where is no content.
+          var targetElement = event.target;
+          if (targetElement === element[0] || targetElement === element[0].firstElementChild) {
+            // Clicked on non-scrollable content. Do not notify about container click.
+            return;
+          }
+        }
         backdropController.notifyContainerClicked(element[0]);
       }
 
       scope.activateContainer = function() {
         if (!scope.containerActive){
           backdropController.activateContainer(element[0]);
-          element[0].addEventListener('click', clickedContainer, false);
+          element.bind('click', clickedContainer);
           element.addClass('active');
           scope.containerActive = true;
+          if (attrs.editableFieldContainerScrollable) {
+            element.addClass('scrollable');
+          }
         }
-      }
+      };
 
       scope.deactivateContainer = function(directCall) {
         if (scope.containerActive){
@@ -70,9 +82,12 @@
               scope.unFocusCallback();
               scope.unFocusCallback = undefined;
             }
+            if (attrs.editableFieldContainerScrollable) {
+              element.removeClass('scrollable');
+            }
           }
         }
-      }
+      };
 
       // optional click elsewhere function can be set with editable-field-container-click-elswhere="fn"
       // If not set, clicking elsewhere just deactivates the backdrop
