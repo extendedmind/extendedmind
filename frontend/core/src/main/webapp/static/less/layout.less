@@ -469,10 +469,9 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     padding-left: @grid-horizontal;   /* [1] */
   }
 }
+// 1. .group-mixed--middle can be used directly in <a> elements for increased clicking area.
 .group-mixed--middle:last-child {
-  a, textarea, h1, h2, h3 {
-    padding-right: @grid-horizontal;  /* [1] */
-  }
+  padding-right: @grid-horizontal;  /* [1] */
 }
 
 // 1. Expand width and line-height when there are no sibling elements in .group-mixed
