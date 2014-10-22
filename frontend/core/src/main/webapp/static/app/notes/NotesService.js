@@ -40,8 +40,16 @@
     return [{array: notes[ownerUUID].archivedNotes, id: 'archived'}];
   }
 
+  function addTransientProperties(notes, ownerUUID, addExtraTransientPropertyFn) {
+    var addExtraTransientPropertyFunctions;
+    if (typeof addExtraTransientPropertyFn === 'function')
+      addExtraTransientPropertyFunctions = [addExtraTransientPropertyFn, copyFavorited];
+    else addExtraTransientPropertyFunctions = copyFavorited;
+    ExtendedItemService.addTransientProperties(notes, ownerUUID, 'note', addExtraTransientPropertyFunctions);
+  }
+
   function updateNote(note, ownerUUID) {
-    ExtendedItemService.addTransientProperties([note], ownerUUID, 'note', copyFavorited);
+    addTransientProperties([note], ownerUUID);
     return ArrayService.updateItem(note,
       notes[ownerUUID].activeNotes,
       notes[ownerUUID].deletedNotes,
@@ -117,7 +125,7 @@
   return {
     setNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      ExtendedItemService.addTransientProperties(notesResponse, ownerUUID, 'note', copyFavorited);
+      addTransientProperties(notesResponse, ownerUUID);
       return ArrayService.setArrays(
         notesResponse,
         notes[ownerUUID].activeNotes,
@@ -125,7 +133,7 @@
     },
     updateNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      ExtendedItemService.addTransientProperties(notesResponse, ownerUUID, 'note', copyFavorited);
+      addTransientProperties(notesResponse, ownerUUID);
 
       // issue a very short lived lock to prevent leave animation
       // when arrays are reformulated
@@ -143,7 +151,7 @@
         notes[ownerUUID].activeNotes,
         notes[ownerUUID].deletedNotes,
         getOtherArrays(ownerUUID));
-      if (updatedNote) ExtendedItemService.addTransientProperties([updatedNote], ownerUUID, 'note', copyFavorited);
+      if (updatedNote) addTransientProperties([updatedNote], ownerUUID);
       return updatedNote;
     },
     getNoteArrays: function(ownerUUID) {
@@ -376,17 +384,10 @@
         if (note.transientProperties.keywords) delete note.transientProperties.keywords;
         if (note.transientProperties.starred) delete note.transientProperties.starred;
       }
-      ExtendedItemService.addTransientProperties(notesArray, ownerUUID, 'note', copyFavorited);
+      addTransientProperties(notesArray, ownerUUID);
     },
-    addTransientProperties: function(note, ownerUUID, addExtraTransientPropertyFn) {
-      //
-      // TODO: Replace ExtendedItemService.addTransientProperties with this
-      //
-      var addExtraTransientPropertyFunctions;
-      if (typeof addExtraTransientPropertyFn === 'function')
-        addExtraTransientPropertyFunctions = [addExtraTransientPropertyFn, copyFavorited];
-      else addExtraTransientPropertyFunctions = copyFavorited;
-      ExtendedItemService.addTransientProperties([note], ownerUUID, 'note', addExtraTransientPropertyFunctions);
+    addTransientProperties: function(notes, ownerUUID, addExtraTransientPropertyFn) {
+      return addTransientProperties(notes, ownerUUID, addExtraTransientPropertyFn);
     },
     detachTransientProperties: function(note, ownerUUID) {
       return ExtendedItemService.detachTransientProperties(note, ownerUUID);

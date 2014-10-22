@@ -100,7 +100,7 @@
     if (convert) copyConvertToNoteTransientPropertiesFn = copyConvertToItemTransientProperties
       .bind(undefined, note, convert, 'task', 'note');
 
-    NotesService.addTransientProperties(note, ownerUUID, copyConvertToNoteTransientPropertiesFn);
+    NotesService.addTransientProperties([note], ownerUUID, copyConvertToNoteTransientPropertiesFn);
     NotesService.addNote(note, ownerUUID);
     TasksService.removeTask(task, ownerUUID);
   }
