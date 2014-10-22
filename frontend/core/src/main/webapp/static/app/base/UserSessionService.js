@@ -107,6 +107,7 @@
       LocalStorageService.clearUser();
       latestModified = {};
       itemsSynchronized = {};
+      collectives = {};
     },
 
     // Web storage setters

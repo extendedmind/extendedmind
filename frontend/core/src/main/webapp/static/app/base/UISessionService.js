@@ -322,6 +322,7 @@
       notificationsActiveCallbacks = [];
       deferredActions = [];
       ownerPrefix = 'my';
+      locks = {};
     }
   };
 }

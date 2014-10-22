@@ -505,6 +505,7 @@
             }
           }
         }
+        SwiperService.deleteSwiper($scope.swiperPath);
       });
     },
     link: function (scope, element, attrs, drawerAisleController){

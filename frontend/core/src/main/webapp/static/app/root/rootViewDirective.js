@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function rootViewDirective($injector, $rootScope, $window, AnalyticsService, BackendClientService,
+ function rootViewDirective($injector, $rootScope, $templateCache, $window, AnalyticsService, BackendClientService,
                             ModalService, UISessionService, UUIDService, UserSessionService, packaging) {
 
   return {
@@ -97,10 +97,30 @@
         exiting = true;
         UISessionService.reset();
         UserSessionService.clearUser();
+        $rootScope.synced = $rootScope.syncState = undefined;
         // $location can not be injected directly presumably because this directive
         // is defined above ng-view
         var $location = $injector.get('$location');
         $location.url('/');
+
+        // NOTE:  Without this swiper breaks after logout/login, because
+        //        window.getComputedStyle(el, null).getPropertyValue('width');
+        //        in swiper.js starts returning roughly half the real value. This turned out
+        //        to be because of AngularJS template caching: the first ng-include workds, but
+        //        not the second.
+
+        // Tried also this in swiperContainer after initialization:
+        //
+        //      if ($rootScope.horizontalSwipersNeedResize){
+        //        $element[0].style.visibility = 'hidden';
+        //        setTimeout(function(){
+        //          SwiperService.resizeFixSwiper($scope.swiperPath);
+        //          $element[0].style.visibility = 'visible';
+        //        });
+        //      }
+        //
+        // which almost worked, but on menu open, failed. In app that always broke.
+        $templateCache.removeAll();
       }
 
       // Listen to exceptions emitted to rootscope
@@ -255,7 +275,7 @@
   };
 }
 
-rootViewDirective['$inject'] = ['$injector', '$rootScope', '$window',
+rootViewDirective['$inject'] = ['$injector', '$rootScope', '$templateCache', '$window',
 'AnalyticsService', 'BackendClientService', 'ModalService', 'UISessionService', 'UUIDService',
 'UserSessionService', 'packaging'];
 angular.module('em.root').directive('rootView', rootViewDirective);

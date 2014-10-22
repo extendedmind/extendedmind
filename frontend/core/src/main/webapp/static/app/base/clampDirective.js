@@ -14,7 +14,7 @@
  */
 'use strict';
 
-function clampDirective($rootScope, $timeout) {
+function clampDirective($timeout) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
@@ -33,5 +33,5 @@ function clampDirective($rootScope, $timeout) {
     }
   };
 }
-clampDirective['$inject'] = ['$rootScope', '$timeout'];
+clampDirective['$inject'] = ['$timeout'];
 angular.module('em.base').directive('clamp', clampDirective);

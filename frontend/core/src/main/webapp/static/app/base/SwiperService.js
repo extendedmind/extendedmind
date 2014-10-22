@@ -260,6 +260,11 @@ function SwiperService($q, $timeout) {
         });
       }
     },
+    resizeFixSwiper: function(swiperPath) {
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
+        swipers[swiperPath].swiper.resizeFix();
+      }
+    },
     onSlideReset: function(scope, swiperPath) {
       var activeIndex, previousIndex;
 
@@ -478,6 +483,20 @@ function SwiperService($q, $timeout) {
     setEnableSwipeToNext: function(swiperPath, enable) {
       if (swipers[swiperPath]) {
         swipers[swiperPath].swiper.params.swipeToNext = enable;
+      }
+    },
+    deleteSwiper: function(swiperPath){
+      if (swipers[swiperPath]){
+        if (swipers[swiperPath].swiper){
+          swipers[swiperPath].swiper.destroy();
+          delete swipers[swiperPath].swiper;
+        }
+        delete swipers[swiperPath];
+        if (slideChangeCallbacks[swiperPath]) delete slideChangeCallbacks[swiperPath];
+        if (slideChangeStartCallbacks[swiperPath]) delete slideChangeStartCallbacks[swiperPath];
+        if (slideResetCallbacks[swiperPath]) delete slideResetCallbacks[swiperPath];
+        if (slideActiveCallbacks[swiperPath]) delete slideActiveCallbacks[swiperPath];
+        if (overrideSwiperParams[swiperPath]) delete overrideSwiperParams[swiperPath];
       }
     }
   };
