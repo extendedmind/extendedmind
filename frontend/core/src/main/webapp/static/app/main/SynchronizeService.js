@@ -109,13 +109,16 @@
           return;
         }
       } else if (request.params.type === 'note') {
-        if (request.content.url.endsWith('/undelete')) {
+        if (request.content.url.endsWith('/undelete')  || request.content.url.endsWith('/unfavorite')) {
           properties = {modified: response.modified};
-          if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
-            $rootScope.$emit('emException', {type: 'response', response: response,
-              description: 'Could not update undeleted note with values from server'});
-            return;
-          }
+        }else if (request.content.url.endsWith('/favorite')) {
+          // Favorite
+          properties = {favorited: response.favorited, modified: response.result.modified};
+        }
+        if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
+          $rootScope.$emit('emException', {type: 'response', response: response,
+            description: 'Could not update modified note with values from server'});
+          return;
         }
       }
     // ***
