@@ -1,48 +1,46 @@
-
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
-  <section class="container-content">
-    <div list="contexts" list-order="top">
-      <h2 class="group-heading justified row">contexts</h2>
-      <div list-item-add="{tagType:'context'}" list-item-add-save="saveContext(newItem)">
-        <form role="form" class="group-mixed swiper-no-swiping"
-        data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
-        editable-field-container-clicked-elsewhere="clickedElsewhere()">
-          <div class="group-mixed--middle">
-            <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
-            editable-field editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)"
-            placeholder="add context&#8230;" maxlength="128">
-            </textarea>
-          </div>
-          <div class="group-mixed--right">
-            <a href editable-field-deactivate ng-click="openEditor('tag', newItem)">
-              <span class="text-navigation-forward"></span>
-            </a>
-          </div>
-        </form>
-      </div>
-      <div class="animate-list-item-leave"
-      ng-repeat="context in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
-      list-item="getList().length">
-        <div class="group-mixed">
-          <a href class="group-mixed--middle" swiper-click="swipeToContext(context)">
-            <span class="text-link" clamp=2 ng-bind="'@' + context.title"></span>
-          </a>
-          <div class="group-mixed--right">
-            <a href ng-click="swipeToContext(context)">
-              <span class="text-navigation-forward large"></span>
-            </a>
-          </div>
+  <section class="container-content" list="contexts" list-order="top">
+    <h2 class="group-heading justified row">contexts</h2>
+    <div list-item-add="{tagType:'context'}" list-item-add-save="saveContext(newItem)">
+      <form role="form" class="group-mixed swiper-no-swiping"
+      data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
+      editable-field-container-clicked-elsewhere="clickedElsewhere()">
+        <div class="group-mixed--middle">
+          <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
+          editable-field editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)"
+          placeholder="add context&#8230;" maxlength="128">
+          </textarea>
         </div>
-      </div>
+        <div class="group-mixed--right">
+          <a href editable-field-deactivate ng-click="openEditor('tag', newItem)">
+            <span class="text-navigation-forward"></span>
+          </a>
+        </div>
+      </form>
+    </div>
+    <div class="animate-list-item-leave"
+    ng-repeat="context in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
+    list-item="getList().length">
       <div class="group-mixed">
         <a href class="group-mixed--middle" swiper-click="swipeToContext(context)">
-          <span class="text-link">no context</span>
+          <span class="text-link" clamp=2 ng-bind="'@' + context.title"></span>
         </a>
         <div class="group-mixed--right">
-          <a href ng-click="swipeToContext()">
+          <a href ng-click="swipeToContext(context)">
             <span class="text-navigation-forward large"></span>
           </a>
         </div>
+      </div>
+    </div>
+    <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
+    <div class="group-mixed">
+      <a href class="group-mixed--middle" swiper-click="swipeToContext()">
+        <span class="text-link">no context</span>
+      </a>
+      <div class="group-mixed--right">
+        <a href ng-click="swipeToContext()">
+          <span class="text-navigation-forward large"></span>
+        </a>
       </div>
     </div>
   </section>

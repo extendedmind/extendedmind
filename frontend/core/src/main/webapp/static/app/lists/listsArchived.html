@@ -1,13 +1,12 @@
 <div class="container-content--outer" ng-if="isFeatureActive('lists')" list-container>
-  <section class="container-content">
-    <div list="archivedLists" list-order="top">
-      <h2 class="group-heading justified row">archived</h2>
-      <div list-item-add="{}" list-item-add-save="saveAndArchiveList(newItem)"
-      ng-include="'static/app/lists/listListItemAdd.html'"></div>
-      <div class="animate-list-item-leave"
-      ng-repeat="list in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
-      list-item="getList().length" ng-include="'static/app/lists/listListItem.html'"></div>
-    </div>
+  <section class="container-content" list="archivedLists" list-order="top">
+    <h2 class="group-heading justified row">archived</h2>
+    <div list-item-add="{}" list-item-add-save="saveAndArchiveList(newItem)"
+    ng-include="'static/app/lists/listListItemAdd.html'"></div>
+    <div class="animate-list-item-leave"
+    ng-repeat="list in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
+    list-item="getList().length" ng-include="'static/app/lists/listListItem.html'"></div>
+    <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('lists')"></footer>
 </div>

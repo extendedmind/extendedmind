@@ -169,6 +169,13 @@
     TasksService.deleteTask(task, UISessionService.getActiveUUID());
   };
 
+  // UI
+
+  $scope.getNewTaskWithContext = function(context){
+    if (context) return {transientProperties: {context: context.uuid, completed: false}};
+    else return {transientProperties: {completed: false}};
+  };
+
   // NAVIGATION
 
   $scope.context = undefined;
@@ -179,6 +186,7 @@
   };
 
   $scope.swipeToContext = function(context){
+    UISessionService.lock('leaveAnimation', 500);
     $scope.context = context;
     SwiperService.swipeTo('tasks/context');
     $scope.$evalAsync(function(){
