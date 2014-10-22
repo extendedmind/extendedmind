@@ -326,6 +326,14 @@ function MainController(
     }
   };
 
+  $scope.isFavoriteList = function (list) {
+    if ($scope.favoriteLists && $scope.favoriteLists.length &&
+        $scope.favoriteLists.indexOf(list) !== -1){
+      return true;
+    }
+  }
+
+
   function combineNotesArrays() {
     if ($scope.notes.length && $scope.archivedNotes.length) {
       $scope.allNotes = $scope.notes.concat($scope.archivedNotes);

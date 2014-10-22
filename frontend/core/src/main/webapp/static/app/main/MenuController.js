@@ -52,13 +52,6 @@
       return UISessionService.getFeatureData(UISessionService.getCurrentFeatureName());
     }
   }
-
-  $scope.isFavoriteList = function (list) {
-    if ($scope.favoriteLists && $scope.favoriteLists.length &&
-        $scope.favoriteLists.indexOf(list) !== -1){
-      return true;
-    }
-  }
 }
 
 MenuController['$inject'] = ['$location', '$rootScope', '$scope', 'AnalyticsService',

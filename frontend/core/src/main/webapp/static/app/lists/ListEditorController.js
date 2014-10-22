@@ -55,7 +55,11 @@
   };
 
   $scope.clickFavorite = function() {
-    $scope.favoriteList($scope.list);
+    if (!$scope.isFavoriteList($scope.list)){
+      $scope.favoriteList($scope.list);
+    }else{
+      $scope.unfavoriteList($scope.list);
+    }
   };
 
   // TITLEBAR
