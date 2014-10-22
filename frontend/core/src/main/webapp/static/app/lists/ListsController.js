@@ -71,8 +71,8 @@
   $scope.saveListAndChangeFeature = function(list) {
     var saveListDeferred = $scope.saveList(list);
     if (saveListDeferred){
-      saveListDeferred.then(function(savedList){
-        $scope.changeFeature('list', savedList);
+      return saveListDeferred.then(function(savedList){
+        $scope.changeFeature('list', savedList, true);
       });
     }
   };

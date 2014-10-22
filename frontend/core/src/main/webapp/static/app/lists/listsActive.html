@@ -1,14 +1,12 @@
 <div class="container-content--outer" ng-if="isFeatureActive('lists')" list-container drawer-handle="left">
   <section class="container-content">
-    <div list>
+    <div list="lists" list-order="top">
       <h2 class="group-heading justified row">active</h2>
-      <div class="animate-list-item-leave"
-      ng-repeat="list in lists | limitTo: currentListLimitTo"
-      list-item="lists.length" ng-include="'static/app/lists/listListItem.html'"></div>
-
       <div list-item-add="{}" list-item-add-save="saveList(newItem)"
       ng-include="'static/app/lists/listListItemAdd.html'"></div>
-
+      <div class="animate-list-item-leave"
+      ng-repeat="list in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
+      list-item="getList().length" ng-include="'static/app/lists/listListItem.html'"></div>
     </div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('lists')"></footer>

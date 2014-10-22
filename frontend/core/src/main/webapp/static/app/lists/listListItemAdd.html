@@ -2,12 +2,14 @@
 data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
 editable-field-container-clicked-elsewhere="clickedElsewhere()">
   <div class="group-mixed--left">
-    <a href ng-click="callAndExit(saveListAndChangeFeature, newItem)">&lt;</a>
+    <a href ng-click="callAndExit(saveListAndChangeFeature, newItem)">
+      <span class="text-navigation-back large"></span>
+    </a>
   </div>
   <div class="group-mixed--middle">
     <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
-    editable-field placeholder="add list&#8230;" maxlength="128"
-    auto-focus="registerAddItemCallbacks(focus, blur)">
+    editable-field placeholder="add list&#8230;"
+    editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)" maxlength="128">
     </textarea>
   </div>
   <div class="group-mixed--right">
