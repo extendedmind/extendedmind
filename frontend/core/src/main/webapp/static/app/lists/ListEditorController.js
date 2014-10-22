@@ -17,9 +17,12 @@
 
  function ListEditorController($q, $rootScope, $scope) {
 
-  // INITIALIZE VARIABLES
+  // INITIALIZING
 
-  // We expect there to be a $scope.list
+  if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
+    $scope.registerFeatureEditorAboutToCloseCallback(listEditorAboutToClose, 'ListEditorController');
+
+  // We expect there to be a $scope.list via ng-init
 
   $scope.titlebar.text = $scope.list.title;
 
@@ -30,7 +33,7 @@
     $scope.deferEdit().then(function() {
       $scope.saveList($scope.list);
     });
-  };
+  }
 
   $scope.deleteListInEdit = function() {
     $scope.deleteList($scope.list).then(function(){
@@ -41,8 +44,11 @@
 
   $scope.endListEdit = function() {
     $scope.closeEditor();
-    if ($scope.titlebarHasText()) saveListInEdit();
   };
+
+  function listEditorAboutToClose() {
+    if ($scope.titlebarHasText()) saveListInEdit();
+  }
 
   $scope.archiveListInEdit = function() {
     var deferredSaveAndArchive = $scope.saveAndArchiveList($scope.list);

@@ -17,9 +17,12 @@
 
  function TagEditorController($q, $rootScope, $scope) {
 
-  // INITIALIZE VARIABLES
+  // INITIALIZING
 
-  // We expect there to be a $scope.tag
+  if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
+    $scope.registerFeatureEditorAboutToCloseCallback(tagEditorAboutToClose, 'TagEditorController');
+
+  // We expect there to be a $scope.tag via ng-init
 
   $scope.titlebar.text = $scope.tag.title;
 
@@ -34,7 +37,7 @@
         $scope.saveKeyword($scope.tag);
       }
     });
-  };
+  }
 
   $scope.deleteTagInEdit = function() {
     var deferredDelete;
@@ -50,8 +53,11 @@
 
   $scope.endTagEdit = function() {
     $scope.closeEditor();
-    if ($scope.titlebarHasText()) saveTagInEdit();
   };
+
+  function tagEditorAboutToClose() {
+    if ($scope.titlebarHasText()) saveTagInEdit();
+  }
 
   // TITLEBAR
 

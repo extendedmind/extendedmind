@@ -17,9 +17,12 @@
 
  function ItemEditorController($q, $rootScope, $scope) {
 
-  // INITIALIZE VARIABLES
+  // INITIALIZING
 
-  // We expect there to be a $scope.list
+  if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
+    $scope.registerFeatureEditorAboutToCloseCallback(itemEditorAboutToClose, 'ItemEditorController');
+
+  // We expect there to be a $scope.list via ng-init
 
   $scope.titlebar.text = $scope.item.title;
 
@@ -30,7 +33,7 @@
     $scope.deferEdit().then(function() {
       $scope.saveItem($scope.item);
     });
-  };
+  }
 
   $scope.deleteItemInEdit = function() {
     $scope.deleteItem($scope.item).then(function(){
@@ -40,8 +43,11 @@
 
   $scope.endItemEdit = function() {
     $scope.closeEditor();
-    if ($scope.titlebarHasText()) saveItemInEdit();
   };
+
+  function itemEditorAboutToClose() {
+    if ($scope.titlebarHasText()) saveItemInEdit();
+  }
 
   // TITLEBAR
 
