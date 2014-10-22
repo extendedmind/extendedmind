@@ -8,7 +8,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 */
 
 @height-heading: @grid-vertical * 1.6;
-@height-container-toolbar: @grid-vertical * 1.5;
+@height-container-toolbar: @grid-vertical * 1.3;
 @height-landscape-max: 769px;
 @t-max: 1025px;
 @width-max: 1025px;
@@ -101,7 +101,7 @@ Menu
     padding-bottom: 15px;
   }
   a:first-child {
-    padding-top: 15px;
+    padding-top: 8px;
   }
 }
 
@@ -598,7 +598,7 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 
 // 1. Set height for large .group-symmetrical. Overrides default height.
 .group-symmetrical.height-large {
- margin-top: 15px;
+  margin-top: (@height-container-toolbar - @grid-vertical) / 2;
 }
 
 .group-symmetrical--middle.width-large {
