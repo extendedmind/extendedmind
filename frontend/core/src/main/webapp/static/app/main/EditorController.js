@@ -20,8 +20,14 @@
 
   // OPENING, INITIALIZING, CLOSING
 
-
   $scope.initializeEditor = function(editorType, item, mode){
+    // Reset $scope variables. These may exist from previous editor.
+    $scope.task = undefined;
+    $scope.note = undefined;
+    $scope.list = undefined;
+    $scope.item = undefined;
+    $scope.tag = undefined;
+
     $scope.editorType = editorType;
     $scope.editorVisible = true;
     $scope.mode = mode;
@@ -65,13 +71,6 @@
     $scope.editorVisible = false;
     titleBarInputFocusCallbackFunction = titleBarInputBlurCallbackFunction = undefined;
     featureEditorAboutToCloseCallback = undefined;
-
-    // Reset $scope variables
-    $scope.task = undefined;
-    $scope.note = undefined;
-    $scope.list = undefined;
-    $scope.item = undefined;
-    $scope.tag = undefined;
   }
 
   if (angular.isFunction($scope.registerEditorAboutToOpenCallback))
