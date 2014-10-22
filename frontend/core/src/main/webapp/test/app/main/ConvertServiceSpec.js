@@ -441,12 +441,13 @@ it('should set convert object with \'task\' property in transientProperties ' +
 });
 
 it('should set convert object with \'note\' property in transientProperties ' +
- 'when converting existing note with transient values to task', function() {
+ 'when converting existing note with persistent values to task', function() {
   // SETUP
   var notesOnProductivity = NotesService.getNoteByUUID('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID);
 
-  // add transient property to note
-  notesOnProductivity.transientProperties = {starred: true};
+  // add persistent property to note
+  var favoritedTimestamp = Date.now();
+  notesOnProductivity.favorited = favoritedTimestamp;
 
   var noteToTaskPath = '/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/task';
   $httpBackend.expectPOST(noteToTaskPath).respond(200, noteToTaskResponse);
@@ -461,7 +462,7 @@ it('should set convert object with \'note\' property in transientProperties ' +
   expect(convertedTask.transientProperties.convert.note)
   .toBeDefined();
 
-  expect(convertedTask.transientProperties.convert.note.favorited).toBe(true);
+  expect(convertedTask.transientProperties.convert.note.favorited).toBe(favoritedTimestamp);
 });
 
 it('should set transientProperties object with \'date\' property to task ' +
