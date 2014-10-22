@@ -3,7 +3,7 @@
   <div ng-if="selectedList" class="group-mixed">
     <div class="group-mixed--middle" ng-click="listSelected(selectedList)">
       <a href>
-        <span class="text-link emphasis" ng-bind="selectedList.title"></span>
+        <span class="text-link emphasis" clamp=2>{{::prefix}}{{selectedList.title}}</span>
       </a>
     </div>
 
@@ -14,12 +14,14 @@
 
   <div class="row-form" ng-repeat="list in lists | filter:notSelectedList" ng-click="listSelected(list)">
     <a href>
-      <span class="text-link" ng-bind="list.title"></span>
+      <span class="text-link" clamp=2>{{::prefix}}{{list.title}}</span>
     </a>
   </div>
 
   <div class="row-form">
-    <textarea autocapitalize="none" autocorrect="off" ng-model="newList.title" msd-elastic ng-keydown="textareaKeyDown($event)" placeholder="add list&#8230;" maxlength="128"></textarea>
+    <textarea autocapitalize="none" autocorrect="off" ng-model="newList.title" msd-elastic
+    ng-click="watchForTitleChange()" ng-keydown="textareaKeyDown($event)" placeholder="{{placeholder}}"
+    maxlength="128"></textarea>
   </div>
 
   <div class="row-form" ng-repeat="archivedList in archivedLists | filter:notSelectedList" ng-click="listSelected(archivedList)">

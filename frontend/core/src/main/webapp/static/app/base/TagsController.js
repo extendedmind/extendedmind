@@ -41,8 +41,7 @@
   // CONTEXTS
 
   $scope.saveContext = function(context) {
-    TagsService.saveTag(context, UISessionService.getActiveUUID());
-    $scope.gotoPreviousPage();
+    return TagsService.saveTag(context, UISessionService.getActiveUUID());
   };
 
   $scope.deleteContext = function deleteContext(context) {

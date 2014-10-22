@@ -70,9 +70,23 @@
 
       <div class="swiper-slide" swiper-slide="taskEditor/advanced" slide-index="1">
         <div class="container-content">
+
+          <div ng-if="contextPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeContextPicker()" data-snap-ignore="true">
+            <div list-picker="contexts" list-picker-new-item="{tagType: 'context'}" list-picker-save="closeContextPickerAndSetContextToItem(task, list)" list-picker-clear="closeContextPickerAndClearContextFromItem(task, list)" list-picker-get-selected="getContextFromUUID(task.transientProperties.context)" list-picker-type="context" list-picker-prefix="@"></div>
+          </div>
+
+          <div ng-if="!contextPickerOpen">
+            <div class="row-form" ng-click="openContextPicker()">
+              <a href ng-click="openContextPicker()">
+                <span class="text-link" ng-bind="task.transientProperties.context ? '@' + getContextTitleFromUUID(task.transientProperties.context) : 'select context...'"></span>
+              </a>
+            </div>
+          </div>
+
           <select ng-show="contexts.length" ng-model="task.transientProperties.context" ng-options="context.uuid as context.title for context in contexts">
             <option value="">select context&#8230;</option>
           </select>
+
           <select ng-if="task.transientProperties.date" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes">
             <option value="">select repeating&#8230;</option>
           </select>

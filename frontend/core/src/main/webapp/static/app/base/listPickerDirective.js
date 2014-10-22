@@ -20,12 +20,16 @@
     templateUrl: 'static/app/base/listPicker.html',
     scope: {
       lists: '=listPicker',
+      newList: '=?listPickerNewItem',
+      type: '@listPickerType',
+      prefix: '@listPickerPrefix',
       archivedLists: '=listPickerArchivedLists',
       getSelectedList: '&listPickerGetSelected',
       closeAndSave: '&listPickerSave',
       closeAndClearList: '&listPickerClear'
     },
     link: function(scope) {
+      if (!scope.newList) scope.newList = {};
       if (angular.isFunction(scope.getSelectedList))
         scope.selectedList = scope.getSelectedList();
 
@@ -37,7 +41,20 @@
       };
 
       scope.listSelected = function(list) {
-        scope.closeAndSave({list: list});
+        var listToSave = {};
+        if (scope.prefix) {
+          if (list.title && list.title.length <= 1) return; // Title has only prefix. Do not save.
+
+          for (var listProperty in list) {
+            if (list.hasOwnProperty(listProperty)) {
+              listToSave[listProperty] = list[listProperty];
+            }
+          }
+          listToSave.title = listToSave.title.substring(1);
+        } else
+        listToSave = list;
+
+        scope.closeAndSave({list: listToSave});
       };
 
       scope.listCleared = function(list) {
@@ -46,15 +63,47 @@
 
       scope.textareaKeyDown = function(event) {
         if (event.keyCode === 13) { // RETURN button
+          // Enter in add item saves, no line breaks allowed
           if (scope.newList.title && scope.newList.title.length > 0) {
-            // Enter in add item saves, no line breaks allowed
-            scope.closeAndSave({list: scope.newList});
-          }
-          event.preventDefault();
-          event.stopPropagation();
+           scope.listSelected(scope.newList);
+         }
+         event.preventDefault();
+         event.stopPropagation();
+       }
+     };
+
+     var watch;
+     function bindWatcher() {
+      var preventWatch;
+      if (watch) return;  // no rebind
+
+      watch = scope.$watch('newList.title', function(newTitle) {
+        if (preventWatch) {
+          preventWatch = false;
+          return;
         }
-      };
+
+        if (!newTitle) {
+          // Title cleared. Add prefix.
+          preventWatch = true;
+          scope.newList.title = scope.prefix;
+          return;
+        } else if (newTitle) {
+          // New title.
+          if (newTitle.charAt(0) !== scope.prefix) {
+            // Add prefix to first character of title.
+            scope.newList.title = scope.prefix + newTitle;
+          }
+        }
+      });
     }
-  };
+
+    scope.placeholder = 'add ' + (scope.type ? scope.type : 'list') + '...';
+
+    scope.watchForTitleChange = function() {
+      if (scope.prefix) bindWatcher();
+    };
+  }
+};
 }
 angular.module('em.base').directive('listPicker', listPickerDirective);
