@@ -301,6 +301,18 @@ margin.
   line-height: @grid-vertical;
 }
 
+.row-padded {
+  .row();
+  height: auto;
+  & > a > span {
+    margin-bottom: @grid-vertical-half;
+  }
+}
+
+.group-mixed.bottom-padded {
+  padding-bottom: @grid-vertical-half;
+}
+
 /*
 Class `.group-btn` groups automatically button elements horizontally. Works for 1 and 2 buttons.
 

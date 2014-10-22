@@ -3,7 +3,7 @@
     <h2 class="group-heading justified row" ng-bind="items.length + ' items'"></h2>
 
     <div list-item-add="{}" list-item-add-save="saveItem(newItem)">
-      <form role="form" class="group-mixed swiper-no-swiping" ng-submit="callAndExit(saveItem, newItem)"
+      <form role="form" class="group-mixed bottom-padded swiper-no-swiping" ng-submit="callAndExit(saveItem, newItem)"
       data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
       editable-field-container-clicked-elsewhere="clickedElsewhere()">
         <div class="group-mixed--middle">
@@ -13,12 +13,14 @@
           </textarea>
         </div>
         <div class="group-mixed--right">
-          <a href editable-field-deactivate ng-click="openEditor('item', newItem)">&gt;</a>
+          <a href editable-field-deactivate ng-click="openEditor('item', newItem)">
+            <span class="text-navigation-forward"></span>
+          </a>
         </div>
       </form>
     </div>
 
-    <div class="animate-list-item-leave row"
+    <div class="animate-list-item-leave row-padded"
     ng-repeat="item in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
     list-item="getList().length">
       <a href swiper-click="openEditor('item', item)">
