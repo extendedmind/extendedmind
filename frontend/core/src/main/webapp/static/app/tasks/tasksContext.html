@@ -1,4 +1,4 @@
-<div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
+<div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container>
   <section class="container-content" list="tasks | itemsFilter:{name:'byTagUUID', filterBy: context ? context.uuid : undefined}" list-order="top">
     <div class="group-mixed heading">
       <div class="group-mixed--middle">
