@@ -16,7 +16,7 @@
  /*global angular, getJSONFixture */
 'use strict';
 
-function MockUserBackendService($httpBackend, UserService) {
+function MockUserBackendService($httpBackend, UserService, UserSessionService) {
   var termsOfService =
   'Lorem Ipsum is simply dummy text of the printing and typesetting industry.' +
   'Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s,' +
@@ -33,6 +33,9 @@ function MockUserBackendService($httpBackend, UserService) {
     $httpBackend.whenGET(UserService.getAccountRegex)
     .respond(function(method, url, data, headers) {
       var accountResponse = getJSONFixture('accountResponse.json');
+      // Overwrite response with current preferences
+      accountResponse.email = UserSessionService.getEmail()
+      accountResponse.preferences = UserSessionService.getTransportPreferences();
       return expectResponse(method, url, data, headers, accountResponse);
     });
   }
@@ -74,5 +77,5 @@ function MockUserBackendService($httpBackend, UserService) {
   };
 }
 
-MockUserBackendService.$inject = ['$httpBackend', 'UserService'];
+MockUserBackendService.$inject = ['$httpBackend', 'UserService', 'UserSessionService'];
 angular.module('em.appTest').factory('MockUserBackendService', MockUserBackendService);
