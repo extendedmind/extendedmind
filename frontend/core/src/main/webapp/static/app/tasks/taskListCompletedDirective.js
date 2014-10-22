@@ -31,20 +31,46 @@
 
           var disableCompleted;
           scope.isCompletedDisabled = function() {
+            tryToChangeElementActivityStatus();
             return disableCompleted;
           };
+
+          var containsCompleted, elementInActive;
+
+          /*
+          * Set element inactive/non-inactive.
+          *
+          * This mimics the functionality of :empty CSS selector which does not seem to work with Angularjs.
+          */
+          function tryToChangeElementActivityStatus() {
+            if (!disableCompleted && !containsCompleted && !elementInActive) {
+              // Set non-inactive element inactive :) Some negation jargon, but this way element is initially
+              // set inactive here when needed, and there is no need to add class immediately.
+              elementInActive = true;
+              element[0].classList.add('inactive');
+            } else if (!disableCompleted && containsCompleted && elementInActive) {
+              // Set inactive element non-inactive. It has a subtle difference with being active.
+              elementInActive = false;
+              element[0].classList.remove('inactive');
+            }
+          }
 
           scope.containsCompleted = function(){
             var taskArray = scope.getList();
             if (taskArray && taskArray.length){
               for (var i = 0; i < taskArray.length;i++){
                 if (taskArray[i].completed && !scope.isTaskFrozen(taskArray[i])){
+                  containsCompleted = true;
+                  tryToChangeElementActivityStatus();
                   return true;
                 }
               }
             }
+            containsCompleted = false;
             showCompletedTasks = false;
+            tryToChangeElementActivityStatus();
           };
+
           function filterCompletedTasks(task, pastDate){
             if (pastDate) {
               disableCompleted = true;
