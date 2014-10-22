@@ -15,11 +15,11 @@
 
  'use strict';
 
- function OmnibarEditorController($q, $rootScope, $scope, $timeout, ArrayService, DateService, UISessionService) {
+ function OmnibarEditorController($q, $rootScope, $scope, $timeout, ArrayService) {
 
   // INITIALIZE VARIABLES
 
-  $scope.titlebar.text = "";
+  $scope.titlebar.text = '';
   $scope.searchText = {};
 
   // SAVING
@@ -29,6 +29,16 @@
     $scope.deferEdit().then(function() {
       $scope.saveItem(item);
     });
+  };
+
+  // CONVERTING
+
+  $scope.convertToNote = function(){
+    if ($scope.titlebarHasText()) $scope.initializeEditor('note', {title: $scope.titlebar.text});
+  };
+
+  $scope.convertToTask = function(){
+    if ($scope.titlebarHasText()) $scope.initializeEditor('task', {title: $scope.titlebar.text});
   };
 
   // TITLEBAR
@@ -51,8 +61,8 @@
   };
 
   $scope.clearOmnibarTitlebar = function(){
-    $scope.titlebar.text = "";
-  }
+    $scope.titlebar.text = '';
+  };
 
   // SEARCH
 
@@ -70,20 +80,16 @@
   });
 
   function createSearchItems() {
-    var allNotesAndTasks = ArrayService.combineArrays(
-                               $scope.allActiveTasks,
-                               $scope.allNotes, 'created', true);
-    var allNotesAndTasksAndLists = ArrayService.combineArrays(
-                               allNotesAndTasks,
-                               $scope.allLists, 'created', true);
-    $scope.searchItems = ArrayService.combineArrays(
-                               allNotesAndTasksAndLists,
-                               $scope.items, 'created', true);
+    var allNotesAndTasks = ArrayService.combineArrays($scope.allActiveTasks,
+                                                      $scope.allNotes, 'created', true);
+    var allNotesAndTasksAndLists = ArrayService.combineArrays(allNotesAndTasks,
+                                                              $scope.allLists, 'created', true);
+    $scope.searchItems = ArrayService.combineArrays(allNotesAndTasksAndLists,
+                                                    $scope.items, 'created', true);
   }
 
   $scope.$watch('synced', function(newValue){
-    if (newValue)
-      createSearchItems();
+    if (newValue) createSearchItems();
   });
 
   if ($rootScope.synced){
@@ -93,16 +99,15 @@
   // Search filter for all item fields: title, content and description
   $scope.searchItemFields = function (item){
     if ($scope.searchText && $scope.searchText.delayed &&
-        (item.title.indexOf($scope.searchText.delayed)!=-1
-        || (item.description && item.description.indexOf($scope.searchText.delayed)!=-1)
-        || (item.content && item.content.indexOf($scope.searchText.delayed)!=-1))) {
+        (item.title.indexOf($scope.searchText.delayed)!=-1 ||
+         (item.description && item.description.indexOf($scope.searchText.delayed)!=-1) ||
+         (item.content && item.content.indexOf($scope.searchText.delayed)!=-1)))
+    {
       return true;
     }
     return false;
-  }
-
+  };
 }
 
-OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'ArrayService', 'DateService',
-'UISessionService'];
+OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'ArrayService'];
 angular.module('em.main').controller('OmnibarEditorController', OmnibarEditorController);

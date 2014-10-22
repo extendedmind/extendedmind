@@ -9,12 +9,13 @@
 
       <form role="form" class="group-mixed bottom-padded" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--middle">
-          <textarea type="text" ng-model="titlebar.text" ng-keydown="omnibarTitlebarTextKeyDown($event)" editable-field
-          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="save to inbox / search&#8230;" maxlength="128" required ></textarea>
+          <textarea type="text" ng-model="titlebar.text" ng-keydown="omnibarTitlebarTextKeyDown($event)"
+          editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+          msd-elastic dynamic-placeholder="save to inbox / search&#8230;" maxlength="128" required ></textarea>
         </div>
         <div ng-if="titlebar.text.length"class="group-mixed--right">
-           <button type="button" class="btn-clear" ng-click="clearOmnibarTitlebar()"></button>
-         </div>
+          <button type="button" class="btn-clear" ng-click="clearOmnibarTitlebar()"></button>
+        </div>
       </form>
     </div>
   </header>
@@ -23,8 +24,7 @@
     <div class="container-content" drawer-override-aisle="right">
       <div ng-repeat="searchResult in searchItems | filter: searchItemFields" class="group-mixed">
         <div class="group-mixed--middle">
-          <a href class="link-search-result"
-          ng-click="initializeEditor(searchResult.transientProperties.itemType, searchResult)">
+          <a href class="link-search-result" ng-click="initializeEditor(searchResult.transientProperties.itemType, searchResult)">
             <span class="text-search-result" clamp=2 ng-bind="searchResult.title"></span>
           </a>
         </div>
@@ -33,8 +33,18 @@
         </div>
       </div>
     </div>
-    <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">footer
+
+    <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
+      <div class="group-symmetrical">
+        <a href class="group-symmetrical--left" ng-click="convertToNote()">
+          <span class="text-convert">note</span>
+        </a>
+        <a href class="group-symmetrical--right" ng-click="convertToTask()">
+          <span class="text-convert">task</span>
+        </a>
+      </div>
     </footer>
+
   </div>
   <div ng-if="syncState === 'active'" class="container-fluid--inner">
     <div class="loading-animation" loading-animation></div>
