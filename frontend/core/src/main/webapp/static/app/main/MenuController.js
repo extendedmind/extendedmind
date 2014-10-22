@@ -54,7 +54,8 @@
   }
 
   $scope.isFavoriteList = function (list) {
-    if (list.transientProperties && list.transientProperties.favorite){
+    if ($scope.favoriteLists && $scope.favoriteLists.length &&
+        $scope.favoriteLists.indexOf(list) !== -1){
       return true;
     }
   }
