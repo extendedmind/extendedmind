@@ -83,10 +83,6 @@
             </div>
           </div>
 
-          <select ng-show="contexts.length" ng-model="task.transientProperties.context" ng-options="context.uuid as context.title for context in contexts">
-            <option value="">select context&#8230;</option>
-          </select>
-
           <select ng-if="task.transientProperties.date" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes">
             <option value="">select repeating&#8230;</option>
           </select>
