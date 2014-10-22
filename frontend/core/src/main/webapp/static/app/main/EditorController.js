@@ -34,6 +34,8 @@
       $scope.list = item;
     }else if (editorType === 'item'){
       $scope.item = item;
+    }else if (editorType === 'tag'){
+      $scope.tag = item;
     }
   };
 
