@@ -30,25 +30,17 @@
   };
 
   $scope.deleteItem = function(item) {
-    AnalyticsService.do('deleteItem');
-    ItemsService.deleteItem(item, UISessionService.getActiveUUID());
-    $scope.resetInboxEdit();
+    if (item.uuid) {
+      AnalyticsService.do('deleteItem');
+      ItemsService.deleteItem(item, UISessionService.getActiveUUID());
+    }
   };
 
-  $scope.itemToTask = function(item) {
-    $scope.itemType = 'task';
-    $scope.task = item;
-  };
-
-  $scope.itemToNote = function(item) {
-    $scope.itemType = 'note';
-    $scope.note = item;
-  };
-
-  $scope.itemToList = function(item) {
-    AnalyticsService.do('itemToList');
-    ItemsService.itemToList(item, UISessionService.getActiveUUID());
-    $scope.resetInboxEdit();
+  $scope.undeleteItem = function(item) {
+    if (item.uuid) {
+      AnalyticsService.do('undeleteItem');
+      ItemsService.undeleteItem(item, UISessionService.getActiveUUID());
+    }
   };
 }
 

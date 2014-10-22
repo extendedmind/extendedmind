@@ -87,13 +87,24 @@
   };
 
   $scope.archiveList = function(list) {
-    AnalyticsService.do('archiveList');
-    return ListsService.archiveList(list, UISessionService.getActiveUUID());
+    if (list.uuid){
+      AnalyticsService.do('archiveList');
+      return ListsService.archiveList(list, UISessionService.getActiveUUID());
+    }
   };
 
   $scope.deleteList = function(list) {
-    AnalyticsService.do('deleteList');
-    return ListsService.deleteList(list, UISessionService.getActiveUUID());
+    if (list.uuid){
+      AnalyticsService.do('deleteList');
+      return ListsService.deleteList(list, UISessionService.getActiveUUID());
+    }
+  };
+
+  $scope.undeleteList = function(list) {
+    if (list.uuid){
+      AnalyticsService.do('undeleteList');
+      return ListsService.undeleteList(list, UISessionService.getActiveUUID());
+    }
   };
 
   // Navigation

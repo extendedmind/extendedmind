@@ -278,6 +278,11 @@ function MainController(
   $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
   $scope.archivedLists = ListsService.getArchivedLists(UISessionService.getActiveUUID());
   $scope.tags = TagsService.getTags(UISessionService.getActiveUUID());
+  $scope.deletedItems = ItemsService.getDeletedItems(UISessionService.getActiveUUID());
+  $scope.deletedTasks = TasksService.getDeletedTasks(UISessionService.getActiveUUID());
+  $scope.deletedNotes = NotesService.getDeletedNotes(UISessionService.getActiveUUID());
+  $scope.deletedLists = ListsService.getDeletedLists(UISessionService.getActiveUUID());
+  $scope.deletedTags = TagsService.getDeletedTags(UISessionService.getActiveUUID());
 
   $scope.$watch('tags.length', function(/*newValue, oldValue*/) {
     $scope.contexts = $filter('filter')($scope.tags, {tagType: 'context'});
@@ -379,7 +384,32 @@ function MainController(
     combineTasksArrays();
   });
 
-  $scope.ownerPrefix = UISessionService.getOwnerPrefix();
+  // Deleted items
+  function combineDeletedArrays(changedArray) {
+    var allNotesAndTasks = ArrayService.combineArrays($scope.deletedNotes,
+                                                      $scope.deletedTasks, 'deleted', true);
+    var allNotesAndTasksAndLists = ArrayService.combineArrays(allNotesAndTasks,
+                                                              $scope.deletedLists, 'deleted', true);
+    var allNotesAndTasksAndListsAndItems = ArrayService.combineArrays(allNotesAndTasksAndLists,
+                                                    $scope.deletedItems, 'deleted', true);
+    $scope.allDeleted = ArrayService.combineArrays(allNotesAndTasksAndListsAndItems,
+                                                    $scope.deletedTags, 'deleted', true);
+  }
+  $scope.$watch('deletedItems.length', function(/*newValue, oldValue*/) {
+    combineDeletedArrays($scope.deletedItems);
+  });
+  $scope.$watch('deletedTasks.length', function(/*newValue, oldValue*/) {
+    combineDeletedArrays($scope.deletedTasks);
+  });
+  $scope.$watch('deletedNotes.length', function(/*newValue, oldValue*/) {
+    combineDeletedArrays($scope.deletedNotes);
+  });
+  $scope.$watch('deletedLists.length', function(/*newValue, oldValue*/) {
+    combineDeletedArrays($scope.deletedLists);
+  });
+  $scope.$watch('deletedTags.length', function(/*newValue, oldValue*/) {
+    combineDeletedArrays($scope.deletedTags);
+  });
 
   // BACKEND POLLING
 

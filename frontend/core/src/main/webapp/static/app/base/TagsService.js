@@ -69,6 +69,10 @@
       initializeArrays(ownerUUID);
       return tags[ownerUUID].activeTags;
     },
+    getDeletedTags: function(ownerUUID) {
+      initializeArrays(ownerUUID);
+      return tags[ownerUUID].deletedTags;
+    },
     getTagByUUID: function(uuid, ownerUUID) {
       initializeArrays(ownerUUID);
       return tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid);
@@ -111,25 +115,29 @@
      },
      deleteTag: function(tag, ownerUUID) {
       initializeArrays(ownerUUID);
+      var deferred = $q.defer();
+
       // Check if tag has already been deleted
       if (tags[ownerUUID].deletedTags.indexOf(tag) > -1) {
-        return;
-      }
-      BackendClientService.deleteOnline('/api/' + ownerUUID + '/tag/' + tag.uuid,
-       this.deleteTagRegex).then(function(result) {
-        if (result.data) {
-          tag.deleted = result.data.deleted;
-          tag.modified = result.data.result.modified;
-          ArrayService.updateItem(
-            tag,
-            tags[ownerUUID].activeTags,
-            tags[ownerUUID].deletedTags);
-
-          for (var id in tagDeletedCallbacks) {
-            tagDeletedCallbacks[id](tag, ownerUUID);
+        deferred.reject(tag);
+      }else {
+        BackendClientService.deleteOnline('/api/' + ownerUUID + '/tag/' + tag.uuid,
+         this.deleteTagRegex).then(function(result) {
+          if (result.data) {
+            tag.deleted = result.data.deleted;
+            tag.modified = result.data.result.modified;
+            ArrayService.updateItem(
+              tag,
+              tags[ownerUUID].activeTags,
+              tags[ownerUUID].deletedTags);
+            for (var id in tagDeletedCallbacks) {
+              tagDeletedCallbacks[id](tag, ownerUUID);
+            }
+            deferred.resolve(tag);
           }
-        }
-      });
+        });
+       }
+       return deferred.promise;
      },
      undeleteTag: function(tag, ownerUUID) {
       initializeArrays(ownerUUID);

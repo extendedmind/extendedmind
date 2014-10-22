@@ -78,6 +78,10 @@
     getItemByUUID: function(uuid, ownerUUID) {
       return items[ownerUUID].activeItems.findFirstObjectByKeyValue('uuid', uuid);
     },
+    getDeletedItems: function(ownerUUID) {
+      initializeArrays(ownerUUID);
+      return items[ownerUUID].deletedItems;
+    },
     saveItem: function(item, ownerUUID) {
       initializeArrays(ownerUUID);
       var deferred = $q.defer();

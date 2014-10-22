@@ -63,6 +63,8 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
           return expectResponse(method, url, data, headers, response)
         }else if (url.indexOf('?archived=true') != -1){
           return expectResponse(method, url, data, headers, {});
+        }else if (url.indexOf('?deleted=true') != -1){
+          return expectResponse(method, url, data, headers, {});
         }else{
           var authenticateResponse = getJSONFixture('authenticateResponse.json');
           for (var collectiveUUID in authenticateResponse.collectives) {

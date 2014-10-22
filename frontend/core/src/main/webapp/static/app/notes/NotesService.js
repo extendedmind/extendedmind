@@ -170,6 +170,10 @@
       initializeArrays(ownerUUID);
       return notes[ownerUUID].archivedNotes;
     },
+    getDeletedNotes: function(ownerUUID) {
+      initializeArrays(ownerUUID);
+      return notes[ownerUUID].deletedNotes;
+    },
     getNoteByUUID: function(uuid, ownerUUID) {
       initializeArrays(ownerUUID);
       return notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', uuid);

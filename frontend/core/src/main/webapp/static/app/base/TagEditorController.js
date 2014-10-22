@@ -15,7 +15,7 @@
 
  'use strict';
 
- function TagEditorController($q, $rootScope, $scope) {
+ function TagEditorController($q, $rootScope, $scope, SwiperService) {
 
   // INITIALIZING
 
@@ -29,14 +29,18 @@
   // SAVING, DELETING
 
   function saveTagInEdit() {
-    $scope.tag.title = $scope.titlebar.text;
-    $scope.deferEdit().then(function() {
-      if ($scope.tag.tagType === 'context'){
-        $scope.saveContext($scope.tag);
-      }else if ($scope.tag.tagType === 'keyword'){
-        $scope.saveKeyword($scope.tag);
-      }
-    });
+    if (!$scope.tag.deleted){
+      $scope.tag.title = $scope.titlebar.text;
+      $scope.deferEdit().then(function() {
+        if ($scope.tag.tagType === 'context'){
+          $scope.saveContext($scope.tag);
+        }else if ($scope.tag.tagType === 'keyword'){
+          $scope.saveKeyword($scope.tag);
+        }
+      });
+    }else {
+      SwiperService.swipeTo('tasks/contexts');
+    }
   }
 
   $scope.deleteTagInEdit = function() {
@@ -50,6 +54,14 @@
       $scope.closeEditor();
     });
   };
+
+  $scope.undeleteTagInEdit = function() {
+    if ($scope.tag.tagType === 'context'){
+      $scope.undeleteContext($scope.tag);
+    }else if ($scope.tag.tagType === 'keyword'){
+      $scope.undeleteKeyword($scope.tag);
+    }
+  }
 
   $scope.endTagEdit = function() {
     $scope.closeEditor();
@@ -74,5 +86,5 @@
   };
 }
 
-TagEditorController['$inject'] = ['$q', '$rootScope', '$scope'];
+TagEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'SwiperService'];
 angular.module('em.main').controller('TagEditorController', TagEditorController);

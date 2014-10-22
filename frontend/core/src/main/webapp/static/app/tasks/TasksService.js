@@ -198,6 +198,10 @@
       initializeArrays(ownerUUID);
       return tasks[ownerUUID].archivedTasks;
     },
+    getDeletedTasks: function(ownerUUID) {
+      initializeArrays(ownerUUID);
+      return tasks[ownerUUID].deletedTasks;
+    },
     getTaskByUUID: function(uuid, ownerUUID) {
       return tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', uuid);
     },

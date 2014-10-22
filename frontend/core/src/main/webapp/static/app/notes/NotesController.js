@@ -89,8 +89,17 @@
   };
 
   $scope.deleteNote = function deleteNote(note) {
-    AnalyticsService.do('deleteNote');
-    NotesService.deleteNote(note, UISessionService.getActiveUUID());
+    if (note.uuid){
+      AnalyticsService.do('deleteNote');
+      NotesService.deleteNote(note, UISessionService.getActiveUUID());
+    }
+  };
+
+  $scope.undeleteNote = function(note) {
+    if (note.uuid){
+      AnalyticsService.do('undeleteNote');
+      NotesService.undeleteNote(note, UISessionService.getActiveUUID());
+    }
   };
 
   $scope.getNoteContentTeaser = function getNoteContentTeaser(note) {

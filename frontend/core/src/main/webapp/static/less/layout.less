@@ -636,6 +636,19 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   text-align: center;
 }
 
+.container-disabled {
+  * {
+    pointer-events: none;
+    color: @color-text-disabled;
+  }
+  a.active {
+    pointer-events: auto !important;
+    span{
+      pointer-events: auto !important;
+    }
+  }
+}
+
 /*
 **************************************************************************
 # Swiper

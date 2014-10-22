@@ -1,13 +1,16 @@
-<div class="container-fluid" ng-controller="TaskEditorController">
+<div class="container-fluid" ng-controller="TaskEditorController" ng-class="task.deleted && 'container-disabled'">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
-        <a href class="group-symmetrical--left link-navigation highlighted" ng-click="endTaskEdit()" >
-          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="titlebarHasText() ? 'save' : 'back'"></span>
+        <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endTaskEdit()" >
+          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="titlebarHasText() && !task.deleted ? 'save' : 'back'"></span>
         </a>
-        <a href class="group-symmetrical--right" ng-click="deleteTaskInEdit()" >
-          <span class="text-trash"></span>
-        </a>
+        <div class="group-symmetrical--right">
+          <a ng-if="!task.deleted" href ng-click="deleteTaskInEdit()" >
+            <span class="text-trash"></span>
+          </a>
+          <a ng-if="task.deleted" class="link-navigation highlighted active" href ng-click="undeleteTask(task)"><span class="text-navigation">restore</span></a>
+        </div>
       </div>
 
       <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">

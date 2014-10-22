@@ -1,13 +1,16 @@
-<div class="container-fluid" ng-controller="TagEditorController">
+<div class="container-fluid" ng-controller="TagEditorController" ng-class="tag.deleted && 'container-disabled'">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
-        <a href class="group-symmetrical--left link-navigation highlighted" ng-click="endTagEdit()">
-          <span class="text-navigation-back" ng-bind="titlebarHasText() ? 'save' : 'back'"></span>
+        <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endTagEdit()">
+          <span class="text-navigation-back" ng-bind="titlebarHasText() && !tag.deleted ? 'save' : 'back'"></span>
         </a>
-        <a href class="group-symmetrical--right" ng-click="deleteTagInEdit()" >
-          <span class="text-trash"></span>
-        </a>
+        <div class="group-symmetrical--right">
+          <a ng-if="!tag.deleted" href ng-click="deleteTagInEdit()" >
+            <span class="text-trash"></span>
+          </a>
+          <a ng-if="tag.deleted" class="link-navigation highlighted active" href ng-click="undeleteTagInEdit()"><span class="text-navigation">restore</span></a>
+        </div>
       </div>
 
       <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">

@@ -29,10 +29,12 @@
   // SAVING, DELETING
 
   function saveListInEdit () {
-    $scope.list.title = $scope.titlebar.text;
-    $scope.deferEdit().then(function() {
-      $scope.saveList($scope.list);
-    });
+    if (!$scope.list.deleted){
+      $scope.list.title = $scope.titlebar.text;
+      $scope.deferEdit().then(function() {
+        $scope.saveList($scope.list);
+      });
+    }
   }
 
   $scope.deleteListInEdit = function() {

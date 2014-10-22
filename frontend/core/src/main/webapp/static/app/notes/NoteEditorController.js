@@ -29,11 +29,13 @@
   // SAVING, DELETING
 
   function saveNoteInEdit() {
-    // TODO: Keywords
-    $scope.note.title = $scope.titlebar.text;
-    $scope.deferEdit().then(function() {
-      $scope.saveNote($scope.note);
-    });
+    if (!$scope.note.deleted){
+      // TODO: Keywords
+      $scope.note.title = $scope.titlebar.text;
+      $scope.deferEdit().then(function() {
+        $scope.saveNote($scope.note);
+      });
+    }
   };
 
   $scope.deleteNoteInEdit = function() {

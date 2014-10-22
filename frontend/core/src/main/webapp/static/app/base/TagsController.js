@@ -19,12 +19,26 @@
   // KEYWORDS
 
   $scope.saveKeyword = function(keyword) {
+    if (!keyword || !keyword.title || !keyword.title.length) return;
+    if (keyword.uuid) AnalyticsService.do('saveKeyword');
+    else AnalyticsService.do('addKeyword');
+
     TagsService.saveTag(keyword, UISessionService.getActiveUUID());
     $scope.gotoPreviousPage();
   };
 
-  $scope.deleteKeyword = function deleteKeyword(keyword) {
-    TagsService.deleteTag(keyword, UISessionService.getActiveUUID());
+  $scope.deleteKeyword = function (keyword) {
+    if (keyword.uuid){
+      AnalyticsService.do('deleteKeyword');
+      return TagsService.deleteTag(keyword, UISessionService.getActiveUUID());
+    }
+  };
+
+  $scope.undeleteKeyword = function(keyword) {
+    if (keyword.uuid){
+      AnalyticsService.do('undeleteKeyword');
+      return TagsService.undeleteTag(keyword, UISessionService.getActiveUUID());
+    }
   };
 
   $scope.addKeyword = function addKeyword(newKeyword) {
@@ -41,22 +55,25 @@
   // CONTEXTS
 
   $scope.saveContext = function(context) {
+    if (!context || !context.title || !context.title.length) return;
+    if (context.uuid) AnalyticsService.do('saveContext');
+    else AnalyticsService.do('addContext');
+
     return TagsService.saveTag(context, UISessionService.getActiveUUID());
   };
 
-  $scope.deleteContext = function deleteContext(context) {
-    TagsService.deleteTag(context, UISessionService.getActiveUUID());
+  $scope.deleteContext = function(context) {
+    if (context.uuid){
+      AnalyticsService.do('deleteContext');
+      return TagsService.deleteTag(context, UISessionService.getActiveUUID());
+    }
   };
 
-  $scope.addContext = function addContext(newContext) {
-    if (!newContext.title || newContext.title.length === 0) return false;
-
-    var contextToSave = {title: newContext.title, tagType: newContext.tagType};
-    delete newContext.title;
-
-    TagsService.saveTag(contextToSave, UISessionService.getActiveUUID()).then(function(/*context*/) {
-      AnalyticsService.do('addContext');
-    });
+  $scope.undeleteContext = function(context) {
+    if (context.uuid){
+      AnalyticsService.do('undeleteContext');
+      return TagsService.undeleteTag(context, UISessionService.getActiveUUID());
+    }
   };
 }
 

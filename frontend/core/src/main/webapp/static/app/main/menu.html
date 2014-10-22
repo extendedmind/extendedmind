@@ -48,8 +48,8 @@
     <div class="container-menu--push"></div>
   </div>
   <div class="container-menu--bottom">
-    <a href class="link-menu height-large downplayed row" ng-click="gotoFeature('trash')"
-    ng-class="isFeatureActive('trash') && 'active'">
+    <a href class="link-menu height-large row" ng-click="gotoFeature('trash')"
+    ng-class="isFeatureActive('trash') ? 'highlighted' : 'downplayed'">
       <span class="text-navigation-menu-small">trash</h4>
     </a>
   </div>

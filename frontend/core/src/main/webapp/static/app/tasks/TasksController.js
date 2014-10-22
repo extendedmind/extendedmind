@@ -147,26 +147,29 @@
     });
   };
 
-  function undoDelete(task) {
-    TasksService.undeleteTask(task, UISessionService.getActiveUUID());
-    // FIXME: where task went?
-  }
+  $scope.undeleteTask = function(task) {
+    if (task.uuid){
+      AnalyticsService.do('undeleteTask');
+      TasksService.undeleteTask(task, UISessionService.getActiveUUID());
+    }
+  };
 
   $scope.deleteTask = function(task) {
+    if (task.uuid){
+      UISessionService.pushDelayedNotification({
+        type: 'deleted',
+        itemType: 'task',
+        item: task,
+        undoFn: $scope.undeleteTask
+      });
 
-    UISessionService.pushDelayedNotification({
-      type: 'deleted',
-      itemType: 'task',
-      item: task,
-      undoFn: undoDelete
-    });
+      $timeout(function() {
+        UISessionService.activateDelayedNotifications();
+      }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
 
-    $timeout(function() {
-      UISessionService.activateDelayedNotifications();
-    }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
-
-    AnalyticsService.do('deleteTask');
-    TasksService.deleteTask(task, UISessionService.getActiveUUID());
+      AnalyticsService.do('deleteTask');
+      TasksService.deleteTask(task, UISessionService.getActiveUUID());
+    }
   };
 
   // UI

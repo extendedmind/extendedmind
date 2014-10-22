@@ -103,6 +103,10 @@
       initializeArrays(ownerUUID);
       return lists[ownerUUID].archivedLists;
     },
+    getDeletedLists: function(ownerUUID) {
+      initializeArrays(ownerUUID);
+      return lists[ownerUUID].deletedLists;
+    },
     getListByUUID: function(uuid, ownerUUID) {
       return lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', uuid);
     },

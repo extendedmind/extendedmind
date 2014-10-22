@@ -4,12 +4,12 @@
 
     <div ng-repeat="deletedItem in allDeleted | orderBy: 'deleted': true" class="group-mixed">
       <div class="group-mixed--middle">
-        <a href class="link-search-result" ng-click="openEditor(deletedItem.transientProperties.itemType, deletedItem)">
+        <a href class="link-search-result" ng-click="openEditor(deletedItem.tagType ? 'tag' : deletedItem.transientProperties.itemType, deletedItem)">
           <span class="text-search-result" clamp=2 ng-bind="deletedItem.title"></span>
         </a>
       </div>
       <div class="group-mixed--right top">
-        <span class="text-search-type" ng-bind="deletedItem.transientProperties.itemType"></span>
+        <span class="text-search-type" ng-bind="deletedItem.tagType ? deletedItem.tagType : deletedItem.transientProperties.itemType"></span>
       </div>
     </div>
   </section>
