@@ -64,6 +64,14 @@
     $scope.mode = undefined;
     $scope.editorVisible = false;
     titleBarInputFocusCallbackFunction = titleBarInputBlurCallbackFunction = undefined;
+    featureEditorAboutToCloseCallback = undefined;
+
+    // Reset $scope variables
+    $scope.task = undefined;
+    $scope.note = undefined;
+    $scope.list = undefined;
+    $scope.item = undefined;
+    $scope.tag = undefined;
   }
 
   if (angular.isFunction($scope.registerEditorAboutToOpenCallback))
