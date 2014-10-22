@@ -1,8 +1,10 @@
 <div class="group-mixed">
   <div class="group-mixed--left">
-    <a href ng-click="changeFeature('list', list)">&lt;</a>
+    <a href ng-click="changeFeature('list', list)">
+      <span class="text-navigation-back large"></span>
+    </a>
   </div>
   <a href class="group-mixed--middle" swiper-click="changeFeature('list', list, true)">
-    <span class="text-link" ng-bind="list.title"></span>
+    <span class="text-link" clamp=2 ng-bind="list.title"></span>
   </a>
 </div>
