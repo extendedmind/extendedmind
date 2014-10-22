@@ -19,8 +19,8 @@
       </form>
     </div>
     <div class="animate-list-item-leave"
-    ng-repeat="context in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
-    list-item="getList().length">
+    ng-repeat="context in contextsList = (getList()  | orderBy:'created':true | limitTo: currentListLimitTo)"
+    list-item="contextsList.length">
       <div class="group-mixed">
         <a href class="group-mixed--middle" swiper-click="swipeToContext(context)">
           <span class="text-link" clamp=2 ng-bind="'@' + context.title"></span>

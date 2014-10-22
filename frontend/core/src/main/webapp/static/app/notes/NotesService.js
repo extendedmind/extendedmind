@@ -23,6 +23,8 @@
   var notes = {};
   var noteRegex = /\/note/;
   var noteSlashRegex = /\/note\//;
+  var favoriteRegex = /\/favorite/;
+  var unfavoriteRegex = /\/unfavorite/;
 
   function initializeArrays(ownerUUID) {
     if (!notes[ownerUUID]) {
@@ -39,7 +41,7 @@
   }
 
   function updateNote(note, ownerUUID) {
-    ExtendedItemService.addTransientProperties([note], ownerUUID, 'note', copyFavoritedToStarred);
+    ExtendedItemService.addTransientProperties([note], ownerUUID, 'note', copyFavorited);
     return ArrayService.updateItem(note,
       notes[ownerUUID].activeNotes,
       notes[ownerUUID].deletedNotes,
@@ -105,29 +107,17 @@
   };
   ListsService.registerListDeletedCallback(listDeletedCallback, 'NotesService');
 
-  // favorited is persistend, starred is transient
-  function copyFavoritedToStarred(note) {
+  function copyFavorited(note) {
     if (note.favorited) {
       if (!note.transientProperties) note.transientProperties = {};
-      note.transientProperties.starred = note.favorited;
+      note.transientProperties.favorited = note.favorited !== undefined;
     }
-  }
-  // starred is transient, favorited is persistent
-  function copyStarredToFavorited(note) {
-    if (note.transientProperties && note.transientProperties.starred) note.favorited = note.transientProperties.starred;
-
-    // favorited has been removed from note, delete persistent value
-    else if (note.favorited) delete note.favorited;
-    //
-    // TODO: After note.transientProperties.starred is implemented in UI,
-    // check transient property when no value is set with AngularJS ng-model data-binding
-    //
   }
 
   return {
     setNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      ExtendedItemService.addTransientProperties(notesResponse, ownerUUID, 'note', copyFavoritedToStarred);
+      ExtendedItemService.addTransientProperties(notesResponse, ownerUUID, 'note', copyFavorited);
       return ArrayService.setArrays(
         notesResponse,
         notes[ownerUUID].activeNotes,
@@ -135,7 +125,7 @@
     },
     updateNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      ExtendedItemService.addTransientProperties(notesResponse, ownerUUID, 'note', copyFavoritedToStarred);
+      ExtendedItemService.addTransientProperties(notesResponse, ownerUUID, 'note', copyFavorited);
 
       // issue a very short lived lock to prevent leave animation
       // when arrays are reformulated
@@ -153,7 +143,7 @@
         notes[ownerUUID].activeNotes,
         notes[ownerUUID].deletedNotes,
         getOtherArrays(ownerUUID));
-      if (updatedNote) ExtendedItemService.addTransientProperties([updatedNote], ownerUUID, 'note', copyFavoritedToStarred);
+      if (updatedNote) ExtendedItemService.addTransientProperties([updatedNote], ownerUUID, 'note', copyFavorited);
       return updatedNote;
     },
     getNoteArrays: function(ownerUUID) {
@@ -181,7 +171,7 @@
       var deferred = $q.defer();
       if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
       var params;
-      var transientProperties = ExtendedItemService.detachTransientProperties(note, ownerUUID, copyStarredToFavorited);
+      var transientProperties = ExtendedItemService.detachTransientProperties(note, ownerUUID);
       if (note.uuid) {
         // Existing note
         if (UserSessionService.isOfflineEnabled()) {
@@ -313,6 +303,72 @@
         });
       }
     },
+    favoriteNote: function(note, ownerUUID) {
+      initializeArrays(ownerUUID);
+      var deferred = $q.defer();
+      // Check that note is not deleted before trying to complete
+      if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
+
+      if (UserSessionService.isOfflineEnabled()) {
+        // Offline
+        var params = {type: 'note', owner: ownerUUID, uuid: note.uuid,
+                      reverse: {
+                        method: 'post',
+                        url: '/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite'
+                      },
+                      replaceable: true};
+        BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/favorite',
+                                  this.favoriteNoteRegex, params);
+        note.favorited = note.modified = BackendClientService.generateFakeTimestamp();
+        updateNote(note, ownerUUID);
+        deferred.resolve(note);
+      } else {
+        // Online
+        BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.uuid + '/favorite',
+         this.favoriteNoteRegex)
+        .then(function(result) {
+          if (result.data) {
+            note.favorited = result.data.favorited;
+            note.modified = result.data.modified;
+          }
+          updateNote(note, ownerUUID);
+          deferred.resolve(note);
+        });
+      }
+      return deferred.promise;
+    },
+    unfavoriteNote: function(note, ownerUUID) {
+      initializeArrays(ownerUUID);
+      var deferred = $q.defer();
+      // Check that note is not deleted before trying to unfavorite
+      if (this.getNoteStatus(note, ownerUUID) === 'deleted' || !note.favorited) return;
+
+      if (UserSessionService.isOfflineEnabled()) {
+        var params = {type: 'note', owner: ownerUUID, uuid: note.uuid, replaceable: true};
+        // Offline
+        BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite',
+         this.unfavoriteNoteRegex, params);
+        delete note.favorited;
+        note.transientProperties.favorited = false;
+        note.modified = BackendClientService.generateFakeTimestamp();
+        updateNote(note, ownerUUID);
+        deferred.resolve(note);
+      } else {
+        // Online
+        BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite',
+          this.unfavoriteNoteRegex)
+        .then(function(result) {
+          if (result.data) {
+            delete note.favorited;
+            note.transientProperties.favorited = false;
+            note.modified = result.data.modified;
+            updateNote(note, ownerUUID);
+          }
+          deferred.resolve(note);
+        });
+      }
+      return deferred.promise;
+    },
     resetNote: function(note, ownerUUID) {
       var notesArray = [note];
       if (note.transientProperties) {
@@ -320,7 +376,7 @@
         if (note.transientProperties.keywords) delete note.transientProperties.keywords;
         if (note.transientProperties.starred) delete note.transientProperties.starred;
       }
-      ExtendedItemService.addTransientProperties(notesArray, ownerUUID, 'note', copyFavoritedToStarred);
+      ExtendedItemService.addTransientProperties(notesArray, ownerUUID, 'note', copyFavorited);
     },
     addTransientProperties: function(note, ownerUUID, addExtraTransientPropertyFn) {
       //
@@ -328,12 +384,12 @@
       //
       var addExtraTransientPropertyFunctions;
       if (typeof addExtraTransientPropertyFn === 'function')
-        addExtraTransientPropertyFunctions = [addExtraTransientPropertyFn, copyFavoritedToStarred];
-      else addExtraTransientPropertyFunctions = copyFavoritedToStarred;
+        addExtraTransientPropertyFunctions = [addExtraTransientPropertyFn, copyFavorited];
+      else addExtraTransientPropertyFunctions = copyFavorited;
       ExtendedItemService.addTransientProperties([note], ownerUUID, 'note', addExtraTransientPropertyFunctions);
     },
     detachTransientProperties: function(note, ownerUUID) {
-      return ExtendedItemService.detachTransientProperties(note, ownerUUID, copyStarredToFavorited);
+      return ExtendedItemService.detachTransientProperties(note, ownerUUID);
     },
 
     // Regular expressions for note requests
@@ -359,7 +415,21 @@
       BackendClientService.uuidRegex.source +
       noteSlashRegex.source +
       BackendClientService.uuidRegex.source  +
-      BackendClientService.undeleteRegex.source)
+      BackendClientService.undeleteRegex.source),
+
+    favoriteNoteRegex: new RegExp(
+      BackendClientService.apiPrefixRegex.source +
+      BackendClientService.uuidRegex.source +
+      noteSlashRegex.source +
+      BackendClientService.uuidRegex.source +
+      favoriteRegex.source),
+
+    unfavoriteNoteRegex: new RegExp(
+      BackendClientService.apiPrefixRegex.source +
+      BackendClientService.uuidRegex.source +
+      noteSlashRegex.source +
+      BackendClientService.uuidRegex.source +
+      unfavoriteRegex.source),
   };
 }
 

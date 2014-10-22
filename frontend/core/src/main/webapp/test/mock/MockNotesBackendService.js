@@ -37,6 +37,24 @@
     });
   }
 
+  function mockFavoriteNote(expectResponse){
+    $httpBackend.whenPOST(NotesService.favoriteNoteRegex)
+    .respond(function(method, url, data, headers) {
+      var favoriteNoteResponse = getJSONFixture('favoriteNoteResponse.json');
+      favoriteNoteResponse.result.modified = (new Date()).getTime();
+      return expectResponse(method, url, data, headers, favoriteNoteResponse);
+    });
+  }
+
+  function mockUnfavoriteNote(expectResponse){
+    $httpBackend.whenPOST(NotesService.unfavoriteNoteRegex)
+    .respond(function(method, url, data, headers) {
+      var unfavoriteNoteResponse = getJSONFixture('unfavoriteNoteResponse.json');
+      unfavoriteNoteResponse.modified = (new Date()).getTime();
+      return expectResponse(method, url, data, headers, unfavoriteNoteResponse);
+    });
+  }
+
   function mockDeleteNote(expectResponse){
     $httpBackend.whenDELETE(NotesService.deleteNoteRegex)
     .respond(function(method, url, data, headers) {
@@ -59,6 +77,8 @@
     mockNotesBackend: function(expectResponse) {
       mockPutNewNote(expectResponse);
       mockPutExistingNote(expectResponse);
+      mockFavoriteNote(expectResponse);
+      mockUnfavoriteNote(expectResponse);
       mockDeleteNote(expectResponse);
       mockUndeleteNote(expectResponse);
     }

@@ -49,6 +49,16 @@
     return filteredItems;
   };
 
+  itemsFilters.favorited = function(items) {
+    var filteredItems = [];
+    for (var i = 0, len = items.length; i < len; i++) {
+      if (items[i].transientProperties && (items[i].transientProperties.favorited === true)){
+        filteredItems.push(items[i]);
+      }
+    }
+    return filteredItems;
+  };
+
   itemsFilters.noList = function(items) {
     var filteredItems = [];
     for (var i = 0, len = items.length; i < len; i++) {

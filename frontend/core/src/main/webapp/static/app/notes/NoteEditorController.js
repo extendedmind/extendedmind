@@ -51,6 +51,13 @@
     if ($scope.titlebarHasText()) saveNoteInEdit();
   }
 
+  $scope.clickFavorite = function() {
+    if (!$scope.note.transientProperties.favorited){
+      $scope.favoriteNote($scope.note);
+    }else{
+      $scope.unfavoriteNote($scope.note);
+    }
+  };
 
   // MODES
 

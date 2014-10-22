@@ -77,8 +77,14 @@
     if (note.uuid) AnalyticsService.do('saveNote');
     else AnalyticsService.do('addNote');
 
+    if (!note.uuid) var newNote = true;
+
     return saveKeywords(note).then(function() {
-      return NotesService.saveNote(note, UISessionService.getActiveUUID());
+      return NotesService.saveNote(note, UISessionService.getActiveUUID()).then(function(note){
+        if (newNote && note.transientProperties && note.transientProperties.favorited){
+          return $scope.favoriteNote(note);
+        }
+      });
     });
   };
 
@@ -96,6 +102,51 @@
         return note.content.substring(0, maximumTeaserLength);
       }
     }
+  };
+
+  /*
+  * Favorite note.
+  */
+  $scope.favoriteNote = function(note) {
+    if (note.favorited) return;
+
+    // Don't try to favorite a note that hasn't been saved, saveNote will call this again
+    // after the note has a uuid
+    if (!note.uuid){
+      if (!note.transientProperties) note.transientProperties = {};
+      note.transientProperties.favorited = true;
+      return;
+    }
+
+    // Vibrate
+    if (navigator.vibrate)
+      navigator.vibrate(200);
+
+    AnalyticsService.do('favoriteNote');
+
+    return NotesService.favoriteNote(note, UISessionService.getActiveUUID());
+  };
+
+  /*
+  * Unfavorite note.
+  */
+  $scope.unfavoriteNote = function(note) {
+    if (!note.favorited) return;
+
+    // Don't try to unfavorite a note that hasn't been saved
+    if (!note.uuid){
+      if (!note.transientProperties) note.transientProperties = {};
+      note.transientProperties.favorited = false;
+      return;
+    }
+
+    // Vibrate
+    if (navigator.vibrate)
+      navigator.vibrate(200);
+
+    AnalyticsService.do('unfavoriteNote');
+
+    return NotesService.unfavoriteNote(note, UISessionService.getActiveUUID());
   };
 
   $scope.openNoteEditor = function(note){
