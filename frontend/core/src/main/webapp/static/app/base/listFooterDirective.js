@@ -28,6 +28,12 @@
         controllers[0].activateAddListItem();
       }
 
+      function trimNavigationText(text){
+        if (text.length > 12){
+          return text.substring(0, 10) + '...';
+        }else return text;
+      }
+
 
       if (controllers[1]){
         var currentSlidePath = controllers[1].getSlidePath();
@@ -48,9 +54,9 @@
           scope.leftNavigationText = scope.featureInfo.slides.left.heading;
           scope.leftNavigationActionParameter = scope.featureInfo.slides.left.path;
 
-          scope.rightNavigationText = scope.featureInfo.slides.right.heading;
+          scope.rightNavigationText = trimNavigationText(scope.featureInfo.slides.right.heading);
           scope.$watch('featureInfo.slides.right.heading', function(newValue) {
-            scope.rightNavigationText = newValue;
+            scope.rightNavigationText = trimNavigationText(newValue);
           });
           scope.rightNavigationActionParameter = scope.featureInfo.slides.right.path;
 

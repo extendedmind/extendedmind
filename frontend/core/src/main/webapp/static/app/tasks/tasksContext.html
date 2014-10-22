@@ -1,6 +1,13 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
   <section class="container-content" list="tasks | itemsFilter:{name:'byTagUUID', filterBy: context ? context.uuid : undefined}" list-order="top">
-    <h2 class="group-heading justified row" ng-bind="context ? '@' + context.title : 'no context'"></h2>
+    <div class="group-mixed heading">
+      <div class="group-mixed--middle">
+        <h2 class="group-heading long justified">
+          <span class="text-heading" ng-bind="context ? '@' + context.title : 'no context'" clamp=2></span>
+        </h2>
+      </div>
+      <div class="group-mixed--right" task-list-completed></div>
+    </div>
     <div list-item-add="getNewTaskWithContext(context)" list-item-add-save="saveTask(newItem)"
     ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
     <div class="animate-list-item-leave"

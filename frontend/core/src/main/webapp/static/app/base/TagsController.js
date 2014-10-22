@@ -41,8 +41,6 @@
   // CONTEXTS
 
   $scope.saveContext = function(context) {
-    console.log("calling save context")
-    console.log(context)
     return TagsService.saveTag(context, UISessionService.getActiveUUID());
   };
 

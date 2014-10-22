@@ -21,6 +21,7 @@ Fonts in use:
 
 @size-font-jumbotron: 70px;
 @size-font-large: 48px;
+@size-font-not-so-large: 40px;
 @size-font-ingress: 25px;
 @size-font-content: 18px;
 @size-font-medium: 15px;
@@ -84,6 +85,11 @@ h2 {
 # Texts.
 */
 
+[class^="text-"], [class*=" text-"] {
+  .break-words();
+}
+
+
 /*
 Use `.text-details` to separate details from body text.
 */
@@ -105,7 +111,6 @@ Use `.text-details` to separate details from body text.
 .text-teaser, .text-link {
   display: inline-block;
   line-height: @grid-vertical-half;
-  .break-words();
 }
 
 .text-teaser {
