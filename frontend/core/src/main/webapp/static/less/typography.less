@@ -80,6 +80,10 @@ h2 {
   font-size: @size-font-large;
 }
 
+.textgroup-toaster {
+  font-size: @size-font-medium;
+}
+
 /*
 ******************************************************************
 # Texts.
@@ -87,6 +91,10 @@ h2 {
 
 [class^="text-"], [class*=" text-"] {
   .break-words();
+}
+
+.text-highlighted {
+  color: @color-text-highlighted;
 }
 
 /*
@@ -201,6 +209,8 @@ Search results (omnibar, deleted)
 Icon texts
 */
 
+
+
 .text-logo {
   font-size: @size-icon-logo;
   line-height: @size-icon-logo;
@@ -282,4 +292,14 @@ Icon texts
 }
 .text-star.inactive:after {
   color: @color-text-downplayed;
+}
+
+.text-x {
+  &:after {
+    .set-icon-font;
+    content: @icon-x;
+    font-size: @size-icon-x;
+    vertical-align: middle;
+    color: @color-icon-deactivated;
+  }
 }

@@ -1,6 +1,13 @@
-<div ng-if="toasterNotifications" ng-switch on="notification.type" class="container-toaster animate-toaster">
-  <span ng-switch-when="deleted" class="text-toaster">
-    {{notification.itemType}} deleted, <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.undoFn)">undo?</a>
-  </span>
-  <a href ng-click="closeNotificationAndCall(notification)">close</a>
+<div ng-if="toasterNotifications" ng-switch on="notification.type" class="container-toaster animate-toaster group-mixed">
+  <div class="group-mixed--middle" ng-switch-when="deleted">
+    <span class="textgroup-toaster">
+      {{notification.itemType}} deleted,
+      <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.undoFn)">
+        <span class="text-highlighted">undo</span>?
+      </a>
+    </span>
+  </div>
+  <div class="group-mixed--right">
+    <a href ng-click="closeNotificationAndCall(notification)"><span class="text-x"></span></a>
+  </div>
 </div>
