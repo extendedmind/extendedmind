@@ -185,13 +185,16 @@ Search results (omnibar, deleted)
 */
 
 .text-search-result {
-  font-size: @size-font-small;
+  font-size: @size-font-medium;
+  margin-bottom: @grid-vertical-half;
 }
 
 .text-search-type {
   color: @color-text-downplayed;
   font-size: @size-font-small;
   .set-font-bold();
+  // Undo break words
+  .dont-break-words();
 }
 
 /*

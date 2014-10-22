@@ -92,6 +92,23 @@ source: http://kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/
   -ms-hyphens: auto;
   hyphens: auto;
 }
+
+.dont-break-words {
+  word-wrap: inherit;
+  -ms-word-break: inherit;
+  word-break: inherit;
+
+  /* Non standard for webkit */
+  word-break: inherit;
+
+  // For Firefox to hyphenate correctly
+  // we would need LANG to be set by the user
+  -webkit-hyphens: inherit;
+  -moz-hyphens: inherit;
+  -ms-hyphens: inherit;
+  hyphens: inherit;
+}
+
 // Foundation
 
 /*
