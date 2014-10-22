@@ -145,6 +145,7 @@ function MainController(
 
   $scope.closeEditor = function closeEditor() {
     DrawerService.close('right');
+    executeAboutToCloseCallbacks();
   };
 
   $scope.toggleMenu = function() {
@@ -536,11 +537,15 @@ function MainController(
     }
   }
 
-  DrawerService.registerAboutToCloseCallback('right', editorAboutToClose, 'MainController');
-  function editorAboutToClose() {
+  function executeAboutToCloseCallbacks() {
     for (var id in editorAboutToCloseCallbacks) {
       editorAboutToCloseCallbacks[id]();
     }
+  }
+
+  DrawerService.registerAboutToCloseCallback('right', editorAboutToClose, 'MainController');
+  function editorAboutToClose() {
+    executeAboutToCloseCallbacks();
   }
 
   DrawerService.registerClosedCallback('right', editorClosed, 'MainController');

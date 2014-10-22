@@ -45,11 +45,10 @@
 
   $scope.endNoteEdit = function() {
     $scope.closeNoteEditor();
-    if ($scope.titlebarHasText()) saveNoteInEdit();
   }
 
   function noteEditorAboutToClose() {
-    saveNoteInEdit();
+    if ($scope.titlebarHasText()) saveNoteInEdit();
   }
 
 

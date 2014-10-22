@@ -59,11 +59,10 @@
 
   $scope.endTaskEdit = function() {
     $scope.closeTaskEditor();
-    if ($scope.titlebarHasText()) saveTaskInEdit();
   };
 
   function taskEditorAboutToClose() {
-    saveTaskInEdit();
+    if ($scope.titlebarHasText()) saveTaskInEdit();
   }
 
   // TITLEBAR
