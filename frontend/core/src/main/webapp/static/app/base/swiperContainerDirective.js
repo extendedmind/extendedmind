@@ -333,11 +333,6 @@
       var swipePageSlideYSpeedStart, swipePageSlideYSpeed;
       var pageSwiperSlideScrollTimeout;
 
-      var pullToPreviousWeekElement = document.getElementById('pull-to-previous');
-      var pullToNextWeekElement = document.getElementById('pull-to-next');
-      var isPullToPreviousWeekLoaderActive = false;
-      var isPullToNextWeekLoaderActive = false;
-
       function pageSwiperSlideTouchStart(event) {
         /*jshint validthis: true */
         // Reset variables
@@ -436,15 +431,6 @@
           $rootScope.innerSwiping = true;
           // FIXME: innerswiping isn't set back to false anywhere, might cause problems,
           //        Using setTimeout as below in scrolling might do the trick!
-        }
-
-        // Toggle pull to previous/next week indicator in DOM
-        if (isPullToPreviousWeekLoaderActive) {
-          pullToPreviousWeekElement.className = 'loader';
-          isPullToPreviousWeekLoaderActive = false;
-        } else if (isPullToNextWeekLoaderActive) {
-          pullToNextWeekElement.className = 'loader';
-          isPullToNextWeekLoaderActive = false;
         }
       }
 
