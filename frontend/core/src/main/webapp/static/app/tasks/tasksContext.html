@@ -1,5 +1,5 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container>
-  <section class="container-content" list="tasks | itemsFilter:{name:'byTagUUID', filterBy: context ? context.uuid : undefined}" list-order="top">
+  <section class="container-content" list="tasks | itemsFilter:{name:'byTagUUID', filterBy: context ? context.uuid : undefined}" list-order="top" swiper-prevent>
     <div class="group-mixed heading">
       <div class="group-mixed--middle">
         <h2 class="group-heading long justified">
@@ -14,7 +14,7 @@
     <div list-item-add="getNewTaskWithContext(context)" list-item-add-save="saveTask(newItem)"
     ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
-    ng-repeat="task in contextTasks = (getList() | paramFilter:isListItemVisible) | orderBy:getTaskModified:true
+    ng-repeat="task in contextTasks = (getList() | paramFilter:isListItemVisible) | orderBy:'created':true
     | limitTo: currentListLimitTo"
     list-item="contextTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
     <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>

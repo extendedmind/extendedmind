@@ -1,14 +1,20 @@
 <div class="container-content--outer" ng-if="isFeatureActive('list')" list-container drawer-handle="left">
-  <section class="container-content" list>
-    <h2 class="group-heading row">tasks</h2>
+  <section class="container-content" list="allActiveTasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}" list-order="top" swiper-prevent>
+    <div class="group-mixed heading">
+      <div class="group-mixed--middle">
+        <h2 class="group-heading long justified">
+          <span class="text-heading">tasks</span>
+        </h2>
+      </div>
+      <div class="group-mixed--right" task-list-completed></div>
+    </div>
+    <div list-item-add="{transientProperties: {completed: false, list: list.uuid}}" list-item-add-save="saveTask(newItem)"
+    ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
-    ng-repeat="task in listTasks =
-    (tasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid} | filter:isTaskVisible)
+    ng-repeat="task in listTasks = (getList() | paramFilter:isListItemVisible) | orderBy:'created':true
     | limitTo: currentListLimitTo"
     list-item="listTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
-    <div list-item-add="{transientProperties: {completed: false, list: list.uuid}}"
-    list-item-add-save="saveTask(newItem)"
-    ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
+    <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('list')"></footer>
 </div>

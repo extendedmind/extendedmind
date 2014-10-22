@@ -1,11 +1,8 @@
 <div class="container-fluid--inner" list-container drawer-handle="left">
   <section class="container-content" list="allNotes" list-order="top" list-recent
   list-open="openEditor('note', {transientProperties: {favorited: false}})">
-    <div class="group-mixed heading">
-      <div class="group-mhixed--middle">
-        <h2 class="group-heading justified row">recent</h2>
-      </div>
-    </div>
+    <h2 class="group-heading justified row">recent</h2>
+
     <div class="animate-list-item-leave tall"
     ng-repeat="note in getList() | orderBy:'modified':true | limitTo: currentListLimitTo"
     list-item="getList().length" ng-include="'static/app/notes/noteListItem.html'"></div>

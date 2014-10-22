@@ -4,6 +4,11 @@
       <span class="text-heading-primary" ng-bind="note.title"></span>
     </a>
   </div>
+  <div ng-if="note.transientProperties.favorited" class="group-mixed--right">
+    <a href ng-click="unfavoriteNote(note)">
+      <span class="text-star small"></span>
+    </a>
+  </div>
 </div>
 <a href class="group-teaser" swiper-click="callAndWaitThenScroll(openNoteEditorView, note)">
   <span class="text-teaser" clamp=3 ng-bind="getNoteContentTeaser(note)"></span>
