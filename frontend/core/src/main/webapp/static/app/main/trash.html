@@ -1,0 +1,19 @@
+<div class="container-fluid--inner" drawer-handle="left" ng-controller="TrashController">
+  <section class="container-content">
+    <h2 class="group-heading justified row" ng-bind="allDeleted.length + ' deleted'"></h2>
+
+    <div ng-repeat="deletedItem in allDeleted | orderBy: 'deleted': true" class="group-mixed">
+      <div class="group-mixed--middle">
+        <a href class="link-search-result" ng-click="openEditor(deletedItem.transientProperties.itemType, deletedItem)">
+          <span class="text-search-result" clamp=2 ng-bind="deletedItem.title"></span>
+        </a>
+      </div>
+      <div class="group-mixed--right top">
+        <span class="text-search-type" ng-bind="deletedItem.transientProperties.itemType"></span>
+      </div>
+    </div>
+  </section>
+  <footer class="container-content--after group-centered">
+    <span class="text-details row">items in trash are destroyed after 30 days</span>
+  </footer>
+</div>

@@ -104,6 +104,9 @@ function MainController(
         }
       }
     },
+    trash: {
+      heading: 'trash'
+    },
     admin: {
       heading: 'admin'
     }

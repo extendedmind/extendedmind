@@ -27,6 +27,7 @@
         <span class="text-link" clamp=2 ng-bind="item.title"></span>
       </a>
     </div>
+    <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('inbox')"></footer>
 </div>

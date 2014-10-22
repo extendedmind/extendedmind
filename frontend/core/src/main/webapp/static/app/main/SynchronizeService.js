@@ -326,6 +326,23 @@
     });
   };
 
+  var getAllDeletedOnline = function getAllArchivedOnline(ownerUUID) {
+    return BackendClientService.getSecondary('/api/' +
+                                             ownerUUID +
+                                             '/items?deleted=true&active=false',
+                                             getItemsRegex, undefined, true).then(function(result) {
+      if (result.data) {
+        // Update all arrays with archived values
+        TagsService.updateTags(result.data.tags, ownerUUID);
+        ListsService.updateLists(result.data.lists, ownerUUID);
+        TasksService.updateTasks(result.data.tasks, ownerUUID);
+        NotesService.updateNotes(result.data.notes, ownerUUID);
+        ItemsService.updateItems(result.data.items, ownerUUID);
+      }
+      return result;
+    });
+  };
+
   return {
     // Main method to synchronize all arrays with backend.
     synchronize: function(ownerUUID) {
@@ -334,6 +351,11 @@
     addCompletedAndArchived: function(ownerUUID) {
       var deferred = $q.defer();
       getAllOnline(ownerUUID, getAllArchivedAndCompletedOnline, deferred);
+      return deferred.promise;
+    },
+    addDeleted: function(ownerUUID) {
+      var deferred = $q.defer();
+      getAllOnline(ownerUUID, getAllDeletedOnline, deferred);
       return deferred.promise;
     },
     synchronizeUser: function(ownerUUID) {
