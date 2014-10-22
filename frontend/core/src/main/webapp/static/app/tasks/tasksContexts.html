@@ -1,32 +1,50 @@
-<div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container>
-  <section ng-init="newContext={title:undefined, tagType:'context'}" class="container-content">
-    <h3>contexts</h3>
-    <ul>
-      <li ng-show="contexts.length" ng-repeat="context in contexts">
-        <a href class="click-to-slide" swiper-click="swipeToContext(context)">
-          <span class="link-title">@{{context.title}}</span><span class="icon-arrow-right"></span>
-        </a>
-      </li>
-      <li>
-        <form role="form" class="add-element" ng-submit="callAndRefresh(addContext, newContext)" add-item autocapitalize="none" autocorrect="off">
-          <div class="form-group" editable-field-container="disable">
-            <input type="text" id="contextTitle" class="simple-input" ng-model="newContext.title" ng-blur="blurredAddItemElement()" ng-focus="focusedAddItemElement()" editable-field placeholder="add context&#8230;"/>
+
+<div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
+  <section class="container-content">
+    <div list="contexts" list-order="top">
+      <h2 class="group-heading justified row">contexts</h2>
+      <div list-item-add="{tagType:'context'}" list-item-add-save="saveContext(newItem)">
+        <form role="form" class="group-mixed swiper-no-swiping"
+        data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
+        editable-field-container-clicked-elsewhere="clickedElsewhere()">
+          <div class="group-mixed--middle">
+            <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
+            editable-field editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)"
+            placeholder="add context&#8230;" maxlength="128">
+            </textarea>
+          </div>
+          <div class="group-mixed--right">
+            <a href editable-field-deactivate ng-click="openEditor('tag', newItem)">
+              <span class="text-navigation-forward"></span>
+            </a>
           </div>
         </form>
-      </li>
-      <li ng-if="contexts.length === 0">
-        <div class="instruction-text">
-          <p class="instruction-text-chapter">contexts are<br/><b>task types</b><br/><br/>
-            <span class="instruction-text-chapter-details">(e.g. home, computer,<br/>phone, errands etc.)</span>
-          </p>
+      </div>
+      <div class="animate-list-item-leave"
+      ng-repeat="context in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
+      list-item="getList().length">
+        <div class="group-mixed">
+          <a href class="group-mixed--middle" swiper-click="swipeToContext(context)">
+            <span class="text-link" clamp=2 ng-bind="'@' + context.title"></span>
+          </a>
+          <div class="group-mixed--right">
+            <a href ng-click="swipeToContext(context)">
+              <span class="text-navigation-forward large"></span>
+            </a>
+          </div>
         </div>
-      </li>
-    </ul>
-    <h3 class="arrow-link">
-      <a href class="click-to-slide" swiper-click="swipeToContext()">
-        <span class="link-title">no context</span><span class="icon-arrow-right"></span>
-      </a>
-    </h3>
+      </div>
+      <div class="group-mixed">
+        <a href class="group-mixed--middle" swiper-click="swipeToContext(context)">
+          <span class="text-link">no context</span>
+        </a>
+        <div class="group-mixed--right">
+          <a href ng-click="swipeToContext()">
+            <span class="text-navigation-forward large"></span>
+          </a>
+        </div>
+      </div>
+    </div>
   </section>
-  <footer class="container-content--after" list-footer="getFeatureMap('tasks')" list-footer-add-item="addContext({})"></footer>
+  <footer class="container-content--after" list-footer="getFeatureMap('tasks')"></footer>
 </div>
