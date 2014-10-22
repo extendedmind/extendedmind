@@ -649,6 +649,7 @@ function MainController(
   $controller('TagsController',{$scope: $scope});
   $controller('NotesController',{$scope: $scope});
   $controller('ItemsController',{$scope: $scope});
+  $controller('UserController',{$scope: $scope});
 }
 
 MainController['$inject'] = [

@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function UserController($http, $location, $q, $rootScope, $scope, $window, AnalyticsService, SwiperService,
+ function UserController($http, $location, $q, $rootScope, $scope, $window, AnalyticsService, AuthenticationService, SwiperService,
                          UISessionService, UserService, UserSessionService) {
 
   $scope.isUserVerified = false;
@@ -25,8 +25,11 @@
     $scope.email = accountResponse.email;
   });
 
-  $scope.gotoChangePassword = function gotoChangePassword() {
-    $location.path('/my/account/password');
+  $scope.changePassword = function (oldPassword, newPassword) {
+    AuthenticationService.putChangePassword(UserSessionService.getEmail(), oldPassword, newPassword).then(function(){
+      $scope.closeEditor();
+      console.log("returning")
+    });
   };
 
   $scope.isAdmin = function isAdmin() {
@@ -194,6 +197,6 @@
   }
 }
 UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$window',
-                             'AnalyticsService', 'SwiperService', 'UISessionService', 'UserService',
+                             'AnalyticsService', 'AuthenticationService', 'SwiperService', 'UISessionService', 'UserService',
                              'UserSessionService'];
 angular.module('em.user').controller('UserController', UserController);

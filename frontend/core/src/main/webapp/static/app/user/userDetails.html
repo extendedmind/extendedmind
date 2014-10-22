@@ -1,8 +1,17 @@
 <div class="container-content--outer" ng-if="isFeatureActive('user')">
   <section ng-if="activeDetails === 'account'" class="container-content">
-    <h2 class="group-heading row">account</h2>
-    <a href>change password</a>
-    <a href>change email</a>
+    <h2 class="group-heading justified row">account</h2>
+    <div class="group-mixed">
+      <a href class="group-mixed--middle" swiper-click="openEditor('user', undefined, 'password')">
+        <span class="text-link">change password</span>
+      </a>
+      <div class="group-mixed--right">
+        <a href ng-click="openEditor('user', undefined, 'password')">
+          <span class="text-navigation-forward large"></span>
+        </a>
+      </div>
+    </div>
+
   </section>
 
   <section ng-if="activeDetails === 'settings'" class="container-content">

@@ -1,0 +1,30 @@
+<form name="userForm" class="container-fluid">
+  <header class="container-titlebar">
+    <div class="container-titlebar--inner">
+      <div class="group-symmetrical height-large">
+        <a href class="group-symmetrical--left link-navigation highlighted" ng-click="closeEditor()">
+          <span class="text-navigation-back">back</span>
+        </a>
+      </div>
+     </div>
+  </header>
+
+  <div class="container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}">
+    <div class="container-content" drawer-override-aisle="right">
+      <h2 ng-if="mode === 'password'" class="group-heading row-form">change password</h2>
+      <div class="row-form">
+        <input type="password" name="password" id="password" ng-model="user.password"
+        ng-minlength="7" placeholder="enter old password&#8230;" required />
+      </div>
+      <div class="row-form">
+        <input type="password" name="passwordNew" id="passwordNew" ng-model="user.passwordNew"
+        ng-minlength="7" placeholder="enter new password&#8230;" required />
+      </div>
+    </div>
+    <footer class="container-content--after group-btn" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
+      <button type="submit" class="btn-action" ng-disabled="!userForm.$valid" ng-click="changePassword(user.passwordOld, user.passwordNew)">
+        <span class="text-btn">done</span>
+      </button>
+    </footer>
+  </div>
+</form>

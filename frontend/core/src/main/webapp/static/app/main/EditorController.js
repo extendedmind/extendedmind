@@ -16,7 +16,7 @@
  'use strict';
 
  function EditorController($rootScope, $scope, ConvertService, ItemsService, SwiperService,
-                           UISessionService) {
+                           UISessionService, UserSessionService) {
 
   // OPENING, INITIALIZING, CLOSING
 
@@ -42,6 +42,8 @@
       $scope.item = item;
     }else if (editorType === 'tag'){
       $scope.tag = item;
+    }else if (editorType === 'user'){
+      $scope.user = UserSessionService.getUser();
     }
   };
 
@@ -267,5 +269,5 @@
 }
 
 EditorController['$inject'] = ['$rootScope', '$scope', 'ConvertService', 'ItemsService', 'SwiperService',
-'UISessionService'];
+'UISessionService', 'UserSessionService'];
 angular.module('em.main').controller('EditorController', EditorController);

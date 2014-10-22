@@ -18,5 +18,8 @@ vertical-resize="editor" vertical-resize-prevent="!isEditorVisible()" ng-switch=
   <div ng-if="editorVisible" ng-switch-when="omnibar" class="container-editor--inner">
     <div ng-include="'static/app/main/omnibarEditor.html'" include-replace></div>
   </div>
+  <div ng-if="editorVisible" ng-switch-when="user" class="container-editor--inner">
+    <div ng-include="'static/app/user/userEditor.html'" include-replace></div>
+  </div>
   <div ng-if="editorVisible" toaster="override"></div>
 </div>

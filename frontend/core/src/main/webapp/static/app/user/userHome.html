@@ -1,21 +1,52 @@
 <div class="container-content--outer" ng-if="isFeatureActive('user')" drawer-handle="left">
   <section class="container-content">
-    <h2 class="group-heading row">online</h2>
+    <h2 class="group-heading justified row" ng-bind="online ? 'online' : '*offline'"></h2>
 
-    <div ng-if="useCollectives()">
+    <!-- TODO: Collectives!
+    div ng-if="useCollectives()">
       <h3>collectives</h3>
       <div ng-repeat="(key, value) in collectives">
         <div ng-if="value[2] === false">
           <a href ng-class="getCollectiveClass(key)" ng-click="setCollectiveActive(key)">{{value[0]}}</a>
         </div>
       </div>
+    </div-->
+
+    <div class="group-mixed">
+      <a href class="group-mixed--middle" swiper-click="swipeToDetails('account')">
+        <span class="text-link">account</span>
+      </a>
+      <div class="group-mixed--right">
+        <a href ng-click="swipeToDetails('account')">
+          <span class="text-navigation-forward large"></span>
+        </a>
+      </div>
     </div>
-
-    <a href ng-click="swipeToDetails('account')">account</a>
-    <a href ng-click="swipeToDetails('settings')">settings</a>
-    <a href ng-click="swipeToDetails('about')">about</a>
-
-    <a href class="row" ng-if="isAdmin()" ng-click="changeFeature('admin')">admin</a>
+    <!--div class="group-mixed">
+      <a href class="group-mixed--middle" swiper-click="swipeToDetails('settings')">
+        <span class="text-link">settings</span>
+      </a>
+      <div class="group-mixed--right">
+        <a href ng-click="swipeToDetails('settings')">
+          <span class="text-navigation-forward large"></span>
+        </a>
+      </div>
+    </div>
+    <div class="group-mixed">
+      <a href class="group-mixed--middle" swiper-click="swipeToDetails('about')">
+        <span class="text-link">about</span>
+      </a>
+      <div class="group-mixed--right">
+        <a href ng-click="swipeToDetails('about')">
+          <span class="text-navigation-forward large"></span>
+        </a>
+      </div>
+    </div-->
+    <div ng-if="isAdmin()" class="group-mixed">
+      <a href class="group-mixed--middle" swiper-click="changeFeature('admin')">
+        <span class="text-link">admin</span>
+      </a>
+    </div>
 
   </section>
   <footer class="container-content--after group-btn">
