@@ -14,7 +14,12 @@
  */
  'use strict';
 
- function drawerAisleDirective($rootScope, DrawerService) {
+/*
+* Handle aisle background animation classes here.
+* NOTE: Editor open animation slows down after first open, which is probably why animation is different for
+*       the first time vs. the rest.
+*/
+function drawerAisleDirective($rootScope, DrawerService) {
   return {
     restrict: 'A',
     controller: function($scope, $element) {
@@ -121,6 +126,8 @@
       DrawerService.registerCloseCallback('left', menuDrawerClose, 'drawerAisleDirective');
 
       setupEditorDrawer();
+      DrawerService.registerOpenedCallback('right', editorDrawerOpened, 'drawerAisleDirective');
+      DrawerService.registerClosedCallback('right', editorDrawerClosed, 'drawerAisleDirective');
       DrawerService.registerAboutToCloseCallback('right', editorDrawerAboutToClose, 'drawerAisleDirective');
       DrawerService.registerOpenCallback('right', editorDrawerOpen, 'drawerAisleDirective');
       DrawerService.registerCloseCallback('right', editorDrawerClose, 'drawerAisleDirective');
@@ -245,6 +252,21 @@
         }
       }
 
+      function editorDrawerOpened() {
+        if ($rootScope.columns === 1) {
+          // Animation done. Remove .editor-animating and add .editor-open.
+          $element[0].firstElementChild.classList.toggle('editor-animating', false);
+          $element[0].firstElementChild.classList.toggle('editor-open', true);
+        }
+      }
+      function editorDrawerClosed() {
+        if ($rootScope.columns === 1) {
+          // Animation done. Remove .editor-animating and remove .editor-open.
+          $element[0].firstElementChild.classList.toggle('editor-animating', false);
+          $element[0].firstElementChild.classList.toggle('editor-open', false);
+        }
+      }
+
       /*
       * Fires when editor is closed programmatically, i.e. save button pressed.
       * This is triggered before any animation takes place.
@@ -252,6 +274,8 @@
       function editorDrawerClose() {
         var activeFeature = $scope.getActiveFeature();
         if ($rootScope.columns === 1) {
+          // Animations starts. Add .editor-animating.
+          $element[0].firstElementChild.classList.toggle('editor-animating', true);
           // Editor drawer is closing, enable swiping for underlying swiper.
           if (areaAboutToShowCallbacks[activeFeature]) areaAboutToShowCallbacks[activeFeature]();
         }
@@ -263,6 +287,8 @@
       function editorDrawerOpen() {
         var activeFeature = $scope.getActiveFeature();
         if ($rootScope.columns === 1) {
+          // Animation starts. Add .editor-animating.
+          $element[0].firstElementChild.classList.toggle('editor-animating', true);
           if (areaAboutToHideCallbacks[activeFeature]) areaAboutToHideCallbacks[activeFeature]();
         }
       }
@@ -274,6 +300,8 @@
       function editorDrawerAboutToClose() {
         var activeFeature = $scope.getActiveFeature();
         if ($rootScope.columns === 1) {
+          // Animation starts. Add .editor-animating.
+          $element[0].firstElementChild.classList.toggle('editor-animating', true);
           if (areaAboutToShowCallbacks[activeFeature]) areaAboutToShowCallbacks[activeFeature]();
         }
       }

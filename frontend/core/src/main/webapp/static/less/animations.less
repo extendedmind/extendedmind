@@ -169,7 +169,7 @@ input[type="checkbox"]:checked + label:before {
 }
 
 @expanded-position-editor: 135px;
-@speed-animate-editor-toggle: .3s;
+@speed-animate-editor-footer-toggle: .3s;
 
 // 1. Animate editor to expanded position with translate3d.
 .animate-editor-footer-open {
@@ -181,17 +181,44 @@ input[type="checkbox"]:checked + label:before {
 }
 
 .animate-editor-footer-open-add {
-  -webkit-transition: -webkit-transform @speed-animate-editor-toggle @timing-animate;
-  -moz-transition: -moz-transform @speed-animate-editor-toggle @timing-animate;
-  -o-transition: -o-transform @speed-animate-editor-toggle @timing-animate;
-  -ms-transition: -ms-transform @speed-animate-editor-toggle @timing-animate;
-  transition: transform @speed-animate-editor-toggle @timing-animate;
+  -webkit-transition: -webkit-transform @speed-animate-editor-footer-toggle @timing-animate;
+  -moz-transition: -moz-transform @speed-animate-editor-footer-toggle @timing-animate;
+  -o-transition: -o-transform @speed-animate-editor-footer-toggle @timing-animate;
+  -ms-transition: -ms-transform @speed-animate-editor-footer-toggle @timing-animate;
+  transition: transform @speed-animate-editor-footer-toggle @timing-animate;
 }
 
 .animate-editor-footer-open-remove {
-  -webkit-transition: -webkit-transform @speed-animate-editor-toggle @timing-animate;
-  -moz-transition: -moz-transform @speed-animate-editor-toggle @timing-animate;
-  -o-transition: -o-transform @speed-animate-editor-toggle @timing-animate;
-  -ms-transition: -ms-transform @speed-animate-editor-toggle @timing-animate;
-  transition: transform @speed-animate-editor-toggle @timing-animate;
+  -webkit-transition: -webkit-transform @speed-animate-editor-footer-toggle @timing-animate;
+  -moz-transition: -moz-transform @speed-animate-editor-footer-toggle @timing-animate;
+  -o-transition: -o-transform @speed-animate-editor-footer-toggle @timing-animate;
+  -ms-transition: -ms-transform @speed-animate-editor-footer-toggle @timing-animate;
+  transition: transform @speed-animate-editor-footer-toggle @timing-animate;
+}
+
+@speed-animation-editor: .35s;
+
+
+// 1. Darken container background with animation when editor is opening.
+//    Reset container backgroung with animation when editor is closing.
+.editor-open.animate-container-master {
+  background-color: @color-background-editor-inactive;  // [1]
+}
+
+.editor-visible .editor-animating.animate-container-master {
+  -webkit-transition: background-color @speed-animation-editor @timing-animate; // [1]
+  -moz-transition: background-color @speed-animation-editor @timing-animate;    // [1]
+  -o-transition: background-color @speed-animation-editor @timing-animate;      // [1]
+  -ms-transition: background-color @speed-animation-editor @timing-animate;     // [1]
+  transition: background-color @speed-animation-editor @timing-animate;         // [1]
+  background-color: white;
+}
+
+.editor-hidden .editor-animating.animate-container-master {
+  -webkit-transition: background-color @speed-animation-editor @timing-animate; // [1]
+  -moz-transition: background-color @speed-animation-editor @timing-animate;    // [1]
+  -o-transition: background-color @speed-animation-editor @timing-animate;      // [1]
+  -ms-transition: background-color @speed-animation-editor @timing-animate;     // [1]
+  transition: background-color @speed-animation-editor @timing-animate;         // [1]
+  background-color: @color-background-editor-inactive;                          // [1]
 }
