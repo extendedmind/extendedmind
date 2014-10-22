@@ -127,7 +127,7 @@ Vertically center .container-master and .container-editor in large screens
 **************************************************************************
 # LEVEL 4: Fluid, toaster
 */
-@height-footer: @grid-vertical;
+@height-footer: @grid-vertical * 1.1;
 
 /*
 `.container-fluid` sets the vertical positioning of the content area.
@@ -524,7 +524,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-bottom: @grid-vertical-half + 3px; // [1]
 }
 
-@margin-bottom-heading-justified: 17px;
+@margin-bottom-heading-justified: -3px;
 // Justify whitespace between toolbar and content
 .group-heading.justified {
   margin-top: 0;
