@@ -476,6 +476,16 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   line-height: @grid-vertical;
 }
 
+.group-mixed.details {
+  .group-mixed--middle {
+    line-height: @grid-vertical-small;
+  }
+}
+
+.group-mixed.height-large {
+  margin-top: 10px;
+}
+
 // 1. Increase clicking area
 .group-mixed--right {
   padding-left: @padding-inner-group-mixed;
@@ -580,7 +590,13 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 `.group-error` groups together multiple error messages.
 */
 .group-error {
-  line-height: @grid-vertical-half;
+  position:absolute;
+  margin-top: -10px;
+  line-height: @grid-vertical-small;
+}
+
+.group-error.height-large {
+  margin-top:0;
 }
 
 /*

@@ -14,10 +14,10 @@
  */
  'use strict';
 
- function EntryController($location, $rootScope, $scope, $timeout, $window,
+ function EntryController($http, $location, $rootScope, $scope, $timeout, $window,
                           AnalyticsService, AuthenticationService,
                           BackendClientService, DetectBrowserService, SwiperService,
-                          UserSessionService, packaging) {
+                          UISessionService, UserSessionService, packaging) {
 
   AnalyticsService.visitEntry('entry');
 
@@ -41,29 +41,35 @@
     AnalyticsService.visitEntry('login');
   };
 
-  $scope.gotoTermsOfService = function() {
-    AnalyticsService.visit('terms');
-    $window.open('http://ext.md/terms.html', '_system');
-  };
-
-  $scope.gotoPrivacyPolicy = function() {
-    AnalyticsService.visit('privacy');
-    $window.open('http://ext.md/privacy.html', '_system');
-  };
-
   $scope.swipeToHome = function() {
     SwiperService.swipeTo('entry/home');
   };
 
   $scope.swipeToMain = function() {
     $scope.forgotActive = false;
+    $scope.resetCodeExpires = undefined;
     SwiperService.swipeTo('entry/main');
   };
 
-  $scope.swipeToForgot = function() {
-    SwiperService.swipeTo('entry/details');
-    $scope.forgotActive = true;
-    AnalyticsService.visitEntry('forgot');
+  $scope.swipeToDetails = function(mode) {
+    $scope.detailsMode = mode;
+    if (!mode){
+      $scope.forgotActive = true;
+      SwiperService.swipeTo('entry/details');
+      AnalyticsService.visitEntry('forgot');
+    }else if (mode === 'privacy'){
+      $http.get('http://ext.md/privacy.html').then(function(privacyResponse){
+        $scope.details = {html: privacyResponse.data};
+        SwiperService.swipeTo('entry/details');
+        AnalyticsService.visitEntry('privacy');
+      });
+    }else if (mode === 'terms') {
+      $http.get('http://ext.md/terms.html').then(function(termsResponse){
+        $scope.details = {html: termsResponse.data};
+        SwiperService.swipeTo('entry/details');
+        AnalyticsService.visitEntry('terms');
+      });
+    }
   };
 
   var entryEmailMainInputFocusCallbackFunction;
@@ -134,11 +140,8 @@
     var randomCohort = Math.floor(Math.random() * 128) + 1;
 
     var payload = {email: $scope.user.username,
-     password: $scope.user.password,
-     cohort: randomCohort};
-     if ($routeParams.bypass) {
-      payload.bypass = true;
-    }
+                   password: $scope.user.password,
+                   cohort: randomCohort};
 
     AuthenticationService.signUp(payload).then(function(response) {
       AnalyticsService.doWithUuid('signUp', undefined, response.data.uuid);
@@ -165,8 +168,8 @@
   $scope.sendInstructions = function() {
     $scope.sendFailed = false;
     $scope.sendOffline = false;
-    if ($scope.user.email) {
-      AuthenticationService.postForgotPassword($scope.user.email).then(
+    if ($scope.user.username) {
+      AuthenticationService.postForgotPassword($scope.user.username).then(
         function(forgotPasswordResponse) {
           if (BackendClientService.isOffline(forgotPasswordResponse.status)) {
             $scope.sendOffline = true;
@@ -174,16 +177,21 @@
             $scope.sendFailed = true;
           } else if (forgotPasswordResponse.data) {
             $scope.resetCodeExpires = forgotPasswordResponse.data.resetCodeExpires;
+            UISessionService.pushNotification({
+              type: 'fyi',
+              text: 'instructions sent'
+            });
+            $scope.forgotActive = false;
           }
         }
-        );
+      );
     }
   };
 
 }
 
-EntryController['$inject'] = ['$location', '$rootScope', '$scope', '$timeout', '$window',
+EntryController['$inject'] = ['$http', '$location', '$rootScope', '$scope', '$timeout', '$window',
                               'AnalyticsService', 'AuthenticationService',
                               'BackendClientService', 'DetectBrowserService', 'SwiperService',
-                              'UserSessionService', 'packaging'];
+                              'UISessionService', 'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);

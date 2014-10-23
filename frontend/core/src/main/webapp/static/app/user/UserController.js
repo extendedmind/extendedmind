@@ -130,7 +130,7 @@
     $http.get('http://ext.md/terms.html').then(function(termsResponse){
       user.terms = termsResponse.data;
       $scope.openEditor('user', user, 'terms');
-    })
+    });
   }
 
   $scope.openPrivacyInEditor = function(){
@@ -138,7 +138,7 @@
     $http.get('http://ext.md/privacy.html').then(function(privacyResponse){
       user.privacy = privacyResponse.data;
       $scope.openEditor('user', user, 'privacy');
-    })
+    });
   }
 
   var policyModalElement, contentHeight, footerHeight;

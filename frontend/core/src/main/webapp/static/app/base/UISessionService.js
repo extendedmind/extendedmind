@@ -119,9 +119,6 @@
       if (!SessionStorageService.getActiveUUID()) {
         if (LocalStorageService.getUserUUID()) {
           SessionStorageService.setActiveUUID(LocalStorageService.getUserUUID());
-        } else {
-          // There is no way to get the active UUID
-          $rootScope.$emit('emException', {type: 'session', description: 'active UUID not available'});
         }
       }
       return SessionStorageService.getActiveUUID();

@@ -7,6 +7,11 @@
       </a>
     </span>
   </div>
+  <div class="group-mixed--middle" ng-switch-when="fyi">
+    <span class="textgroup-toaster">
+      {{notification.text}}
+    </span>
+  </div>
   <div class="group-mixed--right">
     <a href ng-click="closeNotificationAndCall(notification)"><span class="text-x"></span></a>
   </div>

@@ -1,0 +1,50 @@
+<form ng-if="entryState === 'login'" name="forgotForm">
+  <section class="container-content" editable-field-container>
+    <header class="group-symmetrical">
+      <a href class="group-symmetrical--left link-navigation" ng-click="swipeToMain()" editable-field-deactivate>
+        <span class="text-navigation-back downplayed">back</span>
+      </a>
+    </header>
+    <div ng-if="!resetCodeExpires">
+      <h2 class="group-heading row-form">forgot password?</h2>
+      <div class="row-form">
+        <input type="email" name="email" ng-model="user.username"
+        placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
+        editable-field-register-callbacks="registerEntryForgotEmailInputCallbacks(focus, blur)" required />
+      </div>
+      <div class="group-error row-form">
+        <div ng-if="forgotForm.email.$touched" ng-messages="forgotForm.email.$error">
+          <span class="text-error" ng-message="email">invalid email address</span>
+        </div>
+      </div>
+      <div class="group-error height-large row-form">
+        <span ng-if="sendFailed" class="text-error">you are not an extended mind user</span>
+        <span ng-if="entryOffline" class="text-error">can't connect to server. are you online?</span>
+      </div>
+    </div>
+    <div ng-if="resetCodeExpires">
+      <h2 class="group-heading row-form"><span class="text-heading">check your</span>
+      <span class="text-heading highlighted">email</span>
+      </h2>
+      <div class="textgroup-ingress row">password reset instructions have been sent to your email</div>
+    </div>
+  </section>
+
+  <footer ng-if="forgotActive" class="container-content--after group-btn" editable-field-container="auto">
+    <button type="submit" class="btn-action" ng-disabled="!forgotForm.$valid" ng-click="sendInstructions()">
+      <span class="text-btn">send instructions</span>
+    </button>
+  </footer>
+</form>
+<div ng-if="entryState === 'signup'">
+  <section class="container-content">
+    <header class="group-symmetrical">
+      <a href class="group-symmetrical--left link-navigation" ng-click="swipeToMain()">
+        <span class="text-navigation-back downplayed">back</span>
+      </a>
+    </header>
+    <div ng-if="details.html" class="container-content">
+      <div class="group-html-external row" ng-bind-html="details.html"></div>
+    </div>
+  </section>
+</form>

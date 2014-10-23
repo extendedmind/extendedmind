@@ -84,6 +84,10 @@ h2 {
   font-size: @size-font-medium;
 }
 
+.textgroup-ingress {
+  .set-font-ingress();
+}
+
 /*
 ******************************************************************
 # Texts.
@@ -101,7 +105,11 @@ h2 {
   .set-font-jumbotron();
 }
 
-.text-jumbotron.active {
+.text-jumbotron.highlighted {
+  color: @color-text-active;
+}
+
+.text-heading.highlighted {
   color: @color-text-active;
 }
 
@@ -121,7 +129,6 @@ Use `.text-details` to separate details from body text.
 .text-error {
   font-size: @size-font-small;
   color: @color-text-error;
-  .set-font-bold;
 }
 
 .text-teaser, .text-link {
