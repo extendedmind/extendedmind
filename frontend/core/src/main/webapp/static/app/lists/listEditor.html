@@ -21,13 +21,13 @@
     </div>
   </header>
 
-  <div class="swiper-container container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" swiper-container="listEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
+  <div class="swiper-container container-fluid--inner" swiper-container="listEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
-        <div class="container-content" drawer-override-aisle="right">
+        <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-content" drawer-override-aisle="right">
           <textarea class="row" ng-model="list.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
         </div>
-        <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
+        <footer class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <a href ng-click="clickFavorite()" class="group-symmetrical--left">
               <span class="text-star" ng-class="!isFavoriteList(list) && 'inactive'"></span>
@@ -39,12 +39,27 @@
         </footer>
       </div>
 
-      <div class="swiper-slide" swiper-slide="listEditor/advanced" slide-index="1">
-        <div class="container-content">
-          <input ng-if="list.link" type="text" ng-model="list.link" placeholder="enter url&#8230;">
+      <div class="swiper-slide" swiper-slide="listEditor/advanced" slide-index="1" ng-init="advancedSlideInfo = {}">
+        <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
+
+          <div class="row-form">
+            <input type="text" ng-model="list.link" placeholder="enter url&#8230;">
+          </div>
         </div>
-        <footer class="container-content--after"
-        ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
+
+        <footer class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
+
+          <div class="table">
+            <div class="table-row">
+              <a href class="table-cell" ng-click="convertToTask()">
+                <span class="text-convert">task</span>
+              </a>
+              <a href class="table-cell" ng-click="convertToList()">
+                <span class="text-convert">note</span>
+              </a>
+            </div>
+          </div>
+
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <a href ng-click="swipeToBasic()" class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
