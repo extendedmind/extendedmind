@@ -23,10 +23,10 @@
           <string>icon@2x</string>
           <string>icon-72</string>
           <string>icon-72@2x</string>
-          <string>icon-Small-50@2x</string>
+          <string>icon-50@2x</string>
           <string>icon-60@3x</string>
-          <string>icon-Small-40@3x</string>
-          <string>icon-Small@3x</string>
+          <string>icon-40@3x</string>
+          <string>icon-@3x</string>
           <string>icon-60</string>
         </array>
         <key>UIPrerenderedIcon</key>
