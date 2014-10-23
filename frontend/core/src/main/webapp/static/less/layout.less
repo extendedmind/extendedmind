@@ -97,11 +97,11 @@ Menu
   margin: 0 auto -@height-menu-footer; /* the bottom margin is the negative value of the footer's height */
   .separate {
     // use this to separate link elements from other
-    line-height: @grid-vertical * 2.3;
+    line-height: 73px;
     padding-bottom: 15px;
   }
   a:first-child {
-    padding-top: 8px;
+    padding-top: 6px;
   }
 }
 
@@ -533,11 +533,11 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-bottom: @grid-vertical-half + 3px; // [1]
 }
 
-@margin-bottom-heading-justified: -3px;
+@margin-top-heading-justified: -12px;
 // Justify whitespace between toolbar and content
 .group-heading.justified {
-  margin-top: 0;
-  margin-bottom: @margin-bottom-heading-justified;
+  margin-top: @margin-top-heading-justified;
+  margin-bottom: 0;
 }
 
 .group-heading.long {
