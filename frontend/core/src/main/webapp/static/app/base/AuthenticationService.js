@@ -247,7 +247,8 @@
         this.putChangePasswordRegex,
         {password: newPassword},
         sanitizeEmail(email),
-        currentPassword);
+        currentPassword,
+        [0, 403, 404, 502]);
     },
     // Regular expressions for account requests
     postAuthenticateRegex: postAuthenticateRegexp,

@@ -148,10 +148,12 @@
     });
   };
 
-  methods.putOnlineWithUsernamePassword = function(url, regex, data, username, password) {
+  methods.putOnlineWithUsernamePassword = function(url, regex, data, username, password, skipLogStatuses) {
     if (regex.test(url)) {
       var usernamePasswordCredentials = base64.encode(username + ':' + password);
-      return HttpClientService.putOnlineWithCredentials(getUrlPrefix() + url, data, usernamePasswordCredentials);
+      return HttpClientService.putOnlineWithCredentials(getUrlPrefix() + url, data,
+                                                        usernamePasswordCredentials,
+                                                        skipLogStatuses);
     } else {
       emitRegexException(regex, 'put', data);
     }

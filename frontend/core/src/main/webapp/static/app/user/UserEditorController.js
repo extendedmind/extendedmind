@@ -25,16 +25,21 @@
     AuthenticationService.putChangePassword(UserSessionService.getEmail(),
                                             oldPassword,
                                             newPassword).then(function(changePasswordResponse){
-      if (BackendClientService.isOffline(changePasswordResponse.status)) {
-        $scope.userEditOffline = true;
-      } else if (changePasswordResponse.status !== 200) {
-        $scope.changePasswordFailed = true;
-      }else{
+      // Need to relogin with new password
+      AuthenticationService.login({username: UserSessionService.getEmail(),
+                                  password: newPassword,
+                                  remember: UserSessionService.isAuthenticateReplaceable()})
+      .then(function(authenticationResponse){
         $scope.closeEditor();
+      });
+    }, function(error){
+      if (BackendClientService.isOffline(error.status)) {
+        $scope.userEditOffline = true;
+      } else if (error.status !== 200) {
+        $scope.changePasswordFailed = true;
       }
     });
-  };
-
+  }
 }
 UserEditorController['$inject'] = ['$scope', 'AnalyticsService', 'AuthenticationService',
 'BackendClientService', 'UserService', 'UserSessionService'];

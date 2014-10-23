@@ -222,7 +222,7 @@
     });
   };
 
-  methods.putOnlineWithCredentials = function(url, data, overrideCredentials) {
+  methods.putOnlineWithCredentials = function(url, data, overrideCredentials, skipLogStatuses) {
     return $http({
       method: 'put',
       url: url,
@@ -232,7 +232,7 @@
     .then(function(success) {
       return success;
     }, function(error) {
-      emitException(error);
+      emitException(error, skipLogStatuses);
       return $q.reject(error);
     });
   };
