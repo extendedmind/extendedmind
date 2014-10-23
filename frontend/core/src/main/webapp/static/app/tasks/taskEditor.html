@@ -23,11 +23,11 @@
     </div>
   </header>
 
-  <div class="swiper-container container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" swiper-container="taskEditor" swiper-type="main" expected-slides="2" swiper-container-toggle-drawer-sliding-events="true" swiper-container-slide-changed="editorSwiperSlideChanged()">
+  <div class="swiper-container container-fluid--inner" swiper-container="taskEditor" swiper-type="main" expected-slides="2" swiper-container-toggle-drawer-sliding-events="true" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper">
-      <div class="swiper-slide" swiper-slide="taskEditor/basic" slide-index="0">
+      <div class="swiper-slide" swiper-slide="taskEditor/basic" slide-index="0" ng-init="basicSlideInfo = {}">
 
-        <div class="container-content" drawer-override-aisle="right">
+        <div ng-style="{'padding-bottom': basicSlideInfo.footerHeight}" class="container-content" drawer-override-aisle="right">
 
           <div ng-if="calendarOpen" class="row swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()" data-snap-ignore="true">
             <div calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false" >
@@ -51,9 +51,10 @@
             </div>
 
           </div>
+
         </div>
 
-        <footer class="container-content--after editor-footer" editor-footer>
+        <footer class="container-content--after editor-footer" editor-footer="basicSlideInfo">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
               <a href ng-if="task.transientProperties.date" ng-click="openExpand()">
@@ -69,8 +70,8 @@
 
       </div>
 
-      <div class="swiper-slide" swiper-slide="taskEditor/advanced" slide-index="1">
-        <div class="container-content">
+      <div class="swiper-slide" swiper-slide="taskEditor/advanced" slide-index="1" ng-init="advancedSlideInfo = {}">
+        <div class="container-content" ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}">
 
           <div ng-if="contextPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeContextPicker()" data-snap-ignore="true">
             <div list-picker="contexts" list-picker-new-item="{tagType: 'context'}" list-picker-save="closeContextPickerAndSetContextToItem(task, list)" list-picker-clear="closeContextPickerAndClearContextFromItem(task, list)" list-picker-get-selected="getContextFromUUID(task.transientProperties.context)" list-picker-type="context" list-picker-prefix="@"></div>
@@ -82,14 +83,32 @@
                 <span class="text-link" ng-bind="task.transientProperties.context ? '@' + getContextTitleFromUUID(task.transientProperties.context) : 'select context...'"></span>
               </a>
             </div>
+
+            <div class="row-form">
+              <select ng-if="task.transientProperties.date" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes">
+                <option value="">select repeating&#8230;</option>
+              </select>
+            </div>
+
+            <div class="row-form">
+              <input type="text" ng-model="task.link" placeholder="enter url&#8230;">
+            </div>
+
+          </div>
+        </div>
+        <footer class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
+
+          <div class="table">
+            <div class="table-row">
+              <a href class="table-cell" ng-click="convertToNote()">
+                <span class="text-convert">note</span>
+              </a>
+              <a href class="table-cell" ng-click="convertToList()">
+                <span class="text-convert">list</span>
+              </a>
+            </div>
           </div>
 
-          <select ng-if="task.transientProperties.date" ng-model="task.repeating" ng-options="repeatType as repeatType for repeatType in repeatTypes">
-            <option value="">select repeating&#8230;</option>
-          </select>
-          <input type="text" ng-model="task.link" placeholder="enter url&#8230;">
-        </div>
-        <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <a href ng-click="swipeToBasic()" class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>

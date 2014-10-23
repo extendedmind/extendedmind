@@ -125,6 +125,10 @@
           $scope.initializeEditor('note', note);
         });
       }
+    } else if (itemInEdit.transientProperties.itemType === 'task') {
+      // TODO
+    } else if (itemInEdit.transientProperties.itemType === 'list') {
+      // TODO
     }
   };
 
@@ -136,6 +140,10 @@
           $scope.initializeEditor('task', task);
         });
       }
+    } else if (itemInEdit.transientProperties.itemType === 'note') {
+      // TODO
+    } else if (itemInEdit.transientProperties.itemType === 'list') {
+      // TODO
     }
   };
 
@@ -147,6 +155,10 @@
           $scope.initializeEditor('list', list);
         });
       }
+    } else if (itemInEdit.transientProperties.itemType === 'task') {
+      // TODO
+    } else if (itemInEdit.transientProperties.itemType === 'note') {
+      // TODO
     }
   };
 

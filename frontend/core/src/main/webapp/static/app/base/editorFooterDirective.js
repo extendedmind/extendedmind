@@ -14,29 +14,29 @@
  */
  'use strict';
 
- function editorFooterDirective($animate, $rootScope) {
+ function editorFooterDirective($animate, $parse, $rootScope) {
   var footerHeight = 44;
   var expandedFooterHeight = 179;
   return {
     restrict: 'A',
     scope: true,
-    link: function(scope, element) {
+    link: function(scope, element, attrs) {
+      var containerInfos = $parse(attrs.editorFooter)(scope);
+      containerInfos.footerHeight = element[0].offsetHeight;
+
       var expandPromise, shrinkPromise;
 
       scope.closeExpand = function() {
         // Reset container's padding-bottom to default footer height before animation so that the backside
         // of expanded footer is not blank.
-        $rootScope.EDITOR_FOOTER_HEIGHT = footerHeight;
-        // Set new bottom for footer so that it does not follow new position caused by container's
-        // padding-bottom change.
-        element[0].style.bottom = -expandedFooterHeight + 'px';
+        containerInfos.footerHeight = footerHeight;
 
         // Start shrink animation.
         shrinkPromise = $animate.removeClass(element, 'animate-editor-footer-open').then(function() {
 
           // Set footer height and bottom to default values.
           element[0].style.height = footerHeight + 'px';
-          element[0].style.bottom = -footerHeight + 'px';
+          element[0].style.bottom = 0;
 
           if (!$rootScope.$$phase && !scope.$$phase)
             scope.$apply(function(){
@@ -47,13 +47,15 @@
           }
           shrinkPromise = undefined;
         });
+
       };
 
       scope.openExpand = function() {
         scope.footerExpanded = true;
-        // Footer expands so it needs no height and bottom.
+        // Footer expands so it needs new height and bottom.
         element[0].style.height = expandedFooterHeight + 'px';
-        element[0].style.bottom = -expandedFooterHeight + 'px';
+        element[0].style.bottom = -(expandedFooterHeight - footerHeight) + 'px';
+
 
         // Start expand animation.
         expandPromise = $animate.addClass(element, 'animate-editor-footer-open').then(function() {
@@ -64,19 +66,17 @@
           if (!shrinkPromise) {
             // No shrink promise -> footer expanded.
 
-            // Set new bottom for footer so that it does not follow new position caused by container's
-            // padding-bottom change.
-            element[0].style.bottom = -(135 + expandedFooterHeight) + 'px';
             scope.$apply(function() {
               // Set padding-bottom for container to make content scrollable.
-              $rootScope.EDITOR_FOOTER_HEIGHT = expandedFooterHeight;
+              containerInfos.footerHeight = expandedFooterHeight;
             });
           }
           expandPromise = undefined;
         });
+
       };
     }
   };
 }
-editorFooterDirective['$inject'] = ['$animate', '$rootScope'];
+editorFooterDirective['$inject'] = ['$animate', '$parse', '$rootScope'];
 angular.module('em.base').directive('editorFooter', editorFooterDirective);

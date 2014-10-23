@@ -167,6 +167,11 @@ Vertically center .container-master and .container-editor in large screens
   padding-bottom: @height-footer; // [3]
 }
 
+// 1. Clear padding-bottom for footer. Padding-bottom is set programmatically in editor.
+.container-editor .container-fluid--inner {
+  padding-bottom: 0;  // [1]
+}
+
 // 1. Inherit width from parent. Elements inside swiper would otherwise be as wide as `.swiper-wrapper`.
 .swiper-slide .container-content {
   width: inherit; /* [1] */
@@ -175,10 +180,6 @@ Vertically center .container-master and .container-editor in large screens
 // 1. Use same positioning as in swiper to make .container-content scrollable and .container-content--after visible.
 //    Set left and right properties as well because .container-master and .container-editor are absolutely positioned.
 //    See: http://www.smashingmagazine.com/2013/08/09/absolute-horizontal-vertical-centering-css/
-// 2. .container-content--after inside swiper is absolutely positioned
-//    so it needs to be positioned to the bottom of the content-container.
-//    NOTE: Override programmatically if footer height is different.
-//          See http://css-tricks.com/snippets/css/sticky-footer/
 .container-master, .container-editor {
   .swiper-slide {
     .container-content, .container-content--after {
@@ -186,10 +187,30 @@ Vertically center .container-master and .container-editor in large screens
       left: 0;            // [1]
       right: 0;           // [1]
     }
-    .container-content--after {
-      bottom: -@height-footer;  // [2]
-    }
   }
+}
+
+// 1. .container-content--after inside swiper is absolutely positioned
+//    so it needs to be positioned to the bottom of the content-container.
+//    NOTE: Override programmatically if footer height is different.
+//          See http://css-tricks.com/snippets/css/sticky-footer/
+.container-master .container-content--after {
+  bottom: -@height-footer;  // [1]
+}
+
+
+/*
+*************************************************************
+# Editor footer
+*/
+
+// 1. Set white background to hide stuff below.
+// 2. Editor footer is at the bottom.
+// 3. Varying height.
+.container-content--after.editor-footer {
+  background-color: white;  // [1]
+  bottom: 0;    // [2]
+  height: auto; // [3]
 }
 
 /*
@@ -498,6 +519,27 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     height: @grid-vertical;
     line-height: @grid-vertical;
   }
+}
+
+// 1. Simple table grid layout.
+.table {
+  display: table; // [1]
+  width: 100%;
+}
+
+.table-row {
+  display: table-row;
+  height: @grid-vertical;
+}
+
+// 1. Each cell has half the width.
+.table-cell {
+  display: table-cell;
+  vertical-align: middle;
+  width: 50%; // [1]
+  text-align: center;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 // 1. Set padding-left to default padding for inactive.
