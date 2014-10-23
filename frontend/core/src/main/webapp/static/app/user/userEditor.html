@@ -1,4 +1,4 @@
-<form name="userForm" class="container-fluid">
+<form name="userForm" class="container-fluid" ng-controller="UserEditorController">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
@@ -13,12 +13,20 @@
     <div ng-if="mode === 'password'" class="container-content" drawer-override-aisle="right">
       <h2 class="group-heading row-form">change password</h2>
       <div class="row-form">
-        <input type="password" name="password" id="password" ng-model="user.password"
+        <input type="password" name="password" id="password" ng-model="user.passwordOld"
         ng-minlength="7" placeholder="enter old password&#8230;" required />
       </div>
       <div class="row-form">
         <input type="password" name="passwordNew" id="passwordNew" ng-model="user.passwordNew"
         ng-minlength="7" placeholder="enter new password&#8230;" required />
+      </div>
+      <div class="group-error row-form">
+        <div ng-if="userForm.passwordNew.$touched" ng-messages="signupForm.password.$error">
+          <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
+        </div>
+        <span ng-if="signupFailed" class="text-error">user with given email already registered</span>
+        <span ng-if="userEditOffline" class="text-error">can't connect to server. are you online?</span>
+        <span ng-if="changePasswordFailed" class="text-error">invalid old password</span>
       </div>
     </div>
     <div ng-if="mode === 'terms'" class="container-content" drawer-override-aisle="right">

@@ -25,12 +25,6 @@
     $scope.email = accountResponse.email;
   });
 
-  $scope.changePassword = function (oldPassword, newPassword) {
-    AuthenticationService.putChangePassword(UserSessionService.getEmail(), oldPassword, newPassword).then(function(){
-      $scope.closeEditor();
-    });
-  };
-
   $scope.isAdmin = function isAdmin() {
     return UserSessionService.getUserType() === 0;
   };
