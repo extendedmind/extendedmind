@@ -1,7 +1,7 @@
 <div class="container-content--outer" ng-if="isFeatureActive('lists')" list-container drawer-handle="left">
   <section class="container-content" list="lists" list-order="top" swiper-prevent>
     <h2 class="group-heading justified row">active</h2>
-    <div list-item-add="{}" list-item-add-save="saveList(newItem)"
+    <div list-item-add="{transientProperties: {itemType: 'list'}}" list-item-add-save="saveList(newItem)"
     ng-include="'static/app/lists/listListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
     ng-repeat="list in getList() | orderBy:'created':true | limitTo: currentListLimitTo"

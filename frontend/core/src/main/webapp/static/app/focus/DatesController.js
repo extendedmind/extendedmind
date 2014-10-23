@@ -397,7 +397,13 @@
   // UI
 
   $scope.getNewDayTask = function(daySlidesIndex){
-    return {transientProperties: {date: $scope.daySlides[daySlidesIndex].info, completed: false}};
+    return {
+      transientProperties: {
+        date: $scope.daySlides[daySlidesIndex].info,
+        completed: false,
+        itemType: 'task'
+      }
+    };
   };
 
   /*
@@ -568,5 +574,6 @@
   };
 }
 
-DatesController['$inject'] = ['$filter', '$rootScope', '$scope', 'DateService', 'SwiperService', 'UISessionService'];
+DatesController['$inject'] = ['$filter', '$rootScope', '$scope', 'DateService', 'SwiperService',
+'UISessionService'];
 angular.module('em.focus').controller('DatesController', DatesController);

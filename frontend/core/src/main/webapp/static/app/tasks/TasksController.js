@@ -175,8 +175,21 @@
   // UI
 
   $scope.getNewTaskWithContext = function(context){
-    if (context) return {transientProperties: {context: context.uuid, completed: false}};
-    else return {transientProperties: {completed: false}};
+    if (context) {
+      return {
+        transientProperties: {
+          context: context.uuid,
+          completed: false,
+          itemType: 'task'
+        }
+      };
+    }
+    else return {
+      transientProperties: {
+        completed: false,
+        itemType: 'task'
+      }
+    };
   };
 
   // NAVIGATION
@@ -203,9 +216,9 @@
     $scope.context = undefined;
     SwiperService.swipeTo('tasks/contexts');
     refreshFeatureMapHeading();
-  }
+  };
 }
 
 TasksController['$inject'] = ['$rootScope', '$scope', '$timeout', 'AnalyticsService', 'DateService',
-  'SwiperService', 'TasksService', 'UISessionService'];
+'SwiperService', 'TasksService', 'UISessionService'];
 angular.module('em.tasks').controller('TasksController', TasksController);

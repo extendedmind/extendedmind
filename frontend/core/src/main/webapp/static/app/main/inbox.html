@@ -2,14 +2,14 @@
   <section class="container-content" list="items" list-order="top">
     <h2 class="group-heading justified row" ng-bind="items.length + ' items'"></h2>
 
-    <div list-item-add="{}" list-item-add-save="saveItem(newItem)">
+    <div list-item-add="{transientProperties: {itemType: 'item'}}" list-item-add-save="saveItem(newItem)">
       <form role="form" class="group-mixed bottom-padded swiper-no-swiping" ng-submit="callAndExit(saveItem, newItem)"
       data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
       editable-field-container-clicked-elsewhere="clickedElsewhere()">
         <div class="group-mixed--middle">
-          <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
-          editable-field editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)"
-          placeholder="add item&#8230;" maxlength="128">
+          <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)" editable-field
+          editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)" placeholder="add item&#8230;"
+          maxlength="128">
           </textarea>
         </div>
         <div class="group-mixed--right">
@@ -20,8 +20,7 @@
       </form>
     </div>
 
-    <div class="animate-list-item-leave row-padded"
-    ng-repeat="item in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
+    <div class="animate-list-item-leave row-padded" ng-repeat="item in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
     list-item="getList().length">
       <a href swiper-click="openEditor('item', item)">
         <span class="text-link" clamp=2 ng-bind="item.title"></span>
