@@ -66,8 +66,21 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
   font-size: @size-font-medium;
 }
 
-.datepicker-active-day {
+.datepicker-day.past > div >:last-child {
+  color: @color-text-downplayed;
+}
+
+.datepicker-day.today > div >:first-child {
+  color: @color-text;
   .set-font-bold();
+}
+
+.datepicker-day.active > div >:last-child {
+  .set-font-bold();
+}
+
+.past-date h2 {
+  color: @color-text-downplayed;
 }
 
 /*

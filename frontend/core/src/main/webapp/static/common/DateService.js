@@ -60,6 +60,7 @@
    *  yyyyymmdd:        '2014-03-18'
    *  displayDate:      'mar 18' or 'today'
    *  displayDateShort  '18'
+   *  type:             'past', 'today' or 'future'
    *
    * @param {Date} date Day of the week.
    * @returns {Array} Weekdays.
@@ -85,6 +86,12 @@
       day.referenceDate = day.displayDate =
       (date.toDateString() === today.toDateString() ? 'today' : day.month.name + ' ' + day.date);
       day.displayDateShort = day.date;
+
+      // Set date type for easy reference
+      var todayYYYYMMDD = yyyymmdd(today);
+      if (day.yyyymmdd === todayYYYYMMDD) day.type = 'today';
+      else if (day.yyyymmdd < todayYYYYMMDD) day.type = 'past';
+      else day.type = 'future';
 
       week.push(day);
       date.setDate(date.getDate() + 1);
