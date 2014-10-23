@@ -7,6 +7,7 @@
     <js>/src/main/webapp/static/lib/angularjs/angular-animate.min.js</js>
     <js>/src/main/webapp/static/lib/angularjs/angular-route.min.js</js>
     <js>/src/main/webapp/static/lib/angularjs/angular-messages.min.js</js>
+    <js>/src/main/webapp/static/lib/angularjs/angular-sanitize.min.js</js>
   	<js>/src/main/webapp/static/lib/base64.js</js>
     <js>/src/main/webapp/static/lib/elastic.js</js>
     <js>/src/main/webapp/static/lib/fastclick.js</js>

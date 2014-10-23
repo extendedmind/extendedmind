@@ -11,7 +11,33 @@
         </a>
       </div>
     </div>
-
+  </section>
+  <section ng-if="activeDetails === 'about'" class="container-content">
+    <h2 class="group-heading justified row">about</h2>
+    <p class="row">
+       <span class="text-heading-primary">version</span></br>
+       <span class="text-teaser" ng-bind="extendedMindVersion"></span>
+    </p>
+    <div class="group-mixed">
+      <a href class="group-mixed--middle" ng-click="openTermsInEditor()">
+        <span class="text-link">terms of service</span>
+      </a>
+      <div class="group-mixed--right">
+        <a href ng-click="openTermsInEditor()">
+          <span class="text-navigation-forward large"></span>
+        </a>
+      </div>
+    </div>
+    <div class="group-mixed">
+      <a href class="group-mixed--middle" swiper-click="openPrivacyInEditor()">
+        <span class="text-link">privacy policy</span>
+      </a>
+      <div class="group-mixed--right">
+        <a href ng-click="openPrivacyInEditor()">
+          <span class="text-navigation-forward large"></span>
+        </a>
+      </div>
+    </div>
   </section>
 
   <section ng-if="activeDetails === 'settings'" class="container-content">
@@ -21,16 +47,10 @@
     <input type="checkbox" id="hideFooter" ng-model="settings.hideFooter" ng-change="hideFooter(settings.hideFooter)"/>
     <label for="hideFooter" class="default-element font-small">hide footer on mobile</label>
   </section>
-  <section ng-if="activeDetails === 'about'" class="container-content">
-    <h2 class="group-heading row">about</h2>
-    <a class="highlighted-link" href ng-click="openTermsOfServiceModal()">terms of service</a><br/>
-    <a class="highlighted-link" href ng-click="openPrivacyPolicyModal()">privacy policy</a>
-  </section>
-
   <footer class="container-content--after">
     <nav role="navigation" class="swiper-no-swiping group-symmetrical">
       <a href ng-click="swipeToHome()" class="group-symmetrical--left link-navigation">
-        <span class="text-navigation-back">home</span>
+        <span class="text-navigation-back">back</span>
       </a>
     </nav>
   </footer>

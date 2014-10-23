@@ -43,7 +43,7 @@
     }else if (editorType === 'tag'){
       $scope.tag = item;
     }else if (editorType === 'user'){
-      $scope.user = UserSessionService.getUser();
+      $scope.user = item ? item : UserSessionService.getUser();
     }
   };
 

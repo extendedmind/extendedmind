@@ -28,7 +28,6 @@
   $scope.changePassword = function (oldPassword, newPassword) {
     AuthenticationService.putChangePassword(UserSessionService.getEmail(), oldPassword, newPassword).then(function(){
       $scope.closeEditor();
-      console.log("returning")
     });
   };
 
@@ -129,6 +128,24 @@
   $scope.hideFooter = function hideFooter() {
     updateHideSetting('hideFooter', $scope.settings.hideFooter);
   };
+
+  // TERMS AND PRIVACY
+
+  $scope.openTermsInEditor = function(){
+    var user  = UserSessionService.getUser();
+    $http.get('http://ext.md/terms.html').then(function(termsResponse){
+      user.terms = termsResponse.data;
+      $scope.openEditor('user', user, 'terms');
+    })
+  }
+
+  $scope.openPrivacyInEditor = function(){
+    var user  = UserSessionService.getUser();
+    $http.get('http://ext.md/privacy.html').then(function(privacyResponse){
+      user.privacy = privacyResponse.data;
+      $scope.openEditor('user', user, 'privacy');
+    })
+  }
 
   var policyModalElement, contentHeight, footerHeight;
   $scope.openTermsOfServiceModal = function openTermsOfServiceModal() {

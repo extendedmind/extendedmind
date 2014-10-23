@@ -18,16 +18,45 @@
 
 function MockUserBackendService($httpBackend, UserService, UserSessionService) {
   var termsOfService =
-  'Lorem Ipsum is simply dummy text of the printing and typesetting industry.' +
-  'Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s,' +
-  'when an unknown printer took a galley of type and scrambled it to make a type specimen book.' +
-  'It has survived not only five centuries, but also the leap into electronic typesetting,' +
-  'remaining essentially unchanged.' +
-  'It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,' +
-  'and more recently with desktop publishing software' +
-  'It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,' +
-  'and more recently with desktop publishing software' +
-  'like Aldus PageMaker including versions of Lorem Ipsum.';
+  '<!DOCTYPE html>' +
+  '<html><head>' +
+  '<meta charset="utf-8">' +
+  '<link rel="shortcut icon" href="static/favicon.ico">' +
+'<style type="text/css"></style></head>' +
+'<body>' +
+  '<h1>Extended Mind</h1>' +
+  '<h2>Terms and Conditions</h2>' +
+  '<p><b>Effective Date</b></p>' +
+  '<p>The Extended Mind Technologies Oy (“Extended Mind”) ....</p>' +
+  '<p>By showing your consent to these terms and conditions...</p>' +
+  '<h3>1. ”Effective Term”</h3>' +
+  '<p>This Agreement is effective on the effective date (“the Effective Date”)...</p>' +
+  '<h3>9. Restrictions</h3>' +
+  '<p>You may not under any circumstances:</p>' +
+  '<ul>' +
+    '<li>111</li>' +
+    '<li>222</li>' +
+  '</ul>' +
+  '<h3>9. Restrictions</h3>' +
+  '<p>You may not under any circumstances:</p>' +
+  '<ul>' +
+    '<li>111</li>' +
+    '<li>222</li>' +
+  '</ul>' +
+  '<h3>9. Restrictions</h3>' +
+  '<p>You may not under any circumstances:</p>' +
+  '<ul>' +
+    '<li>111</li>' +
+    '<li>222</li>' +
+  '</ul>' +
+  '<h3>9. Restrictions</h3>' +
+  '<p>You may not under any circumstances:</p>' +
+  '<ul>' +
+    '<li>111</li>' +
+    '<li>222</li>' +
+  '</ul>' +
+  '<p>Copyright © 2014 Extended Mind Technologies Oy. All rights reserved.</p>' +
+'</body></html>';
 
   function mockGetAccount(expectResponse){
     $httpBackend.whenGET(UserService.getAccountRegex)
