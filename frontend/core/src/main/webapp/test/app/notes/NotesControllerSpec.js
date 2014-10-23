@@ -23,6 +23,7 @@ describe('NotesController', function() {
     MockNotesService = {
       notes: [],
       saveNote: function(note) {
+        note.uuid = 'TEST';
         this.notes.push(note);
       },
       getNotes: function() {
