@@ -18,21 +18,71 @@
 
  function MockConvertBackendService($httpBackend, ConvertService) {
 
-  function mockConverNoteToTask(expectResponse) {
+  function mockConvertTaskToNote(expectResponse) {
+    $httpBackend.whenPOST(ConvertService.convertTaskToNoteRegex)
+    .respond(function(method, url, data, headers) {
+      var convertTaskToNoteResponse = getJSONFixture('taskToNoteResponse.json');
+      convertTaskToNoteResponse.modified = Date.now();
+      return expectResponse(method, url, data, headers, convertTaskToNoteResponse);
+    });
+  }
+
+  function mockConvertTaskToList(expectResponse) {
+    $httpBackend.whenPOST(ConvertService.convertTaskToListRegex)
+    .respond(function(method, url, data, headers) {
+      var convertTaskToListResponse = getJSONFixture('taskToListResponse.json');
+      convertTaskToListResponse.modified = Date.now();
+      return expectResponse(method, url, data, headers, convertTaskToListResponse);
+    });
+  }
+
+  function mockConvertNoteToTask(expectResponse) {
     $httpBackend.whenPOST(ConvertService.convertNoteToTaskRegex)
     .respond(function(method, url, data, headers) {
-      var converNoteToTaskResponse = getJSONFixture('noteToTaskResponse.json');
-      converNoteToTaskResponse.modified = (new Date()).getTime();
-      return expectResponse(method, url, data, headers, converNoteToTaskResponse);
+      var convertNoteToTaskResponse = getJSONFixture('noteToTaskResponse.json');
+      convertNoteToTaskResponse.modified = Date.now();
+      return expectResponse(method, url, data, headers, convertNoteToTaskResponse);
+    });
+  }
+
+  function mockConvertNoteToList(expectResponse) {
+    $httpBackend.whenPOST(ConvertService.convertNoteToListRegex)
+    .respond(function(method, url, data, headers) {
+      var convertNoteToListResponse = getJSONFixture('noteToListResponse.json');
+      convertNoteToListResponse.modified = Date.now();
+      return expectResponse(method, url, data, headers, convertNoteToListResponse);
+    });
+  }
+
+  function mockConvertListToTask(expectResponse) {
+    $httpBackend.whenPOST(ConvertService.convertListToTaskRegex)
+    .respond(function(method, url, data, headers) {
+      var convertListToTaskResponse = getJSONFixture('listToTaskResponse.json');
+      convertListToTaskResponse.modified = Date.now();
+      return expectResponse(method, url, data, headers, convertListToTaskResponse);
+    });
+  }
+
+  function mockConvertListToNote(expectResponse) {
+    $httpBackend.whenPOST(ConvertService.convertListToNoteRegex)
+    .respond(function(method, url, data, headers) {
+      var convertListToNoteResponse = getJSONFixture('listToNoteResponse.json');
+      convertListToNoteResponse.modified = Date.now();
+      return expectResponse(method, url, data, headers, convertListToNoteResponse);
     });
   }
 
   return {
     mockConvertBackend: function(expectResponse) {
-      mockConverNoteToTask(expectResponse);
+      mockConvertTaskToNote(expectResponse);
+      mockConvertTaskToList(expectResponse);
+      mockConvertNoteToTask(expectResponse);
+      mockConvertNoteToList(expectResponse);
+      mockConvertListToTask(expectResponse);
+      mockConvertListToNote(expectResponse);
     }
   };
 }
 
-MockConvertBackendService.$inject = ['$httpBackend', 'UUIDService'];
+MockConvertBackendService.$inject = ['$httpBackend', 'ConvertService'];
 angular.module('em.appTest').factory('MockConvertBackendService', MockConvertBackendService);

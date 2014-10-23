@@ -50,6 +50,7 @@
       this.mockTasksBackend();
       this.mockNotesBackend();
       this.mockItemsBackend();
+      this.mockConvertBackend();
       this.mockAccountBackend();
       this.mockAuthBackend();
       this.mockAdminBackend();

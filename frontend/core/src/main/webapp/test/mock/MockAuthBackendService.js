@@ -65,6 +65,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
     });
   }
 
+  // FIXME: Remove if not needed: Timo?
   function mockPostSignUp() {
     $httpBackend.whenPOST(AuthenticationService.postSignUpRegex).respond(function(method, url, data, headers) {
       var signUpResponse = getJSONFixture('signUpResponse.json');

@@ -118,47 +118,64 @@
   // CONVERTING
 
   $scope.convertToNote = function(itemInEdit){
-    if (itemInEdit.transientProperties.itemType === 'item'){
-      var itemToNote = ItemsService.itemToNote(itemInEdit, UISessionService.getActiveUUID());
-      if (itemToNote){
-        itemToNote.then(function(note){
-          $scope.initializeEditor('note', note);
-        });
-      }
-    } else if (itemInEdit.transientProperties.itemType === 'task') {
-      // TODO
-    } else if (itemInEdit.transientProperties.itemType === 'list') {
-      // TODO
+    var convertToNotePromise;
+    if (itemInEdit.transientProperties.itemType === 'item') {
+      convertToNotePromise = ItemsService.convertToNotePromise(itemInEdit,
+                                                               UISessionService.getActiveUUID());
+    }
+    else if (itemInEdit.transientProperties.itemType === 'task') {
+      convertToNotePromise = ConvertService.finishTaskToNoteConvert(itemInEdit,
+                                                                    UISessionService.getActiveUUID());
+    }
+    else if (itemInEdit.transientProperties.itemType === 'list') {
+      convertToNotePromise = ConvertService.finishListToNoteConvert(itemInEdit,
+                                                                    UISessionService.getActiveUUID());
+    }
+    if (convertToNotePromise){
+      convertToNotePromise.then(function(note){
+        $scope.initializeEditor('note', note);
+      });
     }
   };
 
   $scope.convertToTask = function(itemInEdit){
-    if (itemInEdit.transientProperties.itemType === 'item'){
-      var itemToTask = ItemsService.itemToTask(itemInEdit, UISessionService.getActiveUUID());
-      if (itemToTask){
-        itemToTask.then(function(task){
-          $scope.initializeEditor('task', task);
-        });
-      }
-    } else if (itemInEdit.transientProperties.itemType === 'note') {
-      // TODO
+    var convertToTaskPromise;
+    if (itemInEdit.transientProperties.itemType === 'item') {
+      convertToTaskPromise = ItemsService.itemToTask(itemInEdit,
+                                                     UISessionService.getActiveUUID());
+    }
+    else if (itemInEdit.transientProperties.itemType === 'note') {
+      convertToTaskPromise = ConvertService.finishNoteToTaskConvert(itemInEdit,
+                                                                    UISessionService.getActiveUUID());
     } else if (itemInEdit.transientProperties.itemType === 'list') {
-      // TODO
+      convertToTaskPromise = ConvertService.finishListToTaskConvert(itemInEdit,
+                                                                    UISessionService.getActiveUUID());
+    }
+    if (convertToTaskPromise){
+      convertToTaskPromise.then(function(task){
+        $scope.initializeEditor('task', task);
+      });
     }
   };
 
   $scope.convertToList = function(itemInEdit){
+    var convertToListPromise;
     if (itemInEdit.transientProperties.itemType === 'item'){
-      var itemToList = ItemsService.itemToList(itemInEdit, UISessionService.getActiveUUID());
-      if (itemToList){
-        itemToList.then(function(list){
-          $scope.initializeEditor('list', list);
-        });
-      }
-    } else if (itemInEdit.transientProperties.itemType === 'task') {
-      // TODO
-    } else if (itemInEdit.transientProperties.itemType === 'note') {
-      // TODO
+      convertToListPromise = ItemsService.itemToList(itemInEdit,
+                                                     UISessionService.getActiveUUID());
+    }
+    else if (itemInEdit.transientProperties.itemType === 'task') {
+      convertToListPromise = ConvertService.finishTaskToListConvert(itemInEdit,
+                                                                    UISessionService.getActiveUUID());
+    }
+    else if (itemInEdit.transientProperties.itemType === 'note') {
+      convertToListPromise = ConvertService.finishNoteToListConvert(itemInEdit,
+                                                                    UISessionService.getActiveUUID());
+    }
+    if (convertToListPromise){
+      convertToListPromise.then(function(list){
+        $scope.initializeEditor('list', list);
+      });
     }
   };
 

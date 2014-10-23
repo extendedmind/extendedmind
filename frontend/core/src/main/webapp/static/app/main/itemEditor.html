@@ -20,11 +20,11 @@
     </div>
   </header>
 
-  <div class="container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}">
+  <div class="container-fluid--inner">
     <div class="container-content" drawer-override-aisle="right">
       <textarea class="row-form" ng-model="item.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
     </div>
-    <footer class="container-content--after" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
+    <footer class="container-content--after editor-footer">
       <div class="group-symmetrical">
         <a href class="group-symmetrical--left" ng-click="convertToTask(item)">
           <span class="text-convert">task</span>

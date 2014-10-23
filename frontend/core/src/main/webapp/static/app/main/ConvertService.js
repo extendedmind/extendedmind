@@ -16,7 +16,8 @@
  /* global angular */
  'use strict';
 
- function ConvertService(BackendClientService, ExtendedItemService, ListsService, NotesService, TasksService) {
+ function ConvertService(BackendClientService, ExtendedItemService, ListsService, NotesService,
+                         TasksService) {
 
   // TODO: Should these be public getter functions in corresponding services?
   var listSlashRegex = /\/list\//;
@@ -26,47 +27,41 @@
   var noteRegex = /\/note/;
   var taskRegex = /\/task/;
 
-  var convertTaskToNoteRegexp = new RegExp(
-    BackendClientService.apiPrefixRegex.source +
-    BackendClientService.uuidRegex.source +
-    taskSlashRegex.source +
-    BackendClientService.uuidRegex.source +
-    noteRegex.source),
+  var convertTaskToNoteRegexp = new RegExp(BackendClientService.apiPrefixRegex.source +
+                                           BackendClientService.uuidRegex.source +
+                                           taskSlashRegex.source +
+                                           BackendClientService.uuidRegex.source +
+                                           noteRegex.source),
 
-  convertTaskToListRegexp = new RegExp(
-    BackendClientService.apiPrefixRegex.source +
-    BackendClientService.uuidRegex.source +
-    taskSlashRegex.source +
-    BackendClientService.uuidRegex.source +
-    listRegex.source),
+  convertTaskToListRegexp = new RegExp(BackendClientService.apiPrefixRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       taskSlashRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       listRegex.source),
 
-  convertNoteToTaskRegexp = new RegExp(
-    BackendClientService.apiPrefixRegex.source +
-    BackendClientService.uuidRegex.source +
-    noteSlashRegex.source +
-    BackendClientService.uuidRegex.source +
-    taskRegex.source),
+  convertNoteToTaskRegexp = new RegExp(BackendClientService.apiPrefixRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       noteSlashRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       taskRegex.source),
 
-  convertNoteToListRegexp = new RegExp(
-    BackendClientService.apiPrefixRegex.source +
-    BackendClientService.uuidRegex.source +
-    noteSlashRegex.source +
-    BackendClientService.uuidRegex.source +
-    listRegex.source),
+  convertNoteToListRegexp = new RegExp(BackendClientService.apiPrefixRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       noteSlashRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       listRegex.source),
 
-  convertListToTaskRegexp = new RegExp(
-    BackendClientService.apiPrefixRegex.source +
-    BackendClientService.uuidRegex.source +
-    listSlashRegex.source +
-    BackendClientService.uuidRegex.source +
-    taskRegex.source),
+  convertListToTaskRegexp = new RegExp(BackendClientService.apiPrefixRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       listSlashRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       taskRegex.source),
 
-  convertListToNoteRegexp = new RegExp(
-    BackendClientService.apiPrefixRegex.source +
-    BackendClientService.uuidRegex.source +
-    listSlashRegex.source +
-    BackendClientService.uuidRegex.source +
-    noteRegex.source);
+  convertListToNoteRegexp = new RegExp(BackendClientService.apiPrefixRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       listSlashRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       noteRegex.source);
 
   function postConvertTaskToNote(task, ownerUUID) {
     var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/note';
@@ -206,19 +201,22 @@
     finishTaskToNoteConvert: function(task, ownerUUID) {
       if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
       TasksService.detachTransientProperties(task, ownerUUID);
-      postConvertTaskToNote(task, ownerUUID).then(function(result) {
+      return postConvertTaskToNote(task, ownerUUID).then(function(result) {
         processTaskToNoteResponse(task, result.data, ownerUUID);
+        return result.data;
       });
     },
     finishTaskToListConvert: function(task, ownerUUID) {
       // TODO: should cleanRecentlyCompletedTasks(ownerUUID) be called first?
       if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
-      // NOTE: Currently only one-level lists are supported. Remove pre-existing list before convertin to list.
+      // NOTE: Currently only one-level lists are supported.
+      // Remove pre-existing list before convertin to list.
       removeList(task);
       TasksService.detachTransientProperties(task, ownerUUID);
 
-      postConvertTaskToList(task, ownerUUID).then(function(result) {
+      return postConvertTaskToList(task, ownerUUID).then(function(result) {
         processTaskToListResponse(task, result.data, ownerUUID);
+        return result.data;
       });
     },
     finishNoteToTaskConvert: function(note, ownerUUID) {
@@ -226,8 +224,9 @@
         if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') return;
 
         NotesService.detachTransientProperties(note, ownerUUID);
-        postConvertNoteToTask(note, ownerUUID).then(function(result) {
+        return postConvertNoteToTask(note, ownerUUID).then(function(result) {
           processNoteToTaskResponse(note, result.data, ownerUUID);
+          return result.data;
         });
       } else {
         // TODO: Convert new note to task.
@@ -235,34 +234,39 @@
     },
     finishNoteToListConvert: function(note, ownerUUID) {
       if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') return;
-      // NOTE: Currently only one-level lists are supported. Remove pre-existing list before convertin to list.
+      // NOTE: Currently only one-level lists are supported.
+      // Remove pre-existing list before convertin to list.
       removeList(note);
       NotesService.detachTransientProperties(note, ownerUUID);
-      postConvertNoteToList(note, ownerUUID).then(function(result) {
+      return postConvertNoteToList(note, ownerUUID).then(function(result) {
         processNoteToListResponse(note, result.data, ownerUUID);
+        return result.data;
       });
     },
     finishListToTaskConvert: function(list, ownerUUID) {
       if (ListsService.getListStatus(list, ownerUUID) === 'deleted') return;
-      postConvertListToTask(list, ownerUUID).then(function(result) {
+      return postConvertListToTask(list, ownerUUID).then(function(result) {
         processListToTaskResponse(list, result.data, ownerUUID);
+        return result.data;
       });
     },
     finishListToNoteConvert: function(list, ownerUUID) {
       if (ListsService.getListStatus(list, ownerUUID) === 'deleted') return;
 
-      postConvertListToNote(list, ownerUUID).then(function(result) {
+      return postConvertListToNote(list, ownerUUID).then(function(result) {
         processListToNoteResponse(list, result.data, ownerUUID);
+        return result.data;
       });
     },
 
-    convertNoteToTaskRegexp: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      noteSlashRegex.source +
-      BackendClientService.uuidRegex.source +
-      taskRegex.source)
+    convertTaskToNoteRegex: convertTaskToNoteRegexp,
+    convertTaskToListRegex: convertTaskToListRegexp,
+    convertNoteToTaskRegex: convertNoteToTaskRegexp,
+    convertNoteToListRegex: convertNoteToListRegexp,
+    convertListToTaskRegex: convertListToTaskRegexp,
+    convertListToNoteRegex: convertListToNoteRegexp
   };
 }
-ConvertService['$inject'] = ['BackendClientService', 'ExtendedItemService', 'ListsService', 'NotesService', 'TasksService'];
+ConvertService['$inject'] = ['BackendClientService', 'ExtendedItemService', 'ListsService', 'NotesService',
+'TasksService'];
 angular.module('em.main').factory('ConvertService', ConvertService);

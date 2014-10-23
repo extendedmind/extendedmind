@@ -167,8 +167,9 @@ Vertically center .container-master and .container-editor in large screens
   padding-bottom: @height-footer; // [3]
 }
 
-// 1. Clear padding-bottom for footer. Padding-bottom is set programmatically in editor.
-.container-editor .container-fluid--inner {
+// 1. Clear padding-bottom for footer from fluid swiper container.
+//    Padding-bottom is set programmatically in editor with swiper into .content-container.
+.container-editor .swiper-container.container-fluid--inner {
   padding-bottom: 0;  // [1]
 }
 

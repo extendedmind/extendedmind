@@ -9,7 +9,7 @@
      </div>
   </header>
 
-  <div class="container-fluid--inner" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}">
+  <div class="container-fluid--inner">
     <div ng-if="mode === 'password'" class="container-content" drawer-override-aisle="right">
       <h2 class="group-heading row-form">change password</h2>
       <div class="row-form">
@@ -35,7 +35,7 @@
     <div ng-if="mode === 'privacy'" class="container-content" drawer-override-aisle="right">
       <div class="group-html-external row" ng-bind-html="user.privacy"></div>
     </div>
-    <footer class="container-content--after group-btn" ng-style="{height: EDITOR_FOOTER_HEIGHT, bottom: -EDITOR_FOOTER_HEIGHT}">
+    <footer class="container-content--after group-btn editor-footer">
       <button ng-if="mode === 'password'"type="submit" class="btn-action" ng-disabled="!userForm.$valid" ng-click="changePassword(user.passwordOld, user.passwordNew)">
         <span class="text-btn">done</span>
       </button>
