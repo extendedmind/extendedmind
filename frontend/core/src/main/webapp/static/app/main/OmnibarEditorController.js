@@ -34,11 +34,11 @@
   // CONVERTING
 
   $scope.convertToNote = function(){
-    if ($scope.titlebarHasText()) $scope.initializeEditor('note', {title: $scope.titlebar.text});
+    $scope.initializeEditor('note', {title: $scope.titlebar.text});
   };
 
   $scope.convertToTask = function(){
-    if ($scope.titlebarHasText()) $scope.initializeEditor('task', {title: $scope.titlebar.text});
+    $scope.initializeEditor('task', {title: $scope.titlebar.text});
   };
 
   // TITLEBAR
