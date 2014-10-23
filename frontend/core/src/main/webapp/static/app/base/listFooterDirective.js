@@ -30,7 +30,7 @@
 
       function trimNavigationText(text){
         if (text.length > 12){
-          return text.substring(0, 10) + '...';
+          return text.substring(0, 10) + '\u2026';
         }else return text;
       }
 

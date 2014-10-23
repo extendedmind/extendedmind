@@ -18,7 +18,7 @@
     </a>
   </div>
 
-  <div class="row-form">
+  <div ng-if="newList" class="row-form">
     <textarea autocapitalize="none" autocorrect="off" ng-model="newList.title" msd-elastic
     ng-click="watchForTitleChange()" ng-keydown="textareaKeyDown($event)" placeholder="{{placeholder}}"
     maxlength="128"></textarea>

@@ -113,6 +113,23 @@
     if (task.transientProperties) delete task.transientProperties.date;
   };
 
+  // REPEATING PICKER
+  $scope.openRepeatingPicker = function() {
+    $scope.repeatingPickerOpen = true;
+  };
+  $scope.closeRepeatingPicker = function() {
+    $scope.repeatingPickerOpen = false;
+  };
+  $scope.closeRepeatingPickerAndSetRepeatTypeToTask = function(task, repeatType) {
+    $scope.closeRepeatingPicker();
+    task.repeating = repeatType.title;
+  };
+  $scope.closeRepeatingPickerAndClearRepeatTypeFromtask = function(task, repeatType) {
+    $scope.closeRepeatingPicker();
+    if (task.repeating === repeatType.title)
+      delete task.repeating;
+  };
+
 }
 
 TaskEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'DateService',

@@ -29,7 +29,6 @@
       closeAndClearList: '&listPickerClear'
     },
     link: function(scope) {
-      if (!scope.newList) scope.newList = {};
       if (angular.isFunction(scope.getSelectedList))
         scope.selectedList = scope.getSelectedList();
 
@@ -37,7 +36,15 @@
       * Filter selected list from lists.
       */
       scope.notSelectedList = function(list) {
-        return !scope.selectedList || (scope.selectedList.uuid && list.uuid !== scope.selectedList.uuid);
+        if (!scope.selectedList) return true;  // No list selected.
+
+        if (list.uuid) {
+          // Compare with uuid.
+          return scope.selectedList.uuid && list.uuid !== scope.selectedList.uuid;
+        } else {
+          // Compare with title.
+          return scope.selectedList.title !== list.title;
+        }
       };
 
       scope.listSelected = function(list) {
@@ -98,7 +105,7 @@
       });
     }
 
-    scope.placeholder = 'add ' + (scope.type ? scope.type : 'list') + '...';
+    scope.placeholder = 'add ' + (scope.type ? scope.type : 'list') + '\u2026';
 
     scope.watchForTitleChange = function() {
       if (scope.prefix) bindWatcher();

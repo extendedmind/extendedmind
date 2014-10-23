@@ -17,7 +17,12 @@
  function TasksController($rootScope, $scope, $timeout, AnalyticsService, DateService, SwiperService,
                           TasksService, UISessionService) {
 
-  $scope.repeatTypes = ['daily', 'weekly', 'monthly', 'yearly'];
+  $scope.repeatTypes = [
+  {title:'daily'},
+  {title:'weekly'},
+  {title:'monthly'},
+  {title:'yearly'}
+  ];
 
   $scope.openTaskEditor = function openTaskEditor(task) {
     return $scope.openEditor('task', task);
