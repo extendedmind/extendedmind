@@ -201,6 +201,24 @@ Navigation texts
 }
 
 /*
+Convert texts.
+*/
+
+.text-convert{
+  line-height: inherit;
+  min-height: @size-icon-arrow-move;
+  height: @grid-vertical;
+  display: inline-block;  // for height
+  &:before {
+    .set-icon-font();
+    content: @icon-arrow-move;
+    font-size: @size-icon-arrow-move;
+    padding-right: @width-arrow-text-gap;
+    vertical-align: middle;
+  }
+}
+
+/*
 Search results (omnibar, deleted)
 */
 
