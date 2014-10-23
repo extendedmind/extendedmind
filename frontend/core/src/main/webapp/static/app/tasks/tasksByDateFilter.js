@@ -22,20 +22,35 @@
     }
 
     var filteredItems = [];
+    if (tasks && tasks.length) {
 
-    // Tasks with 'no date'.
-    if (date === null) {
-      for (var i = 0, len = tasks.length; i < len; i++) {
-        if (!tasks[i].due) filteredItems.push(tasks[i]);
+      // Tasks with 'no date'.
+      if (date === null) {
+        for (var i = 0, len = tasks.length; i < len; i++) {
+          if (!tasks[i].due) filteredItems.push(tasks[i]);
+        }
+        return filteredItems;
       }
-      return filteredItems;
-    }
 
-    var today = DateService.getTodayYYYYMMDD();
-    for (var k = 0, kLen = tasks.length; k < kLen; k++) {
-      if (tasks[k].due) {
-        // match tasks with given date, or if date is today match also overdue tasks
-        if (tasks[k].due === date || (date === today && tasks[k].due < today)) filteredItems.push(tasks[k]);
+      var today = DateService.getTodayYYYYMMDD();
+      var todayMidnight = new Date().setHours(0, 0, 0, 0);
+
+      for (var k = 0, kLen = tasks.length; k < kLen; k++) {
+        if (tasks[k].due) {
+          // match tasks with given date, or if date is today match also overdue tasks
+          if (tasks[k].due === date || (date === today && tasks[k].due < today)){
+            // Don't add completed tasks to future dates or tasks that were completed before today
+            if (!(tasks[k].completed && date > today) &&
+                !(tasks[k].completed && tasks[k].completed < todayMidnight)){
+              filteredItems.push(tasks[k])
+              continue;
+            }
+          }
+        }
+        // But do add all tasks that were completed today to today's tasks
+        if (date === today && tasks[k].completed && tasks[k].completed > todayMidnight){
+          filteredItems.push(tasks[k])
+        }
       }
     }
     return filteredItems;
