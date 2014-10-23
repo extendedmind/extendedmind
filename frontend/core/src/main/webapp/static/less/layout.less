@@ -98,7 +98,7 @@ Menu
   .separate {
     // use this to separate link elements from other
     line-height: 84px;
-    padding-bottom: 15px;
+    padding-bottom: 6px;
     span {
       line-height: inherit;
     }
@@ -526,6 +526,34 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 .group-mixed.heading > .group-mixed--right {
   line-height: @height-heading; // [1]
   vertical-align: middle;       // [2]
+}
+
+.group-mixed.with-checkbox {
+  max-height: inherit;
+  height: auto;
+  .group-mixed--left, .group-mixed--middle, .group-mixed--right {
+    height: auto;
+    vertical-align: top;
+  }
+  .group-mixed--middle {
+    padding-top: 10px;
+    padding-bottom: 11px;
+  }
+
+  .group-mixed--left {
+    padding-top: 9.5px;
+    label:before {
+      line-height: inherit !important;
+    }
+    label {
+      height: auto;
+    }
+  }
+  .group-mixed--middle {
+    span {
+      height: auto;
+    }
+  }
 }
 
 // Heading is long, multiple lines need smaller spacing, so the method above does not work
