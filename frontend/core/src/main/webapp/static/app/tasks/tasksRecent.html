@@ -1,18 +1,28 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
   <section class="container-content" list="allActiveTasks" list-order="top" list-recent swiper-prevent>
-    <div class="group-mixed heading">
-      <div class="group-mixed--middle">
-        <h2 class="group-heading justified">recent</h2>
+    <div ng-if="false">
+      <div class="group-mixed heading">
+        <div class="group-mixed--middle">
+          <h2 class="group-heading justified">recent</h2>
+        </div>
+        <div class="group-mixed--right" task-list-completed></div>
       </div>
-      <div class="group-mixed--right" task-list-completed></div>
+      <div list-item-add="{transientProperties: {completed: false, itemType: 'task'}}"
+      list-item-add-save="saveTask(newItem)" ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
+      <div class="animate-list-item-leave"
+      ng-repeat="task in recentTasks = (getList() | paramFilter:isListItemVisible) | orderBy:getTaskModified:true
+      | limitTo: currentListLimitTo"
+      list-item="recentTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
+      <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
     </div>
-    <div list-item-add="{transientProperties: {completed: false, itemType: 'task'}}"
-    list-item-add-save="saveTask(newItem)" ng-include="'static/app/tasks/taskListItemAdd.html'"></div>
-    <div class="animate-list-item-leave"
-    ng-repeat="task in recentTasks = (getList() | paramFilter:isListItemVisible) | orderBy:getTaskModified:true
-    | limitTo: currentListLimitTo"
-    list-item="recentTasks.length" ng-include="'static/app/tasks/taskListItem.html'"></div>
-    <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
+
+    <div ng-if="true">
+      <h2 class="group-heading instruction row">what do you want to <span class="highlighted">get done?</span></h2>
+      <div class="textgroup-ingress row">add a task by clicking the plus sign below<div/>
+    </div>
+
+  </section>
+  <section class="container-content" list="allActiveTasks" list-order="top" list-recent swiper-prevent>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('tasks')"></footer>
 </div>

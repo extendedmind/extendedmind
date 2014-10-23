@@ -238,9 +238,6 @@ function MainController(
     focusActiveCallback = activateFn;
   };
 
-  // Start from focus
-  $scope.changeFeature('focus');
-
   // ONBOARDING
 
   $scope.onboardingInProgress = false;
@@ -267,6 +264,16 @@ function MainController(
   $scope.getOnboardingPhase = function getOnboardingPhase() {
     return onboardingPhase;
   };
+
+
+  // Start from tasks on onboarding, or later on, from focus
+  if (!$scope.onboardingInProgress){
+    $scope.changeFeature('focus');
+  }else{
+    $scope.changeFeature('tasks');
+  }
+
+
 
   // DATA ARRAYS
 
