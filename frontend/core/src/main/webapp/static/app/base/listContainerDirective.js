@@ -28,6 +28,11 @@
       };
 
       this.activateAddListItem = function(){
+        if ($attrs.listContainerOverrideVerticalResize){
+          // Re-register just in case list container active has not fired
+          $scope.registerOverrideElement();
+        }
+
         if (activateAddListItemCallback) activateAddListItemCallback();
       };
     },
@@ -36,8 +41,8 @@
         pre: function preLink(scope, element, attrs, controllers) {
           var overrideElement;
           scope.registerOverrideElement = function(elem) {
-            overrideElement = elem;
-            controllers[0].overrideVerticalResize(overrideElement);
+            if (elem) overrideElement = elem;
+            if (overrideElement) controllers[0].overrideVerticalResize(overrideElement);
           };
 
           function listContainerActive(){
