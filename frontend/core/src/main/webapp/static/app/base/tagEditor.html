@@ -5,12 +5,10 @@
         <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endTagEdit()">
           <span class="text-navigation-back" ng-bind="titlebarHasText() && !tag.deleted ? 'save' : 'back'"></span>
         </a>
-        <div class="group-symmetrical--right">
-          <a ng-if="!tag.deleted" href ng-click="deleteTagInEdit()" >
-            <span class="text-trash"></span>
-          </a>
-          <a ng-if="tag.deleted" class="link-navigation highlighted active" href ng-click="undeleteTagInEdit()"><span class="text-navigation">restore</span></a>
-        </div>
+        <a ng-if="!tag.deleted" class="group-symmetrical--right" href ng-click="deleteTagInEdit()" >
+          <span class="text-trash"></span>
+        </a>
+        <a ng-if="tag.deleted" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteTagInEdit()"><span class="text-navigation">restore</span></a>
       </div>
 
       <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">

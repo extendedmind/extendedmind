@@ -40,16 +40,14 @@
   };
 
   function saveTaskInEdit() {
-    if (!$scope.task.deleted){
-      $scope.task.title = $scope.titlebar.text;
-      $scope.deferEdit().then(function() {
-        $scope.saveTask($scope.task);
-        if (completeReadyDeferred){
-          completeReadyDeferred.resolve($scope.task);
-          completeReadyDeferred = undefined;
-        }
-      });
-    }
+    $scope.task.title = $scope.titlebar.text;
+    $scope.deferEdit().then(function() {
+      $scope.saveTask($scope.task);
+      if (completeReadyDeferred){
+        completeReadyDeferred.resolve($scope.task);
+        completeReadyDeferred = undefined;
+      }
+    });
   }
 
   $scope.deleteTaskInEdit = function() {
@@ -64,7 +62,7 @@
   };
 
   function taskEditorAboutToClose() {
-    if ($scope.titlebarHasText()) saveTaskInEdit();
+    if ($scope.titlebarHasText() && !$scope.task.deleted) saveTaskInEdit();
   }
 
   // TITLEBAR

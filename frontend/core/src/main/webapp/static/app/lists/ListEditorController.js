@@ -29,12 +29,10 @@
   // SAVING, DELETING
 
   function saveListInEdit () {
-    if (!$scope.list.deleted){
-      $scope.list.title = $scope.titlebar.text;
-      $scope.deferEdit().then(function() {
-        $scope.saveList($scope.list);
-      });
-    }
+    $scope.list.title = $scope.titlebar.text;
+    $scope.deferEdit().then(function() {
+      $scope.saveList($scope.list);
+    });
   }
 
   $scope.deleteListInEdit = function() {
@@ -49,7 +47,7 @@
   };
 
   function listEditorAboutToClose() {
-    if ($scope.titlebarHasText()) saveListInEdit();
+    if ($scope.titlebarHasText() && !$scope.list.deleted) saveListInEdit();
   }
 
   $scope.archiveListInEdit = function() {

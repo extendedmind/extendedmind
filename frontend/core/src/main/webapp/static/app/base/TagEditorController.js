@@ -27,23 +27,20 @@
   $scope.titlebar.text = $scope.tag.title;
 
   // SAVING, DELETING
-
   function saveTagInEdit() {
-    if (!$scope.tag.deleted){
-      $scope.tag.title = $scope.titlebar.text;
-      $scope.deferEdit().then(function() {
-        if ($scope.tag.tagType === 'context'){
-          $scope.saveContext($scope.tag);
-        }else if ($scope.tag.tagType === 'keyword'){
-          $scope.saveKeyword($scope.tag);
-        }
-      });
-    }else {
-      $scope.swipeToContextsAndReset();
-    }
+    $scope.tag.title = $scope.titlebar.text;
+    $scope.deferEdit().then(function() {
+      if ($scope.tag.tagType === 'context'){
+        $scope.saveContext($scope.tag);
+      }else if ($scope.tag.tagType === 'keyword'){
+        $scope.saveKeyword($scope.tag);
+      }
+    });
   }
 
+  var deleting = false;
   $scope.deleteTagInEdit = function() {
+    deleting = true;
     var deferredDelete;
     if ($scope.tag.tagType === 'context'){
       deferredDelete = $scope.deleteContext($scope.tag);
@@ -68,7 +65,12 @@
   };
 
   function tagEditorAboutToClose() {
-    if ($scope.titlebarHasText()) saveTagInEdit();
+    if ($scope.titlebarHasText() && !$scope.tag.deleted){
+      saveTagInEdit();
+    }else if (deleting){
+      $scope.swipeToContextsAndReset();
+      deleting = false;
+    }
   }
 
   // TITLEBAR

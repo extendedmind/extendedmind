@@ -32,14 +32,14 @@
   $scope.deleteItem = function(item) {
     if (item.uuid) {
       AnalyticsService.do('deleteItem');
-      ItemsService.deleteItem(item, UISessionService.getActiveUUID());
+      return ItemsService.deleteItem(item, UISessionService.getActiveUUID());
     }
   };
 
   $scope.undeleteItem = function(item) {
     if (item.uuid) {
       AnalyticsService.do('undeleteItem');
-      ItemsService.undeleteItem(item, UISessionService.getActiveUUID());
+      return ItemsService.undeleteItem(item, UISessionService.getActiveUUID());
     }
   };
 }

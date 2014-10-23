@@ -148,6 +148,7 @@
     },
     deleteItem: function(item, ownerUUID) {
       initializeArrays(ownerUUID);
+      var deferred = $q.defer();
       // Check if item has already been deleted
       if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
         return;
@@ -163,6 +164,7 @@
          this.deleteItemRegex, params);
         item.deleted = item.modified = BackendClientService.generateFakeTimestamp();
         updateItem(item, ownerUUID);
+        deferred.resolve(item);
       } else {
         // Online
         BackendClientService.deleteOnline('/api/' + ownerUUID + '/item/' + item.uuid,
@@ -171,9 +173,11 @@
             item.deleted = result.data.deleted;
             item.modified = result.data.result.modified;
             updateItem(item, ownerUUID);
+            deferred.resolve(item);
           }
         });
       }
+      return deferred.promise;
     },
     undeleteItem: function(item, ownerUUID) {
       initializeArrays(ownerUUID);

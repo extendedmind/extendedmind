@@ -1,13 +1,14 @@
-<div class="container-fluid" ng-controller="ItemEditorController">
+<div class="container-fluid" ng-controller="ItemEditorController" ng-class="item.deleted && 'container-disabled'">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
         <a href class="group-symmetrical--left link-navigation highlighted" ng-click="endItemEdit()">
-          <span class="text-navigation-back" ng-bind="titlebarHasText() ? 'save' : 'back'"></span>
+          <span class="text-navigation-back" ng-bind="titlebarHasText() && !item.deleted ? 'save' : 'back'"></span>
         </a>
-        <a href class="group-symmetrical--right" ng-click="deleteItemInEdit()" >
+        <a ng-if="!item.deleted" href class="group-symmetrical--right" ng-click="deleteItemInEdit()" >
           <span class="text-trash"></span>
         </a>
+        <a ng-if="item.deleted" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteItem(item)"><span class="text-navigation">restore</span></a>
       </div>
 
       <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">

@@ -46,7 +46,9 @@
   };
 
   function itemEditorAboutToClose() {
-    if ($scope.titlebarHasText()) saveItemInEdit();
+    if ($scope.titlebarHasText() && !$scope.item.deleted){
+      saveItemInEdit();
+    }
   }
 
   // TITLEBAR

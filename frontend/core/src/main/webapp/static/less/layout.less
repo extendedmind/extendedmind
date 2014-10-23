@@ -586,12 +586,14 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   line-height: @grid-vertical;
 }
 
+@group-symmetrical-edge-padding-to-center: 10px;
 // 1. Inherit varying container height.
 .group-symmetrical--left {
   height: inherit;  // [1]
   text-align: left;
   float: left;
   padding-left: @grid-horizontal;
+  padding-right: @group-symmetrical-edge-padding-to-center;
 }
 
 // 1. Vertically and horizontally align the content of the middle element.
@@ -622,6 +624,7 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   height: inherit;  // [1]
   float: right;
   padding-right: @grid-horizontal;
+  padding-left: @group-symmetrical-edge-padding-to-center;
 }
 
 // 1. Set height for large .group-symmetrical. Overrides default height.

@@ -29,13 +29,11 @@
   // SAVING, DELETING
 
   function saveNoteInEdit() {
-    if (!$scope.note.deleted){
-      // TODO: Keywords
-      $scope.note.title = $scope.titlebar.text;
-      $scope.deferEdit().then(function() {
-        $scope.saveNote($scope.note);
-      });
-    }
+    // TODO: Keywords
+    $scope.note.title = $scope.titlebar.text;
+    $scope.deferEdit().then(function() {
+      $scope.saveNote($scope.note);
+    });
   };
 
   $scope.deleteNoteInEdit = function() {
@@ -50,7 +48,7 @@
   }
 
   function noteEditorAboutToClose() {
-    if ($scope.titlebarHasText()) saveNoteInEdit();
+    if ($scope.titlebarHasText() && !$scope.note.deleted) saveNoteInEdit();
   }
 
   $scope.clickFavorite = function() {
