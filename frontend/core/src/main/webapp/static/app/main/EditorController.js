@@ -20,6 +20,7 @@
 
   // OPENING, INITIALIZING, CLOSING
 
+  var itemInEdit;
   $scope.initializeEditor = function(editorType, item, mode){
     // Reset $scope variables. These may exist from previous editor.
     $scope.task = undefined;
@@ -27,23 +28,24 @@
     $scope.list = undefined;
     $scope.item = undefined;
     $scope.tag = undefined;
+    itemInEdit = item;
 
     $scope.editorType = editorType;
     $scope.editorVisible = true;
     $scope.mode = mode;
 
     if (editorType === 'task'){
-      $scope.task = item;
+      $scope.task = itemInEdit;
     }else if (editorType === 'note'){
-      $scope.note = item;
+      $scope.note = itemInEdit;
     }else if (editorType === 'list'){
-      $scope.list = item;
+      $scope.list = itemInEdit;
     }else if (editorType === 'item'){
-      $scope.item = item;
+      $scope.item = itemInEdit;
     }else if (editorType === 'tag'){
-      $scope.tag = item;
+      $scope.tag = itemInEdit;
     }else if (editorType === 'user'){
-      $scope.user = item ? item : UserSessionService.getUser();
+      $scope.user = itemInEdit ? itemInEdit : UserSessionService.getUser();
     }
   };
 
@@ -53,7 +55,7 @@
 
   // Callback from Snap.js, outside of AngularJS event loop
   function editorOpened() {
-    if (typeof titleBarInputFocusCallbackFunction === 'function'){
+    if (!itemInEdit.deleted && typeof titleBarInputFocusCallbackFunction === 'function'){
       if (!$scope.$$phase && !$rootScope.$$phase){
         $scope.$apply(setFocusOnTitlebarInput);
       }else{
