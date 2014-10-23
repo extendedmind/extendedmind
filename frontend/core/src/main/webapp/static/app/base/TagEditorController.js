@@ -39,7 +39,7 @@
         }
       });
     }else {
-      SwiperService.swipeTo('tasks/contexts');
+      $scope.swipeToContextsAndReset();
     }
   }
 

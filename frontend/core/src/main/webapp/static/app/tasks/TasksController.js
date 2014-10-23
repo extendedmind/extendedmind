@@ -182,23 +182,28 @@
   // NAVIGATION
 
   $scope.context = undefined;
-  $scope.deleteContextAndShowContexts = function deleteContextAndShowContexts(context) {
-    SwiperService.swipeTo('tasks/contexts');
-    $scope.deleteContext(context);
-    $scope.context = undefined;
-  };
 
-  $scope.swipeToContext = function(context){
-    UISessionService.lock('leaveAnimation', 500);
-    $scope.context = context;
-    SwiperService.swipeTo('tasks/context');
+  function refreshFeatureMapHeading(){
     $scope.$evalAsync(function(){
       if ($scope.context)
         $scope.getFeatureMap('tasks').slides.right.heading = '@' + $scope.context.title;
       else
         $scope.getFeatureMap('tasks').slides.right.heading = 'no context';
     });
+  }
+
+  $scope.swipeToContext = function(context){
+    UISessionService.lock('leaveAnimation', 500);
+    $scope.context = context;
+    SwiperService.swipeTo('tasks/context');
+    refreshFeatureMapHeading();
   };
+
+  $scope.swipeToContextsAndReset = function(){
+    $scope.context = undefined;
+    SwiperService.swipeTo('tasks/contexts');
+    refreshFeatureMapHeading();
+  }
 }
 
 TasksController['$inject'] = ['$rootScope', '$scope', '$timeout', 'AnalyticsService', 'DateService',
