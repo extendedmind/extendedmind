@@ -1,5 +1,5 @@
 <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-  <a href ng-if="leftNavigationText" class="group-symmetrical--left link-navigation" ng-click="navigationAction(leftNavigationActionParameter)">
+  <a href ng-if="leftNavigationText" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--left link-navigation" ng-click="navigationAction(leftNavigationActionParameter)">
     <span class="text-navigation-back" ng-bind="leftNavigationText"></span>
   </a>
 
@@ -9,7 +9,7 @@
     </a>
   </div>
 
-  <a href ng-if="rightNavigationText" class="group-symmetrical--right link-navigation" ng-click="navigationAction(rightNavigationActionParameter)">
+  <a href ng-if="rightNavigationText" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--right link-navigation" ng-click="navigationAction(rightNavigationActionParameter)">
     <span class="text-navigation-forward" ng-bind="rightNavigationText"></span>
   </a>
 </nav>

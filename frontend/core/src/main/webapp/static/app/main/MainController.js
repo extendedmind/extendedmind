@@ -22,9 +22,9 @@
 // which are part of every main slide collection.
 function MainController(
                         $controller, $filter, $rootScope, $scope, $timeout, $window,
-                        UserService, AnalyticsService, ArrayService, DrawerService, ItemsService, ListsService,
-                        NotesService, SwiperService, SynchronizeService, TagsService, TasksService,
-                        UISessionService, UserSessionService, packaging) {
+                        UserService, AnalyticsService, ArrayService, DrawerService, ItemsService,
+                        ListsService, NotesService, SwiperService, SynchronizeService, TagsService,
+                        TasksService, UISessionService, UserSessionService, packaging) {
 
   // MAP OF ALL FEATURES
 
@@ -172,6 +172,14 @@ function MainController(
   $scope.isMenuVisible = function isMenuVisible() {
     return DrawerService.isOpen('left');
   };
+
+  $scope.isFooterNavigationHidden = function(){
+    return UserSessionService.getUIPreference('hideFooter');
+  }
+
+  $scope.isVibrationDisabled = function(){
+    return UserSessionService.getUIPreference('hideFooter');
+  }
 
   // FEATURE CHANGING
 
@@ -393,8 +401,7 @@ function MainController(
         $scope.favoriteLists.indexOf(list) !== -1){
       return true;
     }
-  }
-
+  };
 
   function combineNotesArrays() {
     if ($scope.notes.length && $scope.archivedNotes.length) {
@@ -438,7 +445,7 @@ function MainController(
   });
 
   // Deleted items
-  function combineDeletedArrays(changedArray) {
+  function combineDeletedArrays(/*changedArray*/) {
     var allNotesAndTasks = ArrayService.combineArrays($scope.deletedNotes,
                                                       $scope.deletedTasks, 'deleted', true);
     var allNotesAndTasksAndLists = ArrayService.combineArrays(allNotesAndTasks,
@@ -549,17 +556,17 @@ function MainController(
         if (itemsSynchronizeCounter === 0 ||
             itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
             sinceLastItemsSynchronized > userSyncTimeTreshold){
-          SynchronizeService.synchronizeUser(activeUUID).then(function(){
-            $scope.refreshFavoriteLists();
-          });
-        }
-        itemsSynchronizeCounter++;
-      }, function(){
-        $rootScope.syncState = 'error';
-      });
+            SynchronizeService.synchronizeUser(activeUUID).then(function(){
+              $scope.refreshFavoriteLists();
+            });
+          }
+          itemsSynchronizeCounter++;
+        }, function(){
+          $rootScope.syncState = 'error';
+        });
+      }
     }
   }
-}
 
   // CLEANUP
 

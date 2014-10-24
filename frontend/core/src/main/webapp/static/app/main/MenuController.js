@@ -30,7 +30,7 @@
           }
         });
       }
-      return "timo.tiuraniemi@filosofianakatemia.fi";
+      return ownerName;
     }
   };
 

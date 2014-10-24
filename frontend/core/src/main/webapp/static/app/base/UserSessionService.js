@@ -226,10 +226,17 @@
     getTransportPreferences: function() {
       syncWebStorages();
       var preferences = SessionStorageService.getPreferences();
-      if (preferences.ui) {
-        preferences.ui = JSON.stringify(preferences.ui);
+
+      var transportPreferences = {};
+      for (var property in preferences){
+        if (preferences.hasOwnProperty(property)){
+          transportPreferences[property] = preferences[property];
+        }
       }
-      return preferences;
+      if (transportPreferences.ui) {
+        transportPreferences.ui = JSON.stringify(preferences.ui);
+      }
+      return transportPreferences;
     },
     getPreferences: function() {
       syncWebStorages();

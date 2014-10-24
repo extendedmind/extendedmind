@@ -14,15 +14,14 @@
  */
  'use strict';
 
- function listFooterDirective() {
+ function listFooterDirective($parse) {
   return {
     require: ['^listContainer', '?^swiperSlide'],
     restrict: 'A',
     templateUrl: 'static/app/base/listFooter.html',
-    scope: {
-      featureInfo: '=listFooter'
-    },
+    scope: true,
     link: function(scope, element, attrs, controllers){
+      scope.featureInfo = $parse(attrs.listFooter)(scope);
 
       scope.addItem = function(){
         controllers[0].activateAddListItem();
@@ -33,7 +32,6 @@
           return text.substring(0, 10) + '\u2026';
         }else return text;
       }
-
 
       if (controllers[1]){
         var currentSlidePath = controllers[1].getSlidePath();
@@ -74,4 +72,5 @@
     }
   };
 }
+listFooterDirective['$inject'] = ['$parse'];
 angular.module('em.base').directive('listFooter', listFooterDirective);

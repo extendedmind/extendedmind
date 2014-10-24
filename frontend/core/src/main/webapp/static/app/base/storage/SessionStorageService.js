@@ -18,6 +18,7 @@
   var cachedActiveUUID;
   var cachedUserUUID;
   var cachedEmail;
+  var cachedPreferences;
   return {
 
     // setters
@@ -51,6 +52,7 @@
       }
     },
     setPreferences: function(preferences) {
+      cachedPreferences = preferences;
       if (preferences) {
         sessionStorage.setItem('preferences', JSON.stringify(preferences));
       }
@@ -96,8 +98,13 @@
       return sessionStorage.getItem('cohort');
     },
     getPreferences: function() {
-      var preferences = sessionStorage.getItem('preferences');
-      if (preferences) return JSON.parse(preferences);
+      if (!cachedPreferences){
+        var preferences = sessionStorage.getItem('preferences');
+        if (preferences){
+          cachedPreferences = JSON.parse(preferences);
+        }
+      }
+      return cachedPreferences;
     },
     getUserModified: function() {
       return sessionStorage.getItem('userModified');
@@ -118,7 +125,7 @@
       sessionStorage.removeItem('preferences');
       sessionStorage.removeItem('userModified');
       sessionStorage.removeItem('state');
-      cachedActiveUUID = cachedUserUUID = cachedEmail = undefined;
+      cachedActiveUUID = cachedUserUUID = cachedEmail = cachedPreferences = undefined;
     }
   };
 }

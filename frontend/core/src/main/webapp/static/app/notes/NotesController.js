@@ -145,7 +145,7 @@
     }
 
     // Vibrate
-    if (navigator.vibrate)
+    if (navigator.vibrate && !$scope.isVibrationDisabled())
       navigator.vibrate(200);
 
     AnalyticsService.do('favoriteNote');
@@ -167,7 +167,7 @@
     }
 
     // Vibrate
-    if (navigator.vibrate)
+    if (navigator.vibrate && !$scope.isVibrationDisabled())
       navigator.vibrate(200);
 
     AnalyticsService.do('unfavoriteNote');

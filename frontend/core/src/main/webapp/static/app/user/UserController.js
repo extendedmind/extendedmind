@@ -54,6 +54,9 @@
   $scope.activeDetails;
   $scope.swipeToDetails = function(detailsType){
     $scope.activeDetails = detailsType;
+    if (detailsType === 'settings'){
+      initializeSettings();
+    }
     SwiperService.swipeTo('user/details');
   }
   $scope.swipeToHome = function(detailsType){
@@ -70,7 +73,12 @@
 
   // SETTINGS
 
-  $scope.settings = {};
+  function initializeSettings(){
+    $scope.settings = {
+      hideFooter: UserSessionService.getUIPreference('hideFooter'),
+      disableVibration: UserSessionService.getUIPreference('disableVibration'),
+    };
+  }
 
   $scope.settingsCheckboxClicked = function(preference) {
     if ($scope.settings[preference] !== undefined){

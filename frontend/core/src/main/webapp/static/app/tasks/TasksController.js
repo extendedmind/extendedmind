@@ -102,7 +102,7 @@
     }
 
     // Vibrate
-    if (navigator.vibrate)
+    if (navigator.vibrate && !$scope.isVibrationDisabled())
       navigator.vibrate(200);
 
     freezeTask(task);
