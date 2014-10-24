@@ -21,11 +21,13 @@
 */
 function HttpRequestQueueService() {
 
-  // Primary is the first every time, secondary the second, tertiary the third
-  var primary, secondary, tertiary;
+  // Primary is the first every time, secondary the second
+  var primary, secondary;
   // After primary and secondary there is a FIFO queue
   var queue = [];
-  // Last request is exectued last
+  // Before last is executed, well, before the last
+  var beforeLast;
+  // Last request is executed last
   var last;
   // A simple boolean lock that signals if head & remove/setOffline process
   // is currently in progress
@@ -41,11 +43,11 @@ function HttpRequestQueueService() {
   if (localStorage.getItem('secondaryRequest')) {
     secondary = JSON.parse(localStorage.getItem('secondaryRequest'));
   }
-  if (localStorage.getItem('tertiaryRequest')) {
-    tertiary = JSON.parse(localStorage.getItem('tertiaryRequest'));
-  }
   if (localStorage.getItem('requestQueue')) {
     queue = JSON.parse(localStorage.getItem('requestQueue'));
+  }
+  if (localStorage.getItem('beforeLastRequest')) {
+    beforeLast = JSON.parse(localStorage.getItem('beforeLastRequest'));
   }
   if (localStorage.getItem('lastRequest')) {
     last = JSON.parse(localStorage.getItem('lastRequest'));
@@ -107,10 +109,10 @@ function HttpRequestQueueService() {
       return primary;
     } else if (secondary) {
       return secondary;
-    } else if (tertiary) {
-      return tertiary;
     } else if (queue && queue.length > 0) {
       return queue[0];
+    } else if (beforeLast) {
+      return beforeLast;
     } else if (last) {
       return last;
     }
@@ -128,10 +130,10 @@ function HttpRequestQueueService() {
           secondary = request;
           localStorage.setItem('secondaryRequest', JSON.stringify(secondary));
         }
-      } else if (request.tertiary) {
-        if (!tertiary || tertiary.offline) {
-          tertiary = request;
-          localStorage.setItem('tertiaryRequest', JSON.stringify(tertiary));
+      } else if (request.beforeLast) {
+        if (!beforeLast || beforeLast.offline) {
+          beforeLast = request;
+          localStorage.setItem('beforeLastRequest', JSON.stringify(beforeLast));
         }
       }
       else {
@@ -178,9 +180,9 @@ function HttpRequestQueueService() {
       } else if (request.secondary) {
         secondary = undefined;
         localStorage.removeItem('secondaryRequest');
-      } else if (request.tertiary) {
-        tertiary = undefined;
-        localStorage.removeItem('tertiaryRequest');
+      } else if (request.beforeLast) {
+        beforeLast = undefined;
+        localStorage.removeItem('beforeLastRequest');
       } else if (request.last) {
         last = undefined;
         localStorage.removeItem('lastRequest');
@@ -200,9 +202,9 @@ function HttpRequestQueueService() {
       } else if (request.secondary) {
         secondary.offline = true;
         localStorage.setItem('secondaryRequest', JSON.stringify(secondary));
-      } else if (request.tertiary) {
-        tertiary.offline = true;
-        localStorage.setItem('tertiaryRequest', JSON.stringify(tertiary));
+      } else if (request.beforeLast) {
+        beforeLast.offline = true;
+        localStorage.setItem('beforeLastRequest', JSON.stringify(beforeLast));
       } else {
         var requestIndex = findRequestIndex(request);
         if (requestIndex !== undefined) {

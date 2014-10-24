@@ -222,7 +222,7 @@
     }
   }
   BackendClientService.registerSecondaryGetCallback(synchronizeCallback);
-  BackendClientService.registerTertiaryGetCallback(synchronizeUserAccountCallback);
+  BackendClientService.registerBeforeLastGetCallback(synchronizeUserAccountCallback);
   BackendClientService.registerDefaultCallback(defaultCallback);
 
   var getAllOnline = function getAllOnline(ownerUUID, getAllMethod, deferred) {
@@ -363,12 +363,12 @@
 
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
-        BackendClientService.getTertiary('/api/account',
+        BackendClientService.getBeforeLast('/api/account',
          UserService.getAccountRegex);
         deferred.resolve();
       } else {
         // Online
-        BackendClientService.getTertiary('/api/account',
+        BackendClientService.getBeforeLast('/api/account',
          UserService.getAccountRegex, undefined, true).then(function(accountResponse) {
           storeUserAccountResponse(accountResponse);
           deferred.resolve();

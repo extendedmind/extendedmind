@@ -119,8 +119,8 @@
       if (localStorage.getItem('secondaryRequest')) {
         localStorage.removeItem('secondaryRequest');
       }
-      if (localStorage.getItem('tertiaryRequest')) {
-        localStorage.removeItem('tertiaryRequest');
+      if (localStorage.getItem('beforeLastRequest')) {
+        localStorage.removeItem('beforeLastRequest');
       }
       if (localStorage.getItem('requestQueue')) {
         localStorage.removeItem('requestQueue');

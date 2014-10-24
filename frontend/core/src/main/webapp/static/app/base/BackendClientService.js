@@ -93,13 +93,13 @@
     });
   };
 
-  methods.getTertiary = function(url, regex, params, online) {
+  methods.getBeforeLast = function(url, regex, params, online) {
     return refreshCredentials(online).then(function() {
       if (regex.test(url)) {
         if (online) {
           return HttpClientService.get(getUrlPrefix() + url);
         } else {
-          return HttpClientService.getTertiary(getUrlPrefix() + url, params);
+          return HttpClientService.getBeforeLast(getUrlPrefix() + url, params);
         }
       } else {
         emitRegexException(regex, 'get', url);
@@ -226,8 +226,8 @@
   methods.registerSecondaryGetCallback = function(callback) {
     HttpClientService.registerCallback('secondary', callback);
   };
-  methods.registerTertiaryGetCallback = function(callback) {
-    HttpClientService.registerCallback('tertiary', callback);
+  methods.registerBeforeLastGetCallback = function(callback) {
+    HttpClientService.registerCallback('beforeLast', callback);
   };
   methods.registerDefaultCallback = function(callback) {
     HttpClientService.registerCallback('default', callback);

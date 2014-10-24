@@ -58,7 +58,7 @@
   }
 
   // Callbacks
-  var primaryResultCallback, primaryCreateCallback, secondaryCallback, tertiaryCallback,
+  var primaryResultCallback, primaryCreateCallback, secondaryCallback, beforeLastCallback,
   defaultCallback, onlineCallback;
 
   var retryingExecution = false;
@@ -84,8 +84,8 @@
           } else if (headRequest.secondary && secondaryCallback) {
             secondaryCallback(headRequest, data, HttpRequestQueueService.getQueue());
             HttpRequestQueueService.saveQueue();
-          } else if (headRequest.tertiary && tertiaryCallback) {
-            tertiaryCallback(headRequest, data, HttpRequestQueueService.getQueue());
+          } else if (headRequest.beforeLast && beforeLastCallback) {
+            beforeLastCallback(headRequest, data, HttpRequestQueueService.getQueue());
             HttpRequestQueueService.saveQueue();
           }  else if (defaultCallback) {
             defaultCallback(headRequest, data, HttpRequestQueueService.getQueue());
@@ -264,10 +264,10 @@
     executeRequests();
   };
 
-  // Custom method for tertiary GET, i.e. user account
-  methods.getTertiary = function(url, params) {
+  // Custom method for beforeLast GET, i.e. user account
+  methods.getBeforeLast = function(url, params) {
     var request = getRequest('get', url, params);
-    request.tertiary = true;
+    request.beforeLast = true;
     HttpRequestQueueService.push(request);
     executeRequests();
   };
@@ -330,8 +330,8 @@
       primaryCreateCallback = callback;
     } else if (type === 'secondary') {
       secondaryCallback = callback;
-    } else if (type === 'tertiary') {
-      tertiaryCallback = callback;
+    } else if (type === 'beforeLast') {
+      beforeLastCallback = callback;
     } else if (type === 'default') {
       defaultCallback = callback;
     } else if (type === 'online') {
