@@ -554,7 +554,9 @@
         };
 
         this.state = function() {
-            // FORK: there is a one pixel diference in minPosition and fromLeft sometimes!
+            // FORK:    There is a one pixel diference in fromLeft and minPosition sometimes!
+            //          This is due to using parseInt and getComputedStyle with fromLeft here
+            //          and window.innerWidth with minPosition in app.
             function equalsMoreOrLess(first, second){
                 if (Math.abs(first - second) < 3) return true
                 else return false;
