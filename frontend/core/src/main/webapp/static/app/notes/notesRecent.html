@@ -1,12 +1,29 @@
 <div class="container-fluid--inner" list-container drawer-handle="left">
   <section class="container-content" list="allNotes" list-order="top" list-recent
-  list-open="openEditor('note', {transientProperties: {favorited: false, itemType: 'note'}})">
-    <h2 class="group-heading justified row">recent</h2>
+  list-open="openEditor('note', {transientProperties: {favorited: false, itemType: 'note'}})"
+  ng-init="setListOnboarding('notes', listOnboarding)">
+    <div ng-show="isOnboarded('notes') || isListOnboardingLockedOrReleased('notes')">
+      <h2 class="group-heading justified row">recent</h2>
+      <div class="animate-list-item-leave tall"
+      ng-repeat="note in getList() | orderBy:'modified':true | limitTo: currentListLimitTo"
+      list-item="getList().length" ng-include="'static/app/notes/noteListItem.html'"></div>
+      <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
+    </div>
+    <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', undefined)" class="group-instruction">
+      <h2 class="group-heading instruction long row">what do you want to
+        <span class="highlighted">remember</span>?
+      </h2>
+      <div class="textgroup-ingress row">add your first <span class="text-highlighted">note</span> by clicking the plus sign below</div>
+    </div>
+    <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'off')" class="group-instruction">
+      <h2 class="group-heading instruction row">
+        <span class="highlighted">note</span> created!
+      </h2>
+      <div class="textgroup-ingress row">when you're ready, make your way to <span class="highlighted">lists</span>
+      by using the menu</div>
+      <div class="text-normal row">&#8230;or add more notes by hitting the plus sign again</div>
+    </div>
 
-    <div class="animate-list-item-leave tall"
-    ng-repeat="note in getList() | orderBy:'modified':true | limitTo: currentListLimitTo"
-    list-item="getList().length" ng-include="'static/app/notes/noteListItem.html'"></div>
-    <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('notes')"></footer>
 </div>

@@ -14,7 +14,7 @@
         <a ng-if="note.deleted" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteNote(note)"><span class="text-navigation">restore</span></a>
       </div>
 
-      <form ng-hide="hideNoteTitle" role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
+      <form ng-hide="hideNoteTitle && isOnboarded('notes')" role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--middle">
           <textarea type="text" ng-model="titlebar.text" ng-keydown="noteTitlebarTextKeyDown($event)"
           editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
@@ -22,6 +22,11 @@
           ng-focus="noteTitleFocused()"></textarea>
         </div>
       </form>
+      <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')" class="group-instruction-input">
+        <div ng-if="!titlebar.text.length" class="text-details row">e.g. books to read, notes from a
+         conversation, plans for the summer</div>
+        <div ng-if="titlebar.text.length && !hideNoteTitle" class="text-details row">when done, hit return</div>
+      </div>
     </div>
   </header>
 
@@ -39,9 +44,14 @@
               <span class="text-link" ng-bind="note.transientProperties.list ? getListTitleFromUUID(note.transientProperties.list) : 'select list\u2026'"></span>
             </div>
 
-            <textarea class="row" ng-model="note.content" msd-elastic placeholder="enter content&#8230;"
+            <textarea ng-class="(!isOnboarded('notes') && checkListOnboardingLock('notes', 'on') && !hideNoteTitle) && 'input-separate'" class="row" ng-model="note.content" msd-elastic placeholder="enter content&#8230;"
             ng-focus="noteContentFocused()"
             editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"></textarea>
+            <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')" class="group-instruction-input">
+              <div ng-if="note.content.length" class="text-details row">when done, save your note by
+              clicking save in the top-left corner or swipe left
+              </div>
+            </div>
           </div>
         </div>
 

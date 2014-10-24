@@ -18,3 +18,7 @@ editable-field-container-clicked-elsewhere="clickedElsewhere()">
     </a>
   </div>
 </form>
+<div ng-if="!isOnboarded('tasks') && checkListOnboardingLock('tasks', 'on')" class="group-instruction-input">
+  <div ng-if="newItem.title.length === 0" class="text-details row">e.g. buy a book, call a friend, do a leg workout</div>
+  <div ng-if="newItem.title.length" class="text-details row">when done, hit return</div>
+</div>

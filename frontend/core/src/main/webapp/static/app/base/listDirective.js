@@ -42,7 +42,7 @@
 
       this.notifyListItemAdd = function(){
         if ($scope.listOnboarding.lock === 'on'){
-          $scope.listOnboarding.lock = 'off';
+          $scope.turnOffListOnboardingLock($scope.listOnboarding);
           return true;
         }
         if ($attrs.listOrder !== 'top'){
@@ -97,12 +97,13 @@
       }
 
       function activateListAdd() {
+        if (scope.listOnboarding.lock === undefined) scope.listOnboarding.lock = 'on';
+        else if (scope.listOnboarding.lock === 'off') scope.listOnboarding.lock = 'released';
+
         if (listOpenOnAddFn){
           // Execute open function
           listOpenOnAddFn();
         }else if (scope.activateAddItem){
-          if (scope.listOnboarding.lock === undefined) scope.listOnboarding.lock = 'on';
-          else if (scope.listOnboarding.lock === 'off') scope.listOnboarding.lock = 'released';
           if (attrs.listOrder !== 'top'){
             scope.activateListBottom();
             // If the entire list was not visible, we

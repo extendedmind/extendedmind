@@ -24,7 +24,7 @@ function MainController(
                         $controller, $filter, $rootScope, $scope, $timeout, $window,
                         UserService, AnalyticsService, ArrayService, DrawerService, ItemsService, ListsService,
                         NotesService, SwiperService, SynchronizeService, TagsService, TasksService,
-                        UISessionService, UserSessionService) {
+                        UISessionService, UserSessionService, packaging) {
 
   // MAP OF ALL FEATURES
 
@@ -271,22 +271,44 @@ function MainController(
   var listOnboardingMap = {};
   $scope.checkListOnboardingLock = function(feature, status){
     return listOnboardingMap[feature] && listOnboardingMap[feature].lock === status;
-  }
+  };
+
+  $scope.turnOffListOnboardingLock = function(param){
+    var feature = param;
+
+    if (angular.isObject(param)){
+      for (var featureKey in listOnboardingMap){
+        if (listOnboardingMap[featureKey] === param){
+          feature = featureKey;
+          break;
+        }
+      }
+    }
+    if (listOnboardingMap[feature] && listOnboardingMap[feature].lock === 'on'){
+      listOnboardingMap[feature].lock = 'off';
+      AnalyticsService.do(feature + 'Onboarded');
+    }
+  };
+
   $scope.isListOnboardingLockedOrReleased = function(feature){
-    return listOnboardingMap[feature] && (listOnboardingMap[feature].lock === 'on'
-           || listOnboardingMap[feature].lock === 'released');
-  }
+    return listOnboardingMap[feature] && (listOnboardingMap[feature].lock === 'on' ||
+           listOnboardingMap[feature].lock === 'released');
+  };
+
   $scope.isOnboarded = function(feature){
     if ($scope.onboardingInProgress && $scope.checkListOnboardingLock(feature, undefined)){
       return isOnboardingItemCreated(feature);
     }else if (!$scope.onboardingInProgress){
       return true;
     }
-  }
+  };
 
-  $scope.isAlmostOnboarded = function(feature) {
-    return $scope.onboardingInProgress && isOnboardingItemCreated(feature);
-  }
+  $scope.completeOnboarding = function(){
+    $scope.onboardingInProgress = false;
+    UserSessionService.setPreference('onboarded', packaging);
+    UserService.saveAccountPreferences();
+    AnalyticsService.do('onboarded');
+  };
 
   $scope.setListOnboarding = function (feature, listOnboarding) {
     listOnboardingMap[feature] = listOnboarding;
@@ -298,8 +320,6 @@ function MainController(
   }else{
     $scope.changeFeature('tasks');
   }
-
-
 
   // DATA ARRAYS
 
@@ -689,6 +709,6 @@ MainController['$inject'] = [
 '$controller', '$filter', '$rootScope', '$scope', '$timeout', '$window',
 'UserService', 'AnalyticsService', 'ArrayService', 'DrawerService', 'ItemsService', 'ListsService',
 'NotesService', 'SwiperService', 'SynchronizeService','TagsService', 'TasksService',
-'UISessionService', 'UserSessionService'
+'UISessionService', 'UserSessionService', 'packaging'
 ];
 angular.module('em.main').controller('MainController', MainController);

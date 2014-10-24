@@ -1,13 +1,38 @@
 <div class="container-content--outer" ng-if="isFeatureActive('lists')" list-container drawer-handle="left">
-  <section class="container-content" list="lists" list-order="top" swiper-prevent>
-    <h2 class="group-heading justified row">active</h2>
-    <div list-item-add="{transientProperties: {itemType: 'list'}}" list-item-add-save="saveList(newItem)"
-    ng-include="'static/app/lists/listListItemAdd.html'"></div>
-    <div class="animate-list-item-leave"
-    ng-repeat="list in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
-    list-item="getList().length" ng-include="'static/app/lists/listListItem.html'"></div>
-    <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
+  <section class="container-content" list="lists" list-order="top" swiper-prevent
+  ng-init="setListOnboarding('lists', listOnboarding)">
+    <div ng-show="isOnboarded('lists') || isListOnboardingLockedOrReleased('lists')">
+      <h2 class="group-heading justified row">active</h2>
+      <div list-item-add="{transientProperties: {itemType: 'list'}}" list-item-add-save="saveList(newItem)"
+      ng-include="'static/app/lists/listListItemAdd.html'"></div>
+      <div class="animate-list-item-leave"
+      ng-repeat="list in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
+      list-item="getList().length" ng-include="'static/app/lists/listListItem.html'"></div>
+      <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
+    </div>
+    <div ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', undefined)" class="group-instruction">
+      <h2 class="group-heading instruction row">what's
+        <span class="highlighted">going on</span> in your work or life?
+      </h2>
+      <div class="textgroup-ingress row">add a new <span class="text-highlighted">list</span> &#8211;
+      you probably already know how</div>
+    </div>
+    <div ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', 'off')" class="group-instruction">
+      <h2 class="group-heading instruction row">
+        tutorial <span class="highlighted">complete</span>!
+      </h2>
+      <div class="textgroup-ingress row">you are now free to use the
+        <span class="highlighted">extended mind</span> in any way you  want
+      </div>
+    </div>
   </section>
-  <footer class="container-content--after" list-footer="getFeatureMap('lists')"></footer>
+  <footer ng-if="isOnboarded('lists') || !checkListOnboardingLock('lists', 'off')" class="container-content--after" list-footer="getFeatureMap('lists')"></footer>
+  <footer ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', 'off')" class="container-content--after group-btn">
+    <button type="submit" class="btn-action" ng-click="completeOnboarding()">
+      <span class="text-btn">got it</span>
+    </button>
+  </footer>
+
+
 </div>
 
