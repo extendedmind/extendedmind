@@ -256,24 +256,24 @@ function MainController(
     onboardingPhase = 'new';
   }
 
-  function isOnboardingItemCreated(feature){
+  $scope.isOneOnboardingItemCreated = function(feature){
     if (feature === 'tasks'){
       // Tasks onboarding is not ready if there are no tasks
-      if ($scope.allActiveTasks && $scope.allActiveTasks.length === 0){
-        return false;
+      if ($scope.allActiveTasks && $scope.allActiveTasks.length === 1){
+        return true;
       }
     }else if (feature === 'notes'){
       // Notes onboarding is not ready if there are no notes
-      if ($scope.allNotes && $scope.allNotes.length === 0){
-        return false;
+      if ($scope.allNotes && $scope.allNotes.length === 1){
+        return true;
       }
     }else if (feature === 'lists'){
       // Lists onboarding is not ready if there are no lists
-      if ($scope.allLists && $scope.allLists.length === 0){
-        return false;
+      if ($scope.allLists && $scope.allLists.length === 1){
+        return true;
       }
     }
-    return true;
+    return false;
   }
 
   var listOnboardingMap = {};
@@ -314,7 +314,7 @@ function MainController(
     if (feature === 'focusTasks' || feature === 'focusNotes' || feature === 'inbox'){
       return UserSessionService.getUIPreference(feature + 'Onboarded') !== undefined;
     }else if ($scope.onboardingInProgress && $scope.checkListOnboardingLock(feature, undefined)){
-      return isOnboardingItemCreated(feature);
+      return false;
     }else if (!$scope.onboardingInProgress){
       return true;
     }
