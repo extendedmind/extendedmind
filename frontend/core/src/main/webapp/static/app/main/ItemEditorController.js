@@ -36,8 +36,14 @@
   }
 
   $scope.deleteItemInEdit = function() {
-    $scope.deleteItem($scope.item).then(function(){
-      $scope.closeEditor();
+    // Unregister about to close callback, because delete is run after editor is closed
+    // and about to close callback would try to save item in between close and delete.
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
+      $scope.unregisterEditorAboutToCloseCallback();
+
+    $scope.closeTaskEditor();
+    $scope.deferEdit().then(function(){
+      $scope.deleteItem($scope.item);
     });
   };
 
@@ -46,9 +52,7 @@
   };
 
   function itemEditorAboutToClose() {
-    if ($scope.titlebarHasText() && !$scope.item.deleted){
-      saveItemInEdit();
-    }
+    if ($scope.titlebarHasText() && !$scope.item.deleted) saveItemInEdit();
   }
 
   // TITLEBAR

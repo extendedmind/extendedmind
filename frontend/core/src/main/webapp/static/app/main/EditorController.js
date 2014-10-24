@@ -110,6 +110,9 @@
   $scope.registerFeatureEditorAboutToCloseCallback = function(callback) {
     featureEditorAboutToCloseCallback = callback;
   };
+  $scope.unregisterEditorAboutToCloseCallback = function() {
+    featureEditorAboutToCloseCallback = undefined;
+  };
 
   $scope.deferEdit = function(){
     return UISessionService.deferAction('edit', $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);

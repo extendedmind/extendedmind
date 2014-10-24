@@ -37,6 +37,11 @@
   };
 
   $scope.deleteNoteInEdit = function() {
+    // Unregister about to close callback, because delete is run after editor is closed
+    // and about to close callback would try to save item in between close and delete.
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
+      $scope.unregisterEditorAboutToCloseCallback();
+
     $scope.closeNoteEditor();
     $scope.deferEdit().then(function() {
       $scope.deleteNote($scope.note);
