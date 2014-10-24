@@ -1,7 +1,7 @@
 <div class="container-menu swiper-no-swiping" ng-controller="MenuController" drawer="left">
   <div class="container-menu--top">
     <a href class="link-menu row" ng-click="gotoFeature('user')" ng-class="isFeatureActive('user') && 'highlighted'">
-      <span class="text-navigation-menu-small" ng-bind="getActiveDisplayName()"></span>
+      <span class="text-navigation-menu-small" clamp=1 ng-bind="getActiveDisplayName()"></span>
     </a>
 
     <a href class="link-menu separate row" ng-click="gotoFeature('focus')" ng-class="isFeatureActive('focus') && 'highlighted'">

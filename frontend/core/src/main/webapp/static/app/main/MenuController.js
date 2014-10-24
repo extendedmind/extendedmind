@@ -30,11 +30,7 @@
           }
         });
       }
-      var maximumOwnerNameLength = 20;
-      if (ownerName.length > maximumOwnerNameLength) {
-        return ownerName.substring(0, maximumOwnerNameLength) + '&#8230;';
-      }
-      return ownerName;
+      return "timo.tiuraniemi@filosofianakatemia.fi";
     }
   };
 
