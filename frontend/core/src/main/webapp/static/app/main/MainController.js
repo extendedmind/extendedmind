@@ -279,6 +279,8 @@ function MainController(
   $scope.isOnboarded = function(feature){
     if ($scope.onboardingInProgress && $scope.checkListOnboardingLock(feature, undefined)){
       return isOnboardingItemCreated(feature);
+    }else if (!$scope.onboardingInProgress){
+      return true;
     }
   }
 
