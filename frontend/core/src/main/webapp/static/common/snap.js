@@ -554,11 +554,17 @@
         };
 
         this.state = function() {
+            // FORK: there is a one pixel diference in minPosition and fromLeft sometimes!
+            function equalsMoreOrLess(first, second){
+                if (Math.abs(first - second) < 3) return true
+                else return false;
+            }
             var state,
                 fromLeft = action.translate.get.matrix(4);
-            if (fromLeft === settings.maxPosition) {
+            if (equalsMoreOrLess(fromLeft,settings.maxPosition)) {
                 state = 'left';
-            } else if (fromLeft === settings.minPosition) {
+            } else if (equalsMoreOrLess(fromLeft, settings.minPosition)) {
+            // FORK
                 state = 'right';
             } else {
                 state = 'closed';
