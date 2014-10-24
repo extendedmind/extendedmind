@@ -8,47 +8,22 @@
     <string>${PRODUCT_NAME}</string>
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
-    <key>CFBundleIconFile</key>
-    <string>Icon.png</string>
     <key>CFBundleIcons</key>
     <dict>
       <key>CFBundlePrimaryIcon</key>
       <dict>
-        <key>CFBundleIconFiles</key>
-        <array>
-          <string>icon-40</string>
-          <string>icon-small</string>
-          <string>icon-60</string>
-          <string>icon.png</string>
-          <string>icon@2x</string>
-          <string>icon-72</string>
-          <string>icon-72@2x</string>
-          <string>icon-50@2x</string>
-          <string>icon-60@3x</string>
-          <string>icon-40@3x</string>
-          <string>icon-@3x</string>
-          <string>icon-60</string>
-        </array>
         <key>UIPrerenderedIcon</key>
         <false/>
+        <key>CFBundleIconFiles</key>
+        <array>
+          <string>icon-60@2x</string>
+        </array>
       </dict>
     </dict>
     <key>CFBundleIcons~ipad</key>
     <dict>
       <key>CFBundlePrimaryIcon</key>
       <dict>
-        <key>CFBundleIconFiles</key>
-        <array>
-          <string>icon-small</string>
-          <string>icon-40</string>
-          <string>icon-50</string>
-          <string>icon-76</string>
-          <string>icon-60</string>
-          <string>icon</string>
-          <string>icon@2x</string>
-          <string>icon-72</string>
-          <string>icon-72@2x</string>
-        </array>
         <key>UIPrerenderedIcon</key>
         <false/>
       </dict>
