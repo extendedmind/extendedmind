@@ -2,9 +2,10 @@
 data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
 editable-field-container-clicked-elsewhere="clickedElsewhere()">
   <div class="group-mixed--left">
-    <a href ng-click="callAndExit(saveListAndChangeFeature, newItem)">
+    <a href ng-hide="onboardingInProgress" ng-click="callAndExit(saveListAndChangeFeature, newItem)">
       <span class="text-navigation-back large"></span>
     </a>
+    <div href ng-show="onboardingInProgress"><span class="text-navigation-back large"></span></div>
   </div>
   <div class="group-mixed--middle">
     <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
@@ -13,7 +14,7 @@ editable-field-container-clicked-elsewhere="clickedElsewhere()">
     </textarea>
   </div>
   <div class="group-mixed--right">
-    <a href editable-field-deactivate ng-click="openEditor('list', newItem)">
+    <a href ng-hide="onboardingInProgress" editable-field-deactivate ng-click="openEditor('list', newItem)">
       <span class="text-navigation-forward"></span>
     </a>
   </div>

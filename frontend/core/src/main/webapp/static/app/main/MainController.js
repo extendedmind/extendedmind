@@ -174,7 +174,7 @@ function MainController(
   };
 
   $scope.isFooterNavigationHidden = function(){
-    return UserSessionService.getUIPreference('hideFooter');
+    return $scope.onboardingInProgress || UserSessionService.getUIPreference('hideFooter');
   }
 
   $scope.isVibrationDisabled = function(){
@@ -296,6 +296,13 @@ function MainController(
       listOnboardingMap[feature].lock = 'off';
       AnalyticsService.do(feature + 'Onboarded');
     }
+  };
+
+  $scope.isOnboardingNotReady = function(feature){
+    if (!$scope.onboardingInProgress) return false;
+    return !listOnboardingMap[feature] ||
+                    !listOnboardingMap[feature].lock ||
+                    listOnboardingMap[feature].lock === 'on';
   };
 
   $scope.isListOnboardingLockedOrReleased = function(feature){

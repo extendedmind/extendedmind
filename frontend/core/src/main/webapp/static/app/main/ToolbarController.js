@@ -38,13 +38,11 @@
   };
 
   function switchFeature() {
-    if (!$scope.onboardingInProgress) {
-      var activeFeature = $scope.getActiveFeature();
-      if (activeFeature === 'focus') {
-        $scope.changeFeature('inbox', undefined, true);
-      } else {
-        $scope.changeFeature('focus', undefined, true);
-      }
+    var activeFeature = $scope.getActiveFeature();
+    if (activeFeature === 'focus') {
+      $scope.changeFeature('inbox', undefined, true);
+    } else {
+      $scope.changeFeature('focus', undefined, true);
     }
   }
 
