@@ -311,18 +311,25 @@ function MainController(
   };
 
   $scope.isOnboarded = function(feature){
-    if ($scope.onboardingInProgress && $scope.checkListOnboardingLock(feature, undefined)){
+    if (feature === 'focusTasks' || feature === 'focusNotes' || feature === 'inbox'){
+      return UserSessionService.getUIPreference(feature + 'Onboarded') !== undefined;
+    }else if ($scope.onboardingInProgress && $scope.checkListOnboardingLock(feature, undefined)){
       return isOnboardingItemCreated(feature);
     }else if (!$scope.onboardingInProgress){
       return true;
     }
   };
 
-  $scope.completeOnboarding = function(){
+  $scope.completeOnboarding = function(feature){
     $scope.onboardingInProgress = false;
-    UserSessionService.setPreference('onboarded', packaging);
+    if (feature === 'focusTasks' || feature === 'focusNotes' || feature === 'inbox'){
+      UserSessionService.setUIPreference(feature + 'Onboarded', packaging);
+      AnalyticsService.do(feature + 'Onboarded');
+    }else {
+      UserSessionService.setPreference('onboarded', packaging);
+      AnalyticsService.do('onboarded');
+    }
     UserService.saveAccountPreferences();
-    AnalyticsService.do('onboarded');
   };
 
   $scope.setListOnboarding = function (feature, listOnboarding) {

@@ -1,5 +1,5 @@
 <div class="container-content--outer" list-container drawer-handle="left" drawer-handle-register-activate="registerFocusActivateCallback(activate)" list-container-override-vertical-resize="true">
-  <section class="container-content" ng-controller="DatesController">
+  <section ng-if="isOnboarded('focusTasks')" class="container-content" ng-controller="DatesController">
 
     <div ng-if="datepickerVisible" class="swiper-container datepicker" swiper-container="datepicker" swiper-type="main" expected-slides="5" data-snap-ignore="true">
       <!-- Set editable-field-container to child to circumvent AngularJS error https://docs.angularjs.org/error/$compile/multidir -->
@@ -372,5 +372,23 @@
       </div>
     </div>
   </section>
-  <footer class="container-content--after" list-footer="getFeatureMap('focus')"></footer>
+  <footer ng-if="isOnboarded('focusTasks')" class="container-content--after" list-footer="getFeatureMap('focus')"></footer>
+
+  <section ng-if="!isOnboarded('focusTasks')" class="container-content">
+    <div class="group-instruction">
+      <h2 class="group-heading instruction row">what to do right
+        <span class="highlighted">now</span>?
+      </h2>
+      <div class="textgroup-ingress row">on this focus view you can see tasks  sorted by
+        <span class="text-highlighted">date</span>
+      </div>
+      <div class="textgroup-ingress last row">to change dates, click on the date heading</div>
+    </div>
+  </section>
+  <footer ng-if="!isOnboarded('focusTasks')" class="container-content--after group-btn">
+    <button type="submit" class="btn-action" ng-click="completeOnboarding('focusTasks')">
+      <span class="text-btn">got it</span>
+    </button>
+  </footer>
+
 </div>
