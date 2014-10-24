@@ -1,6 +1,6 @@
 <div>
 
-  <div ng-if="selectedList" class="group-mixed">
+  <div ng-if="selectedList" class="group-mixed bottom-padded">
     <div class="group-mixed--middle" ng-click="listSelected(selectedList)">
       <a href>
         <span class="text-link emphasis" clamp=2>{{::prefix}}{{selectedList.title}}</span>
@@ -12,7 +12,7 @@
     </div>
   </div>
 
-  <div class="row-form" ng-repeat="list in lists | filter:notSelectedList" ng-click="listSelected(list)">
+  <div class="row-padded" ng-repeat="list in lists | filter:notSelectedList" ng-click="listSelected(list)">
     <a href>
       <span class="text-link" clamp=2>{{::prefix}}{{list.title}}</span>
     </a>
