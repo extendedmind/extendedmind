@@ -336,8 +336,10 @@ margin.
   }
 }
 
+// 1. Set padding-bottom to mimic height of .row-padded.
+//    43px + 21px is not the correct value but near.
 .group-mixed.bottom-padded {
-  padding-bottom: 14px;
+  padding-bottom: 21px; // [1]
 }
 
 .group-mixed--right.top {
