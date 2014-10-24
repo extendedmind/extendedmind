@@ -14,8 +14,8 @@
  */
  'use strict';
 
- function TasksController($rootScope, $scope, $timeout, AnalyticsService, DateService, SwiperService,
-                          TasksService, UISessionService) {
+ function TasksController($rootScope, $scope, $timeout,
+                          AnalyticsService, DateService, SwiperService, TasksService, UISessionService) {
 
   $scope.repeatTypes = [
   {title:'daily'},
@@ -127,6 +127,8 @@
     }
   };
 
+  // SAVING
+
   $scope.saveTask = function(task) {
     if (!task || !task.title || task.title.length === 0) return false;
     var completeOnSave = false;
@@ -152,18 +154,14 @@
     });
   };
 
-  $scope.undeleteTask = function(task) {
-    if (task.uuid){
-      AnalyticsService.do('undeleteTask');
-      TasksService.undeleteTask(task, UISessionService.getActiveUUID());
-    }
-  };
+  // (UN)DELETING
 
   $scope.deleteTask = function(task) {
     if (task.uuid){
+
       UISessionService.pushDelayedNotification({
         type: 'deleted',
-        itemType: 'task',
+        itemType: 'task', // NOTE: Same as task.transientProperties.itemType
         item: task,
         undoFn: $scope.undeleteTask
       });
@@ -174,6 +172,13 @@
 
       AnalyticsService.do('deleteTask');
       TasksService.deleteTask(task, UISessionService.getActiveUUID());
+    }
+  };
+
+  $scope.undeleteTask = function(task) {
+    if (task.uuid){
+      AnalyticsService.do('undeleteTask');
+      TasksService.undeleteTask(task, UISessionService.getActiveUUID());
     }
   };
 
@@ -224,6 +229,8 @@
   };
 }
 
-TasksController['$inject'] = ['$rootScope', '$scope', '$timeout', 'AnalyticsService', 'DateService',
-'SwiperService', 'TasksService', 'UISessionService'];
+TasksController['$inject'] = [
+'$rootScope', '$scope', '$timeout',
+'AnalyticsService', 'DateService', 'SwiperService', 'TasksService', 'UISessionService'
+];
 angular.module('em.tasks').controller('TasksController', TasksController);

@@ -14,8 +14,9 @@
  */
  'use strict';
 
- function ListsController($q, $rootScope, $scope, AnalyticsService, ListsService, SwiperService,
-                          UISessionService, UserService, UserSessionService) {
+ function ListsController($q, $rootScope, $scope, $timeout,
+                          AnalyticsService, ListsService, SwiperService, UISessionService, UserService,
+                          UserSessionService) {
 
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
     if (name === 'list') {
@@ -57,6 +58,8 @@
     }
   };
 
+  // SAVING
+
   $scope.saveList = function(list) {
     if (list && list.title && list.title.length > 0){
       if (list.uuid){
@@ -93,8 +96,22 @@
     }
   };
 
+  // (UN)DELETING
+
   $scope.deleteList = function(list) {
     if (list.uuid){
+
+      UISessionService.pushDelayedNotification({
+        type: 'deleted',
+        itemType: 'list', // NOTE: Same as list.transientProperties.itemType.
+        item: list,
+        undoFn: $scope.undeleteList
+      });
+
+      $timeout(function() {
+        UISessionService.activateDelayedNotifications();
+      }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
+
       AnalyticsService.do('deleteList');
       return ListsService.deleteList(list, UISessionService.getActiveUUID());
     }
@@ -116,6 +133,8 @@
   };
 }
 
-ListsController['$inject'] = ['$q', '$rootScope', '$scope', 'AnalyticsService', 'ListsService',
-'SwiperService', 'UISessionService', 'UserService', 'UserSessionService'];
+ListsController['$inject'] = [
+'$q', '$rootScope', '$scope', '$timeout',
+'AnalyticsService', 'ListsService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService'
+];
 angular.module('em.base').controller('ListsController', ListsController);

@@ -14,9 +14,11 @@
  */
  'use strict';
 
- function TagsController($scope, AnalyticsService, TagsService, UISessionService) {
+ function TagsController($rootScope, $scope, $timeout, AnalyticsService, TagsService, UISessionService) {
 
   // KEYWORDS
+
+  // SAVING
 
   $scope.saveKeyword = function(keyword) {
     if (!keyword || !keyword.title || !keyword.title.length) return;
@@ -26,6 +28,8 @@
     TagsService.saveTag(keyword, UISessionService.getActiveUUID());
     $scope.gotoPreviousPage();
   };
+
+  // DELETING
 
   $scope.deleteKeyword = function (keyword) {
     if (keyword.uuid){
@@ -54,6 +58,8 @@
 
   // CONTEXTS
 
+  // SAVING
+
   $scope.saveContext = function(context) {
     if (!context || !context.title || !context.title.length) return;
     if (context.uuid) AnalyticsService.do('saveContext');
@@ -62,8 +68,22 @@
     return TagsService.saveTag(context, UISessionService.getActiveUUID());
   };
 
+  // DELETING
+
   $scope.deleteContext = function(context) {
     if (context.uuid){
+
+      UISessionService.pushDelayedNotification({
+        type: 'deleted',
+        itemType: 'context',
+        item: context,
+        undoFn: $scope.undeleteContext
+      });
+
+      $timeout(function() {
+        UISessionService.activateDelayedNotifications();
+      }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
+
       AnalyticsService.do('deleteContext');
       return TagsService.deleteTag(context, UISessionService.getActiveUUID());
     }
@@ -77,5 +97,8 @@
   };
 }
 
-TagsController['$inject'] = ['$scope', 'AnalyticsService', 'TagsService', 'UISessionService'];
+TagsController['$inject'] = [
+'$rootScope', '$scope', '$timeout',
+'AnalyticsService', 'TagsService', 'UISessionService'
+];
 angular.module('em.base').controller('TagsController', TagsController);

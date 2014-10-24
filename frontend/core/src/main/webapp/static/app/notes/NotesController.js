@@ -14,8 +14,9 @@
  */
  'use strict';
 
- function NotesController($filter, $q, $scope, AnalyticsService, ListsService, NotesService, TagsService,
-                          SwiperService, UISessionService) {
+ function NotesController($filter, $q, $rootScope, $scope, $timeout,
+                          AnalyticsService, ListsService, NotesService, TagsService, SwiperService,
+                          UISessionService) {
 
   $scope.noteHasKeywords = function noteHasKeywords(note) {
     return note.transientProperties && note.transientProperties.keywords;
@@ -55,7 +56,7 @@
     var deferredSaveKeywordsSave = $q.defer();
 
     if ($scope.noteHasKeywords(note))
-     {
+    {
       // http://stackoverflow.com/a/21315112
       var newKeywords = getNewKeywords(note.transientProperties.keywords);
       var saveNewKeywordPromises = newKeywords.map(function(newKeyword){
@@ -73,6 +74,8 @@
     return deferredSaveKeywordsSave.promise;
   }
 
+  // SAVING
+
   $scope.saveNote = function saveNote(note) {
     if (note.uuid) AnalyticsService.do('saveNote');
     else AnalyticsService.do('addNote');
@@ -88,8 +91,22 @@
     });
   };
 
+  // (UN)DELETING
+
   $scope.deleteNote = function deleteNote(note) {
     if (note.uuid){
+
+      UISessionService.pushDelayedNotification({
+        type: 'deleted',
+        itemType: 'note', // NOTE: Same as note.transientProperties.itemType
+        item: note,
+        undoFn: $scope.undeleteNote
+      });
+
+      $timeout(function() {
+        UISessionService.activateDelayedNotifications();
+      }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
+
       AnalyticsService.do('deleteNote');
       NotesService.deleteNote(note, UISessionService.getActiveUUID());
     }
@@ -174,7 +191,7 @@
 }
 
 NotesController['$inject'] = [
-'$filter', '$q', '$scope',
-'AnalyticsService', 'ListsService', 'NotesService', 'TagsService',
-'SwiperService', 'UISessionService'];
+'$filter', '$q', '$rootScope', '$scope', '$timeout',
+'AnalyticsService', 'ListsService', 'NotesService', 'TagsService', 'SwiperService', 'UISessionService'
+];
 angular.module('em.notes').controller('NotesController', NotesController);

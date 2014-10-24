@@ -43,6 +43,7 @@
 
     $scope.deleteList($scope.list).then(function(){
       $scope.closeEditor();
+      // TODO:  Change only when editor opened from deleted list.
       $scope.changeFeature('lists', undefined, false);
     });
   };

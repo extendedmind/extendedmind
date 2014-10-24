@@ -14,7 +14,9 @@
  */
  'use strict';
 
- function ItemsController($scope, $timeout, AnalyticsService, ItemsService, UISessionService) {
+ function ItemsController($rootScope, $scope, $timeout, AnalyticsService, ItemsService, UISessionService) {
+
+  // SAVING
 
   $scope.saveItem = function(item) {
     if (item.title && item.title.length > 0) {
@@ -29,8 +31,22 @@
     }
   };
 
+  // DELETING
+
   $scope.deleteItem = function(item) {
     if (item.uuid) {
+
+      UISessionService.pushDelayedNotification({
+        type: 'deleted',
+        itemType: 'item', // NOTE: Same as item.transientProperties.itemType
+        item: item,
+        undoFn: $scope.undeleteItem
+      });
+
+      $timeout(function() {
+        UISessionService.activateDelayedNotifications();
+      }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
+
       AnalyticsService.do('deleteItem');
       return ItemsService.deleteItem(item, UISessionService.getActiveUUID());
     }
@@ -44,5 +60,8 @@
   };
 }
 
-ItemsController['$inject'] = ['$scope', '$timeout', 'AnalyticsService', 'ItemsService', 'UISessionService'];
+ItemsController['$inject'] = [
+'$rootScope', '$scope', '$timeout',
+'AnalyticsService', 'ItemsService', 'UISessionService'
+];
 angular.module('em.main').controller('ItemsController', ItemsController);
