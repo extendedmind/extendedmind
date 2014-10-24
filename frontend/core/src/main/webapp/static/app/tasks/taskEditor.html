@@ -13,7 +13,7 @@
 
       <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--left">
-          <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-checked="task.transientProperties.completed" ng-model="task.transientProperties.completed" icon-checkbox="editorTitlebarCheckbox" />
+          <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-checked="task.transientProperties.completed" ng-model="task.transientProperties.completed" icon-checkbox="'editorTitlebarCheckbox'" />
         </div>
         <div class="group-mixed--middle">
           <textarea type="text" ng-model="titlebar.text" ng-keydown="taskTitlebarTextKeyDown($event)" editable-field

@@ -41,11 +41,26 @@
   </section>
 
   <section ng-if="activeDetails === 'settings'" class="container-content">
-    <h2 class="group-heading row">settings</h2>
-    <input type="checkbox" id="showOnboarding" ng-model="settings.showOnboarding" ng-change="onboardingChecked(settings.showOnboarding)"/>
-    <label for="showOnboarding" class="default-element font-small">show onboarding on next login</label>
-    <input type="checkbox" id="hideFooter" ng-model="settings.hideFooter" ng-change="hideFooter(settings.hideFooter)"/>
-    <label for="hideFooter" class="default-element font-small">hide footer on mobile</label>
+    <h2 class="group-heading justified row">settings</h2>
+
+    <div class="group-mixed with-checkbox">
+      <div class="group-mixed--left">
+        <input type="checkbox" ng-model="settings.hideFooter" ng-true-value="true" icon-checkbox="'hideFooter'"
+        ng-click="settingsCheckboxClicked('hideFooter')" />
+      </div>
+      <div href class="group-mixed--middle">
+        <span class="text-link">hide footer navigation on mobile devices</span>
+      </div>
+    </div>
+    <div class="group-mixed with-checkbox">
+      <div class="group-mixed--left">
+        <input type="checkbox" ng-model="settings.disableVibration" ng-true-value="true"
+        icon-checkbox="'disableVibration'" ng-click="settingsCheckboxClicked('disableVibration')" />
+      </div>
+      <div class="group-mixed--middle">
+        <span class="text-link">disable vibration on starring and completing</span>
+      </div>
+    </div>
   </section>
   <footer class="container-content--after">
     <nav role="navigation" class="swiper-no-swiping group-symmetrical">
