@@ -48,15 +48,19 @@
       }
 
       var unfocusInProgress = false;
-      function blur() {
+      function blur(deactivateAfterBlur) {
         if ($document[0].activeElement === element[0]){
           unfocusInProgress = true;
           if ($rootScope.$$phase || scope.$$phase){
             $timeout(function(){
               element[0].blur();
+              if (deactivateAfterBlur && editableFieldContainerController)
+                editableFieldContainerController.deactivateContainer();
             });
           }else {
             element[0].blur();
+            if (deactivateAfterBlur && editableFieldContainerController)
+              editableFieldContainerController.deactivateContainer();
           }
         }
       }

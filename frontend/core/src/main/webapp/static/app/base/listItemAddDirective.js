@@ -50,8 +50,11 @@
             addItemFocusCallback();
           }
 
-          function exit(){
-            if (addItemBlurCallback) addItemBlurCallback();
+          function exit(deactivateAfterBlur){
+            if (addItemBlurCallback){
+              addItemBlurCallback(deactivateAfterBlur);
+              controllers[0].notifyListItemAddBlurred();
+            }
             element[0].style.display = "none";
           }
 
@@ -86,7 +89,9 @@
 
           function saveNewItem(newItem){
             saveNewItemFn(newItem).then(function(){
-              controllers[0].notifyListItemAdd();
+              if (controllers[0].notifyListItemAdd()){
+                exit(true);
+              }
             });
           }
 

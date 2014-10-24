@@ -20,6 +20,7 @@
     restrict: 'A',
     scope: true,
     controller: function($scope, $element, $attrs) {
+      $scope.listOnboarding = {};
 
       var listArrayFn = $parse($attrs.list).bind(undefined, $scope);
       $scope.getList = function(){
@@ -33,7 +34,17 @@
         $scope.listLength = length;
       }
 
+      this.notifyListItemAddBlurred = function(){
+        if ($scope.listOnboarding.lock === 'on'){
+          $scope.listOnboarding.lock = undefined;
+        }
+      }
+
       this.notifyListItemAdd = function(){
+        if ($scope.listOnboarding.lock === 'on'){
+          $scope.listOnboarding.lock = 'off';
+          return true;
+        }
         if ($attrs.listOrder !== 'top'){
           // NOTE: This is called before notifyListLength, that's why we
           // have to set list length directly here
@@ -90,6 +101,8 @@
           // Execute open function
           listOpenOnAddFn();
         }else if (scope.activateAddItem){
+          if (scope.listOnboarding.lock === undefined) scope.listOnboarding.lock = 'on';
+          else if (scope.listOnboarding.lock === 'off') scope.listOnboarding.lock = 'released';
           if (attrs.listOrder !== 'top'){
             scope.activateListBottom();
             // If the entire list was not visible, we

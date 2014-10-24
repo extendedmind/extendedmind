@@ -247,24 +247,48 @@ function MainController(
     $scope.onboardingInProgress = true;
     onboardingPhase = 'new';
   }
-  $scope.setOnboardingPhase = function setOnboardingPhase(phase) {
-    onboardingPhase = phase;
-    if (onboardingPhase === 'itemAdded') {
-      // End right after first item added
-      UserSessionService.setPreference('onboarded', $rootScope.packaging);
-      UserService.saveAccountPreferences();
-      $scope.onboardingInProgress = false;
-      AnalyticsService.do('firstItemAdded');
-    } else if (onboardingPhase === 'secondItemAdded') {
-      AnalyticsService.do('secondItemAdded');
-    } else if (onboardingPhase === 'sortingStarted') {
-      AnalyticsService.do('sortingStarted');
-    }
-  };
-  $scope.getOnboardingPhase = function getOnboardingPhase() {
-    return onboardingPhase;
-  };
 
+  function isOnboardingItemCreated(feature){
+    if (feature === 'tasks'){
+      // Tasks onboarding is not ready if there are no tasks
+      if ($scope.allActiveTasks && $scope.allActiveTasks.length === 0){
+        return false;
+      }
+    }else if (feature === 'notes'){
+      // Notes onboarding is not ready if there are no notes
+      if ($scope.allNotes && $scope.allNotes.length === 0){
+        return false;
+      }
+    }else if (feature === 'lists'){
+      // Lists onboarding is not ready if there are no lists
+      if ($scope.allLists && $scope.allLists.length === 0){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  var listOnboardingMap = {};
+  $scope.checkListOnboardingLock = function(feature, status){
+    return listOnboardingMap[feature] && listOnboardingMap[feature].lock === status;
+  }
+  $scope.isListOnboardingLockedOrReleased = function(feature){
+    return listOnboardingMap[feature] && (listOnboardingMap[feature].lock === 'on'
+           || listOnboardingMap[feature].lock === 'released');
+  }
+  $scope.isOnboarded = function(feature){
+    if ($scope.onboardingInProgress && $scope.checkListOnboardingLock(feature, undefined)){
+      return isOnboardingItemCreated(feature);
+    }
+  }
+
+  $scope.isAlmostOnboarded = function(feature) {
+    return $scope.onboardingInProgress && isOnboardingItemCreated(feature);
+  }
+
+  $scope.setListOnboarding = function (feature, listOnboarding) {
+    listOnboardingMap[feature] = listOnboarding;
+  };
 
   // Start from tasks on onboarding, or later on, from focus
   if (!$scope.onboardingInProgress){

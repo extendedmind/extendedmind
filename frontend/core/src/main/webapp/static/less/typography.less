@@ -19,10 +19,11 @@ Fonts in use:
 @font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'HelveticaNeueLTStd-Lt', 'HelveticaNeue', 'Helvetica Neue',  'Arial', 'Helvetica', 'sans-serif';
 @font-family-bold: 'HelveticaNeue', 'Helvetica Neue',  'HelveticaNeueLT-Roman', 'Arial', 'Helvetica', 'sans-serif';
 
-@size-font-jumbotron: 70px;
+@size-font-jumbotron: 59px;
 @size-font-large: 48px;
 @size-font-not-so-large: 40px;
-@size-font-ingress: 25px;
+@size-font-btn: 25px;
+@size-font-ingress: 21px;
 @size-font-content: 18px;
 @size-font-medium: 15px;
 @size-font-topheading: 15px;
@@ -42,11 +43,6 @@ Font mixins.
 .set-font-bold() {
   font-family: @font-family-bold;
   font-weight: 700;
-}
-
-.set-font-ingress() {
-  font-size: @size-font-ingress;
-  .set-font-bold;
 }
 
 .set-font-jumbotron() {
@@ -85,7 +81,8 @@ h2 {
 }
 
 .textgroup-ingress {
-  .set-font-ingress();
+  font-size: @size-font-ingress;
+  .set-font-bold;
 }
 
 /*
@@ -149,6 +146,11 @@ Use `.text-details` to separate details from body text.
   line-height: @grid-vertical-half;
   font-size: @size-font-topheading;
   .set-font-bold();
+}
+
+.text-normal {
+  line-height: @grid-vertical-half;
+  font-size: @size-font-medium;
 }
 
 /*
