@@ -43,6 +43,23 @@
   }
   ];
 
+  if (angular.isFunction($scope.registerSynchronizeCallback))
+    $scope.registerSynchronizeCallback(detectDayChange, 'DatesController');
+
+  var today = new Date().setHours(0, 0, 0, 0);  // Today for reference.
+  function detectDayChange() {
+    var newToday = new Date().setHours(0, 0, 0, 0);
+    if (today !== newToday) {
+      // Date has changed.
+      today = newToday;
+      var activeDaySlideInfo = SwiperService.getActiveSlideIndex('focus/tasks');
+      if (activeDaySlideInfo.heading === 'today') {
+        // Swipe from old today to new today slide.
+        $scope.changeDaySlide(DateService.getYYYYMMDD(newToday));
+      }
+    }
+  }
+
 
   // DATEPICKER SLIDES CONSTRUCTOR
 
@@ -572,6 +589,11 @@
       }
     }
   };
+
+  $scope.$on('$destroy', function() {
+    if (angular.isFunction($scope.unregisterSynchronizeCallback))
+      $scope.unregisterSynchronizeCallback('DatesController');
+  });
 }
 
 DatesController['$inject'] = ['$filter', '$rootScope', '$scope', 'DateService', 'SwiperService',

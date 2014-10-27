@@ -176,11 +176,11 @@ function MainController(
   $scope.isFooterNavigationHidden = function(){
     return $scope.onboardingInProgress ||
     (packaging.endsWith('cordova') && UserSessionService.getUIPreference('hideFooter'));
-  }
+  };
 
   $scope.isVibrationDisabled = function(){
     return UserSessionService.getUIPreference('hideFooter');
-  }
+  };
 
   // FEATURE CHANGING
 
@@ -275,7 +275,7 @@ function MainController(
       }
     }
     return false;
-  }
+  };
 
   var listOnboardingMap = {};
   $scope.checkListOnboardingLock = function(feature, status){
@@ -302,13 +302,13 @@ function MainController(
   $scope.isOnboardingNotReady = function(feature){
     if (!$scope.onboardingInProgress) return false;
     return !listOnboardingMap[feature] ||
-                    !listOnboardingMap[feature].lock ||
-                    listOnboardingMap[feature].lock === 'on';
+    !listOnboardingMap[feature].lock ||
+    listOnboardingMap[feature].lock === 'on';
   };
 
   $scope.isListOnboardingLockedOrReleased = function(feature){
     return listOnboardingMap[feature] && (listOnboardingMap[feature].lock === 'on' ||
-           listOnboardingMap[feature].lock === 'released');
+                                          listOnboardingMap[feature].lock === 'released');
   };
 
   $scope.isOnboarded = function(feature){
@@ -415,49 +415,49 @@ function MainController(
     if ($scope.favoriteLists && $scope.favoriteLists.length &&
         $scope.favoriteLists.indexOf(list) !== -1){
       return true;
-    }
-  };
-
-  function combineNotesArrays() {
-    if ($scope.notes.length && $scope.archivedNotes.length) {
-      $scope.allNotes = $scope.notes.concat($scope.archivedNotes);
-    } else if ($scope.notes.length && !$scope.archivedNotes.length) {
-      $scope.allNotes = $scope.notes;
-    } else if ($scope.archivedNotes.length && !$scope.notes.length) {
-      $scope.allNotes = $scope.archivedNotes;
-    } else {
-      $scope.allNotes = [];
-    }
   }
+};
 
-  $scope.$watch('notes.length', function(/*newValue, oldValue*/) {
-    combineNotesArrays();
-  });
-  $scope.$watch('archivedNotes.length', function(/*newValue, oldValue*/) {
-    combineNotesArrays();
-  });
-
-  function combineTasksArrays() {
-    var activeArchivedTasks = [];
-    var i = 0;
-    while ($scope.archivedTasks[i]) {
-      if ($scope.archivedTasks[i].completed === undefined) {
-        activeArchivedTasks.push($scope.archivedTasks[i]);
-      }
-      i++;
-    }
-    $scope.allActiveTasks =
-    ArrayService.combineArrays(
-                               activeArchivedTasks,
-                               $scope.tasks, 'created', true);
+function combineNotesArrays() {
+  if ($scope.notes.length && $scope.archivedNotes.length) {
+    $scope.allNotes = $scope.notes.concat($scope.archivedNotes);
+  } else if ($scope.notes.length && !$scope.archivedNotes.length) {
+    $scope.allNotes = $scope.notes;
+  } else if ($scope.archivedNotes.length && !$scope.notes.length) {
+    $scope.allNotes = $scope.archivedNotes;
+  } else {
+    $scope.allNotes = [];
   }
+}
 
-  $scope.$watch('tasks.length', function(/*newValue, oldValue*/) {
-    combineTasksArrays();
-  });
-  $scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
-    combineTasksArrays();
-  });
+$scope.$watch('notes.length', function(/*newValue, oldValue*/) {
+  combineNotesArrays();
+});
+$scope.$watch('archivedNotes.length', function(/*newValue, oldValue*/) {
+  combineNotesArrays();
+});
+
+function combineTasksArrays() {
+  var activeArchivedTasks = [];
+  var i = 0;
+  while ($scope.archivedTasks[i]) {
+    if ($scope.archivedTasks[i].completed === undefined) {
+      activeArchivedTasks.push($scope.archivedTasks[i]);
+    }
+    i++;
+  }
+  $scope.allActiveTasks =
+  ArrayService.combineArrays(
+                             activeArchivedTasks,
+                             $scope.tasks, 'created', true);
+}
+
+$scope.$watch('tasks.length', function(/*newValue, oldValue*/) {
+  combineTasksArrays();
+});
+$scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
+  combineTasksArrays();
+});
 
   // Deleted items
   function combineDeletedArrays(/*changedArray*/) {
@@ -466,9 +466,9 @@ function MainController(
     var allNotesAndTasksAndLists = ArrayService.combineArrays(allNotesAndTasks,
                                                               $scope.deletedLists, 'deleted', true);
     var allNotesAndTasksAndListsAndItems = ArrayService.combineArrays(allNotesAndTasksAndLists,
-                                                    $scope.deletedItems, 'deleted', true);
+                                                                      $scope.deletedItems, 'deleted', true);
     $scope.allDeleted = ArrayService.combineArrays(allNotesAndTasksAndListsAndItems,
-                                                    $scope.deletedTags, 'deleted', true);
+                                                   $scope.deletedTags, 'deleted', true);
   }
   $scope.$watch('deletedItems.length', function(/*newValue, oldValue*/) {
     combineDeletedArrays($scope.deletedItems);
@@ -571,17 +571,18 @@ function MainController(
         if (itemsSynchronizeCounter === 0 ||
             itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
             sinceLastItemsSynchronized > userSyncTimeTreshold){
-            SynchronizeService.synchronizeUser(activeUUID).then(function(){
-              $scope.refreshFavoriteLists();
-            });
-          }
-          itemsSynchronizeCounter++;
-        }, function(){
-          $rootScope.syncState = 'error';
-        });
+          SynchronizeService.synchronizeUser(activeUUID).then(function(){
+            $scope.refreshFavoriteLists();
+          });
       }
+      itemsSynchronizeCounter++;
+    }, function(){
+      $rootScope.syncState = 'error';
+    });
     }
   }
+  executeSynchronizeCallbacks();
+}
 
   // CLEANUP
 
@@ -597,10 +598,24 @@ function MainController(
 
   // CALLBACKS
 
+  var synchronizeCallbacks = {};  // map of synchronize callbacks
+
   var editorAboutToOpenCallbacks = {};
   var editorOpenedCallbacks = {};
   var editorAboutToCloseCallbacks = {};
   var editorClosedCallbacks = {};
+
+  // Synchronize
+  $scope.registerSynchronizeCallback = function(callback, id) {
+    synchronizeCallbacks[id] = callback;
+  };
+  $scope.unregisterSynchronizeCallback = function(id) {
+    if (synchronizeCallbacks[id]) delete synchronizeCallbacks[id];
+  };
+  function executeSynchronizeCallbacks() {
+    for (var id in synchronizeCallbacks)
+      synchronizeCallbacks[id]();
+  }
 
   // register editor callbacks
   $scope.registerEditorAboutToOpenCallback = function (callback, id) {
