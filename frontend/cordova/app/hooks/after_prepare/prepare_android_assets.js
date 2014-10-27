@@ -8,9 +8,6 @@ var path = require( "path" ),
     buildroot = rootdir + "/assets/build/android";
 
 if (shell.test('-d', androidroot)){
-  // copy fonts
-  shell.exec( "cp -f " + fontroot + "/Helvetica*.* " + androidroot + "/assets/www/static/fonts", {silent:false} );
-
   // copy edited Android sources
 
   if (shell.test('-d', androidroot + "/src/org/extendedmind/nightly")){
