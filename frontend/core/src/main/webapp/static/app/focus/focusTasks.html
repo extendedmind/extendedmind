@@ -265,7 +265,7 @@
           </div>
         </div>
 
-        <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1" swiper-slide-loop-start="true">
+        <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1">
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'"
           list="tasks | tasksByDate:daySlides[0].info:daySlides[0].pastDate" list-order="top">
             <div ng-if="isFeatureActive('focus')">
@@ -291,7 +291,7 @@
           </div>
         </div>
 
-        <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2">
+        <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2" swiper-slide-loop-start="true">
           <div class="container-content" ng-class="daySlides[1].pastDate && 'past-date'"
           list="tasks | tasksByDate:daySlides[1].info:daySlides[1].pastDate" list-order="top">
             <div ng-if="isFeatureActive('focus')">

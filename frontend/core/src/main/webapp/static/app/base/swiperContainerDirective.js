@@ -136,11 +136,12 @@
 
       // Registers the path of the slide to the swiper
       // and sets up listeners for element, if needed
-      this.registerSlide = function registerSlide(path, element, index, duplicate) {
+      this.registerSlide = function registerSlide(path, element, index, duplicate, initialSlide) {
         if (duplicate){
           // Registered a duplicate slide, this is a looping swiper
           $scope.loop = true;
         }
+        if (initialSlide) SwiperService.setInitialSlidePath($scope.swiperPath, path);
 
         // For vertical page outerSwiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal
