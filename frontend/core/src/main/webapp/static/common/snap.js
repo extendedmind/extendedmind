@@ -267,6 +267,11 @@
                         utils.events.removeEvent(settings.element, utils.eventType('move'), action.drag.dragging);
                         utils.events.removeEvent(settings.element, utils.eventType('up'), action.drag.endDrag);
                     } else if (settings.overrideElement) {
+                        // Make sure drawer returns correct position.
+                        // We are using override element on 'right' drawer side, so translate to min position
+                        // without animation.
+                        // FIXME: Use drawerAisleController.
+                        action.translate.x(settings.minPosition);
                         utils.events.removeEvent(settings.overrideElement, utils.eventType('down'), action.drag.startDrag);
                         utils.events.removeEvent(settings.overrideElement, utils.eventType('move'), action.drag.dragging);
                         utils.events.removeEvent(settings.overrideElement, utils.eventType('up'), action.drag.endDrag);
