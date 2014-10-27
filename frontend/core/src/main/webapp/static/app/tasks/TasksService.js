@@ -307,7 +307,7 @@
         reverse: {
           method: 'post',
           url: '/api/' + ownerUUID + '/task/' + task.uuid + '/undelete'
-        }};
+        }, replaceable: true};
         BackendClientService.deleteOffline('/api/' + ownerUUID + '/task/' + task.uuid,
          this.deleteTaskRegex, params);
         task.deleted = task.modified = BackendClientService.generateFakeTimestamp();
@@ -332,7 +332,7 @@
 
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
-        var params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
+        var params = {type: 'task', owner: ownerUUID, uuid: task.uuid, replaceable: true};
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
          this.undeleteTaskRegex, params);
         delete task.deleted;
@@ -362,7 +362,7 @@
                       reverse: {
                         method: 'post',
                         url: '/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete'
-                      }};
+                      }, replaceable: true};
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
                                   this.completeTaskRegex, params);
         task.completed = task.modified = BackendClientService.generateFakeTimestamp();
@@ -390,7 +390,7 @@
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
 
       if (UserSessionService.isOfflineEnabled()) {
-        var params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
+        var params = {type: 'task', owner: ownerUUID, uuid: task.uuid, replaceable: true};
         // Offline
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
          this.uncompleteTaskRegex, params);

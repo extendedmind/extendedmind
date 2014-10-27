@@ -159,7 +159,7 @@
         reverse: {
           method: 'post',
           url: '/api/' + ownerUUID + '/item/' + item.uuid + '/undelete'
-        }};
+        }, replaceable: true};
         BackendClientService.deleteOffline('/api/' + ownerUUID + '/item/' + item.uuid,
          this.deleteItemRegex, params);
         item.deleted = item.modified = BackendClientService.generateFakeTimestamp();
@@ -187,7 +187,7 @@
       }
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
-        var params = {type: 'item', owner: ownerUUID, uuid: item.uuid};
+        var params = {type: 'item', owner: ownerUUID, uuid: item.uuid, replaceable: true};
         BackendClientService.post('/api/' + ownerUUID + '/item/' + item.uuid + '/undelete',
          this.deleteItemRegex, params);
         delete item.deleted;

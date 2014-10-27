@@ -146,19 +146,20 @@ function HttpRequestQueueService() {
         } else {
           var replaceableIndex = findReplaceableRequestIndex(request);
 
-          if (replaceableIndex !== undefined &&
-              (getHead() !== queue[replaceableIndex] || queue[replaceableIndex].offline)){
-            // Find identical replaceable method from the queue (not currently on the go):
-            // replace the data with the newer data
-            if (!(queue[replaceableIndex].content.data === undefined && request.content.data === undefined)){
-              // There is data to be replaced
+          if (replaceableIndex !== undefined){
+            if (queue[replaceableIndex].content.data === undefined && request.content.data === undefined){
+              // The method does not have a payload, we just stop here. This happens e.g. for
+              // delete, where second identical call will fail with "already deleted" if this is not done.
+              return false;
+            }else if (getHead() !== queue[replaceableIndex] || queue[replaceableIndex].offline){
+              // There is data to be replaced, and the request is not the head, or is the head but
+              // not on its way to the server: just replace
               queue[replaceableIndex].content.data = request.content.data;
               persistQueue();
+              return false;
             }
-            return false;
-          }else{
-            pushToQueue(request);
           }
+          pushToQueue(request);
         }
       }
       return true;

@@ -274,7 +274,7 @@
         reverse: {
           method: 'post',
           url: '/api/' + ownerUUID + '/note/' + note.uuid + '/undelete'
-        }};
+        }, replaceable: true};
         BackendClientService.deleteOffline('/api/' + ownerUUID + '/note/' + note.uuid,
          this.deleteNoteRegex, params);
         note.deleted = note.modified = BackendClientService.generateFakeTimestamp();
@@ -297,7 +297,7 @@
       if (this.getNoteStatus(note, ownerUUID) !== 'deleted') return;
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
-        var params = {type: 'note', owner: ownerUUID, uuid: note.uuid};
+        var params = {type: 'note', owner: ownerUUID, uuid: note.uuid, replaceable: true};
         BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/undelete',
          this.deleteNoteRegex, params);
         delete note.deleted;
@@ -327,8 +327,7 @@
                       reverse: {
                         method: 'post',
                         url: '/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite'
-                      },
-                      replaceable: true};
+                      },replaceable: true};
         BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/favorite',
                                   this.favoriteNoteRegex, params);
         note.favorited = note.modified = BackendClientService.generateFakeTimestamp();
