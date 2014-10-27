@@ -174,7 +174,8 @@ function MainController(
   };
 
   $scope.isFooterNavigationHidden = function(){
-    return $scope.onboardingInProgress || UserSessionService.getUIPreference('hideFooter');
+    return $scope.onboardingInProgress ||
+    (packaging.endsWith('cordova') && UserSessionService.getUIPreference('hideFooter'));
   }
 
   $scope.isVibrationDisabled = function(){
