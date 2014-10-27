@@ -12,16 +12,16 @@
     </div>
   </div>
 
-  <div class="row-padded" ng-repeat="list in lists | filter:notSelectedList" ng-click="listSelected(list)">
-    <a href>
-      <span class="text-link" clamp=2>{{::prefix}}{{list.title}}</span>
-    </a>
-  </div>
-
   <div ng-if="newList" class="row-form">
     <textarea autocapitalize="none" autocorrect="off" ng-model="newList.title" msd-elastic
     ng-click="watchForTitleChange()" ng-keydown="textareaKeyDown($event)" placeholder="{{placeholder}}"
     maxlength="128"></textarea>
+  </div>
+
+  <div class="row-padded" ng-repeat="list in lists | filter:notSelectedList | orderBy:'title'" ng-click="listSelected(list)">
+    <a href>
+      <span class="text-link" clamp=2>{{::prefix}}{{list.title}}</span>
+    </a>
   </div>
 
   <div class="row-form" ng-repeat="archivedList in archivedLists | filter:notSelectedList" ng-click="listSelected(archivedList)">
