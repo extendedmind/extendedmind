@@ -144,10 +144,6 @@
       return;
     }
 
-    // Vibrate
-    if (navigator.vibrate && !$scope.isVibrationDisabled())
-      navigator.vibrate(200);
-
     AnalyticsService.do('favoriteNote');
 
     return NotesService.favoriteNote(note, UISessionService.getActiveUUID());
@@ -165,10 +161,6 @@
       note.transientProperties.favorited = false;
       return;
     }
-
-    // Vibrate
-    if (navigator.vibrate && !$scope.isVibrationDisabled())
-      navigator.vibrate(200);
 
     AnalyticsService.do('unfavoriteNote');
 
