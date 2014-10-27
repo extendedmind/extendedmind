@@ -35,13 +35,13 @@
       }
 
       this.notifyListItemAddBlurred = function(){
-        if ($scope.listOnboarding.lock === 'on'){
+        if ($scope.onboardingInProgress && $scope.listOnboarding.lock === 'on'){
           $scope.listOnboarding.lock = undefined;
         }
       }
 
       this.notifyListItemAdd = function(){
-        if ($scope.listOnboarding.lock === 'on'){
+        if ($scope.onboardingInProgress && $scope.listOnboarding.lock === 'on'){
           $scope.turnOffListOnboardingLock($scope.listOnboarding);
           return true;
         }
@@ -97,9 +97,10 @@
       }
 
       function activateListAdd() {
-        if (scope.listOnboarding.lock === undefined) scope.listOnboarding.lock = 'on';
-        else if (scope.listOnboarding.lock === 'off') scope.listOnboarding.lock = 'released';
-
+        if (scope.onboardingInProgress){
+          if (scope.listOnboarding.lock === undefined) scope.listOnboarding.lock = 'on';
+          else if (scope.listOnboarding.lock === 'off') scope.listOnboarding.lock = 'released';
+        }
         if (listOpenOnAddFn){
           // Execute open function
           listOpenOnAddFn();
