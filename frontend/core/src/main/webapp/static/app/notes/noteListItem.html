@@ -1,6 +1,6 @@
 <div class="group-mixed">
   <div class="group-mixed--middle">
-    <a href class="link-note-heading" swiper-click="callAndWaitThenScroll(openNoteEditor, note)">
+    <a href class="link-note-heading link-list-item" swiper-click="callAndWaitThenScroll(openNoteEditor, note)">
       <span class="text-heading-primary" ng-bind="note.title"></span>
     </a>
   </div>
@@ -10,6 +10,6 @@
     </a>
   </div>
 </div>
-<a href class="group-teaser" swiper-click="callAndWaitThenScroll(openNoteEditorView, note)">
+<a href class="group-teaser link-teaser" swiper-click="callAndWaitThenScroll(openNoteEditorView, note)">
   <span class="text-teaser" clamp=3 ng-bind="getNoteContentTeaser(note)"></span>
 </a>

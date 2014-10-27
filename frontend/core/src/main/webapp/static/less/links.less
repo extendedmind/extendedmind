@@ -20,12 +20,6 @@ a {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-a:active {
-  *, *:before, *:after {
-    color: @color-text-pressed;
-  }
-}
-
 /*
 Highlighting and downplaying
 */
@@ -79,12 +73,32 @@ Menu link
   line-height: @grid-vertical * 2;
 }
 
+.link-menu:active {
+  * {
+    color: @color-text-highlighted;
+  }
+}
+
+/*
+In Android, :active pseudo class just sucks, gets ghost clicks when menu is opening.
+.menu-hidden selector tricks did not help either.
+*/
+.android .link-menu:active {
+  * {
+    color: @color-text-inverse;
+  }
+}
+
 /*
 Search results
 */
 .link-search-result {
   height: auto;
   line-height: @grid-vertical-half;
+}
+
+.link-search-result:active {
+  color: @color-text-pressed;
 }
 
 /*
@@ -98,4 +112,16 @@ Note Heading
 */
 .link-disable {
   pointer-events: none !important;
+}
+
+.link-list-item:active {
+  *, *:before, *:after {
+    color: @color-text-pressed;
+  }
+}
+
+.link-teaser:active {
+  *, *:before, *:after {
+    color: @color-text-downplayed-pressed;
+  }
 }
