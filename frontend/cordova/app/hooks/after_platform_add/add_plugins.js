@@ -3,7 +3,7 @@
 //this hook installs all your plugins
 
 var pluginlist = [
-    "https://github.com/driftyco/ionic-plugins-keyboard",
+    "com.ionic.keyboard",
     "org.apache.cordova.vibration"
 ];
 

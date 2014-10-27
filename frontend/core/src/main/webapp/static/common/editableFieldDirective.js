@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function editableFieldDirective($document, $parse, $rootScope, $timeout) {
+ function editableFieldDirective($document, $parse, $rootScope, $timeout, packaging) {
   return {
     require: '^?editableFieldContainer',
     restrict: 'A',
@@ -28,10 +28,17 @@
 
       if (attrs.editableFieldRegisterCallbacks){
         var registerCallbacksFn = $parse(attrs.editableFieldRegisterCallbacks).bind(undefined, scope);
-        registerCallbacksFn({focus: focus, blur: blur}) ;
+        registerCallbacksFn({focus: focusElement, blur: blurElement}) ;
       }
 
-      function focus() {
+      function focusElement() {
+        function doFocusElement(){
+          element[0].focus();
+          if (packaging === 'android-cordova'){
+            // In Android we need to force the keyboard up
+            cordova.plugins.Keyboard.show();
+          }
+        }
         // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
         if ($document[0].activeElement !== element[0]){
           if ($rootScope.$$phase || scope.$$phase){
@@ -39,28 +46,30 @@
             // https://github.com/angular/angular.js/issues/1250
             // "In the future, this will (hopefully) be solved with Object.observe."
             $timeout(function(){
-              element[0].focus()
+              doFocusElement();
             });
           }else {
-            element[0].focus()
+            doFocusElement();
           }
-        };
+        }
       }
 
       var unfocusInProgress = false;
-      function blur(deactivateAfterBlur) {
+      function blurElement(deactivateAfterBlur) {
+        function doBlurElement(){
+          element[0].blur();
+          if (deactivateAfterBlur && editableFieldContainerController)
+            editableFieldContainerController.deactivateContainer();
+        }
+
         if ($document[0].activeElement === element[0]){
           unfocusInProgress = true;
           if ($rootScope.$$phase || scope.$$phase){
             $timeout(function(){
-              element[0].blur();
-              if (deactivateAfterBlur && editableFieldContainerController)
-                editableFieldContainerController.deactivateContainer();
+              doBlurElement();
             });
           }else {
-            element[0].blur();
-            if (deactivateAfterBlur && editableFieldContainerController)
-              editableFieldContainerController.deactivateContainer();
+            doBlurElement();
           }
         }
       }
@@ -68,13 +77,13 @@
       var refocusInProgress = false;
       function reFocusEditableField(){
         refocusInProgress = true;
-        focus();
+        focusElement();
       }
 
       var editableFieldClicked = function() {
         if (editableFieldContainerController) editableFieldContainerController.notifyFocus();
         reFocusEditableField();
-      }
+      };
 
       var editableFieldFocus = function() {
         if (!refocusInProgress){
@@ -87,10 +96,14 @@
       var editableFieldBlur = function() {
         if (editableFieldType === 'sticky' && !unfocusInProgress){
           reFocusEditableField();
-          if (editableFieldContainerController) editableFieldContainerController.notifyReFocus(blur);
+          if (editableFieldContainerController) editableFieldContainerController.notifyReFocus(blurElement);
         }else{
           element.removeClass('active');
           unfocusInProgress = false;
+          if (packaging === 'android-cordova'){
+            // In Android we need to force the keyboard down
+            cordova.plugins.Keyboard.close();
+          }
         }
       };
 
@@ -119,5 +132,5 @@
     }
   };
 }
-editableFieldDirective['$inject'] = ['$document', '$parse', '$rootScope', '$timeout'];
+editableFieldDirective['$inject'] = ['$document', '$parse', '$rootScope', '$timeout', 'packaging'];
 angular.module('common').directive('editableField', editableFieldDirective);
