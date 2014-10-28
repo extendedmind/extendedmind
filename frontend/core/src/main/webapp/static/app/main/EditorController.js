@@ -301,6 +301,12 @@
     if (item.transientProperties && item.transientProperties.context === context.uuid)
       delete item.transientProperties.context;
   };
+
+  // DESCRIPTION
+  $scope.setDescriptionFocus = function(value){
+    $scope.descriptionFocused = value;
+  }
+
 }
 
 EditorController['$inject'] = ['$rootScope', '$scope', 'ConvertService', 'ItemsService', 'SwiperService',

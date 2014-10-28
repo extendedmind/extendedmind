@@ -41,20 +41,20 @@
           </div>
 
           <div ng-if="!calendarOpen && !listPickerOpen">
-            <div class="row-form animate-fade-in">
+            <div ng-hide="descriptionFocused" class="row-form animate-fade-in">
               <a href ng-click="openCalendar()">
                 <span ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></span>
               </a>
             </div>
 
-            <div class="row-form" ng-click="openListPicker()">
+            <div ng-hide="descriptionFocused" class="row-form" ng-click="openListPicker()">
               <a href>
                 <span class="text-link" ng-bind="task.transientProperties.list ? getListTitleFromUUID(task.transientProperties.list) : 'select list\u2026'"></span>
               </a>
             </div>
 
             <div class="row-form">
-              <textarea ng-model="task.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
+              <textarea ng-model="task.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024" ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)"></textarea>
             </div>
 
           </div>
