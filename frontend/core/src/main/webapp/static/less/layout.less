@@ -441,6 +441,16 @@ Use `.group-instruction` to create an instruction block in the middle of a secti
   }
 }
 
+// For iPhone 4s, we need a much tighter layout
+.height-small .group-instruction{
+  .textgroup-ingress {
+    padding-top: 0;
+  }
+  .textgroup-ingress.last {
+    padding-top: @grid-vertical-half;
+  }
+}
+
 /*
 Use `.group-instruction-input` to create an instruction block below an input field.
 */
@@ -477,6 +487,12 @@ Use `.group-instruction-jumbtron` to create a very large instruction block in th
   }
 }
 
+// iPhone 4s, less top margin
+.height-small .group-instruction-jumbotron {
+  .group-instruction--main{
+    margin-top: @grid-vertical-medium;
+  }
+}
 
 /*
 Use `.group-mixed` to create horizontal collections of different elements.
@@ -657,6 +673,11 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 .group-heading.instruction {
   margin-top: @grid-vertical * 1.5;
   padding-top: 2vh;
+}
+
+// iPhone 4s, less top margin for instruction headings
+.height-small .group-heading.instruction {
+  margin-top: @grid-vertical-half;
 }
 
 .group-heading .highlighted {
