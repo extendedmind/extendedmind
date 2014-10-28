@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function editorFooterDirective($animate, $parse, $rootScope) {
+ function editorFooterDirective($animate, $parse, $rootScope, $timeout, packaging) {
   var footerHeight = 44;
   var expandedFooterHeight = 179;
   return {
@@ -50,14 +50,11 @@
 
       };
 
-      scope.openExpand = function() {
-        scope.footerExpanded = true;
+
+      function startFooterExpandAnimation() {
         // Footer expands so it needs new height and bottom.
         element[0].style.height = expandedFooterHeight + 'px';
         element[0].style.bottom = -(expandedFooterHeight - footerHeight) + 'px';
-
-
-        // Start expand animation.
         expandPromise = $animate.addClass(element, 'animate-editor-footer-open').then(function() {
 
           // Shrink promise exists if footer is shrinked before it is fully expanded. In that case,
@@ -73,10 +70,40 @@
           }
           expandPromise = undefined;
         });
+        // Need to digest ot be sure that class is applied
+        if (!$rootScope.$$phase && !scope.$$phase){
+          scope.$digest();
+        }
+      }
 
+      scope.openExpand = function() {
+        if (!scope.footerExpanded){
+          scope.footerExpanded = true;
+          startFooterExpandAnimation();
+        }
       };
+
+      // iOS hack: when keyboard is up, later icon does not open expanded area. To get around this
+      // we use a long enough timetout for the keyboard to get hidden, and after that, open the
+      // expand area.
+      function iOSEditorFooterTouched(){
+        if (!scope.footerExpanded && event.target.id.startsWith('editorFooterMiddle')){
+          $timeout(function(){
+            scope.openExpand();
+          }, 150);
+        }
+      }
+
+      if (attrs.editorFooterListenMiddleClick !== undefined && packaging === 'ios-cordova'){
+        element[0].addEventListener('touchstart', iOSEditorFooterTouched);
+      }
+      scope.$on('$destroy', function() {
+        if (attrs.editorFooterListenMiddleClick !== undefined && packaging === 'ios-cordova'){
+          element[0].removeEventListener('touchstart', iOSEditorFooterTouched);
+        }
+      });
     }
   };
 }
-editorFooterDirective['$inject'] = ['$animate', '$parse', '$rootScope'];
+editorFooterDirective['$inject'] = ['$animate', '$parse', '$rootScope', '$timeout', 'packaging'];
 angular.module('em.base').directive('editorFooter', editorFooterDirective);

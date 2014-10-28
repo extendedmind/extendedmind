@@ -61,11 +61,12 @@
 
         </div>
 
-        <footer class="container-content--after editor-footer" editor-footer="basicSlideInfo">
+        <footer class="container-content--after editor-footer" editor-footer="basicSlideInfo"
+        editor-footer-listen-middle-click>
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
-              <a href ng-if="task.transientProperties.date" ng-click="openExpand()">
-                <span class="text-calendar"></span>
+              <a href id="editorFooterMiddleLink" ng-if="task.transientProperties.date" ng-click="openExpand()">
+                <span id="editorFooterMiddleIcon" class="text-calendar"></span>
               </a>
             </div>
             <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--right link-navigation">
