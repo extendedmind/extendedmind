@@ -25,12 +25,12 @@
       <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')" class="group-instruction-input">
         <div ng-if="!titlebar.text || titlebar.text.length === 0" class="text-details row">e.g. books to read, notes from a
          conversation, plans for the summer</div>
-        <div ng-if="titlebar.text.length && !hideNoteTitle" class="text-details row">when done, hit return</div>
-      </div>
-    </div>
-  </header>
+         <div ng-if="titlebar.text.length && !hideNoteTitle" class="text-details row">when done, hit return</div>
+       </div>
+     </div>
+   </header>
 
-  <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
+   <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper" ng-class="onboardingInProgress && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': mode === 'fullScreen' ? 0 : EDITOR_FOOTER_HEIGHT}" class="container-content" drawer-override-aisle="right">
@@ -52,7 +52,7 @@
             editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"></textarea>
             <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')" class="group-instruction-input">
               <div ng-if="note.content.length" class="text-details row">when done, save your note by
-              clicking save in the top-left corner or swipe left
+                clicking save in the top-left corner or swipe left
               </div>
             </div>
           </div>
@@ -73,10 +73,27 @@
       <div class="swiper-slide" swiper-slide="noteEditor/advanced" slide-index="1" ng-init="advancedSlideInfo = {}">
         <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
 
-          <!-- TODO! -->
-          <!-- <select ng-show="keywords.length" ng-model="note.transientProperties.keywords" ng-options="keyword.uuid as keyword.title for keyword in keywords">
-            <option value="">select keywords&#8230;</option>
-          </select> -->
+          <!-- KEYWORDS -->
+          <form role="form" class="row-form" autocapitalize="none" autocorrect="off" ng-submit="addNewKeywordToNote(note, newKeyword)">
+            <input type="text" ng-model="newKeyword.title" placeholder="add keyword&#8230;" maxlength="128">
+          </form>
+          <span class="text-details row" ng-if="newKeyword.title" class="row" clamp=2>hit enter to create #{{newKeyword.title}}</span>
+
+          <div ng-if="noteHasKeywords(note)" class="keywords-container row">
+            <div class="keyword-wrapper" ng-repeat="keyword in keywords | keywordsFilter:{name: 'byNoteUUID', item: note} | orderBy:'title'">
+              <a href class="keyword highlighted" ng-click="removeKeywordFromNote(note, keyword)">
+                <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
+              </a>
+            </div>
+          </div>
+
+          <div ng-if="keywords" class="keywords-container row">
+            <div class="keyword-wrapper" ng-repeat="keyword in keywords | keywordsFilter:{name:'byOtherThanNoteUUID', item: note} | filter:newKeyword.title | orderBy:'title'">
+              <a href class="keyword" ng-click="addKeywordToNote(note, keyword)">
+                <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
+              </a>
+            </div>
+          </div>
 
           <div class="row-form">
             <input type="text" ng-model="note.link" placeholder="enter url&#8230;">

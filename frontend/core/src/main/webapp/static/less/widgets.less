@@ -30,6 +30,54 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
 
 /*
 *************************************************************
+# Keywords
+*/
+
+// 1. Set display to inline-block so that .keywords-container has some height.
+.keywords-container {
+  width: 100%;
+  height: auto;
+  display: inline-block;
+}
+
+.keyword-wrapper {
+  width: 33.333%;
+  height: @grid-vertical-medium;
+  float: left;
+  display: table;
+}
+
+// 1. Add padding-right to keywords in left column
+.keyword-wrapper:nth-child(3n+1) {
+  .keyword {
+    padding-right: 5px; // [1]
+  }
+}
+
+// 1. Add padding-left and padding-right to keywords in middle column.
+.keyword-wrapper:nth-child(3n+2) {
+  .keyword {
+    padding-left: 5px;  // [1]
+    padding-right: 5px; // [1]
+    text-align: center;
+  }
+}
+
+// 1. Add padding-left to keywords in right column.
+.keyword-wrapper:nth-child(3n+3) {
+  .keyword {
+    padding-left: 5px;  // [1]
+    text-align: right;
+  }
+}
+
+.keyword {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+/*
+*************************************************************
 # Datepicker
 */
 

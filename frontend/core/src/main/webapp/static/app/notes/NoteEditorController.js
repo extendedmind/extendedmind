@@ -15,7 +15,7 @@
 
  'use strict';
 
- function NoteEditorController($scope) {
+ function NoteEditorController($scope, UUIDService) {
 
   // INITIALIZING
 
@@ -36,7 +36,7 @@
     $scope.deferEdit().then(function() {
       $scope.saveNote($scope.note);
     });
-  };
+  }
 
   $scope.deleteNoteInEdit = function() {
     // Unregister about to close callback, because delete is run after editor is closed
@@ -52,7 +52,7 @@
 
   $scope.endNoteEdit = function() {
     $scope.closeNoteEditor();
-  }
+  };
 
   function noteEditorAboutToClose() {
     if ($scope.titlebarHasText() && !$scope.note.deleted) saveNoteInEdit();
@@ -72,14 +72,14 @@
     if ($scope.isFirstSlide()){
       $scope.mode = 'fullScreen';
     }
-  }
+  };
 
   $scope.noteContentFocused = function(){
     if ($scope.isFirstSlide()){
       $scope.mode = 'fullScreen';
       $scope.hideNoteTitle = true;
     }
-  }
+  };
 
   $scope.toggleNoteEditMode = function(){
     if ($scope.mode === 'fullScreen'){
@@ -90,14 +90,14 @@
       $scope.mode = 'view';
     }
     $scope.hideNoteTitle = false;
-  }
+  };
 
   // CONTENT
 
   var noteContentFocusCallback;
   $scope.registerNoteContentInputCallbacks = function(focus){
     noteContentFocusCallback = focus;
-  }
+  };
 
   // TITLEBAR
 
@@ -128,49 +128,37 @@
     };
   };
 
-  function addKeywordToNote(keyword) {
+  $scope.addKeywordToNote = function(note, keyword) {
     if (!$scope.note.transientProperties) $scope.note.transientProperties = {};
     if (!$scope.note.transientProperties.keywords) $scope.note.transientProperties.keywords = [];
     $scope.note.transientProperties.keywords.push(keyword.uuid);
-  }
-
-  $scope.selectExistingKeyword = function selectExistingKeyword(keyword) {
-    addKeywordToNote(keyword);
     $scope.clearKeyword();
   };
 
-  $scope.selectNewKeyword = function selectNewKeyword() {
-    function keywordExists(keyword) {
-      if (keyword.title === $scope.newKeyword.title) {
-        $scope.newKeyword = keyword;
-        return true;
-      }
-      return false;
+  $scope.addNewKeywordToNote = function(note, newKeyword) {
+    var keywordToAdd = $scope.keywords.findFirstObjectByKeyValue('title', newKeyword.title);
+
+    if (!keywordToAdd) {
+      // Make new keyword with fake UUID and push it to keywords array.
+      keywordToAdd = newKeyword;
+      keywordToAdd.uuid = UUIDService.generateFakeUUID();
+      $scope.keywords.push(keywordToAdd);
     }
-    var isExistingKeyword = $scope.keywords.some(keywordExists);
-    if (!isExistingKeyword) {
-      $scope.newKeyword.uuid = UUIDService.generateFakeUUID();
-      $scope.newKeyword.isNew = true;
-      $scope.keywords.push($scope.newKeyword);
-    }
-    addKeywordToNote($scope.newKeyword);
-    $scope.clearKeyword();
+
+    $scope.addKeywordToNote(note, keywordToAdd);
   };
 
-  $scope.unSelectKeyword = function unSelectKeyword(keyword) {
-    $scope.note.transientProperties.keywords.splice($scope.note.transientProperties.keywords.indexOf(keyword.uuid), 1);
-    if (keyword.isNew) $scope.keywords.splice($scope.keywords.indexOf(keyword), 1);
-  };
+  $scope.removeKeywordFromNote = function(note, keyword) {
+    note.transientProperties.keywords.splice(note.transientProperties.keywords.indexOf(keyword.uuid), 1);
 
-  $scope.isSelectedKeyword = function isSelectedKeyword() {
-    function isNoteKeyword(keyword) {
-      return keyword.title === $scope.newKeyword.title &&
-      $scope.note.transientProperties.keywords.indexOf(keyword.uuid) !== -1;
+    var transientKeyword = UUIDService.isFakeUUID(keyword.uuid);
+    if (transientKeyword) {
+      // Remove new keyword.
+      $scope.keywords.splice($scope.keywords.indexOf(keyword), 1);
     }
-    if ($scope.noteHasKeywords()) return $scope.keywords.some(isNoteKeyword);
   };
 
 }
 
-NoteEditorController['$inject'] = ['$scope'];
+NoteEditorController['$inject'] = ['$scope', 'UUIDService'];
 angular.module('em.main').controller('NoteEditorController', NoteEditorController);

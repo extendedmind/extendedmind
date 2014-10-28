@@ -21,7 +21,8 @@
     if (note.transientProperties && note.transientProperties.keywords) {
       var filteredKeywords = [];
       for (var i = 0, len = keywords.length; i < len; i++) {
-        if (note.transientProperties.keywords.indexOf(keywords[i].uuid) !== -1) filteredKeywords.push(keywords[i]);
+        if (note.transientProperties.keywords.indexOf(keywords[i].uuid) !== -1)
+          filteredKeywords.push(keywords[i]);
       }
       return filteredKeywords;
     }
@@ -31,10 +32,13 @@
     if (note.transientProperties && note.transientProperties.keywords) {
       var filteredKeywords = [];
       for (var i = 0, len = keywords.length; i < len; i++) {
-        if (note.transientProperties.keywords.indexOf(keywords[i].uuid) === -1) filteredKeywords.push(keywords[i]);
+        if (note.transientProperties.keywords.indexOf(keywords[i].uuid) === -1)
+          filteredKeywords.push(keywords[i]);
       }
       return filteredKeywords;
     }
+    // Just return keywords if note has no keywords.
+    return keywords;
   };
 
   return function(keywords, filterValue) {
