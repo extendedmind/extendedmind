@@ -89,9 +89,8 @@
       this.activateContainer = function (id) {
         // Function called in the middle of a click event. It may be unsafe to stop event bubbling,
         // so prevent bubbling locally to backdrop click event.
-        if (event && event.type === 'click' || event.type === 'focus'){
+        if (event && (event.type === 'click' || event.type === 'focus')){
           preventBackdropBubbleClick = (new Date).getTime();
-
         }
 
         // activate container
