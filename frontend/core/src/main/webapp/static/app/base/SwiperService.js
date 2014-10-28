@@ -71,8 +71,8 @@ function SwiperService($q, $timeout) {
     }
   };
 
-  function getInitialSlideIndex(swiperPath, swiperSlidesPaths, loop) {
-    var overrideSlideIndex = useOverrideSlideIndex(swiperPath, swiperSlidesPaths, loop);
+  function getInitialSlideIndex(swiperPath, swiperSlidesPaths) {
+    var overrideSlideIndex = useOverrideSlideIndex(swiperPath, swiperSlidesPaths);
     if (overrideSlideIndex !== undefined) {
       return overrideSlideIndex;
     } else {
@@ -81,19 +81,11 @@ function SwiperService($q, $timeout) {
     }
   }
 
-  function useOverrideSlideIndex(swiperPath, swiperSlidesPaths, loop) {
+  function useOverrideSlideIndex(swiperPath, swiperSlidesPaths) {
     if (overrideSwiperParams[swiperPath] && overrideSwiperParams[swiperPath].initialSlidePath) {
       var slideIndex = getSlideIndexBySlidePath(overrideSwiperParams[swiperPath].initialSlidePath,
                                                 swiperSlidesPaths);
       if (slideIndex !== undefined) {
-        if (loop) {
-          // Correct the index when in loop mode. There are two duplicated (looped) slides,
-          // one in the beginning and one in the end. Since there is no point setting a duplicated slide as
-          // initial slide, we can assume that the initial slide index is the somewhere in the middle
-          // slides.lenght. So we get the correct index by subtracting number of duplicate slides (=1)
-          // preceding initial slide. So this will not work if initial slide in is set to zero.
-          slideIndex--;
-        }
         // execute slide change callbacks on override
         executeSlideChangeCallbacks(swiperPath,
                                     overrideSwiperParams[swiperPath].initialSlidePath,
@@ -134,7 +126,7 @@ function SwiperService($q, $timeout) {
       onSlideChangeEnd: onSlideChangeEndCallback
     };
 
-    swiperParams.initialSlide = getInitialSlideIndex(swiperPath, swiperSlidesPaths, loop);
+    swiperParams.initialSlide = getInitialSlideIndex(swiperPath, swiperSlidesPaths);
     if (swiperType === 'main') {
       swiperParams.mode = 'horizontal';
     } else if (swiperType === 'page') {
@@ -215,8 +207,7 @@ function SwiperService($q, $timeout) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
         // Set initial slide path
         var initialSlideIndex = 0;
-        var overrideSlideIndex = useOverrideSlideIndex(swiperPath, swiperSlidesPaths,
-                                                       swipers[swiperPath].params.loop);
+        var overrideSlideIndex = useOverrideSlideIndex(swiperPath, swiperSlidesPaths);
         if (overrideSlideIndex !== undefined) {
           initialSlideIndex = overrideSlideIndex;
         }

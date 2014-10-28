@@ -53,8 +53,7 @@
       swiperContainerDirectiveController.registerSlide(scope.slidePath,
                                                        element,
                                                        scope.slideIndex,
-                                                       scope.duplicateSlide,
-                                                       scope.loopStart);
+                                                       scope.duplicateSlide);
       scope.$on('$destroy', function() {
         swiperContainerDirectiveController.unregisterSlide(scope.slidePath);
       });

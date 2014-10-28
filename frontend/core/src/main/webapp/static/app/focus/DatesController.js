@@ -26,12 +26,6 @@
   */
   $scope.daySlides = [
   {
-    // 'no date' slide
-    info: null,
-    referenceDate: null,
-    heading: daySlideHeading(null)
-  },
-  {
     info: DateService.getTodayYYYYMMDD(),
     referenceDate: DateService.getTodayYYYYMMDD(),
     heading: daySlideHeading(DateService.getTodayYYYYMMDD())
@@ -40,6 +34,12 @@
     info: DateService.getTomorrowYYYYMMDD(),
     referenceDate: DateService.getTomorrowYYYYMMDD(),
     heading: daySlideHeading(DateService.getTomorrowYYYYMMDD())
+  },
+  {
+    // 'no date' slide
+    info: null,
+    referenceDate: null,
+    heading: daySlideHeading(null)
   }
   ];
 
