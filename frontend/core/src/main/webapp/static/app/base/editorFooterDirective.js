@@ -83,6 +83,14 @@
         }
       };
 
+      scope.toggleExpand = function() {
+        if (scope.footerExpanded){
+          scope.closeExpand();
+        }else {
+          scope.openExpand();
+        }
+      }
+
       // iOS hack: when keyboard is up, later icon does not open expanded area. To get around this
       // we use a long enough timetout for the keyboard to get hidden, and after that, open the
       // expand area.
