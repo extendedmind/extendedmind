@@ -1,12 +1,12 @@
 <div ng-if="isFeatureActive('focus')" class="container-content--outer" list-container>
-  <section ng-if="isOnboarded('focusNotes')" class="container-content" list="allNotes | itemsFilter:{name:'favorited'}" list-order="top" list-open="openEditor('note', {transientProperties: {favorited:true, itemType: 'note'}})" swiper-prevent>
+  <section ng-show="isOnboarded('focusNotes')" class="container-content" list="allNotes | itemsFilter:{name:'favorited'}" list-order="top" list-open="openEditor('note', {transientProperties: {favorited:true, itemType: 'note'}})" swiper-prevent>
     <h2 class="group-heading justified row">favorite</h2>
     <div class="animate-list-item-leave tall"
     ng-repeat="note in getList() | orderBy:'favorited':true | limitTo: currentListLimitTo"
     list-item="getList().length" ng-include="'static/app/notes/noteListItem.html'"></div>
     <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
   </section>
-  <footer ng-if="isOnboarded('focusNotes')" class="container-content--after" list-footer="getFeatureMap('focus')"></footer>
+  <footer ng-show="isOnboarded('focusNotes')" class="container-content--after" list-footer="getFeatureMap('focus')"></footer>
   <section ng-if="!isOnboarded('focusNotes')" class="container-content">
     <div class="group-instruction">
       <h2 class="group-heading instruction row">what notes are

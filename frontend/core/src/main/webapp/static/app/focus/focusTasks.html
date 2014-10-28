@@ -1,5 +1,5 @@
 <div class="container-content--outer" list-container drawer-handle="left" drawer-handle-register-activate="registerFocusActivateCallback(activate)" list-container-override-vertical-resize="true">
-  <section ng-if="isOnboarded('focusTasks')" class="container-content" ng-controller="DatesController">
+  <section ng-show="isOnboarded('focusTasks')" class="container-content" ng-controller="DatesController">
 
     <div ng-if="datepickerVisible" class="swiper-container datepicker" swiper-container="datepicker" swiper-type="main" expected-slides="5" data-snap-ignore="true">
       <!-- Set editable-field-container to child to circumvent AngularJS error https://docs.angularjs.org/error/$compile/multidir -->
@@ -372,7 +372,7 @@
       </div>
     </div>
   </section>
-  <footer ng-if="isOnboarded('focusTasks')" class="container-content--after" list-footer="getFeatureMap('focus')"></footer>
+  <footer ng-show="isOnboarded('focusTasks')" class="container-content--after" list-footer="getFeatureMap('focus')"></footer>
 
   <section ng-if="!isOnboarded('focusTasks')" class="container-content">
     <div class="group-instruction">

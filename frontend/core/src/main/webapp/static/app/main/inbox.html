@@ -1,5 +1,5 @@
 <div class="container-fluid--inner" list-container drawer-handle="left">
-  <section ng-if="isOnboarded('inbox')" class="container-content" list="items" list-order="top">
+  <section ng-show="isOnboarded('inbox')" class="container-content" list="items" list-order="top">
     <h2 class="group-heading justified row" ng-bind="items.length + ' items'"></h2>
 
     <div list-item-add="{transientProperties: {itemType: 'item'}}" list-item-add-save="saveItem(newItem)">
@@ -28,8 +28,7 @@
     </div>
     <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
   </section>
-  <footer ng-if="isOnboarded('inbox')" class="container-content--after" list-footer="getFeatureMap('inbox')"></footer>
-
+  <footer ng-show="isOnboarded('inbox')" class="container-content--after" list-footer="getFeatureMap('inbox')"></footer>
 
   <section ng-if="!isOnboarded('inbox')" class="container-content">
     <div class="group-instruction">
