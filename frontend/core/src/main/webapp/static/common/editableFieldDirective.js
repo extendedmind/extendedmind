@@ -127,7 +127,7 @@
         angular.element(element).unbind('blur', editableFieldBlur);
         angular.element(element).unbind('keydown', editableFieldKeydown);
         if (editableFieldType === 'sticky')
-          angular.element(element).bind('click', editableFieldClicked);
+          angular.element(element).unbind('click', editableFieldClicked);
       });
     }
   };
