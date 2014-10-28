@@ -80,7 +80,7 @@
           <span class="text-details row" ng-if="newKeyword.title" class="row" clamp=2>hit enter to create #{{newKeyword.title}}</span>
 
           <div ng-if="noteHasKeywords(note)" class="keywords-container row">
-            <div class="keyword-wrapper" ng-repeat="keyword in keywords | keywordsFilter:{name: 'byNoteUUID', item: note} | orderBy:'title'">
+            <div class="keyword-wrapper" ng-repeat="keyword in note.transientProperties.keywords | orderBy:'title'">
               <a href class="keyword highlighted" ng-click="removeKeywordFromNote(note, keyword)">
                 <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
               </a>
@@ -88,7 +88,7 @@
           </div>
 
           <div ng-if="keywords" class="keywords-container row">
-            <div class="keyword-wrapper" ng-repeat="keyword in keywords | keywordsFilter:{name:'byOtherThanNoteUUID', item: note} | filter:newKeyword.title | orderBy:'title'">
+            <div class="keyword-wrapper" ng-repeat="keyword in keywords | keywordsFilter:{name:'byOtherThanNoteKeywords', item: note} | filter:newKeyword.title | orderBy:'title'">
               <a href class="keyword" ng-click="addKeywordToNote(note, keyword)">
                 <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
               </a>

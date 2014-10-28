@@ -19,59 +19,42 @@
                           UISessionService) {
 
   $scope.noteHasKeywords = function noteHasKeywords(note) {
-    return note.transientProperties && note.transientProperties.keywords;
+    return note.transientProperties && note.transientProperties.keywords &&
+    note.transientProperties.keywords.length;
   };
 
-  // Return keywords, that has beend added during note edit
+  // Return keywords, that has beend added during note edit.
   function getNewKeywords(keywords) {
     var newKeywords = [];
     for (var i=0; i<keywords.length; i++){
       var keyword = keywords[i];
-      if (keyword.isNew){
+      if (!keyword.uuid) {
+        // Keyword is new when it doesn't have an UUID.
         newKeywords.push(keyword);
       }
     }
     return newKeywords;
   }
 
-  // Keyword is added with fake UUID and isNew key, which are removed before save.
-  // Keyword is associated with UUID so it needs to be removed from lists also.
-  function removeFromMemoryAndReturnSavePromise(keyword, note) {
-    note.transientProperties.keywords.splice(note.transientProperties.keywords.indexOf(keyword.uuid), 1);
-    delete keyword.uuid;
-    delete keyword.isNew;
-
-    return TagsService.saveTag(keyword, UISessionService.getActiveUUID());
-  }
-
-  // Re-add keywords to note with correct UUIDs.
-  function addKeywordsToNote(keywords, note) {
-    keywords.forEach(function(keyword) {
-      note.transientProperties.keywords.push(keyword.uuid);
-    });
-  }
-
   // Save keywords first because saveTag requires network connection.
   function saveKeywords(note) {
-    var deferredSaveKeywordsSave = $q.defer();
-
-    if ($scope.noteHasKeywords(note))
-    {
+    if ($scope.noteHasKeywords(note)) {
       // http://stackoverflow.com/a/21315112
       var newKeywords = getNewKeywords(note.transientProperties.keywords);
-      var saveNewKeywordPromises = newKeywords.map(function(newKeyword){
-        return removeFromMemoryAndReturnSavePromise(newKeyword, note);
-      });
+      if (newKeywords) {
+        var saveNewKeywordPromises = newKeywords.map(function(newKeyword) {
+          // Make array of save keyword promises from new keywords.
+          return TagsService.saveTag(newKeyword, UISessionService.getActiveUUID());
+        });
 
-      $q.all(saveNewKeywordPromises).then(function(){
-        addKeywordsToNote(newKeywords, note);
-        deferredSaveKeywordsSave.resolve();
-      });
-
-    } else {
-      deferredSaveKeywordsSave.resolve();
+        return $q.all(saveNewKeywordPromises);
+      }
     }
-    return deferredSaveKeywordsSave.promise;
+
+    // Return promise to caller.
+    var deferredSaveKeywords = $q.defer();
+    deferredSaveKeywords.resolve();
+    return deferredSaveKeywords.promise;
   }
 
   // SAVING

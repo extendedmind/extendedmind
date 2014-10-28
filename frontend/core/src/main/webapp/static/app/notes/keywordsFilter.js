@@ -17,22 +17,11 @@
  function keywordsFilter() {
   var keywordsFilters = {};
 
-  keywordsFilters.byNoteUUID = function(keywords, note) {
+  keywordsFilters.byOtherThanNoteKeywords = function(keywords, note) {
     if (note.transientProperties && note.transientProperties.keywords) {
       var filteredKeywords = [];
       for (var i = 0, len = keywords.length; i < len; i++) {
-        if (note.transientProperties.keywords.indexOf(keywords[i].uuid) !== -1)
-          filteredKeywords.push(keywords[i]);
-      }
-      return filteredKeywords;
-    }
-  };
-
-  keywordsFilters.byOtherThanNoteUUID = function(keywords, note) {
-    if (note.transientProperties && note.transientProperties.keywords) {
-      var filteredKeywords = [];
-      for (var i = 0, len = keywords.length; i < len; i++) {
-        if (note.transientProperties.keywords.indexOf(keywords[i].uuid) === -1)
+        if (note.transientProperties.keywords.indexOf(keywords[i]) === -1)
           filteredKeywords.push(keywords[i]);
       }
       return filteredKeywords;

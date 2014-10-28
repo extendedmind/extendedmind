@@ -36,14 +36,17 @@
             break;
           } else if (tag.tagType === 'keyword') {
             if (!extendedItem.transientProperties.keywords) extendedItem.transientProperties.keywords = [];
-            extendedItem.transientProperties.keywords.push(tag.uuid);
+            if (extendedItem.transientProperties.keywords.indexOf(tag) === -1) {
+                // Push keyword if it does not exist in transient keywords.
+                extendedItem.transientProperties.keywords.push(tag);
+              }
+            }
           }
         }
       }
     }
-  }
 
-  function copyKeywordsToTags(extendedItem, ownerUUID) {
+    function copyKeywordsToTags(extendedItem, ownerUUID) {
     // Item has transient keywords.
     if (extendedItem.transientProperties && extendedItem.transientProperties.keywords) {
       // Item has persistent tags.
@@ -52,10 +55,13 @@
         .concat(addNewTransientKeywordsToTags());
       }
       // Item does not have persistend tags
-      //  * copy transient keywords to tags
+      //  * copy transient keyword UUIDs to tags
       else {
         if (!extendedItem.relationships) extendedItem.relationships = {};
-        extendedItem.relationships.tags = extendedItem.transientProperties.keywords;
+        extendedItem.relationships.tags = [];
+        for (var i = 0, len = extendedItem.transientProperties.keywords.length; i < len; i++) {
+          extendedItem.relationships.tags.push(extendedItem.transientProperties.keywords[i].uuid);
+        }
       }
     }
     // Transient keywords has been removed from item, delete persistent values
@@ -78,7 +84,10 @@
           if (tag.tagType === 'context') filteredTags.push(extendedItem.relationships.tags[i]);
           else if (tag.tagType === 'keyword') {
             // Find persistent keyword from transient keywords
-            if (extendedItem.transientProperties.keywords.indexOf(extendedItem.relationships.tags[i]) !== -1) {
+            var persistentKeyword = extendedItem.transientProperties.keywords
+            .findFirstObjectByKeyValue('uuid', extendedItem.relationships.tags[i]);
+
+            if (persistentKeyword !== undefined) {
               filteredTags.push(extendedItem.relationships.tags[i]);
             }
           }
@@ -92,8 +101,9 @@
       //  * add transient keyword if it is not found from persistent keywords.
       var filteredTags = [];
       for (var i = 0, len = extendedItem.transientProperties.keywords.length; i < len; i++) {
-        if (extendedItem.relationships.tags.indexOf(extendedItem.transientProperties.keywords[i]) === -1) {
-          filteredTags.push(extendedItem.transientProperties.keywords[i]);
+        var transientKeyword = extendedItem.transientProperties.keywords[i];
+        if (extendedItem.relationships.tags.indexOf(transientKeyword.uuid) === -1) {
+          filteredTags.push(transientKeyword.uuid);
         }
       }
       return filteredTags;
@@ -132,7 +142,8 @@
             }
           }
           // remove old tag
-          if (previousContextIndex !== undefined) extendedItem.relationships.tags.splice(previousContextIndex, 1);
+          if (previousContextIndex !== undefined)
+            extendedItem.relationships.tags.splice(previousContextIndex, 1);
         }
       }
       // copy new context to tag
@@ -174,8 +185,10 @@
       if (extendedItemsArray) {
         var hasAddExtraTransientPropertyCopyFunction;
         var hasAddExtraTransientPropertyCopyFunctions;
-        if (typeof addExtraTransientPropertyFn === 'function') hasAddExtraTransientPropertyCopyFunction = true;
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray
+        if (typeof addExtraTransientPropertyFn === 'function') {
+          // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray
+          hasAddExtraTransientPropertyCopyFunction = true;
+        }
         else if (Array.isArray(addExtraTransientPropertyFn)) hasAddExtraTransientPropertyCopyFunctions = true;
 
         for (var i = 0, len = extendedItemsArray.length; i < len; i++) {
@@ -212,7 +225,9 @@
 
       // Check that transientProperties object is not empty
       // http://stackoverflow.com/a/4994244
-      if (extendedItem.transientProperties && Object.getOwnPropertyNames(extendedItem.transientProperties).length > 0) {
+      if (extendedItem.transientProperties &&
+          Object.getOwnPropertyNames(extendedItem.transientProperties).length > 0)
+      {
         // store transient values into variable and delete transient object from item
         var transients = extendedItem.transientProperties;
         delete extendedItem.transientProperties;
