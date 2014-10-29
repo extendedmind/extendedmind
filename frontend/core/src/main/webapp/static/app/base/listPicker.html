@@ -1,4 +1,4 @@
-<div>
+<div class="list-picker">
 
   <div ng-if="selectedList" class="group-mixed bottom-padded">
     <div class="group-mixed--middle" ng-click="listSelected(selectedList)">
@@ -12,7 +12,7 @@
     </div>
   </div>
 
-  <div ng-if="newList" class="row-form">
+  <div ng-if="newList" class="row-padded">
     <textarea autocapitalize="none" autocorrect="off" ng-model="newList.title" msd-elastic
     ng-click="watchForTitleChange()" ng-keydown="textareaKeyDown($event)" placeholder="{{placeholder}}"
     maxlength="128"></textarea>

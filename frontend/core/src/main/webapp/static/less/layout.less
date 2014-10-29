@@ -331,6 +331,7 @@ margin.
 .row-padded {
   .row();
   height: auto;
+  & > textarea,
   & > a > span {
     margin-bottom: @grid-vertical-half;
   }
@@ -338,8 +339,18 @@ margin.
 
 // 1. Set padding-bottom to mimic height of .row-padded.
 //    43px + 21px is not the correct value but near.
+// 2. Adjust vertical alignment for button and make sure it does not increase .group-mixed.bottom-padded's height.
 .group-mixed.bottom-padded {
   padding-bottom: 21px; // [1]
+  .group-mixed--middle {
+    vertical-align: baseline;
+  }
+  .group-mixed--right {
+    & > button {
+      height: inherit;      // [2]
+      line-height: inherit; // [2]
+    }
+  }
 }
 
 .group-mixed--right.top {
@@ -553,7 +564,9 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-left: @padding-inner-group-mixed;
 
   // NOTE: all buttons have height defined
-  & > button, & > a, & > span {
+  & > button,
+  & > a,
+  & > span {
     padding-right: @grid-horizontal;  /* [1] */
   }
   & > a {
