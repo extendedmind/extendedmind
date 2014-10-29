@@ -18,7 +18,7 @@
     maxlength="128"></textarea>
   </div>
 
-  <div class="row-padded" ng-repeat="list in lists | filter:notSelectedList | orderBy:'title'" ng-click="listSelected(list)">
+  <div class="row-padded" ng-repeat="list in lists | filter:notSelectedList | orderBy:'title'" ng-click="listSelected(list)">
     <a href>
       <span class="text-link" clamp=2>{{::prefix}}{{list.title}}</span>
     </a>
