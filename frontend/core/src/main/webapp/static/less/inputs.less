@@ -37,6 +37,18 @@ textarea {
   resize: none;
 }
 
+// 1. In iOS text in textarea is aligned slightly right.
+//    See: http://stackoverflow.com/a/7029825 and
+//    http://stackoverflow.com/questions/6890149/remove-3-pixels-in-ios-webkit-textarea#comment27305256_7029825
+.ios textarea {
+  margin-left: -3px;  // [1]
+}
+
+// 1. Align placeholder horizontally with textarea align in iOS.
+.ios textarea::-webkit-input-placeholder {
+  text-indent: 3px; // [1]
+}
+
 /*
 ******************************************************************
 # Buttons
