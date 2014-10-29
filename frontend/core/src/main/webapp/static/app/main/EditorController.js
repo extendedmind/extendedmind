@@ -305,7 +305,12 @@
   // DESCRIPTION
   $scope.setDescriptionFocus = function(value){
     $scope.descriptionFocused = value;
-  }
+  };
+
+  // URL
+  $scope.setUrlFocus = function(value) {
+    $scope.urlFocused = value;
+  };
 
 }
 

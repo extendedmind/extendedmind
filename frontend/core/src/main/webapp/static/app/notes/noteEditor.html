@@ -74,12 +74,12 @@
         <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
 
           <!-- KEYWORDS -->
-          <form role="form" class="row-form" autocapitalize="none" autocorrect="off" ng-submit="addNewKeywordToNote(note, newKeyword)">
+          <form ng-hide="urlFocused" role="form" class="row-form" autocapitalize="none" autocorrect="off" ng-submit="addNewKeywordToNote(note, newKeyword)">
             <input type="text" ng-model="newKeyword.title" placeholder="add keyword&#8230;" maxlength="128">
           </form>
           <span class="text-details row" ng-if="newKeyword.title" class="row" clamp=2>hit enter to create #{{newKeyword.title}}</span>
 
-          <div ng-if="noteHasKeywords(note)" class="keywords-container row">
+          <div ng-hide="urlFocused" ng-if="noteHasKeywords(note)" class="keywords-container row">
             <div class="keyword-wrapper" ng-repeat="keyword in note.transientProperties.keywords | orderBy:'title'">
               <a href class="keyword highlighted" ng-click="removeKeywordFromNote(note, keyword)">
                 <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
@@ -87,7 +87,7 @@
             </div>
           </div>
 
-          <div ng-if="keywords" class="keywords-container row">
+          <div ng-if="!urlFocused && keywords" class="keywords-container row">
             <div class="keyword-wrapper" ng-repeat="keyword in keywords | keywordsFilter:{name:'byOtherThanNoteKeywords', item: note} | filter:newKeyword.title | orderBy:'title'">
               <a href class="keyword" ng-click="addKeywordToNote(note, keyword)">
                 <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
@@ -96,7 +96,7 @@
           </div>
 
           <div class="row-form">
-            <input type="text" ng-model="note.link" placeholder="enter url&#8230;">
+            <input type="text" ng-model="note.link" ng-focus="setUrlFocus(true)" ng-blur="setUrlFocus(false)" placeholder="enter url&#8230;">
           </div>
 
         </div>
