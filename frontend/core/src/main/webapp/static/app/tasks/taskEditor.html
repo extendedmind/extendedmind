@@ -30,6 +30,7 @@
         <div ng-style="{'padding-bottom': basicSlideInfo.footerHeight}" class="container-content"
         drawer-override-aisle="right" swiper-prevent>
 
+        <!-- CALENDAR -->
           <div ng-if="calendarOpen" class="row swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()" data-snap-ignore="true">
             <div calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false" >
               <button ng-if="task.transientProperties.date" type="button" class="btn-clear pikaday-clear" ng-click="closeCalendarAndCall(clearTransientDate, task)"></button>

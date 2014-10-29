@@ -245,22 +245,35 @@ TODO: Example needed
   color: @color-text-downplayed;
 }
 
-// 1. Float clear button to the right of .pika-title which is rendered by Pikaday.js.
+// 1. Set height to match height of elements in .pika-title.
+// 2. Float clear button to the right of .pika-title which is rendered by Pikaday.js.
 // TODO: align with .pika-title
 .pikaday-clear {
-  float: right; // [1]
+  height: @grid-vertical; // [1]
+  float: right; // [2]
 }
 
 // 1. Make room for .pikaday-clear.
-//    NOTE: Make sure that layout does not break if setting width smaller than 60%.
+//    NOTE: Make sure that layout does not break if setting width different than 65%.
 // TODO: align with .pika-clear
 .pika-title {
-  width: 60%; // [1]
+  height: @grid-vertical;
+  width: 65%; // [1]
   .center-horizontally;
   text-align: center;
 }
 
+// 1. Inherit height to align elements in .pika-title.
+.pika-label,
+.pika-select,
+.pika-prev,
+.pika-next {
+  height: inherit;
+}
+
+// 1. Vertical align.
 .pika-label {
+  line-height: @grid-vertical;  // [1]
   display: inline-block;
   position: relative;
 }
@@ -295,6 +308,12 @@ TODO: Example needed
   padding-right: 5px;
 }
 
+// 1. Override vertical-align from .set-icon-font mixin.
+.pika-prev:before,
+.pika-next:after {
+  vertical-align: middle; // [1]
+}
+
 // 1. Remove borders.
 // 2. Remove background.
 .pika-prev,
@@ -318,10 +337,91 @@ TODO: Example needed
   width: 100%;  // [1]
 }
 
+// 1. Set height for rows
+.pika-table tr {
+  height: @grid-vertical; // [1]
+}
+
 // 1. Set width for table header and data cells: 100% / 7.
 .pika-table th,
 .pika-table td {
   width: 14.285714285714286%; // [1]
+}
+
+// 1. Set display type for width and width for horizontal alignment.
+.pika-table abbr[title] {
+  display: inline-block;  // [1]
+  width: 100%;            // [1]
+}
+
+// Stretch cells to occupy all available width.
+
+// FIRST COLUMN
+
+// 1. 100% / 7 * 2
+.pika-table th:first-child,
+.pika-table td:first-child {
+  abbr, button {
+    margin-left: -21.428571429%;  // [1]
+    margin-right: 21.428571429%;  // [1]
+  }
+}
+
+// SECOND COLUMN
+
+// 1. 100% / 7
+.pika-table th:nth-child(2),
+.pika-table td:nth-child(2) {
+  abbr, button {
+    margin-left: -14.285714286%;  // [1]
+    margin-right: 14.285714286%;  // [1]
+  }
+}
+
+// THIRD COLUMN
+
+// 1. 100% / 7 / 2
+.pika-table th:nth-child(3),
+.pika-table td:nth-child(3) {
+  abbr, button {
+    margin-left: -7.142857143%; // [1]
+    margin-right: 7.142857143%; // [1]
+  }
+}
+
+// MIDDLE
+
+// FIFTH COLUMN
+
+// 1. 100% / 7 / 2
+.pika-table th:nth-child(5),
+.pika-table td:nth-child(5) {
+  abbr, button {
+    margin-left: 7.142857143%;    // [1]
+    margin-right: -7.142857143%;  // [1]
+  }
+}
+
+// SIXTH COLUMN
+
+// 1. 100% / 7
+.pika-table th:nth-child(6),
+.pika-table td:nth-child(6) {
+  abbr, button {
+    margin-left: 14.285714286%;   // [1]
+    margin-right: -14.285714286%; // [1]
+  }
+}
+
+// LAST COLUMN
+
+// 1. 100% / 7 * 2
+.pika-table th:last-child,
+.pika-table td:last-child {
+  abbr, button {
+    margin-left: 21.428571429%;
+    margin-right: -21.428571429%;
+  }
 }
 
 // 1. Remove borders.
