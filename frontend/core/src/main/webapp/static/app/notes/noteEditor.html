@@ -47,9 +47,13 @@
               </a>
             </div>
 
-            <textarea ng-class="(!isOnboarded('notes') && checkListOnboardingLock('notes', 'on') && !hideNoteTitle) && 'input-separate'" class="row" ng-model="note.content" msd-elastic placeholder="enter content&#8230;"
-            ng-focus="noteContentFocused()"
-            editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"></textarea>
+            <!-- CONTENT -->
+            <div class="row-form">
+              <textarea ng-class="(!isOnboarded('notes') && checkListOnboardingLock('notes', 'on') && !hideNoteTitle) && 'input-separate'" ng-model="note.content" msd-elastic placeholder="enter content&#8230;"
+              ng-focus="noteContentFocused()"
+              editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"></textarea>
+            </div>
+
             <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')" class="group-instruction-input">
               <div ng-if="note.content.length" class="text-details row">when done, save your note by
                 clicking save in the top-left corner or swipe left
