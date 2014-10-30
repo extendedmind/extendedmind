@@ -16,9 +16,9 @@
           <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-checked="task.transientProperties.completed" ng-model="task.transientProperties.completed" icon-checkbox="editorTitlebarCheckbox" />
         </div>
         <div class="group-mixed--middle">
-          <textarea ng-hide="calendarOpen && smallDeviceHeight" type="text" ng-model="titlebar.text" ng-keydown="taskTitlebarTextKeyDown($event)" editable-field
+          <textarea ng-hide="isTaskTitleClamped()" type="text" ng-model="titlebar.text" ng-keydown="taskTitlebarTextKeyDown($event)" editable-field
           editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="enter task title&#8230;" maxlength="128" required ></textarea>
-          <div ng-if="calendarOpen && smallDeviceHeight">
+          <div ng-if="isTaskTitleClamped()">
             <span ng-class="{'text-downplayed': !titlebar.text}" ng-bind="titlebar.text ? titlebar.text : 'enter task title&#8230;'" clamp=2></span>
           </div>
         </div>
@@ -68,7 +68,7 @@
 
         </div>
 
-        <footer ng-hide="descriptionFocused || (calendarOpen && smallDeviceHeight)" class="container-content--after editor-footer" editor-footer="basicSlideInfo">
+        <footer ng-hide="isTaskFooterHidden()" class="container-content--after editor-footer" editor-footer="basicSlideInfo">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
               <a href id="editorFooterExpandLink" ng-if="task.transientProperties.date" ng-click="toggleExpand()">
@@ -96,7 +96,7 @@
             <div list-picker="repeatTypes" list-picker-save="closeRepeatingPickerAndSetRepeatTypeToTask(task, list)" list-picker-clear="closeRepeatingPickerAndClearRepeatTypeFromtask(task, list)" list-picker-get-selected="task.repeating ? {title: task.repeating} : undefined" list-picker-type="repeating"></div>
           </div>
 
-          <div ng-if="!contextPickerOpen && !repeatingPickerOpen">
+          <div ng-if="!contextPickerOpen && !repeatingPickerOpen">
 
             <div class="row-form">
               <a href ng-class="{downplayed: !task.transientProperties.context}" ng-click="openContextPicker()">
@@ -116,7 +116,7 @@
 
           </div>
         </div>
-        <footer class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
+        <footer ng-hide="isTaskFooterHidden()" class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
 
           <div class="table">
             <div class="table-row">

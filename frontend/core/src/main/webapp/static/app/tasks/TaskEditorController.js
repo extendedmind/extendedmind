@@ -118,6 +118,42 @@
     if (task.transientProperties) delete task.transientProperties.date;
   };
 
+  // CONTEXT PICKER
+  $scope.openContextPicker = function() {
+    $scope.contextPickerOpen = true;
+  };
+  $scope.closeContextPicker = function() {
+    $scope.contextPickerOpen = false;
+  };
+  $scope.getContextFromUUID = function(uuid) {
+    var context = $scope.contexts.findFirstObjectByKeyValue('uuid', uuid);
+    if (context) return context;
+  };
+  $scope.getContextTitleFromUUID = function(uuid) {
+    var context = $scope.contexts.findFirstObjectByKeyValue('uuid', uuid);
+    if (context) return context.title;
+  };
+
+  $scope.closeContextPickerAndSetContextToItem = function(item, context) {
+
+    function doCloseAndSave() {
+      $scope.closeContextPicker();
+      if (!item.transientProperties) item.transientProperties = {};
+      item.transientProperties.context = context.uuid;
+    }
+
+    if (!context.uuid)  // Context is new, save it first. Close context picker on error saving new context.
+      $scope.saveContext(context).then(doCloseAndSave, $scope.closeContextPicker);
+    else
+      doCloseAndSave();
+  };
+
+  $scope.closeContextPickerAndClearContextFromItem = function(item, context) {
+    $scope.closeContextPicker();
+    if (item.transientProperties && item.transientProperties.context === context.uuid)
+      delete item.transientProperties.context;
+  };
+
   // REPEATING PICKER
   $scope.openRepeatingPicker = function() {
     $scope.repeatingPickerOpen = true;
@@ -133,6 +169,15 @@
     $scope.closeRepeatingPicker();
     if (task.repeating === repeatType.title)
       delete task.repeating;
+  };
+
+  $scope.isTaskTitleClamped = function () {
+    return $scope.isTitleClamped() ||
+    $scope.calendarOpen || $scope.contextPickerOpen || $scope.repeatingPickerOpen;
+  };
+
+  $scope.isTaskFooterHidden = function() {
+    return $scope.isTaskTitleClamped();
   };
 
 }

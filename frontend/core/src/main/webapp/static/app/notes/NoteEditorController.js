@@ -92,6 +92,10 @@
     $scope.hideNoteTitle = false;
   };
 
+  $scope.isNoteFooterHidden = function() {
+    return $scope.mode === 'fullScreen' || $scope.isTitleClamped();
+  };
+
   // CONTENT
 
   var noteContentFocusCallback;

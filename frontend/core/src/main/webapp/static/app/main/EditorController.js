@@ -212,6 +212,10 @@
     }
   };
 
+  $scope.isTitleClamped = function() {
+    return $scope.descriptionFocused || $scope.listPickerOpen;
+  };
+
   // NAVIGATION
 
   $scope.isFirstSlide = function(){
@@ -236,30 +240,16 @@
   $scope.openListPicker = function() {
     $scope.listPickerOpen = true;
   };
-  $scope.openContextPicker = function() {
-    $scope.contextPickerOpen = true;
-  };
   $scope.closeListPicker = function() {
     $scope.listPickerOpen = false;
-  };
-  $scope.closeContextPicker = function() {
-    $scope.contextPickerOpen = false;
   };
   $scope.getListFromUUID = function(uuid) {
     var list = $scope.allLists.findFirstObjectByKeyValue('uuid', uuid);
     if (list) return list;
   };
-  $scope.getContextFromUUID = function(uuid) {
-    var context = $scope.contexts.findFirstObjectByKeyValue('uuid', uuid);
-    if (context) return context;
-  };
   $scope.getListTitleFromUUID = function(uuid) {
     var list = $scope.allLists.findFirstObjectByKeyValue('uuid', uuid);
     if (list) return list.title;
-  };
-  $scope.getContextTitleFromUUID = function(uuid) {
-    var context = $scope.contexts.findFirstObjectByKeyValue('uuid', uuid);
-    if (context) return context.title;
   };
 
   $scope.closeListPickerAndSetListToItem = function(item, list) {
@@ -276,30 +266,10 @@
       doCloseAndSave();
   };
 
-  $scope.closeContextPickerAndSetContextToItem = function(item, context) {
-
-    function doCloseAndSave() {
-      $scope.closeContextPicker();
-      if (!item.transientProperties) item.transientProperties = {};
-      item.transientProperties.context = context.uuid;
-    }
-
-    if (!context.uuid)  // Context is new, save it first. Close context picker on error saving new context.
-      $scope.saveContext(context).then(doCloseAndSave, $scope.closeContextPicker);
-    else
-      doCloseAndSave();
-  };
-
   $scope.closeListPickerAndClearListFromItem = function(item, list) {
     $scope.closeListPicker();
     if (item.transientProperties && item.transientProperties.list === list.uuid)
       delete item.transientProperties.list;
-  };
-
-  $scope.closeContextPickerAndClearContextFromItem = function(item, context) {
-    $scope.closeContextPicker();
-    if (item.transientProperties && item.transientProperties.context === context.uuid)
-      delete item.transientProperties.context;
   };
 
   // DESCRIPTION

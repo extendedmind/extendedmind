@@ -1,7 +1,7 @@
 <div class="group-mixed">
   <div class="group-mixed--middle">
     <a href class="link-note-heading link-list-item" swiper-click="callAndWaitThenScroll(openNoteEditor, note)">
-      <span class="text-heading-primary" ng-bind="note.title"></span>
+      <span class="text-heading-primary" ng-bind="note.title" clamp=2></span>
     </a>
   </div>
   <div ng-if="note.transientProperties.favorited" class="group-mixed--right">
