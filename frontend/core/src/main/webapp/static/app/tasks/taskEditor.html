@@ -16,8 +16,11 @@
           <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-checked="task.transientProperties.completed" ng-model="task.transientProperties.completed" icon-checkbox="editorTitlebarCheckbox" />
         </div>
         <div class="group-mixed--middle">
-          <textarea type="text" ng-model="titlebar.text" ng-keydown="taskTitlebarTextKeyDown($event)" editable-field
+          <textarea ng-hide="calendarOpen && smallDeviceHeight" type="text" ng-model="titlebar.text" ng-keydown="taskTitlebarTextKeyDown($event)" editable-field
           editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="enter task title&#8230;" maxlength="128" required ></textarea>
+          <div ng-if="calendarOpen && smallDeviceHeight">
+            <span ng-class="{'text-downplayed': !titlebar.text}" ng-bind="titlebar.text ? titlebar.text : 'enter task title&#8230;'" clamp=2></span>
+          </div>
         </div>
       </form>
     </div>
@@ -37,7 +40,7 @@
           <div ng-if="!listPickerOpen">
             <div ng-hide="descriptionFocused" class="group-mixed animate-fade-in">
               <div class="group-mixed--middle">
-                <a href ng-click="openCalendar()">
+                <a href ng-class="{downplayed: !task.transientProperties.date}" ng-click="openCalendar()">
                   <span ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></span>
                 </a>
               </div>
@@ -51,8 +54,8 @@
               <div calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false"></div>
             </div>
 
-            <div ng-hide="descriptionFocused || calendarOpen" class="row-form" ng-click="openListPicker()">
-              <a href>
+            <div ng-hide="descriptionFocused || calendarOpen" class="row-form">
+              <a href ng-class="{downplayed: !task.transientProperties.list}" ng-click="openListPicker()">
                 <span class="text-link" ng-bind="task.transientProperties.list ? getListTitleFromUUID(task.transientProperties.list) : 'select list\u2026'"></span>
               </a>
             </div>
@@ -65,7 +68,7 @@
 
         </div>
 
-        <footer ng-hide="descriptionFocused" class="container-content--after editor-footer" editor-footer="basicSlideInfo">
+        <footer ng-hide="descriptionFocused || (calendarOpen && smallDeviceHeight)" class="container-content--after editor-footer" editor-footer="basicSlideInfo">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
               <a href id="editorFooterExpandLink" ng-if="task.transientProperties.date" ng-click="toggleExpand()">
@@ -96,13 +99,13 @@
           <div ng-if="!contextPickerOpen && !repeatingPickerOpen">
 
             <div class="row-form">
-              <a href ng-click="openContextPicker()">
+              <a href ng-class="{downplayed: !task.transientProperties.context}" ng-click="openContextPicker()">
                 <span class="text-link" ng-bind="task.transientProperties.context ? '@' + getContextTitleFromUUID(task.transientProperties.context) : 'select context\u2026'"></span>
               </a>
             </div>
 
             <div ng-if="task.transientProperties.date" class="row-form">
-              <a href ng-click="openRepeatingPicker()">
+              <a href ng-class="{downplayed: !task.repeating}" ng-click="openRepeatingPicker()">
                 <span class="text-link" ng-bind="task.repeating ? task.repeating : 'select repeating\u2026'"></span>
               </a>
             </div>
