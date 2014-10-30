@@ -51,13 +51,13 @@
               <div calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false"></div>
             </div>
 
-            <div ng-hide="descriptionFocused" class="row-form" ng-click="openListPicker()">
+            <div ng-hide="descriptionFocused || calendarOpen" class="row-form" ng-click="openListPicker()">
               <a href>
                 <span class="text-link" ng-bind="task.transientProperties.list ? getListTitleFromUUID(task.transientProperties.list) : 'select list\u2026'"></span>
               </a>
             </div>
 
-            <div class="row-form" editable-field-container>
+            <div ng-hide="calendarOpen" class="row-form" editable-field-container>
               <textarea ng-model="task.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024" ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)" editable-field></textarea>
             </div>
 
