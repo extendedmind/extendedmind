@@ -32,7 +32,8 @@
    <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper" ng-class="onboardingInProgress && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
-        <div ng-style="{'padding-bottom': mode === 'fullScreen' ? 0 : EDITOR_FOOTER_HEIGHT}" class="container-content" drawer-override-aisle="right">
+        <div ng-style="{'padding-bottom': mode === 'fullScreen' ? 0 : EDITOR_FOOTER_HEIGHT}"
+        class="container-content" drawer-override-aisle="right" swiper-prevent>
 
           <!-- LIST PICKER -->
           <div ng-if="listPickerOpen" ng-hide="onboardingInProgress" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
@@ -74,7 +75,8 @@
       </div>
 
       <div class="swiper-slide" swiper-slide="noteEditor/advanced" slide-index="1" ng-init="advancedSlideInfo = {}">
-        <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
+        <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content"
+        swiper-prevent>
 
           <!-- KEYWORDS -->
           <form ng-hide="urlFocused" role="form" class="row-form" autocapitalize="none" autocorrect="off" ng-submit="addNewKeywordToNote(note, newKeyword)">

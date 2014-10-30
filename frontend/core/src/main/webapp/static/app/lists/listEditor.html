@@ -24,7 +24,8 @@
   <div class="swiper-container container-fluid--inner" swiper-container="listEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
-        <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-content" drawer-override-aisle="right">
+        <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-content"
+        drawer-override-aisle="right" swiper-prevent>
           <div class="row-form" editable-field-container>
             <textarea ng-model="list.description" msd-elastic placeholder="enter description&#8230;" ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)" maxlength="1024" editable-field></textarea>
           </div>
@@ -42,7 +43,8 @@
       </div>
 
       <div class="swiper-slide" swiper-slide="listEditor/advanced" slide-index="1" ng-init="advancedSlideInfo = {}">
-        <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
+        <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content"
+        swiper-prevent>
 
           <div class="row-form">
             <input type="text" ng-model="list.link" placeholder="enter url&#8230;">

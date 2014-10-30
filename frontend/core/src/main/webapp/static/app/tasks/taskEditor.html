@@ -27,7 +27,8 @@
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="taskEditor/basic" slide-index="0" ng-init="basicSlideInfo = {}">
 
-        <div ng-style="{'padding-bottom': basicSlideInfo.footerHeight}" class="container-content" drawer-override-aisle="right">
+        <div ng-style="{'padding-bottom': basicSlideInfo.footerHeight}" class="container-content"
+        drawer-override-aisle="right" swiper-prevent>
 
           <div ng-if="calendarOpen" class="row swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()" data-snap-ignore="true">
             <div calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false" >
@@ -61,12 +62,11 @@
 
         </div>
 
-        <footer ng-hide="descriptionFocused" class="container-content--after editor-footer" editor-footer="basicSlideInfo"
-        editor-footer-listen-middle-click>
+        <footer ng-hide="descriptionFocused" class="container-content--after editor-footer" editor-footer="basicSlideInfo">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
-              <a href id="editorFooterMiddleLink" ng-if="task.transientProperties.date" ng-click="toggleExpand()">
-                <span id="editorFooterMiddleIcon" class="text-calendar"></span>
+              <a href id="editorFooterExpandLink" ng-if="task.transientProperties.date" ng-click="toggleExpand()">
+                <span id="editorFooterExpandIcon" class="text-calendar"></span>
               </a>
             </div>
             <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--right link-navigation">
@@ -79,7 +79,7 @@
       </div>
 
       <div class="swiper-slide" swiper-slide="taskEditor/advanced" slide-index="1" ng-init="advancedSlideInfo = {}">
-        <div class="container-content" ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}">
+        <div class="container-content" ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" swiper-prevent>
 
           <!-- CONTEXT PICKER -->
           <div ng-if="contextPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeContextPicker()" data-snap-ignore="true">

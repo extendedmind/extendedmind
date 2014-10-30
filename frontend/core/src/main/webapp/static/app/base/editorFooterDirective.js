@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function editorFooterDirective($animate, $parse, $rootScope, $timeout, packaging) {
+ function editorFooterDirective($animate, $document, $parse, $rootScope, $timeout, packaging) {
   var footerHeight = 44;
   var expandedFooterHeight = 179;
   return {
@@ -94,24 +94,69 @@
       // iOS hack: when keyboard is up, later icon does not open expanded area. To get around this
       // we use a long enough timetout for the keyboard to get hidden, and after that, open the
       // expand area.
-      function iOSEditorFooterTouched(){
-        if (!scope.footerExpanded && event.target.id.startsWith('editorFooterMiddle')){
+      function iOSEditorFooterTouchStart(){
+        // First stop touch start from getting anywhere else to prevent ghost clicks to
+        // textarea below footer
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      function iOSEditorFooterTouchEnd(){
+        function doProcessTouchEnd(touchEndEvent){
+          // First, blur active element
+          var blurredActiveElement = false;
+          if ($document[0].activeElement &&
+              ($document[0].activeElement.nodeName === 'TEXTAREA' ||
+               $document[0].activeElement.nodeName === 'INPUT')){
+            $document[0].activeElement.blur();
+            blurredActiveElement = true;
+          }
+
+          // After that, do the action where the click hit
+          if (!scope.footerExpanded && touchEndEvent.target.id.startsWith('editorFooterExpand')){
+            // If the touch hit the expand icon while keyboard was up, first wait for the resize animation to end
+            if (blurredActiveElement){
+              $timeout(function(){
+                scope.openExpand();
+              }, 150);
+            }else{
+              scope.openExpand();
+            }
+            touchEndEvent.preventDefault();
+            touchEndEvent.stopPropagation();
+          }else if (touchEndEvent.target.nodeName === 'A'){
+            // Execute the action of the touchend link target
+            touchEndEvent.target.click();
+          }else if (touchEndEvent.target.nodeName === 'SPAN' && touchEndEvent.target.parentElement.nodeName === 'A') {
+            // Execute the action of the touchend target parent link
+            touchEndEvent.target.parentElement.click();
+          }else {
+            // Touch hit somewhere else in the footer
+            touchEndEvent.preventDefault();
+            touchEndEvent.stopPropagation();
+          }
+        }
+        if ($rootScope.$$phase || scope.$$phase){
           $timeout(function(){
-            scope.openExpand();
-          }, 150);
+            doProcessTouchEnd(event);
+          });
+        }else {
+          doProcessTouchEnd(event);
         }
       }
 
-      if (attrs.editorFooterListenMiddleClick !== undefined && packaging === 'ios-cordova'){
-        element[0].addEventListener('touchstart', iOSEditorFooterTouched);
+      if (packaging === 'ios-cordova'){
+        element[0].addEventListener('touchstart', iOSEditorFooterTouchStart);
+        element[0].addEventListener('touchend', iOSEditorFooterTouchEnd);
       }
       scope.$on('$destroy', function() {
-        if (attrs.editorFooterListenMiddleClick !== undefined && packaging === 'ios-cordova'){
-          element[0].removeEventListener('touchstart', iOSEditorFooterTouched);
+        if (packaging === 'ios-cordova'){
+          element[0].removeEventListener('touchstart', iOSEditorFooterTouchStart);
+          element[0].removeEventListener('touchend', iOSEditorFooterTouchEnd);
         }
       });
     }
   };
 }
-editorFooterDirective['$inject'] = ['$animate', '$parse', '$rootScope', '$timeout', 'packaging'];
+editorFooterDirective['$inject'] = ['$animate', '$document', '$parse', '$rootScope', '$timeout', 'packaging'];
 angular.module('em.base').directive('editorFooter', editorFooterDirective);
