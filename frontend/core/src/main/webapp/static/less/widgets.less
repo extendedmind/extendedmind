@@ -362,8 +362,8 @@ TODO: Example needed
 .pika-table th:first-child,
 .pika-table td:first-child {
   abbr, button {
-    margin-left: -21.428571429%;  // [1]
-    margin-right: 21.428571429%;  // [1]
+    margin-left: -14.285714286%;  // [1]
+    margin-right: 14.285714286%;  // [1]
   }
 }
 
@@ -373,8 +373,8 @@ TODO: Example needed
 .pika-table th:nth-child(2),
 .pika-table td:nth-child(2) {
   abbr, button {
-    margin-left: -14.285714286%;  // [1]
-    margin-right: 14.285714286%;  // [1]
+    margin-left: -14.285714286%;  // [1]  // TODO: -100/14*1.5
+    margin-right: 14.285714286%;  // [1]  // TODO: 100/14*1.5
   }
 }
 
@@ -408,8 +408,8 @@ TODO: Example needed
 .pika-table th:nth-child(6),
 .pika-table td:nth-child(6) {
   abbr, button {
-    margin-left: 14.285714286%;   // [1]
-    margin-right: -14.285714286%; // [1]
+    margin-left: 14.285714286%;   // [1]  // TODO: 100/14*1.5
+    margin-right: -14.285714286%; // [1]  // TODO: -100/14*1.5
   }
 }
 
@@ -419,34 +419,63 @@ TODO: Example needed
 .pika-table th:last-child,
 .pika-table td:last-child {
   abbr, button {
-    margin-left: 21.428571429%;
-    margin-right: -21.428571429%;
+    margin-left: 21.428571429%;   // FIXME
+    margin-right: -21.428571429%; // FIXME
   }
+}
+
+// 1. Set position relative to put :after pseudo element on top of itself.
+//    See: http://css-tricks.com/css-content/
+.is-today .pika-button,
+.animate-calendar-selected-date {
+  position: relative; // [1]
+}
+
+// 1. Get day stored into data attribute for content.
+// 2. Put on top of element.
+.is-today .pika-button:after,
+.animate-calendar-selected-date:after {
+  content: attr(data-pika-day); // [1]
+  position: absolute; // [2]
+  top: 0;             // [2]
+  left: 0;            // [2]
+  right: 0;           // [2]
+  bottom: 0;          // [2]
+  margin: auto;       // [2]
+  height: 30px;
+  line-height: 30px;
+  width: 30px;
+  border-radius: 50%;
+}
+
+// 1. Highlight today with border.
+.is-today .pika-button:after {
+  border-radius: 50%;
+  border: 1px solid @color-text-downplayed;
+}
+
+// 1. Highlight selected date font.
+.animate-calendar-selected-date:after {
+  background-color: @color-background-text-highlighted;
+  color: @color-text-highlighted; // [1]
 }
 
 // 1. Remove borders.
 // 2. Remove outline.
 // 3. Add some padding value to make calendar obey window width.
-// 4. Explicitly set box-sizing if Pikaday is used in some environment that sets box-sizing to something
+// 4. Expand horizontally and vertically.
+// 5. Explicitly set box-sizing if Pikaday is used in some environment that sets box-sizing to something
 //    other than border-box.
 //    See. https://github.com/dbushell/Pikaday/commit/ee4d064769e66315dcb2fe33783588c6feb14cd0
-
-// TODO: add height to button
 .pika-button {
   border: 0;      // [1]
   outline: none;  // [2]
   padding: 0;     // [3]
-  width: 100%;
+  width: 100%;    // [4]
+  height: 100%;   // [4]
   font-size: @size-font-small;
   background-color: white;
-  // box-sizing: border-box; // [4]
-}
-
-// 1. Highlight today with border.
-
-// TODO: add border-radius when correct height (and dimensions) is set.
-.is-today .pika-button {
-  border: 1px solid black;  // [1]
+  // box-sizing: border-box; // [5]
 }
 
 // 1. Highlight hovered date with bold font.

@@ -28,7 +28,7 @@
 @timing-animate-fade-in: @timing-animate;
 
 @speed-animate-date-active: .2s;
-@timing-animate-date-active: @timing-animate-steep;
+@timing-animate-date-active: @timing-animate-gradual;
 
 // 1. Animate maximum width change when menu opens and closes.
 // 2. Animate maximum height change when soft keyboard opens and closes.
@@ -135,17 +135,28 @@ input[type="checkbox"]:checked + label:before {
   opacity: 1; // [1]
 }
 
-// 1. Highlight selected date with bold font.
-// 2. Animate background-color.
-// TODO:  Add border-radius when correct height (and dimensions) is set.
-.animate-calendar-selected-date {
-  -webkit-transition: background-color @speed-animate-date-active @timing-animate-date-active ; // [2]
-  -moz-transition: background-color @speed-animate-date-active @timing-animate-date-active;    // [2]
-  -o-transition: background-color @speed-animate-date-active @timing-animate-date-active;      // [2]
-  -ms-transition: background-color @speed-animate-date-active @timing-animate-date-active;     // [2]
-  transition: background-color @speed-animate-date-active @timing-animate-date-active;         // [2]
-  .set-font-bold; // [1]
-  background-color: @color-background-highlighted; // [2]
+// 1. Starting point for animation.
+// 2. Place a 0s transition here to ensure that the styles are applied instantly
+//    even if the element already has a transition style.
+.animate-calendar-selected-date-add {
+  opacity: 0; // [1]
+
+  -webkit-transition: opacity 0s @timing-animate-date-active; // [2]
+  -moz-transition: opacity 0s @timing-animate-date-active;    // [2]
+  -o-transition: opacity 0s @timing-animate-date-active;      // [2]
+  -ms-transition: opacity 0s @timing-animate-date-active;     // [2]
+  transition: opacity 0s @timing-animate-date-active;         // [2]
+}
+
+// 1. Perform opacity animation.
+.animate-calendar-selected-date-add.animate-calendar-selected-date-add-active {
+  opacity: 1; // [1]
+
+  -webkit-transition: opacity @speed-animate-date-active @timing-animate-date-active; // [1]
+  -moz-transition: opacity @speed-animate-date-active @timing-animate-date-active;    // [1]
+  -o-transition: opacity @speed-animate-date-active @timing-animate-date-active;      // [1]
+  -ms-transition: opacity @speed-animate-date-active @timing-animate-date-active;     // [1]
+  transition: opacity @speed-animate-date-active @timing-animate-date-active;         // [1]
 }
 
 // 1. Fade in animating only ng-enter part of ng-if
