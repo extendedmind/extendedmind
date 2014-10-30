@@ -596,6 +596,31 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-right: 5px;
 }
 
+.table.two-to-left .table-cell {
+  text-align: left;
+}
+
+.table.two-to-left .table-cell:nth-child(odd) {
+  padding-left: @grid-horizontal;
+}
+
+.table.two-to-left .table-cell:nth-child(even) {
+  padding-right: @grid-horizontal;
+}
+
+// FIXME: .short-text and .long-text are ugly hacks!
+.table.two-to-left .short-text {
+  span, a {
+    height: @grid-vertical - 12px;
+  }
+}
+
+.table.two-to-left .long-text {
+  span, a {
+    height: @grid-vertical + 12px;
+  }
+}
+
 // 1. Set padding-left to default padding for inactive.
 //    NOTE: It would be better to use :empty selector but it did not work with AngularJS 1.3.0 on element with
 //          ng-if so use .inactive instead.
