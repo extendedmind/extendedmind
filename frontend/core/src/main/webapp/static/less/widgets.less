@@ -245,14 +245,32 @@ TODO: Example needed
   color: @color-text-downplayed;
 }
 
+// 1. Set height to match height of elements in .pika-title.
+.pika-title,
+.pikaday-today {
+  height: @grid-vertical-medium; // [1]
+  font-size: @size-font-small;
+}
+
+// 1. Vertical align.
+//    NOTE: Match line-height with height in .pika-title.
+.pika-label,
+.pikaday-today {
+  line-height: @grid-vertical-medium;  // [1]
+}
+
+// 1. Float today button the left to .pika-title which is rendered by Pikaday.js.
+.pikaday-today {
+  float: left; // [1]
+}
+
 // 1. Make room for title.
 //    NOTE: Make sure that layout does not break if setting width different than 65%.
 .pika-title {
   height: @grid-vertical-medium;
-  width: 65%; // [1]
+  width: 55%; // [1]
   .center-horizontally;
   text-align: center;
-  font-size: @size-font-small;
 }
 
 // 1. Inherit height to align elements in .pika-title.
@@ -266,7 +284,6 @@ TODO: Example needed
 // 1. Vertical align.
 //    NOTE: Match line-height with height in .pika-title.
 .pika-label {
-  line-height: @grid-vertical-medium;  // [1]
   display: inline-block;
   position: relative;
 }

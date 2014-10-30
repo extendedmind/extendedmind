@@ -26,7 +26,20 @@
       firstDay: '@calendarFirstDay',
       bound: '=calendarBound'
     },
-    link: function (scope, element) {
+    transclude: true,
+    link: function (scope, element, attrs, controller, transclude) {
+      var transcludedContent, transclusionScope;
+
+      transclude(function(clone, scope) {
+        element.append(clone);
+        transcludedContent = clone;
+        transclusionScope = scope;
+      });
+
+      transclusionScope.gotoCurrentMonth = function() {
+        calendar.gotoToday();
+      };
+
       var startingDate = scope.getStartingDate();
 
       // Set first day of the week. Default to 1 = Monday.

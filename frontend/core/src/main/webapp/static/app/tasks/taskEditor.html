@@ -51,7 +51,11 @@
 
             <!-- CALENDAR -->
             <div ng-if="calendarOpen" class="row swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()" data-snap-ignore="true">
-              <div calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false"></div>
+              <div calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false">
+                <a class="pikaday-today text-highlighted" href ng-click="gotoCurrentMonth()">
+                  <span>today</span>
+                </a>
+              </div>
             </div>
 
             <div ng-hide="descriptionFocused || calendarOpen" class="row-form">
@@ -113,31 +117,31 @@
             <div class="row-form">
               <textarea type="text" ng-model="task.link" ng-focus="setUrlFocus(true)"
               ng-blur="setUrlFocus(false)" msd-elastic maxlength="128" placeholder="enter url&#8230;">
-              </textarea>
-            </div>
+            </textarea>
+          </div>
 
+        </div>
+      </div>
+      <footer ng-hide="isTaskFooterHidden()" class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
+
+        <div class="table">
+          <div class="table-row">
+            <a href class="table-cell" ng-click="convertToNote(task)">
+              <span class="text-convert">note</span>
+            </a>
+            <a href class="table-cell" ng-click="convertToList(task)">
+              <span class="text-convert">list</span>
+            </a>
           </div>
         </div>
-        <footer ng-hide="isTaskFooterHidden()" class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
 
-          <div class="table">
-            <div class="table-row">
-              <a href class="table-cell" ng-click="convertToNote(task)">
-                <span class="text-convert">note</span>
-              </a>
-              <a href class="table-cell" ng-click="convertToList(task)">
-                <span class="text-convert">list</span>
-              </a>
-            </div>
-          </div>
-
-          <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-hide="isFooterNavigationHidden()" ng-click="swipeToBasic()" class="group-symmetrical--left link-navigation">
-              <span class="text-navigation-back">basic</span>
-            </a>
-          </nav>
-        </footer>
-      </div>
+        <nav role="navigation" class="swiper-no-swiping group-symmetrical">
+          <a href ng-hide="isFooterNavigationHidden()" ng-click="swipeToBasic()" class="group-symmetrical--left link-navigation">
+            <span class="text-navigation-back">basic</span>
+          </a>
+        </nav>
+      </footer>
     </div>
   </div>
+</div>
 </div>
