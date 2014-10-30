@@ -11,18 +11,17 @@
       <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
     </div>
     <div ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', undefined)" class="group-instruction">
-      <h2 class="group-heading instruction row">what's
-        <span class="highlighted">going on</span> in your work or life?
+      <h2 class="group-heading instruction row">link tasks and notes with <span class="highlighted">lists</span>
       </h2>
-      <div class="textgroup-ingress row">add a new <span class="text-highlighted">list</span> &#8211;
-      you probably already know how</div>
+      <div class="textgroup-ingress row">add a new or ongoing <span class="text-highlighted">project</span> or
+      <span class="text-highlighted">responsibility</span> by hitting the plus sign</div>
     </div>
     <div ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', 'off')" class="group-instruction">
       <h2 class="group-heading instruction row">
         tutorial <span class="highlighted">complete</span>!
       </h2>
-      <div class="textgroup-ingress row">you are now free to use the
-        <span class="highlighted">extended mind</span> in any way you  want
+      <div class="textgroup-ingress row">play, search and explore,
+        <span class="text-highlighted">extended mind</span> is yours
       </div>
     </div>
   </section>
