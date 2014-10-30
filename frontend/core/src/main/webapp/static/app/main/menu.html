@@ -28,7 +28,7 @@
 
     <div ng-if="isFeatureActive('list')" class="group-mixed">
       <div class="group-mixed--middle">
-        <a href class="link-menu highlighted" ng-click="gotoFeature('list', getActiveList())">
+        <a href class="link-menu-small highlighted" ng-click="gotoFeature('list', getActiveList())">
           <span class="text-navigation-menu-small" clamp=2 ng-bind="getActiveList().title"></span>
         </a>
       </div>
@@ -41,7 +41,7 @@
     <div ng-if="favoriteLists.length > 0" class="group-mixed" ng-repeat="favoriteList in favoriteLists"
     ng-hide="favoriteList === getActiveList()">
       <div class="group-mixed--middle">
-        <a href class="link-menu" ng-click="gotoFeature('list', favoriteList)">
+        <a href class="link-menu-small" ng-click="gotoFeature('list', favoriteList)">
           <span class="text-navigation-menu-small" clamp=2 ng-bind="favoriteList.title"></span>
         </a>
       </div>

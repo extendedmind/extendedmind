@@ -103,10 +103,13 @@ Menu
       line-height: inherit;
     }
   }
-  a:first-child {
+  .link-menu:first-child {
     padding-top: 15px;
     line-height: @grid-vertical;
     padding-bottom: 15px;
+  }
+  .link-menu-small {
+    line-height: @grid-vertical;
   }
 }
 
@@ -687,6 +690,15 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     }
   }
 }
+
+.group-mixed.with-teaser {
+  margin-bottom: 5px;
+  a {
+    line-height: @grid-vertical-half;
+    height: auto;
+  }
+}
+
 
 // Heading is long, multiple lines need smaller spacing, so the method above does not work
 // 1. Match 88 pixels with this, to make this be the same as the above for consistent look and feel
