@@ -248,10 +248,11 @@ TODO: Example needed
 // 1. Make room for title.
 //    NOTE: Make sure that layout does not break if setting width different than 65%.
 .pika-title {
-  height: @grid-vertical;
+  height: @grid-vertical-medium;
   width: 65%; // [1]
   .center-horizontally;
   text-align: center;
+  font-size: @size-font-small;
 }
 
 // 1. Inherit height to align elements in .pika-title.
@@ -263,8 +264,9 @@ TODO: Example needed
 }
 
 // 1. Vertical align.
+//    NOTE: Match line-height with height in .pika-title.
 .pika-label {
-  line-height: @grid-vertical;  // [1]
+  line-height: @grid-vertical-medium;  // [1]
   display: inline-block;
   position: relative;
 }
