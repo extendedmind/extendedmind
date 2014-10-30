@@ -27,26 +27,28 @@
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="taskEditor/basic" slide-index="0" ng-init="basicSlideInfo = {}">
 
-        <div ng-style="{'padding-bottom': basicSlideInfo.footerHeight}" class="container-content"
-        drawer-override-aisle="right" swiper-prevent>
-
-        <!-- CALENDAR -->
-          <div ng-if="calendarOpen" class="row swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()" data-snap-ignore="true">
-            <div calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false" >
-              <button ng-if="task.transientProperties.date" type="button" class="btn-clear pikaday-clear" ng-click="closeCalendarAndCall(clearTransientDate, task)"></button>
-            </div>
-          </div>
+        <div ng-style="{'padding-bottom': basicSlideInfo.footerHeight}" class="container-content" drawer-override-aisle="right" swiper-prevent>
 
           <!-- LIST PICKER -->
           <div ng-if="listPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
             <div list-picker="lists" list-picker-new-item="{}" list-picker-archived-lists="archivedLists" list-picker-save="closeListPickerAndSetListToItem(task, list)" list-picker-clear="closeListPickerAndClearListFromItem(task, list)" list-picker-get-selected="getListFromUUID(task.transientProperties.list)"></div>
           </div>
 
-          <div ng-if="!calendarOpen && !listPickerOpen">
-            <div ng-hide="descriptionFocused" class="row-form animate-fade-in">
-              <a href ng-click="openCalendar()">
-                <span ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></span>
-              </a>
+          <div ng-hide="listPickerOpen">
+            <div ng-hide="descriptionFocused" class="group-mixed animate-fade-in">
+              <div class="group-mixed--middle">
+                <a href ng-click="openCalendar()">
+                  <span ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></span>
+                </a>
+              </div>
+              <div ng-if="task.transientProperties.date" class="group-mixed--right">
+                <button type="button" class="btn-clear" ng-click="clearTransientDate(task)"></button>
+              </div>
+            </div>
+
+            <!-- CALENDAR -->
+            <div ng-if="calendarOpen" class="row swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()" data-snap-ignore="true">
+              <div calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false"></div>
             </div>
 
             <div ng-hide="descriptionFocused" class="row-form" ng-click="openListPicker()">
@@ -76,7 +78,6 @@
           </nav>
           <div ng-if="footerExpanded" later="setDateAndSave(date)" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeExpand()"></div>
         </footer>
-
       </div>
 
       <div class="swiper-slide" swiper-slide="taskEditor/advanced" slide-index="1" ng-init="advancedSlideInfo = {}">
