@@ -98,20 +98,22 @@
 
           <div ng-if="!contextPickerOpen && !repeatingPickerOpen">
 
-            <div class="row-form">
+            <div ng-hide="urlFocused" class="row-form">
               <a href ng-class="{downplayed: !task.transientProperties.context}" ng-click="openContextPicker()">
                 <span class="text-link" ng-bind="task.transientProperties.context ? '@' + getContextTitleFromUUID(task.transientProperties.context) : 'select context\u2026'"></span>
               </a>
             </div>
 
-            <div ng-if="task.transientProperties.date" class="row-form">
+            <div ng-hide="urlFocused && task.transientProperties.date" class="row-form">
               <a href ng-class="{downplayed: !task.repeating}" ng-click="openRepeatingPicker()">
                 <span class="text-link" ng-bind="task.repeating ? task.repeating : 'select repeating\u2026'"></span>
               </a>
             </div>
 
             <div class="row-form">
-              <input type="text" ng-model="task.link" placeholder="enter url&#8230;">
+              <textarea type="text" ng-model="task.link" ng-focus="setUrlFocus(true)"
+              ng-blur="setUrlFocus(false)" msd-elastic maxlength="128" placeholder="enter url&#8230;">
+              </textarea>
             </div>
 
           </div>

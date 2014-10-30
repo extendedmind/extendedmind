@@ -106,7 +106,9 @@
           </div>
 
           <div class="row-form">
-            <input type="text" ng-model="note.link" ng-focus="setUrlFocus(true)" ng-blur="setUrlFocus(false)" placeholder="enter url&#8230;">
+            <textarea type="text" ng-model="note.link" ng-focus="setUrlFocus(true)" ng-blur="setUrlFocus(false)"
+            msd-elastic maxlength="128" placeholder="enter url&#8230;">
+            </textarea>
           </div>
 
         </div>
