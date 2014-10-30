@@ -32,6 +32,10 @@
         processClose(date);
       }
 
+      scope.setDateToday = function() {
+        processClose(new Date());
+      };
+
       scope.setDateTomorrow = function() {
         var tomorrow = DateService.getTomorrowDate();
         processClose(tomorrow);
