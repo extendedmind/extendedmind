@@ -34,7 +34,7 @@
             <div list-picker="lists" list-picker-new-item="{}" list-picker-archived-lists="archivedLists" list-picker-save="closeListPickerAndSetListToItem(task, list)" list-picker-clear="closeListPickerAndClearListFromItem(task, list)" list-picker-get-selected="getListFromUUID(task.transientProperties.list)"></div>
           </div>
 
-          <div ng-hide="listPickerOpen">
+          <div ng-if="!listPickerOpen">
             <div ng-hide="descriptionFocused" class="group-mixed animate-fade-in">
               <div class="group-mixed--middle">
                 <a href ng-click="openCalendar()">
