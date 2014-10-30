@@ -231,6 +231,12 @@
           $rootScope.columns = 3;
         }
 
+        if (height <= 500){
+          $rootScope.smallDeviceHeight = true;
+        }else{
+          $rootScope.smallDeviceHeight = false;
+        }
+
         // Execute callbacks
         for (var id in windowResizedCallbacks) {
           windowResizedCallbacks[id]();

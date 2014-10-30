@@ -671,6 +671,12 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-bottom: @grid-vertical-half + 3px; // [1]
 }
 
+.height-small .group-heading:not(.justified){
+  padding-top: 5px;
+  padding-bottom: 10px;
+  font-size: @size-font-not-so-large;
+}
+
 @margin-top-heading-justified: -12px;
 // Justify whitespace between toolbar and content
 .group-heading.justified {
