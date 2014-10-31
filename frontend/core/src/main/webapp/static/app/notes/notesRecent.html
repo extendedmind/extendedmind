@@ -6,7 +6,7 @@
       <h2 class="group-heading justified row">recent</h2>
       <div class="animate-list-item-leave tall"
       ng-repeat="note in getList() | orderBy:'modified':true | limitTo: currentListLimitTo"
-      list-item="getList().length" ng-include="'static/app/notes/noteListItem.html'"></div>
+      list-item="getList().length" ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
       <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
     </div>
     <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', undefined)" class="group-instruction">

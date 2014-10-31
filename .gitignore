@@ -12,9 +12,7 @@ frontend/core/*.sublime-workspace
 target/
 frontend/core/src/main/webapp/test/json/
 frontend/core/src/main/webapp/static/em.min.js
-frontend/core/src/main/webapp/static/favicon.ico
 frontend/core/src/main/webapp/static/css
-frontend/core/src/main/webapp/static/config.json
 
 # Ignore PhantomJS logs
 phantomjsdriver.log
@@ -32,3 +30,5 @@ frontend/cordova/app/assets/fonts
 frontend/cordova/app/assets/build
 frontend/cordova/app/www
 frontend/cordova/app/config.xml
+frontend/cordova/app/merges
+

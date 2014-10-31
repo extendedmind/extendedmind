@@ -14,12 +14,12 @@
  */
  'use strict';
 
- function taskListCompletedDirective() {
+ function taskListCompletedDirective($rootScope) {
   return {
     restrict: 'A',
     require: '^list',
     scope: true,
-    templateUrl: 'static/app/tasks/taskListCompleted.html',
+    templateUrl: $rootScope.urlBase + 'app/tasks/taskListCompleted.html',
     compile: function(){
       return {
         post: function(scope, element, attrs, listController) {
@@ -94,4 +94,5 @@
     }
   };
 }
+taskListCompletedDirective['$inject'] = ['$rootScope']
 angular.module('em.base').directive('taskListCompleted', taskListCompletedDirective);

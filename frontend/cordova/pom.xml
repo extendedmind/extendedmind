@@ -77,19 +77,34 @@
       <resource>
         <directory>src/main/resources/ios</directory>
         <filtering>true</filtering>
+        <excludes>
+          <exclude>index.html</exclude>
+        </excludes>
         <targetPath>${project.basedir}/app/assets/build/ios</targetPath>
+      </resource>
+      <resource>
+        <directory>src/main/resources/ios</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>index.html</include>
+        </includes>
+        <targetPath>${project.basedir}/app/merges/ios</targetPath>
       </resource>
       <resource>
         <directory>src/main/resources/android</directory>
         <filtering>true</filtering>
+        <excludes>
+          <exclude>index.html</exclude>
+        </excludes>
         <targetPath>${project.basedir}/app/assets/build/android</targetPath>
       </resource>
       <resource>
-        <directory>${user.home}/.extendedmind/android</directory>
-        <targetPath>${project.basedir}/app/assets/fonts</targetPath>
+        <directory>src/main/resources/android</directory>
+        <filtering>true</filtering>
         <includes>
-          <include>Helvetica*.*</include>
+          <include>index.html</include>
         </includes>
+        <targetPath>${project.basedir}/app/merges/android</targetPath>
       </resource>
     </resources>
     <sourceDirectory>${basedir}/src</sourceDirectory>

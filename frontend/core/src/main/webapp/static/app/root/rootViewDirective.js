@@ -20,7 +20,7 @@
   return {
     restrict: 'A',
     replace: 'true',
-    templateUrl: 'static/app/root/root.html',
+    templateUrl: $rootScope.urlBase + 'app/root/root.html',
     controller: function($scope) {
 
       // BASIC DIMENSIONS TO ROOT SCOPE
@@ -130,7 +130,7 @@
           id: 'errorDialog',
           showHeaderCloseButton: false,
           backdrop: true,
-          footerTemplateUrl:'static/app/base/modalFooter.html',
+          footerTemplateUrl: $rootScope.urlBase + 'app/base/modalFooter.html',
           modalClass: 'modal small-modal'
         };
 
@@ -149,12 +149,12 @@
                 fnPromise: exception.promise,
                 fnPromiseParam: exception.promiseParam,
               };
-              ModalService.createDialog('static/app/root/errorMessage.html', modalOptions);
+              ModalService.createDialog($rootScope.urlBase + 'app/root/errorMessage.html', modalOptions);
             } else {
               // No retry possibility
               $scope.modalSuccessText = 'close';
               $scope.errorMessageText = 'you need to be online to complete this action';
-              ModalService.createDialog('static/app/root/errorMessage.html', modalOptions);
+              ModalService.createDialog($rootScope.urlBase + 'app/root/errorMessage.html', modalOptions);
             }
           }
         } else if (exception.type === 'http' && exception.status === 403) {
@@ -172,14 +172,14 @@
           $scope.errorMessageHeading = 'something unexpected happened, sorry!';
           $scope.errorMessageText = JSON.stringify(exception, null, 4);
           $scope.modalSuccessText = 'close';
-          ModalService.createDialog('static/app/root/errorMessage.html', modalOptions);
+          ModalService.createDialog($rootScope.urlBase + 'app/root/errorMessage.html', modalOptions);
         }
       });
 
       // Clean up listening by executing the variable
       $scope.$on('$destroy', unbindEmException);
     },
-    link: function (scope) {
+    link: function (scope, attrs) {
 
       // SESSION MANAGEMENT
 

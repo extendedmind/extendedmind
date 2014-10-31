@@ -14,7 +14,8 @@
  */
  'use strict';
 
-function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpClientService, UserSessionService, packaging) {
+function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpClientService,
+                          UserSessionService, packaging, version) {
 
   var deferredLocation = $q.defer();
   var collectAnalytics = packaging !== 'devel';
@@ -521,7 +522,7 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
         time: new Date().toISOString(),
         data: {
           packaging: packaging,
-          version: $rootScope.extendedMindVersion,
+          version: version,
           session: session
         }
       }
@@ -611,5 +612,6 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
     }
   };
 }
-AnalyticsService['$inject'] = ['$q', '$rootScope', '$timeout', 'BackendClientService', 'HttpClientService', 'UserSessionService', 'packaging'];
+AnalyticsService['$inject'] = ['$q', '$rootScope', '$timeout', 'BackendClientService', 'HttpClientService',
+'UserSessionService', 'packaging', 'version'];
 angular.module('em.base').factory('AnalyticsService', AnalyticsService);

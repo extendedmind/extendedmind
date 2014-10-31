@@ -61,13 +61,6 @@
   </dependencies>
 
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <targetPath>${project.basedir}/src/main/webapp/static</targetPath>
-      </resource>
-    </resources>
     <testSourceDirectory>${project.basedir}/src/main/webapp/test</testSourceDirectory>
     <plugins>
       <plugin>
@@ -133,15 +126,41 @@
               <addClasspath>true</addClasspath>
             </manifest>
           </archive>
-          <packagingExcludes>index_devel.html,
-            index_async.html,
-            static/app/**/*.js,
-            static/common/**/*.js,
-            test*/**,
-            WEB-INF/wro.*,
-            static/less*/**,
-            static/js*/**,
-            static/lib/**</packagingExcludes>
+          <webResources>
+            <resource>
+              <directory>src/main/webapp</directory>
+              <includes>
+                <include>index.html</include>
+              </includes>
+              <filtering>true</filtering>
+            </resource>
+            <resource>
+              <directory>src/main/webapp/WEB-INF</directory>
+              <includes>
+                <include>jetty-web.xml</include>
+                <include>urlrewrite.xml</include>
+                <include>web.xml</include>
+              </includes>
+            </resource>
+            <resource>
+              <directory>src/main/webapp/static</directory>
+              <targetPath>static/${project.version}</targetPath>
+              <excludes>
+                <exclude>**/*.jshintrc</exclude>
+                <exclude>app/**/*.js</exclude>
+                <exclude>common/**/*.js</exclude>
+                <exclude>less/**</exclude>
+                <exclude>js/**</exclude>
+                <exclude>lib/**</exclude>
+              </excludes>
+            </resource>
+          </webResources>
+          <packagingIncludes>
+            WEB-INF/**,
+            META-INF/**,
+            index.html,
+            static/${project.version}/**
+          </packagingIncludes>
         </configuration>
       </plugin>
       <plugin>

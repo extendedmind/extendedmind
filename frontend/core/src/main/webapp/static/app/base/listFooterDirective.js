@@ -14,11 +14,11 @@
  */
  'use strict';
 
- function listFooterDirective($parse) {
+ function listFooterDirective($parse, $rootScope) {
   return {
     require: ['^listContainer', '?^swiperSlide'],
     restrict: 'A',
-    templateUrl: 'static/app/base/listFooter.html',
+    templateUrl: $rootScope.urlBase + 'app/base/listFooter.html',
     scope: true,
     link: function(scope, element, attrs, controllers){
       scope.featureInfo = $parse(attrs.listFooter)(scope);
@@ -72,5 +72,5 @@
     }
   };
 }
-listFooterDirective['$inject'] = ['$parse'];
+listFooterDirective['$inject'] = ['$parse', '$rootScope'];
 angular.module('em.base').directive('listFooter', listFooterDirective);

@@ -4,10 +4,10 @@
     <div ng-show="isOnboarded('lists') || isListOnboardingLockedOrReleased('lists')">
       <h2 class="group-heading justified row">active</h2>
       <div list-item-add="{transientProperties: {itemType: 'list'}}" list-item-add-save="saveList(newItem)"
-      ng-include="'static/app/lists/listListItemAdd.html'"></div>
+      ng-include="urlBase + 'app/lists/listListItemAdd.html'"></div>
       <div class="animate-list-item-leave"
       ng-repeat="list in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
-      list-item="getList().length" ng-include="'static/app/lists/listListItem.html'"></div>
+      list-item="getList().length" ng-include="urlBase + 'app/lists/listListItem.html'"></div>
       <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
     </div>
     <div ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', undefined)" class="group-instruction">

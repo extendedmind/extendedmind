@@ -24,22 +24,11 @@
   <meta name="format-detection" content="telephone=no" />
 
   <title>extended mind</title>
-
-  <style type="text/css">
-    @font-face {
-      font-family: 'HelveticaNeueLTStd-Lt';
-      src: url('static/fonts/HelveticaNeueLight.ttf') format("truetype");
-    }
-    @font-face {
-      font-family: 'HelveticaNeueLT-Roman';
-      src: url('static/fonts/HelveticaNeueRoman.ttf') format('truetype');
-    }
-  </style>
-
-  <link rel="stylesheet" href="static/css/em.css"/>
+  <link rel="stylesheet" href="/static/${project.version}/css/em.css"/>
   <script src="cordova.js"></script>
   <script>
     var packaging = "android-cordova";
+    var version = "${project.version}";
     var urlPrefix = 'https://ext.md';
     var html5Mode = false;
     var bindToFocusEvent = false;
@@ -63,6 +52,6 @@
 </head>
 <body>
   <div class="android" root-view></div>
-  <script src="static/em.min.js"></script>
+  <script src="${project.version}/static/em.min.js"></script>
 </body>
 </html>

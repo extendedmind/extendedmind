@@ -2,10 +2,10 @@
   <section class="container-content" list="archivedLists" list-order="top" swiper-prevent>
     <h2 class="group-heading justified row">archived</h2>
     <div list-item-add="{transientProperties: {itemType: 'list'}}" list-item-add-save="saveAndArchiveList(newItem)"
-    ng-include="'static/app/lists/listListItemAdd.html'"></div>
+    ng-include="urlBase + 'app/lists/listListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
     ng-repeat="list in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
-    list-item="getList().length" ng-include="'static/app/lists/listListItem.html'"></div>
+    list-item="getList().length" ng-include="urlBase + 'app/lists/listListItem.html'"></div>
     <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('lists')"></footer>

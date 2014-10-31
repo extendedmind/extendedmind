@@ -14,10 +14,10 @@
  */
  'use strict';
 
- function laterDirective(DateService) {
+ function laterDirective($rootScope, DateService) {
   return {
     restrict: 'A',
-    templateUrl: 'static/app/base/later.html',
+    templateUrl: $rootScope.urlBase + 'app/base/later.html',
     scope: {
       closeAndSave: '&later'
     },
@@ -68,5 +68,5 @@
     }
   };
 }
-laterDirective['$inject'] = ['DateService'];
+laterDirective['$inject'] = ['$rootScope', 'DateService'];
 angular.module('em.base').directive('later', laterDirective);

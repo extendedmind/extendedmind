@@ -24,10 +24,11 @@
   <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
   <title>extended mind</title>
-  <link rel="stylesheet" href="static/css/em.css"/>
+  <link rel="stylesheet" href="/static/${project.version}/css/em.css"/>
   <script src="cordova.js"></script>
   <script>
     var packaging = "ios-cordova";
+    var version = "${project.version}";
     var urlPrefix = 'https://ext.md';
     var html5Mode = false;
     var bindToFocusEvent = false;
@@ -51,6 +52,6 @@
 </head>
 <body onload="onLoad()">
   <div class="ios" root-view></div>
-  <script src="static/em.min.js"></script>
+  <script src="${project.version}/static/em.min.js"></script>
 </body>
 </html>

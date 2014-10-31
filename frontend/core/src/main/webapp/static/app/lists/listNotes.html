@@ -5,7 +5,7 @@
     <div class="animate-list-item-leave tall"
     ng-repeat="note in getList() | itemsFilter:{name:'byListUUID', filterBy: list.uuid}
     | orderBy:'created':true | limitTo: currentListLimitTo"
-    list-item="getList().length" ng-include="'static/app/notes/noteListItem.html'"></div>
+    list-item="getList().length" ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
     <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('list')"></footer>

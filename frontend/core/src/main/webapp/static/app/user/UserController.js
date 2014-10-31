@@ -16,7 +16,9 @@
 
  function UserController($http, $location, $q, $rootScope, $scope, $templateCache, $window,
                          AnalyticsService, AuthenticationService, SwiperService,
-                         UISessionService, UserService, UserSessionService) {
+                         UISessionService, UserService, UserSessionService, version) {
+
+  $scope.extendedMindVersion = version;
 
   $scope.isAdmin = function isAdmin() {
     return UserSessionService.getUserType() === 0;
@@ -125,5 +127,5 @@
 }
 UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache', '$window',
                              'AnalyticsService', 'AuthenticationService', 'SwiperService',
-                             'UISessionService', 'UserService', 'UserSessionService'];
+                             'UISessionService', 'UserService', 'UserSessionService', 'version'];
 angular.module('em.user').controller('UserController', UserController);

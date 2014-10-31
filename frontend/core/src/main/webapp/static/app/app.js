@@ -61,9 +61,18 @@
  // Global variable "packaging" is defined in index.html
  angular.module('em.app').constant('packaging', (typeof packaging !== 'undefined') ? packaging: 'devel');
 
+ // Global variable "version" is defined in index.html
+ angular.module('em.app').constant('version', (typeof version !== 'undefined') ? version: 'devel');
+
  angular.module('em.app').config(['$animateProvider', '$compileProvider', '$locationProvider',
-                                 '$routeProvider', 'packaging',
-  function($animateProvider, $compileProvider, $locationProvider, $routeProvider, packaging) {
+                                 '$routeProvider', 'packaging', 'version',
+  function($animateProvider, $compileProvider, $locationProvider, $routeProvider, packaging, version) {
+
+    var urlBase;
+    if (version !== 'devel')
+      urlBase = 'static/' + version + '/';
+    else
+      urlBase = 'static/';
 
     // Enable animations for elements that have classes containing word 'animate'.
     $animateProvider.classNameFilter(/animate/);
@@ -75,7 +84,7 @@
     $compileProvider.debugInfoEnabled(packaging === 'devel');
 
     $routeProvider.when('/', {
-      templateUrl: 'static/app/entry/entrySlides.html',
+      templateUrl: urlBase + 'app/entry/entrySlides.html',
       resolve: {
         userStatus: ['$location', 'UserSessionService',
         function($location, UserSessionService) {
@@ -88,7 +97,7 @@
     });
 
     $routeProvider.when('/my', {
-      templateUrl: 'static/app/main/main.html',
+      templateUrl: urlBase + 'app/main/main.html',
       resolve: {
         auth: ['AuthenticationService',
         function(AuthenticationService) {
@@ -102,7 +111,7 @@
     });
 
     $routeProvider.when('/collective/:collectiveUUID/', {
-      templateUrl: 'static/app/main/main.html',
+      templateUrl: urlBase + 'app/main/main.html',
       resolve: {
         auth: ['AuthenticationService',
         function(AuthenticationService) {
@@ -116,7 +125,7 @@
     });
 
     $routeProvider.when('/reset/:hex_code', {
-      templateUrl: 'static/app/entry/reset.html',
+      templateUrl: urlBase + 'app/entry/reset.html',
       resolve: {
         routes: ['$location', '$route', 'AuthenticationService',
         function($location, $route, AuthenticationService) {
@@ -163,7 +172,7 @@
     });
 
     $routeProvider.when('/404', {
-      templateUrl: 'static/app/main/pageNotFound.html',
+      templateUrl: urlBase + 'app/main/pageNotFound.html',
       controller: 'PageNotFoundController'
     });
 
@@ -176,19 +185,22 @@
 
     // ADMINISTRATION
     $routeProvider.when('/admin', {
-      templateUrl: 'static/app/admin/admin.html'
+      templateUrl: urlBase + 'app/admin/admin.html'
     });
 
   }]);
 
-angular.module('em.app').run(function($rootScope) {
+angular.module('em.app').run(['$rootScope', 'version', function($rootScope, version) {
 
-  // Put version to root scope
-  $.getJSON('static/config.json', function(data) {
-    $rootScope.extendedMindVersion = data.version;
-  });
+  // SETUP VERSIONING
+
+  if (version !== 'devel'){
+    $rootScope.urlBase = 'static/' + version + '/';
+  }else{
+    $rootScope.urlBase = 'static/'
+  }
 
   // http://stackoverflow.com/a/21113518
   // http://www.youtube.com/watch?v=xOAG7Ab_Oz0#t=2314
   FastClick.attach(document.body);
-});
+}]);

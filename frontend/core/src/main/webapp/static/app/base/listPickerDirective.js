@@ -14,10 +14,10 @@
  */
  'use strict';
 
- function listPickerDirective() {
+ function listPickerDirective($rootScope) {
   return {
     restrict: 'A',
-    templateUrl: 'static/app/base/listPicker.html',
+    templateUrl: $rootScope.urlBase + 'app/base/listPicker.html',
     scope: {
       lists: '=listPicker',
       newList: '=?listPickerNewItem',
@@ -113,4 +113,5 @@
   }
 };
 }
+listPickerDirective['$inject'] = ['$rootScope'];
 angular.module('em.base').directive('listPicker', listPickerDirective);

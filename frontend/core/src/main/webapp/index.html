@@ -9,14 +9,15 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="msapplication-tap-highlight" content="no" />
   <title>extended mind</title>
-  <link rel="stylesheet" href="static/css/em.css"/>
-  <link rel="shortcut icon" href="static/favicon.ico"/>
+  <link rel="stylesheet" href="/static/${project.version}/css/em.css"/>
+  <link rel="shortcut icon" href="/static/${project.version}/favicon.ico"/>
   <script>
     var packaging = "web";
+    var version = "${project.version}";
   </script>
 </head>
 <body>
   <div class="web" root-view></div>
-  <script src="static/em.min.js"></script>
+  <script src="/static/${project.version}/em.min.js"></script>
 </body>
 </html>

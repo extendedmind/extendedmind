@@ -19,7 +19,7 @@
 
   return {
     restrict: 'A',
-    templateUrl: 'static/app/base/toaster.html',
+    templateUrl: $rootScope.urlBase + 'app/base/toaster.html',
     scope: true,
     link: function(scope, element, attrs) {
 

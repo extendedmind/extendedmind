@@ -2,8 +2,8 @@
 swiper-container="lists" swiper-type="main" expected-slides=2 ng-class="onboardingInProgress && 'swiper-no-swiping'">
   <div class="swiper-wrapper">
     <div class="swiper-slide" swiper-slide="lists/active" slide-index=0
-    ng-include="'static/app/lists/listsActive.html'"></div>
+    ng-include="urlBase + 'app/lists/listsActive.html'"></div>
     <div class="swiper-slide" swiper-slide="lists/archived" slide-index=1
-    ng-include="'static/app/lists/listsArchived.html'"></div>
+    ng-include="urlBase + 'app/lists/listsArchived.html'"></div>
   </div>
 </div>

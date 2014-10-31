@@ -1,20 +1,20 @@
 <div class="container-main" ng-controller="MainController" ng-class="[isEditorVisible() ? 'editor-visible' : 'editor-hidden', isMenuVisible() ? 'menu-visible' : 'menu-hidden']">
-  <div ng-include="'static/app/main/menu.html'" include-replace></div>
-  <div ng-include="'static/app/main/editor.html'" include-replace></div>
+  <div ng-include="urlBase + 'app/main/menu.html'" include-replace></div>
+  <div ng-include="urlBase + 'app/main/editor.html'" include-replace></div>
   <div drawer-aisle class="container-drawer-aisle">
     <div class="container-master animate-container-master" vertical-resize="master"
     vertical-resize-prevent="isEditorVisible()" vertical-resize-hide-footer="true">
       <div class="container-fluid" ng-class="getFooterVisibilityClass()">
-        <header class="container-toolbar" ng-include="'static/app/main/toolbar.html'"></header>
-        <div ng-if="isFeatureLoaded('user')" ng-include="'static/app/user/userSlides.html'" include-replace></div>
-        <div ng-if="isFeatureLoaded('focus')" ng-include="'static/app/focus/focusSlides.html'" include-replace></div>
-        <div ng-if="isFeatureActive('inbox')" ng-include="'static/app/main/inbox.html'" include-replace></div>
-        <div ng-if="isFeatureLoaded('tasks')" ng-include="'static/app/tasks/tasksSlides.html'" include-replace></div>
-        <div ng-if="isFeatureActive('notes')" ng-include="'static/app/notes/notesRecent.html'" include-replace></div>
-        <div ng-if="isFeatureLoaded('lists')" ng-include="'static/app/lists/listsSlides.html'" include-replace></div>
-        <div ng-if="isFeatureLoaded('list')" ng-include="'static/app/lists/listSlides.html'" include-replace></div>
-        <div ng-if="isFeatureActive('trash')" ng-include="'static/app/main/trash.html'" include-replace></div>
-        <div ng-if="isFeatureLoaded('admin')" ng-include="'static/app/admin/admin.html'" include-replace></div>
+        <header class="container-toolbar" ng-include="urlBase + 'app/main/toolbar.html'"></header>
+        <div ng-if="isFeatureLoaded('user')" ng-include="urlBase + 'app/user/userSlides.html'" include-replace></div>
+        <div ng-if="isFeatureLoaded('focus')" ng-include="urlBase + 'app/focus/focusSlides.html'" include-replace></div>
+        <div ng-if="isFeatureActive('inbox')" ng-include="urlBase + 'app/main/inbox.html'" include-replace></div>
+        <div ng-if="isFeatureLoaded('tasks')" ng-include="urlBase + 'app/tasks/tasksSlides.html'" include-replace></div>
+        <div ng-if="isFeatureActive('notes')" ng-include="urlBase + 'app/notes/notesRecent.html'" include-replace></div>
+        <div ng-if="isFeatureLoaded('lists')" ng-include="urlBase + 'app/lists/listsSlides.html'" include-replace></div>
+        <div ng-if="isFeatureLoaded('list')" ng-include="urlBase + 'app/lists/listSlides.html'" include-replace></div>
+        <div ng-if="isFeatureActive('trash')" ng-include="urlBase + 'app/main/trash.html'" include-replace></div>
+        <div ng-if="isFeatureLoaded('admin')" ng-include="urlBase + 'app/admin/admin.html'" include-replace></div>
         <div ng-if="syncState === 'active'" class="container-fluid--inner">
           <div class="loading-animation" loading-animation></div>
         </div>
