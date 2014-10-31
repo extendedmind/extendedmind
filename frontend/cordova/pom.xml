@@ -239,6 +239,9 @@
               <directory>${basedir}/app/plugins</directory>
             </fileset>
             <fileset>
+              <directory>${basedir}/app/merges</directory>
+            </fileset>
+            <fileset>
               <directory>${basedir}/app/www</directory>
             </fileset>
             <fileset>
