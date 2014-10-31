@@ -664,32 +664,32 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 
 // 1. Inherit vertical-aling for textarea to override default value set elsewhere.
 .group-mixed.with-checkbox {
-  max-height: inherit;
-  height: auto;
+  max-height: inherit;  // TODO: comments
+  height: auto;         // TODO: comments
   .group-mixed--left, .group-mixed--middle, .group-mixed--right {
-    height: auto;
-    line-height: inherit;
-    vertical-align: top;
+    height: auto;         // TODO: comments
+    line-height: inherit; // TODO: comments
+    vertical-align: top;  // TODO: comments
   }
 
   .group-mixed--left {
-    padding-top: 9.5px;
+    padding-top: 9.5px; // TODO: comments
     label:before {
-      line-height: inherit !important;
+      line-height: inherit !important;  // TODO: comments
     }
     label {
-      height: auto;
+      height: auto; // TODO: comments
     }
   }
 
   .group-mixed--middle {
-    padding-top: 10px;
-    padding-bottom: 11px;
+    padding-top: 10px;    // TODO: comments
+    padding-bottom: 11px; // TODO: comments
     textarea {
-      vertical-align: inherit;
+      vertical-align: inherit;  // [1]
     }
     span {
-      height: auto;
+      height: auto; // TODO: comments
     }
   }
 }
