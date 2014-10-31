@@ -89,7 +89,7 @@
         }else {
           scope.openExpand();
         }
-      }
+      };
 
       // iOS hack: when keyboard is up, later icon does not open expanded area. To get around this
       // we use a long enough timetout for the keyboard to get hidden, and after that, open the
@@ -107,14 +107,16 @@
           var blurredActiveElement = false;
           if ($document[0].activeElement &&
               ($document[0].activeElement.nodeName === 'TEXTAREA' ||
-               $document[0].activeElement.nodeName === 'INPUT')){
+               $document[0].activeElement.nodeName === 'INPUT'))
+          {
             $document[0].activeElement.blur();
             blurredActiveElement = true;
           }
 
           // After that, do the action where the click hit
           if (!scope.footerExpanded && touchEndEvent.target.id.startsWith('editorFooterExpand')){
-            // If the touch hit the expand icon while keyboard was up, first wait for the resize animation to end
+            // If the touch hit the expand icon while keyboard was up,
+            // first wait for the resize animation to end
             if (blurredActiveElement){
               $timeout(function(){
                 scope.openExpand();
@@ -125,11 +127,21 @@
             touchEndEvent.preventDefault();
             touchEndEvent.stopPropagation();
           }else if (touchEndEvent.target.nodeName === 'A'){
-            // Execute the action of the touchend link target
-            touchEndEvent.target.click();
-          }else if (touchEndEvent.target.nodeName === 'SPAN' && touchEndEvent.target.parentElement.nodeName === 'A') {
-            // Execute the action of the touchend target parent link
-            touchEndEvent.target.parentElement.click();
+            // Execute the action of the touchend link target.
+            // NOTE:  Vanilla JS click() is not working for the first time.
+            //        Wrapping click into angular $digest cycle printed error message:
+            //          'Can only call HTMLElement.click on instances of HTMLElement'
+            //        So wrap element into angular element first and use jqLite click()
+            angular.element(touchEndEvent.target.parentElement).click();
+          }else if (touchEndEvent.target.nodeName === 'SPAN' &&
+                    touchEndEvent.target.parentElement.nodeName === 'A')
+          {
+            // Execute the action of the touchend target parent link.
+            // NOTE:  Vanilla JS click() is not working for the first time.
+            //        Wrapping click into angular $digest cycle printed error message:
+            //          'Can only call HTMLElement.click on instances of HTMLElement'
+            //        So wrap element into angular element first and use jqLite click()
+            angular.element(touchEndEvent.target.parentElement).click();
           }else {
             // Touch hit somewhere else in the footer
             touchEndEvent.preventDefault();
