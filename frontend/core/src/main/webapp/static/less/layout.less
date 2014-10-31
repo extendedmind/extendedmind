@@ -662,6 +662,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   vertical-align: middle;       // [2]
 }
 
+// 1. Inherit vertical-aling for textarea to override default value set elsewhere.
 .group-mixed.with-checkbox {
   max-height: inherit;
   height: auto;
@@ -669,10 +670,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     height: auto;
     line-height: inherit;
     vertical-align: top;
-  }
-  .group-mixed--middle {
-    padding-top: 10px;
-    padding-bottom: 11px;
   }
 
   .group-mixed--left {
@@ -684,7 +681,13 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
       height: auto;
     }
   }
+
   .group-mixed--middle {
+    padding-top: 10px;
+    padding-bottom: 11px;
+    textarea {
+      vertical-align: inherit;
+    }
     span {
       height: auto;
     }
