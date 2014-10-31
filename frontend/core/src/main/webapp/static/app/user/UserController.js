@@ -14,7 +14,8 @@
  */
  'use strict';
 
- function UserController($http, $location, $q, $rootScope, $scope, $window, AnalyticsService, AuthenticationService, SwiperService,
+ function UserController($http, $location, $q, $rootScope, $scope, $templateCache, $window,
+                         AnalyticsService, AuthenticationService, SwiperService,
                          UISessionService, UserService, UserSessionService) {
 
   $scope.isAdmin = function isAdmin() {
@@ -34,6 +35,7 @@
       UISessionService.setMyActive();
       UISessionService.changeFeature('tasks');
       $location.path('/my');
+      $templateCache.removeAll();
     } else {
       $scope.toggleMenu();
     }
@@ -44,10 +46,21 @@
       UISessionService.setCollectiveActive(uuid);
       UISessionService.changeFeature('tasks');
       $location.path('/collective/' + uuid);
-    } else {
-      $scope.toggleMenu();
+      $templateCache.removeAll();
     }
   };
+
+  $scope.isCollectiveActive = function(uuid) {
+    if (UISessionService.getActiveUUID() === uuid) return true;
+  }
+
+  $scope.isMyActive = function() {
+    if (UISessionService.getActiveUUID() === UserSessionService.getUserUUID()) return true;
+  }
+
+  $scope.getUserEmail = function(){
+    return UserSessionService.getEmail();
+  }
 
   // NAVIGATION
 
@@ -110,7 +123,7 @@
     });
   }
 }
-UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$window',
-                             'AnalyticsService', 'AuthenticationService', 'SwiperService', 'UISessionService', 'UserService',
-                             'UserSessionService'];
+UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache', '$window',
+                             'AnalyticsService', 'AuthenticationService', 'SwiperService',
+                             'UISessionService', 'UserService', 'UserSessionService'];
 angular.module('em.user').controller('UserController', UserController);

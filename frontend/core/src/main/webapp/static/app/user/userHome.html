@@ -2,15 +2,19 @@
   <section class="container-content">
     <h2 class="group-heading justified row" ng-bind="online ? 'online' : '*offline'"></h2>
 
-    <!-- TODO: Collectives!
-    div ng-if="useCollectives()">
-      <h3>collectives</h3>
+    <div ng-if="useCollectives()">
+      <h3 class="row-form">switch to</h3>
       <div ng-repeat="(key, value) in collectives">
-        <div ng-if="value[2] === false">
-          <a href ng-class="getCollectiveClass(key)" ng-click="setCollectiveActive(key)">{{value[0]}}</a>
+        <div ng-if="value[2] === false && !isCollectiveActive(key)">
+          <a href class="row-form" ng-click="setCollectiveActive(key)">
+            <span ng-bind="value[0]"></span>
+          </a>
         </div>
       </div>
-    </div-->
+      <a href class="row-form" ng-if="!isMyActive()"  ng-click="setMyActive()" class="row-form">
+        <span ng-bind="getUserEmail()"></span>
+      </a>
+    </div>
 
     <div class="group-mixed">
       <a href class="group-mixed--middle" swiper-click="swipeToDetails('account')">

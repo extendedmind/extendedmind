@@ -21,7 +21,6 @@
   var latestModified = {};
   var itemsSynchronized = {};
   var offlineBufferEnabled = (typeof useOfflineBuffer !== 'undefined') ? useOfflineBuffer: false;
-  var collectives = {};
 
   // Sync session storage with local storage.
   function syncWebStorages() {
@@ -69,11 +68,6 @@
     }
   }
 
-  function cacheCollectives(currentCollectives) {
-    for (var uuid in collectives) delete collectives[uuid];
-      for (var uuid in currentCollectives) collectives[uuid] = currentCollectives[uuid];
-    }
-
   return {
     isAuthenticated: function() {
       return SessionStorageService.getExpires() || LocalStorageService.getExpires();
@@ -107,7 +101,6 @@
       LocalStorageService.clearUser();
       latestModified = {};
       itemsSynchronized = {};
-      collectives = {};
     },
 
     // Web storage setters
@@ -117,7 +110,6 @@
       var preferences = migrateTransportPreferences(authenticateResponse.preferences);
 
       SessionStorageService.setCollectives(authenticateResponse.collectives);
-      cacheCollectives(authenticateResponse.collectives);
       SessionStorageService.setExpires(authenticateResponse.expires + authExpiresDelta);
       SessionStorageService.setCredentials(credentials);
       SessionStorageService.setUserType(authenticateResponse.userType);
@@ -192,8 +184,7 @@
     // Web storage getters
     getCollectives: function() {
       syncWebStorages();
-      cacheCollectives(SessionStorageService.getCollectives());
-      return collectives;
+      return SessionStorageService.getCollectives();
     },
     getCredentials: function() {
       syncWebStorages();

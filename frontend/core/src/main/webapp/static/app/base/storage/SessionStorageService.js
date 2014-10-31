@@ -19,6 +19,7 @@
   var cachedUserUUID;
   var cachedEmail;
   var cachedPreferences;
+  var cachedCollectives;
   return {
 
     // setters
@@ -27,7 +28,28 @@
       sessionStorage.setItem('activeUUID', uuid);
     },
     setCollectives: function(collectives) {
-      if (collectives) sessionStorage.setItem('collectives', JSON.stringify(collectives));
+      if (collectives){
+        // To get two-way binding to work with cached collectives, we want to replace the content
+        // of cachedCollectives with the new one
+        if (cachedCollectives){
+          // delete every old key, then add every key
+          for (var oldUuid in cachedCollectives){
+            if (cachedCollectives.hasOwnProperty(oldUuid)){
+              delete cachedCollectives[oldUuid];
+            }
+          }
+          for (var newUuid in collectives){
+            if (collectives.hasOwnProperty(newUuid)){
+              cachedCollectives[newUuid] = collectives[newUuid];
+            }
+          }
+        }else{
+          cachedCollectives = collectives;
+        }
+        sessionStorage.setItem('collectives', JSON.stringify(collectives));
+      }else{
+        cachedCollectives = collectives;
+      }
     },
     setEmail: function(email) {
       cachedEmail = email;
@@ -74,8 +96,17 @@
       return cachedActiveUUID;
     },
     getCollectives: function() {
-      var collectives = sessionStorage.getItem('collectives');
-      if (collectives) JSON.parse(collectives);
+      if (!cachedCollectives){
+        var collectives = sessionStorage.getItem('collectives');
+        if (collectives){
+          cachedCollectives = JSON.parse(collectives);
+        }else{
+          // We need to have at least some array pointer to get two-way binding to work:
+          // collectives are needed before authentication!
+          cachedCollectives = {};
+        }
+      }
+      return cachedCollectives;
     },
     getEmail: function() {
       if (!cachedEmail) cachedEmail = sessionStorage.getItem('email');
@@ -125,7 +156,7 @@
       sessionStorage.removeItem('preferences');
       sessionStorage.removeItem('userModified');
       sessionStorage.removeItem('state');
-      cachedActiveUUID = cachedUserUUID = cachedEmail = cachedPreferences = undefined;
+      cachedActiveUUID = cachedUserUUID = cachedEmail = cachedPreferences = cachedCollectives = undefined;
     }
   };
 }
