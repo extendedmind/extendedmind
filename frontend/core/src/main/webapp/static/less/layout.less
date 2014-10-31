@@ -458,7 +458,7 @@ Use `.group-instruction` to create an instruction block in the middle of a secti
 // For iPhone 4s, we need a much tighter layout
 .height-small .group-instruction{
   .textgroup-ingress {
-    padding-top: 0;
+    padding-top: @grid-vertical-small;
   }
   .textgroup-ingress.last {
     padding-top: @grid-vertical-half;
@@ -708,7 +708,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-bottom: @grid-vertical-half + 3px; // [1]
 }
 
-.height-small .group-heading:not(.justified){
+.height-small .group-heading:not(.justified):not(.instruction){
   padding-top: 5px;
   padding-bottom: 10px;
   font-size: @size-font-not-so-large;
