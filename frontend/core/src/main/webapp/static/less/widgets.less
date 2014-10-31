@@ -91,50 +91,131 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
 # Datepicker
 */
 
-.datepicker{
+@height-datepicker: @grid-vertical * 2;
+
+// 1. Align with '.group-heading justified'.
+.datepicker {
   line-height: @height-heading;
   vertical-align: middle;
-  margin-top: @margin-top-heading-justified;
-  margin-bottom: 6px;
+  margin-top: @margin-top-heading-justified;  // [1]
+  margin-bottom: 4px;                         // [1]
+}
+
+.datepicker-week {
+  display: table;
+}
+
+.datepicker-day-container {
+  width: 14.285714286%;
+  height: @height-datepicker;
+  line-height: @height-datepicker;
+  display: table-cell;
+}
+
+.datepicker-day-wrapper {
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .datepicker-day {
-  height: 88px;
-  line-height: 88px;
-  text-align: center;
-  display:table;
+  vertical-align: middle;
+  display: inherit;
+  line-height: inherit;
 }
 
-.datepicker-day > div {
-  width: 100%;
-  height: 88px;
-  line-height: 88px;
-  display:table-cell;
-  vertical-align: middle;
-}
-.datepicker-day > div > * {
+.datepicker-weekday,
+.datepicker-date {
   display: block;
   line-height: normal;
 }
 
-.datepicker-day > div >:first-child {
+.datepicker-weekday {
   padding-bottom: 4px;
 }
-.datepicker-day > div >:last-child {
-  font-size: @size-font-medium;
-}
 
-.datepicker-day.past > div >:last-child {
-  color: @color-text-downplayed;
-}
-
-.datepicker-day.today > div >:first-child {
+.datepicker-day-container.today .datepicker-weekday {
   color: @color-text;
   .set-font-bold();
 }
 
-.datepicker-day.active > div >:last-child {
+// DATE
+.datepicker-date {
+  font-size: @size-font-medium;
+}
+
+.datepicker-day-container.past .datepicker-date {
+  color: @color-text-downplayed;
+}
+
+.datepicker-day-container.active .datepicker-date {
   .set-font-bold();
+}
+
+// Stretch cells to occupy all available width.
+
+// FIRST COLUMN
+
+// 1. 100% / 7 * 2
+.datepicker-day-container:first-child {
+  .datepicker-day-wrapper {
+    margin-left: -14.285714286%;  // [1]
+    margin-right: 14.285714286%;  // [1]
+  }
+}
+
+// SECOND COLUMN
+
+// 1. 100% / 7
+.datepicker-day-container:nth-child(2) {
+  .datepicker-day-wrapper {
+    margin-left: -14.285714286%;  // [1]
+    margin-right: 14.285714286%;  // [1]
+  }
+}
+
+// THIRD COLUMN
+
+// 1. 100% / 7 / 2
+.datepicker-day-container:nth-child(3) {
+  .datepicker-day-wrapper {
+    margin-left: -7.142857143%; // [1]
+    margin-right: 7.142857143%; // [1]
+  }
+}
+
+// MIDDLE
+
+// FIFTH COLUMN
+
+// 1. 100% / 7 / 2
+.datepicker-day-container:nth-child(5) {
+  .datepicker-day-wrapper {
+    margin-left: 7.142857143%;    // [1]
+    margin-right: -7.142857143%;  // [1]
+  }
+}
+
+// SIXTH COLUMN
+
+// 1. 100% / 7
+.datepicker-day-container:nth-child(6) {
+  .datepicker-day-wrapper {
+    margin-left: 14.285714286%;   // [1]  // TODO: 100/14*1.5
+    margin-right: -14.285714286%; // [1]  // TODO: -100/14*1.5
+  }
+}
+
+// LAST COLUMN
+
+// 1. 100% / 7 * 2
+.datepicker-day-container:last-child {
+  .datepicker-day-wrapper {
+    margin-left: 21.428571429%;   // FIXME
+    margin-right: -21.428571429%; // FIXME
+  }
 }
 
 .past-date h2 {
