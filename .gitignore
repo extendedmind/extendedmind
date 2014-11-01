@@ -13,6 +13,7 @@ target/
 frontend/core/src/main/webapp/test/json/
 frontend/core/src/main/webapp/static/em.min.js
 frontend/core/src/main/webapp/static/css
+frontend/core/src/main/webapp/static/favicon.ico
 
 # Ignore PhantomJS logs
 phantomjsdriver.log
