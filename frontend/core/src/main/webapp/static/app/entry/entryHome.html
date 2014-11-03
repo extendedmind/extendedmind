@@ -22,16 +22,49 @@
   </footer>
 </div>
 <div ng-if="entryState === 'download'">
-  <section class="container-content">
-    <h2>download the app</h2>
-    <h3>to access your extended mind with a phone or tablet, please download our mobile app</h3>
-    <div id="welcome-store-buttons">
-      <a href onClick="window.open('http://itunes.com/apps/extendedmind', '_system_')">
-        <img ng-src="/{{urlBase}}img/appstore.png" style="width: 120px;"/>
-      </a>&nbsp; &nbsp;
-      <a href onClick="window.open('https://play.google.com/store/apps/details?id=org.extendedmind', '_system_')">
-        <img ng-src="/{{urlBase}}img/playstore.png" style="width: 120px;"/>
-      </a>
-    </div>
+  <section class="container-content" style="padding-bottom: 122px;">
+    <ul style="padding-left: 28px;">
+      <li style="display:inline; margin-right: 15px;">
+        <span class="text-logo"></span>
+      </li>
+      <li style="display:inline;">
+        <a href="http://www.extendedmind.org" target="_blank">
+          <span class="text-details" style="padding: 0 3px 0 3px;">blog</span>
+        </a>
+      </li>
+      <li style="display:inline;">
+        <a href="https://www.facebook.com/extmd" target="_blank">
+          <span class="text-details" style="padding: 0 3px 0 3px;">facebook</span>
+        </a>
+      </li>
+      <li style="display:inline;">
+        <a href="https://twitter.com/extmd" target="_blank">
+          <span class="text-details" style="padding: 0 3px 0 3px;">twitter</span>
+        </a>
+      </li>
+      <li style="display:inline;">
+        <a href="mailto:info@ext.md">
+          <span class="text-details" style="padding: 0 3px 0 3px;">contact</span>
+        </a>
+      </li>
+    </ul>
+    <h2 class="group-heading instruction row" style="padding-top: 15vh;">
+      download<br/>
+      the <span class="text-highlighted">app</span>
+    </h2>
   </section>
+  <footer class="container-content--after" style="height: 122px;">
+    <div class="table row">
+      <div class="table-row" style="vertical-align: middle;">
+        <a class="table-cell" style="text-align: left;" href="itms://itunes.com/apps/extendedmind">
+          <img ng-src="/{{urlBase}}img/appstore.png" style="width: 120px;"/><br/>
+          <span class="text-details" style="padding-left: 10px;">iphone 4s or later</span>
+        </a>
+        <a class="table-cell" style="text-align: right;" href="market://details?id=org.extendedmind">
+          <img ng-src="/{{urlBase}}img/playstore.png" style="width: 120px;"/><br/>
+          <span class="text-details" style="padding-right: 10px;">4.4 kitkat or later</span>
+        </a>
+      </div>
+    </div>
+  </footer>
 </div>

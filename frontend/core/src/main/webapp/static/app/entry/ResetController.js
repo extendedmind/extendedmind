@@ -15,7 +15,7 @@
  'use strict';
 
  function ResetController($location, $routeParams, $scope, $window, AnalyticsService, AuthenticationService,
-                          BackendClientService, DetectBrowserService, packaging) {
+                          BackendClientService, DetectBrowserService, UISessionService, packaging) {
 
   AnalyticsService.visitEntry('reset');
 
@@ -38,8 +38,8 @@
             $scope.resetFailed = true;
           } else if (resetPasswordResponse.data && resetPasswordResponse.data.count) {
             if (packaging === 'web' && DetectBrowserService.isMobile()){
-              // FIXME: This redirect is a little iffy
-              $window.location.href = 'http://ext.md';
+              $location.url($location.path());
+              $location.path('/');
             }else{
               // Authenticate using the new password
               AuthenticationService.login($scope.user).then(
@@ -55,6 +55,10 @@
                 }
               );
             }
+            UISessionService.pushNotification({
+              type: 'fyi',
+              text: 'password reset successful'
+            });
           }
         }
       );
@@ -73,5 +77,5 @@
 
 }
 ResetController['$inject'] = ['$location', '$routeParams', '$scope', '$window', 'AnalyticsService',
-'AuthenticationService', 'BackendClientService', 'DetectBrowserService', 'packaging'];
+'AuthenticationService', 'BackendClientService', 'DetectBrowserService', 'UISessionService', 'packaging'];
 angular.module('em.entry').controller('ResetController', ResetController);

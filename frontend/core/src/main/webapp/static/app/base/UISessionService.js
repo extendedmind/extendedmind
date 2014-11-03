@@ -210,6 +210,8 @@
           type: type,
           callback: callback
         });
+        // Execute on register in case there are already notifications pushed before toaster is registered
+        executeNotificationsActiveCallbacks(notificationMap[null]);
       }
     },
     unregisterNotificationsActiveCallback: function(type) {

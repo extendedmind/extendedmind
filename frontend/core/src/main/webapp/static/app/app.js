@@ -151,8 +151,8 @@
     $routeProvider.when('/verify/:hex_code', {
       redirectTo: '/',
       resolve: {
-        routes: ['$location', '$route', 'AnalyticsService', 'AuthenticationService',
-        function($location, $route, AnalyticsService, AuthenticationService) {
+        routes: ['$location', '$route', 'AnalyticsService', 'AuthenticationService', 'UISessionService',
+        function($location, $route, AnalyticsService, AuthenticationService, UISessionService) {
           AnalyticsService.visitEntry('verify');
           var verifyCode = $route.current.params.hex_code;
           var email = $route.current.params.email;
@@ -161,9 +161,19 @@
             // verify email directly
             AuthenticationService.postVerifyEmail(verifyCode, email).then(
               function(success){
-                // TODO:  TOASTER FOR SUCCESS IN VERIFICATION
+                $location.url($location.path());
+                $location.path('/');
+                UISessionService.pushNotification({
+                  type: 'fyi',
+                  text: 'email verified'
+                });
               }, function(failure){
-                // TODO: TOASTER FOR FAILED VERIFY
+                $location.url($location.path());
+                $location.path('/');
+                UISessionService.pushNotification({
+                  type: 'fyi',
+                  text: 'email verification failed'
+                });
               }
             );
           }
