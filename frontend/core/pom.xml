@@ -114,6 +114,9 @@
             <fileset>
               <directory>${basedir}/src/main/webapp/static/css</directory>
             </fileset>
+            <fileset>
+              <directory>${basedir}/src/main/webapp/static/img</directory>
+            </fileset>
           </filesets>
         </configuration>
       </plugin>
