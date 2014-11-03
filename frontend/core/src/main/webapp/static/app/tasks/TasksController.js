@@ -109,17 +109,18 @@
 
     if (task.completed) {
       AnalyticsService.do('uncompleteTask');
-      TasksService.uncompleteTask(task, UISessionService.getActiveUUID()).then(function() {
+      TasksService.uncompleteTask(task, UISessionService.getActiveUUID()).then(function(task) {
         unfreezeTask(task, true);
+        $scope.combineTasksArrays();
       }, function() {
         unfreezeTask(task, true);
       });
       return false;
     } else {
       AnalyticsService.do('completeTask');
-
       TasksService.completeTask(task, UISessionService.getActiveUUID()).then(function(){
         if (!taskCompletingReadyDeferred) unfreezeTask(task, true);
+        $scope.combineTasksArrays();
       }, function() {
         if (!taskCompletingReadyDeferred) unfreezeTask(task, true);
       });

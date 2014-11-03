@@ -437,26 +437,35 @@ $scope.$watch('archivedNotes.length', function(/*newValue, oldValue*/) {
   combineNotesArrays();
 });
 
-function combineTasksArrays() {
+$scope.combineTasksArrays = function() {
   var activeArchivedTasks = [];
   var i = 0;
   while ($scope.archivedTasks[i]) {
-    if ($scope.archivedTasks[i].completed === undefined) {
+    if (!$scope.tasks[i].transientProperties.completed) {
       activeArchivedTasks.push($scope.archivedTasks[i]);
     }
     i++;
   }
-  $scope.allActiveTasks =
-  ArrayService.combineArrays(
+
+  var activeTasks = [];
+  i = 0;
+  while ($scope.tasks[i]) {
+    if (!$scope.tasks[i].transientProperties.completed) {
+      activeTasks.push($scope.tasks[i]);
+    }
+    i++;
+  }
+
+  $scope.allActiveTasks = ArrayService.combineArrays(
                              activeArchivedTasks,
-                             $scope.tasks, 'created', true);
+                             activeTasks, 'created', true);
 }
 
-$scope.$watch('tasks.length', function(/*newValue, oldValue*/) {
-  combineTasksArrays();
+$scope.$watchCollection('tasks', function(/*newValue, oldValue*/) {
+  $scope.combineTasksArrays();
 });
 $scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
-  combineTasksArrays();
+  $scope.combineTasksArrays();
 });
 
   // Deleted items
