@@ -14,7 +14,8 @@
  */
  'use strict';
 
- function ResetController($location, $routeParams, $scope, AnalyticsService, AuthenticationService, BackendClientService) {
+ function ResetController($location, $routeParams, $scope, $window, AnalyticsService, AuthenticationService,
+                          BackendClientService, DetectBrowserService, packaging) {
 
   AnalyticsService.visitEntry('reset');
 
@@ -36,19 +37,24 @@
           } else if (resetPasswordResponse.status !== 200) {
             $scope.resetFailed = true;
           } else if (resetPasswordResponse.data && resetPasswordResponse.data.count) {
-            // Authenticate using the new password
-            AuthenticationService.login($scope.user).then(
-              function(/*authenticationResponse*/) {
-                $location.url($location.path());
-                $location.path('/');
-              }, function(error) {
-                if (BackendClientService.isOffline(error.status)) {
-                  $scope.resetOffline = true;
-                } else {
-                  $scope.loginFailed = true;
+            if (packaging === 'web' && DetectBrowserService.isMobile()){
+              // FIXME: This redirect is a little iffy
+              $window.location.href = 'http://ext.md';
+            }else{
+              // Authenticate using the new password
+              AuthenticationService.login($scope.user).then(
+                function(/*authenticationResponse*/) {
+                  $location.url($location.path());
+                  $location.path('/');
+                }, function(error) {
+                  if (BackendClientService.isOffline(error.status)) {
+                    $scope.resetOffline = true;
+                  } else {
+                    $scope.loginFailed = true;
+                  }
                 }
-              }
-            );
+              );
+            }
           }
         }
       );
@@ -66,5 +72,6 @@
   }
 
 }
-ResetController['$inject'] = ['$location', '$routeParams', '$scope', 'AnalyticsService', 'AuthenticationService', 'BackendClientService'];
+ResetController['$inject'] = ['$location', '$routeParams', '$scope', '$window', 'AnalyticsService',
+'AuthenticationService', 'BackendClientService', 'DetectBrowserService', 'packaging'];
 angular.module('em.entry').controller('ResetController', ResetController);
