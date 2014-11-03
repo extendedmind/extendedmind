@@ -134,14 +134,14 @@
             //        So wrap element into angular element first and use jqLite click()
             angular.element(touchEndEvent.target.parentElement).click();
           }else if (touchEndEvent.target.nodeName === 'SPAN' &&
-                    touchEndEvent.target.parentElement.nodeName === 'A')
-          {
+                    touchEndEvent.target.parentElement.nodeName === 'A'){
             // Execute the action of the touchend target parent link.
-            // NOTE:  Vanilla JS click() is not working for the first time.
-            //        Wrapping click into angular $digest cycle printed error message:
-            //          'Can only call HTMLElement.click on instances of HTMLElement'
-            //        So wrap element into angular element first and use jqLite click()
             angular.element(touchEndEvent.target.parentElement).click();
+          }else if (touchEndEvent.target.nodeName === 'SPAN' &&
+                    touchEndEvent.target.parentElement.nodeName === 'SPAN' &&
+                    touchEndEvent.target.parentElement.parentElement.nodeName === 'A'){
+            // Execute the action of the touchend target grandparent link.
+            angular.element(touchEndEvent.target.parentElement.parentElement).click();
           }else {
             // Touch hit somewhere else in the footer
             touchEndEvent.preventDefault();
