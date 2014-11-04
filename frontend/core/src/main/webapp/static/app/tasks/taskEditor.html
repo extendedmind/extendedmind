@@ -72,14 +72,14 @@
 
         </div>
 
-        <footer ng-hide="isTaskFooterHidden()" class="container-content--after editor-footer" editor-footer="basicSlideInfo">
+        <footer ng-hide="isTaskFooterHidden()" class="container-content--after editor-footer animate-fade-in-out" editor-footer="basicSlideInfo">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
               <a href id="editorFooterExpandLink" ng-click="toggleExpand()">
                 <span id="editorFooterExpandIcon" class="text-calendar"></span>
               </a>
             </div>
-            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--right link-navigation">
+            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden() || footerExpandOpen" class="group-symmetrical--right link-navigation animate-fade-in-out">
               <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>
