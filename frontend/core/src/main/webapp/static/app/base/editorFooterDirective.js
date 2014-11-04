@@ -23,6 +23,7 @@
       var expandedFooterMaxHeight = 135;  // Default expanded height. Used in task editor.
       var oldTranslateYPosition = 0;      // Default and previous translateY position.
       var expandPromise, shrinkPromise;   // Animation promises.
+      var expandedHeightChangeWatcher;    // Attach watcher into variable to be able to unregister it.
 
       if (attrs.editorFooter) {
         // Delegate footer height info.
@@ -56,16 +57,19 @@
         shrinkPromise = $animate.addClass(element, 'animate-editor-footer-close').then(function() {
           if (!$rootScope.$$phase && !scope.$$phase)
             scope.$apply(function(){
-              scope.footerExpanded = false; // remove expandable DOM
+              scope.footerExpanded = false;   // Remove expandable DOM.
+              scope.footerExpandOpen = false; // Footer is now closed.
             });
           else {
-            scope.footerExpanded = false; // remove expandable DOM
+            scope.footerExpanded = false;   // Remove expandable DOM.
+            scope.footerExpandOpen = false; // Footer is now closed.
           }
           shrinkPromise = undefined;
         });
 
         if (expandedHeightChangeWatcher) expandedHeightChangeWatcher(); // unregister watcher
         oldTranslateYPosition = 0; // Clear old Y position to default.
+        element[0].classList.remove('expanded-one-row');  // Remove padding-bottom fix class.
       };
 
       function startFooterExpandAnimation(expandedHeight) {
@@ -94,6 +98,7 @@
             scope.$apply(function() {
               // Set padding-bottom for container to make content scrollable.
               containerInfos.footerHeight = expandedHeight + footerHeight;
+              scope.footerExpandOpen = true;  // Footer is now opened.
             });
           }
           expandPromise = undefined;
@@ -104,8 +109,6 @@
         }
         oldTranslateYPosition = expandedHeight;
       }
-
-      var expandedHeightChangeWatcher;
 
       scope.openExpand = function() {
         if (!scope.footerExpanded){
@@ -153,6 +156,11 @@
           expandedHeight = expandedFooterMaxHeight;
         }
         startFooterExpandAnimation(expandedHeight);
+
+        // Toggle padding-bottom with this class. When expanded only one row, area would have undesired scroll
+        // due to padding-bottom.
+        var expandedOneRow = rowsInFirstContainer + rowsInSecondContainer === 1;
+        element[0].classList.toggle('expanded-one-row', expandedOneRow);
       }
 
       // iOS hack: when keyboard is up, later icon does not open expanded area. To get around this

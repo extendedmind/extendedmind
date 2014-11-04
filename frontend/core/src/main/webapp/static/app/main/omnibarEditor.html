@@ -38,7 +38,7 @@
     <footer class="container-content--after editor-footer" editor-footer="containerInfo" editor-footer-toggled-callback="setFilterItemsByKeywords" editor-footer-expand-height-change="notifyFilteredKeywordsLengthChange">
 
       <div class="group-symmetrical">
-        <a href ng-hide="footerExpanded" class="group-symmetrical--left animate-fade-in-out" ng-click="convertToTask()">
+        <a href ng-hide="footerExpandOpen" class="group-symmetrical--left animate-fade-in-out" ng-click="convertToTask()">
           <span class="text-convert">task</span>
         </a>
         <div class="group-symmetrical--middle">
@@ -46,7 +46,7 @@
             <span>#</span>
           </a>
         </div>
-        <a href ng-hide="footerExpanded" class="group-symmetrical--right animate-fade-in-out" ng-click="convertToNote()">
+        <a href ng-hide="footerExpandOpen" class="group-symmetrical--right animate-fade-in-out" ng-click="convertToNote()">
           <span class="text-convert">note</span>
         </a>
       </div>

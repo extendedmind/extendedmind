@@ -244,13 +244,19 @@ Vertically center .container-master and .container-editor in large screens
   height: @height-footer; // [1]
 }
 
-// FIXME: move and refactor
+// FIXME: move
 // 1. Add padding-bottom to make area scrollable.
 .keywords-footer {
   height: 100%;
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
   padding-bottom: @grid-vertical; // [1]
+}
+
+// FIXME: move
+// 1. When expanded only one row, .keywords-footer would have undesired scroll due to padding-bottom.
+.editor-footer.expanded-one-row .keywords-footer {
+  padding-bottom: 0;  // [1]
 }
 
 // FIXME: move?
