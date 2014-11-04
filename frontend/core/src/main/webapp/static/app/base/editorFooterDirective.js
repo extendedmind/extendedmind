@@ -103,8 +103,6 @@
           scope.$digest();
         }
         oldTranslateYPosition = expandedHeight;
-
-        return expandPromise;
       }
 
       var expandedHeightChangeWatcher;
@@ -112,13 +110,15 @@
       scope.openExpand = function() {
         if (!scope.footerExpanded){
           scope.footerExpanded = true;  // Create element in the DOM.
-          startFooterExpandAnimation(expandedFooterMaxHeight).then(function() {
-            if (typeof registerExpandedHeightChangeCallbackFn === 'function') {
-              // Register watcher for changes in expanded footer height to resize footer.
-              expandedHeightChangeWatcher =
-              registerExpandedHeightChangeCallbackFn(setNewExpandHeightAndStartAnimation);
-            }
-          });
+
+          if (typeof registerExpandedHeightChangeCallbackFn === 'function') {
+            // Set new expand height.
+            expandedHeightChangeWatcher =
+            registerExpandedHeightChangeCallbackFn(setNewExpandHeightAndStartAnimation);
+          } else {
+            // Expand to max height.
+            startFooterExpandAnimation(expandedFooterMaxHeight);
+          }
         }
       };
 
