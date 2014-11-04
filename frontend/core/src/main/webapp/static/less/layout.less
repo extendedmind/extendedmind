@@ -7,7 +7,7 @@
 TODO: em grid structure explained in plain English (when new grid structure decided!)
 */
 
-@height-heading:70px;
+@height-heading: 70px;
 @height-container-toolbar: @grid-vertical * 1.3;
 @height-landscape-max: 769px;
 @t-max: 1025px;
@@ -28,15 +28,16 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   position: relative; // [2]
 }
 
+// FIXME: move
 // 1. Minimize paint when editor is open and .container-master and .container-menu are stacked beneath.
 //    At least absolutely positioned elements inside these classes would repaint and slow down swiping in
 //    editor swiper.
-.editor-visible .container-master,
-.editor-visible .container-master *,
-.editor-visible .container-menu,
-.editor-visible .container-menu * {
-  pointer-events: none; // [1]
-  overflow: hidden;     // [1]
+.editor-visible {
+  .container-master, .container-master *,
+  .container-menu, .container-menu * {
+    pointer-events: none; // [1]
+    overflow: hidden;     // [1]
+  }
 }
 
 /*
@@ -45,7 +46,8 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 */
 
 // 1. Inherit width and height for absolutely positioned (grand)children.
-.container-main, .container-drawer-aisle, .container-drawer-aisle--inner {
+.container-main,
+.container-drawer-aisle, .container-drawer-aisle--inner {
   width: inherit;   // [1]
   height: inherit;  // [1]
 }
@@ -63,7 +65,9 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 
 // 1. Layout for Snap.js. See https://github.com/jakiestfu/Snap.js/#layout
 // 2. Inherit height to expand vertically and for (grand)children as well.
-.container-master, .container-editor, .container-menu {
+.container-menu,
+.container-master,
+.container-editor {
   position: absolute; // [1]
   height: inherit;    // [2]
 }
@@ -74,7 +78,8 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 }
 
 // 1. Maximum height is set programmatically - set default maximum height here as well for reference.
-.container-master, .container-editor {
+.container-master,
+.container-editor {
   max-height: @height-landscape-max;  // [1]
 }
 
@@ -88,10 +93,11 @@ Menu
   -webkit-overflow-scrolling: touch;  // [1]
   width: @width-menu;
   overflow-y: auto;
-  height:100%;
+  height: 100%;
   background-color: @color-background-menu;
 }
 
+// FIXME: comment and refactor
 .container-menu--top {
   min-height: 100%;
   margin: 0 auto -@height-menu-footer; /* the bottom margin is the negative value of the footer's height */
@@ -117,15 +123,12 @@ Menu
   height: @height-menu-footer;
 }
 
-.container-menu--bottom {
-  height: @height-menu-footer;
-}
-
 /*
 Vertically center .container-master and .container-editor in large screens
 */
 @media (min-height: @height-landscape-max) {
-  .container-master, .container-editor {
+  .container-master,
+  .container-editor {
     margin-top: -@height-landscape-max / 2;
     top: 50%;
   }
@@ -197,8 +200,7 @@ Vertically center .container-master and .container-editor in large screens
 }
 
 .container-master .swiper-slide {
-  .container-content,
-  .container-content--after {
+  .container-content, .container-content--after {
     position: absolute; // [1]
     left: 0;            // [1]
     right: 0;           // [1]
@@ -242,14 +244,16 @@ Vertically center .container-master and .container-editor in large screens
   height: @height-footer; // [1]
 }
 
+// FIXME: move and refactor
 // 1. Add padding-bottom to make area scrollable.
 .keywords-footer {
   height: 100%;
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
-  padding-bottom: 44px; // [1]
+  padding-bottom: @grid-vertical; // [1]
 }
 
+// FIXME: move?
 // 1. Put toaster to the bottom of its parent, .container-master or .container-editor
 // 2. Center toaster
 // 3. Set height and color
@@ -279,13 +283,15 @@ Vertically center .container-master and .container-editor in large screens
 //    title
 //  inbox task note list
 // 1. Fluid container height
-.container-titlebar, .container-toolbar {
+.container-titlebar,
+.container-toolbar {
   display: table-row; /* [1] */
 }
 
 // 1. Set content inside wrapper and center horizontally with max-width,
 //    because .container-toolbar has display: table-row which can not(?) be centered horizontally in CSS.
-.container-toolbar--inner, .container-titlebar--inner {
+.container-toolbar--inner,
+.container-titlebar--inner {
   max-width: @width-column-max; // [1]
   .center-horizontally;         // [1]
 }
@@ -321,10 +327,10 @@ Vertically center .container-master and .container-editor in large screens
 // http://getbootstrap.com/components/#input-groups-buttons
 .row-form,
 .group-mixed--middle:first-child {
-  & > a{                        // [1]
+  & > a {                        // [1]
     display: table;
     width: 100%;
-    & > span{                   // [1]
+    & > span {                   // [1]
       height: inherit;
       vertical-align: middle;
     }
@@ -348,6 +354,7 @@ margin.
   line-height: @grid-vertical;
 }
 
+// FIXME: unify vertical align with single- and multi-row items or move (overrides.less)
 .row-padded {
   .row();
   height: auto;
@@ -357,6 +364,7 @@ margin.
   }
 }
 
+// FIXME: unify vertical align with single- and multi-row items or move (overrides.less)
 // 1. Set padding-bottom to mimic height of .row-padded.
 //    43px + 21px is not the correct value but near.
 // 2. Adjust vertical alignment for button and make sure it does not increase .group-mixed.bottom-padded's height.
@@ -373,6 +381,7 @@ margin.
   }
 }
 
+// FIXME: refactor or move (overrides.less)
 .group-mixed--right.top {
   vertical-align: top;
 }
@@ -472,8 +481,9 @@ Use `.group-instruction` to create an instruction block in the middle of a secti
   }
 }
 
+// FIXME: move (overrides.less)
 // For iPhone 4s, we need a much tighter layout
-.height-small .group-instruction{
+.height-small .group-instruction {
   .textgroup-ingress {
     padding-top: @grid-vertical-small;
   }
@@ -518,9 +528,10 @@ Use `.group-instruction-jumbtron` to create a very large instruction block in th
   }
 }
 
+// FIXME: move (overrides.less)
 // iPhone 4s, less top margin
 .height-small .group-instruction-jumbotron {
-  .group-instruction--main{
+  .group-instruction--main {
     margin-top: @grid-vertical-medium;
   }
 }
@@ -555,11 +566,15 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 .group-mixed--left {
   padding-right: @padding-inner-group-mixed;
 
-  a, input[type="checkbox"] + label, div {
+  a,
+  input[type="checkbox"] + label,
+  div {
     padding-left: @grid-horizontal; /* [1] */
     height: @grid-vertical;         /* [1] */
   }
-  a, input[type="checkbox"] + label:before, span {
+  a,
+  input[type="checkbox"] + label:before,
+  span {
     line-height: @grid-vertical;
   }
 }
@@ -569,12 +584,14 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   line-height: @grid-vertical;
 }
 
+// FIXME: move (overrides.less)
 .group-mixed.details {
   .group-mixed--middle {
     line-height: @grid-vertical-small;
   }
 }
 
+// FIXME: move (overrides.less)
 .group-mixed.height-large {
   margin-top: 10px;
 }
@@ -616,31 +633,37 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-right: 5px;
 }
 
+// FIXME: refactor or move (overrides.less)
 .table.two-to-left .table-cell {
   text-align: left;
 }
 
+// FIXME: refactor or move (overrides.less)
 .table.two-to-left .table-cell:nth-child(odd) {
   padding-left: @grid-horizontal;
 }
 
+// FIXME: refactor or move (overrides.less)
 .table.two-to-left .table-cell:nth-child(even) {
   padding-right: @grid-horizontal;
 }
 
 // FIXME: .short-text and .long-text are ugly hacks!
 .table.two-to-left .short-text {
-  span, a {
+  span,
+  a {
     height: @grid-vertical - 12px;
   }
 }
 
 .table.two-to-left .long-text {
-  span, a {
+  span,
+  a {
     height: @grid-vertical + 12px;
   }
 }
 
+// FIXME: move (overrides.less)
 // 1. Set padding-left to default padding for inactive.
 //    NOTE: It would be better to use :empty selector but it did not work with AngularJS 1.3.0 on element with
 //          ng-if so use .inactive instead.
@@ -679,38 +702,40 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   vertical-align: middle;       // [2]
 }
 
+// FIXME: comment and move (overrides.less)
 // 1. Inherit vertical-aling for textarea to override default value set elsewhere.
 .group-mixed.with-checkbox {
-  max-height: inherit;  // TODO: comments
-  height: auto;         // TODO: comments
+  max-height: inherit;
+  height: auto;
   .group-mixed--left, .group-mixed--middle, .group-mixed--right {
-    height: auto;         // TODO: comments
-    line-height: inherit; // TODO: comments
-    vertical-align: top;  // TODO: comments
+    height: auto;
+    line-height: inherit;
+    vertical-align: top;
   }
 
   .group-mixed--left {
-    padding-top: 9.5px; // TODO: comments
+    padding-top: 9.5px;
     label:before {
-      line-height: inherit !important;  // TODO: comments
+      line-height: inherit !important;
     }
     label {
-      height: auto; // TODO: comments
+      height: auto;
     }
   }
 
   .group-mixed--middle {
-    padding-top: 10px;    // TODO: comments
-    padding-bottom: 11px; // TODO: comments
+    padding-top: 10px;
+    padding-bottom: 11px;
     textarea {
       vertical-align: inherit;  // [1]
     }
     span {
-      height: auto; // TODO: comments
+      height: auto;
     }
   }
 }
 
+// FIXME: refactor or move (overrides.less)
 .group-mixed.with-teaser {
   margin-bottom: 5px;
   a {
@@ -734,6 +759,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   font-size: @size-font-not-so-large;
 }
 
+// FIXME: refactor or move (overrides.less)
 @margin-top-heading-justified: -12px;
 // Justify whitespace between toolbar and content
 .group-heading.justified {
@@ -741,16 +767,19 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   margin-bottom: 0;
 }
 
+// FIXME: refactor or move (overrides.less)
 .group-heading.long {
   font-size: @size-font-not-so-large;
   margin-bottom: 0;
 }
 
+// FIXME: refactor or move (overrides.less)
 .group-heading.instruction {
   margin-top: @grid-vertical * 1.5;
   padding-top: 2vh;
 }
 
+// FIXME: refactor or move (overrides.less)
 // iPhone 4s, less top margin for instruction headings
 .height-small .group-heading.instruction {
   margin-top: @grid-vertical-half;
@@ -764,13 +793,14 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 `.group-error` groups together multiple error messages.
 */
 .group-error {
-  position:absolute;
+  position: absolute;
   margin-top: -10px;
   line-height: @grid-vertical-small;
 }
 
+// FIXME: refactor or move (overrides.less)
 .group-error.height-large {
-  margin-top:0;
+  margin-top: 0;
 }
 
 /*
@@ -798,7 +828,7 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 @max-width-group-symmetrical-middle: 70px;
 
 .group-symmetrical--left, .group-symmetrical--right {
-  display:table-cell;
+  display: table-cell;
   vertical-align: middle;
 }
 
@@ -827,12 +857,12 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   max-width: @max-width-group-symmetrical-middle;
   height: inherit;
 
-  & > a{                        // [1]
+  & > a {                        // [1]
     display: table;
     width: 100%;
     height: inherit;
     & > span,
-    & > div{                   // [1]
+    & > div {                   // [1]
       text-align: center;
       height: inherit;
       display: table-cell;
@@ -863,6 +893,7 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   text-align: center;
 }
 
+// FIXME: comments
 .container-disabled {
   * {
     pointer-events: none;
@@ -870,12 +901,13 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   }
   a.active {
     pointer-events: auto !important;
-    span{
+    span {
       pointer-events: auto !important;
     }
   }
 }
 
+// FIXME: comments
 .group-html-external {
   h1 {
     font-size: 24px;
@@ -908,7 +940,6 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 }
 
 // 1. Inherit height for vertical swiper slides.
-//    NOTE: evaluate need for this when vertical slide pages are implemented with new layout.
 .swiper-container[swiper-type="page"] {
   height: inherit;  // [1]
 }
@@ -929,7 +960,27 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   -webkit-overflow-scrolling: auto; // [1]
 }
 
+// FIXME: refactor or move (overrides.less)
 // 1. Exclude padding from height with box-sizing.
 .container-content.with-expandable-footer {
   box-sizing: content-box;  // [1]
+}
+
+// 1. Override vertical-align: middle because it will brake layout with multiline text. Set padding-top and
+//    margin-bottom to align textarea vertically.
+//    Value is probably (grid-vertical - 22px[=line-height of textarea]) / 2. Then adjust it between
+//    paddin-top and margin-bottom to truly align text in the vertical center.
+// 2. Default line-height and min-height for .content-text.
+// 3. Remove inconsistent bottom margin.
+.content-text {
+  padding-top: 11px;  //[1]
+  padding-bottom: 11px;
+  line-height: @grid-vertical-half;  // [2]
+  min-height: @grid-vertical;   // [2]
+  vertical-align: top;
+  textarea {
+    line-height: inherit;
+    vertical-align: baseline; // [1]
+    display: block; // [3]
+  }
 }
