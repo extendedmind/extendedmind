@@ -15,29 +15,45 @@
  'use strict';
 
  function editorFooterDirective($animate, $document, $parse, $rootScope, $timeout, packaging) {
-  var footerHeight = 44;
-  var expandedFooterHeight = 179;
+  var footerHeight = 44;  // NOTE: Match with @grid-vertical in LESS.
   return {
     restrict: 'A',
     scope: true,
     link: function(scope, element, attrs) {
-      var containerInfos = $parse(attrs.editorFooter)(scope);
-      containerInfos.footerHeight = element[0].offsetHeight;
+      var expandedFooterMaxHeight = 135;  // Default expanded height. Used in task editor.
+      var oldTranslateYPosition = 0;      // Default and previous translateY position.
+      var expandPromise, shrinkPromise;   // Animation promises.
 
-      var expandPromise, shrinkPromise;
+      if (attrs.editorFooter) {
+        // Delegate footer height info.
+        var containerInfos = $parse(attrs.editorFooter)(scope);
+        containerInfos.footerHeight = element[0].offsetHeight;
+      }
+
+      if (attrs.editorFooterExpandHeightChange) {
+        // Height change callback function.
+        var registerExpandedHeightChangeCallbackFn = $parse(attrs.editorFooterExpandHeightChange)(scope);
+      }
+
+      if (attrs.editorFooterToggledCallback) {
+        // Toggled callback function.
+        var editorFooterToggledCallbackFn = $parse(attrs.editorFooterToggledCallback)(scope);
+      }
 
       scope.closeExpand = function() {
         // Reset container's padding-bottom to default footer height before animation so that the backside
         // of expanded footer is not blank.
         containerInfos.footerHeight = footerHeight;
 
+        // Set footer height and bottom to default values.
+        element[0].style.height = footerHeight + 'px';
+        element[0].style.bottom = 0;
+
+        // Remove animation class from opening.
+        element[0].classList.remove('animate-editor-footer-open');
+
         // Start shrink animation.
-        shrinkPromise = $animate.removeClass(element, 'animate-editor-footer-open').then(function() {
-
-          // Set footer height and bottom to default values.
-          element[0].style.height = footerHeight + 'px';
-          element[0].style.bottom = 0;
-
+        shrinkPromise = $animate.addClass(element, 'animate-editor-footer-close').then(function() {
           if (!$rootScope.$$phase && !scope.$$phase)
             scope.$apply(function(){
               scope.footerExpanded = false; // remove expandable DOM
@@ -48,15 +64,27 @@
           shrinkPromise = undefined;
         });
 
+        if (expandedHeightChangeWatcher) expandedHeightChangeWatcher(); // unregister watcher
+        oldTranslateYPosition = 0; // Clear old Y position to default.
       };
 
-
-      function startFooterExpandAnimation() {
+      function startFooterExpandAnimation(expandedHeight) {
         // Footer expands so it needs new height and bottom.
-        element[0].style.height = expandedFooterHeight + 'px';
-        element[0].style.bottom = -(expandedFooterHeight - footerHeight) + 'px';
-        expandPromise = $animate.addClass(element, 'animate-editor-footer-open').then(function() {
+        element[0].style.height = expandedHeight + footerHeight + 'px';
+        element[0].style.bottom = -expandedHeight + 'px';
 
+        // Remove animation class from previous toggling.
+        element[0].classList.remove('animate-editor-footer-close');
+        element[0].classList.remove('animate-editor-footer-open');
+
+        expandPromise = $animate.addClass(element, 'animate-editor-footer-open', {
+          from: {
+            transform: 'translate3d(0, ' + -oldTranslateYPosition + 'px' + ', 0)'
+          },
+          to: {
+            transform: 'translate3d(0, ' + -expandedHeight + 'px, 0)'
+          }
+        }).then(function() {
           // Shrink promise exists if footer is shrinked before it is fully expanded. In that case,
           // this resolve callback is more like a rejection so let's do nothing here and let shrink promise
           // do its thing instead.
@@ -65,7 +93,7 @@
 
             scope.$apply(function() {
               // Set padding-bottom for container to make content scrollable.
-              containerInfos.footerHeight = expandedFooterHeight;
+              containerInfos.footerHeight = expandedHeight + footerHeight;
             });
           }
           expandPromise = undefined;
@@ -74,22 +102,58 @@
         if (!$rootScope.$$phase && !scope.$$phase){
           scope.$digest();
         }
+        oldTranslateYPosition = expandedHeight;
+
+        return expandPromise;
       }
+
+      var expandedHeightChangeWatcher;
 
       scope.openExpand = function() {
         if (!scope.footerExpanded){
-          scope.footerExpanded = true;
-          startFooterExpandAnimation();
+          scope.footerExpanded = true;  // Create element in the DOM.
+          startFooterExpandAnimation(expandedFooterMaxHeight).then(function() {
+            if (typeof registerExpandedHeightChangeCallbackFn === 'function') {
+              // Register watcher for changes in expanded footer height to resize footer.
+              expandedHeightChangeWatcher =
+              registerExpandedHeightChangeCallbackFn(setNewExpandHeightAndStartAnimation);
+            }
+          });
         }
       };
 
       scope.toggleExpand = function() {
+        var expanded;
         if (scope.footerExpanded){
+          expanded = false;
           scope.closeExpand();
         }else {
+          expanded = true;
           scope.openExpand();
         }
+        if (typeof editorFooterToggledCallbackFn === 'function')
+          editorFooterToggledCallbackFn(expanded); // Inform about footer new state.
       };
+
+      /*
+      * There are three elements in a row, so divide elements in a container by three and round that upwards
+      * to get the number of rows in a container.
+      */
+      function setNewExpandHeightAndStartAnimation(elementsInFirstContainer, elementsInSecondContainer) {
+        var rowsInFirstContainer = Math.ceil(elementsInFirstContainer / 3);
+        var firstContainerHeight = footerHeight * rowsInFirstContainer;
+
+        var rowsInSecondContainer = Math.ceil(elementsInSecondContainer / 3);
+        var secondContainerHeight = footerHeight * rowsInSecondContainer;
+
+        var expandedHeight = firstContainerHeight + secondContainerHeight;
+
+        if (expandedHeight > expandedFooterMaxHeight) {
+          // Do not expand beyond max height.
+          expandedHeight = expandedFooterMaxHeight;
+        }
+        startFooterExpandAnimation(expandedHeight);
+      }
 
       // iOS hack: when keyboard is up, later icon does not open expanded area. To get around this
       // we use a long enough timetout for the keyboard to get hidden, and after that, open the

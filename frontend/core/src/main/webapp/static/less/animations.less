@@ -179,18 +179,9 @@ input[type="checkbox"]:checked + label:before {
   opacity: 1; // [1]
 }
 
-@expanded-position-editor: 135px;
 @speed-animate-editor-footer-toggle: .3s;
 
-// 1. Animate editor to expanded position with translate3d.
-.animate-editor-footer-open {
-  -webkit-transform: translate3d(0, -@expanded-position-editor, 0); // [1]
-  -mox-transform: translate3d(0, -@expanded-position-editor, 0);    // [1]
-  -o-transform: translate3d(0, -@expanded-position-editor, 0);      // [1]
-  -ms-transform: translate3d(0, -@expanded-position-editor, 0);     // [1]
-  transform: translate3d(0, -@expanded-position-editor, 0);         // [1]
-}
-
+// 1. Animate editor to expanded position.
 .animate-editor-footer-open-add {
   -webkit-transition: -webkit-transform @speed-animate-editor-footer-toggle @timing-animate;
   -moz-transition: -moz-transform @speed-animate-editor-footer-toggle @timing-animate;
@@ -199,12 +190,19 @@ input[type="checkbox"]:checked + label:before {
   transition: transform @speed-animate-editor-footer-toggle @timing-animate;
 }
 
-.animate-editor-footer-open-remove {
+// 1. Override transform style applied directly into element by $animate.addClass options.
+.animate-editor-footer-close {
   -webkit-transition: -webkit-transform @speed-animate-editor-footer-toggle @timing-animate;
   -moz-transition: -moz-transform @speed-animate-editor-footer-toggle @timing-animate;
   -o-transition: -o-transform @speed-animate-editor-footer-toggle @timing-animate;
   -ms-transition: -ms-transform @speed-animate-editor-footer-toggle @timing-animate;
   transition: transform @speed-animate-editor-footer-toggle @timing-animate;
+
+  -webkit-transform: translate3d(0, 0, 0) !important; // [1]
+  -moz-transform: translate3d(0, 0, 0) !important; // [1]
+  -o-transform: translate3d(0, 0, 0) !important; // [1]
+  -ms-transform: translate3d(0, 0, 0) !important; // [1]
+  transform: translate3d(0, 0, 0) !important; // [1]
 }
 
 @speed-animation-editor: .35s;

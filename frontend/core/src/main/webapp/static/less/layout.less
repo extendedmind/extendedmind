@@ -172,9 +172,9 @@ Vertically center .container-master and .container-editor in large screens
   padding-bottom: @height-footer; // [3]
 }
 
-// 1. Clear padding-bottom for footer from fluid swiper container.
-//    Padding-bottom is set programmatically in editor with swiper into .content-container.
-.container-editor .swiper-container.container-fluid--inner {
+// 1. Clear padding-bottom for footer from fluid container in editor.
+//    Padding-bottom is set programmatically in editor into .content-container.
+.container-editor .container-fluid--inner {
   padding-bottom: 0;  // [1]
 }
 
@@ -183,16 +183,25 @@ Vertically center .container-master and .container-editor in large screens
   width: inherit; /* [1] */
 }
 
-// 1. Use same positioning as in swiper to make .container-content scrollable and .container-content--after visible.
+// 1. Use same positioning as in swiper to make .container-content scrollable
 //    Set left and right properties as well because .container-master and .container-editor are absolutely positioned.
+//    Set position to absolute to make .container-content--after visible.
 //    See: http://www.smashingmagazine.com/2013/08/09/absolute-horizontal-vertical-centering-css/
-.container-master, .container-editor {
-  .swiper-slide {
-    .container-content, .container-content--after {
-      position: absolute; // [1]
-      left: 0;            // [1]
-      right: 0;           // [1]
-    }
+.container-editor {
+  .swiper-slide .container-content,
+  .container-content--after {
+    position: absolute; // [1]
+    left: 0;            // [1]
+    right: 0;           // [1]
+  }
+}
+
+.container-master .swiper-slide {
+  .container-content,
+  .container-content--after {
+    position: absolute; // [1]
+    left: 0;            // [1]
+    right: 0;           // [1]
   }
 }
 
@@ -231,6 +240,14 @@ Vertically center .container-master and .container-editor in large screens
 // 1. Default height for footer. NOTE: Override programmatically if footer height is different.
 .container-content--after {
   height: @height-footer; // [1]
+}
+
+// 1. Add padding-bottom to make area scrollable.
+.keywords-footer {
+  height: 100%;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  padding-bottom: 44px; // [1]
 }
 
 // 1. Put toaster to the bottom of its parent, .container-master or .container-editor
@@ -814,7 +831,8 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
     display: table;
     width: 100%;
     height: inherit;
-    & > span, & > div{                   // [1]
+    & > span,
+    & > div{                   // [1]
       text-align: center;
       height: inherit;
       display: table-cell;
@@ -909,4 +927,9 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 //    NOTE: This bug is fixed starging from iOS 8.
 .swiper-slide-under-element .container-content {
   -webkit-overflow-scrolling: auto; // [1]
+}
+
+// 1. Exclude padding from height with box-sizing.
+.container-content.with-expandable-footer {
+  box-sizing: content-box;  // [1]
 }

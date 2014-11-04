@@ -96,8 +96,10 @@
     createSearchItems();
   }
 
-  // Search filter for all item fields: title, content and description
-  $scope.searchItemFields = function (item){
+  /*
+  * Search filter for all item fields: title, content and description.
+  */
+  function searchItemFields(item) {
     if ($scope.searchText && $scope.searchText.delayed &&
         (item.title.indexOf($scope.searchText.delayed)!=-1 ||
          (item.description && item.description.indexOf($scope.searchText.delayed)!=-1) ||
@@ -106,6 +108,86 @@
       return true;
     }
     return false;
+  }
+
+  /*
+  * Match items containing all selected keywords.
+  */
+  function filterByKeywords(item) {
+    if (!$scope.selectedKeywords || !$scope.selectedKeywords.length) return;
+    if (!item.transientProperties || !item.transientProperties.keywords) return;
+
+    for (var i = 0, len = $scope.selectedKeywords.length; i < len; i++) {
+      if (item.transientProperties.keywords.indexOf($scope.selectedKeywords[i]) === -1) {
+        // Selected keyword is not found in the item.
+        return false;
+      }
+    }
+    // Item contains all selected keywords.
+    return true;
+  }
+
+  $scope.itemsFilter = searchItemFields;  // Set default items filter.
+
+  $scope.setFilterItemsByKeywords = function(enabled) {
+    if (enabled) {
+      $scope.itemsFilter = filterByKeywords;
+    } else {
+      $scope.itemsFilter = searchItemFields;  // Reset to default items filter.
+    }
+  };
+
+  // KEYWORDS
+
+  $scope.selectedKeywords = [];
+  // Store filtered items into object to maintain prototypical inheritance.
+  $scope.filteredItems = {
+    unselectedKeywords: $scope.keywords,
+    searchResults: undefined
+  };
+
+  /*
+  * Watch and notify length change of filtered keywords arrays.
+  *
+  * When length of unselected keywords array changes, selected keywords array length changes as well.
+  */
+  $scope.notifyFilteredKeywordsLengthChange = function(callback) {
+    return $scope.$watch('filteredItems.unselectedKeywords.length', function(newLength) {
+      callback(newLength, $scope.selectedKeywords.length);
+    });
+  };
+
+  $scope.clearSelectedKeywords = function() {
+    $scope.selectedKeywords = [];
+  };
+
+  $scope.selectKeyword = function(keyword) {
+    $scope.selectedKeywords.push(keyword);
+  };
+  $scope.unselectKeyword = function(keyword) {
+    $scope.selectedKeywords.splice($scope.selectedKeywords.indexOf(keyword), 1);
+  };
+
+  /*
+  * Return unselected keywords which are found in the items that have been filtered by selected keywords.
+  */
+  $scope.unselectedKeywordsFromItemsWithSelectedKeywords = function(keyword) {
+    if (!$scope.selectedKeywords || !$scope.selectedKeywords.length) {
+      // No keywords selected. Return keyword.
+      return true;
+    }
+
+    if ($scope.selectedKeywords.indexOf(keyword) !== -1) {
+      // Keyword is selected.
+      return false;
+    }
+
+    for (var i = 0, len = $scope.filteredItems.searchResults.length; i < len; i++) {
+      if ($scope.filteredItems.searchResults[i].transientProperties.keywords.indexOf(keyword) !== -1) {
+        // Keyword found in item from search results.
+        return true;
+      }
+    }
   };
 }
 
