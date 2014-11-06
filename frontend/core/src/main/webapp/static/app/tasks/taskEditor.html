@@ -11,7 +11,7 @@
         <a ng-if="task.deleted" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteTask(task)"><span class="text-navigation">restore</span></a>
       </div>
 
-      <form role="form" class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
+      <form role="form" class="group-mixed with-checkbox with-textarea" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--left">
           <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-checked="task.transientProperties.completed" ng-model="task.transientProperties.completed" icon-checkbox="editorTitlebarCheckbox" />
         </div>
@@ -19,7 +19,7 @@
           <textarea ng-hide="isTaskTitleClamped()" type="text" ng-model="titlebar.text" ng-keydown="taskTitlebarTextKeyDown($event)" editable-field
           editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="enter task title&#8230;" maxlength="128" required ></textarea>
           <div ng-if="isTaskTitleClamped()">
-            <span ng-class="{'text-downplayed': !titlebar.text}" ng-bind="titlebar.text ? titlebar.text : 'enter task title&#8230;'" clamp=2></span>
+            <span ng-class="{'text-downplayed': !titlebar.text}" class="text-clamped" ng-bind="titlebar.text ? titlebar.text : 'enter task title&#8230;'" clamp=2></span>
           </div>
         </div>
       </form>

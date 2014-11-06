@@ -139,6 +139,11 @@ Use `.text-details` to separate details from body text.
   line-height: @grid-vertical-half;
 }
 
+// 1. Clear line-height for clamped text.
+.text-clamped {
+  line-height: initial; // [1]
+}
+
 .text-teaser {
   font-size: @size-font-medium;
   color: @color-text-downplayed;
