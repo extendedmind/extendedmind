@@ -382,14 +382,17 @@ input::-moz-focus-inner {
   padding: 0;
 }
 
-//
 // 1. Remove default vertical scrollbar in IE 8/9.
 // 2. Improve readability and alignment in all browsers.
+// 3. textarea is a replaced element so "---different browsers set it to different positions."
+//    https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
+//    Some browsers set textarea to display: inline-block by default, which causes incostistent bottom margin,
+//    set display: block by default. See http://stackoverflow.com/a/3454002
 //
-
 textarea {
-  overflow: auto; // 1
-  vertical-align: top; // 2
+  overflow: auto;       // [1]
+  vertical-align: top;  // [2]
+  display: block;       // [3]
 }
 
 // ==========================================================================

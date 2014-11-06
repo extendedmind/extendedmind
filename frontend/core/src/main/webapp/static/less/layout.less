@@ -708,36 +708,31 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   vertical-align: middle;       // [2]
 }
 
-// FIXME: comment and move (overrides.less)
-// 1. Inherit vertical-aling for textarea to override default value set elsewhere.
+// FIXME: move (overrides.less)
+
+// 1. Set vertical-align: top so that checbkox is aligned to the first row of text inside .group-mixed--middle
+// 2. Align vertically with textarea in .group-mixed---middle
+//    Checkbox icon is 28px, .group-mixed default height is 44px, use remaining 16 px for padding.
+//    NOTE: Checkbox icon height is stored into @size-checkbox.
+// 3. Checkbox icon determines height.
+// 4. Clear line-height.
+// 5. Align vertically.
+//    textarea is 22px, .group-mixed default height is 44px, use remaining 22px for padding.
 .group-mixed.with-checkbox {
-  max-height: inherit;
-  height: auto;
-  .group-mixed--left, .group-mixed--middle, .group-mixed--right {
-    height: auto;
-    line-height: inherit;
-    vertical-align: top;
-  }
-
   .group-mixed--left {
-    padding-top: 9.5px;
-    label:before {
-      line-height: inherit !important;
-    }
+    vertical-align: top;  // [1]
+    padding-top: 9px;     // [2]
+    padding-bottom: 7px;  // [2]
     label {
-      height: auto;
+      height: 100%; // [3]
+      &:before {
+        line-height: initial; // [4]
+      }
     }
   }
-
   .group-mixed--middle {
-    padding-top: 10px;
-    padding-bottom: 11px;
-    textarea {
-      vertical-align: inherit;  // [1]
-    }
-    span {
-      height: auto;
-    }
+    padding-top: 11px;    // [5]
+    padding-bottom: 11px; // [5]
   }
 }
 
@@ -972,6 +967,8 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   box-sizing: content-box;  // [1]
 }
 
+
+// FIXME: lost&found - not in use
 // 1. Override vertical-align: middle because it will brake layout with multiline text. Set padding-top and
 //    margin-bottom to align textarea vertically.
 //    Value is probably (grid-vertical - 22px[=line-height of textarea]) / 2. Then adjust it between
@@ -988,5 +985,15 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
     line-height: inherit;
     vertical-align: baseline; // [1]
     display: block; // [3]
+  }
+}
+
+.area-text {
+  height: @grid-vertical;
+  textarea {
+    display: block;
+    min-height: 22px;
+    height: 22px;
+    vertical-align: top;
   }
 }
