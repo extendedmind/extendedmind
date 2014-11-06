@@ -1,6 +1,6 @@
-<div class="list-picker">
+<div>
 
-  <div ng-if="selectedList" class="group-mixed bottom-padded">
+  <div ng-if="selectedList" class="group-mixed vertically-centered">
     <div class="group-mixed--middle" ng-click="listSelected(selectedList)">
       <a href>
         <span class="text-link emphasis" clamp=2>{{::prefix}}{{selectedList.title}}</span>
@@ -12,19 +12,19 @@
     </div>
   </div>
 
-  <div ng-if="newList" class="row-padded">
+  <div ng-if="newList" class="row-vertically-centered with-textarea">
     <textarea autocapitalize="none" autocorrect="off" ng-model="newList.title" msd-elastic
     ng-click="watchForTitleChange()" ng-keydown="textareaKeyDown($event)" placeholder="{{placeholder}}"
     maxlength="128"></textarea>
   </div>
 
-  <div class="row-padded" ng-repeat="list in lists | filter:notSelectedList | orderBy:'title'" ng-click="listSelected(list)">
+  <div class="row-vertically-centered" ng-repeat="list in lists | filter:notSelectedList | orderBy:'title'" ng-click="listSelected(list)">
     <a href>
       <span class="text-link" clamp=2>{{::prefix}}{{list.title}}</span>
     </a>
   </div>
 
-  <div class="row-form" ng-repeat="archivedList in archivedLists | filter:notSelectedList" ng-click="listSelected(archivedList)">
+  <div class="row-vertically-centered" ng-repeat="archivedList in archivedLists | filter:notSelectedList" ng-click="listSelected(archivedList)">
     <a href>
       <span class="text-link" ng-bind="archivedList.title"></span>
     </a>

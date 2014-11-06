@@ -709,7 +709,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 }
 
 // FIXME: move (overrides.less)
-
 @group-mixed--left-vertical-padding: 8px;
 @group-mixed--middle-vertical-padding: 11px;
 
@@ -739,11 +738,29 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   }
 }
 
+// FIXME: move (overrides.less)
+// 1. Center vertically
+.group-mixed.vertically-centered {
+  .group-mixed--left, .group-mixed--middle {
+    padding-top: @group-mixed--middle-vertical-padding;    // [5]
+    padding-bottom: @group-mixed--middle-vertical-padding; // [5]
+  }
+}
+
+// FIXME: move (overrides.less)
+.row-vertically-centered {
+  .row();
+  padding-top: @group-mixed--middle-vertical-padding;    // [5]
+  padding-bottom: @group-mixed--middle-vertical-padding; // [5]
+}
+
+// FIXME: move (overrides.less)
 // 1. font-family, angular-elastic or WebKit browser increases default textarea height by 1px to be 23px
 //    Decrease padding-top by 1px: 44px / 22px / 2px - 1px.
 .ios,
 .android {
-  .group-mixed.with-textarea .group-mixed--middle {
+  .group-mixed.with-textarea .group-mixed--middle,
+  .row-vertically-centered.with-textarea {
     padding-top: @group-mixed--middle-vertical-padding - 1px;    // [1]
   }
 }
