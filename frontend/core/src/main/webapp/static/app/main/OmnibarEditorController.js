@@ -140,6 +140,7 @@
   // KEYWORDS
 
   $scope.selectedKeywords = [];
+  $scope.keywordsSearch = {};
   // Store filtered items into object to maintain prototypical inheritance.
   $scope.filteredItems = {
     unselectedKeywords: $scope.keywords,
@@ -163,6 +164,7 @@
 
   $scope.selectKeyword = function(keyword) {
     $scope.selectedKeywords.push(keyword);
+    $scope.keywordsSearch.text = undefined; // Clear search text.
   };
   $scope.unselectKeyword = function(keyword) {
     $scope.selectedKeywords.splice($scope.selectedKeywords.indexOf(keyword), 1);

@@ -41,7 +41,7 @@
         <a href ng-hide="footerExpandOpen" class="group-symmetrical--left animate-fade-in-out" ng-click="convertToTask()">
           <span class="text-convert">task</span>
         </a>
-        <div class="group-symmetrical--middle">
+        <div ng-if="keywords && keywords.length" class="group-symmetrical--middle">
           <a href ng-click="toggleExpand()">
             <span>#</span>
           </a>
@@ -52,9 +52,14 @@
       </div>
 
       <!-- EXPANDABLE FOOTER CONTENT -->
-      <div ng-if="footerExpanded" class="keywords-footer row" ng-init="clearSelectedKeywords()">
+      <div ng-if="footerExpanded" class="keywords-footer row" ng-class="{'keywords-select-active': selectedKeywords && selectedKeywords.length}" ng-init="clearSelectedKeywords()">
 
         <!-- KEYWORDS -->
+
+        <div ng-hide="selectedKeywords && selectedKeywords.length" class="keywords-search">
+          <input type="search" class="text-keyword" ng-model="keywordsSearch.text" placeholder="search keywords&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
+        </div>
+
         <div ng-if="selectedKeywords && selectedKeywords.length" class="keywords-container">
           <div class="keyword-wrapper" ng-repeat="keyword in selectedKeywords">
             <a href class="keyword highlighted" ng-click="unselectKeyword(keyword)">
@@ -64,7 +69,7 @@
         </div>
 
         <div class="keywords-container">
-          <div class="keyword-wrapper" ng-repeat="keyword in filteredItems.unselectedKeywords = (keywords | filter:unselectedKeywordsFromItemsWithSelectedKeywords) | orderBy:'title'">
+          <div class="keyword-wrapper" ng-repeat="keyword in filteredItems.unselectedKeywords = (keywords | filter:unselectedKeywordsFromItemsWithSelectedKeywords) | filter:{title:keywordsSearch.text} | orderBy:'title'">
             <a href class="keyword" ng-click="selectKeyword(keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
             </a>

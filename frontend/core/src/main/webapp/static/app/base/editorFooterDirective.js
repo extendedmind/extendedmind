@@ -141,12 +141,14 @@
       /*
       * There are three elements in a row, so divide elements in a container by three and round that upwards
       * to get the number of rows in a container.
+      *
+      * Second row is always present, so default it to one row.
       */
       function setNewExpandHeightAndStartAnimation(elementsInFirstContainer, elementsInSecondContainer) {
         var rowsInFirstContainer = Math.ceil(elementsInFirstContainer / 3);
         var firstContainerHeight = footerHeight * rowsInFirstContainer;
 
-        var rowsInSecondContainer = Math.ceil(elementsInSecondContainer / 3);
+        var rowsInSecondContainer = Math.ceil(elementsInSecondContainer / 3) || 1;  // Default to one row.
         var secondContainerHeight = footerHeight * rowsInSecondContainer;
 
         var expandedHeight = firstContainerHeight + secondContainerHeight;

@@ -40,9 +40,14 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
   display: inline-block;
 }
 
+.keywords-search,
 .keyword-wrapper {
-  width: 33.333%;
   height: @grid-vertical-medium;
+}
+
+// 1. There is three keywords in a row by default.
+.keyword-wrapper {
+  width: 33.333%; // [1]
   float: left;
   display: table;
 }
@@ -74,6 +79,60 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
 .keyword {
   display: table-cell;
   vertical-align: middle;
+}
+
+// KEYWORDS SELECTION
+// Center rows with two or one keywords.
+
+// 1. Center horizontally when there is two keywords in a row.
+// 2. Make .keyword (link part) at least as wide as the ones in three in a row: 1/3 * (1 / (1/2)) = 2/3
+//    Content in .keyword can expand width up to 50%.
+// 3. Set to full height
+// 4. Vertical center.
+.keywords-select-active .keyword-wrapper:nth-child(3n+1):nth-last-child(2),
+.keywords-select-active .keyword-wrapper:nth-child(3n+2):last-child {
+  width: 50%;         // [1]
+  margin-left: auto;  // [1]
+  margin-left: auto;  // [1]
+  text-align: center; // [1]
+  .keyword {
+    display: inline-block;  // [2]
+    min-width: 66.666%;     // [2]
+    height: 100%;                       // [3]
+    line-height: @grid-vertical-medium; // [4]
+  }
+}
+
+// 1. Remove padding-left and set padding-right for right keyword in two in a row.
+.keywords-select-active .keyword-wrapper:nth-child(3n+1):nth-last-child(2) {
+  .keyword {
+    padding-left: 0;    // [1]
+    padding-right: 5px; // [1]
+  }
+}
+// 1. Set padding-left and remove padding-right for left keyword in two in a row.
+.keywords-select-active .keyword-wrapper:nth-child(3n+2):last-child {
+  .keyword {
+    padding-left: 5px;  // [1]
+    padding-right: 0;   // [1]
+  }
+}
+
+// 1. Remove float and center horizontally when there is one keyword in a row.
+// 2. Make .keyword-wrapper at least as wide as the ones in three in a row: 1/3
+// 3. Center text.
+// 4. Remove padding-left and padding-right.
+.keywords-select-active .keyword-wrapper:nth-child(3n+1):last-child {
+  margin-left: auto;  // [1]
+  margin-right: auto; // [1]
+  float: none;        // [1]
+  width: auto;        // [1]
+  min-width: 33.333%; // [2]
+  .keyword {
+    text-align: center; // [3]
+    padding-left: 0;    // [4]
+    padding-right: 0;   // [4]
+  }
 }
 
 /*
