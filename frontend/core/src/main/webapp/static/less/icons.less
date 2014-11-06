@@ -53,6 +53,9 @@ TODO: Icons are not working yet with Phytoplankton
   font-style: normal;
 }
 
+// 1. Better font rendering.
+// 2. Center icons vertically.
+//    NOTE: Do not change this, override it locally.
 .set-icon-font() {
   font-family: 'icomoon' !important;
   speak: none;
@@ -60,13 +63,7 @@ TODO: Icons are not working yet with Phytoplankton
   font-weight: normal;
   font-variant: normal;
   text-transform: none;
-
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  // needed to align icons vertically middle
-  // source: http://www.sitepoint.com/creating-custom-icon-font-icomoon-less/
-  // vertical-align: -10%; // FIXME: Needs to be overriden in many places
-  // vertical-align: middle;
+  -webkit-font-smoothing: antialiased;  // [1]
+  -moz-osx-font-smoothing: grayscale;   // [1]
+  vertical-align: middle; // [2]
 }
