@@ -123,8 +123,8 @@
   $scope.convertToNote = function(itemInEdit){
     var convertToNotePromise;
     if (itemInEdit.transientProperties.itemType === 'item') {
-      convertToNotePromise = ItemsService.convertToNotePromise(itemInEdit,
-                                                               UISessionService.getActiveUUID());
+      convertToNotePromise = ItemsService.itemToNote(itemInEdit,
+                                                     UISessionService.getActiveUUID());
     }
     else if (itemInEdit.transientProperties.itemType === 'task') {
       convertToNotePromise = ConvertService.finishTaskToNoteConvert(itemInEdit,
