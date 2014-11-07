@@ -11,13 +11,12 @@
         <a ng-if="list.deleted" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteList(list)"><span class="text-navigation">restore</span></a>
       </div>
 
-      <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
-        <div class="group-mixed--middle">
-          <textarea type="text" ng-model="titlebar.text" ng-keydown="listTitlebarTextKeyDown($event)"
+      <div class="row-vertically-centered with-textarea">
+        <textarea type="text" ng-model="titlebar.text" ng-keydown="listTitlebarTextKeyDown($event)"
           editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-          msd-elastic dynamic-placeholder="enter list title&#8230;" maxlength="128" required ></textarea>
-        </div>
-      </form>
+          msd-elastic dynamic-placeholder="enter list title&#8230;" maxlength="128" required autocapitalize="none" autocorrect="off">
+        </textarea>
+      </div>
     </div>
   </header>
 
@@ -26,7 +25,7 @@
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-content"
         drawer-override-aisle="right" swiper-prevent>
-          <div class="row-form" editable-field-container>
+          <div class="row-vertically-centered with-textarea" editable-field-container>
             <textarea ng-model="list.description" msd-elastic placeholder="enter description&#8230;" ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)" maxlength="1024" editable-field></textarea>
           </div>
         </div>
@@ -46,7 +45,7 @@
         <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content"
         swiper-prevent>
 
-          <div class="row-form">
+          <div class="row-vertically-centered with-textarea">
             <textarea type="text" ng-model="list.link" msd-elastic maxlength="128" placeholder="enter url&#8230;">
             </textarea>
           </div>
