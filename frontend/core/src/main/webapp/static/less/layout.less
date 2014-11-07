@@ -696,7 +696,8 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 @padding-vertically-centered: 11px;
 @group-mixed--left-vertical-padding: 8px;
 
-// 1. Set vertical-align: top so that checbkox is aligned to the first row of text inside .group-mixed--middle
+// 1. Set vertical-align: baseline so that checbkox and navigation arrow icon is aligned to the first row of
+//    text inside .group-mixed--middle.
 // 2. Align vertically with textarea in .group-mixed---middle
 //    Checkbox icon is 28px, .group-mixed default height is 44px, use remaining 16 px for padding.
 //    NOTE: Checkbox icon height is stored into @size-checkbox.
@@ -705,8 +706,10 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 5. Align vertically.
 //    textarea is 22px, .group-mixed default height is 44px, use remaining 22px for padding.
 .group-mixed.with-checkbox {
+  .group-mixed--left, .group-mixed--right {
+    vertical-align: baseline;  // [1]
+  }
   .group-mixed--left {
-    vertical-align: top;  // [1]
     padding-top: @group-mixed--left-vertical-padding + 1px;     // [2]
     padding-bottom: @group-mixed--left-vertical-padding - 1px;  // [2]
     label {
@@ -757,17 +760,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 .row-vertically-centered.with-textarea {
   padding-top: @padding-vertically-centered;    // [1]
   padding-bottom: @padding-vertically-centered; // [1]
-}
-
-// FIXME: move (overrides.less)
-// 1. font-family, angular-elastic or WebKit browser increases default textarea height by 1px to be 23px
-//    Decrease padding-top by 1px: 44px / 22px / 2px - 1px.
-.ios,
-.android {
-  .group-mixed.with-textarea .group-mixed--middle,
-  .row-vertically-centered.with-textarea {
-    padding-top: @padding-vertically-centered - 1px;    // [1]
-  }
 }
 
 // FIXME: refactor or move (overrides.less)

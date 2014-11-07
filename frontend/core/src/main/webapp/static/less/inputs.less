@@ -33,10 +33,12 @@ input, select, textarea {
 //    https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
 //    Some browsers set textarea to display: inline-block by default, which causes incostistent bottom margin,
 //    set display: block by default. See http://stackoverflow.com/a/3454002
+// 2. Set default line-height so different fonts and platforms will not change height.
 textarea {
   display: block; // [1]
-  min-height: @grid-vertical / 2;
-  height: @grid-vertical / 2;
+  min-height: @grid-vertical-half;
+  height: @grid-vertical-half;
+  line-height: @grid-vertical-half;  // [2]
   .break-words();
   resize: none;
 }
