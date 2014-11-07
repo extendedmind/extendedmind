@@ -1,11 +1,9 @@
 <div>
 
   <div ng-if="selectedList" class="group-mixed vertically-centered">
-    <div class="group-mixed--middle" ng-click="listSelected(selectedList)">
-      <a href>
-        <span class="text-link emphasis" clamp=2>{{::prefix}}{{selectedList.title}}</span>
-      </a>
-    </div>
+    <a href class="group-mixed--middle" ng-click="listSelected(selectedList)">
+      <span class="text-link emphasis" clamp=2>{{::prefix}}{{selectedList.title}}</span>
+    </a>
 
     <div class="group-mixed--right">
       <button type="button" class="btn-clear" ng-click="listCleared(selectedList)"></button>
@@ -26,7 +24,7 @@
 
   <div class="row-vertically-centered" ng-repeat="archivedList in archivedLists | filter:notSelectedList" ng-click="listSelected(archivedList)">
     <a href>
-      <span class="text-link" ng-bind="archivedList.title"></span>
+      <span class="text-link" ng-bind="archivedList.title" clamp=2></span>
     </a>
   </div>
 

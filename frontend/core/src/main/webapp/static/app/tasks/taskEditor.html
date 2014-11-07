@@ -38,12 +38,10 @@
           </div>
 
           <div ng-if="!listPickerOpen">
-            <div ng-hide="descriptionFocused" class="group-mixed animate-fade-in">
-              <div class="group-mixed--middle">
-                <a href ng-class="{downplayed: !task.transientProperties.date}" ng-click="openCalendar()">
-                  <span ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></span>
-                </a>
-              </div>
+            <div ng-hide="descriptionFocused" class="group-mixed vertically-centered animate-fade-in">
+              <a href ng-class="{downplayed: !task.transientProperties.date}" class="group-mixed--middle" ng-click="openCalendar()">
+                <span class="text-link" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></span>
+              </a>
               <div ng-if="task.transientProperties.date" class="group-mixed--right">
                 <button type="button" class="btn-clear" ng-click="clearTransientDate(task)"></button>
               </div>
@@ -58,13 +56,13 @@
               </div>
             </div>
 
-            <div ng-hide="descriptionFocused || calendarOpen" class="row-form">
+            <div ng-hide="descriptionFocused || calendarOpen" class="row-vertically-centered">
               <a href ng-class="{downplayed: !task.transientProperties.list}" ng-click="openListPicker()">
                 <span class="text-link" ng-bind="task.transientProperties.list ? getListTitleFromUUID(task.transientProperties.list) : 'select list\u2026'"></span>
               </a>
             </div>
 
-            <div ng-hide="calendarOpen" class="row-form">
+            <div ng-hide="calendarOpen" class="row-vertically-centered with-textarea">
               <textarea ng-model="task.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024" ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)"></textarea>
             </div>
 
@@ -102,19 +100,19 @@
 
           <div ng-if="!contextPickerOpen && !repeatingPickerOpen">
 
-            <div ng-hide="urlFocused" class="row-form">
+            <div ng-hide="urlFocused" class="row-vertically-centered">
               <a href ng-class="{downplayed: !task.transientProperties.context}" ng-click="openContextPicker()">
                 <span class="text-link" ng-bind="task.transientProperties.context ? '@' + getContextTitleFromUUID(task.transientProperties.context) : 'select context\u2026'"></span>
               </a>
             </div>
 
-            <div ng-hide="urlFocused && task.transientProperties.date" class="row-form">
+            <div ng-hide="urlFocused && task.transientProperties.date" class="row-vertically-centered">
               <a href ng-class="{downplayed: !task.repeating}" ng-click="openRepeatingPicker()">
                 <span class="text-link" ng-bind="task.repeating ? task.repeating : 'select repeating\u2026'"></span>
               </a>
             </div>
 
-            <div class="row-form">
+            <div class="row-vertically-centered with-textarea">
               <textarea type="text" ng-model="task.link" ng-focus="setUrlFocus(true)"
               ng-blur="setUrlFocus(false)" msd-elastic maxlength="128" placeholder="enter url&#8230;">
             </textarea>

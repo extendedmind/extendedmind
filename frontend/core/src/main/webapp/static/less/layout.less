@@ -327,22 +327,6 @@ Vertically center .container-master and .container-editor in large screens
 # LEVEL 6: row and groups
 */
 
-// 1. Vertically and horizontally align the content of the middle element.
-// Works with <a><span></span></a> structure. Unfortunately a <button> element does not work here
-// because that buttons don't work with display:table*. Bootstrap has a similar solution:
-// http://getbootstrap.com/components/#input-groups-buttons
-.row-form,
-.group-mixed--middle:first-child {
-  & > a {                        // [1]
-    display: table;
-    width: 100%;
-    & > span {                   // [1]
-      height: inherit;
-      vertical-align: middle;
-    }
-  }
-}
-
 @width-button-gap: 10px;
 
 /*
@@ -709,8 +693,8 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 }
 
 // FIXME: move (overrides.less)
+@padding-vertically-centered: 11px;
 @group-mixed--left-vertical-padding: 8px;
-@group-mixed--middle-vertical-padding: 11px;
 
 // 1. Set vertical-align: top so that checbkox is aligned to the first row of text inside .group-mixed--middle
 // 2. Align vertically with textarea in .group-mixed---middle
@@ -733,25 +717,46 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     }
   }
   .group-mixed--middle {
-    padding-top: @group-mixed--middle-vertical-padding;    // [5]
-    padding-bottom: @group-mixed--middle-vertical-padding; // [5]
+    padding-top: @padding-vertically-centered;    // [5]
+    padding-bottom: @padding-vertically-centered; // [5]
   }
 }
 
 // FIXME: move (overrides.less)
-// 1. Center vertically
+// 1. Center vertically. Supports single line, multiline and clamped text.
+// 2. Make sure clamped and unclamped span inside a tag has the same height with display: block.
 .group-mixed.vertically-centered {
   .group-mixed--left, .group-mixed--middle {
-    padding-top: @group-mixed--middle-vertical-padding;    // [5]
-    padding-bottom: @group-mixed--middle-vertical-padding; // [5]
+    padding-top: @padding-vertically-centered;    // [1]
+    padding-bottom: @padding-vertically-centered; // [1]
+  }
+  .group-mixed--middle {
+    & > span {
+      display: block; // [2]
+    }
   }
 }
 
-// FIXME: move (overrides.less)
+// FIXME: rename and replace .row-form
+// 1. Center vertically. Supports single line, multiline and clamped text.
+// 2. Expand link element.
+// 3. Make sure clamped and unclamped span inside a tag has the same height with display: block.
 .row-vertically-centered {
   .row();
-  padding-top: @group-mixed--middle-vertical-padding;    // [5]
-  padding-bottom: @group-mixed--middle-vertical-padding; // [5]
+  & > a {
+    padding-top: @padding-vertically-centered;    // [1]
+    padding-bottom: @padding-vertically-centered; // [1]
+    display: block; // [2]
+    & > span {
+      display: block; // [3]
+    }
+  }
+}
+
+// 1. Apply vertical center directly into container when used as a textarea wrapper.
+.row-vertically-centered.with-textarea {
+  padding-top: @padding-vertically-centered;    // [1]
+  padding-bottom: @padding-vertically-centered; // [1]
 }
 
 // FIXME: move (overrides.less)
@@ -761,7 +766,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 .android {
   .group-mixed.with-textarea .group-mixed--middle,
   .row-vertically-centered.with-textarea {
-    padding-top: @group-mixed--middle-vertical-padding - 1px;    // [1]
+    padding-top: @padding-vertically-centered - 1px;    // [1]
   }
 }
 
