@@ -692,11 +692,11 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   vertical-align: middle;       // [2]
 }
 
-// FIXME: move (overrides.less)
+// FIXME: rename move (overrides.less)
 @padding-vertically-centered: 11px;
 @group-mixed--left-vertical-padding: 8px;
 
-// 1. Set vertical-align: baseline so that checbkox and navigation arrow icon is aligned to the first row of
+// 1. Set vertical-align: baseline so that checkbox and navigation arrow icon is aligned to the first row of
 //    text inside .group-mixed--middle.
 // 2. Align vertically with textarea in .group-mixed---middle
 //    Checkbox icon is 28px, .group-mixed default height is 44px, use remaining 16 px for padding.
@@ -744,6 +744,9 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 1. Center vertically. Supports single line, multiline and clamped text.
 // 2. Expand link element.
 // 3. Make sure clamped and unclamped span inside a tag has the same height with display: block.
+//    NOTE: Height of clamped span may vary depending on font, platform and browser. Tested with iPhone 5 and
+//          iOS 8.
+//          Use span[clamp="2"] if needed to target clamped span.
 .row-vertically-centered {
   .row();
   & > a {
@@ -788,10 +791,11 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 
 // FIXME: refactor or move (overrides.less)
 @margin-top-heading-justified: -12px;
+@margin-bottom-heading-justified: -12px;
 // Justify whitespace between toolbar and content
 .group-heading.justified {
   margin-top: @margin-top-heading-justified;
-  margin-bottom: 0;
+  margin-bottom: @margin-bottom-heading-justified;
 }
 
 // FIXME: refactor or move (overrides.less)
