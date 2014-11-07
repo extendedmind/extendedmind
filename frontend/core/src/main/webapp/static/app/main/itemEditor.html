@@ -11,18 +11,18 @@
         <a ng-if="item.deleted" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteItem(item)"><span class="text-navigation">restore</span></a>
       </div>
 
-      <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
-        <div class="group-mixed--middle">
-          <textarea type="text" ng-model="titlebar.text" ng-keydown="itemTitlebarTextKeyDown($event)" editable-field
-          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="enter item title&#8230;" maxlength="128" required ></textarea>
-        </div>
-      </form>
+      <div class="row-vertically-centered with-textarea">
+        <textarea type="text" ng-model="titlebar.text" ng-keydown="itemTitlebarTextKeyDown($event)" editable-field
+        editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="enter item title&#8230;" maxlength="128" required autocapitalize="none" autocorrect="off"></textarea>
+      </div>
     </div>
   </header>
 
-  <div class="container-fluid--inner">
+  <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-fluid--inner">
     <div class="container-content" drawer-override-aisle="right">
-      <textarea class="row-form" ng-model="item.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
+      <div class="row-vertically-centered with-textarea">
+        <textarea ng-model="item.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off"></textarea>
+      </div>
     </div>
     <footer class="container-content--after editor-footer">
       <div class="group-symmetrical">
