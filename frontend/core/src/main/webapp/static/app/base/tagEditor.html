@@ -11,25 +11,23 @@
         <a ng-if="tag.deleted" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteTagInEdit()"><span class="text-navigation">restore</span></a>
       </div>
 
-      <form role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
-        <div class="group-mixed--middle">
-          <!-- TODO: @ or # symbol! -->
-          <textarea type="text" ng-model="titlebar.text" ng-keydown="tagTitlebarTextKeyDown($event)" editable-field
-          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="enter {{tag.tagType}} title&#8230;" maxlength="128" required ></textarea>
-        </div>
-      </form>
+      <div class="row-vertically-centered with-textarea">
+        <!-- TODO: @ or # symbol! -->
+        <textarea type="text" ng-model="titlebar.text" ng-keydown="tagTitlebarTextKeyDown($event)" editable-field
+        editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="enter {{tag.tagType}} title&#8230;" maxlength="128" required autocapitalize="none" autocorrect="off"></textarea>
+      </div>
     </div>
   </header>
 
   <div class="container-fluid--inner">
     <div class="container-content" drawer-override-aisle="right">
 
-      <div class="row-form">
+      <div class="row-vertically-centered with-textarea">
         <textarea type="text" ng-model="tag.link" msd-elastic maxlength="128" placeholder="enter url&#8230;">
         </textarea>
       </div>
 
-      <div class="row-form">
+      <div class="row-vertically-centered with-textarea">
         <textarea ng-model="tag.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024"></textarea>
       </div>
 
