@@ -7,31 +7,32 @@
         </a>
       </div>
 
-      <form role="form" class="group-mixed bottom-padded" autocapitalize="none" autocorrect="off">
+      <div class="group-mixed vertically-centered">
         <div class="group-mixed--middle">
           <textarea type="text" ng-model="titlebar.text" ng-keydown="omnibarTitlebarTextKeyDown($event)"
           editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-          msd-elastic dynamic-placeholder="save to inbox / search&#8230;" maxlength="128" required ></textarea>
+          msd-elastic dynamic-placeholder="save to inbox / search&#8230;" maxlength="128" required autocapitalize="none" autocorrect="off"></textarea>
         </div>
-        <div ng-if="titlebar.text.length"class="group-mixed--right">
+        <div ng-if="titlebar.text.length" class="group-mixed--right">
           <button type="button" class="btn-clear" ng-click="clearOmnibarTitlebar()"></button>
         </div>
-      </form>
+      </div>
     </div>
   </header>
 
   <div ng-if="syncState !== 'active'" class="container-fluid--inner" ng-init="containerInfo = {}">
     <div ng-style="{'padding-bottom': containerInfo.footerHeight}" class="container-content with-expandable-footer" drawer-override-aisle="right">
-      <div ng-repeat="searchResult in filteredItems.searchResults = (searchItems | filter: itemsFilter)" class="group-mixed">
-        <div class="group-mixed--middle">
-          <a href class="link-search-result" ng-click="initializeEditor(searchResult.transientProperties.itemType, searchResult)">
-            <span class="text-search-result" clamp=2 ng-bind="searchResult.title"></span>
-          </a>
-        </div>
-        <div class="group-mixed--right top">
+
+      <!-- SEARCH / FILTERED RESULTS -->
+      <div ng-repeat="searchResult in filteredItems.searchResults = (searchItems | filter: itemsFilter)" class="group-mixed with-checkbox">
+        <a href class="group-mixed--middle link-search-result" ng-click="initializeEditor(searchResult.transientProperties.itemType, searchResult)">
+          <span class="text-search-result" clamp=2 ng-bind="searchResult.title"></span>
+        </a>
+        <div class="group-mixed--right">
           <span class="text-search-type" ng-bind="searchResult.transientProperties.itemType"></span>
         </div>
       </div>
+
     </div>
 
     <!-- FOOTER -->

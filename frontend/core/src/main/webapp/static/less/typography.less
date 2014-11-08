@@ -250,12 +250,19 @@ Convert texts.
 Search results (omnibar, deleted)
 */
 
+@line-height-text-search: @grid-vertical-half;
+
+// 1. Align vertically with .text-search-type, which has different font-size, using same line-height in both
+//    classes.
 .text-search-result {
+  line-height: @line-height-text-search; // [1]
   font-size: @size-font-medium;
-  margin-bottom: @grid-vertical-half;
 }
 
+// 1. Align vertically with .text-search-result, which has different font-size, using same line-height in both
+//    classes.
 .text-search-type {
+  line-height: @line-height-text-search; // [1]
   color: @color-text-downplayed;
   font-size: @size-font-small;
   .set-font-bold();

@@ -571,7 +571,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 
 .group-mixed--middle {
   width: 100%;
-  line-height: @grid-vertical;
 }
 
 // FIXME: move (overrides.less)
@@ -705,6 +704,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 4. Clear line-height (for multiline text as well).
 // 5. Align vertically.
 //    textarea is 22px, .group-mixed default height is 44px, use remaining 22px for padding.
+// 6. Align search type vertically with first row of search result text inside .group-mixed--middle.
 .group-mixed.with-checkbox {
   .group-mixed--left, .group-mixed--right {
     vertical-align: baseline;  // [1]
@@ -721,6 +721,10 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   .group-mixed--middle {
     padding-top: @padding-vertically-centered;    // [5]
     padding-bottom: @padding-vertically-centered; // [5]
+  }
+  .group-mixed--middle.link-search-result + .group-mixed--right > span.text-search-type {
+    padding-top: @padding-vertically-centered;    // [6]
+    padding-bottom: @padding-vertically-centered; // [6]
   }
 }
 
