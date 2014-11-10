@@ -20,7 +20,7 @@
     restrict: 'A',
     scope: true,
     link: function(scope, element, attrs) {
-      var expandedFooterMaxHeight = 135;  // Default expanded height. Used in task editor.
+      var expandedFooterMaxHeight = 156;  // Default expanded height. Used in task editor.
       var oldTranslateYPosition = 0;      // Default and previous translateY position.
       var expandPromise, shrinkPromise;   // Animation promises.
       var expandedHeightChangeWatcher;    // Attach watcher into variable to be able to unregister it.
