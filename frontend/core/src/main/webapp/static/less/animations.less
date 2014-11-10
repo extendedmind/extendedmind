@@ -161,7 +161,8 @@ input[type="checkbox"]:checked + label:before {
 
 // 1. Fade in animating only ng-enter part of ng-if, and ng-hide.
 .animate-fade-in.ng-enter,
-.animate-fade-in-out.ng-hide-add, .animate-fade-in-out.ng-hide-remove {
+.animate-fade-in-out.ng-hide-add, .animate-fade-in-out.ng-hide-remove,
+.animate-fade-in-out.ng-enter, .animate-fade-in-out.ng-leave {
   pointer-events: none;
   -webkit-transition: opacity @speed-animate-fade-in @timing-animate-fade-in;  // [1]
   -moz-transition: opacity @speed-animate-fade-in @timing-animate-fade-in;     // [1]
@@ -181,19 +182,23 @@ input[type="checkbox"]:checked + label:before {
 }
 
 // 1. Fade out start.
-.animate-fade-in-out.ng-hide-add {
+.animate-fade-in-out.ng-hide-add,
+.animate-fade-in-out.ng-leave {
   opacity: 1; // [1]
 }
 // 1. Fade out end.
-.animate-fade-in-out.ng-hide-add.ng-hide-add-active {
+.animate-fade-in-out.ng-hide-add.ng-hide-add-active,
+.animate-fade-in-out.ng-leave.ng-leave-active {
   opacity: 0;
 }
 // 1. Fade in start.
-.animate-fade-in-out.ng-hide-remove {
+.animate-fade-in-out.ng-hide-remove,
+.animate-fade-in-out.ng-enter {
   opacity: 0;
 }
 // 1. Fade in end.
-.animate-fade-in-out.ng-hide-remove.ng-hide-remove-active {
+.animate-fade-in-out.ng-hide-remove.ng-hide-remove-active,
+.animate-fade-in-out.ng-enter.ng-enter-active {
   opacity: 1;
 }
 
