@@ -698,13 +698,18 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 1. Set vertical-align: baseline so that checkbox and navigation arrow icon is aligned to the first row of
 //    text inside .group-mixed--middle.
 // 2. Increase click area and align vertically with textarea in .group-mixed---middle
-//    Checkbox icon is 28px, .group-mixed default height is 44px, use remaining 16 px for padding.
+//    Checkbox icon is 28px, .group-mixed default height is 44px, use remaining 16px for padding.
 //    NOTE: Checkbox icon height is stored into @size-checkbox.
 // 3. Checkbox icon determines height.
 // 4. Clear line-height (for multiline text as well).
 // 5. Align vertically.
 //    textarea is 22px, .group-mixed default height is 44px, use remaining 22px for padding.
-// 6. Align search type vertically with first row of search result text inside .group-mixed--middle.
+// 6. Increase click area.
+// 7. Add space between first and last link inside.
+// 8. Align search type vertically with first row of search result text inside .group-mixed--middle.
+// 9. Increase click area and align vertically with textarea in .group-mixed---middle
+//    Star icon wrapper is 24px, .group-mixed default height is 44px, use remaining 20px for padding.
+//    NOTE: Star icon height is a combination of @size-icon-star-small and line-height: @grid-vertical-half.
 .group-mixed.with-checkbox {
   .group-mixed--left, .group-mixed--right {
     vertical-align: baseline;  // [1]
@@ -721,10 +726,29 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   .group-mixed--middle {
     padding-top: @padding-vertically-centered;    // [5]
     padding-bottom: @padding-vertically-centered; // [5]
+    & > a {
+      display: block;                               // [6]
+      padding-top: @padding-vertically-centered;    // [6]
+      margin-top: -@padding-vertically-centered;    // [6]
+      padding-bottom: @padding-vertically-centered; // [6]
+      margin-bottom: -@padding-vertically-centered; // [6]
+    }
+    & > a:first-of-type:not(:only-of-type) {
+      padding-bottom: @padding-vertically-centered / 2; // [7]
+      margin-bottom: -@padding-vertically-centered / 2; // [7]
+    }
+    & > a:last-of-type:not(:only-of-type) {
+      padding-top: 0; // [7]
+      margin-top: 0;  // [7]
+    }
   }
   .group-mixed--middle.link-search-result + .group-mixed--right > span.text-search-type {
-    padding-top: @padding-vertically-centered;    // [6]
-    padding-bottom: @padding-vertically-centered; // [6]
+    padding-top: @padding-vertically-centered;    // [8]
+    padding-bottom: @padding-vertically-centered; // [8]
+  }
+  .group-mixed--right span.text-star.small {
+    padding-top: @padding-vertically-centered - 1;    // [9]
+    padding-bottom: @padding-vertically-centered + 1; // [9]
   }
 }
 
@@ -771,16 +795,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-top: @padding-vertically-centered;    // [1]
   padding-bottom: @padding-vertically-centered; // [1]
 }
-
-// FIXME: refactor or move (overrides.less)
-.group-mixed.with-teaser {
-  margin-bottom: 5px;
-  a {
-    line-height: @grid-vertical-half;
-    height: auto;
-  }
-}
-
 
 // Heading is long, multiple lines need smaller spacing, so the method above does not work
 // 1. Match 88 pixels with this, to make this be the same as the above for consistent look and feel
@@ -839,18 +853,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // FIXME: refactor or move (overrides.less)
 .group-error.height-large {
   margin-top: 0;
-}
-
-/*
-`.group-teaser` is used for displaying a teaser.
-*/
-.group-teaser {
-  height: auto;
-  span {
-    padding-left: @grid-horizontal;
-    padding-right: @grid-horizontal;
-    margin-bottom: @grid-vertical-half;
-  }
 }
 
 

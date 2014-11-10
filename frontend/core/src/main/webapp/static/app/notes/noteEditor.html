@@ -14,19 +14,18 @@
         <a ng-if="note.deleted && !onboardingInProgress" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteNote(note)"><span class="text-navigation">restore</span></a>
       </div>
 
-      <form ng-hide="hideNoteTitle && isOnboarded('notes')" role="form" class="group-mixed" autocapitalize="none" autocorrect="off">
-        <div class="group-mixed--middle">
-          <textarea ng-hide="isTitleClamped()" type="text" class="text-heading-primary" ng-model="titlebar.text" ng-keydown="noteTitlebarTextKeyDown($event)"
-          editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-          msd-elastic dynamic-placeholder="enter note title&#8230;" maxlength="128" required
-          ng-focus="noteTitleFocused()"></textarea>
+      <!-- NOTE TITLE -->
+      <div ng-hide="hideNoteTitle && isOnboarded('notes')" class="row-vertically-centered with-textarea">
+        <textarea ng-hide="isTitleClamped()" type="text" class="text-heading-primary" ng-model="titlebar.text" ng-keydown="noteTitlebarTextKeyDown($event)"
+        editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+        msd-elastic dynamic-placeholder="enter note title&#8230;" maxlength="128" required autocapitalize="none" autocorrect="off"
+        ng-focus="noteTitleFocused()"></textarea>
 
-          <div ng-if="isTitleClamped()">
-            <span class="text-heading-primary" ng-class="{'text-downplayed': !titlebar.text}" ng-bind="titlebar.text ? titlebar.text : 'enter note title&#8230;'" clamp=2></span>
-          </div>
-
+        <div ng-if="isTitleClamped()">
+          <span class="text-heading-primary" ng-class="{'text-downplayed': !titlebar.text}" ng-bind="titlebar.text ? titlebar.text : 'enter note title&#8230;'" clamp=2></span>
         </div>
-      </form>
+      </div>
+
       <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')" class="group-instruction-input">
         <div ng-if="!titlebar.text || titlebar.text.length === 0" class="text-details row">e.g. reading suggestions, budget meeting minutes, summer plans</div>
          <div ng-if="titlebar.text.length && !hideNoteTitle" class="text-details row">when done, hit return</div>
@@ -53,7 +52,7 @@
             </div>
 
             <!-- CONTENT -->
-            <div class="row-form">
+            <div class="row-vertically-centered with-textarea">
               <textarea ng-class="(!isOnboarded('notes') && checkListOnboardingLock('notes', 'on') && !hideNoteTitle) && 'input-separate'" ng-model="note.content" msd-elastic placeholder="enter content&#8230;"
               ng-focus="noteContentFocused()"
               editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"></textarea>
@@ -105,7 +104,7 @@
             </div>
           </div>
 
-          <div class="row-form">
+          <div class="row-vertically-centered with-textarea">
             <textarea type="text" ng-model="note.link" ng-focus="setUrlFocus(true)" ng-blur="setUrlFocus(false)"
             msd-elastic maxlength="128" placeholder="enter url&#8230;">
             </textarea>
