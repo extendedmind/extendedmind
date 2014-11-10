@@ -231,12 +231,12 @@
         }
       }
 
-      if (packaging === 'ios-cordova'){
+      if (attrs.editorFooterIosClick !== undefined && packaging === 'ios-cordova'){
         element[0].addEventListener('touchstart', iOSEditorFooterTouchStart);
         element[0].addEventListener('touchend', iOSEditorFooterTouchEnd);
       }
       scope.$on('$destroy', function() {
-        if (packaging === 'ios-cordova'){
+        if (attrs.editorFooterIosClick !== undefined && packaging === 'ios-cordova'){
           element[0].removeEventListener('touchstart', iOSEditorFooterTouchStart);
           element[0].removeEventListener('touchend', iOSEditorFooterTouchEnd);
         }
