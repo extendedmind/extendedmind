@@ -443,30 +443,55 @@ trait InviteDatabase extends UserDatabase {
   }
   
   protected def destroyInviteNode(inviteNode: Node)(implicit neo4j: DatabaseService): Response[DestroyResult] = {
-    val inviteRelationshipList = inviteNode.getRelationships().toList
-    val acceptRelationships = inviteRelationshipList.filter(relationship => {
-      if (relationship.getType().name() == SecurityRelationship.IS_ACCEPTER.name()) true
-      else false
-    })
-    val originRelationships = inviteRelationshipList.filter(relationship => {
-      if (relationship.getType().name() == SecurityRelationship.IS_ORIGIN.name()) true
-      else false
-    })
-    if (acceptRelationships.size != 1){
-      fail(INTERNAL_SERVER_ERROR, "Invalid number of accept relationships for invite " + getUUID(inviteNode))
-    }else if (originRelationships.size != 1){
-      fail(INTERNAL_SERVER_ERROR, "Invalid number of origin relationships for invite " + getUUID(inviteNode))
-    }else if (inviteRelationshipList.size > 2){
+    if (inviteNode.hasProperty("accepted")){
       fail(INVALID_PARAMETER, "Can't delete accepted invite")
-    }else{            
-      acceptRelationships(0).delete()
-      val inviteRequestUUID = getUUID(originRelationships(0).getStartNode())
-      originRelationships(0).getStartNode().delete()
-      originRelationships(0).delete()
-      val destroyedUuids = scala.List(inviteRequestUUID, getUUID(inviteNode))
-      inviteNode.delete()
-      Right(DestroyResult(destroyedUuids))
-    }    
+    }else{
+      val inviteRelationshipList = inviteNode.getRelationships().toList
+      val acceptRelationships = inviteRelationshipList.filter(relationship => {
+        if (relationship.getType().name() == SecurityRelationship.IS_ACCEPTER.name()) true
+        else false
+      })
+      val originRelationships = inviteRelationshipList.filter(relationship => {
+        if (relationship.getType().name() == SecurityRelationship.IS_ORIGIN.name()) true
+        else false
+      })
+
+      if (acceptRelationships.size != 1){
+        fail(INTERNAL_SERVER_ERROR, "Invalid number of accept relationships for invite " + getUUID(inviteNode))
+      }else if (originRelationships.size > 1){
+        fail(INTERNAL_SERVER_ERROR, "Invalid number of origin relationships for invite " + getUUID(inviteNode))
+      }else{
+        acceptRelationships(0).delete()
+        
+        val deletedInviteRequestUUID = {
+          if (originRelationships.size == 1){
+            val inviteRequestNode = originRelationships(0).getStartNode()
+            originRelationships(0).delete()
+            if (inviteRequestNode.getRelationships().toList.size > 1){
+              // This invite request has two invites attached to it, don't delete the invite request
+              None
+            }else{
+              if (inviteRequestNode.getRelationships().toList.size == 1){
+                // Delete the accepted relationship
+                inviteRequestNode.getRelationships().toList(0).delete()
+              }
+              val uuid = getUUID(inviteRequestNode)
+              inviteRequestNode.delete()
+              Some(uuid)
+            }
+          }else{
+            None
+          }
+        }
+        
+        val destroyedUuids = 
+          if (deletedInviteRequestUUID.isDefined)
+            scala.List(deletedInviteRequestUUID.get, getUUID(inviteNode))
+          else scala.List(getUUID(inviteNode))
+        inviteNode.delete()
+        Right(DestroyResult(destroyedUuids))
+      }
+    }
   } 
   
   protected def upgradeInvites(inviteRequestUUIDs: scala.List[UUID], inviteUUIDs: scala.List[UUID]): Response[CountResult] = {
