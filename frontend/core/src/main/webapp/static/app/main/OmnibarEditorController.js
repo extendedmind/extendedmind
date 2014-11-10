@@ -15,12 +15,22 @@
 
  'use strict';
 
- function OmnibarEditorController($q, $rootScope, $scope, $timeout, ArrayService) {
+ function OmnibarEditorController($q, $rootScope, $scope, $timeout, ArrayService, packaging) {
 
-  // INITIALIZE VARIABLES
+  // INITIALIZING
 
   $scope.titlebar.text = '';
   $scope.searchText = {};
+
+  if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
+    $scope.registerFeatureEditorAboutToCloseCallback(omnibarEditorAboutToClose, 'OmnibarEditorController');
+
+  function omnibarEditorAboutToClose() {
+    if (packaging === 'android-cordova'){
+      // In Android we need to force the keyboard down
+      cordova.plugins.Keyboard.close();
+    }
+  }
 
   // SAVING
 
@@ -193,5 +203,5 @@
   };
 }
 
-OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'ArrayService'];
+OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'ArrayService', 'packaging'];
 angular.module('em.main').controller('OmnibarEditorController', OmnibarEditorController);
