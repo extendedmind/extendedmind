@@ -807,12 +807,10 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 }
 
 // FIXME: refactor or move (overrides.less)
-@margin-top-heading-justified: -12px;
-@margin-bottom-heading-justified: -12px;
-// Justify whitespace between toolbar and content
+@margin-top-heading-justified: -11px;
+// 1. Justify whitespace between toolbar and content
 .group-heading.justified {
-  margin-top: @margin-top-heading-justified;
-  margin-bottom: @margin-bottom-heading-justified;
+  margin-top: @margin-top-heading-justified; // [1]
 }
 
 // FIXME: refactor or move (overrides.less)
