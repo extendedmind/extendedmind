@@ -15,7 +15,7 @@
 
  'use strict';
 
- function TagEditorController($q, $rootScope, $scope, SwiperService) {
+ function TagEditorController($q, $rootScope, $scope) {
 
   // INITIALIZING
 
@@ -58,9 +58,9 @@
     }else if ($scope.tag.tagType === 'keyword'){
       $scope.undeleteKeyword($scope.tag);
     }
-  }
+  };
 
-  $scope.endTagEdit = function() {
+  $scope.endTagEdit = function() {
     $scope.closeEditor();
   };
 
@@ -88,5 +88,5 @@
   };
 }
 
-TagEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'SwiperService'];
+TagEditorController['$inject'] = ['$q', '$rootScope', '$scope'];
 angular.module('em.main').controller('TagEditorController', TagEditorController);

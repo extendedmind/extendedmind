@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+ /* global cordova */
  'use strict';
 
  function OmnibarEditorController($q, $rootScope, $scope, $timeout, ArrayService, packaging) {
