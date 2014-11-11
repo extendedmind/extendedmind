@@ -150,13 +150,16 @@
     return true;
   }
 
+  $scope.keywordsFilter = unselectedKeywordsFromItemsWithSelectedKeywords;  // Set default keywords filter.
   $scope.itemsFilter = searchItemFields;  // Set default items filter.
 
-  $scope.setFilterItemsByKeywords = function(enabled) {
+  $scope.setKeywordsAndItemsFilters = function(enabled) {
     if (enabled) {
       $scope.itemsFilter = filterByKeywords;
+      $scope.keywordsFilter = unselectedKeywordsFromItemsWithSelectedKeywords;
     } else {
       $scope.itemsFilter = searchItemFields;  // Reset to default items filter.
+      $scope.keywordsFilter = undefined;      // Clear keywords filter.
     }
   };
 
@@ -176,8 +179,19 @@
   * When length of unselected keywords array changes, selected keywords array length changes as well.
   */
   $scope.notifyFilteredKeywordsLengthChange = function(callback) {
+    var preventFirstRun = $scope.titlebar && $scope.titlebar.text;
+    // Hackily prevent first run when titlebar has text, because it filters filteredItems.unselectedKeywords.
+    // First $watch executes when filteredItems.unselectedKeywords is rendered into DOM during ng-if $digest.
+    // After that, keywords are filtered and filteredItems.unselectedKeywords changed, so only now whatch is
+    // executed with correct value.
     return $scope.$watch('filteredItems.unselectedKeywords.length', function(newLength) {
-      callback(newLength, $scope.selectedKeywords.length);
+      if (preventFirstRun) {
+        // Do nothing when first run is prevented.
+        preventFirstRun = false;
+      } else {
+        // Execute callback with new length infos.
+        callback(newLength, $scope.selectedKeywords.length);
+      }
     });
   };
 
@@ -196,8 +210,7 @@
   /*
   * Return unselected keywords which are found in the items that have been filtered by selected keywords.
   */
-  $scope.unselectedKeywordsFromItemsWithSelectedKeywords = function(keyword) {
-
+  function unselectedKeywordsFromItemsWithSelectedKeywords(keyword) {
     if ((!$scope.selectedKeywords || !$scope.selectedKeywords.length) &&
         (!$scope.titlebar || !$scope.titlebar.text))
     {
@@ -219,7 +232,7 @@
         return true;
       }
     }
-  };
+  }
 }
 
 OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'ArrayService', 'packaging'];

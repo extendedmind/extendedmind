@@ -55,15 +55,23 @@
         element[0].classList.remove('animate-editor-footer-open');
 
         // Start shrink animation.
-        shrinkPromise = $animate.addClass(element, 'animate-editor-footer-close').then(function() {
+        shrinkPromise = $animate.addClass(element, 'animate-editor-footer-close', {
+          // Remove flicker during open caused by leftover transform property in element style from previous
+          // position.
+          to: {
+            transform: 'translate3d(0, 0, 0)' // Reset element style.
+          }
+        }).then(function() {
           if (!$rootScope.$$phase && !scope.$$phase)
             scope.$apply(function(){
               scope.footerExpanded = false;   // Remove expandable DOM.
               scope.footerExpandOpen = false; // Footer is now closed.
+              scope.footerExpandedToMaxHeight = false;  // Reset variable.
             });
           else {
             scope.footerExpanded = false;   // Remove expandable DOM.
             scope.footerExpandOpen = false; // Footer is now closed.
+            scope.footerExpandedToMaxHeight = false;  // Reset variable.
           }
           shrinkPromise = undefined;
         });
@@ -71,7 +79,6 @@
         if (expandedHeightChangeWatcher) expandedHeightChangeWatcher(); // unregister watcher
         oldTranslateYPosition = 0; // Clear old Y position to default.
         element[0].classList.remove('expanded-one-row');  // Remove padding-bottom fix class.
-        scope.footerExpandedToMaxHeight = false;
       };
 
       function startFooterExpandAnimation(expandedHeight) {
