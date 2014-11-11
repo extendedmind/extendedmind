@@ -24,9 +24,9 @@
       return {
         post: function(scope, element, attrs, listController) {
 
-          var showCompletedTasks = false;
+          scope.showCompletedTasks = false;
           scope.toggleShowCompletedTasks = function () {
-            showCompletedTasks = !showCompletedTasks;
+            scope.showCompletedTasks = !scope.showCompletedTasks;
           };
 
           var disableCompleted;
@@ -67,7 +67,7 @@
               }
             }
             containsCompleted = false;
-            showCompletedTasks = false;
+            scope.showCompletedTasks = false;
             tryToChangeElementActivityStatus();
           };
 
@@ -83,7 +83,7 @@
             }
             disableCompleted = false;
 
-            if (!showCompletedTasks && task.completed && !scope.isTaskFrozen(task)) {
+            if (!scope.showCompletedTasks && task.completed && !scope.isTaskFrozen(task)) {
               return false;
             }
             return true;
