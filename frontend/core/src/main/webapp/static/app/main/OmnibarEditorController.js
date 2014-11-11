@@ -125,12 +125,24 @@
   * Match items containing all selected keywords.
   */
   function filterByKeywords(item) {
-    if (!$scope.selectedKeywords || !$scope.selectedKeywords.length) return;
-    if (!item.transientProperties || !item.transientProperties.keywords) return;
+    if ($scope.titlebar && $scope.titlebar.text) {
+      // First filter out items not matching titlebar text.
+      if (!searchItemFields(item)) return false;
+    } else {
+
+      // Then
+      if (!$scope.selectedKeywords || !$scope.selectedKeywords.length) return false;
+      if (!item.transientProperties || !item.transientProperties.keywords) return false;
+    }
 
     for (var i = 0, len = $scope.selectedKeywords.length; i < len; i++) {
-      if (item.transientProperties.keywords.indexOf($scope.selectedKeywords[i]) === -1) {
-        // Selected keyword is not found in the item.
+      if (item.transientProperties && item.transientProperties.keywords) {
+        if (item.transientProperties.keywords.indexOf($scope.selectedKeywords[i]) === -1) {
+          // Selected keyword is not found in the item.
+          return false;
+        }
+      } else {
+        // Filter items with no selected keywords.
         return false;
       }
     }
@@ -185,8 +197,11 @@
   * Return unselected keywords which are found in the items that have been filtered by selected keywords.
   */
   $scope.unselectedKeywordsFromItemsWithSelectedKeywords = function(keyword) {
-    if (!$scope.selectedKeywords || !$scope.selectedKeywords.length) {
-      // No keywords selected. Return keyword.
+
+    if ((!$scope.selectedKeywords || !$scope.selectedKeywords.length) &&
+        (!$scope.titlebar || !$scope.titlebar.text))
+    {
+      // No keywords selected and search text. Return keyword.
       return true;
     }
 
@@ -196,8 +211,11 @@
     }
 
     for (var i = 0, len = $scope.filteredItems.searchResults.length; i < len; i++) {
-      if ($scope.filteredItems.searchResults[i].transientProperties.keywords.indexOf(keyword) !== -1) {
-        // Keyword found in item from search results.
+      var item = $scope.filteredItems.searchResults[i];
+      if (item.transientProperties && item.transientProperties.keywords &&
+          item.transientProperties.keywords.indexOf(keyword) !== -1)
+      {
+        // Keyword found in search results from item which has keywords.
         return true;
       }
     }
