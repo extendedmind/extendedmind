@@ -45,7 +45,7 @@
           </div>
 
           <div ng-if="!listPickerOpen">
-            <div ng-hide="mode === 'fullScreen'" class="row-form">
+            <div ng-hide="mode === 'fullScreen'" class="row-vertically-centered">
               <a href ng-class="{downplayed: !note.transientProperties.list}" ng-click="openListPicker()">
                 <span class="text-link" ng-bind="note.transientProperties.list ? getListTitleFromUUID(note.transientProperties.list) : 'select list\u2026'"></span>
               </a>
