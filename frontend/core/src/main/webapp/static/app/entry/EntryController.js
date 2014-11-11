@@ -167,21 +167,24 @@
 
   $scope.sendInstructions = function() {
     $scope.sendFailed = false;
-    $scope.sendOffline = false;
+    $scope.entryOffline = false;
     if ($scope.user.username) {
       AuthenticationService.postForgotPassword($scope.user.username).then(
         function(forgotPasswordResponse) {
-          if (BackendClientService.isOffline(forgotPasswordResponse.status)) {
-            $scope.sendOffline = true;
-          } else if (forgotPasswordResponse.status !== 200) {
-            $scope.sendFailed = true;
-          } else if (forgotPasswordResponse.data) {
+          if (forgotPasswordResponse.data) {
             $scope.resetCodeExpires = forgotPasswordResponse.data.resetCodeExpires;
             UISessionService.pushNotification({
               type: 'fyi',
               text: 'instructions sent'
             });
             $scope.forgotActive = false;
+          }
+        },
+        function(errorResponse){
+          if (BackendClientService.isOffline(errorResponse.status)) {
+            $scope.entryOffline = true;
+          } else {
+            $scope.sendFailed = true;
           }
         }
       );

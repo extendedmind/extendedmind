@@ -220,7 +220,7 @@
       return BackendClientService.postOnline(
         '/api/password/forgot',
         postForgotPasswordRegexp,
-        {email: sanitizeEmail(email)}, true);
+        {email: sanitizeEmail(email)}, true, [0, 400, 404, 502]);
     },
     getPasswordResetExpires: function(resetCode, email) {
       return BackendClientService.get(
