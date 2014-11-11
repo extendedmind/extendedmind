@@ -105,8 +105,10 @@
               <directory>${basedir}/src/main/webapp/static/</directory>
               <includes>
                 <include>em.min.js</include>
-                <include>favicon.ico</include>
               </includes>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/main/webapp/static/favicon</directory>
             </fileset>
             <fileset>
               <directory>${basedir}/src/main/webapp/test/json</directory>
@@ -277,20 +279,17 @@
                   </configuration>
               </execution>
               <execution>
-                  <id>copy-favicon</id>
+                  <id>copy-favicons</id>
                   <phase>prepare-package</phase>
                   <goals>
                       <goal>copy-resources</goal>
                   </goals>
                   <configuration>
-                      <outputDirectory>${project.basedir}/src/main/webapp/static/</outputDirectory>
+                      <outputDirectory>${project.basedir}/src/main/webapp/static/favicon</outputDirectory>
                       <overwrite>true</overwrite>
                       <resources>
                           <resource>
-                              <directory>${project.basedir}/src/main/webapp/landing/</directory>
-                              <includes>
-                                  <include>favicon.ico</include>
-                              </includes>
+                              <directory>${project.basedir}/src/main/webapp/landing/favicon</directory>
                           </resource>
                       </resources>
                   </configuration>
