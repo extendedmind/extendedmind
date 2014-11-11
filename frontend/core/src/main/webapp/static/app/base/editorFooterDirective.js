@@ -22,6 +22,7 @@
     link: function(scope, element, attrs) {
       var expandedFooterMaxHeight = 156;  // Default expanded height. Used in task editor.
       var oldTranslateYPosition = 0;      // Default and previous translateY position.
+      var currentExpandedFooterHeight;    // Current expanded footer height.
       var expandPromise, shrinkPromise;   // Animation promises.
       var expandedHeightChangeWatcher;    // Attach watcher into variable to be able to unregister it.
 
@@ -70,6 +71,7 @@
         if (expandedHeightChangeWatcher) expandedHeightChangeWatcher(); // unregister watcher
         oldTranslateYPosition = 0; // Clear old Y position to default.
         element[0].classList.remove('expanded-one-row');  // Remove padding-bottom fix class.
+        scope.footerExpandedToMaxHeight = false;
       };
 
       function startFooterExpandAnimation(expandedHeight) {
@@ -138,6 +140,31 @@
           editorFooterToggledCallbackFn(expanded); // Inform about footer new state.
       };
 
+      scope.toggleExpandFooterToMaxHeight = function() {
+        if (!scope.footerExpandedToMaxHeight) {
+          scope.footerExpandedToMaxHeight = true;
+
+          var maxPosition;
+          if ($rootScope.currentHeight < $rootScope.CONTAINER_MASTER_MAX_HEIGHT) {
+            // Set max position to current height.
+            maxPosition = $rootScope.currentHeight;
+          }
+          else {
+            // Set max position to max available height.
+            maxPosition = $rootScope.CONTAINER_MASTER_MAX_HEIGHT;
+          }
+
+          // Decrease max position by footer height to make un-expandable part visible.
+          maxPosition -= footerHeight;
+
+          startFooterExpandAnimation(maxPosition);
+        } else {
+          scope.footerExpandedToMaxHeight = false;
+          // Animate to previous position.
+          startFooterExpandAnimation(currentExpandedFooterHeight);
+        }
+      };
+
       /*
       * There are three elements in a row, so divide elements in a container by three and round that upwards
       * to get the number of rows in a container.
@@ -163,6 +190,7 @@
         // due to padding-bottom.
         var expandedOneRow = rowsInFirstContainer + rowsInSecondContainer === 1;
         element[0].classList.toggle('expanded-one-row', expandedOneRow);
+        currentExpandedFooterHeight = expandedHeight;
       }
 
       // iOS hack: when keyboard is up, later icon does not open expanded area. To get around this

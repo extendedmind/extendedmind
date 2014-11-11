@@ -26,7 +26,6 @@
     else AnalyticsService.do('addKeyword');
 
     TagsService.saveTag(keyword, UISessionService.getActiveUUID());
-    $scope.gotoPreviousPage();
   };
 
   // DELETING

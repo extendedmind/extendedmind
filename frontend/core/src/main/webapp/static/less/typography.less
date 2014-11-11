@@ -98,6 +98,9 @@ h2 {
 
 [class^="text-"], [class*=" text-"] {
   .break-words();
+  &.emphasis {
+    .set-font-bold();
+  }
 }
 
 .text-highlighted {
@@ -145,15 +148,17 @@ Use `.text-details` to separate details from body text.
   line-height: @grid-vertical-half; // [1]
 }
 
+.text-edit {
+  font-size: @size-font-small;
+  .dont-break-words();
+}
+
 .text-teaser {
   font-size: @size-font-medium;
   color: @color-text-downplayed;
 }
 
-.text-link.emphasis {
-  .set-font-bold();
-}
-
+// TODO: Use .text-heading-primare and .emphasis which defines .set-font-bold().
 .text-heading-primary {
   line-height: @grid-vertical-half;
   font-size: @size-font-topheading;

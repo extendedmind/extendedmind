@@ -14,8 +14,9 @@
  */
  'use strict';
 
- function rootViewDirective($injector, $rootScope, $templateCache, $window, AnalyticsService, BackendClientService,
-                            ModalService, UISessionService, UUIDService, UserSessionService, packaging) {
+ function rootViewDirective($injector, $rootScope, $templateCache, $window,
+                            AnalyticsService, BackendClientService, ModalService, UISessionService,
+                            UUIDService, UserSessionService, packaging) {
 
   return {
     restrict: 'A',
@@ -24,8 +25,10 @@
     controller: function($scope) {
 
       // BASIC DIMENSIONS TO ROOT SCOPE
-      // NOTE: For some reason this had to be 567 before, because editor disappeared after animation was ready.
+      // NOTE: For some reason this had to be 567 before,
+      // because editor disappeared after animation was ready.
       $rootScope.CONTAINER_MASTER_MAX_WIDTH = 568;
+      $rootScope.CONTAINER_MASTER_MAX_HEIGHT = 769;
       $rootScope.MAX_HEIGHT = 769;
       $rootScope.MENU_WIDTH = 260;
       $rootScope.EDITOR_FOOTER_HEIGHT = 44;
@@ -44,11 +47,6 @@
       $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME = 2000;
       $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED = 1000;
 
-      // Back function globally available
-      $scope.gotoPreviousPage = function gotoPreviousPage() {
-        $window.history.back();
-      };
-
       // Sticky inputs
       var useStickyInputs = false;
       if (packaging.endsWith('cordova')){
@@ -57,7 +55,7 @@
 
       $scope.getEditableFieldSticky = function(){
         if (useStickyInputs) return 'sticky';
-      }
+      };
 
       // Online/offline status, optimistic default
       $scope.online = true;
@@ -121,7 +119,7 @@
         //
         // which almost worked, but on menu open, failed. In app that always broke.
         $templateCache.removeAll();
-      }
+      };
 
       // Listen to exceptions emitted to rootscope
       var unbindEmException = $rootScope.$on('emException', function(name, exception) {
@@ -138,7 +136,8 @@
           if (!$scope.retrying) {
             $scope.errorMessageHeading = 'no online connection';
             if (exception.retry) {
-              $scope.errorMessageText = 'please connect to the internet and press retry to access your information';
+              $scope.errorMessageText = 'please connect to the internet and press retry to access your ' +
+              'information';
               $scope.modalSuccessText = 'retry';
               modalOptions.allowBackdropDismiss = false;
               modalOptions.asyncSuccess = true;
@@ -179,7 +178,7 @@
       // Clean up listening by executing the variable
       $scope.$on('$destroy', unbindEmException);
     },
-    link: function (scope, attrs) {
+    link: function (scope) {
 
       // SESSION MANAGEMENT
 
@@ -211,7 +210,8 @@
       // WINDOW RESIZING
 
       var windowResizedCallbacks = {};
-      scope.registerWindowResizedCallback = function registerWindowResizedCallback(windowResizedCallback, id) {
+      scope.registerWindowResizedCallback = function registerWindowResizedCallback(windowResizedCallback,
+                                                                                   id) {
         windowResizedCallbacks[id] = windowResizedCallback;
       };
 
