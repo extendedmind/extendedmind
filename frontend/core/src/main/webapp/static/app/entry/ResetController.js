@@ -30,13 +30,10 @@
   $scope.resetPassword = function resetPassword() {
     resetErrors();
     if ($scope.user.password) {
+      $scope.resetting = true;
       AuthenticationService.postResetPassword(passwordResetCode, $scope.user.username, $scope.user.password).then(
         function(resetPasswordResponse) {
-          if (BackendClientService.isOffline(resetPasswordResponse.status)) {
-            $scope.resetOffline = true;
-          } else if (resetPasswordResponse.status !== 200) {
-            $scope.resetFailed = true;
-          } else if (resetPasswordResponse.data && resetPasswordResponse.data.count) {
+          if (resetPasswordResponse.data && resetPasswordResponse.data.count) {
             if (packaging === 'web' && DetectBrowserService.isMobile()){
               $location.url($location.path());
               $location.path('/');
@@ -60,6 +57,14 @@
               text: 'password reset successful'
             });
           }
+        },
+        function(errorResponse){
+          if (BackendClientService.isOffline(errorResponse.status)) {
+            $scope.resetOffline = true;
+          } else {
+            $scope.resetFailed = true;
+          }
+          $scope.resetting = false;
         }
       );
     }

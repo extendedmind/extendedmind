@@ -10,14 +10,16 @@
           <div ng-if="resetForm.password.$touched" ng-messages="resetForm.password.$error">
             <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
           </div>
+        </div>
+        <div class="group-error height-large row-form">
           <span ng-if="resetFailed" class="text-error">error resetting password</span>
           <span ng-if="resetOffline" class="text-error">can't connect to server. are you online?</span>
           <span ng-if="loginFailed" class="text-error">could not login with new credentials</span>
         </div>
       </section>
       <footer class="container-content--after group-btn">
-        <button type="submit" class="btn-action" ng-disabled="!resetForm.$valid" ng-click="resetPassword()">
-          <span class="text-btn">done</span>
+        <button type="submit" class="btn-action" ng-disabled="!resetForm.$valid || resetting" ng-click="resetPassword()">
+          <span class="text-btn" ng-bind="resetting && 'resetting' || 'done'">done</span>
         </button>
       </footer>
     </form>

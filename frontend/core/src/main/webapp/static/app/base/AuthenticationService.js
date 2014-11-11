@@ -233,7 +233,7 @@
         '/api/password/' + resetCode + '/reset',
         postResetPasswordRegexp,
         {email: sanitizeEmail(email),
-         password: password}, true);
+         password: password}, true, [0, 400, 404, 502]);
     },
     postVerifyEmail: function(resetCode, email) {
       return BackendClientService.postOnline(
