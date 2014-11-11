@@ -700,7 +700,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 4. Clear line-height (for multiline text as well).
 // 5. Align vertically.
 //    textarea is 22px, .group-mixed default height is 44px, use remaining 22px for padding.
-// 6. Increase click area.
+// 6. Increase click area by inheriting padding-top and -bottom from .group-mixed--middle.
 // 7. Add space between first and last link inside.
 // 8. Align search type vertically with first row of search result text inside .group-mixed--middle.
 // 9. Increase click area and align vertically with textarea in .group-mixed---middle
@@ -724,9 +724,9 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     padding-bottom: @padding-vertically-centered; // [5]
     & > a {
       display: block;                               // [6]
-      padding-top: @padding-vertically-centered;    // [6]
+      padding-top: inherit;    // [6]
       margin-top: -@padding-vertically-centered;    // [6]
-      padding-bottom: @padding-vertically-centered; // [6]
+      padding-bottom: inherit; // [6]
       margin-bottom: -@padding-vertically-centered; // [6]
     }
     & > a:first-of-type:not(:only-of-type) {
@@ -745,6 +745,31 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   .group-mixed--right span.text-star.small {
     padding-top: @padding-vertically-centered - 1;    // [9]
     padding-bottom: @padding-vertically-centered + 1; // [9]
+  }
+}
+
+// 1. Text element inside .group-mixed--middle has line-height of 16px (@grid-vertical-small).
+//    Set padding-top and bottom to make .group-mixed.small 30px high.
+//    TODO: vertical padding in .group-mixed--middle + negative vertical margin in & > a
+// 2. Set smaller height for link inside .group-mixed--right.
+// 3. Align with text in .group-mixed--middle.
+//    TODO: vertical padding in .group-mixed--middle + negative vertical margin in & > a
+.group-mixed.small {
+  .group-mixed--middle > a.link-menu-small {
+    padding-top: 4px;     // [1]
+    padding-bottom: 4px;  // [1]
+    & > span.text-navigation-menu-small {
+      line-height: @grid-vertical-small;
+    }
+  }
+  .group-mixed--right > a {
+    height: @grid-vertical-medium;       // [1]
+    line-height: @grid-vertical-medium;  // [1]
+    & > span.text-star.small {
+      line-height: @grid-vertical-small;
+      padding-top: 4px - 1px;
+      padding-bottom: 4px + 1px;
+    }
   }
 }
 
