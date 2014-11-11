@@ -456,12 +456,13 @@ trait InviteDatabase extends UserDatabase {
         else false
       })
 
-      if (acceptRelationships.size != 1){
+      if (acceptRelationships.size > 1){
         fail(INTERNAL_SERVER_ERROR, "Invalid number of accept relationships for invite " + getUUID(inviteNode))
       }else if (originRelationships.size > 1){
         fail(INTERNAL_SERVER_ERROR, "Invalid number of origin relationships for invite " + getUUID(inviteNode))
       }else{
-        acceptRelationships(0).delete()
+        if (acceptRelationships.size == 1)
+          acceptRelationships(0).delete()
         
         val deletedInviteRequestUUID = {
           if (originRelationships.size == 1){
