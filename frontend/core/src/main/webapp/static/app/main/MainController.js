@@ -310,8 +310,6 @@ function MainController(
   $scope.isOnboarded = function(feature){
     if (feature === 'focusTasks' || feature === 'focusNotes' || feature === 'inbox'){
       return UserSessionService.getUIPreference(feature + 'Onboarded') !== undefined;
-    }else if ($scope.onboardingInProgress && $scope.checkListOnboardingLock(feature, undefined)){
-      return false;
     }else if (!$scope.onboardingInProgress){
       return true;
     }
@@ -330,7 +328,13 @@ function MainController(
   };
 
   $scope.setListOnboarding = function (feature, listOnboarding) {
-    listOnboardingMap[feature] = listOnboarding;
+    if (listOnboardingMap[feature]){
+      var oldLockValue = listOnboardingMap[feature].lock;
+      listOnboardingMap[feature] = listOnboarding;
+      listOnboardingMap[feature].lock = oldLockValue;
+    }else{
+      listOnboardingMap[feature] = listOnboarding;
+    }
   };
 
   // Start from tasks on onboarding, or later on, from focus
