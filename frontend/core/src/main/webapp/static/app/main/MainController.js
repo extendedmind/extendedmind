@@ -437,7 +437,7 @@ $scope.combineTasksArrays = function() {
   var activeArchivedTasks = [];
   var i = 0;
   while ($scope.archivedTasks[i]) {
-    if (!$scope.tasks[i].transientProperties.completed) {
+    if ($scope.tasks[i].transientProperties && !$scope.tasks[i].transientProperties.completed) {
       activeArchivedTasks.push($scope.archivedTasks[i]);
     }
     i++;
@@ -446,7 +446,7 @@ $scope.combineTasksArrays = function() {
   var activeTasks = [];
   i = 0;
   while ($scope.tasks[i]) {
-    if (!$scope.tasks[i].transientProperties.completed) {
+    if ($scope.tasks[i].transientProperties && !$scope.tasks[i].transientProperties.completed) {
       activeTasks.push($scope.tasks[i]);
     }
     i++;

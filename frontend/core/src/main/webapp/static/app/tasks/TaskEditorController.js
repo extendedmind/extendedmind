@@ -44,6 +44,7 @@
     $scope.deferEdit().then(function() {
       $scope.saveTask($scope.task);
       if (completeReadyDeferred){
+        UISessionService.allow('leaveAnimation', 200);
         completeReadyDeferred.resolve($scope.task);
         completeReadyDeferred = undefined;
       }
