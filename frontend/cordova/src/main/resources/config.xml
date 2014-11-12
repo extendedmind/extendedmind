@@ -26,11 +26,24 @@
     <preference name="DisallowOverscroll" value="true" />
     <preference name="detect-data-types" value="true" />
     <preference name="exit-on-suspend" value="false" />
-    <preference name="show-splash-screen-spinner" value="true" />
-    <preference name="auto-hide-splash-screen" value="true" />
+    <preference name="ShowSplashScreenSpinner" value="false" />
+    <preference name="AutoHideSplashScreen" value="true" />
     <preference name="disable-cursor" value="false" />
     <preference name="SplashScreen" value="splash" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <platform name="ios">
+        <!-- images are determined by width and height. The following are supported -->
+        <splash src="assets/screens/ios/Default~iphone.png" width="320" height="480"/>
+        <splash src="assets/screens/ios/Default@2x~iphone.png" width="640" height="960"/>
+        <splash src="assets/screens/ios/Default-Portrait~ipad.png" width="768" height="1024"/>
+        <splash src="assets/screens/ios/Default-Portrait@2x~ipad.png" width="1536" height="2048"/>
+        <splash src="assets/screens/ios/Default-Landscape~ipad.png" width="1024" height="768"/>
+        <splash src="assets/screens/ios/Default-Landscape@2x~ipad.png" width="2048" height="1536"/>
+        <splash src="assets/screens/ios/Default-568h@2x~iphone.png" width="640" height="1136"/>
+        <splash src="assets/screens/ios/Default-667h@2x~iphone.png" width="750" height="1334"/>
+        <splash src="assets/screens/ios/Default-736h@3x~iphone.png" width="1242" height="2208"/>
+        <splash src="assets/screens/ios/Default-Landscape-736h@3x~iphone.png" width="2208" height="1242"/>
+    </platform>
 
     <access origin="*" />
     <content src="index.html" />

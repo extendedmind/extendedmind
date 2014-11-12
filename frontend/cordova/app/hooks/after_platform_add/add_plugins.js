@@ -3,8 +3,9 @@
 //this hook installs all your plugins
 
 var pluginlist = [
-    "com.ionic.keyboard",
-    "org.apache.cordova.vibration"
+    "https://github.com/driftyco/ionic-plugins-keyboard.git",
+    "org.apache.cordova.vibration",
+    "https://github.com/apache/cordova-plugin-splashscreen.git"
 ];
 
 // no need to configure below
