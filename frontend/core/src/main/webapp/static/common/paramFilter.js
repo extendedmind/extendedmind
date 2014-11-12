@@ -17,11 +17,13 @@
  function paramFilter() {
 
   return function(items, filterFn, filterParameter) {
-    var filteredItems = [];
-    for (var i = 0, len = items.length; i < len; i++) {
-      if (filterFn(items[i], filterParameter)) filteredItems.push(items[i]);
+    if (items && items.length > 0){
+      var filteredItems = [];
+      for (var i = 0, len = items.length; i < len; i++) {
+        if (filterFn(items[i], filterParameter)) filteredItems.push(items[i]);
+      }
+      return filteredItems;
     }
-    return filteredItems;
   };
 
 }
