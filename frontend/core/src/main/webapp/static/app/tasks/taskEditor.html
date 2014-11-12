@@ -106,7 +106,7 @@
               </a>
             </div>
 
-            <div ng-hide="urlFocused && task.transientProperties.date" class="row-vertically-centered">
+            <div ng-hide="urlFocused || !task.transientProperties.date" class="row-vertically-centered">
               <a href ng-class="{downplayed: !task.repeating}" ng-click="openRepeatingPicker()">
                 <span class="text-link" ng-bind="task.repeating ? task.repeating : 'select repeating\u2026'"></span>
               </a>
