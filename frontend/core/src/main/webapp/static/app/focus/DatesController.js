@@ -109,10 +109,6 @@
   SwiperService.registerSlideChangeStartCallback(daySlideChangeStart, 'focus/tasks', 'DatesController');
   function daySlideChangeStart(activeIndex, direction) {
 
-    // issue a 500ms lock to prevent leave animation for this digest cycle
-    // see listItemDirective => animation
-    UISessionService.lock('leaveAnimation', 500);
-
     // Store offset from old active day because slides can be swiped back and forth
     // before slide change end callback is fired.
     offsetFromOldActiveDaySlide += direction === 'prev' ? -1 : 1;

@@ -73,10 +73,6 @@
       initializeArrays(ownerUUID);
       this.addTransientProperties(listsResponse, ownerUUID);
 
-      // issue a very short lived lock to prevent leave animation
-      // when arrays are reformulated
-      UISessionService.lock('leaveAnimation', 100);
-
       var latestModified = ArrayService.updateArrays(
         listsResponse,
         lists[ownerUUID].activeLists,

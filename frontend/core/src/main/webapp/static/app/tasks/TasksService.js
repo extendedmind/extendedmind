@@ -170,10 +170,6 @@
     updateTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       this.addTransientProperties(tasksResponse, ownerUUID);
-
-      // issue a very short lived lock to prevent leave animation
-      // when arrays are reformulated
-      UISessionService.lock('leaveAnimation', 100);
       return ArrayService.updateArrays(
         tasksResponse,
         tasks[ownerUUID].activeTasks,

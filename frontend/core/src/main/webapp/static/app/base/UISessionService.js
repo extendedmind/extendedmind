@@ -32,7 +32,7 @@
 
   var deferredActions = [];
 
-  var locks = {};
+  var allowedActions = {};
 
   function removeDeferredAction(type) {
     var deferredActionIndex = deferredActions.findFirstIndexByKeyValue('type', type);
@@ -283,16 +283,16 @@
       if (deferredAction) deferredAction.deferred.resolve(parameter);
     },
 
-    // LOCKS
+    // ALLOWED ACTIONS
 
-    lock: function(type, duration) {
-      locks[type] = true;
+    allow: function(type, duration) {
+      allowedActions[type] = true;
       $timeout(function(){
-        locks[type] = false;
+        allowedActions[type] = false;
       },duration);
     },
-    isLocked: function(type) {
-      return locks[type];
+    isAllowed: function(type) {
+      return allowedActions[type];
     },
 
     // CALLBACK REGISTRATION
@@ -321,7 +321,7 @@
       notificationsActiveCallbacks = [];
       deferredActions = [];
       ownerPrefix = 'my';
-      locks = {};
+      allowedActions = {};
     }
   };
 }

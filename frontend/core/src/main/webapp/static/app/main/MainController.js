@@ -201,10 +201,6 @@ function MainController(
 
         if (!$scope.features[feature].loaded) $scope.features[feature].loaded = true;
 
-        // issue a 500ms lock to prevent leave animation to prevent items from fading
-        // on list change
-        UISessionService.lock('leaveAnimation', 500);
-
         var state = UISessionService.getFeatureState(feature);
 
         UISessionService.changeFeature(feature, data, state);

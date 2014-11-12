@@ -76,6 +76,7 @@
 
         if (checked) {
           checkingTimeout = $timeout(function() {
+            UISessionService.allow('leaveAnimation', 200);
             checkboxCheckingReadyDeferred.resolve(item);
             if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
           }, $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME);
@@ -199,10 +200,6 @@
         }else{
           scope.currentListStartIndexLimit = -startIndex;
         }
-
-        // issue a 500ms lock to prevent leave animation for this digest cycle
-        // see listItemDirective => animation
-        UISessionService.lock('leaveAnimation', 500);
       }
 
       scope.activateListBottom = function() {

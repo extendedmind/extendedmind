@@ -20,13 +20,6 @@
 
   $scope.saveItem = function(item) {
     if (item.title && item.title.length > 0) {
-
-      if (!item.uuid){
-        // when adding issue a 500ms lock to prevent leave animation for tasks below this
-        // in the list
-        UISessionService.lock('leaveAnimation', 500);
-      }
-
       return ItemsService.saveItem(item, UISessionService.getActiveUUID());
     }
   };

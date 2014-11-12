@@ -15,7 +15,7 @@
 
  'use strict';
 
- function TaskEditorController($q, $rootScope, $scope, $timeout, DateService) {
+ function TaskEditorController($q, $rootScope, $scope, $timeout, DateService, UISessionService) {
 
   // INITIALIZING
 
@@ -58,6 +58,7 @@
 
     $scope.closeTaskEditor();
     $scope.deferEdit().then(function(){
+      UISessionService.allow('leaveAnimation', 200);
       $scope.deleteTask($scope.task);
     });
   };
@@ -111,6 +112,9 @@
 
   $scope.setDateAndSave = function(date) {
     $scope.setTaskDate($scope.task, date);
+    // FIXME: This is not the place to do this! Better would be at saveTaskInEdit but that would require
+    //        that we know if the task will actually leave or not!
+    UISessionService.allow('leaveAnimation', 1000);
     $scope.endTaskEdit();
   };
 

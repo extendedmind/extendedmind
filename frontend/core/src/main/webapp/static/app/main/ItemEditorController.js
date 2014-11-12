@@ -15,7 +15,7 @@
 
  'use strict';
 
- function ItemEditorController($q, $rootScope, $scope) {
+ function ItemEditorController($q, $rootScope, $scope, UISessionService) {
 
   // INITIALIZING
 
@@ -43,6 +43,7 @@
 
     $scope.closeTaskEditor();
     $scope.deferEdit().then(function(){
+      UISessionService.allow('leaveAnimation', 200);
       $scope.deleteItem($scope.item);
     });
   };
@@ -70,5 +71,5 @@
   };
 }
 
-ItemEditorController['$inject'] = ['$q', '$rootScope', '$scope'];
+ItemEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'UISessionService'];
 angular.module('em.main').controller('ItemEditorController', ItemEditorController);

@@ -58,7 +58,7 @@ function listItemLeaveAnimation($animate, UISessionService) {
     */
     leave: function(element, leaveDone) {
       leaveDone();
-      if (UISessionService.isLocked('leaveAnimation')) {
+      if (!UISessionService.isAllowed('leaveAnimation')) {
         // Second leaveDone call will cancel animation.
         leaveDone();
         return;

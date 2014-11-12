@@ -15,7 +15,7 @@
 
  'use strict';
 
- function NoteEditorController($scope) {
+ function NoteEditorController($scope, UISessionService) {
 
   // INITIALIZING
 
@@ -46,6 +46,7 @@
 
     $scope.closeNoteEditor();
     $scope.deferEdit().then(function() {
+      UISessionService.allow('leaveAnimation', 200);
       $scope.deleteNote($scope.note);
     });
   };
@@ -156,5 +157,5 @@
 
 }
 
-NoteEditorController['$inject'] = ['$scope'];
+NoteEditorController['$inject'] = ['$scope', 'UISessionService'];
 angular.module('em.main').controller('NoteEditorController', NoteEditorController);

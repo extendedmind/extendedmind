@@ -98,6 +98,8 @@
     if (taskCompletingReadyDeferred) {
       taskCompletingReadyDeferred.promise.then(function(task) {
         unfreezeTask(task);
+        // Need to delay combining task arrays to prevent immediate disapper
+        $scope.combineTasksArrays();
       });
     }
 
@@ -119,10 +121,15 @@
     } else {
       AnalyticsService.do('completeTask');
       TasksService.completeTask(task, UISessionService.getActiveUUID()).then(function(){
-        if (!taskCompletingReadyDeferred) unfreezeTask(task, true);
-        $scope.combineTasksArrays();
+        if (!taskCompletingReadyDeferred){
+          unfreezeTask(task, true);
+          $scope.combineTasksArrays();
+        }
       }, function() {
-        if (!taskCompletingReadyDeferred) unfreezeTask(task, true);
+        if (!taskCompletingReadyDeferred){
+          unfreezeTask(task, true);
+          $scope.combineTasksArrays();
+        }
       });
       return true;
     }
@@ -140,12 +147,7 @@
       if (task.transientProperties && task.transientProperties.completed){
         completeOnSave = true;
       }
-
-      // issue a 500ms lock to prevent leave animation for tasks below this
-      // in the list
-      UISessionService.lock('leaveAnimation', 500);
     }
-
 
     return TasksService.saveTask(task, UISessionService.getActiveUUID()).then(function(savedTask) {
       if (completeOnSave){
@@ -217,7 +219,6 @@
   }
 
   $scope.swipeToContext = function(context){
-    UISessionService.lock('leaveAnimation', 500);
     $scope.context = context;
     SwiperService.swipeTo('tasks/context');
     refreshFeatureMapHeading();

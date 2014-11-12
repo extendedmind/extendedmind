@@ -56,10 +56,6 @@
     updateItems: function(itemsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       this.addTransientProperties(itemsResponse);
-      // issue a very short lived lock to prevent leave animation
-      // when arrays are reformulated
-      UISessionService.lock('leaveAnimation', 100);
-
       return ArrayService.updateArrays(itemsResponse,
         items[ownerUUID].activeItems,
         items[ownerUUID].deletedItems);
