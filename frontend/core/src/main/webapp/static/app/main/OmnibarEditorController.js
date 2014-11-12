@@ -160,6 +160,7 @@
     } else {
       $scope.itemsFilter = searchItemFields;  // Reset to default items filter.
       $scope.keywordsFilter = undefined;      // Clear keywords filter.
+      $scope.keywordsSearch.text = undefined; // Clear keywords filter text.
     }
   };
 
