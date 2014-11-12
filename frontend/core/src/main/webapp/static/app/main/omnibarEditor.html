@@ -59,7 +59,7 @@
       <div ng-if="footerExpanded" class="keywords-footer" ng-class="{'keywords-select-active': selectedKeywords && selectedKeywords.length}" ng-init="clearSelectedKeywords()">
 
         <!-- KEYWORDS -->
-        <div ng-hide="selectedKeywords && selectedKeywords.length" class="keywords-search row">
+        <div ng-hide="(selectedKeywords && selectedKeywords.length) || footerExpandedToMaxHeight" class="keywords-search row">
           <input type="search" class="text-keyword" ng-model="keywordsSearch.text" placeholder="search keywords&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
         </div>
 
@@ -82,7 +82,7 @@
 
         <!-- EDIT MODE -->
         <div ng-if="footerExpandedToMaxHeight" class="keywords-container row">
-          <div class="keyword-wrapper" ng-repeat="keyword in keywords | filter:{title:keywordsSearch.text} | orderBy:'title'">
+          <div class="keyword-wrapper" ng-repeat="keyword in keywords | orderBy:'title'">
             <a href class="keyword" ng-click="initializeEditor('tag', keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
             </a>
