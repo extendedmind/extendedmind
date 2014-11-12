@@ -1,29 +1,30 @@
 <div class="table two-to-left">
 
-  <div class="table-row short-text">
-    <a href class="table-cell" ng-click="setDateFirstDayOfNextMonth()">
-      <span class="text-convert">next month</span>
-    </a>
-    <a href class="table-cell" ng-click="setDateFirstDayOfNextWeek()">
-      <span class="text-convert">next week</span>
-    </a>
-  </div>
+ <div class="table-row short-text">
+  <a href class="table-cell" ng-click="setDateToday()">
+    <span class="text-convert">today</span>
+  </a>
+  <a href class="table-cell" ng-click="setDateTomorrow()">
+    <span class="text-convert">tomorrow</span>
+  </a>
+</div>
 
-  <div class="table-row long-text">
-    <a href class="table-cell" ng-click="setDateNextWeekend()">
-      <span class="text-convert">next<br/><span class="second-line">weekend</span></span>
-    </a>
-    <a href class="table-cell" ng-click="setDateDayAfterTomorrow()">
-      <span class="text-convert">day after<br/><span class="second-line">tomorrow</span></span>
-    </a>
-  </div>
+<div class="table-row short-text">
+  <a href class="table-cell" ng-click="setDateDayAfterTomorrow()">
+    <span class="text-convert">2 days later</span>
+  </a>
+  <a href class="table-cell" ng-click="setDateNextWeekend()">
+    <span class="text-convert">weekend</span>
+  </a>
+</div>
 
-  <div class="table-row">
-    <a href class="table-cell" ng-click="setDateTomorrow()">
-      <span class="text-convert">tomorrow</span>
-    </a>
-    <a href class="table-cell" ng-click="setDateToday()">
-      <span class="text-convert">today</span>
-    </a>
-  </div>
+<div class="table-row short-text">
+ <a href class="table-cell" ng-click="setDateFirstDayOfNextWeek()">
+  <span class="text-convert">next week</span>
+</a>
+<a href class="table-cell" ng-click="setDateFirstDayOfNextMonth()">
+  <span class="text-convert">next month</span>
+</a>
+</div>
+
 </div>
