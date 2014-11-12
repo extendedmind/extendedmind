@@ -1,5 +1,5 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
-  <section class="container-content" list="allActiveTasks" list-order="top" list-recent ng-init="setListOnboarding('tasks', listOnboarding)" swiper-prevent>
+  <section class="container-content" list="allTasks" list-order="top" list-recent ng-init="setListOnboarding('tasks', listOnboarding)" swiper-prevent>
     <div ng-show="isOnboarded('tasks') || isListOnboardingLockedOrReleased('tasks')">
       <div class="group-mixed heading">
         <div class="group-mixed--middle">

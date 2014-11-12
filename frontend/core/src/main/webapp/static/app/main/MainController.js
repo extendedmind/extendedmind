@@ -411,58 +411,62 @@ function MainController(
     if ($scope.favoriteLists && $scope.favoriteLists.length &&
         $scope.favoriteLists.indexOf(list) !== -1){
       return true;
-  }
-};
-
-function combineNotesArrays() {
-  if ($scope.notes.length && $scope.archivedNotes.length) {
-    $scope.allNotes = $scope.notes.concat($scope.archivedNotes);
-  } else if ($scope.notes.length && !$scope.archivedNotes.length) {
-    $scope.allNotes = $scope.notes;
-  } else if ($scope.archivedNotes.length && !$scope.notes.length) {
-    $scope.allNotes = $scope.archivedNotes;
-  } else {
-    $scope.allNotes = [];
-  }
-}
-
-$scope.$watch('notes.length', function(/*newValue, oldValue*/) {
-  combineNotesArrays();
-});
-$scope.$watch('archivedNotes.length', function(/*newValue, oldValue*/) {
-  combineNotesArrays();
-});
-
-$scope.combineTasksArrays = function() {
-  var activeArchivedTasks = [];
-  var i = 0;
-  while ($scope.archivedTasks[i]) {
-    if ($scope.tasks[i].transientProperties && !$scope.tasks[i].transientProperties.completed) {
-      activeArchivedTasks.push($scope.archivedTasks[i]);
     }
-    i++;
-  }
+  };
 
-  var activeTasks = [];
-  i = 0;
-  while ($scope.tasks[i]) {
-    if ($scope.tasks[i].transientProperties && !$scope.tasks[i].transientProperties.completed) {
-      activeTasks.push($scope.tasks[i]);
+  function combineNotesArrays() {
+    if ($scope.notes.length && $scope.archivedNotes.length) {
+      $scope.allNotes = $scope.notes.concat($scope.archivedNotes);
+    } else if ($scope.notes.length && !$scope.archivedNotes.length) {
+      $scope.allNotes = $scope.notes;
+    } else if ($scope.archivedNotes.length && !$scope.notes.length) {
+      $scope.allNotes = $scope.archivedNotes;
+    } else {
+      $scope.allNotes = [];
     }
-    i++;
   }
 
-  $scope.allActiveTasks = ArrayService.combineArrays(
-                             activeArchivedTasks,
-                             activeTasks, 'created', true);
-}
+  $scope.$watch('notes.length', function(/*newValue, oldValue*/) {
+    combineNotesArrays();
+  });
+  $scope.$watch('archivedNotes.length', function(/*newValue, oldValue*/) {
+    combineNotesArrays();
+  });
 
-$scope.$watchCollection('tasks', function(/*newValue, oldValue*/) {
-  $scope.combineTasksArrays();
-});
-$scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
-  $scope.combineTasksArrays();
-});
+  $scope.combineTasksArrays = function() {
+    var activeArchivedTasks = [];
+    var i = 0;
+    while ($scope.archivedTasks[i]) {
+      if ($scope.tasks[i].transientProperties && !$scope.tasks[i].transientProperties.completed) {
+        activeArchivedTasks.push($scope.archivedTasks[i]);
+      }
+      i++;
+    }
+
+    var activeTasks = [];
+    i = 0;
+    while ($scope.tasks[i]) {
+      if ($scope.tasks[i].transientProperties && !$scope.tasks[i].transientProperties.completed) {
+        activeTasks.push($scope.tasks[i]);
+      }
+      i++;
+    }
+
+    $scope.allActiveTasks = ArrayService.combineArrays(
+                               activeArchivedTasks,
+                               activeTasks, 'created', true);
+
+    $scope.allTasks = ArrayService.combineArrays(
+                               $scope.tasks,
+                               $scope.archivedTasks);
+  }
+
+  $scope.$watchCollection('tasks', function(/*newValue, oldValue*/) {
+    $scope.combineTasksArrays();
+  });
+  $scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
+    $scope.combineTasksArrays();
+  });
 
   // Deleted items
   function combineDeletedArrays(/*changedArray*/) {
