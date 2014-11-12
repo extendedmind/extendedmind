@@ -36,10 +36,9 @@
     heading: daySlideHeading(DateService.getTomorrowYYYYMMDD())
   },
   {
-    // 'no date' slide
-    info: null,
-    referenceDate: null,
-    heading: daySlideHeading(null)
+    info: DateService.getYesterdayYYYYMMDD(),
+    referenceDate: DateService.getYesterdayYYYYMMDD(),
+    heading: daySlideHeading(DateService.getYesterdayYYYYMMDD())
   }
   ];
 
@@ -170,54 +169,18 @@
   /*
   * Update date in active slide: set new active date with offset from old active date.
   *
-  * Yesterday, 'no date' and today are special cases.
+  * 'no date' is a special case.
   */
   function refreshActiveDaySlideAndReturnInfo(oldActiveIndex, newActiveIndex, offset) {
     var newActiveDate;
-
     var referenceDate = $scope.daySlides[oldActiveIndex].referenceDate;
-    if (referenceDate) {
-      referenceDate = new Date(referenceDate);
-      var today = new Date().setHours(0, 0, 0, 0);
-      var newActiveDateCandidate = DateService.getDateWithOffset(offset, referenceDate);
-
-      if (referenceDate.setHours(0, 0, 0, 0) < today) { // Past
-        if (newActiveDateCandidate.setHours(0, 0, 0, 0) > today) {
-          // From past to future, so hopped over 'no date' slide. Go back one day.
-          newActiveDateCandidate = DateService.getDateWithOffset(-1, newActiveDateCandidate);
-          makeDaySlide(newActiveIndex, newActiveDateCandidate);
-          return newActiveDateCandidate;
-
-        } else if (newActiveDateCandidate.setHours(0, 0, 0, 0) === today) {
-          // Active slide is a 'no date' slide when new active date candidate is today.
-          makeDaySlide(newActiveIndex, null);
-          return;
-        }
-
-      } else { // Present or future
-        var yesterday = DateService.getYesterdayDate().setHours(0, 0, 0, 0);
-        if (newActiveDateCandidate.setHours(0, 0, 0, 0) < yesterday) {
-          // From future to past, so hopped over 'no date' slide. Go forward one day.
-          newActiveDateCandidate = DateService.getDateWithOffset(1, newActiveDateCandidate);
-          makeDaySlide(newActiveIndex, newActiveDateCandidate);
-          return newActiveDateCandidate;
-
-        } else if (newActiveDateCandidate.setHours(0, 0, 0, 0) === yesterday) {
-          // Active slide is a 'no date' slide when new active date candidate is today.
-          makeDaySlide(newActiveIndex, null);
-          return;
-        }
-      }
-    } else if (referenceDate === null) {
-      // 'no date' slide. Today is the reference when going past, yesterday when future.
+    if (referenceDate === null) {
+      // 'no date' slide. Next day is the reference when going past, previous day when future.
       if (offset > 0) { // Going to the future.
-        // Subtract offset and then use today as a reference. Result is the same as using original offset and
-        // yesterday, but this is easier.
-        offset--;
+        oldActiveIndex = (oldActiveIndex - 1 + $scope.daySlides.length) % $scope.daySlides.length;
+      } else if (offset < 0) {  // Going to the past.
+        oldActiveIndex = (oldActiveIndex + 1 + $scope.daySlides.length) % $scope.daySlides.length;
       }
-      var slideDate = DateService.getDateWithOffset(offset, new Date());
-      makeDaySlide(newActiveIndex, slideDate);
-      return slideDate;
     }
 
     // Old active day is in old active slide index.
@@ -266,26 +229,14 @@
     var previousDate, nextDate;
     // Detect type of active day slide.
     if (activeDate) {
-      // Clear the time from date for comparison between dates. See http://stackoverflow.com/a/6202196
-      activeDate.setHours(0, 0, 0, 0);
-
-      if (activeDate.getTime() === new Date().setHours(0, 0, 0, 0)) {
-        // Today slide. Previous slide is 'no date' slide.
-        nextDate = DateService.getTomorrowDate();
-        previousDate = null;
-      } else if (activeDate.getTime() === DateService.getYesterdayDate().setHours(0, 0, 0, 0)) {
-        // Yesterday slide. Next slide is 'no date' slide.
-        previousDate = DateService.getDateWithOffset(-1, activeDate);
-        nextDate = null;
-      } else {
-        // Standard date slide. Get previous and next date.
-        previousDate = DateService.getDateWithOffset(-1, activeDate);
-        nextDate = DateService.getDateWithOffset(1, activeDate);
-      }
-    } else if (activeDate === null) {
-      // 'No date' slide. Previous date is yesterday and next date is today.
-      previousDate = DateService.getYesterdayDate();
-      nextDate = new Date();
+      // Standard date slide. Get previous and next date.
+      previousDate = DateService.getDateWithOffset(-1, activeDate);
+      nextDate = DateService.getDateWithOffset(1, activeDate);
+    }
+    else if (activeDate === null) {
+      // 'no date' slide. Next date is in next index and previous date is date before next.
+      nextDate = new Date($scope.daySlides[nextIndex].referenceDate);
+      previousDate = DateService.getDateWithOffset(-1, nextDate);
     }
 
     // NOTE:  We could check equality between adjacent reference date and new adjacent date without
@@ -399,9 +350,13 @@
 
   function newActiveDaySlideInfo(weeksOffset) {
     var oldActiveDaySlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
-    // http://stackoverflow.com/a/543152
-    // Pass today if we are in 'no date' slide.
-    var oldActiveDate = new Date($scope.daySlides[oldActiveDaySlideIndex].referenceDate || new Date());
+    var refDate = $scope.daySlides[oldActiveDaySlideIndex].referenceDate;
+    if (refDate === null) {
+      // 'no date'. Old active date is in the next index.
+      oldActiveDaySlideIndex = (oldActiveDaySlideIndex + 1 + $scope.daySlides.length
+                                ) % $scope.daySlides.length;
+    }
+    var oldActiveDate = new Date($scope.daySlides[oldActiveDaySlideIndex].referenceDate);
     var daysOffset = weeksOffset * 7;
     return DateService.setOffsetDate(daysOffset, oldActiveDate).getYYYYMMDD(oldActiveDate);
   }
@@ -445,11 +400,10 @@
   }
 
   function setDayActive(dateYYYYMMDD) {
-    if (dateYYYYMMDD === null) {
-      // 'no date'. Set today active.
-      dateYYYYMMDD = DateService.getTodayYYYYMMDD();
+    if (dateYYYYMMDD !== null) {
+      // Not 'no date'. Set date active.
+      activeDateYYYYMMDD = dateYYYYMMDD;
     }
-    activeDateYYYYMMDD = dateYYYYMMDD;
   }
 
   function datepickerHeading() {
@@ -482,7 +436,7 @@
     $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), true);
   }
   function gotoNoDate() {
-    $scope.changeDaySlide(null, true);
+    $scope.changeDaySlide(null);
   }
 
   /*
@@ -506,25 +460,20 @@
       // Came from 'no date'. Going to 'no date'. Do nothing.
       return;
     } else if (oldDateYYYYMMDD === null) {
-      // Came from 'no date'. Reference today as an old active date and compare it with new active date.
+      // Came from 'no date'. Reference next day as an old active date and compare it with new active date.
       newActiveDate = new Date(newDateYYYYMMDD);
-      offsetBetweenDays = (newActiveDate.setHours(0, 0, 0, 0) -
-                           new Date().setHours(0, 0, 0, 0)) / (1000*60*60*24);
+      var activeDayIndex = (activeSlideIndex + 1 + $scope.daySlides.length) % $scope.daySlides.length;
+      oldActiveDate = new Date($scope.daySlides[activeDayIndex].referenceDate);
+      offsetBetweenDays = ((newActiveDate.setHours(0, 0, 0, 0)) - (oldActiveDate.setHours(0, 0, 0, 0))
+                           ) / (1000*60*60*24);
       if (offsetBetweenDays === 0) {
-        // Going to today
+        // Going to same day.
         offsetBetweenDays++;
       }
     } else if (newDateYYYYMMDD === null) {
-      // Going to 'no date'. Reference today as a new active date and compare it with old active date.
-      oldActiveDate = new Date(oldDateYYYYMMDD);
-      offsetBetweenDays = (new Date().setHours(0, 0, 0, 0) -
-                           oldActiveDate.setHours(0, 0, 0, 0)) / (1000*60*60*24);
+      // Going to 'no date'.
       newActiveDate = null; // 'no date'
-
-      if (offsetBetweenDays === 0) {
-        // Came from today.
-        offsetBetweenDays--;
-      }
+      offsetBetweenDays = -1;
     } else {
       // Default.
       newActiveDate = new Date(newDateYYYYMMDD);
