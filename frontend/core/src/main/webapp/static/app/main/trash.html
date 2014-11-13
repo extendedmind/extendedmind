@@ -2,13 +2,11 @@
   <section class="container-content">
     <h2 class="group-heading justified row" ng-bind="allDeleted.length + ' deleted'"></h2>
 
-    <div ng-repeat="deletedItem in allDeleted | orderBy: 'deleted': true" class="group-mixed">
-      <div class="group-mixed--middle">
-        <a href class="link-search-result" ng-click="openEditor(deletedItem.tagType ? 'tag' : deletedItem.transientProperties.itemType, deletedItem)">
-          <span class="text-search-result" clamp=2 ng-bind="deletedItem.title"></span>
-        </a>
-      </div>
-      <div class="group-mixed--right top">
+    <div ng-repeat="deletedItem in allDeleted | orderBy: 'deleted': true" class="group-mixed with-checkbox">
+      <a href class="group-mixed--middle link-search-result" ng-click="openEditor(deletedItem.tagType ? 'tag' : deletedItem.transientProperties.itemType, deletedItem)">
+        <span class="text-search-result" clamp=2 ng-bind="deletedItem.title"></span>
+      </a>
+      <div class="group-mixed--right">
         <span class="text-search-type" ng-bind="deletedItem.tagType ? deletedItem.tagType : deletedItem.transientProperties.itemType"></span>
       </div>
     </div>
