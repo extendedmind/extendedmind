@@ -43,6 +43,20 @@ textarea {
   resize: none;
 }
 
+// 1. Use same color in placeholders as in .downplayed.
+::-webkit-input-placeholder {
+   color: @color-text-downplayed; // [1]
+}
+:-moz-placeholder { /* Firefox 18- */
+   color: @color-text-downplayed; // [1]
+}
+::-moz-placeholder {  /* Firefox 19+ */
+   color: @color-text-downplayed; // [1]
+}
+:-ms-input-placeholder {
+   color: @color-text-downplayed; // [1]
+}
+
 // 1. In iOS text in textarea is aligned slightly right.
 //    See: http://stackoverflow.com/a/7029825 and
 //    http://stackoverflow.com/questions/6890149/remove-3-pixels-in-ios-webkit-textarea#comment27305256_7029825
