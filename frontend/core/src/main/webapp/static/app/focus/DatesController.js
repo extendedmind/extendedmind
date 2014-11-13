@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function DatesController($filter, $rootScope, $scope, DateService, SwiperService, UISessionService) {
+ function DatesController($filter, $rootScope, $scope, DateService, SwiperService) {
   var slidePath = 'focus/tasks';
 
   // DAY SLIDES CONSTRUCTOR
@@ -26,21 +26,24 @@
   */
   $scope.daySlides = [
   {
-    info: DateService.getTodayYYYYMMDD(),
     referenceDate: DateService.getTodayYYYYMMDD(),
-    heading: daySlideHeading(DateService.getTodayYYYYMMDD())
   },
   {
-    info: DateService.getTomorrowYYYYMMDD(),
     referenceDate: DateService.getTomorrowYYYYMMDD(),
-    heading: daySlideHeading(DateService.getTomorrowYYYYMMDD())
   },
   {
-    info: DateService.getYesterdayYYYYMMDD(),
     referenceDate: DateService.getYesterdayYYYYMMDD(),
-    heading: daySlideHeading(DateService.getYesterdayYYYYMMDD())
   }
   ];
+  $scope.daySlides[0].info = $scope.daySlides[0].referenceDate;
+  $scope.daySlides[0].heading = daySlideHeading($scope.daySlides[0].info);
+
+  $scope.daySlides[1].info = $scope.daySlides[1].referenceDate;
+  $scope.daySlides[1].heading = daySlideHeading($scope.daySlides[1].referenceDate);
+
+  $scope.daySlides[2].info = $scope.daySlides[2].referenceDate;
+  $scope.daySlides[2].pastDate = $scope.daySlides[2].referenceDate;
+  $scope.daySlides[2].heading = daySlideHeading($scope.daySlides[2].referenceDate);
 
   if (angular.isFunction($scope.registerSynchronizeCallback))
     $scope.registerSynchronizeCallback(detectDayChange, 'DatesController');
@@ -541,6 +544,5 @@
   });
 }
 
-DatesController['$inject'] = ['$filter', '$rootScope', '$scope', 'DateService', 'SwiperService',
-'UISessionService'];
+DatesController['$inject'] = ['$filter', '$rootScope', '$scope', 'DateService', 'SwiperService'];
 angular.module('em.focus').controller('DatesController', DatesController);
