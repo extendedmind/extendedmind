@@ -8,8 +8,11 @@ var path = require( "path" ),
     buildroot = rootdir + "/assets/build/android";
 
 if (shell.test('-d', androidroot)){
-  // copy edited Android sources
 
+  // copy AndroidManifest.xml
+  shell.exec( "cp -f " + buildroot + "/AndroidManifest.xml " + androidroot, {silent:false} );
+
+  // copy edited Android sources
   if (shell.test('-d', androidroot + "/src/org/extendedmind/nightly")){
     shell.exec( "cp -f " + buildroot + "/*.java " + androidroot + "/src/org/extendedmind/nightly", {silent:false} );
   }else {
