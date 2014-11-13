@@ -1,7 +1,7 @@
 <div class="container-toolbar--inner" ng-controller="ToolbarController">
   <div ng-hide="isCustomToolbar()" class="swiper-no-swiping group-symmetrical height-large">
     <button ng-disabled="!isOnboarded('tasks') && checkListOnboardingLock('tasks', undefined)" class="group-symmetrical--left btn" type="button" ng-click="toggleMenu()" alt="menu">
-      <span class="text-menu"></span>
+      <span class="icon-menu"></span>
     </button>
     <div class="group-symmetrical--middle" ng-style="{maxWidth: calculateHeadingWidth()}">
       <a href ng-class="onboardingInProgress && 'link-disable'" ng-click="clickToolbarHeading()">
@@ -9,7 +9,7 @@
       </a>
     </div>
     <button ng-disabled="onboardingInProgress" class="group-symmetrical--right btn" ng-click="openEditor('omnibar')">
-      <span class="text-logo"></span>
+      <span class="icon-logo"></span>
     </button>
   </div>
   <div ng-if="isCustomToolbar()" class="group-symmetrical height-large" editable-field-container="auto">

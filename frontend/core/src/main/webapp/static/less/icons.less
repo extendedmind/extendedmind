@@ -67,3 +67,114 @@ TODO: Icons are not working yet with Phytoplankton
   -moz-osx-font-smoothing: grayscale;   // [1]
   vertical-align: middle; // [2]
 }
+
+/*
+Icon classes
+*/
+
+// 1. Set dimensions for .icon-logo.
+// 2. Override default vertical-align and vertically align with text.
+//    NOTE: This has to be AFTER .set-icon-font().
+.icon-logo {
+  font-size: @size-icon-logo;   // [1]
+  line-height: @size-icon-logo; // [1]
+  height: @size-icon-logo;      // [1]
+  display: block;               // [1]
+  &:after {
+    .set-icon-font();
+    vertical-align: baseline; // [2]
+    color: @color-text;
+    content: @icon-logo-only;
+  }
+}
+
+// 1. Set dimensions for .icon-menu.
+// 2. Override default vertical-align and ertically align with text.
+//    NOTE: This has to be AFTER .set-icon-font().
+.icon-menu {
+  font-size: @size-icon-menu;   // [1]
+  line-height: @size-icon-menu; // [1]
+  height: @size-icon-menu;      // [1]
+  display: block;               // [1]
+  &:after {
+    .set-icon-font();
+    vertical-align: baseline; // [2]
+    color: @color-text;
+    content: @icon-menu;
+  }
+}
+
+.icon-toggle-completed {
+  font-size: @size-icon-toggle-completed;
+  line-height: @size-icon-toggle-completed;
+  &:after {
+    .set-icon-font;
+    color: @color-text-downplayed;
+    content: @icon-show-completed;
+  }
+}
+.active > .icon-toggle-completed:after {
+  color: @color-text;
+}
+
+.icon-plus {
+  font-size: @size-icon-plus;
+  line-height: @size-icon-plus;
+  &:after {
+    .set-icon-font;
+    color: @color-text-highlighted;
+    content: @icon-plus;
+  }
+}
+
+.icon-trash {
+  &:after {
+    .set-icon-font;
+    color: @color-text;
+    content: @icon-trash;
+  }
+}
+
+.icon-calendar {
+  &:after {
+    .set-icon-font;
+    color: @color-icon-deactivated;
+    content: @icon-calendar;
+    font-size: 23px;
+  }
+}
+
+.icon-star {
+  &:after {
+    .set-icon-font;
+    color: @color-text;
+    content: @icon-star;
+    font-size: @size-icon-star;
+    vertical-align: middle;
+  }
+}
+.icon-star.inverse:after{
+  color: @color-text-inverse;
+}
+
+.icon-star.small {
+  line-height: @grid-vertical-half;
+}
+
+.icon-star.small:after{
+  font-size: @size-icon-star-small;
+}
+.icon-star.inactive:after {
+  color: @color-text-downplayed;
+}
+
+.icon-x {
+  &:after {
+    .set-icon-font;
+    content: @icon-x;
+    font-size: @size-icon-x;
+    vertical-align: middle;
+    color: @color-icon-deactivated;
+  }
+}
+

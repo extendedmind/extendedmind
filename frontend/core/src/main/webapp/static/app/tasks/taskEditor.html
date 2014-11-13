@@ -6,7 +6,7 @@
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="titlebarHasText() && !task.deleted ? 'save' : 'back'"></span>
         </a>
         <a ng-if="!task.deleted" class="group-symmetrical--right" href ng-click="deleteTaskInEdit()" >
-          <span class="text-trash"></span>
+          <span class="icon-trash"></span>
         </a>
         <a ng-if="task.deleted" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteTask(task)"><span class="text-navigation">restore</span></a>
       </div>
@@ -74,7 +74,7 @@
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
               <a href id="editorFooterExpandLink" ng-click="toggleExpand()">
-                <span id="editorFooterExpandIcon" class="text-calendar"></span>
+                <span id="editorFooterExpandIcon" class="icon-calendar"></span>
               </a>
             </div>
             <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden() || footerExpandOpen" class="group-symmetrical--right link-navigation animate-fade-in-out">

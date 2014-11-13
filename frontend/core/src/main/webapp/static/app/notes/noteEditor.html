@@ -10,7 +10,7 @@
             <span class="text-navigation downplayed">note settings</span>
           </a>
         </div>
-        <a ng-if="!note.deleted && !onboardingInProgress" class="group-symmetrical--right" href ng-click="deleteNoteInEdit()"><span class="text-trash"></span></a>
+        <a ng-if="!note.deleted && !onboardingInProgress" class="group-symmetrical--right" href ng-click="deleteNoteInEdit()"><span class="icon-trash"></span></a>
         <a ng-if="note.deleted && !onboardingInProgress" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteNote(note)"><span class="text-navigation">restore</span></a>
       </div>
 
@@ -75,7 +75,7 @@
         <footer ng-hide="isNoteFooterHidden()" class="container-content--after editor-footer animate-fade-in-out">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <a href ng-hide="onboardingInProgress" ng-click="clickFavorite()" class="group-symmetrical--left">
-              <span class="text-star" ng-class="!note.transientProperties.favorited && 'inactive'"></span>
+              <span class="icon-star" ng-class="!note.transientProperties.favorited && 'inactive'"></span>
             </a>
             <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>

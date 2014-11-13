@@ -6,7 +6,7 @@
           <span class="text-navigation-back" ng-bind="titlebarHasText() && !item.deleted ? 'save' : 'back'"></span>
         </a>
         <a ng-if="!item.deleted" href class="group-symmetrical--right" ng-click="deleteItemInEdit()" >
-          <span class="text-trash"></span>
+          <span class="icon-trash"></span>
         </a>
         <a ng-if="item.deleted" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteItem(item)"><span class="text-navigation">restore</span></a>
       </div>
