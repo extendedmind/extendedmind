@@ -241,7 +241,7 @@
             //        Wrapping click into angular $digest cycle printed error message:
             //          'Can only call HTMLElement.click on instances of HTMLElement'
             //        So wrap element into angular element first and use jqLite click()
-            angular.element(touchEndEvent.target.parentElement).click();
+            angular.element(touchEndEvent.target).click();
           }else if (touchEndEvent.target.nodeName === 'SPAN' &&
                     touchEndEvent.target.parentElement.nodeName === 'A'){
             // Execute the action of the touchend target parent link.
@@ -266,12 +266,12 @@
         }
       }
 
-      if (attrs.editorFooterIosClick !== undefined && packaging === 'ios-cordova'){
+      if (attrs.editorFooterIosClick !== undefined/* && packaging === 'ios-cordova'*/){
         element[0].addEventListener('touchstart', iOSEditorFooterTouchStart);
         element[0].addEventListener('touchend', iOSEditorFooterTouchEnd);
       }
       scope.$on('$destroy', function() {
-        if (attrs.editorFooterIosClick !== undefined && packaging === 'ios-cordova'){
+        if (attrs.editorFooterIosClick !== undefined/* && packaging === 'ios-cordova'*/){
           element[0].removeEventListener('touchstart', iOSEditorFooterTouchStart);
           element[0].removeEventListener('touchend', iOSEditorFooterTouchEnd);
         }
