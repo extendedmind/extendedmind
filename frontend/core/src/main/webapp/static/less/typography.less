@@ -234,7 +234,7 @@ Convert texts.
 */
 
 .text-convert{
-  line-height: inherit;
+  line-height: @grid-vertical;
   min-height: @size-icon-arrow-move;
   height: @grid-vertical;
   display: inline-block;  // for height
@@ -244,10 +244,6 @@ Convert texts.
     font-size: @size-icon-arrow-move;
     padding-right: @width-arrow-text-gap;
     vertical-align: middle;
-  }
-  // FIXME: Ugly hack. Do this better!
-  .second-line {
-    padding-left: 25px;
   }
 }
 
