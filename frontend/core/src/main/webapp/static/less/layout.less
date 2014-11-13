@@ -842,6 +842,29 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   color: @color-text-highlighted;
 }
 
+// 1. Remove padding-top and padding-bottom defined elsewhere.
+// 2. Add equal padding-top and padding-bottom to match, with line-height in .text-heading (=60px),
+//    height of .group-heading justified (=94px).
+// 3. Maximum line-height to make whole text visible.
+.group-mixed.heading.vertically-centered {
+  .group-mixed--middle {
+    padding-top: 0;     // [1]
+    padding-bottom: 0;  // [1]
+    & > h2.group-heading.justified {
+      padding-top: 0;     // [1]
+      padding-bottom: 0;  // [1]
+      & > a {
+        padding-top: 17px;    // [2]
+        padding-bottom: 17px; // [2]
+        display: block;
+        & > span.text-heading {
+          line-height: 60px;  // [3]
+        }
+      }
+    }
+  }
+}
+
 /*
 `.group-error` groups together multiple error messages.
 */

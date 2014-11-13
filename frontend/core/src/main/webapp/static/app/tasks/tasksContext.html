@@ -1,6 +1,6 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container>
   <section class="container-content" list="tasks | itemsFilter:{name:'byTagUUID', filterBy: context ? context.uuid : undefined}" list-order="top" swiper-prevent>
-    <div class="group-mixed heading">
+    <div class="group-mixed heading vertically-centered">
       <div class="group-mixed--middle">
         <h2 class="group-heading justified">
           <a ng-if="context" href ng-click="openEditor('tag', context)">
