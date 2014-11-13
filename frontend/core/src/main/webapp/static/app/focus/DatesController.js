@@ -50,17 +50,20 @@
 
   var today = new Date().setHours(0, 0, 0, 0);  // Today for reference.
   function detectDayChange() {
-    var newToday = new Date().setHours(0, 0, 0, 0);
-    if (today !== newToday) {
+    if (today === new Date().setHours(0, 0, 0, 0)) {
       // Date has changed.
-      today = newToday;
-      var activeDaySlideInfo = SwiperService.getActiveSlideIndex('focus/tasks');
-      if (activeDaySlideInfo.heading === 'today') {
-        // Swipe from old today to new today slide.
-        $scope.changeDaySlide(DateService.getYYYYMMDD(newToday));
+      today = new Date();
+      var activeDaySlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
+      var activeDaySlide;
+      if (activeDaySlideIndex !== undefined) {
+        activeDaySlide = $scope.daySlides[activeDaySlideIndex];
       }
-    }
-  }
+      if (activeDaySlide && activeDaySlide.heading === 'today') {
+       // Swipe from old today to new today slide.
+       $scope.changeDaySlide(DateService.getTodayYYYYMMDD());
+     }
+   }
+ }
 
 
   // DATEPICKER SLIDES CONSTRUCTOR
