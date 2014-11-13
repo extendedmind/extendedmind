@@ -40,7 +40,7 @@
           <div ng-if="!listPickerOpen">
             <div ng-hide="descriptionFocused" class="group-mixed vertically-centered animate-fade-in">
               <a href ng-class="{downplayed: !task.transientProperties.date}" class="group-mixed--middle" ng-click="openCalendar()">
-                <span class="text-link" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date'"></span>
+                <span class="text-link" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date\u2026'"></span>
               </a>
               <div ng-if="task.transientProperties.date" class="group-mixed--right">
                 <button type="button" class="btn-clear" ng-click="clearTransientDate(task)"></button>
