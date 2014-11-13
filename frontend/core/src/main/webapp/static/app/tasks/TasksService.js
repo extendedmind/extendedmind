@@ -266,7 +266,6 @@
       return deferred.promise;
     },
     getTaskStatus: function(task, ownerUUID) {
-      // NOTE: should cleanRecentlyCompletedTasks() be called?
       initializeArrays(ownerUUID);
       var arrayInfo = ArrayService.getActiveArrayInfo(task,
         tasks[ownerUUID].activeTasks,

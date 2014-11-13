@@ -100,20 +100,18 @@
 
   $scope.deleteList = function(list) {
     if (list.uuid){
-
-      UISessionService.pushDelayedNotification({
-        type: 'deleted',
-        itemType: 'list', // NOTE: Same as list.transientProperties.itemType.
-        item: list,
-        undoFn: $scope.undeleteList
-      });
-
-      $timeout(function() {
-        UISessionService.activateDelayedNotifications();
-      }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
-
       AnalyticsService.do('deleteList');
-      return ListsService.deleteList(list, UISessionService.getActiveUUID());
+      return ListsService.deleteList(list, UISessionService.getActiveUUID()).then(function(){
+        UISessionService.pushDelayedNotification({
+          type: 'deleted',
+          itemType: 'list', // NOTE: Same as list.transientProperties.itemType.
+          item: list,
+          undoFn: $scope.undeleteList
+        });
+        $timeout(function() {
+          UISessionService.activateDelayedNotifications();
+        }, $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
+      });
     }
   };
 
