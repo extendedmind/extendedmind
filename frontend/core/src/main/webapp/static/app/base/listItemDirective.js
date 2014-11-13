@@ -17,22 +17,16 @@
  function listItemDirective($parse) {
   return {
     restrict: 'A',
-    // Making list optional was the only way to get rid of
-    // "Controller 'list', required by directive 'listItem', can't be found!"
-    // for the web version.
-    require: '^?list',
+    require: '^list',
     scope: true,
-    compile: function(scope, element, attrs, listController){
+    compile: function(){
       return {
         post: function(scope, element, attrs, listController) {
           var listLength = $parse(attrs.listItem)(scope);
-          if (listController) listController.notifyListLength(listLength);
-          else console.error("could not find listController!")
+          listController.notifyListLength(listLength);
 
           scope.toggleLeftCheckbox = function (item, toggleFn) {
-            if (listController) listController.toggleLeftCheckbox(item, toggleFn,
-                                              angular.element(element[0].firstElementChild));
-            else console.error("could not find listController!")
+            listController.toggleLeftCheckbox(item, toggleFn, angular.element(element[0].firstElementChild));
           };
         }
       };

@@ -22,23 +22,23 @@
     controller: function($scope, $element, $attrs) {
       $scope.listOnboarding = {};
 
-      var listArrayFn = $parse($attrs.list).bind(undefined, $scope);
+      var listArrayFn = $parse($attrs.list);
       $scope.getList = function(){
         return listArrayFn($scope);
-      }
+      };
 
       this.registerAddActiveCallback = function(callback){
         $scope.activateAddItem = callback;
-      }
+      };
       this.notifyListLength = function(length){
         $scope.listLength = length;
-      }
+      };
 
       this.notifyListItemAddBlurred = function(){
         if ($scope.onboardingInProgress && $scope.listOnboarding.lock === 'on'){
           $scope.listOnboarding.lock = undefined;
         }
-      }
+      };
 
       this.notifyListItemAdd = function(){
         if ($scope.onboardingInProgress && $scope.listOnboarding.lock === 'on'){
@@ -54,22 +54,25 @@
             $element[0].scrollTop = $element[0].scrollHeight;
           });
         }
-      }
+      };
 
       var customFilterItemVisible;
       this.setCustomFilterItemVisible = function(filter){
         customFilterItemVisible = filter;
-      }
+      };
       $scope.isListItemVisible = function(item, param){
         if (customFilterItemVisible){
           return customFilterItemVisible(item, param);
         }else{
+          if ($attrs.listHideItemDefault !== undefined) {
+            return false;
+          }
           return true;
         }
-      }
+      };
 
       var checkingTimeout;
-      this.toggleLeftCheckbox = function(item, toggleFn, element) {
+      this.toggleLeftCheckbox = function(item, toggleFn) {
 
         var checkboxCheckingReadyDeferred = $q.defer();
         var checked = toggleFn(item, checkboxCheckingReadyDeferred);
@@ -86,7 +89,7 @@
             checkingTimeout = undefined;
           }
           checkboxCheckingReadyDeferred.resolve(item);
-        };
+        }
       };
 
     },
@@ -139,9 +142,9 @@
         if (attrs.listRecent !== undefined && promise && promise.then){
           promise.then(function(){
             element[0].scrollTop = 0;
-          })
+          });
         }
-      }
+      };
 
       // INFINITE SCROLL
 
@@ -155,14 +158,13 @@
 
       var lastScrollPosition = 0;
 
-      function listScroll(event){
+      function listScroll(/*event*/){
 
         // get scroll position
         var elementHeight = element[0].offsetHeight;
         var elementScrollHeight = element[0].scrollHeight;
         var elementScrollPosition = element[0].scrollTop;
         var remainingToBottom = elementScrollHeight - elementScrollPosition;
-        var remainingToTop = elementScrollHeight - remainingToBottom;
 
         // evaluate direction
         var scrollingDown = true;
@@ -207,7 +209,7 @@
           setLimits(scope.listLength - scope.maximumNumberOfItems);
           return true;
         }
-      }
+      };
 
       function addMoreItemsToBottom(){
         function doAddMoreItemsToBottom(){
@@ -231,7 +233,7 @@
             doAddMoreItemsToBottom();
           } else {
             if (!$rootScope.$$phase && !scope.$$phase) scope.$apply();
-            doAddMoreItemsToBottom()
+            doAddMoreItemsToBottom();
           }
         }
       }
