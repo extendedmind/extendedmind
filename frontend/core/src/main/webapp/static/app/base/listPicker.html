@@ -11,9 +11,10 @@
   </div>
 
   <div ng-if="newList" class="row-vertically-centered with-textarea">
-    <textarea autocapitalize="none" autocorrect="off" ng-model="newList.title" msd-elastic
-    ng-click="watchForTitleChange()" ng-keydown="textareaKeyDown($event)" placeholder="{{placeholder}}"
-    maxlength="128"></textarea>
+    <textarea ng-model="newList.title" msd-elastic
+      ng-click="watchForTitleChange()" ng-keydown="textareaKeyDown($event)" placeholder="{{placeholder}}"
+      maxlength="128" autocapitalize="none" autocorrect="off">
+    </textarea>
   </div>
 
   <div class="row-vertically-centered" ng-repeat="list in lists | filter:notSelectedList | orderBy:'title'" ng-click="listSelected(list)">

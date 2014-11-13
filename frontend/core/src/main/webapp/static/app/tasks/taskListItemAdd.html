@@ -1,15 +1,14 @@
 <form role="form" class="group-mixed with-checkbox with-textarea swiper-no-swiping"
-ng-submit="callAndExit(saveTask, newItem)"
-data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
-editable-field-container-clicked-elsewhere="clickedElsewhere()">
+  ng-submit="callAndExit(saveTask, newItem)" data-snap-ignore="true" editable-field-container
+  editable-field-container-clicked-elsewhere="clickedElsewhere()" autocapitalize="none" autocorrect="off" >
   <div class="group-mixed--left">
     <input type="checkbox" ng-model="newItem.transientProperties.completed"
     swiper-click="toggleLeftCheckbox(toggleCompleteTask)" icon-checkbox="getListItemAddId()" ng-disabled="!newItem.title">
   </div>
   <div class="group-mixed--middle">
     <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
-    editable-field editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)"
-    placeholder="add task&#8230;" maxlength="128">
+      editable-field editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)"
+      placeholder="add task&#8230;" maxlength="128">
     </textarea>
   </div>
   <div class="group-mixed--right">

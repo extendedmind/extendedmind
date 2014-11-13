@@ -12,9 +12,10 @@
       </div>
 
       <div class="row-vertically-centered with-textarea">
-        <textarea type="text" ng-model="titlebar.text" ng-keydown="listTitlebarTextKeyDown($event)"
-          editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-          msd-elastic dynamic-placeholder="enter list title&#8230;" maxlength="128" required autocapitalize="none" autocorrect="off">
+        <textarea ng-model="titlebar.text" ng-keydown="listTitlebarTextKeyDown($event)" editable-field
+          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+          msd-elastic dynamic-placeholder="enter list title&#8230;" maxlength="128"
+          autocapitalize="none" autocorrect="off">
         </textarea>
       </div>
     </div>
@@ -26,7 +27,10 @@
         <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-content"
         drawer-override-aisle="right" swiper-prevent>
           <div class="row-vertically-centered with-textarea" editable-field-container>
-            <textarea ng-model="list.description" msd-elastic placeholder="enter description&#8230;" ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)" maxlength="1024" editable-field></textarea>
+            <textarea ng-model="list.description" msd-elastic editable-field
+              ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)"
+              placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
+           </textarea>
           </div>
         </div>
         <footer ng-hide="descriptionFocused" class="container-content--after editor-footer">
@@ -46,7 +50,8 @@
         swiper-prevent>
 
           <div class="row-vertically-centered with-textarea">
-            <textarea type="text" ng-model="list.link" msd-elastic maxlength="128" placeholder="enter url&#8230;">
+            <textarea ng-model="list.link" msd-elastic maxlength="128" placeholder="enter url&#8230;"
+              autocapitalize="none" autocorrect="off">
             </textarea>
           </div>
         </div>

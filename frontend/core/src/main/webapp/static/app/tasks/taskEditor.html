@@ -16,8 +16,11 @@
           <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-checked="task.transientProperties.completed" ng-model="task.transientProperties.completed" icon-checkbox="editorTitlebarCheckbox" />
         </div>
         <div class="group-mixed--middle">
-          <textarea ng-hide="isTaskTitleClamped()" type="text" ng-model="titlebar.text" ng-keydown="taskTitlebarTextKeyDown($event)" editable-field
-          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic dynamic-placeholder="enter task title&#8230;" maxlength="128" required ></textarea>
+          <textarea ng-hide="isTaskTitleClamped()" ng-model="titlebar.text"
+            ng-keydown="taskTitlebarTextKeyDown($event)" editable-field
+            editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+            msd-elastic dynamic-placeholder="enter task title&#8230;" maxlength="128">
+          </textarea>
           <div ng-if="isTaskTitleClamped()">
             <span ng-class="{'text-downplayed': !titlebar.text}" class="text-clamped" ng-bind="titlebar.text ? titlebar.text : 'enter task title&#8230;'" clamp=2></span>
           </div>
@@ -63,7 +66,10 @@
             </div>
 
             <div ng-hide="calendarOpen" class="row-vertically-centered with-textarea">
-              <textarea ng-model="task.transientProperties.description" msd-elastic placeholder="enter description&#8230;" maxlength="1024" ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)"></textarea>
+              <textarea ng-model="task.transientProperties.description" ng-focus="setDescriptionFocus(true)"
+                ng-blur="setDescriptionFocus(false)" msd-elastic placeholder="enter description&#8230;"
+                maxlength="1024" autocapitalize="none" autocorrect="off">
+              </textarea>
             </div>
 
           </div>
@@ -113,9 +119,10 @@
             </div>
 
             <div class="row-vertically-centered with-textarea">
-              <textarea type="text" ng-model="task.link" ng-focus="setUrlFocus(true)"
-              ng-blur="setUrlFocus(false)" msd-elastic maxlength="128" placeholder="enter url&#8230;">
-            </textarea>
+              <textarea ng-model="task.link" ng-focus="setUrlFocus(true)" ng-blur="setUrlFocus(false)"
+                msd-elastic maxlength="128" placeholder="enter url&#8230;"
+                autocapitalize="none" autocorrect="off">
+              </textarea>
           </div>
 
         </div>

@@ -1,6 +1,7 @@
-<form role="form" class="group-mixed vertically-centered swiper-no-swiping" ng-submit="callAndExit(saveList, newItem)"
-data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
-editable-field-container-clicked-elsewhere="clickedElsewhere()">
+<form role="form" class="group-mixed vertically-centered swiper-no-swiping"
+  ng-submit="callAndExit(saveList, newItem)" data-snap-ignore="true" editable-field-container
+  editable-field-container-clicked-elsewhere="clickedElsewhere()"
+  autocapitalize="none" autocorrect="off">
   <div class="group-mixed--left">
     <a href ng-click="!onboardingInProgress ? callAndExit(saveListAndChangeFeature, newItem) : undefined">
       <span class="text-navigation-back large"></span>
@@ -8,8 +9,8 @@ editable-field-container-clicked-elsewhere="clickedElsewhere()">
   </div>
   <div class="group-mixed--middle">
     <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
-    editable-field placeholder="add list&#8230;"
-    editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)" maxlength="128">
+      editable-field placeholder="add list&#8230;"
+      editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)" maxlength="128">
     </textarea>
   </div>
   <div class="group-mixed--right">

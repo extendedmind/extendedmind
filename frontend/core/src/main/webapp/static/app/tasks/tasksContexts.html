@@ -3,12 +3,13 @@
     <h2 class="group-heading justified row">contexts</h2>
     <div list-item-add="{tagType:'context'}" list-item-add-save="saveContext(newItem)">
       <form role="form" class="group-mixed swiper-no-swiping"
-      data-snap-ignore="true" autocapitalize="none" autocorrect="off" editable-field-container
-      editable-field-container-clicked-elsewhere="clickedElsewhere()">
+        data-snap-ignore="true" editable-field-container
+        editable-field-container-clicked-elsewhere="clickedElsewhere()"
+        autocapitalize="none" autocorrect="off">
         <div class="group-mixed--middle">
           <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
-          editable-field editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)"
-          placeholder="add context&#8230;" maxlength="128">
+            editable-field editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)"
+            placeholder="add context&#8230;" maxlength="128">
           </textarea>
         </div>
         <div class="group-mixed--right">

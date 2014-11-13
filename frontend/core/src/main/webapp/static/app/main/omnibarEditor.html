@@ -9,9 +9,11 @@
 
       <div class="group-mixed vertically-centered">
         <div class="group-mixed--middle">
-          <textarea type="text" ng-model="titlebar.text" ng-keydown="omnibarTitlebarTextKeyDown($event)"
-          editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-          msd-elastic dynamic-placeholder="save to inbox / search&#8230;" maxlength="128" required autocapitalize="none" autocorrect="off"></textarea>
+          <textarea ng-model="titlebar.text" ng-keydown="omnibarTitlebarTextKeyDown($event)" editable-field
+            editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic
+            dynamic-placeholder="save to inbox / search&#8230;" maxlength="128"
+            autocapitalize="none" autocorrect="off">
+          </textarea>
         </div>
         <div ng-if="titlebar.text.length" class="group-mixed--right">
           <button type="button" class="btn-clear" ng-click="clearOmnibarTitlebar()"></button>
@@ -60,7 +62,8 @@
 
         <!-- KEYWORDS -->
         <div ng-hide="(selectedKeywords && selectedKeywords.length) || footerExpandedToMaxHeight" class="keywords-search row">
-          <input type="search" class="text-keyword" ng-model="keywordsSearch.text" placeholder="search keywords&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
+          <input type="search" class="text-keyword" ng-model="keywordsSearch.text"
+            placeholder="search keywords&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
         </div>
 
         <div ng-if="selectedKeywords && selectedKeywords.length" class="keywords-container row">

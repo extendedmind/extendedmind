@@ -16,10 +16,12 @@
 
       <!-- NOTE TITLE -->
       <div ng-hide="hideNoteTitle && isOnboarded('notes')" class="row-vertically-centered with-textarea">
-        <textarea ng-hide="isTitleClamped()" type="text" class="text-heading-primary" ng-model="titlebar.text" ng-keydown="noteTitlebarTextKeyDown($event)"
-        editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-        msd-elastic dynamic-placeholder="enter note title&#8230;" maxlength="128" required autocapitalize="none" autocorrect="off"
-        ng-focus="noteTitleFocused()"></textarea>
+        <textarea ng-hide="isTitleClamped()" class="text-heading-primary" ng-model="titlebar.text"
+          ng-keydown="noteTitlebarTextKeyDown($event)" ng-focus="noteTitleFocused()" editable-field
+          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic
+          dynamic-placeholder="enter note title&#8230;" maxlength="128"
+          autocapitalize="none" autocorrect="off">
+        </textarea>
 
         <div ng-if="isTitleClamped()">
           <span class="text-heading-primary" ng-class="{'text-downplayed': !titlebar.text}" ng-bind="titlebar.text ? titlebar.text : 'enter note title&#8230;'" clamp=2></span>
@@ -53,15 +55,18 @@
 
             <!-- URL -->
             <div ng-hide="mode === 'fullScreen'" class="row-vertically-centered with-textarea">
-              <textarea type="text" ng-model="note.link" msd-elastic maxlength="128" placeholder="enter url&#8230;">
+              <textarea ng-model="note.link" msd-elastic maxlength="128" placeholder="enter url&#8230;"
+                autocapitalize="none" autocorrect="off">
               </textarea>
             </div>
 
             <!-- CONTENT -->
             <div class="row-vertically-centered with-textarea">
-              <textarea ng-class="(!isOnboarded('notes') && checkListOnboardingLock('notes', 'on') && !hideNoteTitle) && 'input-separate'" ng-model="note.content" msd-elastic placeholder="enter content&#8230;"
-              ng-focus="noteContentFocused()"
-              editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"></textarea>
+              <textarea ng-class="(!isOnboarded('notes') && checkListOnboardingLock('notes', 'on') && !hideNoteTitle) && 'input-separate'"
+                ng-model="note.content" msd-elastic ng-focus="noteContentFocused()" editable-field
+                editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"
+                placeholder="enter content&#8230;" autocapitalize="none" autocorrect="off">
+              </textarea>
             </div>
 
             <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')" class="group-instruction-input">
@@ -89,7 +94,8 @@
         swiper-prevent>
 
           <!-- KEYWORDS -->
-          <form role="form" class="row-form" autocapitalize="none" autocorrect="off" ng-submit="addNewKeywordToNote(note, newKeyword)">
+          <form role="form" class="row-form" ng-submit="addNewKeywordToNote(note, newKeyword)"
+            autocapitalize="none" autocorrect="off">
             <input type="text" ng-model="newKeyword.title" placeholder="add keyword&#8230;" maxlength="128">
           </form>
           <span class="text-details row" ng-if="newKeyword.title" class="row" clamp=2>hit enter to create #{{newKeyword.title}}</span>

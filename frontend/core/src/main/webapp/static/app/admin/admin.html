@@ -29,8 +29,9 @@ ng-switch on="adminMode">
     <div class="row-form" ng-repeat="user in users | orderBy:'created':true">
       <a ng-href="mailto:{{user.email}}" ng-bind="user.email"></a>
       <span class="text-details">since: {{getDateString(user.created)}}</span>
-      <form role="form" ng-submit="destroyUser(user)">
-        <input type="text" class="text-details" ng-model="user.destroy" placeholder="write 'destroy [email]' to destroy the user&#8230;"/>
+      <form role="form" ng-submit="destroyUser(user)" autocapitalize="none" autocorrect="off">
+        <input type="text" class="text-details" ng-model="user.destroy"
+          placeholder="write 'destroy [email]' to destroy the user&#8230;"/>
       </form>
     </div>
   </section>
