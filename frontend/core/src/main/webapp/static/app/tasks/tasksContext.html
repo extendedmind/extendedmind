@@ -4,9 +4,12 @@
       <div class="group-mixed--middle">
         <h2 class="group-heading justified">
           <a ng-if="context" href ng-click="openEditor('tag', context)">
-            <span class="text-heading" ng-bind="context ? '@' + context.title : 'no context'" clamp=2></span>
+            <span class="text-heading" ng-bind="'@' + context.title"
+            ng-class="context.title.length > 6 && 'long'" clamp=2></span>
           </a>
-          <span ng-if="!context" class="text-heading" ng-bind="context ? '@' + context.title : 'no context'" clamp=2></span>
+          <div ng-if="!context">
+            <span class="text-heading long" clamp=2>no context</span>
+          </div>
         </h2>
       </div>
       <div class="group-mixed--right" task-list-completed></div>

@@ -821,12 +821,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 }
 
 // FIXME: refactor or move (overrides.less)
-.group-heading.long {
-  font-size: @size-font-not-so-large;
-  margin-bottom: 0;
-}
-
-// FIXME: refactor or move (overrides.less)
 .group-heading.instruction {
   margin-top: @grid-vertical * 1.5;
   padding-top: 2vh;
@@ -853,12 +847,15 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     & > h2.group-heading.justified {
       padding-top: 0;     // [1]
       padding-bottom: 0;  // [1]
-      & > a {
+      & > a, & > div {
         padding-top: 17px;    // [2]
         padding-bottom: 17px; // [2]
         display: block;
         & > span.text-heading {
           line-height: 60px;  // [3]
+        }
+        & > span.text-heading.long {
+          font-size: @size-font-not-so-large;
         }
       }
     }
