@@ -267,17 +267,45 @@ Vertically center .container-master and .container-editor in large screens
 }
 
 // FIXME: move?
-// 1. Put toaster to the bottom of its parent, .container-master or .container-editor
-// 2. Center toaster
+// 1. Center toaster
+// 2. Put toaster to the bottom of its parent, .container-master or .container-editor, with little space
+//    between borders.
+//    NOTE: Set left and right AFTER .center-horizontally-absolute.
 // 3. Set height and color
+// NOTE:  Uncomment when taller footer is implemented.
 .container-toaster {
   position: absolute; // [1]
-  bottom: 0; // [1]
-  .center-horizontally-absolute; // [2]
-  max-width: @width-column-max; // [2]
+  .center-horizontally-absolute; // [1]
+  bottom: 0;
+  /*
+  bottom: 9px;  // [2]
+  left: 9px;    // [2]
+  right: 9px;   // [2]
+  */
+  max-width: @width-column-max; // [1]
   height: @grid-vertical; // [3]
   line-height: @grid-vertical; // [3]
   background-color: @color-background-toaster; // [3]
+  &.group-mixed {
+    .group-mixed--middle {
+      /*
+      padding-left: 19px;
+      */
+    }
+    .group-mixed--right {
+      /*
+      padding-right: 19px;
+      */
+      & > .icon-x {
+        /*
+        padding-right: 0;
+        */
+        height: 44px;
+        line-height: 44px;
+        display: block;
+      }
+    }
+  }
 }
 
 /*

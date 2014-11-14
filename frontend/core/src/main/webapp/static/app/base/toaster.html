@@ -1,30 +1,30 @@
 <div ng-if="toasterNotifications" ng-switch on="notification.type" class="container-toaster animate-toaster group-mixed">
-  <div class="group-mixed--middle" ng-switch-when="deleted">
-    <span class="textgroup-toaster">
-      {{notification.itemType}} deleted,
-      <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.undoFn)">
-        <span class="text-highlighted">undo</span>?
-      </a>
-    </span>
-  </div>
-  <div class="group-mixed--middle" ng-switch-when="fyi">
-    <span class="textgroup-toaster">
-      {{notification.text}}
-    </span>
-  </div>
-  <div class="group-mixed--middle" ng-switch-when="inbox">
-    <span class="textgroup-toaster">
-      <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.openFn)">
-        <span class="text-highlighted">item</span>
-      </a>
-      saved to
-      <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.gotoFn)">
-        <span class="text-highlighted">inbox</span>
-      </a>
-    </span>
+
+  <!-- DELETED -->
+  <div class="group-mixed--middle textgroup-toaster" ng-switch-when="deleted">
+    <span ng-bind="notification.itemType + ' deleted,'"></span>
+    <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.undoFn)">
+      <span class="text-highlighted">undo</span><span>?</span>
+    </a>
   </div>
 
-  <div class="group-mixed--right">
-    <a href ng-click="closeNotificationAndCall(notification)"><span class="icon-x"></span></a>
+  <!-- FYI -->
+  <div class="group-mixed--middle" ng-switch-when="fyi">
+    <span class="textgroup-toaster" ng-bind="notification.text"></span>
   </div>
+
+  <!-- INBOX -->
+  <div class="group-mixed--middle textgroup-toaster" ng-switch-when="inbox">
+    <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.openFn)">
+      <span class="text-highlighted">item</span>
+    </a>
+    <span>saved to</span>
+    <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.gotoFn)">
+      <span class="text-highlighted">inbox</span>
+    </a>
+  </div>
+
+  <a href class="group-mixed--right" ng-click="closeNotificationAndCall(notification)">
+    <span class="icon-x"></span>
+  </a>
 </div>
