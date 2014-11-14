@@ -96,7 +96,7 @@
 
           <!-- CONTEXT PICKER -->
           <div ng-if="contextPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeContextPicker()" data-snap-ignore="true">
-            <div list-picker="contexts" list-picker-new-item="{tagType: 'context'}" list-picker-save="closeContextPickerAndSetContextToItem(task, list)" list-picker-clear="closeContextPickerAndClearContextFromItem(task, list)" list-picker-get-selected="getContextFromUUID(task.trans.context)" list-picker-type="context" list-picker-prefix="@"></div>
+            <div list-picker="contexts" list-picker-new-item="{tagType: 'context'}" list-picker-save="closeContextPickerAndSetContextToTask(task, list)" list-picker-clear="closeContextPickerAndClearContextFromTask(task, list)" list-picker-get-selected="getContextFromUUID(task.trans.context)" list-picker-type="context" list-picker-prefix="@"></div>
           </div>
 
           <!-- REPEATING PICKER -->

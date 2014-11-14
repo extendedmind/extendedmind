@@ -64,7 +64,7 @@
     });
   };
 
-  $scope.endTaskEdit = function() {
+  $scope.endTaskEdit = function() {
     $scope.closeTaskEditor();
   };
 
@@ -101,9 +101,9 @@
     $scope.calendarOpen = false;
   };
 
-  $scope.closeCalendarAndCall = function(itemAction, item, newItemProperty) {
+  $scope.closeCalendarAndCall = function(taskAction, task, taskNewProperty) {
     $scope.closeCalendar();
-    itemAction(item, newItemProperty);
+    taskAction(task, taskNewProperty);
   };
 
   $scope.setTaskDate = function(task, date) {
@@ -139,12 +139,12 @@
     if (context) return context.title;
   };
 
-  $scope.closeContextPickerAndSetContextToItem = function(item, context) {
+  $scope.closeContextPickerAndSetContextToTask = function(task, context) {
 
     function doCloseAndSave() {
       $scope.closeContextPicker();
-      if (!item.trans) item.trans = {};
-      item.trans.context = context.uuid;
+      if (!task.trans) task.trans = {};
+      task.trans.context = context.uuid;
     }
 
     if (!context.uuid)  // Context is new, save it first. Close context picker on error saving new context.
@@ -153,10 +153,10 @@
       doCloseAndSave();
   };
 
-  $scope.closeContextPickerAndClearContextFromItem = function(item, context) {
+  $scope.closeContextPickerAndClearContextFromTask = function(task, context) {
     $scope.closeContextPicker();
-    if (item.trans && item.trans.context === context.uuid)
-      delete item.trans.context;
+    if (task.trans && task.trans.context === context.uuid)
+      delete task.trans.context;
   };
 
   // REPEATING PICKER
@@ -187,6 +187,7 @@
 
 }
 
-TaskEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'DateService',
-'UISessionService'];
+TaskEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
+  'DateService', 'UISessionService'
+];
 angular.module('em.main').controller('TaskEditorController', TaskEditorController);
