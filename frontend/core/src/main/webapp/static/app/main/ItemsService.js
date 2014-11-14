@@ -34,15 +34,15 @@
 
   function updateItem(item, ownerUUID) {
     return ArrayService.updateItem(item,
-      items[ownerUUID].activeItems,
-      items[ownerUUID].deletedItems);
+                                   items[ownerUUID].activeItems,
+                                   items[ownerUUID].deletedItems);
   }
 
   function setItem(item, ownerUUID) {
     initializeArrays(ownerUUID);
     return ArrayService.setItem(item,
-      items[ownerUUID].activeItems,
-      items[ownerUUID].deletedItems);
+                                items[ownerUUID].activeItems,
+                                items[ownerUUID].deletedItems);
   }
 
   return {
@@ -50,22 +50,21 @@
       initializeArrays(ownerUUID);
       this.addTransientProperties(itemsResponse);
       return ArrayService.setArrays(itemsResponse,
-        items[ownerUUID].activeItems,
-        items[ownerUUID].deletedItems);
+                                    items[ownerUUID].activeItems,
+                                    items[ownerUUID].deletedItems);
     },
     updateItems: function(itemsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       this.addTransientProperties(itemsResponse);
       return ArrayService.updateArrays(itemsResponse,
-        items[ownerUUID].activeItems,
-        items[ownerUUID].deletedItems);
+                                       items[ownerUUID].activeItems,
+                                       items[ownerUUID].deletedItems);
     },
     updateItemProperties: function(uuid, properties, ownerUUID) {
-      return ArrayService.updateItemProperties(
-        uuid,
-        properties,
-        items[ownerUUID].activeItems,
-        items[ownerUUID].deletedItems);
+      return ArrayService.updateItemProperties(uuid,
+                                               properties,
+                                               items[ownerUUID].activeItems,
+                                               items[ownerUUID].deletedItems);
     },
     getItems: function(ownerUUID) {
       initializeArrays(ownerUUID);
@@ -93,7 +92,7 @@
           // Push to offline buffer
           params = {type: 'item', owner: ownerUUID, uuid: item.uuid};
           BackendClientService.put('/api/' + params.owner + '/item/' + item.uuid,
-           this.putNewItemRegex, params, item);
+                                   this.putNewItemRegex, params, item);
           item.modified = BackendClientService.generateFakeTimestamp();
           item.trans = transientProperties;
           updateItem(item, ownerUUID);
@@ -101,7 +100,8 @@
         } else {
           // Online
           BackendClientService.putOnline('/api/' + ownerUUID + '/item/' + item.uuid,
-           this.putExistingItemRegex, item).then(function(result) {
+                                         this.putExistingItemRegex, item)
+          .then(function(result) {
             if (result.data) {
               item.modified = result.data.modified;
               item.trans = transientProperties;
@@ -109,15 +109,15 @@
               deferred.resolve(item);
             }
           });
-         }
-       } else {
+        }
+      } else {
         // New item
         if (UserSessionService.isOfflineEnabled()) {
           // Push to offline queue with fake UUID
           var fakeUUID = UUIDService.generateFakeUUID();
           params = {type: 'item', owner: ownerUUID, fakeUUID: fakeUUID};
           BackendClientService.put('/api/' + params.owner + '/item',
-           this.putNewItemRegex, params, item);
+                                   this.putNewItemRegex, params, item);
           // Use the fake uuid and a fake modified that is far enough in the to make
           // it to the end of the list
           item.uuid = fakeUUID;
@@ -128,7 +128,8 @@
         } else {
           // Online
           BackendClientService.putOnline('/api/' + ownerUUID + '/item',
-           this.putNewItemRegex, item).then(function(result) {
+                                         this.putNewItemRegex, item)
+          .then(function(result) {
             if (result.data) {
               item.uuid = result.data.uuid;
               item.created = result.data.created;
@@ -157,14 +158,15 @@
           url: '/api/' + ownerUUID + '/item/' + item.uuid + '/undelete'
         }, replaceable: true};
         BackendClientService.deleteOffline('/api/' + ownerUUID + '/item/' + item.uuid,
-         this.deleteItemRegex, params);
+                                           this.deleteItemRegex, params);
         item.deleted = item.modified = BackendClientService.generateFakeTimestamp();
         updateItem(item, ownerUUID);
         deferred.resolve(item);
       } else {
         // Online
         BackendClientService.deleteOnline('/api/' + ownerUUID + '/item/' + item.uuid,
-         this.deleteItemRegex).then(function(result) {
+                                          this.deleteItemRegex)
+        .then(function(result) {
           if (result.data) {
             item.deleted = result.data.deleted;
             item.modified = result.data.result.modified;
@@ -185,13 +187,14 @@
         // Offline
         var params = {type: 'item', owner: ownerUUID, uuid: item.uuid, replaceable: true};
         BackendClientService.post('/api/' + ownerUUID + '/item/' + item.uuid + '/undelete',
-         this.deleteItemRegex, params);
+                                  this.deleteItemRegex, params);
         delete item.deleted;
         updateItem(item, ownerUUID);
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/item/' + item.uuid + '/undelete',
-         this.deleteItemRegex).then(function(result) {
+                                        this.deleteItemRegex)
+        .then(function(result) {
           if (result.data) {
             delete item.deleted;
             item.modified = result.data.modified;
@@ -256,27 +259,27 @@
     // Regular expressions for item requests
     putNewItemRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      itemRegex.source),
+               BackendClientService.uuidRegex.source +
+               itemRegex.source),
     putExistingItemRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      itemSlashRegex.source +
-      BackendClientService.uuidRegex.source),
+               BackendClientService.uuidRegex.source +
+               itemSlashRegex.source +
+               BackendClientService.uuidRegex.source),
     deleteItemRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      itemSlashRegex.source +
-      BackendClientService.uuidRegex.source),
+               BackendClientService.uuidRegex.source +
+               itemSlashRegex.source +
+               BackendClientService.uuidRegex.source),
     undeleteItemRegex:
     new RegExp(BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      itemSlashRegex.source +
-      BackendClientService.uuidRegex.source +
-      BackendClientService.undeleteRegex.source),
+               BackendClientService.uuidRegex.source +
+               itemSlashRegex.source +
+               BackendClientService.uuidRegex.source +
+               BackendClientService.undeleteRegex.source),
   };
 }
 
 ItemsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ListsService', 'NotesService',
-'TagsService', 'TasksService', 'UISessionService', 'UserSessionService', 'UUIDService'];
+  'TagsService', 'TasksService', 'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.main').factory('ItemsService', ItemsService);

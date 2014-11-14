@@ -16,7 +16,8 @@
  /* global cordova */
  'use strict';
 
- function OmnibarEditorController($q, $rootScope, $scope, $timeout, ArrayService, packaging, UISessionService) {
+ function OmnibarEditorController($q, $rootScope, $scope, $timeout,
+                                  ArrayService, packaging, UISessionService) {
 
   // INITIALIZING
 
@@ -246,6 +247,6 @@
   }
 }
 
-OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'ArrayService',
-'packaging', 'UISessionService'];
+OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
+  'ArrayService', 'packaging', 'UISessionService'];
 angular.module('em.main').controller('OmnibarEditorController', OmnibarEditorController);

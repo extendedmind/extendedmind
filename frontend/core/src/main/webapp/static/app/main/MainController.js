@@ -413,7 +413,8 @@ function MainController(
 
   $scope.isFavoriteList = function (list) {
     if ($scope.favoriteLists && $scope.favoriteLists.length &&
-        $scope.favoriteLists.indexOf(list) !== -1){
+        $scope.favoriteLists.indexOf(list) !== -1)
+    {
       return true;
     }
   };
@@ -456,14 +457,12 @@ function MainController(
       i++;
     }
 
-    $scope.allActiveTasks = ArrayService.combineArrays(
-                               activeArchivedTasks,
-                               activeTasks, 'created', true);
+    $scope.allActiveTasks = ArrayService.combineArrays(activeArchivedTasks,
+                                                       activeTasks, 'created', true);
 
-    $scope.allTasks = ArrayService.combineArrays(
-                               $scope.tasks,
-                               $scope.archivedTasks);
-  }
+    $scope.allTasks = ArrayService.combineArrays($scope.tasks,
+                                                 $scope.archivedTasks);
+  };
 
   $scope.$watchCollection('tasks', function(/*newValue, oldValue*/) {
     $scope.combineTasksArrays();
@@ -552,14 +551,15 @@ function MainController(
     var activeUUID = UISessionService.getActiveUUID();
     // First check that the user has login
     if ((!$rootScope.syncState || $rootScope.syncState === 'ready' ||
-        $rootScope.syncState === 'error') && activeUUID) {
+        $rootScope.syncState === 'error') && activeUUID)
+    {
 
       // User has logged in, now set when user was last synchronized
-    $rootScope.synced = UserSessionService.getItemsSynchronized(activeUUID);
-    var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
-    if (isNaN(sinceLastItemsSynchronized) || sinceLastItemsSynchronized > itemsSynchronizedThreshold) {
-      $scope.$evalAsync(function() {
-        if (!$rootScope.synced){
+      $rootScope.synced = UserSessionService.getItemsSynchronized(activeUUID);
+      var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
+      if (isNaN(sinceLastItemsSynchronized) || sinceLastItemsSynchronized > itemsSynchronizedThreshold) {
+        $scope.$evalAsync(function() {
+          if (!$rootScope.synced){
             // This is the first load for the user
             $rootScope.syncState = 'active';
           }else{
@@ -567,35 +567,36 @@ function MainController(
           }
         });
 
-      SynchronizeService.synchronize(activeUUID).then(function(firstSync) {
-        if (firstSync){
-          // Also immediately after first sync add completed and archived to the mix
-          $rootScope.syncState = 'completedAndArchived';
-          SynchronizeService.addCompletedAndArchived(activeUUID).then(function(){
+        SynchronizeService.synchronize(activeUUID).then(function(firstSync) {
+          if (firstSync){
+            // Also immediately after first sync add completed and archived to the mix
+            $rootScope.syncState = 'completedAndArchived';
+            SynchronizeService.addCompletedAndArchived(activeUUID).then(function(){
+              updateItemsSyncronized(activeUUID);
+            }, function(){
+              $rootScope.syncState = 'error';
+            });
+          }else{
             updateItemsSyncronized(activeUUID);
-          }, function(){
-            $rootScope.syncState = 'error';
-          });
-        }else{
-          updateItemsSyncronized(activeUUID);
-        }
+          }
 
-        // If there has been a long enough time from last sync, update account preferences as well
-        if (itemsSynchronizeCounter === 0 ||
-            itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
-            sinceLastItemsSynchronized > userSyncTimeTreshold){
-          SynchronizeService.synchronizeUser(activeUUID).then(function(){
-            $scope.refreshFavoriteLists();
-          });
+          // If there has been a long enough time from last sync, update account preferences as well
+          if (itemsSynchronizeCounter === 0 ||
+              itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
+              sinceLastItemsSynchronized > userSyncTimeTreshold)
+          {
+            SynchronizeService.synchronizeUser(activeUUID).then(function(){
+              $scope.refreshFavoriteLists();
+            });
+          }
+          itemsSynchronizeCounter++;
+        }, function(){
+          $rootScope.syncState = 'error';
+        });
       }
-      itemsSynchronizeCounter++;
-    }, function(){
-      $rootScope.syncState = 'error';
-    });
     }
+    executeSynchronizeCallbacks();
   }
-  executeSynchronizeCallbacks();
-}
 
   // CLEANUP
 

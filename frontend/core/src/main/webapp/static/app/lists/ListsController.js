@@ -131,8 +131,7 @@
   };
 }
 
-ListsController['$inject'] = [
-'$q', '$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'ListsService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService'
+ListsController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
+  'AnalyticsService', 'ListsService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService'
 ];
 angular.module('em.base').controller('ListsController', ListsController);

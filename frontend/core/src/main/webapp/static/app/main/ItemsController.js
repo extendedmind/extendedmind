@@ -63,8 +63,7 @@
   };
 }
 
-ItemsController['$inject'] = [
-'$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'ItemsService', 'UISessionService'
+ItemsController['$inject'] = ['$rootScope', '$scope', '$timeout',
+  'AnalyticsService', 'ItemsService', 'UISessionService'
 ];
 angular.module('em.main').controller('ItemsController', ItemsController);

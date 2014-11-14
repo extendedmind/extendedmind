@@ -51,17 +51,17 @@
   function updateNote(note, ownerUUID) {
     addTransientProperties([note], ownerUUID);
     return ArrayService.updateItem(note,
-      notes[ownerUUID].activeNotes,
-      notes[ownerUUID].deletedNotes,
-      getOtherArrays(ownerUUID));
+                                   notes[ownerUUID].activeNotes,
+                                   notes[ownerUUID].deletedNotes,
+                                   getOtherArrays(ownerUUID));
   }
 
   function setNote(note, ownerUUID) {
     initializeArrays(ownerUUID);
     ArrayService.setItem(note,
-      notes[ownerUUID].activeNotes,
-      notes[ownerUUID].deletedNotes,
-      getOtherArrays(ownerUUID));
+                         notes[ownerUUID].activeNotes,
+                         notes[ownerUUID].deletedNotes,
+                         getOtherArrays(ownerUUID));
   }
 
   // Setup callback to ListsService
@@ -80,7 +80,8 @@
             deletedNote.modified = children[i].modified;
             updateNote(deletedNote, ownerUUID);
           } else {
-            var archivedNote = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue('uuid', children[i].uuid);
+            var archivedNote = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue('uuid',
+                                                                                        children[i].uuid);
             if (archivedNote) {
               archivedNote.archived = archived;
               archivedNote.modified = children[i].modified;
@@ -126,27 +127,24 @@
     setNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       addTransientProperties(notesResponse, ownerUUID);
-      return ArrayService.setArrays(
-        notesResponse,
-        notes[ownerUUID].activeNotes,
-        notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
+      return ArrayService.setArrays(notesResponse,
+                                    notes[ownerUUID].activeNotes,
+                                    notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
     },
     updateNotes: function(notesResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       addTransientProperties(notesResponse, ownerUUID);
 
-      return ArrayService.updateArrays(
-        notesResponse,
-        notes[ownerUUID].activeNotes,
-        notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
+      return ArrayService.updateArrays(notesResponse,
+                                       notes[ownerUUID].activeNotes,
+                                       notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
     },
     updateNoteProperties: function(uuid, properties, ownerUUID) {
-      var updatedNote = ArrayService.updateItemProperties(
-        uuid,
-        properties,
-        notes[ownerUUID].activeNotes,
-        notes[ownerUUID].deletedNotes,
-        getOtherArrays(ownerUUID));
+      var updatedNote = ArrayService.updateItemProperties(uuid,
+                                                          properties,
+                                                          notes[ownerUUID].activeNotes,
+                                                          notes[ownerUUID].deletedNotes,
+                                                          getOtherArrays(ownerUUID));
       if (updatedNote) addTransientProperties([updatedNote], ownerUUID);
       return updatedNote;
     },
@@ -186,7 +184,7 @@
           // Push to offline buffer
           params = {type: 'note', owner: ownerUUID, uuid: note.uuid};
           BackendClientService.put('/api/' + ownerUUID + '/note/' + note.uuid,
-           this.putExistingNoteRegex, params, note);
+                                   this.putExistingNoteRegex, params, note);
           note.created = note.modified = BackendClientService.generateFakeTimestamp();
           ExtendedItemService.attachTransientProperties(note, transientProperties, 'note');
           updateNote(note, ownerUUID);
@@ -194,7 +192,7 @@
         } else {
           // Online
           BackendClientService.putOnline('/api/' + ownerUUID + '/note/' + note.uuid,
-           this.putExistingNoteRegex, note)
+                                         this.putExistingNoteRegex, note)
           .then(function(result) {
             if (result.data) {
               note.modified = result.data.modified;
@@ -211,7 +209,7 @@
           var fakeUUID = UUIDService.generateFakeUUID();
           params = {type: 'note', owner: ownerUUID, fakeUUID: fakeUUID};
           BackendClientService.put('/api/' + ownerUUID + '/note',
-           this.putNewNoteRegex, params, note);
+                                   this.putNewNoteRegex, params, note);
           note.uuid = fakeUUID;
           note.created = note.modified = BackendClientService.generateFakeTimestamp();
           ExtendedItemService.attachTransientProperties(note, transientProperties, 'note');
@@ -220,7 +218,7 @@
         } else {
           // Online
           BackendClientService.putOnline('/api/' + ownerUUID + '/note',
-           this.putNewNoteRegex, note)
+                                         this.putNewNoteRegex, note)
           .then(function(result) {
             if (result.data) {
               note.uuid = result.data.uuid;
@@ -238,9 +236,9 @@
     getNoteStatus: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
       var arrayInfo = ArrayService.getActiveArrayInfo(note,
-        notes[ownerUUID].activeNotes,
-        notes[ownerUUID].deletedNotes,
-        getOtherArrays(ownerUUID));
+                                                      notes[ownerUUID].activeNotes,
+                                                      notes[ownerUUID].deletedNotes,
+                                                      getOtherArrays(ownerUUID));
 
       if (arrayInfo) return arrayInfo.type;
     },
@@ -256,9 +254,9 @@
       if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
 
       ArrayService.removeFromArrays(note,
-        notes[ownerUUID].activeNotes,
-        notes[ownerUUID].deletedNotes,
-        getOtherArrays(ownerUUID));
+                                    notes[ownerUUID].activeNotes,
+                                    notes[ownerUUID].deletedNotes,
+                                    getOtherArrays(ownerUUID));
     },
     deleteNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
@@ -272,12 +270,12 @@
           url: '/api/' + ownerUUID + '/note/' + note.uuid + '/undelete'
         }, replaceable: true};
         BackendClientService.deleteOffline('/api/' + ownerUUID + '/note/' + note.uuid,
-         this.deleteNoteRegex, params);
+                                           this.deleteNoteRegex, params);
         note.deleted = note.modified = BackendClientService.generateFakeTimestamp();
         updateNote(note, ownerUUID);
       } else {
         BackendClientService.deleteOnline('/api/' + ownerUUID + '/note/' + note.uuid,
-         this.deleteNoteRegex)
+                                          this.deleteNoteRegex)
         .then(function(result) {
           if (result.data) {
             note.deleted = result.data.deleted;
@@ -295,13 +293,13 @@
         // Offline
         var params = {type: 'note', owner: ownerUUID, uuid: note.uuid, replaceable: true};
         BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/undelete',
-         this.deleteNoteRegex, params);
+                                  this.deleteNoteRegex, params);
         delete note.deleted;
         updateNote(note, ownerUUID);
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.uuid + '/undelete',
-         this.deleteNoteRegex)
+                                        this.deleteNoteRegex)
         .then(function(result) {
           if (result.data) {
             delete note.deleted;
@@ -320,10 +318,10 @@
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
         var params = {type: 'note', owner: ownerUUID, uuid: note.uuid,
-                      reverse: {
-                        method: 'post',
-                        url: '/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite'
-                      },replaceable: true};
+        reverse: {
+          method: 'post',
+          url: '/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite'
+        },replaceable: true};
         BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/favorite',
                                   this.favoriteNoteRegex, params);
         note.favorited = note.modified = BackendClientService.generateFakeTimestamp();
@@ -332,7 +330,7 @@
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.uuid + '/favorite',
-         this.favoriteNoteRegex)
+                                        this.favoriteNoteRegex)
         .then(function(result) {
           if (result.data) {
             note.favorited = result.data.favorited;
@@ -354,7 +352,7 @@
         var params = {type: 'note', owner: ownerUUID, uuid: note.uuid, replaceable: true};
         // Offline
         BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite',
-         this.unfavoriteNoteRegex, params);
+                                  this.unfavoriteNoteRegex, params);
         delete note.favorited;
         note.trans.favorited = false;
         note.modified = BackendClientService.generateFakeTimestamp();
@@ -363,7 +361,7 @@
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite',
-          this.unfavoriteNoteRegex)
+                                        this.unfavoriteNoteRegex)
         .then(function(result) {
           if (result.data) {
             delete note.favorited;
@@ -393,46 +391,40 @@
     },
 
     // Regular expressions for note requests
-    putNewNoteRegex: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      noteRegex.source),
+    putNewNoteRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                BackendClientService.uuidRegex.source +
+                                noteRegex.source),
 
-    putExistingNoteRegex: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      noteSlashRegex.source +
-      BackendClientService.uuidRegex.source),
+    putExistingNoteRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                     BackendClientService.uuidRegex.source +
+                                     noteSlashRegex.source +
+                                     BackendClientService.uuidRegex.source),
 
-    deleteNoteRegex: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      noteSlashRegex.source +
-      BackendClientService.uuidRegex.source),
+    deleteNoteRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                BackendClientService.uuidRegex.source +
+                                noteSlashRegex.source +
+                                BackendClientService.uuidRegex.source),
 
-    undeleteNoteRegex: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      noteSlashRegex.source +
-      BackendClientService.uuidRegex.source  +
-      BackendClientService.undeleteRegex.source),
+    undeleteNoteRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                  BackendClientService.uuidRegex.source +
+                                  noteSlashRegex.source +
+                                  BackendClientService.uuidRegex.source  +
+                                  BackendClientService.undeleteRegex.source),
 
-    favoriteNoteRegex: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      noteSlashRegex.source +
-      BackendClientService.uuidRegex.source +
-      favoriteRegex.source),
+    favoriteNoteRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                  BackendClientService.uuidRegex.source +
+                                  noteSlashRegex.source +
+                                  BackendClientService.uuidRegex.source +
+                                  favoriteRegex.source),
 
-    unfavoriteNoteRegex: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      noteSlashRegex.source +
-      BackendClientService.uuidRegex.source +
-      unfavoriteRegex.source),
+    unfavoriteNoteRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                    BackendClientService.uuidRegex.source +
+                                    noteSlashRegex.source +
+                                    BackendClientService.uuidRegex.source +
+                                    unfavoriteRegex.source),
   };
 }
 
 NotesService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ExtendedItemService',
-'ListsService', 'TagsService', 'UISessionService', 'UserSessionService', 'UUIDService'];
+  'ListsService', 'TagsService', 'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.notes').factory('NotesService', NotesService);

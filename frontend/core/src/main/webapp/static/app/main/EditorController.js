@@ -15,8 +15,9 @@
 
  'use strict';
 
- function EditorController($rootScope, $scope, ConvertService, ItemsService, SwiperService,
-                           UISessionService, UserSessionService) {
+ function EditorController($rootScope, $scope,
+                           ConvertService, ItemsService, SwiperService, UISessionService,
+                           UserSessionService) {
 
   // OPENING, INITIALIZING, CLOSING
 
@@ -205,7 +206,7 @@
     return $scope.titlebar.text && $scope.titlebar.text.length !== 0;
   };
 
-  $scope.handleBasicTitlebarKeydown = function(keydownEvent, item){
+  $scope.handleBasicTitlebarKeydown = function(keydownEvent/*, item*/){
     // Escape
     if (keydownEvent.keyCode === 27){
       blurTitlebarInput();
@@ -284,6 +285,6 @@
 
 }
 
-EditorController['$inject'] = ['$rootScope', '$scope', 'ConvertService', 'ItemsService', 'SwiperService',
-'UISessionService', 'UserSessionService'];
+EditorController['$inject'] = ['$rootScope', '$scope',
+  'ConvertService', 'ItemsService', 'SwiperService', 'UISessionService', 'UserSessionService'];
 angular.module('em.main').controller('EditorController', EditorController);

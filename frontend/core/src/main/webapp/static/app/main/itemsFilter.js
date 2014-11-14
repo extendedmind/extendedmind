@@ -33,8 +33,11 @@
         if (items[i].relationships && items[i].relationships.tags)
           if (items[i].relationships.tags.indexOf(uuid) !== -1) filteredItems.push(items[i]);
       }else {
-        if (!items[i].relationships || !items[i].relationships.tags || items[i].relationships.tags.length === 0)
+        if (!items[i].relationships || !items[i].relationships.tags ||
+            items[i].relationships.tags.length === 0)
+        {
           filteredItems.push(items[i]);
+        }
       }
     }
     return filteredItems;

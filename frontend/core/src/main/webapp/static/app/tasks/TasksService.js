@@ -16,7 +16,8 @@
  /*global angular */
  'use strict';
 
- function TasksService($q, $rootScope, ArrayService, BackendClientService, ExtendedItemService,
+ function TasksService($q, $rootScope,
+                       ArrayService, BackendClientService, ExtendedItemService,
                        ListsService, TagsService, UISessionService, UserSessionService, UUIDService) {
   var tasks = {};
 
@@ -42,17 +43,17 @@
   function updateTask(task, ownerUUID) {
     if (task) addTransientProperties([task], ownerUUID);
     return ArrayService.updateItem(task,
-      tasks[ownerUUID].activeTasks,
-      tasks[ownerUUID].deletedTasks,
-      getOtherArrays(ownerUUID));
+                                   tasks[ownerUUID].activeTasks,
+                                   tasks[ownerUUID].deletedTasks,
+                                   getOtherArrays(ownerUUID));
   }
 
   function setTask(task, ownerUUID) {
     initializeArrays(ownerUUID);
     ArrayService.setItem(task,
-      tasks[ownerUUID].activeTasks,
-      tasks[ownerUUID].deletedTasks,
-      getOtherArrays(ownerUUID));
+                         tasks[ownerUUID].activeTasks,
+                         tasks[ownerUUID].deletedTasks,
+                         getOtherArrays(ownerUUID));
   }
 
   // Setup callback to ListsService
@@ -71,7 +72,8 @@
             deletedTask.modified = children[i].modified;
             updateTask(deletedTask, ownerUUID);
           } else {
-            var archivedTask = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
+            var archivedTask = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid',
+                                                                                        children[i].uuid);
             if (archivedTask) {
               archivedTask.archived = archived;
               archivedTask.modified = children[i].modified;
@@ -144,16 +146,19 @@
       task.description = task.trans.description;
     else if (task.description) delete task.description;
 
-    // AngularJS sets property to empty string '""' if it is used in ng-model data-binding and text is removed.
+    // AngularJS sets property to empty string '""' if it is used in ng-model data-binding and text is
+    // removed.
     if (task.trans && task.trans.description === '')
       delete task.trans.description;
   }
 
   function addTransientProperties(tasksArray, ownerUUID, addExtraTransientPropertyFn) {
-    var addExtraTransientPropertyFunctions = [copyDueToDate, copyCompleted, copyDescriptionToTransientProperties];
+    var addExtraTransientPropertyFunctions = [copyDueToDate, copyCompleted,
+      copyDescriptionToTransientProperties];
     if (typeof addExtraTransientPropertyFn === 'function')
       addExtraTransientPropertyFunctions.push(addExtraTransientPropertyFn);
-    ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, 'task', addExtraTransientPropertyFunctions);
+    ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, 'task',
+                                               addExtraTransientPropertyFunctions);
   }
 
   return {
@@ -161,28 +166,25 @@
       initializeArrays(ownerUUID);
       this.addTransientProperties(tasksResponse, ownerUUID);
 
-      return ArrayService.setArrays(
-        tasksResponse,
-        tasks[ownerUUID].activeTasks,
-        tasks[ownerUUID].deletedTasks,
-        getOtherArrays(ownerUUID));
+      return ArrayService.setArrays(tasksResponse,
+                                    tasks[ownerUUID].activeTasks,
+                                    tasks[ownerUUID].deletedTasks,
+                                    getOtherArrays(ownerUUID));
     },
     updateTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       this.addTransientProperties(tasksResponse, ownerUUID);
-      return ArrayService.updateArrays(
-        tasksResponse,
-        tasks[ownerUUID].activeTasks,
-        tasks[ownerUUID].deletedTasks,
-        getOtherArrays(ownerUUID));
+      return ArrayService.updateArrays(tasksResponse,
+                                       tasks[ownerUUID].activeTasks,
+                                       tasks[ownerUUID].deletedTasks,
+                                       getOtherArrays(ownerUUID));
     },
     updateTaskProperties: function(uuid, properties, ownerUUID) {
-      var updatedTask = ArrayService.updateItemProperties(
-        uuid,
-        properties,
-        tasks[ownerUUID].activeTasks,
-        tasks[ownerUUID].deletedTasks,
-        getOtherArrays(ownerUUID));
+      var updatedTask = ArrayService.updateItemProperties(uuid,
+                                                          properties,
+                                                          tasks[ownerUUID].activeTasks,
+                                                          tasks[ownerUUID].deletedTasks,
+                                                          getOtherArrays(ownerUUID));
       if (updatedTask) this.addTransientProperties([updatedTask], ownerUUID);
       return updatedTask;
     },
@@ -213,7 +215,7 @@
             // Push to offline buffer
             params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
             BackendClientService.put('/api/' + params.owner + '/task/' + task.uuid,
-             this.putExistingTaskRegex, params, task);
+                                     this.putExistingTaskRegex, params, task);
             task.modified = BackendClientService.generateFakeTimestamp();
             ExtendedItemService.attachTransientProperties(task, transientProperties, 'task');
             updateTask(task, ownerUUID);
@@ -221,7 +223,7 @@
           } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/task/' + task.uuid,
-             this.putExistingTaskRegex, task).
+                                           this.putExistingTaskRegex, task).
             then(function(result) {
               if (result.data) {
                 task.modified = result.data.modified;
@@ -238,7 +240,7 @@
             var fakeUUID = UUIDService.generateFakeUUID();
             var params = {type: 'task', owner: ownerUUID, fakeUUID: fakeUUID};
             BackendClientService.put('/api/' + params.owner + '/task',
-             this.putNewTaskRegex, params, task);
+                                     this.putNewTaskRegex, params, task);
             task.uuid = fakeUUID;
             // Use a fake modified that is far enough in the to make
             // it to the end of the list
@@ -249,7 +251,7 @@
           } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/task',
-             this.putNewTaskRegex, task).
+                                           this.putNewTaskRegex, task).
             then(function(result) {
               if (result.data) {
                 task.uuid = result.data.uuid;
@@ -268,9 +270,9 @@
     getTaskStatus: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
       var arrayInfo = ArrayService.getActiveArrayInfo(task,
-        tasks[ownerUUID].activeTasks,
-        tasks[ownerUUID].deletedTasks,
-        getOtherArrays(ownerUUID));
+                                                      tasks[ownerUUID].activeTasks,
+                                                      tasks[ownerUUID].deletedTasks,
+                                                      getOtherArrays(ownerUUID));
 
       if (arrayInfo) return arrayInfo.type;
     },
@@ -287,9 +289,9 @@
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
 
       ArrayService.removeFromArrays(task,
-        tasks[ownerUUID].activeTasks,
-        tasks[ownerUUID].deletedTasks,
-        getOtherArrays(ownerUUID));
+                                    tasks[ownerUUID].activeTasks,
+                                    tasks[ownerUUID].deletedTasks,
+                                    getOtherArrays(ownerUUID));
     },
     deleteTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
@@ -304,13 +306,13 @@
           url: '/api/' + ownerUUID + '/task/' + task.uuid + '/undelete'
         }, replaceable: true};
         BackendClientService.deleteOffline('/api/' + ownerUUID + '/task/' + task.uuid,
-         this.deleteTaskRegex, params);
+                                           this.deleteTaskRegex, params);
         task.deleted = task.modified = BackendClientService.generateFakeTimestamp();
         updateTask(task, ownerUUID);
       } else {
         // Online
         BackendClientService.deleteOnline('/api/' + ownerUUID + '/task/' + task.uuid,
-         this.deleteTaskRegex)
+                                          this.deleteTaskRegex)
         .then(function(result) {
           if (result.data) {
             task.deleted = result.data.deleted;
@@ -329,13 +331,13 @@
         // Offline
         var params = {type: 'task', owner: ownerUUID, uuid: task.uuid, replaceable: true};
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
-         this.undeleteTaskRegex, params);
+                                  this.undeleteTaskRegex, params);
         delete task.deleted;
         updateTask(task, ownerUUID);
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
-         this.undeleteTaskRegex)
+                                        this.undeleteTaskRegex)
         .then(function(result) {
           if (result.data) {
             delete task.deleted;
@@ -354,10 +356,10 @@
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
         var params = {type: 'task', owner: ownerUUID, uuid: task.uuid,
-                      reverse: {
-                        method: 'post',
-                        url: '/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete'
-                      }, replaceable: true};
+        reverse: {
+          method: 'post',
+          url: '/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete'
+        }, replaceable: true};
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
                                   this.completeTaskRegex, params);
         task.completed = task.modified = BackendClientService.generateFakeTimestamp();
@@ -366,7 +368,7 @@
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
-         this.completeTaskRegex)
+                                        this.completeTaskRegex)
         .then(function(result) {
           if (result.data) {
             task.completed = result.data.completed;
@@ -388,7 +390,7 @@
         var params = {type: 'task', owner: ownerUUID, uuid: task.uuid, replaceable: true};
         // Offline
         BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
-         this.uncompleteTaskRegex, params);
+                                  this.uncompleteTaskRegex, params);
         delete task.completed;
         task.modified = BackendClientService.generateFakeTimestamp();
         updateTask(task, ownerUUID);
@@ -396,7 +398,7 @@
       } else {
         // Online
         BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
-          this.uncompleteTaskRegex)
+                                        this.uncompleteTaskRegex)
         .then(function(result) {
           if (result.data) {
             delete task.completed;
@@ -424,50 +426,46 @@
     },
     detachTransientProperties: function(task, ownerUUID) {
       var detachExtraTransientPropertyFunctions = [copyDateToDue, copyTransientDescriptionToPersistent];
-      return ExtendedItemService.detachTransientProperties(task, ownerUUID, detachExtraTransientPropertyFunctions);
+      return ExtendedItemService.detachTransientProperties(task, ownerUUID,
+                                                           detachExtraTransientPropertyFunctions);
     },
 
     // Regular expressions for task requests
-    putNewTaskRegex: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      taskRegex.source),
+    putNewTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                BackendClientService.uuidRegex.source +
+                                taskRegex.source),
 
-    putExistingTaskRegex: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      taskSlashRegex.source +
-      BackendClientService.uuidRegex.source),
+    putExistingTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                     BackendClientService.uuidRegex.source +
+                                     taskSlashRegex.source +
+                                     BackendClientService.uuidRegex.source),
 
-    deleteTaskRegex: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      taskSlashRegex.source +
-      BackendClientService.uuidRegex.source),
+    deleteTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                BackendClientService.uuidRegex.source +
+                                taskSlashRegex.source +
+                                BackendClientService.uuidRegex.source),
 
-    undeleteTaskRegex: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      taskSlashRegex.source +
-      BackendClientService.uuidRegex.source +
-      BackendClientService.undeleteRegex.source),
+    undeleteTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                  BackendClientService.uuidRegex.source +
+                                  taskSlashRegex.source +
+                                  BackendClientService.uuidRegex.source +
+                                  BackendClientService.undeleteRegex.source),
 
-    completeTaskRegex: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      taskSlashRegex.source +
-      BackendClientService.uuidRegex.source +
-      completeRegex.source),
+    completeTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                  BackendClientService.uuidRegex.source +
+                                  taskSlashRegex.source +
+                                  BackendClientService.uuidRegex.source +
+                                  completeRegex.source),
 
-    uncompleteTaskRegex: new RegExp(
-      BackendClientService.apiPrefixRegex.source +
-      BackendClientService.uuidRegex.source +
-      taskSlashRegex.source +
-      BackendClientService.uuidRegex.source +
-      uncompleteRegex.source),
+    uncompleteTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                    BackendClientService.uuidRegex.source +
+                                    taskSlashRegex.source +
+                                    BackendClientService.uuidRegex.source +
+                                    uncompleteRegex.source),
   };
 }
 
-TasksService['$inject'] = ['$q', '$rootScope', 'ArrayService', 'BackendClientService',
-'ExtendedItemService', 'ListsService', 'TagsService', 'UISessionService', 'UserSessionService', 'UUIDService'];
+TasksService['$inject'] = ['$q', '$rootScope',
+  'ArrayService', 'BackendClientService', 'ExtendedItemService', 'ListsService', 'TagsService',
+  'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.tasks').factory('TasksService', TasksService);
