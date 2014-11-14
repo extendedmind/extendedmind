@@ -114,8 +114,8 @@ input[type="checkbox"]:checked + label:before {
   opacity: 1; // [1]
 }
 
-// 1. Simple fade-in-out animation.
-.animate-btn-completed {
+// 1. Fade-in animation for show completed tasks button.
+.animate-btn-completed.ng-enter {
   -webkit-transition: opacity @speed-animate-btn-completed-fade @timing-animate-btn-completed;  // [1]
   -moz-transition: opacity @speed-animate-btn-completed-fade @timing-animate-btn-completed;     // [1]
   -o-transition: opacity @speed-animate-btn-completed-fade @timing-animate-btn-completed;       // [1]
@@ -123,14 +123,12 @@ input[type="checkbox"]:checked + label:before {
   transition: opacity @speed-animate-btn-completed-fade @timing-animate-btn-completed;          // [1]
 }
 
-// 1. Starting point for fade in and ending point for fade out.
-.animate-btn-completed.ng-enter,
-.animate-btn-completed.ng-leave.ng-leave-active {
+// 1. Starting point for show completed tasks button fade in.
+.animate-btn-completed.ng-enter {
   opacity: 0; // [1]
 }
 
-// 1. Starting point for fade out and ending point for fade in.
-.animate-btn-completed.ng-leave,
+// 1. Ending point for show completed tasks button fade in.
 .animate-btn-completed.ng-enter.ng-enter-active {
   opacity: 1; // [1]
 }

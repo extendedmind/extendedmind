@@ -1,4 +1,4 @@
-<button class="btn animate-btn-completed" ng-if="!isCompletedDisabled() && containsCompleted()"
-ng-click="toggleShowCompletedTasks()" ng-class="showCompletedTasks && 'active'">
+<button ng-if="!isCompletedDisabled() && containsCompleted()" class="btn animate-btn-completed"
+  ng-class="showCompletedTasks && 'active'" ng-click="toggleShowCompletedTasks()" >
   <span class="icon-toggle-completed"></span>
 </button>
