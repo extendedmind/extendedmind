@@ -128,7 +128,7 @@ Icon classes
   }
 }
 
-// 1. Set dimensions for .icon-menu.
+// 1. Set dimensions for .icon-trash.
 // 2. Override default vertical-align and ertically align with text.
 //    NOTE: This has to be AFTER .set-icon-font().
 .icon-trash {
@@ -155,13 +155,20 @@ Icon classes
   }
 }
 
+// 1. Set dimensions for .icon-star.
+// 2. Override default vertical-align and ertically align with text.
+//    NOTE: This has to be AFTER .set-icon-font().
 .icon-star {
+  font-size: @size-icon-star;   // [1]
+  line-height: @size-icon-star; // [1]
+  height: @size-icon-star;      // [1]
+  display: inline-block;        // [1]
   &:after {
     .set-icon-font;
+    vertical-align: baseline; // [2]
     color: @color-text;
     content: @icon-star;
     font-size: @size-icon-star;
-    vertical-align: middle;
   }
 }
 .icon-star.inverse:after{
