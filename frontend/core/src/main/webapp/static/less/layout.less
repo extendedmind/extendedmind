@@ -926,6 +926,7 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 // Works with <a><span></span></a> structure. Unfortunately a <button> element does not work here
 // because that buttons don't work with display:table*. Bootstrap has a similar solution:
 // http://getbootstrap.com/components/#input-groups-buttons
+// 2. Make sure icon-calendar does not increase height by setting it to block element.
 .group-symmetrical--middle {
   position: absolute;
   .center-horizontally-absolute;
@@ -942,6 +943,9 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
       height: inherit;
       display: table-cell;
       vertical-align: middle;
+    }
+    & > span.icon-calendar {
+      display: block; // [2]
     }
   }
 }
