@@ -966,6 +966,23 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   max-width: @max-width-group-symmetrical-middle * 2;
 }
 
+// 1. Align plus icon vertically.
+// 2. plus-icon element is taller than icon itself and since it's a font, its baseline is somewhere.
+//    Set vertical-align to adjust icon inside element.
+.group-symmetrical--middle > a > .icon-plus {
+  display: block;               // [1]
+  line-height: @grid-vertical;  // [1]
+  &:after {
+    vertical-align: -7.5%;      // [2]
+  }
+}
+
+// 1. Set height, and also to ensure icon in .text-navigation-forward:after does not increase height.
+.group-symmetrical--right.link-navigation > .text-navigation-forward {
+  display: block;         // [1]
+  height: @grid-vertical; // [1]
+}
+
 .group-centered {
   width: 100%;
   text-align: center;
