@@ -18,6 +18,7 @@ TODO: Icons are not working yet with Phytoplankton
 @size-icon-arrow-move: 20px;
 @size-icon-star: 16px;
 @size-icon-star-small: 8px;
+@size-icon-trash: 18px;
 @size-icon-x: 10px;
 
 // Icon character codes
@@ -127,9 +128,17 @@ Icon classes
   }
 }
 
+// 1. Set dimensions for .icon-menu.
+// 2. Override default vertical-align and ertically align with text.
+//    NOTE: This has to be AFTER .set-icon-font().
 .icon-trash {
+  font-size: @size-icon-trash;    // [1]
+  line-height: @size-icon-trash;  // [1]
+  height: @size-icon-trash;       // [1]
+  display: inline-block;          // [1]
   &:after {
     .set-icon-font;
+    vertical-align: baseline; // [2]
     color: @color-text;
     content: @icon-trash;
   }
