@@ -836,10 +836,18 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   color: @color-text-highlighted;
 }
 
+@padding-vertical-heading-text: 17px;
+@max-line-height-heading-text: 60px;
+@padding-vertical-not-so-large-heading-text: 6px;
+@max-line-height-not-so-large-heading-text: 48px;
+
 // 1. Remove padding-top and padding-bottom defined elsewhere.
 // 2. Add equal padding-top and padding-bottom to match, with line-height in .text-heading (=60px),
 //    height of .group-heading justified (=94px).
 // 3. Maximum line-height to make whole text visible.
+// 4. Add equal padding-top and padding-bottom to match, with line-height in .text-heading.long (=48px) and
+//    padding-top and padding-bottom in parent, height of .group-heading justified (=94px).
+// 5. Expand link element's width and height.
 .group-mixed.heading.vertically-centered {
   .group-mixed--middle {
     padding-top: 0;     // [1]
@@ -847,16 +855,22 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     & > h2.group-heading.justified {
       padding-top: 0;     // [1]
       padding-bottom: 0;  // [1]
-      & > a, & > div {
-        padding-top: 17px;    // [2]
-        padding-bottom: 17px; // [2]
-        display: block;
+      & > a,
+      & > div {
+        padding-top: @padding-vertical-heading-text;    // [2]
+        padding-bottom: @padding-vertical-heading-text; // [2]
         & > span.text-heading {
-          line-height: 60px;  // [3]
+          line-height: @max-line-height-heading-text;  // [3]
         }
         & > span.text-heading.long {
+          line-height: @max-line-height-not-so-large-heading-text;    // [3]
+          padding-top: @padding-vertical-not-so-large-heading-text;     // [4]
+          padding-bottom: @padding-vertical-not-so-large-heading-text;  // [4]
           font-size: @size-font-not-so-large;
         }
+      }
+      & > a {
+        display: block; // [5]
       }
     }
   }
