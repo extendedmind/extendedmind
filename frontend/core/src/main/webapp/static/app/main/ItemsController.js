@@ -16,6 +16,16 @@
 
  function ItemsController($rootScope, $scope, $timeout, AnalyticsService, ItemsService, UISessionService) {
 
+  // NAVIGATING
+
+  $scope.openItemEditor = function(item){
+    $scope.openEditor('item', item);
+  };
+
+  $scope.gotoInbox = function(item){
+    $scope.changeFeature('inbox', item, true);
+  };
+
   // SAVING
 
   $scope.saveItem = function(item) {

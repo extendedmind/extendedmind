@@ -16,7 +16,7 @@
  /* global cordova */
  'use strict';
 
- function OmnibarEditorController($q, $rootScope, $scope, $timeout, ArrayService, packaging) {
+ function OmnibarEditorController($q, $rootScope, $scope, $timeout, ArrayService, packaging, UISessionService) {
 
   // INITIALIZING
 
@@ -38,7 +38,17 @@
   $scope.saveOmnibarToItem = function() {
     var item = {title: $scope.titlebar.text};
     $scope.deferEdit().then(function() {
-      $scope.saveItem(item);
+      $scope.saveItem(item).then(function(){
+        if (!$scope.isFeatureActive('inbox')){
+          UISessionService.pushNotification({
+            type: 'inbox',
+            itemType: 'item',
+            item: item,
+            openFn: $scope.openItemEditor,
+            gotoFn: $scope.gotoInbox
+          });
+        }
+      });
     });
   };
 
@@ -236,5 +246,6 @@
   }
 }
 
-OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'ArrayService', 'packaging'];
+OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'ArrayService',
+'packaging', 'UISessionService'];
 angular.module('em.main').controller('OmnibarEditorController', OmnibarEditorController);

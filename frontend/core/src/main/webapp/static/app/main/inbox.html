@@ -23,7 +23,7 @@
 
     <div class="animate-list-item-leave row-vertically-centered" ng-repeat="item in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
     list-item="getList().length">
-      <a href class="link-list-item" swiper-click="openEditor('item', item)">
+      <a href class="link-list-item" swiper-click="openItemEditor(item)">
         <span class="text-link" clamp=2 ng-bind="item.title"></span>
       </a>
     </div>

@@ -12,6 +12,18 @@
       {{notification.text}}
     </span>
   </div>
+  <div class="group-mixed--middle" ng-switch-when="inbox">
+    <span class="textgroup-toaster">
+      <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.openFn)">
+        <span class="text-highlighted">item</span>
+      </a>
+      saved to
+      <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.gotoFn)">
+        <span class="text-highlighted">inbox</span>
+      </a>
+    </span>
+  </div>
+
   <div class="group-mixed--right">
     <a href ng-click="closeNotificationAndCall(notification)"><span class="icon-x"></span></a>
   </div>
