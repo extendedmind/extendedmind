@@ -1,6 +1,11 @@
 <div class="container-content--outer" list-container drawer-handle="left" drawer-handle-register-activate="registerFocusActivateCallback(activate)" list-container-override-vertical-resize="true">
   <section ng-show="isOnboarded('focusTasks')" class="container-content" ng-controller="DatesController">
 
+    <div ng-if="datepickerVisible && columns > 1" editable-field-container="auto">
+      <a href class="datepicker-back" ng-click="swipeDatepickerLeft()" editable-field>
+        <span class="icon-arrow-left"></span>
+      </a>
+    </div>
     <div ng-if="datepickerVisible" class="swiper-container datepicker" swiper-container="datepicker" swiper-type="main" expected-slides="5" data-snap-ignore="true">
       <!-- Set editable-field-container to child to circumvent AngularJS error https://docs.angularjs.org/error/$compile/multidir -->
       <div class="swiper-wrapper" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeDatepicker()">
@@ -305,6 +310,11 @@
           </div>
         </div>
       </div>
+    </div>
+    <div ng-if="datepickerVisible && columns > 1" editable-field-container="auto">
+      <a href class="datepicker-forward" ng-click="swipeDatepickerRight()" editable-field>
+        <span class="icon-arrow-right"></span>
+      </a>
     </div>
 
     <div class="swiper-container" swiper-container="focus/tasks" swiper-type="page" expected-slides="5">

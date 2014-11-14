@@ -150,6 +150,30 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
   margin-bottom: 4px;                         // [1]
 }
 
+.datepicker-back, .datepicker-forward {
+  display: block;
+  position:absolute;
+  z-index: 1;
+  width: @grid-horizontal;
+  height: @height-datepicker;
+  margin-top: @margin-top-heading-justified;  // [1]
+  margin-bottom: 4px;                         // [1]
+  line-height: @height-datepicker;
+  background-color: white;
+}
+
+@padding-datepicker-arrow: 10px;
+.datepicker-back {
+  padding-left: @padding-datepicker-arrow;
+}
+
+.datepicker-forward {
+  padding-right: @padding-datepicker-arrow;
+  text-align: right;
+  right: 0;
+  top: 0;
+}
+
 .datepicker-week {
   display: table;
 }

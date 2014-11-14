@@ -178,3 +178,19 @@ Icon classes
   }
 }
 
+.icon-arrow-left, .icon-arrow-right {
+  &:after {
+    .set-icon-font;
+    color: @color-text-downplayed;
+    font-size: @size-icon-arrow-small;
+    vertical-align: middle;
+  }
+}
+
+.icon-arrow-left:after {
+  content: @icon-arrow-left;
+}
+
+.icon-arrow-right:after {
+  content: @icon-arrow-right;
+}

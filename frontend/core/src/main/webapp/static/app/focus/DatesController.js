@@ -541,6 +541,14 @@
     }
   };
 
+  $scope.swipeDatepickerLeft = function(){
+    SwiperService.swipePrevious('datepicker');
+  }
+
+  $scope.swipeDatepickerRight = function(){
+    SwiperService.swipeNext('datepicker');
+  }
+
   $scope.$on('$destroy', function() {
     if (angular.isFunction($scope.unregisterSynchronizeCallback))
       $scope.unregisterSynchronizeCallback('DatesController');
